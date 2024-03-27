@@ -19,15 +19,14 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
 
 public record AdvancementRewards(int experience, List<RegistryKey<LootTable>> loot, List<Identifier> recipes, Optional<LazyContainer> function) {
 	public static final Codec<AdvancementRewards> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(Codec.INT, "experience", 0).forGetter(AdvancementRewards::experience),
-					Codecs.createStrictOptionalFieldCodec(RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).listOf(), "loot", List.of()).forGetter(AdvancementRewards::loot),
-					Codecs.createStrictOptionalFieldCodec(Identifier.CODEC.listOf(), "recipes", List.of()).forGetter(AdvancementRewards::recipes),
-					Codecs.createStrictOptionalFieldCodec(LazyContainer.CODEC, "function").forGetter(AdvancementRewards::function)
+					Codec.INT.optionalFieldOf("experience", Integer.valueOf(0)).forGetter(AdvancementRewards::experience),
+					RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).listOf().optionalFieldOf("loot", List.of()).forGetter(AdvancementRewards::loot),
+					Identifier.CODEC.listOf().optionalFieldOf("recipes", List.of()).forGetter(AdvancementRewards::recipes),
+					LazyContainer.CODEC.optionalFieldOf("function").forGetter(AdvancementRewards::function)
 				)
 				.apply(instance, AdvancementRewards::new)
 	);

@@ -740,6 +740,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	@Override
 	public void remove(Entity.RemovalReason reason) {
+		if (reason == Entity.RemovalReason.KILLED || reason == Entity.RemovalReason.DISCARDED) {
+			for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
+				statusEffectInstance.onEntityRemoval(this, reason);
+			}
+		}
+
 		super.remove(reason);
 		this.brain.forgetAll();
 	}
@@ -1024,6 +1030,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				this.activeStatusEffects.put(effect.getEffectType(), effect);
 				this.onStatusEffectApplied(effect, source);
 				bl = true;
+				effect.playApplySound(this);
 			} else if (statusEffectInstance.upgrade(effect)) {
 				this.onStatusEffectUpgraded(statusEffectInstance, true, source);
 				bl = true;
@@ -1035,9 +1042,15 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	public boolean canHaveStatusEffect(StatusEffectInstance effect) {
-		return !this.getType().isIn(EntityTypeTags.IGNORES_POISON_AND_REGEN)
-			? true
-			: !effect.equals(StatusEffects.REGENERATION) && !effect.equals(StatusEffects.POISON);
+		if (this.getType().isIn(EntityTypeTags.IMMUNE_TO_INFESTED)) {
+			return !effect.equals(StatusEffects.INFESTED);
+		} else if (this.getType().isIn(EntityTypeTags.IMMUNE_TO_OOZING)) {
+			return !effect.equals(StatusEffects.OOZING);
+		} else {
+			return !this.getType().isIn(EntityTypeTags.IGNORES_POISON_AND_REGEN)
+				? true
+				: !effect.equals(StatusEffects.REGENERATION) && !effect.equals(StatusEffects.POISON);
+		}
 	}
 
 	/**
@@ -1324,6 +1337,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 			if (entity2 instanceof ServerPlayerEntity) {
 				Criteria.PLAYER_HURT_ENTITY.trigger((ServerPlayerEntity)entity2, this, source, f, amount, bl);
+			}
+
+			for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
+				statusEffectInstance.onEntityDamage(this, source, amount);
 			}
 
 			return bl3;
@@ -1735,7 +1752,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	protected float applyArmorToDamage(DamageSource source, float amount) {
 		if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
 			this.damageArmor(source, amount);
-			amount = DamageUtil.getDamageLeft(amount, (float)this.getArmor(), (float)this.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
+			amount = DamageUtil.getDamageLeft(amount, source, (float)this.getArmor(), (float)this.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
 		}
 
 		return amount;

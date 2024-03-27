@@ -1,7 +1,7 @@
 package net.minecraft.loot.entry;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
@@ -9,7 +9,7 @@ import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 
 public class AlternativeEntry extends CombinedEntry {
-	public static final Codec<AlternativeEntry> CODEC = createCodec(AlternativeEntry::new);
+	public static final MapCodec<AlternativeEntry> CODEC = createCodec(AlternativeEntry::new);
 
 	AlternativeEntry(List<LootPoolEntry> list, List<LootCondition> list2) {
 		super(list, list2);

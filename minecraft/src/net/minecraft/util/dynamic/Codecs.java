@@ -1,35 +1,34 @@
 package net.minecraft.util.dynamic;
 
-import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.primitives.UnsignedBytes;
 import com.google.gson.JsonElement;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
+import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.datafixers.util.Unit;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Decoder;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JavaOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.Codec.ResultFunction;
-import com.mojang.serialization.DataResult.PartialResult;
-import com.mojang.serialization.MapCodec.MapCodecCodec;
+import com.mojang.serialization.DataResult.Error;
 import com.mojang.serialization.codecs.BaseMapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatList;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -44,16 +43,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
-import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
-import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
-import java.util.stream.Stream.Builder;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
@@ -81,7 +77,7 @@ public class Codecs {
 	 * 
 	 * @see RuntimeOps
 	 */
-	public static final Codec<Object> BASIC_OBJECT = fromOps(RuntimeOps.INSTANCE);
+	public static final Codec<Object> BASIC_OBJECT = fromOps(JavaOps.INSTANCE);
 	public static final Codec<Vector3f> VECTOR_3F = Codec.FLOAT
 		.listOf()
 		.comapFlatMap(
@@ -102,7 +98,7 @@ public class Codecs {
 				)
 				.apply(instance, AxisAngle4f::new)
 	);
-	public static final Codec<Quaternionf> ROTATION = alternatively(QUATERNIONF, AXIS_ANGLE4F.xmap(Quaternionf::new, AxisAngle4f::new));
+	public static final Codec<Quaternionf> ROTATION = Codec.withAlternative(QUATERNIONF, AXIS_ANGLE4F.xmap(Quaternionf::new, AxisAngle4f::new));
 	public static Codec<Matrix4f> MATRIX4F = Codec.FLOAT.listOf().comapFlatMap(list -> Util.decodeFixedLengthList(list, 16).map(listx -> {
 			Matrix4f matrix4f = new Matrix4f();
 
@@ -162,7 +158,7 @@ public class Codecs {
 		instance -> instance.group(
 					Codec.STRING.fieldOf("name").forGetter(Property::name),
 					Codec.STRING.fieldOf("value").forGetter(Property::value),
-					Codec.STRING.optionalFieldOf("signature").forGetter(property -> Optional.ofNullable(property.signature()))
+					Codec.STRING.lenientOptionalFieldOf("signature").forGetter(property -> Optional.ofNullable(property.signature()))
 				)
 				.apply(instance, (key, value, signature) -> new Property(key, value, (String)signature.orElse(null)))
 	);
@@ -181,13 +177,13 @@ public class Codecs {
 				}
 			});
 			return propertyMap;
-		}, properties -> com.mojang.datafixers.util.Either.right(properties.values().stream().toList()));
-	public static final Codec<String> PLAYER_NAME = validate(
-		string(0, 16),
-		name -> StringHelper.isValidPlayerName(name)
-				? DataResult.success(name)
-				: DataResult.error(() -> "Player name contained disallowed characters: '" + name + "'")
-	);
+		}, properties -> Either.right(properties.values().stream().toList()));
+	public static final Codec<String> PLAYER_NAME = Codec.string(0, 16)
+		.validate(
+			name -> StringHelper.isValidPlayerName(name)
+					? DataResult.success(name)
+					: DataResult.error(() -> "Player name contained disallowed characters: '" + name + "'")
+		);
 	private static final MapCodec<GameProfile> GAME_PROFILE = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(Uuids.CODEC.fieldOf("id").forGetter(GameProfile::getId), PLAYER_NAME.fieldOf("name").forGetter(GameProfile::getName))
 				.apply(instance, GameProfile::new)
@@ -195,49 +191,26 @@ public class Codecs {
 	public static final Codec<GameProfile> GAME_PROFILE_WITH_PROPERTIES = RecordCodecBuilder.create(
 		instance -> instance.group(
 					GAME_PROFILE.forGetter(Function.identity()),
-					GAME_PROFILE_PROPERTY_MAP.optionalFieldOf("properties", new PropertyMap()).forGetter(GameProfile::getProperties)
+					GAME_PROFILE_PROPERTY_MAP.lenientOptionalFieldOf("properties", new PropertyMap()).forGetter(GameProfile::getProperties)
 				)
 				.apply(instance, (profile, properties) -> {
 					properties.forEach((key, property) -> profile.getProperties().put(key, property));
 					return profile;
 				})
 	);
-	public static final Codec<String> NON_EMPTY_STRING = validate(
-		Codec.STRING, string -> string.isEmpty() ? DataResult.error(() -> "Expected non-empty string") : DataResult.success(string)
-	);
+	public static final Codec<String> NON_EMPTY_STRING = Codec.STRING
+		.validate(string -> string.isEmpty() ? DataResult.error(() -> "Expected non-empty string") : DataResult.success(string));
 	public static final Codec<Integer> CODEPOINT = Codec.STRING.comapFlatMap(string -> {
 		int[] is = string.codePoints().toArray();
 		return is.length != 1 ? DataResult.error(() -> "Expected one codepoint, got: " + string) : DataResult.success(is[0]);
 	}, Character::toString);
-	public static Codec<String> IDENTIFIER_PATH = validate(
-		Codec.STRING,
-		path -> !Identifier.isPathValid(path) ? DataResult.error(() -> "Invalid string to use as a resource path element: " + path) : DataResult.success(path)
-	);
+	public static Codec<String> IDENTIFIER_PATH = Codec.STRING
+		.validate(
+			path -> !Identifier.isPathValid(path) ? DataResult.error(() -> "Invalid string to use as a resource path element: " + path) : DataResult.success(path)
+		);
 
 	public static <T> Codec<T> fromOps(DynamicOps<T> ops) {
 		return Codec.PASSTHROUGH.xmap(dynamic -> dynamic.convert(ops).getValue(), object -> new Dynamic<>(ops, (T)object));
-	}
-
-	/**
-	 * Returns an exclusive-or codec for {@link Either} instances.
-	 * 
-	 * <p>This returned codec fails if both the {@code first} and {@code second} codecs can
-	 * decode the input, while DFU's {@link com.mojang.serialization.codecs.EitherCodec}
-	 * will always take the first decoded result when it is available.
-	 * 
-	 * <p>Otherwise, this behaves the same as the either codec.
-	 * 
-	 * @param <F> the first type
-	 * @param <S> the second type
-	 * @return the xor codec for the two codecs
-	 * @see Codec#either(Codec, Codec)
-	 * @see com.mojang.serialization.codecs.EitherCodec
-	 * 
-	 * @param first the first codec
-	 * @param second the second codec
-	 */
-	public static <F, S> Codec<com.mojang.datafixers.util.Either<F, S>> xor(Codec<F> first, Codec<S> second) {
-		return new Codecs.Xor<>(first, second);
 	}
 
 	public static <P, I> Codec<I> createCodecForPairObject(
@@ -260,12 +233,12 @@ public class Codecs {
 			.comapFlatMap(
 				pair -> (DataResult)combineFunction.apply(pair.getFirst(), pair.getSecond()), pair -> Pair.of(leftFunction.apply(pair), rightFunction.apply(pair))
 			);
-		Codec<I> codec4 = alternatively(codec2, codec3);
+		Codec<I> codec4 = Codec.withAlternative(codec2, codec3);
 		return Codec.either(codec, codec4)
 			.comapFlatMap(either -> either.map(object -> (DataResult)combineFunction.apply(object, object), DataResult::success), pair -> {
 				P object = (P)leftFunction.apply(pair);
 				P object2 = (P)rightFunction.apply(pair);
-				return Objects.equals(object, object2) ? com.mojang.datafixers.util.Either.left(object) : com.mojang.datafixers.util.Either.right(pair);
+				return Objects.equals(object, object2) ? Either.left(object) : Either.right(pair);
 			});
 	}
 
@@ -299,16 +272,6 @@ public class Codecs {
 					int j = elementToRawId.applyAsInt(element);
 					return j == errorRawId ? DataResult.error(() -> "Element with unknown id: " + element) : DataResult.success(j);
 				}
-			);
-	}
-
-	public static <E> Codec<E> idChecked(Function<E, String> elementToId, Function<String, E> idToElement) {
-		return Codec.STRING
-			.flatXmap(
-				id -> (DataResult)Optional.ofNullable(idToElement.apply(id)).map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Unknown element name:" + id)),
-				element -> (DataResult)Optional.ofNullable((String)elementToId.apply(element))
-						.map(DataResult::success)
-						.orElseGet(() -> DataResult.error(() -> "Element with unknown name: " + element))
 			);
 	}
 
@@ -375,27 +338,15 @@ public class Codecs {
 		return withLifecycle(originalCodec, lifecycleGetter, lifecycleGetter);
 	}
 
-	public static <F, S> Codecs.Either<F, S> either(Codec<F> first, Codec<S> second) {
-		return new Codecs.Either<>(first, second);
-	}
-
 	public static <K, V> Codecs.StrictUnboundedMapCodec<K, V> strictUnboundedMap(Codec<K> keyCodec, Codec<V> elementCodec) {
 		return new Codecs.StrictUnboundedMapCodec<>(keyCodec, elementCodec);
 	}
 
-	public static <T> Codec<T> validate(Codec<T> codec, Function<T, DataResult<T>> validator) {
-		return codec instanceof MapCodecCodec<T> mapCodecCodec ? validate(mapCodecCodec.codec(), validator).codec() : codec.flatXmap(validator, validator);
-	}
-
-	public static <T> MapCodec<T> validate(MapCodec<T> codec, Function<T, DataResult<T>> validator) {
-		return codec.flatXmap(validator, validator);
-	}
-
 	private static Codec<Integer> rangedInt(int min, int max, Function<Integer, String> messageFactory) {
-		return validate(
-			Codec.INT,
-			value -> value.compareTo(min) >= 0 && value.compareTo(max) <= 0 ? DataResult.success(value) : DataResult.error(() -> (String)messageFactory.apply(value))
-		);
+		return Codec.INT
+			.validate(
+				value -> value.compareTo(min) >= 0 && value.compareTo(max) <= 0 ? DataResult.success(value) : DataResult.error(() -> (String)messageFactory.apply(value))
+			);
 	}
 
 	public static Codec<Integer> rangedInt(int min, int max) {
@@ -403,44 +354,22 @@ public class Codecs {
 	}
 
 	private static Codec<Float> rangedFloat(float min, float max, Function<Float, String> messageFactory) {
-		return validate(
-			Codec.FLOAT,
-			value -> value.compareTo(min) > 0 && value.compareTo(max) <= 0 ? DataResult.success(value) : DataResult.error(() -> (String)messageFactory.apply(value))
-		);
+		return Codec.FLOAT
+			.validate(
+				value -> value.compareTo(min) > 0 && value.compareTo(max) <= 0 ? DataResult.success(value) : DataResult.error(() -> (String)messageFactory.apply(value))
+			);
 	}
 
 	public static <T> Codec<List<T>> nonEmptyList(Codec<List<T>> originalCodec) {
-		return validate(originalCodec, list -> list.isEmpty() ? DataResult.error(() -> "List must have contents") : DataResult.success(list));
+		return originalCodec.validate(list -> list.isEmpty() ? DataResult.error(() -> "List must have contents") : DataResult.success(list));
 	}
 
 	public static <T> Codec<RegistryEntryList<T>> nonEmptyEntryList(Codec<RegistryEntryList<T>> originalCodec) {
-		return validate(
-			originalCodec,
+		return originalCodec.validate(
 			entryList -> entryList.getStorage().right().filter(List::isEmpty).isPresent()
 					? DataResult.error(() -> "List must have contents")
 					: DataResult.success(entryList)
 		);
-	}
-
-	public static <T> Codec<T> createRecursive(String name, Function<Codec<T>, Codec<T>> codecFunction) {
-		return new Codecs.Recursive<>(name, codecFunction);
-	}
-
-	public static <T> MapCodec<T> createRecursiveMap(String name, Function<Codec<T>, MapCodec<T>> mapCodecFunction) {
-		return new Codecs.RecursiveMap<>(name, mapCodecFunction);
-	}
-
-	public static <A> Codec<A> createLazy(Supplier<Codec<A>> supplier) {
-		return new Codecs.Recursive<>(supplier.toString(), codec -> (Codec)supplier.get());
-	}
-
-	public static <A> MapCodec<Optional<A>> createStrictOptionalFieldCodec(Codec<A> codec, String field) {
-		return new Codecs.StrictOptionalField<>(field, codec);
-	}
-
-	public static <A> MapCodec<A> createStrictOptionalFieldCodec(Codec<A> codec, String field, A fallback) {
-		return createStrictOptionalFieldCodec(codec, field)
-			.xmap(value -> value.orElse(fallback), value -> Objects.equals(value, fallback) ? Optional.empty() : Optional.of(value));
 	}
 
 	public static <E> MapCodec<E> createContextRetrievalCodec(Function<DynamicOps<?>, DataResult<E>> retriever) {
@@ -514,47 +443,12 @@ public class Codecs {
 		return codec.xmap(OPTIONAL_OF_LONG_TO_OPTIONAL_LONG, OPTIONAL_LONG_TO_OPTIONAL_OF_LONG);
 	}
 
-	public static Codec<String> string(int minLength, int maxLength) {
-		return validate(
-			Codec.STRING,
-			string -> {
-				int k = string.length();
-				if (k < minLength) {
-					return DataResult.error(() -> "String \"" + string + "\" is too short: " + k + ", expected range [" + minLength + "-" + maxLength + "]");
-				} else {
-					return k > maxLength
-						? DataResult.error(() -> "String \"" + string + "\" is too long: " + k + ", expected range [" + minLength + "-" + maxLength + "]")
-						: DataResult.success(string);
-				}
-			}
-		);
-	}
-
-	public static <T> Codec<List<T>> list(Codec<List<T>> codec, int maxLength) {
-		return validate(
-			codec,
-			list -> list.size() > maxLength
-					? DataResult.error(() -> "List is too long: " + list.size() + ", expected range [0-" + maxLength + "]")
-						.setPartial((Supplier)(() -> List.copyOf(list.subList(0, maxLength))))
-					: DataResult.success(list)
-		);
-	}
-
 	public static <K, V> Codec<Map<K, V>> map(Codec<Map<K, V>> codec, int maxLength) {
-		return validate(
-			codec,
+		return codec.validate(
 			map -> map.size() > maxLength
 					? DataResult.error(() -> "Map is too long: " + map.size() + ", expected range [0-" + maxLength + "]")
 					: DataResult.success(map)
 		);
-	}
-
-	public static <T> Codec<T> alternatively(Codec<T> a, Codec<? extends T> b) {
-		return Codec.either(a, b).xmap(either -> either.map(o -> o, o -> o), com.mojang.datafixers.util.Either::left);
-	}
-
-	public static <T, U> Codec<T> either(Codec<T> serialized, Codec<U> alternative, Function<U, T> alternativeMapper) {
-		return Codec.either(serialized, alternative).xmap(either -> either.map(o -> o, alternativeMapper), com.mojang.datafixers.util.Either::left);
 	}
 
 	public static <T> Codec<Object2BooleanMap<T>> object2BooleanMap(Codec<T> keyCodec) {
@@ -602,67 +496,6 @@ public class Codecs {
 		};
 	}
 
-	/**
-	 * {@return a codec for a map, given the codec for the key {@code Codec<K>} and a
-	 * function from the key to the codec for the value, {@code Codec<V>}}
-	 * 
-	 * @param <K> the type of the map keys
-	 * @param <V> the type of the map values
-	 */
-	public static <K, V> Codec<Map<K, V>> keyDispatching(Codec<K> keyCodec, Function<K, Codec<? extends V>> keyToValueCodec) {
-		return new Codec<Map<K, V>>() {
-			public <T> DataResult<T> encode(Map<K, V> map, DynamicOps<T> dynamicOps, T object) {
-				RecordBuilder<T> recordBuilder = dynamicOps.mapBuilder();
-
-				for (Entry<K, V> entry : map.entrySet()) {
-					recordBuilder.add(
-						keyCodec.encodeStart(dynamicOps, (K)entry.getKey()), this.encode((Codec)keyToValueCodec.apply(entry.getKey()), (V)entry.getValue(), dynamicOps)
-					);
-				}
-
-				return recordBuilder.build(object);
-			}
-
-			private <T, V2 extends V> DataResult<T> encode(Codec<V2> codec, V value, DynamicOps<T> ops) {
-				return codec.encodeStart(ops, (V2)value);
-			}
-
-			@Override
-			public <T> DataResult<Pair<Map<K, V>, T>> decode(DynamicOps<T> ops, T input) {
-				return ops.getMap(input)
-					.flatMap(
-						map -> {
-							Map<K, V> map2 = new Object2ObjectArrayMap<>();
-							Builder<Pair<T, T>> builder = Stream.builder();
-							DataResult<Unit> dataResult = (DataResult<Unit>)map.entries().reduce(DataResult.success(Unit.INSTANCE, Lifecycle.stable()), (result, entry) -> {
-								DataResult<K> dataResultx = keyCodec.parse(ops, (T)entry.getFirst());
-								DataResult<V> dataResult2 = dataResultx.map(keyToValueCodec).flatMap(codecxx -> codecxx.parse(ops, (T)entry.getSecond()).map(Function.identity()));
-								DataResult<Pair<K, V>> dataResult3 = dataResultx.apply2stable(Pair::of, dataResult2);
-								Optional<Pair<K, V>> optional = dataResult3.resultOrPartial(string -> {
-								});
-								if (optional.isPresent()) {
-									V objectx = (V)map2.putIfAbsent(((Pair)optional.get()).getFirst(), ((Pair)optional.get()).getSecond());
-									if (objectx != null) {
-										builder.add(entry);
-										return result.apply2stable((unit, objectxx) -> unit, DataResult.error(() -> "Duplicate entry for key: '" + ((Pair)optional.get()).getFirst() + "'"));
-									}
-								} else {
-									builder.add(entry);
-								}
-
-								return result.apply2stable((unit, pair) -> unit, dataResult3);
-							}, (a, b) -> a.apply2stable((unit, unit2) -> unit, b));
-							Map<K, V> map3 = Map.copyOf(map2);
-							T object2 = ops.createMap(builder.build());
-							return dataResult.<Pair<Map<K, V>, T>>map(unit -> Pair.of(map3, input))
-								.setPartial(Pair.of(map3, input))
-								.mapError(error -> error + " missed input: " + object2);
-						}
-					);
-			}
-		};
-	}
-
 	public static <A> Codec<Optional<A>> optional(Codec<A> codec) {
 		return new Codec<Optional<A>>() {
 			@Override
@@ -681,171 +514,19 @@ public class Codecs {
 		};
 	}
 
-	public static final class Either<F, S> implements Codec<com.mojang.datafixers.util.Either<F, S>> {
-		private final Codec<F> first;
-		private final Codec<S> second;
-
-		public Either(Codec<F> first, Codec<S> second) {
-			this.first = first;
-			this.second = second;
-		}
-
-		@Override
-		public <T> DataResult<Pair<com.mojang.datafixers.util.Either<F, S>, T>> decode(DynamicOps<T> ops, T input) {
-			DataResult<Pair<com.mojang.datafixers.util.Either<F, S>, T>> dataResult = this.first
-				.decode(ops, input)
-				.map(pair -> pair.mapFirst(com.mojang.datafixers.util.Either::left));
-			if (dataResult.error().isEmpty()) {
-				return dataResult;
-			} else {
-				DataResult<Pair<com.mojang.datafixers.util.Either<F, S>, T>> dataResult2 = this.second
-					.decode(ops, input)
-					.map(pair -> pair.mapFirst(com.mojang.datafixers.util.Either::right));
-				return dataResult2.error().isEmpty() ? dataResult2 : dataResult.apply2((pair, pair2) -> pair2, dataResult2);
-			}
-		}
-
-		public <T> DataResult<T> encode(com.mojang.datafixers.util.Either<F, S> either, DynamicOps<T> dynamicOps, T object) {
-			return either.map(left -> this.first.encode((F)left, dynamicOps, object), right -> this.second.encode((S)right, dynamicOps, object));
-		}
-
-		public boolean equals(Object o) {
-			if (this == o) {
-				return true;
-			} else if (o != null && this.getClass() == o.getClass()) {
-				Codecs.Either<?, ?> either = (Codecs.Either<?, ?>)o;
-				return Objects.equals(this.first, either.first) && Objects.equals(this.second, either.second);
-			} else {
-				return false;
-			}
-		}
-
-		public int hashCode() {
-			return Objects.hash(new Object[]{this.first, this.second});
-		}
-
-		public String toString() {
-			return "EitherCodec[" + this.first + ", " + this.second + "]";
-		}
-	}
-
-	static class Recursive<T> implements Codec<T> {
-		private final String name;
-		private final Supplier<Codec<T>> supplier;
-
-		Recursive(String name, Function<Codec<T>, Codec<T>> codecFunction) {
-			this.name = name;
-			this.supplier = Suppliers.memoize(() -> (Codec<T>)codecFunction.apply(this));
-		}
-
-		@Override
-		public <S> DataResult<Pair<T, S>> decode(DynamicOps<S> ops, S input) {
-			return ((Codec)this.supplier.get()).decode(ops, input);
-		}
-
-		@Override
-		public <S> DataResult<S> encode(T input, DynamicOps<S> ops, S prefix) {
-			return ((Codec)this.supplier.get()).encode(input, ops, prefix);
-		}
-
-		public String toString() {
-			return "RecursiveCodec[" + this.name + "]";
-		}
-	}
-
-	static class RecursiveMap<T> extends MapCodec<T> {
-		private final String name;
-		private final Supplier<MapCodec<T>> supplier;
-
-		RecursiveMap(String name, Function<Codec<T>, MapCodec<T>> codecFunction) {
-			this.name = name;
-			this.supplier = Suppliers.memoize(() -> (MapCodec<T>)codecFunction.apply(this.codec()));
-		}
-
-		@Override
-		public <S> RecordBuilder<S> encode(T input, DynamicOps<S> ops, RecordBuilder<S> builder) {
-			return ((MapCodec)this.supplier.get()).encode(input, ops, builder);
-		}
-
-		@Override
-		public <S> DataResult<T> decode(DynamicOps<S> ops, MapLike<S> input) {
-			return ((MapCodec)this.supplier.get()).decode(ops, input);
-		}
-
-		@Override
-		public <S> Stream<S> keys(DynamicOps<S> ops) {
-			return ((MapCodec)this.supplier.get()).keys(ops);
-		}
-
-		public String toString() {
-			return "RecursiveMapCodec[" + this.name + "]";
-		}
-	}
-
-	static final class StrictOptionalField<A> extends MapCodec<Optional<A>> {
-		private final String field;
-		private final Codec<A> codec;
-
-		public StrictOptionalField(String field, Codec<A> codec) {
-			this.field = field;
-			this.codec = codec;
-		}
-
-		@Override
-		public <T> DataResult<Optional<A>> decode(DynamicOps<T> ops, MapLike<T> input) {
-			T object = input.get(this.field);
-			return object == null ? DataResult.success(Optional.empty()) : this.codec.parse(ops, object).map(Optional::of);
-		}
-
-		public <T> RecordBuilder<T> encode(Optional<A> optional, DynamicOps<T> dynamicOps, RecordBuilder<T> recordBuilder) {
-			return optional.isPresent() ? recordBuilder.add(this.field, this.codec.encodeStart(dynamicOps, (A)optional.get())) : recordBuilder;
-		}
-
-		@Override
-		public <T> Stream<T> keys(DynamicOps<T> ops) {
-			return Stream.of(ops.createString(this.field));
-		}
-
-		public boolean equals(Object o) {
-			if (this == o) {
-				return true;
-			} else {
-				return !(o instanceof Codecs.StrictOptionalField<?> strictOptionalField)
-					? false
-					: Objects.equals(this.field, strictOptionalField.field) && Objects.equals(this.codec, strictOptionalField.codec);
-			}
-		}
-
-		public int hashCode() {
-			return Objects.hash(new Object[]{this.field, this.codec});
-		}
-
-		public String toString() {
-			return "StrictOptionalFieldCodec[" + this.field + ": " + this.codec + "]";
-		}
-	}
-
 	public static record StrictUnboundedMapCodec<K, V>(Codec<K> keyCodec, Codec<V> elementCodec) implements Codec<Map<K, V>>, BaseMapCodec<K, V> {
 		@Override
 		public <T> DataResult<Map<K, V>> decode(DynamicOps<T> ops, MapLike<T> input) {
-			com.google.common.collect.ImmutableMap.Builder<K, V> builder = ImmutableMap.builder();
+			Builder<K, V> builder = ImmutableMap.builder();
 
 			for (Pair<T, T> pair : input.entries().toList()) {
 				DataResult<K> dataResult = this.keyCodec().parse(ops, pair.getFirst());
 				DataResult<V> dataResult2 = this.elementCodec().parse(ops, pair.getSecond());
 				DataResult<Pair<K, V>> dataResult3 = dataResult.apply2stable(Pair::of, dataResult2);
-				if (dataResult3.error().isPresent()) {
-					return DataResult.error(() -> {
-						PartialResult<Pair<K, V>> partialResult = (PartialResult<Pair<K, V>>)dataResult3.error().get();
-						String string;
-						if (dataResult.result().isPresent()) {
-							string = "Map entry '" + dataResult.result().get() + "' : " + partialResult.message();
-						} else {
-							string = partialResult.message();
-						}
-
-						return string;
-					});
+				Optional<Error<Pair<K, V>>> optional = dataResult3.error();
+				if (optional.isPresent()) {
+					String string = ((Error)optional.get()).message();
+					return DataResult.error(() -> dataResult.result().isPresent() ? "Map entry '" + dataResult.result().get() + "' : " + string : string);
 				}
 
 				if (!dataResult3.result().isPresent()) {
@@ -881,45 +562,6 @@ public class Codecs {
 
 		private String asString() {
 			return this.tag ? "#" + this.id : this.id.toString();
-		}
-	}
-
-	/**
-	 * An xor codec that only permits exactly one of the two data choices to be
-	 * present.
-	 * 
-	 * @see Codecs#xor(Codec, Codec)
-	 * @see com.mojang.serialization.codecs.EitherCodec
-	 */
-	static record Xor<F, S>(Codec<F> first, Codec<S> second) implements Codec<com.mojang.datafixers.util.Either<F, S>> {
-		@Override
-		public <T> DataResult<Pair<com.mojang.datafixers.util.Either<F, S>, T>> decode(DynamicOps<T> ops, T input) {
-			DataResult<Pair<com.mojang.datafixers.util.Either<F, S>, T>> dataResult = this.first
-				.decode(ops, input)
-				.map(pair -> pair.mapFirst(com.mojang.datafixers.util.Either::left));
-			DataResult<Pair<com.mojang.datafixers.util.Either<F, S>, T>> dataResult2 = this.second
-				.decode(ops, input)
-				.map(pair -> pair.mapFirst(com.mojang.datafixers.util.Either::right));
-			Optional<Pair<com.mojang.datafixers.util.Either<F, S>, T>> optional = dataResult.result();
-			Optional<Pair<com.mojang.datafixers.util.Either<F, S>, T>> optional2 = dataResult2.result();
-			if (optional.isPresent() && optional2.isPresent()) {
-				return DataResult.error(
-					() -> "Both alternatives read successfully, can not pick the correct one; first: " + optional.get() + " second: " + optional2.get(),
-					(Pair<com.mojang.datafixers.util.Either<F, S>, T>)optional.get()
-				);
-			} else if (optional.isPresent()) {
-				return dataResult;
-			} else {
-				return optional2.isPresent() ? dataResult2 : dataResult.apply2((a, b) -> b, dataResult2);
-			}
-		}
-
-		public <T> DataResult<T> encode(com.mojang.datafixers.util.Either<F, S> either, DynamicOps<T> dynamicOps, T object) {
-			return either.map(left -> this.first.encode((F)left, dynamicOps, object), right -> this.second.encode((S)right, dynamicOps, object));
-		}
-
-		public String toString() {
-			return "XorCodec[" + this.first + ", " + this.second + "]";
 		}
 	}
 }

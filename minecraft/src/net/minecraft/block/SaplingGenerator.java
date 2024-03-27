@@ -10,7 +10,6 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
@@ -21,7 +20,7 @@ import net.minecraft.world.gen.feature.TreeConfiguredFeatures;
 
 public final class SaplingGenerator {
 	private static final Map<String, SaplingGenerator> GENERATORS = new Object2ObjectArrayMap<>();
-	public static final Codec<SaplingGenerator> CODEC = Codecs.idChecked(generator -> generator.id, GENERATORS::get);
+	public static final Codec<SaplingGenerator> CODEC = Codec.stringResolver(generator -> generator.id, GENERATORS::get);
 	public static final SaplingGenerator OAK = new SaplingGenerator(
 		"oak",
 		0.1F,

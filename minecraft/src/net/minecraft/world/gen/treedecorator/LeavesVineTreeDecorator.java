@@ -1,16 +1,16 @@
 package net.minecraft.world.gen.treedecorator;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.VineBlock;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 
 public class LeavesVineTreeDecorator extends TreeDecorator {
-	public static final Codec<LeavesVineTreeDecorator> CODEC = Codec.floatRange(0.0F, 1.0F)
+	public static final MapCodec<LeavesVineTreeDecorator> CODEC = Codec.floatRange(0.0F, 1.0F)
 		.fieldOf("probability")
-		.<LeavesVineTreeDecorator>xmap(LeavesVineTreeDecorator::new, treeDecorator -> treeDecorator.probability)
-		.codec();
+		.xmap(LeavesVineTreeDecorator::new, treeDecorator -> treeDecorator.probability);
 	private final float probability;
 
 	@Override

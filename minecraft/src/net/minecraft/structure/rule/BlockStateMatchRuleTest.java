@@ -1,14 +1,13 @@
 package net.minecraft.structure.rule;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.random.Random;
 
 public class BlockStateMatchRuleTest extends RuleTest {
-	public static final Codec<BlockStateMatchRuleTest> CODEC = BlockState.CODEC
+	public static final MapCodec<BlockStateMatchRuleTest> CODEC = BlockState.CODEC
 		.fieldOf("block_state")
-		.<BlockStateMatchRuleTest>xmap(BlockStateMatchRuleTest::new, ruleTest -> ruleTest.blockState)
-		.codec();
+		.xmap(BlockStateMatchRuleTest::new, ruleTest -> ruleTest.blockState);
 	private final BlockState blockState;
 
 	public BlockStateMatchRuleTest(BlockState blockState) {

@@ -1,6 +1,6 @@
 package net.minecraft.loot.provider.number;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
-public record LootNumberProviderType(Codec<? extends LootNumberProvider> codec) {
+public record LootNumberProviderType(MapCodec<? extends LootNumberProvider> codec) {
 }

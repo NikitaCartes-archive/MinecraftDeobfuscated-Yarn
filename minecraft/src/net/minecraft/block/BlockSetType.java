@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.dynamic.Codecs;
 
 public record BlockSetType(
 	String name,
@@ -26,7 +25,7 @@ public record BlockSetType(
 	SoundEvent buttonClickOn
 ) {
 	private static final Map<String, BlockSetType> VALUES = new Object2ObjectArrayMap<>();
-	public static final Codec<BlockSetType> CODEC = Codecs.idChecked(BlockSetType::name, VALUES::get);
+	public static final Codec<BlockSetType> CODEC = Codec.stringResolver(BlockSetType::name, VALUES::get);
 	public static final BlockSetType IRON = register(
 		new BlockSetType(
 			"iron",

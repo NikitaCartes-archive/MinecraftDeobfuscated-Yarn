@@ -141,6 +141,8 @@ public final class ItemTags {
 	public static final TagKey<Item> HEAD_ARMOR_ENCHANTABLE = of("enchantable/head_armor");
 	public static final TagKey<Item> ARMOR_ENCHANTABLE = of("enchantable/armor");
 	public static final TagKey<Item> SWORD_ENCHANTABLE = of("enchantable/sword");
+	public static final TagKey<Item> FIRE_ASPECT_ENCHANTABLE = of("enchantable/fire_aspect");
+	public static final TagKey<Item> SHARP_WEAPON_ENCHANTABLE = of("enchantable/sharp_weapon");
 	public static final TagKey<Item> WEAPON_ENCHANTABLE = of("enchantable/weapon");
 	public static final TagKey<Item> MINING_ENCHANTABLE = of("enchantable/mining");
 	public static final TagKey<Item> MINING_LOOT_ENCHANTABLE = of("enchantable/mining_loot");
@@ -151,6 +153,7 @@ public final class ItemTags {
 	public static final TagKey<Item> EQUIPPABLE_ENCHANTABLE = of("enchantable/equippable");
 	public static final TagKey<Item> CROSSBOW_ENCHANTABLE = of("enchantable/crossbow");
 	public static final TagKey<Item> VANISHING_ENCHANTABLE = of("enchantable/vanishing");
+	public static final TagKey<Item> MACE_ENCHANTABLE = of("enchantable/mace");
 
 	private ItemTags() {
 	}

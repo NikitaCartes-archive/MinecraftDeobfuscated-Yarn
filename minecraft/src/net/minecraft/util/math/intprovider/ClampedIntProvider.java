@@ -2,13 +2,13 @@ package net.minecraft.util.math.intprovider;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
 public class ClampedIntProvider extends IntProvider {
-	public static final Codec<ClampedIntProvider> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<ClampedIntProvider> CODEC = RecordCodecBuilder.<ClampedIntProvider>mapCodec(
 			instance -> instance.group(
 						IntProvider.VALUE_CODEC.fieldOf("source").forGetter(provider -> provider.source),
 						Codec.INT.fieldOf("min_inclusive").forGetter(provider -> provider.min),
@@ -16,11 +16,10 @@ public class ClampedIntProvider extends IntProvider {
 					)
 					.apply(instance, ClampedIntProvider::new)
 		)
-		.comapFlatMap(
+		.validate(
 			provider -> provider.max < provider.min
 					? DataResult.error(() -> "Max must be at least min, min_inclusive: " + provider.min + ", max_inclusive: " + provider.max)
-					: DataResult.success(provider),
-			Function.identity()
+					: DataResult.success(provider)
 		);
 	private final IntProvider source;
 	private final int min;

@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.structure;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import net.minecraft.structure.BuriedTreasureGenerator;
 import net.minecraft.structure.StructurePiecesCollector;
@@ -8,7 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 
 public class BuriedTreasureStructure extends Structure {
-	public static final Codec<BuriedTreasureStructure> CODEC = createCodec(BuriedTreasureStructure::new);
+	public static final MapCodec<BuriedTreasureStructure> CODEC = createCodec(BuriedTreasureStructure::new);
 
 	public BuriedTreasureStructure(Structure.Config config) {
 		super(config);

@@ -129,11 +129,13 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.SONIC_BOOM, SonicBoomParticle.Factory::new);
 		this.registerFactory(ParticleTypes.FALLING_DUST, BlockFallingDustParticle.Factory::new);
 		this.registerFactory(ParticleTypes.GUST, GustParticle.Factory::new);
+		this.registerFactory(ParticleTypes.SMALL_GUST, GustParticle.SmallGustFactory::new);
 		this.registerFactory(ParticleTypes.GUST_EMITTER_LARGE, new GustEmitterParticle.Factory(3.0, 7, 0));
 		this.registerFactory(ParticleTypes.GUST_EMITTER_SMALL, new GustEmitterParticle.Factory(1.0, 3, 2));
 		this.registerFactory(ParticleTypes.FIREWORK, FireworksSparkParticle.ExplosionFactory::new);
 		this.registerFactory(ParticleTypes.FISHING, FishingParticle.Factory::new);
 		this.registerFactory(ParticleTypes.FLAME, FlameParticle.Factory::new);
+		this.registerFactory(ParticleTypes.INFESTED, SpellParticle.DefaultFactory::new);
 		this.registerFactory(ParticleTypes.SCULK_SOUL, SoulParticle.SculkSoulFactory::new);
 		this.registerFactory(ParticleTypes.SCULK_CHARGE, SculkChargeParticle.Factory::new);
 		this.registerFactory(ParticleTypes.SCULK_CHARGE_POP, SculkChargePopParticle.Factory::new);
@@ -145,6 +147,7 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.INSTANT_EFFECT, SpellParticle.InstantFactory::new);
 		this.registerFactory(ParticleTypes.ITEM, new CrackParticle.ItemFactory());
 		this.registerFactory(ParticleTypes.ITEM_SLIME, new CrackParticle.SlimeballFactory());
+		this.registerFactory(ParticleTypes.ITEM_COBWEB, new CrackParticle.CobwebFactory());
 		this.registerFactory(ParticleTypes.ITEM_SNOWBALL, new CrackParticle.SnowballFactory());
 		this.registerFactory(ParticleTypes.LARGE_SMOKE, LargeFireSmokeParticle.Factory::new);
 		this.registerFactory(ParticleTypes.LAVA, LavaEmberParticle.Factory::new);
@@ -199,7 +202,12 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.EGG_CRACK, SuspendParticle.EggCrackFactory::new);
 		this.registerFactory(ParticleTypes.DUST_PLUME, DustPlumeParticle.Factory::new);
 		this.registerFactory(ParticleTypes.TRIAL_SPAWNER_DETECTION, TrialSpawnerDetectionParticle.Factory::new);
+		this.registerFactory(ParticleTypes.TRIAL_SPAWNER_DETECTION_OMINOUS, TrialSpawnerDetectionParticle.Factory::new);
 		this.registerFactory(ParticleTypes.VAULT_CONNECTION, ConnectionParticle.VaultConnectionFactory::new);
+		this.registerFactory(ParticleTypes.DUST_PILLAR, new BlockDustParticle.DustPillarFactory());
+		this.registerFactory(ParticleTypes.RAID_OMEN, SpellParticle.DefaultFactory::new);
+		this.registerFactory(ParticleTypes.TRIAL_OMEN, SpellParticle.DefaultFactory::new);
+		this.registerFactory(ParticleTypes.OMINOUS_SPAWNING, OminousSpawningParticle.Factory::new);
 	}
 
 	private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {

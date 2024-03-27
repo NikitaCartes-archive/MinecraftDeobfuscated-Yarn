@@ -3,6 +3,7 @@ package net.minecraft.loot.function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -21,15 +22,15 @@ import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 
 public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
-	public static final Codec<SetEnchantmentsLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SetEnchantmentsLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.<Map<RegistryEntry<Enchantment>, LootNumberProvider>, boolean>and(
 					instance.group(
-						Codecs.createStrictOptionalFieldCodec(Codec.unboundedMap(Registries.ENCHANTMENT.getEntryCodec(), LootNumberProviderTypes.CODEC), "enchantments", Map.of())
+						Codec.unboundedMap(Registries.ENCHANTMENT.getEntryCodec(), LootNumberProviderTypes.CODEC)
+							.optionalFieldOf("enchantments", Map.of())
 							.forGetter(function -> function.enchantments),
 						Codec.BOOL.fieldOf("add").orElse(false).forGetter(function -> function.add)
 					)

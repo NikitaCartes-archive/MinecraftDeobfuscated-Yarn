@@ -65,6 +65,9 @@ public class DataComponentTypes {
 	public static final DataComponentType<Text> CUSTOM_NAME = register(
 		"custom_name", builder -> builder.codec(TextCodecs.STRINGIFIED_CODEC).packetCodec(TextCodecs.REGISTRY_PACKET_CODEC)
 	);
+	public static final DataComponentType<Text> ITEM_NAME = register(
+		"item_name", builder -> builder.codec(TextCodecs.STRINGIFIED_CODEC).packetCodec(TextCodecs.REGISTRY_PACKET_CODEC)
+	);
 	public static final DataComponentType<LoreComponent> LORE = register(
 		"lore", builder -> builder.codec(LoreComponent.CODEC).packetCodec(LoreComponent.PACKET_CODEC)
 	);
@@ -160,6 +163,9 @@ public class DataComponentTypes {
 	);
 	public static final DataComponentType<RegistryEntry<Instrument>> INSTRUMENT = register(
 		"instrument", builder -> builder.codec(Instrument.ENTRY_CODEC).packetCodec(Instrument.ENTRY_PACKET_CODEC)
+	);
+	public static final DataComponentType<Integer> OMINOUS_BOTTLE_AMPLIFIER = register(
+		"ominous_bottle_amplifier", builder -> builder.codec(Codecs.rangedInt(0, 4)).packetCodec(PacketCodecs.VAR_INT)
 	);
 	public static final DataComponentType<List<Identifier>> RECIPES = register("recipes", builder -> builder.codec(Identifier.CODEC.listOf()));
 	public static final DataComponentType<LodestoneTrackerComponent> LODESTONE_TRACKER = register(

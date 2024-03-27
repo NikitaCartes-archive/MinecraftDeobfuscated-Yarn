@@ -12,7 +12,6 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntityCriterion.Conditions> {
 	@Override
@@ -29,9 +28,9 @@ public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntit
 		implements AbstractCriterion.Conditions {
 		public static final Codec<PlayerHurtEntityCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(PlayerHurtEntityCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(DamagePredicate.CODEC, "damage").forGetter(PlayerHurtEntityCriterion.Conditions::damage),
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity").forGetter(PlayerHurtEntityCriterion.Conditions::entity)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(PlayerHurtEntityCriterion.Conditions::player),
+						DamagePredicate.CODEC.optionalFieldOf("damage").forGetter(PlayerHurtEntityCriterion.Conditions::damage),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("entity").forGetter(PlayerHurtEntityCriterion.Conditions::entity)
 					)
 					.apply(instance, PlayerHurtEntityCriterion.Conditions::new)
 		);

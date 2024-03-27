@@ -1,7 +1,7 @@
 package net.minecraft.loot.condition;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
@@ -10,7 +10,7 @@ import net.minecraft.util.math.random.Random;
 
 public class SurvivesExplosionLootCondition implements LootCondition {
 	private static final SurvivesExplosionLootCondition INSTANCE = new SurvivesExplosionLootCondition();
-	public static final Codec<SurvivesExplosionLootCondition> CODEC = Codec.unit(INSTANCE);
+	public static final MapCodec<SurvivesExplosionLootCondition> CODEC = MapCodec.unit(INSTANCE);
 
 	private SurvivesExplosionLootCondition() {
 	}

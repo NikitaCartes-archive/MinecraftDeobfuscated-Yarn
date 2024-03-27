@@ -22,6 +22,8 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 
 public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity implements FlyingItemEntity {
+	public static final AbstractWindChargeEntity.WindChargeExplosionBehavior EXPLOSION_BEHAVIOR = new AbstractWindChargeEntity.WindChargeExplosionBehavior();
+
 	public AbstractWindChargeEntity(EntityType<? extends AbstractWindChargeEntity> entityType, World world) {
 		super(entityType, world);
 	}
@@ -57,15 +59,23 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 
 	@Override
 	protected boolean canHit(Entity entity) {
-		return entity instanceof AbstractWindChargeEntity ? false : super.canHit(entity);
+		if (entity instanceof AbstractWindChargeEntity) {
+			return false;
+		} else {
+			return entity.getType() == EntityType.END_CRYSTAL ? false : super.canHit(entity);
+		}
 	}
 
 	@Override
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		super.onEntityHit(entityHitResult);
 		if (!this.getWorld().isClient) {
-			entityHitResult.getEntity()
-				.damage(this.getDamageSources().windCharge(this, this.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null), 1.0F);
+			LivingEntity livingEntity2 = this.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null;
+			if (livingEntity2 != null) {
+				livingEntity2.onAttacking(entityHitResult.getEntity());
+			}
+
+			entityHitResult.getEntity().damage(this.getDamageSources().windCharge(this, livingEntity2), 1.0F);
 			this.createExplosion();
 		}
 	}

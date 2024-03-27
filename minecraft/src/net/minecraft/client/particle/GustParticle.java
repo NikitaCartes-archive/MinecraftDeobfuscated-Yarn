@@ -49,4 +49,19 @@ public class GustParticle extends SpriteBillboardParticle {
 			return new GustParticle(clientWorld, d, e, f, this.spriteProvider);
 		}
 	}
+
+	@Environment(EnvType.CLIENT)
+	public static class SmallGustFactory implements ParticleFactory<DefaultParticleType> {
+		private final SpriteProvider field_50230;
+
+		public SmallGustFactory(SpriteProvider spriteProvider) {
+			this.field_50230 = spriteProvider;
+		}
+
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			Particle particle = new GustParticle(clientWorld, d, e, f, this.field_50230);
+			particle.scale(0.15F);
+			return particle;
+		}
+	}
 }

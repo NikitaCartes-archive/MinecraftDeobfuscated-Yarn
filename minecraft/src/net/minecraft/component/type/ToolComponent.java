@@ -22,8 +22,8 @@ public record ToolComponent(List<ToolComponent.Rule> rules, float defaultMiningS
 	public static final Codec<ToolComponent> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					ToolComponent.Rule.CODEC.listOf().fieldOf("rules").forGetter(ToolComponent::rules),
-					Codecs.createStrictOptionalFieldCodec(Codec.FLOAT, "default_mining_speed", 1.0F).forGetter(ToolComponent::defaultMiningSpeed),
-					Codecs.createStrictOptionalFieldCodec(Codecs.NONNEGATIVE_INT, "damage_per_block", 1).forGetter(ToolComponent::damagePerBlock)
+					Codec.FLOAT.optionalFieldOf("default_mining_speed", Float.valueOf(1.0F)).forGetter(ToolComponent::defaultMiningSpeed),
+					Codecs.NONNEGATIVE_INT.optionalFieldOf("damage_per_block", 1).forGetter(ToolComponent::damagePerBlock)
 				)
 				.apply(instance, ToolComponent::new)
 	);
@@ -61,8 +61,8 @@ public record ToolComponent(List<ToolComponent.Rule> rules, float defaultMiningS
 		public static final Codec<ToolComponent.Rule> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						RegistryCodecs.entryList(RegistryKeys.BLOCK).fieldOf("blocks").forGetter(ToolComponent.Rule::blocks),
-						Codecs.createStrictOptionalFieldCodec(Codecs.POSITIVE_FLOAT, "speed").forGetter(ToolComponent.Rule::speed),
-						Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "correct_for_drops").forGetter(ToolComponent.Rule::correctForDrops)
+						Codecs.POSITIVE_FLOAT.optionalFieldOf("speed").forGetter(ToolComponent.Rule::speed),
+						Codec.BOOL.optionalFieldOf("correct_for_drops").forGetter(ToolComponent.Rule::correctForDrops)
 					)
 					.apply(instance, ToolComponent.Rule::new)
 		);

@@ -7,7 +7,6 @@ import java.util.Optional;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.poi.PointOfInterestTypes;
@@ -15,8 +14,8 @@ import net.minecraft.world.poi.PointOfInterestTypes;
 public record LodestoneTrackerComponent(Optional<GlobalPos> target, boolean tracked) {
 	public static final Codec<LodestoneTrackerComponent> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(GlobalPos.CODEC, "target").forGetter(LodestoneTrackerComponent::target),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "tracked", true).forGetter(LodestoneTrackerComponent::tracked)
+					GlobalPos.CODEC.optionalFieldOf("target").forGetter(LodestoneTrackerComponent::target),
+					Codec.BOOL.optionalFieldOf("tracked", Boolean.valueOf(true)).forGetter(LodestoneTrackerComponent::tracked)
 				)
 				.apply(instance, LodestoneTrackerComponent::new)
 	);

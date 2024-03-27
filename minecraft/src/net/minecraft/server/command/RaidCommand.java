@@ -72,11 +72,11 @@ public class RaidCommand {
 		if (raid != null) {
 			int i = raid.getMaxAcceptableBadOmenLevel();
 			if (level > i) {
-				source.sendError(Text.literal("Sorry, the max bad omen level you can set is " + i));
+				source.sendError(Text.literal("Sorry, the max raid omen level you can set is " + i));
 			} else {
 				int j = raid.getBadOmenLevel();
 				raid.setBadOmenLevel(level);
-				source.sendFeedback(() -> Text.literal("Changed village's bad omen level from " + j + " to " + level), false);
+				source.sendFeedback(() -> Text.literal("Changed village's raid omen level from " + j + " to " + level), false);
 			}
 		} else {
 			source.sendError(Text.literal("No raid found here"));
@@ -119,7 +119,7 @@ public class RaidCommand {
 			return -1;
 		} else {
 			RaidManager raidManager = serverPlayerEntity.getServerWorld().getRaidManager();
-			Raid raid = raidManager.startRaid(serverPlayerEntity);
+			Raid raid = raidManager.startRaid(serverPlayerEntity, serverPlayerEntity.getBlockPos());
 			if (raid != null) {
 				raid.setBadOmenLevel(level);
 				raidManager.markDirty();
@@ -155,7 +155,7 @@ public class RaidCommand {
 			StringBuilder stringBuilder2 = new StringBuilder();
 			stringBuilder2.append("Num groups spawned: ");
 			stringBuilder2.append(raid.getGroupsSpawned());
-			stringBuilder2.append(" Bad omen level: ");
+			stringBuilder2.append(" Raid omen level: ");
 			stringBuilder2.append(raid.getBadOmenLevel());
 			stringBuilder2.append(" Num mobs: ");
 			stringBuilder2.append(raid.getRaiderCount());

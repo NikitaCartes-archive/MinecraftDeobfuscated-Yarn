@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.structure;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.entity.EntityType;
@@ -20,7 +20,7 @@ public class NetherFortressStructure extends Structure {
 		new SpawnSettings.SpawnEntry(EntityType.SKELETON, 2, 5, 5),
 		new SpawnSettings.SpawnEntry(EntityType.MAGMA_CUBE, 3, 4, 4)
 	);
-	public static final Codec<NetherFortressStructure> CODEC = createCodec(NetherFortressStructure::new);
+	public static final MapCodec<NetherFortressStructure> CODEC = createCodec(NetherFortressStructure::new);
 
 	public NetherFortressStructure(Structure.Config config) {
 		super(config);

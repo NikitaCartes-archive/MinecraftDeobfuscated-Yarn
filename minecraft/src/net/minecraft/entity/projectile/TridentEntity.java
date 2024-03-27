@@ -39,6 +39,12 @@ public class TridentEntity extends PersistentProjectileEntity {
 		this.dataTracker.set(ENCHANTED, stack.hasGlint());
 	}
 
+	public TridentEntity(World world, double x, double y, double z, ItemStack stack) {
+		super(EntityType.TRIDENT, x, y, z, world, stack);
+		this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(stack));
+		this.dataTracker.set(ENCHANTED, stack.hasGlint());
+	}
+
 	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
 		super.initDataTracker(builder);

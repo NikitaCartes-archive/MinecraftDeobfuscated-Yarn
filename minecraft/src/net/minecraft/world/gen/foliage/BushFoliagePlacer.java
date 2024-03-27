@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.foliage;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
@@ -8,7 +8,7 @@ import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class BushFoliagePlacer extends BlobFoliagePlacer {
-	public static final Codec<BushFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> createCodec(instance).apply(instance, BushFoliagePlacer::new));
+	public static final MapCodec<BushFoliagePlacer> CODEC = RecordCodecBuilder.mapCodec(instance -> createCodec(instance).apply(instance, BushFoliagePlacer::new));
 
 	public BushFoliagePlacer(IntProvider intProvider, IntProvider intProvider2, int i) {
 		super(intProvider, intProvider2, i);

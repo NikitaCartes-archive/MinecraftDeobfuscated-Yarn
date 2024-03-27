@@ -1,6 +1,7 @@
 package net.minecraft.network.message;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.BitSet;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -22,9 +23,9 @@ public class FilterMask {
 	public static final Style FILTERED_STYLE = Style.EMPTY
 		.withColor(Formatting.DARK_GRAY)
 		.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.filtered")));
-	static final Codec<FilterMask> PASS_THROUGH_CODEC = Codec.unit(PASS_THROUGH);
-	static final Codec<FilterMask> FULLY_FILTERED_CODEC = Codec.unit(FULLY_FILTERED);
-	static final Codec<FilterMask> PARTIALLY_FILTERED_CODEC = Codecs.BIT_SET.xmap(FilterMask::new, FilterMask::getMask);
+	static final MapCodec<FilterMask> PASS_THROUGH_CODEC = MapCodec.unit(PASS_THROUGH);
+	static final MapCodec<FilterMask> FULLY_FILTERED_CODEC = MapCodec.unit(FULLY_FILTERED);
+	static final MapCodec<FilterMask> PARTIALLY_FILTERED_CODEC = Codecs.BIT_SET.<FilterMask>xmap(FilterMask::new, FilterMask::getMask).fieldOf("value");
 	private static final char FILTERED = '#';
 	private final BitSet mask;
 	private final FilterMask.FilterStatus status;
@@ -151,9 +152,9 @@ public class FilterMask {
 		PARTIALLY_FILTERED("partially_filtered", () -> FilterMask.PARTIALLY_FILTERED_CODEC);
 
 		private final String id;
-		private final Supplier<Codec<FilterMask>> codecSupplier;
+		private final Supplier<MapCodec<FilterMask>> codecSupplier;
 
-		private FilterStatus(String id, Supplier<Codec<FilterMask>> codecSupplier) {
+		private FilterStatus(String id, Supplier<MapCodec<FilterMask>> codecSupplier) {
 			this.id = id;
 			this.codecSupplier = codecSupplier;
 		}
@@ -163,8 +164,8 @@ public class FilterMask {
 			return this.id;
 		}
 
-		private Codec<FilterMask> getCodec() {
-			return (Codec<FilterMask>)this.codecSupplier.get();
+		private MapCodec<FilterMask> getCodec() {
+			return (MapCodec<FilterMask>)this.codecSupplier.get();
 		}
 	}
 }

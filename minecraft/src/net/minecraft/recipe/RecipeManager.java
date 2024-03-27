@@ -30,7 +30,6 @@ import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.World;
@@ -69,7 +68,7 @@ public class RecipeManager extends JsonDataLoader {
 
 			try {
 				JsonObject jsonObject = JsonHelper.asObject((JsonElement)entry.getValue(), "top element");
-				Recipe<?> recipe = Util.getResult(Recipe.CODEC.parse(registryOps, jsonObject), JsonParseException::new);
+				Recipe<?> recipe = Recipe.CODEC.parse(registryOps, jsonObject).getOrThrow(JsonParseException::new);
 				RecipeEntry<?> recipeEntry = new RecipeEntry<>(identifier, recipe);
 				((Builder)map2.computeIfAbsent(recipe.getType(), recipeType -> ImmutableMap.builder())).put(identifier, recipeEntry);
 				builder.put(identifier, recipeEntry);
@@ -246,7 +245,7 @@ public class RecipeManager extends JsonDataLoader {
 	 */
 	@VisibleForTesting
 	protected static RecipeEntry<?> deserialize(Identifier id, JsonObject json, RegistryWrapper.WrapperLookup registryLookup) {
-		Recipe<?> recipe = Util.getResult(Recipe.CODEC.parse(registryLookup.getOps(JsonOps.INSTANCE), json), JsonParseException::new);
+		Recipe<?> recipe = Recipe.CODEC.parse(registryLookup.getOps(JsonOps.INSTANCE), json).getOrThrow(JsonParseException::new);
 		return new RecipeEntry<>(id, recipe);
 	}
 

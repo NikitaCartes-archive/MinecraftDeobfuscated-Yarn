@@ -92,7 +92,7 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 	protected void baseTick() {
 		this.server.getProfiler().push("keepAlive");
 		long l = Util.getMeasuringTimeMs();
-		if (l - this.lastKeepAliveTime >= 15000L) {
+		if (!this.isHost() && l - this.lastKeepAliveTime >= 15000L) {
 			if (this.waitingForKeepAlive) {
 				this.disconnect(TIMEOUT_TEXT);
 			} else {

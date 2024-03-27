@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.placementmodifier;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.stream.Stream;
 import java.util.stream.Stream.Builder;
 import net.minecraft.block.BlockState;
@@ -14,10 +14,9 @@ import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
 @Deprecated
 public class CountMultilayerPlacementModifier extends PlacementModifier {
-	public static final Codec<CountMultilayerPlacementModifier> MODIFIER_CODEC = IntProvider.createValidatingCodec(0, 256)
+	public static final MapCodec<CountMultilayerPlacementModifier> MODIFIER_CODEC = IntProvider.createValidatingCodec(0, 256)
 		.fieldOf("count")
-		.<CountMultilayerPlacementModifier>xmap(CountMultilayerPlacementModifier::new, countMultilayerPlacementModifier -> countMultilayerPlacementModifier.count)
-		.codec();
+		.xmap(CountMultilayerPlacementModifier::new, countMultilayerPlacementModifier -> countMultilayerPlacementModifier.count);
 	private final IntProvider count;
 
 	private CountMultilayerPlacementModifier(IntProvider count) {

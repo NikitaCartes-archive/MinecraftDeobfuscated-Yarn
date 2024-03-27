@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.structure;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import net.minecraft.structure.IglooGenerator;
 import net.minecraft.structure.StructurePiecesCollector;
@@ -11,7 +11,7 @@ import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.world.Heightmap;
 
 public class IglooStructure extends Structure {
-	public static final Codec<IglooStructure> CODEC = createCodec(IglooStructure::new);
+	public static final MapCodec<IglooStructure> CODEC = createCodec(IglooStructure::new);
 
 	public IglooStructure(Structure.Config config) {
 		super(config);

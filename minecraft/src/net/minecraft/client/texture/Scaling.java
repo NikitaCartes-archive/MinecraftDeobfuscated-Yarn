@@ -3,9 +3,9 @@ package net.minecraft.client.texture;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.OptionalInt;
-import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.StringIdentifiable;
@@ -20,17 +20,15 @@ public interface Scaling {
 
 	@Environment(EnvType.CLIENT)
 	public static record NineSlice(int width, int height, Scaling.NineSlice.Border border) implements Scaling {
-		public static final Codec<Scaling.NineSlice> CODEC = Codecs.validate(
-			RecordCodecBuilder.create(
+		public static final MapCodec<Scaling.NineSlice> CODEC = RecordCodecBuilder.<Scaling.NineSlice>mapCodec(
 				instance -> instance.group(
 							Codecs.POSITIVE_INT.fieldOf("width").forGetter(Scaling.NineSlice::width),
 							Codecs.POSITIVE_INT.fieldOf("height").forGetter(Scaling.NineSlice::height),
 							Scaling.NineSlice.Border.CODEC.fieldOf("border").forGetter(Scaling.NineSlice::border)
 						)
 						.apply(instance, Scaling.NineSlice::new)
-			),
-			Scaling.NineSlice::validate
-		);
+			)
+			.validate(Scaling.NineSlice::validate);
 
 		private static DataResult<Scaling.NineSlice> validate(Scaling.NineSlice nineSlice) {
 			Scaling.NineSlice.Border border = nineSlice.border();
@@ -65,10 +63,7 @@ public interface Scaling {
 						.apply(instance, Scaling.NineSlice.Border::new)
 			);
 			static final Codec<Scaling.NineSlice.Border> CODEC = Codec.either(UNIFORM_SIDE_SIZES_CODEC, DIFFERENT_SIDE_SIZES_CODEC)
-				.xmap(
-					either -> either.map(Function.identity(), Function.identity()),
-					border -> border.getUniformSideSize().isPresent() ? Either.left(border) : Either.right(border)
-				);
+				.xmap(Either::unwrap, border -> border.getUniformSideSize().isPresent() ? Either.left(border) : Either.right(border));
 
 			private OptionalInt getUniformSideSize() {
 				return this.left() == this.top() && this.top() == this.right() && this.right() == this.bottom() ? OptionalInt.of(this.left()) : OptionalInt.empty();
@@ -78,7 +73,7 @@ public interface Scaling {
 
 	@Environment(EnvType.CLIENT)
 	public static record Stretch() implements Scaling {
-		public static final Codec<Scaling.Stretch> CODEC = Codec.unit(Scaling.Stretch::new);
+		public static final MapCodec<Scaling.Stretch> CODEC = MapCodec.unit(Scaling.Stretch::new);
 
 		@Override
 		public Scaling.Type getType() {
@@ -88,7 +83,7 @@ public interface Scaling {
 
 	@Environment(EnvType.CLIENT)
 	public static record Tile(int width, int height) implements Scaling {
-		public static final Codec<Scaling.Tile> CODEC = RecordCodecBuilder.create(
+		public static final MapCodec<Scaling.Tile> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
 						Codecs.POSITIVE_INT.fieldOf("width").forGetter(Scaling.Tile::width), Codecs.POSITIVE_INT.fieldOf("height").forGetter(Scaling.Tile::height)
 					)
@@ -109,9 +104,9 @@ public interface Scaling {
 
 		public static final Codec<Scaling.Type> CODEC = StringIdentifiable.createCodec(Scaling.Type::values);
 		private final String name;
-		private final Codec<? extends Scaling> codec;
+		private final MapCodec<? extends Scaling> codec;
 
-		private Type(String name, Codec<? extends Scaling> codec) {
+		private Type(String name, MapCodec<? extends Scaling> codec) {
 			this.name = name;
 			this.codec = codec;
 		}
@@ -121,7 +116,7 @@ public interface Scaling {
 			return this.name;
 		}
 
-		public Codec<? extends Scaling> getCodec() {
+		public MapCodec<? extends Scaling> getCodec() {
 			return this.codec;
 		}
 	}

@@ -1,6 +1,6 @@
 package net.minecraft.loot.entry;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.function.Consumer;
@@ -8,7 +8,6 @@ import net.minecraft.loot.LootChoice;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.dynamic.Codecs;
 
 public abstract class CombinedEntry extends LootPoolEntry {
 	protected final List<LootPoolEntry> children;
@@ -39,11 +38,9 @@ public abstract class CombinedEntry extends LootPoolEntry {
 		return !this.test(lootContext) ? false : this.predicate.expand(lootContext, consumer);
 	}
 
-	public static <T extends CombinedEntry> Codec<T> createCodec(CombinedEntry.Factory<T> factory) {
-		return RecordCodecBuilder.create(
-			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(LootPoolEntryTypes.CODEC.listOf(), "children", List.of()).forGetter(entry -> entry.children)
-					)
+	public static <T extends CombinedEntry> MapCodec<T> createCodec(CombinedEntry.Factory<T> factory) {
+		return RecordCodecBuilder.mapCodec(
+			instance -> instance.group(LootPoolEntryTypes.CODEC.listOf().optionalFieldOf("children", List.of()).forGetter(entry -> entry.children))
 					.and(addConditionsField(instance).t1())
 					.apply(instance, factory::create)
 		);

@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.foliage;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
@@ -18,17 +18,17 @@ public class FoliagePlacerType<P extends FoliagePlacer> {
 		"random_spread_foliage_placer", RandomSpreadFoliagePlacer.CODEC
 	);
 	public static final FoliagePlacerType<CherryFoliagePlacer> CHERRY_FOLIAGE_PLACER = register("cherry_foliage_placer", CherryFoliagePlacer.CODEC);
-	private final Codec<P> codec;
+	private final MapCodec<P> codec;
 
-	private static <P extends FoliagePlacer> FoliagePlacerType<P> register(String id, Codec<P> codec) {
+	private static <P extends FoliagePlacer> FoliagePlacerType<P> register(String id, MapCodec<P> codec) {
 		return Registry.register(Registries.FOLIAGE_PLACER_TYPE, id, new FoliagePlacerType<>(codec));
 	}
 
-	private FoliagePlacerType(Codec<P> codec) {
+	private FoliagePlacerType(MapCodec<P> codec) {
 		this.codec = codec;
 	}
 
-	public Codec<P> getCodec() {
+	public MapCodec<P> getCodec() {
 		return this.codec;
 	}
 }

@@ -78,7 +78,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements GameEventLi
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		if (nbt.contains("warning_level", NbtElement.NUMBER_TYPE)) {
 			this.warningLevel = nbt.getInt("warning_level");

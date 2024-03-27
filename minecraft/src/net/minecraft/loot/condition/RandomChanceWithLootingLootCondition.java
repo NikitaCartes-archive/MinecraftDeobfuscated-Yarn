@@ -2,6 +2,7 @@ package net.minecraft.loot.condition;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -12,7 +13,7 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 
 public record RandomChanceWithLootingLootCondition(float chance, float lootingMultiplier) implements LootCondition {
-	public static final Codec<RandomChanceWithLootingLootCondition> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<RandomChanceWithLootingLootCondition> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codec.FLOAT.fieldOf("chance").forGetter(RandomChanceWithLootingLootCondition::chance),
 					Codec.FLOAT.fieldOf("looting_multiplier").forGetter(RandomChanceWithLootingLootCondition::lootingMultiplier)

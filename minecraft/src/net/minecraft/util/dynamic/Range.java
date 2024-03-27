@@ -24,18 +24,18 @@ public record Range<T extends Comparable<T>>(T minInclusive, T maxInclusive) {
 	}
 
 	public static <T extends Comparable<T>> Codec<Range<T>> createRangedCodec(Codec<T> codec, T minInclusive, T maxInclusive) {
-		return Codecs.validate(
-			createCodec(codec),
-			range -> {
-				if (range.minInclusive().compareTo(minInclusive) < 0) {
-					return DataResult.error(() -> "Range limit too low, expected at least " + minInclusive + " [" + range.minInclusive() + "-" + range.maxInclusive() + "]");
-				} else {
-					return range.maxInclusive().compareTo(maxInclusive) > 0
-						? DataResult.error(() -> "Range limit too high, expected at most " + maxInclusive + " [" + range.minInclusive() + "-" + range.maxInclusive() + "]")
-						: DataResult.success(range);
+		return createCodec(codec)
+			.validate(
+				range -> {
+					if (range.minInclusive().compareTo(minInclusive) < 0) {
+						return DataResult.error(() -> "Range limit too low, expected at least " + minInclusive + " [" + range.minInclusive() + "-" + range.maxInclusive() + "]");
+					} else {
+						return range.maxInclusive().compareTo(maxInclusive) > 0
+							? DataResult.error(() -> "Range limit too high, expected at most " + maxInclusive + " [" + range.minInclusive() + "-" + range.maxInclusive() + "]")
+							: DataResult.success(range);
+					}
 				}
-			}
-		);
+			);
 	}
 
 	public static <T extends Comparable<T>> DataResult<Range<T>> validate(T minInclusive, T maxInclusive) {

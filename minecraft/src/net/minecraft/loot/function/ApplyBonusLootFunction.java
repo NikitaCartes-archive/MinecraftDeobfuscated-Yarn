@@ -36,7 +36,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 	private static final MapCodec<ApplyBonusLootFunction.Formula> FORMULA_CODEC = Codecs.parameters(
 		"formula", "parameters", TYPE_CODEC, ApplyBonusLootFunction.Formula::getType, ApplyBonusLootFunction.Type::codec
 	);
-	public static final Codec<ApplyBonusLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<ApplyBonusLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.<RegistryEntry<Enchantment>, ApplyBonusLootFunction.Formula>and(
 					instance.group(

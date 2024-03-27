@@ -10,7 +10,6 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabilityChangedCriterion.Conditions> {
 	@Override
@@ -27,13 +26,10 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 	) implements AbstractCriterion.Conditions {
 		public static final Codec<ItemDurabilityChangedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(ItemDurabilityChangedCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(ItemDurabilityChangedCriterion.Conditions::item),
-						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "durability", NumberRange.IntRange.ANY)
-							.forGetter(ItemDurabilityChangedCriterion.Conditions::durability),
-						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "delta", NumberRange.IntRange.ANY)
-							.forGetter(ItemDurabilityChangedCriterion.Conditions::delta)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(ItemDurabilityChangedCriterion.Conditions::player),
+						ItemPredicate.CODEC.optionalFieldOf("item").forGetter(ItemDurabilityChangedCriterion.Conditions::item),
+						NumberRange.IntRange.CODEC.optionalFieldOf("durability", NumberRange.IntRange.ANY).forGetter(ItemDurabilityChangedCriterion.Conditions::durability),
+						NumberRange.IntRange.CODEC.optionalFieldOf("delta", NumberRange.IntRange.ANY).forGetter(ItemDurabilityChangedCriterion.Conditions::delta)
 					)
 					.apply(instance, ItemDurabilityChangedCriterion.Conditions::new)
 		);

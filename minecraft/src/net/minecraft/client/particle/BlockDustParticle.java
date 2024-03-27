@@ -1,5 +1,6 @@
 package net.minecraft.client.particle;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -73,15 +74,39 @@ public class BlockDustParticle extends SpriteBillboardParticle {
 		return i == 0 && this.world.isChunkLoaded(this.blockPos) ? WorldRenderer.getLightmapCoordinates(this.world, this.blockPos) : i;
 	}
 
+	@Nullable
+	static BlockDustParticle create(
+		BlockStateParticleEffect parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+	) {
+		BlockState blockState = parameters.getBlockState();
+		return !blockState.isAir() && !blockState.isOf(Blocks.MOVING_PISTON) && blockState.hasBlockBreakParticles()
+			? new BlockDustParticle(world, x, y, z, velocityX, velocityY, velocityZ, blockState)
+			: null;
+	}
+
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements ParticleFactory<BlockStateParticleEffect> {
+	public static class DustPillarFactory implements ParticleFactory<BlockStateParticleEffect> {
+		@Nullable
 		public Particle createParticle(
 			BlockStateParticleEffect blockStateParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i
 		) {
-			BlockState blockState = blockStateParticleEffect.getBlockState();
-			return !blockState.isAir() && !blockState.isOf(Blocks.MOVING_PISTON) && blockState.hasBlockBreakParticles()
-				? new BlockDustParticle(clientWorld, d, e, f, g, h, i, blockState)
-				: null;
+			Particle particle = BlockDustParticle.create(blockStateParticleEffect, clientWorld, d, e, f, g, h, i);
+			if (particle != null) {
+				particle.setVelocity(clientWorld.random.nextGaussian() / 30.0, h + clientWorld.random.nextGaussian() / 2.0, clientWorld.random.nextGaussian() / 30.0);
+				particle.setMaxAge(clientWorld.random.nextInt(20) + 20);
+			}
+
+			return particle;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class Factory implements ParticleFactory<BlockStateParticleEffect> {
+		@Nullable
+		public Particle createParticle(
+			BlockStateParticleEffect blockStateParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i
+		) {
+			return BlockDustParticle.create(blockStateParticleEffect, clientWorld, d, e, f, g, h, i);
 		}
 	}
 }

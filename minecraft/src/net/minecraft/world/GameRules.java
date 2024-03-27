@@ -277,7 +277,7 @@ public class GameRules {
 	}
 
 	private void load(DynamicLike<?> dynamic) {
-		this.rules.forEach((key, rule) -> dynamic.get(key.name).asString().result().ifPresent(rule::deserialize));
+		this.rules.forEach((key, rule) -> dynamic.get(key.name).asString().ifSuccess(rule::deserialize));
 	}
 
 	public GameRules copy() {

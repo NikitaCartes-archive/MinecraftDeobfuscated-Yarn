@@ -595,19 +595,16 @@ public class Style {
 	public static class Codecs {
 		public static final MapCodec<Style> MAP_CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
-						net.minecraft.util.dynamic.Codecs.createStrictOptionalFieldCodec(TextColor.CODEC, "color").forGetter(style -> Optional.ofNullable(style.color)),
-						net.minecraft.util.dynamic.Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "bold").forGetter(style -> Optional.ofNullable(style.bold)),
-						net.minecraft.util.dynamic.Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "italic").forGetter(style -> Optional.ofNullable(style.italic)),
-						net.minecraft.util.dynamic.Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "underlined").forGetter(style -> Optional.ofNullable(style.underlined)),
-						net.minecraft.util.dynamic.Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "strikethrough")
-							.forGetter(style -> Optional.ofNullable(style.strikethrough)),
-						net.minecraft.util.dynamic.Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "obfuscated").forGetter(style -> Optional.ofNullable(style.obfuscated)),
-						net.minecraft.util.dynamic.Codecs.createStrictOptionalFieldCodec(ClickEvent.CODEC, "clickEvent")
-							.forGetter(style -> Optional.ofNullable(style.clickEvent)),
-						net.minecraft.util.dynamic.Codecs.createStrictOptionalFieldCodec(HoverEvent.CODEC, "hoverEvent")
-							.forGetter(style -> Optional.ofNullable(style.hoverEvent)),
-						net.minecraft.util.dynamic.Codecs.createStrictOptionalFieldCodec(Codec.STRING, "insertion").forGetter(style -> Optional.ofNullable(style.insertion)),
-						net.minecraft.util.dynamic.Codecs.createStrictOptionalFieldCodec(Identifier.CODEC, "font").forGetter(style -> Optional.ofNullable(style.font))
+						TextColor.CODEC.optionalFieldOf("color").forGetter(style -> Optional.ofNullable(style.color)),
+						Codec.BOOL.optionalFieldOf("bold").forGetter(style -> Optional.ofNullable(style.bold)),
+						Codec.BOOL.optionalFieldOf("italic").forGetter(style -> Optional.ofNullable(style.italic)),
+						Codec.BOOL.optionalFieldOf("underlined").forGetter(style -> Optional.ofNullable(style.underlined)),
+						Codec.BOOL.optionalFieldOf("strikethrough").forGetter(style -> Optional.ofNullable(style.strikethrough)),
+						Codec.BOOL.optionalFieldOf("obfuscated").forGetter(style -> Optional.ofNullable(style.obfuscated)),
+						ClickEvent.CODEC.optionalFieldOf("clickEvent").forGetter(style -> Optional.ofNullable(style.clickEvent)),
+						HoverEvent.CODEC.optionalFieldOf("hoverEvent").forGetter(style -> Optional.ofNullable(style.hoverEvent)),
+						Codec.STRING.optionalFieldOf("insertion").forGetter(style -> Optional.ofNullable(style.insertion)),
+						Identifier.CODEC.optionalFieldOf("font").forGetter(style -> Optional.ofNullable(style.font))
 					)
 					.apply(instance, Style::of)
 		);

@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.stateprovider;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
@@ -22,17 +22,17 @@ public class BlockStateProviderType<P extends BlockStateProvider> {
 	public static final BlockStateProviderType<RandomizedIntBlockStateProvider> RANDOMIZED_INT_STATE_PROVIDER = register(
 		"randomized_int_state_provider", RandomizedIntBlockStateProvider.CODEC
 	);
-	private final Codec<P> codec;
+	private final MapCodec<P> codec;
 
-	private static <P extends BlockStateProvider> BlockStateProviderType<P> register(String id, Codec<P> codec) {
+	private static <P extends BlockStateProvider> BlockStateProviderType<P> register(String id, MapCodec<P> codec) {
 		return Registry.register(Registries.BLOCK_STATE_PROVIDER_TYPE, id, new BlockStateProviderType<>(codec));
 	}
 
-	private BlockStateProviderType(Codec<P> codec) {
+	private BlockStateProviderType(MapCodec<P> codec) {
 		this.codec = codec;
 	}
 
-	public Codec<P> getCodec() {
+	public MapCodec<P> getCodec() {
 		return this.codec;
 	}
 }

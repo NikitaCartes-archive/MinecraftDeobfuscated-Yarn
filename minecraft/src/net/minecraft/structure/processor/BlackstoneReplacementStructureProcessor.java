@@ -1,7 +1,7 @@
 package net.minecraft.structure.processor;
 
 import com.google.common.collect.Maps;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.block.Block;
@@ -19,7 +19,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldView;
 
 public class BlackstoneReplacementStructureProcessor extends StructureProcessor {
-	public static final Codec<BlackstoneReplacementStructureProcessor> CODEC = Codec.unit(
+	public static final MapCodec<BlackstoneReplacementStructureProcessor> CODEC = MapCodec.unit(
 		(Supplier<BlackstoneReplacementStructureProcessor>)(() -> BlackstoneReplacementStructureProcessor.INSTANCE)
 	);
 	public static final BlackstoneReplacementStructureProcessor INSTANCE = new BlackstoneReplacementStructureProcessor();

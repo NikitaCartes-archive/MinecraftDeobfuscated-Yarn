@@ -22,8 +22,8 @@ public class NbtTextContent implements TextContent {
 	public static final MapCodec<NbtTextContent> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codec.STRING.fieldOf("nbt").forGetter(NbtTextContent::getPath),
-					Codec.BOOL.optionalFieldOf("interpret", Boolean.valueOf(false)).forGetter(NbtTextContent::shouldInterpret),
-					TextCodecs.CODEC.optionalFieldOf("separator").forGetter(NbtTextContent::getSeparator),
+					Codec.BOOL.lenientOptionalFieldOf("interpret", Boolean.valueOf(false)).forGetter(NbtTextContent::shouldInterpret),
+					TextCodecs.CODEC.lenientOptionalFieldOf("separator").forGetter(NbtTextContent::getSeparator),
 					NbtDataSource.CODEC.forGetter(NbtTextContent::getDataSource)
 				)
 				.apply(instance, NbtTextContent::new)

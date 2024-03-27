@@ -16,7 +16,6 @@ import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHookedCriterion.Conditions> {
 	@Override
@@ -36,10 +35,10 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 	) implements AbstractCriterion.Conditions {
 		public static final Codec<FishingRodHookedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(FishingRodHookedCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "rod").forGetter(FishingRodHookedCriterion.Conditions::rod),
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity").forGetter(FishingRodHookedCriterion.Conditions::entity),
-						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(FishingRodHookedCriterion.Conditions::item)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(FishingRodHookedCriterion.Conditions::player),
+						ItemPredicate.CODEC.optionalFieldOf("rod").forGetter(FishingRodHookedCriterion.Conditions::rod),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("entity").forGetter(FishingRodHookedCriterion.Conditions::entity),
+						ItemPredicate.CODEC.optionalFieldOf("item").forGetter(FishingRodHookedCriterion.Conditions::item)
 					)
 					.apply(instance, FishingRodHookedCriterion.Conditions::new)
 		);

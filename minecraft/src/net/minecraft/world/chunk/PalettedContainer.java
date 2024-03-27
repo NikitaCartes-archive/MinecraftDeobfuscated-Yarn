@@ -83,7 +83,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T>, ReadableC
 		return RecordCodecBuilder.create(
 				instance -> instance.group(
 							entryCodec.mapResult(Codecs.orElsePartial(defaultValue)).listOf().fieldOf("palette").forGetter(ReadableContainer.Serialized::paletteEntries),
-							Codec.LONG_STREAM.optionalFieldOf("data").forGetter(ReadableContainer.Serialized::storage)
+							Codec.LONG_STREAM.lenientOptionalFieldOf("data").forGetter(ReadableContainer.Serialized::storage)
 						)
 						.apply(instance, ReadableContainer.Serialized::new)
 			)

@@ -6,7 +6,6 @@ import com.mojang.serialization.DataResult;
 import java.util.stream.IntStream;
 import javax.annotation.concurrent.Immutable;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 
 /**
  * A vector composed of 3 integers.
@@ -37,8 +36,7 @@ public class Vec3i implements Comparable<Vec3i> {
 	private int z;
 
 	public static Codec<Vec3i> createOffsetCodec(int maxAbsValue) {
-		return Codecs.validate(
-			CODEC,
+		return CODEC.validate(
 			vec -> Math.abs(vec.getX()) < maxAbsValue && Math.abs(vec.getY()) < maxAbsValue && Math.abs(vec.getZ()) < maxAbsValue
 					? DataResult.success(vec)
 					: DataResult.error(() -> "Position out of range, expected at most " + maxAbsValue + ": " + vec)

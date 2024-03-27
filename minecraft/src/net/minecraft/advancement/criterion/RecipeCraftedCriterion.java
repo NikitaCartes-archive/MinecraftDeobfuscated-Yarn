@@ -13,7 +13,6 @@ import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
 
 public class RecipeCraftedCriterion extends AbstractCriterion<RecipeCraftedCriterion.Conditions> {
 	@Override
@@ -29,9 +28,9 @@ public class RecipeCraftedCriterion extends AbstractCriterion<RecipeCraftedCrite
 		implements AbstractCriterion.Conditions {
 		public static final Codec<RecipeCraftedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(RecipeCraftedCriterion.Conditions::player),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(RecipeCraftedCriterion.Conditions::player),
 						Identifier.CODEC.fieldOf("recipe_id").forGetter(RecipeCraftedCriterion.Conditions::recipeId),
-						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC.listOf(), "ingredients", List.of()).forGetter(RecipeCraftedCriterion.Conditions::ingredients)
+						ItemPredicate.CODEC.listOf().optionalFieldOf("ingredients", List.of()).forGetter(RecipeCraftedCriterion.Conditions::ingredients)
 					)
 					.apply(instance, RecipeCraftedCriterion.Conditions::new)
 		);

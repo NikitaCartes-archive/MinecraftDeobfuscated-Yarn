@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.blockpredicate;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluid;
@@ -11,7 +11,7 @@ import net.minecraft.util.math.Vec3i;
 
 class MatchingFluidsBlockPredicate extends OffsetPredicate {
 	private final RegistryEntryList<Fluid> fluids;
-	public static final Codec<MatchingFluidsBlockPredicate> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<MatchingFluidsBlockPredicate> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> registerOffsetField(instance)
 				.and(RegistryCodecs.entryList(RegistryKeys.FLUID).fieldOf("fluids").forGetter(predicate -> predicate.fluids))
 				.apply(instance, MatchingFluidsBlockPredicate::new)

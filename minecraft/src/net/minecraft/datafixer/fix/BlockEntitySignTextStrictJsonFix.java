@@ -12,7 +12,7 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 	}
 
 	private Dynamic<?> fix(Dynamic<?> dynamic, String lineName) {
-		return dynamic.update(lineName, TextFixes::method_56629);
+		return dynamic.update(lineName, TextFixes::text);
 	}
 
 	@Override

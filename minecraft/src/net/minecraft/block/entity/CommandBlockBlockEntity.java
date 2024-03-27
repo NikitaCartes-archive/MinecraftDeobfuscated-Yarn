@@ -79,7 +79,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		this.commandExecutor.readNbt(nbt, registryLookup);
 		this.powered = nbt.getBoolean("powered");
@@ -167,12 +167,13 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readComponents(ComponentMap components) {
+	protected void readComponents(BlockEntity.ComponentsAccess components) {
+		super.readComponents(components);
 		this.commandExecutor.setCustomName(components.get(DataComponentTypes.CUSTOM_NAME));
 	}
 
 	@Override
-	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
 		super.addComponents(componentMapBuilder);
 		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.commandExecutor.getCustomNameNullable());
 	}

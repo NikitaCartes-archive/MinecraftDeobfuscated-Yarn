@@ -59,6 +59,13 @@ public class CrackParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
+	public static class CobwebFactory implements ParticleFactory<DefaultParticleType> {
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			return new CrackParticle(clientWorld, d, e, f, new ItemStack(Items.COBWEB));
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
 	public static class ItemFactory implements ParticleFactory<ItemStackParticleEffect> {
 		public Particle createParticle(
 			ItemStackParticleEffect itemStackParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i

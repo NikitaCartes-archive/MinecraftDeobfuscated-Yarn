@@ -1,6 +1,6 @@
 package net.minecraft.loot.function;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
-public record LootFunctionType(Codec<? extends LootFunction> codec) {
+public record LootFunctionType(MapCodec<? extends LootFunction> codec) {
 }

@@ -1,7 +1,7 @@
 package net.minecraft.world.gen.trunk;
 
 import com.google.common.collect.Lists;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Objects;
@@ -17,7 +17,7 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 
 public class LargeOakTrunkPlacer extends TrunkPlacer {
-	public static final Codec<LargeOakTrunkPlacer> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<LargeOakTrunkPlacer> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> fillTrunkPlacerFields(instance).apply(instance, LargeOakTrunkPlacer::new)
 	);
 	private static final double field_31524 = 0.618;

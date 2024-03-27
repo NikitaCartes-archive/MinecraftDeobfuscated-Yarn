@@ -36,11 +36,11 @@ public class BlockPredicatesChecker {
 	private static final Codec<BlockPredicatesChecker> FULL_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.nonEmptyList(BlockPredicate.CODEC.listOf()).fieldOf("predicates").forGetter(checker -> checker.predicates),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_in_tooltip", true).forGetter(BlockPredicatesChecker::showInTooltip)
+					Codec.BOOL.optionalFieldOf("show_in_tooltip", Boolean.valueOf(true)).forGetter(BlockPredicatesChecker::showInTooltip)
 				)
 				.apply(instance, BlockPredicatesChecker::new)
 	);
-	public static final Codec<BlockPredicatesChecker> CODEC = Codecs.alternatively(FULL_CODEC, SINGLE_CODEC);
+	public static final Codec<BlockPredicatesChecker> CODEC = Codec.withAlternative(FULL_CODEC, SINGLE_CODEC);
 	public static final PacketCodec<RegistryByteBuf, BlockPredicatesChecker> PACKET_CODEC = PacketCodec.tuple(
 		BlockPredicate.PACKET_CODEC.collect(PacketCodecs.toList()),
 		blockPredicatesChecker -> blockPredicatesChecker.predicates,

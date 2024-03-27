@@ -18,30 +18,30 @@ import net.minecraft.world.WorldEvents;
 public enum VaultState implements StringIdentifiable {
 	INACTIVE("inactive", VaultState.Light.HALF_LIT) {
 		@Override
-		protected void onChangedTo(ServerWorld world, BlockPos pos, VaultConfig config, VaultSharedData sharedData) {
+		protected void onChangedTo(ServerWorld world, BlockPos pos, VaultConfig config, VaultSharedData sharedData, boolean ominous) {
 			sharedData.setDisplayItem(ItemStack.EMPTY);
-			world.syncWorldEvent(WorldEvents.VAULT_DEACTIVATES, pos, 0);
+			world.syncWorldEvent(WorldEvents.VAULT_DEACTIVATES, pos, ominous ? 1 : 0);
 		}
 	},
 	ACTIVE("active", VaultState.Light.LIT) {
 		@Override
-		protected void onChangedTo(ServerWorld world, BlockPos pos, VaultConfig config, VaultSharedData sharedData) {
+		protected void onChangedTo(ServerWorld world, BlockPos pos, VaultConfig config, VaultSharedData sharedData, boolean ominous) {
 			if (!sharedData.hasDisplayItem()) {
 				VaultBlockEntity.Server.updateDisplayItem(world, this, config, sharedData, pos);
 			}
 
-			world.syncWorldEvent(WorldEvents.VAULT_ACTIVATES, pos, 0);
+			world.syncWorldEvent(WorldEvents.VAULT_ACTIVATES, pos, ominous ? 1 : 0);
 		}
 	},
 	UNLOCKING("unlocking", VaultState.Light.LIT) {
 		@Override
-		protected void onChangedTo(ServerWorld world, BlockPos pos, VaultConfig config, VaultSharedData sharedData) {
+		protected void onChangedTo(ServerWorld world, BlockPos pos, VaultConfig config, VaultSharedData sharedData, boolean ominous) {
 			world.playSound(null, pos, SoundEvents.BLOCK_VAULT_INSERT_ITEM, SoundCategory.BLOCKS);
 		}
 	},
 	EJECTING("ejecting", VaultState.Light.LIT) {
 		@Override
-		protected void onChangedTo(ServerWorld world, BlockPos pos, VaultConfig config, VaultSharedData sharedData) {
+		protected void onChangedTo(ServerWorld world, BlockPos pos, VaultConfig config, VaultSharedData sharedData, boolean ominous) {
 			world.playSound(null, pos, SoundEvents.BLOCK_VAULT_OPEN_SHUTTER, SoundCategory.BLOCKS);
 		}
 
@@ -105,12 +105,12 @@ public enum VaultState implements StringIdentifiable {
 		return sharedData.hasConnectedPlayers() ? ACTIVE : INACTIVE;
 	}
 
-	public void onStateChange(ServerWorld world, BlockPos pos, VaultState newState, VaultConfig config, VaultSharedData sharedData) {
+	public void onStateChange(ServerWorld world, BlockPos pos, VaultState newState, VaultConfig config, VaultSharedData sharedData, boolean ominous) {
 		this.onChangedFrom(world, pos, config, sharedData);
-		newState.onChangedTo(world, pos, config, sharedData);
+		newState.onChangedTo(world, pos, config, sharedData, ominous);
 	}
 
-	protected void onChangedTo(ServerWorld world, BlockPos pos, VaultConfig config, VaultSharedData sharedData) {
+	protected void onChangedTo(ServerWorld world, BlockPos pos, VaultConfig config, VaultSharedData sharedData, boolean ominous) {
 	}
 
 	protected void onChangedFrom(ServerWorld world, BlockPos pos, VaultConfig config, VaultSharedData sharedData) {

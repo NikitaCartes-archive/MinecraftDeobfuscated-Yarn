@@ -1,19 +1,19 @@
 package net.minecraft.loot.condition;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryElementCodec;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
 
 public class LootConditionTypes {
 	private static final Codec<LootCondition> BASE_CODEC = Registries.LOOT_CONDITION_TYPE
 		.getCodec()
 		.dispatch("condition", LootCondition::getType, LootConditionType::codec);
-	public static final Codec<LootCondition> CODEC = Codecs.createLazy(() -> Codecs.alternatively(BASE_CODEC, AllOfLootCondition.INLINE_CODEC));
+	public static final Codec<LootCondition> CODEC = Codec.lazyInitialized(() -> Codec.withAlternative(BASE_CODEC, AllOfLootCondition.INLINE_CODEC));
 	public static final Codec<RegistryEntry<LootCondition>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.PREDICATE, CODEC);
 	public static final LootConditionType INVERTED = register("inverted", InvertedLootCondition.CODEC);
 	public static final LootConditionType ANY_OF = register("any_of", AnyOfLootCondition.CODEC);
@@ -34,7 +34,7 @@ public class LootConditionTypes {
 	public static final LootConditionType TIME_CHECK = register("time_check", TimeCheckLootCondition.CODEC);
 	public static final LootConditionType VALUE_CHECK = register("value_check", ValueCheckLootCondition.CODEC);
 
-	private static LootConditionType register(String id, Codec<? extends LootCondition> codec) {
+	private static LootConditionType register(String id, MapCodec<? extends LootCondition> codec) {
 		return Registry.register(Registries.LOOT_CONDITION_TYPE, new Identifier(id), new LootConditionType(codec));
 	}
 }

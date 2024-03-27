@@ -1,6 +1,7 @@
 package net.minecraft.structure.rule;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -8,7 +9,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
 public class AxisAlignedLinearPosRuleTest extends PosRuleTest {
-	public static final Codec<AxisAlignedLinearPosRuleTest> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<AxisAlignedLinearPosRuleTest> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codec.FLOAT.fieldOf("min_chance").orElse(0.0F).forGetter(ruleTest -> ruleTest.minChance),
 					Codec.FLOAT.fieldOf("max_chance").orElse(0.0F).forGetter(ruleTest -> ruleTest.maxChance),

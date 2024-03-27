@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.placementmodifier;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -8,7 +8,7 @@ import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
 public class BlockFilterPlacementModifier extends AbstractConditionalPlacementModifier {
-	public static final Codec<BlockFilterPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<BlockFilterPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(BlockPredicate.BASE_CODEC.fieldOf("predicate").forGetter(blockFilterPlacementModifier -> blockFilterPlacementModifier.predicate))
 				.apply(instance, BlockFilterPlacementModifier::new)
 	);

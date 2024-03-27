@@ -420,6 +420,13 @@ public class WorldEvents {
 	 */
 	public static final int TURTLE_EGG_PLACED = 2012;
 	/**
+	 * A mace is used to execute a smash attack.
+	 * <br>Spawns dust pillar particles.
+	 * <p>The amount of particles to spawn must be supplied as extra data.
+	 * <p>Called by {@link net.minecraft.item.MaceItem#knockbackNearbyEntities}
+	 */
+	public static final int SMASH_ATTACK = 2013;
+	/**
 	 * An end gateway spawns.
 	 * <br>Plays the end gateway spawn sound event and spawns an explosion emitter particle.
 	 * <p>Called by {@link net.minecraft.entity.boss.dragon.EnderDragonFight#generateEndGateway(net.minecraft.util.math.BlockPos) EnderDragonFight#generateEndGateway}
@@ -527,4 +534,32 @@ public class WorldEvents {
 	 * <p>Called by {@link net.minecraft.block.enums.VaultState#ejectItem}.
 	 */
 	public static final int VAULT_EJECTS_ITEM = 3017;
+	/**
+	 * A cobweb is placed by the weaving effect.
+	 * <br>Spawns poof particles and plays the cobweb place sound.
+	 * <p>Called by {@link net.minecraft.entity.effect.WeavingStatusEffect#tryPlaceCobweb}.
+	 */
+	public static final int COBWEB_WEAVED = 3018;
+	/**
+	 * An ominous trial spawner detects survival-mode players.
+	 * <br>Plays the detection sound and spawns detection particles.
+	 * <p>The extra data denotes the number of players.
+	 * <p>Called by {@link net.minecraft.block.spawner.TrialSpawnerData#updatePlayers}.
+	 */
+	public static final int OMINOUS_TRIAL_SPAWNER_DETECTS_PLAYER = 3019;
+	/**
+	 * A trial spawner becomes ominous.
+	 * <br>Plays the activate sound and spawns both detection and omen particles.
+	 * <p>If a {@code 0} is passed as extra data, the activate sound will be played at 0.3 volume.
+	 * <br>Otherwise, it is played at full volume.
+	 * <p>Called by {@link net.minecraft.block.spawner.TrialSpawnerLogic#setOminous},
+	 * and {@link net.minecraft.block.spawner.TrialSpawnerData#updatePlayers}.
+	 */
+	public static final int TRIAL_SPAWNER_TURNS_OMINOUS = 3020;
+	/**
+	 * An ominous item spawner spawns an item.
+	 * <br>Plays the item spawn sound and spawns mob spawn particles.
+	 * <p>Called by {@link net.minecraft.entity.OminousItemSpawnerEntity#spawnItem}
+	 */
+	public static final int OMINOUS_ITEM_SPAWNER_SPAWNS_ITEM = 3021;
 }

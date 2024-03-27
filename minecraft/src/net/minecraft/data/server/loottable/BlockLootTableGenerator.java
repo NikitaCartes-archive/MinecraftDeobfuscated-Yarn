@@ -206,7 +206,8 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(
-							ItemEntry.builder(drop).apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).add(DataComponentTypes.CUSTOM_NAME))
+							ItemEntry.builder(drop)
+								.apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).include(DataComponentTypes.CUSTOM_NAME))
 						)
 				)
 			);
@@ -223,10 +224,10 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 							ItemEntry.builder(drop)
 								.apply(
 									CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY)
-										.add(DataComponentTypes.CUSTOM_NAME)
-										.add(DataComponentTypes.CONTAINER)
-										.add(DataComponentTypes.LOCK)
-										.add(DataComponentTypes.CONTAINER_LOOT)
+										.include(DataComponentTypes.CUSTOM_NAME)
+										.include(DataComponentTypes.CONTAINER)
+										.include(DataComponentTypes.LOCK)
+										.include(DataComponentTypes.CONTAINER_LOOT)
 								)
 						)
 				)
@@ -280,8 +281,10 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 							ItemEntry.builder(drop)
 								.apply(
 									CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY)
-										.add(DataComponentTypes.CUSTOM_NAME)
-										.add(DataComponentTypes.BANNER_PATTERNS)
+										.include(DataComponentTypes.CUSTOM_NAME)
+										.include(DataComponentTypes.ITEM_NAME)
+										.include(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP)
+										.include(DataComponentTypes.BANNER_PATTERNS)
 								)
 						)
 				)
@@ -296,7 +299,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.with(
 						ItemEntry.builder(drop)
-							.apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).add(DataComponentTypes.BEES))
+							.apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).include(DataComponentTypes.BEES))
 							.apply(CopyStateLootFunction.builder(drop).addProperty(BeehiveBlock.HONEY_LEVEL))
 					)
 			);
@@ -310,7 +313,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 					.with(
 						ItemEntry.builder(drop)
 							.conditionally(WITH_SILK_TOUCH)
-							.apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).add(DataComponentTypes.BEES))
+							.apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).include(DataComponentTypes.BEES))
 							.apply(CopyStateLootFunction.builder(drop).addProperty(BeehiveBlock.HONEY_LEVEL))
 							.alternatively(ItemEntry.builder(drop))
 					)
@@ -576,7 +579,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 
 		for (Block block : Registries.BLOCK) {
 			if (block.isEnabled(this.requiredFeatures)) {
-				RegistryKey<LootTable> registryKey = block.getLootTableId();
+				RegistryKey<LootTable> registryKey = block.getLootTableKey();
 				if (registryKey != LootTables.EMPTY && set.add(registryKey)) {
 					LootTable.Builder builder = (LootTable.Builder)this.lootTables.remove(registryKey);
 					if (builder == null) {
@@ -630,6 +633,6 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected void addDrop(Block block, LootTable.Builder lootTable) {
-		this.lootTables.put(block.getLootTableId(), lootTable);
+		this.lootTables.put(block.getLootTableKey(), lootTable);
 	}
 }

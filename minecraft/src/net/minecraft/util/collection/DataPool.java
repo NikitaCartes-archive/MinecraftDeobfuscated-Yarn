@@ -33,7 +33,7 @@ public class DataPool<E> extends Pool<Weighted.Present<E>> {
 	}
 
 	public Optional<E> getDataOrEmpty(Random random) {
-		return this.getOrEmpty(random).map(Weighted.Present::getData);
+		return this.getOrEmpty(random).map(Weighted.Present::data);
 	}
 
 	public static class Builder<E> {

@@ -12,7 +12,6 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion.Conditions> {
 	@Override
@@ -32,10 +31,10 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 	) implements AbstractCriterion.Conditions {
 		public static final Codec<BredAnimalsCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(BredAnimalsCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "parent").forGetter(BredAnimalsCriterion.Conditions::parent),
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "partner").forGetter(BredAnimalsCriterion.Conditions::partner),
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "child").forGetter(BredAnimalsCriterion.Conditions::child)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(BredAnimalsCriterion.Conditions::player),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("parent").forGetter(BredAnimalsCriterion.Conditions::parent),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("partner").forGetter(BredAnimalsCriterion.Conditions::partner),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("child").forGetter(BredAnimalsCriterion.Conditions::child)
 					)
 					.apply(instance, BredAnimalsCriterion.Conditions::new)
 		);

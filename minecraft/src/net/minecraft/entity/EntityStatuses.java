@@ -39,7 +39,6 @@ public class EntityStatuses {
 	public static final byte TAME_OCELOT_FAILED = 40;
 	public static final byte TAME_OCELOT_SUCCESS = 41;
 	public static final byte ADD_SPLASH_PARTICLES = 42;
-	public static final byte ADD_CLOUD_PARTICLES = 43;
 	public static final byte CREATE_EATING_PARTICLES = 45;
 	public static final byte ADD_PORTAL_PARTICLES = 46;
 	public static final byte BREAK_MAINHAND = 47;

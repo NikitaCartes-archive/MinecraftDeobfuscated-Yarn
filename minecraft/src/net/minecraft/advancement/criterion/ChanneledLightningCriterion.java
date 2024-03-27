@@ -13,7 +13,6 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class ChanneledLightningCriterion extends AbstractCriterion<ChanneledLightningCriterion.Conditions> {
 	@Override
@@ -31,9 +30,8 @@ public class ChanneledLightningCriterion extends AbstractCriterion<ChanneledLigh
 	public static record Conditions(Optional<LootContextPredicate> player, List<LootContextPredicate> victims) implements AbstractCriterion.Conditions {
 		public static final Codec<ChanneledLightningCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(ChanneledLightningCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.listOf(), "victims", List.of())
-							.forGetter(ChanneledLightningCriterion.Conditions::victims)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(ChanneledLightningCriterion.Conditions::player),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.listOf().optionalFieldOf("victims", List.of()).forGetter(ChanneledLightningCriterion.Conditions::victims)
 					)
 					.apply(instance, ChanneledLightningCriterion.Conditions::new)
 		);

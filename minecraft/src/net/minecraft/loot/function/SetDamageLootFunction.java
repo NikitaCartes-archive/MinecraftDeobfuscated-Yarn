@@ -2,6 +2,7 @@ package net.minecraft.loot.function;
 
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +17,7 @@ import org.slf4j.Logger;
 
 public class SetDamageLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final Codec<SetDamageLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SetDamageLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.<LootNumberProvider, boolean>and(
 					instance.group(

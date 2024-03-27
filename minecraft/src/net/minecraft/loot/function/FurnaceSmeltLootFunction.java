@@ -1,7 +1,7 @@
 package net.minecraft.loot.function;
 
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 
 public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final Codec<FurnaceSmeltLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<FurnaceSmeltLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance).apply(instance, FurnaceSmeltLootFunction::new)
 	);
 

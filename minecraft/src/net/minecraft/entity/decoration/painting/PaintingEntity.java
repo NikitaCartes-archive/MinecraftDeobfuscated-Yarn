@@ -131,7 +131,7 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 	}
 
 	public static void writeVariantToNbt(NbtCompound nbt, RegistryEntry<PaintingVariant> variant) {
-		VARIANT_ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, variant).result().ifPresent(nbtElement -> nbt.copyFrom((NbtCompound)nbtElement));
+		VARIANT_ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, variant).ifSuccess(nbtElement -> nbt.copyFrom((NbtCompound)nbtElement));
 	}
 
 	@Override

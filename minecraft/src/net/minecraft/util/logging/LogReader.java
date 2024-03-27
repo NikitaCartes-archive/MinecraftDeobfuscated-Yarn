@@ -11,7 +11,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.Reader;
 import javax.annotation.Nullable;
-import net.minecraft.util.Util;
 
 public interface LogReader<T> extends Closeable {
 	static <T> LogReader<T> create(Codec<T> codec, Reader reader) {
@@ -26,7 +25,7 @@ public interface LogReader<T> extends Closeable {
 						return null;
 					} else {
 						JsonElement jsonElement = JsonParser.parseReader(jsonReader);
-						return Util.getResult(codec.parse(JsonOps.INSTANCE, jsonElement), IOException::new);
+						return codec.parse(JsonOps.INSTANCE, jsonElement).getOrThrow(IOException::new);
 					}
 				} catch (JsonParseException var2) {
 					throw new IOException(var2);

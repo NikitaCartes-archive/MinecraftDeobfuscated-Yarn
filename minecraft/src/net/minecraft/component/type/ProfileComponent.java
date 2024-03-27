@@ -18,13 +18,13 @@ import net.minecraft.util.dynamic.Codecs;
 public record ProfileComponent(Optional<String> name, Optional<UUID> id, PropertyMap properties, GameProfile gameProfile) {
 	private static final Codec<ProfileComponent> BASE_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(Codecs.PLAYER_NAME, "name").forGetter(ProfileComponent::name),
-					Codecs.createStrictOptionalFieldCodec(Uuids.INT_STREAM_CODEC, "id").forGetter(ProfileComponent::id),
-					Codecs.createStrictOptionalFieldCodec(Codecs.GAME_PROFILE_PROPERTY_MAP, "properties", new PropertyMap()).forGetter(ProfileComponent::properties)
+					Codecs.PLAYER_NAME.optionalFieldOf("name").forGetter(ProfileComponent::name),
+					Uuids.INT_STREAM_CODEC.optionalFieldOf("id").forGetter(ProfileComponent::id),
+					Codecs.GAME_PROFILE_PROPERTY_MAP.optionalFieldOf("properties", new PropertyMap()).forGetter(ProfileComponent::properties)
 				)
 				.apply(instance, ProfileComponent::new)
 	);
-	public static final Codec<ProfileComponent> CODEC = Codecs.either(
+	public static final Codec<ProfileComponent> CODEC = Codec.withAlternative(
 		BASE_CODEC, Codecs.PLAYER_NAME, name -> new ProfileComponent(Optional.of(name), Optional.empty(), new PropertyMap())
 	);
 	public static final PacketCodec<ByteBuf, ProfileComponent> PACKET_CODEC = PacketCodec.tuple(

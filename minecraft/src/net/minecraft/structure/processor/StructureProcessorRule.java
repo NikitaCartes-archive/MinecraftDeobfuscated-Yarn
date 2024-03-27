@@ -19,9 +19,11 @@ public class StructureProcessorRule {
 		instance -> instance.group(
 					RuleTest.TYPE_CODEC.fieldOf("input_predicate").forGetter(rule -> rule.inputPredicate),
 					RuleTest.TYPE_CODEC.fieldOf("location_predicate").forGetter(rule -> rule.locationPredicate),
-					PosRuleTest.BASE_CODEC.optionalFieldOf("position_predicate", AlwaysTruePosRuleTest.INSTANCE).forGetter(rule -> rule.positionPredicate),
+					PosRuleTest.BASE_CODEC.lenientOptionalFieldOf("position_predicate", AlwaysTruePosRuleTest.INSTANCE).forGetter(rule -> rule.positionPredicate),
 					BlockState.CODEC.fieldOf("output_state").forGetter(rule -> rule.outputState),
-					RuleBlockEntityModifier.TYPE_CODEC.optionalFieldOf("block_entity_modifier", DEFAULT_BLOCK_ENTITY_MODIFIER).forGetter(rule -> rule.blockEntityModifier)
+					RuleBlockEntityModifier.TYPE_CODEC
+						.lenientOptionalFieldOf("block_entity_modifier", DEFAULT_BLOCK_ENTITY_MODIFIER)
+						.forGetter(rule -> rule.blockEntityModifier)
 				)
 				.apply(instance, StructureProcessorRule::new)
 	);

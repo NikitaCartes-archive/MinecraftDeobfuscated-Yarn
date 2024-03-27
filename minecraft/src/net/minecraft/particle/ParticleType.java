@@ -1,6 +1,6 @@
 package net.minecraft.particle;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 
@@ -24,7 +24,7 @@ public abstract class ParticleType<T extends ParticleEffect> {
 		return this.parametersFactory;
 	}
 
-	public abstract Codec<T> getCodec();
+	public abstract MapCodec<T> getCodec();
 
 	public abstract PacketCodec<? super RegistryByteBuf, T> getPacketCodec();
 }

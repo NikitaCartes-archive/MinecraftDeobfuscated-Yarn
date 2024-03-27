@@ -22,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Weighting;
 import net.minecraft.util.math.MathHelper;
@@ -110,6 +111,17 @@ public class EnchantmentHelper {
 		return i > 0 ? getSweepingMultiplier(i) : 0.0F;
 	}
 
+	public static float getBreachFactor(@Nullable Entity entity, float f) {
+		if (entity instanceof LivingEntity livingEntity) {
+			int i = getEquipmentLevel(Enchantments.BREACH, livingEntity);
+			if (i > 0) {
+				return BreachEnchantment.getFactor((float)i, f);
+			}
+		}
+
+		return f;
+	}
+
 	public static void onUserDamaged(LivingEntity user, Entity attacker) {
 		EnchantmentHelper.Consumer consumer = (enchantment, level) -> enchantment.onUserDamaged(user, attacker, level);
 		if (user != null) {
@@ -129,6 +141,12 @@ public class EnchantmentHelper {
 
 		if (user instanceof PlayerEntity) {
 			forEachEnchantment(consumer, user.getMainHandStack());
+		}
+	}
+
+	public static void onAttack(LivingEntity attacker, Entity target, ItemEnchantmentsComponent enchantments) {
+		for (Entry<RegistryEntry<Enchantment>> entry : enchantments.getEnchantmentsMap()) {
+			((Enchantment)((RegistryEntry)entry.getKey()).value()).onAttack(attacker, target, entry.getIntValue());
 		}
 	}
 
@@ -305,28 +323,24 @@ public class EnchantmentHelper {
 
 	/**
 	 * Enchants the {@code target} item stack and returns it.
-	 * 
-	 * @param treasureAllowed whether treasure enchantments may appear
-	 * @param level the experience level
-	 * @param target the item stack to enchant
 	 */
-	public static ItemStack enchant(Random random, ItemStack target, int level, boolean treasureAllowed) {
-		List<EnchantmentLevelEntry> list = generateEnchantments(random, target, level, treasureAllowed);
-		if (target.isOf(Items.BOOK)) {
-			target = new ItemStack(Items.ENCHANTED_BOOK);
+	public static ItemStack enchant(FeatureSet enabledFeatures, Random random, ItemStack stack, int level, boolean treasureAllowed) {
+		List<EnchantmentLevelEntry> list = generateEnchantments(enabledFeatures, random, stack, level, treasureAllowed);
+		if (stack.isOf(Items.BOOK)) {
+			stack = new ItemStack(Items.ENCHANTED_BOOK);
 		}
 
 		for (EnchantmentLevelEntry enchantmentLevelEntry : list) {
-			target.addEnchantment(enchantmentLevelEntry.enchantment, enchantmentLevelEntry.level);
+			stack.addEnchantment(enchantmentLevelEntry.enchantment, enchantmentLevelEntry.level);
 		}
 
-		return target;
+		return stack;
 	}
 
 	/**
 	 * Generate the enchantments for enchanting the {@code stack}.
 	 */
-	public static List<EnchantmentLevelEntry> generateEnchantments(Random random, ItemStack stack, int level, boolean treasureAllowed) {
+	public static List<EnchantmentLevelEntry> generateEnchantments(FeatureSet enabledFeatures, Random random, ItemStack stack, int level, boolean treasureAllowed) {
 		List<EnchantmentLevelEntry> list = Lists.<EnchantmentLevelEntry>newArrayList();
 		Item item = stack.getItem();
 		int i = item.getEnchantability();
@@ -336,7 +350,7 @@ public class EnchantmentHelper {
 			level += 1 + random.nextInt(i / 4 + 1) + random.nextInt(i / 4 + 1);
 			float f = (random.nextFloat() + random.nextFloat() - 1.0F) * 0.15F;
 			level = MathHelper.clamp(Math.round((float)level + (float)level * f), 1, Integer.MAX_VALUE);
-			List<EnchantmentLevelEntry> list2 = getPossibleEntries(level, stack, treasureAllowed);
+			List<EnchantmentLevelEntry> list2 = getPossibleEntries(enabledFeatures, level, stack, treasureAllowed);
 			if (!list2.isEmpty()) {
 				Weighting.getRandom(random, list2).ifPresent(list::add);
 
@@ -393,16 +407,17 @@ public class EnchantmentHelper {
 	 * Gets all the possible entries for enchanting the {@code stack} at the
 	 * given {@code power}.
 	 */
-	public static List<EnchantmentLevelEntry> getPossibleEntries(int power, ItemStack stack, boolean treasureAllowed) {
+	public static List<EnchantmentLevelEntry> getPossibleEntries(FeatureSet enabledFeatures, int level, ItemStack stack, boolean treasureAllowed) {
 		List<EnchantmentLevelEntry> list = Lists.<EnchantmentLevelEntry>newArrayList();
 		boolean bl = stack.isOf(Items.BOOK);
 
 		for (Enchantment enchantment : Registries.ENCHANTMENT) {
-			if ((!enchantment.isTreasure() || treasureAllowed)
+			if (enchantment.isEnabled(enabledFeatures)
+				&& (!enchantment.isTreasure() || treasureAllowed)
 				&& enchantment.isAvailableForRandomSelection()
 				&& (bl || enchantment.isAcceptableItem(stack) && enchantment.isPrimaryItem(stack))) {
 				for (int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; i--) {
-					if (power >= enchantment.getMinPower(i) && power <= enchantment.getMaxPower(i)) {
+					if (level >= enchantment.getMinPower(i) && level <= enchantment.getMaxPower(i)) {
 						list.add(new EnchantmentLevelEntry(enchantment, i));
 						break;
 					}

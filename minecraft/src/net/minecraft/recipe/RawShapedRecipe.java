@@ -14,7 +14,6 @@ import java.util.function.Function;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 
@@ -33,7 +32,7 @@ public record RawShapedRecipe(int width, int height, DefaultedList<Ingredient> i
 
 	public static RawShapedRecipe create(Map<Character, Ingredient> key, List<String> pattern) {
 		RawShapedRecipe.Data data = new RawShapedRecipe.Data(key, pattern);
-		return Util.getResult(fromData(data), IllegalArgumentException::new);
+		return fromData(data).getOrThrow();
 	}
 
 	private static DataResult<RawShapedRecipe> fromData(RawShapedRecipe.Data data) {

@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -8,7 +9,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
 public class SurfaceThresholdFilterPlacementModifier extends AbstractConditionalPlacementModifier {
-	public static final Codec<SurfaceThresholdFilterPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SurfaceThresholdFilterPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Heightmap.Type.CODEC.fieldOf("heightmap").forGetter(surfaceThresholdFilterPlacementModifier -> surfaceThresholdFilterPlacementModifier.heightmap),
 					Codec.INT

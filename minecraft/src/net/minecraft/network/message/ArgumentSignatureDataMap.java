@@ -21,21 +21,6 @@ public record ArgumentSignatureDataMap(List<ArgumentSignatureDataMap.Entry> entr
 		this(buf.readCollection(PacketByteBuf.getMaxValidator(ArrayList::new, 8), ArgumentSignatureDataMap.Entry::new));
 	}
 
-	/**
-	 * {@return the signature data for {@code argumentName}, or {@code null} if the
-	 * argument name is not present in this signatures}
-	 */
-	@Nullable
-	public MessageSignatureData get(String argumentName) {
-		for (ArgumentSignatureDataMap.Entry entry : this.entries) {
-			if (entry.name.equals(argumentName)) {
-				return entry.signature;
-			}
-		}
-
-		return null;
-	}
-
 	public void write(PacketByteBuf buf) {
 		buf.writeCollection(this.entries, (buf2, entry) -> entry.write(buf2));
 	}
@@ -65,7 +50,6 @@ public record ArgumentSignatureDataMap(List<ArgumentSignatureDataMap.Entry> entr
 	 * An entry of the signatures map, consisting of the argument's name and signature data.
 	 */
 	public static record Entry(String name, MessageSignatureData signature) {
-
 		public Entry(PacketByteBuf buf) {
 			this(buf.readString(16), MessageSignatureData.fromBuf(buf));
 		}

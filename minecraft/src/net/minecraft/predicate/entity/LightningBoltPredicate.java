@@ -8,15 +8,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
 public record LightningBoltPredicate(NumberRange.IntRange blocksSetOnFire, Optional<EntityPredicate> entityStruck) implements EntitySubPredicate {
 	public static final MapCodec<LightningBoltPredicate> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "blocks_set_on_fire", NumberRange.IntRange.ANY)
-						.forGetter(LightningBoltPredicate::blocksSetOnFire),
-					Codecs.createStrictOptionalFieldCodec(EntityPredicate.CODEC, "entity_struck").forGetter(LightningBoltPredicate::entityStruck)
+					NumberRange.IntRange.CODEC.optionalFieldOf("blocks_set_on_fire", NumberRange.IntRange.ANY).forGetter(LightningBoltPredicate::blocksSetOnFire),
+					EntityPredicate.CODEC.optionalFieldOf("entity_struck").forGetter(LightningBoltPredicate::entityStruck)
 				)
 				.apply(instance, LightningBoltPredicate::new)
 	);

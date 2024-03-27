@@ -2,23 +2,22 @@ package net.minecraft.util.math.floatprovider;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
 public class UniformFloatProvider extends FloatProvider {
-	public static final Codec<UniformFloatProvider> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<UniformFloatProvider> CODEC = RecordCodecBuilder.<UniformFloatProvider>mapCodec(
 			instance -> instance.group(
 						Codec.FLOAT.fieldOf("min_inclusive").forGetter(provider -> provider.min), Codec.FLOAT.fieldOf("max_exclusive").forGetter(provider -> provider.max)
 					)
 					.apply(instance, UniformFloatProvider::new)
 		)
-		.comapFlatMap(
+		.validate(
 			provider -> provider.max <= provider.min
 					? DataResult.error(() -> "Max must be larger than min, min_inclusive: " + provider.min + ", max_exclusive: " + provider.max)
-					: DataResult.success(provider),
-			Function.identity()
+					: DataResult.success(provider)
 		);
 	private final float min;
 	private final float max;

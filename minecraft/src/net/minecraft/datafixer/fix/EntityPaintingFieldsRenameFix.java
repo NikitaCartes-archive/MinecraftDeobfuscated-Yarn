@@ -4,7 +4,6 @@ import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
-import net.minecraft.datafixer.FixUtil;
 import net.minecraft.datafixer.TypeReferences;
 
 public class EntityPaintingFieldsRenameFix extends ChoiceFix {
@@ -13,7 +12,7 @@ public class EntityPaintingFieldsRenameFix extends ChoiceFix {
 	}
 
 	public Dynamic<?> rename(Dynamic<?> dynamic) {
-		return FixUtil.renameKey(FixUtil.renameKey(dynamic, "Motive", "variant"), "Facing", "facing");
+		return dynamic.renameField("Motive", "variant").renameField("Facing", "facing");
 	}
 
 	@Override

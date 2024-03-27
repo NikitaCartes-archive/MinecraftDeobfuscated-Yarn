@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.placementmodifier;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
@@ -29,9 +29,9 @@ public interface PlacementModifierType<P extends PlacementModifier> {
 	PlacementModifierType<RandomOffsetPlacementModifier> RANDOM_OFFSET = register("random_offset", RandomOffsetPlacementModifier.MODIFIER_CODEC);
 	PlacementModifierType<CarvingMaskPlacementModifier> CARVING_MASK = register("carving_mask", CarvingMaskPlacementModifier.MODIFIER_CODEC);
 
-	Codec<P> codec();
+	MapCodec<P> codec();
 
-	private static <P extends PlacementModifier> PlacementModifierType<P> register(String id, Codec<P> codec) {
+	private static <P extends PlacementModifier> PlacementModifierType<P> register(String id, MapCodec<P> codec) {
 		return Registry.register(Registries.PLACEMENT_MODIFIER_TYPE, id, () -> codec);
 	}
 }

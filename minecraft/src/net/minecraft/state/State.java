@@ -166,8 +166,8 @@ public abstract class State<O, S> {
 			owner -> {
 				S state = (S)ownerToStateFunction.apply(owner);
 				return state.getEntries().isEmpty()
-					? Codec.unit(state)
-					: state.codec.codec().optionalFieldOf("Properties").xmap(optional -> (State)optional.orElse(state), Optional::of).codec();
+					? MapCodec.unit(state)
+					: state.codec.codec().lenientOptionalFieldOf("Properties").xmap(optional -> (State)optional.orElse(state), Optional::of);
 			}
 		);
 	}

@@ -82,7 +82,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		this.setTemplateName(nbt.getString("name"));
 		this.author = nbt.getString("author");
@@ -144,7 +144,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createNbt(registryLookup);
+		return this.createComponentlessNbt(registryLookup);
 	}
 
 	public boolean openScreen(PlayerEntity player) {

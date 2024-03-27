@@ -24,7 +24,6 @@ import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
 import org.slf4j.Logger;
 
@@ -45,7 +44,7 @@ public class ServerAdvancementLoader extends JsonDataLoader {
 		Builder<Identifier, AdvancementEntry> builder = ImmutableMap.builder();
 		map.forEach((id, json) -> {
 			try {
-				Advancement advancement = Util.getResult(Advancement.CODEC.parse(registryOps, json), JsonParseException::new);
+				Advancement advancement = Advancement.CODEC.parse(registryOps, json).getOrThrow(JsonParseException::new);
 				this.validate(id, advancement);
 				builder.put(id, new AdvancementEntry(id, advancement));
 			} catch (Exception var6x) {

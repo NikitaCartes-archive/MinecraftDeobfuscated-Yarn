@@ -19,21 +19,18 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class HotbarStorageEntry {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int HOTBAR_SIZE = PlayerInventory.getHotbarSize();
-	public static final Codec<HotbarStorageEntry> CODEC = Codecs.<List<Dynamic<?>>>validate(
-			Codec.PASSTHROUGH.listOf(), stacks -> Util.decodeFixedLengthList(stacks, HOTBAR_SIZE)
-		)
+	public static final Codec<HotbarStorageEntry> CODEC = Codec.PASSTHROUGH
+		.listOf()
+		.validate(stacks -> Util.decodeFixedLengthList(stacks, HOTBAR_SIZE))
 		.xmap(HotbarStorageEntry::new, entry -> entry.stacks);
 	private static final DynamicOps<NbtElement> NBT_OPS = NbtOps.INSTANCE;
-	private static final Dynamic<?> EMPTY_STACK = new Dynamic<>(
-		NBT_OPS, Util.getResult(ItemStack.OPTIONAL_CODEC.encodeStart(NBT_OPS, ItemStack.EMPTY), IllegalStateException::new)
-	);
+	private static final Dynamic<?> EMPTY_STACK = new Dynamic<>(NBT_OPS, ItemStack.OPTIONAL_CODEC.encodeStart(NBT_OPS, ItemStack.EMPTY).getOrThrow());
 	private List<Dynamic<?>> stacks;
 
 	private HotbarStorageEntry(List<Dynamic<?>> stacks) {

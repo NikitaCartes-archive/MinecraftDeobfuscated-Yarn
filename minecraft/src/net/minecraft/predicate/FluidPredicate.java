@@ -9,14 +9,13 @@ import net.minecraft.registry.RegistryCodecs;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 
 public record FluidPredicate(Optional<RegistryEntryList<Fluid>> fluids, Optional<StatePredicate> state) {
 	public static final Codec<FluidPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(RegistryCodecs.entryList(RegistryKeys.FLUID), "fluids").forGetter(FluidPredicate::fluids),
-					Codecs.createStrictOptionalFieldCodec(StatePredicate.CODEC, "state").forGetter(FluidPredicate::state)
+					RegistryCodecs.entryList(RegistryKeys.FLUID).optionalFieldOf("fluids").forGetter(FluidPredicate::fluids),
+					StatePredicate.CODEC.optionalFieldOf("state").forGetter(FluidPredicate::state)
 				)
 				.apply(instance, FluidPredicate::new)
 	);

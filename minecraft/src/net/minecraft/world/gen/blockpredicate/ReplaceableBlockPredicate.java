@@ -1,12 +1,12 @@
 package net.minecraft.world.gen.blockpredicate;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.Vec3i;
 
 class ReplaceableBlockPredicate extends OffsetPredicate {
-	public static final Codec<ReplaceableBlockPredicate> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<ReplaceableBlockPredicate> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> registerOffsetField(instance).apply(instance, ReplaceableBlockPredicate::new)
 	);
 

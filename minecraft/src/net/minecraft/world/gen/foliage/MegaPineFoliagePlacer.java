@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.foliage;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -10,7 +10,7 @@ import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class MegaPineFoliagePlacer extends FoliagePlacer {
-	public static final Codec<MegaPineFoliagePlacer> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<MegaPineFoliagePlacer> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> fillFoliagePlacerFields(instance)
 				.and(IntProvider.createValidatingCodec(0, 24).fieldOf("crown_height").forGetter(placer -> placer.crownHeight))
 				.apply(instance, MegaPineFoliagePlacer::new)

@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen.pack;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.util.Collection;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -79,6 +80,8 @@ public class ExperimentalWarningScreen extends Screen {
 	class DetailsScreen extends Screen {
 		private static final Text TITLE = Text.translatable("selectWorld.experimental.details.title");
 		final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
+		@Nullable
+		private ExperimentalWarningScreen.DetailsScreen.PackListWidget packListWidget;
 
 		DetailsScreen() {
 			super(TITLE);
@@ -87,16 +90,21 @@ public class ExperimentalWarningScreen extends Screen {
 		@Override
 		protected void init() {
 			this.layout.addHeader(TITLE, this.textRenderer);
-			this.layout.addBody(new ExperimentalWarningScreen.DetailsScreen.PackListWidget(this.client, ExperimentalWarningScreen.this.enabledProfiles));
+			this.packListWidget = this.layout
+				.addBody(new ExperimentalWarningScreen.DetailsScreen.PackListWidget(this.client, ExperimentalWarningScreen.this.enabledProfiles));
 			this.layout.addFooter(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).build());
-			this.layout.forEachChild(element -> {
-				ClickableWidget var10000 = this.addDrawableChild(element);
+			this.layout.forEachChild(child -> {
+				ClickableWidget var10000 = this.addDrawableChild(child);
 			});
 			this.initTabNavigation();
 		}
 
 		@Override
 		protected void initTabNavigation() {
+			if (this.packListWidget != null) {
+				this.packListWidget.position(this.width, this.layout);
+			}
+
 			this.layout.refreshPositions();
 		}
 

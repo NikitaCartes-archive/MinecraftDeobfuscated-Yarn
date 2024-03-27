@@ -13,7 +13,6 @@ import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class ThrownItemPickedUpByEntityCriterion extends AbstractCriterion<ThrownItemPickedUpByEntityCriterion.Conditions> {
 	@Override
@@ -30,11 +29,9 @@ public class ThrownItemPickedUpByEntityCriterion extends AbstractCriterion<Throw
 		implements AbstractCriterion.Conditions {
 		public static final Codec<ThrownItemPickedUpByEntityCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(ThrownItemPickedUpByEntityCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(ThrownItemPickedUpByEntityCriterion.Conditions::item),
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity")
-							.forGetter(ThrownItemPickedUpByEntityCriterion.Conditions::entity)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(ThrownItemPickedUpByEntityCriterion.Conditions::player),
+						ItemPredicate.CODEC.optionalFieldOf("item").forGetter(ThrownItemPickedUpByEntityCriterion.Conditions::item),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("entity").forGetter(ThrownItemPickedUpByEntityCriterion.Conditions::entity)
 					)
 					.apply(instance, ThrownItemPickedUpByEntityCriterion.Conditions::new)
 		);

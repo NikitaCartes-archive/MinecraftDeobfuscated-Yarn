@@ -22,7 +22,6 @@ import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.mutable.MutableInt;
@@ -31,8 +30,8 @@ public class LootPool {
 	public static final Codec<LootPool> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					LootPoolEntryTypes.CODEC.listOf().fieldOf("entries").forGetter(pool -> pool.entries),
-					Codecs.createStrictOptionalFieldCodec(LootConditionTypes.CODEC.listOf(), "conditions", List.of()).forGetter(pool -> pool.conditions),
-					Codecs.createStrictOptionalFieldCodec(LootFunctionTypes.CODEC.listOf(), "functions", List.of()).forGetter(pool -> pool.functions),
+					LootConditionTypes.CODEC.listOf().optionalFieldOf("conditions", List.of()).forGetter(pool -> pool.conditions),
+					LootFunctionTypes.CODEC.listOf().optionalFieldOf("functions", List.of()).forGetter(pool -> pool.functions),
 					LootNumberProviderTypes.CODEC.fieldOf("rolls").forGetter(pool -> pool.rolls),
 					LootNumberProviderTypes.CODEC.fieldOf("bonus_rolls").orElse(ConstantLootNumberProvider.create(0.0F)).forGetter(pool -> pool.bonusRolls)
 				)

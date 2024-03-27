@@ -24,13 +24,13 @@ public class WeightedBakedModel implements BakedModel {
 	public WeightedBakedModel(List<Weighted.Present<BakedModel>> models) {
 		this.models = models;
 		this.totalWeight = Weighting.getWeightSum(models);
-		this.defaultModel = (BakedModel)((Weighted.Present)models.get(0)).getData();
+		this.defaultModel = (BakedModel)((Weighted.Present)models.get(0)).data();
 	}
 
 	@Override
 	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
 		return (List<BakedQuad>)Weighting.getAt(this.models, Math.abs((int)random.nextLong()) % this.totalWeight)
-			.map(present -> ((BakedModel)present.getData()).getQuads(state, face, random))
+			.map(present -> ((BakedModel)present.data()).getQuads(state, face, random))
 			.orElse(Collections.emptyList());
 	}
 
@@ -86,7 +86,7 @@ public class WeightedBakedModel implements BakedModel {
 			if (this.models.isEmpty()) {
 				return null;
 			} else {
-				return (BakedModel)(this.models.size() == 1 ? (BakedModel)((Weighted.Present)this.models.get(0)).getData() : new WeightedBakedModel(this.models));
+				return (BakedModel)(this.models.size() == 1 ? (BakedModel)((Weighted.Present)this.models.get(0)).data() : new WeightedBakedModel(this.models));
 			}
 		}
 	}

@@ -4,10 +4,9 @@ import com.mojang.serialization.Codec;
 import java.util.Map;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.dynamic.Codecs;
 
 public interface ItemSubPredicate {
-	Codec<Map<ItemSubPredicate.Type<?>, ItemSubPredicate>> PREDICATES_MAP_CODEC = Codecs.keyDispatching(
+	Codec<Map<ItemSubPredicate.Type<?>, ItemSubPredicate>> PREDICATES_MAP_CODEC = Codec.dispatchedMap(
 		Registries.ITEM_SUB_PREDICATE_TYPE.getCodec(), ItemSubPredicate.Type::codec
 	);
 

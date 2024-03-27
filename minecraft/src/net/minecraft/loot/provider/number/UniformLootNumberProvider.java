@@ -1,7 +1,7 @@
 package net.minecraft.loot.provider.number;
 
 import com.google.common.collect.Sets;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
@@ -9,7 +9,7 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.util.math.MathHelper;
 
 public record UniformLootNumberProvider(LootNumberProvider min, LootNumberProvider max) implements LootNumberProvider {
-	public static final Codec<UniformLootNumberProvider> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<UniformLootNumberProvider> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					LootNumberProviderTypes.CODEC.fieldOf("min").forGetter(UniformLootNumberProvider::min),
 					LootNumberProviderTypes.CODEC.fieldOf("max").forGetter(UniformLootNumberProvider::max)

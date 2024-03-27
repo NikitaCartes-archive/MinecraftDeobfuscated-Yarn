@@ -1,6 +1,7 @@
 package net.minecraft.client.texture.atlas;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -10,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class DirectoryAtlasSource implements AtlasSource {
-	public static final Codec<DirectoryAtlasSource> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<DirectoryAtlasSource> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codec.STRING.fieldOf("source").forGetter(directoryAtlasSource -> directoryAtlasSource.source),
 					Codec.STRING.fieldOf("prefix").forGetter(directoryAtlasSource -> directoryAtlasSource.prefix)

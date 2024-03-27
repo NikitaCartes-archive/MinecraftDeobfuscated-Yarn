@@ -1,7 +1,7 @@
 package net.minecraft.world.gen.structure;
 
 import com.google.common.collect.Lists;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.block.Block;
@@ -19,7 +19,7 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class WoodlandMansionStructure extends Structure {
-	public static final Codec<WoodlandMansionStructure> CODEC = createCodec(WoodlandMansionStructure::new);
+	public static final MapCodec<WoodlandMansionStructure> CODEC = createCodec(WoodlandMansionStructure::new);
 
 	public WoodlandMansionStructure(Structure.Config config) {
 		super(config);

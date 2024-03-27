@@ -23,7 +23,7 @@ import net.minecraft.util.dynamic.Codecs;
 
 public class TranslatableTextContent implements TextContent {
 	public static final Object[] EMPTY_ARGUMENTS = new Object[0];
-	private static final Codec<Object> OBJECT_ARGUMENT_CODEC = Codecs.validate(Codecs.BASIC_OBJECT, TranslatableTextContent::validate);
+	private static final Codec<Object> OBJECT_ARGUMENT_CODEC = Codecs.BASIC_OBJECT.validate(TranslatableTextContent::validate);
 	private static final Codec<Object> ARGUMENT_CODEC = Codec.either(OBJECT_ARGUMENT_CODEC, TextCodecs.CODEC)
 		.xmap(
 			either -> either.map(object -> object, text -> Objects.requireNonNullElse(text.getLiteralString(), text)),
@@ -32,8 +32,8 @@ public class TranslatableTextContent implements TextContent {
 	public static final MapCodec<TranslatableTextContent> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codec.STRING.fieldOf("translate").forGetter(content -> content.key),
-					Codec.STRING.optionalFieldOf("fallback").forGetter(content -> Optional.ofNullable(content.fallback)),
-					Codecs.createStrictOptionalFieldCodec(ARGUMENT_CODEC.listOf(), "with").forGetter(content -> toOptionalList(content.args))
+					Codec.STRING.lenientOptionalFieldOf("fallback").forGetter(content -> Optional.ofNullable(content.fallback)),
+					ARGUMENT_CODEC.listOf().optionalFieldOf("with").forGetter(content -> toOptionalList(content.args))
 				)
 				.apply(instance, TranslatableTextContent::of)
 	);

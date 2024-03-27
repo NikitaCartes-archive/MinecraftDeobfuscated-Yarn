@@ -13,7 +13,6 @@ import com.mojang.datafixers.types.Type;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
-import com.mojang.serialization.DataResult.PartialResult;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -130,6 +129,10 @@ public class Util {
 
 	public static <K, V> Collector<Entry<? extends K, ? extends V>, ?, Map<K, V>> toMap() {
 		return Collectors.toMap(Entry::getKey, Entry::getValue);
+	}
+
+	public static <T> Collector<T, ?, List<T>> toArrayList() {
+		return Collectors.toCollection(Lists::newArrayList);
 	}
 
 	public static <T extends Comparable<T>> String getValueAsString(Property<T> property, Object value) {
@@ -1119,35 +1122,8 @@ public class Util {
 		}
 	}
 
-	/**
-	 * {@return the result wrapped in {@code result}}
-	 */
-	public static <T, E extends Throwable> T getResult(DataResult<T> result, Function<String, E> exceptionGetter) throws E {
-		Optional<PartialResult<T>> optional = result.error();
-		if (optional.isPresent()) {
-			throw (Throwable)exceptionGetter.apply(((PartialResult)optional.get()).message());
-		} else {
-			return (T)result.result().orElseThrow();
-		}
-	}
-
-	public static <T, E extends Throwable> T getResultOrPartial(DataResult<T> result, Function<String, E> exceptionGetter) throws E {
-		Optional<PartialResult<T>> optional = result.error();
-		if (optional.isPresent()) {
-			Optional<T> optional2 = result.resultOrPartial(string -> {
-			});
-			if (optional2.isPresent()) {
-				return (T)optional2.get();
-			} else {
-				throw (Throwable)exceptionGetter.apply(((PartialResult)optional.get()).message());
-			}
-		} else {
-			return (T)result.result().orElseThrow();
-		}
-	}
-
 	public static <A, B> Typed<B> apply(Typed<A> typed, Type<B> type, UnaryOperator<Dynamic<?>> modifier) {
-		Dynamic<?> dynamic = getResult((DataResult<Dynamic<?>>)typed.write(), IllegalStateException::new);
+		Dynamic<?> dynamic = (Dynamic<?>)typed.write().getOrThrow();
 		return readTyped(type, (Dynamic<?>)modifier.apply(dynamic), true);
 	}
 
@@ -1159,7 +1135,7 @@ public class Util {
 		DataResult<Typed<T>> dataResult = type.readTyped(value).map(com.mojang.datafixers.util.Pair::getFirst);
 
 		try {
-			return allowPartial ? getResultOrPartial(dataResult, IllegalStateException::new) : getResult(dataResult, IllegalStateException::new);
+			return allowPartial ? dataResult.getPartialOrThrow(IllegalStateException::new) : dataResult.getOrThrow(IllegalStateException::new);
 		} catch (IllegalStateException var7) {
 			CrashReport crashReport = CrashReport.create(var7, "Reading type");
 			CrashReportSection crashReportSection = crashReport.addElement("Info");

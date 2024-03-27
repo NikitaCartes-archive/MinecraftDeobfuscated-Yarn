@@ -11,7 +11,6 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.dynamic.Codecs;
 
 public record VaultConfig(
 	RegistryKey<LootTable> lootTable,
@@ -24,19 +23,19 @@ public record VaultConfig(
 ) {
 	static final String CONFIG_KEY = "config";
 	public static VaultConfig DEFAULT = new VaultConfig();
-	public static Codec<VaultConfig> codec = Codecs.validate(
-		RecordCodecBuilder.create(
+	public static Codec<VaultConfig> codec = RecordCodecBuilder.<VaultConfig>create(
 			instance -> instance.group(
-						RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).optionalFieldOf("loot_table", DEFAULT.lootTable()).forGetter(VaultConfig::lootTable),
-						Codec.DOUBLE.optionalFieldOf("activation_range", Double.valueOf(DEFAULT.activationRange())).forGetter(VaultConfig::activationRange),
-						Codec.DOUBLE.optionalFieldOf("deactivation_range", Double.valueOf(DEFAULT.deactivationRange())).forGetter(VaultConfig::deactivationRange),
+						RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).lenientOptionalFieldOf("loot_table", DEFAULT.lootTable()).forGetter(VaultConfig::lootTable),
+						Codec.DOUBLE.lenientOptionalFieldOf("activation_range", Double.valueOf(DEFAULT.activationRange())).forGetter(VaultConfig::activationRange),
+						Codec.DOUBLE.lenientOptionalFieldOf("deactivation_range", Double.valueOf(DEFAULT.deactivationRange())).forGetter(VaultConfig::deactivationRange),
 						ItemStack.createOptionalCodec("key_item").forGetter(VaultConfig::keyItem),
-						RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).optionalFieldOf("override_loot_table_to_display").forGetter(VaultConfig::overrideLootTableToDisplay)
+						RegistryKey.createCodec(RegistryKeys.LOOT_TABLE)
+							.lenientOptionalFieldOf("override_loot_table_to_display")
+							.forGetter(VaultConfig::overrideLootTableToDisplay)
 					)
 					.apply(instance, VaultConfig::new)
-		),
-		VaultConfig::validate
-	);
+		)
+		.validate(VaultConfig::validate);
 
 	private VaultConfig() {
 		this(

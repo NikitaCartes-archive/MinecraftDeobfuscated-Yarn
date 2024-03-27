@@ -2,6 +2,8 @@ package net.minecraft.loot.function;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.JavaOps;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.component.DataComponentTypes;
@@ -13,14 +15,11 @@ import net.minecraft.text.RawFilteredPair;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.collection.ListOperation;
-import net.minecraft.util.dynamic.Codecs;
-import net.minecraft.util.dynamic.RuntimeOps;
 
 public class SetWrittenBookPagesLootFunction extends ConditionalLootFunction {
-	public static final Codec<Text> TEXT_CODEC = Codecs.validate(
-		TextCodecs.CODEC, text -> WrittenBookContentComponent.PAGE_CODEC.encodeStart(RuntimeOps.INSTANCE, text).map(value -> text)
-	);
-	public static final Codec<SetWrittenBookPagesLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final Codec<Text> TEXT_CODEC = TextCodecs.CODEC
+		.validate(text -> WrittenBookContentComponent.PAGE_CODEC.encodeStart(JavaOps.INSTANCE, text).map(value -> text));
+	public static final MapCodec<SetWrittenBookPagesLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.<List<RawFilteredPair<Text>>, ListOperation>and(
 					instance.group(

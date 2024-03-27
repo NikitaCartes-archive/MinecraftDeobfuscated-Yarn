@@ -184,7 +184,7 @@ public interface Vibrations {
 	public static final class ListenerData {
 		public static Codec<Vibrations.ListenerData> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Vibration.CODEC.optionalFieldOf("event").forGetter(listenerData -> Optional.ofNullable(listenerData.vibration)),
+						Vibration.CODEC.lenientOptionalFieldOf("event").forGetter(listenerData -> Optional.ofNullable(listenerData.vibration)),
 						VibrationSelector.CODEC.fieldOf("selector").forGetter(Vibrations.ListenerData::getSelector),
 						Codecs.NONNEGATIVE_INT.fieldOf("event_delay").orElse(0).forGetter(Vibrations.ListenerData::getDelay)
 					)

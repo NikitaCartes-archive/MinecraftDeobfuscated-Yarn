@@ -1,6 +1,6 @@
 package net.minecraft.structure.processor;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.registry.RegistryKeys;
@@ -13,8 +13,9 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class ProtectedBlocksStructureProcessor extends StructureProcessor {
 	public final TagKey<Block> protectedBlocksTag;
-	public static final Codec<ProtectedBlocksStructureProcessor> CODEC = TagKey.codec(RegistryKeys.BLOCK)
-		.xmap(ProtectedBlocksStructureProcessor::new, processor -> processor.protectedBlocksTag);
+	public static final MapCodec<ProtectedBlocksStructureProcessor> CODEC = TagKey.codec(RegistryKeys.BLOCK)
+		.<ProtectedBlocksStructureProcessor>xmap(ProtectedBlocksStructureProcessor::new, processor -> processor.protectedBlocksTag)
+		.fieldOf("value");
 
 	public ProtectedBlocksStructureProcessor(TagKey<Block> protectedBlocksTag) {
 		this.protectedBlocksTag = protectedBlocksTag;

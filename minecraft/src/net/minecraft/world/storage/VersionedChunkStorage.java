@@ -1,7 +1,7 @@
 package net.minecraft.world.storage;
 
 import com.mojang.datafixers.DataFixer;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -39,7 +39,7 @@ public class VersionedChunkStorage implements AutoCloseable {
 		RegistryKey<World> worldKey,
 		Supplier<PersistentStateManager> persistentStateManagerFactory,
 		NbtCompound nbt,
-		Optional<RegistryKey<Codec<? extends ChunkGenerator>>> generatorCodecKey
+		Optional<RegistryKey<MapCodec<? extends ChunkGenerator>>> generatorCodecKey
 	) {
 		int i = getDataVersion(nbt);
 		if (i < 1493) {
@@ -74,7 +74,7 @@ public class VersionedChunkStorage implements AutoCloseable {
 		return featureUpdater;
 	}
 
-	public static void saveContextToNbt(NbtCompound nbt, RegistryKey<World> worldKey, Optional<RegistryKey<Codec<? extends ChunkGenerator>>> generatorCodecKey) {
+	public static void saveContextToNbt(NbtCompound nbt, RegistryKey<World> worldKey, Optional<RegistryKey<MapCodec<? extends ChunkGenerator>>> generatorCodecKey) {
 		NbtCompound nbtCompound = new NbtCompound();
 		nbtCompound.putString("dimension", worldKey.getValue().toString());
 		generatorCodecKey.ifPresent(key -> nbtCompound.putString("generator", key.getValue().toString()));

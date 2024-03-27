@@ -13,7 +13,6 @@ import com.mojang.serialization.DynamicOps;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
-import net.minecraft.datafixer.FixUtil;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.Identifier;
 
@@ -26,8 +25,7 @@ public class Schema1451v6 extends IdentifierNormalizingSchema {
 			return DataFixUtils.orElse(
 					dynamic.get("CriteriaName")
 						.asString()
-						.get()
-						.left()
+						.result()
 						.map(criteriaName -> {
 							int i = criteriaName.indexOf(58);
 							if (i < 0) {
@@ -66,12 +64,11 @@ public class Schema1451v6 extends IdentifierNormalizingSchema {
 			Dynamic<T> dynamic = new Dynamic<>(ops, value);
 			Optional<Dynamic<T>> optional = dynamic.get("CriteriaType")
 				.get()
-				.get()
-				.left()
+				.result()
 				.flatMap(
 					dynamic2 -> {
-						Optional<String> optionalx = dynamic2.get("type").asString().get().left();
-						Optional<String> optional2 = dynamic2.get("id").asString().get().left();
+						Optional<String> optionalx = dynamic2.get("type").asString().result();
+						Optional<String> optional2 = dynamic2.get("id").asString().result();
 						if (optionalx.isPresent() && optional2.isPresent()) {
 							String string = (String)optionalx.get();
 							return string.equals("_special")
@@ -99,7 +96,7 @@ public class Schema1451v6 extends IdentifierNormalizingSchema {
 			TypeReferences.STATS,
 			() -> DSL.optionalFields(
 					"stats",
-					FixUtil.method_57188(
+					DSL.optionalFields(
 						Pair.of("minecraft:mined", DSL.compoundList(TypeReferences.BLOCK_NAME.in(schema), DSL.constType(DSL.intType()))),
 						Pair.of("minecraft:crafted", (TypeTemplate)supplier.get()),
 						Pair.of("minecraft:used", (TypeTemplate)supplier.get()),

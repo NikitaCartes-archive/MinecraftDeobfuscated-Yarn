@@ -69,8 +69,7 @@ public class ScoreboardScore implements ReadableScoreboardScore {
 		if (this.numberFormat != null) {
 			NumberFormatTypes.CODEC
 				.encodeStart(registries.getOps(NbtOps.INSTANCE), this.numberFormat)
-				.result()
-				.ifPresent(formatElement -> nbtCompound.put("format", formatElement));
+				.ifSuccess(formatElement -> nbtCompound.put("format", formatElement));
 		}
 
 		return nbtCompound;
@@ -85,7 +84,7 @@ public class ScoreboardScore implements ReadableScoreboardScore {
 		}
 
 		if (nbt.contains("format", NbtElement.COMPOUND_TYPE)) {
-			NumberFormatTypes.CODEC.parse(registries.getOps(NbtOps.INSTANCE), nbt.get("format")).result().ifPresent(format -> scoreboardScore.numberFormat = format);
+			NumberFormatTypes.CODEC.parse(registries.getOps(NbtOps.INSTANCE), nbt.get("format")).ifSuccess(format -> scoreboardScore.numberFormat = format);
 		}
 
 		return scoreboardScore;

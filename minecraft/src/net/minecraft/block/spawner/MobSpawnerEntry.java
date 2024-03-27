@@ -9,27 +9,27 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DataPool;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.dynamic.Range;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.LightType;
 
-public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.CustomSpawnRules> customSpawnRules) {
+public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.CustomSpawnRules> customSpawnRules, Optional<Identifier> equipmentLootTable) {
 	public static final String ENTITY_KEY = "entity";
 	public static final Codec<MobSpawnerEntry> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					NbtCompound.CODEC.fieldOf("entity").forGetter(entry -> entry.entity),
-					MobSpawnerEntry.CustomSpawnRules.CODEC.optionalFieldOf("custom_spawn_rules").forGetter(entry -> entry.customSpawnRules)
+					MobSpawnerEntry.CustomSpawnRules.CODEC.optionalFieldOf("custom_spawn_rules").forGetter(entry -> entry.customSpawnRules),
+					Identifier.CODEC.optionalFieldOf("equipment_loot_table").forGetter(entry -> entry.equipmentLootTable)
 				)
 				.apply(instance, MobSpawnerEntry::new)
 	);
 	public static final Codec<DataPool<MobSpawnerEntry>> DATA_POOL_CODEC = DataPool.createEmptyAllowedCodec(CODEC);
 
 	public MobSpawnerEntry() {
-		this(new NbtCompound(), Optional.empty());
+		this(new NbtCompound(), Optional.empty(), Optional.empty());
 	}
 
-	public MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.CustomSpawnRules> customSpawnRules) {
+	public MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.CustomSpawnRules> customSpawnRules, Optional<Identifier> equipmentLootTable) {
 		if (entity.contains("id")) {
 			Identifier identifier = Identifier.tryParse(entity.getString("id"));
 			if (identifier != null) {
@@ -41,6 +41,7 @@ public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.Custo
 
 		this.entity = entity;
 		this.customSpawnRules = customSpawnRules;
+		this.equipmentLootTable = equipmentLootTable;
 	}
 
 	public NbtCompound getNbt() {
@@ -49,6 +50,10 @@ public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.Custo
 
 	public Optional<MobSpawnerEntry.CustomSpawnRules> getCustomSpawnRules() {
 		return this.customSpawnRules;
+	}
+
+	public Optional<Identifier> getEquipmentLootTable() {
+		return this.equipmentLootTable;
 	}
 
 	public static record CustomSpawnRules(Range<Integer> blockLightLimit, Range<Integer> skyLightLimit) {
@@ -66,7 +71,7 @@ public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.Custo
 		}
 
 		private static MapCodec<Range<Integer>> createLightLimitCodec(String name) {
-			return Codecs.validate(Range.CODEC.optionalFieldOf(name, DEFAULT), MobSpawnerEntry.CustomSpawnRules::validate);
+			return Range.CODEC.lenientOptionalFieldOf(name, DEFAULT).validate(MobSpawnerEntry.CustomSpawnRules::validate);
 		}
 
 		public boolean canSpawn(BlockPos pos, ServerWorld world) {

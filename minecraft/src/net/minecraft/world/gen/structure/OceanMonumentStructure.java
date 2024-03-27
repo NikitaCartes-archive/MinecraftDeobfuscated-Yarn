@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.structure;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -19,7 +19,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 
 public class OceanMonumentStructure extends Structure {
-	public static final Codec<OceanMonumentStructure> CODEC = createCodec(OceanMonumentStructure::new);
+	public static final MapCodec<OceanMonumentStructure> CODEC = createCodec(OceanMonumentStructure::new);
 
 	public OceanMonumentStructure(Structure.Config config) {
 		super(config);

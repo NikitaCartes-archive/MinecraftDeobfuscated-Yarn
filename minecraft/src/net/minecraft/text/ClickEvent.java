@@ -6,7 +6,6 @@ import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.dynamic.Codecs;
 
 public class ClickEvent {
 	public static final Codec<ClickEvent> CODEC = RecordCodecBuilder.create(
@@ -58,7 +57,7 @@ public class ClickEvent {
 		COPY_TO_CLIPBOARD("copy_to_clipboard", true);
 
 		public static final MapCodec<ClickEvent.Action> UNVALIDATED_CODEC = StringIdentifiable.createCodec(ClickEvent.Action::values).fieldOf("action");
-		public static final MapCodec<ClickEvent.Action> CODEC = Codecs.validate(UNVALIDATED_CODEC, ClickEvent.Action::validate);
+		public static final MapCodec<ClickEvent.Action> CODEC = UNVALIDATED_CODEC.validate(ClickEvent.Action::validate);
 		private final boolean userDefinable;
 		private final String name;
 

@@ -1,13 +1,13 @@
 package net.minecraft.world.gen.heightprovider;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.HeightContext;
 
 public class WeightedListHeightProvider extends HeightProvider {
-	public static final Codec<WeightedListHeightProvider> WEIGHTED_LIST_CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<WeightedListHeightProvider> WEIGHTED_LIST_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					DataPool.createCodec(HeightProvider.CODEC).fieldOf("distribution").forGetter(weightedListHeightProvider -> weightedListHeightProvider.weightedList)
 				)

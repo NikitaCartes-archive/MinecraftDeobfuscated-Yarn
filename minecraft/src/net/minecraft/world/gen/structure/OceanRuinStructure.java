@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.structure;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.structure.OceanRuinGenerator;
@@ -11,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 
 public class OceanRuinStructure extends Structure {
-	public static final Codec<OceanRuinStructure> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<OceanRuinStructure> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					configCodecBuilder(instance),
 					OceanRuinStructure.BiomeTemperature.CODEC.fieldOf("biome_temp").forGetter(structure -> structure.biomeTemperature),

@@ -17,7 +17,6 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Nameable;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import org.slf4j.Logger;
 
@@ -42,7 +41,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	public void readFrom(ItemStack stack, DyeColor baseColor) {
 		this.baseColor = baseColor;
-		this.readComponents(stack.getComponents());
+		this.readComponents(stack);
 	}
 
 	@Override
@@ -60,9 +59,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
 		if (!this.patterns.equals(BannerPatternsComponent.DEFAULT)) {
-			nbt.put(
-				"patterns", Util.getResult(BannerPatternsComponent.CODEC.encodeStart(registryLookup.getOps(NbtOps.INSTANCE), this.patterns), IllegalStateException::new)
-			);
+			nbt.put("patterns", BannerPatternsComponent.CODEC.encodeStart(registryLookup.getOps(NbtOps.INSTANCE), this.patterns).getOrThrow());
 		}
 
 		if (this.customName != null) {
@@ -71,7 +68,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
 			this.customName = Text.Serialization.fromJson(nbt.getString("CustomName"), registryLookup);
@@ -91,7 +88,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createNbt(registryLookup);
+		return this.createComponentlessNbt(registryLookup);
 	}
 
 	public BannerPatternsComponent getPatterns() {
@@ -109,13 +106,15 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Override
-	public void readComponents(ComponentMap components) {
+	protected void readComponents(BlockEntity.ComponentsAccess components) {
+		super.readComponents(components);
 		this.patterns = components.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT);
 		this.customName = components.get(DataComponentTypes.CUSTOM_NAME);
 	}
 
 	@Override
-	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
+		super.addComponents(componentMapBuilder);
 		componentMapBuilder.add(DataComponentTypes.BANNER_PATTERNS, this.patterns);
 		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
 	}

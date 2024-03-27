@@ -9,13 +9,12 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.dynamic.Codecs;
 
 public record EnchantmentPredicate(Optional<RegistryEntry<Enchantment>> enchantment, NumberRange.IntRange levels) {
 	public static final Codec<EnchantmentPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(Registries.ENCHANTMENT.getEntryCodec(), "enchantment").forGetter(EnchantmentPredicate::enchantment),
-					Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "levels", NumberRange.IntRange.ANY).forGetter(EnchantmentPredicate::levels)
+					Registries.ENCHANTMENT.getEntryCodec().optionalFieldOf("enchantment").forGetter(EnchantmentPredicate::enchantment),
+					NumberRange.IntRange.CODEC.optionalFieldOf("levels", NumberRange.IntRange.ANY).forGetter(EnchantmentPredicate::levels)
 				)
 				.apply(instance, EnchantmentPredicate::new)
 	);

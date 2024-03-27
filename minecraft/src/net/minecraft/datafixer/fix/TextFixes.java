@@ -38,7 +38,7 @@ public class TextFixes {
 		return DataFixUtils.orElse(dynamic.asString().map(string -> text(dynamic.getOps(), string)).result(), dynamic);
 	}
 
-	public static Dynamic<?> method_56629(Dynamic<?> dynamic) {
+	public static Dynamic<?> text(Dynamic<?> dynamic) {
 		Optional<String> optional = dynamic.asString().result();
 		if (optional.isEmpty()) {
 			return dynamic;
@@ -64,5 +64,21 @@ public class TextFixes {
 				return empty(dynamic.getOps());
 			}
 		}
+	}
+
+	public static Optional<String> getTranslate(String json) {
+		try {
+			JsonElement jsonElement = JsonParser.parseString(json);
+			if (jsonElement.isJsonObject()) {
+				JsonObject jsonObject = jsonElement.getAsJsonObject();
+				JsonElement jsonElement2 = jsonObject.get("translate");
+				if (jsonElement2 != null && jsonElement2.isJsonPrimitive()) {
+					return Optional.of(jsonElement2.getAsString());
+				}
+			}
+		} catch (JsonParseException var4) {
+		}
+
+		return Optional.empty();
 	}
 }

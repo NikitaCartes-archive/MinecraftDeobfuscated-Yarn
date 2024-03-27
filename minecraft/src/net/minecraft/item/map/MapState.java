@@ -35,7 +35,6 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
@@ -191,7 +190,7 @@ public class MapState extends PersistentState {
 		nbt.putBoolean("unlimitedTracking", this.unlimitedTracking);
 		nbt.putBoolean("locked", this.locked);
 		RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
-		nbt.put("banners", Util.getResult(MapBannerMarker.LIST_CODEC.encodeStart(registryOps, List.copyOf(this.banners.values())), IllegalStateException::new));
+		nbt.put("banners", MapBannerMarker.LIST_CODEC.encodeStart(registryOps, List.copyOf(this.banners.values())).getOrThrow());
 		NbtList nbtList = new NbtList();
 
 		for (MapFrameMarker mapFrameMarker : this.frames.values()) {

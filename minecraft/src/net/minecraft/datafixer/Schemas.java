@@ -27,6 +27,7 @@ import net.minecraft.datafixer.fix.AdvancementRenameFix;
 import net.minecraft.datafixer.fix.AdvancementsFix;
 import net.minecraft.datafixer.fix.AreaEffectCloudPotionFix;
 import net.minecraft.datafixer.fix.ArrowPickupFix;
+import net.minecraft.datafixer.fix.BannerCustomNameToItemNameFix;
 import net.minecraft.datafixer.fix.BannerPatternFormatFix;
 import net.minecraft.datafixer.fix.BedBlockEntityFix;
 import net.minecraft.datafixer.fix.BedItemColorFix;
@@ -121,6 +122,7 @@ import net.minecraft.datafixer.fix.ItemRemoveBlockEntityTagFix;
 import net.minecraft.datafixer.fix.ItemShulkerBoxColorFix;
 import net.minecraft.datafixer.fix.ItemSpawnEggFix;
 import net.minecraft.datafixer.fix.ItemStackComponentizationFix;
+import net.minecraft.datafixer.fix.ItemStackCustomNameToItemNameFix;
 import net.minecraft.datafixer.fix.ItemStackEnchantmentFix;
 import net.minecraft.datafixer.fix.ItemStackUuidFix;
 import net.minecraft.datafixer.fix.ItemWaterPotionFix;
@@ -187,6 +189,7 @@ import net.minecraft.datafixer.fix.StructuresToConfiguredStructuresFix;
 import net.minecraft.datafixer.fix.TeamDisplayNameFix;
 import net.minecraft.datafixer.fix.TicksInWrongChunkFix;
 import net.minecraft.datafixer.fix.TippedArrowPotionToItemFix;
+import net.minecraft.datafixer.fix.TrialSpawnerConfigTagFix;
 import net.minecraft.datafixer.fix.UntaggedSpawnerFix;
 import net.minecraft.datafixer.fix.UpdateSignTextFormatFix;
 import net.minecraft.datafixer.fix.VillagerFollowRangeFix;
@@ -285,6 +288,7 @@ import net.minecraft.datafixer.schema.Schema3816;
 import net.minecraft.datafixer.schema.Schema3818;
 import net.minecraft.datafixer.schema.Schema3818_3;
 import net.minecraft.datafixer.schema.Schema3818_4;
+import net.minecraft.datafixer.schema.Schema3825;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -1266,6 +1270,11 @@ public class Schemas {
 		Schema schema217 = builder.addSchema(3820, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new PlayerHeadBlockProfileFix(schema217));
 		builder.addFixer(new LodestoneCompassComponentFix(schema217));
+		Schema schema218 = builder.addSchema(3825, Schema3825::new);
+		builder.addFixer(new ItemStackCustomNameToItemNameFix(schema218));
+		builder.addFixer(new BannerCustomNameToItemNameFix(schema218));
+		builder.addFixer(new TrialSpawnerConfigTagFix(schema218));
+		builder.addFixer(new ChoiceTypesFix(schema218, "Added Ominous Item Spawner", TypeReferences.ENTITY));
 	}
 
 	private static UnaryOperator<String> replacingRaw(Map<String, String> replacements) {

@@ -1,17 +1,16 @@
 package net.minecraft.world.gen.treedecorator;
 
 import com.google.common.collect.Lists;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class AlterGroundTreeDecorator extends TreeDecorator {
-	public static final Codec<AlterGroundTreeDecorator> CODEC = BlockStateProvider.TYPE_CODEC
+	public static final MapCodec<AlterGroundTreeDecorator> CODEC = BlockStateProvider.TYPE_CODEC
 		.fieldOf("provider")
-		.<AlterGroundTreeDecorator>xmap(AlterGroundTreeDecorator::new, decorator -> decorator.provider)
-		.codec();
+		.xmap(AlterGroundTreeDecorator::new, decorator -> decorator.provider);
 	private final BlockStateProvider provider;
 
 	public AlterGroundTreeDecorator(BlockStateProvider provider) {

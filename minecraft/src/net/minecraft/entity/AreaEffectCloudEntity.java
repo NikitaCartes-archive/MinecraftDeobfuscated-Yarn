@@ -25,7 +25,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
@@ -34,7 +33,6 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_29972 = 5;
 	private static final TrackedData<Float> RADIUS = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.FLOAT);
-	private static final TrackedData<Integer> COLOR = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> WAITING = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<ParticleEffect> PARTICLE_ID = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.PARTICLE);
 	private static final float MAX_RADIUS = 32.0F;
@@ -67,10 +65,9 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 
 	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
-		builder.add(COLOR, 0);
 		builder.add(RADIUS, 3.0F);
 		builder.add(WAITING, false);
-		builder.add(PARTICLE_ID, EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, 0.0F, 0.0F, 0.0F));
+		builder.add(PARTICLE_ID, EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, -1));
 	}
 
 	public void setRadius(float radius) {
@@ -98,15 +95,12 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 	}
 
 	private void updateColor() {
-		this.dataTracker.set(COLOR, this.potionContentsComponent.equals(PotionContentsComponent.DEFAULT) ? 0 : this.potionContentsComponent.getColor());
+		int i = this.potionContentsComponent.equals(PotionContentsComponent.DEFAULT) ? 0 : this.potionContentsComponent.getColor();
+		this.dataTracker.set(PARTICLE_ID, EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, i));
 	}
 
 	public void addEffect(StatusEffectInstance effect) {
 		this.setPotionContents(this.potionContentsComponent.with(effect));
-	}
-
-	public int getColor() {
-		return this.getDataTracker().get(COLOR);
 	}
 
 	public ParticleEffect getParticleType() {
@@ -160,25 +154,11 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 				double d = this.getX() + (double)(MathHelper.cos(h) * k);
 				double e = this.getY();
 				double l = this.getZ() + (double)(MathHelper.sin(h) * k);
-				double n;
-				double o;
-				double p;
-				if (particleEffect.getType() == ParticleTypes.ENTITY_EFFECT) {
-					int m = bl && this.random.nextBoolean() ? 16777215 : this.getColor();
-					n = (double)((float)(m >> 16 & 0xFF) / 255.0F);
-					o = (double)((float)(m >> 8 & 0xFF) / 255.0F);
-					p = (double)((float)(m & 0xFF) / 255.0F);
-				} else if (bl) {
-					n = 0.0;
-					o = 0.0;
-					p = 0.0;
+				if (bl && this.random.nextBoolean()) {
+					this.getWorld().addImportantParticle(EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, -1), d, e, l, 0.0, 0.0, 0.0);
 				} else {
-					n = (0.5 - this.random.nextDouble()) * 0.15;
-					o = 0.01F;
-					p = (0.5 - this.random.nextDouble()) * 0.15;
+					this.getWorld().addImportantParticle(particleEffect, d, e, l, 0.0, 0.0, 0.0);
 				}
-
-				this.getWorld().addImportantParticle(particleEffect, d, e, l, n, o, p);
 			}
 		} else {
 			if (this.age >= this.waitTime + this.duration) {
@@ -216,7 +196,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 							list.add(
 								new StatusEffectInstance(
 									statusEffectInstance.getEffectType(),
-									statusEffectInstance.mapDuration(i -> i / 4),
+									statusEffectInstance.mapDuration(duration -> duration / 4),
 									statusEffectInstance.getAmplifier(),
 									statusEffectInstance.isAmbient(),
 									statusEffectInstance.shouldShowParticles()
@@ -230,10 +210,10 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 					if (!list2.isEmpty()) {
 						for (LivingEntity livingEntity : list2) {
 							if (!this.affectedEntities.containsKey(livingEntity) && livingEntity.isAffectedBySplashPotions()) {
-								double q = livingEntity.getX() - this.getX();
-								double r = livingEntity.getZ() - this.getZ();
-								double s = q * q + r * r;
-								if (s <= (double)(f * f)) {
+								double m = livingEntity.getX() - this.getX();
+								double n = livingEntity.getZ() - this.getZ();
+								double o = m * m + n * n;
+								if (o <= (double)(f * f)) {
 									this.affectedEntities.put(livingEntity, this.age + this.reapplicationDelay);
 
 									for (StatusEffectInstance statusEffectInstance2 : list) {
@@ -365,7 +345,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 		}
 
 		if (!this.potionContentsComponent.equals(PotionContentsComponent.DEFAULT)) {
-			NbtElement nbtElement = Util.getResult(PotionContentsComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.potionContentsComponent), IllegalStateException::new);
+			NbtElement nbtElement = PotionContentsComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.potionContentsComponent).getOrThrow();
 			nbt.put("potion_contents", nbtElement);
 		}
 	}

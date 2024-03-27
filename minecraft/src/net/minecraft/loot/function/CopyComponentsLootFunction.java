@@ -2,9 +2,13 @@ package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentType;
@@ -14,25 +18,39 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.Util;
 
 public class CopyComponentsLootFunction extends ConditionalLootFunction {
-	public static final Codec<CopyComponentsLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<CopyComponentsLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
-				.<CopyComponentsLootFunction.Source, List<DataComponentType<?>>>and(
+				.<CopyComponentsLootFunction.Source, Optional<List<DataComponentType<?>>>, Optional<List<DataComponentType<?>>>>and(
 					instance.group(
 						CopyComponentsLootFunction.Source.CODEC.fieldOf("source").forGetter(function -> function.source),
-						DataComponentType.CODEC.listOf().fieldOf("components").forGetter(function -> function.components)
+						DataComponentType.CODEC.listOf().optionalFieldOf("include").forGetter(function -> function.include),
+						DataComponentType.CODEC.listOf().optionalFieldOf("exclude").forGetter(function -> function.exclude)
 					)
 				)
 				.apply(instance, CopyComponentsLootFunction::new)
 	);
 	private final CopyComponentsLootFunction.Source source;
-	private final List<DataComponentType<?>> components;
+	private final Optional<List<DataComponentType<?>>> include;
+	private final Optional<List<DataComponentType<?>>> exclude;
+	private final Predicate<DataComponentType<?>> filter;
 
-	CopyComponentsLootFunction(List<LootCondition> conditions, CopyComponentsLootFunction.Source source, List<DataComponentType<?>> components) {
+	CopyComponentsLootFunction(
+		List<LootCondition> conditions,
+		CopyComponentsLootFunction.Source source,
+		Optional<List<DataComponentType<?>>> include,
+		Optional<List<DataComponentType<?>>> exclude
+	) {
 		super(conditions);
 		this.source = source;
-		this.components = List.copyOf(components);
+		this.include = include.map(List::copyOf);
+		this.exclude = exclude.map(List::copyOf);
+		List<Predicate<DataComponentType<?>>> list = new ArrayList(2);
+		exclude.ifPresent(excludedTypes -> list.add((Predicate)type -> !excludedTypes.contains(type)));
+		include.ifPresent(includedTypes -> list.add(includedTypes::contains));
+		this.filter = Util.allOf(list);
 	}
 
 	@Override
@@ -48,7 +66,7 @@ public class CopyComponentsLootFunction extends ConditionalLootFunction {
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		ComponentMap componentMap = this.source.getComponents(context);
-		stack.applyComponentsFrom(componentMap.filtered(this.components::contains));
+		stack.applyComponentsFrom(componentMap.filtered(this.filter));
 		return stack;
 	}
 
@@ -58,14 +76,28 @@ public class CopyComponentsLootFunction extends ConditionalLootFunction {
 
 	public static class Builder extends ConditionalLootFunction.Builder<CopyComponentsLootFunction.Builder> {
 		private final CopyComponentsLootFunction.Source source;
-		private final ImmutableList.Builder<DataComponentType<?>> types = ImmutableList.builder();
+		private Optional<ImmutableList.Builder<DataComponentType<?>>> include = Optional.empty();
+		private Optional<ImmutableList.Builder<DataComponentType<?>>> exclude = Optional.empty();
 
 		Builder(CopyComponentsLootFunction.Source source) {
 			this.source = source;
 		}
 
-		public CopyComponentsLootFunction.Builder add(DataComponentType<?> type) {
-			this.types.add(type);
+		public CopyComponentsLootFunction.Builder include(DataComponentType<?> type) {
+			if (this.include.isEmpty()) {
+				this.include = Optional.of(ImmutableList.builder());
+			}
+
+			((ImmutableList.Builder)this.include.get()).add(type);
+			return this;
+		}
+
+		public CopyComponentsLootFunction.Builder exclude(DataComponentType<?> type) {
+			if (this.exclude.isEmpty()) {
+				this.exclude = Optional.of(ImmutableList.builder());
+			}
+
+			((ImmutableList.Builder)this.exclude.get()).add(type);
 			return this;
 		}
 
@@ -75,7 +107,9 @@ public class CopyComponentsLootFunction extends ConditionalLootFunction {
 
 		@Override
 		public LootFunction build() {
-			return new CopyComponentsLootFunction(this.getConditions(), this.source, this.types.build());
+			return new CopyComponentsLootFunction(
+				this.getConditions(), this.source, this.include.map(ImmutableList.Builder::build), this.exclude.map(ImmutableList.Builder::build)
+			);
 		}
 	}
 

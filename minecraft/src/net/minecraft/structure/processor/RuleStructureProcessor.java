@@ -1,7 +1,7 @@
 package net.minecraft.structure.processor;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -13,11 +13,10 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldView;
 
 public class RuleStructureProcessor extends StructureProcessor {
-	public static final Codec<RuleStructureProcessor> CODEC = StructureProcessorRule.CODEC
+	public static final MapCodec<RuleStructureProcessor> CODEC = StructureProcessorRule.CODEC
 		.listOf()
 		.fieldOf("rules")
-		.<RuleStructureProcessor>xmap(RuleStructureProcessor::new, processor -> processor.rules)
-		.codec();
+		.xmap(RuleStructureProcessor::new, processor -> processor.rules);
 	private final ImmutableList<StructureProcessorRule> rules;
 
 	public RuleStructureProcessor(List<? extends StructureProcessorRule> rules) {

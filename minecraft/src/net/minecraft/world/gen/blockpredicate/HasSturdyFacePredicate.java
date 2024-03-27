@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.blockpredicate;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -10,7 +10,7 @@ import net.minecraft.world.StructureWorldAccess;
 public class HasSturdyFacePredicate implements BlockPredicate {
 	private final Vec3i offset;
 	private final Direction face;
-	public static final Codec<HasSturdyFacePredicate> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<HasSturdyFacePredicate> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Vec3i.createOffsetCodec(16).optionalFieldOf("offset", Vec3i.ZERO).forGetter(predicate -> predicate.offset),
 					Direction.CODEC.fieldOf("direction").forGetter(predicate -> predicate.face)

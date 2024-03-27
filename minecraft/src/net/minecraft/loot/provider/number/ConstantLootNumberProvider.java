@@ -1,11 +1,12 @@
 package net.minecraft.loot.provider.number;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.loot.context.LootContext;
 
 public record ConstantLootNumberProvider(float value) implements LootNumberProvider {
-	public static final Codec<ConstantLootNumberProvider> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<ConstantLootNumberProvider> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(Codec.FLOAT.fieldOf("value").forGetter(ConstantLootNumberProvider::value)).apply(instance, ConstantLootNumberProvider::new)
 	);
 	public static final Codec<ConstantLootNumberProvider> INLINE_CODEC = Codec.FLOAT.xmap(ConstantLootNumberProvider::new, ConstantLootNumberProvider::value);

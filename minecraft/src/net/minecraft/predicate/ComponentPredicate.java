@@ -16,13 +16,15 @@ import net.minecraft.component.DataComponentType;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.dynamic.Codecs;
 
 public final class ComponentPredicate implements Predicate<ComponentMap> {
-	public static final Codec<ComponentPredicate> CODEC = Codecs.keyDispatching(DataComponentType.CODEC, DataComponentType::getCodecOrThrow)
+	public static final Codec<ComponentPredicate> CODEC = DataComponentType.TYPE_TO_VALUE_MAP_CODEC
 		.xmap(
 			map -> new ComponentPredicate((List<Component<?>>)map.entrySet().stream().map(Component::of).collect(Collectors.toList())),
-			predicate -> (Map)predicate.components.stream().collect(Collectors.toMap(Component::type, Component::value))
+			predicate -> (Map)predicate.components
+					.stream()
+					.filter(component -> !component.type().shouldSkipSerialization())
+					.collect(Collectors.toMap(Component::type, Component::value))
 		);
 	public static final PacketCodec<RegistryByteBuf, ComponentPredicate> PACKET_CODEC = Component.PACKET_CODEC
 		.collect(PacketCodecs.toList())

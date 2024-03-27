@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.placementmodifier;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.function.Supplier;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
@@ -11,7 +11,7 @@ import net.minecraft.world.gen.feature.PlacedFeature;
 
 public class BiomePlacementModifier extends AbstractConditionalPlacementModifier {
 	private static final BiomePlacementModifier INSTANCE = new BiomePlacementModifier();
-	public static Codec<BiomePlacementModifier> MODIFIER_CODEC = Codec.unit((Supplier<BiomePlacementModifier>)(() -> INSTANCE));
+	public static MapCodec<BiomePlacementModifier> MODIFIER_CODEC = MapCodec.unit((Supplier<BiomePlacementModifier>)(() -> INSTANCE));
 
 	private BiomePlacementModifier() {
 	}

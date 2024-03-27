@@ -32,6 +32,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -132,7 +133,10 @@ public abstract class RaiderEntity extends PatrolEntity {
 				raid.removeFromWave(this, false);
 			}
 
-			if (this.isPatrolLeader() && raid == null && ((ServerWorld)this.getWorld()).getRaidAt(this.getBlockPos()) == null) {
+			if (!this.getWorld().getEnabledFeatures().contains(FeatureFlags.UPDATE_1_21)
+				&& this.isPatrolLeader()
+				&& raid == null
+				&& ((ServerWorld)this.getWorld()).getRaidAt(this.getBlockPos()) == null) {
 				ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
 				PlayerEntity playerEntity = null;
 				if (entity instanceof PlayerEntity) {
@@ -180,6 +184,18 @@ public abstract class RaiderEntity extends PatrolEntity {
 	@Nullable
 	public Raid getRaid() {
 		return this.raid;
+	}
+
+	public boolean isCaptain() {
+		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
+		boolean bl = !itemStack.isEmpty()
+			&& ItemStack.areEqual(itemStack, Raid.getOminousBanner(this.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
+		boolean bl2 = this.isPatrolLeader();
+		return bl && bl2;
+	}
+
+	public boolean hasRaid() {
+		return !(this.getWorld() instanceof ServerWorld serverWorld) ? false : this.getRaid() != null || serverWorld.getRaidAt(this.getBlockPos()) != null;
 	}
 
 	public boolean hasActiveRaid() {

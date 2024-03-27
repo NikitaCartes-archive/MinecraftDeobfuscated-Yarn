@@ -12,7 +12,6 @@ import net.minecraft.item.Items;
 import net.minecraft.predicate.ComponentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.registry.RegistryEntryLookup;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.village.raid.Raid;
 
 public record EntityEquipmentPredicate(
@@ -25,12 +24,12 @@ public record EntityEquipmentPredicate(
 ) {
 	public static final Codec<EntityEquipmentPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "head").forGetter(EntityEquipmentPredicate::head),
-					Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "chest").forGetter(EntityEquipmentPredicate::chest),
-					Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "legs").forGetter(EntityEquipmentPredicate::legs),
-					Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "feet").forGetter(EntityEquipmentPredicate::feet),
-					Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "mainhand").forGetter(EntityEquipmentPredicate::mainhand),
-					Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "offhand").forGetter(EntityEquipmentPredicate::offhand)
+					ItemPredicate.CODEC.optionalFieldOf("head").forGetter(EntityEquipmentPredicate::head),
+					ItemPredicate.CODEC.optionalFieldOf("chest").forGetter(EntityEquipmentPredicate::chest),
+					ItemPredicate.CODEC.optionalFieldOf("legs").forGetter(EntityEquipmentPredicate::legs),
+					ItemPredicate.CODEC.optionalFieldOf("feet").forGetter(EntityEquipmentPredicate::feet),
+					ItemPredicate.CODEC.optionalFieldOf("mainhand").forGetter(EntityEquipmentPredicate::mainhand),
+					ItemPredicate.CODEC.optionalFieldOf("offhand").forGetter(EntityEquipmentPredicate::offhand)
 				)
 				.apply(instance, EntityEquipmentPredicate::new)
 	);

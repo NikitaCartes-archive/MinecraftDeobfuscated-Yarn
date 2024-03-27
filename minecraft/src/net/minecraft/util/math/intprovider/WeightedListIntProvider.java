@@ -1,6 +1,6 @@
 package net.minecraft.util.math.intprovider;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.util.collection.DataPool;
@@ -8,7 +8,7 @@ import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.math.random.Random;
 
 public class WeightedListIntProvider extends IntProvider {
-	public static final Codec<WeightedListIntProvider> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<WeightedListIntProvider> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(DataPool.createCodec(IntProvider.VALUE_CODEC).fieldOf("distribution").forGetter(provider -> provider.weightedList))
 				.apply(instance, WeightedListIntProvider::new)
 	);
@@ -23,8 +23,8 @@ public class WeightedListIntProvider extends IntProvider {
 		int j = Integer.MIN_VALUE;
 
 		for (Weighted.Present<IntProvider> present : list) {
-			int k = present.getData().getMin();
-			int l = present.getData().getMax();
+			int k = present.data().getMin();
+			int l = present.data().getMax();
 			i = Math.min(i, k);
 			j = Math.max(j, l);
 		}

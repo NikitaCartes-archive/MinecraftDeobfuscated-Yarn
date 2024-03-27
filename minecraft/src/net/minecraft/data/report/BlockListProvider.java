@@ -82,10 +82,10 @@ public class BlockListProvider implements DataProvider {
 
 								jsonObject2.add("states", jsonArray2);
 								String string = entry.getIdAsString();
-								JsonElement jsonElement = Util.getResult(
-									BlockTypes.CODEC.codec().encodeStart(registryOps, (Block)entry.value()),
-									string2 -> new AssertionError("Failed to serialize block " + string + " (is type registered in BlockTypes?): " + string2)
-								);
+								JsonElement jsonElement = BlockTypes.CODEC
+									.codec()
+									.encodeStart(registryOps, (Block)entry.value())
+									.getOrThrow(string2 -> new AssertionError("Failed to serialize block " + string + " (is type registered in BlockTypes?): " + string2));
 								jsonObject2.add("definition", jsonElement);
 								jsonObject.add(string, jsonObject2);
 							}

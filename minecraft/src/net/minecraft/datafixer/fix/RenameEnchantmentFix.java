@@ -43,14 +43,12 @@ public class RenameEnchantmentFix extends DataFix {
 										"id",
 										dynamic2 -> dynamic2.asString()
 												.map(oldId -> dynamicx.createString((String)this.oldToNewIds.getOrDefault(oldId, oldId)))
-												.get()
-												.map(Function.identity(), partialResult -> dynamic2)
+												.mapOrElse(Function.identity(), error -> dynamic2)
 									)
 							)
 					)
 					.map(dynamic::createList)
-					.get()
-					.map(Function.identity(), partialResult -> dynamic)
+					.mapOrElse(Function.identity(), error -> dynamic)
 		);
 	}
 }

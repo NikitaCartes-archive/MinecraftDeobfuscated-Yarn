@@ -14,7 +14,6 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.entry.RegistryEntryInfo;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 
 public class SerializableRegistries {
 	public static final Set<RegistryKey<? extends Registry<?>>> SYNCED_REGISTRIES = (Set<RegistryKey<? extends Registry<?>>>)RegistryLoader.SYNCED_REGISTRIES
@@ -50,10 +49,9 @@ public class SerializableRegistries {
 								if (bl) {
 									optional = Optional.empty();
 								} else {
-									NbtElement nbtElement = Util.getResult(
-										entry.elementCodec().encodeStart(nbtOps, (T)registryEntry.value()),
-										error -> new IllegalArgumentException("Failed to serialize " + registryEntry.registryKey() + ": " + error)
-									);
+									NbtElement nbtElement = entry.elementCodec()
+										.encodeStart(nbtOps, (T)registryEntry.value())
+										.getOrThrow(error -> new IllegalArgumentException("Failed to serialize " + registryEntry.registryKey() + ": " + error));
 									optional = Optional.of(nbtElement);
 								}
 

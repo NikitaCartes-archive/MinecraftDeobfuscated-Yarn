@@ -10,7 +10,6 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCriterion.Conditions> {
 	@Override
@@ -26,10 +25,9 @@ public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCrite
 		implements AbstractCriterion.Conditions {
 		public static final Codec<EnchantedItemCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(EnchantedItemCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(EnchantedItemCriterion.Conditions::item),
-						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "levels", NumberRange.IntRange.ANY)
-							.forGetter(EnchantedItemCriterion.Conditions::levels)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(EnchantedItemCriterion.Conditions::player),
+						ItemPredicate.CODEC.optionalFieldOf("item").forGetter(EnchantedItemCriterion.Conditions::item),
+						NumberRange.IntRange.CODEC.optionalFieldOf("levels", NumberRange.IntRange.ANY).forGetter(EnchantedItemCriterion.Conditions::levels)
 					)
 					.apply(instance, EnchantedItemCriterion.Conditions::new)
 		);

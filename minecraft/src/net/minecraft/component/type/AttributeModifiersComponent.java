@@ -18,18 +18,17 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 
 public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry> modifiers, boolean showInTooltip) {
 	public static final AttributeModifiersComponent DEFAULT = new AttributeModifiersComponent(List.of(), true);
 	private static final Codec<AttributeModifiersComponent> BASE_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					AttributeModifiersComponent.Entry.CODEC.listOf().fieldOf("modifiers").forGetter(AttributeModifiersComponent::modifiers),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_in_tooltip", true).forGetter(AttributeModifiersComponent::showInTooltip)
+					Codec.BOOL.optionalFieldOf("show_in_tooltip", Boolean.valueOf(true)).forGetter(AttributeModifiersComponent::showInTooltip)
 				)
 				.apply(instance, AttributeModifiersComponent::new)
 	);
-	public static final Codec<AttributeModifiersComponent> CODEC = Codecs.either(
+	public static final Codec<AttributeModifiersComponent> CODEC = Codec.withAlternative(
 		BASE_CODEC, AttributeModifiersComponent.Entry.CODEC.listOf(), attributeModifiers -> new AttributeModifiersComponent(attributeModifiers, true)
 	);
 	public static final PacketCodec<RegistryByteBuf, AttributeModifiersComponent> PACKET_CODEC = PacketCodec.tuple(
@@ -104,7 +103,7 @@ public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry
 			instance -> instance.group(
 						Registries.ATTRIBUTE.getEntryCodec().fieldOf("type").forGetter(AttributeModifiersComponent.Entry::attribute),
 						EntityAttributeModifier.MAP_CODEC.forGetter(AttributeModifiersComponent.Entry::modifier),
-						Codecs.createStrictOptionalFieldCodec(AttributeModifierSlot.CODEC, "slot", AttributeModifierSlot.ANY).forGetter(AttributeModifiersComponent.Entry::slot)
+						AttributeModifierSlot.CODEC.optionalFieldOf("slot", AttributeModifierSlot.ANY).forGetter(AttributeModifiersComponent.Entry::slot)
 					)
 					.apply(instance, AttributeModifiersComponent.Entry::new)
 		);

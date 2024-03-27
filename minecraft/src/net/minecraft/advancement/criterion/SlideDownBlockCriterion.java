@@ -13,7 +13,6 @@ import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCriterion.Conditions> {
 	@Override
@@ -27,17 +26,15 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 
 	public static record Conditions(Optional<LootContextPredicate> player, Optional<RegistryEntry<Block>> block, Optional<StatePredicate> state)
 		implements AbstractCriterion.Conditions {
-		public static final Codec<SlideDownBlockCriterion.Conditions> CODEC = Codecs.validate(
-			RecordCodecBuilder.create(
+		public static final Codec<SlideDownBlockCriterion.Conditions> CODEC = RecordCodecBuilder.<SlideDownBlockCriterion.Conditions>create(
 				instance -> instance.group(
-							Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(SlideDownBlockCriterion.Conditions::player),
-							Codecs.createStrictOptionalFieldCodec(Registries.BLOCK.getEntryCodec(), "block").forGetter(SlideDownBlockCriterion.Conditions::block),
-							Codecs.createStrictOptionalFieldCodec(StatePredicate.CODEC, "state").forGetter(SlideDownBlockCriterion.Conditions::state)
+							EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(SlideDownBlockCriterion.Conditions::player),
+							Registries.BLOCK.getEntryCodec().optionalFieldOf("block").forGetter(SlideDownBlockCriterion.Conditions::block),
+							StatePredicate.CODEC.optionalFieldOf("state").forGetter(SlideDownBlockCriterion.Conditions::state)
 						)
 						.apply(instance, SlideDownBlockCriterion.Conditions::new)
-			),
-			SlideDownBlockCriterion.Conditions::validate
-		);
+			)
+			.validate(SlideDownBlockCriterion.Conditions::validate);
 
 		private static DataResult<SlideDownBlockCriterion.Conditions> validate(SlideDownBlockCriterion.Conditions conditions) {
 			return (DataResult<SlideDownBlockCriterion.Conditions>)conditions.block

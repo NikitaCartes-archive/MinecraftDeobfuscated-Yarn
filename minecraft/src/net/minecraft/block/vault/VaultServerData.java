@@ -19,10 +19,10 @@ public class VaultServerData {
 	static final String SERVER_DATA_KEY = "server_data";
 	public static Codec<VaultServerData> codec = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Uuids.LINKED_SET_CODEC.optionalFieldOf("rewarded_players", Set.of()).forGetter(data -> data.rewardedPlayers),
-					Codec.LONG.optionalFieldOf("state_updating_resumes_at", Long.valueOf(0L)).forGetter(data -> data.stateUpdatingResumesAt),
-					ItemStack.CODEC.listOf().optionalFieldOf("items_to_eject", List.of()).forGetter(data -> data.itemsToEject),
-					Codec.INT.optionalFieldOf("total_ejections_needed", Integer.valueOf(0)).forGetter(data -> data.totalEjectionsNeeded)
+					Uuids.LINKED_SET_CODEC.lenientOptionalFieldOf("rewarded_players", Set.of()).forGetter(data -> data.rewardedPlayers),
+					Codec.LONG.lenientOptionalFieldOf("state_updating_resumes_at", Long.valueOf(0L)).forGetter(data -> data.stateUpdatingResumesAt),
+					ItemStack.CODEC.listOf().lenientOptionalFieldOf("items_to_eject", List.of()).forGetter(data -> data.itemsToEject),
+					Codec.INT.lenientOptionalFieldOf("total_ejections_needed", Integer.valueOf(0)).forGetter(data -> data.totalEjectionsNeeded)
 				)
 				.apply(instance, VaultServerData::new)
 	);

@@ -29,6 +29,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
@@ -76,11 +77,11 @@ public class VaultBlockEntity extends BlockEntity {
 	}
 
 	private static <T> NbtElement encodeValue(Codec<T> codec, T value, RegistryWrapper.WrapperLookup registries) {
-		return Util.getResult(codec.encodeStart(registries.getOps(NbtOps.INSTANCE), value), IllegalStateException::new);
+		return codec.encodeStart(registries.getOps(NbtOps.INSTANCE), value).getOrThrow();
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		DynamicOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
 		if (nbt.contains("server_data")) {
@@ -131,38 +132,38 @@ public class VaultBlockEntity extends BlockEntity {
 				spawnConnectedParticles(world, pos, state, sharedData);
 			}
 
-			spawnAmbientParticles(world, pos, sharedData);
+			spawnAmbientParticles(world, pos, sharedData, state.get(VaultBlock.OMINOUS) ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.SMALL_FLAME);
 			playAmbientSound(world, pos, sharedData);
 		}
 
-		public static void spawnActivateParticles(World world, BlockPos pos, BlockState state, VaultSharedData sharedData) {
+		public static void spawnActivateParticles(World world, BlockPos pos, BlockState state, VaultSharedData sharedData, ParticleEffect particle) {
 			spawnConnectedParticles(world, pos, state, sharedData);
 			Random random = world.random;
 
 			for (int i = 0; i < 20; i++) {
 				Vec3d vec3d = getRegularParticlesPos(pos, random);
 				world.addParticle(ParticleTypes.SMOKE, vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0, 0.0, 0.0);
-				world.addParticle(ParticleTypes.SMALL_FLAME, vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0, 0.0, 0.0);
+				world.addParticle(particle, vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0, 0.0, 0.0);
 			}
 		}
 
-		public static void spawnDeactivateParticles(World world, BlockPos pos) {
+		public static void spawnDeactivateParticles(World world, BlockPos pos, ParticleEffect particle) {
 			Random random = world.random;
 
 			for (int i = 0; i < 20; i++) {
 				Vec3d vec3d = getDeactivateParticlesPos(pos, random);
 				Vec3d vec3d2 = new Vec3d(random.nextGaussian() * 0.02, random.nextGaussian() * 0.02, random.nextGaussian() * 0.02);
-				world.addParticle(ParticleTypes.SMALL_FLAME, vec3d.getX(), vec3d.getY(), vec3d.getZ(), vec3d2.getX(), vec3d2.getY(), vec3d2.getZ());
+				world.addParticle(particle, vec3d.getX(), vec3d.getY(), vec3d.getZ(), vec3d2.getX(), vec3d2.getY(), vec3d2.getZ());
 			}
 		}
 
-		private static void spawnAmbientParticles(World world, BlockPos pos, VaultSharedData sharedData) {
+		private static void spawnAmbientParticles(World world, BlockPos pos, VaultSharedData sharedData, ParticleEffect particle) {
 			Random random = world.getRandom();
 			if (random.nextFloat() <= 0.5F) {
 				Vec3d vec3d = getRegularParticlesPos(pos, random);
 				world.addParticle(ParticleTypes.SMOKE, vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0, 0.0, 0.0);
 				if (hasDisplayItem(sharedData)) {
-					world.addParticle(ParticleTypes.SMALL_FLAME, vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0, 0.0, 0.0);
+					world.addParticle(particle, vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0, 0.0, 0.0);
 				}
 			}
 		}
@@ -290,7 +291,7 @@ public class VaultBlockEntity extends BlockEntity {
 			VaultState vaultState = oldState.get(VaultBlock.VAULT_STATE);
 			VaultState vaultState2 = newState.get(VaultBlock.VAULT_STATE);
 			world.setBlockState(pos, newState, Block.NOTIFY_ALL);
-			vaultState.onStateChange(world, pos, vaultState2, config, sharedData);
+			vaultState.onStateChange(world, pos, vaultState2, config, sharedData, (Boolean)newState.get(VaultBlock.OMINOUS));
 		}
 
 		public static void updateDisplayItem(ServerWorld world, VaultState state, VaultConfig config, VaultSharedData sharedData, BlockPos pos) {
@@ -302,12 +303,12 @@ public class VaultBlockEntity extends BlockEntity {
 			}
 		}
 
-		private static ItemStack generateDisplayItem(ServerWorld world, BlockPos pos, RegistryKey<LootTable> registryKey) {
-			LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(registryKey);
+		private static ItemStack generateDisplayItem(ServerWorld world, BlockPos pos, RegistryKey<LootTable> lootTable) {
+			LootTable lootTable2 = world.getServer().getReloadableRegistries().getLootTable(lootTable);
 			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world)
 				.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
 				.build(LootContextTypes.VAULT);
-			List<ItemStack> list = lootTable.generateLoot(lootContextParameterSet);
+			List<ItemStack> list = lootTable2.generateLoot(lootContextParameterSet);
 			return list.isEmpty() ? ItemStack.EMPTY : Util.getRandom(list, world.getRandom());
 		}
 

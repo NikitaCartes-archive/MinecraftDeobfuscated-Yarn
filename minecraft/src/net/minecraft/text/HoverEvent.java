@@ -3,7 +3,6 @@ package net.minecraft.text;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -31,11 +30,10 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Uuids;
-import net.minecraft.util.dynamic.Codecs;
 
 public class HoverEvent {
-	public static final Codec<HoverEvent> CODEC = Codec.either(HoverEvent.EventData.CODEC.codec(), HoverEvent.EventData.LEGACY_CODEC.codec())
-		.xmap(either -> new HoverEvent(either.map(data -> data, data -> data)), event -> Either.left(event.data));
+	public static final Codec<HoverEvent> CODEC = Codec.withAlternative(HoverEvent.EventData.CODEC.codec(), HoverEvent.EventData.LEGACY_CODEC.codec())
+		.xmap(HoverEvent::new, event -> event.data);
 	private final HoverEvent.EventData<?> data;
 
 	public <T> HoverEvent(HoverEvent.Action<T> action, T contents) {
@@ -82,19 +80,17 @@ public class HoverEvent {
 		public static final Codec<HoverEvent.Action<?>> UNVALIDATED_CODEC = StringIdentifiable.createBasicCodec(
 			() -> new HoverEvent.Action[]{SHOW_TEXT, SHOW_ITEM, SHOW_ENTITY}
 		);
-		public static final Codec<HoverEvent.Action<?>> CODEC = Codecs.validate(UNVALIDATED_CODEC, HoverEvent.Action::validate);
+		public static final Codec<HoverEvent.Action<?>> CODEC = UNVALIDATED_CODEC.validate(HoverEvent.Action::validate);
 		private final String name;
 		private final boolean parsable;
-		final Codec<HoverEvent.EventData<T>> codec;
-		final Codec<HoverEvent.EventData<T>> legacyCodec;
+		final MapCodec<HoverEvent.EventData<T>> codec;
+		final MapCodec<HoverEvent.EventData<T>> legacyCodec;
 
 		public Action(String name, boolean parsable, Codec<T> contentCodec, HoverEvent.LegacySerializer<T> legacySerializer) {
 			this.name = name;
 			this.parsable = parsable;
-			this.codec = contentCodec.<HoverEvent.EventData<T>>xmap(value -> new HoverEvent.EventData<>(this, (T)value), action -> action.value)
-				.fieldOf("contents")
-				.codec();
-			this.legacyCodec = new Codec<HoverEvent.EventData<T>>() {
+			this.codec = contentCodec.<HoverEvent.EventData<T>>xmap(value -> new HoverEvent.EventData<>(this, (T)value), action -> action.value).fieldOf("contents");
+			this.legacyCodec = (new Codec<HoverEvent.EventData<T>>() {
 				@Override
 				public <D> DataResult<Pair<HoverEvent.EventData<T>, D>> decode(DynamicOps<D> ops, D input) {
 					return TextCodecs.CODEC.decode(ops, input).flatMap(pair -> {
@@ -112,7 +108,7 @@ public class HoverEvent {
 				public <D> DataResult<D> encode(HoverEvent.EventData<T> eventData, DynamicOps<D> dynamicOps, D object) {
 					return DataResult.error(() -> "Can't encode in legacy format");
 				}
-			};
+			}).fieldOf("value");
 		}
 
 		public boolean isParsable() {
@@ -146,7 +142,7 @@ public class HoverEvent {
 			instance -> instance.group(
 						Registries.ENTITY_TYPE.getCodec().fieldOf("type").forGetter(content -> content.entityType),
 						Uuids.STRICT_CODEC.fieldOf("id").forGetter(content -> content.uuid),
-						Codecs.createStrictOptionalFieldCodec(TextCodecs.CODEC, "name").forGetter(content -> content.name)
+						TextCodecs.CODEC.lenientOptionalFieldOf("name").forGetter(content -> content.name)
 					)
 					.apply(instance, HoverEvent.EntityContent::new)
 		);
@@ -220,7 +216,7 @@ public class HoverEvent {
 			.xmap(HoverEvent.ItemStackContent::new, HoverEvent.ItemStackContent::asStack);
 		private static final Codec<HoverEvent.ItemStackContent> ENTRY_BASED_CODEC = ItemStack.REGISTRY_ENTRY_CODEC
 			.xmap(HoverEvent.ItemStackContent::new, HoverEvent.ItemStackContent::asStack);
-		public static final Codec<HoverEvent.ItemStackContent> CODEC = Codecs.alternatively(ITEM_STACK_CODEC, ENTRY_BASED_CODEC);
+		public static final Codec<HoverEvent.ItemStackContent> CODEC = Codec.withAlternative(ITEM_STACK_CODEC, ENTRY_BASED_CODEC);
 		private final RegistryEntry<Item> item;
 		private final int count;
 		private final ComponentChanges changes;

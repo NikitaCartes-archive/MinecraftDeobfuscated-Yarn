@@ -13,7 +13,6 @@ import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.Conditions> {
 	@Override
@@ -27,17 +26,15 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 
 	public static record Conditions(Optional<LootContextPredicate> player, Optional<RegistryEntry<Block>> block, Optional<StatePredicate> state)
 		implements AbstractCriterion.Conditions {
-		public static final Codec<EnterBlockCriterion.Conditions> CODEC = Codecs.validate(
-			RecordCodecBuilder.create(
+		public static final Codec<EnterBlockCriterion.Conditions> CODEC = RecordCodecBuilder.<EnterBlockCriterion.Conditions>create(
 				instance -> instance.group(
-							Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(EnterBlockCriterion.Conditions::player),
-							Codecs.createStrictOptionalFieldCodec(Registries.BLOCK.getEntryCodec(), "block").forGetter(EnterBlockCriterion.Conditions::block),
-							Codecs.createStrictOptionalFieldCodec(StatePredicate.CODEC, "state").forGetter(EnterBlockCriterion.Conditions::state)
+							EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(EnterBlockCriterion.Conditions::player),
+							Registries.BLOCK.getEntryCodec().optionalFieldOf("block").forGetter(EnterBlockCriterion.Conditions::block),
+							StatePredicate.CODEC.optionalFieldOf("state").forGetter(EnterBlockCriterion.Conditions::state)
 						)
 						.apply(instance, EnterBlockCriterion.Conditions::new)
-			),
-			EnterBlockCriterion.Conditions::validate
-		);
+			)
+			.validate(EnterBlockCriterion.Conditions::validate);
 
 		private static DataResult<EnterBlockCriterion.Conditions> validate(EnterBlockCriterion.Conditions conditions) {
 			return (DataResult<EnterBlockCriterion.Conditions>)conditions.block

@@ -1,12 +1,12 @@
 package net.minecraft.world.gen.blockpredicate;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 
 class AnyOfBlockPredicate extends CombinedBlockPredicate {
-	public static final Codec<AnyOfBlockPredicate> CODEC = buildCodec(AnyOfBlockPredicate::new);
+	public static final MapCodec<AnyOfBlockPredicate> CODEC = buildCodec(AnyOfBlockPredicate::new);
 
 	public AnyOfBlockPredicate(List<BlockPredicate> list) {
 		super(list);

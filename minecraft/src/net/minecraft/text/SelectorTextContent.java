@@ -12,7 +12,6 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.dynamic.Codecs;
 import org.slf4j.Logger;
 
 public class SelectorTextContent implements TextContent {
@@ -20,7 +19,7 @@ public class SelectorTextContent implements TextContent {
 	public static final MapCodec<SelectorTextContent> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codec.STRING.fieldOf("selector").forGetter(SelectorTextContent::getPattern),
-					Codecs.createStrictOptionalFieldCodec(TextCodecs.CODEC, "separator").forGetter(SelectorTextContent::getSeparator)
+					TextCodecs.CODEC.optionalFieldOf("separator").forGetter(SelectorTextContent::getSeparator)
 				)
 				.apply(instance, SelectorTextContent::new)
 	);

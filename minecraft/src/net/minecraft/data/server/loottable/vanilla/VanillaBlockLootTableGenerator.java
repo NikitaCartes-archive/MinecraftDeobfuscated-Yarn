@@ -977,9 +977,9 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 									ItemEntry.builder(block)
 										.apply(
 											CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY)
-												.add(DataComponentTypes.PROFILE)
-												.add(DataComponentTypes.NOTE_BLOCK_SOUND)
-												.add(DataComponentTypes.CUSTOM_NAME)
+												.include(DataComponentTypes.PROFILE)
+												.include(DataComponentTypes.NOTE_BLOCK_SOUND)
+												.include(DataComponentTypes.CUSTOM_NAME)
 										)
 								)
 						)
@@ -1422,7 +1422,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 							.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(DecoratedPotBlock.CRACKED, true)))
 							.alternatively(
 								ItemEntry.builder(block)
-									.apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).add(DataComponentTypes.POT_DECORATIONS))
+									.apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).include(DataComponentTypes.POT_DECORATIONS))
 							)
 					)
 			);

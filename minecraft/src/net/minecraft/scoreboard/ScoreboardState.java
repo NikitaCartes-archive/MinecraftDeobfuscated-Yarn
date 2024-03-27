@@ -199,10 +199,7 @@ public class ScoreboardState extends PersistentState {
 			nbtCompound.putBoolean("display_auto_update", scoreboardObjective.shouldDisplayAutoUpdate());
 			NumberFormat numberFormat = scoreboardObjective.getNumberFormat();
 			if (numberFormat != null) {
-				NumberFormatTypes.CODEC
-					.encodeStart(registries.getOps(NbtOps.INSTANCE), numberFormat)
-					.result()
-					.ifPresent(nbtElement -> nbtCompound.put("format", nbtElement));
+				NumberFormatTypes.CODEC.encodeStart(registries.getOps(NbtOps.INSTANCE), numberFormat).ifSuccess(nbtElement -> nbtCompound.put("format", nbtElement));
 			}
 
 			nbtList.add(nbtCompound);

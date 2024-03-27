@@ -2,7 +2,7 @@ package net.minecraft.particle;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.argument.BlockArgumentParser;
@@ -24,8 +24,8 @@ public class BlockStateParticleEffect implements ParticleEffect {
 	private final ParticleType<BlockStateParticleEffect> type;
 	private final BlockState blockState;
 
-	public static Codec<BlockStateParticleEffect> createCodec(ParticleType<BlockStateParticleEffect> type) {
-		return BlockState.CODEC.xmap(state -> new BlockStateParticleEffect(type, state), effect -> effect.blockState);
+	public static MapCodec<BlockStateParticleEffect> createCodec(ParticleType<BlockStateParticleEffect> type) {
+		return BlockState.CODEC.<BlockStateParticleEffect>xmap(state -> new BlockStateParticleEffect(type, state), effect -> effect.blockState).fieldOf("value");
 	}
 
 	public static PacketCodec<? super RegistryByteBuf, BlockStateParticleEffect> createPacketCodec(ParticleType<BlockStateParticleEffect> type) {

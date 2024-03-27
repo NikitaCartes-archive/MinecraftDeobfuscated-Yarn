@@ -36,7 +36,6 @@ import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.village.raid.Raid;
 
 public class ItemGroups {
@@ -1411,7 +1410,7 @@ public class ItemGroups {
 						entries.add(Items.SPECTRAL_ARROW);
 						displayContext.lookup()
 							.getOptionalWrapper(RegistryKeys.POTION)
-							.ifPresent(wrapper -> addPotions(entries, wrapper, Items.TIPPED_ARROW, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS));
+							.ifPresent(impl -> addPotions(entries, impl, Items.TIPPED_ARROW, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS, displayContext.enabledFeatures()));
 					}
 				)
 				.build()
@@ -1465,10 +1464,11 @@ public class ItemGroups {
 					addSuspiciousStews(entries, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
 					entries.add(Items.MILK_BUCKET);
 					entries.add(Items.HONEY_BOTTLE);
-					displayContext.lookup().getOptionalWrapper(RegistryKeys.POTION).ifPresent(wrapper -> {
-						addPotions(entries, wrapper, Items.POTION, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
-						addPotions(entries, wrapper, Items.SPLASH_POTION, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
-						addPotions(entries, wrapper, Items.LINGERING_POTION, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
+					addOminousBottles(entries, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
+					displayContext.lookup().getOptionalWrapper(RegistryKeys.POTION).ifPresent(registryWrapper -> {
+						addPotions(entries, registryWrapper, Items.POTION, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS, displayContext.enabledFeatures());
+						addPotions(entries, registryWrapper, Items.SPLASH_POTION, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS, displayContext.enabledFeatures());
+						addPotions(entries, registryWrapper, Items.LINGERING_POTION, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS, displayContext.enabledFeatures());
 					});
 				})
 				.build()
@@ -1624,6 +1624,7 @@ public class ItemGroups {
 						entries.add(Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE);
 						entries.add(Items.EXPERIENCE_BOTTLE);
 						entries.add(Items.TRIAL_KEY);
+						entries.add(Items.OMINOUS_TRIAL_KEY);
 						Set<TagKey<Item>> set = Set.of(
 							ItemTags.FOOT_ARMOR_ENCHANTABLE,
 							ItemTags.LEG_ARMOR_ENCHANTABLE,
@@ -1631,6 +1632,9 @@ public class ItemGroups {
 							ItemTags.HEAD_ARMOR_ENCHANTABLE,
 							ItemTags.ARMOR_ENCHANTABLE,
 							ItemTags.SWORD_ENCHANTABLE,
+							ItemTags.SHARP_WEAPON_ENCHANTABLE,
+							ItemTags.MACE_ENCHANTABLE,
+							ItemTags.FIRE_ASPECT_ENCHANTABLE,
 							ItemTags.WEAPON_ENCHANTABLE,
 							ItemTags.MINING_ENCHANTABLE,
 							ItemTags.MINING_LOOT_ENCHANTABLE,
@@ -1642,9 +1646,9 @@ public class ItemGroups {
 							ItemTags.CROSSBOW_ENCHANTABLE,
 							ItemTags.VANISHING_ENCHANTABLE
 						);
-						displayContext.lookup().getOptionalWrapper(RegistryKeys.ENCHANTMENT).ifPresent(wrapper -> {
-							addMaxLevelEnchantedBooks(entries, wrapper, set, ItemGroup.StackVisibility.PARENT_TAB_ONLY);
-							addAllLevelEnchantedBooks(entries, wrapper, set, ItemGroup.StackVisibility.SEARCH_TAB_ONLY);
+						displayContext.lookup().getOptionalWrapper(RegistryKeys.ENCHANTMENT).ifPresent(registryWrapper -> {
+							addMaxLevelEnchantedBooks(entries, registryWrapper, set, ItemGroup.StackVisibility.PARENT_TAB_ONLY, displayContext.enabledFeatures());
+							addAllLevelEnchantedBooks(entries, registryWrapper, set, ItemGroup.StackVisibility.SEARCH_TAB_ONLY, displayContext.enabledFeatures());
 						});
 					}
 				)
@@ -1808,26 +1812,41 @@ public class ItemGroups {
 		return Registries.ITEM_GROUP.getOrThrow(BUILDING_BLOCKS);
 	}
 
-	private static void addPotions(ItemGroup.Entries entries, RegistryWrapper<Potion> registryWrapper, Item item, ItemGroup.StackVisibility visibility) {
-		registryWrapper.streamEntries().map(entry -> PotionContentsComponent.createStack(item, entry)).forEach(stack -> entries.add(stack, visibility));
+	private static void addPotions(
+		ItemGroup.Entries entries, RegistryWrapper<Potion> registryWrapper, Item item, ItemGroup.StackVisibility visibility, FeatureSet enabledFeatures
+	) {
+		registryWrapper.streamEntries()
+			.filter(potionEntry -> ((Potion)potionEntry.value()).isEnabled(enabledFeatures))
+			.map(entry -> PotionContentsComponent.createStack(item, entry))
+			.forEach(stack -> entries.add(stack, visibility));
 	}
 
 	private static void addMaxLevelEnchantedBooks(
-		ItemGroup.Entries entries, RegistryWrapper<Enchantment> registryWrapper, Set<TagKey<Item>> enchantmentTargets, ItemGroup.StackVisibility visibility
+		ItemGroup.Entries entries,
+		RegistryWrapper<Enchantment> registryWrapper,
+		Set<TagKey<Item>> tags,
+		ItemGroup.StackVisibility visibility,
+		FeatureSet enabledFeatures
 	) {
 		registryWrapper.streamEntries()
 			.map(RegistryEntry::value)
-			.filter(enchantment -> enchantmentTargets.contains(enchantment.getApplicableItems()))
+			.filter(enchantment -> enchantment.isEnabled(enabledFeatures))
+			.filter(enchantment -> tags.contains(enchantment.getApplicableItems()))
 			.map(enchantment -> EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, enchantment.getMaxLevel())))
 			.forEach(stack -> entries.add(stack, visibility));
 	}
 
 	private static void addAllLevelEnchantedBooks(
-		ItemGroup.Entries entries, RegistryWrapper<Enchantment> registryWrapper, Set<TagKey<Item>> enchantmentTargets, ItemGroup.StackVisibility visibility
+		ItemGroup.Entries entries,
+		RegistryWrapper<Enchantment> registryWrapper,
+		Set<TagKey<Item>> tags,
+		ItemGroup.StackVisibility visibility,
+		FeatureSet enabledFeatures
 	) {
 		registryWrapper.streamEntries()
 			.map(RegistryEntry::value)
-			.filter(enchantment -> enchantmentTargets.contains(enchantment.getApplicableItems()))
+			.filter(enchantment -> enchantment.isEnabled(enabledFeatures))
+			.filter(enchantment -> tags.contains(enchantment.getApplicableItems()))
 			.flatMap(
 				enchantment -> IntStream.rangeClosed(enchantment.getMinLevel(), enchantment.getMaxLevel())
 						.mapToObj(level -> EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, level)))
@@ -1857,6 +1876,14 @@ public class ItemGroups {
 		entries.addAll(set, visibility);
 	}
 
+	private static void addOminousBottles(ItemGroup.Entries entries, ItemGroup.StackVisibility visibility) {
+		for (int i = 0; i <= 4; i++) {
+			ItemStack itemStack = new ItemStack(Items.OMINOUS_BOTTLE);
+			itemStack.set(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER, i);
+			entries.add(itemStack, visibility);
+		}
+	}
+
 	private static void addFireworkRockets(ItemGroup.Entries entries, ItemGroup.StackVisibility visibility) {
 		for (byte b : FireworkRocketItem.FLIGHT_VALUES) {
 			ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET);
@@ -1876,8 +1903,10 @@ public class ItemGroups {
 			.sorted(PAINTING_VARIANT_COMPARATOR)
 			.forEach(
 				variant -> {
-					NbtComponent nbtComponent = Util.getResult(NbtComponent.DEFAULT.with(PaintingEntity.VARIANT_MAP_CODEC, variant), IllegalStateException::new)
-						.apply(nbtCompound -> nbtCompound.putString("id", "minecraft:painting"));
+					NbtComponent nbtComponent = NbtComponent.DEFAULT
+						.with(PaintingEntity.VARIANT_MAP_CODEC, variant)
+						.getOrThrow()
+						.apply(nbt -> nbt.putString("id", "minecraft:painting"));
 					ItemStack itemStack = new ItemStack(Items.PAINTING);
 					itemStack.set(DataComponentTypes.ENTITY_DATA, nbtComponent);
 					entries.add(itemStack, visibility);

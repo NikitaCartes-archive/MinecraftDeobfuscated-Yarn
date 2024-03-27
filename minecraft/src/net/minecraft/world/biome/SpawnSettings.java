@@ -119,8 +119,7 @@ public class SpawnSettings {
 	}
 
 	public static class SpawnEntry extends Weighted.Absent {
-		public static final Codec<SpawnSettings.SpawnEntry> CODEC = Codecs.validate(
-			RecordCodecBuilder.create(
+		public static final Codec<SpawnSettings.SpawnEntry> CODEC = RecordCodecBuilder.<SpawnSettings.SpawnEntry>create(
 				instance -> instance.group(
 							Registries.ENTITY_TYPE.getCodec().fieldOf("type").forGetter(spawnEntry -> spawnEntry.type),
 							Weight.CODEC.fieldOf("weight").forGetter(Weighted.Absent::getWeight),
@@ -128,11 +127,12 @@ public class SpawnSettings {
 							Codecs.POSITIVE_INT.fieldOf("maxCount").forGetter(spawnEntry -> spawnEntry.maxGroupSize)
 						)
 						.apply(instance, SpawnSettings.SpawnEntry::new)
-			),
-			spawnEntry -> spawnEntry.minGroupSize > spawnEntry.maxGroupSize
-					? DataResult.error(() -> "minCount needs to be smaller or equal to maxCount")
-					: DataResult.success(spawnEntry)
-		);
+			)
+			.validate(
+				spawnEntry -> spawnEntry.minGroupSize > spawnEntry.maxGroupSize
+						? DataResult.error(() -> "minCount needs to be smaller or equal to maxCount")
+						: DataResult.success(spawnEntry)
+			);
 		public final EntityType<?> type;
 		public final int minGroupSize;
 		public final int maxGroupSize;

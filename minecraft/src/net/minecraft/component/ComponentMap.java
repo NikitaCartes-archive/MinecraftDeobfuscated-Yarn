@@ -2,12 +2,15 @@ package net.minecraft.component;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Sets;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Spliterators;
@@ -34,6 +37,22 @@ public interface ComponentMap extends Iterable<Component<?>> {
 			return Collections.emptyIterator();
 		}
 	};
+	Codec<ComponentMap> CODEC = DataComponentType.TYPE_TO_VALUE_MAP_CODEC.flatComapMap(ComponentMap.Builder::build, components -> {
+		int i = components.size();
+		if (i == 0) {
+			return DataResult.success(Reference2ObjectMaps.emptyMap());
+		} else {
+			Reference2ObjectMap<DataComponentType<?>, Object> reference2ObjectMap = new Reference2ObjectArrayMap<>(i);
+
+			for (Component<?> component : components) {
+				if (!component.type().shouldSkipSerialization()) {
+					reference2ObjectMap.put(component.type(), component.value());
+				}
+			}
+
+			return DataResult.success(reference2ObjectMap);
+		}
+	});
 
 	static ComponentMap.Builder builder() {
 		return new ComponentMap.Builder();
@@ -96,14 +115,17 @@ public interface ComponentMap extends Iterable<Component<?>> {
 		Builder() {
 		}
 
-		public <T> ComponentMap.Builder add(DataComponentType<T> type, @Nullable T component) {
-			if (component != null) {
-				this.components.put(type, component);
+		public <T> ComponentMap.Builder add(DataComponentType<T> type, @Nullable T value) {
+			this.put(type, value);
+			return this;
+		}
+
+		<T> void put(DataComponentType<T> type, @Nullable Object value) {
+			if (value != null) {
+				this.components.put(type, value);
 			} else {
 				this.components.remove(type);
 			}
-
-			return this;
 		}
 
 		public ComponentMap.Builder addAll(ComponentMap componentSet) {
@@ -115,12 +137,16 @@ public interface ComponentMap extends Iterable<Component<?>> {
 		}
 
 		public ComponentMap build() {
-			if (this.components.isEmpty()) {
+			return build(this.components);
+		}
+
+		private static ComponentMap build(Map<DataComponentType<?>, Object> components) {
+			if (components.isEmpty()) {
 				return ComponentMap.EMPTY;
 			} else {
-				return this.components.size() < 8
-					? new ComponentMap.Builder.SimpleComponentMap(new Reference2ObjectArrayMap<>(this.components))
-					: new ComponentMap.Builder.SimpleComponentMap(new Reference2ObjectOpenHashMap<>(this.components));
+				return components.size() < 8
+					? new ComponentMap.Builder.SimpleComponentMap(new Reference2ObjectArrayMap<>(components))
+					: new ComponentMap.Builder.SimpleComponentMap(new Reference2ObjectOpenHashMap<>(components));
 			}
 		}
 

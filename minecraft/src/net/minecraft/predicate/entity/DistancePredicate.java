@@ -3,7 +3,6 @@ package net.minecraft.predicate.entity;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 
 public record DistancePredicate(
@@ -11,11 +10,11 @@ public record DistancePredicate(
 ) {
 	public static final Codec<DistancePredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "x", NumberRange.DoubleRange.ANY).forGetter(DistancePredicate::x),
-					Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "y", NumberRange.DoubleRange.ANY).forGetter(DistancePredicate::y),
-					Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "z", NumberRange.DoubleRange.ANY).forGetter(DistancePredicate::z),
-					Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "horizontal", NumberRange.DoubleRange.ANY).forGetter(DistancePredicate::horizontal),
-					Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "absolute", NumberRange.DoubleRange.ANY).forGetter(DistancePredicate::absolute)
+					NumberRange.DoubleRange.CODEC.optionalFieldOf("x", NumberRange.DoubleRange.ANY).forGetter(DistancePredicate::x),
+					NumberRange.DoubleRange.CODEC.optionalFieldOf("y", NumberRange.DoubleRange.ANY).forGetter(DistancePredicate::y),
+					NumberRange.DoubleRange.CODEC.optionalFieldOf("z", NumberRange.DoubleRange.ANY).forGetter(DistancePredicate::z),
+					NumberRange.DoubleRange.CODEC.optionalFieldOf("horizontal", NumberRange.DoubleRange.ANY).forGetter(DistancePredicate::horizontal),
+					NumberRange.DoubleRange.CODEC.optionalFieldOf("absolute", NumberRange.DoubleRange.ANY).forGetter(DistancePredicate::absolute)
 				)
 				.apply(instance, DistancePredicate::new)
 	);

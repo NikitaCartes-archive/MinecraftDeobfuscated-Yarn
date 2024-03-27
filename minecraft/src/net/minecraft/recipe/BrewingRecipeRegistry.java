@@ -131,9 +131,17 @@ public class BrewingRecipeRegistry {
 		registerPotionRecipe(Potions.WATER, Items.SPIDER_EYE, Potions.MUNDANE);
 		registerPotionRecipe(Potions.WATER, Items.SUGAR, Potions.MUNDANE);
 		registerPotionRecipe(Potions.WATER, Items.MAGMA_CREAM, Potions.MUNDANE);
+		registerPotionRecipe(Potions.WATER, Items.BREEZE_ROD, Potions.MUNDANE);
+		registerPotionRecipe(Potions.WATER, Items.SLIME_BLOCK, Potions.MUNDANE);
+		registerPotionRecipe(Potions.WATER, Items.STONE, Potions.MUNDANE);
+		registerPotionRecipe(Potions.WATER, Items.COBWEB, Potions.MUNDANE);
 		registerPotionRecipe(Potions.WATER, Items.GLOWSTONE_DUST, Potions.THICK);
 		registerPotionRecipe(Potions.WATER, Items.REDSTONE, Potions.MUNDANE);
 		registerPotionRecipe(Potions.WATER, Items.NETHER_WART, Potions.AWKWARD);
+		registerPotionRecipe(Potions.AWKWARD, Items.BREEZE_ROD, Potions.WIND_CHARGED);
+		registerPotionRecipe(Potions.AWKWARD, Items.SLIME_BLOCK, Potions.OOZING);
+		registerPotionRecipe(Potions.AWKWARD, Items.STONE, Potions.INFESTED);
+		registerPotionRecipe(Potions.AWKWARD, Items.COBWEB, Potions.WEAVING);
 		registerPotionRecipe(Potions.AWKWARD, Items.GOLDEN_CARROT, Potions.NIGHT_VISION);
 		registerPotionRecipe(Potions.NIGHT_VISION, Items.REDSTONE, Potions.LONG_NIGHT_VISION);
 		registerPotionRecipe(Potions.NIGHT_VISION, Items.FERMENTED_SPIDER_EYE, Potions.INVISIBILITY);

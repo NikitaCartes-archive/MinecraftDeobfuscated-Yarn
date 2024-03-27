@@ -3,6 +3,7 @@ package net.minecraft.loot.function;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Set;
@@ -16,16 +17,15 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
-import net.minecraft.util.dynamic.Codecs;
 
 public class LootingEnchantLootFunction extends ConditionalLootFunction {
 	public static final int DEFAULT_LIMIT = 0;
-	public static final Codec<LootingEnchantLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<LootingEnchantLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.<LootNumberProvider, int>and(
 					instance.group(
 						LootNumberProviderTypes.CODEC.fieldOf("count").forGetter(function -> function.countRange),
-						Codecs.createStrictOptionalFieldCodec(Codec.INT, "limit", 0).forGetter(function -> function.limit)
+						Codec.INT.optionalFieldOf("limit", Integer.valueOf(0)).forGetter(function -> function.limit)
 					)
 				)
 				.apply(instance, LootingEnchantLootFunction::new)

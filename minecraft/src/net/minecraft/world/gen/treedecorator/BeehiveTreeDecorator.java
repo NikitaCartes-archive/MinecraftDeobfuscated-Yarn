@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.treedecorator;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -15,10 +16,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 
 public class BeehiveTreeDecorator extends TreeDecorator {
-	public static final Codec<BeehiveTreeDecorator> CODEC = Codec.floatRange(0.0F, 1.0F)
+	public static final MapCodec<BeehiveTreeDecorator> CODEC = Codec.floatRange(0.0F, 1.0F)
 		.fieldOf("probability")
-		.<BeehiveTreeDecorator>xmap(BeehiveTreeDecorator::new, decorator -> decorator.probability)
-		.codec();
+		.xmap(BeehiveTreeDecorator::new, decorator -> decorator.probability);
 	private static final Direction BEE_NEST_FACE = Direction.SOUTH;
 	private static final Direction[] GENERATE_DIRECTIONS = (Direction[])Direction.Type.HORIZONTAL
 		.stream()

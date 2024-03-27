@@ -8,19 +8,17 @@ import java.util.function.Function;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.filter.FilteredMessage;
-import net.minecraft.util.dynamic.Codecs;
 
 public record RawFilteredPair<T>(T raw, Optional<T> filtered) {
 	public static <T> Codec<RawFilteredPair<T>> createCodec(Codec<T> baseCodec) {
 		Codec<RawFilteredPair<T>> codec = RecordCodecBuilder.create(
 			instance -> instance.group(
-						baseCodec.fieldOf("text").forGetter(RawFilteredPair::raw),
-						Codecs.createStrictOptionalFieldCodec(baseCodec, "filtered").forGetter(RawFilteredPair::filtered)
+						baseCodec.fieldOf("text").forGetter(RawFilteredPair::raw), baseCodec.optionalFieldOf("filtered").forGetter(RawFilteredPair::filtered)
 					)
 					.apply(instance, RawFilteredPair::new)
 		);
 		Codec<RawFilteredPair<T>> codec2 = baseCodec.xmap(RawFilteredPair::of, RawFilteredPair::raw);
-		return Codecs.alternatively(codec, codec2);
+		return Codec.withAlternative(codec, codec2);
 	}
 
 	public static <B extends ByteBuf, T> PacketCodec<B, RawFilteredPair<T>> createPacketCodec(PacketCodec<B, T> basePacketCodec) {

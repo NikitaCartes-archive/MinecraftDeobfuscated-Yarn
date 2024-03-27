@@ -1,6 +1,5 @@
 package net.minecraft.registry;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.block.Block;
@@ -104,7 +103,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<Activity>> ACTIVITY = of("activity");
 	public static final RegistryKey<Registry<EntityAttribute>> ATTRIBUTE = of("attribute");
 	public static final RegistryKey<Registry<BannerPattern>> BANNER_PATTERN = of("banner_pattern");
-	public static final RegistryKey<Registry<Codec<? extends BiomeSource>>> BIOME_SOURCE = of("worldgen/biome_source");
+	public static final RegistryKey<Registry<MapCodec<? extends BiomeSource>>> BIOME_SOURCE = of("worldgen/biome_source");
 	public static final RegistryKey<Registry<Block>> BLOCK = of("block");
 	public static final RegistryKey<Registry<MapCodec<? extends Block>>> BLOCK_TYPE = of("block_type");
 	public static final RegistryKey<Registry<BlockEntityType<?>>> BLOCK_ENTITY_TYPE = of("block_entity_type");
@@ -113,13 +112,13 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<Carver<?>>> CARVER = of("worldgen/carver");
 	public static final RegistryKey<Registry<CatVariant>> CAT_VARIANT = of("cat_variant");
 	public static final RegistryKey<Registry<WolfVariant>> WOLF_VARIANT = of("wolf_variant");
-	public static final RegistryKey<Registry<Codec<? extends ChunkGenerator>>> CHUNK_GENERATOR = of("worldgen/chunk_generator");
+	public static final RegistryKey<Registry<MapCodec<? extends ChunkGenerator>>> CHUNK_GENERATOR = of("worldgen/chunk_generator");
 	public static final RegistryKey<Registry<ChunkStatus>> CHUNK_STATUS = of("chunk_status");
 	public static final RegistryKey<Registry<ArgumentSerializer<?, ?>>> COMMAND_ARGUMENT_TYPE = of("command_argument_type");
 	public static final RegistryKey<Registry<ItemGroup>> ITEM_GROUP = of("creative_mode_tab");
 	public static final RegistryKey<Registry<Identifier>> CUSTOM_STAT = of("custom_stat");
 	public static final RegistryKey<Registry<DamageType>> DAMAGE_TYPE = of("damage_type");
-	public static final RegistryKey<Registry<Codec<? extends DensityFunction>>> DENSITY_FUNCTION_TYPE = of("worldgen/density_function_type");
+	public static final RegistryKey<Registry<MapCodec<? extends DensityFunction>>> DENSITY_FUNCTION_TYPE = of("worldgen/density_function_type");
 	public static final RegistryKey<Registry<Enchantment>> ENCHANTMENT = of("enchantment");
 	public static final RegistryKey<Registry<EntityType<?>>> ENTITY_TYPE = of("entity_type");
 	public static final RegistryKey<Registry<Feature<?>>> FEATURE = of("worldgen/feature");
@@ -139,8 +138,8 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<LootNumberProviderType>> LOOT_NUMBER_PROVIDER_TYPE = of("loot_number_provider_type");
 	public static final RegistryKey<Registry<LootPoolEntryType>> LOOT_POOL_ENTRY_TYPE = of("loot_pool_entry_type");
 	public static final RegistryKey<Registry<LootScoreProviderType>> LOOT_SCORE_PROVIDER_TYPE = of("loot_score_provider_type");
-	public static final RegistryKey<Registry<Codec<? extends MaterialRules.MaterialCondition>>> MATERIAL_CONDITION = of("worldgen/material_condition");
-	public static final RegistryKey<Registry<Codec<? extends MaterialRules.MaterialRule>>> MATERIAL_RULE = of("worldgen/material_rule");
+	public static final RegistryKey<Registry<MapCodec<? extends MaterialRules.MaterialCondition>>> MATERIAL_CONDITION = of("worldgen/material_condition");
+	public static final RegistryKey<Registry<MapCodec<? extends MaterialRules.MaterialRule>>> MATERIAL_RULE = of("worldgen/material_rule");
 	public static final RegistryKey<Registry<MemoryModuleType<?>>> MEMORY_MODULE_TYPE = of("memory_module_type");
 	public static final RegistryKey<Registry<ScreenHandlerType<?>>> SCREEN_HANDLER = of("menu");
 	public static final RegistryKey<Registry<StatusEffect>> STATUS_EFFECT = of("mob_effect");
@@ -163,7 +162,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<StructurePieceType>> STRUCTURE_PIECE = of("worldgen/structure_piece");
 	public static final RegistryKey<Registry<StructurePlacementType<?>>> STRUCTURE_PLACEMENT = of("worldgen/structure_placement");
 	public static final RegistryKey<Registry<StructurePoolElementType<?>>> STRUCTURE_POOL_ELEMENT = of("worldgen/structure_pool_element");
-	public static final RegistryKey<Registry<Codec<? extends StructurePoolAliasBinding>>> POOL_ALIAS_BINDING = of("worldgen/pool_alias_binding");
+	public static final RegistryKey<Registry<MapCodec<? extends StructurePoolAliasBinding>>> POOL_ALIAS_BINDING = of("worldgen/pool_alias_binding");
 	public static final RegistryKey<Registry<StructureProcessorType<?>>> STRUCTURE_PROCESSOR = of("worldgen/structure_processor");
 	public static final RegistryKey<Registry<StructureType<?>>> STRUCTURE_TYPE = of("worldgen/structure_type");
 	public static final RegistryKey<Registry<TreeDecoratorType<?>>> TREE_DECORATOR_TYPE = of("worldgen/tree_decorator_type");

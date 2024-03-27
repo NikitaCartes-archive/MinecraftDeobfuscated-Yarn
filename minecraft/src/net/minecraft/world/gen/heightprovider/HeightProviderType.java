@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.heightprovider;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
@@ -12,9 +12,9 @@ public interface HeightProviderType<P extends HeightProvider> {
 	HeightProviderType<TrapezoidHeightProvider> TRAPEZOID = register("trapezoid", TrapezoidHeightProvider.CODEC);
 	HeightProviderType<WeightedListHeightProvider> WEIGHTED_LIST = register("weighted_list", WeightedListHeightProvider.WEIGHTED_LIST_CODEC);
 
-	Codec<P> codec();
+	MapCodec<P> codec();
 
-	private static <P extends HeightProvider> HeightProviderType<P> register(String id, Codec<P> codec) {
+	private static <P extends HeightProvider> HeightProviderType<P> register(String id, MapCodec<P> codec) {
 		return Registry.register(Registries.HEIGHT_PROVIDER_TYPE, id, () -> codec);
 	}
 }

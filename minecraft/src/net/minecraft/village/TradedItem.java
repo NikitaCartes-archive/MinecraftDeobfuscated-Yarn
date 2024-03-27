@@ -22,7 +22,7 @@ public record TradedItem(RegistryEntry<Item> item, int count, ComponentPredicate
 		instance -> instance.group(
 					Registries.ITEM.getEntryCodec().fieldOf("id").forGetter(TradedItem::item),
 					Codecs.POSITIVE_INT.fieldOf("count").orElse(1).forGetter(TradedItem::count),
-					Codecs.createStrictOptionalFieldCodec(ComponentPredicate.CODEC, "components", ComponentPredicate.EMPTY).forGetter(TradedItem::components)
+					ComponentPredicate.CODEC.optionalFieldOf("components", ComponentPredicate.EMPTY).forGetter(TradedItem::components)
 				)
 				.apply(instance, TradedItem::new)
 	);

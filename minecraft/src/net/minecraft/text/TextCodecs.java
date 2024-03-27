@@ -29,7 +29,7 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.dynamic.Codecs;
 
 public class TextCodecs {
-	public static final Codec<Text> CODEC = Codecs.createRecursive("Component", TextCodecs::createCodec);
+	public static final Codec<Text> CODEC = Codec.recursive("Component", TextCodecs::createCodec);
 	public static final PacketCodec<RegistryByteBuf, Text> REGISTRY_PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
 	public static final PacketCodec<RegistryByteBuf, Optional<Text>> OPTIONAL_PACKET_CODEC = REGISTRY_PACKET_CODEC.collect(PacketCodecs::optional);
 	public static final PacketCodec<RegistryByteBuf, Text> UNLIMITED_REGISTRY_PACKET_CODEC = PacketCodecs.unlimitedRegistryCodec(CODEC);
@@ -40,7 +40,7 @@ public class TextCodecs {
 	public static final Codec<Text> STRINGIFIED_CODEC = codec(Integer.MAX_VALUE);
 
 	public static Codec<Text> codec(int maxSerializedLength) {
-		final Codec<String> codec = Codecs.string(0, maxSerializedLength);
+		final Codec<String> codec = Codec.string(0, maxSerializedLength);
 		return new Codec<Text>() {
 			@Override
 			public <T> DataResult<Pair<Text, T>> decode(DynamicOps<T> ops, T input) {
@@ -89,7 +89,7 @@ public class TextCodecs {
 			Stream.of(types).map(typeToCodec).toList(), object -> (MapEncoder)typeToCodec.apply((StringIdentifiable)valueToType.apply(object))
 		);
 		Codec<T> codec = StringIdentifiable.createBasicCodec(() -> types);
-		MapCodec<E> mapCodec2 = codec.dispatchMap(dispatchingKey, valueToType, type -> ((MapCodec)typeToCodec.apply(type)).codec());
+		MapCodec<E> mapCodec2 = codec.dispatchMap(dispatchingKey, valueToType, typeToCodec);
 		MapCodec<E> mapCodec3 = new TextCodecs.DispatchingCodec<>(dispatchingKey, mapCodec2, mapCodec);
 		return Codecs.orCompressed(mapCodec3, mapCodec2);
 	}
@@ -102,7 +102,7 @@ public class TextCodecs {
 		Codec<Text> codec = RecordCodecBuilder.create(
 			instance -> instance.group(
 						mapCodec.forGetter(Text::getContent),
-						Codecs.createStrictOptionalFieldCodec(Codecs.nonEmptyList(selfCodec.listOf()), "extra", List.of()).forGetter(Text::getSiblings),
+						Codecs.nonEmptyList(selfCodec.listOf()).optionalFieldOf("extra", List.of()).forGetter(Text::getSiblings),
 						Style.Codecs.MAP_CODEC.forGetter(Text::getStyle)
 					)
 					.apply(instance, MutableText::new)

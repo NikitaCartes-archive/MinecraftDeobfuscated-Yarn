@@ -13,7 +13,6 @@ import com.mojang.serialization.DynamicOps;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.minecraft.datafixer.FixUtil;
 import net.minecraft.datafixer.TypeReferences;
 import org.slf4j.Logger;
 
@@ -280,7 +279,11 @@ public class Schema99 extends Schema {
 					)
 				)
 		);
-		schema.registerType(true, TypeReferences.BLOCK_ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.string(), blockEntityTypes));
+		schema.registerType(
+			true,
+			TypeReferences.BLOCK_ENTITY,
+			() -> DSL.optionalFields("components", TypeReferences.DATA_COMPONENTS.in(schema), DSL.taggedChoiceLazy("id", DSL.string(), blockEntityTypes))
+		);
 		schema.registerType(
 			true, TypeReferences.ENTITY_TREE, () -> DSL.optionalFields("Riding", TypeReferences.ENTITY_TREE.in(schema), TypeReferences.ENTITY.in(schema))
 		);
@@ -294,7 +297,7 @@ public class Schema99 extends Schema {
 						"id",
 						DSL.or(DSL.constType(DSL.intType()), TypeReferences.ITEM_NAME.in(schema)),
 						"tag",
-						FixUtil.method_57188(
+						DSL.optionalFields(
 							Pair.of("EntityTag", TypeReferences.ENTITY_TREE.in(schema)),
 							Pair.of("BlockEntityTag", TypeReferences.BLOCK_ENTITY.in(schema)),
 							Pair.of("CanDestroy", DSL.list(TypeReferences.BLOCK_NAME.in(schema))),

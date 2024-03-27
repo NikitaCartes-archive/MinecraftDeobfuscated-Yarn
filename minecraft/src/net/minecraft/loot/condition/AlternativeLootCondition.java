@@ -2,6 +2,7 @@ package net.minecraft.loot.condition;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.function.Function;
@@ -18,8 +19,8 @@ public abstract class AlternativeLootCondition implements LootCondition {
 		this.predicate = predicate;
 	}
 
-	protected static <T extends AlternativeLootCondition> Codec<T> createCodec(Function<List<LootCondition>, T> termsToCondition) {
-		return RecordCodecBuilder.create(
+	protected static <T extends AlternativeLootCondition> MapCodec<T> createCodec(Function<List<LootCondition>, T> termsToCondition) {
+		return RecordCodecBuilder.mapCodec(
 			instance -> instance.group(LootConditionTypes.CODEC.listOf().fieldOf("terms").forGetter(condition -> condition.terms)).apply(instance, termsToCondition)
 		);
 	}

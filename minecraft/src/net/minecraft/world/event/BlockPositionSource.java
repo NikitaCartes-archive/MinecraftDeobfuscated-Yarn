@@ -1,6 +1,6 @@
 package net.minecraft.world.event;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.network.RegistryByteBuf;
@@ -10,7 +10,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class BlockPositionSource implements PositionSource {
-	public static final Codec<BlockPositionSource> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<BlockPositionSource> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(BlockPos.CODEC.fieldOf("pos").forGetter(blockPositionSource -> blockPositionSource.pos)).apply(instance, BlockPositionSource::new)
 	);
 	public static final PacketCodec<RegistryByteBuf, BlockPositionSource> PACKET_CODEC = PacketCodec.tuple(
@@ -34,7 +34,7 @@ public class BlockPositionSource implements PositionSource {
 
 	public static class Type implements PositionSourceType<BlockPositionSource> {
 		@Override
-		public Codec<BlockPositionSource> getCodec() {
+		public MapCodec<BlockPositionSource> getCodec() {
 			return BlockPositionSource.CODEC;
 		}
 

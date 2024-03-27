@@ -1,6 +1,6 @@
 package net.minecraft.structure.rule.blockentity;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
@@ -10,9 +10,9 @@ public interface RuleBlockEntityModifierType<P extends RuleBlockEntityModifier> 
 	RuleBlockEntityModifierType<AppendStaticRuleBlockEntityModifier> APPEND_STATIC = register("append_static", AppendStaticRuleBlockEntityModifier.CODEC);
 	RuleBlockEntityModifierType<AppendLootRuleBlockEntityModifier> APPEND_LOOT = register("append_loot", AppendLootRuleBlockEntityModifier.CODEC);
 
-	Codec<P> codec();
+	MapCodec<P> codec();
 
-	private static <P extends RuleBlockEntityModifier> RuleBlockEntityModifierType<P> register(String id, Codec<P> codec) {
+	private static <P extends RuleBlockEntityModifier> RuleBlockEntityModifierType<P> register(String id, MapCodec<P> codec) {
 		return Registry.register(Registries.RULE_BLOCK_ENTITY_MODIFIER, id, () -> codec);
 	}
 }

@@ -6,8 +6,6 @@ import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
 import java.util.Map;
-import java.util.function.UnaryOperator;
-import net.minecraft.datafixer.FixUtil;
 import net.minecraft.datafixer.TypeReferences;
 
 public class BannerPatternFormatFix extends ChoiceFix {
@@ -65,24 +63,20 @@ public class BannerPatternFormatFix extends ChoiceFix {
 	}
 
 	private static Dynamic<?> replacePatterns(Dynamic<?> dynamic) {
-		return FixUtil.replaceKey(
-			dynamic,
-			"Patterns",
-			"patterns",
-			(UnaryOperator<Dynamic<?>>)(dynamicx -> dynamicx.createList(dynamicx.asStream().map(BannerPatternFormatFix::replacePatternAndColor)))
+		return dynamic.renameAndFixField(
+			"Patterns", "patterns", dynamicx -> dynamicx.createList(dynamicx.asStream().map(BannerPatternFormatFix::replacePatternAndColor))
 		);
 	}
 
 	private static Dynamic<?> replacePatternAndColor(Dynamic<?> dynamic) {
-		dynamic = FixUtil.replaceKey(
-			dynamic,
+		dynamic = dynamic.renameAndFixField(
 			"Pattern",
 			"pattern",
-			(UnaryOperator<Dynamic<?>>)(dynamicx -> DataFixUtils.orElse(
+			dynamicx -> DataFixUtils.orElse(
 					dynamicx.asString().map(string -> (String)OLD_TO_NEW_PATTERNS.getOrDefault(string, string)).map(dynamicx::createString).result(), dynamicx
-				))
+				)
 		);
-		return FixUtil.replaceKey(dynamic, "Color", "color", (UnaryOperator<Dynamic<?>>)(dynamicx -> dynamicx.createString(getColorFromInt(dynamicx.asInt(0)))));
+		return dynamic.renameAndFixField("Color", "color", dynamicx -> dynamicx.createString(getColorFromInt(dynamicx.asInt(0))));
 	}
 
 	public static String getColorFromInt(int color) {

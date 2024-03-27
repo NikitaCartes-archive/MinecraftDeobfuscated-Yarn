@@ -9,7 +9,6 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class FilledBucketCriterion extends AbstractCriterion<FilledBucketCriterion.Conditions> {
 	@Override
@@ -24,8 +23,8 @@ public class FilledBucketCriterion extends AbstractCriterion<FilledBucketCriteri
 	public static record Conditions(Optional<LootContextPredicate> player, Optional<ItemPredicate> item) implements AbstractCriterion.Conditions {
 		public static final Codec<FilledBucketCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(FilledBucketCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(FilledBucketCriterion.Conditions::item)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(FilledBucketCriterion.Conditions::player),
+						ItemPredicate.CODEC.optionalFieldOf("item").forGetter(FilledBucketCriterion.Conditions::item)
 					)
 					.apply(instance, FilledBucketCriterion.Conditions::new)
 		);

@@ -31,7 +31,6 @@ import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -226,13 +225,19 @@ public class Raid {
 		this.badOmenLevel = badOmenLevel;
 	}
 
-	public void start(PlayerEntity player) {
-		if (player.hasStatusEffect(StatusEffects.BAD_OMEN)) {
-			this.badOmenLevel = this.badOmenLevel + player.getStatusEffect(StatusEffects.BAD_OMEN).getAmplifier() + 1;
+	public boolean start(ServerPlayerEntity serverPlayerEntity) {
+		if (!serverPlayerEntity.hasStatusEffect(StatusEffects.RAID_OMEN)) {
+			return false;
+		} else {
+			this.badOmenLevel = this.badOmenLevel + serverPlayerEntity.getStatusEffect(StatusEffects.RAID_OMEN).getAmplifier() + 1;
 			this.badOmenLevel = MathHelper.clamp(this.badOmenLevel, 0, this.getMaxAcceptableBadOmenLevel());
-		}
+			if (!this.hasSpawned()) {
+				serverPlayerEntity.incrementStat(Stats.RAID_TRIGGER);
+				Criteria.VOLUNTARY_EXILE.trigger(serverPlayerEntity);
+			}
 
-		player.removeStatusEffect(StatusEffects.BAD_OMEN);
+			return true;
+		}
 	}
 
 	public void invalidate() {
@@ -613,7 +618,7 @@ public class Raid {
 			.build();
 		itemStack.set(DataComponentTypes.BANNER_PATTERNS, bannerPatternsComponent);
 		itemStack.set(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE);
-		itemStack.set(DataComponentTypes.CUSTOM_NAME, OMINOUS_BANNER_TRANSLATION_KEY);
+		itemStack.set(DataComponentTypes.ITEM_NAME, OMINOUS_BANNER_TRANSLATION_KEY);
 		return itemStack;
 	}
 

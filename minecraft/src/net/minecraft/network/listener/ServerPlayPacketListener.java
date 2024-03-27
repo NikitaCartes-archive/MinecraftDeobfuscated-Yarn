@@ -7,6 +7,7 @@ import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
 import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
+import net.minecraft.network.packet.c2s.play.ChatCommandSignedC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
@@ -63,6 +64,8 @@ public interface ServerPlayPacketListener extends ServerQueryPingPacketListener,
 	void onChatMessage(ChatMessageC2SPacket packet);
 
 	void onCommandExecution(CommandExecutionC2SPacket packet);
+
+	void onChatCommandSigned(ChatCommandSignedC2SPacket packet);
 
 	void onMessageAcknowledgment(MessageAcknowledgmentC2SPacket packet);
 

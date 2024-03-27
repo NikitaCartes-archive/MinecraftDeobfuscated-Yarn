@@ -17,7 +17,6 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 
 public class ItemListProvider implements DataProvider {
 	private final DataOutput output;
@@ -47,9 +46,7 @@ public class ItemListProvider implements DataProvider {
 
 	private static <T> JsonElement toJson(Component<T> component, DynamicOps<JsonElement> ops) {
 		Identifier identifier = Registries.DATA_COMPONENT_TYPE.getId(component.type());
-		JsonElement jsonElement = Util.getResult(
-			component.encode(ops), error -> new IllegalStateException("Failed to serialize component " + identifier + ": " + error)
-		);
+		JsonElement jsonElement = component.encode(ops).getOrThrow(error -> new IllegalStateException("Failed to serialize component " + identifier + ": " + error));
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.addProperty("type", identifier.toString());
 		jsonObject.add("value", jsonElement);

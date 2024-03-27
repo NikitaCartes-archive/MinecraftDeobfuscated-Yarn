@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.List;
@@ -21,11 +22,11 @@ import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 
 public class SetStewEffectLootFunction extends ConditionalLootFunction {
-	private static final Codec<List<SetStewEffectLootFunction.StewEffect>> STEW_EFFECT_LIST_CODEC = Codecs.validate(
-		SetStewEffectLootFunction.StewEffect.CODEC.listOf(), stewEffects -> {
+	private static final Codec<List<SetStewEffectLootFunction.StewEffect>> STEW_EFFECT_LIST_CODEC = SetStewEffectLootFunction.StewEffect.CODEC
+		.listOf()
+		.validate(stewEffects -> {
 			Set<RegistryEntry<StatusEffect>> set = new ObjectOpenHashSet<>();
 
 			for (SetStewEffectLootFunction.StewEffect stewEffect : stewEffects) {
@@ -35,11 +36,10 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 			}
 
 			return DataResult.success(stewEffects);
-		}
-	);
-	public static final Codec<SetStewEffectLootFunction> CODEC = RecordCodecBuilder.create(
+		});
+	public static final MapCodec<SetStewEffectLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
-				.and(Codecs.createStrictOptionalFieldCodec(STEW_EFFECT_LIST_CODEC, "effects", List.of()).forGetter(function -> function.stewEffects))
+				.and(STEW_EFFECT_LIST_CODEC.optionalFieldOf("effects", List.of()).forGetter(function -> function.stewEffects))
 				.apply(instance, SetStewEffectLootFunction::new)
 	);
 	private final List<SetStewEffectLootFunction.StewEffect> stewEffects;

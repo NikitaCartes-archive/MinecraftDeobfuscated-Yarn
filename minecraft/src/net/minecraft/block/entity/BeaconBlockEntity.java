@@ -277,7 +277,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createNbt(registryLookup);
+		return this.createComponentlessNbt(registryLookup);
 	}
 
 	private static void writeStatusEffect(NbtCompound nbt, String key, @Nullable RegistryEntry<StatusEffect> effect) {
@@ -297,7 +297,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		this.primary = readStatusEffect(nbt, "primary_effect");
 		this.secondary = readStatusEffect(nbt, "secondary_effect");
@@ -350,13 +350,15 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	@Override
-	public void readComponents(ComponentMap components) {
+	protected void readComponents(BlockEntity.ComponentsAccess components) {
+		super.readComponents(components);
 		this.customName = components.get(DataComponentTypes.CUSTOM_NAME);
 		this.lock = components.getOrDefault(DataComponentTypes.LOCK, ContainerLock.EMPTY);
 	}
 
 	@Override
-	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
+		super.addComponents(componentMapBuilder);
 		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
 		if (!this.lock.equals(ContainerLock.EMPTY)) {
 			componentMapBuilder.add(DataComponentTypes.LOCK, this.lock);

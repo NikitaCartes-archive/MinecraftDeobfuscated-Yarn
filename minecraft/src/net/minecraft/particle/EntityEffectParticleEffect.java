@@ -3,6 +3,7 @@ package net.minecraft.particle;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.netty.buffer.ByteBuf;
 import java.util.Locale;
 import net.minecraft.network.codec.PacketCodec;
@@ -33,8 +34,8 @@ public class EntityEffectParticleEffect implements ParticleEffect {
 	private final ParticleType<? extends EntityEffectParticleEffect> type;
 	private final int color;
 
-	public static Codec<EntityEffectParticleEffect> createCodec(ParticleType<EntityEffectParticleEffect> type) {
-		return Codec.INT.xmap(color -> new EntityEffectParticleEffect(type, color), effect -> effect.color);
+	public static MapCodec<EntityEffectParticleEffect> createCodec(ParticleType<EntityEffectParticleEffect> type) {
+		return Codec.INT.<EntityEffectParticleEffect>xmap(color -> new EntityEffectParticleEffect(type, color), effect -> effect.color).fieldOf("value");
 	}
 
 	public static PacketCodec<? super ByteBuf, EntityEffectParticleEffect> createPacketCodec(ParticleType<EntityEffectParticleEffect> type) {

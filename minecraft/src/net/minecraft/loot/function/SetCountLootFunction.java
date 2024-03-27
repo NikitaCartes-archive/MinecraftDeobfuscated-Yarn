@@ -1,6 +1,7 @@
 package net.minecraft.loot.function;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Set;
@@ -13,7 +14,7 @@ import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 import net.minecraft.util.math.MathHelper;
 
 public class SetCountLootFunction extends ConditionalLootFunction {
-	public static final Codec<SetCountLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SetCountLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.<LootNumberProvider, boolean>and(
 					instance.group(

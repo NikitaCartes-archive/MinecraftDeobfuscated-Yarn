@@ -1,19 +1,19 @@
 package net.minecraft.structure.processor;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryElementCodec;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.dynamic.Codecs;
 
 public interface StructureProcessorType<P extends StructureProcessor> {
 	Codec<StructureProcessor> CODEC = Registries.STRUCTURE_PROCESSOR
 		.getCodec()
 		.dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
 	Codec<StructureProcessorList> LIST_CODEC = CODEC.listOf().xmap(StructureProcessorList::new, StructureProcessorList::getList);
-	Codec<StructureProcessorList> PROCESSORS_CODEC = Codecs.alternatively(LIST_CODEC.fieldOf("processors").codec(), LIST_CODEC);
+	Codec<StructureProcessorList> PROCESSORS_CODEC = Codec.withAlternative(LIST_CODEC.fieldOf("processors").codec(), LIST_CODEC);
 	Codec<RegistryEntry<StructureProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.PROCESSOR_LIST, PROCESSORS_CODEC);
 	StructureProcessorType<BlockIgnoreStructureProcessor> BLOCK_IGNORE = register("block_ignore", BlockIgnoreStructureProcessor.CODEC);
 	StructureProcessorType<BlockRotStructureProcessor> BLOCK_ROT = register("block_rot", BlockRotStructureProcessor.CODEC);
@@ -31,9 +31,9 @@ public interface StructureProcessorType<P extends StructureProcessor> {
 	StructureProcessorType<ProtectedBlocksStructureProcessor> PROTECTED_BLOCKS = register("protected_blocks", ProtectedBlocksStructureProcessor.CODEC);
 	StructureProcessorType<CappedStructureProcessor> CAPPED = register("capped", CappedStructureProcessor.CODEC);
 
-	Codec<P> codec();
+	MapCodec<P> codec();
 
-	static <P extends StructureProcessor> StructureProcessorType<P> register(String id, Codec<P> codec) {
+	static <P extends StructureProcessor> StructureProcessorType<P> register(String id, MapCodec<P> codec) {
 		return Registry.register(Registries.STRUCTURE_PROCESSOR, id, () -> codec);
 	}
 }

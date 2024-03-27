@@ -24,7 +24,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.dynamic.Codecs;
 
 public final class Ingredient implements Predicate<ItemStack> {
 	public static final Ingredient EMPTY = new Ingredient(Stream.empty());
@@ -126,7 +125,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 						: DataResult.success((Ingredient.Entry[])entries.toArray(new Ingredient.Entry[0])),
 				List::of
 			);
-		return Codecs.either(codec, Ingredient.Entry.CODEC)
+		return Codec.either(codec, Ingredient.Entry.CODEC)
 			.flatComapMap(
 				either -> either.map(Ingredient::new, entry -> new Ingredient(new Ingredient.Entry[]{entry})),
 				ingredient -> {
@@ -142,7 +141,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 	}
 
 	interface Entry {
-		Codec<Ingredient.Entry> CODEC = Codecs.xor(Ingredient.StackEntry.CODEC, Ingredient.TagEntry.CODEC)
+		Codec<Ingredient.Entry> CODEC = Codec.xor(Ingredient.StackEntry.CODEC, Ingredient.TagEntry.CODEC)
 			.xmap(either -> either.map(stackEntry -> stackEntry, tagEntry -> tagEntry), entry -> {
 				if (entry instanceof Ingredient.TagEntry tagEntry) {
 					return Either.right(tagEntry);

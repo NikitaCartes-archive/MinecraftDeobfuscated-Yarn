@@ -4,7 +4,6 @@ import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
-import net.minecraft.datafixer.FixUtil;
 import net.minecraft.datafixer.TypeReferences;
 
 public class EntityBrushableBlockFieldsRenameFix extends ChoiceFix {
@@ -13,7 +12,7 @@ public class EntityBrushableBlockFieldsRenameFix extends ChoiceFix {
 	}
 
 	public Dynamic<?> renameFields(Dynamic<?> dynamic) {
-		return FixUtil.renameKey(FixUtil.renameKey(dynamic, "loot_table", "LootTable"), "loot_table_seed", "LootTableSeed");
+		return dynamic.renameField("loot_table", "LootTable").renameField("loot_table_seed", "LootTableSeed");
 	}
 
 	@Override

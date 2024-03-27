@@ -12,20 +12,17 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryElementCodec;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 
 public class WorldPreset {
-	public static final Codec<WorldPreset> CODEC = Codecs.validate(
-		RecordCodecBuilder.create(
+	public static final Codec<WorldPreset> CODEC = RecordCodecBuilder.<WorldPreset>create(
 			instance -> instance.group(
 						Codec.unboundedMap(RegistryKey.createCodec(RegistryKeys.DIMENSION), DimensionOptions.CODEC).fieldOf("dimensions").forGetter(preset -> preset.dimensions)
 					)
 					.apply(instance, WorldPreset::new)
-		),
-		WorldPreset::validate
-	);
+		)
+		.validate(WorldPreset::validate);
 	public static final Codec<RegistryEntry<WorldPreset>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.WORLD_PRESET, CODEC);
 	private final Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensions;
 

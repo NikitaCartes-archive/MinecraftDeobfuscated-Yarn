@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.foliage;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
@@ -9,7 +10,7 @@ import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class CherryFoliagePlacer extends FoliagePlacer {
-	public static final Codec<CherryFoliagePlacer> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<CherryFoliagePlacer> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> fillFoliagePlacerFields(instance)
 				.<IntProvider, Float, Float, Float, Float>and(
 					instance.group(

@@ -2,30 +2,27 @@ package net.minecraft.world.gen.chunk.placement;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
 
 public class RandomSpreadStructurePlacement extends StructurePlacement {
-	public static final Codec<RandomSpreadStructurePlacement> CODEC = Codecs.validate(
-			RecordCodecBuilder.mapCodec(
-				instance -> buildCodec(instance)
-						.<int, int, SpreadType>and(
-							instance.group(
-								Codec.intRange(0, 4096).fieldOf("spacing").forGetter(RandomSpreadStructurePlacement::getSpacing),
-								Codec.intRange(0, 4096).fieldOf("separation").forGetter(RandomSpreadStructurePlacement::getSeparation),
-								SpreadType.CODEC.optionalFieldOf("spread_type", SpreadType.LINEAR).forGetter(RandomSpreadStructurePlacement::getSpreadType)
-							)
+	public static final MapCodec<RandomSpreadStructurePlacement> CODEC = RecordCodecBuilder.<RandomSpreadStructurePlacement>mapCodec(
+			instance -> buildCodec(instance)
+					.<int, int, SpreadType>and(
+						instance.group(
+							Codec.intRange(0, 4096).fieldOf("spacing").forGetter(RandomSpreadStructurePlacement::getSpacing),
+							Codec.intRange(0, 4096).fieldOf("separation").forGetter(RandomSpreadStructurePlacement::getSeparation),
+							SpreadType.CODEC.optionalFieldOf("spread_type", SpreadType.LINEAR).forGetter(RandomSpreadStructurePlacement::getSpreadType)
 						)
-						.apply(instance, RandomSpreadStructurePlacement::new)
-			),
-			RandomSpreadStructurePlacement::validate
+					)
+					.apply(instance, RandomSpreadStructurePlacement::new)
 		)
-		.codec();
+		.validate(RandomSpreadStructurePlacement::validate);
 	private final int spacing;
 	private final int separation;
 	private final SpreadType spreadType;

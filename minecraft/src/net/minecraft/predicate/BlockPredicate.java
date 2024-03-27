@@ -19,16 +19,15 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 
 public record BlockPredicate(Optional<RegistryEntryList<Block>> blocks, Optional<StatePredicate> state, Optional<NbtPredicate> nbt) {
 	public static final Codec<BlockPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(RegistryCodecs.entryList(RegistryKeys.BLOCK), "blocks").forGetter(BlockPredicate::blocks),
-					Codecs.createStrictOptionalFieldCodec(StatePredicate.CODEC, "state").forGetter(BlockPredicate::state),
-					Codecs.createStrictOptionalFieldCodec(NbtPredicate.CODEC, "nbt").forGetter(BlockPredicate::nbt)
+					RegistryCodecs.entryList(RegistryKeys.BLOCK).optionalFieldOf("blocks").forGetter(BlockPredicate::blocks),
+					StatePredicate.CODEC.optionalFieldOf("state").forGetter(BlockPredicate::state),
+					NbtPredicate.CODEC.optionalFieldOf("nbt").forGetter(BlockPredicate::nbt)
 				)
 				.apply(instance, BlockPredicate::new)
 	);

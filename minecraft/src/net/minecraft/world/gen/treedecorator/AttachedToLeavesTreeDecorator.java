@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.treedecorator;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +14,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class AttachedToLeavesTreeDecorator extends TreeDecorator {
-	public static final Codec<AttachedToLeavesTreeDecorator> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<AttachedToLeavesTreeDecorator> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codec.floatRange(0.0F, 1.0F).fieldOf("probability").forGetter(treeDecorator -> treeDecorator.probability),
 					Codec.intRange(0, 16).fieldOf("exclusion_radius_xz").forGetter(treeDecorator -> treeDecorator.exclusionRadiusXZ),

@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.util.Util;
 
 /**
  * A resource pack manager manages a list of {@link ResourcePackProfile}s and
@@ -74,7 +74,7 @@ public class ResourcePackManager {
 	}
 
 	private List<ResourcePackProfile> buildEnabledProfiles(Collection<String> enabledNames) {
-		List<ResourcePackProfile> list = (List<ResourcePackProfile>)this.streamProfilesById(enabledNames).collect(Collectors.toList());
+		List<ResourcePackProfile> list = (List<ResourcePackProfile>)this.streamProfilesById(enabledNames).collect(Util.toArrayList());
 
 		for (ResourcePackProfile resourcePackProfile : this.profiles.values()) {
 			if (resourcePackProfile.isRequired() && !list.contains(resourcePackProfile)) {

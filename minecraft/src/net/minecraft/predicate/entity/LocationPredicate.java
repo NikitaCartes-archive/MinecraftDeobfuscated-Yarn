@@ -14,7 +14,6 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -32,14 +31,14 @@ public record LocationPredicate(
 ) {
 	public static final Codec<LocationPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(LocationPredicate.PositionRange.CODEC, "position").forGetter(LocationPredicate::position),
-					Codecs.createStrictOptionalFieldCodec(RegistryCodecs.entryList(RegistryKeys.BIOME), "biomes").forGetter(LocationPredicate::biomes),
-					Codecs.createStrictOptionalFieldCodec(RegistryCodecs.entryList(RegistryKeys.STRUCTURE), "structures").forGetter(LocationPredicate::structures),
-					Codecs.createStrictOptionalFieldCodec(RegistryKey.createCodec(RegistryKeys.WORLD), "dimension").forGetter(LocationPredicate::dimension),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "smokey").forGetter(LocationPredicate::smokey),
-					Codecs.createStrictOptionalFieldCodec(LightPredicate.CODEC, "light").forGetter(LocationPredicate::light),
-					Codecs.createStrictOptionalFieldCodec(BlockPredicate.CODEC, "block").forGetter(LocationPredicate::block),
-					Codecs.createStrictOptionalFieldCodec(FluidPredicate.CODEC, "fluid").forGetter(LocationPredicate::fluid)
+					LocationPredicate.PositionRange.CODEC.optionalFieldOf("position").forGetter(LocationPredicate::position),
+					RegistryCodecs.entryList(RegistryKeys.BIOME).optionalFieldOf("biomes").forGetter(LocationPredicate::biomes),
+					RegistryCodecs.entryList(RegistryKeys.STRUCTURE).optionalFieldOf("structures").forGetter(LocationPredicate::structures),
+					RegistryKey.createCodec(RegistryKeys.WORLD).optionalFieldOf("dimension").forGetter(LocationPredicate::dimension),
+					Codec.BOOL.optionalFieldOf("smokey").forGetter(LocationPredicate::smokey),
+					LightPredicate.CODEC.optionalFieldOf("light").forGetter(LocationPredicate::light),
+					BlockPredicate.CODEC.optionalFieldOf("block").forGetter(LocationPredicate::block),
+					FluidPredicate.CODEC.optionalFieldOf("fluid").forGetter(LocationPredicate::fluid)
 				)
 				.apply(instance, LocationPredicate::new)
 	);
@@ -166,9 +165,9 @@ public record LocationPredicate(
 	static record PositionRange(NumberRange.DoubleRange x, NumberRange.DoubleRange y, NumberRange.DoubleRange z) {
 		public static final Codec<LocationPredicate.PositionRange> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "x", NumberRange.DoubleRange.ANY).forGetter(LocationPredicate.PositionRange::x),
-						Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "y", NumberRange.DoubleRange.ANY).forGetter(LocationPredicate.PositionRange::y),
-						Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "z", NumberRange.DoubleRange.ANY).forGetter(LocationPredicate.PositionRange::z)
+						NumberRange.DoubleRange.CODEC.optionalFieldOf("x", NumberRange.DoubleRange.ANY).forGetter(LocationPredicate.PositionRange::x),
+						NumberRange.DoubleRange.CODEC.optionalFieldOf("y", NumberRange.DoubleRange.ANY).forGetter(LocationPredicate.PositionRange::y),
+						NumberRange.DoubleRange.CODEC.optionalFieldOf("z", NumberRange.DoubleRange.ANY).forGetter(LocationPredicate.PositionRange::z)
 					)
 					.apply(instance, LocationPredicate.PositionRange::new)
 		);

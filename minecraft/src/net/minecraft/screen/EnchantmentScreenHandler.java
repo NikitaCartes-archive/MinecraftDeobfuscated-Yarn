@@ -14,6 +14,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -114,7 +115,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 
 					for (int jx = 0; jx < 3; jx++) {
 						if (this.enchantmentPower[jx] > 0) {
-							List<EnchantmentLevelEntry> list = this.generateEnchantments(itemStack, jx, this.enchantmentPower[jx]);
+							List<EnchantmentLevelEntry> list = this.generateEnchantments(world.getEnabledFeatures(), itemStack, jx, this.enchantmentPower[jx]);
 							if (list != null && !list.isEmpty()) {
 								EnchantmentLevelEntry enchantmentLevelEntry = (EnchantmentLevelEntry)list.get(this.random.nextInt(list.size()));
 								this.enchantmentId[jx] = Registries.ENCHANTMENT.getRawId(enchantmentLevelEntry.enchantment);
@@ -150,7 +151,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 			} else {
 				this.context.run((world, pos) -> {
 					ItemStack itemStack3 = itemStack;
-					List<EnchantmentLevelEntry> list = this.generateEnchantments(itemStack, id, this.enchantmentPower[id]);
+					List<EnchantmentLevelEntry> list = this.generateEnchantments(world.getEnabledFeatures(), itemStack, id, this.enchantmentPower[id]);
 					if (!list.isEmpty()) {
 						player.applyEnchantmentCosts(itemStack, i);
 						if (itemStack.isOf(Items.BOOK)) {
@@ -188,9 +189,9 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 		}
 	}
 
-	private List<EnchantmentLevelEntry> generateEnchantments(ItemStack stack, int slot, int level) {
+	private List<EnchantmentLevelEntry> generateEnchantments(FeatureSet enabledFeatures, ItemStack stack, int slot, int level) {
 		this.random.setSeed((long)(this.seed.get() + slot));
-		List<EnchantmentLevelEntry> list = EnchantmentHelper.generateEnchantments(this.random, stack, level, false);
+		List<EnchantmentLevelEntry> list = EnchantmentHelper.generateEnchantments(enabledFeatures, this.random, stack, level, false);
 		if (stack.isOf(Items.BOOK) && list.size() > 1) {
 			list.remove(this.random.nextInt(list.size()));
 		}

@@ -626,7 +626,14 @@ public class Blocks {
 	public static final Block COBWEB = register(
 		"cobweb",
 		new CobwebBlock(
-			AbstractBlock.Settings.create().mapColor(MapColor.WHITE_GRAY).solid().noCollision().requiresTool().strength(4.0F).pistonBehavior(PistonBehavior.DESTROY)
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.WHITE_GRAY)
+				.sounds(BlockSoundGroup.COBWEB)
+				.solid()
+				.noCollision()
+				.requiresTool()
+				.strength(4.0F)
+				.pistonBehavior(PistonBehavior.DESTROY)
 		)
 	);
 	public static final Block SHORT_GRASS = register(
@@ -6556,7 +6563,7 @@ public class Blocks {
 				blockState.initShapeCache();
 			}
 
-			block.getLootTableId();
+			block.getLootTableKey();
 		}
 	}
 }

@@ -1,15 +1,14 @@
 package net.minecraft.world.gen.stateprovider;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 
 public class SimpleBlockStateProvider extends BlockStateProvider {
-	public static final Codec<SimpleBlockStateProvider> CODEC = BlockState.CODEC
+	public static final MapCodec<SimpleBlockStateProvider> CODEC = BlockState.CODEC
 		.fieldOf("state")
-		.<SimpleBlockStateProvider>xmap(SimpleBlockStateProvider::new, simpleBlockStateProvider -> simpleBlockStateProvider.state)
-		.codec();
+		.xmap(SimpleBlockStateProvider::new, simpleBlockStateProvider -> simpleBlockStateProvider.state);
 	private final BlockState state;
 
 	protected SimpleBlockStateProvider(BlockState state) {

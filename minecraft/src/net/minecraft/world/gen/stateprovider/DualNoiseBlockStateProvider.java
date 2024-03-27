@@ -2,6 +2,7 @@ package net.minecraft.world.gen.stateprovider;
 
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.block.BlockState;
@@ -15,7 +16,7 @@ import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.math.random.Random;
 
 public class DualNoiseBlockStateProvider extends NoiseBlockStateProvider {
-	public static final Codec<DualNoiseBlockStateProvider> DUAL_CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<DualNoiseBlockStateProvider> DUAL_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Range.createRangedCodec(Codec.INT, 1, 64).fieldOf("variety").forGetter(dualNoiseBlockStateProvider -> dualNoiseBlockStateProvider.variety),
 					DoublePerlinNoiseSampler.NoiseParameters.CODEC

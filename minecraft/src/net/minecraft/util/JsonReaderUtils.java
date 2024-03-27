@@ -46,7 +46,7 @@ public class JsonReaderUtils {
 		Object var5;
 		try {
 			JsonElement jsonElement = Streams.parse(jsonReader);
-			var5 = Util.getResult(codec.parse(registryLookup.getOps(JsonOps.INSTANCE), jsonElement), JsonParseException::new);
+			var5 = codec.parse(registryLookup.getOps(JsonOps.INSTANCE), jsonElement).getOrThrow(JsonParseException::new);
 		} catch (StackOverflowError var9) {
 			throw new JsonParseException(var9);
 		} finally {

@@ -61,7 +61,7 @@ public class PistonBlockEntity extends BlockEntity {
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createNbt(registryLookup);
+		return this.createComponentlessNbt(registryLookup);
 	}
 
 	public boolean isExtending() {
@@ -323,7 +323,7 @@ public class PistonBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		RegistryEntryLookup<Block> registryEntryLookup = (RegistryEntryLookup<Block>)(this.world != null
 			? this.world.createCommandRegistryWrapper(RegistryKeys.BLOCK)

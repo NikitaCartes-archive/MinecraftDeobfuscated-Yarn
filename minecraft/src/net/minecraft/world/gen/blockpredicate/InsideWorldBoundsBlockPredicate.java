@@ -1,13 +1,13 @@
 package net.minecraft.world.gen.blockpredicate;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.StructureWorldAccess;
 
 public class InsideWorldBoundsBlockPredicate implements BlockPredicate {
-	public static final Codec<InsideWorldBoundsBlockPredicate> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<InsideWorldBoundsBlockPredicate> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(Vec3i.createOffsetCodec(16).optionalFieldOf("offset", BlockPos.ORIGIN).forGetter(predicate -> predicate.offset))
 				.apply(instance, InsideWorldBoundsBlockPredicate::new)
 	);

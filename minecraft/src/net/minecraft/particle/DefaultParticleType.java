@@ -1,7 +1,7 @@
 package net.minecraft.particle;
 
 import com.mojang.brigadier.StringReader;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.Registries;
@@ -13,7 +13,7 @@ public class DefaultParticleType extends ParticleType<DefaultParticleType> imple
 			return (DefaultParticleType)particleType;
 		}
 	};
-	private final Codec<DefaultParticleType> codec = Codec.unit(this::getType);
+	private final MapCodec<DefaultParticleType> codec = MapCodec.unit(this::getType);
 	private final PacketCodec<RegistryByteBuf, DefaultParticleType> PACKET_CODEC = PacketCodec.unit(this);
 
 	protected DefaultParticleType(boolean alwaysShow) {
@@ -25,7 +25,7 @@ public class DefaultParticleType extends ParticleType<DefaultParticleType> imple
 	}
 
 	@Override
-	public Codec<DefaultParticleType> getCodec() {
+	public MapCodec<DefaultParticleType> getCodec() {
 		return this.codec;
 	}
 

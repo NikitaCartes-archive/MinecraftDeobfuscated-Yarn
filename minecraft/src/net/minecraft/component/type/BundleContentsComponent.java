@@ -14,12 +14,12 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.dynamic.Codecs;
 
 public final class BundleContentsComponent implements TooltipData {
 	public static final int MAX_SIZE = 64;
 	public static final BundleContentsComponent DEFAULT = new BundleContentsComponent(List.of());
-	public static final Codec<BundleContentsComponent> CODEC = Codecs.list(ItemStack.CODEC.listOf(), 64)
+	public static final Codec<BundleContentsComponent> CODEC = ItemStack.CODEC
+		.sizeLimitedListOf(64)
 		.xmap(BundleContentsComponent::new, component -> component.stacks);
 	public static final PacketCodec<RegistryByteBuf, BundleContentsComponent> PACKET_CODEC = ItemStack.PACKET_CODEC
 		.collect(PacketCodecs.toList(64))

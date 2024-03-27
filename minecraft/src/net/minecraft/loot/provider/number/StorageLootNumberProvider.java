@@ -1,7 +1,7 @@
 package net.minecraft.loot.provider.number;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +13,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
 
 public record StorageLootNumberProvider(Identifier storage, NbtPathArgumentType.NbtPath path) implements LootNumberProvider {
-	public static final Codec<StorageLootNumberProvider> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<StorageLootNumberProvider> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Identifier.CODEC.fieldOf("storage").forGetter(StorageLootNumberProvider::storage),
 					NbtPathArgumentType.NbtPath.CODEC.fieldOf("path").forGetter(StorageLootNumberProvider::path)

@@ -2,6 +2,7 @@ package net.minecraft.loot.function;
 
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import org.slf4j.Logger;
@@ -26,9 +26,9 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 		.getEntryCodec()
 		.listOf()
 		.xmap(RegistryEntryList::of, enchantments -> enchantments.stream().toList());
-	public static final Codec<EnchantRandomlyLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<EnchantRandomlyLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
-				.and(Codecs.createStrictOptionalFieldCodec(ENCHANTMENT_LIST_CODEC, "enchantments").forGetter(function -> function.enchantments))
+				.and(ENCHANTMENT_LIST_CODEC.optionalFieldOf("enchantments").forGetter(function -> function.enchantments))
 				.apply(instance, EnchantRandomlyLootFunction::new)
 	);
 	private final Optional<RegistryEntryList<Enchantment>> enchantments;
@@ -53,6 +53,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 					boolean bl = stack.isOf(Items.BOOK);
 					List<RegistryEntry.Reference<Enchantment>> list = Registries.ENCHANTMENT
 						.streamEntries()
+						.filter(entry -> ((Enchantment)entry.value()).isEnabled(context.getWorld().getEnabledFeatures()))
 						.filter(enchantment -> ((Enchantment)enchantment.value()).isAvailableForRandomSelection())
 						.filter(enchantment -> bl || ((Enchantment)enchantment.value()).isAcceptableItem(stack))
 						.toList();

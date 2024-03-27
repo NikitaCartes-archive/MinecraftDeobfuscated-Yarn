@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.blockpredicate;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -10,7 +10,7 @@ import net.minecraft.util.math.Vec3i;
 
 public class MatchingBlockTagPredicate extends OffsetPredicate {
 	final TagKey<Block> tag;
-	public static final Codec<MatchingBlockTagPredicate> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<MatchingBlockTagPredicate> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> registerOffsetField(instance)
 				.and(TagKey.unprefixedCodec(RegistryKeys.BLOCK).fieldOf("tag").forGetter(predicate -> predicate.tag))
 				.apply(instance, MatchingBlockTagPredicate::new)

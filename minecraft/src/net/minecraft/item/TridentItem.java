@@ -13,6 +13,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -22,11 +23,13 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class TridentItem extends Item {
+public class TridentItem extends Item implements ProjectileItem {
 	public static final int MIN_DRAW_DURATION = 10;
 	public static final float ATTACK_DAMAGE = 8.0F;
 	public static final float THROW_SPEED = 2.5F;
@@ -150,5 +153,12 @@ public class TridentItem extends Item {
 	@Override
 	public int getEnchantability() {
 		return 1;
+	}
+
+	@Override
+	public ProjectileEntity createEntity(World world, Position pos, ItemStack stack, Direction direction) {
+		TridentEntity tridentEntity = new TridentEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack.copyWithCount(1));
+		tridentEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
+		return tridentEntity;
 	}
 }

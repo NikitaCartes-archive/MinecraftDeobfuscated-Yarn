@@ -1,17 +1,16 @@
 package net.minecraft.world.gen.stateprovider;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 
 public class WeightedBlockStateProvider extends BlockStateProvider {
-	public static final Codec<WeightedBlockStateProvider> CODEC = DataPool.createCodec(BlockState.CODEC)
+	public static final MapCodec<WeightedBlockStateProvider> CODEC = DataPool.createCodec(BlockState.CODEC)
 		.<WeightedBlockStateProvider>comapFlatMap(WeightedBlockStateProvider::wrap, weightedBlockStateProvider -> weightedBlockStateProvider.states)
-		.fieldOf("entries")
-		.codec();
+		.fieldOf("entries");
 	private final DataPool<BlockState> states;
 
 	private static DataResult<WeightedBlockStateProvider> wrap(DataPool<BlockState> states) {

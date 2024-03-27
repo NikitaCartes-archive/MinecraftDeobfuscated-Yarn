@@ -92,7 +92,7 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	}
 
 	@Override
-	public void readComponents(ComponentMap components) {
+	protected void readComponents(BlockEntity.ComponentsAccess components) {
 		super.readComponents(components);
 		ContainerLootComponent containerLootComponent = components.get(DataComponentTypes.CONTAINER_LOOT);
 		if (containerLootComponent != null) {
@@ -102,7 +102,7 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	}
 
 	@Override
-	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
 		super.addComponents(componentMapBuilder);
 		if (this.lootTable != null) {
 			componentMapBuilder.add(DataComponentTypes.CONTAINER_LOOT, new ContainerLootComponent(this.lootTable, this.lootTableSeed));

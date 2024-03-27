@@ -1,13 +1,13 @@
 package net.minecraft.structure.rule.blockentity;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.random.Random;
 
 public class PassthroughRuleBlockEntityModifier implements RuleBlockEntityModifier {
 	public static final PassthroughRuleBlockEntityModifier INSTANCE = new PassthroughRuleBlockEntityModifier();
-	public static final Codec<PassthroughRuleBlockEntityModifier> CODEC = Codec.unit(INSTANCE);
+	public static final MapCodec<PassthroughRuleBlockEntityModifier> CODEC = MapCodec.unit(INSTANCE);
 
 	@Nullable
 	@Override

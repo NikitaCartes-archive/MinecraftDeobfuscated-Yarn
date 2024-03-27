@@ -11,16 +11,14 @@ import net.minecraft.predicate.TagPredicate;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
 public record DamageSourcePredicate(List<TagPredicate<DamageType>> tags, Optional<EntityPredicate> directEntity, Optional<EntityPredicate> sourceEntity) {
 	public static final Codec<DamageSourcePredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(TagPredicate.createCodec(RegistryKeys.DAMAGE_TYPE).listOf(), "tags", List.of())
-						.forGetter(DamageSourcePredicate::tags),
-					Codecs.createStrictOptionalFieldCodec(EntityPredicate.CODEC, "direct_entity").forGetter(DamageSourcePredicate::directEntity),
-					Codecs.createStrictOptionalFieldCodec(EntityPredicate.CODEC, "source_entity").forGetter(DamageSourcePredicate::sourceEntity)
+					TagPredicate.createCodec(RegistryKeys.DAMAGE_TYPE).listOf().optionalFieldOf("tags", List.of()).forGetter(DamageSourcePredicate::tags),
+					EntityPredicate.CODEC.optionalFieldOf("direct_entity").forGetter(DamageSourcePredicate::directEntity),
+					EntityPredicate.CODEC.optionalFieldOf("source_entity").forGetter(DamageSourcePredicate::sourceEntity)
 				)
 				.apply(instance, DamageSourcePredicate::new)
 	);

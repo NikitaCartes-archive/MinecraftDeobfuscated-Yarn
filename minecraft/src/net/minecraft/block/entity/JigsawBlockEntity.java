@@ -109,7 +109,7 @@ public class JigsawBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		this.name = new Identifier(nbt.getString("name"));
 		this.target = new Identifier(nbt.getString("target"));
@@ -127,7 +127,7 @@ public class JigsawBlockEntity extends BlockEntity {
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createNbt(registryLookup);
+		return this.createComponentlessNbt(registryLookup);
 	}
 
 	public void generate(ServerWorld world, int maxDepth, boolean keepJigsaws) {

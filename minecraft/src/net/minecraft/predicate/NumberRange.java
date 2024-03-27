@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.text.Text;
-import net.minecraft.util.dynamic.Codecs;
 
 public interface NumberRange<T extends Number> {
 	SimpleCommandExceptionType EXCEPTION_EMPTY = new SimpleCommandExceptionType(Text.translatable("argument.range.empty"));
@@ -33,10 +32,7 @@ public interface NumberRange<T extends Number> {
 
 	static <T extends Number, R extends NumberRange<T>> Codec<R> createCodec(Codec<T> valueCodec, NumberRange.Factory<T, R> rangeFactory) {
 		Codec<R> codec = RecordCodecBuilder.create(
-			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(valueCodec, "min").forGetter(NumberRange::min),
-						Codecs.createStrictOptionalFieldCodec(valueCodec, "max").forGetter(NumberRange::max)
-					)
+			instance -> instance.group(valueCodec.optionalFieldOf("min").forGetter(NumberRange::min), valueCodec.optionalFieldOf("max").forGetter(NumberRange::max))
 					.apply(instance, rangeFactory::create)
 		);
 		return Codec.either(codec, valueCodec)

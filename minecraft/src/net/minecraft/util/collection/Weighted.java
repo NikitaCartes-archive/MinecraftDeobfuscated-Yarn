@@ -27,19 +27,7 @@ public interface Weighted {
 		}
 	}
 
-	public static class Present<T> implements Weighted {
-		private final T data;
-		private final Weight weight;
-
-		Present(T data, Weight weight) {
-			this.data = data;
-			this.weight = weight;
-		}
-
-		public T getData() {
-			return this.data;
-		}
-
+	public static record Present<T>(T data, Weight weight) implements Weighted {
 		@Override
 		public Weight getWeight() {
 			return this.weight;
@@ -47,9 +35,7 @@ public interface Weighted {
 
 		public static <E> Codec<Weighted.Present<E>> createCodec(Codec<E> dataCodec) {
 			return RecordCodecBuilder.create(
-				instance -> instance.group(
-							dataCodec.fieldOf("data").forGetter(Weighted.Present::getData), Weight.CODEC.fieldOf("weight").forGetter(Weighted.Present::getWeight)
-						)
+				instance -> instance.group(dataCodec.fieldOf("data").forGetter(Weighted.Present::data), Weight.CODEC.fieldOf("weight").forGetter(Weighted.Present::weight))
 						.apply(instance, Weighted.Present::new)
 			);
 		}

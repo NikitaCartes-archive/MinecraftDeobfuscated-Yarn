@@ -52,8 +52,8 @@ public abstract class Structure {
 		return Structure.Config.CODEC.forGetter(feature -> feature.config);
 	}
 
-	public static <S extends Structure> Codec<S> createCodec(Function<Structure.Config, S> featureCreator) {
-		return RecordCodecBuilder.create(instance -> instance.group(configCodecBuilder(instance)).apply(instance, featureCreator));
+	public static <S extends Structure> MapCodec<S> createCodec(Function<Structure.Config, S> featureCreator) {
+		return RecordCodecBuilder.mapCodec(instance -> instance.group(configCodecBuilder(instance)).apply(instance, featureCreator));
 	}
 
 	protected Structure(Structure.Config config) {

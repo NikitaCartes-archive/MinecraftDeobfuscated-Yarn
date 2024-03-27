@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.structure;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Set;
 import net.minecraft.block.Block;
@@ -22,7 +22,7 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class DesertPyramidStructure extends BasicTempleStructure {
-	public static final Codec<DesertPyramidStructure> CODEC = createCodec(DesertPyramidStructure::new);
+	public static final MapCodec<DesertPyramidStructure> CODEC = createCodec(DesertPyramidStructure::new);
 
 	public DesertPyramidStructure(Structure.Config config) {
 		super(DesertTempleGenerator::new, 21, 21, config);

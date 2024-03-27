@@ -14,7 +14,7 @@ public class GeneratorOptions {
 					Codec.LONG.fieldOf("seed").stable().forGetter(GeneratorOptions::getSeed),
 					Codec.BOOL.fieldOf("generate_features").orElse(true).stable().forGetter(GeneratorOptions::shouldGenerateStructures),
 					Codec.BOOL.fieldOf("bonus_chest").orElse(false).stable().forGetter(GeneratorOptions::hasBonusChest),
-					Codec.STRING.optionalFieldOf("legacy_custom_options").stable().forGetter(generatorOptions -> generatorOptions.legacyCustomOptions)
+					Codec.STRING.lenientOptionalFieldOf("legacy_custom_options").stable().forGetter(generatorOptions -> generatorOptions.legacyCustomOptions)
 				)
 				.apply(instance, instance.stable(GeneratorOptions::new))
 	);

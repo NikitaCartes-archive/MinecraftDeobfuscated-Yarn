@@ -1,6 +1,6 @@
 package net.minecraft.structure.pool;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,7 +17,7 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ListPoolElement extends StructurePoolElement {
-	public static final Codec<ListPoolElement> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<ListPoolElement> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(StructurePoolElement.CODEC.listOf().fieldOf("elements").forGetter(pool -> pool.elements), projectionGetter())
 				.apply(instance, ListPoolElement::new)
 	);

@@ -51,7 +51,7 @@ public class ConduitBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		if (nbt.containsUuid("Target")) {
 			this.targetUuid = nbt.getUuid("Target");
@@ -74,7 +74,7 @@ public class ConduitBlockEntity extends BlockEntity {
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createNbt(registryLookup);
+		return this.createComponentlessNbt(registryLookup);
 	}
 
 	public static void clientTick(World world, BlockPos pos, BlockState state, ConduitBlockEntity blockEntity) {

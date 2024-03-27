@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.placementmodifier;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
@@ -9,7 +9,7 @@ import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
 public class SquarePlacementModifier extends PlacementModifier {
 	private static final SquarePlacementModifier INSTANCE = new SquarePlacementModifier();
-	public static final Codec<SquarePlacementModifier> MODIFIER_CODEC = Codec.unit((Supplier<SquarePlacementModifier>)(() -> INSTANCE));
+	public static final MapCodec<SquarePlacementModifier> MODIFIER_CODEC = MapCodec.unit((Supplier<SquarePlacementModifier>)(() -> INSTANCE));
 
 	public static SquarePlacementModifier of() {
 		return INSTANCE;

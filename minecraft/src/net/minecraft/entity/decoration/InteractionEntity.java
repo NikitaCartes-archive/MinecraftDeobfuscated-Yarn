@@ -94,11 +94,11 @@ public class InteractionEntity extends Entity implements Attackable, Targeter {
 		nbt.putFloat("width", this.getInteractionWidth());
 		nbt.putFloat("height", this.getInteractionHeight());
 		if (this.attack != null) {
-			InteractionEntity.Interaction.CODEC.encodeStart(NbtOps.INSTANCE, this.attack).result().ifPresent(nbtElement -> nbt.put("attack", nbtElement));
+			InteractionEntity.Interaction.CODEC.encodeStart(NbtOps.INSTANCE, this.attack).ifSuccess(nbtElement -> nbt.put("attack", nbtElement));
 		}
 
 		if (this.interaction != null) {
-			InteractionEntity.Interaction.CODEC.encodeStart(NbtOps.INSTANCE, this.interaction).result().ifPresent(nbtElement -> nbt.put("interaction", nbtElement));
+			InteractionEntity.Interaction.CODEC.encodeStart(NbtOps.INSTANCE, this.interaction).ifSuccess(nbtElement -> nbt.put("interaction", nbtElement));
 		}
 
 		nbt.putBoolean("response", this.shouldRespond());

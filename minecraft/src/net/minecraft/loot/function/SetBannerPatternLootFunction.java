@@ -1,6 +1,7 @@
 package net.minecraft.loot.function;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.block.entity.BannerPattern;
@@ -13,7 +14,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.DyeColor;
 
 public class SetBannerPatternLootFunction extends ConditionalLootFunction {
-	public static final Codec<SetBannerPatternLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SetBannerPatternLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.<BannerPatternsComponent, boolean>and(
 					instance.group(

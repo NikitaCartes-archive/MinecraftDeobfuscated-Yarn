@@ -88,9 +88,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 			.resultOrPartial(LOGGER::error)
 			.ifPresent(nbtElement -> nbt.put("VillagerData", nbtElement));
 		if (this.offerData != null) {
-			nbt.put(
-				"Offers", Util.getResult(TradeOfferList.CODEC.encodeStart(this.getRegistryManager().getOps(NbtOps.INSTANCE), this.offerData), IllegalStateException::new)
-			);
+			nbt.put("Offers", TradeOfferList.CODEC.encodeStart(this.getRegistryManager().getOps(NbtOps.INSTANCE), this.offerData).getOrThrow());
 		}
 
 		if (this.gossipData != null) {

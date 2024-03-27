@@ -30,8 +30,13 @@ public class TrialSpawnerBlockEntity extends BlockEntity implements Spawner, Tri
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
+		if (nbt.contains("normal_config")) {
+			NbtCompound nbtCompound = nbt.getCompound("normal_config").copy();
+			nbt.put("ominous_config", nbtCompound.copyFrom(nbt.getCompound("ominous_config")));
+		}
+
 		this.spawner.codec().parse(NbtOps.INSTANCE, nbt).resultOrPartial(LOGGER::error).ifPresent(spawner -> this.spawner = spawner);
 		if (this.world != null) {
 			this.updateListeners();
@@ -44,9 +49,8 @@ public class TrialSpawnerBlockEntity extends BlockEntity implements Spawner, Tri
 		this.spawner
 			.codec()
 			.encodeStart(NbtOps.INSTANCE, this.spawner)
-			.get()
-			.ifLeft(nbtx -> nbt.copyFrom((NbtCompound)nbtx))
-			.ifRight(partialResult -> LOGGER.warn("Failed to encode TrialSpawner {}", partialResult.message()));
+			.ifSuccess(nbtx -> nbt.copyFrom((NbtCompound)nbtx))
+			.ifError(error -> LOGGER.warn("Failed to encode TrialSpawner {}", error.message()));
 	}
 
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {

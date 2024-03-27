@@ -1,7 +1,7 @@
 package net.minecraft.loot.condition;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.Set;
@@ -10,13 +10,12 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.entity.EntityPredicate;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
 public record EntityPropertiesLootCondition(Optional<EntityPredicate> predicate, LootContext.EntityTarget entity) implements LootCondition {
-	public static final Codec<EntityPropertiesLootCondition> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<EntityPropertiesLootCondition> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(EntityPredicate.CODEC, "predicate").forGetter(EntityPropertiesLootCondition::predicate),
+					EntityPredicate.CODEC.optionalFieldOf("predicate").forGetter(EntityPropertiesLootCondition::predicate),
 					LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(EntityPropertiesLootCondition::entity)
 				)
 				.apply(instance, EntityPropertiesLootCondition::new)

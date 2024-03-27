@@ -1971,7 +1971,14 @@ public class Items {
 	public static final Item WAXED_OXIDIZED_COPPER_BULB = register(Blocks.WAXED_OXIDIZED_COPPER_BULB);
 	public static final Item TRIAL_SPAWNER = register(Blocks.TRIAL_SPAWNER);
 	public static final Item TRIAL_KEY = register("trial_key", new Item(new Item.Settings().requires(FeatureFlags.UPDATE_1_21)));
+	public static final Item OMINOUS_TRIAL_KEY = register("ominous_trial_key", new Item(new Item.Settings().requires(FeatureFlags.UPDATE_1_21)));
 	public static final Item VAULT = register(Blocks.VAULT);
+	public static final Item OMINOUS_BOTTLE = register(
+		"ominous_bottle",
+		new OminousBottleItem(
+			new Item.Settings().food(FoodComponents.OMINOUS_BOTTLE).component(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER, 0).requires(FeatureFlags.UPDATE_1_21)
+		)
+	);
 	public static final Item BREEZE_ROD = register("breeze_rod", new Item(new Item.Settings().requires(FeatureFlags.UPDATE_1_21)));
 
 	public static Item register(Block block) {

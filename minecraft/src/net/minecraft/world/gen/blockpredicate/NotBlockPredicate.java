@@ -1,12 +1,12 @@
 package net.minecraft.world.gen.blockpredicate;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 
 class NotBlockPredicate implements BlockPredicate {
-	public static final Codec<NotBlockPredicate> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<NotBlockPredicate> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(BlockPredicate.BASE_CODEC.fieldOf("predicate").forGetter(predicate -> predicate.predicate))
 				.apply(instance, NotBlockPredicate::new)
 	);

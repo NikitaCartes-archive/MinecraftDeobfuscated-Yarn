@@ -1,6 +1,7 @@
 package net.minecraft.loot.function;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -9,7 +10,7 @@ import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContext;
 
 public class AndLootFunction implements LootFunction {
-	public static final Codec<AndLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<AndLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(LootFunctionTypes.BASE_CODEC.listOf().fieldOf("functions").forGetter(function -> function.terms))
 				.apply(instance, AndLootFunction::new)
 	);

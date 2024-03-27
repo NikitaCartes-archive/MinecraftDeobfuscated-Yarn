@@ -2,6 +2,7 @@ package net.minecraft.entity.effect;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
@@ -13,17 +14,23 @@ import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.resource.featuretoggle.FeatureFlag;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.resource.featuretoggle.ToggleableFeature;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
-public class StatusEffect {
+public class StatusEffect implements ToggleableFeature {
 	private static final int AMBIENT_PARTICLE_ALPHA = MathHelper.floor(38.25F);
 	private final Map<RegistryEntry<EntityAttribute>, StatusEffect.EffectAttributeModifierCreator> attributeModifiers = new Object2ObjectOpenHashMap<>();
 	private final StatusEffectCategory category;
@@ -32,6 +39,8 @@ public class StatusEffect {
 	@Nullable
 	private String translationKey;
 	private int fadeTicks;
+	private Optional<SoundEvent> applySound = Optional.empty();
+	private FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
 
 	protected StatusEffect(StatusEffectCategory category, int color) {
 		this.category = category;
@@ -65,6 +74,17 @@ public class StatusEffect {
 	}
 
 	public void onApplied(LivingEntity entity, int amplifier) {
+	}
+
+	public void playApplySound(LivingEntity entity, int amplifier) {
+		this.applySound
+			.ifPresent(sound -> entity.getWorld().playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, entity.getSoundCategory(), 1.0F, 1.0F));
+	}
+
+	public void onEntityRemoval(LivingEntity entity, int amplifier, Entity.RemovalReason reason) {
+	}
+
+	public void onEntityDamage(LivingEntity entity, int amplifier, DamageSource source, float amount) {
 	}
 
 	public boolean isInstant() {
@@ -142,6 +162,21 @@ public class StatusEffect {
 
 	public ParticleEffect createParticle(StatusEffectInstance effect) {
 		return (ParticleEffect)this.particleFactory.apply(effect);
+	}
+
+	public StatusEffect applySound(SoundEvent sound) {
+		this.applySound = Optional.of(sound);
+		return this;
+	}
+
+	public StatusEffect requires(FeatureFlag... requiredFeatures) {
+		this.requiredFeatures = FeatureFlags.FEATURE_MANAGER.featureSetOf(requiredFeatures);
+		return this;
+	}
+
+	@Override
+	public FeatureSet getRequiredFeatures() {
+		return this.requiredFeatures;
 	}
 
 	static record EffectAttributeModifierCreator(UUID uuid, double baseValue, EntityAttributeModifier.Operation operation) {

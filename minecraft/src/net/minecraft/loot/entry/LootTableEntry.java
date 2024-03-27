@@ -2,6 +2,7 @@ package net.minecraft.loot.entry;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public class LootTableEntry extends LeafEntry {
-	public static final Codec<LootTableEntry> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<LootTableEntry> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(Codec.either(RegistryKey.createCodec(RegistryKeys.LOOT_TABLE), LootTable.CODEC).fieldOf("value").forGetter(entry -> entry.value))
 				.<int, int, List<LootCondition>, List<LootFunction>>and(addLeafFields(instance))
 				.apply(instance, LootTableEntry::new)

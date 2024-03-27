@@ -1,13 +1,12 @@
 package net.minecraft.util.math.floatprovider;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.dynamic.Codecs;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.util.math.random.Random;
 
 public class ConstantFloatProvider extends FloatProvider {
 	public static final ConstantFloatProvider ZERO = new ConstantFloatProvider(0.0F);
-	public static final Codec<ConstantFloatProvider> CODEC = Codecs.alternatively(Codec.FLOAT, Codec.FLOAT.fieldOf("value").codec())
-		.xmap(ConstantFloatProvider::new, ConstantFloatProvider::getValue);
+	public static final MapCodec<ConstantFloatProvider> CODEC = Codec.FLOAT.fieldOf("value").xmap(ConstantFloatProvider::create, ConstantFloatProvider::getValue);
 	private final float value;
 
 	public static ConstantFloatProvider create(float value) {

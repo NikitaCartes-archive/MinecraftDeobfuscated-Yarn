@@ -35,7 +35,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		);
 	public static final Codec<AdvancementProgress> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(MAP_CODEC, "criteria", Map.of()).forGetter(advancementProgress -> advancementProgress.criteriaProgresses),
+					MAP_CODEC.optionalFieldOf("criteria", Map.of()).forGetter(advancementProgress -> advancementProgress.criteriaProgresses),
 					Codec.BOOL.fieldOf("done").orElse(true).forGetter(AdvancementProgress::isDone)
 				)
 				.apply(instance, (criteriaProgresses, done) -> new AdvancementProgress(new HashMap(criteriaProgresses)))

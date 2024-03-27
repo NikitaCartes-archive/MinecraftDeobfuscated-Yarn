@@ -510,7 +510,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 							itemStack.set(DataComponentTypes.CREATIVE_SLOT_LOCK, Unit.INSTANCE);
 							Text text = this.client.options.hotbarKeys[i].getBoundKeyLocalizedText();
 							Text text2 = this.client.options.saveToolbarActivatorKey.getBoundKeyLocalizedText();
-							itemStack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable("inventory.hotbarInfo", text2, text));
+							itemStack.set(DataComponentTypes.ITEM_NAME, Text.translatable("inventory.hotbarInfo", text2, text));
 							this.handler.itemList.add(itemStack);
 						} else {
 							this.handler.itemList.add(ItemStack.EMPTY);

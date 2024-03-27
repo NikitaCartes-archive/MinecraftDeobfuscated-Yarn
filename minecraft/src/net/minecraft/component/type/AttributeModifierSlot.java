@@ -19,7 +19,8 @@ public enum AttributeModifierSlot implements StringIdentifiable {
 	LEGS(5, "legs", EquipmentSlot.LEGS),
 	CHEST(6, "chest", EquipmentSlot.CHEST),
 	HEAD(7, "head", EquipmentSlot.HEAD),
-	ARMOR(8, "armor", EquipmentSlot::isArmorSlot);
+	ARMOR(8, "armor", EquipmentSlot::isArmorSlot),
+	BODY(9, "body", EquipmentSlot.BODY);
 
 	public static final IntFunction<AttributeModifierSlot> ID_TO_VALUE = ValueLists.createIdToValueFunction(
 		id -> id.id, values(), ValueLists.OutOfBoundsHandling.ZERO

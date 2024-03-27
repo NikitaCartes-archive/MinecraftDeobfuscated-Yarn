@@ -1,6 +1,6 @@
 package net.minecraft.loot.function;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.item.GoatHornItem;
@@ -12,7 +12,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 
 public class SetInstrumentLootFunction extends ConditionalLootFunction {
-	public static final Codec<SetInstrumentLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SetInstrumentLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.and(TagKey.codec(RegistryKeys.INSTRUMENT).fieldOf("options").forGetter(function -> function.options))
 				.apply(instance, SetInstrumentLootFunction::new)

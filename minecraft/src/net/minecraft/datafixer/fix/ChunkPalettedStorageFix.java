@@ -631,7 +631,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 			this.level = chunkTag;
 			this.x = chunkTag.get("xPos").asInt(0) << 4;
 			this.z = chunkTag.get("zPos").asInt(0) << 4;
-			chunkTag.get("TileEntities").asStreamOpt().result().ifPresent(stream -> stream.forEach(blockEntityTag -> {
+			chunkTag.get("TileEntities").asStreamOpt().ifSuccess(stream -> stream.forEach(blockEntityTag -> {
 					int ix = blockEntityTag.get("x").asInt(0) - this.x & 15;
 					int jx = blockEntityTag.get("y").asInt(0);
 					int k = blockEntityTag.get("z").asInt(0) - this.z & 15;
@@ -641,7 +641,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 					}
 				}));
 			boolean bl = chunkTag.get("convertedFromAlphaFormat").asBoolean(false);
-			chunkTag.get("Sections").asStreamOpt().result().ifPresent(stream -> stream.forEach(sectionTag -> {
+			chunkTag.get("Sections").asStreamOpt().ifSuccess(stream -> stream.forEach(sectionTag -> {
 					ChunkPalettedStorageFix.Section sectionx = new ChunkPalettedStorageFix.Section(sectionTag);
 					this.sidesToUpgrade = sectionx.visit(this.sidesToUpgrade);
 					this.sections[sectionx.y] = sectionx;

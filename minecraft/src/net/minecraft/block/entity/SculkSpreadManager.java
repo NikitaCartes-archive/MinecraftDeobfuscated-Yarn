@@ -212,7 +212,7 @@ public class SculkSpreadManager {
 						Codec.intRange(0, 1000).fieldOf("charge").orElse(0).forGetter(SculkSpreadManager.Cursor::getCharge),
 						Codec.intRange(0, 1).fieldOf("decay_delay").orElse(1).forGetter(SculkSpreadManager.Cursor::getDecay),
 						Codec.intRange(0, Integer.MAX_VALUE).fieldOf("update_delay").orElse(0).forGetter(cursor -> cursor.update),
-						DIRECTION_SET_CODEC.optionalFieldOf("facings").forGetter(cursor -> Optional.ofNullable(cursor.getFaces()))
+						DIRECTION_SET_CODEC.lenientOptionalFieldOf("facings").forGetter(cursor -> Optional.ofNullable(cursor.getFaces()))
 					)
 					.apply(instance, SculkSpreadManager.Cursor::new)
 		);

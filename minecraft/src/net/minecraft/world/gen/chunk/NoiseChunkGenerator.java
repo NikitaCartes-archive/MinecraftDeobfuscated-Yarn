@@ -3,7 +3,7 @@ package net.minecraft.world.gen.chunk;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Sets;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.text.DecimalFormat;
 import java.util.List;
@@ -58,7 +58,7 @@ import net.minecraft.world.gen.noise.NoiseRouter;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 public final class NoiseChunkGenerator extends ChunkGenerator {
-	public static final Codec<NoiseChunkGenerator> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<NoiseChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					BiomeSource.CODEC.fieldOf("biome_source").forGetter(generator -> generator.biomeSource),
 					ChunkGeneratorSettings.REGISTRY_CODEC.fieldOf("settings").forGetter(generator -> generator.settings)
@@ -111,7 +111,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	protected Codec<? extends ChunkGenerator> getCodec() {
+	protected MapCodec<? extends ChunkGenerator> getCodec() {
 		return CODEC;
 	}
 

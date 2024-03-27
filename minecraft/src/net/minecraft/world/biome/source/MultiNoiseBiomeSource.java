@@ -26,9 +26,8 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 	private static final MapCodec<RegistryEntry<MultiNoiseBiomeSourceParameterList>> PRESET_CODEC = MultiNoiseBiomeSourceParameterList.REGISTRY_CODEC
 		.fieldOf("preset")
 		.withLifecycle(Lifecycle.stable());
-	public static final Codec<MultiNoiseBiomeSource> CODEC = Codec.mapEither(CUSTOM_CODEC, PRESET_CODEC)
-		.<MultiNoiseBiomeSource>xmap(MultiNoiseBiomeSource::new, source -> source.biomeEntries)
-		.codec();
+	public static final MapCodec<MultiNoiseBiomeSource> CODEC = Codec.mapEither(CUSTOM_CODEC, PRESET_CODEC)
+		.xmap(MultiNoiseBiomeSource::new, source -> source.biomeEntries);
 	private final Either<MultiNoiseUtil.Entries<RegistryEntry<Biome>>, RegistryEntry<MultiNoiseBiomeSourceParameterList>> biomeEntries;
 
 	private MultiNoiseBiomeSource(Either<MultiNoiseUtil.Entries<RegistryEntry<Biome>>, RegistryEntry<MultiNoiseBiomeSourceParameterList>> biomeEntries) {
@@ -53,7 +52,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	protected Codec<? extends BiomeSource> getCodec() {
+	protected MapCodec<? extends BiomeSource> getCodec() {
 		return CODEC;
 	}
 

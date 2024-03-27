@@ -98,7 +98,7 @@ public class SkullBlockEntity extends BlockEntity {
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
 		if (this.owner != null) {
-			nbt.put("profile", Util.getResult(ProfileComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.owner), IllegalStateException::new));
+			nbt.put("profile", ProfileComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.owner).getOrThrow());
 		}
 
 		if (this.noteBlockSound != null) {
@@ -111,7 +111,7 @@ public class SkullBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		if (nbt.contains("profile")) {
 			ProfileComponent.CODEC
@@ -160,7 +160,7 @@ public class SkullBlockEntity extends BlockEntity {
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createNbt(registryLookup);
+		return this.createComponentlessNbt(registryLookup);
 	}
 
 	public void setOwner(@Nullable ProfileComponent profile) {
@@ -188,14 +188,16 @@ public class SkullBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readComponents(ComponentMap components) {
+	protected void readComponents(BlockEntity.ComponentsAccess components) {
+		super.readComponents(components);
 		this.setOwner(components.get(DataComponentTypes.PROFILE));
 		this.noteBlockSound = components.get(DataComponentTypes.NOTE_BLOCK_SOUND);
 		this.customName = components.get(DataComponentTypes.CUSTOM_NAME);
 	}
 
 	@Override
-	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
+		super.addComponents(componentMapBuilder);
 		componentMapBuilder.add(DataComponentTypes.PROFILE, this.owner);
 		componentMapBuilder.add(DataComponentTypes.NOTE_BLOCK_SOUND, this.noteBlockSound);
 		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);

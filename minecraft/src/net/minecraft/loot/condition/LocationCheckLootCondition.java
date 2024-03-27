@@ -7,7 +7,6 @@ import java.util.Optional;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.entity.LocationPredicate;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -15,15 +14,15 @@ import net.minecraft.util.math.Vec3i;
 public record LocationCheckLootCondition(Optional<LocationPredicate> predicate, BlockPos offset) implements LootCondition {
 	private static final MapCodec<BlockPos> OFFSET_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(Codec.INT, "offsetX", 0).forGetter(Vec3i::getX),
-					Codecs.createStrictOptionalFieldCodec(Codec.INT, "offsetY", 0).forGetter(Vec3i::getY),
-					Codecs.createStrictOptionalFieldCodec(Codec.INT, "offsetZ", 0).forGetter(Vec3i::getZ)
+					Codec.INT.optionalFieldOf("offsetX", Integer.valueOf(0)).forGetter(Vec3i::getX),
+					Codec.INT.optionalFieldOf("offsetY", Integer.valueOf(0)).forGetter(Vec3i::getY),
+					Codec.INT.optionalFieldOf("offsetZ", Integer.valueOf(0)).forGetter(Vec3i::getZ)
 				)
 				.apply(instance, BlockPos::new)
 	);
-	public static final Codec<LocationCheckLootCondition> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<LocationCheckLootCondition> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(LocationPredicate.CODEC, "predicate").forGetter(LocationCheckLootCondition::predicate),
+					LocationPredicate.CODEC.optionalFieldOf("predicate").forGetter(LocationCheckLootCondition::predicate),
 					OFFSET_CODEC.forGetter(LocationCheckLootCondition::offset)
 				)
 				.apply(instance, LocationCheckLootCondition::new)

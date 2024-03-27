@@ -2,6 +2,7 @@ package net.minecraft.loot.condition;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public record TableBonusLootCondition(RegistryEntry<Enchantment> enchantment, List<Float> chances) implements LootCondition {
-	public static final Codec<TableBonusLootCondition> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<TableBonusLootCondition> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Registries.ENCHANTMENT.getEntryCodec().fieldOf("enchantment").forGetter(TableBonusLootCondition::enchantment),
 					Codec.FLOAT.listOf().fieldOf("chances").forGetter(TableBonusLootCondition::chances)

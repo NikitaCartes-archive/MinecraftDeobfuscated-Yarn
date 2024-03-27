@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -116,19 +117,17 @@ public abstract class Feature<FC extends FeatureConfig> {
 		"pointed_dripstone", new SmallDripstoneFeature(SmallDripstoneFeatureConfig.CODEC)
 	);
 	public static final Feature<SculkPatchFeatureConfig> SCULK_PATCH = register("sculk_patch", new SculkPatchFeature(SculkPatchFeatureConfig.CODEC));
-	private final Codec<ConfiguredFeature<FC, Feature<FC>>> codec;
+	private final MapCodec<ConfiguredFeature<FC, Feature<FC>>> codec;
 
 	private static <C extends FeatureConfig, F extends Feature<C>> F register(String name, F feature) {
 		return Registry.register(Registries.FEATURE, name, feature);
 	}
 
 	public Feature(Codec<FC> configCodec) {
-		this.codec = configCodec.fieldOf("config")
-			.<ConfiguredFeature<FC, Feature<FC>>>xmap(config -> new ConfiguredFeature<>(this, config), ConfiguredFeature::config)
-			.codec();
+		this.codec = configCodec.fieldOf("config").xmap(config -> new ConfiguredFeature<>(this, config), ConfiguredFeature::config);
 	}
 
-	public Codec<ConfiguredFeature<FC, Feature<FC>>> getCodec() {
+	public MapCodec<ConfiguredFeature<FC, Feature<FC>>> getCodec() {
 		return this.codec;
 	}
 

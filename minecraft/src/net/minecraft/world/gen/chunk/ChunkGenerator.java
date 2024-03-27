@@ -3,6 +3,7 @@ package net.minecraft.world.gen.chunk;
 import com.google.common.base.Suppliers;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -104,13 +105,13 @@ public abstract class ChunkGenerator {
 		);
 	}
 
-	protected abstract Codec<? extends ChunkGenerator> getCodec();
+	protected abstract MapCodec<? extends ChunkGenerator> getCodec();
 
 	public StructurePlacementCalculator createStructurePlacementCalculator(RegistryWrapper<StructureSet> structureSetRegistry, NoiseConfig noiseConfig, long seed) {
 		return StructurePlacementCalculator.create(noiseConfig, seed, this.biomeSource, structureSetRegistry);
 	}
 
-	public Optional<RegistryKey<Codec<? extends ChunkGenerator>>> getCodecKey() {
+	public Optional<RegistryKey<MapCodec<? extends ChunkGenerator>>> getCodecKey() {
 		return Registries.CHUNK_GENERATOR.getKey(this.getCodec());
 	}
 

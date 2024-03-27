@@ -1,7 +1,7 @@
 package net.minecraft.loot.condition;
 
 import com.google.common.collect.Sets;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
@@ -11,7 +11,7 @@ import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 
 public record ValueCheckLootCondition(LootNumberProvider value, BoundedIntUnaryOperator range) implements LootCondition {
-	public static final Codec<ValueCheckLootCondition> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<ValueCheckLootCondition> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					LootNumberProviderTypes.CODEC.fieldOf("value").forGetter(ValueCheckLootCondition::value),
 					BoundedIntUnaryOperator.CODEC.fieldOf("range").forGetter(ValueCheckLootCondition::range)

@@ -19,6 +19,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentHolder;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -57,6 +58,9 @@ import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.loot.LootTable;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtFloat;
@@ -90,7 +94,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
-public abstract class MobEntity extends LivingEntity implements Targeter {
+public abstract class MobEntity extends LivingEntity implements EquipmentHolder, Targeter {
 	private static final TrackedData<Byte> MOB_FLAGS = DataTracker.registerData(MobEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final int AI_DISABLED_FLAG = 1;
 	private static final int LEFT_HANDED_FLAG = 2;
@@ -1053,6 +1057,19 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		};
 	}
 
+	private LootContextParameterSet createEquipmentLootParameters(ServerWorld world) {
+		return new LootContextParameterSet.Builder(world)
+			.add(LootContextParameters.ORIGIN, this.getPos())
+			.add(LootContextParameters.THIS_ENTITY, this)
+			.build(LootContextTypes.EQUIPMENT);
+	}
+
+	public void setEquipmentFromLootTable(Identifier lootTableId) {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			this.setEquipmentFromLootTable(lootTableId, this.createEquipmentLootParameters(serverWorld));
+		}
+	}
+
 	protected void initEquipment(Random random, LocalDifficulty localDifficulty) {
 		if (random.nextFloat() < 0.15F * localDifficulty.getClampedLocalDifficulty()) {
 			int i = random.nextInt(2);
@@ -1159,14 +1176,19 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 
 	protected void enchantMainHandItem(Random random, float power) {
 		if (!this.getMainHandStack().isEmpty() && random.nextFloat() < 0.25F * power) {
-			this.equipStack(EquipmentSlot.MAINHAND, EnchantmentHelper.enchant(random, this.getMainHandStack(), (int)(5.0F + power * (float)random.nextInt(18)), false));
+			this.equipStack(
+				EquipmentSlot.MAINHAND,
+				EnchantmentHelper.enchant(this.getWorld().getEnabledFeatures(), random, this.getMainHandStack(), (int)(5.0F + power * (float)random.nextInt(18)), false)
+			);
 		}
 	}
 
 	protected void enchantEquipment(Random random, float power, EquipmentSlot slot) {
 		ItemStack itemStack = this.getEquippedStack(slot);
 		if (!itemStack.isEmpty() && random.nextFloat() < 0.5F * power) {
-			this.equipStack(slot, EnchantmentHelper.enchant(random, itemStack, (int)(5.0F + power * (float)random.nextInt(18)), false));
+			this.equipStack(
+				slot, EnchantmentHelper.enchant(this.getWorld().getEnabledFeatures(), random, itemStack, (int)(5.0F + power * (float)random.nextInt(18)), false)
+			);
 		}
 	}
 
@@ -1185,16 +1207,17 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		this.persistent = true;
 	}
 
-	public void setEquipmentDropChance(EquipmentSlot slot, float chance) {
+	@Override
+	public void setEquipmentDropChance(EquipmentSlot slot, float dropChance) {
 		switch (slot.getType()) {
 			case HAND:
-				this.handDropChances[slot.getEntitySlotId()] = chance;
+				this.handDropChances[slot.getEntitySlotId()] = dropChance;
 				break;
 			case ARMOR:
-				this.armorDropChances[slot.getEntitySlotId()] = chance;
+				this.armorDropChances[slot.getEntitySlotId()] = dropChance;
 				break;
 			case BODY:
-				this.bodyArmorDropChance = chance;
+				this.bodyArmorDropChance = dropChance;
 		}
 	}
 

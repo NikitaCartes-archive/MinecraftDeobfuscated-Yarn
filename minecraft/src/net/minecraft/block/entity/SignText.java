@@ -27,7 +27,7 @@ public class SignText {
 	public static final Codec<SignText> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					MESSAGES_CODEC.fieldOf("messages").forGetter(signText -> signText.messages),
-					MESSAGES_CODEC.optionalFieldOf("filtered_messages").forGetter(SignText::getFilteredMessages),
+					MESSAGES_CODEC.lenientOptionalFieldOf("filtered_messages").forGetter(SignText::getFilteredMessages),
 					DyeColor.CODEC.fieldOf("color").orElse(DyeColor.BLACK).forGetter(signText -> signText.color),
 					Codec.BOOL.fieldOf("has_glowing_text").orElse(false).forGetter(signText -> signText.glowing)
 				)

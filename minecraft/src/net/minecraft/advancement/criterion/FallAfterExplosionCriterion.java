@@ -14,7 +14,6 @@ import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
 public class FallAfterExplosionCriterion extends AbstractCriterion<FallAfterExplosionCriterion.Conditions> {
@@ -34,10 +33,10 @@ public class FallAfterExplosionCriterion extends AbstractCriterion<FallAfterExpl
 	) implements AbstractCriterion.Conditions {
 		public static final Codec<FallAfterExplosionCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(FallAfterExplosionCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(LocationPredicate.CODEC, "start_position").forGetter(FallAfterExplosionCriterion.Conditions::startPosition),
-						Codecs.createStrictOptionalFieldCodec(DistancePredicate.CODEC, "distance").forGetter(FallAfterExplosionCriterion.Conditions::distance),
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "cause").forGetter(FallAfterExplosionCriterion.Conditions::cause)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(FallAfterExplosionCriterion.Conditions::player),
+						LocationPredicate.CODEC.optionalFieldOf("start_position").forGetter(FallAfterExplosionCriterion.Conditions::startPosition),
+						DistancePredicate.CODEC.optionalFieldOf("distance").forGetter(FallAfterExplosionCriterion.Conditions::distance),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("cause").forGetter(FallAfterExplosionCriterion.Conditions::cause)
 					)
 					.apply(instance, FallAfterExplosionCriterion.Conditions::new)
 		);

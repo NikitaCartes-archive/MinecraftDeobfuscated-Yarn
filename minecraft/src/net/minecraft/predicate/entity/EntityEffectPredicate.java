@@ -14,7 +14,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.dynamic.Codecs;
 
 public record EntityEffectPredicate(Map<RegistryEntry<StatusEffect>, EntityEffectPredicate.EffectData> effects) {
 	public static final Codec<EntityEffectPredicate> CODEC = Codec.unboundedMap(Registries.STATUS_EFFECT.getEntryCodec(), EntityEffectPredicate.EffectData.CODEC)
@@ -68,12 +67,10 @@ public record EntityEffectPredicate(Map<RegistryEntry<StatusEffect>, EntityEffec
 	public static record EffectData(NumberRange.IntRange amplifier, NumberRange.IntRange duration, Optional<Boolean> ambient, Optional<Boolean> visible) {
 		public static final Codec<EntityEffectPredicate.EffectData> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "amplifier", NumberRange.IntRange.ANY)
-							.forGetter(EntityEffectPredicate.EffectData::amplifier),
-						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "duration", NumberRange.IntRange.ANY)
-							.forGetter(EntityEffectPredicate.EffectData::duration),
-						Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "ambient").forGetter(EntityEffectPredicate.EffectData::ambient),
-						Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "visible").forGetter(EntityEffectPredicate.EffectData::visible)
+						NumberRange.IntRange.CODEC.optionalFieldOf("amplifier", NumberRange.IntRange.ANY).forGetter(EntityEffectPredicate.EffectData::amplifier),
+						NumberRange.IntRange.CODEC.optionalFieldOf("duration", NumberRange.IntRange.ANY).forGetter(EntityEffectPredicate.EffectData::duration),
+						Codec.BOOL.optionalFieldOf("ambient").forGetter(EntityEffectPredicate.EffectData::ambient),
+						Codec.BOOL.optionalFieldOf("visible").forGetter(EntityEffectPredicate.EffectData::visible)
 					)
 					.apply(instance, EntityEffectPredicate.EffectData::new)
 		);

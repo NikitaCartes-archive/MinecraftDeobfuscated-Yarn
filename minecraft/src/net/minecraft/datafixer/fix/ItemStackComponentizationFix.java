@@ -19,7 +19,6 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.datafixer.FixUtil;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 import net.minecraft.util.math.MathHelper;
@@ -67,7 +66,7 @@ public class ItemStackComponentizationFix extends DataFix {
 			return dynamicx.equals(blockEntityTagDynamic.emptyMap()) ? dynamicx : blockEntityTagDynamic;
 		});
 		data.moveToComponent("BlockEntityTag", "minecraft:block_entity_data");
-		if (FixUtil.getBoolean(data.getAndRemove("Unbreakable"), false)) {
+		if (data.getAndRemove("Unbreakable").asBoolean(false)) {
 			Dynamic<?> dynamic2 = dynamic.emptyMap();
 			if ((i & 4) != 0) {
 				dynamic2 = dynamic2.set("show_in_tooltip", dynamic.createBoolean(false));
@@ -169,7 +168,7 @@ public class ItemStackComponentizationFix extends DataFix {
 
 	private static Dynamic<?> method_58050(Dynamic<?> dynamic) {
 		return dynamic.createMap(dynamic.asMap(dynamicx -> dynamicx, dynamicx -> {
-			Optional<Boolean> optional = FixUtil.getBoolean(dynamicx).result();
+			Optional<Boolean> optional = dynamicx.asBoolean().result();
 			if (optional.isPresent()) {
 				return dynamicx.createString(String.valueOf(optional.get()));
 			} else {
@@ -193,12 +192,17 @@ public class ItemStackComponentizationFix extends DataFix {
 			data.setComponent("minecraft:dyed_color", dynamic2);
 		}
 
+		Optional<String> optional2 = dynamic.get("LocName").asString().result();
+		if (optional2.isPresent()) {
+			data.setComponent("minecraft:item_name", TextFixes.translate(dynamic.getOps(), (String)optional2.get()));
+		}
+
 		if (data.itemEquals("minecraft:filled_map")) {
 			data.setComponent("minecraft:map_color", dynamic.get("MapColor"));
 			dynamic = dynamic.remove("MapColor");
 		}
 
-		return dynamic.remove("Name").remove("Lore").remove("color");
+		return dynamic.remove("Name").remove("Lore").remove("color").remove("LocName");
 	}
 
 	private static <T> Dynamic<T> fixBlockEntityData(ItemStackComponentizationFix.StackData data, Dynamic<T> dynamic, String blockEntityId) {
@@ -381,12 +385,12 @@ public class ItemStackComponentizationFix extends DataFix {
 			.set("name", dynamic.createString(""))
 			.set("amount", dynamic.createDouble(0.0))
 			.set("operation", dynamic.createString("add_value"));
-		dynamic2 = FixUtil.copyValue(dynamic, "AttributeName", dynamic2, "type");
-		dynamic2 = FixUtil.copyValue(dynamic, "Slot", dynamic2, "slot");
-		dynamic2 = FixUtil.copyValue(dynamic, "UUID", dynamic2, "uuid");
-		dynamic2 = FixUtil.copyValue(dynamic, "Name", dynamic2, "name");
-		dynamic2 = FixUtil.copyValue(dynamic, "Amount", dynamic2, "amount");
-		return FixUtil.copyAndTransformValue(dynamic, "Operation", dynamic2, "operation", operationDynamic -> {
+		dynamic2 = Dynamic.copyField(dynamic, "AttributeName", dynamic2, "type");
+		dynamic2 = Dynamic.copyField(dynamic, "Slot", dynamic2, "slot");
+		dynamic2 = Dynamic.copyField(dynamic, "UUID", dynamic2, "uuid");
+		dynamic2 = Dynamic.copyField(dynamic, "Name", dynamic2, "name");
+		dynamic2 = Dynamic.copyField(dynamic, "Amount", dynamic2, "amount");
+		return Dynamic.copyAndFixField(dynamic, "Operation", dynamic2, "operation", operationDynamic -> {
 			return operationDynamic.createString(switch (operationDynamic.asInt(0)) {
 				case 1 -> "add_multiplied_base";
 				case 2 -> "add_multiplied_total";
@@ -526,7 +530,7 @@ public class ItemStackComponentizationFix extends DataFix {
 		Optional<? extends Dynamic<?>> optional = data.getAndRemove("LodestonePos").result();
 		Optional<? extends Dynamic<?>> optional2 = data.getAndRemove("LodestoneDimension").result();
 		if (!optional.isEmpty() || !optional2.isEmpty()) {
-			boolean bl = FixUtil.getBoolean(data.getAndRemove("LodestoneTracked"), true);
+			boolean bl = data.getAndRemove("LodestoneTracked").asBoolean(true);
 			Dynamic<?> dynamic2 = dynamic.emptyMap();
 			if (optional.isPresent() && optional2.isPresent()) {
 				dynamic2 = dynamic2.set("target", dynamic.emptyMap().set("pos", (Dynamic<?>)optional.get()).set("dimension", (Dynamic<?>)optional2.get()));
@@ -564,7 +568,7 @@ public class ItemStackComponentizationFix extends DataFix {
 	}
 
 	private static Dynamic<?> fixExplosion(Dynamic<?> dynamic) {
-		dynamic = FixUtil.replaceKey(dynamic, "Type", "shape", (UnaryOperator<Dynamic<?>>)(typeDynamic -> {
+		dynamic = dynamic.renameAndFixField("Type", "shape", typeDynamic -> {
 			return typeDynamic.createString(switch (typeDynamic.asInt(0)) {
 				case 1 -> "large_ball";
 				case 2 -> "star";
@@ -572,11 +576,11 @@ public class ItemStackComponentizationFix extends DataFix {
 				case 4 -> "burst";
 				default -> "small_ball";
 			});
-		}));
-		dynamic = FixUtil.renameKey(dynamic, "Colors", "colors");
-		dynamic = FixUtil.renameKey(dynamic, "FadeColors", "fade_colors");
-		dynamic = FixUtil.renameKey(dynamic, "Trail", "has_trail");
-		return FixUtil.renameKey(dynamic, "Flicker", "has_twinkle");
+		});
+		dynamic = dynamic.renameField("Colors", "colors");
+		dynamic = dynamic.renameField("FadeColors", "fade_colors");
+		dynamic = dynamic.renameField("Trail", "has_trail");
+		return dynamic.renameField("Flicker", "has_twinkle");
 	}
 
 	public static Dynamic<?> createProfileDynamic(Dynamic<?> dynamic) {
@@ -750,8 +754,8 @@ public class ItemStackComponentizationFix extends DataFix {
 			return itemIds.contains(this.itemId);
 		}
 
-		public boolean method_58054(String string) {
-			return this.components.get(string).result().isPresent();
+		public boolean itemContains(String componentId) {
+			return this.components.get(componentId).result().isPresent();
 		}
 	}
 }

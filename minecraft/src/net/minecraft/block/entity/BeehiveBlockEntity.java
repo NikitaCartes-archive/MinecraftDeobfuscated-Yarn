@@ -32,9 +32,7 @@ import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -285,7 +283,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		this.bees.clear();
 		if (nbt.contains("bees")) {
@@ -301,14 +299,14 @@ public class BeehiveBlockEntity extends BlockEntity {
 	@Override
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
-		nbt.put("bees", Util.getResult(BeehiveBlockEntity.BeeData.LIST_CODEC.encodeStart(NbtOps.INSTANCE, this.createBeesData()), IllegalStateException::new));
+		nbt.put("bees", BeehiveBlockEntity.BeeData.LIST_CODEC.encodeStart(NbtOps.INSTANCE, this.createBeesData()).getOrThrow());
 		if (this.hasFlowerPos()) {
 			nbt.put("flower_pos", NbtHelper.fromBlockPos(this.flowerPos));
 		}
 	}
 
 	@Override
-	public void readComponents(ComponentMap components) {
+	protected void readComponents(BlockEntity.ComponentsAccess components) {
 		super.readComponents(components);
 		this.bees.clear();
 		List<BeehiveBlockEntity.BeeData> list = components.getOrDefault(DataComponentTypes.BEES, List.of());
@@ -316,7 +314,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
 		super.addComponents(componentMapBuilder);
 		componentMapBuilder.add(DataComponentTypes.BEES, this.createBeesData());
 	}
@@ -356,7 +354,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 	public static record BeeData(NbtComponent entityData, int ticksInHive, int minTicksInHive) {
 		public static final Codec<BeehiveBlockEntity.BeeData> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(NbtComponent.CODEC, "entity_data", NbtComponent.DEFAULT).forGetter(BeehiveBlockEntity.BeeData::entityData),
+						NbtComponent.CODEC.optionalFieldOf("entity_data", NbtComponent.DEFAULT).forGetter(BeehiveBlockEntity.BeeData::entityData),
 						Codec.INT.fieldOf("ticks_in_hive").forGetter(BeehiveBlockEntity.BeeData::ticksInHive),
 						Codec.INT.fieldOf("min_ticks_in_hive").forGetter(BeehiveBlockEntity.BeeData::minTicksInHive)
 					)

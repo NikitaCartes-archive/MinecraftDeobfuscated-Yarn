@@ -4,7 +4,6 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.dynamic.Codecs;
 
 public abstract class FloatProvider implements FloatSupplier {
 	private static final Codec<Either<Float, FloatProvider>> FLOAT_CODEC = Codec.either(
@@ -16,8 +15,7 @@ public abstract class FloatProvider implements FloatSupplier {
 	);
 
 	public static Codec<FloatProvider> createValidatedCodec(float min, float max) {
-		return Codecs.validate(
-			VALUE_CODEC,
+		return VALUE_CODEC.validate(
 			provider -> {
 				if (provider.getMin() < min) {
 					return DataResult.error(() -> "Value provider too low: " + min + " [" + provider.getMin() + "-" + provider.getMax() + "]");

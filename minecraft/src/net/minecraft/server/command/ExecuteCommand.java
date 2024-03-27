@@ -944,8 +944,12 @@ public class ExecuteCommand {
 									return OptionalInt.empty();
 								}
 
-								NbtCompound nbtCompound = blockEntity.createNbt(dynamicRegistryManager);
-								NbtCompound nbtCompound2 = blockEntity2.createNbt(dynamicRegistryManager);
+								if (!blockEntity.getComponents().equals(blockEntity2.getComponents())) {
+									return OptionalInt.empty();
+								}
+
+								NbtCompound nbtCompound = blockEntity.createComponentlessNbt(dynamicRegistryManager);
+								NbtCompound nbtCompound2 = blockEntity2.createComponentlessNbt(dynamicRegistryManager);
 								if (!nbtCompound.equals(nbtCompound2)) {
 									return OptionalInt.empty();
 								}

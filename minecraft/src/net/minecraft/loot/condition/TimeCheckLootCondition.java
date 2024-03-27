@@ -1,6 +1,7 @@
 package net.minecraft.loot.condition;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.Set;
@@ -8,12 +9,11 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.operator.BoundedIntUnaryOperator;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.Codecs;
 
 public record TimeCheckLootCondition(Optional<Long> period, BoundedIntUnaryOperator value) implements LootCondition {
-	public static final Codec<TimeCheckLootCondition> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<TimeCheckLootCondition> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(Codec.LONG, "period").forGetter(TimeCheckLootCondition::period),
+					Codec.LONG.optionalFieldOf("period").forGetter(TimeCheckLootCondition::period),
 					BoundedIntUnaryOperator.CODEC.fieldOf("value").forGetter(TimeCheckLootCondition::value)
 				)
 				.apply(instance, TimeCheckLootCondition::new)

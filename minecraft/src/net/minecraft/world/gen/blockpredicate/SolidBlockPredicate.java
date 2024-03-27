@@ -1,13 +1,13 @@
 package net.minecraft.world.gen.blockpredicate;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.Vec3i;
 
 @Deprecated
 public class SolidBlockPredicate extends OffsetPredicate {
-	public static final Codec<SolidBlockPredicate> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SolidBlockPredicate> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> registerOffsetField(instance).apply(instance, SolidBlockPredicate::new)
 	);
 

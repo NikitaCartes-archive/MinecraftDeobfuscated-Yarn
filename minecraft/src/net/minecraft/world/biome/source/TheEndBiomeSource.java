@@ -1,6 +1,6 @@
 package net.minecraft.world.biome.source;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.stream.Stream;
 import net.minecraft.registry.RegistryEntryLookup;
@@ -13,7 +13,7 @@ import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 
 public class TheEndBiomeSource extends BiomeSource {
-	public static final Codec<TheEndBiomeSource> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<TheEndBiomeSource> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					RegistryOps.getEntryCodec(BiomeKeys.THE_END),
 					RegistryOps.getEntryCodec(BiomeKeys.END_HIGHLANDS),
@@ -59,7 +59,7 @@ public class TheEndBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	protected Codec<? extends BiomeSource> getCodec() {
+	protected MapCodec<? extends BiomeSource> getCodec() {
 		return CODEC;
 	}
 

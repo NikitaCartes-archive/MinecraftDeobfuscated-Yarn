@@ -1,7 +1,7 @@
 package net.minecraft.structure.pool;
 
 import com.google.common.collect.Lists;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.block.Blocks;
@@ -24,7 +24,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.PlacedFeature;
 
 public class FeaturePoolElement extends StructurePoolElement {
-	public static final Codec<FeaturePoolElement> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<FeaturePoolElement> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(PlacedFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(pool -> pool.feature), projectionGetter())
 				.apply(instance, FeaturePoolElement::new)
 	);

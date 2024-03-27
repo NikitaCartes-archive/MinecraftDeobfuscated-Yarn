@@ -79,7 +79,7 @@ public class AtlasLoader {
 
 				try {
 					Dynamic<JsonElement> dynamic = new Dynamic<>(JsonOps.INSTANCE, JsonParser.parseReader(bufferedReader));
-					list.addAll((Collection)AtlasSourceManager.LIST_CODEC.parse(dynamic).getOrThrow(false, LOGGER::error));
+					list.addAll((Collection)AtlasSourceManager.LIST_CODEC.parse(dynamic).getOrThrow());
 				} catch (Throwable var10) {
 					if (bufferedReader != null) {
 						try {
@@ -96,7 +96,7 @@ public class AtlasLoader {
 					bufferedReader.close();
 				}
 			} catch (Exception var11) {
-				LOGGER.warn("Failed to parse atlas definition {} in pack {}", identifier, resource.getPackId(), var11);
+				LOGGER.error("Failed to parse atlas definition {} in pack {}", identifier, resource.getPackId(), var11);
 			}
 		}
 

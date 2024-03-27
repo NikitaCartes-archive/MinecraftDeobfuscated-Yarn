@@ -1,12 +1,12 @@
 package net.minecraft.loot.entry;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import net.minecraft.loot.condition.LootCondition;
 
 public class SequenceEntry extends CombinedEntry {
-	public static final Codec<SequenceEntry> CODEC = createCodec(SequenceEntry::new);
+	public static final MapCodec<SequenceEntry> CODEC = createCodec(SequenceEntry::new);
 
 	SequenceEntry(List<LootPoolEntry> list, List<LootCondition> list2) {
 		super(list, list2);

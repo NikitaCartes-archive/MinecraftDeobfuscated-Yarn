@@ -1,6 +1,7 @@
 package net.minecraft.loot.function;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.block.entity.BlockEntityType;
@@ -15,15 +16,14 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.dynamic.Codecs;
 
 public class SetLootTableLootFunction extends ConditionalLootFunction {
-	public static final Codec<SetLootTableLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SetLootTableLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.<RegistryKey<LootTable>, long, RegistryEntry<BlockEntityType<?>>>and(
 					instance.group(
 						RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).fieldOf("name").forGetter(function -> function.lootTable),
-						Codecs.createStrictOptionalFieldCodec(Codec.LONG, "seed", 0L).forGetter(function -> function.seed),
+						Codec.LONG.optionalFieldOf("seed", Long.valueOf(0L)).forGetter(function -> function.seed),
 						Registries.BLOCK_ENTITY_TYPE.getEntryCodec().fieldOf("type").forGetter(function -> function.type)
 					)
 				)

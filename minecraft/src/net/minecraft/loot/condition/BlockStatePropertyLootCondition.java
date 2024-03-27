@@ -1,7 +1,7 @@
 package net.minecraft.loot.condition;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.Set;
@@ -13,19 +13,16 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.dynamic.Codecs;
 
 public record BlockStatePropertyLootCondition(RegistryEntry<Block> block, Optional<StatePredicate> properties) implements LootCondition {
-	public static final Codec<BlockStatePropertyLootCondition> CODEC = Codecs.validate(
-		RecordCodecBuilder.create(
+	public static final MapCodec<BlockStatePropertyLootCondition> CODEC = RecordCodecBuilder.<BlockStatePropertyLootCondition>mapCodec(
 			instance -> instance.group(
 						Registries.BLOCK.getEntryCodec().fieldOf("block").forGetter(BlockStatePropertyLootCondition::block),
-						Codecs.createStrictOptionalFieldCodec(StatePredicate.CODEC, "properties").forGetter(BlockStatePropertyLootCondition::properties)
+						StatePredicate.CODEC.optionalFieldOf("properties").forGetter(BlockStatePropertyLootCondition::properties)
 					)
 					.apply(instance, BlockStatePropertyLootCondition::new)
-		),
-		BlockStatePropertyLootCondition::validateHasProperties
-	);
+		)
+		.validate(BlockStatePropertyLootCondition::validateHasProperties);
 
 	private static DataResult<BlockStatePropertyLootCondition> validateHasProperties(BlockStatePropertyLootCondition condition) {
 		return (DataResult<BlockStatePropertyLootCondition>)condition.properties()

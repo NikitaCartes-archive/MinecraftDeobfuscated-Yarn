@@ -6,7 +6,6 @@ import com.mojang.datafixers.types.templates.TypeTemplate;
 import com.mojang.datafixers.util.Pair;
 import java.util.Map;
 import java.util.function.Supplier;
-import net.minecraft.datafixer.FixUtil;
 import net.minecraft.datafixer.TypeReferences;
 
 public class Schema3818_3 extends IdentifierNormalizingSchema {
@@ -20,7 +19,7 @@ public class Schema3818_3 extends IdentifierNormalizingSchema {
 		schema.registerType(
 			true,
 			TypeReferences.DATA_COMPONENTS,
-			() -> FixUtil.method_57188(
+			() -> DSL.optionalFields(
 					Pair.of("minecraft:bees", DSL.list(DSL.optionalFields("entity_data", TypeReferences.ENTITY_TREE.in(schema)))),
 					Pair.of("minecraft:block_entity_data", TypeReferences.BLOCK_ENTITY.in(schema)),
 					Pair.of("minecraft:bundle_contents", DSL.list(TypeReferences.ITEM_STACK.in(schema))),

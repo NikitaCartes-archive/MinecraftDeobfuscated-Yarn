@@ -16,7 +16,6 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionConsumingBuilder;
 import net.minecraft.loot.function.LootFunctionTypes;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 
 public abstract class LeafEntry extends LootPoolEntry {
@@ -43,11 +42,11 @@ public abstract class LeafEntry extends LootPoolEntry {
 
 	protected static <T extends LeafEntry> P4<Mu<T>, Integer, Integer, List<LootCondition>, List<LootFunction>> addLeafFields(Instance<T> instance) {
 		return instance.group(
-				Codecs.createStrictOptionalFieldCodec(Codec.INT, "weight", 1).forGetter(entry -> entry.weight),
-				Codecs.createStrictOptionalFieldCodec(Codec.INT, "quality", 0).forGetter(entry -> entry.quality)
+				Codec.INT.optionalFieldOf("weight", Integer.valueOf(1)).forGetter(entry -> entry.weight),
+				Codec.INT.optionalFieldOf("quality", Integer.valueOf(0)).forGetter(entry -> entry.quality)
 			)
 			.and(addConditionsField(instance).t1())
-			.and(Codecs.createStrictOptionalFieldCodec(LootFunctionTypes.CODEC.listOf(), "functions", List.of()).forGetter(entry -> entry.functions));
+			.and(LootFunctionTypes.CODEC.listOf().optionalFieldOf("functions", List.of()).forGetter(entry -> entry.functions));
 	}
 
 	@Override

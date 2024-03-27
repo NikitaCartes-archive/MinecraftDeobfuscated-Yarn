@@ -1,6 +1,7 @@
 package net.minecraft.structure.pool.alias;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -29,7 +30,7 @@ public interface StructurePoolAliasBinding {
 
 	static RandomStructurePoolAliasBinding random(String alias, DataPool<String> targets) {
 		DataPool.Builder<RegistryKey<StructurePool>> builder = DataPool.builder();
-		targets.getEntries().forEach(target -> builder.add(StructurePools.of((String)target.getData()), target.getWeight().getValue()));
+		targets.getEntries().forEach(target -> builder.add(StructurePools.of((String)target.data()), target.getWeight().getValue()));
 		return random(StructurePools.of(alias), builder.build());
 	}
 
@@ -41,5 +42,5 @@ public interface StructurePoolAliasBinding {
 		return new RandomGroupStructurePoolAliasBinding(groups);
 	}
 
-	Codec<? extends StructurePoolAliasBinding> getCodec();
+	MapCodec<? extends StructurePoolAliasBinding> getCodec();
 }

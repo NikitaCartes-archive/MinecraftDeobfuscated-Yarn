@@ -1,13 +1,13 @@
 package net.minecraft.world.gen.treedecorator;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.function.Supplier;
 import net.minecraft.block.VineBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 
 public class TrunkVineTreeDecorator extends TreeDecorator {
-	public static final Codec<TrunkVineTreeDecorator> CODEC = Codec.unit((Supplier<TrunkVineTreeDecorator>)(() -> TrunkVineTreeDecorator.INSTANCE));
+	public static final MapCodec<TrunkVineTreeDecorator> CODEC = MapCodec.unit((Supplier<TrunkVineTreeDecorator>)(() -> TrunkVineTreeDecorator.INSTANCE));
 	public static final TrunkVineTreeDecorator INSTANCE = new TrunkVineTreeDecorator();
 
 	@Override

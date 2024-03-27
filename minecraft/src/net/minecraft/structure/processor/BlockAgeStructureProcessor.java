@@ -1,6 +1,7 @@
 package net.minecraft.structure.processor;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -17,10 +18,9 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldView;
 
 public class BlockAgeStructureProcessor extends StructureProcessor {
-	public static final Codec<BlockAgeStructureProcessor> CODEC = Codec.FLOAT
+	public static final MapCodec<BlockAgeStructureProcessor> CODEC = Codec.FLOAT
 		.fieldOf("mossiness")
-		.<BlockAgeStructureProcessor>xmap(BlockAgeStructureProcessor::new, processor -> processor.mossiness)
-		.codec();
+		.xmap(BlockAgeStructureProcessor::new, processor -> processor.mossiness);
 	private static final float field_31681 = 0.5F;
 	private static final float field_31682 = 0.5F;
 	private static final float field_31683 = 0.15F;

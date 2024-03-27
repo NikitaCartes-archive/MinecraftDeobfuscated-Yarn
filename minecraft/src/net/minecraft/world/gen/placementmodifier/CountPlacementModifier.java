@@ -1,16 +1,15 @@
 package net.minecraft.world.gen.placementmodifier;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
 
 public class CountPlacementModifier extends AbstractCountPlacementModifier {
-	public static final Codec<CountPlacementModifier> MODIFIER_CODEC = IntProvider.createValidatingCodec(0, 256)
+	public static final MapCodec<CountPlacementModifier> MODIFIER_CODEC = IntProvider.createValidatingCodec(0, 256)
 		.fieldOf("count")
-		.<CountPlacementModifier>xmap(CountPlacementModifier::new, countPlacementModifier -> countPlacementModifier.count)
-		.codec();
+		.xmap(CountPlacementModifier::new, countPlacementModifier -> countPlacementModifier.count);
 	private final IntProvider count;
 
 	private CountPlacementModifier(IntProvider count) {

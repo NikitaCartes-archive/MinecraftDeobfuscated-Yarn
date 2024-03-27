@@ -1,6 +1,6 @@
 package net.minecraft.loot.function;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.component.DataComponentTypes;
@@ -12,7 +12,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 
 public class SetCustomDataLootFunction extends ConditionalLootFunction {
-	public static final Codec<SetCustomDataLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SetCustomDataLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.and(StringNbtReader.STRINGIFIED_CODEC.fieldOf("tag").forGetter(function -> function.nbt))
 				.apply(instance, SetCustomDataLootFunction::new)

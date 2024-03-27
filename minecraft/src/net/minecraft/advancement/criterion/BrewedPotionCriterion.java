@@ -10,7 +10,6 @@ import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriterion.Conditions> {
 	@Override
@@ -25,8 +24,8 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 	public static record Conditions(Optional<LootContextPredicate> player, Optional<RegistryEntry<Potion>> potion) implements AbstractCriterion.Conditions {
 		public static final Codec<BrewedPotionCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(BrewedPotionCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(Registries.POTION.getEntryCodec(), "potion").forGetter(BrewedPotionCriterion.Conditions::potion)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(BrewedPotionCriterion.Conditions::player),
+						Registries.POTION.getEntryCodec().optionalFieldOf("potion").forGetter(BrewedPotionCriterion.Conditions::potion)
 					)
 					.apply(instance, BrewedPotionCriterion.Conditions::new)
 		);

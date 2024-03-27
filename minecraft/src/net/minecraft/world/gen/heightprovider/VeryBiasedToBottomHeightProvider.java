@@ -2,6 +2,7 @@ package net.minecraft.world.gen.heightprovider;
 
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
@@ -10,7 +11,7 @@ import net.minecraft.world.gen.YOffset;
 import org.slf4j.Logger;
 
 public class VeryBiasedToBottomHeightProvider extends HeightProvider {
-	public static final Codec<VeryBiasedToBottomHeightProvider> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<VeryBiasedToBottomHeightProvider> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					YOffset.OFFSET_CODEC.fieldOf("min_inclusive").forGetter(provider -> provider.minOffset),
 					YOffset.OFFSET_CODEC.fieldOf("max_inclusive").forGetter(provider -> provider.maxOffset),

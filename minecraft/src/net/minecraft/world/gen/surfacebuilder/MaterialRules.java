@@ -129,7 +129,7 @@ public class MaterialRules {
 		return MaterialRules.TerracottaBandsMaterialRule.INSTANCE;
 	}
 
-	static <A> Codec<? extends A> register(Registry<Codec<? extends A>> registry, String id, CodecHolder<? extends A> codecHolder) {
+	static <A> MapCodec<? extends A> register(Registry<MapCodec<? extends A>> registry, String id, CodecHolder<? extends A> codecHolder) {
 		return Registry.register(registry, id, codecHolder.codec());
 	}
 
@@ -372,7 +372,7 @@ public class MaterialRules {
 			.getCodec()
 			.dispatch(materialCondition -> materialCondition.codec().codec(), Function.identity());
 
-		static Codec<? extends MaterialRules.MaterialCondition> registerAndGetDefault(Registry<Codec<? extends MaterialRules.MaterialCondition>> registry) {
+		static MapCodec<? extends MaterialRules.MaterialCondition> registerAndGetDefault(Registry<MapCodec<? extends MaterialRules.MaterialCondition>> registry) {
 			MaterialRules.register(registry, "biome", MaterialRules.BiomeMaterialCondition.CODEC);
 			MaterialRules.register(registry, "noise_threshold", MaterialRules.NoiseThresholdMaterialCondition.CODEC);
 			MaterialRules.register(registry, "vertical_gradient", MaterialRules.VerticalGradientMaterialCondition.CODEC);
@@ -392,7 +392,7 @@ public class MaterialRules {
 	public interface MaterialRule extends Function<MaterialRules.MaterialRuleContext, MaterialRules.BlockStateRule> {
 		Codec<MaterialRules.MaterialRule> CODEC = Registries.MATERIAL_RULE.getCodec().dispatch(materialRule -> materialRule.codec().codec(), Function.identity());
 
-		static Codec<? extends MaterialRules.MaterialRule> registerAndGetDefault(Registry<Codec<? extends MaterialRules.MaterialRule>> registry) {
+		static MapCodec<? extends MaterialRules.MaterialRule> registerAndGetDefault(Registry<MapCodec<? extends MaterialRules.MaterialRule>> registry) {
 			MaterialRules.register(registry, "bandlands", MaterialRules.TerracottaBandsMaterialRule.CODEC);
 			MaterialRules.register(registry, "block", MaterialRules.BlockMaterialRule.CODEC);
 			MaterialRules.register(registry, "sequence", MaterialRules.SequenceMaterialRule.CODEC);

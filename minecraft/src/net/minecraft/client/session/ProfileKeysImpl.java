@@ -43,16 +43,12 @@ public class ProfileKeysImpl implements ProfileKeys {
 	private static final Path PROFILE_KEYS_PATH = Path.of("profilekeys");
 	private final UserApiService userApiService;
 	private final Path jsonPath;
-	private CompletableFuture<Optional<PlayerKeyPair>> keyFuture;
+	private CompletableFuture<Optional<PlayerKeyPair>> keyFuture = CompletableFuture.completedFuture(Optional.empty());
 	private Instant expiryCheckTime = Instant.EPOCH;
 
 	public ProfileKeysImpl(UserApiService userApiService, UUID uuid, Path root) {
 		this.userApiService = userApiService;
 		this.jsonPath = root.resolve(PROFILE_KEYS_PATH).resolve(uuid + ".json");
-		this.keyFuture = CompletableFuture.supplyAsync(
-				() -> this.loadKeyPairFromFile().filter(key -> !key.publicKey().data().isExpired()), Util.getMainWorkerExecutor()
-			)
-			.thenCompose(this::getKeyPair);
 	}
 
 	@Override
@@ -85,14 +81,14 @@ public class ProfileKeysImpl implements ProfileKeys {
 				try {
 					PlayerKeyPair playerKeyPair = this.fetchKeyPair(this.userApiService);
 					this.saveKeyPairToFile(playerKeyPair);
-					return Optional.of(playerKeyPair);
+					return Optional.ofNullable(playerKeyPair);
 				} catch (NetworkEncryptionException | MinecraftClientException | IOException var3) {
 					LOGGER.error("Failed to retrieve profile key pair", (Throwable)var3);
 					this.saveKeyPairToFile(null);
 					return currentKey;
 				}
 			}
-		}, Util.getMainWorkerExecutor());
+		}, Util.getDownloadWorkerExecutor());
 	}
 
 	/**
@@ -150,7 +146,7 @@ public class ProfileKeysImpl implements ProfileKeys {
 
 		if (keyPair != null) {
 			if (SharedConstants.isDevelopment) {
-				PlayerKeyPair.CODEC.encodeStart(JsonOps.INSTANCE, keyPair).result().ifPresent(json -> {
+				PlayerKeyPair.CODEC.encodeStart(JsonOps.INSTANCE, keyPair).ifSuccess(json -> {
 					try {
 						Files.createDirectories(this.jsonPath.getParent());
 						Files.writeString(this.jsonPath, json.toString());
@@ -168,6 +164,7 @@ public class ProfileKeysImpl implements ProfileKeys {
 	 * @throws NetworkEncryptionException when the fetched key is malformed
 	 * @throws IOException when fetching fails
 	 */
+	@Nullable
 	private PlayerKeyPair fetchKeyPair(UserApiService userApiService) throws NetworkEncryptionException, IOException {
 		KeyPairResponse keyPairResponse = userApiService.getKeyPair();
 		if (keyPairResponse != null) {
@@ -178,7 +175,7 @@ public class ProfileKeysImpl implements ProfileKeys {
 				Instant.parse(keyPairResponse.refreshedAfter())
 			);
 		} else {
-			throw new IOException("Could not retrieve profile key pair");
+			return null;
 		}
 	}
 

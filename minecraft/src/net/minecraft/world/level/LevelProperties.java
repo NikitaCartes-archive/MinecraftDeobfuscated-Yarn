@@ -3,7 +3,6 @@ package net.minecraft.world.level;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
@@ -254,15 +253,15 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		levelNbt.putByte("Difficulty", (byte)this.levelInfo.getDifficulty().getId());
 		levelNbt.putBoolean("DifficultyLocked", this.difficultyLocked);
 		levelNbt.put("GameRules", this.levelInfo.getGameRules().toNbt());
-		levelNbt.put("DragonFight", Util.getResult(EnderDragonFight.Data.CODEC.encodeStart(NbtOps.INSTANCE, this.dragonFight), IllegalStateException::new));
+		levelNbt.put("DragonFight", EnderDragonFight.Data.CODEC.encodeStart(NbtOps.INSTANCE, this.dragonFight).getOrThrow());
 		if (playerNbt != null) {
 			levelNbt.put("Player", playerNbt);
 		}
 
-		DataResult<NbtElement> dataResult = DataConfiguration.CODEC.encodeStart(NbtOps.INSTANCE, this.levelInfo.getDataConfiguration());
-		dataResult.get()
-			.ifLeft(dataConfiguration -> levelNbt.copyFrom((NbtCompound)dataConfiguration))
-			.ifRight(result -> LOGGER.warn("Failed to encode configuration {}", result.message()));
+		DataConfiguration.CODEC
+			.encodeStart(NbtOps.INSTANCE, this.levelInfo.getDataConfiguration())
+			.ifSuccess(dataConfiguration -> levelNbt.copyFrom((NbtCompound)dataConfiguration))
+			.ifError(error -> LOGGER.warn("Failed to encode configuration {}", error.message()));
 		if (this.customBossEvents != null) {
 			levelNbt.put("CustomBossEvents", this.customBossEvents);
 		}

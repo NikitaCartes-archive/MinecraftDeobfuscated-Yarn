@@ -183,7 +183,7 @@ public class FallingBlockEntity extends Entity {
 											}
 
 											try {
-												blockEntity.readNbt(nbtCompound, this.getWorld().getRegistryManager());
+												blockEntity.read(nbtCompound, this.getWorld().getRegistryManager());
 											} catch (Exception var15) {
 												LOGGER.error("Failed to load block entity from falling block", (Throwable)var15);
 											}

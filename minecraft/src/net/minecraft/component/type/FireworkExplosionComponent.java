@@ -18,7 +18,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.function.ValueLists;
 
 public record FireworkExplosionComponent(FireworkExplosionComponent.Type shape, IntList colors, IntList fadeColors, boolean hasTrail, boolean hasTwinkle)
@@ -30,10 +29,10 @@ public record FireworkExplosionComponent(FireworkExplosionComponent.Type shape, 
 	public static final Codec<FireworkExplosionComponent> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					FireworkExplosionComponent.Type.CODEC.fieldOf("shape").forGetter(FireworkExplosionComponent::shape),
-					Codecs.createStrictOptionalFieldCodec(COLORS_CODEC, "colors", IntList.of()).forGetter(FireworkExplosionComponent::colors),
-					Codecs.createStrictOptionalFieldCodec(COLORS_CODEC, "fade_colors", IntList.of()).forGetter(FireworkExplosionComponent::fadeColors),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "has_trail", false).forGetter(FireworkExplosionComponent::hasTrail),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "has_twinkle", false).forGetter(FireworkExplosionComponent::hasTwinkle)
+					COLORS_CODEC.optionalFieldOf("colors", IntList.of()).forGetter(FireworkExplosionComponent::colors),
+					COLORS_CODEC.optionalFieldOf("fade_colors", IntList.of()).forGetter(FireworkExplosionComponent::fadeColors),
+					Codec.BOOL.optionalFieldOf("has_trail", Boolean.valueOf(false)).forGetter(FireworkExplosionComponent::hasTrail),
+					Codec.BOOL.optionalFieldOf("has_twinkle", Boolean.valueOf(false)).forGetter(FireworkExplosionComponent::hasTwinkle)
 				)
 				.apply(instance, FireworkExplosionComponent::new)
 	);

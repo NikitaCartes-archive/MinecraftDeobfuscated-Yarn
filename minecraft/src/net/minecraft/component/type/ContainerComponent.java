@@ -13,12 +13,12 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.dynamic.Codecs;
 
 public final class ContainerComponent implements Iterable<ItemStack> {
 	private static final int MAX_SLOTS = 256;
 	public static final ContainerComponent DEFAULT = new ContainerComponent(DefaultedList.of());
-	public static final Codec<ContainerComponent> CODEC = Codecs.list(ContainerComponent.Slot.CODEC.listOf(), 256)
+	public static final Codec<ContainerComponent> CODEC = ContainerComponent.Slot.CODEC
+		.sizeLimitedListOf(256)
 		.xmap(ContainerComponent::fromSlots, ContainerComponent::collectSlots);
 	public static final PacketCodec<RegistryByteBuf, ContainerComponent> PACKET_CODEC = ItemStack.OPTIONAL_PACKET_CODEC
 		.collect(PacketCodecs.toList(256))

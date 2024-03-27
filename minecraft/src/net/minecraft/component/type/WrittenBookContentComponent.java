@@ -33,11 +33,11 @@ public record WrittenBookContentComponent(RawFilteredPair<String> title, String 
 	public static final Codec<List<RawFilteredPair<Text>>> PAGES_CODEC = createPagesCodec(PAGE_CODEC);
 	public static final Codec<WrittenBookContentComponent> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					RawFilteredPair.createCodec(Codecs.string(0, 32)).fieldOf("title").forGetter(WrittenBookContentComponent::title),
+					RawFilteredPair.createCodec(Codec.string(0, 32)).fieldOf("title").forGetter(WrittenBookContentComponent::title),
 					Codec.STRING.fieldOf("author").forGetter(WrittenBookContentComponent::author),
-					Codecs.createStrictOptionalFieldCodec(Codecs.rangedInt(0, 3), "generation", 0).forGetter(WrittenBookContentComponent::generation),
-					Codecs.createStrictOptionalFieldCodec(PAGES_CODEC, "pages", List.of()).forGetter(WrittenBookContentComponent::pages),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "resolved", false).forGetter(WrittenBookContentComponent::resolved)
+					Codecs.rangedInt(0, 3).optionalFieldOf("generation", 0).forGetter(WrittenBookContentComponent::generation),
+					PAGES_CODEC.optionalFieldOf("pages", List.of()).forGetter(WrittenBookContentComponent::pages),
+					Codec.BOOL.optionalFieldOf("resolved", Boolean.valueOf(false)).forGetter(WrittenBookContentComponent::resolved)
 				)
 				.apply(instance, WrittenBookContentComponent::new)
 	);
@@ -60,7 +60,7 @@ public record WrittenBookContentComponent(RawFilteredPair<String> title, String 
 	}
 
 	public static Codec<List<RawFilteredPair<Text>>> createPagesCodec(Codec<Text> textCodec) {
-		return Codecs.list(createPageCodec(textCodec).listOf(), 100);
+		return createPageCodec(textCodec).sizeLimitedListOf(100);
 	}
 
 	@Nullable

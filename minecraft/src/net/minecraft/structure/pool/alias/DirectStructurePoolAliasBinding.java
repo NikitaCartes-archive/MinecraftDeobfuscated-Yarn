@@ -1,6 +1,6 @@
 package net.minecraft.structure.pool.alias;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
@@ -10,7 +10,7 @@ import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.util.math.random.Random;
 
 public record DirectStructurePoolAliasBinding(RegistryKey<StructurePool> alias, RegistryKey<StructurePool> target) implements StructurePoolAliasBinding {
-	static Codec<DirectStructurePoolAliasBinding> CODEC = RecordCodecBuilder.create(
+	static MapCodec<DirectStructurePoolAliasBinding> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					RegistryKey.createCodec(RegistryKeys.TEMPLATE_POOL).fieldOf("alias").forGetter(DirectStructurePoolAliasBinding::alias),
 					RegistryKey.createCodec(RegistryKeys.TEMPLATE_POOL).fieldOf("target").forGetter(DirectStructurePoolAliasBinding::target)
@@ -29,7 +29,7 @@ public record DirectStructurePoolAliasBinding(RegistryKey<StructurePool> alias, 
 	}
 
 	@Override
-	public Codec<DirectStructurePoolAliasBinding> getCodec() {
+	public MapCodec<DirectStructurePoolAliasBinding> getCodec() {
 		return CODEC;
 	}
 }

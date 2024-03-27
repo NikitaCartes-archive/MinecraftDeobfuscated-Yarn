@@ -12,6 +12,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
@@ -28,6 +29,7 @@ public class VaultBlock extends BlockWithEntity {
 	public static final MapCodec<VaultBlock> CODEC = createCodec(VaultBlock::new);
 	public static final Property<VaultState> VAULT_STATE = Properties.VAULT_STATE;
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final BooleanProperty OMINOUS = Properties.OMINOUS;
 
 	@Override
 	public MapCodec<VaultBlock> getCodec() {
@@ -36,7 +38,9 @@ public class VaultBlock extends BlockWithEntity {
 
 	public VaultBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(VAULT_STATE, VaultState.INACTIVE));
+		this.setDefaultState(
+			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(VAULT_STATE, VaultState.INACTIVE).with(OMINOUS, Boolean.valueOf(false))
+		);
 	}
 
 	@Override
@@ -65,7 +69,7 @@ public class VaultBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(FACING, VAULT_STATE);
+		builder.add(FACING, VAULT_STATE, OMINOUS);
 	}
 
 	@Nullable

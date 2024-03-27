@@ -1,6 +1,6 @@
 package net.minecraft.loot.entry;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.function.Consumer;
@@ -11,7 +11,7 @@ import net.minecraft.loot.function.LootFunction;
 import net.minecraft.util.Identifier;
 
 public class DynamicEntry extends LeafEntry {
-	public static final Codec<DynamicEntry> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<DynamicEntry> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(Identifier.CODEC.fieldOf("name").forGetter(entry -> entry.name))
 				.<int, int, List<LootCondition>, List<LootFunction>>and(addLeafFields(instance))
 				.apply(instance, DynamicEntry::new)

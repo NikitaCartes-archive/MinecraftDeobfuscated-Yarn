@@ -34,17 +34,6 @@ import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.ArmadilloEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.entity.projectile.FireworkRocketEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.SmallFireballEntity;
-import net.minecraft.entity.projectile.SpectralArrowEntity;
-import net.minecraft.entity.projectile.WindChargeEntity;
-import net.minecraft.entity.projectile.thrown.EggEntity;
-import net.minecraft.entity.projectile.thrown.ExperienceBottleEntity;
-import net.minecraft.entity.projectile.thrown.PotionEntity;
-import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BoneMealItem;
@@ -64,15 +53,11 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Position;
 import net.minecraft.util.math.RotationPropertyHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
@@ -86,105 +71,17 @@ public interface DispenserBehavior {
 	ItemStack dispense(BlockPointer pointer, ItemStack stack);
 
 	static void registerDefaults() {
-		DispenserBlock.registerBehavior(Items.ARROW, new ProjectileDispenserBehavior() {
-			@Override
-			protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-				ArrowEntity arrowEntity = new ArrowEntity(world, position.getX(), position.getY(), position.getZ(), stack.copyWithCount(1));
-				arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
-				return arrowEntity;
-			}
-		});
-		DispenserBlock.registerBehavior(Items.TIPPED_ARROW, new ProjectileDispenserBehavior() {
-			@Override
-			protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-				ArrowEntity arrowEntity = new ArrowEntity(world, position.getX(), position.getY(), position.getZ(), stack.copyWithCount(1));
-				arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
-				return arrowEntity;
-			}
-		});
-		DispenserBlock.registerBehavior(
-			Items.SPECTRAL_ARROW,
-			new ProjectileDispenserBehavior() {
-				@Override
-				protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-					PersistentProjectileEntity persistentProjectileEntity = new SpectralArrowEntity(
-						world, position.getX(), position.getY(), position.getZ(), stack.copyWithCount(1)
-					);
-					persistentProjectileEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
-					return persistentProjectileEntity;
-				}
-			}
-		);
-		DispenserBlock.registerBehavior(Items.EGG, new ProjectileDispenserBehavior() {
-			@Override
-			protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-				return Util.make(new EggEntity(world, position.getX(), position.getY(), position.getZ()), entity -> entity.setItem(stack));
-			}
-		});
-		DispenserBlock.registerBehavior(Items.SNOWBALL, new ProjectileDispenserBehavior() {
-			@Override
-			protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-				return Util.make(new SnowballEntity(world, position.getX(), position.getY(), position.getZ()), entity -> entity.setItem(stack));
-			}
-		});
-		DispenserBlock.registerBehavior(Items.EXPERIENCE_BOTTLE, new ProjectileDispenserBehavior() {
-			@Override
-			protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-				return Util.make(new ExperienceBottleEntity(world, position.getX(), position.getY(), position.getZ()), entity -> entity.setItem(stack));
-			}
-
-			@Override
-			protected float getVariation() {
-				return super.getVariation() * 0.5F;
-			}
-
-			@Override
-			protected float getForce() {
-				return super.getForce() * 1.25F;
-			}
-		});
-		DispenserBlock.registerBehavior(Items.SPLASH_POTION, new DispenserBehavior() {
-			@Override
-			public ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
-				return (new ProjectileDispenserBehavior() {
-					@Override
-					protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-						return Util.make(new PotionEntity(world, position.getX(), position.getY(), position.getZ()), entity -> entity.setItem(stack));
-					}
-
-					@Override
-					protected float getVariation() {
-						return super.getVariation() * 0.5F;
-					}
-
-					@Override
-					protected float getForce() {
-						return super.getForce() * 1.25F;
-					}
-				}).dispense(blockPointer, itemStack);
-			}
-		});
-		DispenserBlock.registerBehavior(Items.LINGERING_POTION, new DispenserBehavior() {
-			@Override
-			public ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
-				return (new ProjectileDispenserBehavior() {
-					@Override
-					protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-						return Util.make(new PotionEntity(world, position.getX(), position.getY(), position.getZ()), entity -> entity.setItem(stack));
-					}
-
-					@Override
-					protected float getVariation() {
-						return super.getVariation() * 0.5F;
-					}
-
-					@Override
-					protected float getForce() {
-						return super.getForce() * 1.25F;
-					}
-				}).dispense(blockPointer, itemStack);
-			}
-		});
+		DispenserBlock.registerProjectileBehavior(Items.ARROW);
+		DispenserBlock.registerProjectileBehavior(Items.TIPPED_ARROW);
+		DispenserBlock.registerProjectileBehavior(Items.SPECTRAL_ARROW);
+		DispenserBlock.registerProjectileBehavior(Items.EGG);
+		DispenserBlock.registerProjectileBehavior(Items.SNOWBALL);
+		DispenserBlock.registerProjectileBehavior(Items.EXPERIENCE_BOTTLE);
+		DispenserBlock.registerProjectileBehavior(Items.SPLASH_POTION);
+		DispenserBlock.registerProjectileBehavior(Items.LINGERING_POTION);
+		DispenserBlock.registerProjectileBehavior(Items.FIREWORK_ROCKET);
+		DispenserBlock.registerProjectileBehavior(Items.FIRE_CHARGE);
+		DispenserBlock.registerProjectileBehavior(Items.WIND_CHARGE);
 		ItemDispenserBehavior itemDispenserBehavior = new ItemDispenserBehavior() {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
@@ -214,7 +111,7 @@ public interface DispenserBehavior {
 				Direction direction = pointer.state().get(DispenserBlock.FACING);
 				BlockPos blockPos = pointer.pos().offset(direction);
 				ServerWorld serverWorld = pointer.world();
-				Consumer<ArmorStandEntity> consumer = EntityType.copier(entity -> entity.setYaw(direction.asRotation()), serverWorld, stack, null);
+				Consumer<ArmorStandEntity> consumer = EntityType.copier(armorStandEntityx -> armorStandEntityx.setYaw(direction.asRotation()), serverWorld, stack, null);
 				ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.spawn(serverWorld, consumer, blockPos, SpawnReason.DISPENSER, false, false);
 				if (armorStandEntity != null) {
 					stack.decrement(1);
@@ -252,7 +149,9 @@ public interface DispenserBehavior {
 				BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 
 				for (AbstractHorseEntity abstractHorseEntity : pointer.world()
-					.getEntitiesByClass(AbstractHorseEntity.class, new Box(blockPos), entity -> entity.isAlive() && entity.hasArmorSlot())) {
+					.getEntitiesByClass(
+						AbstractHorseEntity.class, new Box(blockPos), abstractHorseEntityx -> abstractHorseEntityx.isAlive() && abstractHorseEntityx.hasArmorSlot()
+					)) {
 					if (abstractHorseEntity.isHorseArmor(stack) && !abstractHorseEntity.isWearingBodyArmor() && abstractHorseEntity.isTame()) {
 						abstractHorseEntity.equipBodyArmor(stack.split(1));
 						this.setSuccess(true);
@@ -291,7 +190,9 @@ public interface DispenserBehavior {
 					BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 
 					for (AbstractDonkeyEntity abstractDonkeyEntity : pointer.world()
-						.getEntitiesByClass(AbstractDonkeyEntity.class, new Box(blockPos), entity -> entity.isAlive() && !entity.hasChest())) {
+						.getEntitiesByClass(
+							AbstractDonkeyEntity.class, new Box(blockPos), abstractDonkeyEntityx -> abstractDonkeyEntityx.isAlive() && !abstractDonkeyEntityx.hasChest()
+						)) {
 						if (abstractDonkeyEntity.isTame() && abstractDonkeyEntity.getStackReference(499).set(stack)) {
 							stack.decrement(1);
 							this.setSuccess(true);
@@ -300,74 +201,6 @@ public interface DispenserBehavior {
 					}
 
 					return super.dispenseSilently(pointer, stack);
-				}
-			}
-		);
-		DispenserBlock.registerBehavior(Items.FIREWORK_ROCKET, new ItemDispenserBehavior() {
-			@Override
-			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				Direction direction = pointer.state().get(DispenserBlock.FACING);
-				Vec3d vec3d = DispenserBehavior.setEntityPosition(pointer, EntityType.FIREWORK_ROCKET, direction);
-				FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(pointer.world(), stack, vec3d.getX(), vec3d.getY(), vec3d.getZ(), true);
-				fireworkRocketEntity.setVelocity((double)direction.getOffsetX(), (double)direction.getOffsetY(), (double)direction.getOffsetZ(), 0.5F, 1.0F);
-				pointer.world().spawnEntity(fireworkRocketEntity);
-				stack.decrement(1);
-				return stack;
-			}
-
-			@Override
-			protected void playSound(BlockPointer pointer) {
-				pointer.world().syncWorldEvent(WorldEvents.FIREWORK_ROCKET_SHOOTS, pointer.pos(), 0);
-			}
-		});
-		DispenserBlock.registerBehavior(Items.FIRE_CHARGE, new ItemDispenserBehavior() {
-			@Override
-			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				Direction direction = pointer.state().get(DispenserBlock.FACING);
-				Position position = DispenserBlock.getOutputLocation(pointer);
-				double d = position.getX() + (double)((float)direction.getOffsetX() * 0.3F);
-				double e = position.getY() + (double)((float)direction.getOffsetY() * 0.3F);
-				double f = position.getZ() + (double)((float)direction.getOffsetZ() * 0.3F);
-				World world = pointer.world();
-				Random random = world.random;
-				double g = random.nextTriangular((double)direction.getOffsetX(), 0.11485000000000001);
-				double h = random.nextTriangular((double)direction.getOffsetY(), 0.11485000000000001);
-				double i = random.nextTriangular((double)direction.getOffsetZ(), 0.11485000000000001);
-				SmallFireballEntity smallFireballEntity = new SmallFireballEntity(world, d, e, f, g, h, i);
-				world.spawnEntity(Util.make(smallFireballEntity, entity -> entity.setItem(stack)));
-				stack.decrement(1);
-				return stack;
-			}
-
-			@Override
-			protected void playSound(BlockPointer pointer) {
-				pointer.world().syncWorldEvent(WorldEvents.BLAZE_SHOOTS, pointer.pos(), 0);
-			}
-		});
-		DispenserBlock.registerBehavior(
-			Items.WIND_CHARGE,
-			new ItemDispenserBehavior() {
-				@Override
-				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-					Direction direction = pointer.state().get(DispenserBlock.FACING);
-					Position position = DispenserBlock.getOutputLocation(pointer);
-					World world = pointer.world();
-					Random random = world.random;
-					double d = random.nextTriangular((double)direction.getOffsetX(), 0.11485000000000001);
-					double e = random.nextTriangular((double)direction.getOffsetY(), 0.11485000000000001);
-					double f = random.nextTriangular((double)direction.getOffsetZ(), 0.11485000000000001);
-					WindChargeEntity windChargeEntity = new WindChargeEntity(
-						world,
-						position.getX() + (double)((float)direction.getOffsetX() * 0.3F),
-						position.getY() + (double)((float)direction.getOffsetY() * 0.3F),
-						position.getZ() + (double)((float)direction.getOffsetZ() * 0.3F),
-						d,
-						e,
-						f
-					);
-					world.spawnEntity(windChargeEntity);
-					stack.decrement(1);
-					return stack;
 				}
 			}
 		);
@@ -576,17 +409,17 @@ public interface DispenserBehavior {
 			new FallibleItemDispenserBehavior() {
 				private final ItemDispenserBehavior fallbackBehavior = new ItemDispenserBehavior();
 
-				private ItemStack tryPutFilledBottle(BlockPointer pointer, ItemStack emptyBottleStack, ItemStack filledBottleStack) {
-					emptyBottleStack.decrement(1);
-					if (emptyBottleStack.isEmpty()) {
+				private ItemStack replace(BlockPointer pointer, ItemStack oldStack, ItemStack newStack) {
+					oldStack.decrement(1);
+					if (oldStack.isEmpty()) {
 						pointer.world().emitGameEvent(null, GameEvent.FLUID_PICKUP, pointer.pos());
-						return filledBottleStack.copy();
+						return newStack.copy();
 					} else {
-						if (pointer.blockEntity().addToFirstFreeSlot(filledBottleStack.copy()) < 0) {
-							this.fallbackBehavior.dispense(pointer, filledBottleStack.copy());
+						if (pointer.blockEntity().addToFirstFreeSlot(newStack.copy()) < 0) {
+							this.fallbackBehavior.dispense(pointer, newStack.copy());
 						}
 
-						return emptyBottleStack;
+						return oldStack;
 					}
 				}
 
@@ -600,10 +433,10 @@ public interface DispenserBehavior {
 						&& (Integer)blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
 						((BeehiveBlock)blockState.getBlock()).takeHoney(serverWorld, blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
 						this.setSuccess(true);
-						return this.tryPutFilledBottle(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));
+						return this.replace(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));
 					} else if (serverWorld.getFluidState(blockPos).isIn(FluidTags.WATER)) {
 						this.setSuccess(true);
-						return this.tryPutFilledBottle(pointer, stack, PotionContentsComponent.createStack(Items.POTION, Potions.WATER));
+						return this.replace(pointer, stack, PotionContentsComponent.createStack(Items.POTION, Potions.WATER));
 					} else {
 						return super.dispenseSilently(pointer, stack);
 					}
@@ -679,19 +512,19 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(
 			Items.POTION,
 			new ItemDispenserBehavior() {
-				private final ItemDispenserBehavior fallback = new ItemDispenserBehavior();
+				private final ItemDispenserBehavior fallbackBehavior = new ItemDispenserBehavior();
 
 				@Override
 				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 					PotionContentsComponent potionContentsComponent = stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
 					if (!potionContentsComponent.matches(Potions.WATER)) {
-						return this.fallback.dispense(pointer, stack);
+						return this.fallbackBehavior.dispense(pointer, stack);
 					} else {
 						ServerWorld serverWorld = pointer.world();
 						BlockPos blockPos = pointer.pos();
 						BlockPos blockPos2 = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 						if (!serverWorld.getBlockState(blockPos2).isIn(BlockTags.CONVERTABLE_TO_MUD)) {
-							return this.fallback.dispense(pointer, stack);
+							return this.fallbackBehavior.dispense(pointer, stack);
 						} else {
 							if (!serverWorld.isClient) {
 								for (int i = 0; i < 5; i++) {
@@ -718,14 +551,5 @@ public interface DispenserBehavior {
 				}
 			}
 		);
-	}
-
-	static Vec3d setEntityPosition(BlockPointer pointer, EntityType<?> entityType, Direction direction) {
-		return pointer.centerPos()
-			.add(
-				(double)direction.getOffsetX() * (0.5000099999997474 - (double)entityType.getWidth() / 2.0),
-				(double)direction.getOffsetY() * (0.5000099999997474 - (double)entityType.getHeight() / 2.0) - (double)entityType.getHeight() / 2.0,
-				(double)direction.getOffsetZ() * (0.5000099999997474 - (double)entityType.getWidth() / 2.0)
-			);
 	}
 }

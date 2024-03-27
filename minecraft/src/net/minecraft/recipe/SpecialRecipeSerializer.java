@@ -1,6 +1,6 @@
 package net.minecraft.recipe;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -16,13 +16,11 @@ import net.minecraft.recipe.book.CraftingRecipeCategory;
  * are also defined in code, which distinguishes them from "non-special" recipes.
  */
 public class SpecialRecipeSerializer<T extends CraftingRecipe> implements RecipeSerializer<T> {
-	private final SpecialRecipeSerializer.Factory<T> factory;
-	private final Codec<T> codec;
+	private final MapCodec<T> codec;
 	private final PacketCodec<RegistryByteBuf, T> packetCodec;
 
 	public SpecialRecipeSerializer(SpecialRecipeSerializer.Factory<T> factory) {
-		this.factory = factory;
-		this.codec = RecordCodecBuilder.create(
+		this.codec = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(CraftingRecipe::getCategory))
 					.apply(instance, factory::create)
 		);
@@ -30,7 +28,7 @@ public class SpecialRecipeSerializer<T extends CraftingRecipe> implements Recipe
 	}
 
 	@Override
-	public Codec<T> codec() {
+	public MapCodec<T> codec() {
 		return this.codec;
 	}
 

@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.structure;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.structure.StrongholdGenerator;
@@ -8,7 +8,7 @@ import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesCollector;
 
 public class StrongholdStructure extends Structure {
-	public static final Codec<StrongholdStructure> CODEC = createCodec(StrongholdStructure::new);
+	public static final MapCodec<StrongholdStructure> CODEC = createCodec(StrongholdStructure::new);
 
 	public StrongholdStructure(Structure.Config config) {
 		super(config);

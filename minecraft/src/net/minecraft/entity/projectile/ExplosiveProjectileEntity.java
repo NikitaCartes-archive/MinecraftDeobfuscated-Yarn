@@ -114,12 +114,6 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void setVelocityClient(double x, double y, double z) {
-		super.setVelocityClient(x, y, z);
-		this.setPower(x, y, z);
-	}
-
-	@Override
 	protected boolean canHit(Entity entity) {
 		return super.canHit(entity) && !entity.noClip;
 	}

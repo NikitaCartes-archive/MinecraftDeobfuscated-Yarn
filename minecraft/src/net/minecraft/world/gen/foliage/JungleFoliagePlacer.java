@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.foliage;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
@@ -8,7 +9,7 @@ import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class JungleFoliagePlacer extends FoliagePlacer {
-	public static final Codec<JungleFoliagePlacer> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<JungleFoliagePlacer> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> fillFoliagePlacerFields(instance)
 				.and(Codec.intRange(0, 16).fieldOf("height").forGetter(placer -> placer.height))
 				.apply(instance, JungleFoliagePlacer::new)

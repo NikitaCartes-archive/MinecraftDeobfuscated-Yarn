@@ -12,7 +12,7 @@ public record PackResourceMetadata(Text description, int packFormat, Optional<Ra
 		instance -> instance.group(
 					TextCodecs.CODEC.fieldOf("description").forGetter(PackResourceMetadata::description),
 					Codec.INT.fieldOf("pack_format").forGetter(PackResourceMetadata::packFormat),
-					Range.createCodec(Codec.INT).optionalFieldOf("supported_formats").forGetter(PackResourceMetadata::supportedFormats)
+					Range.createCodec(Codec.INT).lenientOptionalFieldOf("supported_formats").forGetter(PackResourceMetadata::supportedFormats)
 				)
 				.apply(instance, PackResourceMetadata::new)
 	);

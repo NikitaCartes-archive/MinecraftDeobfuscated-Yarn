@@ -9,7 +9,6 @@ import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlayerCriterion.Conditions> {
 	@Override
@@ -24,8 +23,8 @@ public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlaye
 	public static record Conditions(Optional<LootContextPredicate> player, Optional<DamagePredicate> damage) implements AbstractCriterion.Conditions {
 		public static final Codec<EntityHurtPlayerCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(EntityHurtPlayerCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(DamagePredicate.CODEC, "damage").forGetter(EntityHurtPlayerCriterion.Conditions::damage)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(EntityHurtPlayerCriterion.Conditions::player),
+						DamagePredicate.CODEC.optionalFieldOf("damage").forGetter(EntityHurtPlayerCriterion.Conditions::damage)
 					)
 					.apply(instance, EntityHurtPlayerCriterion.Conditions::new)
 		);

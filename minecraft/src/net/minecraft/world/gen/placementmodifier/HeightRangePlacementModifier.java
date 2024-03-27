@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.placementmodifier;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
@@ -12,7 +12,7 @@ import net.minecraft.world.gen.heightprovider.TrapezoidHeightProvider;
 import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
 public class HeightRangePlacementModifier extends PlacementModifier {
-	public static final Codec<HeightRangePlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<HeightRangePlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(HeightProvider.CODEC.fieldOf("height").forGetter(heightRangePlacementModifier -> heightRangePlacementModifier.height))
 				.apply(instance, HeightRangePlacementModifier::new)
 	);

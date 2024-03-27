@@ -10,7 +10,6 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
 public class TravelCriterion extends AbstractCriterion<TravelCriterion.Conditions> {
@@ -28,9 +27,9 @@ public class TravelCriterion extends AbstractCriterion<TravelCriterion.Condition
 		implements AbstractCriterion.Conditions {
 		public static final Codec<TravelCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(TravelCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(LocationPredicate.CODEC, "start_position").forGetter(TravelCriterion.Conditions::startPosition),
-						Codecs.createStrictOptionalFieldCodec(DistancePredicate.CODEC, "distance").forGetter(TravelCriterion.Conditions::distance)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(TravelCriterion.Conditions::player),
+						LocationPredicate.CODEC.optionalFieldOf("start_position").forGetter(TravelCriterion.Conditions::startPosition),
+						DistancePredicate.CODEC.optionalFieldOf("distance").forGetter(TravelCriterion.Conditions::distance)
 					)
 					.apply(instance, TravelCriterion.Conditions::new)
 		);

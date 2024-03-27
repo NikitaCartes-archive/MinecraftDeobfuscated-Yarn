@@ -19,9 +19,9 @@ public record FoodComponent(int nutrition, float saturationModifier, boolean can
 		instance -> instance.group(
 					Codecs.NONNEGATIVE_INT.fieldOf("nutrition").forGetter(FoodComponent::nutrition),
 					Codec.FLOAT.fieldOf("saturation_modifier").forGetter(FoodComponent::saturationModifier),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "can_always_eat", false).forGetter(FoodComponent::canAlwaysEat),
-					Codecs.createStrictOptionalFieldCodec(Codecs.POSITIVE_FLOAT, "eat_seconds", 1.6F).forGetter(FoodComponent::eatSeconds),
-					Codecs.createStrictOptionalFieldCodec(FoodComponent.StatusEffectEntry.CODEC.listOf(), "effects", List.of()).forGetter(FoodComponent::effects)
+					Codec.BOOL.optionalFieldOf("can_always_eat", Boolean.valueOf(false)).forGetter(FoodComponent::canAlwaysEat),
+					Codecs.POSITIVE_FLOAT.optionalFieldOf("eat_seconds", 1.6F).forGetter(FoodComponent::eatSeconds),
+					FoodComponent.StatusEffectEntry.CODEC.listOf().optionalFieldOf("effects", List.of()).forGetter(FoodComponent::effects)
 				)
 				.apply(instance, FoodComponent::new)
 	);
@@ -111,7 +111,7 @@ public record FoodComponent(int nutrition, float saturationModifier, boolean can
 		public static final Codec<FoodComponent.StatusEffectEntry> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						StatusEffectInstance.CODEC.fieldOf("effect").forGetter(FoodComponent.StatusEffectEntry::effect),
-						Codecs.createStrictOptionalFieldCodec(Codec.floatRange(0.0F, 1.0F), "probability", 1.0F).forGetter(FoodComponent.StatusEffectEntry::probability)
+						Codec.floatRange(0.0F, 1.0F).optionalFieldOf("probability", 1.0F).forGetter(FoodComponent.StatusEffectEntry::probability)
 					)
 					.apply(instance, FoodComponent.StatusEffectEntry::new)
 		);

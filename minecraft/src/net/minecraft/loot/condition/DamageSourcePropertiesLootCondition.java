@@ -1,7 +1,7 @@
 package net.minecraft.loot.condition;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.Set;
@@ -10,14 +10,11 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
 public record DamageSourcePropertiesLootCondition(Optional<DamageSourcePredicate> predicate) implements LootCondition {
-	public static final Codec<DamageSourcePropertiesLootCondition> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(DamageSourcePredicate.CODEC, "predicate").forGetter(DamageSourcePropertiesLootCondition::predicate)
-				)
+	public static final MapCodec<DamageSourcePropertiesLootCondition> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(DamageSourcePredicate.CODEC.optionalFieldOf("predicate").forGetter(DamageSourcePropertiesLootCondition::predicate))
 				.apply(instance, DamageSourcePropertiesLootCondition::new)
 	);
 

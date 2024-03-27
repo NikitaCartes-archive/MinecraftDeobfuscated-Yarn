@@ -19,7 +19,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -98,7 +97,7 @@ public class BitmapFont implements Font {
 
 	@Environment(EnvType.CLIENT)
 	public static record Loader(Identifier file, int height, int ascent, int[][] codepointGrid) implements FontLoader {
-		private static final Codec<int[][]> CODE_POINT_GRID_CODEC = Codecs.validate(Codec.STRING.listOf().xmap(strings -> {
+		private static final Codec<int[][]> CODE_POINT_GRID_CODEC = Codec.STRING.listOf().<int[][]>xmap(strings -> {
 			int i = strings.size();
 			int[][] is = new int[i][];
 
@@ -115,9 +114,8 @@ public class BitmapFont implements Font {
 			}
 
 			return list;
-		}), BitmapFont.Loader::validateCodePointGrid);
-		public static final MapCodec<BitmapFont.Loader> CODEC = Codecs.validate(
-			RecordCodecBuilder.mapCodec(
+		}).validate(BitmapFont.Loader::validateCodePointGrid);
+		public static final MapCodec<BitmapFont.Loader> CODEC = RecordCodecBuilder.<BitmapFont.Loader>mapCodec(
 				instance -> instance.group(
 							Identifier.CODEC.fieldOf("file").forGetter(BitmapFont.Loader::file),
 							Codec.INT.optionalFieldOf("height", Integer.valueOf(8)).forGetter(BitmapFont.Loader::height),
@@ -125,9 +123,8 @@ public class BitmapFont implements Font {
 							CODE_POINT_GRID_CODEC.fieldOf("chars").forGetter(BitmapFont.Loader::codepointGrid)
 						)
 						.apply(instance, BitmapFont.Loader::new)
-			),
-			BitmapFont.Loader::validate
-		);
+			)
+			.validate(BitmapFont.Loader::validate);
 
 		private static DataResult<int[][]> validateCodePointGrid(int[][] codePointGrid) {
 			int i = codePointGrid.length;

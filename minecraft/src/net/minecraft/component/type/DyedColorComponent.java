@@ -16,18 +16,17 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.ColorHelper;
 
 public record DyedColorComponent(int rgb, boolean showInTooltip) implements TooltipAppender {
 	private static final Codec<DyedColorComponent> BASE_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.INT.fieldOf("rgb").forGetter(DyedColorComponent::rgb),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_in_tooltip", true).forGetter(DyedColorComponent::showInTooltip)
+					Codec.BOOL.optionalFieldOf("show_in_tooltip", Boolean.valueOf(true)).forGetter(DyedColorComponent::showInTooltip)
 				)
 				.apply(instance, DyedColorComponent::new)
 	);
-	public static final Codec<DyedColorComponent> CODEC = Codecs.either(BASE_CODEC, Codec.INT, rgb -> new DyedColorComponent(rgb, true));
+	public static final Codec<DyedColorComponent> CODEC = Codec.withAlternative(BASE_CODEC, Codec.INT, rgb -> new DyedColorComponent(rgb, true));
 	public static final PacketCodec<ByteBuf, DyedColorComponent> PACKET_CODEC = PacketCodec.tuple(
 		PacketCodecs.INTEGER, DyedColorComponent::rgb, PacketCodecs.BOOL, DyedColorComponent::showInTooltip, DyedColorComponent::new
 	);

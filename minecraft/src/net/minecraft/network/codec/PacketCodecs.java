@@ -35,7 +35,6 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.collection.IndexedIterable;
 import org.joml.Quaternionf;
@@ -419,8 +418,8 @@ public interface PacketCodecs {
 	static <T> PacketCodec<ByteBuf, T> codec(Codec<T> codec, Supplier<NbtSizeTracker> sizeTracker) {
 		return nbt(sizeTracker)
 			.xmap(
-				nbt -> Util.getResult(codec.parse(NbtOps.INSTANCE, nbt), error -> new DecoderException("Failed to decode: " + error + " " + nbt)),
-				value -> Util.getResult(codec.encodeStart(NbtOps.INSTANCE, (T)value), error -> new EncoderException("Failed to encode: " + error + " " + value))
+				nbt -> codec.parse(NbtOps.INSTANCE, nbt).getOrThrow(error -> new DecoderException("Failed to decode: " + error + " " + nbt)),
+				value -> codec.encodeStart(NbtOps.INSTANCE, (T)value).getOrThrow(error -> new EncoderException("Failed to encode: " + error + " " + value))
 			);
 	}
 
@@ -438,12 +437,12 @@ public interface PacketCodecs {
 			public T decode(RegistryByteBuf registryByteBuf) {
 				NbtElement nbtElement = packetCodec.decode(registryByteBuf);
 				RegistryOps<NbtElement> registryOps = registryByteBuf.getRegistryManager().getOps(NbtOps.INSTANCE);
-				return Util.getResult(codec.parse(registryOps, nbtElement), error -> new DecoderException("Failed to decode: " + error + " " + nbtElement));
+				return codec.parse(registryOps, nbtElement).getOrThrow(error -> new DecoderException("Failed to decode: " + error + " " + nbtElement));
 			}
 
 			public void encode(RegistryByteBuf registryByteBuf, T object) {
 				RegistryOps<NbtElement> registryOps = registryByteBuf.getRegistryManager().getOps(NbtOps.INSTANCE);
-				NbtElement nbtElement = Util.getResult(codec.encodeStart(registryOps, object), error -> new EncoderException("Failed to encode: " + error + " " + object));
+				NbtElement nbtElement = codec.encodeStart(registryOps, object).getOrThrow(error -> new EncoderException("Failed to encode: " + error + " " + object));
 				packetCodec.encode(registryByteBuf, nbtElement);
 			}
 		};

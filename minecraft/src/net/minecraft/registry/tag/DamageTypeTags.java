@@ -35,6 +35,7 @@ public interface DamageTypeTags {
 	TagKey<DamageType> ALWAYS_KILLS_ARMOR_STANDS = of("always_kills_armor_stands");
 	TagKey<DamageType> CAN_BREAK_ARMOR_STAND = of("can_break_armor_stand");
 	TagKey<DamageType> BYPASSES_WOLF_ARMOR = of("bypasses_wolf_armor");
+	TagKey<DamageType> IS_PLAYER_ATTACK = of("is_player_attack");
 
 	private static TagKey<DamageType> of(String id) {
 		return TagKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(id));

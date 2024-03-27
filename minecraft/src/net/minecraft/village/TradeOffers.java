@@ -1369,7 +1369,7 @@ public class TradeOffers {
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
 			int i = 5 + random.nextInt(15);
-			ItemStack itemStack = EnchantmentHelper.enchant(random, new ItemStack(this.tool.getItem()), i, false);
+			ItemStack itemStack = EnchantmentHelper.enchant(entity.getWorld().getEnabledFeatures(), random, new ItemStack(this.tool.getItem()), i, false);
 			int j = Math.min(this.basePrice + i, 64);
 			TradedItem tradedItem = new TradedItem(Items.EMERALD, j);
 			return new TradeOffer(tradedItem, itemStack, this.maxUses, this.experience, this.multiplier);
@@ -1447,7 +1447,7 @@ public class TradeOffers {
 					ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
 					FilledMapItem.fillExplorationMap(serverWorld, itemStack);
 					MapState.addDecorationsNbt(itemStack, blockPos, "+", this.decoration);
-					itemStack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable(this.nameKey));
+					itemStack.set(DataComponentTypes.ITEM_NAME, Text.translatable(this.nameKey));
 					return new TradeOffer(
 						new TradedItem(Items.EMERALD, this.price), Optional.of(new TradedItem(Items.COMPASS)), itemStack, this.maxUses, this.experience, 0.2F
 					);

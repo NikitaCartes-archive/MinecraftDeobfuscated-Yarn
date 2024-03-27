@@ -12,7 +12,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.util.Util;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -61,7 +60,7 @@ public class HotbarStorage {
 			for (int i = 0; i < 9; i++) {
 				HotbarStorageEntry hotbarStorageEntry = this.getSavedHotbar(i);
 				DataResult<NbtElement> dataResult = HotbarStorageEntry.CODEC.encodeStart(NbtOps.INSTANCE, hotbarStorageEntry);
-				nbtCompound.put(String.valueOf(i), Util.getResult(dataResult, IllegalStateException::new));
+				nbtCompound.put(String.valueOf(i), dataResult.getOrThrow());
 			}
 
 			NbtIo.write(nbtCompound, this.file);

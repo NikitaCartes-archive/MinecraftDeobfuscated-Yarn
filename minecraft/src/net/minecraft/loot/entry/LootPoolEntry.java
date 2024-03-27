@@ -12,7 +12,6 @@ import net.minecraft.loot.condition.LootConditionConsumingBuilder;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 
 public abstract class LootPoolEntry implements EntryCombiner {
 	protected final List<LootCondition> conditions;
@@ -24,7 +23,7 @@ public abstract class LootPoolEntry implements EntryCombiner {
 	}
 
 	protected static <T extends LootPoolEntry> P1<Mu<T>, List<LootCondition>> addConditionsField(Instance<T> instance) {
-		return instance.group(Codecs.createStrictOptionalFieldCodec(LootConditionTypes.CODEC.listOf(), "conditions", List.of()).forGetter(entry -> entry.conditions));
+		return instance.group(LootConditionTypes.CODEC.listOf().optionalFieldOf("conditions", List.of()).forGetter(entry -> entry.conditions));
 	}
 
 	public void validate(LootTableReporter reporter) {

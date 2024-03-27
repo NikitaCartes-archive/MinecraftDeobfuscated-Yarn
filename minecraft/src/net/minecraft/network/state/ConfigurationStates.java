@@ -29,6 +29,7 @@ import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.config.DynamicRegistriesS2CPacket;
 import net.minecraft.network.packet.s2c.config.FeaturesS2CPacket;
 import net.minecraft.network.packet.s2c.config.ReadyS2CPacket;
+import net.minecraft.network.packet.s2c.config.ResetChatS2CPacket;
 import net.minecraft.network.packet.s2c.config.SelectKnownPacksS2CPacket;
 
 public class ConfigurationStates {
@@ -51,6 +52,7 @@ public class ConfigurationStates {
 				.add(ConfigPackets.FINISH_CONFIGURATION_S2C, ReadyS2CPacket.CODEC)
 				.add(CommonPackets.KEEP_ALIVE_S2C, KeepAliveS2CPacket.CODEC)
 				.add(CommonPackets.PING, CommonPingS2CPacket.CODEC)
+				.add(ConfigPackets.RESET_CHAT, ResetChatS2CPacket.CODEC)
 				.add(ConfigPackets.REGISTRY_DATA, DynamicRegistriesS2CPacket.CODEC)
 				.add(CommonPackets.RESOURCE_PACK_POP, ResourcePackRemoveS2CPacket.CODEC)
 				.add(CommonPackets.RESOURCE_PACK_PUSH, ResourcePackSendS2CPacket.CODEC)

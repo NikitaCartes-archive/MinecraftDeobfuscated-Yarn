@@ -1,6 +1,6 @@
 package net.minecraft.recipe;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -96,7 +96,7 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 	}
 
 	public static class Serializer implements RecipeSerializer<SmithingTrimRecipe> {
-		private static final Codec<SmithingTrimRecipe> CODEC = RecordCodecBuilder.create(
+		private static final MapCodec<SmithingTrimRecipe> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
 						Ingredient.ALLOW_EMPTY_CODEC.fieldOf("template").forGetter(recipe -> recipe.template),
 						Ingredient.ALLOW_EMPTY_CODEC.fieldOf("base").forGetter(recipe -> recipe.base),
@@ -109,7 +109,7 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 		);
 
 		@Override
-		public Codec<SmithingTrimRecipe> codec() {
+		public MapCodec<SmithingTrimRecipe> codec() {
 			return CODEC;
 		}
 

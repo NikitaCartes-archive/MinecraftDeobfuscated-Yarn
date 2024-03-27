@@ -94,7 +94,14 @@ public class Enchantments {
 		"sharpness",
 		new DamageEnchantment(
 			Enchantment.properties(
-				ItemTags.WEAPON_ENCHANTABLE, ItemTags.SWORD_ENCHANTABLE, 10, 5, Enchantment.leveledCost(1, 11), Enchantment.leveledCost(21, 11), 1, EquipmentSlot.MAINHAND
+				ItemTags.SHARP_WEAPON_ENCHANTABLE,
+				ItemTags.SWORD_ENCHANTABLE,
+				10,
+				5,
+				Enchantment.leveledCost(1, 11),
+				Enchantment.leveledCost(21, 11),
+				1,
+				EquipmentSlot.MAINHAND
 			),
 			Optional.empty()
 		)
@@ -126,7 +133,7 @@ public class Enchantments {
 	public static final Enchantment FIRE_ASPECT = register(
 		"fire_aspect",
 		new Enchantment(
-			Enchantment.properties(ItemTags.SWORD_ENCHANTABLE, 2, 2, Enchantment.leveledCost(10, 20), Enchantment.leveledCost(60, 20), 4, EquipmentSlot.MAINHAND)
+			Enchantment.properties(ItemTags.FIRE_ASPECT_ENCHANTABLE, 2, 2, Enchantment.leveledCost(10, 20), Enchantment.leveledCost(60, 20), 4, EquipmentSlot.MAINHAND)
 		)
 	);
 	public static final Enchantment LOOTING = register(
@@ -242,6 +249,9 @@ public class Enchantments {
 			Enchantment.properties(ItemTags.CROSSBOW_ENCHANTABLE, 10, 4, Enchantment.leveledCost(1, 10), Enchantment.constantCost(50), 1, EquipmentSlot.MAINHAND)
 		)
 	);
+	public static final Enchantment DENSITY = register("density", new DensityEnchantment());
+	public static final Enchantment BREACH = register("breach", new BreachEnchantment());
+	public static final Enchantment WIND_BURST = register("wind_burst", new WindBurstEnchantment());
 	public static final Enchantment MENDING = register(
 		"mending",
 		new MendingEnchantment(

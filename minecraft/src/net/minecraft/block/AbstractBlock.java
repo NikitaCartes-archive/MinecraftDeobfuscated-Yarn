@@ -366,17 +366,17 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 */
 	protected final AbstractBlock.Settings settings;
 	/**
-	 * The {@link net.minecraft.util.Identifier} of the loot table that determines what this block drops.
+	 * The {@link RegistryKey} of the loot table that determines what this block drops.
 	 * 
-	 * @see #getLootTableId
+	 * @see #getLootTableKey
 	 * @see #getDroppedStacks
 	 */
 	@Nullable
-	protected RegistryKey<LootTable> lootTableId;
+	protected RegistryKey<LootTable> lootTableKey;
 
 	public AbstractBlock(AbstractBlock.Settings settings) {
 		this.collidable = settings.collidable;
-		this.lootTableId = settings.lootTableId;
+		this.lootTableKey = settings.lootTableKey;
 		this.resistance = settings.resistance;
 		this.randomTicks = settings.randomTicks;
 		this.soundGroup = settings.soundGroup;
@@ -759,7 +759,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @see net.minecraft.loot.context.LootContextParameters
 	 */
 	protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
-		RegistryKey<LootTable> registryKey = this.getLootTableId();
+		RegistryKey<LootTable> registryKey = this.getLootTableKey();
 		if (registryKey == LootTables.EMPTY) {
 			return Collections.emptyList();
 		} else {
@@ -1078,13 +1078,13 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		return 0;
 	}
 
-	public final RegistryKey<LootTable> getLootTableId() {
-		if (this.lootTableId == null) {
+	public final RegistryKey<LootTable> getLootTableKey() {
+		if (this.lootTableKey == null) {
 			Identifier identifier = Registries.BLOCK.getId(this.asBlock());
-			this.lootTableId = RegistryKey.of(RegistryKeys.LOOT_TABLE, identifier.withPrefixedPath("blocks/"));
+			this.lootTableKey = RegistryKey.of(RegistryKeys.LOOT_TABLE, identifier.withPrefixedPath("blocks/"));
 		}
 
-		return this.lootTableId;
+		return this.lootTableKey;
 	}
 
 	/**
@@ -1712,7 +1712,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		float slipperiness = 0.6F;
 		float velocityMultiplier = 1.0F;
 		float jumpVelocityMultiplier = 1.0F;
-		RegistryKey<LootTable> lootTableId;
+		RegistryKey<LootTable> lootTableKey;
 		boolean opaque = true;
 		boolean isAir;
 		boolean burnable;
@@ -1754,7 +1754,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			settings.postProcessPredicate = settings2.postProcessPredicate;
 			settings.suffocationPredicate = settings2.suffocationPredicate;
 			settings.blockVisionPredicate = settings2.blockVisionPredicate;
-			settings.lootTableId = settings2.lootTableId;
+			settings.lootTableKey = settings2.lootTableKey;
 			return settings;
 		}
 
@@ -1885,7 +1885,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		}
 
 		public AbstractBlock.Settings dropsNothing() {
-			this.lootTableId = LootTables.EMPTY;
+			this.lootTableKey = LootTables.EMPTY;
 			return this;
 		}
 
@@ -1895,7 +1895,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		 * @param source the block to copy item drops from
 		 */
 		public AbstractBlock.Settings dropsLike(Block source) {
-			this.lootTableId = source.getLootTableId();
+			this.lootTableKey = source.getLootTableKey();
 			return this;
 		}
 

@@ -48,7 +48,7 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		this.sherds = Sherds.fromNbt(nbt);
 		if (!this.readLootTable(nbt)) {
@@ -66,7 +66,7 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createNbt(registryLookup);
+		return this.createComponentlessNbt(registryLookup);
 	}
 
 	public Direction getHorizontalFacing() {
@@ -78,7 +78,7 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 	}
 
 	public void readFrom(ItemStack stack) {
-		this.readComponents(stack.getComponents());
+		this.readComponents(stack);
 	}
 
 	public ItemStack asStack() {
@@ -115,13 +115,15 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 	}
 
 	@Override
-	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
+		super.addComponents(componentMapBuilder);
 		componentMapBuilder.add(DataComponentTypes.POT_DECORATIONS, this.sherds);
 		componentMapBuilder.add(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(List.of(this.stack)));
 	}
 
 	@Override
-	public void readComponents(ComponentMap components) {
+	protected void readComponents(BlockEntity.ComponentsAccess components) {
+		super.readComponents(components);
 		this.sherds = components.getOrDefault(DataComponentTypes.POT_DECORATIONS, Sherds.DEFAULT);
 		this.stack = components.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT).copyFirstStack();
 	}

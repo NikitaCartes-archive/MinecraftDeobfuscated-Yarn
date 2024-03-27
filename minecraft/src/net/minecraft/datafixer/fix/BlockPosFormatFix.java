@@ -28,7 +28,7 @@ public class BlockPosFormatFix extends DataFix {
 	private Typed<?> fixOldBlockPosFormat(Typed<?> typed, Map<String, String> oldToNewKey) {
 		return typed.update(DSL.remainderFinder(), dynamic -> {
 			for (Entry<String, String> entry : oldToNewKey.entrySet()) {
-				dynamic = FixUtil.replaceKey(dynamic, (String)entry.getKey(), (String)entry.getValue(), FixUtil::fixBlockPos);
+				dynamic = dynamic.renameAndFixField((String)entry.getKey(), (String)entry.getValue(), FixUtil::fixBlockPos);
 			}
 
 			return dynamic;
@@ -37,13 +37,13 @@ public class BlockPosFormatFix extends DataFix {
 
 	private <T> Dynamic<T> fixMapItemFrames(Dynamic<T> dynamic) {
 		return dynamic.update("frames", dynamicx -> dynamicx.createList(dynamicx.asStream().map(dynamicxx -> {
-				dynamicxx = FixUtil.replaceKey(dynamicxx, "Pos", "pos", FixUtil::fixBlockPos);
-				dynamicxx = FixUtil.renameKey(dynamicxx, "Rotation", "rotation");
-				return FixUtil.renameKey(dynamicxx, "EntityId", "entity_id");
+				dynamicxx = dynamicxx.renameAndFixField("Pos", "pos", FixUtil::fixBlockPos);
+				dynamicxx = dynamicxx.renameField("Rotation", "rotation");
+				return dynamicxx.renameField("EntityId", "entity_id");
 			}))).update("banners", dynamicx -> dynamicx.createList(dynamicx.asStream().map(dynamicxx -> {
-				dynamicxx = FixUtil.renameKey(dynamicxx, "Pos", "pos");
-				dynamicxx = FixUtil.renameKey(dynamicxx, "Color", "color");
-				return FixUtil.renameKey(dynamicxx, "Name", "name");
+				dynamicxx = dynamicxx.renameField("Pos", "pos");
+				dynamicxx = dynamicxx.renameField("Color", "color");
+				return dynamicxx.renameField("Name", "name");
 			})));
 	}
 
@@ -83,7 +83,7 @@ public class BlockPosFormatFix extends DataFix {
 			this.fixTypeEverywhereTyped(
 				"BlockPos format in Leash for mobs",
 				this.getInputSchema().getType(TypeReferences.ENTITY),
-				typed -> typed.update(DSL.remainderFinder(), dynamic -> FixUtil.replaceKey(dynamic, "Leash", "leash", FixUtil::fixBlockPos))
+				typed -> typed.update(DSL.remainderFinder(), dynamic -> dynamic.renameAndFixField("Leash", "leash", FixUtil::fixBlockPos))
 			)
 		);
 	}

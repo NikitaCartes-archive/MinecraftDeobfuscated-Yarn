@@ -29,7 +29,6 @@ import net.minecraft.client.gui.widget.OptionSliderWidget;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.TranslatableOption;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 import org.slf4j.Logger;
 
@@ -407,7 +406,7 @@ public final class SimpleOption<T> {
 
 		@Override
 		public Codec<Double> codec() {
-			return Codecs.either(Codec.doubleRange(0.0, 1.0), Codec.BOOL, value -> value ? 1.0 : 0.0);
+			return Codec.withAlternative(Codec.doubleRange(0.0, 1.0), Codec.BOOL, value -> value ? 1.0 : 0.0);
 		}
 	}
 
@@ -499,15 +498,15 @@ public final class SimpleOption<T> {
 
 		@Override
 		public Codec<Integer> codec() {
-			return Codecs.validate(
-				Codec.INT,
-				value -> {
-					int i = this.encodableMaxInclusive + 1;
-					return value.compareTo(this.minInclusive) >= 0 && value.compareTo(i) <= 0
-						? DataResult.success(value)
-						: DataResult.error(() -> "Value " + value + " outside of range [" + this.minInclusive + ":" + i + "]", value);
-				}
-			);
+			return Codec.INT
+				.validate(
+					value -> {
+						int i = this.encodableMaxInclusive + 1;
+						return value.compareTo(this.minInclusive) >= 0 && value.compareTo(i) <= 0
+							? DataResult.success(value)
+							: DataResult.error(() -> "Value " + value + " outside of range [" + this.minInclusive + ":" + i + "]", value);
+					}
+				);
 		}
 
 		@Override

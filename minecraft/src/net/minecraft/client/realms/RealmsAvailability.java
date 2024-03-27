@@ -6,11 +6,13 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.gui.screen.RealmsClientIncompatibleScreen;
 import net.minecraft.client.realms.gui.screen.RealmsGenericErrorScreen;
 import net.minecraft.client.realms.gui.screen.RealmsParentalConsentScreen;
+import net.minecraft.client.session.Session;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
@@ -35,25 +37,28 @@ public class RealmsAvailability {
 	}
 
 	private static CompletableFuture<RealmsAvailability.Info> checkInternal() {
-		return CompletableFuture.supplyAsync(
-			() -> {
-				RealmsClient realmsClient = RealmsClient.create();
+		Session session = MinecraftClient.getInstance().getSession();
+		return session.getAccountType() != Session.AccountType.MSA
+			? CompletableFuture.completedFuture(new RealmsAvailability.Info(RealmsAvailability.Type.AUTHENTICATION_ERROR))
+			: CompletableFuture.supplyAsync(
+				() -> {
+					RealmsClient realmsClient = RealmsClient.create();
 
-				try {
-					if (realmsClient.clientCompatible() != RealmsClient.CompatibleVersionResponse.COMPATIBLE) {
-						return new RealmsAvailability.Info(RealmsAvailability.Type.INCOMPATIBLE_CLIENT);
-					} else {
-						return !realmsClient.mcoEnabled()
-							? new RealmsAvailability.Info(RealmsAvailability.Type.NEEDS_PARENTAL_CONSENT)
-							: new RealmsAvailability.Info(RealmsAvailability.Type.SUCCESS);
+					try {
+						if (realmsClient.clientCompatible() != RealmsClient.CompatibleVersionResponse.COMPATIBLE) {
+							return new RealmsAvailability.Info(RealmsAvailability.Type.INCOMPATIBLE_CLIENT);
+						} else {
+							return !realmsClient.mcoEnabled()
+								? new RealmsAvailability.Info(RealmsAvailability.Type.NEEDS_PARENTAL_CONSENT)
+								: new RealmsAvailability.Info(RealmsAvailability.Type.SUCCESS);
+						}
+					} catch (RealmsServiceException var2) {
+						LOGGER.error("Couldn't connect to realms", (Throwable)var2);
+						return var2.error.getErrorCode() == 401 ? new RealmsAvailability.Info(RealmsAvailability.Type.AUTHENTICATION_ERROR) : new RealmsAvailability.Info(var2);
 					}
-				} catch (RealmsServiceException var2) {
-					LOGGER.error("Couldn't connect to realms", (Throwable)var2);
-					return var2.error.getErrorCode() == 401 ? new RealmsAvailability.Info(RealmsAvailability.Type.AUTHENTICATION_ERROR) : new RealmsAvailability.Info(var2);
-				}
-			},
-			Util.getIoWorkerExecutor()
-		);
+				},
+				Util.getIoWorkerExecutor()
+			);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -101,7 +101,7 @@ public abstract class MobSpawnerLogic {
 					double d = j >= 1 ? nbtList.getDouble(0) : (double)pos.getX() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5;
 					double e = j >= 2 ? nbtList.getDouble(1) : (double)(pos.getY() + random.nextInt(3) - 1);
 					double f = j >= 3 ? nbtList.getDouble(2) : (double)pos.getZ() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5;
-					if (world.isSpaceEmpty(((EntityType)optional.get()).createSimpleBoundingBox(d, e, f))) {
+					if (world.isSpaceEmpty(((EntityType)optional.get()).getSpawnBox(d, e, f))) {
 						BlockPos blockPos = BlockPos.ofFloored(d, e, f);
 						if (mobSpawnerEntry.getCustomSpawnRules().isPresent()) {
 							if (!((EntityType)optional.get()).getSpawnGroup().isPeaceful() && world.getDifficulty() == Difficulty.PEACEFUL) {
@@ -147,6 +147,8 @@ public abstract class MobSpawnerLogic {
 							if (bl2) {
 								((MobEntity)entity).initialize(world, world.getLocalDifficulty(entity.getBlockPos()), SpawnReason.SPAWNER, null);
 							}
+
+							mobSpawnerEntry.getEquipmentLootTable().ifPresent(mobEntity::setEquipmentFromLootTable);
 						}
 
 						if (!world.spawnNewEntityAndPassengers(entity)) {
@@ -179,7 +181,7 @@ public abstract class MobSpawnerLogic {
 			this.spawnDelay = this.minSpawnDelay + random.nextInt(this.maxSpawnDelay - this.minSpawnDelay);
 		}
 
-		this.spawnPotentials.getOrEmpty(random).ifPresent(spawnPotential -> this.setSpawnEntry(world, pos, (MobSpawnerEntry)spawnPotential.getData()));
+		this.spawnPotentials.getOrEmpty(random).ifPresent(spawnPotential -> this.setSpawnEntry(world, pos, (MobSpawnerEntry)spawnPotential.data()));
 		this.sendStatus(world, pos, 1);
 	}
 
@@ -234,11 +236,11 @@ public abstract class MobSpawnerLogic {
 		if (this.spawnEntry != null) {
 			nbt.put(
 				"SpawnData",
-				(NbtElement)MobSpawnerEntry.CODEC.encodeStart(NbtOps.INSTANCE, this.spawnEntry).result().orElseThrow(() -> new IllegalStateException("Invalid SpawnData"))
+				MobSpawnerEntry.CODEC.encodeStart(NbtOps.INSTANCE, this.spawnEntry).getOrThrow(string -> new IllegalStateException("Invalid SpawnData: " + string))
 			);
 		}
 
-		nbt.put("SpawnPotentials", (NbtElement)MobSpawnerEntry.DATA_POOL_CODEC.encodeStart(NbtOps.INSTANCE, this.spawnPotentials).result().orElseThrow());
+		nbt.put("SpawnPotentials", MobSpawnerEntry.DATA_POOL_CODEC.encodeStart(NbtOps.INSTANCE, this.spawnPotentials).getOrThrow());
 		return nbt;
 	}
 
@@ -278,7 +280,7 @@ public abstract class MobSpawnerLogic {
 		if (this.spawnEntry != null) {
 			return this.spawnEntry;
 		} else {
-			this.setSpawnEntry(world, pos, (MobSpawnerEntry)this.spawnPotentials.getOrEmpty(random).map(Weighted.Present::getData).orElseGet(MobSpawnerEntry::new));
+			this.setSpawnEntry(world, pos, (MobSpawnerEntry)this.spawnPotentials.getOrEmpty(random).map(Weighted.Present::data).orElseGet(MobSpawnerEntry::new));
 			return this.spawnEntry;
 		}
 	}

@@ -1,7 +1,7 @@
 package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +15,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 
 public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
-	public static final Codec<FillPlayerHeadLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<FillPlayerHeadLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.and(LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(function -> function.entity))
 				.apply(instance, FillPlayerHeadLootFunction::new)

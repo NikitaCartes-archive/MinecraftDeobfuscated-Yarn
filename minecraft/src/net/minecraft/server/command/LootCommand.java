@@ -431,7 +431,7 @@ public class LootCommand {
 			.addOptional(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity())
 			.add(LootContextParameters.TOOL, stack);
 		List<ItemStack> list = blockState.getDroppedStacks(builder);
-		return constructor.accept(context, list, stacks -> sendDroppedFeedback(serverCommandSource, stacks, blockState.getBlock().getLootTableId()));
+		return constructor.accept(context, list, stacks -> sendDroppedFeedback(serverCommandSource, stacks, blockState.getBlock().getLootTableKey()));
 	}
 
 	private static int executeKill(CommandContext<ServerCommandSource> context, Entity entity, LootCommand.Target constructor) throws CommandSyntaxException {

@@ -267,9 +267,8 @@ public abstract class DisplayEntity extends Entity {
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
 		AffineTransformation.ANY_CODEC
 			.encodeStart(NbtOps.INSTANCE, getTransformation(this.dataTracker))
-			.result()
-			.ifPresent(transformations -> nbt.put("transformation", transformations));
-		DisplayEntity.BillboardMode.CODEC.encodeStart(NbtOps.INSTANCE, this.getBillboardMode()).result().ifPresent(billboard -> nbt.put("billboard", billboard));
+			.ifSuccess(transformations -> nbt.put("transformation", transformations));
+		DisplayEntity.BillboardMode.CODEC.encodeStart(NbtOps.INSTANCE, this.getBillboardMode()).ifSuccess(billboard -> nbt.put("billboard", billboard));
 		nbt.putInt("interpolation_duration", this.getInterpolationDuration());
 		nbt.putInt("teleport_duration", this.getTeleportDuration());
 		nbt.putFloat("view_range", this.getViewRange());
@@ -280,7 +279,7 @@ public abstract class DisplayEntity extends Entity {
 		nbt.putInt("glow_color_override", this.getGlowColorOverride());
 		Brightness brightness = this.getBrightnessUnpacked();
 		if (brightness != null) {
-			Brightness.CODEC.encodeStart(NbtOps.INSTANCE, brightness).result().ifPresent(brightnessx -> nbt.put("brightness", brightnessx));
+			Brightness.CODEC.encodeStart(NbtOps.INSTANCE, brightness).ifSuccess(brightnessx -> nbt.put("brightness", brightnessx));
 		}
 	}
 
@@ -748,7 +747,7 @@ public abstract class DisplayEntity extends Entity {
 				nbt.put("item", this.getItemStack().encode(this.getRegistryManager()));
 			}
 
-			ModelTransformationMode.CODEC.encodeStart(NbtOps.INSTANCE, this.getTransformationMode()).result().ifPresent(nbtx -> nbt.put("item_display", nbtx));
+			ModelTransformationMode.CODEC.encodeStart(NbtOps.INSTANCE, this.getTransformationMode()).ifSuccess(nbtx -> nbt.put("item_display", nbtx));
 		}
 
 		@Override
@@ -939,10 +938,7 @@ public abstract class DisplayEntity extends Entity {
 			writeFlag(b, nbt, "shadow", SHADOW_FLAG);
 			writeFlag(b, nbt, "see_through", SEE_THROUGH_FLAG);
 			writeFlag(b, nbt, "default_background", DEFAULT_BACKGROUND_FLAG);
-			DisplayEntity.TextDisplayEntity.TextAlignment.CODEC
-				.encodeStart(NbtOps.INSTANCE, getAlignment(b))
-				.result()
-				.ifPresent(nbtElement -> nbt.put("alignment", nbtElement));
+			DisplayEntity.TextDisplayEntity.TextAlignment.CODEC.encodeStart(NbtOps.INSTANCE, getAlignment(b)).ifSuccess(nbtElement -> nbt.put("alignment", nbtElement));
 		}
 
 		@Override

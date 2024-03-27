@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.stateprovider;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.block.BlockState;
@@ -10,7 +11,7 @@ import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.math.random.Random;
 
 public class NoiseThresholdBlockStateProvider extends AbstractNoiseBlockStateProvider {
-	public static final Codec<NoiseThresholdBlockStateProvider> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<NoiseThresholdBlockStateProvider> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> fillCodecFields(instance)
 				.<float, float, BlockState, List<BlockState>, List<BlockState>>and(
 					instance.group(

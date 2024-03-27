@@ -13,6 +13,7 @@ import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.LocalDifficulty;
 
@@ -89,9 +90,11 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 				skeletonEntity.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
 			}
 
+			FeatureSet featureSet = vehicle.getWorld().getEnabledFeatures();
 			skeletonEntity.equipStack(
 				EquipmentSlot.MAINHAND,
 				EnchantmentHelper.enchant(
+					featureSet,
 					skeletonEntity.getRandom(),
 					this.removeEnchantments(skeletonEntity.getMainHandStack()),
 					(int)(5.0F + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRandom().nextInt(18)),
@@ -101,6 +104,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 			skeletonEntity.equipStack(
 				EquipmentSlot.HEAD,
 				EnchantmentHelper.enchant(
+					featureSet,
 					skeletonEntity.getRandom(),
 					this.removeEnchantments(skeletonEntity.getEquippedStack(EquipmentSlot.HEAD)),
 					(int)(5.0F + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRandom().nextInt(18)),

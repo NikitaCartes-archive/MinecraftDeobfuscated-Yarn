@@ -1,6 +1,7 @@
 package net.minecraft.structure.processor;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import javax.annotation.Nullable;
 import net.minecraft.server.world.ServerWorld;
@@ -11,7 +12,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldView;
 
 public class GravityStructureProcessor extends StructureProcessor {
-	public static final Codec<GravityStructureProcessor> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<GravityStructureProcessor> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Heightmap.Type.CODEC.fieldOf("heightmap").orElse(Heightmap.Type.WORLD_SURFACE_WG).forGetter(processor -> processor.heightmap),
 					Codec.INT.fieldOf("offset").orElse(0).forGetter(processor -> processor.offset)

@@ -8,11 +8,10 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 
 public record DebugStickStateComponent(Map<RegistryEntry<Block>, Property<?>> properties) {
 	public static final DebugStickStateComponent DEFAULT = new DebugStickStateComponent(Map.of());
-	public static final Codec<DebugStickStateComponent> CODEC = Codecs.keyDispatching(
+	public static final Codec<DebugStickStateComponent> CODEC = Codec.dispatchedMap(
 			Registries.BLOCK.getEntryCodec(), block -> Codec.STRING.comapFlatMap(property -> {
 					Property<?> property2 = ((Block)block.value()).getStateManager().getProperty(property);
 					return property2 != null ? DataResult.success(property2) : DataResult.error(() -> "No property on " + block.getIdAsString() + " with name: " + property);

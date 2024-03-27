@@ -35,7 +35,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -107,20 +106,18 @@ public class ChunkSerializer {
 			if (l >= 0 && l < chunkSections.length) {
 				PalettedContainer<BlockState> palettedContainer;
 				if (nbtCompound.contains("block_states", NbtElement.COMPOUND_TYPE)) {
-					palettedContainer = Util.getResult(
-						CODEC.parse(NbtOps.INSTANCE, nbtCompound.getCompound("block_states")).promotePartial(errorMessage -> logRecoverableError(chunkPos, k, errorMessage)),
-						ChunkSerializer.ChunkLoadingException::new
-					);
+					palettedContainer = CODEC.parse(NbtOps.INSTANCE, nbtCompound.getCompound("block_states"))
+						.promotePartial(errorMessage -> logRecoverableError(chunkPos, k, errorMessage))
+						.getOrThrow(ChunkSerializer.ChunkLoadingException::new);
 				} else {
 					palettedContainer = new PalettedContainer<>(Block.STATE_IDS, Blocks.AIR.getDefaultState(), PalettedContainer.PaletteProvider.BLOCK_STATE);
 				}
 
 				ReadableContainer<RegistryEntry<Biome>> readableContainer;
 				if (nbtCompound.contains("biomes", NbtElement.COMPOUND_TYPE)) {
-					readableContainer = Util.getResult(
-						codec.parse(NbtOps.INSTANCE, nbtCompound.getCompound("biomes")).promotePartial(errorMessage -> logRecoverableError(chunkPos, k, errorMessage)),
-						ChunkSerializer.ChunkLoadingException::new
-					);
+					readableContainer = codec.parse(NbtOps.INSTANCE, nbtCompound.getCompound("biomes"))
+						.promotePartial(errorMessage -> logRecoverableError(chunkPos, k, errorMessage))
+						.getOrThrow(ChunkSerializer.ChunkLoadingException::new);
 				} else {
 					readableContainer = new PalettedContainer<>(registry.getIndexedEntries(), registry.entryOf(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
 				}
@@ -311,8 +308,8 @@ public class ChunkSerializer {
 				NbtCompound nbtCompound2 = new NbtCompound();
 				if (bl2) {
 					ChunkSection chunkSection = chunkSections[j];
-					nbtCompound2.put("block_states", CODEC.encodeStart(NbtOps.INSTANCE, chunkSection.getBlockStateContainer()).getOrThrow(false, LOGGER::error));
-					nbtCompound2.put("biomes", codec.encodeStart(NbtOps.INSTANCE, chunkSection.getBiomeContainer()).getOrThrow(false, LOGGER::error));
+					nbtCompound2.put("block_states", CODEC.encodeStart(NbtOps.INSTANCE, chunkSection.getBlockStateContainer()).getOrThrow());
+					nbtCompound2.put("biomes", codec.encodeStart(NbtOps.INSTANCE, chunkSection.getBiomeContainer()).getOrThrow());
 				}
 
 				if (chunkNibbleArray != null && !chunkNibbleArray.isUninitialized()) {

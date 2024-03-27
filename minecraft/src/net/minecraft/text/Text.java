@@ -25,7 +25,6 @@ import javax.annotation.Nullable;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 
 /**
@@ -308,11 +307,11 @@ public interface Text extends Message, StringVisitable {
 		}
 
 		static MutableText fromJson(JsonElement json, RegistryWrapper.WrapperLookup registries) {
-			return (MutableText)Util.getResult(TextCodecs.CODEC.parse(registries.getOps(JsonOps.INSTANCE), json), JsonParseException::new);
+			return (MutableText)TextCodecs.CODEC.parse(registries.getOps(JsonOps.INSTANCE), json).getOrThrow(JsonParseException::new);
 		}
 
 		static JsonElement toJson(Text text, RegistryWrapper.WrapperLookup registries) {
-			return Util.getResult(TextCodecs.CODEC.encodeStart(registries.getOps(JsonOps.INSTANCE), text), JsonParseException::new);
+			return TextCodecs.CODEC.encodeStart(registries.getOps(JsonOps.INSTANCE), text).getOrThrow(JsonParseException::new);
 		}
 
 		public static String toJsonString(Text text, RegistryWrapper.WrapperLookup registries) {

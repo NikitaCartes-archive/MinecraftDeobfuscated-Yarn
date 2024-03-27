@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.resource.ClientDataPackManager;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
@@ -21,6 +22,7 @@ import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.config.DynamicRegistriesS2CPacket;
 import net.minecraft.network.packet.s2c.config.FeaturesS2CPacket;
 import net.minecraft.network.packet.s2c.config.ReadyS2CPacket;
+import net.minecraft.network.packet.s2c.config.ResetChatS2CPacket;
 import net.minecraft.network.packet.s2c.config.SelectKnownPacksS2CPacket;
 import net.minecraft.network.state.PlayStateFactories;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -41,12 +43,15 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 	private final ClientRegistries clientRegistries = new ClientRegistries();
 	@Nullable
 	private ClientDataPackManager dataPackManager;
+	@Nullable
+	protected ChatHud.ChatState chatState;
 
 	public ClientConfigurationNetworkHandler(MinecraftClient minecraftClient, ClientConnection clientConnection, ClientConnectionState clientConnectionState) {
 		super(minecraftClient, clientConnection, clientConnectionState);
 		this.profile = clientConnectionState.localGameProfile();
 		this.registryManager = clientConnectionState.receivedRegistries();
 		this.enabledFeatures = clientConnectionState.enabledFeatures();
+		this.chatState = clientConnectionState.chatState();
 	}
 
 	@Override
@@ -91,6 +96,11 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 		this.sendPacket(new SelectKnownPacksC2SPacket(list));
 	}
 
+	@Override
+	public void onResetChat(ResetChatS2CPacket packet) {
+		this.chatState = null;
+	}
+
 	private <T> T openClientDataPack(Function<ResourceFactory, T> opener) {
 		if (this.dataPackManager == null) {
 			return (T)opener.apply(ResourceFactory.MISSING);
@@ -117,7 +127,15 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 					this.client,
 					this.connection,
 					new ClientConnectionState(
-						this.profile, this.worldSession, immutable, this.enabledFeatures, this.brand, this.serverInfo, this.postDisconnectScreen, this.serverCookies
+						this.profile,
+						this.worldSession,
+						immutable,
+						this.enabledFeatures,
+						this.brand,
+						this.serverInfo,
+						this.postDisconnectScreen,
+						this.serverCookies,
+						this.chatState
 					)
 				)
 			);

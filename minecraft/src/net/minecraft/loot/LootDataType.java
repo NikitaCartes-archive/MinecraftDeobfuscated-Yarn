@@ -33,7 +33,7 @@ public record LootDataType<T>(RegistryKey<Registry<T>> registryKey, Codec<T> cod
 
 	public <V> Optional<T> parse(Identifier id, DynamicOps<V> ops, V json) {
 		DataResult<T> dataResult = this.codec.parse(ops, json);
-		dataResult.error().ifPresent(result -> LOGGER.error("Couldn't parse element {}:{} - {}", this.directory, id, result.message()));
+		dataResult.error().ifPresent(error -> LOGGER.error("Couldn't parse element {}:{} - {}", this.directory, id, error.message()));
 		return dataResult.result();
 	}
 

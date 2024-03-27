@@ -78,7 +78,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
-import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
@@ -132,34 +131,29 @@ import org.slf4j.Logger;
  * </div>
  */
 public final class ItemStack implements ComponentHolder {
-	private static final Codec<RegistryEntry<Item>> ITEM_CODEC = Codecs.validate(
-		Registries.ITEM.getEntryCodec(),
-		entry -> entry.matches(Items.AIR.getRegistryEntry()) ? DataResult.error(() -> "Item must not be minecraft:air") : DataResult.success(entry)
-	);
-	public static final Codec<ItemStack> CODEC = Codecs.createLazy(
-		() -> Codecs.validate(
-				RecordCodecBuilder.create(
+	private static final Codec<RegistryEntry<Item>> ITEM_CODEC = Registries.ITEM
+		.getEntryCodec()
+		.validate(entry -> entry.matches(Items.AIR.getRegistryEntry()) ? DataResult.error(() -> "Item must not be minecraft:air") : DataResult.success(entry));
+	public static final Codec<ItemStack> CODEC = Codec.lazyInitialized(
+		() -> RecordCodecBuilder.create(
 					instance -> instance.group(
 								ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry),
 								Codecs.POSITIVE_INT.fieldOf("count").orElse(1).forGetter(ItemStack::getCount),
-								Codecs.createStrictOptionalFieldCodec(ComponentChanges.CODEC, "components", ComponentChanges.EMPTY).forGetter(stack -> stack.components.getChanges())
+								ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.EMPTY).forGetter(stack -> stack.components.getChanges())
 							)
 							.apply(instance, ItemStack::new)
-				),
-				ItemStack::validate
-			)
+				)
+				.validate(ItemStack::validate)
 	);
-	public static final Codec<ItemStack> COOKING_RECIPE_RESULT_CODEC = Codecs.createLazy(
-		() -> Codecs.validate(
-				RecordCodecBuilder.create(
+	public static final Codec<ItemStack> COOKING_RECIPE_RESULT_CODEC = Codec.lazyInitialized(
+		() -> RecordCodecBuilder.create(
 					instance -> instance.group(
 								ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry),
-								Codecs.createStrictOptionalFieldCodec(ComponentChanges.CODEC, "components", ComponentChanges.EMPTY).forGetter(stack -> stack.components.getChanges())
+								ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.EMPTY).forGetter(stack -> stack.components.getChanges())
 							)
 							.apply(instance, (item, components) -> new ItemStack(item, 1, components))
-				),
-				ItemStack::validate
-			)
+				)
+				.validate(ItemStack::validate)
 	);
 	public static final Codec<ItemStack> OPTIONAL_CODEC = Codecs.optional(CODEC)
 		.xmap(optional -> (ItemStack)optional.orElse(ItemStack.EMPTY), stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack));
@@ -243,6 +237,10 @@ public final class ItemStack implements ComponentHolder {
 	@Override
 	public ComponentMap getComponents() {
 		return (ComponentMap)(!this.isEmpty() ? this.components : ComponentMap.EMPTY);
+	}
+
+	public ComponentMap getDefaultComponents() {
+		return !this.isEmpty() ? this.getItem().getComponents() : ComponentMap.EMPTY;
 	}
 
 	public ComponentChanges getComponentChanges() {
@@ -428,7 +426,7 @@ public final class ItemStack implements ComponentHolder {
 		if (this.isEmpty()) {
 			throw new IllegalStateException("Cannot encode empty ItemStack");
 		} else {
-			return Util.getResult(CODEC.encode(this, registries.getOps(NbtOps.INSTANCE), prefix), IllegalStateException::new);
+			return CODEC.encode(this, registries.getOps(NbtOps.INSTANCE), prefix).getOrThrow();
 		}
 	}
 
@@ -436,7 +434,7 @@ public final class ItemStack implements ComponentHolder {
 		if (this.isEmpty()) {
 			throw new IllegalStateException("Cannot encode empty ItemStack");
 		} else {
-			return Util.getResult(CODEC.encodeStart(registries.getOps(NbtOps.INSTANCE), this), IllegalStateException::new);
+			return CODEC.encodeStart(registries.getOps(NbtOps.INSTANCE), this).getOrThrow();
 		}
 	}
 
@@ -778,7 +776,8 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	public static MapCodec<ItemStack> createOptionalCodec(String fieldName) {
-		return CODEC.optionalFieldOf(fieldName).xmap(optional -> (ItemStack)optional.orElse(EMPTY), stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack));
+		return CODEC.lenientOptionalFieldOf(fieldName)
+			.xmap(optional -> (ItemStack)optional.orElse(EMPTY), stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack));
 	}
 
 	public static int hashCode(@Nullable ItemStack stack) {
@@ -927,7 +926,12 @@ public final class ItemStack implements ComponentHolder {
 	 */
 	public Text getName() {
 		Text text = this.get(DataComponentTypes.CUSTOM_NAME);
-		return text != null ? text : this.getItem().getName(this);
+		if (text != null) {
+			return text;
+		} else {
+			Text text2 = this.get(DataComponentTypes.ITEM_NAME);
+			return text2 != null ? text2 : this.getItem().getName(this);
+		}
 	}
 
 	private <T extends TooltipAppender> void appendTooltip(DataComponentType<T> componentType, Consumer<Text> textConsumer, TooltipContext context) {
@@ -1134,6 +1138,10 @@ public final class ItemStack implements ComponentHolder {
 	 */
 	public boolean hasEnchantments() {
 		return !this.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT).isEmpty();
+	}
+
+	public ItemEnchantmentsComponent getEnchantments() {
+		return this.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
 	}
 
 	/**

@@ -22,6 +22,7 @@ import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
 import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
+import net.minecraft.network.packet.c2s.play.ChatCommandSignedC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
@@ -193,6 +194,7 @@ public class PlayStateFactories {
 				.add(PlayPackets.CHANGE_DIFFICULTY_C2S, UpdateDifficultyC2SPacket.CODEC)
 				.add(PlayPackets.CHAT_ACK, MessageAcknowledgmentC2SPacket.CODEC)
 				.add(PlayPackets.CHAT_COMMAND, CommandExecutionC2SPacket.CODEC)
+				.add(PlayPackets.CHAT_COMMAND_SIGNED, ChatCommandSignedC2SPacket.CODEC)
 				.add(PlayPackets.CHAT, ChatMessageC2SPacket.CODEC)
 				.add(PlayPackets.CHAT_SESSION_UPDATE, PlayerSessionC2SPacket.CODEC)
 				.add(PlayPackets.CHUNK_BATCH_RECEIVED, AcknowledgeChunksC2SPacket.CODEC)

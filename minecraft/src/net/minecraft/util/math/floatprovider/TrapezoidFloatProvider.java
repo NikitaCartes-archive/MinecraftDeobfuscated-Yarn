@@ -2,12 +2,12 @@ package net.minecraft.util.math.floatprovider;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.function.Function;
 import net.minecraft.util.math.random.Random;
 
 public class TrapezoidFloatProvider extends FloatProvider {
-	public static final Codec<TrapezoidFloatProvider> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<TrapezoidFloatProvider> CODEC = RecordCodecBuilder.<TrapezoidFloatProvider>mapCodec(
 			instance -> instance.group(
 						Codec.FLOAT.fieldOf("min").forGetter(provider -> provider.min),
 						Codec.FLOAT.fieldOf("max").forGetter(provider -> provider.max),
@@ -15,7 +15,7 @@ public class TrapezoidFloatProvider extends FloatProvider {
 					)
 					.apply(instance, TrapezoidFloatProvider::new)
 		)
-		.comapFlatMap(
+		.validate(
 			provider -> {
 				if (provider.max < provider.min) {
 					return DataResult.error(() -> "Max must be larger than min: [" + provider.min + ", " + provider.max + "]");
@@ -24,8 +24,7 @@ public class TrapezoidFloatProvider extends FloatProvider {
 						? DataResult.error(() -> "Plateau can at most be the full span: [" + provider.min + ", " + provider.max + "]")
 						: DataResult.success(provider);
 				}
-			},
-			Function.identity()
+			}
 		);
 	private final float min;
 	private final float max;

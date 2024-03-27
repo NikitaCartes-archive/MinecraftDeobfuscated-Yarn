@@ -1,6 +1,6 @@
 package net.minecraft.loot.function;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Optional;
@@ -14,14 +14,13 @@ import net.minecraft.util.collection.ListOperation;
 import net.minecraft.util.dynamic.Codecs;
 
 public class SetFireworksLootFunction extends ConditionalLootFunction {
-	public static final Codec<SetFireworksLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SetFireworksLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.<List<FireworkExplosionComponent>, ListOperation, Optional<Integer>>and(
 					instance.group(
-						Codecs.createStrictOptionalFieldCodec(Codecs.list(FireworkExplosionComponent.CODEC.listOf(), 256), "explosions", List.of())
-							.forGetter(function -> function.explosions),
+						FireworkExplosionComponent.CODEC.sizeLimitedListOf(256).optionalFieldOf("explosions", List.of()).forGetter(function -> function.explosions),
 						ListOperation.createCodec(256).forGetter(function -> function.operation),
-						Codecs.createStrictOptionalFieldCodec(Codecs.UNSIGNED_BYTE, "flight_duration").forGetter(function -> function.flightDuration)
+						Codecs.UNSIGNED_BYTE.optionalFieldOf("flight_duration").forGetter(function -> function.flightDuration)
 					)
 				)
 				.apply(instance, SetFireworksLootFunction::new)

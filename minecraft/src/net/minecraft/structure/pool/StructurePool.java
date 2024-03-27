@@ -17,7 +17,6 @@ import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
@@ -28,7 +27,7 @@ public class StructurePool {
 	private static final MutableObject<Codec<RegistryEntry<StructurePool>>> FALLBACK = new MutableObject<>();
 	public static final Codec<StructurePool> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createLazy(FALLBACK::getValue).fieldOf("fallback").forGetter(StructurePool::getFallback),
+					Codec.lazyInitialized(FALLBACK::getValue).fieldOf("fallback").forGetter(StructurePool::getFallback),
 					Codec.mapPair(StructurePoolElement.CODEC.fieldOf("element"), Codec.intRange(1, 150).fieldOf("weight"))
 						.codec()
 						.listOf()

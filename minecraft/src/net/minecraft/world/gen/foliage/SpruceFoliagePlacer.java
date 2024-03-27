@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.foliage;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
@@ -9,7 +9,7 @@ import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class SpruceFoliagePlacer extends FoliagePlacer {
-	public static final Codec<SpruceFoliagePlacer> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SpruceFoliagePlacer> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> fillFoliagePlacerFields(instance)
 				.and(IntProvider.createValidatingCodec(0, 24).fieldOf("trunk_height").forGetter(placer -> placer.trunkHeight))
 				.apply(instance, SpruceFoliagePlacer::new)

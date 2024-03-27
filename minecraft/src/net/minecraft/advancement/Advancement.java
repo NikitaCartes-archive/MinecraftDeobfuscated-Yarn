@@ -23,7 +23,6 @@ import net.minecraft.text.Texts;
 import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
 
 public record Advancement(
 	Optional<Identifier> parent,
@@ -34,27 +33,23 @@ public record Advancement(
 	boolean sendsTelemetryEvent,
 	Optional<Text> name
 ) {
-	private static final Codec<Map<String, AdvancementCriterion<?>>> CRITERIA_CODEC = Codecs.validate(
-		Codec.unboundedMap(Codec.STRING, AdvancementCriterion.CODEC),
-		criteria -> criteria.isEmpty() ? DataResult.error(() -> "Advancement criteria cannot be empty") : DataResult.success(criteria)
-	);
-	public static final Codec<Advancement> CODEC = Codecs.validate(
-		RecordCodecBuilder.create(
+	private static final Codec<Map<String, AdvancementCriterion<?>>> CRITERIA_CODEC = Codec.unboundedMap(Codec.STRING, AdvancementCriterion.CODEC)
+		.validate(criteria -> criteria.isEmpty() ? DataResult.error(() -> "Advancement criteria cannot be empty") : DataResult.success(criteria));
+	public static final Codec<Advancement> CODEC = RecordCodecBuilder.<Advancement>create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(Identifier.CODEC, "parent").forGetter(Advancement::parent),
-						Codecs.createStrictOptionalFieldCodec(AdvancementDisplay.CODEC, "display").forGetter(Advancement::display),
-						Codecs.createStrictOptionalFieldCodec(AdvancementRewards.CODEC, "rewards", AdvancementRewards.NONE).forGetter(Advancement::rewards),
+						Identifier.CODEC.optionalFieldOf("parent").forGetter(Advancement::parent),
+						AdvancementDisplay.CODEC.optionalFieldOf("display").forGetter(Advancement::display),
+						AdvancementRewards.CODEC.optionalFieldOf("rewards", AdvancementRewards.NONE).forGetter(Advancement::rewards),
 						CRITERIA_CODEC.fieldOf("criteria").forGetter(Advancement::criteria),
-						Codecs.createStrictOptionalFieldCodec(AdvancementRequirements.CODEC, "requirements").forGetter(advancement -> Optional.of(advancement.requirements())),
-						Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "sends_telemetry_event", false).forGetter(Advancement::sendsTelemetryEvent)
+						AdvancementRequirements.CODEC.optionalFieldOf("requirements").forGetter(advancement -> Optional.of(advancement.requirements())),
+						Codec.BOOL.optionalFieldOf("sends_telemetry_event", Boolean.valueOf(false)).forGetter(Advancement::sendsTelemetryEvent)
 					)
 					.apply(instance, (parent, display, rewards, criteria, requirements, sendsTelemetryEvent) -> {
 						AdvancementRequirements advancementRequirements = (AdvancementRequirements)requirements.orElseGet(() -> AdvancementRequirements.allOf(criteria.keySet()));
 						return new Advancement(parent, display, rewards, criteria, advancementRequirements, sendsTelemetryEvent);
 					})
-		),
-		Advancement::validate
-	);
+		)
+		.validate(Advancement::validate);
 	public static final PacketCodec<RegistryByteBuf, Advancement> PACKET_CODEC = PacketCodec.of(Advancement::write, Advancement::read);
 
 	public Advancement(

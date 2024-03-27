@@ -6,13 +6,12 @@ import net.minecraft.component.DataComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.util.dynamic.Codecs;
 
 public record DamagePredicate(NumberRange.IntRange durability, NumberRange.IntRange damage) implements ComponentSubPredicate<Integer> {
 	public static final Codec<DamagePredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "durability", NumberRange.IntRange.ANY).forGetter(DamagePredicate::durability),
-					Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "damage", NumberRange.IntRange.ANY).forGetter(DamagePredicate::damage)
+					NumberRange.IntRange.CODEC.optionalFieldOf("durability", NumberRange.IntRange.ANY).forGetter(DamagePredicate::durability),
+					NumberRange.IntRange.CODEC.optionalFieldOf("damage", NumberRange.IntRange.ANY).forGetter(DamagePredicate::damage)
 				)
 				.apply(instance, DamagePredicate::new)
 	);

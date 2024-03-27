@@ -16,9 +16,9 @@ public class VaultSharedData {
 	public static Codec<VaultSharedData> codec = RecordCodecBuilder.create(
 		instance -> instance.group(
 					ItemStack.createOptionalCodec("display_item").forGetter(data -> data.displayItem),
-					Uuids.LINKED_SET_CODEC.optionalFieldOf("connected_players", Set.of()).forGetter(data -> data.connectedPlayers),
+					Uuids.LINKED_SET_CODEC.lenientOptionalFieldOf("connected_players", Set.of()).forGetter(data -> data.connectedPlayers),
 					Codec.DOUBLE
-						.optionalFieldOf("connected_particles_range", Double.valueOf(VaultConfig.DEFAULT.deactivationRange()))
+						.lenientOptionalFieldOf("connected_particles_range", Double.valueOf(VaultConfig.DEFAULT.deactivationRange()))
 						.forGetter(data -> data.connectedParticlesRange)
 				)
 				.apply(instance, VaultSharedData::new)
@@ -66,7 +66,7 @@ public class VaultSharedData {
 
 	public void updateConnectedPlayers(ServerWorld world, BlockPos pos, VaultServerData serverData, VaultConfig config, double radius) {
 		Set<UUID> set = (Set<UUID>)config.playerDetector()
-			.detect(world, config.entitySelector(), pos, radius)
+			.detect(world, config.entitySelector(), pos, radius, false)
 			.stream()
 			.filter(uuid -> !serverData.getRewardedPlayers().contains(uuid))
 			.collect(Collectors.toSet());

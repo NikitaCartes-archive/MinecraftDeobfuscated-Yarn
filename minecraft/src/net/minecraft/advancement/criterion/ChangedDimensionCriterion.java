@@ -9,7 +9,6 @@ import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.World;
 
 public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensionCriterion.Conditions> {
@@ -26,9 +25,9 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 		implements AbstractCriterion.Conditions {
 		public static final Codec<ChangedDimensionCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(ChangedDimensionCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(RegistryKey.createCodec(RegistryKeys.WORLD), "from").forGetter(ChangedDimensionCriterion.Conditions::from),
-						Codecs.createStrictOptionalFieldCodec(RegistryKey.createCodec(RegistryKeys.WORLD), "to").forGetter(ChangedDimensionCriterion.Conditions::to)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(ChangedDimensionCriterion.Conditions::player),
+						RegistryKey.createCodec(RegistryKeys.WORLD).optionalFieldOf("from").forGetter(ChangedDimensionCriterion.Conditions::from),
+						RegistryKey.createCodec(RegistryKeys.WORLD).optionalFieldOf("to").forGetter(ChangedDimensionCriterion.Conditions::to)
 					)
 					.apply(instance, ChangedDimensionCriterion.Conditions::new)
 		);

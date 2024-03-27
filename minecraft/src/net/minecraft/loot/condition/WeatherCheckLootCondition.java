@@ -1,17 +1,17 @@
 package net.minecraft.loot.condition;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.Codecs;
 
 public record WeatherCheckLootCondition(Optional<Boolean> raining, Optional<Boolean> thundering) implements LootCondition {
-	public static final Codec<WeatherCheckLootCondition> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<WeatherCheckLootCondition> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "raining").forGetter(WeatherCheckLootCondition::raining),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "thundering").forGetter(WeatherCheckLootCondition::thundering)
+					Codec.BOOL.optionalFieldOf("raining").forGetter(WeatherCheckLootCondition::raining),
+					Codec.BOOL.optionalFieldOf("thundering").forGetter(WeatherCheckLootCondition::thundering)
 				)
 				.apply(instance, WeatherCheckLootCondition::new)
 	);

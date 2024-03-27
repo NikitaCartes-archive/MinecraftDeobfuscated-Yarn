@@ -35,7 +35,7 @@ public class PointOfInterestSet {
 		return RecordCodecBuilder.<PointOfInterestSet>create(
 				instance -> instance.group(
 							RecordCodecBuilder.point(updateListener),
-							Codec.BOOL.optionalFieldOf("Valid", Boolean.valueOf(false)).forGetter(poiSet -> poiSet.valid),
+							Codec.BOOL.lenientOptionalFieldOf("Valid", Boolean.valueOf(false)).forGetter(poiSet -> poiSet.valid),
 							PointOfInterest.createCodec(updateListener).listOf().fieldOf("Records").forGetter(poiSet -> ImmutableList.copyOf(poiSet.pointsOfInterestByPos.values()))
 						)
 						.apply(instance, PointOfInterestSet::new)

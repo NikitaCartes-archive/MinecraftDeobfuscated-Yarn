@@ -1,13 +1,14 @@
 package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.biome.Biome;
 
 public class NoiseThresholdCountPlacementModifier extends AbstractCountPlacementModifier {
-	public static final Codec<NoiseThresholdCountPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<NoiseThresholdCountPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codec.DOUBLE.fieldOf("noise_level").forGetter(noiseThresholdCountPlacementModifier -> noiseThresholdCountPlacementModifier.noiseLevel),
 					Codec.INT.fieldOf("below_noise").forGetter(noiseThresholdCountPlacementModifier -> noiseThresholdCountPlacementModifier.belowNoise),

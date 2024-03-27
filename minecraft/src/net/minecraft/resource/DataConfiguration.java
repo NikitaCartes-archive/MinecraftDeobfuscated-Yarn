@@ -9,8 +9,8 @@ public record DataConfiguration(DataPackSettings dataPacks, FeatureSet enabledFe
 	public static final String ENABLED_FEATURES_KEY = "enabled_features";
 	public static final Codec<DataConfiguration> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					DataPackSettings.CODEC.optionalFieldOf("DataPacks", DataPackSettings.SAFE_MODE).forGetter(DataConfiguration::dataPacks),
-					FeatureFlags.CODEC.optionalFieldOf("enabled_features", FeatureFlags.DEFAULT_ENABLED_FEATURES).forGetter(DataConfiguration::enabledFeatures)
+					DataPackSettings.CODEC.lenientOptionalFieldOf("DataPacks", DataPackSettings.SAFE_MODE).forGetter(DataConfiguration::dataPacks),
+					FeatureFlags.CODEC.lenientOptionalFieldOf("enabled_features", FeatureFlags.DEFAULT_ENABLED_FEATURES).forGetter(DataConfiguration::enabledFeatures)
 				)
 				.apply(instance, DataConfiguration::new)
 	);

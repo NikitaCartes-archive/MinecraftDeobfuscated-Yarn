@@ -478,7 +478,7 @@ public class WorldChunk extends Chunk {
 		consumer.accept((ChunkData.BlockEntityVisitor)(pos, blockEntityType, nbtx) -> {
 			BlockEntity blockEntity = this.getBlockEntity(pos, WorldChunk.CreationType.IMMEDIATE);
 			if (blockEntity != null && nbtx != null && blockEntity.getType() == blockEntityType) {
-				blockEntity.readNbt(nbtx, this.world.getRegistryManager());
+				blockEntity.read(nbtx, this.world.getRegistryManager());
 			}
 		});
 	}

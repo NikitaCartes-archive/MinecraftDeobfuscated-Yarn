@@ -11,7 +11,6 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class CuredZombieVillagerCriterion extends AbstractCriterion<CuredZombieVillagerCriterion.Conditions> {
 	@Override
@@ -29,10 +28,9 @@ public class CuredZombieVillagerCriterion extends AbstractCriterion<CuredZombieV
 		implements AbstractCriterion.Conditions {
 		public static final Codec<CuredZombieVillagerCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(CuredZombieVillagerCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "zombie").forGetter(CuredZombieVillagerCriterion.Conditions::zombie),
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "villager")
-							.forGetter(CuredZombieVillagerCriterion.Conditions::villager)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(CuredZombieVillagerCriterion.Conditions::player),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("zombie").forGetter(CuredZombieVillagerCriterion.Conditions::zombie),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("villager").forGetter(CuredZombieVillagerCriterion.Conditions::villager)
 					)
 					.apply(instance, CuredZombieVillagerCriterion.Conditions::new)
 		);

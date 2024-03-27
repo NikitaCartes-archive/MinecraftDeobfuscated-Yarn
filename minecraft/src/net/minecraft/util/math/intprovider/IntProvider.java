@@ -4,7 +4,6 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.random.Random;
 
 public abstract class IntProvider {
@@ -23,18 +22,17 @@ public abstract class IntProvider {
 	}
 
 	public static <T extends IntProvider> Codec<T> createValidatingCodec(int min, int max, Codec<T> providerCodec) {
-		return Codecs.validate(
-			providerCodec,
-			provider -> {
-				if (provider.getMin() < min) {
-					return DataResult.error(() -> "Value provider too low: " + min + " [" + provider.getMin() + "-" + provider.getMax() + "]");
-				} else {
-					return provider.getMax() > max
-						? DataResult.error(() -> "Value provider too high: " + max + " [" + provider.getMin() + "-" + provider.getMax() + "]")
-						: DataResult.success(provider);
-				}
-			}
-		);
+		return providerCodec.validate(provider -> method_58612(min, max, provider));
+	}
+
+	private static <T extends IntProvider> DataResult<T> method_58612(int i, int j, T intProvider) {
+		if (intProvider.getMin() < i) {
+			return DataResult.error(() -> "Value provider too low: " + i + " [" + intProvider.getMin() + "-" + intProvider.getMax() + "]");
+		} else {
+			return intProvider.getMax() > j
+				? DataResult.error(() -> "Value provider too high: " + j + " [" + intProvider.getMin() + "-" + intProvider.getMax() + "]")
+				: DataResult.success(intProvider);
+		}
 	}
 
 	public abstract int get(Random random);

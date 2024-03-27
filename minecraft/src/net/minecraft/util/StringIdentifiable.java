@@ -92,7 +92,7 @@ public interface StringIdentifiable {
 
 		public BasicCodec(S[] values, Function<String, S> idToIdentifiable, ToIntFunction<S> identifiableToOrdinal) {
 			this.codec = Codecs.orCompressed(
-				Codecs.idChecked(StringIdentifiable::asString, idToIdentifiable),
+				Codec.stringResolver(StringIdentifiable::asString, idToIdentifiable),
 				Codecs.rawIdChecked(identifiableToOrdinal, ordinal -> ordinal >= 0 && ordinal < values.length ? values[ordinal] : null, -1)
 			);
 		}

@@ -53,7 +53,7 @@ public class TagGroupLoader<T> {
 					try {
 						JsonElement jsonElement = JsonParser.parseReader(reader);
 						List<TagGroupLoader.TrackedEntry> list = (List<TagGroupLoader.TrackedEntry>)map.computeIfAbsent(identifier2, id -> new ArrayList());
-						TagFile tagFile = TagFile.CODEC.parse(new Dynamic<>(JsonOps.INSTANCE, jsonElement)).getOrThrow(false, LOGGER::error);
+						TagFile tagFile = TagFile.CODEC.parse(new Dynamic<>(JsonOps.INSTANCE, jsonElement)).getOrThrow();
 						if (tagFile.replace()) {
 							list.clear();
 						}

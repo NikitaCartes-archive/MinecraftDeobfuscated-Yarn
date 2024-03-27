@@ -2,6 +2,7 @@ package net.minecraft.world.gen.structure;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +12,6 @@ import net.minecraft.structure.pool.StructurePoolBasedGenerator;
 import net.minecraft.structure.pool.alias.StructurePoolAliasBinding;
 import net.minecraft.structure.pool.alias.StructurePoolAliasLookup;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
@@ -22,24 +22,21 @@ public final class JigsawStructure extends Structure {
 	public static final int MAX_SIZE = 128;
 	public static final int field_49155 = 0;
 	public static final int MAX_GENERATION_DEPTH = 20;
-	public static final Codec<JigsawStructure> CODEC = Codecs.validate(
-			RecordCodecBuilder.mapCodec(
-				instance -> instance.group(
-							configCodecBuilder(instance),
-							StructurePool.REGISTRY_CODEC.fieldOf("start_pool").forGetter(structure -> structure.startPool),
-							Identifier.CODEC.optionalFieldOf("start_jigsaw_name").forGetter(structure -> structure.startJigsawName),
-							Codec.intRange(0, 20).fieldOf("size").forGetter(structure -> structure.size),
-							HeightProvider.CODEC.fieldOf("start_height").forGetter(structure -> structure.startHeight),
-							Codec.BOOL.fieldOf("use_expansion_hack").forGetter(structure -> structure.useExpansionHack),
-							Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
-							Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter),
-							Codec.list(StructurePoolAliasBinding.CODEC).optionalFieldOf("pool_aliases", List.of()).forGetter(structure -> structure.poolAliasBindings)
-						)
-						.apply(instance, JigsawStructure::new)
-			),
-			JigsawStructure::validate
+	public static final MapCodec<JigsawStructure> CODEC = RecordCodecBuilder.<JigsawStructure>mapCodec(
+			instance -> instance.group(
+						configCodecBuilder(instance),
+						StructurePool.REGISTRY_CODEC.fieldOf("start_pool").forGetter(structure -> structure.startPool),
+						Identifier.CODEC.optionalFieldOf("start_jigsaw_name").forGetter(structure -> structure.startJigsawName),
+						Codec.intRange(0, 20).fieldOf("size").forGetter(structure -> structure.size),
+						HeightProvider.CODEC.fieldOf("start_height").forGetter(structure -> structure.startHeight),
+						Codec.BOOL.fieldOf("use_expansion_hack").forGetter(structure -> structure.useExpansionHack),
+						Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
+						Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter),
+						Codec.list(StructurePoolAliasBinding.CODEC).optionalFieldOf("pool_aliases", List.of()).forGetter(structure -> structure.poolAliasBindings)
+					)
+					.apply(instance, JigsawStructure::new)
 		)
-		.codec();
+		.validate(JigsawStructure::validate);
 	private final RegistryEntry<StructurePool> startPool;
 	private final Optional<Identifier> startJigsawName;
 	private final int size;

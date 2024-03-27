@@ -69,7 +69,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	public RuinedPortalStructurePiece(StructureTemplateManager manager, NbtCompound nbt) {
 		super(StructurePieceType.RUINED_PORTAL, nbt, manager, id -> createPlacementData(manager, nbt, id));
 		this.verticalPlacement = RuinedPortalStructurePiece.VerticalPlacement.getFromId(nbt.getString("VerticalPlacement"));
-		this.properties = RuinedPortalStructurePiece.Properties.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, LOGGER::error);
+		this.properties = RuinedPortalStructurePiece.Properties.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("Properties"))).getPartialOrThrow();
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 			BlockRotation.valueOf(nbt.getString("Rotation")),
 			RuinedPortalStructurePiece.VerticalPlacement.getFromId(nbt.getString("VerticalPlacement")),
 			blockPos,
-			RuinedPortalStructurePiece.Properties.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, LOGGER::error)
+			RuinedPortalStructurePiece.Properties.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("Properties"))).getPartialOrThrow()
 		);
 	}
 

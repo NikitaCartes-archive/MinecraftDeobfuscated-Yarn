@@ -1,11 +1,11 @@
 package net.minecraft.loot.condition;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import net.minecraft.util.Util;
 
 public class AnyOfLootCondition extends AlternativeLootCondition {
-	public static final Codec<AnyOfLootCondition> CODEC = createCodec(AnyOfLootCondition::new);
+	public static final MapCodec<AnyOfLootCondition> CODEC = createCodec(AnyOfLootCondition::new);
 
 	AnyOfLootCondition(List<LootCondition> terms) {
 		super(terms, Util.anyOf(terms));

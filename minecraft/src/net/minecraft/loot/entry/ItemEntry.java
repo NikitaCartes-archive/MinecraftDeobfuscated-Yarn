@@ -1,6 +1,6 @@
 package net.minecraft.loot.entry;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.function.Consumer;
@@ -14,7 +14,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public class ItemEntry extends LeafEntry {
-	public static final Codec<ItemEntry> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<ItemEntry> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(Registries.ITEM.getEntryCodec().fieldOf("name").forGetter(entry -> entry.item))
 				.<int, int, List<LootCondition>, List<LootFunction>>and(addLeafFields(instance))
 				.apply(instance, ItemEntry::new)

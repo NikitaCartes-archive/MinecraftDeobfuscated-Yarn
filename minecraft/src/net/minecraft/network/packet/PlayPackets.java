@@ -9,6 +9,7 @@ import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
 import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
+import net.minecraft.network.packet.c2s.play.ChatCommandSignedC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
@@ -275,6 +276,7 @@ public class PlayPackets {
 	public static final PacketType<UpdateDifficultyC2SPacket> CHANGE_DIFFICULTY_C2S = c2s("change_difficulty");
 	public static final PacketType<MessageAcknowledgmentC2SPacket> CHAT_ACK = c2s("chat_ack");
 	public static final PacketType<CommandExecutionC2SPacket> CHAT_COMMAND = c2s("chat_command");
+	public static final PacketType<ChatCommandSignedC2SPacket> CHAT_COMMAND_SIGNED = c2s("chat_command_signed");
 	public static final PacketType<ChatMessageC2SPacket> CHAT = c2s("chat");
 	public static final PacketType<PlayerSessionC2SPacket> CHAT_SESSION_UPDATE = c2s("chat_session_update");
 	public static final PacketType<AcknowledgeChunksC2SPacket> CHUNK_BATCH_RECEIVED = c2s("chunk_batch_received");

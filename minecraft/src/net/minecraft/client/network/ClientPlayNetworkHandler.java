@@ -29,6 +29,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.DemoScreen;
@@ -116,6 +117,7 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.play.AcknowledgeChunksC2SPacket;
 import net.minecraft.network.packet.c2s.play.AcknowledgeReconfigurationC2SPacket;
+import net.minecraft.network.packet.c2s.play.ChatCommandSignedC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
@@ -353,6 +355,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.pingMeasurer = new PingMeasurer(this, client.getDebugHud().getPingLog());
 		this.recipeManager = new RecipeManager(this.combinedDynamicRegistries);
 		this.debugSampleSubscriber = new DebugSampleSubscriber(this, client.getDebugHud());
+		if (clientConnectionState.chatState() != null) {
+			client.inGameHud.getChatHud().restoreChatState(clientConnectionState.chatState());
+		}
 	}
 
 	public ClientCommandSource getCommandSource() {
@@ -776,6 +781,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onEnterReconfiguration(EnterReconfigurationS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.client.getMessageHandler().processAll();
+		this.sendAcknowledgment();
+		ChatHud.ChatState chatState = this.client.inGameHud.getChatHud().toChatState();
 		this.client.enterReconfiguration(new ReconfiguringScreen(RECONFIGURING_TEXT, this.connection));
 		this.connection
 			.transitionInbound(
@@ -791,7 +799,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 						this.brand,
 						this.serverInfo,
 						this.postDisconnectScreen,
-						this.serverCookies
+						this.serverCookies,
+						chatState
 					)
 				)
 			);
@@ -1246,7 +1255,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.client.world.getBlockEntity(blockPos, packet.getBlockEntityType()).ifPresent(blockEntity -> {
 			NbtCompound nbtCompound = packet.getNbt();
 			if (!nbtCompound.isEmpty()) {
-				blockEntity.readNbt(nbtCompound, this.combinedDynamicRegistries);
+				blockEntity.read(nbtCompound, this.combinedDynamicRegistries);
 			}
 
 			if (blockEntity instanceof CommandBlockBlockEntity && this.client.currentScreen instanceof CommandBlockScreen) {
@@ -2330,20 +2339,24 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	}
 
 	public void sendChatCommand(String command) {
-		Instant instant = Instant.now();
-		long l = NetworkEncryptionUtils.SecureRandomUtil.nextLong();
-		LastSeenMessagesCollector.LastSeenMessages lastSeenMessages = this.lastSeenMessagesCollector.collect();
-		ArgumentSignatureDataMap argumentSignatureDataMap = ArgumentSignatureDataMap.sign(SignedArgumentList.of(this.parse(command)), value -> {
-			MessageBody messageBody = new MessageBody(value, instant, l, lastSeenMessages.lastSeen());
-			return this.messagePacker.pack(messageBody);
-		});
-		this.sendPacket(new CommandExecutionC2SPacket(command, instant, l, argumentSignatureDataMap, lastSeenMessages.update()));
+		SignedArgumentList<CommandSource> signedArgumentList = SignedArgumentList.of(this.parse(command));
+		if (signedArgumentList.arguments().isEmpty()) {
+			this.sendPacket(new CommandExecutionC2SPacket(command));
+		} else {
+			Instant instant = Instant.now();
+			long l = NetworkEncryptionUtils.SecureRandomUtil.nextLong();
+			LastSeenMessagesCollector.LastSeenMessages lastSeenMessages = this.lastSeenMessagesCollector.collect();
+			ArgumentSignatureDataMap argumentSignatureDataMap = ArgumentSignatureDataMap.sign(signedArgumentList, value -> {
+				MessageBody messageBody = new MessageBody(value, instant, l, lastSeenMessages.lastSeen());
+				return this.messagePacker.pack(messageBody);
+			});
+			this.sendPacket(new ChatCommandSignedC2SPacket(command, instant, l, argumentSignatureDataMap, lastSeenMessages.update()));
+		}
 	}
 
 	public boolean sendCommand(String command) {
-		if (SignedArgumentList.of(this.parse(command)).arguments().isEmpty()) {
-			LastSeenMessagesCollector.LastSeenMessages lastSeenMessages = this.lastSeenMessagesCollector.collect();
-			this.sendPacket(new CommandExecutionC2SPacket(command, Instant.now(), 0L, ArgumentSignatureDataMap.EMPTY, lastSeenMessages.update()));
+		if (!SignedArgumentList.isNotEmpty(this.parse(command))) {
+			this.sendPacket(new CommandExecutionC2SPacket(command));
 			return true;
 		} else {
 			return false;

@@ -14,12 +14,10 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 
 public record Sherds(Optional<Item> back, Optional<Item> left, Optional<Item> right, Optional<Item> front) {
 	public static final Sherds DEFAULT = new Sherds(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
-	public static final Codec<Sherds> CODEC = Codecs.list(Registries.ITEM.getCodec().listOf(), 4).xmap(Sherds::new, Sherds::stream);
+	public static final Codec<Sherds> CODEC = Registries.ITEM.getCodec().sizeLimitedListOf(4).xmap(Sherds::new, Sherds::stream);
 	public static final PacketCodec<RegistryByteBuf, Sherds> PACKET_CODEC = PacketCodecs.registryValue(RegistryKeys.ITEM)
 		.collect(PacketCodecs.toList(4))
 		.xmap(Sherds::new, Sherds::stream);
@@ -45,7 +43,7 @@ public record Sherds(Optional<Item> back, Optional<Item> left, Optional<Item> ri
 		if (this.equals(DEFAULT)) {
 			return nbt;
 		} else {
-			nbt.put("sherds", Util.getResult(CODEC.encodeStart(NbtOps.INSTANCE, this), IllegalStateException::new));
+			nbt.put("sherds", CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow());
 			return nbt;
 		}
 	}

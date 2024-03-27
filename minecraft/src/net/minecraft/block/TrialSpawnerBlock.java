@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
@@ -24,6 +25,7 @@ import net.minecraft.world.World;
 public class TrialSpawnerBlock extends BlockWithEntity {
 	public static final MapCodec<TrialSpawnerBlock> CODEC = createCodec(TrialSpawnerBlock::new);
 	public static final EnumProperty<TrialSpawnerState> TRIAL_SPAWNER_STATE = Properties.TRIAL_SPAWNER_STATE;
+	public static final BooleanProperty OMINOUS = Properties.OMINOUS;
 
 	@Override
 	public MapCodec<TrialSpawnerBlock> getCodec() {
@@ -32,12 +34,12 @@ public class TrialSpawnerBlock extends BlockWithEntity {
 
 	public TrialSpawnerBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(TRIAL_SPAWNER_STATE, TrialSpawnerState.INACTIVE));
+		this.setDefaultState(this.stateManager.getDefaultState().with(TRIAL_SPAWNER_STATE, TrialSpawnerState.INACTIVE).with(OMINOUS, Boolean.valueOf(false)));
 	}
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(TRIAL_SPAWNER_STATE);
+		builder.add(TRIAL_SPAWNER_STATE, OMINOUS);
 	}
 
 	@Override
@@ -55,8 +57,16 @@ public class TrialSpawnerBlock extends BlockWithEntity {
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
 		return world instanceof ServerWorld serverWorld
-			? validateTicker(type, BlockEntityType.TRIAL_SPAWNER, (worldx, pos, statex, blockEntity) -> blockEntity.getSpawner().tickServer(serverWorld, pos))
-			: validateTicker(type, BlockEntityType.TRIAL_SPAWNER, (worldx, pos, statex, blockEntity) -> blockEntity.getSpawner().tickClient(worldx, pos));
+			? validateTicker(
+				type,
+				BlockEntityType.TRIAL_SPAWNER,
+				(worldx, pos, statex, blockEntity) -> blockEntity.getSpawner().tickServer(serverWorld, pos, (Boolean)statex.getOrEmpty(Properties.OMINOUS).orElse(false))
+			)
+			: validateTicker(
+				type,
+				BlockEntityType.TRIAL_SPAWNER,
+				(worldx, pos, statex, blockEntity) -> blockEntity.getSpawner().tickClient(worldx, pos, (Boolean)statex.getOrEmpty(Properties.OMINOUS).orElse(false))
+			);
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package net.minecraft.loot.function;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.function.BiFunction;
 import net.minecraft.item.ItemStack;
@@ -11,14 +12,13 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryElementCodec;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
 
 public class LootFunctionTypes {
 	public static final BiFunction<ItemStack, LootContext, ItemStack> NOOP = (stack, context) -> stack;
 	public static final Codec<LootFunction> BASE_CODEC = Registries.LOOT_FUNCTION_TYPE
 		.getCodec()
 		.dispatch("function", LootFunction::getType, LootFunctionType::codec);
-	public static final Codec<LootFunction> CODEC = Codecs.createLazy(() -> Codecs.alternatively(BASE_CODEC, AndLootFunction.INLINE_CODEC));
+	public static final Codec<LootFunction> CODEC = Codec.lazyInitialized(() -> Codec.withAlternative(BASE_CODEC, AndLootFunction.INLINE_CODEC));
 	public static final Codec<RegistryEntry<LootFunction>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.ITEM_MODIFIER, CODEC);
 	public static final LootFunctionType SET_COUNT = register("set_count", SetCountLootFunction.CODEC);
 	public static final LootFunctionType ENCHANT_WITH_LEVELS = register("enchant_with_levels", EnchantWithLevelsLootFunction.CODEC);
@@ -55,8 +55,9 @@ public class LootFunctionTypes {
 	public static final LootFunctionType SET_WRITTEN_BOOK_PAGES = register("set_written_book_pages", SetWrittenBookPagesLootFunction.CODEC);
 	public static final LootFunctionType SET_WRITABLE_BOOK_PAGES = register("set_writable_book_pages", SetWritableBookPagesLootFunction.CODEC);
 	public static final LootFunctionType TOGGLE_TOOLTIPS = register("toggle_tooltips", ToggleTooltipsLootFunction.CODEC);
+	public static final LootFunctionType SET_OMINOUS_BOTTLE_AMPLIFIER = register("set_ominous_bottle_amplifier", SetOminousBottleAmplifierLootFunction.CODEC);
 
-	private static LootFunctionType register(String id, Codec<? extends LootFunction> codec) {
+	private static LootFunctionType register(String id, MapCodec<? extends LootFunction> codec) {
 		return Registry.register(Registries.LOOT_FUNCTION_TYPE, new Identifier(id), new LootFunctionType(codec));
 	}
 

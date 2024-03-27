@@ -29,7 +29,6 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 public class ItemStringReader {
@@ -199,7 +198,7 @@ public class ItemStringReader {
 			int i = this.reader.getCursor();
 			NbtElement nbtElement = new StringNbtReader(this.reader).parseElement();
 			DataResult<T> dataResult = type.getCodecOrThrow().parse(ItemStringReader.this.nbtOps, nbtElement);
-			this.callbacks.onComponent(type, Util.getResult(dataResult, error -> {
+			this.callbacks.onComponent(type, dataResult.getOrThrow(error -> {
 				this.reader.setCursor(i);
 				return ItemStringReader.MALFORMED_COMPONENT_EXCEPTION.createWithContext(this.reader, type.toString(), error);
 			}));

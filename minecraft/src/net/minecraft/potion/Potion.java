@@ -5,11 +5,16 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.resource.featuretoggle.FeatureFlag;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.resource.featuretoggle.ToggleableFeature;
 
-public class Potion {
+public class Potion implements ToggleableFeature {
 	@Nullable
 	private final String baseName;
 	private final List<StatusEffectInstance> effects;
+	private FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
 
 	public Potion(StatusEffectInstance... effects) {
 		this(null, effects);
@@ -18,6 +23,16 @@ public class Potion {
 	public Potion(@Nullable String baseName, StatusEffectInstance... effects) {
 		this.baseName = baseName;
 		this.effects = List.of(effects);
+	}
+
+	public Potion requires(FeatureFlag... requiredFeatures) {
+		this.requiredFeatures = FeatureFlags.FEATURE_MANAGER.featureSetOf(requiredFeatures);
+		return this;
+	}
+
+	@Override
+	public FeatureSet getRequiredFeatures() {
+		return this.requiredFeatures;
 	}
 
 	public static String finishTranslationKey(Optional<RegistryEntry<Potion>> potion, String prefix) {

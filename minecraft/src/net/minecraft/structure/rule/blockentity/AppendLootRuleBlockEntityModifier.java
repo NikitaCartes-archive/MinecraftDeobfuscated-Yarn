@@ -1,7 +1,7 @@
 package net.minecraft.structure.rule.blockentity;
 
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import javax.annotation.Nullable;
 import net.minecraft.loot.LootTable;
@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 
 public class AppendLootRuleBlockEntityModifier implements RuleBlockEntityModifier {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final Codec<AppendLootRuleBlockEntityModifier> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<AppendLootRuleBlockEntityModifier> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).fieldOf("loot_table").forGetter(modifier -> modifier.lootTable))
 				.apply(instance, AppendLootRuleBlockEntityModifier::new)
 	);

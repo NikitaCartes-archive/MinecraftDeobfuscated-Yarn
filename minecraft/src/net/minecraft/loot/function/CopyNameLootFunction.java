@@ -2,6 +2,7 @@ package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +16,7 @@ import net.minecraft.util.Nameable;
 import net.minecraft.util.StringIdentifiable;
 
 public class CopyNameLootFunction extends ConditionalLootFunction {
-	public static final Codec<CopyNameLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<CopyNameLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.and(CopyNameLootFunction.Source.CODEC.fieldOf("source").forGetter(function -> function.source))
 				.apply(instance, CopyNameLootFunction::new)

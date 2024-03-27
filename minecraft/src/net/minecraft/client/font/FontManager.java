@@ -224,7 +224,7 @@ public class FontManager implements ResourceReloader, AutoCloseable {
 
 				try {
 					JsonElement jsonElement = GSON.fromJson(reader, JsonElement.class);
-					FontManager.Providers providers = Util.getResult(FontManager.Providers.CODEC.parse(JsonOps.INSTANCE, jsonElement), JsonParseException::new);
+					FontManager.Providers providers = FontManager.Providers.CODEC.parse(JsonOps.INSTANCE, jsonElement).getOrThrow(JsonParseException::new);
 					List<FontLoader.Provider> list2 = providers.providers;
 
 					for (int i = list2.size() - 1; i >= 0; i--) {

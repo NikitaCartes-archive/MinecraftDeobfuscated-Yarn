@@ -9,7 +9,9 @@ import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -20,7 +22,6 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 import org.slf4j.Logger;
@@ -270,6 +271,14 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		this.type.value().onApplied(entity, this.amplifier);
 	}
 
+	public void onEntityRemoval(LivingEntity entity, Entity.RemovalReason reason) {
+		this.type.value().onEntityRemoval(entity, this.amplifier, reason);
+	}
+
+	public void onEntityDamage(LivingEntity entity, DamageSource source, float amount) {
+		this.type.value().onEntityDamage(entity, this.amplifier, source, amount);
+	}
+
 	public String getTranslationKey() {
 		return this.type.value().getTranslationKey();
 	}
@@ -318,7 +327,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	}
 
 	public NbtElement writeNbt() {
-		return Util.getResult(CODEC.encodeStart(NbtOps.INSTANCE, this), IllegalStateException::new);
+		return CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow();
 	}
 
 	@Nullable
@@ -339,6 +348,10 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 				.compare(this.isAmbient(), statusEffectInstance.isAmbient())
 				.compare(this.getEffectType().value().getColor(), statusEffectInstance.getEffectType().value().getColor())
 				.result();
+	}
+
+	public void playApplySound(LivingEntity entity) {
+		this.type.value().playApplySound(entity, this.amplifier);
 	}
 
 	public boolean equals(RegistryEntry<StatusEffect> effect) {
@@ -420,16 +433,16 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	static record Parameters(
 		int amplifier, int duration, boolean ambient, boolean showParticles, boolean showIcon, Optional<StatusEffectInstance.Parameters> hiddenEffect
 	) {
-		public static final MapCodec<StatusEffectInstance.Parameters> CODEC = Codecs.createRecursiveMap(
+		public static final MapCodec<StatusEffectInstance.Parameters> CODEC = MapCodec.recursive(
 			"MobEffectInstance.Details",
 			codec -> RecordCodecBuilder.mapCodec(
 					instance -> instance.group(
-								Codecs.createStrictOptionalFieldCodec(Codecs.UNSIGNED_BYTE, "amplifier", 0).forGetter(StatusEffectInstance.Parameters::amplifier),
-								Codecs.createStrictOptionalFieldCodec(Codec.INT, "duration", 0).forGetter(StatusEffectInstance.Parameters::duration),
-								Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "ambient", false).forGetter(StatusEffectInstance.Parameters::ambient),
-								Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_particles", true).forGetter(StatusEffectInstance.Parameters::showParticles),
-								Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_icon").forGetter(parameters -> Optional.of(parameters.showIcon())),
-								Codecs.createStrictOptionalFieldCodec(codec, "hidden_effect").forGetter(StatusEffectInstance.Parameters::hiddenEffect)
+								Codecs.UNSIGNED_BYTE.optionalFieldOf("amplifier", 0).forGetter(StatusEffectInstance.Parameters::amplifier),
+								Codec.INT.optionalFieldOf("duration", Integer.valueOf(0)).forGetter(StatusEffectInstance.Parameters::duration),
+								Codec.BOOL.optionalFieldOf("ambient", Boolean.valueOf(false)).forGetter(StatusEffectInstance.Parameters::ambient),
+								Codec.BOOL.optionalFieldOf("show_particles", Boolean.valueOf(true)).forGetter(StatusEffectInstance.Parameters::showParticles),
+								Codec.BOOL.optionalFieldOf("show_icon").forGetter(parameters -> Optional.of(parameters.showIcon())),
+								codec.optionalFieldOf("hidden_effect").forGetter(StatusEffectInstance.Parameters::hiddenEffect)
 							)
 							.apply(instance, StatusEffectInstance.Parameters::create)
 				)

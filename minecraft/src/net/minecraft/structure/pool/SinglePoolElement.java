@@ -6,6 +6,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Comparator;
@@ -39,7 +40,7 @@ public class SinglePoolElement extends StructurePoolElement {
 	private static final Codec<Either<Identifier, StructureTemplate>> LOCATION_CODEC = Codec.of(
 		SinglePoolElement::encodeLocation, Identifier.CODEC.map(Either::left)
 	);
-	public static final Codec<SinglePoolElement> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SinglePoolElement> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(locationGetter(), processorsGetter(), projectionGetter()).apply(instance, SinglePoolElement::new)
 	);
 	protected final Either<Identifier, StructureTemplate> location;

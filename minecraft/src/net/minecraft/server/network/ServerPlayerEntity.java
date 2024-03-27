@@ -230,6 +230,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private boolean allowServerListing;
 	private boolean spawnExtraParticlesOnFall;
 	private SculkShriekerWarningManager sculkShriekerWarningManager = new SculkShriekerWarningManager(0, 0, 0);
+	@Nullable
+	private BlockPos startRaidPos;
 	private final ScreenHandlerSyncHandler screenHandlerSyncHandler = new ScreenHandlerSyncHandler() {
 		@Override
 		public void updateState(ScreenHandler handler, DefaultedList<ItemStack> stacks, ItemStack cursorStack, int[] properties) {
@@ -374,6 +376,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 
 		this.spawnExtraParticlesOnFall = nbt.getBoolean("spawn_extra_particles_on_fall");
+		BlockPos.CODEC
+			.parse(NbtOps.INSTANCE, nbt.get("raid_omen_position"))
+			.resultOrPartial(LOGGER::error)
+			.ifPresent(startRaidPos -> this.startRaidPos = startRaidPos);
 	}
 
 	@Override
@@ -419,6 +425,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 
 		nbt.putBoolean("spawn_extra_particles_on_fall", this.spawnExtraParticlesOnFall);
+		if (this.startRaidPos != null) {
+			BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, this.startRaidPos).resultOrPartial(LOGGER::error).ifPresent(encoded -> nbt.put("raid_omen_position", encoded));
+		}
 	}
 
 	public void setExperiencePoints(int points) {
@@ -1104,7 +1113,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlock) {
-		this.networkHandler.sendPacket(BlockEntityUpdateS2CPacket.create(commandBlock, BlockEntity::createNbt));
+		this.networkHandler.sendPacket(BlockEntityUpdateS2CPacket.create(commandBlock, BlockEntity::createComponentlessNbt));
 	}
 
 	@Override
@@ -1916,5 +1925,18 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.getLastDeathPos(),
 			this.getPortalCooldown()
 		);
+	}
+
+	public void setStartRaidPos(BlockPos startRaidPos) {
+		this.startRaidPos = startRaidPos;
+	}
+
+	public void clearStartRaidPos() {
+		this.startRaidPos = null;
+	}
+
+	@Nullable
+	public BlockPos getStartRaidPos() {
+		return this.startRaidPos;
 	}
 }

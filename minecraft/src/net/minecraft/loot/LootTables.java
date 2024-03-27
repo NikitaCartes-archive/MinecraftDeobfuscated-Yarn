@@ -58,6 +58,10 @@ public class LootTables {
 	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_REWARD_COMMON_CHEST = register("chests/trial_chambers/reward_common");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_REWARD_RARE_CHEST = register("chests/trial_chambers/reward_rare");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_REWARD_UNIQUE_CHEST = register("chests/trial_chambers/reward_unique");
+	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_REWARD_OMINOUS_CHEST = register("chests/trial_chambers/reward_ominous");
+	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_REWARD_OMINOUS_COMMON_CHEST = register("chests/trial_chambers/reward_ominous_common");
+	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_REWARD_OMINOUS_RARE_CHEST = register("chests/trial_chambers/reward_ominous_rare");
+	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_REWARD_OMINOUS_UNIQUE_CHEST = register("chests/trial_chambers/reward_ominous_unique");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_SUPPLY_CHEST = register("chests/trial_chambers/supply");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_CORRIDOR_CHEST = register("chests/trial_chambers/corridor");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_INTERSECTION_CHEST = register("chests/trial_chambers/intersection");
@@ -67,6 +71,7 @@ public class LootTables {
 	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_CHAMBER_DISPENSER = register("dispensers/trial_chambers/chamber");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_WATER_DISPENSER = register("dispensers/trial_chambers/water");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_CORRIDOR_POT = register("pots/trial_chambers/corridor");
+	public static final RegistryKey<LootTable> TRIAL_CHAMBER_EQUIPMENT = register("equipment/trial_chamber");
 	public static final RegistryKey<LootTable> WHITE_SHEEP_ENTITY = register("entities/sheep/white");
 	public static final RegistryKey<LootTable> ORANGE_SHEEP_ENTITY = register("entities/sheep/orange");
 	public static final RegistryKey<LootTable> MAGENTA_SHEEP_ENTITY = register("entities/sheep/magenta");
@@ -106,6 +111,9 @@ public class LootTables {
 	public static final RegistryKey<LootTable> PIGLIN_BARTERING_GAMEPLAY = register("gameplay/piglin_bartering");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBER_KEY_SPAWNER = register("spawners/trial_chamber/key");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBER_CONSUMABLES_SPAWNER = register("spawners/trial_chamber/consumables");
+	public static final RegistryKey<LootTable> OMINOUS_TRIAL_CHAMBER_KEY_SPAWNER = register("spawners/ominous/trial_chamber/key");
+	public static final RegistryKey<LootTable> OMINOUS_TRIAL_CHAMBER_CONSUMABLES_SPAWNER = register("spawners/ominous/trial_chamber/consumables");
+	public static final RegistryKey<LootTable> TRIAL_CHAMBER_ITEMS_TO_DROP_WHEN_OMINOUS_SPAWNER = register("spawners/trial_chamber/items_to_drop_when_ominous");
 	public static final RegistryKey<LootTable> BOGGED_SHEARING = register("shearing/bogged");
 	public static final RegistryKey<LootTable> DESERT_WELL_ARCHAEOLOGY = register("archaeology/desert_well");
 	public static final RegistryKey<LootTable> DESERT_PYRAMID_ARCHAEOLOGY = register("archaeology/desert_pyramid");

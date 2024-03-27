@@ -27,11 +27,11 @@ public record ServerMetadata(
 ) {
 	public static final Codec<ServerMetadata> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					TextCodecs.CODEC.optionalFieldOf("description", ScreenTexts.EMPTY).forGetter(ServerMetadata::description),
-					ServerMetadata.Players.CODEC.optionalFieldOf("players").forGetter(ServerMetadata::players),
-					ServerMetadata.Version.CODEC.optionalFieldOf("version").forGetter(ServerMetadata::version),
-					ServerMetadata.Favicon.CODEC.optionalFieldOf("favicon").forGetter(ServerMetadata::favicon),
-					Codec.BOOL.optionalFieldOf("enforcesSecureChat", Boolean.valueOf(false)).forGetter(ServerMetadata::secureChatEnforced)
+					TextCodecs.CODEC.lenientOptionalFieldOf("description", ScreenTexts.EMPTY).forGetter(ServerMetadata::description),
+					ServerMetadata.Players.CODEC.lenientOptionalFieldOf("players").forGetter(ServerMetadata::players),
+					ServerMetadata.Version.CODEC.lenientOptionalFieldOf("version").forGetter(ServerMetadata::version),
+					ServerMetadata.Favicon.CODEC.lenientOptionalFieldOf("favicon").forGetter(ServerMetadata::favicon),
+					Codec.BOOL.lenientOptionalFieldOf("enforcesSecureChat", Boolean.valueOf(false)).forGetter(ServerMetadata::secureChatEnforced)
 				)
 				.apply(instance, ServerMetadata::new)
 	);
@@ -62,7 +62,7 @@ public record ServerMetadata(
 			instance -> instance.group(
 						Codec.INT.fieldOf("max").forGetter(ServerMetadata.Players::max),
 						Codec.INT.fieldOf("online").forGetter(ServerMetadata.Players::online),
-						GAME_PROFILE_CODEC.listOf().optionalFieldOf("sample", List.of()).forGetter(ServerMetadata.Players::sample)
+						GAME_PROFILE_CODEC.listOf().lenientOptionalFieldOf("sample", List.of()).forGetter(ServerMetadata.Players::sample)
 					)
 					.apply(instance, ServerMetadata.Players::new)
 		);

@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.blockpredicate;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
@@ -8,7 +8,7 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.StructureWorldAccess;
 
 public class WouldSurviveBlockPredicate implements BlockPredicate {
-	public static final Codec<WouldSurviveBlockPredicate> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<WouldSurviveBlockPredicate> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Vec3i.createOffsetCodec(16).optionalFieldOf("offset", Vec3i.ZERO).forGetter(predicate -> predicate.offset),
 					BlockState.CODEC.fieldOf("state").forGetter(predicate -> predicate.state)

@@ -1,6 +1,6 @@
 package net.minecraft.loot.condition;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
-public record LootConditionType(Codec<? extends LootCondition> codec) {
+public record LootConditionType(MapCodec<? extends LootCondition> codec) {
 }

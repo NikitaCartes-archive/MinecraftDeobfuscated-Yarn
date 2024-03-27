@@ -7,6 +7,7 @@ import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * A list of parsed {@linkplain SignedArgumentType signed arguments}.
@@ -14,6 +15,10 @@ import java.util.List;
  * @see #of
  */
 public record SignedArgumentList<S>(List<SignedArgumentList.ParsedArgument<S>> arguments) {
+	public static <S> boolean isNotEmpty(ParseResults<S> parseResults) {
+		return !of(parseResults).arguments().isEmpty();
+	}
+
 	/**
 	 * {@return a new instance of this list from {@code parseResults}}
 	 */
@@ -24,12 +29,7 @@ public record SignedArgumentList<S>(List<SignedArgumentList.ParsedArgument<S>> a
 		List<SignedArgumentList.ParsedArgument<S>> list = collectDecoratableArguments(string, commandContextBuilder);
 
 		CommandContextBuilder<S> commandContextBuilder3;
-		while ((commandContextBuilder3 = commandContextBuilder2.getChild()) != null) {
-			boolean bl = commandContextBuilder3.getRootNode() != commandContextBuilder.getRootNode();
-			if (!bl) {
-				break;
-			}
-
+		while ((commandContextBuilder3 = commandContextBuilder2.getChild()) != null && commandContextBuilder3.getRootNode() != commandContextBuilder.getRootNode()) {
 			list.addAll(collectDecoratableArguments(string, commandContextBuilder3));
 			commandContextBuilder2 = commandContextBuilder3;
 		}
@@ -56,6 +56,17 @@ public record SignedArgumentList<S>(List<SignedArgumentList.ParsedArgument<S>> a
 		}
 
 		return list;
+	}
+
+	@Nullable
+	public SignedArgumentList.ParsedArgument<S> get(String name) {
+		for (SignedArgumentList.ParsedArgument<S> parsedArgument : this.arguments) {
+			if (name.equals(parsedArgument.getNodeName())) {
+				return parsedArgument;
+			}
+		}
+
+		return null;
 	}
 
 	/**

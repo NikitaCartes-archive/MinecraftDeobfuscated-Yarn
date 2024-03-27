@@ -195,6 +195,7 @@ public class OneTwentyOneAdventureTabAdvancementGenerator implements Advancement
 						.dealt(NumberRange.DoubleRange.atLeast(100.0))
 						.type(
 							DamageSourcePredicate.Builder.create()
+								.tag(TagPredicate.expected(DamageTypeTags.IS_PLAYER_ATTACK))
 								.directEntity(
 									EntityPredicate.Builder.create()
 										.type(EntityType.PLAYER)

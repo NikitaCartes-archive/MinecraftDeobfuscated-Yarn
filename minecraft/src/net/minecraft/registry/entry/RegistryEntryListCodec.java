@@ -26,7 +26,7 @@ public class RegistryEntryListCodec<E> implements Codec<RegistryEntryList<E>> {
 	 * instead of serializing as one entry if the length is {@code 0}
 	 */
 	private static <E> Codec<List<RegistryEntry<E>>> createDirectEntryListCodec(Codec<RegistryEntry<E>> entryCodec, boolean alwaysSerializeAsList) {
-		Codec<List<RegistryEntry<E>>> codec = Codecs.validate(entryCodec.listOf(), Codecs.createEqualTypeChecker(RegistryEntry::getType));
+		Codec<List<RegistryEntry<E>>> codec = entryCodec.listOf().validate(Codecs.createEqualTypeChecker(RegistryEntry::getType));
 		return alwaysSerializeAsList
 			? codec
 			: Codec.either(codec, entryCodec)

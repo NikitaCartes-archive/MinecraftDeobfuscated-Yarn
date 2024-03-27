@@ -1,6 +1,6 @@
 package net.minecraft.client.texture.atlas;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -9,7 +9,7 @@ import net.minecraft.resource.metadata.BlockEntry;
 
 @Environment(EnvType.CLIENT)
 public class FilterAtlasSource implements AtlasSource {
-	public static final Codec<FilterAtlasSource> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<FilterAtlasSource> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(BlockEntry.CODEC.fieldOf("pattern").forGetter(filterAtlasSource -> filterAtlasSource.pattern))
 				.apply(instance, FilterAtlasSource::new)
 	);

@@ -1,12 +1,19 @@
 package net.minecraft.block.entity;
 
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import java.util.HashSet;
+import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentMap;
+import net.minecraft.component.ComponentMapImpl;
+import net.minecraft.component.DataComponentType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.registry.Registries;
@@ -64,6 +71,7 @@ public abstract class BlockEntity {
 	protected final BlockPos pos;
 	protected boolean removed;
 	private BlockState cachedState;
+	private ComponentMap components = ComponentMap.EMPTY;
 
 	public BlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
 		this.type = type;
@@ -121,7 +129,19 @@ public abstract class BlockEntity {
 	 * 
 	 * @see #writeNbt
 	 */
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	}
+
+	public final void read(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		this.readNbt(nbt, registryLookup);
+		BlockEntity.Components.CODEC
+			.parse(registryLookup.getOps(NbtOps.INSTANCE), nbt)
+			.resultOrPartial(error -> LOGGER.warn("Failed to load components: {}", error))
+			.ifPresent(components -> this.components = components);
+	}
+
+	public final void readComponentlessNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		this.readNbt(nbt, registryLookup);
 	}
 
 	/**
@@ -181,6 +201,16 @@ public abstract class BlockEntity {
 	public final NbtCompound createNbt(RegistryWrapper.WrapperLookup registryLookup) {
 		NbtCompound nbtCompound = new NbtCompound();
 		this.writeNbt(nbtCompound, registryLookup);
+		BlockEntity.Components.CODEC
+			.encodeStart(registryLookup.getOps(NbtOps.INSTANCE), this.components)
+			.resultOrPartial(string -> LOGGER.warn("Failed to save components: {}", string))
+			.ifPresent(nbtElement -> nbtCompound.copyFrom((NbtCompound)nbtElement));
+		return nbtCompound;
+	}
+
+	public final NbtCompound createComponentlessNbt(RegistryWrapper.WrapperLookup registryLookup) {
+		NbtCompound nbtCompound = new NbtCompound();
+		this.writeNbt(nbtCompound, registryLookup);
 		return nbtCompound;
 	}
 
@@ -211,7 +241,7 @@ public abstract class BlockEntity {
 	 * NBT value to {@linkplain #createNbt the block entity's NBT data}.
 	 */
 	public void setStackNbt(ItemStack stack, RegistryWrapper.WrapperLookup registries) {
-		NbtCompound nbtCompound = this.createNbt(registries);
+		NbtCompound nbtCompound = this.createComponentlessNbt(registries);
 		this.removeFromCopiedStackNbt(nbtCompound);
 		BlockItem.setBlockEntityData(stack, this.getType(), nbtCompound);
 		stack.applyComponentsFrom(this.createComponentMap());
@@ -255,7 +285,7 @@ public abstract class BlockEntity {
 				}
 			}).map(blockEntity -> {
 				try {
-					blockEntity.readNbt(nbt, registryLookup);
+					blockEntity.read(nbt, registryLookup);
 					return blockEntity;
 				} catch (Throwable var5x) {
 					LOGGER.error("Failed to load data for block entity {}", string, var5x);
@@ -402,10 +432,35 @@ public abstract class BlockEntity {
 		this.cachedState = state;
 	}
 
-	public void readComponents(ComponentMap components) {
+	protected void readComponents(BlockEntity.ComponentsAccess components) {
 	}
 
-	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+	public final void readComponents(ItemStack stack) {
+		this.readComponents(stack.getDefaultComponents(), stack.getComponentChanges());
+	}
+
+	public final void readComponents(ComponentMap defaultComponents, ComponentChanges components) {
+		final Set<DataComponentType<?>> set = new HashSet();
+		final ComponentMap componentMap = ComponentMapImpl.create(defaultComponents, components);
+		this.readComponents(new BlockEntity.ComponentsAccess() {
+			@Nullable
+			@Override
+			public <T> T get(DataComponentType<T> type) {
+				set.add(type);
+				return componentMap.get(type);
+			}
+
+			@Override
+			public <T> T getOrDefault(DataComponentType<? extends T> type, T fallback) {
+				set.add(type);
+				return componentMap.getOrDefault(type, fallback);
+			}
+		});
+		ComponentChanges componentChanges = components.withRemovedIf(set::contains);
+		this.components = componentChanges.toAddedRemovedPair().added();
+	}
+
+	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
 	}
 
 	@Deprecated
@@ -414,7 +469,30 @@ public abstract class BlockEntity {
 
 	public final ComponentMap createComponentMap() {
 		ComponentMap.Builder builder = ComponentMap.builder();
+		builder.addAll(this.components);
 		this.addComponents(builder);
 		return builder.build();
+	}
+
+	public ComponentMap getComponents() {
+		return this.components;
+	}
+
+	public void setComponents(ComponentMap components) {
+		this.components = components;
+	}
+
+	static class Components {
+		public static final Codec<ComponentMap> CODEC = ComponentMap.CODEC.optionalFieldOf("components", ComponentMap.EMPTY).codec();
+
+		private Components() {
+		}
+	}
+
+	protected interface ComponentsAccess {
+		@Nullable
+		<T> T get(DataComponentType<T> type);
+
+		<T> T getOrDefault(DataComponentType<? extends T> type, T fallback);
 	}
 }

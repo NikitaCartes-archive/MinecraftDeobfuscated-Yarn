@@ -1,7 +1,7 @@
 package net.minecraft.structure.pool.alias;
 
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.Registry;
@@ -11,7 +11,7 @@ import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
 
 public class StructurePoolAliasBindings {
-	public static Codec<? extends StructurePoolAliasBinding> registerAndGetDefault(Registry<Codec<? extends StructurePoolAliasBinding>> registry) {
+	public static MapCodec<? extends StructurePoolAliasBinding> registerAndGetDefault(Registry<MapCodec<? extends StructurePoolAliasBinding>> registry) {
 		Registry.register(registry, "random", RandomStructurePoolAliasBinding.CODEC);
 		Registry.register(registry, "random_group", RandomGroupStructurePoolAliasBinding.CODEC);
 		return Registry.register(registry, "direct", DirectStructurePoolAliasBinding.CODEC);

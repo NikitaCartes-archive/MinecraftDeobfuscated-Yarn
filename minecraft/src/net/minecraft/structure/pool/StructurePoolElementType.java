@@ -1,6 +1,6 @@
 package net.minecraft.structure.pool;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
@@ -11,9 +11,9 @@ public interface StructurePoolElementType<P extends StructurePoolElement> {
 	StructurePoolElementType<EmptyPoolElement> EMPTY_POOL_ELEMENT = register("empty_pool_element", EmptyPoolElement.CODEC);
 	StructurePoolElementType<LegacySinglePoolElement> LEGACY_SINGLE_POOL_ELEMENT = register("legacy_single_pool_element", LegacySinglePoolElement.CODEC);
 
-	Codec<P> codec();
+	MapCodec<P> codec();
 
-	static <P extends StructurePoolElement> StructurePoolElementType<P> register(String id, Codec<P> codec) {
+	static <P extends StructurePoolElement> StructurePoolElementType<P> register(String id, MapCodec<P> codec) {
 		return Registry.register(Registries.STRUCTURE_POOL_ELEMENT, id, () -> codec);
 	}
 }

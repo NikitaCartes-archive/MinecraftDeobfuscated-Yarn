@@ -9,7 +9,6 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
 
 public class AdvancementDisplay {
 	public static final Codec<AdvancementDisplay> CODEC = RecordCodecBuilder.create(
@@ -17,11 +16,11 @@ public class AdvancementDisplay {
 					ItemStack.CODEC.fieldOf("icon").forGetter(AdvancementDisplay::getIcon),
 					TextCodecs.CODEC.fieldOf("title").forGetter(AdvancementDisplay::getTitle),
 					TextCodecs.CODEC.fieldOf("description").forGetter(AdvancementDisplay::getDescription),
-					Codecs.createStrictOptionalFieldCodec(Identifier.CODEC, "background").forGetter(AdvancementDisplay::getBackground),
-					Codecs.createStrictOptionalFieldCodec(AdvancementFrame.CODEC, "frame", AdvancementFrame.TASK).forGetter(AdvancementDisplay::getFrame),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_toast", true).forGetter(AdvancementDisplay::shouldShowToast),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "announce_to_chat", true).forGetter(AdvancementDisplay::shouldAnnounceToChat),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "hidden", false).forGetter(AdvancementDisplay::isHidden)
+					Identifier.CODEC.optionalFieldOf("background").forGetter(AdvancementDisplay::getBackground),
+					AdvancementFrame.CODEC.optionalFieldOf("frame", AdvancementFrame.TASK).forGetter(AdvancementDisplay::getFrame),
+					Codec.BOOL.optionalFieldOf("show_toast", Boolean.valueOf(true)).forGetter(AdvancementDisplay::shouldShowToast),
+					Codec.BOOL.optionalFieldOf("announce_to_chat", Boolean.valueOf(true)).forGetter(AdvancementDisplay::shouldAnnounceToChat),
+					Codec.BOOL.optionalFieldOf("hidden", Boolean.valueOf(false)).forGetter(AdvancementDisplay::isHidden)
 				)
 				.apply(instance, AdvancementDisplay::new)
 	);

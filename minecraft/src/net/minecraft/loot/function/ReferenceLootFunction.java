@@ -1,7 +1,7 @@
 package net.minecraft.loot.function;
 
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.item.ItemStack;
@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 
 public class ReferenceLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final Codec<ReferenceLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<ReferenceLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.and(RegistryKey.createCodec(RegistryKeys.ITEM_MODIFIER).fieldOf("name").forGetter(function -> function.name))
 				.apply(instance, ReferenceLootFunction::new)

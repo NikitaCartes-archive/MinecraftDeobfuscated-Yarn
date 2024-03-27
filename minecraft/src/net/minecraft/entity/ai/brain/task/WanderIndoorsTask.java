@@ -2,10 +2,10 @@ package net.minecraft.entity.ai.brain.task;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 
 public class WanderIndoorsTask {
@@ -21,7 +21,7 @@ public class WanderIndoorsTask {
 									BlockPos blockPos = entity.getBlockPos();
 									List<BlockPos> list = (List<BlockPos>)BlockPos.stream(blockPos.add(-1, -1, -1), blockPos.add(1, 1, 1))
 										.map(BlockPos::toImmutable)
-										.collect(Collectors.toList());
+										.collect(Util.toArrayList());
 									Collections.shuffle(list);
 									list.stream()
 										.filter(pos -> !world.isSkyVisible(pos))

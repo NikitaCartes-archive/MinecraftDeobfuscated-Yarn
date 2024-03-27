@@ -191,8 +191,7 @@ public class RegistryLoader {
 		try {
 			JsonElement jsonElement = JsonParser.parseReader(reader);
 			DataResult<E> dataResult = decoder.parse(ops, jsonElement);
-			E object = dataResult.getOrThrow(false, error -> {
-			});
+			E object = dataResult.getOrThrow();
 			registry.add(key, object, entryInfo);
 		} catch (Throwable var11) {
 			if (reader != null) {
@@ -257,8 +256,7 @@ public class RegistryLoader {
 				if (optional.isPresent()) {
 					try {
 						DataResult<E> dataResult = decoder.parse(registryOps, (NbtElement)optional.get());
-						E object = dataResult.getOrThrow(false, error -> {
-						});
+						E object = dataResult.getOrThrow();
 						registry.add(registryKey, object, EXPERIMENTAL_ENTRY_INFO);
 					} catch (Exception var17) {
 						loadingErrors.put(registryKey, new IllegalStateException(String.format(Locale.ROOT, "Failed to parse value %s from server", optional.get()), var17));

@@ -2,6 +2,7 @@ package net.minecraft.world.event;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,7 +17,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class EntityPositionSource implements PositionSource {
-	public static final Codec<EntityPositionSource> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<EntityPositionSource> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Uuids.INT_STREAM_CODEC.fieldOf("source_entity").forGetter(EntityPositionSource::getUuid),
 					Codec.FLOAT.fieldOf("y_offset").orElse(0.0F).forGetter(entityPositionSource -> entityPositionSource.yOffset)
@@ -81,7 +82,7 @@ public class EntityPositionSource implements PositionSource {
 
 	public static class Type implements PositionSourceType<EntityPositionSource> {
 		@Override
-		public Codec<EntityPositionSource> getCodec() {
+		public MapCodec<EntityPositionSource> getCodec() {
 			return EntityPositionSource.CODEC;
 		}
 

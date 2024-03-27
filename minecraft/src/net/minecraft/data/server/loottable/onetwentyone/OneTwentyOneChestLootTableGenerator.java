@@ -14,6 +14,7 @@ import net.minecraft.loot.function.EnchantRandomlyLootFunction;
 import net.minecraft.loot.function.EnchantWithLevelsLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.function.SetDamageLootFunction;
+import net.minecraft.loot.function.SetOminousBottleAmplifierLootFunction;
 import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
@@ -283,18 +284,8 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(ItemEntry.builder(Items.EMERALD_BLOCK).weight(3))
+						.with(ItemEntry.builder(Items.EMERALD).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 4.0F))))
 						.with(ItemEntry.builder(Items.SHIELD).weight(3).apply(SetDamageLootFunction.builder(UniformLootNumberProvider.create(0.5F, 1.0F))))
-						.with(
-							ItemEntry.builder(Items.IRON_CHESTPLATE)
-								.weight(3)
-								.apply(EnchantWithLevelsLootFunction.builder(UniformLootNumberProvider.create(5.0F, 15.0F)).allowTreasureEnchantments())
-						)
-						.with(
-							ItemEntry.builder(Items.IRON_AXE)
-								.weight(3)
-								.apply(EnchantWithLevelsLootFunction.builder(UniformLootNumberProvider.create(5.0F, 15.0F)).allowTreasureEnchantments())
-						)
 						.with(
 							ItemEntry.builder(Items.BOW)
 								.weight(3)
@@ -306,16 +297,16 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 								.apply(EnchantWithLevelsLootFunction.builder(UniformLootNumberProvider.create(5.0F, 20.0F)).allowTreasureEnchantments())
 						)
 						.with(
-							ItemEntry.builder(Items.DIAMOND_AXE)
+							ItemEntry.builder(Items.IRON_AXE)
 								.weight(2)
-								.apply(EnchantWithLevelsLootFunction.builder(UniformLootNumberProvider.create(5.0F, 15.0F)).allowTreasureEnchantments())
+								.apply(EnchantWithLevelsLootFunction.builder(UniformLootNumberProvider.create(0.0F, 10.0F)).allowTreasureEnchantments())
 						)
 						.with(
-							ItemEntry.builder(Items.DIAMOND_CHESTPLATE)
+							ItemEntry.builder(Items.IRON_CHESTPLATE)
 								.weight(2)
-								.apply(EnchantWithLevelsLootFunction.builder(UniformLootNumberProvider.create(5.0F, 15.0F)).allowTreasureEnchantments())
+								.apply(EnchantWithLevelsLootFunction.builder(UniformLootNumberProvider.create(0.0F, 10.0F)).allowTreasureEnchantments())
 						)
-						.with(ItemEntry.builder(Items.GOLDEN_APPLE).weight(2))
+						.with(ItemEntry.builder(Items.GOLDEN_CARROT).weight(2).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
 						.with(
 							ItemEntry.builder(Items.BOOK)
 								.weight(2)
@@ -341,6 +332,16 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 										.add(Enchantments.MENDING)
 								)
 						)
+						.with(
+							ItemEntry.builder(Items.DIAMOND_CHESTPLATE)
+								.weight(1)
+								.apply(EnchantWithLevelsLootFunction.builder(UniformLootNumberProvider.create(5.0F, 15.0F)).allowTreasureEnchantments())
+						)
+						.with(
+							ItemEntry.builder(Items.DIAMOND_AXE)
+								.weight(1)
+								.apply(EnchantWithLevelsLootFunction.builder(UniformLootNumberProvider.create(5.0F, 15.0F)).allowTreasureEnchantments())
+						)
 				)
 		);
 		consumer.accept(
@@ -356,10 +357,16 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 8.0F)))
 								.apply(SetPotionLootFunction.builder(Potions.POISON))
 						)
-						.with(ItemEntry.builder(Items.EMERALD).weight(4).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 8.0F))))
+						.with(ItemEntry.builder(Items.EMERALD).weight(4).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 4.0F))))
 						.with(ItemEntry.builder(Items.WIND_CHARGE).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
 						.with(ItemEntry.builder(Items.IRON_INGOT).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
 						.with(ItemEntry.builder(Items.HONEY_BOTTLE).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
+						.with(
+							ItemEntry.builder(Items.OMINOUS_BOTTLE)
+								.weight(2)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.apply(SetOminousBottleAmplifierLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
+						)
 						.with(ItemEntry.builder(Items.WIND_CHARGE).weight(1).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 12.0F))))
 						.with(ItemEntry.builder(Items.DIAMOND).weight(1).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
 				)
@@ -370,12 +377,10 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(ItemEntry.builder(Items.ENCHANTED_GOLDEN_APPLE).weight(3))
+						.with(ItemEntry.builder(Items.GOLDEN_APPLE).weight(6))
 						.with(ItemEntry.builder(Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE).weight(3))
-						.with(ItemEntry.builder(Items.FLOW_ARMOR_TRIM_SMITHING_TEMPLATE).weight(3))
-						.with(ItemEntry.builder(Items.FLOW_BANNER_PATTERN).weight(1))
-						.with(ItemEntry.builder(Items.GUSTER_BANNER_PATTERN).weight(1))
-						.with(ItemEntry.builder(Items.HEAVY_CORE).weight(1))
+						.with(ItemEntry.builder(Items.GUSTER_BANNER_PATTERN).weight(2))
+						.with(ItemEntry.builder(Items.TRIDENT).weight(1))
 				)
 		);
 		consumer.accept(
@@ -396,6 +401,101 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 				)
 		);
 		consumer.accept(
+			LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_RARE_CHEST,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(ItemEntry.builder(Items.EMERALD_BLOCK).weight(6))
+						.with(ItemEntry.builder(Items.IRON_BLOCK).weight(4))
+						.with(
+							ItemEntry.builder(Items.CROSSBOW)
+								.weight(4)
+								.apply(EnchantWithLevelsLootFunction.builder(UniformLootNumberProvider.create(5.0F, 20.0F)).allowTreasureEnchantments())
+						)
+						.with(ItemEntry.builder(Items.GOLDEN_APPLE).weight(4))
+						.with(
+							ItemEntry.builder(Items.DIAMOND_AXE)
+								.weight(3)
+								.apply(EnchantWithLevelsLootFunction.builder(UniformLootNumberProvider.create(10.0F, 20.0F)).allowTreasureEnchantments())
+						)
+						.with(
+							ItemEntry.builder(Items.DIAMOND_CHESTPLATE)
+								.weight(3)
+								.apply(EnchantWithLevelsLootFunction.builder(UniformLootNumberProvider.create(10.0F, 20.0F)).allowTreasureEnchantments())
+						)
+						.with(
+							ItemEntry.builder(Items.BOOK)
+								.weight(2)
+								.apply(
+									new EnchantRandomlyLootFunction.Builder()
+										.add(Enchantments.KNOCKBACK)
+										.add(Enchantments.PUNCH)
+										.add(Enchantments.SMITE)
+										.add(Enchantments.LOOTING)
+										.add(Enchantments.MULTISHOT)
+								)
+						)
+						.with(ItemEntry.builder(Items.BOOK).weight(2).apply(new EnchantRandomlyLootFunction.Builder().add(Enchantments.BREACH).add(Enchantments.DENSITY)))
+						.with(ItemEntry.builder(Items.BOOK).weight(1).apply(new EnchantRandomlyLootFunction.Builder().add(Enchantments.WIND_BURST)))
+						.with(ItemEntry.builder(Items.DIAMOND_BLOCK).weight(1))
+				)
+		);
+		consumer.accept(
+			LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_COMMON_CHEST,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(ItemEntry.builder(Items.EMERALD).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 10.0F))))
+						.with(ItemEntry.builder(Items.WIND_CHARGE).weight(4).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(8.0F, 12.0F))))
+						.with(
+							ItemEntry.builder(Items.TIPPED_ARROW)
+								.weight(3)
+								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 12.0F)))
+								.apply(SetPotionLootFunction.builder(Potions.STRONG_SLOWNESS))
+						)
+						.with(ItemEntry.builder(Items.DIAMOND).weight(2).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 3.0F))))
+						.with(
+							ItemEntry.builder(Items.OMINOUS_BOTTLE)
+								.weight(1)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.apply(SetOminousBottleAmplifierLootFunction.builder(UniformLootNumberProvider.create(2.0F, 4.0F)))
+						)
+				)
+		);
+		consumer.accept(
+			LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_UNIQUE_CHEST,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(ItemEntry.builder(Items.ENCHANTED_GOLDEN_APPLE).weight(3))
+						.with(ItemEntry.builder(Items.FLOW_ARMOR_TRIM_SMITHING_TEMPLATE).weight(3))
+						.with(ItemEntry.builder(Items.FLOW_BANNER_PATTERN).weight(2))
+						.with(ItemEntry.builder(Items.HEAVY_CORE).weight(1))
+				)
+		);
+		consumer.accept(
+			LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_CHEST,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(LootTableEntry.builder(LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_RARE_CHEST).weight(8))
+						.with(LootTableEntry.builder(LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_COMMON_CHEST).weight(2))
+				)
+				.pool(
+					LootPool.builder().rolls(UniformLootNumberProvider.create(1.0F, 3.0F)).with(LootTableEntry.builder(LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_COMMON_CHEST))
+				)
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.conditionally(RandomChanceLootCondition.builder(0.75F))
+						.with(LootTableEntry.builder(LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_UNIQUE_CHEST))
+				)
+		);
+		consumer.accept(
 			LootTables.TRIAL_CHAMBER_KEY_SPAWNER,
 			LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.TRIAL_KEY)))
 		);
@@ -405,11 +505,35 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(ItemEntry.builder(Items.EMERALD).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 6.0F))))
-						.with(ItemEntry.builder(Items.GOLDEN_CARROT).weight(1).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
-						.with(ItemEntry.builder(Items.BAKED_POTATO).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
-						.with(ItemEntry.builder(Items.GLOW_BERRIES).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 10.0F))))
-						.with(ItemEntry.builder(Items.ENDER_PEARL).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F))))
+						.with(ItemEntry.builder(Items.COOKED_CHICKEN).weight(3).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F))))
+						.with(ItemEntry.builder(Items.BREAD).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
+						.with(ItemEntry.builder(Items.BAKED_POTATO).weight(2).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
+						.with(
+							ItemEntry.builder(Items.POTION)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.apply(SetPotionLootFunction.builder(Potions.REGENERATION))
+						)
+						.with(
+							ItemEntry.builder(Items.POTION)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.apply(SetPotionLootFunction.builder(Potions.SWIFTNESS))
+						)
+						.with(ItemEntry.builder(Items.ROTTEN_FLESH).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
+				)
+		);
+		consumer.accept(
+			LootTables.OMINOUS_TRIAL_CHAMBER_KEY_SPAWNER,
+			LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.OMINOUS_TRIAL_KEY)))
+		);
+		consumer.accept(
+			LootTables.OMINOUS_TRIAL_CHAMBER_CONSUMABLES_SPAWNER,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(ItemEntry.builder(Items.COOKED_BEEF).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
+						.with(ItemEntry.builder(Items.BAKED_POTATO).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 4.0F))))
+						.with(ItemEntry.builder(Items.GOLDEN_CARROT).weight(2).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
 						.with(
 							ItemEntry.builder(Items.POTION)
 								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
@@ -420,6 +544,68 @@ public class OneTwentyOneChestLootTableGenerator implements LootTableGenerator {
 								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
 								.apply(SetPotionLootFunction.builder(Potions.STRENGTH))
 						)
+						.with(ItemEntry.builder(Items.ROTTEN_FLESH).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
+				)
+		);
+		consumer.accept(
+			LootTables.TRIAL_CHAMBER_ITEMS_TO_DROP_WHEN_OMINOUS_SPAWNER,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(
+							ItemEntry.builder(Items.LINGERING_POTION)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.apply(SetPotionLootFunction.builder(Potions.WIND_CHARGED))
+						)
+						.with(
+							ItemEntry.builder(Items.LINGERING_POTION)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.apply(SetPotionLootFunction.builder(Potions.OOZING))
+						)
+						.with(
+							ItemEntry.builder(Items.LINGERING_POTION)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.apply(SetPotionLootFunction.builder(Potions.WEAVING))
+						)
+						.with(
+							ItemEntry.builder(Items.LINGERING_POTION)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.apply(SetPotionLootFunction.builder(Potions.INFESTED))
+						)
+						.with(
+							ItemEntry.builder(Items.LINGERING_POTION)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.apply(SetPotionLootFunction.builder(Potions.STRENGTH))
+						)
+						.with(
+							ItemEntry.builder(Items.LINGERING_POTION)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.apply(SetPotionLootFunction.builder(Potions.SWIFTNESS))
+						)
+						.with(
+							ItemEntry.builder(Items.LINGERING_POTION)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.apply(SetPotionLootFunction.builder(Potions.SLOW_FALLING))
+						)
+				)
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(ItemEntry.builder(Items.ARROW).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F))))
+						.with(
+							ItemEntry.builder(Items.ARROW)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.apply(SetPotionLootFunction.builder(Potions.POISON))
+						)
+						.with(
+							ItemEntry.builder(Items.ARROW)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.apply(SetPotionLootFunction.builder(Potions.STRONG_SLOWNESS))
+						)
+						.with(ItemEntry.builder(Items.FIRE_CHARGE).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
+						.with(ItemEntry.builder(Items.WIND_CHARGE).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
+						.with(ItemEntry.builder(Items.EXPERIENCE_BOTTLE).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
 				)
 		);
 	}

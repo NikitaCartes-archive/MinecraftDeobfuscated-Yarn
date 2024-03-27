@@ -2,6 +2,7 @@ package net.minecraft.world.gen.carver;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Set;
 import java.util.function.Function;
 import javax.annotation.Nullable;
@@ -34,21 +35,21 @@ public abstract class Carver<C extends CarverConfig> {
 	protected static final FluidState WATER = Fluids.WATER.getDefaultState();
 	protected static final FluidState LAVA = Fluids.LAVA.getDefaultState();
 	protected Set<Fluid> carvableFluids = ImmutableSet.of(Fluids.WATER);
-	private final Codec<ConfiguredCarver<C>> codec;
+	private final MapCodec<ConfiguredCarver<C>> codec;
 
 	private static <C extends CarverConfig, F extends Carver<C>> F register(String name, F carver) {
 		return Registry.register(Registries.CARVER, name, carver);
 	}
 
 	public Carver(Codec<C> configCodec) {
-		this.codec = configCodec.fieldOf("config").<ConfiguredCarver<C>>xmap(this::configure, ConfiguredCarver::config).codec();
+		this.codec = configCodec.fieldOf("config").xmap(this::configure, ConfiguredCarver::config);
 	}
 
 	public ConfiguredCarver<C> configure(C config) {
 		return new ConfiguredCarver<>(this, config);
 	}
 
-	public Codec<ConfiguredCarver<C>> getCodec() {
+	public MapCodec<ConfiguredCarver<C>> getCodec() {
 		return this.codec;
 	}
 

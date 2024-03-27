@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -8,7 +9,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
 public class SurfaceWaterDepthFilterPlacementModifier extends AbstractConditionalPlacementModifier {
-	public static final Codec<SurfaceWaterDepthFilterPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SurfaceWaterDepthFilterPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codec.INT.fieldOf("max_water_depth").forGetter(surfaceWaterDepthFilterPlacementModifier -> surfaceWaterDepthFilterPlacementModifier.maxWaterDepth)
 				)

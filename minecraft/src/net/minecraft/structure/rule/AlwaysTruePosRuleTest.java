@@ -1,12 +1,12 @@
 package net.minecraft.structure.rule;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.function.Supplier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 
 public class AlwaysTruePosRuleTest extends PosRuleTest {
-	public static final Codec<AlwaysTruePosRuleTest> CODEC = Codec.unit((Supplier<AlwaysTruePosRuleTest>)(() -> AlwaysTruePosRuleTest.INSTANCE));
+	public static final MapCodec<AlwaysTruePosRuleTest> CODEC = MapCodec.unit((Supplier<AlwaysTruePosRuleTest>)(() -> AlwaysTruePosRuleTest.INSTANCE));
 	public static final AlwaysTruePosRuleTest INSTANCE = new AlwaysTruePosRuleTest();
 
 	private AlwaysTruePosRuleTest() {

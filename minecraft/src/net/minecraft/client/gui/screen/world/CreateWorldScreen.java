@@ -405,7 +405,7 @@ public class CreateWorldScreen extends Screen {
 							.setLifecycle(Lifecycle.stable());
 						DynamicOps<JsonElement> dynamicOps2 = context.worldGenRegistryManager().getOps(JsonOps.INSTANCE);
 						WorldGenSettings worldGenSettings = dataResult.<WorldGenSettings>flatMap(json -> WorldGenSettings.CODEC.parse(dynamicOps2, json))
-							.getOrThrow(false, Util.addPrefix("Error parsing worldgen settings after loading data packs: ", LOGGER::error));
+							.getOrThrow(string -> new IllegalStateException("Error parsing worldgen settings after loading data packs: " + string));
 						return new SaveLoading.LoadContext<>(
 							new CreateWorldScreen.WorldCreationSettings(worldGenSettings, context.dataConfiguration()), context.dimensionsRegistryManager()
 						);

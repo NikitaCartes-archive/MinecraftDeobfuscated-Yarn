@@ -184,14 +184,16 @@ public class ChatHud {
 		this.addMessage(message, null, this.client.isConnectedToLocalServer() ? MessageIndicator.singlePlayer() : MessageIndicator.system());
 	}
 
-	public void addMessage(Text message, @Nullable MessageSignatureData signature, @Nullable MessageIndicator indicator) {
-		this.logChatMessage(message, indicator);
-		this.addMessage(message, signature, this.client.inGameHud.getTicks(), indicator, false);
+	public void addMessage(Text message, @Nullable MessageSignatureData signatureData, @Nullable MessageIndicator indicator) {
+		ChatHudLine chatHudLine = new ChatHudLine(this.client.inGameHud.getTicks(), message, signatureData, indicator);
+		this.logChatMessage(chatHudLine);
+		this.addVisibleMessage(chatHudLine);
+		this.addMessage(chatHudLine);
 	}
 
-	private void logChatMessage(Text message, @Nullable MessageIndicator indicator) {
-		String string = message.getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n");
-		String string2 = Nullables.map(indicator, MessageIndicator::loggedName);
+	private void logChatMessage(ChatHudLine message) {
+		String string = message.content().getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n");
+		String string2 = Nullables.map(message.indicator(), MessageIndicator::loggedName);
 		if (string2 != null) {
 			LOGGER.info("[{}] [CHAT] {}", string2, string);
 		} else {
@@ -199,13 +201,14 @@ public class ChatHud {
 		}
 	}
 
-	private void addMessage(Text message, @Nullable MessageSignatureData signature, int ticks, @Nullable MessageIndicator indicator, boolean refresh) {
+	private void addVisibleMessage(ChatHudLine message) {
 		int i = MathHelper.floor((double)this.getWidth() / this.getChatScale());
-		if (indicator != null && indicator.icon() != null) {
-			i -= indicator.icon().width + 4 + 2;
+		MessageIndicator.Icon icon = message.getIcon();
+		if (icon != null) {
+			i -= icon.width + 4 + 2;
 		}
 
-		List<OrderedText> list = ChatMessages.breakRenderedChatMessageLines(message, i, this.client.textRenderer);
+		List<OrderedText> list = ChatMessages.breakRenderedChatMessageLines(message.content(), i, this.client.textRenderer);
 		boolean bl = this.isChatFocused();
 
 		for (int j = 0; j < list.size(); j++) {
@@ -216,19 +219,19 @@ public class ChatHud {
 			}
 
 			boolean bl2 = j == list.size() - 1;
-			this.visibleMessages.add(0, new ChatHudLine.Visible(ticks, orderedText, indicator, bl2));
+			this.visibleMessages.add(0, new ChatHudLine.Visible(message.creationTick(), orderedText, message.indicator(), bl2));
 		}
 
 		while (this.visibleMessages.size() > 100) {
 			this.visibleMessages.remove(this.visibleMessages.size() - 1);
 		}
+	}
 
-		if (!refresh) {
-			this.messages.add(0, new ChatHudLine(ticks, message, signature, indicator));
+	private void addMessage(ChatHudLine message) {
+		this.messages.add(0, message);
 
-			while (this.messages.size() > 100) {
-				this.messages.remove(this.messages.size() - 1);
-			}
+		while (this.messages.size() > 100) {
+			this.messages.remove(this.messages.size() - 1);
 		}
 	}
 
@@ -278,9 +281,8 @@ public class ChatHud {
 	private void refresh() {
 		this.visibleMessages.clear();
 
-		for (int i = this.messages.size() - 1; i >= 0; i--) {
-			ChatHudLine chatHudLine = (ChatHudLine)this.messages.get(i);
-			this.addMessage(chatHudLine.content(), chatHudLine.signature(), chatHudLine.creationTick(), chatHudLine.indicator(), true);
+		for (ChatHudLine chatHudLine : Lists.reverse(this.messages)) {
+			this.addVisibleMessage(chatHudLine);
 		}
 	}
 
@@ -470,6 +472,33 @@ public class ChatHud {
 
 	private int getLineHeight() {
 		return (int)(9.0 * (this.client.options.getChatLineSpacing().getValue() + 1.0));
+	}
+
+	public ChatHud.ChatState toChatState() {
+		return new ChatHud.ChatState(List.copyOf(this.messages), List.copyOf(this.messageHistory), List.copyOf(this.removalQueue));
+	}
+
+	public void restoreChatState(ChatHud.ChatState state) {
+		this.messageHistory.clear();
+		this.messageHistory.addAll(state.messageHistory);
+		this.removalQueue.clear();
+		this.removalQueue.addAll(state.removalQueue);
+		this.messages.clear();
+		this.messages.addAll(state.messages);
+		this.refresh();
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class ChatState {
+		final List<ChatHudLine> messages;
+		final List<String> messageHistory;
+		final List<ChatHud.RemovalQueuedMessage> removalQueue;
+
+		public ChatState(List<ChatHudLine> messages, List<String> messageHistory, List<ChatHud.RemovalQueuedMessage> removalQueue) {
+			this.messages = messages;
+			this.messageHistory = messageHistory;
+			this.removalQueue = removalQueue;
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

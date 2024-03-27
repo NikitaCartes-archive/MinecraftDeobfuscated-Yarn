@@ -9,7 +9,6 @@ import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
 public class LevitationCriterion extends AbstractCriterion<LevitationCriterion.Conditions> {
@@ -26,10 +25,9 @@ public class LevitationCriterion extends AbstractCriterion<LevitationCriterion.C
 		implements AbstractCriterion.Conditions {
 		public static final Codec<LevitationCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(LevitationCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(DistancePredicate.CODEC, "distance").forGetter(LevitationCriterion.Conditions::distance),
-						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "duration", NumberRange.IntRange.ANY)
-							.forGetter(LevitationCriterion.Conditions::duration)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(LevitationCriterion.Conditions::player),
+						DistancePredicate.CODEC.optionalFieldOf("distance").forGetter(LevitationCriterion.Conditions::distance),
+						NumberRange.IntRange.CODEC.optionalFieldOf("duration", NumberRange.IntRange.ANY).forGetter(LevitationCriterion.Conditions::duration)
 					)
 					.apply(instance, LevitationCriterion.Conditions::new)
 		);

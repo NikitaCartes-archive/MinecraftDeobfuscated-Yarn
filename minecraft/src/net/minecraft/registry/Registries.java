@@ -2,7 +2,6 @@ package net.minecraft.registry;
 
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import java.util.Map;
@@ -201,15 +200,15 @@ public class Registries {
 	public static final Registry<FeatureSizeType<?>> FEATURE_SIZE_TYPE = create(
 		RegistryKeys.FEATURE_SIZE_TYPE, registry -> FeatureSizeType.TWO_LAYERS_FEATURE_SIZE
 	);
-	public static final Registry<Codec<? extends BiomeSource>> BIOME_SOURCE = create(RegistryKeys.BIOME_SOURCE, BiomeSources::registerAndGetDefault);
-	public static final Registry<Codec<? extends ChunkGenerator>> CHUNK_GENERATOR = create(RegistryKeys.CHUNK_GENERATOR, ChunkGenerators::registerAndGetDefault);
-	public static final Registry<Codec<? extends MaterialRules.MaterialCondition>> MATERIAL_CONDITION = create(
+	public static final Registry<MapCodec<? extends BiomeSource>> BIOME_SOURCE = create(RegistryKeys.BIOME_SOURCE, BiomeSources::registerAndGetDefault);
+	public static final Registry<MapCodec<? extends ChunkGenerator>> CHUNK_GENERATOR = create(RegistryKeys.CHUNK_GENERATOR, ChunkGenerators::registerAndGetDefault);
+	public static final Registry<MapCodec<? extends MaterialRules.MaterialCondition>> MATERIAL_CONDITION = create(
 		RegistryKeys.MATERIAL_CONDITION, MaterialRules.MaterialCondition::registerAndGetDefault
 	);
-	public static final Registry<Codec<? extends MaterialRules.MaterialRule>> MATERIAL_RULE = create(
+	public static final Registry<MapCodec<? extends MaterialRules.MaterialRule>> MATERIAL_RULE = create(
 		RegistryKeys.MATERIAL_RULE, MaterialRules.MaterialRule::registerAndGetDefault
 	);
-	public static final Registry<Codec<? extends DensityFunction>> DENSITY_FUNCTION_TYPE = create(
+	public static final Registry<MapCodec<? extends DensityFunction>> DENSITY_FUNCTION_TYPE = create(
 		RegistryKeys.DENSITY_FUNCTION_TYPE, DensityFunctionTypes::registerAndGetDefault
 	);
 	public static final Registry<MapCodec<? extends Block>> BLOCK_TYPE = create(RegistryKeys.BLOCK_TYPE, BlockTypes::registerAndGetDefault);
@@ -219,7 +218,7 @@ public class Registries {
 	public static final Registry<StructurePoolElementType<?>> STRUCTURE_POOL_ELEMENT = create(
 		RegistryKeys.STRUCTURE_POOL_ELEMENT, registry -> StructurePoolElementType.EMPTY_POOL_ELEMENT
 	);
-	public static final Registry<Codec<? extends StructurePoolAliasBinding>> POOL_ALIAS_BINDING = create(
+	public static final Registry<MapCodec<? extends StructurePoolAliasBinding>> POOL_ALIAS_BINDING = create(
 		RegistryKeys.POOL_ALIAS_BINDING, StructurePoolAliasBindings::registerAndGetDefault
 	);
 	public static final Registry<CatVariant> CAT_VARIANT = create(RegistryKeys.CAT_VARIANT, CatVariant::registerAndGetDefault);

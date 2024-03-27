@@ -18,7 +18,6 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbowCriterion.Conditions> {
 	@Override
@@ -42,10 +41,10 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 		implements AbstractCriterion.Conditions {
 		public static final Codec<KilledByCrossbowCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(KilledByCrossbowCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.listOf(), "victims", List.of())
-							.forGetter(KilledByCrossbowCriterion.Conditions::victims),
-						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "unique_entity_types", NumberRange.IntRange.ANY)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(KilledByCrossbowCriterion.Conditions::player),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.listOf().optionalFieldOf("victims", List.of()).forGetter(KilledByCrossbowCriterion.Conditions::victims),
+						NumberRange.IntRange.CODEC
+							.optionalFieldOf("unique_entity_types", NumberRange.IntRange.ANY)
 							.forGetter(KilledByCrossbowCriterion.Conditions::uniqueEntityTypes)
 					)
 					.apply(instance, KilledByCrossbowCriterion.Conditions::new)

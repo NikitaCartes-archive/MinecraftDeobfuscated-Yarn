@@ -214,7 +214,8 @@ public class BrushableBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.readNbt(nbt, registryLookup);
 		if (!this.readLootTableFromNbt(nbt) && nbt.contains("item")) {
 			this.item = (ItemStack)ItemStack.fromNbt(registryLookup, nbt.getCompound("item")).orElse(ItemStack.EMPTY);
 		} else {
@@ -228,6 +229,7 @@ public class BrushableBlockEntity extends BlockEntity {
 
 	@Override
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.writeNbt(nbt, registryLookup);
 		if (!this.writeLootTableToNbt(nbt) && !this.item.isEmpty()) {
 			nbt.put("item", this.item.encode(registryLookup));
 		}

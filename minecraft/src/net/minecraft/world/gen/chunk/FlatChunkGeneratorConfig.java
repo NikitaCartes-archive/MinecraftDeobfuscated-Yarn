@@ -35,11 +35,11 @@ public class FlatChunkGeneratorConfig {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Codec<FlatChunkGeneratorConfig> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						RegistryCodecs.entryList(RegistryKeys.STRUCTURE_SET).optionalFieldOf("structure_overrides").forGetter(config -> config.structureOverrides),
+						RegistryCodecs.entryList(RegistryKeys.STRUCTURE_SET).lenientOptionalFieldOf("structure_overrides").forGetter(config -> config.structureOverrides),
 						FlatChunkGeneratorLayer.CODEC.listOf().fieldOf("layers").forGetter(FlatChunkGeneratorConfig::getLayers),
 						Codec.BOOL.fieldOf("lakes").orElse(false).forGetter(config -> config.hasLakes),
 						Codec.BOOL.fieldOf("features").orElse(false).forGetter(config -> config.hasFeatures),
-						Biome.REGISTRY_CODEC.optionalFieldOf("biome").orElseGet(Optional::empty).forGetter(config -> Optional.of(config.biome)),
+						Biome.REGISTRY_CODEC.lenientOptionalFieldOf("biome").orElseGet(Optional::empty).forGetter(config -> Optional.of(config.biome)),
 						RegistryOps.getEntryCodec(BiomeKeys.PLAINS),
 						RegistryOps.getEntryCodec(MiscPlacedFeatures.LAKE_LAVA_UNDERGROUND),
 						RegistryOps.getEntryCodec(MiscPlacedFeatures.LAKE_LAVA_SURFACE)

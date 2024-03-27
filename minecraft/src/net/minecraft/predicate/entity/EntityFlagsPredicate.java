@@ -5,18 +5,17 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public record EntityFlagsPredicate(
 	Optional<Boolean> isOnFire, Optional<Boolean> isSneaking, Optional<Boolean> isSprinting, Optional<Boolean> isSwimming, Optional<Boolean> isBaby
 ) {
 	public static final Codec<EntityFlagsPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "is_on_fire").forGetter(EntityFlagsPredicate::isOnFire),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "is_sneaking").forGetter(EntityFlagsPredicate::isSneaking),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "is_sprinting").forGetter(EntityFlagsPredicate::isSprinting),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "is_swimming").forGetter(EntityFlagsPredicate::isSwimming),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "is_baby").forGetter(EntityFlagsPredicate::isBaby)
+					Codec.BOOL.optionalFieldOf("is_on_fire").forGetter(EntityFlagsPredicate::isOnFire),
+					Codec.BOOL.optionalFieldOf("is_sneaking").forGetter(EntityFlagsPredicate::isSneaking),
+					Codec.BOOL.optionalFieldOf("is_sprinting").forGetter(EntityFlagsPredicate::isSprinting),
+					Codec.BOOL.optionalFieldOf("is_swimming").forGetter(EntityFlagsPredicate::isSwimming),
+					Codec.BOOL.optionalFieldOf("is_baby").forGetter(EntityFlagsPredicate::isBaby)
 				)
 				.apply(instance, EntityFlagsPredicate::new)
 	);

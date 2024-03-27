@@ -10,7 +10,6 @@ import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class PlayerGeneratesContainerLootCriterion extends AbstractCriterion<PlayerGeneratesContainerLootCriterion.Conditions> {
 	@Override
@@ -25,8 +24,7 @@ public class PlayerGeneratesContainerLootCriterion extends AbstractCriterion<Pla
 	public static record Conditions(Optional<LootContextPredicate> player, RegistryKey<LootTable> lootTable) implements AbstractCriterion.Conditions {
 		public static final Codec<PlayerGeneratesContainerLootCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(PlayerGeneratesContainerLootCriterion.Conditions::player),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(PlayerGeneratesContainerLootCriterion.Conditions::player),
 						RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).fieldOf("loot_table").forGetter(PlayerGeneratesContainerLootCriterion.Conditions::lootTable)
 					)
 					.apply(instance, PlayerGeneratesContainerLootCriterion.Conditions::new)

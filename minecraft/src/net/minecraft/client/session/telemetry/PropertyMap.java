@@ -1,6 +1,5 @@
 package net.minecraft.client.session.telemetry;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
@@ -27,52 +26,51 @@ public class PropertyMap {
 		return new PropertyMap.Builder();
 	}
 
-	public static Codec<PropertyMap> createCodec(List<TelemetryEventProperty<?>> properties) {
-		return (new MapCodec<PropertyMap>() {
-				public <T> RecordBuilder<T> encode(PropertyMap propertyMap, DynamicOps<T> dynamicOps, RecordBuilder<T> recordBuilder) {
-					RecordBuilder<T> recordBuilder2 = recordBuilder;
+	public static MapCodec<PropertyMap> createCodec(List<TelemetryEventProperty<?>> properties) {
+		return new MapCodec<PropertyMap>() {
+			public <T> RecordBuilder<T> encode(PropertyMap propertyMap, DynamicOps<T> dynamicOps, RecordBuilder<T> recordBuilder) {
+				RecordBuilder<T> recordBuilder2 = recordBuilder;
 
-					for (TelemetryEventProperty<?> telemetryEventProperty : properties) {
-						recordBuilder2 = this.encode(propertyMap, recordBuilder2, telemetryEventProperty);
-					}
-
-					return recordBuilder2;
+				for (TelemetryEventProperty<?> telemetryEventProperty : properties) {
+					recordBuilder2 = this.encode(propertyMap, recordBuilder2, telemetryEventProperty);
 				}
 
-				private <T, V> RecordBuilder<T> encode(PropertyMap map, RecordBuilder<T> builder, TelemetryEventProperty<V> property) {
-					V object = map.get(property);
-					return object != null ? builder.add(property.id(), object, property.codec()) : builder;
+				return recordBuilder2;
+			}
+
+			private <T, V> RecordBuilder<T> encode(PropertyMap map, RecordBuilder<T> builder, TelemetryEventProperty<V> property) {
+				V object = map.get(property);
+				return object != null ? builder.add(property.id(), object, property.codec()) : builder;
+			}
+
+			@Override
+			public <T> DataResult<PropertyMap> decode(DynamicOps<T> ops, MapLike<T> map) {
+				DataResult<PropertyMap.Builder> dataResult = DataResult.success(new PropertyMap.Builder());
+
+				for (TelemetryEventProperty<?> telemetryEventProperty : properties) {
+					dataResult = this.decode(dataResult, ops, map, telemetryEventProperty);
 				}
 
-				@Override
-				public <T> DataResult<PropertyMap> decode(DynamicOps<T> ops, MapLike<T> map) {
-					DataResult<PropertyMap.Builder> dataResult = DataResult.success(new PropertyMap.Builder());
+				return dataResult.map(PropertyMap.Builder::build);
+			}
 
-					for (TelemetryEventProperty<?> telemetryEventProperty : properties) {
-						dataResult = this.decode(dataResult, ops, map, telemetryEventProperty);
-					}
-
-					return dataResult.map(PropertyMap.Builder::build);
+			private <T, V> DataResult<PropertyMap.Builder> decode(
+				DataResult<PropertyMap.Builder> result, DynamicOps<T> ops, MapLike<T> map, TelemetryEventProperty<V> property
+			) {
+				T object = map.get(property.id());
+				if (object != null) {
+					DataResult<V> dataResult = property.codec().parse(ops, object);
+					return result.apply2stable((mapBuilder, value) -> mapBuilder.put(property, (V)value), dataResult);
+				} else {
+					return result;
 				}
+			}
 
-				private <T, V> DataResult<PropertyMap.Builder> decode(
-					DataResult<PropertyMap.Builder> result, DynamicOps<T> ops, MapLike<T> map, TelemetryEventProperty<V> property
-				) {
-					T object = map.get(property.id());
-					if (object != null) {
-						DataResult<V> dataResult = property.codec().parse(ops, object);
-						return result.apply2stable((mapBuilder, value) -> mapBuilder.put(property, (V)value), dataResult);
-					} else {
-						return result;
-					}
-				}
-
-				@Override
-				public <T> Stream<T> keys(DynamicOps<T> ops) {
-					return properties.stream().map(TelemetryEventProperty::id).map(ops::createString);
-				}
-			})
-			.codec();
+			@Override
+			public <T> Stream<T> keys(DynamicOps<T> ops) {
+				return properties.stream().map(TelemetryEventProperty::id).map(ops::createString);
+			}
+		};
 	}
 
 	@Nullable

@@ -2,6 +2,7 @@ package net.minecraft.loot.provider.score;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -10,7 +11,7 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.scoreboard.ScoreHolder;
 
 public record ContextLootScoreProvider(LootContext.EntityTarget target) implements LootScoreProvider {
-	public static final Codec<ContextLootScoreProvider> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<ContextLootScoreProvider> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(LootContext.EntityTarget.CODEC.fieldOf("target").forGetter(ContextLootScoreProvider::target))
 				.apply(instance, ContextLootScoreProvider::new)
 	);

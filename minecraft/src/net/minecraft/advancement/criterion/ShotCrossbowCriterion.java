@@ -10,7 +10,6 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class ShotCrossbowCriterion extends AbstractCriterion<ShotCrossbowCriterion.Conditions> {
 	@Override
@@ -25,8 +24,8 @@ public class ShotCrossbowCriterion extends AbstractCriterion<ShotCrossbowCriteri
 	public static record Conditions(Optional<LootContextPredicate> player, Optional<ItemPredicate> item) implements AbstractCriterion.Conditions {
 		public static final Codec<ShotCrossbowCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(ShotCrossbowCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(ShotCrossbowCriterion.Conditions::item)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(ShotCrossbowCriterion.Conditions::player),
+						ItemPredicate.CODEC.optionalFieldOf("item").forGetter(ShotCrossbowCriterion.Conditions::item)
 					)
 					.apply(instance, ShotCrossbowCriterion.Conditions::new)
 		);

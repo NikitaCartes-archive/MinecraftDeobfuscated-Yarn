@@ -1,7 +1,7 @@
 package net.minecraft.world.gen.root;
 
 import com.google.common.collect.Lists;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +18,7 @@ import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 public class MangroveRootPlacer extends RootPlacer {
 	public static final int field_38769 = 8;
 	public static final int field_38770 = 15;
-	public static final Codec<MangroveRootPlacer> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<MangroveRootPlacer> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> method_43182(instance)
 				.and(MangroveRootPlacement.CODEC.fieldOf("mangrove_root_placement").forGetter(rootPlacer -> rootPlacer.mangroveRootPlacement))
 				.apply(instance, MangroveRootPlacer::new)

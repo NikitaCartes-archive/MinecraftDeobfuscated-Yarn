@@ -292,7 +292,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 										.withZoom((byte)1)
 										.withSkipExistingChunks(false)
 								)
-								.apply(SetNameLootFunction.builder(Text.translatable("filled_map.buried_treasure")))
+								.apply(SetNameLootFunction.builder(Text.translatable("filled_map.buried_treasure"), SetNameLootFunction.Target.ITEM_NAME))
 						)
 				)
 		);
@@ -324,7 +324,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 										.withZoom((byte)1)
 										.withSkipExistingChunks(false)
 								)
-								.apply(SetNameLootFunction.builder(Text.translatable("filled_map.buried_treasure")))
+								.apply(SetNameLootFunction.builder(Text.translatable("filled_map.buried_treasure"), SetNameLootFunction.Target.ITEM_NAME))
 						)
 				)
 		);
@@ -627,6 +627,10 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 		consumer.accept(LootTables.TRIAL_CHAMBERS_REWARD_COMMON_CHEST, LootTable.builder());
 		consumer.accept(LootTables.TRIAL_CHAMBERS_REWARD_RARE_CHEST, LootTable.builder());
 		consumer.accept(LootTables.TRIAL_CHAMBERS_REWARD_UNIQUE_CHEST, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_CHEST, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_COMMON_CHEST, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_RARE_CHEST, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_UNIQUE_CHEST, LootTable.builder());
 		consumer.accept(LootTables.TRIAL_CHAMBERS_SUPPLY_CHEST, LootTable.builder());
 		consumer.accept(LootTables.TRIAL_CHAMBERS_CORRIDOR_CHEST, LootTable.builder());
 		consumer.accept(LootTables.TRIAL_CHAMBERS_ENTRANCE_CHEST, LootTable.builder());
@@ -642,6 +646,9 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 	public static void acceptTrialSpawnerTables(BiConsumer<RegistryKey<LootTable>, LootTable.Builder> exporter) {
 		exporter.accept(LootTables.TRIAL_CHAMBER_KEY_SPAWNER, LootTable.builder());
 		exporter.accept(LootTables.TRIAL_CHAMBER_CONSUMABLES_SPAWNER, LootTable.builder());
+		exporter.accept(LootTables.OMINOUS_TRIAL_CHAMBER_KEY_SPAWNER, LootTable.builder());
+		exporter.accept(LootTables.OMINOUS_TRIAL_CHAMBER_CONSUMABLES_SPAWNER, LootTable.builder());
+		exporter.accept(LootTables.TRIAL_CHAMBER_ITEMS_TO_DROP_WHEN_OMINOUS_SPAWNER, LootTable.builder());
 	}
 
 	public static LootTable.Builder createShipwreckSupplyChestTableBuilder() {
@@ -701,7 +708,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 									.withZoom((byte)1)
 									.withSkipExistingChunks(false)
 							)
-							.apply(SetNameLootFunction.builder(Text.translatable("filled_map.buried_treasure")))
+							.apply(SetNameLootFunction.builder(Text.translatable("filled_map.buried_treasure"), SetNameLootFunction.Target.ITEM_NAME))
 					)
 			)
 			.pool(

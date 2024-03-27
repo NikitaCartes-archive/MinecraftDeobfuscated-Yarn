@@ -16,14 +16,13 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 
 public class BoundedIntUnaryOperator {
 	private static final Codec<BoundedIntUnaryOperator> OPERATOR_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(LootNumberProviderTypes.CODEC, "min").forGetter(operator -> Optional.ofNullable(operator.min)),
-					Codecs.createStrictOptionalFieldCodec(LootNumberProviderTypes.CODEC, "max").forGetter(operator -> Optional.ofNullable(operator.max))
+					LootNumberProviderTypes.CODEC.optionalFieldOf("min").forGetter(operator -> Optional.ofNullable(operator.min)),
+					LootNumberProviderTypes.CODEC.optionalFieldOf("max").forGetter(operator -> Optional.ofNullable(operator.max))
 				)
 				.apply(instance, BoundedIntUnaryOperator::new)
 	);

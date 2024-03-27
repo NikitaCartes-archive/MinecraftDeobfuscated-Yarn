@@ -528,4 +528,8 @@ public class Properties {
 	 * A property that specifies the state of a vault.
 	 */
 	public static final EnumProperty<VaultState> VAULT_STATE = EnumProperty.of("vault_state", VaultState.class);
+	/**
+	 * A property that specifies whether a trial spawner or vault is ominous.
+	 */
+	public static final BooleanProperty OMINOUS = BooleanProperty.of("ominous");
 }

@@ -2,22 +2,21 @@ package net.minecraft.loot.provider.number;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import java.util.function.Function;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
 
 public class LootNumberProviderTypes {
 	private static final Codec<LootNumberProvider> BASE_CODEC = Registries.LOOT_NUMBER_PROVIDER_TYPE
 		.getCodec()
 		.dispatch(LootNumberProvider::getType, LootNumberProviderType::codec);
-	public static final Codec<LootNumberProvider> CODEC = Codecs.createLazy(
+	public static final Codec<LootNumberProvider> CODEC = Codec.lazyInitialized(
 		() -> {
-			Codec<LootNumberProvider> codec = Codecs.alternatively(BASE_CODEC, UniformLootNumberProvider.CODEC);
+			Codec<LootNumberProvider> codec = Codec.withAlternative(BASE_CODEC, UniformLootNumberProvider.CODEC.codec());
 			return Codec.either(ConstantLootNumberProvider.INLINE_CODEC, codec)
 				.xmap(
-					either -> either.map(Function.identity(), Function.identity()),
+					Either::unwrap,
 					provider -> provider instanceof ConstantLootNumberProvider constantLootNumberProvider ? Either.left(constantLootNumberProvider) : Either.right(provider)
 				);
 		}
@@ -28,7 +27,7 @@ public class LootNumberProviderTypes {
 	public static final LootNumberProviderType SCORE = register("score", ScoreLootNumberProvider.CODEC);
 	public static final LootNumberProviderType STORAGE = register("storage", StorageLootNumberProvider.CODEC);
 
-	private static LootNumberProviderType register(String id, Codec<? extends LootNumberProvider> codec) {
+	private static LootNumberProviderType register(String id, MapCodec<? extends LootNumberProvider> codec) {
 		return Registry.register(Registries.LOOT_NUMBER_PROVIDER_TYPE, new Identifier(id), new LootNumberProviderType(codec));
 	}
 }

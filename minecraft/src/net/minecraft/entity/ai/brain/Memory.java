@@ -59,7 +59,7 @@ public class Memory<T> {
 		return RecordCodecBuilder.create(
 			instance -> instance.group(
 						codec.fieldOf("value").forGetter(memory -> memory.value),
-						Codec.LONG.optionalFieldOf("ttl").forGetter(memory -> memory.isTimed() ? Optional.of(memory.expiry) : Optional.empty())
+						Codec.LONG.lenientOptionalFieldOf("ttl").forGetter(memory -> memory.isTimed() ? Optional.of(memory.expiry) : Optional.empty())
 					)
 					.apply(instance, (value, expiry) -> new Memory<>(value, (Long)expiry.orElse(Long.MAX_VALUE)))
 		);

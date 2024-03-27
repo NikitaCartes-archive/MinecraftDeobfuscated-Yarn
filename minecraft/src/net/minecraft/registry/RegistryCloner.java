@@ -2,11 +2,10 @@ package net.minecraft.registry;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JavaOps;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.RuntimeOps;
 
 public class RegistryCloner<T> {
 	private final Codec<T> elementCodec;
@@ -16,10 +15,10 @@ public class RegistryCloner<T> {
 	}
 
 	public T clone(T value, RegistryWrapper.WrapperLookup subsetRegistry, RegistryWrapper.WrapperLookup fullRegistry) {
-		DynamicOps<Object> dynamicOps = subsetRegistry.getOps(RuntimeOps.INSTANCE);
-		DynamicOps<Object> dynamicOps2 = fullRegistry.getOps(RuntimeOps.INSTANCE);
-		Object object = Util.getResult(this.elementCodec.encodeStart(dynamicOps, value), error -> new IllegalStateException("Failed to encode: " + error));
-		return Util.getResult(this.elementCodec.parse(dynamicOps2, object), error -> new IllegalStateException("Failed to decode: " + error));
+		DynamicOps<Object> dynamicOps = subsetRegistry.getOps(JavaOps.INSTANCE);
+		DynamicOps<Object> dynamicOps2 = fullRegistry.getOps(JavaOps.INSTANCE);
+		Object object = this.elementCodec.encodeStart(dynamicOps, value).getOrThrow(error -> new IllegalStateException("Failed to encode: " + error));
+		return this.elementCodec.parse(dynamicOps2, object).getOrThrow(error -> new IllegalStateException("Failed to decode: " + error));
 	}
 
 	public static class CloneableRegistries {

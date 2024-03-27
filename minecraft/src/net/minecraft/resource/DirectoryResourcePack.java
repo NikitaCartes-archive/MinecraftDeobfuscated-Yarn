@@ -52,12 +52,13 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 		return open(id, path);
 	}
 
+	@Nullable
 	public static InputSupplier<InputStream> open(Identifier id, Path path) {
-		return PathUtil.split(id.getPath()).get().map(segments -> {
+		return PathUtil.split(id.getPath()).mapOrElse(segments -> {
 			Path path2 = PathUtil.getPath(path, segments);
 			return open(path2);
-		}, result -> {
-			LOGGER.error("Invalid path {}: {}", id, result.message());
+		}, error -> {
+			LOGGER.error("Invalid path {}: {}", id, error.message());
 			return null;
 		});
 	}
@@ -69,10 +70,10 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 
 	@Override
 	public void findResources(ResourceType type, String namespace, String prefix, ResourcePack.ResultConsumer consumer) {
-		PathUtil.split(prefix).get().ifLeft(prefixSegments -> {
+		PathUtil.split(prefix).ifSuccess(prefixSegments -> {
 			Path path = this.root.resolve(type.getDirectory()).resolve(namespace);
 			findResources(namespace, path, prefixSegments, consumer);
-		}).ifRight(result -> LOGGER.error("Invalid path {}: {}", prefix, result.message()));
+		}).ifError(error -> LOGGER.error("Invalid path {}: {}", prefix, error.message()));
 	}
 
 	public static void findResources(String namespace, Path path, List<String> prefixSegments, ResourcePack.ResultConsumer consumer) {

@@ -1,6 +1,7 @@
 package net.minecraft.loot.entry;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -16,7 +17,7 @@ public class LootPoolEntryTypes {
 	public static final LootPoolEntryType SEQUENCE = register("sequence", SequenceEntry.CODEC);
 	public static final LootPoolEntryType GROUP = register("group", GroupEntry.CODEC);
 
-	private static LootPoolEntryType register(String id, Codec<? extends LootPoolEntry> codec) {
+	private static LootPoolEntryType register(String id, MapCodec<? extends LootPoolEntry> codec) {
 		return Registry.register(Registries.LOOT_POOL_ENTRY_TYPE, new Identifier(id), new LootPoolEntryType(codec));
 	}
 }

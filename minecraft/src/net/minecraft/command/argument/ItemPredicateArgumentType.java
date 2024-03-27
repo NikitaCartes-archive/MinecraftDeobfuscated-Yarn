@@ -117,8 +117,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 
 		public Predicate<ItemStack> createPredicate(ImmutableStringReader reader, RegistryOps<NbtElement> ops, NbtElement nbt) throws CommandSyntaxException {
 			DataResult<? extends Predicate<ItemStack>> dataResult = this.valueChecker.parse(ops, nbt);
-			return Util.getResult(
-				(DataResult<Predicate<ItemStack>>)dataResult,
+			return (Predicate<ItemStack>)dataResult.getOrThrow(
 				error -> ItemPredicateArgumentType.MALFORMED_ITEM_COMPONENT_EXCEPTION.createWithContext(reader, this.id.toString(), error)
 			);
 		}
@@ -134,8 +133,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 
 		public Predicate<ItemStack> createPredicate(ImmutableStringReader reader, RegistryOps<NbtElement> ops, NbtElement nbt) throws CommandSyntaxException {
 			DataResult<? extends Predicate<ItemStack>> dataResult = this.type.parse(ops, nbt);
-			return Util.getResult(
-				(DataResult<Predicate<ItemStack>>)dataResult,
+			return (Predicate<ItemStack>)dataResult.getOrThrow(
 				error -> ItemPredicateArgumentType.MALFORMED_ITEM_PREDICATE_EXCEPTION.createWithContext(reader, this.id.toString(), error)
 			);
 		}

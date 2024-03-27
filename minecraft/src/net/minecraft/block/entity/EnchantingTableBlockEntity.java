@@ -43,7 +43,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable 
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
 			this.customName = Text.Serialization.fromJson(nbt.getString("CustomName"), registryLookup);
@@ -124,12 +124,14 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable 
 	}
 
 	@Override
-	public void readComponents(ComponentMap components) {
+	protected void readComponents(BlockEntity.ComponentsAccess components) {
+		super.readComponents(components);
 		this.customName = components.get(DataComponentTypes.CUSTOM_NAME);
 	}
 
 	@Override
-	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
+		super.addComponents(componentMapBuilder);
 		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
 	}
 

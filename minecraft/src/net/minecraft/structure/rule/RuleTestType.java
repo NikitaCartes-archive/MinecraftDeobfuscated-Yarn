@@ -1,6 +1,6 @@
 package net.minecraft.structure.rule;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
@@ -12,9 +12,9 @@ public interface RuleTestType<P extends RuleTest> {
 	RuleTestType<RandomBlockMatchRuleTest> RANDOM_BLOCK_MATCH = register("random_block_match", RandomBlockMatchRuleTest.CODEC);
 	RuleTestType<RandomBlockStateMatchRuleTest> RANDOM_BLOCKSTATE_MATCH = register("random_blockstate_match", RandomBlockStateMatchRuleTest.CODEC);
 
-	Codec<P> codec();
+	MapCodec<P> codec();
 
-	static <P extends RuleTest> RuleTestType<P> register(String id, Codec<P> codec) {
+	static <P extends RuleTest> RuleTestType<P> register(String id, MapCodec<P> codec) {
 		return Registry.register(Registries.RULE_TEST, id, () -> codec);
 	}
 }

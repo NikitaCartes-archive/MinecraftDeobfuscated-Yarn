@@ -1,6 +1,6 @@
 package net.minecraft.recipe;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.Registries;
@@ -54,7 +54,7 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 		"crafting_decorated_pot", new SpecialRecipeSerializer<>(CraftingDecoratedPotRecipe::new)
 	);
 
-	Codec<T> codec();
+	MapCodec<T> codec();
 
 	PacketCodec<RegistryByteBuf, T> packetCodec();
 

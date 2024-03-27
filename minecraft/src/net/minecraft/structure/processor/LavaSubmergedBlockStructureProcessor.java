@@ -1,6 +1,6 @@
 package net.minecraft.structure.processor;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 
 public class LavaSubmergedBlockStructureProcessor extends StructureProcessor {
-	public static final Codec<LavaSubmergedBlockStructureProcessor> CODEC = Codec.unit(
+	public static final MapCodec<LavaSubmergedBlockStructureProcessor> CODEC = MapCodec.unit(
 		(Supplier<LavaSubmergedBlockStructureProcessor>)(() -> LavaSubmergedBlockStructureProcessor.INSTANCE)
 	);
 	public static final LavaSubmergedBlockStructureProcessor INSTANCE = new LavaSubmergedBlockStructureProcessor();

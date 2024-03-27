@@ -13,7 +13,6 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 	@Override
@@ -27,9 +26,7 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 
 	public static record Conditions(Optional<LootContextPredicate> player) implements AbstractCriterion.Conditions {
 		public static final Codec<TickCriterion.Conditions> CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(TickCriterion.Conditions::player)
-					)
+			instance -> instance.group(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(TickCriterion.Conditions::player))
 					.apply(instance, TickCriterion.Conditions::new)
 		);
 

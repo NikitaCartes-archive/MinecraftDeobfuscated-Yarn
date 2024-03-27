@@ -12,7 +12,6 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RotationPropertyHelper;
 import net.minecraft.util.shape.VoxelShape;
@@ -73,7 +72,7 @@ public class SkullBlock extends AbstractSkullBlock {
 
 	public interface SkullType extends StringIdentifiable {
 		Map<String, SkullBlock.SkullType> TYPES = new Object2ObjectArrayMap<>();
-		Codec<SkullBlock.SkullType> CODEC = Codecs.idChecked(StringIdentifiable::asString, TYPES::get);
+		Codec<SkullBlock.SkullType> CODEC = Codec.stringResolver(StringIdentifiable::asString, TYPES::get);
 	}
 
 	public static enum Type implements SkullBlock.SkullType {

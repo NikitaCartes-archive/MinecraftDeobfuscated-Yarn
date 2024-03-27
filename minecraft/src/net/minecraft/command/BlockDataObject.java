@@ -55,7 +55,7 @@ public class BlockDataObject implements DataCommandObject {
 	@Override
 	public void setNbt(NbtCompound nbt) {
 		BlockState blockState = this.blockEntity.getWorld().getBlockState(this.pos);
-		this.blockEntity.readNbt(nbt, this.blockEntity.getWorld().getRegistryManager());
+		this.blockEntity.read(nbt, this.blockEntity.getWorld().getRegistryManager());
 		this.blockEntity.markDirty();
 		this.blockEntity.getWorld().updateListeners(this.pos, blockState, blockState, Block.NOTIFY_ALL);
 	}

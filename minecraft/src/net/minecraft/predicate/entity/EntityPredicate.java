@@ -20,7 +20,6 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
 public record EntityPredicate(
@@ -39,29 +38,29 @@ public record EntityPredicate(
 	Optional<String> team,
 	Optional<SlotsPredicate> slots
 ) {
-	public static final Codec<EntityPredicate> CODEC = Codecs.createRecursive(
+	public static final Codec<EntityPredicate> CODEC = Codec.recursive(
 		"EntityPredicate",
 		entityPredicateCodec -> RecordCodecBuilder.create(
 				instance -> instance.group(
-							Codecs.createStrictOptionalFieldCodec(EntityTypePredicate.CODEC, "type").forGetter(EntityPredicate::type),
-							Codecs.createStrictOptionalFieldCodec(DistancePredicate.CODEC, "distance").forGetter(EntityPredicate::distance),
-							Codecs.createStrictOptionalFieldCodec(LocationPredicate.CODEC, "location").forGetter(EntityPredicate::location),
-							Codecs.createStrictOptionalFieldCodec(LocationPredicate.CODEC, "stepping_on").forGetter(EntityPredicate::steppingOn),
-							Codecs.createStrictOptionalFieldCodec(EntityEffectPredicate.CODEC, "effects").forGetter(EntityPredicate::effects),
-							Codecs.createStrictOptionalFieldCodec(NbtPredicate.CODEC, "nbt").forGetter(EntityPredicate::nbt),
-							Codecs.createStrictOptionalFieldCodec(EntityFlagsPredicate.CODEC, "flags").forGetter(EntityPredicate::flags),
-							Codecs.createStrictOptionalFieldCodec(EntityEquipmentPredicate.CODEC, "equipment").forGetter(EntityPredicate::equipment),
-							Codecs.createStrictOptionalFieldCodec(EntitySubPredicate.CODEC, "type_specific").forGetter(EntityPredicate::typeSpecific),
-							Codecs.createStrictOptionalFieldCodec(entityPredicateCodec, "vehicle").forGetter(EntityPredicate::vehicle),
-							Codecs.createStrictOptionalFieldCodec(entityPredicateCodec, "passenger").forGetter(EntityPredicate::passenger),
-							Codecs.createStrictOptionalFieldCodec(entityPredicateCodec, "targeted_entity").forGetter(EntityPredicate::targetedEntity),
-							Codecs.createStrictOptionalFieldCodec(Codec.STRING, "team").forGetter(EntityPredicate::team),
-							Codecs.createStrictOptionalFieldCodec(SlotsPredicate.CODEC, "slots").forGetter(EntityPredicate::slots)
+							EntityTypePredicate.CODEC.optionalFieldOf("type").forGetter(EntityPredicate::type),
+							DistancePredicate.CODEC.optionalFieldOf("distance").forGetter(EntityPredicate::distance),
+							LocationPredicate.CODEC.optionalFieldOf("location").forGetter(EntityPredicate::location),
+							LocationPredicate.CODEC.optionalFieldOf("stepping_on").forGetter(EntityPredicate::steppingOn),
+							EntityEffectPredicate.CODEC.optionalFieldOf("effects").forGetter(EntityPredicate::effects),
+							NbtPredicate.CODEC.optionalFieldOf("nbt").forGetter(EntityPredicate::nbt),
+							EntityFlagsPredicate.CODEC.optionalFieldOf("flags").forGetter(EntityPredicate::flags),
+							EntityEquipmentPredicate.CODEC.optionalFieldOf("equipment").forGetter(EntityPredicate::equipment),
+							EntitySubPredicate.CODEC.optionalFieldOf("type_specific").forGetter(EntityPredicate::typeSpecific),
+							entityPredicateCodec.optionalFieldOf("vehicle").forGetter(EntityPredicate::vehicle),
+							entityPredicateCodec.optionalFieldOf("passenger").forGetter(EntityPredicate::passenger),
+							entityPredicateCodec.optionalFieldOf("targeted_entity").forGetter(EntityPredicate::targetedEntity),
+							Codec.STRING.optionalFieldOf("team").forGetter(EntityPredicate::team),
+							SlotsPredicate.CODEC.optionalFieldOf("slots").forGetter(EntityPredicate::slots)
 						)
 						.apply(instance, EntityPredicate::new)
 			)
 	);
-	public static final Codec<LootContextPredicate> LOOT_CONTEXT_PREDICATE_CODEC = Codecs.either(
+	public static final Codec<LootContextPredicate> LOOT_CONTEXT_PREDICATE_CODEC = Codec.withAlternative(
 		LootContextPredicate.CODEC, CODEC, EntityPredicate::asLootContextPredicate
 	);
 

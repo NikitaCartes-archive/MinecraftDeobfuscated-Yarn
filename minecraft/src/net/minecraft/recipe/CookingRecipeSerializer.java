@@ -1,23 +1,23 @@
 package net.minecraft.recipe;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.book.CookingRecipeCategory;
-import net.minecraft.util.dynamic.Codecs;
 
 public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements RecipeSerializer<T> {
 	private final AbstractCookingRecipe.RecipeFactory<T> recipeFactory;
-	private final Codec<T> codec;
+	private final MapCodec<T> codec;
 	private final PacketCodec<RegistryByteBuf, T> packetCodec;
 
 	public CookingRecipeSerializer(AbstractCookingRecipe.RecipeFactory<T> recipeFactory, int cookingTime) {
 		this.recipeFactory = recipeFactory;
-		this.codec = RecordCodecBuilder.create(
+		this.codec = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(recipe -> recipe.group),
+						Codec.STRING.optionalFieldOf("group", "").forGetter(recipe -> recipe.group),
 						CookingRecipeCategory.CODEC.fieldOf("category").orElse(CookingRecipeCategory.MISC).forGetter(recipe -> recipe.category),
 						Ingredient.DISALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(recipe -> recipe.ingredient),
 						ItemStack.COOKING_RECIPE_RESULT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
@@ -30,7 +30,7 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 	}
 
 	@Override
-	public Codec<T> codec() {
+	public MapCodec<T> codec() {
 		return this.codec;
 	}
 

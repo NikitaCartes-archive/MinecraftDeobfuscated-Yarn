@@ -14,7 +14,6 @@ import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroyedCriterion.Conditions> {
 	@Override
@@ -31,11 +30,10 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 	) implements AbstractCriterion.Conditions {
 		public static final Codec<BeeNestDestroyedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(BeeNestDestroyedCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(Registries.BLOCK.getEntryCodec(), "block").forGetter(BeeNestDestroyedCriterion.Conditions::block),
-						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(BeeNestDestroyedCriterion.Conditions::item),
-						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "num_bees_inside", NumberRange.IntRange.ANY)
-							.forGetter(BeeNestDestroyedCriterion.Conditions::beesInside)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(BeeNestDestroyedCriterion.Conditions::player),
+						Registries.BLOCK.getEntryCodec().optionalFieldOf("block").forGetter(BeeNestDestroyedCriterion.Conditions::block),
+						ItemPredicate.CODEC.optionalFieldOf("item").forGetter(BeeNestDestroyedCriterion.Conditions::item),
+						NumberRange.IntRange.CODEC.optionalFieldOf("num_bees_inside", NumberRange.IntRange.ANY).forGetter(BeeNestDestroyedCriterion.Conditions::beesInside)
 					)
 					.apply(instance, BeeNestDestroyedCriterion.Conditions::new)
 		);

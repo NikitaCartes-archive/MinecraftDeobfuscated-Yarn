@@ -26,7 +26,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -70,7 +69,7 @@ import net.minecraft.world.event.GameEvent;
  */
 public interface CauldronBehavior {
 	Map<String, CauldronBehavior.CauldronBehaviorMap> BEHAVIOR_MAPS = new Object2ObjectArrayMap<>();
-	Codec<CauldronBehavior.CauldronBehaviorMap> CODEC = Codecs.idChecked(CauldronBehavior.CauldronBehaviorMap::name, BEHAVIOR_MAPS::get);
+	Codec<CauldronBehavior.CauldronBehaviorMap> CODEC = Codec.stringResolver(CauldronBehavior.CauldronBehaviorMap::name, BEHAVIOR_MAPS::get);
 	/**
 	 * The cauldron behaviors for empty cauldrons.
 	 * 

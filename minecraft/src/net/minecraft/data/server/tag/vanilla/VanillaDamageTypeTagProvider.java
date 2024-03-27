@@ -92,5 +92,6 @@ public class VanillaDamageTypeTagProvider extends TagProvider<DamageType> {
 				DamageTypes.THORNS,
 				DamageTypes.WITHER
 			);
+		this.getOrCreateTagBuilder(DamageTypeTags.IS_PLAYER_ATTACK).add(DamageTypes.PLAYER_ATTACK);
 	}
 }

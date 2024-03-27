@@ -14,7 +14,6 @@ import net.minecraft.loot.condition.LootConditionConsumingBuilder;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 
 public abstract class ConditionalLootFunction implements LootFunction {
 	protected final List<LootCondition> conditions;
@@ -26,9 +25,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 	}
 
 	protected static <T extends ConditionalLootFunction> P1<Mu<T>, List<LootCondition>> addConditionsField(Instance<T> instance) {
-		return instance.group(
-			Codecs.createStrictOptionalFieldCodec(LootConditionTypes.CODEC.listOf(), "conditions", List.of()).forGetter(function -> function.conditions)
-		);
+		return instance.group(LootConditionTypes.CODEC.listOf().optionalFieldOf("conditions", List.of()).forGetter(function -> function.conditions));
 	}
 
 	public final ItemStack apply(ItemStack itemStack, LootContext lootContext) {

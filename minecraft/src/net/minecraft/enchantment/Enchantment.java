@@ -14,13 +14,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.resource.featuretoggle.ToggleableFeature;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 
-public class Enchantment {
+public class Enchantment implements ToggleableFeature {
 	private final Enchantment.Properties properties;
 	@Nullable
 	protected String translationKey;
@@ -44,13 +47,30 @@ public class Enchantment {
 		int anvilCost,
 		EquipmentSlot... slots
 	) {
-		return new Enchantment.Properties(supportedItems, Optional.of(primaryItems), weight, maxLevel, minCost, maxCost, anvilCost, slots);
+		return new Enchantment.Properties(
+			supportedItems, Optional.of(primaryItems), weight, maxLevel, minCost, maxCost, anvilCost, FeatureFlags.DEFAULT_ENABLED_FEATURES, slots
+		);
 	}
 
 	public static Enchantment.Properties properties(
 		TagKey<Item> supportedItems, int weight, int maxLevel, Enchantment.Cost minCost, Enchantment.Cost maxCost, int anvilCost, EquipmentSlot... slots
 	) {
-		return new Enchantment.Properties(supportedItems, Optional.empty(), weight, maxLevel, minCost, maxCost, anvilCost, slots);
+		return new Enchantment.Properties(
+			supportedItems, Optional.empty(), weight, maxLevel, minCost, maxCost, anvilCost, FeatureFlags.DEFAULT_ENABLED_FEATURES, slots
+		);
+	}
+
+	public static Enchantment.Properties properties(
+		TagKey<Item> supportedItems,
+		int weight,
+		int maxLevel,
+		Enchantment.Cost minCost,
+		Enchantment.Cost maxCost,
+		int anvilCost,
+		FeatureSet requiredFeatures,
+		EquipmentSlot... slots
+	) {
+		return new Enchantment.Properties(supportedItems, Optional.empty(), weight, maxLevel, minCost, maxCost, anvilCost, requiredFeatures, slots);
 	}
 
 	@Nullable
@@ -169,6 +189,9 @@ public class Enchantment {
 	public void onUserDamaged(LivingEntity user, Entity attacker, int level) {
 	}
 
+	public void onAttack(LivingEntity attacket, Entity target, int level) {
+	}
+
 	public boolean isTreasure() {
 		return false;
 	}
@@ -198,6 +221,11 @@ public class Enchantment {
 		return this.registryEntry;
 	}
 
+	@Override
+	public FeatureSet getRequiredFeatures() {
+		return this.properties.requiredFeatures();
+	}
+
 	public static record Cost(int base, int perLevel) {
 		public int forLevel(int level) {
 			return this.base + this.perLevel * (level - 1);
@@ -212,6 +240,7 @@ public class Enchantment {
 		Enchantment.Cost minCost,
 		Enchantment.Cost maxCost,
 		int anvilCost,
+		FeatureSet requiredFeatures,
 		EquipmentSlot[] slots
 	) {
 	}

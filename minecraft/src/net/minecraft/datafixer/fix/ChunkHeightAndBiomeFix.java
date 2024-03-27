@@ -309,7 +309,7 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 	private static <T> Dynamic<T> fixUpgradeData(Dynamic<T> upgradeData) {
 		return upgradeData.update("Indices", indices -> {
 			Map<Dynamic<?>, Dynamic<?>> map = new HashMap();
-			indices.getMapValues().result().ifPresent(indicesMap -> indicesMap.forEach((key, value) -> {
+			indices.getMapValues().ifSuccess(indicesMap -> indicesMap.forEach((key, value) -> {
 					try {
 						key.asString().result().map(Integer::parseInt).ifPresent(index -> {
 							int i = index - -4;

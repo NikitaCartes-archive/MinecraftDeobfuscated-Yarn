@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.treedecorator;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CocoaBlock;
@@ -9,10 +10,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 
 public class CocoaBeansTreeDecorator extends TreeDecorator {
-	public static final Codec<CocoaBeansTreeDecorator> CODEC = Codec.floatRange(0.0F, 1.0F)
+	public static final MapCodec<CocoaBeansTreeDecorator> CODEC = Codec.floatRange(0.0F, 1.0F)
 		.fieldOf("probability")
-		.<CocoaBeansTreeDecorator>xmap(CocoaBeansTreeDecorator::new, decorator -> decorator.probability)
-		.codec();
+		.xmap(CocoaBeansTreeDecorator::new, decorator -> decorator.probability);
 	private final float probability;
 
 	public CocoaBeansTreeDecorator(float probability) {

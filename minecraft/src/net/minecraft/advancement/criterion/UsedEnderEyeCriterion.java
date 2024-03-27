@@ -7,7 +7,6 @@ import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 
 public class UsedEnderEyeCriterion extends AbstractCriterion<UsedEnderEyeCriterion.Conditions> {
@@ -26,9 +25,8 @@ public class UsedEnderEyeCriterion extends AbstractCriterion<UsedEnderEyeCriteri
 	public static record Conditions(Optional<LootContextPredicate> player, NumberRange.DoubleRange distance) implements AbstractCriterion.Conditions {
 		public static final Codec<UsedEnderEyeCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(UsedEnderEyeCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "distance", NumberRange.DoubleRange.ANY)
-							.forGetter(UsedEnderEyeCriterion.Conditions::distance)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(UsedEnderEyeCriterion.Conditions::player),
+						NumberRange.DoubleRange.CODEC.optionalFieldOf("distance", NumberRange.DoubleRange.ANY).forGetter(UsedEnderEyeCriterion.Conditions::distance)
 					)
 					.apply(instance, UsedEnderEyeCriterion.Conditions::new)
 		);

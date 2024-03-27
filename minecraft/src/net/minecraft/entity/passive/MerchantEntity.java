@@ -160,9 +160,7 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 		super.writeCustomDataToNbt(nbt);
 		TradeOfferList tradeOfferList = this.getOffers();
 		if (!tradeOfferList.isEmpty()) {
-			nbt.put(
-				"Offers", Util.getResult(TradeOfferList.CODEC.encodeStart(this.getRegistryManager().getOps(NbtOps.INSTANCE), tradeOfferList), IllegalStateException::new)
-			);
+			nbt.put("Offers", TradeOfferList.CODEC.encodeStart(this.getRegistryManager().getOps(NbtOps.INSTANCE), tradeOfferList).getOrThrow());
 		}
 
 		this.writeInventory(nbt, this.getRegistryManager());

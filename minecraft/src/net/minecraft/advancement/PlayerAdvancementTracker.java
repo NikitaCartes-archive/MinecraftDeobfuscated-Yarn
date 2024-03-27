@@ -36,7 +36,6 @@ import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PathUtil;
-import net.minecraft.util.Util;
 import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 
@@ -114,7 +113,7 @@ public class PlayerAdvancementTracker {
 				try {
 					jsonReader.setLenient(false);
 					JsonElement jsonElement = Streams.parse(jsonReader);
-					PlayerAdvancementTracker.ProgressMap progressMap = Util.getResult(this.progressMapCodec.parse(JsonOps.INSTANCE, jsonElement), JsonParseException::new);
+					PlayerAdvancementTracker.ProgressMap progressMap = this.progressMapCodec.parse(JsonOps.INSTANCE, jsonElement).getOrThrow(JsonParseException::new);
 					this.loadProgressMap(advancementLoader, progressMap);
 				} catch (Throwable var6) {
 					try {
@@ -139,7 +138,7 @@ public class PlayerAdvancementTracker {
 	}
 
 	public void save() {
-		JsonElement jsonElement = Util.getResult(this.progressMapCodec.encodeStart(JsonOps.INSTANCE, this.createProgressMap()), IllegalStateException::new);
+		JsonElement jsonElement = this.progressMapCodec.encodeStart(JsonOps.INSTANCE, this.createProgressMap()).getOrThrow();
 
 		try {
 			PathUtil.createDirectories(this.filePath.getParent());

@@ -11,7 +11,6 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 
 public class TargetHitCriterion extends AbstractCriterion<TargetHitCriterion.Conditions> {
@@ -29,10 +28,9 @@ public class TargetHitCriterion extends AbstractCriterion<TargetHitCriterion.Con
 		implements AbstractCriterion.Conditions {
 		public static final Codec<TargetHitCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(TargetHitCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "signal_strength", NumberRange.IntRange.ANY)
-							.forGetter(TargetHitCriterion.Conditions::signalStrength),
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "projectile").forGetter(TargetHitCriterion.Conditions::projectile)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(TargetHitCriterion.Conditions::player),
+						NumberRange.IntRange.CODEC.optionalFieldOf("signal_strength", NumberRange.IntRange.ANY).forGetter(TargetHitCriterion.Conditions::signalStrength),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("projectile").forGetter(TargetHitCriterion.Conditions::projectile)
 					)
 					.apply(instance, TargetHitCriterion.Conditions::new)
 		);

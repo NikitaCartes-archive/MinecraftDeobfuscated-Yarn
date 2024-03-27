@@ -18,14 +18,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 
 public class ArmorTrim implements TooltipAppender {
 	public static final Codec<ArmorTrim> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					ArmorTrimMaterial.ENTRY_CODEC.fieldOf("material").forGetter(ArmorTrim::getMaterial),
 					ArmorTrimPattern.ENTRY_CODEC.fieldOf("pattern").forGetter(ArmorTrim::getPattern),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_in_tooltip", true).forGetter(trim -> trim.showInTooltip)
+					Codec.BOOL.optionalFieldOf("show_in_tooltip", Boolean.valueOf(true)).forGetter(trim -> trim.showInTooltip)
 				)
 				.apply(instance, ArmorTrim::new)
 	);

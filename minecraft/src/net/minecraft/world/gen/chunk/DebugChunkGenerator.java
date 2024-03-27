@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.chunk;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -31,7 +31,7 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class DebugChunkGenerator extends ChunkGenerator {
-	public static final Codec<DebugChunkGenerator> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<DebugChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(RegistryOps.getEntryCodec(BiomeKeys.PLAINS)).apply(instance, instance.stable(DebugChunkGenerator::new))
 	);
 	private static final int field_31467 = 2;
@@ -50,7 +50,7 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	protected Codec<? extends ChunkGenerator> getCodec() {
+	protected MapCodec<? extends ChunkGenerator> getCodec() {
 		return CODEC;
 	}
 

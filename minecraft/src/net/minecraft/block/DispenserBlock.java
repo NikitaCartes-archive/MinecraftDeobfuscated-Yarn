@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
+import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.DispenserBlockEntity;
@@ -32,6 +33,7 @@ import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
@@ -43,7 +45,7 @@ public class DispenserBlock extends BlockWithEntity {
 	public static final MapCodec<DispenserBlock> CODEC = createCodec(DispenserBlock::new);
 	public static final DirectionProperty FACING = FacingBlock.FACING;
 	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
-	private static final Map<Item, DispenserBehavior> BEHAVIORS = Util.make(
+	public static final Map<Item, DispenserBehavior> BEHAVIORS = Util.make(
 		new Object2ObjectOpenHashMap<>(), map -> map.defaultReturnValue(new ItemDispenserBehavior())
 	);
 	private static final int SCHEDULED_TICK_DELAY = 4;
@@ -55,6 +57,10 @@ public class DispenserBlock extends BlockWithEntity {
 
 	public static void registerBehavior(ItemConvertible provider, DispenserBehavior behavior) {
 		BEHAVIORS.put(provider.asItem(), behavior);
+	}
+
+	public static void registerProjectileBehavior(ItemConvertible projectile) {
+		BEHAVIORS.put(projectile.asItem(), new ProjectileDispenserBehavior(projectile.asItem()));
 	}
 
 	protected DispenserBlock(AbstractBlock.Settings settings) {
@@ -139,8 +145,17 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	public static Position getOutputLocation(BlockPointer pointer) {
+		return getOutputLocation(pointer, 0.7, Vec3d.ZERO);
+	}
+
+	public static Position getOutputLocation(BlockPointer pointer, double facingOffset, Vec3d constantOffset) {
 		Direction direction = pointer.state().get(FACING);
-		return pointer.centerPos().add(0.7 * (double)direction.getOffsetX(), 0.7 * (double)direction.getOffsetY(), 0.7 * (double)direction.getOffsetZ());
+		return pointer.centerPos()
+			.add(
+				facingOffset * (double)direction.getOffsetX() + constantOffset.getX(),
+				facingOffset * (double)direction.getOffsetY() + constantOffset.getY(),
+				facingOffset * (double)direction.getOffsetZ() + constantOffset.getZ()
+			);
 	}
 
 	@Override

@@ -5,18 +5,22 @@ import javax.annotation.Nullable;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FireworksComponent;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class FireworkRocketItem extends Item {
+public class FireworkRocketItem extends Item implements ProjectileItem {
 	public static final byte[] FLIGHT_VALUES = new byte[]{1, 2, 3};
 	public static final double OFFSET_POS_MULTIPLIER = 0.15;
 
@@ -69,5 +73,25 @@ public class FireworkRocketItem extends Item {
 		if (fireworksComponent != null) {
 			fireworksComponent.appendTooltip(tooltip::add, context);
 		}
+	}
+
+	@Override
+	public ProjectileEntity createEntity(World world, Position pos, ItemStack stack, Direction direction) {
+		return new FireworkRocketEntity(world, stack.copyWithCount(1), pos.getX(), pos.getY(), pos.getZ(), true);
+	}
+
+	@Override
+	public ProjectileItem.Settings getProjectileSettings() {
+		return ProjectileItem.Settings.builder().positionFunction(FireworkRocketItem::position).uncertainty(0.5F).power(1.0F).overrideDispenseEvent(1004).build();
+	}
+
+	private static Vec3d position(BlockPointer pointer, Direction facing) {
+		return pointer.centerPos()
+			.add(
+				(double)facing.getOffsetX() * (0.5000099999997474 - (double)EntityType.FIREWORK_ROCKET.getWidth() / 2.0),
+				(double)facing.getOffsetY() * (0.5000099999997474 - (double)EntityType.FIREWORK_ROCKET.getHeight() / 2.0)
+					- (double)EntityType.FIREWORK_ROCKET.getHeight() / 2.0,
+				(double)facing.getOffsetZ() * (0.5000099999997474 - (double)EntityType.FIREWORK_ROCKET.getWidth() / 2.0)
+			);
 	}
 }

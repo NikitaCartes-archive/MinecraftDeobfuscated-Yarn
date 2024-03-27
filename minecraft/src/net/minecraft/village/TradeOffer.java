@@ -12,15 +12,15 @@ public class TradeOffer {
 	public static final Codec<TradeOffer> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					TradedItem.CODEC.fieldOf("buy").forGetter(tradeOffer -> tradeOffer.firstBuyItem),
-					TradedItem.CODEC.optionalFieldOf("buyB").forGetter(tradeOffer -> tradeOffer.secondBuyItem),
+					TradedItem.CODEC.lenientOptionalFieldOf("buyB").forGetter(tradeOffer -> tradeOffer.secondBuyItem),
 					ItemStack.CODEC.fieldOf("sell").forGetter(tradeOffer -> tradeOffer.sellItem),
-					Codec.INT.optionalFieldOf("uses", Integer.valueOf(0)).forGetter(tradeOffer -> tradeOffer.uses),
-					Codec.INT.optionalFieldOf("maxUses", Integer.valueOf(4)).forGetter(tradeOffer -> tradeOffer.maxUses),
-					Codec.BOOL.optionalFieldOf("rewardExp", Boolean.valueOf(true)).forGetter(tradeOffer -> tradeOffer.rewardingPlayerExperience),
-					Codec.INT.optionalFieldOf("specialPrice", Integer.valueOf(0)).forGetter(tradeOffer -> tradeOffer.specialPrice),
-					Codec.INT.optionalFieldOf("demand", Integer.valueOf(0)).forGetter(tradeOffer -> tradeOffer.demandBonus),
-					Codec.FLOAT.optionalFieldOf("priceMultiplier", Float.valueOf(0.0F)).forGetter(tradeOffer -> tradeOffer.priceMultiplier),
-					Codec.INT.optionalFieldOf("xp", Integer.valueOf(1)).forGetter(tradeOffer -> tradeOffer.merchantExperience)
+					Codec.INT.lenientOptionalFieldOf("uses", Integer.valueOf(0)).forGetter(tradeOffer -> tradeOffer.uses),
+					Codec.INT.lenientOptionalFieldOf("maxUses", Integer.valueOf(4)).forGetter(tradeOffer -> tradeOffer.maxUses),
+					Codec.BOOL.lenientOptionalFieldOf("rewardExp", Boolean.valueOf(true)).forGetter(tradeOffer -> tradeOffer.rewardingPlayerExperience),
+					Codec.INT.lenientOptionalFieldOf("specialPrice", Integer.valueOf(0)).forGetter(tradeOffer -> tradeOffer.specialPrice),
+					Codec.INT.lenientOptionalFieldOf("demand", Integer.valueOf(0)).forGetter(tradeOffer -> tradeOffer.demandBonus),
+					Codec.FLOAT.lenientOptionalFieldOf("priceMultiplier", Float.valueOf(0.0F)).forGetter(tradeOffer -> tradeOffer.priceMultiplier),
+					Codec.INT.lenientOptionalFieldOf("xp", Integer.valueOf(1)).forGetter(tradeOffer -> tradeOffer.merchantExperience)
 				)
 				.apply(instance, TradeOffer::new)
 	);

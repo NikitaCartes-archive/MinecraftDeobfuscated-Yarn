@@ -10,11 +10,10 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.dynamic.Codecs;
 
 public record UnbreakableComponent(boolean showInTooltip) implements TooltipAppender {
 	public static final Codec<UnbreakableComponent> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_in_tooltip", true).forGetter(UnbreakableComponent::showInTooltip))
+		instance -> instance.group(Codec.BOOL.optionalFieldOf("show_in_tooltip", Boolean.valueOf(true)).forGetter(UnbreakableComponent::showInTooltip))
 				.apply(instance, UnbreakableComponent::new)
 	);
 	public static final PacketCodec<ByteBuf, UnbreakableComponent> PACKET_CODEC = PacketCodecs.BOOL

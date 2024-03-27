@@ -104,9 +104,25 @@ public class TrialChamberData {
 				registryEntry2,
 				List.of(
 					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/chamber/chamber_1", registryEntry4), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/chamber/chamber_5", registryEntry4), 1),
 					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/chamber/chamber_6", registryEntry4), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/chamber/eruption", registryEntry4), 1),
 					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/chamber/slanted", registryEntry4), 1)
+				),
+				StructurePool.Projection.RIGID
+			)
+		);
+		StructurePools.register(
+			poolRegisterable,
+			"trial_chambers/corridor",
+			new StructurePool(
+				registryEntry,
+				List.of(
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/corridor/second_plate"), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/intersection/intersection_1", registryEntry4), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/intersection/intersection_2", registryEntry4), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/corridor/first_plate"), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/corridor/atrium_1", registryEntry4), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/corridor/entrance_1", registryEntry4), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
@@ -176,6 +192,26 @@ public class TrialChamberData {
 		);
 		StructurePools.register(
 			poolRegisterable,
+			"trial_chambers/chamber/eruption",
+			new StructurePool(
+				registryEntry,
+				List.of(
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/eruption/center_1"), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/eruption/breeze_slice_1"), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/eruption/slice_1"), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/eruption/slice_2"), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/eruption/slice_3"), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/eruption/quadrant_1"), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/eruption/quadrant_2"), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/eruption/quadrant_3"), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/eruption/quadrant_4"), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/eruption/quadrant_5"), 1)
+				),
+				StructurePool.Projection.RIGID
+			)
+		);
+		StructurePools.register(
+			poolRegisterable,
 			"trial_chambers/chamber/slanted",
 			new StructurePool(
 				registryEntry,
@@ -193,7 +229,8 @@ public class TrialChamberData {
 					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/slanted/ramp_1"), 1),
 					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/slanted/ramp_2"), 1),
 					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/slanted/ramp_3"), 1),
-					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/slanted/ramp_4"), 1)
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/slanted/ramp_4"), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/slanted/ominous_upper_arm_1"), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
@@ -210,6 +247,7 @@ public class TrialChamberData {
 					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/pedestal/slice_3"), 3),
 					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/pedestal/slice_4"), 3),
 					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/pedestal/slice_5"), 3),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/pedestal/ominous_slice_1"), 1),
 					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/pedestal/quadrant_1"), 1),
 					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/pedestal/quadrant_2"), 1),
 					Pair.of(StructurePoolElement.ofSingle("trial_chambers/chamber/pedestal/quadrant_3"), 1),
@@ -223,37 +261,7 @@ public class TrialChamberData {
 		);
 		StructurePools.register(
 			poolRegisterable,
-			"trial_chambers/corridor/second",
-			new StructurePool(
-				registryEntry,
-				List.of(
-					Pair.of(StructurePoolElement.ofSingle("trial_chambers/corridor/second_plate"), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/intersection/intersection_1", registryEntry4), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/intersection/intersection_2", registryEntry4), 1)
-				),
-				StructurePool.Projection.RIGID
-			)
-		);
-		StructurePools.register(
-			poolRegisterable,
-			"trial_chambers/corridor/first",
-			new StructurePool(
-				registryEntry,
-				List.of(
-					Pair.of(StructurePoolElement.ofSingle("trial_chambers/corridor/first_plate"), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/corridor/entrance_1", registryEntry4), 2)
-				),
-				StructurePool.Projection.RIGID
-			)
-		);
-		StructurePools.register(
-			poolRegisterable,
-			"trial_chambers/corridor/first/straight",
-			new StructurePool(registryEntry, List.of(Pair.of(StructurePoolElement.ofSingle("trial_chambers/corridor/first_plate"), 1)), StructurePool.Projection.RIGID)
-		);
-		StructurePools.register(
-			poolRegisterable,
-			"trial_chambers/corridor",
+			"trial_chambers/corridor/slices",
 			new StructurePool(
 				registryEntry,
 				List.of(
@@ -263,7 +271,7 @@ public class TrialChamberData {
 					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/corridor/straight_4", registryEntry4), 2),
 					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/corridor/straight_5", registryEntry4), 2),
 					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/corridor/straight_6", registryEntry4), 2),
-					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/corridor/straight_7", registryEntry4), 2),
+					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/corridor/straight_7", registryEntry4), 1),
 					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/corridor/straight_8", registryEntry4), 2)
 				),
 				StructurePool.Projection.RIGID
@@ -295,9 +303,9 @@ public class TrialChamberData {
 					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/chamber/chamber_1", registryEntry4), 150),
 					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/chamber/chamber_2", registryEntry4), 150),
 					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/chamber/chamber_4", registryEntry4), 150),
-					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/chamber/chamber_5", registryEntry4), 150),
 					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/chamber/chamber_6", registryEntry4), 150),
 					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/chamber/chamber_8", registryEntry4), 150),
+					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/chamber/eruption", registryEntry4), 150),
 					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/chamber/slanted", registryEntry4), 150),
 					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/chamber/pedestal", registryEntry4), 150),
 					Pair.of(StructurePoolElement.ofProcessedSingle("trial_chambers/hallway/rubble_chamber", registryEntry4), 10),
@@ -363,6 +371,23 @@ public class TrialChamberData {
 		);
 		StructurePools.register(
 			poolRegisterable,
+			"trial_chambers/atrium",
+			new StructurePool(
+				registryEntry,
+				List.of(
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/corridor/atrium/bogged_relief"), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/corridor/atrium/breeze_relief"), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/corridor/atrium/spiral_relief"), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/corridor/atrium/spider_relief"), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/corridor/atrium/grand_staircase_1"), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/corridor/atrium/grand_staircase_2"), 1),
+					Pair.of(StructurePoolElement.ofSingle("trial_chambers/corridor/atrium/grand_staircase_3"), 1)
+				),
+				StructurePool.Projection.RIGID
+			)
+		);
+		StructurePools.register(
+			poolRegisterable,
 			"trial_chambers/decor",
 			new StructurePool(
 				registryEntry,
@@ -395,14 +420,17 @@ public class TrialChamberData {
 		StructurePools.register(
 			poolRegisterable,
 			"trial_chambers/reward/all",
-			new StructurePool(
-				registryEntry, List.of(Pair.of(StructurePoolElement.ofSingle("trial_chambers/reward/connectors/default"), 1)), StructurePool.Projection.RIGID
-			)
+			new StructurePool(registryEntry, List.of(Pair.of(StructurePoolElement.ofSingle("trial_chambers/reward/vault"), 1)), StructurePool.Projection.RIGID)
+		);
+		StructurePools.register(
+			poolRegisterable,
+			"trial_chambers/reward/ominous_vault",
+			new StructurePool(registryEntry, List.of(Pair.of(StructurePoolElement.ofSingle("trial_chambers/reward/ominous_vault"), 1)), StructurePool.Projection.RIGID)
 		);
 		StructurePools.register(
 			poolRegisterable,
 			"trial_chambers/reward/contents/default",
-			new StructurePool(registryEntry, List.of(Pair.of(StructurePoolElement.ofSingle("trial_chambers/reward/default"), 1)), StructurePool.Projection.RIGID)
+			new StructurePool(registryEntry, List.of(Pair.of(StructurePoolElement.ofSingle("trial_chambers/reward/vault"), 1)), StructurePool.Projection.RIGID)
 		);
 		StructurePools.register(
 			poolRegisterable,

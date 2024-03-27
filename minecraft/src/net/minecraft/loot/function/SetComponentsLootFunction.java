@@ -1,6 +1,6 @@
 package net.minecraft.loot.function;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.component.ComponentChanges;
@@ -10,7 +10,7 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 
 public class SetComponentsLootFunction extends ConditionalLootFunction {
-	public static final Codec<SetComponentsLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SetComponentsLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.and(ComponentChanges.CODEC.fieldOf("components").forGetter(function -> function.changes))
 				.apply(instance, SetComponentsLootFunction::new)

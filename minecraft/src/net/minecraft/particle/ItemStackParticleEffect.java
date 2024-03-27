@@ -2,7 +2,7 @@ package net.minecraft.particle;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.command.argument.ItemStackArgument;
 import net.minecraft.command.argument.ItemStringReader;
 import net.minecraft.item.ItemStack;
@@ -25,8 +25,8 @@ public class ItemStackParticleEffect implements ParticleEffect {
 	private final ParticleType<ItemStackParticleEffect> type;
 	private final ItemStack stack;
 
-	public static Codec<ItemStackParticleEffect> createCodec(ParticleType<ItemStackParticleEffect> type) {
-		return ItemStack.CODEC.xmap(stack -> new ItemStackParticleEffect(type, stack), effect -> effect.stack);
+	public static MapCodec<ItemStackParticleEffect> createCodec(ParticleType<ItemStackParticleEffect> type) {
+		return ItemStack.CODEC.<ItemStackParticleEffect>xmap(stack -> new ItemStackParticleEffect(type, stack), effect -> effect.stack).fieldOf("value");
 	}
 
 	public static PacketCodec<? super RegistryByteBuf, ItemStackParticleEffect> createPacketCodec(ParticleType<ItemStackParticleEffect> type) {

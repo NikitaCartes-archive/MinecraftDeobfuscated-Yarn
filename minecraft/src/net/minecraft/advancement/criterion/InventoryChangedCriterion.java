@@ -18,7 +18,6 @@ import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class InventoryChangedCriterion extends AbstractCriterion<InventoryChangedCriterion.Conditions> {
 	@Override
@@ -54,10 +53,11 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 		implements AbstractCriterion.Conditions {
 		public static final Codec<InventoryChangedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(InventoryChangedCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(InventoryChangedCriterion.Conditions.Slots.CODEC, "slots", InventoryChangedCriterion.Conditions.Slots.ANY)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(InventoryChangedCriterion.Conditions::player),
+						InventoryChangedCriterion.Conditions.Slots.CODEC
+							.optionalFieldOf("slots", InventoryChangedCriterion.Conditions.Slots.ANY)
 							.forGetter(InventoryChangedCriterion.Conditions::slots),
-						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC.listOf(), "items", List.of()).forGetter(InventoryChangedCriterion.Conditions::items)
+						ItemPredicate.CODEC.listOf().optionalFieldOf("items", List.of()).forGetter(InventoryChangedCriterion.Conditions::items)
 					)
 					.apply(instance, InventoryChangedCriterion.Conditions::new)
 		);
@@ -112,12 +112,9 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 		public static record Slots(NumberRange.IntRange occupied, NumberRange.IntRange full, NumberRange.IntRange empty) {
 			public static final Codec<InventoryChangedCriterion.Conditions.Slots> CODEC = RecordCodecBuilder.create(
 				instance -> instance.group(
-							Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "occupied", NumberRange.IntRange.ANY)
-								.forGetter(InventoryChangedCriterion.Conditions.Slots::occupied),
-							Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "full", NumberRange.IntRange.ANY)
-								.forGetter(InventoryChangedCriterion.Conditions.Slots::full),
-							Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "empty", NumberRange.IntRange.ANY)
-								.forGetter(InventoryChangedCriterion.Conditions.Slots::empty)
+							NumberRange.IntRange.CODEC.optionalFieldOf("occupied", NumberRange.IntRange.ANY).forGetter(InventoryChangedCriterion.Conditions.Slots::occupied),
+							NumberRange.IntRange.CODEC.optionalFieldOf("full", NumberRange.IntRange.ANY).forGetter(InventoryChangedCriterion.Conditions.Slots::full),
+							NumberRange.IntRange.CODEC.optionalFieldOf("empty", NumberRange.IntRange.ANY).forGetter(InventoryChangedCriterion.Conditions.Slots::empty)
 						)
 						.apply(instance, InventoryChangedCriterion.Conditions.Slots::new)
 			);

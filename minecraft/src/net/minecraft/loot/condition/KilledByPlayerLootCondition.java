@@ -1,7 +1,7 @@
 package net.minecraft.loot.condition;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
@@ -9,7 +9,7 @@ import net.minecraft.loot.context.LootContextParameters;
 
 public class KilledByPlayerLootCondition implements LootCondition {
 	private static final KilledByPlayerLootCondition INSTANCE = new KilledByPlayerLootCondition();
-	public static final Codec<KilledByPlayerLootCondition> CODEC = Codec.unit(INSTANCE);
+	public static final MapCodec<KilledByPlayerLootCondition> CODEC = MapCodec.unit(INSTANCE);
 
 	private KilledByPlayerLootCondition() {
 	}

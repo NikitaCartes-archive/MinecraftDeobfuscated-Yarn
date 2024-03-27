@@ -3,11 +3,10 @@ package net.minecraft.world.gen;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import java.util.function.Function;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.dimension.DimensionType;
 
 public interface YOffset {
-	Codec<YOffset> OFFSET_CODEC = Codecs.xor(YOffset.Fixed.CODEC, Codecs.xor(YOffset.AboveBottom.CODEC, YOffset.BelowTop.CODEC))
+	Codec<YOffset> OFFSET_CODEC = Codec.xor(YOffset.Fixed.CODEC, Codec.xor(YOffset.AboveBottom.CODEC, YOffset.BelowTop.CODEC))
 		.xmap(YOffset::fromEither, YOffset::map);
 	YOffset BOTTOM = aboveBottom(0);
 	YOffset TOP = belowTop(0);
@@ -33,7 +32,7 @@ public interface YOffset {
 	}
 
 	private static YOffset fromEither(Either<YOffset.Fixed, Either<YOffset.AboveBottom, YOffset.BelowTop>> either) {
-		return either.map(Function.identity(), eitherx -> eitherx.map(Function.identity(), Function.identity()));
+		return either.map(Function.identity(), Either::unwrap);
 	}
 
 	private static Either<YOffset.Fixed, Either<YOffset.AboveBottom, YOffset.BelowTop>> map(YOffset yOffset) {

@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.block.BlockState;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
@@ -57,38 +58,45 @@ public class BreezeJumpTask extends MultiTickTask<BreezeEntity> {
 		);
 	}
 
-	protected boolean shouldRun(ServerWorld serverWorld, BreezeEntity breezeEntity) {
-		if (!breezeEntity.isOnGround() && !breezeEntity.isTouchingWater()) {
+	public static boolean shouldJump(ServerWorld world, BreezeEntity breeze) {
+		if (!breeze.isOnGround() && !breeze.isTouchingWater()) {
 			return false;
-		} else if (StayAboveWaterTask.isUnderwater(breezeEntity)) {
+		} else if (StayAboveWaterTask.isUnderwater(breeze)) {
 			return false;
-		} else if (breezeEntity.getBrain().isMemoryInState(MemoryModuleType.BREEZE_JUMP_TARGET, MemoryModuleState.VALUE_PRESENT)) {
+		} else if (breeze.getBrain().isMemoryInState(MemoryModuleType.BREEZE_JUMP_TARGET, MemoryModuleState.VALUE_PRESENT)) {
 			return true;
 		} else {
-			LivingEntity livingEntity = (LivingEntity)breezeEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
+			LivingEntity livingEntity = (LivingEntity)breeze.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
 			if (livingEntity == null) {
 				return false;
-			} else if (isTargetOutOfRange(breezeEntity, livingEntity)) {
-				breezeEntity.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
+			} else if (isTargetOutOfRange(breeze, livingEntity)) {
+				breeze.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
 				return false;
-			} else if (isTargetTooClose(breezeEntity, livingEntity)) {
+			} else if (isTargetTooClose(breeze, livingEntity)) {
 				return false;
-			} else if (!hasRoomToJump(serverWorld, breezeEntity)) {
+			} else if (!hasRoomToJump(world, breeze)) {
 				return false;
 			} else {
-				BlockPos blockPos = getPosToJumpTo(breezeEntity, BreezeMovementUtil.getRandomPosBehindTarget(livingEntity, breezeEntity.getRandom()));
+				BlockPos blockPos = getPosToJumpTo(breeze, BreezeMovementUtil.getRandomPosBehindTarget(livingEntity, breeze.getRandom()));
 				if (blockPos == null) {
 					return false;
-				} else if (!BreezeMovementUtil.canMoveTo(breezeEntity, blockPos.toCenterPos()) && !BreezeMovementUtil.canMoveTo(breezeEntity, blockPos.up(4).toCenterPos())
-					)
-				 {
-					return false;
 				} else {
-					breezeEntity.getBrain().remember(MemoryModuleType.BREEZE_JUMP_TARGET, blockPos);
-					return true;
+					BlockState blockState = world.getBlockState(blockPos.down());
+					if (breeze.getType().isInvalidSpawn(blockState)) {
+						return false;
+					} else if (!BreezeMovementUtil.canMoveTo(breeze, blockPos.toCenterPos()) && !BreezeMovementUtil.canMoveTo(breeze, blockPos.up(4).toCenterPos())) {
+						return false;
+					} else {
+						breeze.getBrain().remember(MemoryModuleType.BREEZE_JUMP_TARGET, blockPos);
+						return true;
+					}
 				}
 			}
 		}
+	}
+
+	protected boolean shouldRun(ServerWorld serverWorld, BreezeEntity breezeEntity) {
+		return shouldJump(serverWorld, breezeEntity);
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, BreezeEntity breezeEntity, long l) {
@@ -176,7 +184,7 @@ public class BreezeJumpTask extends MultiTickTask<BreezeEntity> {
 				pos, pos.offset(Direction.UP, 10.0), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, breeze
 			);
 			HitResult hitResult2 = breeze.getWorld().raycast(raycastContext2);
-			return hitResult2.getType() == HitResult.Type.BLOCK ? BlockPos.ofFloored(hitResult.getPos()).up() : null;
+			return hitResult2.getType() == HitResult.Type.BLOCK ? BlockPos.ofFloored(hitResult2.getPos()).up() : null;
 		}
 	}
 

@@ -20,6 +20,7 @@ import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.command.argument.DimensionArgumentType;
+import net.minecraft.component.ComponentMap;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -90,12 +91,7 @@ public class CloneCommand {
 		return CommandManager.argument("destination", BlockPosArgumentType.blockPos())
 			.executes(
 				context -> execute(
-						context.getSource(),
-						argumentGetter.apply(context),
-						argumentGetter2.apply(context),
-						argumentGetter3.apply(context),
-						cachedBlockPosition -> true,
-						CloneCommand.Mode.NORMAL
+						context.getSource(), argumentGetter.apply(context), argumentGetter2.apply(context), argumentGetter3.apply(context), pos -> true, CloneCommand.Mode.NORMAL
 					)
 			)
 			.then(
@@ -111,7 +107,7 @@ public class CloneCommand {
 									argumentGetter.apply(context),
 									argumentGetter2.apply(context),
 									argumentGetter3.apply(context),
-									cachedBlockPosition -> true,
+									pos -> true,
 									CloneCommand.Mode.NORMAL
 								)
 						)
@@ -250,8 +246,10 @@ public class CloneCommand {
 							if (filter.test(cachedBlockPosition)) {
 								BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos6);
 								if (blockEntity != null) {
-									NbtCompound nbtCompound = blockEntity.createNbt(source.getRegistryManager());
-									list2.add(new CloneCommand.BlockInfo(blockPos7, blockState, nbtCompound));
+									CloneCommand.BlockEntityInfo blockEntityInfo = new CloneCommand.BlockEntityInfo(
+										blockEntity.createComponentlessNbt(source.getRegistryManager()), blockEntity.getComponents()
+									);
+									list2.add(new CloneCommand.BlockInfo(blockPos7, blockState, blockEntityInfo));
 									deque.addLast(blockPos6);
 								} else if (!blockState.isOpaqueFullCube(serverWorld, blockPos6) && !blockState.isFullCube(serverWorld, blockPos6)) {
 									list3.add(new CloneCommand.BlockInfo(blockPos7, blockState, null));
@@ -299,8 +297,9 @@ public class CloneCommand {
 
 				for (CloneCommand.BlockInfo blockInfo2x : list2) {
 					BlockEntity blockEntity4 = serverWorld2.getBlockEntity(blockInfo2x.pos);
-					if (blockInfo2x.blockEntityNbt != null && blockEntity4 != null) {
-						blockEntity4.readNbt(blockInfo2x.blockEntityNbt, serverWorld2.getRegistryManager());
+					if (blockInfo2x.blockEntityInfo != null && blockEntity4 != null) {
+						blockEntity4.readComponentlessNbt(blockInfo2x.blockEntityInfo.nbt, serverWorld2.getRegistryManager());
+						blockEntity4.setComponents(blockInfo2x.blockEntityInfo.components);
 						blockEntity4.markDirty();
 					}
 
@@ -330,17 +329,10 @@ public class CloneCommand {
 		R apply(T value) throws CommandSyntaxException;
 	}
 
-	static class BlockInfo {
-		public final BlockPos pos;
-		public final BlockState state;
-		@Nullable
-		public final NbtCompound blockEntityNbt;
+	static record BlockEntityInfo(NbtCompound nbt, ComponentMap components) {
+	}
 
-		public BlockInfo(BlockPos pos, BlockState state, @Nullable NbtCompound blockEntityNbt) {
-			this.pos = pos;
-			this.state = state;
-			this.blockEntityNbt = blockEntityNbt;
-		}
+	static record BlockInfo(BlockPos pos, BlockState state, @Nullable CloneCommand.BlockEntityInfo blockEntityInfo) {
 	}
 
 	static record DimensionalPos(ServerWorld dimension, BlockPos position) {

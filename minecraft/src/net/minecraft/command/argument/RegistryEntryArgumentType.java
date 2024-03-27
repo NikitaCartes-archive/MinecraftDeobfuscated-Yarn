@@ -30,7 +30,6 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 
 public class RegistryEntryArgumentType<T> implements ArgumentType<RegistryEntry<T>> {
 	private static final Collection<String> EXAMPLES = List.of("foo", "foo:bar", "012", "{}", "true");
@@ -83,7 +82,7 @@ public class RegistryEntryArgumentType<T> implements ArgumentType<RegistryEntry<
 			return null;
 		} else {
 			RegistryOps<NbtElement> registryOps = this.registryLookup.getOps(NbtOps.INSTANCE);
-			return Util.getResult(this.entryCodec.parse(registryOps, nbtElement), argument -> FAILED_TO_PARSE_EXCEPTION.createWithContext(stringReader, argument));
+			return this.entryCodec.parse(registryOps, nbtElement).getOrThrow(argument -> FAILED_TO_PARSE_EXCEPTION.createWithContext(stringReader, argument));
 		}
 	}
 

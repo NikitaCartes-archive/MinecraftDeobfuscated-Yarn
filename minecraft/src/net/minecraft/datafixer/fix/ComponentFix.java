@@ -7,7 +7,6 @@ import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.serialization.Dynamic;
-import net.minecraft.datafixer.FixUtil;
 import net.minecraft.datafixer.TypeReferences;
 
 public abstract class ComponentFix extends DataFix {
@@ -35,7 +34,7 @@ public abstract class ComponentFix extends DataFix {
 			type,
 			typed -> typed.updateTyped(
 					opticFinder,
-					typedx -> typedx.update(DSL.remainderFinder(), dynamic -> FixUtil.replaceKey(dynamic, this.oldComponentId, this.newComponentId, this::fixComponent))
+					typedx -> typedx.update(DSL.remainderFinder(), dynamic -> dynamic.renameAndFixField(this.oldComponentId, this.newComponentId, this::fixComponent))
 				)
 		);
 	}

@@ -7,7 +7,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public record DamagePredicate(
 	NumberRange.DoubleRange dealt,
@@ -18,11 +17,11 @@ public record DamagePredicate(
 ) {
 	public static final Codec<DamagePredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "dealt", NumberRange.DoubleRange.ANY).forGetter(DamagePredicate::dealt),
-					Codecs.createStrictOptionalFieldCodec(NumberRange.DoubleRange.CODEC, "taken", NumberRange.DoubleRange.ANY).forGetter(DamagePredicate::taken),
-					Codecs.createStrictOptionalFieldCodec(EntityPredicate.CODEC, "source_entity").forGetter(DamagePredicate::sourceEntity),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "blocked").forGetter(DamagePredicate::blocked),
-					Codecs.createStrictOptionalFieldCodec(DamageSourcePredicate.CODEC, "type").forGetter(DamagePredicate::type)
+					NumberRange.DoubleRange.CODEC.optionalFieldOf("dealt", NumberRange.DoubleRange.ANY).forGetter(DamagePredicate::dealt),
+					NumberRange.DoubleRange.CODEC.optionalFieldOf("taken", NumberRange.DoubleRange.ANY).forGetter(DamagePredicate::taken),
+					EntityPredicate.CODEC.optionalFieldOf("source_entity").forGetter(DamagePredicate::sourceEntity),
+					Codec.BOOL.optionalFieldOf("blocked").forGetter(DamagePredicate::blocked),
+					DamageSourcePredicate.CODEC.optionalFieldOf("type").forGetter(DamagePredicate::type)
 				)
 				.apply(instance, DamagePredicate::new)
 	);

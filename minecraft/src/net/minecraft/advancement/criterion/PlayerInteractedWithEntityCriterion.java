@@ -12,7 +12,6 @@ import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<PlayerInteractedWithEntityCriterion.Conditions> {
 	@Override
@@ -29,11 +28,9 @@ public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<Playe
 		implements AbstractCriterion.Conditions {
 		public static final Codec<PlayerInteractedWithEntityCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
-							.forGetter(PlayerInteractedWithEntityCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(PlayerInteractedWithEntityCriterion.Conditions::item),
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity")
-							.forGetter(PlayerInteractedWithEntityCriterion.Conditions::entity)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(PlayerInteractedWithEntityCriterion.Conditions::player),
+						ItemPredicate.CODEC.optionalFieldOf("item").forGetter(PlayerInteractedWithEntityCriterion.Conditions::item),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("entity").forGetter(PlayerInteractedWithEntityCriterion.Conditions::entity)
 					)
 					.apply(instance, PlayerInteractedWithEntityCriterion.Conditions::new)
 		);

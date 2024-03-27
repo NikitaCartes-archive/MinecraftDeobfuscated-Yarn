@@ -13,7 +13,7 @@ import net.minecraft.registry.RegistryKeys;
 public class NumberFormatTypes {
 	public static final MapCodec<NumberFormat> REGISTRY_CODEC = Registries.NUMBER_FORMAT_TYPE
 		.getCodec()
-		.dispatchMap(NumberFormat::getType, formatType -> formatType.getCodec().codec());
+		.dispatchMap(NumberFormat::getType, NumberFormatType::getCodec);
 	public static final Codec<NumberFormat> CODEC = REGISTRY_CODEC.codec();
 	public static final PacketCodec<RegistryByteBuf, NumberFormat> PACKET_CODEC = PacketCodecs.registryValue(RegistryKeys.NUMBER_FORMAT_TYPE)
 		.dispatch(NumberFormat::getType, NumberFormatType::getPacketCodec);

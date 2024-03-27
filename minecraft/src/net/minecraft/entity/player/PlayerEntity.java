@@ -25,6 +25,7 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.render.entity.PlayerModelPart;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAttachmentType;
@@ -67,7 +68,6 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
-import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.tag.BlockTags;
@@ -482,19 +482,8 @@ public abstract class PlayerEntity extends LivingEntity {
 			this.reducedDebugInfo = false;
 		} else if (status == EntityStatuses.USE_REDUCED_DEBUG_INFO) {
 			this.reducedDebugInfo = true;
-		} else if (status == EntityStatuses.ADD_CLOUD_PARTICLES) {
-			this.spawnParticles(ParticleTypes.CLOUD);
 		} else {
 			super.handleStatus(status);
-		}
-	}
-
-	private void spawnParticles(ParticleEffect parameters) {
-		for (int i = 0; i < 5; i++) {
-			double d = this.random.nextGaussian() * 0.02;
-			double e = this.random.nextGaussian() * 0.02;
-			double f = this.random.nextGaussian() * 0.02;
-			this.getWorld().addParticle(parameters, this.getParticleX(1.0), this.getRandomBodyY() + 1.0, this.getParticleZ(1.0), d, e, f);
 		}
 	}
 
@@ -865,7 +854,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			.flatMap(pos -> GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, pos).resultOrPartial(LOGGER::error))
 			.ifPresent(pos -> nbt.put("LastDeathLocation", pos));
 		if (this.currentExplosionImpactPos != null) {
-			nbt.put("current_explosion_impact_pos", Util.getResult(Vec3d.CODEC.encodeStart(NbtOps.INSTANCE, this.currentExplosionImpactPos), IllegalStateException::new));
+			nbt.put("current_explosion_impact_pos", Vec3d.CODEC.encodeStart(NbtOps.INSTANCE, this.currentExplosionImpactPos).getOrThrow());
 		}
 
 		nbt.putBoolean("ignore_fall_damage_from_current_explosion", this.ignoreFallDamageFromCurrentExplosion);
@@ -1298,6 +1287,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 						EnchantmentHelper.onTargetDamaged(this, target);
 						ItemStack itemStack2 = this.getMainHandStack();
+						ItemEnchantmentsComponent itemEnchantmentsComponent = itemStack2.getEnchantments();
 						Entity entity = target;
 						if (target instanceof EnderDragonPart) {
 							entity = ((EnderDragonPart)target).owner;
@@ -1310,6 +1300,7 @@ public abstract class PlayerEntity extends LivingEntity {
 							}
 						}
 
+						EnchantmentHelper.onAttack(this, target, itemEnchantmentsComponent);
 						if (target instanceof LivingEntity) {
 							float m = j - ((LivingEntity)target).getHealth();
 							this.increaseStat(Stats.DAMAGE_DEALT, Math.round(m * 10.0F));

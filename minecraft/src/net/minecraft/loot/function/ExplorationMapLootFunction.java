@@ -2,6 +2,7 @@ package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +21,6 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.StructureTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.gen.structure.Structure;
@@ -31,16 +31,15 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	public static final byte DEFAULT_ZOOM = 2;
 	public static final int DEFAULT_SEARCH_RADIUS = 50;
 	public static final boolean DEFAULT_SKIP_EXISTING_CHUNKS = true;
-	public static final Codec<ExplorationMapLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<ExplorationMapLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.<TagKey<Structure>, RegistryEntry<MapDecorationType>, byte, int, boolean>and(
 					instance.group(
-						Codecs.createStrictOptionalFieldCodec(TagKey.unprefixedCodec(RegistryKeys.STRUCTURE), "destination", DEFAULT_DESTINATION)
-							.forGetter(function -> function.destination),
+						TagKey.unprefixedCodec(RegistryKeys.STRUCTURE).optionalFieldOf("destination", DEFAULT_DESTINATION).forGetter(function -> function.destination),
 						MapDecorationType.CODEC.optionalFieldOf("decoration", DEFAULT_DECORATION).forGetter(function -> function.decoration),
-						Codecs.createStrictOptionalFieldCodec(Codec.BYTE, "zoom", (byte)2).forGetter(function -> function.zoom),
-						Codecs.createStrictOptionalFieldCodec(Codec.INT, "search_radius", 50).forGetter(function -> function.searchRadius),
-						Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "skip_existing_chunks", true).forGetter(function -> function.skipExistingChunks)
+						Codec.BYTE.optionalFieldOf("zoom", Byte.valueOf((byte)2)).forGetter(function -> function.zoom),
+						Codec.INT.optionalFieldOf("search_radius", Integer.valueOf(50)).forGetter(function -> function.searchRadius),
+						Codec.BOOL.optionalFieldOf("skip_existing_chunks", Boolean.valueOf(true)).forGetter(function -> function.skipExistingChunks)
 					)
 				)
 				.apply(instance, ExplorationMapLootFunction::new)

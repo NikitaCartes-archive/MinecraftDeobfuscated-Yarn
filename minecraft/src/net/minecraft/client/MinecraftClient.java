@@ -831,7 +831,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private UserApiService createUserApiService(YggdrasilAuthenticationService authService, RunArgs runArgs) {
-		return authService.createUserApiService(runArgs.network.session.getAccessToken());
+		return runArgs.network.session.getAccountType() != Session.AccountType.MSA
+			? UserApiService.OFFLINE
+			: authService.createUserApiService(runArgs.network.session.getAccessToken());
 	}
 
 	public static ModStatus getModStatus() {
@@ -2524,7 +2526,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private void addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity, DynamicRegistryManager registryManager) {
-		NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData(registryManager);
+		NbtCompound nbtCompound = blockEntity.createComponentlessNbt(registryManager);
 		blockEntity.removeFromCopiedStackNbt(nbtCompound);
 		BlockItem.setBlockEntityData(stack, blockEntity.getType(), nbtCompound);
 		stack.applyComponentsFrom(blockEntity.createComponentMap());

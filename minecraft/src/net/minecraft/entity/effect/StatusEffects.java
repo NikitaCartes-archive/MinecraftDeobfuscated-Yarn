@@ -2,10 +2,15 @@ package net.minecraft.entity.effect;
 
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.resource.featuretoggle.FeatureFlag;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 public class StatusEffects {
 	private static final int DARKNESS_PADDING_DURATION = 22;
@@ -97,11 +102,41 @@ public class StatusEffects {
 	public static final RegistryEntry<StatusEffect> SLOW_FALLING = register("slow_falling", new StatusEffect(StatusEffectCategory.BENEFICIAL, 15978425));
 	public static final RegistryEntry<StatusEffect> CONDUIT_POWER = register("conduit_power", new StatusEffect(StatusEffectCategory.BENEFICIAL, 1950417));
 	public static final RegistryEntry<StatusEffect> DOLPHINS_GRACE = register("dolphins_grace", new StatusEffect(StatusEffectCategory.BENEFICIAL, 8954814));
-	public static final RegistryEntry<StatusEffect> BAD_OMEN = register("bad_omen", new BadOmenStatusEffect(StatusEffectCategory.NEUTRAL, 745784));
+	public static final RegistryEntry<StatusEffect> BAD_OMEN = register(
+		"bad_omen", new BadOmenStatusEffect(StatusEffectCategory.NEUTRAL, 745784).applySound(SoundEvents.EVENT_MOB_EFFECT_BAD_OMEN)
+	);
 	public static final RegistryEntry<StatusEffect> HERO_OF_THE_VILLAGE = register(
 		"hero_of_the_village", new StatusEffect(StatusEffectCategory.BENEFICIAL, 4521796)
 	);
 	public static final RegistryEntry<StatusEffect> DARKNESS = register("darkness", new StatusEffect(StatusEffectCategory.HARMFUL, 2696993).fadeTicks(22));
+	public static final RegistryEntry<StatusEffect> TRIAL_OMEN = register(
+		"trial_omen",
+		new StatusEffect(StatusEffectCategory.NEUTRAL, 1484454, ParticleTypes.TRIAL_OMEN)
+			.applySound(SoundEvents.EVENT_MOB_EFFECT_TRIAL_OMEN)
+			.requires(FeatureFlags.UPDATE_1_21)
+	);
+	public static final RegistryEntry<StatusEffect> RAID_OMEN = register(
+		"raid_omen",
+		new RaidOmenStatusEffect(StatusEffectCategory.NEUTRAL, 14565464, ParticleTypes.RAID_OMEN)
+			.applySound(SoundEvents.EVENT_MOB_EFFECT_RAID_OMEN)
+			.requires(FeatureFlags.UPDATE_1_21)
+	);
+	public static final RegistryEntry<StatusEffect> WIND_CHARGED = register(
+		"wind_charged", new WindChargedStatusEffect(StatusEffectCategory.HARMFUL, 12438015).requires(new FeatureFlag[]{FeatureFlags.UPDATE_1_21})
+	);
+	public static final RegistryEntry<StatusEffect> WEAVING = register(
+		"weaving",
+		new WeavingStatusEffect(StatusEffectCategory.HARMFUL, 7891290, random -> MathHelper.nextBetween(random, 1, 3))
+			.requires(new FeatureFlag[]{FeatureFlags.UPDATE_1_21})
+	);
+	public static final RegistryEntry<StatusEffect> OOZING = register(
+		"oozing", new OozingStatusEffect(StatusEffectCategory.HARMFUL, 10092451, random -> 2).requires(new FeatureFlag[]{FeatureFlags.UPDATE_1_21})
+	);
+	public static final RegistryEntry<StatusEffect> INFESTED = register(
+		"infested",
+		new InfestedStatusEffect(StatusEffectCategory.HARMFUL, 9214860, 0.05F, random -> MathHelper.nextBetween(random, 1, 3))
+			.requires(new FeatureFlag[]{FeatureFlags.UPDATE_1_21})
+	);
 
 	private static RegistryEntry<StatusEffect> register(String id, StatusEffect statusEffect) {
 		return Registry.registerReference(Registries.STATUS_EFFECT, new Identifier(id), statusEffect);

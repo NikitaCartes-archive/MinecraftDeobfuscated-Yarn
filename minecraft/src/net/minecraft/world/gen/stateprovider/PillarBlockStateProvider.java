@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.stateprovider;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -10,11 +10,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 
 public class PillarBlockStateProvider extends BlockStateProvider {
-	public static final Codec<PillarBlockStateProvider> CODEC = BlockState.CODEC
+	public static final MapCodec<PillarBlockStateProvider> CODEC = BlockState.CODEC
 		.fieldOf("state")
 		.xmap(AbstractBlock.AbstractBlockState::getBlock, Block::getDefaultState)
-		.<PillarBlockStateProvider>xmap(PillarBlockStateProvider::new, provider -> provider.block)
-		.codec();
+		.xmap(PillarBlockStateProvider::new, provider -> provider.block);
 	private final Block block;
 
 	public PillarBlockStateProvider(Block block) {

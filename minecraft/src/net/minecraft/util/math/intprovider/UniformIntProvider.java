@@ -2,23 +2,22 @@ package net.minecraft.util.math.intprovider;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
 public class UniformIntProvider extends IntProvider {
-	public static final Codec<UniformIntProvider> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<UniformIntProvider> CODEC = RecordCodecBuilder.<UniformIntProvider>mapCodec(
 			instance -> instance.group(
 						Codec.INT.fieldOf("min_inclusive").forGetter(provider -> provider.min), Codec.INT.fieldOf("max_inclusive").forGetter(provider -> provider.max)
 					)
 					.apply(instance, UniformIntProvider::new)
 		)
-		.comapFlatMap(
+		.validate(
 			provider -> provider.max < provider.min
 					? DataResult.error(() -> "Max must be at least min, min_inclusive: " + provider.min + ", max_inclusive: " + provider.max)
-					: DataResult.success(provider),
-			Function.identity()
+					: DataResult.success(provider)
 		);
 	private final int min;
 	private final int max;

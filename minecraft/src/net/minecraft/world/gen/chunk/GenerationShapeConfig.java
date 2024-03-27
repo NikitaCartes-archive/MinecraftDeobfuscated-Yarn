@@ -37,8 +37,8 @@ public record GenerationShapeConfig(int minimumY, int height, int horizontalSize
 
 	public static GenerationShapeConfig create(int minimumY, int height, int horizontalSize, int verticalSize) {
 		GenerationShapeConfig generationShapeConfig = new GenerationShapeConfig(minimumY, height, horizontalSize, verticalSize);
-		checkHeight(generationShapeConfig).error().ifPresent(result -> {
-			throw new IllegalStateException(result.message());
+		checkHeight(generationShapeConfig).error().ifPresent(error -> {
+			throw new IllegalStateException(error.message());
 		});
 		return generationShapeConfig;
 	}

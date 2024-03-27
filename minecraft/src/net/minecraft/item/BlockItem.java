@@ -47,7 +47,7 @@ public class BlockItem extends Item {
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		ActionResult actionResult = this.place(new ItemPlacementContext(context));
 		if (!actionResult.isAccepted() && context.getStack().contains(DataComponentTypes.FOOD)) {
-			ActionResult actionResult2 = this.use(context.getWorld(), context.getPlayer(), context.getHand()).getResult();
+			ActionResult actionResult2 = super.use(context.getWorld(), context.getPlayer(), context.getHand()).getResult();
 			return actionResult2 == ActionResult.CONSUME ? ActionResult.CONSUME_PARTIAL : actionResult2;
 		} else {
 			return actionResult;
@@ -114,7 +114,8 @@ public class BlockItem extends Item {
 	private static void copyComponentsToBlockEntity(World world, BlockPos pos, ItemStack stack) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity != null) {
-			blockEntity.readComponents(stack.getComponents());
+			blockEntity.readComponents(stack);
+			blockEntity.markDirty();
 		}
 	}
 

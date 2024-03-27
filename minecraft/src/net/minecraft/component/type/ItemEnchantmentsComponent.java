@@ -19,7 +19,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
-import net.minecraft.util.dynamic.Codecs;
 
 public class ItemEnchantmentsComponent implements TooltipAppender {
 	public static final ItemEnchantmentsComponent DEFAULT = new ItemEnchantmentsComponent(new Object2IntLinkedOpenHashMap<>(), true);
@@ -32,11 +31,11 @@ public class ItemEnchantmentsComponent implements TooltipAppender {
 	private static final Codec<ItemEnchantmentsComponent> BASE_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					INLINE_CODEC.fieldOf("levels").forGetter(component -> component.enchantments),
-					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_in_tooltip", true).forGetter(component -> component.showInTooltip)
+					Codec.BOOL.optionalFieldOf("show_in_tooltip", Boolean.valueOf(true)).forGetter(component -> component.showInTooltip)
 				)
 				.apply(instance, ItemEnchantmentsComponent::new)
 	);
-	public static final Codec<ItemEnchantmentsComponent> CODEC = Codecs.either(BASE_CODEC, INLINE_CODEC, map -> new ItemEnchantmentsComponent(map, true));
+	public static final Codec<ItemEnchantmentsComponent> CODEC = Codec.withAlternative(BASE_CODEC, INLINE_CODEC, map -> new ItemEnchantmentsComponent(map, true));
 	public static final PacketCodec<RegistryByteBuf, ItemEnchantmentsComponent> PACKET_CODEC = PacketCodec.tuple(
 		PacketCodecs.map(Object2IntLinkedOpenHashMap::new, PacketCodecs.registryEntry(RegistryKeys.ENCHANTMENT), PacketCodecs.VAR_INT),
 		component -> component.enchantments,

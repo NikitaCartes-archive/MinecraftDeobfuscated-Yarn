@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.structure;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
@@ -22,9 +22,9 @@ public interface StructureType<S extends Structure> {
 	StructureType<SwampHutStructure> SWAMP_HUT = register("swamp_hut", SwampHutStructure.CODEC);
 	StructureType<WoodlandMansionStructure> WOODLAND_MANSION = register("woodland_mansion", WoodlandMansionStructure.CODEC);
 
-	Codec<S> codec();
+	MapCodec<S> codec();
 
-	private static <S extends Structure> StructureType<S> register(String id, Codec<S> codec) {
+	private static <S extends Structure> StructureType<S> register(String id, MapCodec<S> codec) {
 		return Registry.register(Registries.STRUCTURE_TYPE, id, () -> codec);
 	}
 }

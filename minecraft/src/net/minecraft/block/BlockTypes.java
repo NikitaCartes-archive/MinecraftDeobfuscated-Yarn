@@ -1,11 +1,12 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
+import java.util.function.Function;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
 public class BlockTypes {
-	public static final MapCodec<Block> CODEC = Registries.BLOCK_TYPE.getCodec().dispatchMap(Block::getCodec, MapCodec::codec);
+	public static final MapCodec<Block> CODEC = Registries.BLOCK_TYPE.getCodec().dispatchMap(Block::getCodec, Function.identity());
 
 	public static MapCodec<? extends Block> registerAndGetDefault(Registry<MapCodec<? extends Block>> registry) {
 		Registry.register(registry, "block", Block.CODEC);

@@ -1,6 +1,6 @@
 package net.minecraft.loot.function;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.item.ItemStack;
@@ -10,7 +10,7 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.util.math.random.Random;
 
 public class ExplosionDecayLootFunction extends ConditionalLootFunction {
-	public static final Codec<ExplosionDecayLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<ExplosionDecayLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance).apply(instance, ExplosionDecayLootFunction::new)
 	);
 

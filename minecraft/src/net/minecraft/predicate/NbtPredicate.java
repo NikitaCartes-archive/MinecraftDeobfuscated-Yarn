@@ -14,12 +14,11 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.dynamic.Codecs;
 
 public record NbtPredicate(NbtCompound nbt) {
 	public static final Codec<NbtPredicate> STRINGIFIED_CODEC = StringNbtReader.STRINGIFIED_CODEC.xmap(NbtPredicate::new, NbtPredicate::nbt);
 	public static final Codec<NbtPredicate> INLINE_CODEC = NbtCompound.CODEC.xmap(NbtPredicate::new, NbtPredicate::nbt);
-	public static final Codec<NbtPredicate> CODEC = Codecs.alternatively(STRINGIFIED_CODEC, INLINE_CODEC);
+	public static final Codec<NbtPredicate> CODEC = Codec.withAlternative(STRINGIFIED_CODEC, INLINE_CODEC);
 	public static final PacketCodec<ByteBuf, NbtPredicate> PACKET_CODEC = PacketCodecs.NBT_COMPOUND.xmap(NbtPredicate::new, NbtPredicate::nbt);
 
 	public boolean test(ItemStack stack) {

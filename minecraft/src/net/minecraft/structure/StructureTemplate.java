@@ -277,7 +277,7 @@ public class StructureTemplate {
 										structureBlockInfo.nbt.putLong("LootTableSeed", random.nextLong());
 									}
 
-									blockEntity.readNbt(structureBlockInfo.nbt, world.getRegistryManager());
+									blockEntity.read(structureBlockInfo.nbt, world.getRegistryManager());
 								}
 							}
 

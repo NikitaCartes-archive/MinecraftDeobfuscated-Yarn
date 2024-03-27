@@ -22,8 +22,8 @@ public record MapBannerMarker(BlockPos pos, DyeColor color, Optional<Text> name)
 	public static final Codec<MapBannerMarker> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					BlockPos.CODEC.fieldOf("pos").forGetter(MapBannerMarker::pos),
-					DyeColor.CODEC.optionalFieldOf("color", DyeColor.WHITE).forGetter(MapBannerMarker::color),
-					TextCodecs.STRINGIFIED_CODEC.optionalFieldOf("name").forGetter(MapBannerMarker::name)
+					DyeColor.CODEC.lenientOptionalFieldOf("color", DyeColor.WHITE).forGetter(MapBannerMarker::color),
+					TextCodecs.STRINGIFIED_CODEC.lenientOptionalFieldOf("name").forGetter(MapBannerMarker::name)
 				)
 				.apply(instance, MapBannerMarker::new)
 	);

@@ -1,15 +1,18 @@
 package net.minecraft.item;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 
-public class SnowballItem extends Item {
+public class SnowballItem extends Item implements ProjectileItem {
 	public SnowballItem(Item.Settings settings) {
 		super(settings);
 	}
@@ -37,5 +40,12 @@ public class SnowballItem extends Item {
 		user.incrementStat(Stats.USED.getOrCreateStat(this));
 		itemStack.decrementUnlessCreative(1, user);
 		return TypedActionResult.success(itemStack, world.isClient());
+	}
+
+	@Override
+	public ProjectileEntity createEntity(World world, Position pos, ItemStack stack, Direction direction) {
+		SnowballEntity snowballEntity = new SnowballEntity(world, pos.getX(), pos.getY(), pos.getZ());
+		snowballEntity.setItem(stack);
+		return snowballEntity;
 	}
 }

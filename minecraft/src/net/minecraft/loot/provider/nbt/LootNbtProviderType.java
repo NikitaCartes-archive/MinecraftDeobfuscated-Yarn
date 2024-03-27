@@ -1,6 +1,6 @@
 package net.minecraft.loot.provider.nbt;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
-public record LootNbtProviderType(Codec<? extends LootNbtProvider> codec) {
+public record LootNbtProviderType(MapCodec<? extends LootNbtProvider> codec) {
 }

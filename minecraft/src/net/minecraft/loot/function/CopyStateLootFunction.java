@@ -2,6 +2,7 @@ package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Objects;
@@ -21,7 +22,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.state.property.Property;
 
 public class CopyStateLootFunction extends ConditionalLootFunction {
-	public static final Codec<CopyStateLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<CopyStateLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.<RegistryEntry<Block>, List<String>>and(
 					instance.group(

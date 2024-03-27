@@ -5,7 +5,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.regex.Pattern;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.dynamic.Range;
 
 public record PackOverlaysMetadata(List<PackOverlaysMetadata.Entry> overlays) {
@@ -30,7 +29,7 @@ public record PackOverlaysMetadata(List<PackOverlaysMetadata.Entry> overlays) {
 		static final Codec<PackOverlaysMetadata.Entry> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Range.createCodec(Codec.INT).fieldOf("formats").forGetter(PackOverlaysMetadata.Entry::format),
-						Codecs.validate(Codec.STRING, PackOverlaysMetadata::validate).fieldOf("directory").forGetter(PackOverlaysMetadata.Entry::overlay)
+						Codec.STRING.validate(PackOverlaysMetadata::validate).fieldOf("directory").forGetter(PackOverlaysMetadata.Entry::overlay)
 					)
 					.apply(instance, PackOverlaysMetadata.Entry::new)
 		);

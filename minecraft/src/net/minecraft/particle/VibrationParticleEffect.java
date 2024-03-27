@@ -3,6 +3,7 @@ package net.minecraft.particle;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Locale;
 import net.minecraft.network.RegistryByteBuf;
@@ -16,7 +17,7 @@ import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.PositionSource;
 
 public class VibrationParticleEffect implements ParticleEffect {
-	public static final Codec<VibrationParticleEffect> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<VibrationParticleEffect> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					PositionSource.CODEC.fieldOf("destination").forGetter(VibrationParticleEffect::getVibration),
 					Codec.INT.fieldOf("arrival_in_ticks").forGetter(VibrationParticleEffect::getArrivalInTicks)

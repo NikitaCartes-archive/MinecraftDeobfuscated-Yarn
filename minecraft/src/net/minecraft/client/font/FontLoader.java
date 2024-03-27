@@ -9,11 +9,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
 
 @Environment(EnvType.CLIENT)
 public interface FontLoader {
-	MapCodec<FontLoader> CODEC = FontType.CODEC.dispatchMap(FontLoader::getType, fontType -> fontType.getLoaderCodec().codec());
+	MapCodec<FontLoader> CODEC = FontType.CODEC.dispatchMap(FontLoader::getType, FontType::getLoaderCodec);
 
 	FontType getType();
 
@@ -29,8 +28,7 @@ public interface FontLoader {
 		public static final Codec<FontLoader.Provider> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						FontLoader.CODEC.forGetter(FontLoader.Provider::definition),
-						Codecs.createStrictOptionalFieldCodec(FontFilterType.FilterMap.CODEC, "filter", FontFilterType.FilterMap.NO_FILTER)
-							.forGetter(FontLoader.Provider::filter)
+						FontFilterType.FilterMap.CODEC.optionalFieldOf("filter", FontFilterType.FilterMap.NO_FILTER).forGetter(FontLoader.Provider::filter)
 					)
 					.apply(instance, FontLoader.Provider::new)
 		);

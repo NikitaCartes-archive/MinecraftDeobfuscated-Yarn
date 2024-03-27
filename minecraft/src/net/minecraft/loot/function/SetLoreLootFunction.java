@@ -1,7 +1,7 @@
 package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Optional;
@@ -17,16 +17,15 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.collection.ListOperation;
-import net.minecraft.util.dynamic.Codecs;
 
 public class SetLoreLootFunction extends ConditionalLootFunction {
-	public static final Codec<SetLoreLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SetLoreLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.<List<Text>, ListOperation, Optional<LootContext.EntityTarget>>and(
 					instance.group(
-						Codecs.list(TextCodecs.CODEC.listOf(), 256).fieldOf("lore").forGetter(function -> function.lore),
+						TextCodecs.CODEC.sizeLimitedListOf(256).fieldOf("lore").forGetter(function -> function.lore),
 						ListOperation.createCodec(256).forGetter(function -> function.operation),
-						Codecs.createStrictOptionalFieldCodec(LootContext.EntityTarget.CODEC, "entity").forGetter(function -> function.entity)
+						LootContext.EntityTarget.CODEC.optionalFieldOf("entity").forGetter(function -> function.entity)
 					)
 				)
 				.apply(instance, SetLoreLootFunction::new)

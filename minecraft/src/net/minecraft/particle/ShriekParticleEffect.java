@@ -3,6 +3,7 @@ package net.minecraft.particle;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Locale;
 import net.minecraft.network.RegistryByteBuf;
@@ -12,7 +13,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 
 public class ShriekParticleEffect implements ParticleEffect {
-	public static final Codec<ShriekParticleEffect> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<ShriekParticleEffect> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(Codec.INT.fieldOf("delay").forGetter(particleEffect -> particleEffect.delay)).apply(instance, ShriekParticleEffect::new)
 	);
 	public static final PacketCodec<RegistryByteBuf, ShriekParticleEffect> PACKET_CODEC = PacketCodec.tuple(

@@ -1,13 +1,14 @@
 package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.biome.Biome;
 
 public class NoiseBasedCountPlacementModifier extends AbstractCountPlacementModifier {
-	public static final Codec<NoiseBasedCountPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<NoiseBasedCountPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codec.INT.fieldOf("noise_to_count_ratio").forGetter(noiseBasedCountPlacementModifier -> noiseBasedCountPlacementModifier.noiseToCountRatio),
 					Codec.DOUBLE.fieldOf("noise_factor").forGetter(noiseBasedCountPlacementModifier -> noiseBasedCountPlacementModifier.noiseFactor),

@@ -1,7 +1,7 @@
 package net.minecraft.structure.pool;
 
 import com.mojang.datafixers.util.Either;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.StructurePlacementData;
@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 
 public class LegacySinglePoolElement extends SinglePoolElement {
-	public static final Codec<LegacySinglePoolElement> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<LegacySinglePoolElement> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(locationGetter(), processorsGetter(), projectionGetter()).apply(instance, LegacySinglePoolElement::new)
 	);
 

@@ -18,9 +18,8 @@ public record FireworksComponent(int flightDuration, List<FireworkExplosionCompo
 	public static final int MAX_EXPLOSIONS = 256;
 	public static final Codec<FireworksComponent> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(Codecs.UNSIGNED_BYTE, "flight_duration", 0).forGetter(FireworksComponent::flightDuration),
-					Codecs.createStrictOptionalFieldCodec(Codecs.list(FireworkExplosionComponent.CODEC.listOf(), 256), "explosions", List.of())
-						.forGetter(FireworksComponent::explosions)
+					Codecs.UNSIGNED_BYTE.optionalFieldOf("flight_duration", 0).forGetter(FireworksComponent::flightDuration),
+					FireworkExplosionComponent.CODEC.sizeLimitedListOf(256).optionalFieldOf("explosions", List.of()).forGetter(FireworksComponent::explosions)
 				)
 				.apply(instance, FireworksComponent::new)
 	);

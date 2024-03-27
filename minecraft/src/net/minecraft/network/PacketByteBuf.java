@@ -58,7 +58,6 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -245,7 +244,7 @@ public class PacketByteBuf extends ByteBuf {
 	@Deprecated
 	public <T> T decode(DynamicOps<NbtElement> ops, Codec<T> codec, NbtSizeTracker sizeTracker) {
 		NbtElement nbtElement = this.readNbt(sizeTracker);
-		return Util.getResult(codec.parse(ops, nbtElement), error -> new DecoderException("Failed to decode: " + error + " " + nbtElement));
+		return codec.parse(ops, nbtElement).getOrThrow(error -> new DecoderException("Failed to decode: " + error + " " + nbtElement));
 	}
 
 	/**
@@ -258,7 +257,7 @@ public class PacketByteBuf extends ByteBuf {
 	 */
 	@Deprecated
 	public <T> PacketByteBuf encode(DynamicOps<NbtElement> ops, Codec<T> codec, T value) {
-		NbtElement nbtElement = Util.getResult(codec.encodeStart(ops, value), error -> new EncoderException("Failed to encode: " + error + " " + value));
+		NbtElement nbtElement = codec.encodeStart(ops, value).getOrThrow(error -> new EncoderException("Failed to encode: " + error + " " + value));
 		this.writeNbt(nbtElement);
 		return this;
 	}
@@ -275,7 +274,7 @@ public class PacketByteBuf extends ByteBuf {
 	public <T> T decodeAsJson(Codec<T> codec) {
 		JsonElement jsonElement = JsonHelper.deserialize(GSON, this.readString(), JsonElement.class);
 		DataResult<T> dataResult = codec.parse(JsonOps.INSTANCE, jsonElement);
-		return Util.getResult(dataResult, error -> new DecoderException("Failed to decode json: " + error));
+		return dataResult.getOrThrow(error -> new DecoderException("Failed to decode json: " + error));
 	}
 
 	/**
@@ -288,7 +287,7 @@ public class PacketByteBuf extends ByteBuf {
 	 */
 	public <T> void encodeAsJson(Codec<T> codec, T value) {
 		DataResult<JsonElement> dataResult = codec.encodeStart(JsonOps.INSTANCE, value);
-		this.writeString(GSON.toJson(Util.getResult(dataResult, error -> new EncoderException("Failed to encode: " + error + " " + value))));
+		this.writeString(GSON.toJson(dataResult.getOrThrow(error -> new EncoderException("Failed to encode: " + error + " " + value))));
 	}
 
 	public static <T> IntFunction<T> getMaxValidator(IntFunction<T> applier, int max) {

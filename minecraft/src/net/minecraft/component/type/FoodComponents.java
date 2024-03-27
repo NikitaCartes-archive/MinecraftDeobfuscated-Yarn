@@ -83,6 +83,7 @@ public class FoodComponents {
 	public static final FoodComponent SWEET_BERRIES = new FoodComponent.Builder().hunger(2).saturationModifier(0.1F).build();
 	public static final FoodComponent GLOW_BERRIES = new FoodComponent.Builder().hunger(2).saturationModifier(0.1F).build();
 	public static final FoodComponent TROPICAL_FISH = new FoodComponent.Builder().hunger(1).saturationModifier(0.1F).build();
+	public static final FoodComponent OMINOUS_BOTTLE = new FoodComponent.Builder().hunger(1).saturationModifier(0.1F).build();
 
 	private static FoodComponent.Builder createStew(int hunger) {
 		return new FoodComponent.Builder().hunger(hunger).saturationModifier(0.6F);

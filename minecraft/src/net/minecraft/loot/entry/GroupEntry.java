@@ -1,12 +1,12 @@
 package net.minecraft.loot.entry;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import net.minecraft.loot.condition.LootCondition;
 
 public class GroupEntry extends CombinedEntry {
-	public static final Codec<GroupEntry> CODEC = createCodec(GroupEntry::new);
+	public static final MapCodec<GroupEntry> CODEC = createCodec(GroupEntry::new);
 
 	GroupEntry(List<LootPoolEntry> list, List<LootCondition> list2) {
 		super(list, list2);

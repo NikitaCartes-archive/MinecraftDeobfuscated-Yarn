@@ -32,5 +32,7 @@ public class OneTwentyOneEntityTypeTagProvider extends ValueLookupTagProvider<En
 				EntityType.SLIME
 			);
 		this.getOrCreateTagBuilder(EntityTypeTags.SKELETONS).add(EntityType.BOGGED);
+		this.getOrCreateTagBuilder(EntityTypeTags.IMMUNE_TO_INFESTED).add(EntityType.SILVERFISH);
+		this.getOrCreateTagBuilder(EntityTypeTags.IMMUNE_TO_OOZING).add(EntityType.SLIME);
 	}
 }

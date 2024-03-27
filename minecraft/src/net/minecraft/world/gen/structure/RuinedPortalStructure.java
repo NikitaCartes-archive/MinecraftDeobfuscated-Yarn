@@ -2,6 +2,7 @@ package net.minecraft.world.gen.structure;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +48,7 @@ public class RuinedPortalStructure extends Structure {
 	private static final float RARE_PORTAL_CHANCE = 0.05F;
 	private static final int MIN_BLOCKS_ABOVE_WORLD_BOTTOM = 15;
 	private final List<RuinedPortalStructure.Setup> setups;
-	public static final Codec<RuinedPortalStructure> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<RuinedPortalStructure> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					configCodecBuilder(instance), Codecs.nonEmptyList(RuinedPortalStructure.Setup.CODEC.listOf()).fieldOf("setups").forGetter(structure -> structure.setups)
 				)

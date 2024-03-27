@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -15,7 +16,13 @@ import javax.annotation.Nullable;
 import net.minecraft.block.enums.TrialSpawnerState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -28,6 +35,7 @@ import net.minecraft.util.Uuids;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
@@ -35,15 +43,17 @@ import net.minecraft.world.WorldEvents;
 public class TrialSpawnerData {
 	public static final String SPAWN_DATA_KEY = "spawn_data";
 	private static final String NEXT_MOB_SPAWNS_AT_KEY = "next_mob_spawns_at";
+	private static final int field_50190 = 20;
+	private static final int field_50191 = 18000;
 	public static MapCodec<TrialSpawnerData> codec = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Uuids.SET_CODEC.optionalFieldOf("registered_players", Sets.<UUID>newHashSet()).forGetter(data -> data.players),
-					Uuids.SET_CODEC.optionalFieldOf("current_mobs", Sets.<UUID>newHashSet()).forGetter(data -> data.spawnedMobsAlive),
-					Codec.LONG.optionalFieldOf("cooldown_ends_at", Long.valueOf(0L)).forGetter(data -> data.cooldownEnd),
-					Codec.LONG.optionalFieldOf("next_mob_spawns_at", Long.valueOf(0L)).forGetter(data -> data.nextMobSpawnsAt),
-					Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("total_mobs_spawned", 0).forGetter(data -> data.totalSpawnedMobs),
-					MobSpawnerEntry.CODEC.optionalFieldOf("spawn_data").forGetter(data -> data.spawnData),
-					RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).optionalFieldOf("ejecting_loot_table").forGetter(data -> data.rewardLootTable)
+					Uuids.SET_CODEC.lenientOptionalFieldOf("registered_players", Sets.<UUID>newHashSet()).forGetter(data -> data.players),
+					Uuids.SET_CODEC.lenientOptionalFieldOf("current_mobs", Sets.<UUID>newHashSet()).forGetter(data -> data.spawnedMobsAlive),
+					Codec.LONG.lenientOptionalFieldOf("cooldown_ends_at", Long.valueOf(0L)).forGetter(data -> data.cooldownEnd),
+					Codec.LONG.lenientOptionalFieldOf("next_mob_spawns_at", Long.valueOf(0L)).forGetter(data -> data.nextMobSpawnsAt),
+					Codec.intRange(0, Integer.MAX_VALUE).lenientOptionalFieldOf("total_mobs_spawned", 0).forGetter(data -> data.totalSpawnedMobs),
+					MobSpawnerEntry.CODEC.lenientOptionalFieldOf("spawn_data").forGetter(data -> data.spawnData),
+					RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).lenientOptionalFieldOf("ejecting_loot_table").forGetter(data -> data.rewardLootTable)
 				)
 				.apply(instance, TrialSpawnerData::new)
 	);
@@ -54,9 +64,10 @@ public class TrialSpawnerData {
 	public int totalSpawnedMobs;
 	public Optional<MobSpawnerEntry> spawnData;
 	public Optional<RegistryKey<LootTable>> rewardLootTable;
-	public DataPool<MobSpawnerEntry> spawnDataPool;
 	@Nullable
 	protected Entity displayEntity;
+	@Nullable
+	private DataPool<ItemStack> itemsToDropWhenOminous;
 	protected double displayEntityRotation;
 	protected double lastDisplayEntityRotation;
 
@@ -82,15 +93,6 @@ public class TrialSpawnerData {
 		this.rewardLootTable = rewardLootTable;
 	}
 
-	public void populateSpawnDataPool(TrialSpawnerConfig config) {
-		DataPool<MobSpawnerEntry> dataPool = config.spawnPotentialsDefinition();
-		if (dataPool.isEmpty()) {
-			this.spawnDataPool = DataPool.of((MobSpawnerEntry)this.spawnData.orElseGet(MobSpawnerEntry::new));
-		} else {
-			this.spawnDataPool = dataPool;
-		}
-	}
-
 	public void reset() {
 		this.players.clear();
 		this.totalSpawnedMobs = 0;
@@ -101,7 +103,7 @@ public class TrialSpawnerData {
 
 	public boolean hasSpawnData(TrialSpawnerLogic logic, Random random) {
 		boolean bl = this.getSpawnData(logic, random).getNbt().contains("id", NbtElement.STRING_TYPE);
-		return bl || !this.spawnDataPool.isEmpty();
+		return bl || !logic.getConfig().spawnPotentialsDefinition().isEmpty();
 	}
 
 	public boolean hasSpawnedAllMobs(TrialSpawnerConfig config, int additionalPlayers) {
@@ -124,23 +126,79 @@ public class TrialSpawnerData {
 		return Math.max(0, this.players.size() - 1);
 	}
 
-	public void updatePlayers(ServerWorld world, BlockPos pos, EntityDetector entityDetector, EntityDetector.Selector entitySelector, int range) {
-		List<UUID> list = entityDetector.detect(world, entitySelector, pos, (double)range);
-		boolean bl = this.players.addAll(list);
-		if (bl) {
-			this.nextMobSpawnsAt = Math.max(world.getTime() + 40L, this.nextMobSpawnsAt);
-			world.syncWorldEvent(WorldEvents.TRIAL_SPAWNER_DETECTS_PLAYER, pos, this.players.size());
+	public void updatePlayers(ServerWorld world, BlockPos pos, TrialSpawnerLogic logic) {
+		boolean bl = (pos.asLong() + world.getTime()) % 20L != 0L;
+		if (!bl) {
+			if (!logic.getSpawnerState().equals(TrialSpawnerState.COOLDOWN) || !logic.isOminous()) {
+				List<UUID> list = logic.getEntityDetector().detect(world, logic.getEntitySelector(), pos, (double)logic.getDetectionRadius(), true);
+				PlayerEntity playerEntity = null;
+
+				for (UUID uUID : list) {
+					PlayerEntity playerEntity2 = world.getPlayerByUuid(uUID);
+					if (playerEntity2 != null) {
+						if (playerEntity2.hasStatusEffect(StatusEffects.BAD_OMEN)) {
+							this.applyTrialOmen(playerEntity2, playerEntity2.getStatusEffect(StatusEffects.BAD_OMEN));
+							playerEntity = playerEntity2;
+						} else if (playerEntity2.hasStatusEffect(StatusEffects.TRIAL_OMEN)) {
+							playerEntity = playerEntity2;
+						}
+					}
+				}
+
+				boolean bl2 = !logic.isOminous() && playerEntity != null;
+				if (!logic.getSpawnerState().equals(TrialSpawnerState.COOLDOWN) || bl2) {
+					if (bl2) {
+						world.syncWorldEvent(WorldEvents.TRIAL_SPAWNER_TURNS_OMINOUS, BlockPos.ofFloored(playerEntity.getEyePos()), 0);
+						logic.setOminous(world, pos);
+					}
+
+					boolean bl3 = logic.getData().players.isEmpty();
+					List<UUID> list2 = bl3 ? list : logic.getEntityDetector().detect(world, logic.getEntitySelector(), pos, (double)logic.getDetectionRadius(), false);
+					if (this.players.addAll(list2)) {
+						this.nextMobSpawnsAt = Math.max(world.getTime() + 40L, this.nextMobSpawnsAt);
+						if (!bl2) {
+							int i = logic.isOminous() ? WorldEvents.OMINOUS_TRIAL_SPAWNER_DETECTS_PLAYER : WorldEvents.TRIAL_SPAWNER_DETECTS_PLAYER;
+							world.syncWorldEvent(i, pos, this.players.size());
+						}
+					}
+				}
+			}
 		}
 	}
 
-	public boolean isCooldownPast(ServerWorld world, TrialSpawnerConfig config, float position) {
-		long l = this.cooldownEnd - (long)config.targetCooldownLength();
-		return (float)world.getTime() >= (float)l + position;
+	public void resetAndClearMobs(TrialSpawnerLogic logic, ServerWorld world) {
+		this.spawnedMobsAlive.stream().map(world::getEntity).forEach(entity -> {
+			if (entity != null) {
+				world.syncWorldEvent(WorldEvents.TRIAL_SPAWNER_SPAWNS_MOB_AT_SPAWN_POS, entity.getBlockPos(), TrialSpawnerLogic.Type.NORMAL.getIndex());
+				entity.remove(Entity.RemovalReason.DISCARDED);
+			}
+		});
+		if (!logic.getOminousConfig().spawnPotentialsDefinition().isEmpty()) {
+			this.spawnData = Optional.empty();
+		}
+
+		this.totalSpawnedMobs = 0;
+		this.spawnedMobsAlive.clear();
+		this.nextMobSpawnsAt = world.getTime() + (long)logic.getOminousConfig().ticksBetweenSpawn();
+		logic.updateListeners();
+		this.cooldownEnd = world.getTime() + logic.getOminousConfig().getCooldownLength();
 	}
 
-	public boolean isCooldownAtRepeating(ServerWorld world, TrialSpawnerConfig config, float position) {
-		long l = this.cooldownEnd - (long)config.targetCooldownLength();
-		return (float)(world.getTime() - l) % position == 0.0F;
+	private void applyTrialOmen(PlayerEntity player, StatusEffectInstance effectInstance) {
+		int i = effectInstance.getAmplifier() + 1;
+		int j = 18000 * i;
+		player.removeStatusEffect(StatusEffects.BAD_OMEN);
+		player.addStatusEffect(new StatusEffectInstance(StatusEffects.TRIAL_OMEN, j, 0));
+	}
+
+	public boolean isCooldownPast(ServerWorld world, float f, int i) {
+		long l = this.cooldownEnd - (long)i;
+		return (float)world.getTime() >= (float)l + f;
+	}
+
+	public boolean isCooldownAtRepeating(ServerWorld world, float f, int i) {
+		long l = this.cooldownEnd - (long)i;
+		return (float)(world.getTime() - l) % f == 0.0F;
 	}
 
 	public boolean isCooldownOver(ServerWorld world) {
@@ -155,10 +213,11 @@ public class TrialSpawnerData {
 		if (this.spawnData.isPresent()) {
 			return (MobSpawnerEntry)this.spawnData.get();
 		} else {
-			MobSpawnerEntry mobSpawnerEntry = (MobSpawnerEntry)this.spawnDataPool.getOrEmpty(random).map(Weighted.Present::getData).orElseGet(MobSpawnerEntry::new);
-			this.spawnData = Optional.of(mobSpawnerEntry);
+			DataPool<MobSpawnerEntry> dataPool = logic.getConfig().spawnPotentialsDefinition();
+			Optional<MobSpawnerEntry> optional = dataPool.isEmpty() ? this.spawnData : dataPool.getOrEmpty(random).map(Weighted.Present::data);
+			this.spawnData = Optional.of((MobSpawnerEntry)optional.orElseGet(MobSpawnerEntry::new));
 			logic.updateListeners();
-			return mobSpawnerEntry;
+			return (MobSpawnerEntry)this.spawnData.get();
 		}
 	}
 
@@ -200,5 +259,35 @@ public class TrialSpawnerData {
 
 	public double getLastDisplayEntityRotation() {
 		return this.lastDisplayEntityRotation;
+	}
+
+	public DataPool<ItemStack> getItemsToDropWhenOminous(ServerWorld world, TrialSpawnerConfig config, BlockPos pos) {
+		if (this.itemsToDropWhenOminous != null) {
+			return this.itemsToDropWhenOminous;
+		} else {
+			LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(config.itemsToDropWhenOminous());
+			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world).build(LootContextTypes.EMPTY);
+			long l = getLootSeed(world, pos);
+			ObjectArrayList<ItemStack> objectArrayList = lootTable.generateLoot(lootContextParameterSet, l);
+			if (objectArrayList.isEmpty()) {
+				return DataPool.empty();
+			} else {
+				DataPool.Builder<ItemStack> builder = new DataPool.Builder<>();
+
+				for (ItemStack itemStack : objectArrayList) {
+					builder.add(itemStack.copyWithCount(1), itemStack.getCount());
+				}
+
+				this.itemsToDropWhenOminous = builder.build();
+				return this.itemsToDropWhenOminous;
+			}
+		}
+	}
+
+	private static long getLootSeed(ServerWorld world, BlockPos pos) {
+		BlockPos blockPos = new BlockPos(
+			MathHelper.floor((float)pos.getX() / 30.0F), MathHelper.floor((float)pos.getY() / 20.0F), MathHelper.floor((float)pos.getZ() / 30.0F)
+		);
+		return world.getSeed() + blockPos.asLong();
 	}
 }

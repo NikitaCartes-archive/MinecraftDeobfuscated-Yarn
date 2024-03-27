@@ -3,6 +3,7 @@ package net.minecraft.particle;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -15,7 +16,7 @@ import org.joml.Vector3f;
 public class DustParticleEffect extends AbstractDustParticleEffect {
 	public static final Vector3f RED = Vec3d.unpackRgb(16711680).toVector3f();
 	public static final DustParticleEffect DEFAULT = new DustParticleEffect(RED, 1.0F);
-	public static final Codec<DustParticleEffect> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<DustParticleEffect> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codecs.VECTOR_3F.fieldOf("color").forGetter(effect -> effect.color), Codec.FLOAT.fieldOf("scale").forGetter(effect -> effect.scale)
 				)

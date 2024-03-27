@@ -1,6 +1,7 @@
 package net.minecraft.particle;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.function.Function;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -48,6 +49,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType EXPLOSION_EMITTER = register("explosion_emitter", true);
 	public static final DefaultParticleType EXPLOSION = register("explosion", true);
 	public static final DefaultParticleType GUST = register("gust", true);
+	public static final DefaultParticleType SMALL_GUST = register("small_gust", false);
 	public static final DefaultParticleType GUST_EMITTER_LARGE = register("gust_emitter_large", true);
 	public static final DefaultParticleType GUST_EMITTER_SMALL = register("gust_emitter_small", true);
 	public static final DefaultParticleType SONIC_BOOM = register("sonic_boom", true);
@@ -57,6 +59,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType FIREWORK = register("firework", false);
 	public static final DefaultParticleType FISHING = register("fishing", false);
 	public static final DefaultParticleType FLAME = register("flame", false);
+	public static final DefaultParticleType INFESTED = register("infested", false);
 	public static final DefaultParticleType CHERRY_LEAVES = register("cherry_leaves", false);
 	public static final DefaultParticleType SCULK_SOUL = register("sculk_soul", false);
 	public static final ParticleType<SculkChargeParticleEffect> SCULK_CHARGE = register(
@@ -77,6 +80,7 @@ public class ParticleTypes {
 		"vibration", true, VibrationParticleEffect.PARAMETERS_FACTORY, type -> VibrationParticleEffect.CODEC, type -> VibrationParticleEffect.PACKET_CODEC
 	);
 	public static final DefaultParticleType ITEM_SLIME = register("item_slime", false);
+	public static final DefaultParticleType ITEM_COBWEB = register("item_cobweb", false);
 	public static final DefaultParticleType ITEM_SNOWBALL = register("item_snowball", false);
 	public static final DefaultParticleType LARGE_SMOKE = register("large_smoke", false);
 	public static final DefaultParticleType LAVA = register("lava", false);
@@ -134,7 +138,14 @@ public class ParticleTypes {
 	public static final DefaultParticleType EGG_CRACK = register("egg_crack", false);
 	public static final DefaultParticleType DUST_PLUME = register("dust_plume", false);
 	public static final DefaultParticleType TRIAL_SPAWNER_DETECTION = register("trial_spawner_detection", true);
+	public static final DefaultParticleType TRIAL_SPAWNER_DETECTION_OMINOUS = register("trial_spawner_detection_ominous", true);
 	public static final DefaultParticleType VAULT_CONNECTION = register("vault_connection", true);
+	public static final ParticleType<BlockStateParticleEffect> DUST_PILLAR = register(
+		"dust_pillar", true, BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec, BlockStateParticleEffect::createPacketCodec
+	);
+	public static final DefaultParticleType OMINOUS_SPAWNING = register("ominous_spawning", true);
+	public static final DefaultParticleType RAID_OMEN = register("raid_omen", false);
+	public static final DefaultParticleType TRIAL_OMEN = register("trial_omen", false);
 	public static final Codec<ParticleEffect> TYPE_CODEC = Registries.PARTICLE_TYPE.getCodec().dispatch("type", ParticleEffect::getType, ParticleType::getCodec);
 	public static final PacketCodec<RegistryByteBuf, ParticleEffect> PACKET_CODEC = PacketCodecs.registryValue(RegistryKeys.PARTICLE_TYPE)
 		.dispatch(ParticleEffect::getType, ParticleType::getPacketCodec);
@@ -147,13 +158,13 @@ public class ParticleTypes {
 		String name,
 		boolean alwaysShow,
 		ParticleEffect.Factory<T> factory,
-		Function<ParticleType<T>, Codec<T>> codecGetter,
+		Function<ParticleType<T>, MapCodec<T>> codecGetter,
 		Function<ParticleType<T>, PacketCodec<? super RegistryByteBuf, T>> packetCodecGetter
 	) {
 		return Registry.register(Registries.PARTICLE_TYPE, name, new ParticleType<T>(alwaysShow, factory) {
 			@Override
-			public Codec<T> getCodec() {
-				return (Codec<T>)codecGetter.apply(this);
+			public MapCodec<T> getCodec() {
+				return (MapCodec<T>)codecGetter.apply(this);
 			}
 
 			@Override

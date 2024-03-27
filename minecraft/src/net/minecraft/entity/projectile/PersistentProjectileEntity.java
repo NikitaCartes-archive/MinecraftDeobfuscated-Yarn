@@ -114,8 +114,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void setVelocity(double x, double y, double z, float speed, float divergence) {
-		super.setVelocity(x, y, z, speed, divergence);
+	public void setVelocity(double x, double y, double z, float power, float uncertainty) {
+		super.setVelocity(x, y, z, power, uncertainty);
 		this.life = 0;
 	}
 

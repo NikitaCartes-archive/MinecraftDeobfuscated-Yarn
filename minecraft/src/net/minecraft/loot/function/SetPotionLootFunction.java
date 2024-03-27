@@ -1,6 +1,6 @@
 package net.minecraft.loot.function;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.component.DataComponentTypes;
@@ -13,7 +13,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public class SetPotionLootFunction extends ConditionalLootFunction {
-	public static final Codec<SetPotionLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SetPotionLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.and(Registries.POTION.getEntryCodec().fieldOf("id").forGetter(function -> function.potion))
 				.apply(instance, SetPotionLootFunction::new)

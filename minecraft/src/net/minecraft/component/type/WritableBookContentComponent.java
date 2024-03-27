@@ -8,15 +8,14 @@ import java.util.stream.Stream;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.RawFilteredPair;
-import net.minecraft.util.dynamic.Codecs;
 
 public record WritableBookContentComponent(List<RawFilteredPair<String>> pages) implements BookContent<String, WritableBookContentComponent> {
 	public static final WritableBookContentComponent DEFAULT = new WritableBookContentComponent(List.of());
 	public static final int MAX_PAGE_LENGTH = 1024;
-	private static final Codec<RawFilteredPair<String>> PAGE_CODEC = RawFilteredPair.createCodec(Codecs.string(0, 1024));
-	public static final Codec<List<RawFilteredPair<String>>> PAGES_CODEC = Codecs.list(PAGE_CODEC.listOf(), 100);
+	private static final Codec<RawFilteredPair<String>> PAGE_CODEC = RawFilteredPair.createCodec(Codec.string(0, 1024));
+	public static final Codec<List<RawFilteredPair<String>>> PAGES_CODEC = PAGE_CODEC.sizeLimitedListOf(100);
 	public static final Codec<WritableBookContentComponent> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(Codecs.createStrictOptionalFieldCodec(PAGES_CODEC, "pages", List.of()).forGetter(WritableBookContentComponent::pages))
+		instance -> instance.group(PAGES_CODEC.optionalFieldOf("pages", List.of()).forGetter(WritableBookContentComponent::pages))
 				.apply(instance, WritableBookContentComponent::new)
 	);
 	public static final PacketCodec<ByteBuf, WritableBookContentComponent> PACKET_CODEC = RawFilteredPair.createPacketCodec(PacketCodecs.string(1024))

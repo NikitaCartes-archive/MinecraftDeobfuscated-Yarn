@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Set;
@@ -25,7 +26,7 @@ import net.minecraft.util.StringIdentifiable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 public class CopyNbtLootFunction extends ConditionalLootFunction {
-	public static final Codec<CopyNbtLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<CopyNbtLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.<LootNbtProvider, List<CopyNbtLootFunction.Operation>>and(
 					instance.group(

@@ -2,6 +2,7 @@ package net.minecraft.world.gen.structure;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.function.IntFunction;
@@ -20,7 +21,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class MineshaftStructure extends Structure {
-	public static final Codec<MineshaftStructure> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<MineshaftStructure> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					configCodecBuilder(instance), MineshaftStructure.Type.CODEC.fieldOf("mineshaft_type").forGetter(mineshaftStructure -> mineshaftStructure.type)
 				)

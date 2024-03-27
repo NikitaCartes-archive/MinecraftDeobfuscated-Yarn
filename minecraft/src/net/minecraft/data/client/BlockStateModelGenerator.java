@@ -3148,18 +3148,33 @@ public class BlockStateModelGenerator {
 		TextureMap textureMap = TextureMap.trialSpawner(block, "_side_inactive", "_top_inactive");
 		TextureMap textureMap2 = TextureMap.trialSpawner(block, "_side_active", "_top_active");
 		TextureMap textureMap3 = TextureMap.trialSpawner(block, "_side_active", "_top_ejecting_reward");
+		TextureMap textureMap4 = TextureMap.trialSpawner(block, "_side_inactive_ominous", "_top_inactive_ominous");
+		TextureMap textureMap5 = TextureMap.trialSpawner(block, "_side_active_ominous", "_top_active_ominous");
+		TextureMap textureMap6 = TextureMap.trialSpawner(block, "_side_active_ominous", "_top_ejecting_reward_ominous");
 		Identifier identifier = Models.CUBE_BOTTOM_TOP_INNER_FACES.upload(block, textureMap, this.modelCollector);
 		Identifier identifier2 = Models.CUBE_BOTTOM_TOP_INNER_FACES.upload(block, "_active", textureMap2, this.modelCollector);
 		Identifier identifier3 = Models.CUBE_BOTTOM_TOP_INNER_FACES.upload(block, "_ejecting_reward", textureMap3, this.modelCollector);
+		Identifier identifier4 = Models.CUBE_BOTTOM_TOP_INNER_FACES.upload(block, "_inactive_ominous", textureMap4, this.modelCollector);
+		Identifier identifier5 = Models.CUBE_BOTTOM_TOP_INNER_FACES.upload(block, "_active_ominous", textureMap5, this.modelCollector);
+		Identifier identifier6 = Models.CUBE_BOTTOM_TOP_INNER_FACES.upload(block, "_ejecting_reward_ominous", textureMap6, this.modelCollector);
 		this.registerParentedItemModel(block, identifier);
 		this.blockStateCollector
-			.accept(VariantsBlockStateSupplier.create(block).coordinate(BlockStateVariantMap.create(Properties.TRIAL_SPAWNER_STATE).register(state -> {
-				return switch (state) {
-					case INACTIVE, COOLDOWN -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier);
-					case WAITING_FOR_PLAYERS, ACTIVE, WAITING_FOR_REWARD_EJECTION -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier2);
-					case EJECTING_REWARD -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier3);
-				};
-			})));
+			.accept(
+				VariantsBlockStateSupplier.create(block)
+					.coordinate(
+						BlockStateVariantMap.create(Properties.TRIAL_SPAWNER_STATE, Properties.OMINOUS)
+							.register(
+								(spawnerState, ominous) -> {
+									return switch (spawnerState) {
+										case INACTIVE, COOLDOWN -> BlockStateVariant.create().put(VariantSettings.MODEL, ominous ? identifier4 : identifier);
+										case WAITING_FOR_PLAYERS, ACTIVE, WAITING_FOR_REWARD_EJECTION -> BlockStateVariant.create()
+										.put(VariantSettings.MODEL, ominous ? identifier5 : identifier2);
+										case EJECTING_REWARD -> BlockStateVariant.create().put(VariantSettings.MODEL, ominous ? identifier6 : identifier3);
+									};
+								}
+							)
+					)
+			);
 	}
 
 	private void registerVault() {
@@ -3172,17 +3187,25 @@ public class BlockStateModelGenerator {
 		Identifier identifier2 = Models.TEMPLATE_VAULT.upload(block, "_active", textureMap2, this.modelCollector);
 		Identifier identifier3 = Models.TEMPLATE_VAULT.upload(block, "_unlocking", textureMap3, this.modelCollector);
 		Identifier identifier4 = Models.TEMPLATE_VAULT.upload(block, "_ejecting_reward", textureMap4, this.modelCollector);
+		TextureMap textureMap5 = TextureMap.vault(block, "_front_off_ominous", "_side_off_ominous", "_top_ominous", "_bottom_ominous");
+		TextureMap textureMap6 = TextureMap.vault(block, "_front_on_ominous", "_side_on_ominous", "_top_ominous", "_bottom_ominous");
+		TextureMap textureMap7 = TextureMap.vault(block, "_front_ejecting_ominous", "_side_on_ominous", "_top_ominous", "_bottom_ominous");
+		TextureMap textureMap8 = TextureMap.vault(block, "_front_ejecting_ominous", "_side_on_ominous", "_top_ejecting_ominous", "_bottom_ominous");
+		Identifier identifier5 = Models.TEMPLATE_VAULT.upload(block, "_ominous", textureMap5, this.modelCollector);
+		Identifier identifier6 = Models.TEMPLATE_VAULT.upload(block, "_active_ominous", textureMap6, this.modelCollector);
+		Identifier identifier7 = Models.TEMPLATE_VAULT.upload(block, "_unlocking_ominous", textureMap7, this.modelCollector);
+		Identifier identifier8 = Models.TEMPLATE_VAULT.upload(block, "_ejecting_reward_ominous", textureMap8, this.modelCollector);
 		this.registerParentedItemModel(block, identifier);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(block)
 					.coordinate(createNorthDefaultHorizontalRotationStates())
-					.coordinate(BlockStateVariantMap.create(VaultBlock.VAULT_STATE).register(vaultState -> {
+					.coordinate(BlockStateVariantMap.create(VaultBlock.VAULT_STATE, VaultBlock.OMINOUS).register((vaultState, ominous) -> {
 						return switch (vaultState) {
-							case INACTIVE -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier);
-							case ACTIVE -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier2);
-							case UNLOCKING -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier3);
-							case EJECTING -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier4);
+							case INACTIVE -> BlockStateVariant.create().put(VariantSettings.MODEL, ominous ? identifier5 : identifier);
+							case ACTIVE -> BlockStateVariant.create().put(VariantSettings.MODEL, ominous ? identifier6 : identifier2);
+							case UNLOCKING -> BlockStateVariant.create().put(VariantSettings.MODEL, ominous ? identifier7 : identifier3);
+							case EJECTING -> BlockStateVariant.create().put(VariantSettings.MODEL, ominous ? identifier8 : identifier4);
 						};
 					}))
 			);

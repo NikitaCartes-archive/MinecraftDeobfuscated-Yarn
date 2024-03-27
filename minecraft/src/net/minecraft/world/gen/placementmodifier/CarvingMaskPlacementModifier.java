@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.placementmodifier;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -9,10 +9,9 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
 public class CarvingMaskPlacementModifier extends PlacementModifier {
-	public static final Codec<CarvingMaskPlacementModifier> MODIFIER_CODEC = GenerationStep.Carver.CODEC
+	public static final MapCodec<CarvingMaskPlacementModifier> MODIFIER_CODEC = GenerationStep.Carver.CODEC
 		.fieldOf("step")
-		.<CarvingMaskPlacementModifier>xmap(CarvingMaskPlacementModifier::new, config -> config.step)
-		.codec();
+		.xmap(CarvingMaskPlacementModifier::new, config -> config.step);
 	private final GenerationStep.Carver step;
 
 	private CarvingMaskPlacementModifier(GenerationStep.Carver step) {

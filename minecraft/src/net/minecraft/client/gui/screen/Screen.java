@@ -9,14 +9,12 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -584,8 +582,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	protected void addElementNarrations(NarrationMessageBuilder builder) {
-		List<Selectable> list = (List<Selectable>)this.selectables.stream().filter(Selectable::isNarratable).collect(Collectors.toList());
-		Collections.sort(list, Comparator.comparingInt(Navigable::getNavigationOrder));
+		List<Selectable> list = this.selectables.stream().filter(Selectable::isNarratable).sorted(Comparator.comparingInt(Navigable::getNavigationOrder)).toList();
 		Screen.SelectedElementNarrationData selectedElementNarrationData = findSelectedElementData(list, this.selected);
 		if (selectedElementNarrationData != null) {
 			if (selectedElementNarrationData.selectType.isFocused()) {

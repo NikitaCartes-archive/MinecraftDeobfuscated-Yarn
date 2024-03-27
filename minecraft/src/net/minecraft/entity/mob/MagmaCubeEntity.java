@@ -18,7 +18,6 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.WorldView;
 
 public class MagmaCubeEntity extends SlimeEntity {
 	public MagmaCubeEntity(EntityType<? extends MagmaCubeEntity> entityType, World world) {
@@ -31,11 +30,6 @@ public class MagmaCubeEntity extends SlimeEntity {
 
 	public static boolean canMagmaCubeSpawn(EntityType<MagmaCubeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return world.getDifficulty() != Difficulty.PEACEFUL;
-	}
-
-	@Override
-	public boolean canSpawn(WorldView world) {
-		return world.doesNotIntersectEntities(this) && !world.containsFluid(this.getBoundingBox());
 	}
 
 	@Override

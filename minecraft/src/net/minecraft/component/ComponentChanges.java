@@ -1,5 +1,6 @@
 package net.minecraft.component;
 
+import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
@@ -8,17 +9,17 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectMaps;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
-import net.minecraft.util.dynamic.Codecs;
 
 public final class ComponentChanges {
 	public static final ComponentChanges EMPTY = new ComponentChanges(Reference2ObjectMaps.emptyMap());
-	public static final Codec<ComponentChanges> CODEC = Codecs.keyDispatching(ComponentChanges.Type.CODEC, ComponentChanges.Type::getValueCodec).xmap(changes -> {
+	public static final Codec<ComponentChanges> CODEC = Codec.dispatchedMap(ComponentChanges.Type.CODEC, ComponentChanges.Type::getValueCodec).xmap(changes -> {
 		if (changes.isEmpty()) {
 			return EMPTY;
 		} else {
@@ -147,8 +148,35 @@ public final class ComponentChanges {
 		return this.changedComponents.size();
 	}
 
+	public ComponentChanges withRemovedIf(Predicate<DataComponentType<?>> removedTypePredicate) {
+		if (this.isEmpty()) {
+			return EMPTY;
+		} else {
+			Reference2ObjectMap<DataComponentType<?>, Optional<?>> reference2ObjectMap = new Reference2ObjectArrayMap<>(this.changedComponents);
+			reference2ObjectMap.keySet().removeIf(removedTypePredicate);
+			return reference2ObjectMap.isEmpty() ? EMPTY : new ComponentChanges(reference2ObjectMap);
+		}
+	}
+
 	public boolean isEmpty() {
 		return this.changedComponents.isEmpty();
+	}
+
+	public ComponentChanges.AddedRemovedPair toAddedRemovedPair() {
+		if (this.isEmpty()) {
+			return ComponentChanges.AddedRemovedPair.EMPTY;
+		} else {
+			ComponentMap.Builder builder = ComponentMap.builder();
+			Set<DataComponentType<?>> set = Sets.newIdentityHashSet();
+			this.changedComponents.forEach((type, value) -> {
+				if (value.isPresent()) {
+					builder.put(type, value.get());
+				} else {
+					set.add(type);
+				}
+			});
+			return new ComponentChanges.AddedRemovedPair(builder.build(), set);
+		}
 	}
 
 	public boolean equals(Object o) {
@@ -198,6 +226,10 @@ public final class ComponentChanges {
 		return stringBuilder.toString();
 	}
 
+	public static record AddedRemovedPair(ComponentMap added, Set<DataComponentType<?>> removed) {
+		public static final ComponentChanges.AddedRemovedPair EMPTY = new ComponentChanges.AddedRemovedPair(ComponentMap.EMPTY, Set.of());
+	}
+
 	public static class Builder {
 		private final Reference2ObjectMap<DataComponentType<?>, Optional<?>> changes = new Reference2ObjectArrayMap<>();
 
@@ -219,7 +251,7 @@ public final class ComponentChanges {
 		}
 
 		public ComponentChanges build() {
-			return new ComponentChanges(this.changes);
+			return this.changes.isEmpty() ? ComponentChanges.EMPTY : new ComponentChanges(this.changes);
 		}
 	}
 

@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.stateprovider;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Collection;
 import java.util.Optional;
@@ -16,7 +17,7 @@ import net.minecraft.util.math.random.Random;
  * A {@linkplain BlockStateProvider block state provider} that randomizes a single {@link IntProperty} of a block state provided by another provider.
  */
 public class RandomizedIntBlockStateProvider extends BlockStateProvider {
-	public static final Codec<RandomizedIntBlockStateProvider> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<RandomizedIntBlockStateProvider> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					BlockStateProvider.TYPE_CODEC.fieldOf("source").forGetter(randomizedIntBlockStateProvider -> randomizedIntBlockStateProvider.source),
 					Codec.STRING.fieldOf("property").forGetter(randomizedIntBlockStateProvider -> randomizedIntBlockStateProvider.propertyName),

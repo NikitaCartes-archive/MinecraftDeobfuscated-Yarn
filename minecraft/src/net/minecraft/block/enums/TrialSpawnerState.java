@@ -1,21 +1,34 @@
 package net.minecraft.block.enums;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import net.minecraft.block.spawner.EntityDetector;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Stream;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.spawner.MobSpawnerEntry;
 import net.minecraft.block.spawner.TrialSpawnerConfig;
 import net.minecraft.block.spawner.TrialSpawnerData;
 import net.minecraft.block.spawner.TrialSpawnerLogic;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.OminousItemSpawnerEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.Util;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public enum TrialSpawnerState implements StringIdentifiable {
@@ -45,8 +58,6 @@ public enum TrialSpawnerState implements StringIdentifiable {
 	public TrialSpawnerState tick(BlockPos pos, TrialSpawnerLogic logic, ServerWorld world) {
 		TrialSpawnerData trialSpawnerData = logic.getData();
 		TrialSpawnerConfig trialSpawnerConfig = logic.getConfig();
-		EntityDetector entityDetector = logic.getEntityDetector();
-		EntityDetector.Selector selector = logic.getEntitySelector();
 
 		return switch (this) {
 			case INACTIVE -> trialSpawnerData.setDisplayEntity(logic, world, WAITING_FOR_PLAYERS) == null ? this : WAITING_FOR_PLAYERS;
@@ -54,7 +65,7 @@ public enum TrialSpawnerState implements StringIdentifiable {
 				if (!trialSpawnerData.hasSpawnData(logic, world.random)) {
 					yield INACTIVE;
 				} else {
-					trialSpawnerData.updatePlayers(world, pos, entityDetector, selector, trialSpawnerConfig.requiredPlayerRange());
+					trialSpawnerData.updatePlayers(world, pos, logic);
 					yield trialSpawnerData.players.isEmpty() ? this : ACTIVE;
 				}
 			}
@@ -63,10 +74,14 @@ public enum TrialSpawnerState implements StringIdentifiable {
 					yield INACTIVE;
 				} else {
 					int i = trialSpawnerData.getAdditionalPlayers(pos);
-					trialSpawnerData.updatePlayers(world, pos, entityDetector, selector, trialSpawnerConfig.requiredPlayerRange());
+					trialSpawnerData.updatePlayers(world, pos, logic);
+					if (logic.isOminous()) {
+						this.spawnOminousItemSpawner(world, pos, logic);
+					}
+
 					if (trialSpawnerData.hasSpawnedAllMobs(trialSpawnerConfig, i)) {
 						if (trialSpawnerData.areMobsDead()) {
-							trialSpawnerData.cooldownEnd = world.getTime() + (long)trialSpawnerConfig.targetCooldownLength();
+							trialSpawnerData.cooldownEnd = world.getTime() + (long)logic.getCooldownLength();
 							trialSpawnerData.totalSpawnedMobs = 0;
 							trialSpawnerData.nextMobSpawnsAt = 0L;
 							yield WAITING_FOR_REWARD_EJECTION;
@@ -76,8 +91,8 @@ public enum TrialSpawnerState implements StringIdentifiable {
 							trialSpawnerData.spawnedMobsAlive.add(uuid);
 							trialSpawnerData.totalSpawnedMobs++;
 							trialSpawnerData.nextMobSpawnsAt = world.getTime() + (long)trialSpawnerConfig.ticksBetweenSpawn();
-							trialSpawnerData.spawnDataPool.getOrEmpty(world.getRandom()).ifPresent(spawnData -> {
-								trialSpawnerData.spawnData = Optional.of((MobSpawnerEntry)spawnData.getData());
+							trialSpawnerConfig.spawnPotentialsDefinition().getOrEmpty(world.getRandom()).ifPresent(spawnData -> {
+								trialSpawnerData.spawnData = Optional.of((MobSpawnerEntry)spawnData.data());
 								logic.updateListeners();
 							});
 						});
@@ -87,7 +102,7 @@ public enum TrialSpawnerState implements StringIdentifiable {
 				}
 			}
 			case WAITING_FOR_REWARD_EJECTION -> {
-				if (trialSpawnerData.isCooldownPast(world, trialSpawnerConfig, START_EJECTING_REWARDS_COOLDOWN)) {
+				if (trialSpawnerData.isCooldownPast(world, 40.0F, logic.getCooldownLength())) {
 					world.playSound(null, pos, SoundEvents.BLOCK_TRIAL_SPAWNER_OPEN_SHUTTER, SoundCategory.BLOCKS);
 					yield EJECTING_REWARD;
 				} else {
@@ -95,7 +110,7 @@ public enum TrialSpawnerState implements StringIdentifiable {
 				}
 			}
 			case EJECTING_REWARD -> {
-				if (!trialSpawnerData.isCooldownAtRepeating(world, trialSpawnerConfig, (float)BETWEEN_EJECTING_REWARDS_COOLDOWN)) {
+				if (!trialSpawnerData.isCooldownAtRepeating(world, (float)BETWEEN_EJECTING_REWARDS_COOLDOWN, logic.getCooldownLength())) {
 					yield this;
 				} else if (trialSpawnerData.players.isEmpty()) {
 					world.playSound(null, pos, SoundEvents.BLOCK_TRIAL_SPAWNER_CLOSE_SHUTTER, SoundCategory.BLOCKS);
@@ -106,20 +121,91 @@ public enum TrialSpawnerState implements StringIdentifiable {
 						trialSpawnerData.rewardLootTable = trialSpawnerConfig.lootTablesToEject().getDataOrEmpty(world.getRandom());
 					}
 
-					trialSpawnerData.rewardLootTable.ifPresent(registryKey -> logic.ejectLootTable(world, pos, registryKey));
+					trialSpawnerData.rewardLootTable.ifPresent(lootTable -> logic.ejectLootTable(world, pos, lootTable));
 					trialSpawnerData.players.remove(trialSpawnerData.players.iterator().next());
 					yield this;
 				}
 			}
 			case COOLDOWN -> {
-				if (trialSpawnerData.isCooldownOver(world)) {
+				trialSpawnerData.updatePlayers(world, pos, logic);
+				if (!trialSpawnerData.players.isEmpty()) {
+					trialSpawnerData.totalSpawnedMobs = 0;
+					trialSpawnerData.nextMobSpawnsAt = 0L;
+					yield ACTIVE;
+				} else if (trialSpawnerData.isCooldownOver(world)) {
 					trialSpawnerData.cooldownEnd = 0L;
+					logic.setNotOminous(world, pos);
 					yield WAITING_FOR_PLAYERS;
 				} else {
 					yield this;
 				}
 			}
 		};
+	}
+
+	private void spawnOminousItemSpawner(ServerWorld world, BlockPos pos, TrialSpawnerLogic logic) {
+		TrialSpawnerData trialSpawnerData = logic.getData();
+		TrialSpawnerConfig trialSpawnerConfig = logic.getConfig();
+		ItemStack itemStack = (ItemStack)trialSpawnerData.getItemsToDropWhenOminous(world, trialSpawnerConfig, pos)
+			.getDataOrEmpty(world.random)
+			.orElse(ItemStack.EMPTY);
+		if (!itemStack.isEmpty()) {
+			if (this.shouldCooldownEnd(world, trialSpawnerData)) {
+				getPosToSpawnItemSpawner(world, pos, logic, trialSpawnerData).ifPresent(posx -> {
+					OminousItemSpawnerEntity ominousItemSpawnerEntity = OminousItemSpawnerEntity.create(world, itemStack);
+					ominousItemSpawnerEntity.refreshPositionAfterTeleport(posx);
+					world.spawnEntity(ominousItemSpawnerEntity);
+					float f = (world.getRandom().nextFloat() - world.getRandom().nextFloat()) * 0.2F + 1.0F;
+					world.playSound(null, BlockPos.ofFloored(posx), SoundEvents.BLOCK_TRIAL_SPAWNER_SPAWN_ITEM_BEGIN, SoundCategory.BLOCKS, 1.0F, f);
+					trialSpawnerData.cooldownEnd = world.getTime() + logic.getOminousConfig().getCooldownLength();
+				});
+			}
+		}
+	}
+
+	private static Optional<Vec3d> getPosToSpawnItemSpawner(ServerWorld world, BlockPos pos, TrialSpawnerLogic logic, TrialSpawnerData data) {
+		List<PlayerEntity> list = data.players
+			.stream()
+			.map(world::getPlayerByUuid)
+			.filter(Objects::nonNull)
+			.filter(
+				player -> !player.isCreative()
+						&& !player.isSpectator()
+						&& player.isAlive()
+						&& player.squaredDistanceTo(pos.toCenterPos()) <= (double)MathHelper.square(logic.getDetectionRadius())
+			)
+			.toList();
+		if (list.isEmpty()) {
+			return Optional.empty();
+		} else {
+			Entity entity = getRandomEntity(list, data.spawnedMobsAlive, logic, pos, world);
+			return getPosAbove(entity, world);
+		}
+	}
+
+	private static Optional<Vec3d> getPosAbove(Entity entity, ServerWorld world) {
+		Vec3d vec3d = entity.getPos();
+		Vec3d vec3d2 = vec3d.offset(Direction.UP, (double)(entity.getHeight() + 2.0F + (float)world.random.nextInt(4)))
+			.offset(Direction.Type.HORIZONTAL.random(world.random), (double)world.random.nextInt(5));
+		BlockHitResult blockHitResult = world.raycast(
+			new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.VISUAL, RaycastContext.FluidHandling.NONE, ShapeContext.absent())
+		);
+		Vec3d vec3d3 = blockHitResult.getBlockPos().toCenterPos().offset(Direction.DOWN, 1.0);
+		BlockPos blockPos = BlockPos.ofFloored(vec3d3);
+		return !world.getBlockState(blockPos).getCollisionShape(world, blockPos).isEmpty() ? Optional.empty() : Optional.of(vec3d3);
+	}
+
+	private static Entity getRandomEntity(List<PlayerEntity> players, Set<UUID> entityUuids, TrialSpawnerLogic logic, BlockPos pos, ServerWorld world) {
+		Stream<Entity> stream = entityUuids.stream()
+			.map(world::getEntity)
+			.filter(Objects::nonNull)
+			.filter(entity -> entity.isAlive() && entity.squaredDistanceTo(pos.toCenterPos()) <= (double)MathHelper.square(logic.getDetectionRadius()));
+		List<Entity> list = Stream.concat(players.stream(), stream).toList();
+		return Util.getRandom(list, world.random);
+	}
+
+	private boolean shouldCooldownEnd(ServerWorld world, TrialSpawnerData data) {
+		return world.getTime() >= data.cooldownEnd;
 	}
 
 	public int getLuminance() {
@@ -138,8 +224,8 @@ public enum TrialSpawnerState implements StringIdentifiable {
 		return this.playsSound;
 	}
 
-	public void emitParticles(World world, BlockPos pos) {
-		this.particleEmitter.emit(world, world.getRandom(), pos);
+	public void emitParticles(World world, BlockPos pos, boolean ominous) {
+		this.particleEmitter.emit(world, world.getRandom(), pos, ominous);
 	}
 
 	@Override
@@ -166,20 +252,20 @@ public enum TrialSpawnerState implements StringIdentifiable {
 	}
 
 	interface ParticleEmitter {
-		TrialSpawnerState.ParticleEmitter NONE = (world, random, pos) -> {
+		TrialSpawnerState.ParticleEmitter NONE = (world, random, pos, ominous) -> {
 		};
-		TrialSpawnerState.ParticleEmitter WAITING = (world, random, pos) -> {
+		TrialSpawnerState.ParticleEmitter WAITING = (world, random, pos, ominous) -> {
 			if (random.nextInt(2) == 0) {
 				Vec3d vec3d = pos.toCenterPos().addRandom(random, 0.9F);
-				emitParticle(ParticleTypes.SMALL_FLAME, vec3d, world);
+				emitParticle(ominous ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.SMALL_FLAME, vec3d, world);
 			}
 		};
-		TrialSpawnerState.ParticleEmitter ACTIVE = (world, random, pos) -> {
+		TrialSpawnerState.ParticleEmitter ACTIVE = (world, random, pos, ominous) -> {
 			Vec3d vec3d = pos.toCenterPos().addRandom(random, 1.0F);
 			emitParticle(ParticleTypes.SMOKE, vec3d, world);
-			emitParticle(ParticleTypes.FLAME, vec3d, world);
+			emitParticle(ominous ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.FLAME, vec3d, world);
 		};
-		TrialSpawnerState.ParticleEmitter COOLDOWN = (world, random, pos) -> {
+		TrialSpawnerState.ParticleEmitter COOLDOWN = (world, random, pos, ominous) -> {
 			Vec3d vec3d = pos.toCenterPos().addRandom(random, 0.9F);
 			if (random.nextInt(3) == 0) {
 				emitParticle(ParticleTypes.SMOKE, vec3d, world);
@@ -199,6 +285,6 @@ public enum TrialSpawnerState implements StringIdentifiable {
 			world.addParticle(type, pos.getX(), pos.getY(), pos.getZ(), 0.0, 0.0, 0.0);
 		}
 
-		void emit(World world, Random random, BlockPos pos);
+		void emit(World world, Random random, BlockPos pos, boolean ominous);
 	}
 }

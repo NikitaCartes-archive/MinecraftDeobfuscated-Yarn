@@ -1,7 +1,7 @@
 package net.minecraft.world.gen.structure;
 
 import com.google.common.collect.Lists;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.structure.EndCityGenerator;
@@ -11,7 +11,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 
 public class EndCityStructure extends Structure {
-	public static final Codec<EndCityStructure> CODEC = createCodec(EndCityStructure::new);
+	public static final MapCodec<EndCityStructure> CODEC = createCodec(EndCityStructure::new);
 
 	public EndCityStructure(Structure.Config config) {
 		super(config);

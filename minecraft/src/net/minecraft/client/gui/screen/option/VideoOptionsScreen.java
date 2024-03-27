@@ -147,12 +147,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		int i = this.gameOptions.getGuiScale().getValue();
 		if (super.mouseClicked(mouseX, mouseY, button)) {
-			if (this.gameOptions.getGuiScale().getValue() != i) {
-				this.client.onResolutionChanged();
-			}
-
 			if (this.warningManager.shouldWarn()) {
 				List<Text> list = Lists.<Text>newArrayList(GRAPHICS_WARNING_MESSAGE_TEXT, ScreenTexts.LINE_BREAK);
 				String string = this.warningManager.getRendererWarning();
@@ -196,16 +191,14 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		if (Screen.hasControlDown()) {
 			SimpleOption<Integer> simpleOption = this.gameOptions.getGuiScale();
 			if (simpleOption.getCallbacks() instanceof SimpleOption.MaxSuppliableIntCallbacks maxSuppliableIntCallbacks) {
-				int i = simpleOption.getValue() + (int)Math.signum(verticalAmount);
-				if (i != 0 && i <= maxSuppliableIntCallbacks.maxInclusive()) {
+				int i = simpleOption.getValue();
+				int j = i == 0 ? maxSuppliableIntCallbacks.maxInclusive() + 1 : i;
+				int k = j + (int)Math.signum(verticalAmount);
+				if (k != 0 && k <= maxSuppliableIntCallbacks.maxInclusive() && k >= maxSuppliableIntCallbacks.minInclusive()) {
 					CyclingButtonWidget<Integer> cyclingButtonWidget = (CyclingButtonWidget<Integer>)this.list.getWidgetFor(simpleOption);
 					if (cyclingButtonWidget != null) {
-						simpleOption.setValue(i);
-						cyclingButtonWidget.setValue(i);
-					}
-
-					if (simpleOption.getValue() == i) {
-						this.client.onResolutionChanged();
+						simpleOption.setValue(k);
+						cyclingButtonWidget.setValue(k);
 						this.list.setScrollAmount(0.0);
 						return true;
 					}

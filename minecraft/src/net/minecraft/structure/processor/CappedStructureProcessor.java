@@ -1,6 +1,6 @@
 package net.minecraft.structure.processor;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -15,7 +15,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.ServerWorldAccess;
 
 public class CappedStructureProcessor extends StructureProcessor {
-	public static final Codec<CappedStructureProcessor> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<CappedStructureProcessor> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					StructureProcessorType.CODEC.fieldOf("delegate").forGetter(processor -> processor.delegate),
 					IntProvider.POSITIVE_CODEC.fieldOf("limit").forGetter(processor -> processor.limit)

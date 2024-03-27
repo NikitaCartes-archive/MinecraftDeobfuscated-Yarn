@@ -16,7 +16,6 @@ import net.minecraft.registry.RegistryCodecs;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.dynamic.Codecs;
 
 public record ItemPredicate(
 	Optional<RegistryEntryList<Item>> items,
@@ -26,10 +25,10 @@ public record ItemPredicate(
 ) {
 	public static final Codec<ItemPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(RegistryCodecs.entryList(RegistryKeys.ITEM), "items").forGetter(ItemPredicate::items),
-					Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "count", NumberRange.IntRange.ANY).forGetter(ItemPredicate::count),
-					Codecs.createStrictOptionalFieldCodec(ComponentPredicate.CODEC, "components", ComponentPredicate.EMPTY).forGetter(ItemPredicate::components),
-					Codecs.createStrictOptionalFieldCodec(ItemSubPredicate.PREDICATES_MAP_CODEC, "predicates", Map.of()).forGetter(ItemPredicate::subPredicates)
+					RegistryCodecs.entryList(RegistryKeys.ITEM).optionalFieldOf("items").forGetter(ItemPredicate::items),
+					NumberRange.IntRange.CODEC.optionalFieldOf("count", NumberRange.IntRange.ANY).forGetter(ItemPredicate::count),
+					ComponentPredicate.CODEC.optionalFieldOf("components", ComponentPredicate.EMPTY).forGetter(ItemPredicate::components),
+					ItemSubPredicate.PREDICATES_MAP_CODEC.optionalFieldOf("predicates", Map.of()).forGetter(ItemPredicate::subPredicates)
 				)
 				.apply(instance, ItemPredicate::new)
 	);

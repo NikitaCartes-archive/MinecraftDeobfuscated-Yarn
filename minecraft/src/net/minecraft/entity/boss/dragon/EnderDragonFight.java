@@ -555,10 +555,10 @@ public class EnderDragonFight {
 						Codec.BOOL.fieldOf("NeedsStateScanning").orElse(true).forGetter(EnderDragonFight.Data::needsStateScanning),
 						Codec.BOOL.fieldOf("DragonKilled").orElse(false).forGetter(EnderDragonFight.Data::dragonKilled),
 						Codec.BOOL.fieldOf("PreviouslyKilled").orElse(false).forGetter(EnderDragonFight.Data::previouslyKilled),
-						Codec.BOOL.optionalFieldOf("IsRespawning", Boolean.valueOf(false)).forGetter(EnderDragonFight.Data::isRespawning),
-						Uuids.INT_STREAM_CODEC.optionalFieldOf("Dragon").forGetter(EnderDragonFight.Data::dragonUUID),
-						BlockPos.CODEC.optionalFieldOf("ExitPortalLocation").forGetter(EnderDragonFight.Data::exitPortalLocation),
-						Codec.list(Codec.INT).optionalFieldOf("Gateways").forGetter(EnderDragonFight.Data::gateways)
+						Codec.BOOL.lenientOptionalFieldOf("IsRespawning", Boolean.valueOf(false)).forGetter(EnderDragonFight.Data::isRespawning),
+						Uuids.INT_STREAM_CODEC.lenientOptionalFieldOf("Dragon").forGetter(EnderDragonFight.Data::dragonUUID),
+						BlockPos.CODEC.lenientOptionalFieldOf("ExitPortalLocation").forGetter(EnderDragonFight.Data::exitPortalLocation),
+						Codec.list(Codec.INT).lenientOptionalFieldOf("Gateways").forGetter(EnderDragonFight.Data::gateways)
 					)
 					.apply(instance, EnderDragonFight.Data::new)
 		);

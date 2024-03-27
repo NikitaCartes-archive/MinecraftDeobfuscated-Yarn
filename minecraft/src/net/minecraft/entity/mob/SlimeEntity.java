@@ -46,6 +46,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	private static final TrackedData<Integer> SLIME_SIZE = DataTracker.registerData(SlimeEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	public static final int MIN_SIZE = 1;
 	public static final int MAX_SIZE = 127;
+	public static final int field_50136 = 4;
 	public float targetStretch;
 	public float stretch;
 	public float lastStretch;

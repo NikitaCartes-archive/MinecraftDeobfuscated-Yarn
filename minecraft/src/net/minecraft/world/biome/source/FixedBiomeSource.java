@@ -2,7 +2,7 @@ package net.minecraft.world.biome.source;
 
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -15,11 +15,10 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 
 public class FixedBiomeSource extends BiomeSource implements BiomeAccess.Storage {
-	public static final Codec<FixedBiomeSource> CODEC = Biome.REGISTRY_CODEC
+	public static final MapCodec<FixedBiomeSource> CODEC = Biome.REGISTRY_CODEC
 		.fieldOf("biome")
 		.<FixedBiomeSource>xmap(FixedBiomeSource::new, biomeSource -> biomeSource.biome)
-		.stable()
-		.codec();
+		.stable();
 	private final RegistryEntry<Biome> biome;
 
 	public FixedBiomeSource(RegistryEntry<Biome> biome) {
@@ -32,7 +31,7 @@ public class FixedBiomeSource extends BiomeSource implements BiomeAccess.Storage
 	}
 
 	@Override
-	protected Codec<? extends BiomeSource> getCodec() {
+	protected MapCodec<? extends BiomeSource> getCodec() {
 		return CODEC;
 	}
 

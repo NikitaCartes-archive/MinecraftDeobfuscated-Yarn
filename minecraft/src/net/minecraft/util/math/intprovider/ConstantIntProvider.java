@@ -1,13 +1,12 @@
 package net.minecraft.util.math.intprovider;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.dynamic.Codecs;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.util.math.random.Random;
 
 public class ConstantIntProvider extends IntProvider {
 	public static final ConstantIntProvider ZERO = new ConstantIntProvider(0);
-	public static final Codec<ConstantIntProvider> CODEC = Codecs.alternatively(Codec.INT, Codec.INT.fieldOf("value").codec())
-		.xmap(ConstantIntProvider::new, ConstantIntProvider::getValue);
+	public static final MapCodec<ConstantIntProvider> CODEC = Codec.INT.fieldOf("value").xmap(ConstantIntProvider::create, ConstantIntProvider::getValue);
 	private final int value;
 
 	public static ConstantIntProvider create(int value) {

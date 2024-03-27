@@ -1,6 +1,6 @@
 package net.minecraft.loot.provider.score;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
-public record LootScoreProviderType(Codec<? extends LootScoreProvider> codec) {
+public record LootScoreProviderType(MapCodec<? extends LootScoreProvider> codec) {
 }

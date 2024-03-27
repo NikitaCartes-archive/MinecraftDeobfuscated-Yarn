@@ -33,7 +33,7 @@ public final class BelowZeroRetrogen {
 	public static final Codec<BelowZeroRetrogen> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					STATUS_CODEC.fieldOf("target_status").forGetter(BelowZeroRetrogen::getTargetStatus),
-					MISSING_BEDROCK_CODEC.optionalFieldOf("missing_bedrock")
+					MISSING_BEDROCK_CODEC.lenientOptionalFieldOf("missing_bedrock")
 						.forGetter(belowZeroRetrogen -> belowZeroRetrogen.missingBedrock.isEmpty() ? Optional.empty() : Optional.of(belowZeroRetrogen.missingBedrock))
 				)
 				.apply(instance, BelowZeroRetrogen::new)

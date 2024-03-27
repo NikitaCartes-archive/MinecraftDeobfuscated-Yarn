@@ -231,6 +231,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		EntityType.Builder.create(BoggedEntity::new, SpawnGroup.MONSTER)
 			.dimensions(0.6F, 1.99F)
 			.eyeHeight(1.74F)
+			.vehicleAttachment(-0.7F)
 			.maxTrackingRange(8)
 			.requires(FeatureFlags.UPDATE_1_21)
 	);
@@ -524,6 +525,10 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.maxTrackingRange(10)
 			.trackingTickInterval(Integer.MAX_VALUE)
 	);
+	public static final EntityType<OminousItemSpawnerEntity> OMINOUS_ITEM_SPAWNER = register(
+		"ominous_item_spawner",
+		EntityType.Builder.create(OminousItemSpawnerEntity::new, SpawnGroup.MISC).dimensions(0.25F, 0.25F).maxTrackingRange(8).requires(FeatureFlags.UPDATE_1_21)
+	);
 	public static final EntityType<FireballEntity> FIREBALL = register(
 		"fireball",
 		EntityType.Builder.<FireballEntity>create(FireballEntity::new, SpawnGroup.MISC).dimensions(1.0F, 1.0F).maxTrackingRange(4).trackingTickInterval(10)
@@ -559,7 +564,12 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<MagmaCubeEntity> MAGMA_CUBE = register(
 		"magma_cube",
-		EntityType.Builder.create(MagmaCubeEntity::new, SpawnGroup.MONSTER).makeFireImmune().dimensions(0.52F, 0.52F).eyeHeight(0.325F).maxTrackingRange(8)
+		EntityType.Builder.create(MagmaCubeEntity::new, SpawnGroup.MONSTER)
+			.makeFireImmune()
+			.dimensions(0.52F, 0.52F)
+			.eyeHeight(0.325F)
+			.spawnBoxScale(4.0F)
+			.maxTrackingRange(8)
 	);
 	public static final EntityType<MarkerEntity> MARKER = register(
 		"marker", EntityType.Builder.create(MarkerEntity::new, SpawnGroup.MISC).dimensions(0.0F, 0.0F).maxTrackingRange(0)
@@ -700,7 +710,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.maxTrackingRange(10)
 	);
 	public static final EntityType<SlimeEntity> SLIME = register(
-		"slime", EntityType.Builder.create(SlimeEntity::new, SpawnGroup.MONSTER).dimensions(0.52F, 0.52F).eyeHeight(0.325F).maxTrackingRange(10)
+		"slime", EntityType.Builder.create(SlimeEntity::new, SpawnGroup.MONSTER).dimensions(0.52F, 0.52F).eyeHeight(0.325F).spawnBoxScale(4.0F).maxTrackingRange(10)
 	);
 	public static final EntityType<SmallFireballEntity> SMALL_FIREBALL = register(
 		"small_fireball",
@@ -976,6 +986,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	@Nullable
 	private RegistryKey<LootTable> lootTableId;
 	private final EntityDimensions dimensions;
+	private final float spawnBoxScale;
 	private final FeatureSet requiredFeatures;
 
 	private static <T extends Entity> EntityType<T> register(String id, EntityType.Builder<T> type) {
@@ -999,6 +1010,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		boolean spawnableFarFromPlayer,
 		ImmutableSet<Block> canSpawnInside,
 		EntityDimensions dimensions,
+		float spawnBoxScale,
 		int maxTrackDistance,
 		int trackTickInterval,
 		FeatureSet requiredFeatures
@@ -1011,6 +1023,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		this.fireImmune = fireImmune;
 		this.canSpawnInside = canSpawnInside;
 		this.dimensions = dimensions;
+		this.spawnBoxScale = spawnBoxScale;
 		this.maxTrackDistance = maxTrackDistance;
 		this.trackTickInterval = trackTickInterval;
 		this.requiredFeatures = requiredFeatures;
@@ -1196,9 +1209,10 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		);
 	}
 
-	public Box createSimpleBoundingBox(double feetX, double feetY, double feetZ) {
-		float f = this.getWidth() / 2.0F;
-		return new Box(feetX - (double)f, feetY, feetZ - (double)f, feetX + (double)f, feetY + (double)this.getHeight(), feetZ + (double)f);
+	public Box getSpawnBox(double x, double y, double z) {
+		float f = this.spawnBoxScale * this.getWidth() / 2.0F;
+		float g = this.spawnBoxScale * this.getHeight();
+		return new Box(x - (double)f, y, z - (double)f, x + (double)f, y + (double)g, z + (double)f);
 	}
 
 	/**
@@ -1338,6 +1352,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		private int maxTrackingRange = 5;
 		private int trackingTickInterval = 3;
 		private EntityDimensions dimensions = EntityDimensions.changing(0.6F, 1.8F);
+		private float spawnBoxScale = 1.0F;
 		private EntityAttachments.Builder attachments = EntityAttachments.builder();
 		private FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
 
@@ -1357,6 +1372,11 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 
 		public EntityType.Builder<T> dimensions(float width, float height) {
 			this.dimensions = EntityDimensions.changing(width, height);
+			return this;
+		}
+
+		public EntityType.Builder<T> spawnBoxScale(float spawnBoxScale) {
+			this.spawnBoxScale = spawnBoxScale;
 			return this;
 		}
 
@@ -1467,6 +1487,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 				this.spawnableFarFromPlayer,
 				this.canSpawnInside,
 				this.dimensions.withAttachments(this.attachments),
+				this.spawnBoxScale,
 				this.maxTrackingRange,
 				this.trackingTickInterval,
 				this.requiredFeatures

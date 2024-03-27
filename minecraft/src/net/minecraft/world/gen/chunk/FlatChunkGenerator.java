@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.chunk;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -26,7 +26,7 @@ import net.minecraft.world.gen.chunk.placement.StructurePlacementCalculator;
 import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class FlatChunkGenerator extends ChunkGenerator {
-	public static final Codec<FlatChunkGenerator> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<FlatChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(FlatChunkGeneratorConfig.CODEC.fieldOf("settings").forGetter(FlatChunkGenerator::getConfig))
 				.apply(instance, instance.stable(FlatChunkGenerator::new))
 	);
@@ -47,7 +47,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	protected Codec<? extends ChunkGenerator> getCodec() {
+	protected MapCodec<? extends ChunkGenerator> getCodec() {
 		return CODEC;
 	}
 

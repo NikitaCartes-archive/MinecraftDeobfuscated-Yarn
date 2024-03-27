@@ -32,7 +32,7 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 		Codec<Serialized<C, I>> codec = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.FLOAT.fieldOf("location").forGetter(Serialized::location),
-						Codecs.createLazy(mutableObject::getValue).fieldOf("value").forGetter(Serialized::value),
+						Codec.lazyInitialized(mutableObject::getValue).fieldOf("value").forGetter(Serialized::value),
 						Codec.FLOAT.fieldOf("derivative").forGetter(Serialized::derivative)
 					)
 					.apply(instance, (location, value, derivative) -> new Serialized(location, value, derivative))

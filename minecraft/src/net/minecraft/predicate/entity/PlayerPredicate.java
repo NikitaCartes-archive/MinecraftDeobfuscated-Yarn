@@ -52,14 +52,14 @@ public record PlayerPredicate(
 	public static final int LOOKING_AT_DISTANCE = 100;
 	public static final MapCodec<PlayerPredicate> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "level", NumberRange.IntRange.ANY).forGetter(PlayerPredicate::experienceLevel),
+					NumberRange.IntRange.CODEC.optionalFieldOf("level", NumberRange.IntRange.ANY).forGetter(PlayerPredicate::experienceLevel),
 					GameMode.CODEC.optionalFieldOf("gamemode").forGetter(PlayerPredicate::gameMode),
-					Codecs.createStrictOptionalFieldCodec(PlayerPredicate.StatMatcher.CODEC.listOf(), "stats", List.of()).forGetter(PlayerPredicate::stats),
-					Codecs.createStrictOptionalFieldCodec(Codecs.object2BooleanMap(Identifier.CODEC), "recipes", Object2BooleanMaps.emptyMap())
-						.forGetter(PlayerPredicate::recipes),
-					Codecs.createStrictOptionalFieldCodec(Codec.unboundedMap(Identifier.CODEC, PlayerPredicate.AdvancementPredicate.CODEC), "advancements", Map.of())
+					PlayerPredicate.StatMatcher.CODEC.listOf().optionalFieldOf("stats", List.of()).forGetter(PlayerPredicate::stats),
+					Codecs.object2BooleanMap(Identifier.CODEC).optionalFieldOf("recipes", Object2BooleanMaps.emptyMap()).forGetter(PlayerPredicate::recipes),
+					Codec.unboundedMap(Identifier.CODEC, PlayerPredicate.AdvancementPredicate.CODEC)
+						.optionalFieldOf("advancements", Map.of())
 						.forGetter(PlayerPredicate::advancements),
-					Codecs.createStrictOptionalFieldCodec(EntityPredicate.CODEC, "looking_at").forGetter(PlayerPredicate::lookingAt)
+					EntityPredicate.CODEC.optionalFieldOf("looking_at").forGetter(PlayerPredicate::lookingAt)
 				)
 				.apply(instance, PlayerPredicate::new)
 	);
@@ -147,7 +147,7 @@ public record PlayerPredicate(
 		Codec<PlayerPredicate.AdvancementPredicate> CODEC = Codec.either(
 				PlayerPredicate.CompletedAdvancementPredicate.CODEC, PlayerPredicate.AdvancementCriteriaPredicate.CODEC
 			)
-			.xmap(either -> either.map(completed -> completed, criteria -> criteria), predicate -> {
+			.xmap(Either::unwrap, predicate -> {
 				if (predicate instanceof PlayerPredicate.CompletedAdvancementPredicate completedAdvancementPredicate) {
 					return Either.left(completedAdvancementPredicate);
 				} else if (predicate instanceof PlayerPredicate.AdvancementCriteriaPredicate advancementCriteriaPredicate) {
@@ -228,11 +228,11 @@ public record PlayerPredicate(
 			this(type, value, range, Suppliers.memoize(() -> type.getOrCreateStat(value.value())));
 		}
 
-		private static <T> Codec<PlayerPredicate.StatMatcher<T>> createCodec(StatType<T> type) {
-			return RecordCodecBuilder.create(
+		private static <T> MapCodec<PlayerPredicate.StatMatcher<T>> createCodec(StatType<T> type) {
+			return RecordCodecBuilder.mapCodec(
 				instance -> instance.group(
 							type.getRegistry().getEntryCodec().fieldOf("stat").forGetter(PlayerPredicate.StatMatcher::value),
-							Codecs.createStrictOptionalFieldCodec(NumberRange.IntRange.CODEC, "value", NumberRange.IntRange.ANY).forGetter(PlayerPredicate.StatMatcher::range)
+							NumberRange.IntRange.CODEC.optionalFieldOf("value", NumberRange.IntRange.ANY).forGetter(PlayerPredicate.StatMatcher::range)
 						)
 						.apply(instance, (registryEntry, intRange) -> new PlayerPredicate.StatMatcher<>(type, registryEntry, intRange))
 			);

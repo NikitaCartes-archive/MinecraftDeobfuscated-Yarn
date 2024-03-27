@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import net.minecraft.datafixer.FixUtil;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 import net.minecraft.util.Util;
@@ -71,7 +70,7 @@ public class StatusEffectFix extends DataFix {
 
 	private static <T> Dynamic<T> renameKeyAndUpdateId(Dynamic<T> dynamic, String oldKey, Dynamic<T> dynamic2, String newKey) {
 		Optional<Dynamic<T>> optional = updateId(dynamic, oldKey);
-		return FixUtil.replaceKey(dynamic2, oldKey, newKey, optional);
+		return dynamic2.replaceField(oldKey, newKey, optional);
 	}
 
 	private static <T> Dynamic<T> renameKeyAndUpdateId(Dynamic<T> dynamic, String oldKey, String newKey) {
@@ -80,13 +79,13 @@ public class StatusEffectFix extends DataFix {
 
 	private static <T> Dynamic<T> fixEffect(Dynamic<T> effectDynamic) {
 		effectDynamic = renameKeyAndUpdateId(effectDynamic, "Id", "id");
-		effectDynamic = FixUtil.renameKey(effectDynamic, "Ambient", "ambient");
-		effectDynamic = FixUtil.renameKey(effectDynamic, "Amplifier", "amplifier");
-		effectDynamic = FixUtil.renameKey(effectDynamic, "Duration", "duration");
-		effectDynamic = FixUtil.renameKey(effectDynamic, "ShowParticles", "show_particles");
-		effectDynamic = FixUtil.renameKey(effectDynamic, "ShowIcon", "show_icon");
+		effectDynamic = effectDynamic.renameField("Ambient", "ambient");
+		effectDynamic = effectDynamic.renameField("Amplifier", "amplifier");
+		effectDynamic = effectDynamic.renameField("Duration", "duration");
+		effectDynamic = effectDynamic.renameField("ShowParticles", "show_particles");
+		effectDynamic = effectDynamic.renameField("ShowIcon", "show_icon");
 		Optional<Dynamic<T>> optional = effectDynamic.get("HiddenEffect").result().map(StatusEffectFix::fixEffect);
-		return FixUtil.replaceKey(effectDynamic, "HiddenEffect", "hidden_effect", optional);
+		return effectDynamic.replaceField("HiddenEffect", "hidden_effect", optional);
 	}
 
 	private static <T> Dynamic<T> fixEffectList(Dynamic<T> dynamic, String oldEffectListKey, String newEffectListKey) {
@@ -94,13 +93,13 @@ public class StatusEffectFix extends DataFix {
 			.asStreamOpt()
 			.result()
 			.map(stream -> dynamic.createList(stream.map(StatusEffectFix::fixEffect)));
-		return FixUtil.replaceKey(dynamic, oldEffectListKey, newEffectListKey, optional);
+		return dynamic.replaceField(oldEffectListKey, newEffectListKey, optional);
 	}
 
 	private static <T> Dynamic<T> method_53083(Dynamic<T> dynamic, Dynamic<T> dynamic2) {
 		dynamic2 = renameKeyAndUpdateId(dynamic, "EffectId", dynamic2, "id");
 		Optional<Dynamic<T>> optional = dynamic.get("EffectDuration").result();
-		return FixUtil.replaceKey(dynamic2, "EffectDuration", "duration", optional);
+		return dynamic2.replaceField("EffectDuration", "duration", optional);
 	}
 
 	private static <T> Dynamic<T> method_53095(Dynamic<T> dynamic) {
@@ -162,7 +161,7 @@ public class StatusEffectFix extends DataFix {
 
 	private static <T> Dynamic<T> method_53106(Dynamic<T> dynamic) {
 		Optional<Dynamic<T>> optional = dynamic.get("Effects").asStreamOpt().result().map(stream -> dynamic.createList(stream.map(StatusEffectFix::method_53095)));
-		return FixUtil.replaceKey(dynamic, "Effects", "effects", optional);
+		return dynamic.replaceField("Effects", "effects", optional);
 	}
 
 	private TypeRewriteRule makeItemStacksRule() {

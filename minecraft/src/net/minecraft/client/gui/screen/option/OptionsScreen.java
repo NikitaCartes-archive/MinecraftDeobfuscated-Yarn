@@ -8,6 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.pack.PackScreen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.AxisGridWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
@@ -38,6 +39,7 @@ public class OptionsScreen extends Screen {
 	private static final Text RESOURCE_PACK_TEXT = Text.translatable("options.resourcepack");
 	private static final Text ACCESSIBILITY_TEXT = Text.translatable("options.accessibility");
 	private static final Text TELEMETRY_TEXT = Text.translatable("options.telemetry");
+	private static final Tooltip TELEMETRY_DISABLED_TOOLTIP = Tooltip.of(Text.translatable("options.telemetry.disabled"));
 	private static final Text CREDITS_AND_ATTRIBUTION_TEXT = Text.translatable("options.credits_and_attribution");
 	private static final int COLUMNS = 2;
 	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this, 61, 33);
@@ -79,7 +81,12 @@ public class OptionsScreen extends Screen {
 			)
 		);
 		adder.add(this.createButton(ACCESSIBILITY_TEXT, () -> new AccessibilityOptionsScreen(this, this.settings)));
-		adder.add(this.createButton(TELEMETRY_TEXT, () -> new TelemetryInfoScreen(this, this.settings)));
+		ButtonWidget buttonWidget = adder.add(this.createButton(TELEMETRY_TEXT, () -> new TelemetryInfoScreen(this, this.settings)));
+		if (!this.client.isTelemetryEnabledByApi()) {
+			buttonWidget.active = false;
+			buttonWidget.setTooltip(TELEMETRY_DISABLED_TOOLTIP);
+		}
+
 		adder.add(this.createButton(CREDITS_AND_ATTRIBUTION_TEXT, () -> new CreditsAndAttributionScreen(this)));
 		this.layout.addBody(gridWidget);
 		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).width(200).build());

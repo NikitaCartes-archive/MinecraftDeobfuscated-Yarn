@@ -7,13 +7,12 @@ import java.util.stream.Stream;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.dynamic.Codecs;
 
 public record WoodType(
 	String name, BlockSetType setType, BlockSoundGroup soundType, BlockSoundGroup hangingSignSoundType, SoundEvent fenceGateClose, SoundEvent fenceGateOpen
 ) {
 	private static final Map<String, WoodType> VALUES = new Object2ObjectArrayMap<>();
-	public static final Codec<WoodType> CODEC = Codecs.idChecked(WoodType::name, VALUES::get);
+	public static final Codec<WoodType> CODEC = Codec.stringResolver(WoodType::name, VALUES::get);
 	public static final WoodType OAK = register(new WoodType("oak", BlockSetType.OAK));
 	public static final WoodType SPRUCE = register(new WoodType("spruce", BlockSetType.SPRUCE));
 	public static final WoodType BIRCH = register(new WoodType("birch", BlockSetType.BIRCH));

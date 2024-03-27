@@ -1,13 +1,13 @@
 package net.minecraft.structure.rule.blockentity;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.random.Random;
 
 public class AppendStaticRuleBlockEntityModifier implements RuleBlockEntityModifier {
-	public static final Codec<AppendStaticRuleBlockEntityModifier> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<AppendStaticRuleBlockEntityModifier> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(NbtCompound.CODEC.fieldOf("data").forGetter(modifier -> modifier.nbt)).apply(instance, AppendStaticRuleBlockEntityModifier::new)
 	);
 	private final NbtCompound nbt;

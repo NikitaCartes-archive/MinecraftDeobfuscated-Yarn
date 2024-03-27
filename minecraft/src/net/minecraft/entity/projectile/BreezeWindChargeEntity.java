@@ -7,7 +7,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
 public class BreezeWindChargeEntity extends AbstractWindChargeEntity {
-	private static final AbstractWindChargeEntity.WindChargeExplosionBehavior EXPLOSION_BEHAVIOR = new AbstractWindChargeEntity.WindChargeExplosionBehavior();
 	private static final float EXPLOSION_POWER = 3.0F;
 
 	public BreezeWindChargeEntity(EntityType<? extends AbstractWindChargeEntity> entityType, World world) {

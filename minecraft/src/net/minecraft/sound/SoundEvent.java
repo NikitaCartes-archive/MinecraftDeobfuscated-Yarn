@@ -15,7 +15,8 @@ import net.minecraft.util.Identifier;
 public class SoundEvent {
 	public static final Codec<SoundEvent> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Identifier.CODEC.fieldOf("sound_id").forGetter(SoundEvent::getId), Codec.FLOAT.optionalFieldOf("range").forGetter(SoundEvent::getStaticDistanceToTravel)
+					Identifier.CODEC.fieldOf("sound_id").forGetter(SoundEvent::getId),
+					Codec.FLOAT.lenientOptionalFieldOf("range").forGetter(SoundEvent::getStaticDistanceToTravel)
 				)
 				.apply(instance, SoundEvent::of)
 	);

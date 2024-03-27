@@ -20,14 +20,11 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 
 public final class NbtComponent {
 	public static final NbtComponent DEFAULT = new NbtComponent(new NbtCompound());
 	public static final Codec<NbtComponent> CODEC = NbtCompound.CODEC.xmap(NbtComponent::new, component -> component.nbt);
-	public static final Codec<NbtComponent> CODEC_WITH_ID = Codecs.validate(
-		CODEC,
+	public static final Codec<NbtComponent> CODEC_WITH_ID = CODEC.validate(
 		component -> component.getNbt().contains("id", NbtElement.STRING_TYPE)
 				? DataResult.success(component)
 				: DataResult.error(() -> "Missing id for entity in: " + component)
@@ -87,11 +84,11 @@ public final class NbtComponent {
 	}
 
 	public boolean applyToBlockEntity(BlockEntity blockEntity, RegistryWrapper.WrapperLookup registryLookup) {
-		NbtCompound nbtCompound = blockEntity.createNbt(registryLookup);
+		NbtCompound nbtCompound = blockEntity.createComponentlessNbt(registryLookup);
 		NbtCompound nbtCompound2 = nbtCompound.copy();
 		nbtCompound.copyFrom(this.nbt);
 		if (!nbtCompound.equals(nbtCompound2)) {
-			blockEntity.readNbt(nbtCompound, registryLookup);
+			blockEntity.readComponentlessNbt(nbtCompound, registryLookup);
 			blockEntity.markDirty();
 			return true;
 		} else {
@@ -104,7 +101,7 @@ public final class NbtComponent {
 	}
 
 	public <T> DataResult<T> get(MapDecoder<T> decoder) {
-		MapLike<NbtElement> mapLike = Util.getResult(NbtOps.INSTANCE.getMap((NbtElement)this.nbt), IllegalStateException::new);
+		MapLike<NbtElement> mapLike = NbtOps.INSTANCE.getMap((NbtElement)this.nbt).getOrThrow();
 		return decoder.decode(NbtOps.INSTANCE, mapLike);
 	}
 

@@ -48,7 +48,7 @@ public record DimensionType(
 	public static final Codec<DimensionType> CODEC = Codecs.exceptionCatching(
 		RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.optionalLong(Codec.LONG.optionalFieldOf("fixed_time")).forGetter(DimensionType::fixedTime),
+						Codecs.optionalLong(Codec.LONG.lenientOptionalFieldOf("fixed_time")).forGetter(DimensionType::fixedTime),
 						Codec.BOOL.fieldOf("has_skylight").forGetter(DimensionType::hasSkyLight),
 						Codec.BOOL.fieldOf("has_ceiling").forGetter(DimensionType::hasCeiling),
 						Codec.BOOL.fieldOf("ultrawarm").forGetter(DimensionType::ultrawarm),

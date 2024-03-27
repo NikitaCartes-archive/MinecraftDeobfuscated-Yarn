@@ -1,6 +1,7 @@
 package net.minecraft.recipe;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -9,7 +10,6 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.dynamic.Codecs;
 
 /**
  * A recipe that has only one input ingredient. It can be used by any type
@@ -73,14 +73,14 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 
 	public static class Serializer<T extends CuttingRecipe> implements RecipeSerializer<T> {
 		final CuttingRecipe.RecipeFactory<T> recipeFactory;
-		private final Codec<T> codec;
+		private final MapCodec<T> codec;
 		private final PacketCodec<RegistryByteBuf, T> packetCodec;
 
 		protected Serializer(CuttingRecipe.RecipeFactory<T> recipeFactory) {
 			this.recipeFactory = recipeFactory;
-			this.codec = RecordCodecBuilder.create(
+			this.codec = RecordCodecBuilder.mapCodec(
 				instance -> instance.group(
-							Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(recipe -> recipe.group),
+							Codec.STRING.optionalFieldOf("group", "").forGetter(recipe -> recipe.group),
 							Ingredient.DISALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(recipe -> recipe.ingredient),
 							ItemStack.CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
 						)
@@ -98,7 +98,7 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 		}
 
 		@Override
-		public Codec<T> codec() {
+		public MapCodec<T> codec() {
 			return this.codec;
 		}
 

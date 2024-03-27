@@ -199,7 +199,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 		super.writeCustomDataToNbt(nbt);
 		nbt.putString("Type", this.getVariant().asString());
 		if (this.stewEffects != null) {
-			SuspiciousStewEffectsComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.stewEffects).result().ifPresent(nbtElement -> nbt.put("stew_effects", nbtElement));
+			SuspiciousStewEffectsComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.stewEffects).ifSuccess(nbtElement -> nbt.put("stew_effects", nbtElement));
 		}
 	}
 
@@ -210,8 +210,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 		if (nbt.contains("stew_effects", NbtElement.LIST_TYPE)) {
 			SuspiciousStewEffectsComponent.CODEC
 				.parse(NbtOps.INSTANCE, nbt.get("stew_effects"))
-				.result()
-				.ifPresent(suspiciousStewEffectsComponent -> this.stewEffects = suspiciousStewEffectsComponent);
+				.ifSuccess(suspiciousStewEffectsComponent -> this.stewEffects = suspiciousStewEffectsComponent);
 		}
 	}
 

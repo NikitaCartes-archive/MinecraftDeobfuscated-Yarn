@@ -1,7 +1,7 @@
 package net.minecraft.loot.condition;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.Set;
@@ -10,11 +10,10 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.item.ItemPredicate;
-import net.minecraft.util.dynamic.Codecs;
 
 public record MatchToolLootCondition(Optional<ItemPredicate> predicate) implements LootCondition {
-	public static final Codec<MatchToolLootCondition> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "predicate").forGetter(MatchToolLootCondition::predicate))
+	public static final MapCodec<MatchToolLootCondition> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(ItemPredicate.CODEC.optionalFieldOf("predicate").forGetter(MatchToolLootCondition::predicate))
 				.apply(instance, MatchToolLootCondition::new)
 	);
 

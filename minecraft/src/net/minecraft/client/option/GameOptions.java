@@ -74,7 +74,6 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.glfw.GLFW;
@@ -144,7 +143,8 @@ public class GameOptions {
 		SimpleOption.emptyTooltip(),
 		SimpleOption.enumValueText(),
 		new SimpleOption.PotentialValuesBasedCallbacks<>(
-			Arrays.asList(CloudRenderMode.values()), Codecs.either(CloudRenderMode.CODEC, Codec.BOOL, value -> value ? CloudRenderMode.FANCY : CloudRenderMode.OFF)
+			Arrays.asList(CloudRenderMode.values()),
+			Codec.withAlternative(CloudRenderMode.CODEC, Codec.BOOL, value -> value ? CloudRenderMode.FANCY : CloudRenderMode.OFF)
 		),
 		CloudRenderMode.FANCY,
 		cloudRenderMode -> {
@@ -795,8 +795,7 @@ public class GameOptions {
 			return !minecraftClient.isRunning() ? 2147483646 : minecraftClient.getWindow().calculateScaleFactor(0, minecraftClient.forcesUnicodeFont());
 		}, 2147483646),
 		0,
-		value -> {
-		}
+		value -> this.client.onResolutionChanged()
 	);
 	private final SimpleOption<ParticlesMode> particles = new SimpleOption<>(
 		"options.particles",
@@ -1408,8 +1407,8 @@ public class GameOptions {
 							JsonElement jsonElement = JsonParser.parseReader(jsonReader);
 							DataResult<T> dataResult = option.getCodec().parse(JsonOps.INSTANCE, jsonElement);
 							dataResult.error()
-								.ifPresent(partialResult -> GameOptions.LOGGER.error("Error parsing option value " + string + " for option " + option + ": " + partialResult.message()));
-							dataResult.result().ifPresent(option::setValue);
+								.ifPresent(error -> GameOptions.LOGGER.error("Error parsing option value " + string + " for option " + option + ": " + error.message()));
+							dataResult.ifSuccess(option::setValue);
 						}
 					}
 
@@ -1503,57 +1502,60 @@ public class GameOptions {
 
 			try {
 				printWriter.println("version:" + SharedConstants.getGameVersion().getSaveVersion().getId());
-				this.accept(new GameOptions.Visitor() {
-					public void print(String key) {
-						printWriter.print(key);
-						printWriter.print(':');
-					}
+				this.accept(
+					new GameOptions.Visitor() {
+						public void print(String key) {
+							printWriter.print(key);
+							printWriter.print(':');
+						}
 
-					@Override
-					public <T> void accept(String key, SimpleOption<T> option) {
-						DataResult<JsonElement> dataResult = option.getCodec().encodeStart(JsonOps.INSTANCE, option.getValue());
-						dataResult.error().ifPresent(partialResult -> GameOptions.LOGGER.error("Error saving option " + option + ": " + partialResult));
-						dataResult.result().ifPresent(json -> {
+						@Override
+						public <T> void accept(String key, SimpleOption<T> option) {
+							option.getCodec()
+								.encodeStart(JsonOps.INSTANCE, option.getValue())
+								.ifError(error -> GameOptions.LOGGER.error("Error saving option " + option + ": " + error))
+								.ifSuccess(json -> {
+									this.print(key);
+									printWriter.println(GameOptions.GSON.toJson(json));
+								});
+						}
+
+						@Override
+						public int visitInt(String key, int current) {
 							this.print(key);
-							printWriter.println(GameOptions.GSON.toJson(json));
-						});
-					}
+							printWriter.println(current);
+							return current;
+						}
 
-					@Override
-					public int visitInt(String key, int current) {
-						this.print(key);
-						printWriter.println(current);
-						return current;
-					}
+						@Override
+						public boolean visitBoolean(String key, boolean current) {
+							this.print(key);
+							printWriter.println(current);
+							return current;
+						}
 
-					@Override
-					public boolean visitBoolean(String key, boolean current) {
-						this.print(key);
-						printWriter.println(current);
-						return current;
-					}
+						@Override
+						public String visitString(String key, String current) {
+							this.print(key);
+							printWriter.println(current);
+							return current;
+						}
 
-					@Override
-					public String visitString(String key, String current) {
-						this.print(key);
-						printWriter.println(current);
-						return current;
-					}
+						@Override
+						public float visitFloat(String key, float current) {
+							this.print(key);
+							printWriter.println(current);
+							return current;
+						}
 
-					@Override
-					public float visitFloat(String key, float current) {
-						this.print(key);
-						printWriter.println(current);
-						return current;
+						@Override
+						public <T> T visitObject(String key, T current, Function<String, T> decoder, Function<T, String> encoder) {
+							this.print(key);
+							printWriter.println((String)encoder.apply(current));
+							return current;
+						}
 					}
-
-					@Override
-					public <T> T visitObject(String key, T current, Function<String, T> decoder, Function<T, String> encoder) {
-						this.print(key);
-						printWriter.println((String)encoder.apply(current));
-						return current;
-					}
-				});
+				);
 				if (this.client.getWindow().getVideoMode().isPresent()) {
 					printWriter.println("fullscreenResolution:" + ((VideoMode)this.client.getWindow().getVideoMode().get()).asString());
 				}

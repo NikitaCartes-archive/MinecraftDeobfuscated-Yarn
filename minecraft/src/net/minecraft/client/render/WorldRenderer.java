@@ -2911,6 +2911,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			case 2012:
 				ParticleUtil.spawnParticlesAround(this.world, pos, data, ParticleTypes.HAPPY_VILLAGER);
 				break;
+			case 2013:
+				ParticleUtil.spawnSmashAttackParticles(this.world, pos, data);
+				break;
 			case 3000:
 				this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, true, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0);
 				this.world
@@ -3032,21 +3035,21 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.EGG_CRACK, UniformIntProvider.create(3, 6));
 				break;
 			case 3011:
-				TrialSpawnerLogic.addMobSpawnParticles(this.world, pos, random);
+				TrialSpawnerLogic.addMobSpawnParticles(this.world, pos, random, TrialSpawnerLogic.Type.fromIndex(data).particle);
 				break;
 			case 3012:
 				this.world
 					.playSoundAtBlockCenter(
 						pos, SoundEvents.BLOCK_TRIAL_SPAWNER_SPAWN_MOB, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, true
 					);
-				TrialSpawnerLogic.addMobSpawnParticles(this.world, pos, random);
+				TrialSpawnerLogic.addMobSpawnParticles(this.world, pos, random, TrialSpawnerLogic.Type.fromIndex(data).particle);
 				break;
 			case 3013:
 				this.world
 					.playSoundAtBlockCenter(
 						pos, SoundEvents.BLOCK_TRIAL_SPAWNER_DETECT_PLAYER, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, true
 					);
-				TrialSpawnerLogic.addDetectionParticles(this.world, pos, random, data);
+				TrialSpawnerLogic.addDetectionParticles(this.world, pos, random, data, ParticleTypes.TRIAL_SPAWNER_DETECTION);
 				break;
 			case 3014:
 				this.world
@@ -3057,18 +3060,71 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				break;
 			case 3015:
 				if (this.world.getBlockEntity(pos) instanceof VaultBlockEntity vaultBlockEntity) {
-					VaultBlockEntity.Client.spawnActivateParticles(this.world, vaultBlockEntity.getPos(), vaultBlockEntity.getCachedState(), vaultBlockEntity.getSharedData());
+					VaultBlockEntity.Client.spawnActivateParticles(
+						this.world,
+						vaultBlockEntity.getPos(),
+						vaultBlockEntity.getCachedState(),
+						vaultBlockEntity.getSharedData(),
+						data == 0 ? ParticleTypes.SMALL_FLAME : ParticleTypes.SOUL_FIRE_FLAME
+					);
 					this.world
 						.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_VAULT_ACTIVATE, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, true);
 				}
 				break;
 			case 3016:
-				VaultBlockEntity.Client.spawnDeactivateParticles(this.world, pos);
+				VaultBlockEntity.Client.spawnDeactivateParticles(this.world, pos, data == 0 ? ParticleTypes.SMALL_FLAME : ParticleTypes.SOUL_FIRE_FLAME);
 				this.world
 					.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_VAULT_DEACTIVATE, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, true);
 				break;
 			case 3017:
 				TrialSpawnerLogic.addEjectItemParticles(this.world, pos, random);
+				break;
+			case 3018:
+				for (int sx = 0; sx < 10; sx++) {
+					double t = random.nextGaussian() * 0.02;
+					double u = random.nextGaussian() * 0.02;
+					double v = random.nextGaussian() * 0.02;
+					this.world
+						.addParticle(
+							ParticleTypes.POOF,
+							(double)pos.getX() + random.nextDouble(),
+							(double)pos.getY() + random.nextDouble(),
+							(double)pos.getZ() + random.nextDouble(),
+							t,
+							u,
+							v
+						);
+				}
+
+				this.world
+					.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_COBWEB_PLACE, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, true);
+				break;
+			case 3019:
+				this.world
+					.playSoundAtBlockCenter(
+						pos, SoundEvents.BLOCK_TRIAL_SPAWNER_DETECT_PLAYER, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, true
+					);
+				TrialSpawnerLogic.addDetectionParticles(this.world, pos, random, data, ParticleTypes.TRIAL_SPAWNER_DETECTION_OMINOUS);
+				break;
+			case 3020:
+				this.world
+					.playSoundAtBlockCenter(
+						pos,
+						SoundEvents.BLOCK_TRIAL_SPAWNER_CHARGE_ACTIVATE,
+						SoundCategory.BLOCKS,
+						data == 0 ? 0.3F : 1.0F,
+						(random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F,
+						true
+					);
+				TrialSpawnerLogic.addDetectionParticles(this.world, pos, random, 0, ParticleTypes.TRIAL_SPAWNER_DETECTION_OMINOUS);
+				TrialSpawnerLogic.addTrialOmenParticles(this.world, pos, random);
+				break;
+			case 3021:
+				this.world
+					.playSoundAtBlockCenter(
+						pos, SoundEvents.BLOCK_TRIAL_SPAWNER_SPAWN_ITEM, SoundCategory.BLOCKS, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, true
+					);
+				TrialSpawnerLogic.addMobSpawnParticles(this.world, pos, random, TrialSpawnerLogic.Type.fromIndex(data).particle);
 		}
 	}
 

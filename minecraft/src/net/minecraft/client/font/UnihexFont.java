@@ -208,8 +208,7 @@ public class UnihexFont implements Font {
 					)
 					.apply(instance, UnihexFont.DimensionOverride::new)
 		);
-		public static final Codec<UnihexFont.DimensionOverride> CODEC = Codecs.validate(
-			NON_VALIDATED_CODEC,
+		public static final Codec<UnihexFont.DimensionOverride> CODEC = NON_VALIDATED_CODEC.validate(
 			override -> override.from >= override.to
 					? DataResult.error(() -> "Invalid range: [" + override.from + ";" + override.to + "]")
 					: DataResult.success(override)

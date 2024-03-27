@@ -17,7 +17,6 @@ import net.minecraft.state.State;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.dynamic.Codecs;
 
 public record StatePredicate(List<StatePredicate.Condition> conditions) {
 	private static final Codec<List<StatePredicate.Condition>> CONDITION_LIST_CODEC = Codec.unboundedMap(Codec.STRING, StatePredicate.ValueMatcher.CODEC)
@@ -131,8 +130,8 @@ public record StatePredicate(List<StatePredicate.Condition> conditions) {
 	static record RangedValueMatcher(Optional<String> min, Optional<String> max) implements StatePredicate.ValueMatcher {
 		public static final Codec<StatePredicate.RangedValueMatcher> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(Codec.STRING, "min").forGetter(StatePredicate.RangedValueMatcher::min),
-						Codecs.createStrictOptionalFieldCodec(Codec.STRING, "max").forGetter(StatePredicate.RangedValueMatcher::max)
+						Codec.STRING.optionalFieldOf("min").forGetter(StatePredicate.RangedValueMatcher::min),
+						Codec.STRING.optionalFieldOf("max").forGetter(StatePredicate.RangedValueMatcher::max)
 					)
 					.apply(instance, StatePredicate.RangedValueMatcher::new)
 		);
@@ -167,7 +166,7 @@ public record StatePredicate(List<StatePredicate.Condition> conditions) {
 
 	interface ValueMatcher {
 		Codec<StatePredicate.ValueMatcher> CODEC = Codec.either(StatePredicate.ExactValueMatcher.CODEC, StatePredicate.RangedValueMatcher.CODEC)
-			.xmap(either -> either.map(exactValueMatcher -> exactValueMatcher, rangedValueMatcher -> rangedValueMatcher), valueMatcher -> {
+			.xmap(Either::unwrap, valueMatcher -> {
 				if (valueMatcher instanceof StatePredicate.ExactValueMatcher exactValueMatcher) {
 					return Either.left(exactValueMatcher);
 				} else if (valueMatcher instanceof StatePredicate.RangedValueMatcher rangedValueMatcher) {
@@ -179,7 +178,7 @@ public record StatePredicate(List<StatePredicate.Condition> conditions) {
 		PacketCodec<ByteBuf, StatePredicate.ValueMatcher> PACKET_CODEC = PacketCodecs.either(
 				StatePredicate.ExactValueMatcher.PACKET_CODEC, StatePredicate.RangedValueMatcher.PACKET_CODEC
 			)
-			.xmap(either -> either.map(exactValueMatcher -> exactValueMatcher, rangedValueMatcher -> rangedValueMatcher), valueMatcher -> {
+			.xmap(Either::unwrap, valueMatcher -> {
 				if (valueMatcher instanceof StatePredicate.ExactValueMatcher exactValueMatcher) {
 					return Either.left(exactValueMatcher);
 				} else if (valueMatcher instanceof StatePredicate.RangedValueMatcher rangedValueMatcher) {

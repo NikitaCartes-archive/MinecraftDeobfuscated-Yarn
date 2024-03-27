@@ -1,7 +1,7 @@
 package net.minecraft.loot.condition;
 
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContext;
@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 
 public record ReferenceLootCondition(RegistryKey<LootCondition> id) implements LootCondition {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final Codec<ReferenceLootCondition> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<ReferenceLootCondition> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(RegistryKey.createCodec(RegistryKeys.PREDICATE).fieldOf("name").forGetter(ReferenceLootCondition::id))
 				.apply(instance, ReferenceLootCondition::new)
 	);

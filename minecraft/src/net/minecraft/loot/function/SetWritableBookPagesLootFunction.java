@@ -1,6 +1,6 @@
 package net.minecraft.loot.function;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.component.DataComponentTypes;
@@ -12,7 +12,7 @@ import net.minecraft.text.RawFilteredPair;
 import net.minecraft.util.collection.ListOperation;
 
 public class SetWritableBookPagesLootFunction extends ConditionalLootFunction {
-	public static final Codec<SetWritableBookPagesLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SetWritableBookPagesLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.<List<RawFilteredPair<String>>, ListOperation>and(
 					instance.group(

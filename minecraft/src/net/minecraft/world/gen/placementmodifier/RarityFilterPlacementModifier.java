@@ -1,16 +1,15 @@
 package net.minecraft.world.gen.placementmodifier;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
 public class RarityFilterPlacementModifier extends AbstractConditionalPlacementModifier {
-	public static final Codec<RarityFilterPlacementModifier> MODIFIER_CODEC = Codecs.POSITIVE_INT
+	public static final MapCodec<RarityFilterPlacementModifier> MODIFIER_CODEC = Codecs.POSITIVE_INT
 		.fieldOf("chance")
-		.<RarityFilterPlacementModifier>xmap(RarityFilterPlacementModifier::new, rarityFilterPlacementModifier -> rarityFilterPlacementModifier.chance)
-		.codec();
+		.xmap(RarityFilterPlacementModifier::new, rarityFilterPlacementModifier -> rarityFilterPlacementModifier.chance);
 	private final int chance;
 
 	private RarityFilterPlacementModifier(int chance) {

@@ -1,12 +1,13 @@
 package net.minecraft.structure.rule;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.random.Random;
 
 public class RandomBlockStateMatchRuleTest extends RuleTest {
-	public static final Codec<RandomBlockStateMatchRuleTest> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<RandomBlockStateMatchRuleTest> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					BlockState.CODEC.fieldOf("block_state").forGetter(ruleTest -> ruleTest.blockState),
 					Codec.FLOAT.fieldOf("probability").forGetter(ruleTest -> ruleTest.probability)

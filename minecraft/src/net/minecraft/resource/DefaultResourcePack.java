@@ -54,19 +54,19 @@ public class DefaultResourcePack implements ResourcePack {
 	}
 
 	public void forEachNamespacedPath(ResourceType type, Identifier path, Consumer<Path> consumer) {
-		PathUtil.split(path.getPath()).get().ifLeft(segments -> {
+		PathUtil.split(path.getPath()).ifSuccess(segments -> {
 			String string = path.getNamespace();
 
 			for (Path pathx : (List)this.namespacePaths.get(type)) {
 				Path path2 = pathx.resolve(string);
 				consumer.accept(PathUtil.getPath(path2, segments));
 			}
-		}).ifRight(result -> LOGGER.error("Invalid path {}: {}", path, result.message()));
+		}).ifError(error -> LOGGER.error("Invalid path {}: {}", path, error.message()));
 	}
 
 	@Override
 	public void findResources(ResourceType type, String namespace, String prefix, ResourcePack.ResultConsumer consumer) {
-		PathUtil.split(prefix).get().ifLeft(segments -> {
+		PathUtil.split(prefix).ifSuccess(segments -> {
 			List<Path> list = (List<Path>)this.namespacePaths.get(type);
 			int i = list.size();
 			if (i == 1) {
@@ -86,7 +86,7 @@ public class DefaultResourcePack implements ResourcePack {
 					map.forEach(consumer);
 				}
 			}
-		}).ifRight(result -> LOGGER.error("Invalid path {}: {}", prefix, result.message()));
+		}).ifError(error -> LOGGER.error("Invalid path {}: {}", prefix, error.message()));
 	}
 
 	private static void collectIdentifiers(ResourcePack.ResultConsumer consumer, String namespace, Path root, List<String> prefixSegments) {
@@ -97,7 +97,7 @@ public class DefaultResourcePack implements ResourcePack {
 	@Nullable
 	@Override
 	public InputSupplier<InputStream> open(ResourceType type, Identifier id) {
-		return PathUtil.split(id.getPath()).get().map(segments -> {
+		return PathUtil.split(id.getPath()).mapOrElse(segments -> {
 			String string = id.getNamespace();
 
 			for (Path path : (List)this.namespacePaths.get(type)) {
@@ -108,8 +108,8 @@ public class DefaultResourcePack implements ResourcePack {
 			}
 
 			return null;
-		}, result -> {
-			LOGGER.error("Invalid path {}: {}", id, result.message());
+		}, error -> {
+			LOGGER.error("Invalid path {}: {}", id, error.message());
 			return null;
 		});
 	}

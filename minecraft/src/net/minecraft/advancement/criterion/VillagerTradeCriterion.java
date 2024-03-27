@@ -12,7 +12,6 @@ import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCriterion.Conditions> {
 	@Override
@@ -29,9 +28,9 @@ public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCrite
 		implements AbstractCriterion.Conditions {
 		public static final Codec<VillagerTradeCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(VillagerTradeCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "villager").forGetter(VillagerTradeCriterion.Conditions::villager),
-						Codecs.createStrictOptionalFieldCodec(ItemPredicate.CODEC, "item").forGetter(VillagerTradeCriterion.Conditions::item)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(VillagerTradeCriterion.Conditions::player),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("villager").forGetter(VillagerTradeCriterion.Conditions::villager),
+						ItemPredicate.CODEC.optionalFieldOf("item").forGetter(VillagerTradeCriterion.Conditions::item)
 					)
 					.apply(instance, VillagerTradeCriterion.Conditions::new)
 		);

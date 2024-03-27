@@ -12,7 +12,6 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Conditions> {
 	@Override
@@ -29,9 +28,9 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 		implements AbstractCriterion.Conditions {
 		public static final Codec<OnKilledCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(OnKilledCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "entity").forGetter(OnKilledCriterion.Conditions::entity),
-						Codecs.createStrictOptionalFieldCodec(DamageSourcePredicate.CODEC, "killing_blow").forGetter(OnKilledCriterion.Conditions::killingBlow)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(OnKilledCriterion.Conditions::player),
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("entity").forGetter(OnKilledCriterion.Conditions::entity),
+						DamageSourcePredicate.CODEC.optionalFieldOf("killing_blow").forGetter(OnKilledCriterion.Conditions::killingBlow)
 					)
 					.apply(instance, OnKilledCriterion.Conditions::new)
 		);

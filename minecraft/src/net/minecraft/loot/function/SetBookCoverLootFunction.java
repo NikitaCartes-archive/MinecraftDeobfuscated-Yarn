@@ -1,6 +1,7 @@
 package net.minecraft.loot.function;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Optional;
@@ -13,13 +14,13 @@ import net.minecraft.text.RawFilteredPair;
 import net.minecraft.util.dynamic.Codecs;
 
 public class SetBookCoverLootFunction extends ConditionalLootFunction {
-	public static final Codec<SetBookCoverLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SetBookCoverLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.<Optional<RawFilteredPair<String>>, Optional<String>, Optional<Integer>>and(
 					instance.group(
-						Codecs.createStrictOptionalFieldCodec(RawFilteredPair.createCodec(Codecs.string(0, 32)), "title").forGetter(function -> function.title),
-						Codecs.createStrictOptionalFieldCodec(Codec.STRING, "author").forGetter(function -> function.author),
-						Codecs.createStrictOptionalFieldCodec(Codecs.rangedInt(0, 3), "generation").forGetter(function -> function.generation)
+						RawFilteredPair.createCodec(Codec.string(0, 32)).optionalFieldOf("title").forGetter(function -> function.title),
+						Codec.STRING.optionalFieldOf("author").forGetter(function -> function.author),
+						Codecs.rangedInt(0, 3).optionalFieldOf("generation").forGetter(function -> function.generation)
 					)
 				)
 				.apply(instance, SetBookCoverLootFunction::new)

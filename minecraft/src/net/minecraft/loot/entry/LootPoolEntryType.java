@@ -1,6 +1,6 @@
 package net.minecraft.loot.entry;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
-public record LootPoolEntryType(Codec<? extends LootPoolEntry> codec) {
+public record LootPoolEntryType(MapCodec<? extends LootPoolEntry> codec) {
 }

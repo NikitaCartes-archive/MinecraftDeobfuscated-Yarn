@@ -949,6 +949,15 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_HEAVY_CORE_HIT,
 		SoundEvents.BLOCK_HEAVY_CORE_FALL
 	);
+	public static final BlockSoundGroup COBWEB = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_COBWEB_BREAK,
+		SoundEvents.BLOCK_COBWEB_STEP,
+		SoundEvents.BLOCK_COBWEB_PLACE,
+		SoundEvents.BLOCK_COBWEB_HIT,
+		SoundEvents.BLOCK_COBWEB_FALL
+	);
 	public final float volume;
 	public final float pitch;
 	private final SoundEvent breakSound;

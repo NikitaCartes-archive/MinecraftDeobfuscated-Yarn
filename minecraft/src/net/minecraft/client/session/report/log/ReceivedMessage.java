@@ -1,7 +1,7 @@
 package net.minecraft.client.session.report.log;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -72,7 +72,7 @@ public interface ReceivedMessage extends ChatLogEntry {
 	 */
 	@Environment(EnvType.CLIENT)
 	public static record ChatMessage(GameProfile profile, SignedMessage message, MessageTrustStatus trustStatus) implements ReceivedMessage {
-		public static final Codec<ReceivedMessage.ChatMessage> CHAT_MESSAGE_CODEC = RecordCodecBuilder.create(
+		public static final MapCodec<ReceivedMessage.ChatMessage> CHAT_MESSAGE_CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
 						Codecs.GAME_PROFILE_WITH_PROPERTIES.fieldOf("profile").forGetter(ReceivedMessage.ChatMessage::profile),
 						SignedMessage.CODEC.forGetter(ReceivedMessage.ChatMessage::message),
@@ -140,7 +140,7 @@ public interface ReceivedMessage extends ChatLogEntry {
 	 */
 	@Environment(EnvType.CLIENT)
 	public static record GameMessage(Text message, Instant timestamp) implements ReceivedMessage {
-		public static final Codec<ReceivedMessage.GameMessage> GAME_MESSAGE_CODEC = RecordCodecBuilder.create(
+		public static final MapCodec<ReceivedMessage.GameMessage> GAME_MESSAGE_CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
 						TextCodecs.CODEC.fieldOf("message").forGetter(ReceivedMessage.GameMessage::message),
 						Codecs.INSTANT.fieldOf("time_stamp").forGetter(ReceivedMessage.GameMessage::timestamp)

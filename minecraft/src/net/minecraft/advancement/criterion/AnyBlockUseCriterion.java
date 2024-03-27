@@ -14,7 +14,6 @@ import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.entity.LootContextPredicateValidator;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 
 public class AnyBlockUseCriterion extends AbstractCriterion<AnyBlockUseCriterion.Conditions> {
@@ -39,8 +38,8 @@ public class AnyBlockUseCriterion extends AbstractCriterion<AnyBlockUseCriterion
 	public static record Conditions(Optional<LootContextPredicate> player, Optional<LootContextPredicate> location) implements AbstractCriterion.Conditions {
 		public static final Codec<AnyBlockUseCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(AnyBlockUseCriterion.Conditions::player),
-						Codecs.createStrictOptionalFieldCodec(LootContextPredicate.CODEC, "location").forGetter(AnyBlockUseCriterion.Conditions::location)
+						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(AnyBlockUseCriterion.Conditions::player),
+						LootContextPredicate.CODEC.optionalFieldOf("location").forGetter(AnyBlockUseCriterion.Conditions::location)
 					)
 					.apply(instance, AnyBlockUseCriterion.Conditions::new)
 		);

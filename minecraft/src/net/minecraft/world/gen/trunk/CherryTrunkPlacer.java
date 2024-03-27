@@ -2,6 +2,7 @@ package net.minecraft.world.gen.trunk;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PillarBlock;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.IntProvider;
@@ -20,13 +20,14 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 
 public class CherryTrunkPlacer extends TrunkPlacer {
-	private static final Codec<UniformIntProvider> BRANCH_START_OFFSET_FROM_TOP_CODEC = Codecs.validate(
-		UniformIntProvider.CODEC,
-		branchStartOffsetFromTop -> branchStartOffsetFromTop.getMax() - branchStartOffsetFromTop.getMin() < 1
-				? DataResult.error(() -> "Need at least 2 blocks variation for the branch starts to fit both branches")
-				: DataResult.success(branchStartOffsetFromTop)
-	);
-	public static final Codec<CherryTrunkPlacer> CODEC = RecordCodecBuilder.create(
+	private static final Codec<UniformIntProvider> BRANCH_START_OFFSET_FROM_TOP_CODEC = UniformIntProvider.CODEC
+		.codec()
+		.validate(
+			branchStartOffsetFromTop -> branchStartOffsetFromTop.getMax() - branchStartOffsetFromTop.getMin() < 1
+					? DataResult.error(() -> "Need at least 2 blocks variation for the branch starts to fit both branches")
+					: DataResult.success(branchStartOffsetFromTop)
+		);
+	public static final MapCodec<CherryTrunkPlacer> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> fillTrunkPlacerFields(instance)
 				.<IntProvider, IntProvider, UniformIntProvider, IntProvider>and(
 					instance.group(

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import org.slf4j.Logger;
 
@@ -45,7 +46,7 @@ public class TestRunContext {
 		this.reuseSpawner = reuseSpawner;
 		this.initialSpawner = initialSpawner;
 		this.batches = ImmutableList.copyOf(batches);
-		this.states = (List<GameTestState>)this.batches.stream().flatMap(batch -> batch.states().stream()).collect(Collectors.toList());
+		this.states = (List<GameTestState>)this.batches.stream().flatMap(batch -> batch.states().stream()).collect(Util.toArrayList());
 		manager.setRunContext(this);
 		this.states.forEach(state -> state.addListener(new StructureTestListener()));
 	}

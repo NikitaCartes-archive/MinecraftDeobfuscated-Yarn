@@ -26,7 +26,6 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import org.slf4j.Logger;
@@ -38,10 +37,10 @@ public class LootTable {
 	public static final long DEFAULT_SEED = 0L;
 	public static final Codec<LootTable> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					LootContextTypes.CODEC.optionalFieldOf("type", GENERIC).forGetter(table -> table.type),
-					Codecs.createStrictOptionalFieldCodec(Identifier.CODEC, "random_sequence").forGetter(table -> table.randomSequenceId),
-					Codecs.createStrictOptionalFieldCodec(LootPool.CODEC.listOf(), "pools", List.of()).forGetter(table -> table.pools),
-					Codecs.createStrictOptionalFieldCodec(LootFunctionTypes.CODEC.listOf(), "functions", List.of()).forGetter(table -> table.functions)
+					LootContextTypes.CODEC.lenientOptionalFieldOf("type", GENERIC).forGetter(table -> table.type),
+					Identifier.CODEC.optionalFieldOf("random_sequence").forGetter(table -> table.randomSequenceId),
+					LootPool.CODEC.listOf().optionalFieldOf("pools", List.of()).forGetter(table -> table.pools),
+					LootFunctionTypes.CODEC.listOf().optionalFieldOf("functions", List.of()).forGetter(table -> table.functions)
 				)
 				.apply(instance, LootTable::new)
 	);

@@ -131,6 +131,17 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 		return true;
 	}
 
+	public Vec3d calculateVelocity(double x, double y, double z, float power, float uncertainty) {
+		return new Vec3d(x, y, z)
+			.normalize()
+			.add(
+				this.random.nextTriangular(0.0, 0.0172275 * (double)uncertainty),
+				this.random.nextTriangular(0.0, 0.0172275 * (double)uncertainty),
+				this.random.nextTriangular(0.0, 0.0172275 * (double)uncertainty)
+			)
+			.multiply((double)power);
+	}
+
 	/**
 	 * Sets velocity and updates rotation accordingly.
 	 * 
@@ -141,22 +152,15 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	 * {@code speed}.
 	 * 
 	 * @param z the Z component of the direction vector
-	 * @param divergence the fuzziness added to the direction; player usages have 1.0 and other
+	 * @param uncertainty the fuzziness added to the direction; player usages have 1.0 and other
 	 * mobs/tools have higher values; some mobs have difficulty-adjusted
 	 * values
-	 * @param speed the speed
+	 * @param power the speed
 	 * @param x the X component of the direction vector
 	 * @param y the Y component of the direction vector
 	 */
-	public void setVelocity(double x, double y, double z, float speed, float divergence) {
-		Vec3d vec3d = new Vec3d(x, y, z)
-			.normalize()
-			.add(
-				this.random.nextTriangular(0.0, 0.0172275 * (double)divergence),
-				this.random.nextTriangular(0.0, 0.0172275 * (double)divergence),
-				this.random.nextTriangular(0.0, 0.0172275 * (double)divergence)
-			)
-			.multiply((double)speed);
+	public void setVelocity(double x, double y, double z, float power, float uncertainty) {
+		Vec3d vec3d = this.calculateVelocity(x, y, z, power, uncertainty);
 		this.setVelocity(vec3d);
 		double d = vec3d.horizontalLength();
 		this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));

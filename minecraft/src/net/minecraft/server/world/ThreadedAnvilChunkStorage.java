@@ -219,15 +219,14 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	public void verifyChunkGenerator() {
 		DataResult<JsonElement> dataResult = ChunkGenerator.CODEC.encodeStart(JsonOps.INSTANCE, this.chunkGenerator);
 		DataResult<ChunkGenerator> dataResult2 = dataResult.flatMap(json -> ChunkGenerator.CODEC.parse(JsonOps.INSTANCE, json));
-		dataResult2.result()
-			.ifPresent(
-				chunkGenerator -> {
-					this.chunkGenerator = chunkGenerator;
-					this.field_49171 = new ChunkGenerationContext(
-						this.field_49171.world(), chunkGenerator, this.field_49171.structureManager(), this.field_49171.lightingProvider()
-					);
-				}
-			);
+		dataResult2.ifSuccess(
+			chunkGenerator -> {
+				this.chunkGenerator = chunkGenerator;
+				this.field_49171 = new ChunkGenerationContext(
+					this.field_49171.world(), chunkGenerator, this.field_49171.structureManager(), this.field_49171.lightingProvider()
+				);
+			}
+		);
 	}
 
 	private static double getSquaredDistance(ChunkPos pos, Entity entity) {
@@ -616,16 +615,18 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private Chunk recoverFromException(Throwable throwable, ChunkPos chunkPos) {
 		Throwable throwable2 = throwable instanceof CompletionException completionException ? completionException.getCause() : throwable;
 		Throwable throwable3 = throwable2 instanceof CrashException crashException ? crashException.getCause() : throwable2;
-		if (!(throwable3 instanceof IOException) && !(throwable3 instanceof ChunkSerializer.ChunkLoadingException)) {
+		boolean bl = throwable3 instanceof Error;
+		boolean bl2 = throwable3 instanceof IOException || throwable3 instanceof ChunkSerializer.ChunkLoadingException;
+		if (!bl && bl2) {
+			LOGGER.error("Couldn't load chunk {}", chunkPos, throwable3);
+			this.world.getServer().onChunkLoadFailure(chunkPos);
+			return this.getProtoChunk(chunkPos);
+		} else {
 			CrashReport crashReport = CrashReport.create(throwable, "Exception loading chunk");
 			CrashReportSection crashReportSection = crashReport.addElement("Chunk being loaded");
 			crashReportSection.add("pos", chunkPos);
 			this.markAsProtoChunk(chunkPos);
 			throw new CrashException(crashReport);
-		} else {
-			LOGGER.error("Couldn't load chunk {}", chunkPos, throwable3);
-			this.world.getServer().onChunkLoadFailure(chunkPos);
-			return this.getProtoChunk(chunkPos);
 		}
 	}
 

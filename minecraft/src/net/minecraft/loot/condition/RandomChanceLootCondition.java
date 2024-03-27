@@ -1,11 +1,12 @@
 package net.minecraft.loot.condition;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.loot.context.LootContext;
 
 public record RandomChanceLootCondition(float chance) implements LootCondition {
-	public static final Codec<RandomChanceLootCondition> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<RandomChanceLootCondition> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(Codec.FLOAT.fieldOf("chance").forGetter(RandomChanceLootCondition::chance)).apply(instance, RandomChanceLootCondition::new)
 	);
 

@@ -3,6 +3,7 @@ package net.minecraft.client.texture.atlas;
 import com.google.common.base.Suppliers;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -32,7 +33,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class PalettedPermutationsAtlasSource implements AtlasSource {
 	static final Logger LOGGER = LogUtils.getLogger();
-	public static final Codec<PalettedPermutationsAtlasSource> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<PalettedPermutationsAtlasSource> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codec.list(Identifier.CODEC).fieldOf("textures").forGetter(source -> source.textures),
 					Identifier.CODEC.fieldOf("palette_key").forGetter(source -> source.paletteKey),

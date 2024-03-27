@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.structure;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.block.BlockState;
@@ -15,7 +15,7 @@ import net.minecraft.world.gen.chunk.VerticalBlockSample;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
 
 public class NetherFossilStructure extends Structure {
-	public static final Codec<NetherFossilStructure> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<NetherFossilStructure> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(configCodecBuilder(instance), HeightProvider.CODEC.fieldOf("height").forGetter(structure -> structure.height))
 				.apply(instance, NetherFossilStructure::new)
 	);

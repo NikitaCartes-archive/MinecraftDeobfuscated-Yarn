@@ -22,8 +22,8 @@ public class BeehiveFieldRenameFix extends DataFix {
 
 	private Dynamic<?> method_57204(Dynamic<?> dynamic) {
 		dynamic = dynamic.remove("EntityData");
-		dynamic = FixUtil.renameKey(dynamic, "TicksInHive", "ticks_in_hive");
-		return FixUtil.renameKey(dynamic, "MinOccupationTicks", "min_ticks_in_hive");
+		dynamic = dynamic.renameField("TicksInHive", "ticks_in_hive");
+		return dynamic.renameField("MinOccupationTicks", "min_ticks_in_hive");
 	}
 
 	@Override

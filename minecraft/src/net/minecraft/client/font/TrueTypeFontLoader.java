@@ -14,7 +14,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.Codecs;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
@@ -23,7 +22,7 @@ import org.lwjgl.util.freetype.FreeType;
 
 @Environment(EnvType.CLIENT)
 public record TrueTypeFontLoader(Identifier location, float size, float oversample, TrueTypeFontLoader.Shift shift, String skip) implements FontLoader {
-	private static final Codec<String> SKIP_CODEC = Codecs.either(Codec.STRING, Codec.STRING.listOf(), chars -> String.join("", chars));
+	private static final Codec<String> SKIP_CODEC = Codec.withAlternative(Codec.STRING, Codec.STRING.listOf(), chars -> String.join("", chars));
 	public static final MapCodec<TrueTypeFontLoader> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Identifier.CODEC.fieldOf("file").forGetter(TrueTypeFontLoader::location),

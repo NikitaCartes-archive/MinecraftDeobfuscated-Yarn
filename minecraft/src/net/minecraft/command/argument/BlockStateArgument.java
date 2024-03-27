@@ -70,7 +70,7 @@ public class BlockStateArgument implements Predicate<CachedBlockPosition> {
 			if (this.data != null) {
 				BlockEntity blockEntity = world.getBlockEntity(pos);
 				if (blockEntity != null) {
-					blockEntity.readNbt(this.data, world.getRegistryManager());
+					blockEntity.read(this.data, world.getRegistryManager());
 				}
 			}
 

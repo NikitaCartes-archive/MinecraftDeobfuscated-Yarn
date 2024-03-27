@@ -1,7 +1,7 @@
 package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.block.entity.BlockEntityType;
@@ -19,7 +19,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.collection.DefaultedList;
 
 public class SetContentsLootFunction extends ConditionalLootFunction {
-	public static final Codec<SetContentsLootFunction> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SetContentsLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
 				.<RegistryEntry<BlockEntityType<?>>, List<LootPoolEntry>>and(
 					instance.group(

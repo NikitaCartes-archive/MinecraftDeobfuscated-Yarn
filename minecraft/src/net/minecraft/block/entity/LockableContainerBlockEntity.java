@@ -33,7 +33,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		this.lock = ContainerLock.fromNbt(nbt);
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
@@ -143,14 +143,16 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	protected abstract ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory);
 
 	@Override
-	public void readComponents(ComponentMap components) {
+	protected void readComponents(BlockEntity.ComponentsAccess components) {
+		super.readComponents(components);
 		this.customName = components.get(DataComponentTypes.CUSTOM_NAME);
 		this.lock = components.getOrDefault(DataComponentTypes.LOCK, ContainerLock.EMPTY);
 		components.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT).copyTo(this.getHeldStacks());
 	}
 
 	@Override
-	public void addComponents(ComponentMap.Builder componentMapBuilder) {
+	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
+		super.addComponents(componentMapBuilder);
 		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
 		if (!this.lock.equals(ContainerLock.EMPTY)) {
 			componentMapBuilder.add(DataComponentTypes.LOCK, this.lock);

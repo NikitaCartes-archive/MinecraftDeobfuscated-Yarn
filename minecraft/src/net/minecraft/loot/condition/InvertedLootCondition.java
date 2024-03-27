@@ -1,6 +1,6 @@
 package net.minecraft.loot.condition;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import net.minecraft.loot.LootTableReporter;
@@ -8,7 +8,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 
 public record InvertedLootCondition(LootCondition term) implements LootCondition {
-	public static final Codec<InvertedLootCondition> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<InvertedLootCondition> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(LootConditionTypes.CODEC.fieldOf("term").forGetter(InvertedLootCondition::term)).apply(instance, InvertedLootCondition::new)
 	);
 

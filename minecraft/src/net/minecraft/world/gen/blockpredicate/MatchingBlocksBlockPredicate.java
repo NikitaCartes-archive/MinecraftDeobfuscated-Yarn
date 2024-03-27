@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.blockpredicate;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -11,7 +11,7 @@ import net.minecraft.util.math.Vec3i;
 
 class MatchingBlocksBlockPredicate extends OffsetPredicate {
 	private final RegistryEntryList<Block> blocks;
-	public static final Codec<MatchingBlocksBlockPredicate> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<MatchingBlocksBlockPredicate> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> registerOffsetField(instance)
 				.and(RegistryCodecs.entryList(RegistryKeys.BLOCK).fieldOf("blocks").forGetter(predicate -> predicate.blocks))
 				.apply(instance, MatchingBlocksBlockPredicate::new)

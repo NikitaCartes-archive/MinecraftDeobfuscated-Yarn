@@ -5,22 +5,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.entity.EntityStatuses;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.PointOfInterestTypeTags;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
@@ -83,7 +78,7 @@ public class RaidManager extends PersistentState {
 	}
 
 	@Nullable
-	public Raid startRaid(ServerPlayerEntity player) {
+	public Raid startRaid(ServerPlayerEntity player, BlockPos pos) {
 		if (player.isSpectator()) {
 			return null;
 		} else if (this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
@@ -93,50 +88,34 @@ public class RaidManager extends PersistentState {
 			if (!dimensionType.hasRaids()) {
 				return null;
 			} else {
-				BlockPos blockPos = player.getBlockPos();
 				List<PointOfInterest> list = this.world
 					.getPointOfInterestStorage()
-					.getInCircle(poiType -> poiType.isIn(PointOfInterestTypeTags.VILLAGE), blockPos, 64, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
+					.getInCircle(poiType -> poiType.isIn(PointOfInterestTypeTags.VILLAGE), pos, 64, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
 					.toList();
 				int i = 0;
 				Vec3d vec3d = Vec3d.ZERO;
 
 				for (PointOfInterest pointOfInterest : list) {
-					BlockPos blockPos2 = pointOfInterest.getPos();
-					vec3d = vec3d.add((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
+					BlockPos blockPos = pointOfInterest.getPos();
+					vec3d = vec3d.add((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 					i++;
 				}
 
-				BlockPos blockPos3;
+				BlockPos blockPos2;
 				if (i > 0) {
 					vec3d = vec3d.multiply(1.0 / (double)i);
-					blockPos3 = BlockPos.ofFloored(vec3d);
+					blockPos2 = BlockPos.ofFloored(vec3d);
 				} else {
-					blockPos3 = blockPos;
+					blockPos2 = pos;
 				}
 
-				Raid raid = this.getOrCreateRaid(player.getServerWorld(), blockPos3);
-				boolean bl = false;
-				if (!raid.hasStarted()) {
-					if (!this.raids.containsKey(raid.getRaidId())) {
-						this.raids.put(raid.getRaidId(), raid);
-					}
-
-					bl = true;
-				} else if (raid.getBadOmenLevel() < raid.getMaxAcceptableBadOmenLevel()) {
-					bl = true;
-				} else {
-					player.removeStatusEffect(StatusEffects.BAD_OMEN);
-					player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, EntityStatuses.ADD_CLOUD_PARTICLES));
+				Raid raid = this.getOrCreateRaid(player.getServerWorld(), blockPos2);
+				if (!raid.hasStarted() && !this.raids.containsKey(raid.getRaidId())) {
+					this.raids.put(raid.getRaidId(), raid);
 				}
 
-				if (bl) {
+				if (!raid.hasStarted() || raid.getBadOmenLevel() < raid.getMaxAcceptableBadOmenLevel()) {
 					raid.start(player);
-					player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, EntityStatuses.ADD_CLOUD_PARTICLES));
-					if (!raid.hasSpawned()) {
-						player.incrementStat(Stats.RAID_TRIGGER);
-						Criteria.VOLUNTARY_EXILE.trigger(player);
-					}
 				}
 
 				this.markDirty();
