@@ -36,6 +36,7 @@ public class OptimizeWorldScreen extends Screen {
 		map.put(World.OVERWORLD, -13408734);
 		map.put(World.NETHER, -10075085);
 		map.put(World.END, -8943531);
+		map.put(World.POTATO, -559038737);
 		map.defaultReturnValue(-2236963);
 	});
 	private final BooleanConsumer callback;

@@ -450,7 +450,7 @@ public class MineshaftGenerator {
 						boolean bl3 = this.canReplace(blockState);
 						if (!bl3 && this.sideCoversSmallSquare(world, mutable, blockState)) {
 							world.setBlockState(mutable.setY(i + 1), this.mineshaftType.getFence(), Block.NOTIFY_LISTENERS);
-							fillColumn(world, Blocks.CHAIN.getDefaultState(), mutable, i + 2, i + j);
+							fillColumn(world, state.isOf(Blocks.POTATO_STEM) ? Blocks.POTATO_PEDICULE.getDefaultState() : Blocks.CHAIN.getDefaultState(), mutable, i + 2, i + j);
 							return;
 						}
 
@@ -793,7 +793,8 @@ public class MineshaftGenerator {
 			return !blockState.isOf(this.mineshaftType.getPlanks().getBlock())
 				&& !blockState.isOf(this.mineshaftType.getLog().getBlock())
 				&& !blockState.isOf(this.mineshaftType.getFence().getBlock())
-				&& !blockState.isOf(Blocks.CHAIN);
+				&& !blockState.isOf(Blocks.CHAIN)
+				&& !blockState.isOf(Blocks.POTATO_PEDICULE);
 		}
 
 		@Override

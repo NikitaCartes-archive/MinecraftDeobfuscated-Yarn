@@ -76,7 +76,7 @@ public class SoundSystem {
 		UNKNOWN_SOUNDS.clear();
 
 		for (SoundEvent soundEvent : Registries.SOUND_EVENT) {
-			if (soundEvent != SoundEvents.INTENTIONALLY_EMPTY) {
+			if (soundEvent != SoundEvents.field_42593) {
 				Identifier identifier = soundEvent.getId();
 				if (this.loader.get(identifier) == null) {
 					LOGGER.warn("Missing sound for event: {}", Registries.SOUND_EVENT.getId(soundEvent));

@@ -14,6 +14,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestTypes;
@@ -41,7 +42,7 @@ public class PortalForcer {
 	public Optional<BlockLocating.Rectangle> getPortalRect(BlockPos pos, boolean destIsNether, WorldBorder worldBorder) {
 		PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
 		int i = destIsNether ? 16 : 128;
-		pointOfInterestStorage.preloadChunks(this.world, pos, i);
+		pointOfInterestStorage.preloadChunks(this.world, pos, i, ChunkStatus.EMPTY);
 		Optional<PointOfInterest> optional = pointOfInterestStorage.getInSquare(
 				poiType -> poiType.matchesKey(PointOfInterestTypes.NETHER_PORTAL), pos, i, PointOfInterestStorage.OccupationStatus.ANY
 			)

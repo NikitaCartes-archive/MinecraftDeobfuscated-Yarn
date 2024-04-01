@@ -102,6 +102,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		EntityType.PIGLIN,
 		EntityType.PIGLIN_BRUTE,
 		EntityType.PILLAGER,
+		EntityType.PLAGUEWHALE,
 		EntityType.RAVAGER,
 		EntityType.SHULKER,
 		EntityType.SILVERFISH,
@@ -109,6 +110,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		EntityType.SLIME,
 		EntityType.SPIDER,
 		EntityType.STRAY,
+		EntityType.TOXIFIN,
 		EntityType.VEX,
 		EntityType.VINDICATOR,
 		EntityType.WITCH,
@@ -117,7 +119,8 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		EntityType.ZOGLIN,
 		EntityType.ZOMBIE_VILLAGER,
 		EntityType.ZOMBIE,
-		EntityType.ZOMBIFIED_PIGLIN
+		EntityType.ZOMBIFIED_PIGLIN,
+		EntityType.POISONOUS_POTATO_ZOMBIE
 	);
 
 	private static AdvancementCriterion<LightningStrikeCriterion.Conditions> createLightningStrike(NumberRange.IntRange range, Optional<EntityPredicate> entity) {
@@ -814,8 +817,8 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		return builder;
 	}
 
-	protected static Advancement.Builder requireListedBiomesVisited(
-		Advancement.Builder builder, RegistryWrapper.WrapperLookup registryLookup, List<RegistryKey<Biome>> biomes
+	protected static <T extends Advancement.Builder> T requireListedBiomesVisited(
+		T builder, RegistryWrapper.WrapperLookup registryLookup, List<RegistryKey<Biome>> biomes
 	) {
 		RegistryEntryLookup<Biome> registryEntryLookup = registryLookup.getWrapperOrThrow(RegistryKeys.BIOME);
 

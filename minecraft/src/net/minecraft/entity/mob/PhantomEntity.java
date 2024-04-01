@@ -37,6 +37,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.biome.BiomeKeys;
 
 public class PhantomEntity extends FlyingEntity implements Monster {
 	public static final float field_30475 = 7.448451F;
@@ -139,7 +140,9 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 	@Override
 	public void tickMovement() {
-		if (this.isAlive() && this.isAffectedByDaylight()) {
+		if (this.isAlive()
+			&& this.isAffectedByDaylight()
+			&& (!this.getWorld().getBiome(this.getBlockPos()).matchesKey(BiomeKeys.CORRUPTION) || this.getTarget() instanceof PlayerEntity)) {
 			this.setOnFireFor(8);
 		}
 

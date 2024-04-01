@@ -26,6 +26,11 @@ public class HuskEntity extends ZombieEntity {
 	}
 
 	@Override
+	public boolean hasPotatoForm() {
+		return true;
+	}
+
+	@Override
 	protected boolean burnsInDaylight() {
 		return false;
 	}

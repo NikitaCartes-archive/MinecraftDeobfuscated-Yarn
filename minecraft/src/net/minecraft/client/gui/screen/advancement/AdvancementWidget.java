@@ -12,6 +12,8 @@ import net.minecraft.advancement.PlacedAdvancement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.item.Items;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
@@ -244,7 +246,14 @@ public class AdvancementWidget {
 			}
 		}
 
+		if (this.display.getIcon().isOf(Items.POISONOUS_POTATO_PLANT)) {
+			this.display.getIcon().set(DataComponentTypes.HOVERED, true);
+		}
+
 		context.drawItemWithoutEntity(this.display.getIcon(), originX + this.x + 8, originY + this.y + 5);
+		if (this.display.getIcon().isOf(Items.POISONOUS_POTATO_PLANT)) {
+			this.display.getIcon().set(DataComponentTypes.HOVERED, false);
+		}
 	}
 
 	public boolean shouldRender(int originX, int originY, int mouseX, int mouseY) {

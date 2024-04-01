@@ -54,6 +54,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -582,7 +583,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 				if (!this.isEatingGrass()
 					&& !this.hasPassengers()
 					&& this.random.nextInt(300) == 0
-					&& this.getWorld().getBlockState(this.getBlockPos().down()).isOf(Blocks.GRASS_BLOCK)) {
+					&& this.getWorld().getBlockState(this.getBlockPos().down()).isIn(BlockTags.ANIMALS_SPAWNABLE_ON)) {
 					this.setEatingGrass(true);
 				}
 

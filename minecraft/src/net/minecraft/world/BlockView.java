@@ -186,4 +186,6 @@ public interface BlockView extends HeightLimitView {
 			}
 		}
 	}
+
+	boolean isPotato();
 }

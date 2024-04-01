@@ -1,16 +1,21 @@
 package net.minecraft.client.world;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -30,6 +35,7 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.component.type.FireworkExplosionComponent;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.GridCarrierEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -52,6 +58,7 @@ import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundSequencer;
 import net.minecraft.text.Text;
 import net.minecraft.util.CubicSampler;
 import net.minecraft.util.CuboidBlockIterator;
@@ -65,6 +72,9 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
+import net.minecraft.util.math.random.CheckedRandom;
+import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.shape.VoxelShape;
@@ -72,6 +82,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.EntityList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.GridCarrierView;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
@@ -100,6 +111,7 @@ public class ClientWorld extends World {
 	private static final int field_34806 = 1000;
 	final EntityList entityList = new EntityList();
 	private final ClientEntityManager<Entity> entityManager = new ClientEntityManager<>(Entity.class, new ClientWorld.ClientEntityHandler());
+	final Object2ObjectMap<UUID, ClientGridCarrierView> gridCarrierViews = new Object2ObjectOpenHashMap<>();
 	private final ClientPlayNetworkHandler networkHandler;
 	private final WorldRenderer worldRenderer;
 	private final ClientWorld.Properties clientWorldProperties;
@@ -108,7 +120,6 @@ public class ClientWorld extends World {
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	final List<AbstractClientPlayerEntity> players = Lists.<AbstractClientPlayerEntity>newArrayList();
 	private final Map<MapIdComponent, MapState> mapStates = Maps.<MapIdComponent, MapState>newHashMap();
-	private static final long field_32640 = 16777215L;
 	private int lightningTicksLeft;
 	private final Object2ObjectArrayMap<ColorResolver, BiomeColorCache> colorCache = Util.make(new Object2ObjectArrayMap<>(3), map -> {
 		map.put(BiomeColors.GRASS_COLOR, new BiomeColorCache(pos -> this.calculateColor(pos, BiomeColors.GRASS_COLOR)));
@@ -120,6 +131,9 @@ public class ClientWorld extends World {
 	private int simulationDistance;
 	private final PendingUpdateManager pendingUpdateManager = new PendingUpdateManager();
 	private static final Set<Item> BLOCK_MARKER_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
+	private static final int field_51160 = 512;
+	private static final float[][] field_51161 = new float[512][512];
+	private static final float[][] field_51162 = new float[512][512];
 
 	public void handlePlayerActionResponse(int sequence) {
 		this.pendingUpdateManager.processPendingUpdates(sequence, this);
@@ -256,13 +270,20 @@ public class ClientWorld extends World {
 	public void tickEntities() {
 		Profiler profiler = this.getProfiler();
 		profiler.push("entities");
-		this.entityList.forEach(entity -> {
-			if (!entity.isRemoved() && !entity.hasVehicle() && !this.tickManager.shouldSkipTick(entity)) {
-				this.tickEntity(this::tickEntity, entity);
-			}
-		});
+
+		for (ClientGridCarrierView clientGridCarrierView : List.copyOf(this.gridCarrierViews.values())) {
+			this.method_59350(clientGridCarrierView.getGridCarrier());
+		}
+
+		this.entityList.forEach(this::method_59350);
 		profiler.pop();
 		this.tickBlockEntities();
+	}
+
+	private void method_59350(Entity entity) {
+		if (!entity.isRemoved() && !entity.hasVehicle() && !this.tickManager.shouldSkipTick(entity)) {
+			this.tickEntity(this::tickEntity, entity);
+		}
 	}
 
 	@Override
@@ -505,6 +526,17 @@ public class ClientWorld extends World {
 	}
 
 	@Override
+	public void playSoundWithDelay(int delay, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(sound, category, volume, pitch, Random.create(0L), x, y, z);
+		this.client.getSoundManager().play(positionedSoundInstance, delay);
+	}
+
+	@Override
+	public void playSoundSequence(double x, double y, double z, Consumer<SoundSequencer> sequencerConsumer) {
+		sequencerConsumer.accept((SoundSequencer)(delay, sound, category, volume, pitch) -> this.playSoundWithDelay(delay, x, y, z, sound, category, volume, pitch));
+	}
+
+	@Override
 	public void addFireworkParticle(
 		double x, double y, double z, double velocityX, double velocityY, double velocityZ, List<FireworkExplosionComponent> explosions
 	) {
@@ -663,7 +695,7 @@ public class ClientWorld extends World {
 		float h = (float)vec3d2.x * g;
 		float i = (float)vec3d2.y * g;
 		float j = (float)vec3d2.z * g;
-		float k = this.getRainGradient(tickDelta);
+		float k = this.method_59088(tickDelta, cameraPos.getY());
 		if (k > 0.0F) {
 			float l = (h * 0.3F + i * 0.59F + j * 0.11F) * 0.6F;
 			float m = 1.0F - k * 0.75F;
@@ -672,7 +704,7 @@ public class ClientWorld extends World {
 			j = j * m + l * (1.0F - m);
 		}
 
-		float l = this.getThunderGradient(tickDelta);
+		float l = this.method_59090(tickDelta, cameraPos.getY());
 		if (l > 0.0F) {
 			float m = (h * 0.3F + i * 0.59F + j * 0.11F) * 0.2F;
 			float n = 1.0F - l * 0.75F;
@@ -701,31 +733,32 @@ public class ClientWorld extends World {
 		float f = this.getSkyAngle(tickDelta);
 		float g = MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.5F;
 		g = MathHelper.clamp(g, 0.0F, 1.0F);
-		float h = 1.0F;
-		float i = 1.0F;
-		float j = 1.0F;
-		float k = this.getRainGradient(tickDelta);
-		if (k > 0.0F) {
-			float l = (h * 0.3F + i * 0.59F + j * 0.11F) * 0.6F;
-			float m = 1.0F - k * 0.95F;
-			h = h * m + l * (1.0F - m);
-			i = i * m + l * (1.0F - m);
-			j = j * m + l * (1.0F - m);
+		int i = this.getDimensionEffects().method_59359();
+		float h = (float)(i >> 16 & 0xFF) / 255.0F;
+		float j = (float)(i >> 8 & 0xFF) / 255.0F;
+		float k = (float)(i & 0xFF) / 255.0F;
+		float l = this.getRainGradient(tickDelta);
+		if (l > 0.0F) {
+			float m = (h * 0.3F + j * 0.59F + k * 0.11F) * 0.6F;
+			float n = 1.0F - l * 0.95F;
+			h = h * n + m * (1.0F - n);
+			j = j * n + m * (1.0F - n);
+			k = k * n + m * (1.0F - n);
 		}
 
 		h *= g * 0.9F + 0.1F;
-		i *= g * 0.9F + 0.1F;
-		j *= g * 0.85F + 0.15F;
-		float l = this.getThunderGradient(tickDelta);
-		if (l > 0.0F) {
-			float m = (h * 0.3F + i * 0.59F + j * 0.11F) * 0.2F;
-			float n = 1.0F - l * 0.95F;
-			h = h * n + m * (1.0F - n);
-			i = i * n + m * (1.0F - n);
-			j = j * n + m * (1.0F - n);
+		j *= g * 0.9F + 0.1F;
+		k *= g * 0.85F + 0.15F;
+		float m = this.getThunderGradient(tickDelta);
+		if (m > 0.0F) {
+			float n = (h * 0.3F + j * 0.59F + k * 0.11F) * 0.2F;
+			float o = 1.0F - m * 0.95F;
+			h = h * o + n * (1.0F - o);
+			j = j * o + n * (1.0F - o);
+			k = k * o + n * (1.0F - o);
 		}
 
-		return new Vec3d((double)h, (double)i, (double)j);
+		return new Vec3d((double)h, (double)j, (double)k);
 	}
 
 	public float getStarBrightness(float tickDelta) {
@@ -775,8 +808,15 @@ public class ClientWorld extends World {
 
 	public int calculateColor(BlockPos pos, ColorResolver colorResolver) {
 		int i = MinecraftClient.getInstance().options.getBiomeBlendRadius().getValue();
+		boolean bl = this.getBiome(pos).matchesKey(BiomeKeys.ARBORETUM) && colorResolver == BiomeColors.FOLIAGE_COLOR;
 		if (i == 0) {
-			return colorResolver.getColor(this.getBiome(pos).value(), (double)pos.getX(), (double)pos.getZ());
+			return bl
+				? this.getBiome(pos)
+					.value()
+					.method_59092(
+						field_51161[Math.floorMod(pos.getX(), 512)][Math.floorMod(pos.getZ(), 512)], field_51162[Math.floorMod(pos.getX(), 512)][Math.floorMod(pos.getZ(), 512)]
+					)
+				: colorResolver.getColor(this.getBiome(pos).value(), (double)pos.getX(), (double)pos.getZ());
 		} else {
 			int j = (i * 2 + 1) * (i * 2 + 1);
 			int k = 0;
@@ -787,7 +827,18 @@ public class ClientWorld extends World {
 
 			while (cuboidBlockIterator.step()) {
 				mutable.set(cuboidBlockIterator.getX(), cuboidBlockIterator.getY(), cuboidBlockIterator.getZ());
-				int n = colorResolver.getColor(this.getBiome(mutable).value(), (double)mutable.getX(), (double)mutable.getZ());
+				int n;
+				if (bl) {
+					n = this.getBiome(mutable)
+						.value()
+						.method_59092(
+							field_51161[Math.floorMod(mutable.getX(), 512)][Math.floorMod(mutable.getZ(), 512)],
+							field_51162[Math.floorMod(mutable.getX(), 512)][Math.floorMod(mutable.getZ(), 512)]
+						);
+				} else {
+					n = colorResolver.getColor(this.getBiome(mutable).value(), (double)mutable.getX(), (double)mutable.getZ());
+				}
+
 				k += (n & 0xFF0000) >> 16;
 				l += (n & 0xFF00) >> 8;
 				m += n & 0xFF;
@@ -827,6 +878,22 @@ public class ClientWorld extends World {
 	}
 
 	@Override
+	public Iterable<ClientGridCarrierView> getGridCarrierViews() {
+		return this.gridCarrierViews.values();
+	}
+
+	@Nullable
+	@Override
+	public GridCarrierView getGridVarrierView(UUID uuid) {
+		return this.gridCarrierViews.get(uuid);
+	}
+
+	@Override
+	public GridCarrierView createGridCarrierView(GridCarrierEntity gridCarrier) {
+		return new ClientGridCarrierView(this, gridCarrier);
+	}
+
+	@Override
 	public String asString() {
 		return "Chunks[C] W: " + this.chunkManager.getDebugString() + " E: " + this.entityManager.getDebugString();
 	}
@@ -849,6 +916,22 @@ public class ClientWorld extends World {
 		return this.networkHandler.getEnabledFeatures();
 	}
 
+	static {
+		OctaveSimplexNoiseSampler octaveSimplexNoiseSampler = new OctaveSimplexNoiseSampler(
+			new ChunkRandom(new CheckedRandom(-559038242L)), ImmutableList.of(-2, -1, 0)
+		);
+		OctaveSimplexNoiseSampler octaveSimplexNoiseSampler2 = new OctaveSimplexNoiseSampler(
+			new ChunkRandom(new CheckedRandom(-17973521L)), ImmutableList.of(-2, -1, 0)
+		);
+
+		for (int i = 0; i < 512; i++) {
+			for (int j = 0; j < 512; j++) {
+				field_51161[i][j] = 2.0F * (float)octaveSimplexNoiseSampler.sample((double)((float)i / 8.0F), (double)((float)j / 8.0F), false);
+				field_51162[i][j] = 2.0F * (float)octaveSimplexNoiseSampler2.sample((double)((float)i / 8.0F), (double)((float)j / 8.0F), false);
+			}
+		}
+	}
+
 	@Environment(EnvType.CLIENT)
 	final class ClientEntityHandler implements EntityHandler<Entity> {
 		public void create(Entity entity) {
@@ -858,7 +941,9 @@ public class ClientWorld extends World {
 		}
 
 		public void startTicking(Entity entity) {
-			ClientWorld.this.entityList.add(entity);
+			if (!(entity instanceof GridCarrierEntity)) {
+				ClientWorld.this.entityList.add(entity);
+			}
 		}
 
 		public void stopTicking(Entity entity) {
@@ -869,11 +954,19 @@ public class ClientWorld extends World {
 			if (entity instanceof AbstractClientPlayerEntity) {
 				ClientWorld.this.players.add((AbstractClientPlayerEntity)entity);
 			}
+
+			if (entity instanceof GridCarrierEntity gridCarrierEntity && gridCarrierEntity.method_58953() instanceof ClientGridCarrierView clientGridCarrierView) {
+				ClientWorld.this.gridCarrierViews.put(gridCarrierEntity.getUuid(), clientGridCarrierView);
+			}
 		}
 
 		public void stopTracking(Entity entity) {
 			entity.detach();
 			ClientWorld.this.players.remove(entity);
+			if (entity instanceof GridCarrierEntity gridCarrierEntity && gridCarrierEntity.method_58953() instanceof ClientGridCarrierView clientGridCarrierView) {
+				clientGridCarrierView.close();
+				ClientWorld.this.gridCarrierViews.remove(clientGridCarrierView.getGridCarrierUuid(), clientGridCarrierView);
+			}
 		}
 
 		public void updateLoadStatus(Entity entity) {

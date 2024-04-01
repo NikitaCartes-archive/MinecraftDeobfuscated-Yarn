@@ -2,13 +2,7 @@ package net.minecraft.sound;
 
 public class BlockSoundGroup {
 	public static final BlockSoundGroup INTENTIONALLY_EMPTY = new BlockSoundGroup(
-		1.0F,
-		1.0F,
-		SoundEvents.INTENTIONALLY_EMPTY,
-		SoundEvents.INTENTIONALLY_EMPTY,
-		SoundEvents.INTENTIONALLY_EMPTY,
-		SoundEvents.INTENTIONALLY_EMPTY,
-		SoundEvents.INTENTIONALLY_EMPTY
+		1.0F, 1.0F, SoundEvents.field_42593, SoundEvents.field_42593, SoundEvents.field_42593, SoundEvents.field_42593, SoundEvents.field_42593
 	);
 	public static final BlockSoundGroup WOOD = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.BLOCK_WOOD_BREAK, SoundEvents.BLOCK_WOOD_STEP, SoundEvents.BLOCK_WOOD_PLACE, SoundEvents.BLOCK_WOOD_HIT, SoundEvents.BLOCK_WOOD_FALL
@@ -822,6 +816,51 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_NETHER_WOOD_PLACE,
 		SoundEvents.BLOCK_NETHER_WOOD_HIT,
 		SoundEvents.BLOCK_NETHER_WOOD_FALL
+	);
+	public static final BlockSoundGroup CORRUPTED_PEELGRASS = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_CORRUPTED_PEELGRASS_BLOCK_BREAK,
+		SoundEvents.BLOCK_CORRUPTED_PEELGRASS_BLOCK_STEP,
+		SoundEvents.BLOCK_CORRUPTED_PEELGRASS_BLOCK_PLACE,
+		SoundEvents.BLOCK_CORRUPTED_PEELGRASS_BLOCK_HIT,
+		SoundEvents.BLOCK_CORRUPTED_PEELGRASS_BLOCK_FALL
+	);
+	public static final BlockSoundGroup PEELGRASS = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_PEELGRASS_BLOCK_BREAK,
+		SoundEvents.BLOCK_PEELGRASS_BLOCK_STEP,
+		SoundEvents.BLOCK_PEELGRASS_BLOCK_PLACE,
+		SoundEvents.BLOCK_PEELGRASS_BLOCK_HIT,
+		SoundEvents.BLOCK_PEELGRASS_BLOCK_FALL
+	);
+	public static final BlockSoundGroup GRAVTATER = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_GRAVTATER_BREAK,
+		SoundEvents.BLOCK_GRAVTATER_STEP,
+		SoundEvents.BLOCK_GRAVTATER_PLACE,
+		SoundEvents.BLOCK_GRAVTATER_HIT,
+		SoundEvents.BLOCK_GRAVTATER_FALL
+	);
+	public static final BlockSoundGroup POTONE = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_POTONE_BREAK,
+		SoundEvents.BLOCK_POTONE_STEP,
+		SoundEvents.BLOCK_POTONE_PLACE,
+		SoundEvents.BLOCK_POTONE_HIT,
+		SoundEvents.BLOCK_POTONE_FALL
+	);
+	public static final BlockSoundGroup TERRE_DE_POMME = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_TERREDEPOMME_BREAK,
+		SoundEvents.BLOCK_TERREDEPOMME_STEP,
+		SoundEvents.BLOCK_TERREDEPOMME_PLACE,
+		SoundEvents.BLOCK_TERREDEPOMME_HIT,
+		SoundEvents.BLOCK_TERREDEPOMME_FALL
 	);
 	public static final BlockSoundGroup CHERRY_WOOD = new BlockSoundGroup(
 		1.0F,

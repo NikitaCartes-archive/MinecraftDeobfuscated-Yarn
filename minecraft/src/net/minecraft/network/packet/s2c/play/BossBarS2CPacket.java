@@ -11,6 +11,7 @@ import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
+import net.minecraft.util.math.Vec3d;
 
 public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, BossBarS2CPacket> CODEC = Packet.createCodec(BossBarS2CPacket::write, BossBarS2CPacket::new);
@@ -60,6 +61,10 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public static BossBarS2CPacket updateName(BossBar bar) {
 		return new BossBarS2CPacket(bar.getUuid(), new BossBarS2CPacket.UpdateNameAction(bar.getName()));
+	}
+
+	public static BossBarS2CPacket method_58779(BossBar bossBar) {
+		return new BossBarS2CPacket(bossBar.getUuid(), new BossBarS2CPacket.class_9488(bossBar.method_58815(), bossBar.method_58816()));
 	}
 
 	public static BossBarS2CPacket updateStyle(BossBar bar) {
@@ -122,6 +127,8 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		private final boolean darkenSky;
 		private final boolean dragonMusic;
 		private final boolean thickenFog;
+		private final Vec3d field_50262;
+		private final int field_50263;
 
 		AddAction(BossBar bar) {
 			this.name = bar.getName();
@@ -131,6 +138,8 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.darkenSky = bar.shouldDarkenSky();
 			this.dragonMusic = bar.hasDragonMusic();
 			this.thickenFog = bar.shouldThickenFog();
+			this.field_50262 = bar.method_58815();
+			this.field_50263 = bar.method_58816();
 		}
 
 		private AddAction(RegistryByteBuf buf) {
@@ -142,6 +151,8 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.darkenSky = (i & 1) > 0;
 			this.dragonMusic = (i & 2) > 0;
 			this.thickenFog = (i & 4) > 0;
+			this.field_50262 = buf.readVec3d();
+			this.field_50263 = buf.readVarInt();
 		}
 
 		@Override
@@ -151,7 +162,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		@Override
 		public void accept(UUID uuid, BossBarS2CPacket.Consumer consumer) {
-			consumer.add(uuid, this.name, this.percent, this.color, this.style, this.darkenSky, this.dragonMusic, this.thickenFog);
+			consumer.add(uuid, this.name, this.percent, this.color, this.style, this.darkenSky, this.dragonMusic, this.thickenFog, this.field_50262, this.field_50263);
 		}
 
 		@Override
@@ -161,11 +172,24 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 			buf.writeEnumConstant(this.color);
 			buf.writeEnumConstant(this.style);
 			buf.writeByte(BossBarS2CPacket.maskProperties(this.darkenSky, this.dragonMusic, this.thickenFog));
+			buf.writeVec3d(this.field_50262);
+			buf.writeVarInt(this.field_50263);
 		}
 	}
 
 	public interface Consumer {
-		default void add(UUID uuid, Text name, float percent, BossBar.Color color, BossBar.Style style, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
+		default void add(
+			UUID uuid,
+			Text name,
+			float percent,
+			BossBar.Color color,
+			BossBar.Style style,
+			boolean darkenSky,
+			boolean dragonMusic,
+			boolean thickenFog,
+			Vec3d vec3d,
+			int i
+		) {
 		}
 
 		default void remove(UUID uuid) {
@@ -175,6 +199,9 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		default void updateName(UUID uuid, Text name) {
+		}
+
+		default void method_58780(UUID uUID, Vec3d vec3d, int i) {
 		}
 
 		default void updateStyle(UUID id, BossBar.Color color, BossBar.Style style) {
@@ -190,7 +217,8 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		UPDATE_PROGRESS(BossBarS2CPacket.UpdateProgressAction::new),
 		UPDATE_NAME(BossBarS2CPacket.UpdateNameAction::new),
 		UPDATE_STYLE(BossBarS2CPacket.UpdateStyleAction::new),
-		UPDATE_PROPERTIES(BossBarS2CPacket.UpdatePropertiesAction::new);
+		UPDATE_PROPERTIES(BossBarS2CPacket.UpdatePropertiesAction::new),
+		UPDATE_CENTER_AND_RADIUS(BossBarS2CPacket.class_9488::new);
 
 		final PacketDecoder<RegistryByteBuf, BossBarS2CPacket.Action> parser;
 
@@ -303,6 +331,28 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		public void toPacket(RegistryByteBuf buf) {
 			buf.writeEnumConstant(this.color);
 			buf.writeEnumConstant(this.style);
+		}
+	}
+
+	static record class_9488(Vec3d position, int radius) implements BossBarS2CPacket.Action {
+		private class_9488(RegistryByteBuf registryByteBuf) {
+			this(registryByteBuf.readVec3d(), registryByteBuf.readVarInt());
+		}
+
+		@Override
+		public BossBarS2CPacket.Type getType() {
+			return BossBarS2CPacket.Type.UPDATE_CENTER_AND_RADIUS;
+		}
+
+		@Override
+		public void accept(UUID uuid, BossBarS2CPacket.Consumer consumer) {
+			consumer.method_58780(uuid, this.position, this.radius);
+		}
+
+		@Override
+		public void toPacket(RegistryByteBuf buf) {
+			buf.writeVec3d(this.position);
+			buf.writeVarInt(this.radius);
 		}
 	}
 }

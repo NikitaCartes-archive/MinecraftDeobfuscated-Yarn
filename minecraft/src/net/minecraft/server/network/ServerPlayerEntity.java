@@ -3,6 +3,7 @@ package net.minecraft.server.network;
 import com.google.common.net.InetAddresses;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import java.net.InetSocketAddress;
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.PlacedAdvancement;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -25,6 +27,9 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SculkShriekerWarningManager;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.LoreComponent;
+import net.minecraft.component.type.WrittenBookContentComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
@@ -104,6 +109,8 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.registry.tag.StructureTags;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreAccess;
 import net.minecraft.scoreboard.ScoreHolder;
@@ -129,6 +136,7 @@ import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.HoverEvent;
+import net.minecraft.text.RawFilteredPair;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Formatting;
@@ -280,6 +288,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	public final Object field_49777;
 	private int screenHandlerSyncId;
 	public boolean notInAnyWorld;
+	public boolean field_50290;
 
 	public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile, SyncedClientOptions clientOptions) {
 		super(world, world.getSpawnPos(), world.getSpawnAngle(), profile);
@@ -478,6 +487,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void tick() {
+		this.method_58794();
 		this.interactionManager.update();
 		this.sculkShriekerWarningManager.tick();
 		this.joinInvulnerabilityTicks--;
@@ -513,6 +523,132 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.tickVehicleInLavaRiding();
 		this.updateCreativeInteractionRangeModifiers();
 		this.advancementTracker.sendUpdate(this);
+	}
+
+	private void method_58794() {
+		World world = this.getWorld();
+		if (world instanceof ServerWorld serverWorld) {
+			PlayerInventory playerInventory = this.getInventory();
+			if (this.isWearingPoisonousPototoPlantOnHead()) {
+				Criteria.RUMBLE_PLANT.trigger(this);
+			}
+
+			if ((this.method_58931("intro", 22) || this.method_58931("leaving_village", 1)) && serverWorld.isNearOccupiedPointOfInterest(this.getSteppingPos())) {
+				this.method_58932("in_village");
+			}
+
+			if (this.method_58931("in_village", 0)) {
+				if (!serverWorld.isNearOccupiedPointOfInterest(this.getSteppingPos())) {
+					this.method_58932("leaving_village");
+				}
+
+				if (playerInventory.containsAny(itemStack -> itemStack.isIn(ItemTags.BEDS))) {
+					this.method_58932("took_bed");
+				}
+
+				if (this.isSleeping()) {
+					this.method_58932("slept_in_bed");
+				}
+			}
+
+			if (this.method_58931("slept_in_bed", 3) || this.method_58931("took_bed", 1)) {
+				this.method_58932("meta_one");
+			}
+
+			if (this.method_58930("meta_one", 13)) {
+				ItemStack itemStack = new ItemStack(Items.PAPER);
+				itemStack.set(DataComponentTypes.LORE, new LoreComponent(List.of(Text.translatable("paper.thoughts"))));
+				playerInventory.insertStack(itemStack);
+				this.method_58932("got_paper");
+			}
+
+			if (this.method_58930("got_paper", 2)) {
+				Direction direction = Direction.fromRotation((double)this.getYaw());
+				BlockPos blockPos = this.getSteppingPos().up(2).add(direction.getVector().multiply(4));
+				boolean bl = false;
+
+				for (BlockPos blockPos2 : BlockPos.iterateInSquare(blockPos, 4, direction, direction.rotateYCounterclockwise())) {
+					if (world.isAir(blockPos2)) {
+						world.setBlockState(blockPos2, Blocks.ANVIL.getDefaultState());
+						bl = true;
+						break;
+					}
+				}
+
+				if (!bl) {
+					world.setBlockState(this.getSteppingPos().up(2), Blocks.ANVIL.getDefaultState());
+				}
+
+				this.method_58932("anvil_dropped");
+			}
+
+			if (this.method_58930("thrown_eye", 13)) {
+				ItemStack itemStack = new ItemStack(Items.WRITTEN_BOOK);
+				itemStack.set(
+					DataComponentTypes.WRITTEN_BOOK_CONTENT,
+					new WrittenBookContentComponent(
+						RawFilteredPair.of(Text.translatable("potato.quest.book.title").getString()),
+						Text.translatable("potato.quest.book.author").getString(),
+						0,
+						List.of(
+							RawFilteredPair.of(Text.translatable("potato.quest.book.page.0")),
+							RawFilteredPair.of(Text.translatable("potato.quest.book.page.1")),
+							RawFilteredPair.of(Text.translatable("potato.quest.book.page.2"))
+						),
+						false
+					)
+				);
+				playerInventory.insertStack(itemStack);
+				this.method_58932("got_book");
+			}
+
+			if (this.method_58931("thrown_eye", 0) || this.method_58931("got_book", 0)) {
+				Optional<BlockPos> optional = this.dataTracker.get(field_50480);
+				if (optional.isPresent() && ((BlockPos)optional.get()).getManhattanDistance(this.getSteppingPos().withY(0)) < 16) {
+					this.method_58932("found_portal");
+				}
+			}
+
+			if (this.method_58931("dimension", 10) && serverWorld.isPotato() && serverWorld.isNearOccupiedPointOfInterest(this.getSteppingPos())) {
+				this.method_58932("potato_village");
+			}
+
+			if (this.method_58931("thrown_eye_part_two", 3)) {
+				Optional<BlockPos> optional = this.dataTracker.get(field_50481);
+				if (optional.isPresent() && ((BlockPos)optional.get()).getManhattanDistance(this.getSteppingPos().withY(0)) < 16) {
+					this.method_58932("found_colosseum");
+				}
+			}
+
+			if (this.method_58931("found_colosseum", 2)
+				&& serverWorld.getStructureAccessor().getStructureContaining(this.getSteppingPos(), StructureTags.COLOSSEUM).hasChildren()) {
+				this.method_58932("inside_colosseum");
+			}
+
+			if (this.method_58930("inside_colosseum", 3)) {
+				playerInventory.insertStack(new ItemStack(Items.WOODEN_SWORD));
+				this.method_58932("got_sword");
+			}
+
+			if (this.method_58930("got_sword", 13)) {
+				this.method_58933("got_sword", 1);
+			}
+
+			if (playerInventory.containsAny(Set.of(Items.POTATO_STAFF))) {
+				Pair<String, Integer> pair = this.method_58936();
+				if (!pair.getFirst().equals("composted_staff") && !pair.getFirst().equals("got_staff")) {
+					this.method_58932("got_staff");
+				}
+			}
+
+			if (this.isWearingPoisonousPototoPlantOnHead() && !this.dataTracker.get(field_50482)) {
+				this.incrementStat(Stats.POTATO_QUEST_TIME);
+			}
+
+			if (this.method_58930("composted_staff", 5)) {
+				this.dataTracker.set(field_50482, true);
+			}
+		}
 	}
 
 	private void updateCreativeInteractionRangeModifiers() {
@@ -639,6 +775,16 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
+	public boolean method_58796() {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			PlayerAdvancementTracker playerAdvancementTracker = serverWorld.getServer().getPlayerManager().getAdvancementTracker(this);
+			PlacedAdvancement placedAdvancement = playerAdvancementTracker.method_58784().get(new Identifier("good_plant"));
+			return placedAdvancement != null;
+		} else {
+			return false;
+		}
+	}
+
 	private void updateScores(ScoreboardCriterion criterion, int score) {
 		this.getScoreboard().forEachScore(criterion, this, innerScore -> innerScore.setScore(score));
 	}
@@ -701,6 +847,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.setOnFire(false);
 		this.getDamageTracker().update();
 		this.setLastDeathPos(Optional.of(GlobalPos.create(this.getWorld().getRegistryKey(), this.getBlockPos())));
+		this.dataTracker.set(field_50479, "potato.quest.intro.jump.0");
+		if (!this.dataTracker.get(field_50482)) {
+			this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.POTATO_QUEST_TIME));
+		}
 	}
 
 	private void forgiveMobAnger() {
@@ -777,8 +927,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Nullable
 	@Override
-	protected TeleportTarget getTeleportTarget(ServerWorld destination) {
-		TeleportTarget teleportTarget = super.getTeleportTarget(destination);
+	protected TeleportTarget getTeleportTarget(ServerWorld destination, boolean bl) {
+		TeleportTarget teleportTarget = super.getTeleportTarget(destination, bl);
 		if (teleportTarget != null && this.getWorld().getRegistryKey() == World.OVERWORLD && destination.getRegistryKey() == World.END) {
 			Vec3d vec3d = teleportTarget.position.add(0.0, -1.0, 0.0);
 			return new TeleportTarget(vec3d, Vec3d.ZERO, 90.0F, 0.0F);
@@ -787,12 +937,20 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
+	public void method_58797() {
+		this.inTeleportationState = true;
+		this.detach();
+		this.getServerWorld().removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
+		this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_50265, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
+	}
+
 	@Nullable
 	@Override
-	public Entity moveToWorld(ServerWorld destination) {
+	public Entity moveToWorld(ServerWorld destination, boolean bl) {
 		this.inTeleportationState = true;
 		ServerWorld serverWorld = this.getServerWorld();
 		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
+		boolean bl2 = destination.isPotato() || serverWorld.isPotato();
 		if (registryKey == World.END && destination.getRegistryKey() == World.OVERWORLD) {
 			this.detach();
 			this.getServerWorld().removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
@@ -812,7 +970,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			playerManager.sendCommandTree(this);
 			serverWorld.removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
 			this.unsetRemoved();
-			TeleportTarget teleportTarget = this.getTeleportTarget(destination);
+			TeleportTarget teleportTarget = this.getTeleportTarget(destination, bl);
 			if (teleportTarget != null) {
 				serverWorld.getProfiler().push("moving");
 				if (registryKey == World.OVERWORLD && destination.getRegistryKey() == World.NETHER) {
@@ -838,7 +996,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 					this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), statusEffectInstance, false));
 				}
 
-				this.networkHandler.sendPacket(new WorldEventS2CPacket(WorldEvents.TRAVEL_THROUGH_PORTAL, BlockPos.ORIGIN, 0, false));
+				this.networkHandler.sendPacket(new WorldEventS2CPacket(WorldEvents.TRAVEL_THROUGH_PORTAL, BlockPos.ORIGIN, bl2 ? 1 : 0, false));
 				this.syncedExperience = -1;
 				this.syncedHealth = -1.0F;
 				this.syncedFoodLevel = -1;
@@ -1011,7 +1169,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (!this.isRegionUnloaded()) {
 			this.updateSupportingBlockPos(onGround, new Vec3d(xDifference, yDifference, zDifference));
 			BlockPos blockPos = this.getLandingPos();
-			BlockState blockState = this.getWorld().getBlockState(blockPos);
+			BlockState blockState = this.method_58837();
 			if (this.spawnExtraParticlesOnFall && onGround && this.fallDistance > 0.0F) {
 				Vec3d vec3d = blockPos.toCenterPos().add(0.0, 0.5, 0.0);
 				int i = (int)(50.0F * this.fallDistance);
@@ -1748,8 +1906,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public ItemEntity dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership) {
-		ItemEntity itemEntity = super.dropItem(stack, throwRandomly, retainOwnership);
+	public ItemEntity dropItem(ItemStack stack, boolean bl, boolean retainOwnership) {
+		ItemEntity itemEntity = super.dropItem(stack, bl, retainOwnership);
 		if (itemEntity == null) {
 			return null;
 		} else {
@@ -1758,6 +1916,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			if (retainOwnership) {
 				if (!itemStack.isEmpty()) {
 					this.increaseStat(Stats.DROPPED.getOrCreateStat(itemStack.getItem()), stack.getCount());
+					Criteria.THROW_LUBRICATED.trigger(this, stack);
 				}
 
 				this.incrementStat(Stats.DROP);
@@ -1914,7 +2073,16 @@ public class ServerPlayerEntity extends PlayerEntity {
 			world.isDebugWorld(),
 			world.isFlat(),
 			this.getLastDeathPos(),
-			this.getPortalCooldown()
+			this.getPortalCooldown(),
+			this.field_50387 != null ? this.field_50387.getGridCarrierUuid() : this.field_50389
 		);
+	}
+
+	public void method_58792(BlockPos blockPos) {
+		this.dataTracker.set(PlayerEntity.field_50480, Optional.of(blockPos));
+	}
+
+	public void method_58793(BlockPos blockPos) {
+		this.dataTracker.set(PlayerEntity.field_50481, Optional.of(blockPos));
 	}
 }

@@ -22,6 +22,7 @@ import net.minecraft.block.SnowBlock;
 import net.minecraft.block.SweetBerryBushBlock;
 import net.minecraft.block.TallPlantBlock;
 import net.minecraft.block.TntBlock;
+import net.minecraft.block.entity.FletchingTableBlockEntity;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.component.DataComponentTypes;
@@ -44,9 +45,11 @@ import net.minecraft.loot.entry.DynamicEntry;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LeafEntry;
 import net.minecraft.loot.entry.LootPoolEntry;
+import net.minecraft.loot.entry.LootTableEntry;
 import net.minecraft.loot.function.ApplyBonusLootFunction;
 import net.minecraft.loot.function.CopyComponentsLootFunction;
 import net.minecraft.loot.function.LimitCountLootFunction;
+import net.minecraft.loot.function.SetComponentsLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.operator.BoundedIntUnaryOperator;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
@@ -103,8 +106,37 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.ANDESITE);
 		this.addDrop(Blocks.POLISHED_ANDESITE);
 		this.addDrop(Blocks.DIRT);
+		this.addDrop(Blocks.TERRE_DE_POMME);
 		this.addDrop(Blocks.COARSE_DIRT);
 		this.addDrop(Blocks.COBBLESTONE);
+		this.addDrop(Blocks.VICIOUS_POTATO);
+		this.addDrop(Blocks.TATERSTONE);
+		this.addDrop(Blocks.BAKED_POTATO_BRICKS);
+		this.addDrop(Blocks.EXPIRED_BAKED_POTATO_BRICKS);
+		this.addDrop(Blocks.FLOATATO);
+		this.addDrop(Blocks.FLOATATER);
+		this.addDrop(Blocks.POTONE_SLAB);
+		this.addDrop(Blocks.POTONE_STAIRS);
+		this.addDrop(Blocks.POTONE_WALL);
+		this.addDrop(Blocks.TATERSTONE_SLAB);
+		this.addDrop(Blocks.TATERSTONE_STAIRS);
+		this.addDrop(Blocks.TATERSTONE_WALL);
+		this.addDrop(Blocks.BAKED_POTATO_BRICK_SLAB);
+		this.addDrop(Blocks.BAKED_POTATO_BRICK_STAIRS);
+		this.addDrop(Blocks.BAKED_POTATO_BRICK_WALL);
+		this.addDrop(Blocks.EXPIRED_BAKED_POTATO_BRICK_SLAB);
+		this.addDrop(Blocks.EXPIRED_BAKED_POTATO_BRICK_STAIRS);
+		this.addDrop(Blocks.EXPIRED_BAKED_POTATO_BRICK_WALL);
+		this.addDrop(Blocks.CHARRED_BAKED_POTATO_BRICKS);
+		this.addDrop(Blocks.CHARRED_BAKED_POTATO_BRICK_SLAB);
+		this.addDrop(Blocks.CHARRED_BAKED_POTATO_BRICK_STAIRS);
+		this.addDrop(Blocks.CHARRED_BAKED_POTATO_BRICK_WALL);
+
+		for (Block block : Blocks.POTATO_PEELS_BLOCKS.values()) {
+			this.addDrop(block);
+		}
+
+		this.addDrop(Blocks.CORRUPTED_POTATO_PEELS_BLOCK);
 		this.addDrop(Blocks.OAK_PLANKS);
 		this.addDrop(Blocks.SPRUCE_PLANKS);
 		this.addDrop(Blocks.BIRCH_PLANKS);
@@ -124,6 +156,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.DARK_OAK_SAPLING);
 		this.addDrop(Blocks.CHERRY_SAPLING);
 		this.addDrop(Blocks.SAND);
+		this.addDrop(Blocks.GRAVTATER);
 		this.addDrop(Blocks.SUSPICIOUS_SAND, dropsNothing());
 		this.addDrop(Blocks.SUSPICIOUS_GRAVEL, dropsNothing());
 		this.addDrop(Blocks.RED_SAND);
@@ -205,6 +238,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.CORNFLOWER);
 		this.addDrop(Blocks.WITHER_ROSE);
 		this.addDrop(Blocks.LILY_OF_THE_VALLEY);
+		this.addDrop(Blocks.POTATO_FLOWER);
 		this.addDrop(Blocks.BROWN_MUSHROOM);
 		this.addDrop(Blocks.RED_MUSHROOM);
 		this.addDrop(Blocks.GOLD_BLOCK);
@@ -272,6 +306,8 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.SMOOTH_BASALT);
 		this.addDrop(Blocks.SOUL_TORCH);
 		this.addDrop(Blocks.CARVED_PUMPKIN);
+		this.addDrop(Blocks.POISONOUS_POTATO_ZOMBIE_HEAD_HAT);
+		this.addDrop(Blocks.POISONOUS_POTATO_ZOMBIE_HEAD_BLOCK);
 		this.addDrop(Blocks.JACK_O_LANTERN);
 		this.addDrop(Blocks.REPEATER);
 		this.addDrop(Blocks.OAK_TRAPDOOR);
@@ -311,6 +347,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.SANDSTONE_STAIRS);
 		this.addDrop(Blocks.TRIPWIRE_HOOK);
 		this.addDrop(Blocks.EMERALD_BLOCK);
+		this.addDrop(Blocks.AMBER_BLOCK);
 		this.addDrop(Blocks.SPRUCE_STAIRS);
 		this.addDrop(Blocks.BIRCH_STAIRS);
 		this.addDrop(Blocks.JUNGLE_STAIRS);
@@ -514,6 +551,10 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.RESPAWN_ANCHOR);
 		this.addDrop(Blocks.LODESTONE);
 		this.addDrop(Blocks.WARPED_STEM);
+		this.addDrop(Blocks.POTATO_STEM);
+		this.addDrop(Blocks.POTATO_FRUIT);
+		this.addDrop(Blocks.POTATO_PEDICULE);
+		this.addDrop(Blocks.POTATO_SPROUTS);
 		this.addDrop(Blocks.WARPED_HYPHAE);
 		this.addDrop(Blocks.WARPED_FUNGUS);
 		this.addDrop(Blocks.WARPED_WART_BLOCK);
@@ -530,6 +571,15 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.WARPED_STAIRS);
 		this.addDrop(Blocks.WARPED_BUTTON);
 		this.addDrop(Blocks.WARPED_SIGN);
+		this.addDrop(Blocks.POTATO_PLANKS);
+		this.addDrop(Blocks.POTATO_PRESSURE_PLATE);
+		this.addDrop(Blocks.POTATO_FENCE);
+		this.addDrop(Blocks.POTATO_TRAPDOOR);
+		this.addDrop(Blocks.POTATO_FENCE_GATE);
+		this.addDrop(Blocks.POTATO_STAIRS);
+		this.addDrop(Blocks.POTATO_BUTTON);
+		this.addDrop(Blocks.POTATO_SIGN);
+		this.addDrop(Blocks.POTATO_HANGING_SIGN);
 		this.addDrop(Blocks.CRIMSON_PRESSURE_PLATE);
 		this.addDrop(Blocks.CRIMSON_FENCE);
 		this.addDrop(Blocks.CRIMSON_TRAPDOOR);
@@ -598,6 +648,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.OXIDIZED_CUT_COPPER_STAIRS);
 		this.addDrop(Blocks.LIGHTNING_ROD);
 		this.addDrop(Blocks.POINTED_DRIPSTONE);
+		this.addDrop(Blocks.POTATO_BUD);
 		this.addDrop(Blocks.DRIPSTONE_BLOCK);
 		this.addDrop(Blocks.SPORE_BLOSSOM);
 		this.addDrop(Blocks.FLOWERING_AZALEA);
@@ -671,9 +722,28 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.WAXED_WEATHERED_COPPER_BULB, dropsNothing());
 		this.addDrop(Blocks.WAXED_OXIDIZED_COPPER_BULB, dropsNothing());
 		this.addDrop(Blocks.HEAVY_CORE, dropsNothing());
+		this.addDrop(
+			Blocks.BIG_BRAIN,
+			LootTable.builder()
+				.pool(
+					this.addSurvivesExplosionCondition(
+						Blocks.BIG_BRAIN, LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Blocks.BIG_BRAIN))
+					)
+				)
+				.pool(
+					LootPool.builder()
+						.with(
+							ItemEntry.builder(Items.POTATO_OF_KNOWLEDGE)
+								.apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).add(DataComponentTypes.XP))
+						)
+				)
+		);
+		this.addDrop(Blocks.POTATO_BATTERY);
 		this.addDrop(Blocks.FARMLAND, Blocks.DIRT);
+		this.addDrop(Blocks.POISON_FARMLAND, Blocks.TERRE_DE_POMME);
 		this.addDrop(Blocks.TRIPWIRE, Items.STRING);
 		this.addDrop(Blocks.DIRT_PATH, Blocks.DIRT);
+		this.addDrop(Blocks.POISON_PATH, Blocks.TERRE_DE_POMME);
 		this.addDrop(Blocks.KELP_PLANT, Blocks.KELP);
 		this.addDrop(Blocks.BAMBOO_SAPLING, Blocks.BAMBOO);
 		this.addDrop(Blocks.WATER_CAULDRON, Blocks.CAULDRON);
@@ -681,8 +751,11 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.POWDER_SNOW_CAULDRON, Blocks.CAULDRON);
 		this.addDrop(Blocks.BIG_DRIPLEAF_STEM, Blocks.BIG_DRIPLEAF);
 		this.addDrop(Blocks.STONE, block -> this.drops(block, Blocks.COBBLESTONE));
+		this.addDrop(Blocks.POTONE, block -> this.drops(block, Blocks.TATERSTONE));
 		this.addDrop(Blocks.DEEPSLATE, block -> this.drops(block, Blocks.COBBLED_DEEPSLATE));
 		this.addDrop(Blocks.GRASS_BLOCK, block -> this.drops(block, Blocks.DIRT));
+		this.addDrop(Blocks.PEELGRASS_BLOCK, block -> this.drops(block, Blocks.TERRE_DE_POMME));
+		this.addDrop(Blocks.CORRUPTED_PEELGRASS_BLOCK, block -> this.drops(block, Blocks.TERRE_DE_POMME));
 		this.addDrop(Blocks.PODZOL, block -> this.drops(block, Blocks.DIRT));
 		this.addDrop(Blocks.MYCELIUM, block -> this.drops(block, Blocks.DIRT));
 		this.addDrop(Blocks.TUBE_CORAL_BLOCK, block -> this.drops(block, Blocks.DEAD_TUBE_CORAL_BLOCK));
@@ -718,6 +791,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addPottedPlantDrops(Blocks.POTTED_OXEYE_DAISY);
 		this.addPottedPlantDrops(Blocks.POTTED_CORNFLOWER);
 		this.addPottedPlantDrops(Blocks.POTTED_LILY_OF_THE_VALLEY);
+		this.addPottedPlantDrops(Blocks.POTTED_POTATO_FLOWER);
 		this.addPottedPlantDrops(Blocks.POTTED_WITHER_ROSE);
 		this.addPottedPlantDrops(Blocks.POTTED_RED_MUSHROOM);
 		this.addPottedPlantDrops(Blocks.POTTED_BROWN_MUSHROOM);
@@ -772,6 +846,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.DIORITE_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.CRIMSON_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.WARPED_SLAB, block -> this.slabDrops(block));
+		this.addDrop(Blocks.POTATO_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.BLACKSTONE_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.POLISHED_BLACKSTONE_SLAB, block -> this.slabDrops(block));
@@ -798,6 +873,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.CHERRY_DOOR, block -> this.doorDrops(block));
 		this.addDrop(Blocks.BAMBOO_DOOR, block -> this.doorDrops(block));
 		this.addDrop(Blocks.WARPED_DOOR, block -> this.doorDrops(block));
+		this.addDrop(Blocks.POTATO_DOOR, block -> this.doorDrops(block));
 		this.addDrop(Blocks.CRIMSON_DOOR, block -> this.doorDrops(block));
 		this.addDrop(Blocks.IRON_DOOR, block -> this.doorDrops(block));
 		this.addDrop(Blocks.COPPER_DOOR, dropsNothing());
@@ -922,13 +998,15 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.TRAPPED_CHEST, block -> this.nameableContainerDrops(block));
 		this.addDrop(Blocks.SMOKER, block -> this.nameableContainerDrops(block));
 		this.addDrop(Blocks.BLAST_FURNACE, block -> this.nameableContainerDrops(block));
+		this.addDrop(Blocks.POTATO_REFINERY, block -> this.nameableContainerDrops(block));
 		this.addDrop(Blocks.BARREL, block -> this.nameableContainerDrops(block));
 		this.addDrop(Blocks.CARTOGRAPHY_TABLE);
-		this.addDrop(Blocks.FLETCHING_TABLE);
+		this.addDrop(Blocks.FLETCHING_TABLE, block -> this.method_59416(block));
 		this.addDrop(Blocks.GRINDSTONE);
 		this.addDrop(Blocks.LECTERN);
 		this.addDrop(Blocks.SMITHING_TABLE);
 		this.addDrop(Blocks.STONECUTTER);
+		this.addDrop(Blocks.POISONOUS_POTATO_CUTTER);
 		this.addDrop(Blocks.BELL, this::drops);
 		this.addDrop(Blocks.LANTERN, this::drops);
 		this.addDrop(Blocks.SOUL_LANTERN, this::drops);
@@ -994,6 +1072,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.ACACIA_LEAVES, block -> this.leavesDrops(block, Blocks.ACACIA_SAPLING, SAPLING_DROP_CHANCE));
 		this.addDrop(Blocks.DARK_OAK_LEAVES, block -> this.oakLeavesDrops(block, Blocks.DARK_OAK_SAPLING, SAPLING_DROP_CHANCE));
 		this.addDrop(Blocks.CHERRY_LEAVES, block -> this.leavesDrops(block, Blocks.CHERRY_SAPLING, SAPLING_DROP_CHANCE));
+		this.addDrop(Blocks.POTATO_LEAVES, block -> this.leavesDrops(block, Blocks.POTATO_SPROUTS, SAPLING_DROP_CHANCE));
 		this.addDrop(Blocks.AZALEA_LEAVES, block -> this.leavesDrops(block, Blocks.AZALEA, SAPLING_DROP_CHANCE));
 		this.addDrop(Blocks.FLOWERING_AZALEA_LEAVES, block -> this.leavesDrops(block, Blocks.FLOWERING_AZALEA, SAPLING_DROP_CHANCE));
 		LootCondition.Builder builder = BlockStatePropertyLootCondition.builder(Blocks.BEETROOTS)
@@ -1056,13 +1135,30 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 			this.applyExplosionDecay(
 				Blocks.POTATOES,
 				LootTable.builder()
-					.pool(LootPool.builder().with(ItemEntry.builder(Items.POTATO)))
+					.pool(
+						LootPool.builder().with(ItemEntry.builder(Items.POTATO)).with(ItemEntry.builder(Items.SNEKTATO)).conditionally(RandomChanceLootCondition.builder(0.04F))
+					)
 					.pool(
 						LootPool.builder()
 							.conditionally(builder5)
 							.with(ItemEntry.builder(Items.POTATO).apply(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286F, 3)))
 					)
-					.pool(LootPool.builder().conditionally(builder5).with(ItemEntry.builder(Items.POISONOUS_POTATO).conditionally(RandomChanceLootCondition.builder(0.02F))))
+					.pool(
+						LootPool.builder()
+							.conditionally(builder5.and(method_59423(0)))
+							.with(ItemEntry.builder(Items.POISONOUS_POTATO).conditionally(RandomChanceLootCondition.builder(0.04F)))
+							.with(ItemEntry.builder(Items.POISONOUS_POTATO_PLANT).conditionally(RandomChanceLootCondition.builder(0.02F)))
+					)
+					.pool(
+						LootPool.builder()
+							.conditionally(builder5.and(method_59423(1)))
+							.with(ItemEntry.builder(Items.POISONOUS_POTATO).conditionally(RandomChanceLootCondition.builder(0.1F)))
+					)
+					.pool(
+						LootPool.builder()
+							.conditionally(builder5.and(method_59423(2)))
+							.with(ItemEntry.builder(Items.POISONOUS_POTATO).conditionally(RandomChanceLootCondition.builder(0.16666667F)))
+					)
 			)
 		);
 		this.addDrop(
@@ -1103,6 +1199,11 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.DEEPSLATE_COPPER_ORE, block -> this.copperOreDrops(block));
 		this.addDrop(Blocks.IRON_ORE, block -> this.oreDrops(block, Items.RAW_IRON));
 		this.addDrop(Blocks.DEEPSLATE_IRON_ORE, block -> this.oreDrops(block, Items.RAW_IRON));
+		LootPool.Builder builder6 = LootPool.builder()
+			.rolls(ConstantLootNumberProvider.create(1.0F))
+			.with(ItemEntry.builder(Items.POISONOUS_POTATO_PLANT).conditionally(RandomChanceLootCondition.builder(0.05F)));
+		this.addDrop(Blocks.POISONOUS_POTATO_ORE, block -> this.oreDrops(block, Items.POISONOUS_POTATO).pool(builder6));
+		this.addDrop(Blocks.DEEPSLATE_POISONOUS_POTATO_ORE, block -> this.oreDrops(block, Items.POISONOUS_POTATO).pool(builder6));
 		this.addDrop(Blocks.GOLD_ORE, block -> this.oreDrops(block, Items.RAW_GOLD));
 		this.addDrop(Blocks.DEEPSLATE_GOLD_ORE, block -> this.oreDrops(block, Items.RAW_GOLD));
 		this.addDrop(
@@ -1119,6 +1220,38 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		);
 		this.addDrop(Blocks.LAPIS_ORE, block -> this.lapisOreDrops(block));
 		this.addDrop(Blocks.DEEPSLATE_LAPIS_ORE, block -> this.lapisOreDrops(block));
+		this.addDrop(
+			Blocks.RESIN_ORE,
+			block -> dropsWithSilkTouch(
+					block,
+					(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
+						block,
+						LootTableEntry.builder(
+							LootTable.builder()
+								.pool(
+									LootPool.builder()
+										.apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
+										.with(
+											ItemEntry.builder(Items.TOXIC_RESIN)
+												.weight(4)
+												.apply(SetComponentsLootFunction.builder(DataComponentTypes.RESIN, new FletchingTableBlockEntity.ResinComponent('a', 'a')))
+										)
+										.with(
+											ItemEntry.builder(Items.TOXIC_RESIN)
+												.weight(3)
+												.apply(SetComponentsLootFunction.builder(DataComponentTypes.RESIN, new FletchingTableBlockEntity.ResinComponent('c', 'a')))
+										)
+										.with(
+											ItemEntry.builder(Items.TOXIC_RESIN)
+												.weight(2)
+												.apply(SetComponentsLootFunction.builder(DataComponentTypes.RESIN, new FletchingTableBlockEntity.ResinComponent('e', 'a')))
+										)
+								)
+								.build()
+						)
+					)
+				)
+		);
 		this.addDrop(
 			Blocks.COBWEB,
 			block -> dropsWithSilkTouchOrShears(block, (LootPoolEntry.Builder<?>)this.addSurvivesExplosionCondition(block, ItemEntry.builder(Items.STRING)))
@@ -1146,6 +1279,9 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.ATTACHED_MELON_STEM, block -> this.attachedCropStemDrops(block, Items.MELON_SEEDS));
 		this.addDrop(Blocks.PUMPKIN_STEM, block -> this.cropStemDrops(block, Items.PUMPKIN_SEEDS));
 		this.addDrop(Blocks.ATTACHED_PUMPKIN_STEM, block -> this.attachedCropStemDrops(block, Items.PUMPKIN_SEEDS));
+		this.addDrop(Blocks.STRONG_ROOTS, dropsNothing());
+		this.addDrop(Blocks.WEAK_ROOTS, dropsNothing());
+		this.addDrop(Blocks.POWERFUL_POTATO);
 		this.addDrop(
 			Blocks.CHORUS_FLOWER,
 			block -> LootTable.builder()
@@ -1188,6 +1324,12 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		);
 		this.addDrop(Blocks.REDSTONE_ORE, block -> this.redstoneOreDrops(block));
 		this.addDrop(Blocks.DEEPSLATE_REDSTONE_ORE, block -> this.redstoneOreDrops(block));
+		this.addDrop(Blocks.POTONE_REDSTONE_ORE, block -> this.redstoneOreDrops(block));
+		this.addDrop(Blocks.POTONE_COPPER_ORE, block -> this.copperOreDrops(block));
+		this.addDrop(Blocks.POTONE_IRON_ORE, block -> this.oreDrops(block, Items.RAW_IRON));
+		this.addDrop(Blocks.POTONE_GOLD_ORE, block -> this.oreDrops(block, Items.RAW_GOLD));
+		this.addDrop(Blocks.POTONE_DIAMOND_ORE, block -> this.oreDrops(block, Items.DIAMOND));
+		this.addDrop(Blocks.POTONE_LAPIS_ORE, block -> this.lapisOreDrops(block));
 		this.addDrop(
 			Blocks.SEA_LANTERN,
 			block -> dropsWithSilkTouch(
@@ -1250,6 +1392,12 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 							)
 					)
 		);
+		this.addDrop(Blocks.POISONOUS_MASHED_POTATO);
+		this.addDrop(Blocks.POISONOUS_POTATO_BLOCK);
+		this.addDrop(Blocks.COMPRESSED_POISONOUS_POTATO_BLOCK);
+		this.addDrop(Blocks.DOUBLE_COMPRESSED_POISONOUS_POTATO_BLOCK);
+		this.addDrop(Blocks.TRIPLE_COMPRESSED_POISONOUS_POTATO_BLOCK);
+		this.addDrop(Blocks.QUADRUPLE_COMPRESSED_POISONOUS_POTATO_BLOCK);
 		this.addDrop(
 			Blocks.GRAVEL,
 			block -> dropsWithSilkTouch(
@@ -1293,6 +1441,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 					)
 				)
 		);
+		this.addDrop(Blocks.FRYING_TABLE);
 		this.addDrop(
 			Blocks.AMETHYST_CLUSTER,
 			block -> dropsWithSilkTouch(
@@ -1404,6 +1553,8 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.FIRE, dropsNothing());
 		this.addDrop(Blocks.SOUL_FIRE, dropsNothing());
 		this.addDrop(Blocks.NETHER_PORTAL, dropsNothing());
+		this.addDrop(Blocks.POTATO_PORTAL, dropsNothing());
+		this.addDrop(Blocks.PEDESTAL, dropsNothing());
 		this.addDrop(Blocks.BUDDING_AMETHYST, dropsNothing());
 		this.addDrop(Blocks.POWDER_SNOW, dropsNothing());
 		this.addDrop(Blocks.FROGSPAWN, dropsNothing());
@@ -1456,5 +1607,9 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 						)
 				)
 		);
+	}
+
+	private static LootCondition.Builder method_59423(int i) {
+		return BlockStatePropertyLootCondition.builder(Blocks.POTATOES).properties(StatePredicate.Builder.create().exactMatch(PotatoesBlock.field_50866, i));
 	}
 }

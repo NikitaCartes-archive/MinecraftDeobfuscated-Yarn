@@ -55,7 +55,7 @@ public class WorldCreator {
 		this.updateWorldTypeLists();
 		this.seed = seed.isPresent() ? Long.toString(seed.getAsLong()) : "";
 		this.generateStructures = generatorOptionsHolder.generatorOptions().shouldGenerateStructures();
-		this.bonusChestEnabled = generatorOptionsHolder.generatorOptions().hasBonusChest();
+		this.bonusChestEnabled = true;
 		this.worldDirectoryName = this.toDirectoryName(this.worldName);
 	}
 

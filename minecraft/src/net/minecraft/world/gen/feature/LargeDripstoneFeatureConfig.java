@@ -2,6 +2,8 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.block.PointedDripstoneBlock;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.floatprovider.FloatProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 
@@ -16,7 +18,12 @@ public class LargeDripstoneFeatureConfig implements FeatureConfig {
 					FloatProvider.createValidatedCodec(0.1F, 10.0F).fieldOf("stalagmite_bluntness").forGetter(config -> config.stalagmiteBluntness),
 					FloatProvider.createValidatedCodec(0.0F, 2.0F).fieldOf("wind_speed").forGetter(config -> config.windSpeed),
 					Codec.intRange(0, 100).fieldOf("min_radius_for_wind").forGetter(config -> config.minRadiusForWind),
-					Codec.floatRange(0.0F, 5.0F).fieldOf("min_bluntness_for_wind").forGetter(config -> config.minBluntnessForWind)
+					Codec.floatRange(0.0F, 5.0F).fieldOf("min_bluntness_for_wind").forGetter(config -> config.minBluntnessForWind),
+					Registries.BLOCK
+						.getCodec()
+						.xmap(block -> (PointedDripstoneBlock)block, pointedDripstoneBlock -> pointedDripstoneBlock)
+						.fieldOf("block")
+						.forGetter(largeDripstoneFeatureConfig -> largeDripstoneFeatureConfig.field_51011)
 				)
 				.apply(instance, LargeDripstoneFeatureConfig::new)
 	);
@@ -29,6 +36,7 @@ public class LargeDripstoneFeatureConfig implements FeatureConfig {
 	public final FloatProvider windSpeed;
 	public final int minRadiusForWind;
 	public final float minBluntnessForWind;
+	public final PointedDripstoneBlock field_51011;
 
 	public LargeDripstoneFeatureConfig(
 		int floorToCeilingSearchRange,
@@ -39,7 +47,8 @@ public class LargeDripstoneFeatureConfig implements FeatureConfig {
 		FloatProvider stalagmiteBluntness,
 		FloatProvider windSpeed,
 		int minRadiusForWind,
-		float minBluntnessForWind
+		float minBluntnessForWind,
+		PointedDripstoneBlock pointedDripstoneBlock
 	) {
 		this.floorToCeilingSearchRange = floorToCeilingSearchRange;
 		this.columnRadius = columnRadius;
@@ -50,5 +59,6 @@ public class LargeDripstoneFeatureConfig implements FeatureConfig {
 		this.windSpeed = windSpeed;
 		this.minRadiusForWind = minRadiusForWind;
 		this.minBluntnessForWind = minBluntnessForWind;
+		this.field_51011 = pointedDripstoneBlock;
 	}
 }

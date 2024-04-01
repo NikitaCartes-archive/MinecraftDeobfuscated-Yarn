@@ -71,6 +71,10 @@ public class RainSplashParticle extends SpriteBillboardParticle {
 		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			RainSplashParticle rainSplashParticle = new RainSplashParticle(clientWorld, d, e, f);
 			rainSplashParticle.setSprite(this.spriteProvider);
+			if (clientWorld.isPotato()) {
+				rainSplashParticle.setColor(1.0F, 1.0F, 0.0F);
+			}
+
 			return rainSplashParticle;
 		}
 	}

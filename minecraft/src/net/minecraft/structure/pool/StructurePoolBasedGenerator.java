@@ -214,7 +214,8 @@ public class StructurePoolBasedGenerator {
 			world.getSeed(),
 			new ChunkPos(pos),
 			world,
-			biome -> true
+			biome -> true,
+			List.of()
 		);
 		Optional<Structure.StructurePosition> optional = generate(
 			context, structurePool, Optional.of(id), size, pos, false, Optional.empty(), 128, StructurePoolAliasLookup.EMPTY

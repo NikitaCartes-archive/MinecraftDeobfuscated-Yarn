@@ -27,6 +27,7 @@ public class BlackstoneReplacementStructureProcessor extends StructureProcessor 
 		replacements.put(Blocks.COBBLESTONE, Blocks.BLACKSTONE);
 		replacements.put(Blocks.MOSSY_COBBLESTONE, Blocks.BLACKSTONE);
 		replacements.put(Blocks.STONE, Blocks.POLISHED_BLACKSTONE);
+		replacements.put(Blocks.POTONE, Blocks.POLISHED_BLACKSTONE);
 		replacements.put(Blocks.STONE_BRICKS, Blocks.POLISHED_BLACKSTONE_BRICKS);
 		replacements.put(Blocks.MOSSY_STONE_BRICKS, Blocks.POLISHED_BLACKSTONE_BRICKS);
 		replacements.put(Blocks.COBBLESTONE_STAIRS, Blocks.BLACKSTONE_STAIRS);

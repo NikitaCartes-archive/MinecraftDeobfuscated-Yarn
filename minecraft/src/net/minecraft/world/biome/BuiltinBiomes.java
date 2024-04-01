@@ -13,6 +13,11 @@ public abstract class BuiltinBiomes {
 		biomeRegisterable.register(BiomeKeys.THE_VOID, OverworldBiomeCreator.createTheVoid(registryEntryLookup, registryEntryLookup2));
 		biomeRegisterable.register(BiomeKeys.PLAINS, OverworldBiomeCreator.createPlains(registryEntryLookup, registryEntryLookup2, false, false, false));
 		biomeRegisterable.register(BiomeKeys.SUNFLOWER_PLAINS, OverworldBiomeCreator.createPlains(registryEntryLookup, registryEntryLookup2, true, false, false));
+		biomeRegisterable.register(BiomeKeys.FIELDS, PotatoBiomeCreator.createFields(registryEntryLookup, registryEntryLookup2));
+		biomeRegisterable.register(BiomeKeys.ARBORETUM, PotatoBiomeCreator.createArboretum(registryEntryLookup, registryEntryLookup2));
+		biomeRegisterable.register(BiomeKeys.HASH, PotatoBiomeCreator.createHash(registryEntryLookup, registryEntryLookup2));
+		biomeRegisterable.register(BiomeKeys.WASTELAND, PotatoBiomeCreator.createWasteland(registryEntryLookup, registryEntryLookup2));
+		biomeRegisterable.register(BiomeKeys.CORRUPTION, PotatoBiomeCreator.createCorruption(registryEntryLookup, registryEntryLookup2));
 		biomeRegisterable.register(BiomeKeys.SNOWY_PLAINS, OverworldBiomeCreator.createPlains(registryEntryLookup, registryEntryLookup2, false, true, false));
 		biomeRegisterable.register(BiomeKeys.ICE_SPIKES, OverworldBiomeCreator.createPlains(registryEntryLookup, registryEntryLookup2, false, true, true));
 		biomeRegisterable.register(BiomeKeys.DESERT, OverworldBiomeCreator.createDesert(registryEntryLookup, registryEntryLookup2));

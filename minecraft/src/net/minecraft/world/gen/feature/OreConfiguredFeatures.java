@@ -16,8 +16,11 @@ public class OreConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_QUARTZ = ConfiguredFeatures.of("ore_quartz");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_GRAVEL_NETHER = ConfiguredFeatures.of("ore_gravel_nether");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_BLACKSTONE = ConfiguredFeatures.of("ore_blackstone");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_TATERSTONE = ConfiguredFeatures.of("ore_taterstone");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_AMBER = ConfiguredFeatures.of("ore_amber");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_DIRT = ConfiguredFeatures.of("ore_dirt");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_GRAVEL = ConfiguredFeatures.of("ore_gravel");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_GRAVTATER = ConfiguredFeatures.of("ore_gravtater");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_GRANITE = ConfiguredFeatures.of("ore_granite");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_DIORITE = ConfiguredFeatures.of("ore_diorite");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_ANDESITE = ConfiguredFeatures.of("ore_andesite");
@@ -26,6 +29,7 @@ public class OreConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_COAL_BURIED = ConfiguredFeatures.of("ore_coal_buried");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_IRON = ConfiguredFeatures.of("ore_iron");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_IRON_SMALL = ConfiguredFeatures.of("ore_iron_small");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_POISONOUS_POTATO = ConfiguredFeatures.of("ore_poisonous_potato");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_GOLD = ConfiguredFeatures.of("ore_gold");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_GOLD_BURIED = ConfiguredFeatures.of("ore_gold_buried");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_REDSTONE = ConfiguredFeatures.of("ore_redstone");
@@ -47,50 +51,65 @@ public class OreConfiguredFeatures {
 		RuleTest ruleTest = new TagMatchRuleTest(BlockTags.BASE_STONE_OVERWORLD);
 		RuleTest ruleTest2 = new TagMatchRuleTest(BlockTags.STONE_ORE_REPLACEABLES);
 		RuleTest ruleTest3 = new TagMatchRuleTest(BlockTags.DEEPSLATE_ORE_REPLACEABLES);
-		RuleTest ruleTest4 = new BlockMatchRuleTest(Blocks.NETHERRACK);
-		RuleTest ruleTest5 = new TagMatchRuleTest(BlockTags.BASE_STONE_NETHER);
+		RuleTest ruleTest4 = new BlockMatchRuleTest(Blocks.POTONE);
+		RuleTest ruleTest5 = new BlockMatchRuleTest(Blocks.NETHERRACK);
+		RuleTest ruleTest6 = new BlockMatchRuleTest(Blocks.POTONE);
+		RuleTest ruleTest7 = new TagMatchRuleTest(BlockTags.BASE_STONE_NETHER);
 		List<OreFeatureConfig.Target> list = List.of(
 			OreFeatureConfig.createTarget(ruleTest2, Blocks.IRON_ORE.getDefaultState()),
-			OreFeatureConfig.createTarget(ruleTest3, Blocks.DEEPSLATE_IRON_ORE.getDefaultState())
+			OreFeatureConfig.createTarget(ruleTest3, Blocks.DEEPSLATE_IRON_ORE.getDefaultState()),
+			OreFeatureConfig.createTarget(ruleTest4, Blocks.POTONE_IRON_ORE.getDefaultState())
 		);
 		List<OreFeatureConfig.Target> list2 = List.of(
-			OreFeatureConfig.createTarget(ruleTest2, Blocks.GOLD_ORE.getDefaultState()),
-			OreFeatureConfig.createTarget(ruleTest3, Blocks.DEEPSLATE_GOLD_ORE.getDefaultState())
+			OreFeatureConfig.createTarget(ruleTest2, Blocks.POISONOUS_POTATO_ORE.getDefaultState()),
+			OreFeatureConfig.createTarget(ruleTest3, Blocks.DEEPSLATE_POISONOUS_POTATO_ORE.getDefaultState())
 		);
 		List<OreFeatureConfig.Target> list3 = List.of(
-			OreFeatureConfig.createTarget(ruleTest2, Blocks.DIAMOND_ORE.getDefaultState()),
-			OreFeatureConfig.createTarget(ruleTest3, Blocks.DEEPSLATE_DIAMOND_ORE.getDefaultState())
+			OreFeatureConfig.createTarget(ruleTest2, Blocks.GOLD_ORE.getDefaultState()),
+			OreFeatureConfig.createTarget(ruleTest3, Blocks.DEEPSLATE_GOLD_ORE.getDefaultState()),
+			OreFeatureConfig.createTarget(ruleTest4, Blocks.POTONE_GOLD_ORE.getDefaultState())
 		);
 		List<OreFeatureConfig.Target> list4 = List.of(
-			OreFeatureConfig.createTarget(ruleTest2, Blocks.LAPIS_ORE.getDefaultState()),
-			OreFeatureConfig.createTarget(ruleTest3, Blocks.DEEPSLATE_LAPIS_ORE.getDefaultState())
+			OreFeatureConfig.createTarget(ruleTest2, Blocks.DIAMOND_ORE.getDefaultState()),
+			OreFeatureConfig.createTarget(ruleTest3, Blocks.DEEPSLATE_DIAMOND_ORE.getDefaultState()),
+			OreFeatureConfig.createTarget(ruleTest4, Blocks.POTONE_DIAMOND_ORE.getDefaultState())
 		);
 		List<OreFeatureConfig.Target> list5 = List.of(
-			OreFeatureConfig.createTarget(ruleTest2, Blocks.COPPER_ORE.getDefaultState()),
-			OreFeatureConfig.createTarget(ruleTest3, Blocks.DEEPSLATE_COPPER_ORE.getDefaultState())
+			OreFeatureConfig.createTarget(ruleTest2, Blocks.LAPIS_ORE.getDefaultState()),
+			OreFeatureConfig.createTarget(ruleTest3, Blocks.DEEPSLATE_LAPIS_ORE.getDefaultState()),
+			OreFeatureConfig.createTarget(ruleTest4, Blocks.POTONE_LAPIS_ORE.getDefaultState())
 		);
 		List<OreFeatureConfig.Target> list6 = List.of(
+			OreFeatureConfig.createTarget(ruleTest2, Blocks.COPPER_ORE.getDefaultState()),
+			OreFeatureConfig.createTarget(ruleTest3, Blocks.DEEPSLATE_COPPER_ORE.getDefaultState()),
+			OreFeatureConfig.createTarget(ruleTest4, Blocks.POTONE_COPPER_ORE.getDefaultState())
+		);
+		List<OreFeatureConfig.Target> list7 = List.of(
 			OreFeatureConfig.createTarget(ruleTest2, Blocks.COAL_ORE.getDefaultState()),
 			OreFeatureConfig.createTarget(ruleTest3, Blocks.DEEPSLATE_COAL_ORE.getDefaultState())
 		);
-		ConfiguredFeatures.register(featureRegisterable, ORE_MAGMA, Feature.ORE, new OreFeatureConfig(ruleTest4, Blocks.MAGMA_BLOCK.getDefaultState(), 33));
-		ConfiguredFeatures.register(featureRegisterable, ORE_SOUL_SAND, Feature.ORE, new OreFeatureConfig(ruleTest4, Blocks.SOUL_SAND.getDefaultState(), 12));
-		ConfiguredFeatures.register(featureRegisterable, ORE_NETHER_GOLD, Feature.ORE, new OreFeatureConfig(ruleTest4, Blocks.NETHER_GOLD_ORE.getDefaultState(), 10));
-		ConfiguredFeatures.register(featureRegisterable, ORE_QUARTZ, Feature.ORE, new OreFeatureConfig(ruleTest4, Blocks.NETHER_QUARTZ_ORE.getDefaultState(), 14));
-		ConfiguredFeatures.register(featureRegisterable, ORE_GRAVEL_NETHER, Feature.ORE, new OreFeatureConfig(ruleTest4, Blocks.GRAVEL.getDefaultState(), 33));
-		ConfiguredFeatures.register(featureRegisterable, ORE_BLACKSTONE, Feature.ORE, new OreFeatureConfig(ruleTest4, Blocks.BLACKSTONE.getDefaultState(), 33));
+		ConfiguredFeatures.register(featureRegisterable, ORE_MAGMA, Feature.ORE, new OreFeatureConfig(ruleTest5, Blocks.MAGMA_BLOCK.getDefaultState(), 33));
+		ConfiguredFeatures.register(featureRegisterable, ORE_SOUL_SAND, Feature.ORE, new OreFeatureConfig(ruleTest5, Blocks.SOUL_SAND.getDefaultState(), 12));
+		ConfiguredFeatures.register(featureRegisterable, ORE_NETHER_GOLD, Feature.ORE, new OreFeatureConfig(ruleTest5, Blocks.NETHER_GOLD_ORE.getDefaultState(), 10));
+		ConfiguredFeatures.register(featureRegisterable, ORE_QUARTZ, Feature.ORE, new OreFeatureConfig(ruleTest5, Blocks.NETHER_QUARTZ_ORE.getDefaultState(), 14));
+		ConfiguredFeatures.register(featureRegisterable, ORE_GRAVEL_NETHER, Feature.ORE, new OreFeatureConfig(ruleTest5, Blocks.GRAVEL.getDefaultState(), 33));
+		ConfiguredFeatures.register(featureRegisterable, ORE_BLACKSTONE, Feature.ORE, new OreFeatureConfig(ruleTest5, Blocks.BLACKSTONE.getDefaultState(), 33));
+		ConfiguredFeatures.register(featureRegisterable, ORE_TATERSTONE, Feature.ORE, new OreFeatureConfig(ruleTest6, Blocks.TATERSTONE.getDefaultState(), 33));
+		ConfiguredFeatures.register(featureRegisterable, ORE_AMBER, Feature.ORE, new OreFeatureConfig(ruleTest6, Blocks.RESIN_ORE.getDefaultState(), 6));
 		ConfiguredFeatures.register(featureRegisterable, ORE_DIRT, Feature.ORE, new OreFeatureConfig(ruleTest, Blocks.DIRT.getDefaultState(), 33));
 		ConfiguredFeatures.register(featureRegisterable, ORE_GRAVEL, Feature.ORE, new OreFeatureConfig(ruleTest, Blocks.GRAVEL.getDefaultState(), 33));
+		ConfiguredFeatures.register(featureRegisterable, ORE_GRAVTATER, Feature.ORE, new OreFeatureConfig(ruleTest, Blocks.GRAVTATER.getDefaultState(), 33));
 		ConfiguredFeatures.register(featureRegisterable, ORE_GRANITE, Feature.ORE, new OreFeatureConfig(ruleTest, Blocks.GRANITE.getDefaultState(), 64));
 		ConfiguredFeatures.register(featureRegisterable, ORE_DIORITE, Feature.ORE, new OreFeatureConfig(ruleTest, Blocks.DIORITE.getDefaultState(), 64));
 		ConfiguredFeatures.register(featureRegisterable, ORE_ANDESITE, Feature.ORE, new OreFeatureConfig(ruleTest, Blocks.ANDESITE.getDefaultState(), 64));
 		ConfiguredFeatures.register(featureRegisterable, ORE_TUFF, Feature.ORE, new OreFeatureConfig(ruleTest, Blocks.TUFF.getDefaultState(), 64));
-		ConfiguredFeatures.register(featureRegisterable, ORE_COAL, Feature.ORE, new OreFeatureConfig(list6, 17));
-		ConfiguredFeatures.register(featureRegisterable, ORE_COAL_BURIED, Feature.ORE, new OreFeatureConfig(list6, 17, 0.5F));
+		ConfiguredFeatures.register(featureRegisterable, ORE_COAL, Feature.ORE, new OreFeatureConfig(list7, 17));
+		ConfiguredFeatures.register(featureRegisterable, ORE_COAL_BURIED, Feature.ORE, new OreFeatureConfig(list7, 17, 0.5F));
 		ConfiguredFeatures.register(featureRegisterable, ORE_IRON, Feature.ORE, new OreFeatureConfig(list, 9));
 		ConfiguredFeatures.register(featureRegisterable, ORE_IRON_SMALL, Feature.ORE, new OreFeatureConfig(list, 4));
-		ConfiguredFeatures.register(featureRegisterable, ORE_GOLD, Feature.ORE, new OreFeatureConfig(list2, 9));
-		ConfiguredFeatures.register(featureRegisterable, ORE_GOLD_BURIED, Feature.ORE, new OreFeatureConfig(list2, 9, 0.5F));
+		ConfiguredFeatures.register(featureRegisterable, ORE_POISONOUS_POTATO, Feature.ORE, new OreFeatureConfig(list2, 9));
+		ConfiguredFeatures.register(featureRegisterable, ORE_GOLD, Feature.ORE, new OreFeatureConfig(list3, 9));
+		ConfiguredFeatures.register(featureRegisterable, ORE_GOLD_BURIED, Feature.ORE, new OreFeatureConfig(list3, 9, 0.5F));
 		ConfiguredFeatures.register(
 			featureRegisterable,
 			ORE_REDSTONE,
@@ -98,17 +117,18 @@ public class OreConfiguredFeatures {
 			new OreFeatureConfig(
 				List.of(
 					OreFeatureConfig.createTarget(ruleTest2, Blocks.REDSTONE_ORE.getDefaultState()),
-					OreFeatureConfig.createTarget(ruleTest3, Blocks.DEEPSLATE_REDSTONE_ORE.getDefaultState())
+					OreFeatureConfig.createTarget(ruleTest3, Blocks.DEEPSLATE_REDSTONE_ORE.getDefaultState()),
+					OreFeatureConfig.createTarget(ruleTest4, Blocks.POTONE_REDSTONE_ORE.getDefaultState())
 				),
 				8
 			)
 		);
-		ConfiguredFeatures.register(featureRegisterable, ORE_DIAMOND_SMALL, Feature.ORE, new OreFeatureConfig(list3, 4, 0.5F));
-		ConfiguredFeatures.register(featureRegisterable, ORE_DIAMOND_LARGE, Feature.ORE, new OreFeatureConfig(list3, 12, 0.7F));
-		ConfiguredFeatures.register(featureRegisterable, ORE_DIAMOND_BURIED, Feature.ORE, new OreFeatureConfig(list3, 8, 1.0F));
-		ConfiguredFeatures.register(featureRegisterable, ORE_DIAMOND_MEDIUM, Feature.ORE, new OreFeatureConfig(list3, 8, 0.5F));
-		ConfiguredFeatures.register(featureRegisterable, ORE_LAPIS, Feature.ORE, new OreFeatureConfig(list4, 7));
-		ConfiguredFeatures.register(featureRegisterable, ORE_LAPIS_BURIED, Feature.ORE, new OreFeatureConfig(list4, 7, 1.0F));
+		ConfiguredFeatures.register(featureRegisterable, ORE_DIAMOND_SMALL, Feature.ORE, new OreFeatureConfig(list4, 4, 0.5F));
+		ConfiguredFeatures.register(featureRegisterable, ORE_DIAMOND_LARGE, Feature.ORE, new OreFeatureConfig(list4, 12, 0.7F));
+		ConfiguredFeatures.register(featureRegisterable, ORE_DIAMOND_BURIED, Feature.ORE, new OreFeatureConfig(list4, 8, 1.0F));
+		ConfiguredFeatures.register(featureRegisterable, ORE_DIAMOND_MEDIUM, Feature.ORE, new OreFeatureConfig(list4, 8, 0.5F));
+		ConfiguredFeatures.register(featureRegisterable, ORE_LAPIS, Feature.ORE, new OreFeatureConfig(list5, 7));
+		ConfiguredFeatures.register(featureRegisterable, ORE_LAPIS_BURIED, Feature.ORE, new OreFeatureConfig(list5, 7, 1.0F));
 		ConfiguredFeatures.register(
 			featureRegisterable,
 			ORE_INFESTED,
@@ -134,13 +154,13 @@ public class OreConfiguredFeatures {
 			)
 		);
 		ConfiguredFeatures.register(
-			featureRegisterable, ORE_ANCIENT_DEBRIS_LARGE, Feature.SCATTERED_ORE, new OreFeatureConfig(ruleTest5, Blocks.ANCIENT_DEBRIS.getDefaultState(), 3, 1.0F)
+			featureRegisterable, ORE_ANCIENT_DEBRIS_LARGE, Feature.SCATTERED_ORE, new OreFeatureConfig(ruleTest7, Blocks.ANCIENT_DEBRIS.getDefaultState(), 3, 1.0F)
 		);
 		ConfiguredFeatures.register(
-			featureRegisterable, ORE_ANCIENT_DEBRIS_SMALL, Feature.SCATTERED_ORE, new OreFeatureConfig(ruleTest5, Blocks.ANCIENT_DEBRIS.getDefaultState(), 2, 1.0F)
+			featureRegisterable, ORE_ANCIENT_DEBRIS_SMALL, Feature.SCATTERED_ORE, new OreFeatureConfig(ruleTest7, Blocks.ANCIENT_DEBRIS.getDefaultState(), 2, 1.0F)
 		);
-		ConfiguredFeatures.register(featureRegisterable, ORE_COPPER_SMALL, Feature.ORE, new OreFeatureConfig(list5, 10));
-		ConfiguredFeatures.register(featureRegisterable, ORE_COPPER_LARGE, Feature.ORE, new OreFeatureConfig(list5, 20));
+		ConfiguredFeatures.register(featureRegisterable, ORE_COPPER_SMALL, Feature.ORE, new OreFeatureConfig(list6, 10));
+		ConfiguredFeatures.register(featureRegisterable, ORE_COPPER_LARGE, Feature.ORE, new OreFeatureConfig(list6, 20));
 		ConfiguredFeatures.register(featureRegisterable, ORE_CLAY, Feature.ORE, new OreFeatureConfig(ruleTest, Blocks.CLAY.getDefaultState(), 33));
 	}
 }

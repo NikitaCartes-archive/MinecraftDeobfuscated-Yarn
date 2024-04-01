@@ -119,7 +119,11 @@ public class FilledMapItem extends NetworkSyncedItem {
 											int w = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, mutable.getX(), mutable.getZ()) + 1;
 											BlockState blockState;
 											if (w <= world.getBottomY() + 1) {
-												blockState = Blocks.BEDROCK.getDefaultState();
+												if (world.isPotato()) {
+													blockState = Blocks.WARPED_WART_BLOCK.getDefaultState();
+												} else {
+													blockState = Blocks.BEDROCK.getDefaultState();
+												}
 											} else {
 												do {
 													mutable.setY(--w);

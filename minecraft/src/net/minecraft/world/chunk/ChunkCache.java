@@ -131,4 +131,9 @@ public class ChunkCache implements BlockView, CollisionView {
 	public Profiler getProfiler() {
 		return this.world.getProfiler();
 	}
+
+	@Override
+	public boolean isPotato() {
+		return this.world.isPotato();
+	}
 }

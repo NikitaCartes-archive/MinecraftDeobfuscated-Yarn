@@ -21,6 +21,11 @@ public class CaveSpiderEntity extends SpiderEntity {
 		super(entityType, world);
 	}
 
+	@Override
+	public boolean hasPotatoForm() {
+		return false;
+	}
+
 	public static DefaultAttributeContainer.Builder createCaveSpiderAttributes() {
 		return SpiderEntity.createSpiderAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 12.0);
 	}
@@ -28,22 +33,25 @@ public class CaveSpiderEntity extends SpiderEntity {
 	@Override
 	public boolean tryAttack(Entity target) {
 		if (super.tryAttack(target)) {
-			if (target instanceof LivingEntity) {
-				int i = 0;
-				if (this.getWorld().getDifficulty() == Difficulty.NORMAL) {
-					i = 7;
-				} else if (this.getWorld().getDifficulty() == Difficulty.HARD) {
-					i = 15;
-				}
-
-				if (i > 0) {
-					((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0), this);
-				}
-			}
-
+			tryInflictPoison(target, this);
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	public static void tryInflictPoison(Entity target, @Nullable Entity attacker) {
+		if (target instanceof LivingEntity livingEntity) {
+			int i = 0;
+			if (target.getWorld().getDifficulty() == Difficulty.NORMAL) {
+				i = 7;
+			} else if (target.getWorld().getDifficulty() == Difficulty.HARD) {
+				i = 15;
+			}
+
+			if (i > 0) {
+				livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0), attacker);
+			}
 		}
 	}
 

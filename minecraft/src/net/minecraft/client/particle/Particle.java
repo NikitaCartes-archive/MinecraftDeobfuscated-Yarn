@@ -276,7 +276,7 @@ public abstract class Particle {
 			double e = dy;
 			double f = dz;
 			if (this.collidesWithWorld && (dx != 0.0 || dy != 0.0 || dz != 0.0) && dx * dx + dy * dy + dz * dz < MAX_SQUARED_COLLISION_CHECK_DISTANCE) {
-				Vec3d vec3d = Entity.adjustMovementForCollisions(null, new Vec3d(dx, dy, dz), this.getBoundingBox(), this.world, List.of());
+				Vec3d vec3d = Entity.adjustMovementForCollisions(null, new Vec3d(dx, dy, dz), this.getBoundingBox(), this.world, List.of()).movement();
 				dx = vec3d.x;
 				dy = vec3d.y;
 				dz = vec3d.z;

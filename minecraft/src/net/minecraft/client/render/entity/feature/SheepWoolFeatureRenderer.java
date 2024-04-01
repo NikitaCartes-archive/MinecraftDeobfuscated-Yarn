@@ -19,6 +19,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/sheep/sheep_fur.png");
+	private static final Identifier field_51188 = LivingEntityRenderer.getPotatoTextureId(SKIN);
 	private final SheepWoolEntityModel<SheepEntity> model;
 
 	public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepEntityModel<SheepEntity>> context, EntityModelLoader loader) {
@@ -51,19 +52,36 @@ public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, Sheep
 					int p = n % o;
 					int q = (n + 1) % o;
 					float r = ((float)(sheepEntity.age % 25) + h) / 25.0F;
-					float[] fs = SheepEntity.getRgbColor(DyeColor.byId(p));
-					float[] gs = SheepEntity.getRgbColor(DyeColor.byId(q));
+					float[] fs = sheepEntity.getRgbColor(DyeColor.byId(p));
+					float[] gs = sheepEntity.getRgbColor(DyeColor.byId(q));
 					s = fs[0] * (1.0F - r) + gs[0] * r;
 					t = fs[1] * (1.0F - r) + gs[1] * r;
 					u = fs[2] * (1.0F - r) + gs[2] * r;
 				} else {
-					float[] hs = SheepEntity.getRgbColor(sheepEntity.getColor());
+					float[] hs = sheepEntity.getRgbColor(sheepEntity.getColor());
 					s = hs[0];
 					t = hs[1];
 					u = hs[2];
 				}
 
-				render(this.getContextModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, sheepEntity, f, g, j, k, l, h, s, t, u);
+				render(
+					this.getContextModel(),
+					this.model,
+					sheepEntity.isPotato() ? field_51188 : SKIN,
+					matrixStack,
+					vertexConsumerProvider,
+					i,
+					sheepEntity,
+					f,
+					g,
+					j,
+					k,
+					l,
+					h,
+					s,
+					t,
+					u
+				);
 			}
 		}
 	}

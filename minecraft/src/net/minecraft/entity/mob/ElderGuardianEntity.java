@@ -23,12 +23,20 @@ public class ElderGuardianEntity extends GuardianEntity {
 	private static final int MINING_FATIGUE_AMPLIFIER = 2;
 	private static final int field_38118 = 1200;
 
-	public ElderGuardianEntity(EntityType<? extends ElderGuardianEntity> entityType, World world) {
-		super(entityType, world);
+	public ElderGuardianEntity(EntityType<? extends ElderGuardianEntity> entityType, World world, boolean bl) {
+		super(entityType, world, bl);
 		this.setPersistent();
 		if (this.wanderGoal != null) {
 			this.wanderGoal.setChance(400);
 		}
+	}
+
+	public static ElderGuardianEntity createPlaguewhale(EntityType<? extends ElderGuardianEntity> type, World world) {
+		return new ElderGuardianEntity(type, world, true);
+	}
+
+	public static ElderGuardianEntity createElderGuardian(EntityType<? extends ElderGuardianEntity> type, World world) {
+		return new ElderGuardianEntity(type, world, false);
 	}
 
 	public static DefaultAttributeContainer.Builder createElderGuardianAttributes() {
@@ -45,42 +53,61 @@ public class ElderGuardianEntity extends GuardianEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_ELDER_GUARDIAN_AMBIENT : SoundEvents.ENTITY_ELDER_GUARDIAN_AMBIENT_LAND;
+		if (this.isPotato()) {
+			return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_PLAGUEWHALE_AMBIENT : SoundEvents.ENTITY_PLAGUEWHALE_AMBIENT_LAND;
+		} else {
+			return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_ELDER_GUARDIAN_AMBIENT : SoundEvents.ENTITY_ELDER_GUARDIAN_AMBIENT_LAND;
+		}
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_ELDER_GUARDIAN_HURT : SoundEvents.ENTITY_ELDER_GUARDIAN_HURT_LAND;
+		if (this.isPotato()) {
+			return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_PLAGUEWHALE_HURT : SoundEvents.ENTITY_PLAGUEWHALE_HURT_LAND;
+		} else {
+			return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_ELDER_GUARDIAN_HURT : SoundEvents.ENTITY_ELDER_GUARDIAN_HURT_LAND;
+		}
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_ELDER_GUARDIAN_DEATH : SoundEvents.ENTITY_ELDER_GUARDIAN_DEATH_LAND;
+		if (this.isPotato()) {
+			return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_PLAGUEWHALE_DEATH : SoundEvents.ENTITY_PLAGUEWHALE_DEATH_LAND;
+		} else {
+			return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_ELDER_GUARDIAN_DEATH : SoundEvents.ENTITY_ELDER_GUARDIAN_DEATH_LAND;
+		}
 	}
 
 	@Override
 	protected SoundEvent getFlopSound() {
-		return SoundEvents.ENTITY_ELDER_GUARDIAN_FLOP;
+		return this.isPotato() ? SoundEvents.ENTITY_PLAGUEWHALE_FLOP : SoundEvents.ENTITY_ELDER_GUARDIAN_FLOP;
 	}
 
 	@Override
 	protected void mobTick() {
 		super.mobTick();
-		if ((this.age + this.getId()) % 1200 == 0) {
-			StatusEffectInstance statusEffectInstance = new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 6000, 2);
-			List<ServerPlayerEntity> list = StatusEffectUtil.addEffectToPlayersWithinDistance(
-				(ServerWorld)this.getWorld(), this, this.getPos(), 50.0, statusEffectInstance, 1200
-			);
-			list.forEach(
-				serverPlayerEntity -> serverPlayerEntity.networkHandler
-						.sendPacket(
-							new GameStateChangeS2CPacket(GameStateChangeS2CPacket.ELDER_GUARDIAN_EFFECT, this.isSilent() ? GameStateChangeS2CPacket.DEMO_OPEN_SCREEN : 1.0F)
-						)
-			);
-		}
+		if (!this.isPotato()) {
+			if ((this.age + this.getId()) % 1200 == 0) {
+				StatusEffectInstance statusEffectInstance = new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 6000, 2);
+				List<ServerPlayerEntity> list = StatusEffectUtil.addEffectToPlayersWithinDistance(
+					(ServerWorld)this.getWorld(), this, this.getPos(), 50.0, statusEffectInstance, 1200
+				);
+				list.forEach(
+					player -> player.networkHandler
+							.sendPacket(
+								new GameStateChangeS2CPacket(GameStateChangeS2CPacket.ELDER_GUARDIAN_EFFECT, this.isSilent() ? GameStateChangeS2CPacket.DEMO_OPEN_SCREEN : 1.0F)
+							)
+				);
+			}
 
-		if (!this.hasPositionTarget()) {
-			this.setPositionTarget(this.getBlockPos(), 16);
+			if (!this.hasPositionTarget()) {
+				this.setPositionTarget(this.getBlockPos(), 16);
+			}
 		}
+	}
+
+	@Override
+	protected double getSameTypePassengerAttachmentPos() {
+		return -0.294;
 	}
 }

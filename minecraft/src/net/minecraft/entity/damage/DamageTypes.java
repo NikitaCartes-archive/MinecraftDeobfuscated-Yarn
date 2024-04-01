@@ -10,6 +10,7 @@ public interface DamageTypes {
 	RegistryKey<DamageType> LIGHTNING_BOLT = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("lightning_bolt"));
 	RegistryKey<DamageType> ON_FIRE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("on_fire"));
 	RegistryKey<DamageType> LAVA = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("lava"));
+	RegistryKey<DamageType> POTATO_HEAT = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("potato_heat"));
 	RegistryKey<DamageType> HOT_FLOOR = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("hot_floor"));
 	RegistryKey<DamageType> IN_WALL = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("in_wall"));
 	RegistryKey<DamageType> CRAMMING = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("cramming"));
@@ -52,12 +53,14 @@ public interface DamageTypes {
 	RegistryKey<DamageType> BAD_RESPAWN_POINT = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("bad_respawn_point"));
 	RegistryKey<DamageType> OUTSIDE_BORDER = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("outside_border"));
 	RegistryKey<DamageType> GENERIC_KILL = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("generic_kill"));
+	RegistryKey<DamageType> POTATO_MAGIC = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("potato_magic"));
 
 	static void bootstrap(Registerable<DamageType> damageTypeRegisterable) {
 		damageTypeRegisterable.register(IN_FIRE, new DamageType("inFire", 0.1F, DamageEffects.BURNING));
 		damageTypeRegisterable.register(LIGHTNING_BOLT, new DamageType("lightningBolt", 0.1F));
 		damageTypeRegisterable.register(ON_FIRE, new DamageType("onFire", 0.0F, DamageEffects.BURNING));
 		damageTypeRegisterable.register(LAVA, new DamageType("lava", 0.1F, DamageEffects.BURNING));
+		damageTypeRegisterable.register(POTATO_HEAT, new DamageType("potato_heat", 0.1F, DamageEffects.BURNING));
 		damageTypeRegisterable.register(HOT_FLOOR, new DamageType("hotFloor", 0.1F, DamageEffects.BURNING));
 		damageTypeRegisterable.register(IN_WALL, new DamageType("inWall", 0.0F));
 		damageTypeRegisterable.register(CRAMMING, new DamageType("cramming", 0.0F));
@@ -103,5 +106,6 @@ public interface DamageTypes {
 		);
 		damageTypeRegisterable.register(OUTSIDE_BORDER, new DamageType("outsideBorder", 0.0F));
 		damageTypeRegisterable.register(GENERIC_KILL, new DamageType("genericKill", 0.0F));
+		damageTypeRegisterable.register(POTATO_MAGIC, new DamageType("potato_magic", DamageScaling.ALWAYS, 0.2F));
 	}
 }

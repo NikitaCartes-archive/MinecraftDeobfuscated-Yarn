@@ -142,7 +142,7 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 
 	@Override
 	public boolean canSpawn(WorldView world) {
-		return super.canSpawn(world) && world.isSpaceEmpty(this, this.getType().getDimensions().getBoxAt(this.getPos()));
+		return super.canSpawn(world) && world.method_59085(this, this.getType().getDimensions().getBoxAt(this.getPos()));
 	}
 
 	@Override

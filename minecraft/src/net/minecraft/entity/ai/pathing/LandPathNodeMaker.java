@@ -352,7 +352,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	}
 
 	private boolean checkBoxCollision(Box box) {
-		return this.collidedBoxes.computeIfAbsent(box, (Object2BooleanFunction<? super Box>)(box2 -> !this.context.getWorld().isSpaceEmpty(this.entity, box)));
+		return this.collidedBoxes.computeIfAbsent(box, (Object2BooleanFunction<? super Box>)(box2 -> !this.context.getWorld().method_59085(this.entity, box)));
 	}
 
 	protected PathNodeType getNodeType(int x, int y, int z) {

@@ -307,6 +307,8 @@ public class ArmorStandEntity extends LivingEntity {
 			return ActionResult.PASS;
 		} else if (player.isSpectator()) {
 			return ActionResult.SUCCESS;
+		} else if (itemStack.isOf(Items.POTATO_PEELER)) {
+			return ActionResult.PASS;
 		} else if (player.getWorld().isClient) {
 			return ActionResult.CONSUME;
 		} else {

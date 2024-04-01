@@ -20,16 +20,17 @@ import net.minecraft.util.Identifier;
 public class ItemModelGenerator {
 	public static final Identifier TRIM_TYPE = new Identifier("trim_type");
 	private static final List<ItemModelGenerator.TrimMaterial> TRIM_MATERIALS = List.of(
-		new ItemModelGenerator.TrimMaterial("quartz", 0.1F, Map.of()),
-		new ItemModelGenerator.TrimMaterial("iron", 0.2F, Map.of(ArmorMaterials.IRON, "iron_darker")),
-		new ItemModelGenerator.TrimMaterial("netherite", 0.3F, Map.of(ArmorMaterials.NETHERITE, "netherite_darker")),
-		new ItemModelGenerator.TrimMaterial("redstone", 0.4F, Map.of()),
-		new ItemModelGenerator.TrimMaterial("copper", 0.5F, Map.of()),
-		new ItemModelGenerator.TrimMaterial("gold", 0.6F, Map.of(ArmorMaterials.GOLD, "gold_darker")),
-		new ItemModelGenerator.TrimMaterial("emerald", 0.7F, Map.of()),
-		new ItemModelGenerator.TrimMaterial("diamond", 0.8F, Map.of(ArmorMaterials.DIAMOND, "diamond_darker")),
-		new ItemModelGenerator.TrimMaterial("lapis", 0.9F, Map.of()),
-		new ItemModelGenerator.TrimMaterial("amethyst", 1.0F, Map.of())
+		new ItemModelGenerator.TrimMaterial("quartz", 0.01F, Map.of()),
+		new ItemModelGenerator.TrimMaterial("iron", 0.02F, Map.of(ArmorMaterials.IRON, "iron_darker")),
+		new ItemModelGenerator.TrimMaterial("netherite", 0.03F, Map.of(ArmorMaterials.NETHERITE, "netherite_darker")),
+		new ItemModelGenerator.TrimMaterial("redstone", 0.04F, Map.of()),
+		new ItemModelGenerator.TrimMaterial("copper", 0.05F, Map.of()),
+		new ItemModelGenerator.TrimMaterial("gold", 0.06F, Map.of(ArmorMaterials.GOLD, "gold_darker")),
+		new ItemModelGenerator.TrimMaterial("emerald", 0.07F, Map.of()),
+		new ItemModelGenerator.TrimMaterial("diamond", 0.08F, Map.of(ArmorMaterials.DIAMOND, "diamond_darker")),
+		new ItemModelGenerator.TrimMaterial("lapis", 0.09F, Map.of()),
+		new ItemModelGenerator.TrimMaterial("amethyst", 0.1F, Map.of()),
+		new ItemModelGenerator.TrimMaterial("amber", 1.0F, Map.of())
 	);
 	private final BiConsumer<Identifier, Supplier<JsonElement>> writer;
 
@@ -133,6 +134,7 @@ public class ItemModelGenerator {
 		this.register(Items.ARMOR_STAND, Models.GENERATED);
 		this.register(Items.ARROW, Models.GENERATED);
 		this.register(Items.BAKED_POTATO, Models.GENERATED);
+		this.register(Items.HOT_POTATO, Models.GENERATED);
 		this.register(Items.BAMBOO, Models.HANDHELD);
 		this.register(Items.BEEF, Models.GENERATED);
 		this.register(Items.BEETROOT, Models.GENERATED);
@@ -158,12 +160,15 @@ public class ItemModelGenerator {
 		this.register(Items.CHICKEN, Models.GENERATED);
 		this.register(Items.CHORUS_FRUIT, Models.GENERATED);
 		this.register(Items.CLAY_BALL, Models.GENERATED);
+		this.register(Items.POTATO_BUD, Models.GENERATED);
 		this.registerClock(Items.CLOCK);
 		this.register(Items.COAL, Models.GENERATED);
 		this.register(Items.COD_BUCKET, Models.GENERATED);
 		this.register(Items.COMMAND_BLOCK_MINECART, Models.GENERATED);
 		this.registerCompass(Items.COMPASS);
 		this.registerCompass(Items.RECOVERY_COMPASS);
+		this.register(Items.LASHING_POTATO, "_extended", Models.HANDHELD);
+		this.register(Items.TOXIC_BEAM, Models.GENERATED);
 		this.register(Items.COOKED_BEEF, Models.GENERATED);
 		this.register(Items.COOKED_CHICKEN, Models.GENERATED);
 		this.register(Items.COOKED_COD, Models.GENERATED);
@@ -212,6 +217,7 @@ public class ItemModelGenerator {
 		this.register(Items.GLOW_ITEM_FRAME, Models.GENERATED);
 		this.register(Items.RAW_GOLD, Models.GENERATED);
 		this.register(Items.GOLDEN_APPLE, Models.GENERATED);
+		this.register(Items.GOLDEN_POISONOUS_POTATO, Models.GENERATED);
 		this.register(Items.GOLDEN_AXE, Models.HANDHELD);
 		this.register(Items.GOLDEN_CARROT, Models.GENERATED);
 		this.register(Items.GOLDEN_HOE, Models.HANDHELD);
@@ -244,6 +250,9 @@ public class ItemModelGenerator {
 		this.register(Items.JUNGLE_CHEST_BOAT, Models.GENERATED);
 		this.register(Items.KNOWLEDGE_BOOK, Models.GENERATED);
 		this.register(Items.LAPIS_LAZULI, Models.GENERATED);
+		this.register(Items.AMBER_GEM, Models.GENERATED);
+		this.register(Items.DENT, Models.GENERATED);
+		this.register(Items.TOXIC_RESIN, Models.GENERATED);
 		this.register(Items.LAVA_BUCKET, Models.GENERATED);
 		this.register(Items.LEATHER, Models.GENERATED);
 		this.register(Items.LEATHER_HORSE_ARMOR, Models.GENERATED);
@@ -381,10 +390,14 @@ public class ItemModelGenerator {
 		this.register(Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, Models.GENERATED);
 		this.register(Items.DEBUG_STICK, Items.STICK, Models.HANDHELD);
 		this.register(Items.ENCHANTED_GOLDEN_APPLE, Items.GOLDEN_APPLE, Models.GENERATED);
+		this.register(Items.ENCHANTED_GOLDEN_POISONOUS_POTATO, Items.GOLDEN_POISONOUS_POTATO, Models.GENERATED);
 
 		for (Item item : Registries.ITEM) {
-			if (item instanceof ArmorItem armorItem) {
-				this.registerArmor(armorItem);
+			if (item instanceof ArmorItem) {
+				ArmorItem armorItem = (ArmorItem)item;
+				if (item != Items.POISONOUS_POTATO_PLANT) {
+					this.registerArmor(armorItem);
+				}
 			}
 		}
 
@@ -412,6 +425,22 @@ public class ItemModelGenerator {
 		this.register(Items.SKULL_POTTERY_SHERD, Models.GENERATED);
 		this.register(Items.SNORT_POTTERY_SHERD, Models.GENERATED);
 		this.register(Items.TRIAL_KEY, Models.GENERATED);
+		this.register(Items.POTATO_OF_KNOWLEDGE, Models.GENERATED);
+		this.register(Items.POTATO_STAFF, Models.GENERATED);
+		this.register(Items.POISONOUS_POTATO_STICKS, Models.GENERATED);
+		this.register(Items.POISONOUS_POTATO_SLICES, Models.GENERATED);
+		this.register(Items.POISONOUS_POTATO_FRIES, Models.GENERATED);
+		this.register(Items.POISONOUS_POTATO_CHIPS, Models.GENERATED);
+		this.register(Items.POTATO_HAMMER, Models.GENERATED);
+		this.register(Items.POTATO_PEELER, Models.HANDHELD);
+
+		for (Item itemx : Items.POTATO_PEELS.values()) {
+			this.register(itemx, Models.GENERATED);
+		}
+
+		this.register(Items.CORRUPTED_POTATO_PEELS, Models.GENERATED);
+		this.register(Items.HASH_BROWNS, Models.GENERATED);
+		this.register(Items.POTATO_EYE, Models.GENERATED);
 	}
 
 	static record TrimMaterial(String name, float itemModelIndex, Map<RegistryEntry<ArmorMaterial>, String> overrideArmorMaterials) {

@@ -232,6 +232,10 @@ public class PlayerAdvancementTracker {
 		return bl;
 	}
 
+	public AdvancementManager method_58784() {
+		return this.advancementManager;
+	}
+
 	private void onStatusUpdate(AdvancementEntry advancement) {
 		PlacedAdvancement placedAdvancement = this.advancementManager.get(advancement);
 		if (placedAdvancement != null) {

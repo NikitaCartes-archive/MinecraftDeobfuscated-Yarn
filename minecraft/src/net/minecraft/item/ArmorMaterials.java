@@ -78,6 +78,13 @@ public class ArmorMaterials {
 		map.put(ArmorItem.Type.HELMET, 3);
 		map.put(ArmorItem.Type.BODY, 11);
 	}), 10, SoundEvents.ITEM_ARMOR_EQUIP_WOLF, 0.0F, 0.0F, () -> Ingredient.ofItems(Items.ARMADILLO_SCUTE));
+	public static final RegistryEntry<ArmorMaterial> POTATO = register("potato", Util.make(new EnumMap(ArmorItem.Type.class), enumMap -> {
+		enumMap.put(ArmorItem.Type.BOOTS, 0);
+		enumMap.put(ArmorItem.Type.LEGGINGS, 0);
+		enumMap.put(ArmorItem.Type.CHESTPLATE, 0);
+		enumMap.put(ArmorItem.Type.HELMET, 0);
+		enumMap.put(ArmorItem.Type.BODY, 0);
+	}), 9, SoundEvents.ITEM_ARMOR_EQUIP_TURTLE, 0.0F, 0.0F, () -> Ingredient.ofItems(Items.POISONOUS_POTATO_PLANT));
 
 	public static RegistryEntry<ArmorMaterial> getDefault(Registry<ArmorMaterial> registry) {
 		return LEATHER;

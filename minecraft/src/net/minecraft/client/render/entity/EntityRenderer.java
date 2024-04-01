@@ -27,9 +27,9 @@ public abstract class EntityRenderer<T extends Entity> {
 	protected float shadowRadius;
 	protected float shadowOpacity = 1.0F;
 
-	protected EntityRenderer(EntityRendererFactory.Context ctx) {
-		this.dispatcher = ctx.getRenderDispatcher();
-		this.textRenderer = ctx.getTextRenderer();
+	protected EntityRenderer(EntityRendererFactory.Context context) {
+		this.dispatcher = context.getRenderDispatcher();
+		this.textRenderer = context.getTextRenderer();
 	}
 
 	public final int getLight(T entity, float tickDelta) {

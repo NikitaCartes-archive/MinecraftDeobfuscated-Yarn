@@ -13,6 +13,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.LidOpenable;
 import net.minecraft.block.enums.ChestType;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.passive.CatEntity;
@@ -238,6 +239,16 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 				player.openHandledScreen(namedScreenHandlerFactory);
 				player.incrementStat(this.getOpenStat());
 				PiglinBrain.onGuardedBlockInteracted(player, true);
+			}
+
+			Inventory inventory = getInventory(this, state, world, pos, false);
+			if (inventory != null) {
+				inventory.forEachStack(stack -> {
+					if (stack.contains(DataComponentTypes.VIEWS)) {
+						stack.set(DataComponentTypes.VIEWS, stack.getOrDefault(DataComponentTypes.VIEWS, Integer.valueOf(0)) + 1);
+						stack.getItem().onViewInChest(stack, world, pos, inventory);
+					}
+				});
 			}
 
 			return ActionResult.CONSUME;

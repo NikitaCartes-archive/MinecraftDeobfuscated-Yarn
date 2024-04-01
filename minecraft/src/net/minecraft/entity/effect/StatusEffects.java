@@ -102,6 +102,8 @@ public class StatusEffects {
 		"hero_of_the_village", new StatusEffect(StatusEffectCategory.BENEFICIAL, 4521796)
 	);
 	public static final RegistryEntry<StatusEffect> DARKNESS = register("darkness", new StatusEffect(StatusEffectCategory.HARMFUL, 2696993).fadeTicks(22));
+	public static final RegistryEntry<StatusEffect> POTATO_OIL = register("potato_oil", new StatusEffect(StatusEffectCategory.BENEFICIAL, 14014113));
+	public static final RegistryEntry<StatusEffect> STICKY = register("sticky", new StatusEffect(StatusEffectCategory.BENEFICIAL, 13023361));
 
 	private static RegistryEntry<StatusEffect> register(String id, StatusEffect statusEffect) {
 		return Registry.registerReference(Registries.STATUS_EFFECT, new Identifier(id), statusEffect);

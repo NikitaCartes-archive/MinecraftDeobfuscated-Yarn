@@ -37,6 +37,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			);
 		this.getOrCreateTagBuilder(BlockTags.PLANKS)
 			.add(
+				Blocks.POTATO_PLANKS,
 				Blocks.OAK_PLANKS,
 				Blocks.SPRUCE_PLANKS,
 				Blocks.BIRCH_PLANKS,
@@ -53,6 +54,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.STONE_BRICKS, Blocks.MOSSY_STONE_BRICKS, Blocks.CRACKED_STONE_BRICKS, Blocks.CHISELED_STONE_BRICKS);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_BUTTONS)
 			.add(
+				Blocks.POTATO_BUTTON,
 				Blocks.OAK_BUTTON,
 				Blocks.SPRUCE_BUTTON,
 				Blocks.BIRCH_BUTTON,
@@ -88,6 +90,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_DOORS)
 			.add(
+				Blocks.POTATO_DOOR,
 				Blocks.OAK_DOOR,
 				Blocks.SPRUCE_DOOR,
 				Blocks.BIRCH_DOOR,
@@ -102,6 +105,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_STAIRS)
 			.add(
+				Blocks.POTATO_STAIRS,
 				Blocks.OAK_STAIRS,
 				Blocks.SPRUCE_STAIRS,
 				Blocks.BIRCH_STAIRS,
@@ -123,6 +127,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.ACACIA_SLAB,
 				Blocks.DARK_OAK_SLAB,
 				Blocks.CRIMSON_SLAB,
+				Blocks.POTATO_SLAB,
 				Blocks.WARPED_SLAB,
 				Blocks.MANGROVE_SLAB,
 				Blocks.BAMBOO_SLAB,
@@ -137,6 +142,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.BIRCH_FENCE,
 				Blocks.JUNGLE_FENCE,
 				Blocks.CRIMSON_FENCE,
+				Blocks.POTATO_FENCE,
 				Blocks.WARPED_FENCE,
 				Blocks.MANGROVE_FENCE,
 				Blocks.BAMBOO_FENCE,
@@ -188,7 +194,11 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.DARK_OAK_LOG)
 			.add(Blocks.MANGROVE_LOG)
 			.add(Blocks.CHERRY_LOG);
-		this.getOrCreateTagBuilder(BlockTags.LOGS).addTag(BlockTags.LOGS_THAT_BURN).addTag(BlockTags.CRIMSON_STEMS).addTag(BlockTags.WARPED_STEMS);
+		this.getOrCreateTagBuilder(BlockTags.LOGS)
+			.addTag(BlockTags.LOGS_THAT_BURN)
+			.addTag(BlockTags.CRIMSON_STEMS)
+			.addTag(BlockTags.WARPED_STEMS)
+			.add(Blocks.POTATO_STEM);
 		this.getOrCreateTagBuilder(BlockTags.ANVIL).add(Blocks.ANVIL, Blocks.CHIPPED_ANVIL, Blocks.DAMAGED_ANVIL);
 		this.getOrCreateTagBuilder(BlockTags.SMALL_FLOWERS)
 			.add(
@@ -204,13 +214,17 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.OXEYE_DAISY,
 				Blocks.CORNFLOWER,
 				Blocks.LILY_OF_THE_VALLEY,
+				Blocks.POTATO_FLOWER,
 				Blocks.WITHER_ROSE,
 				Blocks.TORCHFLOWER
 			);
 		this.getOrCreateTagBuilder(BlockTags.DIRT)
 			.add(
 				Blocks.DIRT,
+				Blocks.TERRE_DE_POMME,
 				Blocks.GRASS_BLOCK,
+				Blocks.PEELGRASS_BLOCK,
+				Blocks.CORRUPTED_PEELGRASS_BLOCK,
 				Blocks.PODZOL,
 				Blocks.COARSE_DIRT,
 				Blocks.MYCELIUM,
@@ -224,6 +238,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.addTag(BlockTags.DIRT)
 			.add(
 				Blocks.SAND,
+				Blocks.GRAVTATER,
 				Blocks.RED_SAND,
 				Blocks.GRAVEL,
 				Blocks.BROWN_MUSHROOM,
@@ -267,6 +282,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.POTTED_CACTUS,
 				Blocks.POTTED_CORNFLOWER,
 				Blocks.POTTED_LILY_OF_THE_VALLEY,
+				Blocks.POTTED_POTATO_FLOWER,
 				Blocks.POTTED_WITHER_ROSE,
 				Blocks.POTTED_BAMBOO,
 				Blocks.POTTED_CRIMSON_FUNGUS,
@@ -324,6 +340,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.DARK_OAK_PRESSURE_PLATE,
 				Blocks.CRIMSON_PRESSURE_PLATE,
 				Blocks.WARPED_PRESSURE_PLATE,
+				Blocks.POTATO_PRESSURE_PLATE,
 				Blocks.MANGROVE_PRESSURE_PLATE,
 				Blocks.BAMBOO_PRESSURE_PLATE,
 				Blocks.CHERRY_PRESSURE_PLATE
@@ -337,6 +354,11 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.addTag(BlockTags.WOODEN_STAIRS)
 			.add(Blocks.BAMBOO_MOSAIC_STAIRS)
 			.add(
+				Blocks.POTONE_STAIRS,
+				Blocks.TATERSTONE_STAIRS,
+				Blocks.EXPIRED_BAKED_POTATO_BRICK_STAIRS,
+				Blocks.CHARRED_BAKED_POTATO_BRICK_STAIRS,
+				Blocks.BAKED_POTATO_BRICK_STAIRS,
 				Blocks.COBBLESTONE_STAIRS,
 				Blocks.SANDSTONE_STAIRS,
 				Blocks.NETHER_BRICK_STAIRS,
@@ -383,6 +405,11 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.addTag(BlockTags.WOODEN_SLABS)
 			.add(Blocks.BAMBOO_MOSAIC_SLAB)
 			.add(
+				Blocks.POTONE_SLAB,
+				Blocks.BAKED_POTATO_BRICK_SLAB,
+				Blocks.CHARRED_BAKED_POTATO_BRICK_SLAB,
+				Blocks.TATERSTONE_SLAB,
+				Blocks.EXPIRED_BAKED_POTATO_BRICK_SLAB,
 				Blocks.STONE_SLAB,
 				Blocks.SMOOTH_STONE_SLAB,
 				Blocks.STONE_BRICK_SLAB,
@@ -431,6 +458,11 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			);
 		this.getOrCreateTagBuilder(BlockTags.WALLS)
 			.add(
+				Blocks.POTONE_WALL,
+				Blocks.TATERSTONE_WALL,
+				Blocks.BAKED_POTATO_BRICK_WALL,
+				Blocks.CHARRED_BAKED_POTATO_BRICK_WALL,
+				Blocks.EXPIRED_BAKED_POTATO_BRICK_WALL,
 				Blocks.COBBLESTONE_WALL,
 				Blocks.MOSSY_COBBLESTONE_WALL,
 				Blocks.BRICK_WALL,
@@ -460,15 +492,16 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.TUBE_CORAL_FAN, Blocks.BRAIN_CORAL_FAN, Blocks.BUBBLE_CORAL_FAN, Blocks.FIRE_CORAL_FAN, Blocks.HORN_CORAL_FAN);
 		this.getOrCreateTagBuilder(BlockTags.WALL_CORALS)
 			.add(Blocks.TUBE_CORAL_WALL_FAN, Blocks.BRAIN_CORAL_WALL_FAN, Blocks.BUBBLE_CORAL_WALL_FAN, Blocks.FIRE_CORAL_WALL_FAN, Blocks.HORN_CORAL_WALL_FAN);
-		this.getOrCreateTagBuilder(BlockTags.SAND).add(Blocks.SAND, Blocks.RED_SAND, Blocks.SUSPICIOUS_SAND);
-		this.getOrCreateTagBuilder(BlockTags.SMELTS_TO_GLASS).add(Blocks.SAND, Blocks.RED_SAND);
+		this.getOrCreateTagBuilder(BlockTags.SAND).add(Blocks.SAND, Blocks.RED_SAND, Blocks.SUSPICIOUS_SAND, Blocks.GRAVTATER);
+		this.getOrCreateTagBuilder(BlockTags.SMELTS_TO_GLASS).add(Blocks.SAND, Blocks.GRAVTATER, Blocks.RED_SAND);
 		this.getOrCreateTagBuilder(BlockTags.RAILS).add(Blocks.RAIL, Blocks.POWERED_RAIL, Blocks.DETECTOR_RAIL, Blocks.ACTIVATOR_RAIL);
 		this.getOrCreateTagBuilder(BlockTags.CORAL_BLOCKS)
 			.add(Blocks.TUBE_CORAL_BLOCK, Blocks.BRAIN_CORAL_BLOCK, Blocks.BUBBLE_CORAL_BLOCK, Blocks.FIRE_CORAL_BLOCK, Blocks.HORN_CORAL_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.ICE).add(Blocks.ICE, Blocks.PACKED_ICE, Blocks.BLUE_ICE, Blocks.FROSTED_ICE);
-		this.getOrCreateTagBuilder(BlockTags.VALID_SPAWN).add(Blocks.GRASS_BLOCK, Blocks.PODZOL);
+		this.getOrCreateTagBuilder(BlockTags.VALID_SPAWN).add(Blocks.GRASS_BLOCK, Blocks.PEELGRASS_BLOCK, Blocks.CORRUPTED_PEELGRASS_BLOCK, Blocks.PODZOL);
 		this.getOrCreateTagBuilder(BlockTags.LEAVES)
 			.add(
+				Blocks.POTATO_LEAVES,
 				Blocks.JUNGLE_LEAVES,
 				Blocks.OAK_LEAVES,
 				Blocks.SPRUCE_LEAVES,
@@ -503,6 +536,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_TRAPDOORS)
 			.add(
+				Blocks.POTATO_TRAPDOOR,
 				Blocks.ACACIA_TRAPDOOR,
 				Blocks.BIRCH_TRAPDOOR,
 				Blocks.DARK_OAK_TRAPDOOR,
@@ -523,6 +557,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.BAMBOO, Blocks.BAMBOO_SAPLING, Blocks.GRAVEL, Blocks.SUSPICIOUS_GRAVEL);
 		this.getOrCreateTagBuilder(BlockTags.STANDING_SIGNS)
 			.add(
+				Blocks.POTATO_SIGN,
 				Blocks.OAK_SIGN,
 				Blocks.SPRUCE_SIGN,
 				Blocks.BIRCH_SIGN,
@@ -537,6 +572,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			);
 		this.getOrCreateTagBuilder(BlockTags.WALL_SIGNS)
 			.add(
+				Blocks.POTATO_WALL_SIGN,
 				Blocks.OAK_WALL_SIGN,
 				Blocks.SPRUCE_WALL_SIGN,
 				Blocks.BIRCH_WALL_SIGN,
@@ -552,6 +588,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.SIGNS).addTag(BlockTags.STANDING_SIGNS).addTag(BlockTags.WALL_SIGNS);
 		this.getOrCreateTagBuilder(BlockTags.CEILING_HANGING_SIGNS)
 			.add(
+				Blocks.POTATO_HANGING_SIGN,
 				Blocks.OAK_HANGING_SIGN,
 				Blocks.SPRUCE_HANGING_SIGN,
 				Blocks.BIRCH_HANGING_SIGN,
@@ -566,6 +603,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			);
 		this.getOrCreateTagBuilder(BlockTags.WALL_HANGING_SIGNS)
 			.add(
+				Blocks.POTATO_WALL_HANGING_SIGN,
 				Blocks.OAK_WALL_HANGING_SIGN,
 				Blocks.SPRUCE_WALL_HANGING_SIGN,
 				Blocks.BIRCH_WALL_HANGING_SIGN,
@@ -654,6 +692,8 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.BEEHIVES).add(Blocks.BEE_NEST, Blocks.BEEHIVE);
 		this.getOrCreateTagBuilder(BlockTags.CROPS)
 			.add(Blocks.BEETROOTS, Blocks.CARROTS, Blocks.POTATOES, Blocks.WHEAT, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM, Blocks.TORCHFLOWER_CROP, Blocks.PITCHER_CROP);
+		this.getOrCreateTagBuilder(BlockTags.GROWS_POTATOES)
+			.add(Blocks.POISON_FARMLAND, Blocks.FARMLAND, Blocks.CORRUPTED_PEELGRASS_BLOCK, Blocks.PEELGRASS_BLOCK, Blocks.GRAVTATER);
 		this.getOrCreateTagBuilder(BlockTags.BEE_GROWABLES).addTag(BlockTags.CROPS).add(Blocks.SWEET_BERRY_BUSH).add(Blocks.CAVE_VINES).add(Blocks.CAVE_VINES_PLANT);
 		this.getOrCreateTagBuilder(BlockTags.SHULKER_BOXES)
 			.add(
@@ -675,12 +715,12 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.WHITE_SHULKER_BOX,
 				Blocks.YELLOW_SHULKER_BOX
 			);
-		this.getOrCreateTagBuilder(BlockTags.PORTALS).add(Blocks.NETHER_PORTAL, Blocks.END_PORTAL, Blocks.END_GATEWAY);
+		this.getOrCreateTagBuilder(BlockTags.PORTALS).add(Blocks.NETHER_PORTAL, Blocks.POTATO_PORTAL, Blocks.END_PORTAL, Blocks.END_GATEWAY);
 		this.getOrCreateTagBuilder(BlockTags.FIRE).add(Blocks.FIRE, Blocks.SOUL_FIRE);
-		this.getOrCreateTagBuilder(BlockTags.NYLIUM).add(Blocks.CRIMSON_NYLIUM, Blocks.WARPED_NYLIUM);
+		this.getOrCreateTagBuilder(BlockTags.NYLIUM).add(Blocks.CRIMSON_NYLIUM, Blocks.WARPED_NYLIUM, Blocks.CORRUPTED_PEELGRASS_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.WART_BLOCKS).add(Blocks.NETHER_WART_BLOCK, Blocks.WARPED_WART_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.BEACON_BASE_BLOCKS)
-			.add(Blocks.NETHERITE_BLOCK, Blocks.EMERALD_BLOCK, Blocks.DIAMOND_BLOCK, Blocks.GOLD_BLOCK, Blocks.IRON_BLOCK);
+			.add(Blocks.AMBER_BLOCK, Blocks.NETHERITE_BLOCK, Blocks.EMERALD_BLOCK, Blocks.DIAMOND_BLOCK, Blocks.GOLD_BLOCK, Blocks.IRON_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.SOUL_SPEED_BLOCKS).add(Blocks.SOUL_SAND, Blocks.SOUL_SOIL);
 		this.getOrCreateTagBuilder(BlockTags.WALL_POST_OVERRIDE)
 			.add(Blocks.TORCH, Blocks.SOUL_TORCH, Blocks.REDSTONE_TORCH, Blocks.TRIPWIRE)
@@ -711,17 +751,18 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.POTTED_WARPED_FUNGUS)
 			.add(Blocks.NETHER_PORTAL)
 			.add(Blocks.RESPAWN_ANCHOR);
-		this.getOrCreateTagBuilder(BlockTags.GOLD_ORES).add(Blocks.GOLD_ORE, Blocks.NETHER_GOLD_ORE, Blocks.DEEPSLATE_GOLD_ORE);
-		this.getOrCreateTagBuilder(BlockTags.IRON_ORES).add(Blocks.IRON_ORE, Blocks.DEEPSLATE_IRON_ORE);
-		this.getOrCreateTagBuilder(BlockTags.DIAMOND_ORES).add(Blocks.DIAMOND_ORE, Blocks.DEEPSLATE_DIAMOND_ORE);
-		this.getOrCreateTagBuilder(BlockTags.REDSTONE_ORES).add(Blocks.REDSTONE_ORE, Blocks.DEEPSLATE_REDSTONE_ORE);
+		this.getOrCreateTagBuilder(BlockTags.GOLD_ORES).add(Blocks.GOLD_ORE, Blocks.NETHER_GOLD_ORE, Blocks.DEEPSLATE_GOLD_ORE, Blocks.POTONE_GOLD_ORE);
+		this.getOrCreateTagBuilder(BlockTags.IRON_ORES).add(Blocks.IRON_ORE, Blocks.DEEPSLATE_IRON_ORE, Blocks.POTONE_IRON_ORE);
+		this.getOrCreateTagBuilder(BlockTags.POISONOUS_POTATO_ORES).add(Blocks.POISONOUS_POTATO_ORE, Blocks.DEEPSLATE_POISONOUS_POTATO_ORE);
+		this.getOrCreateTagBuilder(BlockTags.DIAMOND_ORES).add(Blocks.DIAMOND_ORE, Blocks.DEEPSLATE_DIAMOND_ORE, Blocks.POTONE_DIAMOND_ORE);
+		this.getOrCreateTagBuilder(BlockTags.REDSTONE_ORES).add(Blocks.REDSTONE_ORE, Blocks.DEEPSLATE_REDSTONE_ORE, Blocks.POTONE_REDSTONE_ORE);
 		this.getOrCreateTagBuilder(BlockTags.COAL_ORES).add(Blocks.COAL_ORE, Blocks.DEEPSLATE_COAL_ORE);
 		this.getOrCreateTagBuilder(BlockTags.EMERALD_ORES).add(Blocks.EMERALD_ORE, Blocks.DEEPSLATE_EMERALD_ORE);
-		this.getOrCreateTagBuilder(BlockTags.COPPER_ORES).add(Blocks.COPPER_ORE, Blocks.DEEPSLATE_COPPER_ORE);
-		this.getOrCreateTagBuilder(BlockTags.LAPIS_ORES).add(Blocks.LAPIS_ORE, Blocks.DEEPSLATE_LAPIS_ORE);
+		this.getOrCreateTagBuilder(BlockTags.COPPER_ORES).add(Blocks.COPPER_ORE, Blocks.DEEPSLATE_COPPER_ORE, Blocks.POTONE_COPPER_ORE);
+		this.getOrCreateTagBuilder(BlockTags.LAPIS_ORES).add(Blocks.LAPIS_ORE, Blocks.DEEPSLATE_LAPIS_ORE, Blocks.POTONE_LAPIS_ORE);
 		this.getOrCreateTagBuilder(BlockTags.SOUL_FIRE_BASE_BLOCKS).add(Blocks.SOUL_SAND, Blocks.SOUL_SOIL);
 		this.getOrCreateTagBuilder(BlockTags.STRIDER_WARM_BLOCKS).add(Blocks.LAVA);
-		this.getOrCreateTagBuilder(BlockTags.CAMPFIRES).add(Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE);
+		this.getOrCreateTagBuilder(BlockTags.CAMPFIRES).add(Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE, Blocks.FRYING_TABLE);
 		this.getOrCreateTagBuilder(BlockTags.GUARDED_BY_PIGLINS)
 			.add(Blocks.GOLD_BLOCK, Blocks.BARREL, Blocks.CHEST, Blocks.ENDER_CHEST, Blocks.GILDED_BLACKSTONE, Blocks.TRAPPED_CHEST, Blocks.RAW_GOLD_BLOCK)
 			.addTag(BlockTags.SHULKER_BOXES)
@@ -729,6 +770,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.PREVENT_MOB_SPAWNING_INSIDE).addTag(BlockTags.RAILS);
 		this.getOrCreateTagBuilder(BlockTags.FENCE_GATES)
 			.add(
+				Blocks.POTATO_FENCE_GATE,
 				Blocks.ACACIA_FENCE_GATE,
 				Blocks.BIRCH_FENCE_GATE,
 				Blocks.DARK_OAK_FENCE_GATE,
@@ -749,7 +791,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.STONE_ORE_REPLACEABLES).add(Blocks.STONE).add(Blocks.GRANITE).add(Blocks.DIORITE).add(Blocks.ANDESITE);
 		this.getOrCreateTagBuilder(BlockTags.DEEPSLATE_ORE_REPLACEABLES).add(Blocks.DEEPSLATE).add(Blocks.TUFF);
 		this.getOrCreateTagBuilder(BlockTags.BASE_STONE_OVERWORLD)
-			.add(Blocks.STONE)
+			.add(Blocks.STONE, Blocks.POTONE)
 			.add(Blocks.GRANITE)
 			.add(Blocks.DIORITE)
 			.add(Blocks.ANDESITE)
@@ -774,7 +816,8 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.PACKED_ICE,
 				Blocks.RAW_IRON_BLOCK,
 				Blocks.RAW_COPPER_BLOCK
-			);
+			)
+			.addTag(BlockTags.POISONOUS_POTATO_ORES);
 		this.getOrCreateTagBuilder(BlockTags.NETHER_CARVER_REPLACEABLES)
 			.addTag(BlockTags.BASE_STONE_OVERWORLD)
 			.addTag(BlockTags.BASE_STONE_NETHER)
@@ -828,11 +871,15 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.POWDER_SNOW, Blocks.SCULK_VEIN, Blocks.GLOW_LICHEN, Blocks.LILY_PAD, Blocks.SMALL_AMETHYST_BUD, Blocks.PINK_PETALS);
 		this.getOrCreateTagBuilder(BlockTags.COMBINATION_STEP_SOUND_BLOCKS)
 			.addTag(BlockTags.WOOL_CARPETS)
-			.add(Blocks.MOSS_CARPET, Blocks.SNOW, Blocks.NETHER_SPROUTS, Blocks.WARPED_ROOTS, Blocks.CRIMSON_ROOTS);
+			.add(Blocks.MOSS_CARPET, Blocks.SNOW, Blocks.POISONOUS_MASHED_POTATO, Blocks.NETHER_SPROUTS, Blocks.WARPED_ROOTS, Blocks.CRIMSON_ROOTS);
 		this.getOrCreateTagBuilder(BlockTags.DRIPSTONE_REPLACEABLE_BLOCKS).addTag(BlockTags.BASE_STONE_OVERWORLD);
 		this.getOrCreateTagBuilder(BlockTags.CAVE_VINES).add(Blocks.CAVE_VINES_PLANT).add(Blocks.CAVE_VINES);
 		this.getOrCreateTagBuilder(BlockTags.MOSS_REPLACEABLE).addTag(BlockTags.BASE_STONE_OVERWORLD).addTag(BlockTags.CAVE_VINES).addTag(BlockTags.DIRT);
-		this.getOrCreateTagBuilder(BlockTags.LUSH_GROUND_REPLACEABLE).addTag(BlockTags.MOSS_REPLACEABLE).add(Blocks.CLAY).add(Blocks.GRAVEL).add(Blocks.SAND);
+		this.getOrCreateTagBuilder(BlockTags.LUSH_GROUND_REPLACEABLE)
+			.addTag(BlockTags.MOSS_REPLACEABLE)
+			.add(Blocks.CLAY)
+			.add(Blocks.GRAVEL)
+			.add(Blocks.SAND, Blocks.GRAVTATER);
 		this.getOrCreateTagBuilder(BlockTags.AZALEA_ROOT_REPLACEABLE)
 			.addTag(BlockTags.BASE_STONE_OVERWORLD)
 			.addTag(BlockTags.DIRT)
@@ -840,7 +887,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.RED_SAND)
 			.add(Blocks.CLAY)
 			.add(Blocks.GRAVEL)
-			.add(Blocks.SAND)
+			.add(Blocks.SAND, Blocks.GRAVTATER)
 			.add(Blocks.SNOW_BLOCK)
 			.add(Blocks.POWDER_SNOW);
 		this.getOrCreateTagBuilder(BlockTags.SMALL_DRIPLEAF_PLACEABLE).add(Blocks.CLAY).add(Blocks.MOSS_BLOCK);
@@ -848,6 +895,36 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.OCCLUDES_VIBRATION_SIGNALS).addTag(BlockTags.WOOL);
 		this.getOrCreateTagBuilder(BlockTags.DAMPENS_VIBRATIONS).addTag(BlockTags.WOOL).addTag(BlockTags.WOOL_CARPETS);
 		this.getOrCreateTagBuilder(BlockTags.SNOW).add(Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.POWDER_SNOW);
+		this.getOrCreateTagBuilder(BlockTags.POTONE_MINEABLE)
+			.add(
+				Blocks.RESIN_ORE,
+				Blocks.POTONE_DIAMOND_ORE,
+				Blocks.POTONE_REDSTONE_ORE,
+				Blocks.POTONE_COPPER_ORE,
+				Blocks.POTONE_IRON_ORE,
+				Blocks.POTONE_GOLD_ORE,
+				Blocks.POTONE_LAPIS_ORE,
+				Blocks.POTONE,
+				Blocks.POTONE_SLAB,
+				Blocks.POTONE_STAIRS,
+				Blocks.POTONE_WALL,
+				Blocks.TATERSTONE,
+				Blocks.TATERSTONE_SLAB,
+				Blocks.TATERSTONE_STAIRS,
+				Blocks.TATERSTONE_WALL,
+				Blocks.EXPIRED_BAKED_POTATO_BRICKS,
+				Blocks.EXPIRED_BAKED_POTATO_BRICK_SLAB,
+				Blocks.EXPIRED_BAKED_POTATO_BRICK_STAIRS,
+				Blocks.EXPIRED_BAKED_POTATO_BRICK_WALL,
+				Blocks.CHARRED_BAKED_POTATO_BRICKS,
+				Blocks.CHARRED_BAKED_POTATO_BRICK_SLAB,
+				Blocks.CHARRED_BAKED_POTATO_BRICK_STAIRS,
+				Blocks.CHARRED_BAKED_POTATO_BRICK_WALL,
+				Blocks.BAKED_POTATO_BRICKS,
+				Blocks.BAKED_POTATO_BRICK_SLAB,
+				Blocks.BAKED_POTATO_BRICK_STAIRS,
+				Blocks.BAKED_POTATO_BRICK_WALL
+			);
 		this.getOrCreateTagBuilder(BlockTags.AXE_MINEABLE)
 			.add(
 				Blocks.NOTE_BLOCK,
@@ -934,8 +1011,10 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.addTag(BlockTags.ALL_HANGING_SIGNS)
 			.add(Blocks.BAMBOO_MOSAIC, Blocks.BAMBOO_MOSAIC_SLAB, Blocks.BAMBOO_MOSAIC_STAIRS)
 			.addTag(BlockTags.BAMBOO_BLOCKS)
-			.add(Blocks.CHISELED_BOOKSHELF);
+			.add(Blocks.CHISELED_BOOKSHELF)
+			.add(Blocks.BIG_BRAIN);
 		this.getOrCreateTagBuilder(BlockTags.HOE_MINEABLE)
+			.addTag(BlockTags.POTONE_MINEABLE)
 			.add(
 				Blocks.NETHER_WART_BLOCK,
 				Blocks.WARPED_WART_BLOCK,
@@ -963,10 +1042,12 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.SCULK_VEIN,
 				Blocks.SCULK_SHRIEKER,
 				Blocks.PINK_PETALS,
-				Blocks.CHERRY_LEAVES
+				Blocks.CHERRY_LEAVES,
+				Blocks.FLOATATO
 			);
 		this.getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE)
 			.add(
+				Blocks.AMBER_BLOCK,
 				Blocks.STONE,
 				Blocks.GRANITE,
 				Blocks.POLISHED_GRANITE,
@@ -1296,18 +1377,34 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.MUD_BRICKS)
 			.add(Blocks.MUD_BRICK_STAIRS)
 			.add(Blocks.MUD_BRICK_SLAB)
-			.add(Blocks.PACKED_MUD);
+			.add(Blocks.PACKED_MUD)
+			.add(
+				Blocks.POISONOUS_POTATO_CUTTER,
+				Blocks.FLOATATER,
+				Blocks.POISONOUS_POTATO_BLOCK,
+				Blocks.COMPRESSED_POISONOUS_POTATO_BLOCK,
+				Blocks.DOUBLE_COMPRESSED_POISONOUS_POTATO_BLOCK,
+				Blocks.TRIPLE_COMPRESSED_POISONOUS_POTATO_BLOCK,
+				Blocks.QUADRUPLE_COMPRESSED_POISONOUS_POTATO_BLOCK
+			)
+			.addTag(BlockTags.POISONOUS_POTATO_ORES);
 		this.getOrCreateTagBuilder(BlockTags.SHOVEL_MINEABLE)
 			.add(
 				Blocks.CLAY,
 				Blocks.DIRT,
+				Blocks.POISON_FARMLAND,
+				Blocks.POISON_PATH,
+				Blocks.TERRE_DE_POMME,
 				Blocks.COARSE_DIRT,
 				Blocks.PODZOL,
 				Blocks.FARMLAND,
 				Blocks.GRASS_BLOCK,
+				Blocks.PEELGRASS_BLOCK,
+				Blocks.CORRUPTED_PEELGRASS_BLOCK,
 				Blocks.GRAVEL,
 				Blocks.MYCELIUM,
 				Blocks.SAND,
+				Blocks.GRAVTATER,
 				Blocks.RED_SAND,
 				Blocks.SNOW_BLOCK,
 				Blocks.SNOW,
@@ -1318,7 +1415,8 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.MUDDY_MANGROVE_ROOTS,
 				Blocks.MUD,
 				Blocks.SUSPICIOUS_SAND,
-				Blocks.SUSPICIOUS_GRAVEL
+				Blocks.SUSPICIOUS_GRAVEL,
+				Blocks.POISONOUS_MASHED_POTATO
 			)
 			.addTag(BlockTags.CONCRETE_POWDER);
 		this.getOrCreateTagBuilder(BlockTags.SWORD_EFFICIENT)
@@ -1327,6 +1425,11 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.addTag(BlockTags.SMALL_FLOWERS)
 			.addTag(BlockTags.CROPS)
 			.add(
+				Blocks.POTATO_BUD,
+				Blocks.POTATO_STEM,
+				Blocks.POTATO_LEAVES,
+				Blocks.POTATO_FRUIT,
+				Blocks.POTATO_SPROUTS,
 				Blocks.SHORT_GRASS,
 				Blocks.FERN,
 				Blocks.DEAD_BUSH,
@@ -1382,8 +1485,10 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.NEEDS_IRON_TOOL)
 			.add(
 				Blocks.DIAMOND_BLOCK,
+				Blocks.AMBER_BLOCK,
 				Blocks.DIAMOND_ORE,
 				Blocks.DEEPSLATE_DIAMOND_ORE,
+				Blocks.POTONE_DIAMOND_ORE,
 				Blocks.EMERALD_ORE,
 				Blocks.DEEPSLATE_EMERALD_ORE,
 				Blocks.EMERALD_BLOCK,
@@ -1391,8 +1496,10 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.RAW_GOLD_BLOCK,
 				Blocks.GOLD_ORE,
 				Blocks.DEEPSLATE_GOLD_ORE,
+				Blocks.POTONE_GOLD_ORE,
 				Blocks.REDSTONE_ORE,
-				Blocks.DEEPSLATE_REDSTONE_ORE
+				Blocks.DEEPSLATE_REDSTONE_ORE,
+				Blocks.POTONE_REDSTONE_ORE
 			);
 		this.getOrCreateTagBuilder(BlockTags.NEEDS_STONE_TOOL)
 			.add(
@@ -1400,13 +1507,16 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.RAW_IRON_BLOCK,
 				Blocks.IRON_ORE,
 				Blocks.DEEPSLATE_IRON_ORE,
+				Blocks.POTONE_IRON_ORE,
 				Blocks.LAPIS_BLOCK,
 				Blocks.LAPIS_ORE,
+				Blocks.POTONE_LAPIS_ORE,
 				Blocks.DEEPSLATE_LAPIS_ORE,
 				Blocks.COPPER_BLOCK,
 				Blocks.RAW_COPPER_BLOCK,
 				Blocks.COPPER_ORE,
 				Blocks.DEEPSLATE_COPPER_ORE,
+				Blocks.POTONE_COPPER_ORE,
 				Blocks.CUT_COPPER_SLAB,
 				Blocks.CUT_COPPER_STAIRS,
 				Blocks.CUT_COPPER,
@@ -1439,7 +1549,8 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.WAXED_OXIDIZED_CUT_COPPER_STAIRS,
 				Blocks.WAXED_OXIDIZED_CUT_COPPER,
 				Blocks.LIGHTNING_ROD
-			);
+			)
+			.addTag(BlockTags.POISONOUS_POTATO_ORES);
 		this.getOrCreateTagBuilder(BlockTags.INCORRECT_FOR_NETHERITE_TOOL);
 		this.getOrCreateTagBuilder(BlockTags.INCORRECT_FOR_DIAMOND_TOOL);
 		this.getOrCreateTagBuilder(BlockTags.INCORRECT_FOR_IRON_TOOL).addTag(BlockTags.NEEDS_DIAMOND_TOOL);
@@ -1459,22 +1570,29 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.addTag(BlockTags.LEAVES)
 			.addTag(BlockTags.LOGS);
 		this.getOrCreateTagBuilder(BlockTags.GEODE_INVALID_BLOCKS).add(Blocks.BEDROCK, Blocks.WATER, Blocks.LAVA, Blocks.ICE, Blocks.PACKED_ICE, Blocks.BLUE_ICE);
-		this.getOrCreateTagBuilder(BlockTags.ANIMALS_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK);
+		this.getOrCreateTagBuilder(BlockTags.ANIMALS_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK, Blocks.PEELGRASS_BLOCK, Blocks.CORRUPTED_PEELGRASS_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.ARMADILLO_SPAWNABLE_ON)
 			.addTag(BlockTags.ANIMALS_SPAWNABLE_ON)
 			.addTag(BlockTags.BADLANDS_TERRACOTTA)
-			.add(Blocks.RED_SAND, Blocks.COARSE_DIRT);
+			.add(Blocks.RED_SAND, Blocks.COARSE_DIRT, Blocks.GRAVTATER);
 		this.getOrCreateTagBuilder(BlockTags.AXOLOTLS_SPAWNABLE_ON).add(Blocks.CLAY);
 		this.getOrCreateTagBuilder(BlockTags.GOATS_SPAWNABLE_ON)
 			.addTag(BlockTags.ANIMALS_SPAWNABLE_ON)
-			.add(Blocks.STONE, Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.PACKED_ICE, Blocks.GRAVEL);
+			.add(Blocks.STONE, Blocks.POTONE, Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.PACKED_ICE, Blocks.GRAVEL);
 		this.getOrCreateTagBuilder(BlockTags.MOOSHROOMS_SPAWNABLE_ON).add(Blocks.MYCELIUM);
-		this.getOrCreateTagBuilder(BlockTags.PARROTS_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK, Blocks.AIR).addTag(BlockTags.LEAVES).addTag(BlockTags.LOGS);
+		this.getOrCreateTagBuilder(BlockTags.PARROTS_SPAWNABLE_ON)
+			.add(Blocks.GRASS_BLOCK, Blocks.PEELGRASS_BLOCK, Blocks.CORRUPTED_PEELGRASS_BLOCK, Blocks.AIR)
+			.addTag(BlockTags.LEAVES)
+			.addTag(BlockTags.LOGS);
 		this.getOrCreateTagBuilder(BlockTags.POLAR_BEARS_SPAWNABLE_ON_ALTERNATE).add(Blocks.ICE);
-		this.getOrCreateTagBuilder(BlockTags.RABBITS_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK, Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.SAND);
-		this.getOrCreateTagBuilder(BlockTags.FOXES_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK, Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.PODZOL, Blocks.COARSE_DIRT);
-		this.getOrCreateTagBuilder(BlockTags.WOLVES_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK, Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.COARSE_DIRT, Blocks.PODZOL);
-		this.getOrCreateTagBuilder(BlockTags.FROGS_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK, Blocks.MUD, Blocks.MANGROVE_ROOTS, Blocks.MUDDY_MANGROVE_ROOTS);
+		this.getOrCreateTagBuilder(BlockTags.RABBITS_SPAWNABLE_ON)
+			.add(Blocks.GRASS_BLOCK, Blocks.PEELGRASS_BLOCK, Blocks.CORRUPTED_PEELGRASS_BLOCK, Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.SAND, Blocks.GRAVTATER);
+		this.getOrCreateTagBuilder(BlockTags.FOXES_SPAWNABLE_ON)
+			.add(Blocks.GRASS_BLOCK, Blocks.PEELGRASS_BLOCK, Blocks.CORRUPTED_PEELGRASS_BLOCK, Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.PODZOL, Blocks.COARSE_DIRT);
+		this.getOrCreateTagBuilder(BlockTags.WOLVES_SPAWNABLE_ON)
+			.add(Blocks.GRASS_BLOCK, Blocks.PEELGRASS_BLOCK, Blocks.CORRUPTED_PEELGRASS_BLOCK, Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.COARSE_DIRT, Blocks.PODZOL);
+		this.getOrCreateTagBuilder(BlockTags.FROGS_SPAWNABLE_ON)
+			.add(Blocks.GRASS_BLOCK, Blocks.PEELGRASS_BLOCK, Blocks.CORRUPTED_PEELGRASS_BLOCK, Blocks.MUD, Blocks.MANGROVE_ROOTS, Blocks.MUDDY_MANGROVE_ROOTS);
 		this.getOrCreateTagBuilder(BlockTags.TERRACOTTA)
 			.add(
 				Blocks.TERRACOTTA,
@@ -1532,7 +1650,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.addTag(BlockTags.TERRACOTTA)
 			.addTag(BlockTags.NYLIUM)
 			.addTag(BlockTags.BASE_STONE_NETHER)
-			.add(Blocks.SAND, Blocks.RED_SAND)
+			.add(Blocks.SAND, Blocks.GRAVTATER, Blocks.RED_SAND)
 			.add(Blocks.GRAVEL)
 			.add(Blocks.SOUL_SAND)
 			.add(Blocks.SOUL_SOIL)
@@ -1552,7 +1670,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.CRACKED_DEEPSLATE_TILES)
 			.add(Blocks.POLISHED_DEEPSLATE);
 		this.getOrCreateTagBuilder(BlockTags.VIBRATION_RESONATORS).add(Blocks.AMETHYST_BLOCK);
-		this.getOrCreateTagBuilder(BlockTags.CONVERTABLE_TO_MUD).add(Blocks.DIRT, Blocks.COARSE_DIRT, Blocks.ROOTED_DIRT);
+		this.getOrCreateTagBuilder(BlockTags.CONVERTABLE_TO_MUD).add(Blocks.DIRT, Blocks.TERRE_DE_POMME, Blocks.COARSE_DIRT, Blocks.ROOTED_DIRT);
 		this.getOrCreateTagBuilder(BlockTags.ANCIENT_CITY_REPLACEABLE)
 			.add(Blocks.DEEPSLATE)
 			.add(Blocks.DEEPSLATE_BRICKS)
@@ -1604,17 +1722,30 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.COMPLETES_FIND_TREE_TUTORIAL).addTag(BlockTags.LOGS).addTag(BlockTags.LEAVES).addTag(BlockTags.WART_BLOCKS);
 		this.getOrCreateTagBuilder(BlockTags.SNAPS_GOAT_HORN)
 			.addTag(BlockTags.OVERWORLD_NATURAL_LOGS)
-			.add(Blocks.STONE)
+			.add(Blocks.STONE, Blocks.POTONE)
 			.add(Blocks.PACKED_ICE)
 			.add(Blocks.IRON_ORE)
 			.add(Blocks.COAL_ORE)
 			.add(Blocks.COPPER_ORE)
-			.add(Blocks.EMERALD_ORE);
+			.add(Blocks.EMERALD_ORE)
+			.add(Blocks.POISONOUS_POTATO_ORE);
 		this.getOrCreateTagBuilder(BlockTags.INVALID_SPAWN_INSIDE).add(Blocks.END_PORTAL, Blocks.END_GATEWAY);
 		this.getOrCreateTagBuilder(BlockTags.SAND).add(Blocks.SUSPICIOUS_SAND);
 		this.getOrCreateTagBuilder(BlockTags.TRAIL_RUINS_REPLACEABLE).add(Blocks.GRAVEL);
 		this.getOrCreateTagBuilder(BlockTags.SNIFFER_DIGGABLE_BLOCK)
-			.add(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.PODZOL, Blocks.COARSE_DIRT, Blocks.ROOTED_DIRT, Blocks.MOSS_BLOCK, Blocks.MUD, Blocks.MUDDY_MANGROVE_ROOTS);
+			.add(
+				Blocks.DIRT,
+				Blocks.TERRE_DE_POMME,
+				Blocks.GRASS_BLOCK,
+				Blocks.PEELGRASS_BLOCK,
+				Blocks.CORRUPTED_PEELGRASS_BLOCK,
+				Blocks.PODZOL,
+				Blocks.COARSE_DIRT,
+				Blocks.ROOTED_DIRT,
+				Blocks.MOSS_BLOCK,
+				Blocks.MUD,
+				Blocks.MUDDY_MANGROVE_ROOTS
+			);
 		this.getOrCreateTagBuilder(BlockTags.SNIFFER_EGG_HATCH_BOOST).add(Blocks.MOSS_BLOCK);
 		ValueLookupTagProvider.ObjectBuilder<Block> objectBuilder = this.getOrCreateTagBuilder(BlockTags.REPLACEABLE);
 		lookup.getWrapperOrThrow(RegistryKeys.BLOCK).withPredicateFilter(block -> block.getDefaultState().isReplaceable()).streamKeys().forEach(objectBuilder::add);
@@ -1636,5 +1767,8 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			);
 		this.getOrCreateTagBuilder(BlockTags.CAMEL_SAND_STEP_SOUND_BLOCKS).addTag(BlockTags.SAND).addTag(BlockTags.CONCRETE_POWDER);
 		this.getOrCreateTagBuilder(BlockTags.DOES_NOT_BLOCK_HOPPERS).addTag(BlockTags.BEEHIVES);
+		ValueLookupTagProvider.ObjectBuilder<Block> objectBuilder2 = this.getOrCreateTagBuilder(BlockTags.POTATOSTONE_BASE);
+		objectBuilder2.add(Blocks.PEELGRASS_BLOCK, Blocks.CORRUPTED_PEELGRASS_BLOCK, Blocks.GRAVTATER, Blocks.TERRE_DE_POMME);
+		Blocks.POTATO_PEELS_BLOCKS.forEach((dyeColor, block) -> objectBuilder2.add(block));
 	}
 }

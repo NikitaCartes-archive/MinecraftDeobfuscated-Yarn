@@ -57,6 +57,11 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	}
 
 	@Override
+	public boolean hasPotatoForm() {
+		return true;
+	}
+
+	@Override
 	protected void initGoals() {
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(2, new CreeperIgniteGoal(this));

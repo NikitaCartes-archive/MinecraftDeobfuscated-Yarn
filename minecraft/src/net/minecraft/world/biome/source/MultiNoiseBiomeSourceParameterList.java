@@ -74,6 +74,23 @@ public class MultiNoiseBiomeSourceParameterList {
 				}
 			}
 		);
+		public static final MultiNoiseBiomeSourceParameterList.Preset POTATO = new MultiNoiseBiomeSourceParameterList.Preset(
+			new Identifier("potato"),
+			new MultiNoiseBiomeSourceParameterList.Preset.BiomeSourceFunction() {
+				@Override
+				public <T> MultiNoiseUtil.Entries<T> apply(Function<RegistryKey<Biome>, T> function) {
+					return new MultiNoiseUtil.Entries<>(
+						List.of(
+							Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), function.apply(BiomeKeys.FIELDS)),
+							Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0F, -0.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), function.apply(BiomeKeys.ARBORETUM)),
+							Pair.of(MultiNoiseUtil.createNoiseHypercube(0.4F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), function.apply(BiomeKeys.HASH)),
+							Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0F, 0.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.375F), function.apply(BiomeKeys.WASTELAND)),
+							Pair.of(MultiNoiseUtil.createNoiseHypercube(-0.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.175F), function.apply(BiomeKeys.CORRUPTION))
+						)
+					);
+				}
+			}
+		);
 		public static final MultiNoiseBiomeSourceParameterList.Preset OVERWORLD = new MultiNoiseBiomeSourceParameterList.Preset(
 			new Identifier("overworld"), new MultiNoiseBiomeSourceParameterList.Preset.BiomeSourceFunction() {
 				@Override
@@ -83,7 +100,7 @@ public class MultiNoiseBiomeSourceParameterList {
 			}
 		);
 		static final Map<Identifier, MultiNoiseBiomeSourceParameterList.Preset> BY_IDENTIFIER = (Map<Identifier, MultiNoiseBiomeSourceParameterList.Preset>)Stream.of(
-				NETHER, OVERWORLD
+				NETHER, OVERWORLD, POTATO
 			)
 			.collect(Collectors.toMap(MultiNoiseBiomeSourceParameterList.Preset::id, preset -> preset));
 		public static final Codec<MultiNoiseBiomeSourceParameterList.Preset> CODEC = Identifier.CODEC

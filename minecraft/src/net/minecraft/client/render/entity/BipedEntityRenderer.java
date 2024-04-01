@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
+import net.minecraft.client.render.entity.feature.PoisonousPolytraFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.mob.MobEntity;
 
@@ -18,6 +19,7 @@ public abstract class BipedEntityRenderer<T extends MobEntity, M extends BipedEn
 		super(ctx, model, shadowRadius);
 		this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader(), scaleX, scaleY, scaleZ, ctx.getHeldItemRenderer()));
 		this.addFeature(new ElytraFeatureRenderer<>(this, ctx.getModelLoader()));
+		this.addFeature(new PoisonousPolytraFeatureRenderer<>(this, ctx.getModelLoader()));
 		this.addFeature(new HeldItemFeatureRenderer<>(this, ctx.getHeldItemRenderer()));
 	}
 }

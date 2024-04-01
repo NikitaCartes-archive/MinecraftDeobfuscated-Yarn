@@ -18,6 +18,7 @@ public class BiomeTags {
 	public static final TagKey<Biome> IS_SAVANNA = of("is_savanna");
 	public static final TagKey<Biome> IS_OVERWORLD = of("is_overworld");
 	public static final TagKey<Biome> IS_NETHER = of("is_nether");
+	public static final TagKey<Biome> IS_POTATO = of("is_potato");
 	public static final TagKey<Biome> IS_END = of("is_end");
 	public static final TagKey<Biome> STRONGHOLD_BIASED_TO = of("stronghold_biased_to");
 	public static final TagKey<Biome> BURIED_TREASURE_HAS_STRUCTURE = of("has_structure/buried_treasure");
@@ -31,6 +32,7 @@ public class BiomeTags {
 	public static final TagKey<Biome> OCEAN_RUIN_WARM_HAS_STRUCTURE = of("has_structure/ocean_ruin_warm");
 	public static final TagKey<Biome> PILLAGER_OUTPOST_HAS_STRUCTURE = of("has_structure/pillager_outpost");
 	public static final TagKey<Biome> RUINED_PORTAL_DESERT_HAS_STRUCTURE = of("has_structure/ruined_portal_desert");
+	public static final TagKey<Biome> RUINED_PORTATOLS_HAS_STRUCTURE = of("has_structure/ruined_portatols");
 	public static final TagKey<Biome> RUINED_PORTAL_JUNGLE_HAS_STRUCTURE = of("has_structure/ruined_portal_jungle");
 	public static final TagKey<Biome> RUINED_PORTAL_OCEAN_HAS_STRUCTURE = of("has_structure/ruined_portal_ocean");
 	public static final TagKey<Biome> RUINED_PORTAL_SWAMP_HAS_STRUCTURE = of("has_structure/ruined_portal_swamp");
@@ -43,6 +45,7 @@ public class BiomeTags {
 	public static final TagKey<Biome> SWAMP_HUT_HAS_STRUCTURE = of("has_structure/swamp_hut");
 	public static final TagKey<Biome> VILLAGE_DESERT_HAS_STRUCTURE = of("has_structure/village_desert");
 	public static final TagKey<Biome> VILLAGE_PLAINS_HAS_STRUCTURE = of("has_structure/village_plains");
+	public static final TagKey<Biome> VILLAGE_POTATO_HAS_STRUCTURE = of("has_structure/village_potato");
 	public static final TagKey<Biome> VILLAGE_SAVANNA_HAS_STRUCTURE = of("has_structure/village_savanna");
 	public static final TagKey<Biome> VILLAGE_SNOWY_HAS_STRUCTURE = of("has_structure/village_snowy");
 	public static final TagKey<Biome> VILLAGE_TAIGA_HAS_STRUCTURE = of("has_structure/village_taiga");
@@ -51,6 +54,7 @@ public class BiomeTags {
 	public static final TagKey<Biome> NETHER_FORTRESS_HAS_STRUCTURE = of("has_structure/nether_fortress");
 	public static final TagKey<Biome> NETHER_FOSSIL_HAS_STRUCTURE = of("has_structure/nether_fossil");
 	public static final TagKey<Biome> BASTION_REMNANT_HAS_STRUCTURE = of("has_structure/bastion_remnant");
+	public static final TagKey<Biome> COLOSSEUM_HAS_STRUCTURE = of("has_structure/colosseum");
 	public static final TagKey<Biome> ANCIENT_CITY_HAS_STRUCTURE = of("has_structure/ancient_city");
 	public static final TagKey<Biome> RUINED_PORTAL_NETHER_HAS_STRUCTURE = of("has_structure/ruined_portal_nether");
 	public static final TagKey<Biome> END_CITY_HAS_STRUCTURE = of("has_structure/end_city");

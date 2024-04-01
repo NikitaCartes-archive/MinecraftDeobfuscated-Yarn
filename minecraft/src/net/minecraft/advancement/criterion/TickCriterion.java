@@ -7,12 +7,18 @@ import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.predicate.BlockPredicate;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
+import net.minecraft.predicate.entity.PlayerPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.stat.Stats;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
 
 public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
@@ -50,6 +56,14 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 			return Criteria.SLEPT_IN_BED.create(new TickCriterion.Conditions(Optional.empty()));
 		}
 
+		public static AdvancementCriterion<TickCriterion.Conditions> createGetPeeled() {
+			return Criteria.GET_PEELED.create(new TickCriterion.Conditions(Optional.empty()));
+		}
+
+		public static AdvancementCriterion<TickCriterion.Conditions> createEatArmor() {
+			return Criteria.EAT_ARMOR.create(new TickCriterion.Conditions(Optional.empty()));
+		}
+
 		public static AdvancementCriterion<TickCriterion.Conditions> createHeroOfTheVillage() {
 			return Criteria.HERO_OF_THE_VILLAGE.create(new TickCriterion.Conditions(Optional.empty()));
 		}
@@ -60,6 +74,27 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 
 		public static AdvancementCriterion<TickCriterion.Conditions> createTick() {
 			return Criteria.TICK.create(new TickCriterion.Conditions(Optional.empty()));
+		}
+
+		public static AdvancementCriterion<TickCriterion.Conditions> createRumblePlant() {
+			return Criteria.RUMBLE_PLANT.create(new TickCriterion.Conditions(Optional.empty()));
+		}
+
+		public static AdvancementCriterion<TickCriterion.Conditions> createCompostStaff() {
+			return Criteria.COMPOST_STAFF.create(new TickCriterion.Conditions(Optional.empty()));
+		}
+
+		public static AdvancementCriterion<TickCriterion.Conditions> createSaidPotato(int times) {
+			PlayerPredicate.Builder builder = new PlayerPredicate.Builder()
+				.stat(Stats.CUSTOM, (RegistryEntry.Reference<Identifier>)Registries.CUSTOM_STAT.getEntry(Stats.SAID_POTATO).orElseThrow(), NumberRange.IntRange.atLeast(99));
+			LootContextPredicate lootContextPredicate = EntityPredicate.contextPredicateFromEntityPredicate(
+				EntityPredicate.Builder.create().typeSpecific(builder.build())
+			);
+			return Criteria.SAID_POTATO.create(new TickCriterion.Conditions(Optional.of(lootContextPredicate)));
+		}
+
+		public static AdvancementCriterion<TickCriterion.Conditions> createBringHomeCorruption() {
+			return Criteria.BRING_HOME_CORRUPTION.create(new TickCriterion.Conditions(Optional.empty()));
 		}
 
 		public static AdvancementCriterion<TickCriterion.Conditions> createLocation(Block block, Item item) {

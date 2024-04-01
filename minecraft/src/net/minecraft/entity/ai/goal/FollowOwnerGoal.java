@@ -136,7 +136,7 @@ public class FollowOwnerGoal extends Goal {
 				return false;
 			} else {
 				BlockPos blockPos = pos.subtract(this.tameable.getBlockPos());
-				return this.world.isSpaceEmpty(this.tameable, this.tameable.getBoundingBox().offset(blockPos));
+				return this.world.method_59085(this.tameable, this.tameable.getBoundingBox().offset(blockPos));
 			}
 		}
 	}

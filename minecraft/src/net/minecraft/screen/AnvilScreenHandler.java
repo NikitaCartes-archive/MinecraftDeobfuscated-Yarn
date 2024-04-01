@@ -72,6 +72,10 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 
 	@Override
 	protected void onTakeOutput(PlayerEntity player, ItemStack stack) {
+		if (player.method_58931("anvil_dropped", 0) && stack.isOf(Items.PAPER)) {
+			player.method_58932("wrote_thoughts");
+		}
+
 		if (!player.getAbilities().creativeMode) {
 			player.addExperienceLevels(-this.levelCost.get());
 		}

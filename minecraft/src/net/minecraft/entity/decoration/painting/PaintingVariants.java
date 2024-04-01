@@ -36,6 +36,13 @@ public class PaintingVariants {
 	public static final RegistryKey<PaintingVariant> WIND = of("wind");
 	public static final RegistryKey<PaintingVariant> WATER = of("water");
 	public static final RegistryKey<PaintingVariant> FIRE = of("fire");
+	public static final RegistryKey<PaintingVariant> POISONOUS_POTATO = of("poisonous_potato");
+	public static final RegistryKey<PaintingVariant> MR_POTATO = of("mr_potato");
+	public static final RegistryKey<PaintingVariant> ABSTRACTATO = of("abstractato");
+	public static final RegistryKey<PaintingVariant> BURNING_POTATO = of("burning_potato");
+	public static final RegistryKey<PaintingVariant> UBIQUITATO = of("ubiquitato");
+	public static final RegistryKey<PaintingVariant> CECI = of("ceci");
+	public static final RegistryKey<PaintingVariant> POTATOE = of("potatoe");
 
 	public static PaintingVariant registerAndGetDefault(Registry<PaintingVariant> registry) {
 		Registry.register(registry, KEBAB, new PaintingVariant(16, 16));
@@ -67,6 +74,13 @@ public class PaintingVariants {
 		Registry.register(registry, WIND, new PaintingVariant(32, 32));
 		Registry.register(registry, WATER, new PaintingVariant(32, 32));
 		Registry.register(registry, FIRE, new PaintingVariant(32, 32));
+		Registry.register(registry, POISONOUS_POTATO, new PaintingVariant(128, 128));
+		Registry.register(registry, MR_POTATO, new PaintingVariant(32, 48));
+		Registry.register(registry, ABSTRACTATO, new PaintingVariant(32, 32));
+		Registry.register(registry, BURNING_POTATO, new PaintingVariant(64, 64));
+		Registry.register(registry, UBIQUITATO, new PaintingVariant(48, 48));
+		Registry.register(registry, CECI, new PaintingVariant(128, 64));
+		Registry.register(registry, POTATOE, new PaintingVariant(64, 32));
 		return Registry.register(registry, DONKEY_KONG, new PaintingVariant(64, 48));
 	}
 

@@ -13,6 +13,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.placementmodifier.BiomePlacementModifier;
+import net.minecraft.world.gen.placementmodifier.CountMultilayerPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.CountPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.EnvironmentScanPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.HeightRangePlacementModifier;
@@ -28,6 +29,7 @@ public class UndergroundPlacedFeatures {
 	public static final RegistryKey<PlacedFeature> FOSSIL_LOWER = PlacedFeatures.of("fossil_lower");
 	public static final RegistryKey<PlacedFeature> DRIPSTONE_CLUSTER = PlacedFeatures.of("dripstone_cluster");
 	public static final RegistryKey<PlacedFeature> LARGE_DRIPSTONE = PlacedFeatures.of("large_dripstone");
+	public static final RegistryKey<PlacedFeature> LARGE_POTATOSTONE = PlacedFeatures.of("large_potatostone");
 	public static final RegistryKey<PlacedFeature> POINTED_DRIPSTONE = PlacedFeatures.of("pointed_dripstone");
 	public static final RegistryKey<PlacedFeature> UNDERWATER_MAGMA = PlacedFeatures.of("underwater_magma");
 	public static final RegistryKey<PlacedFeature> GLOW_LICHEN = PlacedFeatures.of("glow_lichen");
@@ -39,9 +41,12 @@ public class UndergroundPlacedFeatures {
 	public static final RegistryKey<PlacedFeature> SPORE_BLOSSOM = PlacedFeatures.of("spore_blossom");
 	public static final RegistryKey<PlacedFeature> CLASSIC_VINES_CAVE_FEATURE = PlacedFeatures.of("classic_vines_cave_feature");
 	public static final RegistryKey<PlacedFeature> AMETHYST_GEODE = PlacedFeatures.of("amethyst_geode");
+	public static final RegistryKey<PlacedFeature> POTATO_GEODE = PlacedFeatures.of("potato_geode");
 	public static final RegistryKey<PlacedFeature> SCULK_PATCH_DEEP_DARK = PlacedFeatures.of("sculk_patch_deep_dark");
 	public static final RegistryKey<PlacedFeature> SCULK_PATCH_ANCIENT_CITY = PlacedFeatures.of("sculk_patch_ancient_city");
 	public static final RegistryKey<PlacedFeature> SCULK_VEIN = PlacedFeatures.of("sculk_vein");
+	public static final RegistryKey<PlacedFeature> POTATO_LEAF = PlacedFeatures.of("potato_leaf");
+	public static final RegistryKey<PlacedFeature> TWISTED_POTATO = PlacedFeatures.of("twisted_potato");
 
 	public static void bootstrap(Registerable<PlacedFeature> featureRegisterable) {
 		RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE);
@@ -50,20 +55,24 @@ public class UndergroundPlacedFeatures {
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry3 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.FOSSIL_DIAMONDS);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry4 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.DRIPSTONE_CLUSTER);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry5 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.LARGE_DRIPSTONE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry6 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.POINTED_DRIPSTONE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry7 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.UNDERWATER_MAGMA);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry8 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.GLOW_LICHEN);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry9 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.ROOTED_AZALEA_TREE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry10 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.CAVE_VINE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry11 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.MOSS_PATCH);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry12 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.LUSH_CAVES_CLAY);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry13 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.MOSS_PATCH_CEILING);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry14 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.SPORE_BLOSSOM);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry15 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.VINES);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry16 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.AMETHYST_GEODE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry17 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.SCULK_PATCH_DEEP_DARK);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry18 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.SCULK_PATCH_ANCIENT_CITY);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry19 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.SCULK_VEIN);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry6 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.LARGE_POTATOSTONE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry7 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.POINTED_DRIPSTONE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry8 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.UNDERWATER_MAGMA);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry9 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.GLOW_LICHEN);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry10 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.ROOTED_AZALEA_TREE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry11 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.CAVE_VINE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry12 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.MOSS_PATCH);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry13 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.LUSH_CAVES_CLAY);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry14 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.MOSS_PATCH_CEILING);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry15 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.SPORE_BLOSSOM);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry16 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.VINES);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry17 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.AMETHYST_GEODE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry18 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.POTATO_GEODE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry19 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.SCULK_PATCH_DEEP_DARK);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry20 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.SCULK_PATCH_ANCIENT_CITY);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry21 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.SCULK_VEIN);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry22 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.POTATO_LEAF);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry23 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.TWISTED_POTATO);
 		PlacedFeatures.register(
 			featureRegisterable,
 			MONSTER_ROOM,
@@ -120,8 +129,17 @@ public class UndergroundPlacedFeatures {
 		);
 		PlacedFeatures.register(
 			featureRegisterable,
-			POINTED_DRIPSTONE,
+			LARGE_POTATOSTONE,
 			registryEntry6,
+			CountPlacementModifier.of(UniformIntProvider.create(5, 10)),
+			SquarePlacementModifier.of(),
+			PlacedFeatures.BOTTOM_TO_120_RANGE,
+			BiomePlacementModifier.of()
+		);
+		PlacedFeatures.register(
+			featureRegisterable,
+			POINTED_DRIPSTONE,
+			registryEntry7,
 			CountPlacementModifier.of(UniformIntProvider.create(192, 256)),
 			SquarePlacementModifier.of(),
 			PlacedFeatures.BOTTOM_TO_120_RANGE,
@@ -132,7 +150,7 @@ public class UndergroundPlacedFeatures {
 		PlacedFeatures.register(
 			featureRegisterable,
 			UNDERWATER_MAGMA,
-			registryEntry7,
+			registryEntry8,
 			CountPlacementModifier.of(UniformIntProvider.create(44, 52)),
 			SquarePlacementModifier.of(),
 			PlacedFeatures.BOTTOM_TO_120_RANGE,
@@ -142,7 +160,7 @@ public class UndergroundPlacedFeatures {
 		PlacedFeatures.register(
 			featureRegisterable,
 			GLOW_LICHEN,
-			registryEntry8,
+			registryEntry9,
 			CountPlacementModifier.of(UniformIntProvider.create(104, 157)),
 			PlacedFeatures.BOTTOM_TO_120_RANGE,
 			SquarePlacementModifier.of(),
@@ -152,7 +170,7 @@ public class UndergroundPlacedFeatures {
 		PlacedFeatures.register(
 			featureRegisterable,
 			ROOTED_AZALEA_TREE,
-			registryEntry9,
+			registryEntry10,
 			CountPlacementModifier.of(UniformIntProvider.create(1, 2)),
 			SquarePlacementModifier.of(),
 			PlacedFeatures.BOTTOM_TO_120_RANGE,
@@ -163,7 +181,7 @@ public class UndergroundPlacedFeatures {
 		PlacedFeatures.register(
 			featureRegisterable,
 			CAVE_VINES,
-			registryEntry10,
+			registryEntry11,
 			CountPlacementModifier.of(188),
 			SquarePlacementModifier.of(),
 			PlacedFeatures.BOTTOM_TO_120_RANGE,
@@ -174,7 +192,7 @@ public class UndergroundPlacedFeatures {
 		PlacedFeatures.register(
 			featureRegisterable,
 			LUSH_CAVES_VEGETATION,
-			registryEntry11,
+			registryEntry12,
 			CountPlacementModifier.of(125),
 			SquarePlacementModifier.of(),
 			PlacedFeatures.BOTTOM_TO_120_RANGE,
@@ -185,7 +203,7 @@ public class UndergroundPlacedFeatures {
 		PlacedFeatures.register(
 			featureRegisterable,
 			LUSH_CAVES_CLAY,
-			registryEntry12,
+			registryEntry13,
 			CountPlacementModifier.of(62),
 			SquarePlacementModifier.of(),
 			PlacedFeatures.BOTTOM_TO_120_RANGE,
@@ -196,7 +214,7 @@ public class UndergroundPlacedFeatures {
 		PlacedFeatures.register(
 			featureRegisterable,
 			LUSH_CAVES_CEILING_VEGETATION,
-			registryEntry13,
+			registryEntry14,
 			CountPlacementModifier.of(125),
 			SquarePlacementModifier.of(),
 			PlacedFeatures.BOTTOM_TO_120_RANGE,
@@ -207,7 +225,7 @@ public class UndergroundPlacedFeatures {
 		PlacedFeatures.register(
 			featureRegisterable,
 			SPORE_BLOSSOM,
-			registryEntry14,
+			registryEntry15,
 			CountPlacementModifier.of(25),
 			SquarePlacementModifier.of(),
 			PlacedFeatures.BOTTOM_TO_120_RANGE,
@@ -218,7 +236,7 @@ public class UndergroundPlacedFeatures {
 		PlacedFeatures.register(
 			featureRegisterable,
 			CLASSIC_VINES_CAVE_FEATURE,
-			registryEntry15,
+			registryEntry16,
 			CountPlacementModifier.of(256),
 			SquarePlacementModifier.of(),
 			PlacedFeatures.BOTTOM_TO_120_RANGE,
@@ -227,7 +245,7 @@ public class UndergroundPlacedFeatures {
 		PlacedFeatures.register(
 			featureRegisterable,
 			AMETHYST_GEODE,
-			registryEntry16,
+			registryEntry17,
 			RarityFilterPlacementModifier.of(24),
 			SquarePlacementModifier.of(),
 			HeightRangePlacementModifier.uniform(YOffset.aboveBottom(6), YOffset.fixed(30)),
@@ -235,21 +253,41 @@ public class UndergroundPlacedFeatures {
 		);
 		PlacedFeatures.register(
 			featureRegisterable,
+			POTATO_GEODE,
+			registryEntry18,
+			RarityFilterPlacementModifier.of(18),
+			SquarePlacementModifier.of(),
+			HeightRangePlacementModifier.uniform(YOffset.aboveBottom(6), YOffset.fixed(30)),
+			BiomePlacementModifier.of()
+		);
+		PlacedFeatures.register(
+			featureRegisterable,
 			SCULK_PATCH_DEEP_DARK,
-			registryEntry17,
+			registryEntry19,
 			CountPlacementModifier.of(ConstantIntProvider.create(256)),
 			SquarePlacementModifier.of(),
 			PlacedFeatures.BOTTOM_TO_120_RANGE,
 			BiomePlacementModifier.of()
 		);
-		PlacedFeatures.register(featureRegisterable, SCULK_PATCH_ANCIENT_CITY, registryEntry18);
+		PlacedFeatures.register(featureRegisterable, SCULK_PATCH_ANCIENT_CITY, registryEntry20);
 		PlacedFeatures.register(
 			featureRegisterable,
 			SCULK_VEIN,
-			registryEntry19,
+			registryEntry21,
 			CountPlacementModifier.of(UniformIntProvider.create(204, 250)),
 			SquarePlacementModifier.of(),
 			PlacedFeatures.BOTTOM_TO_120_RANGE,
+			BiomePlacementModifier.of()
+		);
+		PlacedFeatures.register(
+			featureRegisterable, POTATO_LEAF, registryEntry22, CountMultilayerPlacementModifier.of(1), RarityFilterPlacementModifier.of(5), BiomePlacementModifier.of()
+		);
+		PlacedFeatures.register(
+			featureRegisterable,
+			TWISTED_POTATO,
+			registryEntry23,
+			CountMultilayerPlacementModifier.of(1),
+			RarityFilterPlacementModifier.of(13),
 			BiomePlacementModifier.of()
 		);
 	}

@@ -73,7 +73,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<RecipeInput
 
 				@Override
 				public int getMaxItemCount() {
-					return 1;
+					return equipmentSlot == EquipmentSlot.FEET ? 64 : 1;
 				}
 
 				@Override

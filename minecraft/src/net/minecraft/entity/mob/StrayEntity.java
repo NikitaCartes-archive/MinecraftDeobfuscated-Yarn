@@ -21,6 +21,11 @@ public class StrayEntity extends AbstractSkeletonEntity {
 		super(entityType, world);
 	}
 
+	@Override
+	public boolean hasPotatoForm() {
+		return true;
+	}
+
 	public static boolean canSpawn(EntityType<StrayEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		BlockPos blockPos = pos;
 

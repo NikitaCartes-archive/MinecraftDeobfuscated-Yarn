@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.stream.Stream;
 import java.util.stream.Stream.Builder;
 import net.minecraft.block.BlockState;
@@ -14,22 +15,31 @@ import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
 @Deprecated
 public class CountMultilayerPlacementModifier extends PlacementModifier {
-	public static final Codec<CountMultilayerPlacementModifier> MODIFIER_CODEC = IntProvider.createValidatingCodec(0, 256)
-		.fieldOf("count")
-		.<CountMultilayerPlacementModifier>xmap(CountMultilayerPlacementModifier::new, countMultilayerPlacementModifier -> countMultilayerPlacementModifier.count)
-		.codec();
+	public static final Codec<CountMultilayerPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					IntProvider.createValidatingCodec(0, 256).fieldOf("count").forGetter(placementModifier -> placementModifier.count),
+					Codec.INT.fieldOf("start_offset").forGetter(placementModifier -> placementModifier.startOffset)
+				)
+				.apply(instance, CountMultilayerPlacementModifier::new)
+	);
 	private final IntProvider count;
+	private final int startOffset;
 
-	private CountMultilayerPlacementModifier(IntProvider count) {
+	private CountMultilayerPlacementModifier(IntProvider count, int startOffset) {
+		this.startOffset = startOffset;
 		this.count = count;
 	}
 
 	public static CountMultilayerPlacementModifier of(IntProvider count) {
-		return new CountMultilayerPlacementModifier(count);
+		return new CountMultilayerPlacementModifier(count, 0);
 	}
 
 	public static CountMultilayerPlacementModifier of(int count) {
 		return of(ConstantIntProvider.create(count));
+	}
+
+	public static CountMultilayerPlacementModifier of(int count, int startOffset) {
+		return new CountMultilayerPlacementModifier(ConstantIntProvider.create(count), startOffset);
 	}
 
 	@Override
@@ -44,7 +54,7 @@ public class CountMultilayerPlacementModifier extends PlacementModifier {
 			for (int j = 0; j < this.count.get(random); j++) {
 				int k = random.nextInt(16) + pos.getX();
 				int l = random.nextInt(16) + pos.getZ();
-				int m = context.getTopY(Heightmap.Type.MOTION_BLOCKING, k, l);
+				int m = context.getTopY(Heightmap.Type.MOTION_BLOCKING, k, l) + this.startOffset;
 				int n = findPos(context, k, m, l, i);
 				if (n != Integer.MAX_VALUE) {
 					builder.add(new BlockPos(k, n, l));

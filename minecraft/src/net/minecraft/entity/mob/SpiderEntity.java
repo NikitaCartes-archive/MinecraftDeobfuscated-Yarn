@@ -55,6 +55,11 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
+	public boolean hasPotatoForm() {
+		return true;
+	}
+
+	@Override
 	protected void initGoals() {
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(2, new FleeEntityGoal(this, ArmadilloEntity.class, 6.0F, 1.0, 1.2, entity -> !((ArmadilloEntity)entity).isNotIdle()));

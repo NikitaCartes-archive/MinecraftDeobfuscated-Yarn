@@ -11,6 +11,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class PigEntityRenderer extends MobEntityRenderer<PigEntity, PigEntityModel<PigEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/pig/pig.png");
+	private static final Identifier POTATO_TEXTURE = new Identifier("textures/entity/pig/pig_hwat.png");
 
 	public PigEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new PigEntityModel<>(context.getPart(EntityModelLayers.PIG)), 0.7F);
@@ -20,6 +21,6 @@ public class PigEntityRenderer extends MobEntityRenderer<PigEntity, PigEntityMod
 	}
 
 	public Identifier getTexture(PigEntity pigEntity) {
-		return TEXTURE;
+		return pigEntity.isPotato() && pigEntity.getPotato() ? POTATO_TEXTURE : TEXTURE;
 	}
 }

@@ -1,7 +1,6 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -38,7 +37,7 @@ public class NetherForestVegetationFeature extends Feature<NetherForestVegetatio
 					if (structureWorldAccess.isAir(blockPos2)
 						&& blockPos2.getY() > structureWorldAccess.getBottomY()
 						&& blockState2.canPlaceAt(structureWorldAccess, blockPos2)) {
-						structureWorldAccess.setBlockState(blockPos2, blockState2, Block.NOTIFY_LISTENERS);
+						SimpleBlockFeature.method_59272(blockState2, structureWorldAccess, blockPos2);
 						j++;
 					}
 				}

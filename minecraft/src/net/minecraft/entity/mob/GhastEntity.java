@@ -218,7 +218,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 			for (int i = 1; i < steps; i++) {
 				box = box.offset(direction);
-				if (!this.ghast.getWorld().isSpaceEmpty(this.ghast, box)) {
+				if (!this.ghast.getWorld().method_59085(this.ghast, box)) {
 					return false;
 				}
 			}

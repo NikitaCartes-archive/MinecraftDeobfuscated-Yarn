@@ -324,6 +324,10 @@ public class TextureMap {
 		return new TextureMap().put(TextureKey.LIT_LOG, getSubId(block, "_log_lit")).put(TextureKey.FIRE, getSubId(block, "_fire"));
 	}
 
+	public static TextureMap method_59458(Block block) {
+		return new TextureMap().put(TextureKey.FRYING_TABLE, getId(block));
+	}
+
 	public static TextureMap candleCake(Block block, boolean lit) {
 		return new TextureMap()
 			.put(TextureKey.PARTICLE, getSubId(Blocks.CAKE, "_side"))

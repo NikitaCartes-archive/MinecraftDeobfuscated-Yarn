@@ -69,6 +69,7 @@ public class HandledScreens {
 		register(ScreenHandlerType.BEACON, BeaconScreen::new);
 		register(ScreenHandlerType.BLAST_FURNACE, BlastFurnaceScreen::new);
 		register(ScreenHandlerType.BREWING_STAND, BrewingStandScreen::new);
+		register(ScreenHandlerType.FLETCHING, FletchingScreen::new);
 		register(ScreenHandlerType.CRAFTING, CraftingScreen::new);
 		register(ScreenHandlerType.ENCHANTMENT, EnchantmentScreen::new);
 		register(ScreenHandlerType.FURNACE, FurnaceScreen::new);
@@ -82,6 +83,8 @@ public class HandledScreens {
 		register(ScreenHandlerType.SMOKER, SmokerScreen::new);
 		register(ScreenHandlerType.CARTOGRAPHY_TABLE, CartographyTableScreen::new);
 		register(ScreenHandlerType.STONECUTTER, StonecutterScreen::new);
+		register(ScreenHandlerType.POISONOUS_POTATO_CUTTER, PoisonousPotatoCutterScreen::new);
+		register(ScreenHandlerType.POTATO_REFINERY, PotatoRefineryScreen::new);
 	}
 
 	@Environment(EnvType.CLIENT)

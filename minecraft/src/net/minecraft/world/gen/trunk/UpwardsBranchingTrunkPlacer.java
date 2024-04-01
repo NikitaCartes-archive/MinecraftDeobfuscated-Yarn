@@ -21,12 +21,13 @@ import net.minecraft.world.gen.foliage.FoliagePlacer;
 public class UpwardsBranchingTrunkPlacer extends TrunkPlacer {
 	public static final Codec<UpwardsBranchingTrunkPlacer> CODEC = RecordCodecBuilder.create(
 		instance -> fillTrunkPlacerFields(instance)
-				.<IntProvider, float, IntProvider, RegistryEntryList<Block>>and(
+				.<IntProvider, float, IntProvider, RegistryEntryList<Block>, boolean>and(
 					instance.group(
 						IntProvider.POSITIVE_CODEC.fieldOf("extra_branch_steps").forGetter(trunkPlacer -> trunkPlacer.extraBranchSteps),
 						Codec.floatRange(0.0F, 1.0F).fieldOf("place_branch_per_log_probability").forGetter(trunkPlacer -> trunkPlacer.placeBranchPerLogProbability),
 						IntProvider.NON_NEGATIVE_CODEC.fieldOf("extra_branch_length").forGetter(trunkPlacer -> trunkPlacer.extraBranchLength),
-						RegistryCodecs.entryList(RegistryKeys.BLOCK).fieldOf("can_grow_through").forGetter(trunkPlacer -> trunkPlacer.canGrowThrough)
+						RegistryCodecs.entryList(RegistryKeys.BLOCK).fieldOf("can_grow_through").forGetter(trunkPlacer -> trunkPlacer.canGrowThrough),
+						Codec.BOOL.fieldOf("megabush").forGetter(upwardsBranchingTrunkPlacer -> upwardsBranchingTrunkPlacer.field_51014)
 					)
 				)
 				.apply(instance, UpwardsBranchingTrunkPlacer::new)
@@ -35,6 +36,7 @@ public class UpwardsBranchingTrunkPlacer extends TrunkPlacer {
 	private final float placeBranchPerLogProbability;
 	private final IntProvider extraBranchLength;
 	private final RegistryEntryList<Block> canGrowThrough;
+	private final boolean field_51014;
 
 	public UpwardsBranchingTrunkPlacer(
 		int baseHeight,
@@ -43,13 +45,15 @@ public class UpwardsBranchingTrunkPlacer extends TrunkPlacer {
 		IntProvider extraBranchSteps,
 		float placeBranchPerLogProbability,
 		IntProvider extraBranchLength,
-		RegistryEntryList<Block> canGrowThrough
+		RegistryEntryList<Block> canGrowThrough,
+		boolean bl
 	) {
 		super(baseHeight, firstRandomHeight, secondRandomHeight);
 		this.extraBranchSteps = extraBranchSteps;
 		this.placeBranchPerLogProbability = placeBranchPerLogProbability;
 		this.extraBranchLength = extraBranchLength;
 		this.canGrowThrough = canGrowThrough;
+		this.field_51014 = bl;
 	}
 
 	@Override
@@ -90,7 +94,7 @@ public class UpwardsBranchingTrunkPlacer extends TrunkPlacer {
 		Random random,
 		int height,
 		TreeFeatureConfig config,
-		List<FoliagePlacer.TreeNode> nodes,
+		List<FoliagePlacer.TreeNode> list,
 		BlockPos.Mutable pos,
 		int yOffset,
 		Direction direction,
@@ -112,7 +116,9 @@ public class UpwardsBranchingTrunkPlacer extends TrunkPlacer {
 					i = m + 1;
 				}
 
-				nodes.add(new FoliagePlacer.TreeNode(pos.toImmutable(), 0, false));
+				if (this.field_51014) {
+					list.add(new FoliagePlacer.TreeNode(pos.toImmutable(), 0, false));
+				}
 			}
 
 			l++;
@@ -121,8 +127,10 @@ public class UpwardsBranchingTrunkPlacer extends TrunkPlacer {
 
 		if (i - yOffset > 1) {
 			BlockPos blockPos = new BlockPos(j, i, k);
-			nodes.add(new FoliagePlacer.TreeNode(blockPos, 0, false));
-			nodes.add(new FoliagePlacer.TreeNode(blockPos.down(2), 0, false));
+			list.add(new FoliagePlacer.TreeNode(blockPos, 0, false));
+			if (this.field_51014) {
+				list.add(new FoliagePlacer.TreeNode(blockPos.down(2), 0, false));
+			}
 		}
 	}
 

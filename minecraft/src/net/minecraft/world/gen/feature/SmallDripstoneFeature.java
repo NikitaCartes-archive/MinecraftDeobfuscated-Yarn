@@ -2,6 +2,9 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Optional;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.PointedDripstoneBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -36,6 +39,7 @@ public class SmallDripstoneFeature extends Feature<SmallDripstoneFeatureConfig> 
 	}
 
 	private static Optional<Direction> getDirection(WorldAccess world, BlockPos pos, Random random) {
+		PointedDripstoneBlock pointedDripstoneBlock = (PointedDripstoneBlock)Blocks.POINTED_DRIPSTONE;
 		boolean bl = DripstoneHelper.canReplace(world.getBlockState(pos.up()));
 		boolean bl2 = DripstoneHelper.canReplace(world.getBlockState(pos.down()));
 		if (bl && bl2) {
@@ -48,6 +52,7 @@ public class SmallDripstoneFeature extends Feature<SmallDripstoneFeatureConfig> 
 	}
 
 	private static void generateDripstoneBlocks(WorldAccess world, Random random, BlockPos pos, SmallDripstoneFeatureConfig config) {
+		Block block = Blocks.POINTED_DRIPSTONE;
 		DripstoneHelper.generateDripstoneBlock(world, pos);
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {

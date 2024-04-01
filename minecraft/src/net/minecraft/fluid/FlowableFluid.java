@@ -395,7 +395,11 @@ public abstract class FlowableFluid extends Fluid {
 			|| state.isOf(Blocks.BUBBLE_COLUMN)) {
 			return false;
 		} else {
-			return !state.isOf(Blocks.NETHER_PORTAL) && !state.isOf(Blocks.END_PORTAL) && !state.isOf(Blocks.END_GATEWAY) && !state.isOf(Blocks.STRUCTURE_VOID)
+			return !state.isOf(Blocks.NETHER_PORTAL)
+					&& !state.isOf(Blocks.END_PORTAL)
+					&& !state.isOf(Blocks.END_GATEWAY)
+					&& !state.isOf(Blocks.STRUCTURE_VOID)
+					&& !state.isOf(Blocks.POTATO_PORTAL)
 				? !state.blocksMovement()
 				: false;
 		}

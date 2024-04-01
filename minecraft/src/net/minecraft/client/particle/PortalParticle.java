@@ -86,13 +86,21 @@ public class PortalParticle extends SpriteBillboardParticle {
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
 		private final SpriteProvider spriteProvider;
+		private final float red;
+		private final float green;
+		private final float blue;
 
-		public Factory(SpriteProvider spriteProvider) {
+		public Factory(SpriteProvider spriteProvider, float red, float green, float blue) {
 			this.spriteProvider = spriteProvider;
+			this.red = red;
+			this.green = green;
+			this.blue = blue;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			PortalParticle portalParticle = new PortalParticle(clientWorld, d, e, f, g, h, i);
+			float j = clientWorld.random.nextFloat() * 0.6F + 0.4F;
+			portalParticle.setColor(this.red * j, this.green * j, this.blue * j);
 			portalParticle.setSprite(this.spriteProvider);
 			return portalParticle;
 		}

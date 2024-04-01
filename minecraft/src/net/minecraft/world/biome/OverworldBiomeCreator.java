@@ -847,7 +847,7 @@ public class OverworldBiomeCreator {
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup);
 		addBasicFeatures(lookupBackedBuilder);
 		DefaultBiomeFeatures.addPlainsTallGrass(lookupBackedBuilder);
-		DefaultBiomeFeatures.addDefaultOres(lookupBackedBuilder, true);
+		DefaultBiomeFeatures.addDefaultOres(lookupBackedBuilder, true, false);
 		DefaultBiomeFeatures.addDefaultDisks(lookupBackedBuilder);
 		DefaultBiomeFeatures.addPlainsFeatures(lookupBackedBuilder);
 		DefaultBiomeFeatures.addDefaultMushrooms(lookupBackedBuilder);

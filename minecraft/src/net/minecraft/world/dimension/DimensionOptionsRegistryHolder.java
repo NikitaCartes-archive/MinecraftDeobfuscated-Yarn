@@ -43,7 +43,7 @@ public record DimensionOptionsRegistryHolder(Map<RegistryKey<DimensionOptions>, 
 				.apply(instance, instance.stable(DimensionOptionsRegistryHolder::new))
 	);
 	private static final Set<RegistryKey<DimensionOptions>> VANILLA_KEYS = ImmutableSet.of(
-		DimensionOptions.OVERWORLD, DimensionOptions.NETHER, DimensionOptions.END
+		DimensionOptions.OVERWORLD, DimensionOptions.NETHER, DimensionOptions.END, DimensionOptions.field_50994
 	);
 	private static final int VANILLA_KEY_COUNT = VANILLA_KEYS.size();
 
@@ -133,8 +133,10 @@ public record DimensionOptionsRegistryHolder(Map<RegistryKey<DimensionOptions>, 
 			return isOverworldVanilla(dimensionOptions);
 		} else if (key == DimensionOptions.NETHER) {
 			return isNetherVanilla(dimensionOptions);
+		} else if (key == DimensionOptions.END) {
+			return isTheEndVanilla(dimensionOptions);
 		} else {
-			return key == DimensionOptions.END ? isTheEndVanilla(dimensionOptions) : false;
+			return key == DimensionOptions.field_50994 ? method_59223(dimensionOptions) : false;
 		}
 	}
 
@@ -165,6 +167,14 @@ public record DimensionOptionsRegistryHolder(Map<RegistryKey<DimensionOptions>, 
 			&& dimensionOptions.chunkGenerator() instanceof NoiseChunkGenerator noiseChunkGenerator
 			&& noiseChunkGenerator.matchesSettings(ChunkGeneratorSettings.END)
 			&& noiseChunkGenerator.getBiomeSource() instanceof TheEndBiomeSource;
+	}
+
+	private static boolean method_59223(DimensionOptions dimensionOptions) {
+		return dimensionOptions.dimensionTypeEntry().matchesKey(DimensionTypes.POTATO)
+			&& dimensionOptions.chunkGenerator() instanceof NoiseChunkGenerator noiseChunkGenerator
+			&& noiseChunkGenerator.matchesSettings(ChunkGeneratorSettings.field_50996)
+			&& noiseChunkGenerator.getBiomeSource() instanceof MultiNoiseBiomeSource multiNoiseBiomeSource
+			&& multiNoiseBiomeSource.matchesInstance(MultiNoiseBiomeSourceParameterLists.POTATO);
 	}
 
 	public DimensionOptionsRegistryHolder.DimensionsConfig toConfig(Registry<DimensionOptions> existingRegistry) {

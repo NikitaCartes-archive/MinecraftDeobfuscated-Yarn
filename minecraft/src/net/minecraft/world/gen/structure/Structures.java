@@ -14,9 +14,11 @@ import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.structure.AncientCityGenerator;
 import net.minecraft.structure.BastionRemnantGenerator;
+import net.minecraft.structure.ColosseumGenerator;
 import net.minecraft.structure.DesertVillageData;
 import net.minecraft.structure.PillagerOutpostGenerator;
 import net.minecraft.structure.PlainsVillageData;
+import net.minecraft.structure.PotatoVillageData;
 import net.minecraft.structure.RuinedPortalStructurePiece;
 import net.minecraft.structure.SavannaVillageData;
 import net.minecraft.structure.SnowyVillageData;
@@ -37,17 +39,30 @@ import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
 public class Structures {
 	public static Structure.Config createConfig(
-		RegistryEntryList<Biome> biomes, Map<SpawnGroup, StructureSpawns> spawns, GenerationStep.Feature featureStep, StructureTerrainAdaptation terrainAdaptation
+		RegistryEntryList<Biome> biomes,
+		List<Structure.class_9594> list,
+		Map<SpawnGroup, StructureSpawns> map,
+		GenerationStep.Feature feature,
+		StructureTerrainAdaptation structureTerrainAdaptation
 	) {
-		return new Structure.Config(biomes, spawns, featureStep, terrainAdaptation);
+		return new Structure.Config(biomes, list, map, feature, structureTerrainAdaptation);
 	}
 
 	private static Structure.Config createConfig(RegistryEntryList<Biome> biomes, GenerationStep.Feature featureStep, StructureTerrainAdaptation terrainAdaptation) {
-		return createConfig(biomes, Map.of(), featureStep, terrainAdaptation);
+		return createConfig(biomes, List.of(), Map.of(), featureStep, terrainAdaptation);
+	}
+
+	private static Structure.Config method_59473(
+		RegistryEntryList<Biome> registryEntryList,
+		Map<SpawnGroup, StructureSpawns> map,
+		GenerationStep.Feature feature,
+		StructureTerrainAdaptation structureTerrainAdaptation
+	) {
+		return createConfig(registryEntryList, List.of(), map, feature, structureTerrainAdaptation);
 	}
 
 	private static Structure.Config createConfig(RegistryEntryList<Biome> biomes, StructureTerrainAdaptation terrainAdaptation) {
-		return createConfig(biomes, Map.of(), GenerationStep.Feature.SURFACE_STRUCTURES, terrainAdaptation);
+		return createConfig(biomes, List.of(), Map.of(), GenerationStep.Feature.SURFACE_STRUCTURES, terrainAdaptation);
 	}
 
 	public static void bootstrap(Registerable<Structure> structureRegisterable) {
@@ -56,7 +71,7 @@ public class Structures {
 		structureRegisterable.register(
 			StructureKeys.PILLAGER_OUTPOST,
 			new JigsawStructure(
-				createConfig(
+				method_59473(
 					registryEntryLookup.getOrThrow(BiomeTags.PILLAGER_OUTPOST_HAS_STRUCTURE),
 					Map.of(SpawnGroup.MONSTER, new StructureSpawns(StructureSpawns.BoundingBox.STRUCTURE, Pool.of(new SpawnSettings.SpawnEntry(EntityType.PILLAGER, 1, 1, 1)))),
 					GenerationStep.Feature.SURFACE_STRUCTURES,
@@ -88,6 +103,13 @@ public class Structures {
 			)
 		);
 		structureRegisterable.register(
+			StructureKeys.MINESHAFT_POTATO,
+			new MineshaftStructure(
+				createConfig(registryEntryLookup.getOrThrow(BiomeTags.IS_POTATO), GenerationStep.Feature.UNDERGROUND_STRUCTURES, StructureTerrainAdaptation.NONE),
+				MineshaftStructure.Type.POTATO
+			)
+		);
+		structureRegisterable.register(
 			StructureKeys.MANSION,
 			new WoodlandMansionStructure(createConfig(registryEntryLookup.getOrThrow(BiomeTags.WOODLAND_MANSION_HAS_STRUCTURE), StructureTerrainAdaptation.NONE))
 		);
@@ -113,7 +135,7 @@ public class Structures {
 		structureRegisterable.register(
 			StructureKeys.SWAMP_HUT,
 			new SwampHutStructure(
-				createConfig(
+				method_59473(
 					registryEntryLookup.getOrThrow(BiomeTags.SWAMP_HUT_HAS_STRUCTURE),
 					Map.of(
 						SpawnGroup.MONSTER,
@@ -133,7 +155,7 @@ public class Structures {
 		structureRegisterable.register(
 			StructureKeys.MONUMENT,
 			new OceanMonumentStructure(
-				createConfig(
+				method_59473(
 					registryEntryLookup.getOrThrow(BiomeTags.OCEAN_MONUMENT_HAS_STRUCTURE),
 					Map.of(
 						SpawnGroup.MONSTER,
@@ -169,7 +191,7 @@ public class Structures {
 		structureRegisterable.register(
 			StructureKeys.FORTRESS,
 			new NetherFortressStructure(
-				createConfig(
+				method_59473(
 					registryEntryLookup.getOrThrow(BiomeTags.NETHER_FORTRESS_HAS_STRUCTURE),
 					Map.of(SpawnGroup.MONSTER, new StructureSpawns(StructureSpawns.BoundingBox.PIECE, NetherFortressStructure.MONSTER_SPAWNS)),
 					GenerationStep.Feature.UNDERGROUND_DECORATION,
@@ -211,11 +233,59 @@ public class Structures {
 			)
 		);
 		structureRegisterable.register(
+			StructureKeys.COLOSSEUM,
+			new JigsawStructure(
+				createConfig(
+					registryEntryLookup.getOrThrow(BiomeTags.COLOSSEUM_HAS_STRUCTURE),
+					List.of(
+						Structure.class_9594.method_59295(0, 0, 0, true),
+						Structure.class_9594.method_59295(-18, 46, -18, true),
+						Structure.class_9594.method_59295(-18, 46, 18, true),
+						Structure.class_9594.method_59295(18, 46, -18, true),
+						Structure.class_9594.method_59295(18, 46, 18, true)
+					),
+					Map.of(
+						SpawnGroup.MONSTER,
+						new StructureSpawns(
+							StructureSpawns.BoundingBox.STRUCTURE,
+							Pool.of(
+								new SpawnSettings.SpawnEntry(EntityType.TOXIFIN, 1, 2, 4),
+								new SpawnSettings.SpawnEntry(EntityType.SPIDER, 1, 1, 1),
+								new SpawnSettings.SpawnEntry(EntityType.SKELETON, 1, 1, 1),
+								new SpawnSettings.SpawnEntry(EntityType.SLIME, 1, 1, 1)
+							)
+						),
+						SpawnGroup.UNDERGROUND_WATER_CREATURE,
+						new StructureSpawns(StructureSpawns.BoundingBox.STRUCTURE, SpawnSettings.EMPTY_ENTRY_POOL),
+						SpawnGroup.AXOLOTLS,
+						new StructureSpawns(StructureSpawns.BoundingBox.STRUCTURE, SpawnSettings.EMPTY_ENTRY_POOL)
+					),
+					GenerationStep.Feature.UNDERGROUND_STRUCTURES,
+					StructureTerrainAdaptation.NONE
+				),
+				registryEntryLookup2.getOrThrow(ColosseumGenerator.STARTS_KEY),
+				6,
+				ConstantHeightProvider.create(YOffset.fixed(33)),
+				false
+			)
+		);
+		structureRegisterable.register(
 			StructureKeys.VILLAGE_PLAINS,
 			new JigsawStructure(
 				createConfig(registryEntryLookup.getOrThrow(BiomeTags.VILLAGE_PLAINS_HAS_STRUCTURE), StructureTerrainAdaptation.BEARD_THIN),
 				registryEntryLookup2.getOrThrow(PlainsVillageData.TOWN_CENTERS_KEY),
 				6,
+				ConstantHeightProvider.create(YOffset.fixed(0)),
+				true,
+				Heightmap.Type.WORLD_SURFACE_WG
+			)
+		);
+		structureRegisterable.register(
+			StructureKeys.VILLAGE_POTATO,
+			new JigsawStructure(
+				createConfig(registryEntryLookup.getOrThrow(BiomeTags.VILLAGE_POTATO_HAS_STRUCTURE), StructureTerrainAdaptation.BEARD_THIN),
+				registryEntryLookup2.getOrThrow(PotatoVillageData.TOWN_CENTERS_KEY),
+				8,
 				ConstantHeightProvider.create(YOffset.fixed(0)),
 				true,
 				Heightmap.Type.WORLD_SURFACE_WG
@@ -270,8 +340,8 @@ public class Structures {
 			new RuinedPortalStructure(
 				createConfig(registryEntryLookup.getOrThrow(BiomeTags.RUINED_PORTAL_STANDARD_HAS_STRUCTURE), StructureTerrainAdaptation.NONE),
 				List.of(
-					new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.UNDERGROUND, 1.0F, 0.2F, false, false, true, false, 0.5F),
-					new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_LAND_SURFACE, 0.5F, 0.2F, false, false, true, false, 0.5F)
+					new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.UNDERGROUND, 1.0F, 0.2F, false, false, true, false, 0.5F, false),
+					new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_LAND_SURFACE, 0.5F, 0.2F, false, false, true, false, 0.5F, false)
 				)
 			)
 		);
@@ -279,21 +349,21 @@ public class Structures {
 			StructureKeys.RUINED_PORTAL_DESERT,
 			new RuinedPortalStructure(
 				createConfig(registryEntryLookup.getOrThrow(BiomeTags.RUINED_PORTAL_DESERT_HAS_STRUCTURE), StructureTerrainAdaptation.NONE),
-				new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.PARTLY_BURIED, 0.0F, 0.0F, false, false, false, false, 1.0F)
+				new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.PARTLY_BURIED, 0.0F, 0.0F, false, false, false, false, 1.0F, false)
 			)
 		);
 		structureRegisterable.register(
 			StructureKeys.RUINED_PORTAL_JUNGLE,
 			new RuinedPortalStructure(
 				createConfig(registryEntryLookup.getOrThrow(BiomeTags.RUINED_PORTAL_JUNGLE_HAS_STRUCTURE), StructureTerrainAdaptation.NONE),
-				new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_LAND_SURFACE, 0.5F, 0.8F, true, true, false, false, 1.0F)
+				new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_LAND_SURFACE, 0.5F, 0.8F, true, true, false, false, 1.0F, false)
 			)
 		);
 		structureRegisterable.register(
 			StructureKeys.RUINED_PORTAL_SWAMP,
 			new RuinedPortalStructure(
 				createConfig(registryEntryLookup.getOrThrow(BiomeTags.RUINED_PORTAL_SWAMP_HAS_STRUCTURE), StructureTerrainAdaptation.NONE),
-				new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR, 0.0F, 0.5F, false, true, false, false, 1.0F)
+				new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR, 0.0F, 0.5F, false, true, false, false, 1.0F, false)
 			)
 		);
 		structureRegisterable.register(
@@ -301,8 +371,8 @@ public class Structures {
 			new RuinedPortalStructure(
 				createConfig(registryEntryLookup.getOrThrow(BiomeTags.RUINED_PORTAL_MOUNTAIN_HAS_STRUCTURE), StructureTerrainAdaptation.NONE),
 				List.of(
-					new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.IN_MOUNTAIN, 1.0F, 0.2F, false, false, true, false, 0.5F),
-					new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_LAND_SURFACE, 0.5F, 0.2F, false, false, true, false, 0.5F)
+					new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.IN_MOUNTAIN, 1.0F, 0.2F, false, false, true, false, 0.5F, false),
+					new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_LAND_SURFACE, 0.5F, 0.2F, false, false, true, false, 0.5F, false)
 				)
 			)
 		);
@@ -310,20 +380,33 @@ public class Structures {
 			StructureKeys.RUINED_PORTAL_OCEAN,
 			new RuinedPortalStructure(
 				createConfig(registryEntryLookup.getOrThrow(BiomeTags.RUINED_PORTAL_OCEAN_HAS_STRUCTURE), StructureTerrainAdaptation.NONE),
-				new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR, 0.0F, 0.8F, false, false, true, false, 1.0F)
+				new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR, 0.0F, 0.8F, false, false, true, false, 1.0F, false)
 			)
 		);
 		structureRegisterable.register(
 			StructureKeys.RUINED_PORTAL_NETHER,
 			new RuinedPortalStructure(
 				createConfig(registryEntryLookup.getOrThrow(BiomeTags.RUINED_PORTAL_NETHER_HAS_STRUCTURE), StructureTerrainAdaptation.NONE),
-				new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER, 0.5F, 0.0F, false, false, false, true, 1.0F)
+				new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER, 0.5F, 0.0F, false, false, false, true, 1.0F, false)
+			)
+		);
+		structureRegisterable.register(
+			StructureKeys.RUINED_PORTATOL,
+			new RuinedPortalStructure(
+				createConfig(registryEntryLookup.getOrThrow(BiomeTags.RUINED_PORTATOLS_HAS_STRUCTURE), StructureTerrainAdaptation.NONE),
+				List.of(
+					new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.UNDERGROUND, 1.0F, 0.4F, false, false, true, false, 0.1F, true),
+					new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_LAND_SURFACE, 0.5F, 0.1F, false, false, true, false, 0.3F, true),
+					new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.PARTLY_BURIED, 0.0F, 0.2F, false, false, true, false, 0.1F, true),
+					new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR, 0.0F, 0.8F, false, true, false, false, 0.1F, true),
+					new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.IN_MOUNTAIN, 1.0F, 0.2F, false, false, true, false, 0.2F, true)
+				)
 			)
 		);
 		structureRegisterable.register(
 			StructureKeys.ANCIENT_CITY,
 			new JigsawStructure(
-				createConfig(
+				method_59473(
 					registryEntryLookup.getOrThrow(BiomeTags.ANCIENT_CITY_HAS_STRUCTURE),
 					(Map<SpawnGroup, StructureSpawns>)Arrays.stream(SpawnGroup.values())
 						.collect(Collectors.toMap(spawnGroup -> spawnGroup, spawnGroup -> new StructureSpawns(StructureSpawns.BoundingBox.STRUCTURE, Pool.empty()))),
@@ -343,7 +426,7 @@ public class Structures {
 		structureRegisterable.register(
 			StructureKeys.TRAIL_RUINS,
 			new JigsawStructure(
-				createConfig(
+				method_59473(
 					registryEntryLookup.getOrThrow(BiomeTags.TRAIL_RUINS_HAS_STRUCTURE),
 					Map.of(),
 					GenerationStep.Feature.UNDERGROUND_STRUCTURES,

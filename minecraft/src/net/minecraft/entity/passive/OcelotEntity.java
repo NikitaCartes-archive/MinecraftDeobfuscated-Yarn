@@ -3,7 +3,6 @@ package net.minecraft.entity.passive;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityPose;
@@ -248,7 +247,7 @@ public class OcelotEntity extends AnimalEntity {
 			}
 
 			BlockState blockState = world.getBlockState(blockPos.down());
-			if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isIn(BlockTags.LEAVES)) {
+			if (blockState.isIn(BlockTags.ANIMALS_SPAWNABLE_ON) || blockState.isIn(BlockTags.LEAVES)) {
 				return true;
 			}
 		}

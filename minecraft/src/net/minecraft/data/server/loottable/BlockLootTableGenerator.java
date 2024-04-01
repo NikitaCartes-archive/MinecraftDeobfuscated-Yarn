@@ -82,6 +82,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	protected static final LootCondition.Builder WITHOUT_SILK_TOUCH = WITH_SILK_TOUCH.invert();
 	protected static final LootCondition.Builder WITH_SHEARS = MatchToolLootCondition.builder(ItemPredicate.Builder.create().items(Items.SHEARS));
 	private static final LootCondition.Builder WITH_SILK_TOUCH_OR_SHEARS = WITH_SHEARS.or(WITH_SILK_TOUCH);
+	protected static final LootCondition.Builder field_51215 = MatchToolLootCondition.builder(ItemPredicate.Builder.create().items(Items.POTATO_PEELER));
 	private static final LootCondition.Builder WITHOUT_SILK_TOUCH_NOR_SHEARS = WITH_SILK_TOUCH_OR_SHEARS.invert();
 	protected final Set<Item> explosionImmuneItems;
 	protected final FeatureSet requiredFeatures;
@@ -207,6 +208,20 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(
 							ItemEntry.builder(drop).apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).add(DataComponentTypes.CUSTOM_NAME))
+						)
+				)
+			);
+	}
+
+	protected LootTable.Builder method_59416(Block block) {
+		return LootTable.builder()
+			.pool(
+				this.addSurvivesExplosionCondition(
+					block,
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(
+							ItemEntry.builder(block).apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).add(DataComponentTypes.FLETCHING))
 						)
 				)
 			);

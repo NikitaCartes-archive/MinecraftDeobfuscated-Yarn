@@ -62,6 +62,7 @@ public class Stats {
 	public static final Identifier CLEAN_BANNER = register("clean_banner", StatFormatter.DEFAULT);
 	public static final Identifier CLEAN_SHULKER_BOX = register("clean_shulker_box", StatFormatter.DEFAULT);
 	public static final Identifier INTERACT_WITH_BREWINGSTAND = register("interact_with_brewingstand", StatFormatter.DEFAULT);
+	public static final Identifier INTERACT_WITH_FLETCHING = register("interact_with_fletching", StatFormatter.DEFAULT);
 	public static final Identifier INTERACT_WITH_BEACON = register("interact_with_beacon", StatFormatter.DEFAULT);
 	public static final Identifier INSPECT_DROPPER = register("inspect_dropper", StatFormatter.DEFAULT);
 	public static final Identifier INSPECT_HOPPER = register("inspect_hopper", StatFormatter.DEFAULT);
@@ -93,6 +94,9 @@ public class Stats {
 	public static final Identifier INTERACT_WITH_GRINDSTONE = register("interact_with_grindstone", StatFormatter.DEFAULT);
 	public static final Identifier TARGET_HIT = register("target_hit", StatFormatter.DEFAULT);
 	public static final Identifier INTERACT_WITH_SMITHING_TABLE = register("interact_with_smithing_table", StatFormatter.DEFAULT);
+	public static final Identifier SAID_POTATO = register("said_potato", StatFormatter.DEFAULT);
+	public static final Identifier GET_PEELED = register("get_peeled", StatFormatter.DEFAULT);
+	public static final Identifier POTATO_QUEST_TIME = register("potato_quest_time", StatFormatter.field_50360);
 
 	private static Identifier register(String id, StatFormatter formatter) {
 		Identifier identifier = new Identifier(id);

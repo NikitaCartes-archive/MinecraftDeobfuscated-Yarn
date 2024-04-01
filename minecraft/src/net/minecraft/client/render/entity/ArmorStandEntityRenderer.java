@@ -8,6 +8,7 @@ import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
+import net.minecraft.client.render.entity.feature.PoisonousPolytraFeatureRenderer;
 import net.minecraft.client.render.entity.model.ArmorStandArmorEntityModel;
 import net.minecraft.client.render.entity.model.ArmorStandEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -33,6 +34,7 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 		);
 		this.addFeature(new HeldItemFeatureRenderer<>(this, context.getHeldItemRenderer()));
 		this.addFeature(new ElytraFeatureRenderer<>(this, context.getModelLoader()));
+		this.addFeature(new PoisonousPolytraFeatureRenderer<>(this, context.getModelLoader()));
 		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader(), context.getHeldItemRenderer()));
 	}
 

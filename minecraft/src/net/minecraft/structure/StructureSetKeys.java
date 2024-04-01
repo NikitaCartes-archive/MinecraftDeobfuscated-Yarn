@@ -16,10 +16,12 @@ public interface StructureSetKeys {
 	RegistryKey<StructureSet> BURIED_TREASURES = of("buried_treasures");
 	RegistryKey<StructureSet> MINESHAFTS = of("mineshafts");
 	RegistryKey<StructureSet> RUINED_PORTALS = of("ruined_portals");
+	RegistryKey<StructureSet> RUINED_PORTATOLS = of("ruined_portatols");
 	RegistryKey<StructureSet> SHIPWRECKS = of("shipwrecks");
 	RegistryKey<StructureSet> OCEAN_RUINS = of("ocean_ruins");
 	RegistryKey<StructureSet> NETHER_COMPLEXES = of("nether_complexes");
 	RegistryKey<StructureSet> NETHER_FOSSILS = of("nether_fossils");
+	RegistryKey<StructureSet> COLOSSEA = of("colossea");
 	RegistryKey<StructureSet> END_CITIES = of("end_cities");
 	RegistryKey<StructureSet> ANCIENT_CITIES = of("ancient_cities");
 	RegistryKey<StructureSet> STRONGHOLDS = of("strongholds");

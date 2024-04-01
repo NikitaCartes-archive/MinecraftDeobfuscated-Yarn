@@ -4,19 +4,23 @@ import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.block.MapColor;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.item.TooltipAppender;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.text.Text;
 import net.minecraft.util.function.ValueLists;
 import org.jetbrains.annotations.Contract;
 
 /**
  * An enum representing 16 dye colors.
  */
-public enum DyeColor implements StringIdentifiable {
+public enum DyeColor implements StringIdentifiable, TooltipAppender {
 	WHITE(0, "white", 16383998, MapColor.WHITE, 15790320, 16777215),
 	ORANGE(1, "orange", 16351261, MapColor.ORANGE, 15435844, 16738335),
 	MAGENTA(2, "magenta", 13061821, MapColor.MAGENTA, 12801229, 16711935),
@@ -145,5 +149,12 @@ public enum DyeColor implements StringIdentifiable {
 	@Override
 	public String asString() {
 		return this.name;
+	}
+
+	@Override
+	public void appendTooltip(Consumer<Text> textConsumer, TooltipContext context) {
+		String string = this.name.substring(0, 1).toUpperCase();
+		String string2 = string + this.name.substring(1);
+		textConsumer.accept(Text.translatable("baseColor.tooltip", string2).withColor(this.signColor));
 	}
 }

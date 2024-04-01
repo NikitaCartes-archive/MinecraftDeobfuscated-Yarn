@@ -603,6 +603,23 @@ public abstract class RenderLayer extends RenderPhase {
 			)
 			.build(false)
 	);
+	private static final RenderLayer POISONOUS_POTATO = of(
+		"poisonous_potato",
+		VertexFormats.POSITION,
+		VertexFormat.DrawMode.QUADS,
+		1536,
+		false,
+		false,
+		RenderLayer.MultiPhaseParameters.builder()
+			.program(END_PORTAL_PROGRAM)
+			.texture(
+				RenderPhase.Textures.create()
+					.add(new Identifier("textures/item/poisonous_potato.png"), false, false)
+					.add(new Identifier("nothingtoseeheremovealong", "gui/menu_background.png"), false, false)
+					.build()
+			)
+			.build(false)
+	);
 	private static final RenderLayer END_GATEWAY = of(
 		"end_gateway",
 		VertexFormats.POSITION,
@@ -793,7 +810,7 @@ public abstract class RenderLayer extends RenderPhase {
 		RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
 			.program(ARMOR_CUTOUT_NO_CULL_PROGRAM)
 			.texture(new RenderPhase.Texture(texture, false, false))
-			.transparency(NO_TRANSPARENCY)
+			.transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
 			.cull(DISABLE_CULLING)
 			.lightmap(ENABLE_LIGHTMAP)
 			.overlay(ENABLE_OVERLAY_COLOR)
@@ -1027,6 +1044,10 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer getEndPortal() {
 		return END_PORTAL;
+	}
+
+	public static RenderLayer getPoisonousPotato() {
+		return POISONOUS_POTATO;
 	}
 
 	public static RenderLayer getEndGateway() {

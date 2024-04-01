@@ -230,6 +230,10 @@ public class BlockBox {
 		);
 	}
 
+	public BlockBox method_59292(int i, int j, int k) {
+		return new BlockBox(this.getMinX() - i, this.getMinY() - j, this.getMinZ() - k, this.getMaxX() + i, this.getMaxY() + j, this.getMaxZ() + k);
+	}
+
 	/**
 	 * {@return whether this box contains {@code pos}}
 	 */

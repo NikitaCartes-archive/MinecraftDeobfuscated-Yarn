@@ -39,6 +39,7 @@ public class ScreenHandlerType<T extends ScreenHandler> implements ToggleableFea
 	public static final ScreenHandlerType<CraftingScreenHandler> CRAFTING = register("crafting", CraftingScreenHandler::new);
 	public static final ScreenHandlerType<EnchantmentScreenHandler> ENCHANTMENT = register("enchantment", EnchantmentScreenHandler::new);
 	public static final ScreenHandlerType<FurnaceScreenHandler> FURNACE = register("furnace", FurnaceScreenHandler::new);
+	public static final ScreenHandlerType<FletchingScreenHandler> FLETCHING = register("fletching", FletchingScreenHandler::new);
 	public static final ScreenHandlerType<GrindstoneScreenHandler> GRINDSTONE = register("grindstone", GrindstoneScreenHandler::new);
 	public static final ScreenHandlerType<HopperScreenHandler> HOPPER = register("hopper", HopperScreenHandler::new);
 	public static final ScreenHandlerType<LecternScreenHandler> LECTERN = register("lectern", (syncId, playerInventory) -> new LecternScreenHandler(syncId));
@@ -49,6 +50,10 @@ public class ScreenHandlerType<T extends ScreenHandler> implements ToggleableFea
 	public static final ScreenHandlerType<SmokerScreenHandler> SMOKER = register("smoker", SmokerScreenHandler::new);
 	public static final ScreenHandlerType<CartographyTableScreenHandler> CARTOGRAPHY_TABLE = register("cartography_table", CartographyTableScreenHandler::new);
 	public static final ScreenHandlerType<StonecutterScreenHandler> STONECUTTER = register("stonecutter", StonecutterScreenHandler::new);
+	public static final ScreenHandlerType<PoisonousPotatoCutterScreenHandler> POISONOUS_POTATO_CUTTER = register(
+		"poisonous_potato_cutter", PoisonousPotatoCutterScreenHandler::new
+	);
+	public static final ScreenHandlerType<PotatoRefineryScreenHandler> POTATO_REFINERY = register("potato_refinery", PotatoRefineryScreenHandler::new);
 	private final FeatureSet requiredFeatures;
 	private final ScreenHandlerType.Factory<T> factory;
 

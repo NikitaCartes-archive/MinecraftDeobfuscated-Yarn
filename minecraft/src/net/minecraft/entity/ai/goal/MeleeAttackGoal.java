@@ -22,10 +22,10 @@ public class MeleeAttackGoal extends Goal {
 	private long lastUpdateTime;
 	private static final long MAX_ATTACK_TIME = 20L;
 
-	public MeleeAttackGoal(PathAwareEntity mob, double speed, boolean pauseWhenMobIdle) {
-		this.mob = mob;
-		this.speed = speed;
-		this.pauseWhenMobIdle = pauseWhenMobIdle;
+	public MeleeAttackGoal(PathAwareEntity pathAwareEntity, double d, boolean bl) {
+		this.mob = pathAwareEntity;
+		this.speed = d;
+		this.pauseWhenMobIdle = bl;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 

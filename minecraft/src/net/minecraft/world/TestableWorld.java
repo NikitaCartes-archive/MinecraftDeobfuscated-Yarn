@@ -16,4 +16,6 @@ public interface TestableWorld {
 	<T extends BlockEntity> Optional<T> getBlockEntity(BlockPos pos, BlockEntityType<T> type);
 
 	BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos);
+
+	boolean isPotato();
 }

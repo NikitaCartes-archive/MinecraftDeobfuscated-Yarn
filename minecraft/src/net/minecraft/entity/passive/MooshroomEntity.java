@@ -55,6 +55,11 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 	}
 
 	@Override
+	public boolean hasPotatoForm() {
+		return false;
+	}
+
+	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
 		return world.getBlockState(pos.down()).isOf(Blocks.MYCELIUM) ? 10.0F : world.getPhototaxisFavor(pos);
 	}

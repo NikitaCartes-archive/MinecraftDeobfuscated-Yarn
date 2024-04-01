@@ -1,6 +1,7 @@
 package net.minecraft.network.listener;
 
 import net.minecraft.network.NetworkPhase;
+import net.minecraft.network.packet.s2c.play.AddSubGridS2CPacket;
 import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -87,6 +88,7 @@ import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
 import net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket;
+import net.minecraft.network.packet.s2c.play.SoundSequenceS2CPacket;
 import net.minecraft.network.packet.s2c.play.StartChunkSendS2CPacket;
 import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
@@ -135,6 +137,8 @@ public interface ClientPlayPacketListener extends ClientPingResultPacketListener
 	void onStatistics(StatisticsS2CPacket packet);
 
 	void onUnlockRecipes(UnlockRecipesS2CPacket packet);
+
+	void onAddSubGrid(AddSubGridS2CPacket packet);
 
 	void onBlockBreakingProgress(BlockBreakingProgressS2CPacket packet);
 
@@ -233,6 +237,8 @@ public interface ClientPlayPacketListener extends ClientPingResultPacketListener
 	void onWorldTimeUpdate(WorldTimeUpdateS2CPacket packet);
 
 	void onPlaySound(PlaySoundS2CPacket packet);
+
+	void onSoundSequence(SoundSequenceS2CPacket packet);
 
 	void onPlaySoundFromEntity(PlaySoundFromEntityS2CPacket packet);
 

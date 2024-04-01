@@ -25,6 +25,8 @@ public interface StructureTags {
 	TagKey<Structure> SHIPWRECK = of("shipwreck");
 	TagKey<Structure> RUINED_PORTAL = of("ruined_portal");
 	TagKey<Structure> OCEAN_RUIN = of("ocean_ruin");
+	TagKey<Structure> RUINED_PORTATOL = of("ruined_portatol");
+	TagKey<Structure> COLOSSEUM = of("colosseum");
 
 	private static TagKey<Structure> of(String id) {
 		return TagKey.of(RegistryKeys.STRUCTURE, new Identifier(id));

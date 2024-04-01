@@ -10,6 +10,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -21,9 +22,11 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.util.Window;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.JumpingMount;
@@ -35,6 +38,8 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.scoreboard.Scoreboard;
@@ -46,6 +51,8 @@ import net.minecraft.scoreboard.number.NumberFormat;
 import net.minecraft.scoreboard.number.StyledNumberFormat;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
@@ -60,6 +67,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
@@ -156,6 +164,9 @@ public class InGameHud {
 	private float lastAutosaveIndicatorAlpha;
 	private final LayeredDrawer layeredDrawer = new LayeredDrawer();
 	private float spyglassScale;
+	@Nullable
+	private DrawContext.class_9602 field_51073 = null;
+	private String field_51072 = "";
 
 	public InGameHud(MinecraftClient client) {
 		this.client = client;
@@ -168,6 +179,7 @@ public class InGameHud {
 		this.setDefaultTitleFade();
 		LayeredDrawer layeredDrawer = new LayeredDrawer()
 			.addLayer(this::renderMiscOverlays)
+			.addLayer(this::method_59318)
 			.addLayer(this::renderCrosshair)
 			.addLayer(this::renderMainHud)
 			.addLayer(this::renderExperienceLevel)
@@ -274,6 +286,68 @@ public class InGameHud {
 			}
 
 			this.client.getProfiler().pop();
+		}
+	}
+
+	private void method_59318(DrawContext drawContext, float f) {
+		ItemStack itemStack = this.client.player.getInventory().getArmorStack(3);
+		if (!itemStack.isOf(Items.POISONOUS_POTATO_PLANT)) {
+			this.field_51073 = null;
+		} else {
+			float g = (float)this.getTicks() + f;
+			MatrixStack matrixStack = drawContext.getMatrices();
+			TextRenderer textRenderer = this.getTextRenderer();
+			ItemStack itemStack2 = new ItemStack(Items.POISONOUS_POTATO_PLANT);
+			itemStack2.set(DataComponentTypes.HOVERED, true);
+			if (this.field_51073 == null || !this.field_51072.equals(this.client.player.method_59358())) {
+				this.field_51072 = this.client.player.method_59358();
+				Text text = Text.translatable(
+					this.field_51072,
+					this.client.player.getDisplayName(),
+					this.client.options.jumpKey.getBoundKeyLocalizedText(),
+					this.client.options.useKey.getBoundKeyLocalizedText()
+				);
+				this.field_51073 = drawContext.method_59319((double)g, 2.0, textRenderer, text.getString(), 16777215, drawContext.getScaledWindowWidth() - 72);
+			}
+
+			if (this.client.player.getDataTracker().get(PlayerEntity.field_50482)) {
+				this.client.getNetworkHandler().sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.REQUEST_STATS));
+				String string = Stats.CUSTOM
+					.getOrCreateStat(Stats.POTATO_QUEST_TIME)
+					.format(this.client.player.getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.POTATO_QUEST_TIME)));
+				RenderSystem.disableDepthTest();
+				RenderSystem.depthMask(false);
+				matrixStack.push();
+				drawContext.drawCenteredTextWithShadow(
+					textRenderer, Text.translatable("stat.minecraft.potato_quest_time_format", string), drawContext.getScaledWindowWidth() / 2, 48, 16777215
+				);
+				matrixStack.pop();
+				RenderSystem.enableDepthTest();
+				RenderSystem.depthMask(true);
+			}
+
+			if (!((double)g - this.field_51073.method_59325() > 200.0)) {
+				RenderSystem.disableDepthTest();
+				RenderSystem.depthMask(false);
+				drawContext.fill(0, 0, drawContext.getScaledWindowWidth(), 32, 0, 1073741824);
+				drawContext.fillGradient(0, 32, drawContext.getScaledWindowWidth(), 64, 1073741824, 0);
+				matrixStack.push();
+				matrixStack.translate(-4.0F, -12.0F, 0.0F);
+				matrixStack.scale(4.0F, 4.0F, 1.0F);
+				matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.sin(((float)this.ticks + f) / 5.0F) * 20.0F), 8.0F, 8.0F, 0.0F);
+				drawContext.drawItem(itemStack2, 0, 0);
+				matrixStack.pop();
+				matrixStack.push();
+				if (this.field_51073.method_59326((double)g, 72, 16)) {
+					this.client
+						.getSoundManager()
+						.play(PositionedSoundInstance.master(SoundEvents.BLOCK_NOTE_BLOCK_FLUTE, MathHelper.nextBetween(this.client.player.getRandom(), 1.25F, 1.75F)));
+				}
+
+				matrixStack.pop();
+				RenderSystem.enableDepthTest();
+				RenderSystem.depthMask(true);
+			}
 		}
 	}
 
@@ -548,6 +622,11 @@ public class InGameHud {
 			for (int m = 0; m < 9; m++) {
 				int n = i - 90 + m * 20 + 2;
 				int o = context.getScaledWindowHeight() - 16 - 3;
+				ItemStack itemStack2 = playerEntity.getInventory().main.get(m);
+				if (itemStack2.contains(DataComponentTypes.HOVERED)) {
+					itemStack2.set(DataComponentTypes.HOVERED, playerEntity.getInventory().selectedSlot == m);
+				}
+
 				this.renderHotbarItem(context, n, o, tickDelta, playerEntity, playerEntity.getInventory().main.get(m), l++);
 			}
 
@@ -1124,7 +1203,12 @@ public class InGameHud {
 		RenderSystem.depthMask(false);
 		RenderSystem.enableBlend();
 		context.setShaderColor(1.0F, 1.0F, 1.0F, nauseaStrength);
-		Sprite sprite = this.client.getBlockRenderManager().getModels().getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
+		Block block = Blocks.NETHER_PORTAL;
+		if (this.client.world.isPotato() || this.client.player.getWorld().getBlockState(this.client.player.getBlockPos()).isOf(Blocks.POTATO_PORTAL)) {
+			block = Blocks.POTATO_PORTAL;
+		}
+
+		Sprite sprite = this.client.getBlockRenderManager().getModels().getModelParticleSprite(block.getDefaultState());
 		context.drawSprite(0, 0, -90, context.getScaledWindowWidth(), context.getScaledWindowHeight(), sprite);
 		RenderSystem.disableBlend();
 		RenderSystem.depthMask(true);

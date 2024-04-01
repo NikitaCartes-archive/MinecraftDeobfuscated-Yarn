@@ -13,6 +13,7 @@ import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class BossBarHud {
@@ -62,16 +63,18 @@ public class BossBarHud {
 			int j = 12;
 
 			for (ClientBossBar clientBossBar : this.bossBars.values()) {
-				int k = i / 2 - 91;
-				this.renderBossBar(context, k, j, clientBossBar);
-				Text text = clientBossBar.getName();
-				int m = this.client.textRenderer.getWidth(text);
-				int n = i / 2 - m / 2;
-				int o = j - 9;
-				context.drawTextWithShadow(this.client.textRenderer, text, n, o, 16777215);
-				j += 10 + 9;
-				if (j >= context.getScaledWindowHeight() / 3) {
-					break;
+				if (clientBossBar.method_59327(this.client.cameraEntity.getPos())) {
+					int k = i / 2 - 91;
+					this.renderBossBar(context, k, j, clientBossBar);
+					Text text = clientBossBar.getName();
+					int m = this.client.textRenderer.getWidth(text);
+					int n = i / 2 - m / 2;
+					int o = j - 9;
+					context.drawTextWithShadow(this.client.textRenderer, text, n, o, 16777215);
+					j += 10 + 9;
+					if (j >= context.getScaledWindowHeight() / 3) {
+						break;
+					}
 				}
 			}
 
@@ -98,42 +101,61 @@ public class BossBarHud {
 	}
 
 	public void handlePacket(BossBarS2CPacket packet) {
-		packet.accept(new BossBarS2CPacket.Consumer() {
-			@Override
-			public void add(UUID uuid, Text name, float percent, BossBar.Color color, BossBar.Style style, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
-				BossBarHud.this.bossBars.put(uuid, new ClientBossBar(uuid, name, percent, color, style, darkenSky, dragonMusic, thickenFog));
-			}
+		packet.accept(
+			new BossBarS2CPacket.Consumer() {
+				@Override
+				public void add(
+					UUID uuid,
+					Text name,
+					float percent,
+					BossBar.Color color,
+					BossBar.Style style,
+					boolean darkenSky,
+					boolean dragonMusic,
+					boolean thickenFog,
+					Vec3d vec3d,
+					int i
+				) {
+					BossBarHud.this.bossBars.put(uuid, new ClientBossBar(uuid, name, percent, color, style, darkenSky, dragonMusic, thickenFog, vec3d, i));
+				}
 
-			@Override
-			public void remove(UUID uuid) {
-				BossBarHud.this.bossBars.remove(uuid);
-			}
+				@Override
+				public void remove(UUID uuid) {
+					BossBarHud.this.bossBars.remove(uuid);
+				}
 
-			@Override
-			public void updateProgress(UUID uuid, float percent) {
-				((ClientBossBar)BossBarHud.this.bossBars.get(uuid)).setPercent(percent);
-			}
+				@Override
+				public void updateProgress(UUID uuid, float percent) {
+					((ClientBossBar)BossBarHud.this.bossBars.get(uuid)).setPercent(percent);
+				}
 
-			@Override
-			public void updateName(UUID uuid, Text name) {
-				((ClientBossBar)BossBarHud.this.bossBars.get(uuid)).setName(name);
-			}
+				@Override
+				public void updateName(UUID uuid, Text name) {
+					((ClientBossBar)BossBarHud.this.bossBars.get(uuid)).setName(name);
+				}
 
-			@Override
-			public void updateStyle(UUID id, BossBar.Color color, BossBar.Style style) {
-				ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(id);
-				clientBossBar.setColor(color);
-				clientBossBar.setStyle(style);
-			}
+				@Override
+				public void method_58780(UUID uUID, Vec3d vec3d, int i) {
+					ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(uUID);
+					clientBossBar.method_58785(vec3d, i);
+				}
 
-			@Override
-			public void updateProperties(UUID uuid, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
-				ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(uuid);
-				clientBossBar.setDarkenSky(darkenSky);
-				clientBossBar.setDragonMusic(dragonMusic);
-				clientBossBar.setThickenFog(thickenFog);
+				@Override
+				public void updateStyle(UUID id, BossBar.Color color, BossBar.Style style) {
+					ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(id);
+					clientBossBar.setColor(color);
+					clientBossBar.setStyle(style);
+				}
+
+				@Override
+				public void updateProperties(UUID uuid, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
+					ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(uuid);
+					clientBossBar.setDarkenSky(darkenSky);
+					clientBossBar.setDragonMusic(dragonMusic);
+					clientBossBar.setThickenFog(thickenFog);
+				}
 			}
-		});
+		);
 	}
 
 	public void clear() {

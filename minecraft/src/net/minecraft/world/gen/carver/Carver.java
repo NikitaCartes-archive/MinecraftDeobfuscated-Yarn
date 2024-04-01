@@ -13,6 +13,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -117,8 +118,8 @@ public abstract class Carver<C extends CarverConfig> {
 	}
 
 	protected boolean carveAtPoint(
-		CarverContext context,
-		C config,
+		CarverContext carverContext,
+		C carverConfig,
 		Chunk chunk,
 		Function<BlockPos, RegistryEntry<Biome>> posToBiome,
 		CarvingMask mask,
@@ -128,14 +129,14 @@ public abstract class Carver<C extends CarverConfig> {
 		MutableBoolean replacedGrassy
 	) {
 		BlockState blockState = chunk.getBlockState(pos);
-		if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.MYCELIUM)) {
+		if (blockState.isIn(BlockTags.ANIMALS_SPAWNABLE_ON) || blockState.isOf(Blocks.MYCELIUM)) {
 			replacedGrassy.setTrue();
 		}
 
-		if (!this.canAlwaysCarveBlock(config, blockState) && !isDebug(config)) {
+		if (!this.canAlwaysCarveBlock(carverConfig, blockState) && !isDebug(carverConfig)) {
 			return false;
 		} else {
-			BlockState blockState2 = this.getState(context, config, pos, aquiferSampler);
+			BlockState blockState2 = chunk.isPotato() ? Blocks.CAVE_AIR.getDefaultState() : this.getState(carverContext, carverConfig, pos, aquiferSampler);
 			if (blockState2 == null) {
 				return false;
 			} else {
@@ -146,8 +147,9 @@ public abstract class Carver<C extends CarverConfig> {
 
 				if (replacedGrassy.isTrue()) {
 					tmp.set(pos, Direction.DOWN);
-					if (chunk.getBlockState(tmp).isOf(Blocks.DIRT)) {
-						context.applyMaterialRule(posToBiome, chunk, tmp, !blockState2.getFluidState().isEmpty()).ifPresent(state -> {
+					BlockState blockState3 = chunk.getBlockState(tmp);
+					if (blockState3.isOf(Blocks.DIRT) || blockState3.isOf(Blocks.TERRE_DE_POMME)) {
+						carverContext.applyMaterialRule(posToBiome, chunk, tmp, !blockState2.getFluidState().isEmpty()).ifPresent(state -> {
 							chunk.setBlockState(tmp, state, false);
 							if (!state.getFluidState().isEmpty()) {
 								chunk.markBlockForPostProcessing(tmp);

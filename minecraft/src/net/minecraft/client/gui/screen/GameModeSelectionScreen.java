@@ -188,7 +188,7 @@ public class GameModeSelectionScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	static enum GameModeSelection {
-		CREATIVE(Text.translatable("gameMode.creative"), "gamemode creative", new ItemStack(Blocks.GRASS_BLOCK)),
+		CREATIVE(Text.translatable("gameMode.creative"), "gamemode creative", new ItemStack(Blocks.PEELGRASS_BLOCK)),
 		SURVIVAL(Text.translatable("gameMode.survival"), "gamemode survival", new ItemStack(Items.IRON_SWORD)),
 		ADVENTURE(Text.translatable("gameMode.adventure"), "gamemode adventure", new ItemStack(Items.MAP)),
 		SPECTATOR(Text.translatable("gameMode.spectator"), "gamemode spectator", new ItemStack(Items.ENDER_EYE));

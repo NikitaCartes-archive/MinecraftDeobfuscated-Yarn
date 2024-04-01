@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -14,6 +15,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -78,6 +80,12 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.3F, Items.SPRUCE_LEAVES);
 		registerCompostableItem(0.3F, Items.DARK_OAK_LEAVES);
 		registerCompostableItem(0.3F, Items.ACACIA_LEAVES);
+		registerCompostableItem(0.3F, Items.POTATO_LEAVES);
+		registerCompostableItem(0.3F, Items.POTATO_STEM);
+		registerCompostableItem(0.3F, Items.POTATO_BUD);
+		registerCompostableItem(0.3F, Items.POTATO_SPROUTS);
+		registerCompostableItem(0.3F, Items.POTATO_FRUIT);
+		registerCompostableItem(0.3F, Items.POTATO_PEDICULE);
 		registerCompostableItem(0.3F, Items.CHERRY_LEAVES);
 		registerCompostableItem(0.3F, Items.BIRCH_LEAVES);
 		registerCompostableItem(0.3F, Items.AZALEA_LEAVES);
@@ -169,11 +177,14 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.85F, Items.FLOWERING_AZALEA);
 		registerCompostableItem(0.85F, Items.BREAD);
 		registerCompostableItem(0.85F, Items.BAKED_POTATO);
+		registerCompostableItem(0.85F, Items.HOT_POTATO);
+		registerCompostableItem(0.85F, Items.POTATO_FLOWER);
 		registerCompostableItem(0.85F, Items.COOKIE);
 		registerCompostableItem(0.85F, Items.TORCHFLOWER);
 		registerCompostableItem(0.85F, Items.PITCHER_PLANT);
 		registerCompostableItem(1.0F, Items.CAKE);
 		registerCompostableItem(1.0F, Items.PUMPKIN_PIE);
+		registerCompostableItem(1.0F, Items.POTATO_STAFF);
 	}
 
 	private static void registerCompostableItem(float levelIncreaseChance, ItemConvertible item) {
@@ -291,6 +302,13 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	static BlockState addToComposter(@Nullable Entity user, BlockState state, WorldAccess world, BlockPos pos, ItemStack stack) {
+		if (stack.isOf(Items.POTATO_STAFF) && user instanceof ServerPlayerEntity serverPlayerEntity) {
+			Criteria.COMPOST_STAFF.trigger(serverPlayerEntity);
+			if (!serverPlayerEntity.method_58934("composted_staff")) {
+				serverPlayerEntity.method_58932("composted_staff");
+			}
+		}
+
 		int i = (Integer)state.get(LEVEL);
 		float f = ITEM_TO_LEVEL_INCREASE_CHANCE.getFloat(stack.getItem());
 		if ((i != 0 || !(f > 0.0F)) && !(world.getRandom().nextDouble() < (double)f)) {

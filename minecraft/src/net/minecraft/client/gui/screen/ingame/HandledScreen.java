@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
@@ -100,6 +101,11 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 		for (int k = 0; k < this.handler.slots.size(); k++) {
 			Slot slot = this.handler.slots.get(k);
+			ItemStack itemStack = slot.getStack();
+			if (itemStack.contains(DataComponentTypes.HOVERED)) {
+				itemStack.set(DataComponentTypes.HOVERED, this.isPointOverSlot(slot, (double)mouseX, (double)mouseY) && slot.canBeHighlighted());
+			}
+
 			if (slot.isEnabled()) {
 				this.drawSlot(context, slot);
 			}
@@ -108,28 +114,28 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 				this.focusedSlot = slot;
 				int l = slot.x;
 				int m = slot.y;
-				if (this.focusedSlot.canBeHighlighted()) {
+				if (this.focusedSlot.canBeHighlighted() && !itemStack.contains(DataComponentTypes.HOVERED)) {
 					drawSlotHighlight(context, l, m, 0);
 				}
 			}
 		}
 
 		this.drawForeground(context, mouseX, mouseY);
-		ItemStack itemStack = this.touchDragStack.isEmpty() ? this.handler.getCursorStack() : this.touchDragStack;
-		if (!itemStack.isEmpty()) {
+		ItemStack itemStack2 = this.touchDragStack.isEmpty() ? this.handler.getCursorStack() : this.touchDragStack;
+		if (!itemStack2.isEmpty()) {
 			int n = 8;
-			int l = this.touchDragStack.isEmpty() ? 8 : 16;
+			int o = this.touchDragStack.isEmpty() ? 8 : 16;
 			String string = null;
 			if (!this.touchDragStack.isEmpty() && this.touchIsRightClickDrag) {
-				itemStack = itemStack.copyWithCount(MathHelper.ceil((float)itemStack.getCount() / 2.0F));
+				itemStack2 = itemStack2.copyWithCount(MathHelper.ceil((float)itemStack2.getCount() / 2.0F));
 			} else if (this.cursorDragging && this.cursorDragSlots.size() > 1) {
-				itemStack = itemStack.copyWithCount(this.draggedStackRemainder);
-				if (itemStack.isEmpty()) {
+				itemStack2 = itemStack2.copyWithCount(this.draggedStackRemainder);
+				if (itemStack2.isEmpty()) {
 					string = Formatting.YELLOW + "0";
 				}
 			}
 
-			this.drawItem(context, itemStack, mouseX - i - 8, mouseY - j - l, string);
+			this.drawItem(context, itemStack2, mouseX - i - 8, mouseY - j - o, string);
 		}
 
 		if (!this.touchDropReturningStack.isEmpty()) {
@@ -139,11 +145,11 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 				this.touchDropReturningStack = ItemStack.EMPTY;
 			}
 
-			int l = this.touchDropOriginSlot.x - this.touchDropX;
-			int m = this.touchDropOriginSlot.y - this.touchDropY;
-			int o = this.touchDropX + (int)((float)l * f);
-			int p = this.touchDropY + (int)((float)m * f);
-			this.drawItem(context, this.touchDropReturningStack, o, p, null);
+			int o = this.touchDropOriginSlot.x - this.touchDropX;
+			int l = this.touchDropOriginSlot.y - this.touchDropY;
+			int m = this.touchDropX + (int)((float)o * f);
+			int p = this.touchDropY + (int)((float)l * f);
+			this.drawItem(context, this.touchDropReturningStack, m, p, null);
 		}
 
 		context.getMatrices().pop();
@@ -171,7 +177,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		return getTooltipFromItem(this.client, stack);
 	}
 
-	private void drawItem(DrawContext context, ItemStack stack, int x, int y, String amountText) {
+	protected void drawItem(DrawContext context, ItemStack stack, int x, int y, @Nullable String amountText) {
 		context.getMatrices().push();
 		context.getMatrices().translate(0.0F, 0.0F, 232.0F);
 		context.drawItem(stack, x, y);
@@ -179,8 +185,15 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		context.getMatrices().pop();
 	}
 
+	protected void drawItem(DrawContext context, ItemStack stack, float x, float y, float rotation) {
+		context.getMatrices().push();
+		context.getMatrices().translate(0.0F, 0.0F, 232.0F);
+		context.drawItem(null, null, stack, x, y, rotation, 0, 0);
+		context.getMatrices().pop();
+	}
+
 	protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
-		context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, 4210752, false);
+		context.drawText(this.textRenderer, this.getTitle(), this.titleX, this.titleY, 4210752, false);
 		context.drawText(this.textRenderer, this.playerInventoryTitle, this.playerInventoryTitleX, this.playerInventoryTitleY, 4210752, false);
 	}
 

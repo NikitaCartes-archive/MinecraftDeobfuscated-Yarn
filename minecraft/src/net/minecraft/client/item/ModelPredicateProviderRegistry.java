@@ -12,6 +12,7 @@ import net.minecraft.component.type.BlockStateComponent;
 import net.minecraft.component.type.ChargedProjectilesComponent;
 import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.component.type.LodestoneTrackerComponent;
+import net.minecraft.component.type.SnekComponent;
 import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -24,6 +25,8 @@ import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.LashingPotatoItem;
+import net.minecraft.item.PoisonousPolytraItem;
 import net.minecraft.item.trim.ArmorTrim;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
@@ -183,6 +186,9 @@ public class ModelPredicateProviderRegistry {
 			return chargedProjectilesComponent != null && chargedProjectilesComponent.contains(Items.FIREWORK_ROCKET) ? 1.0F : 0.0F;
 		});
 		register(Items.ELYTRA, new Identifier("broken"), (stack, world, entity, seed) -> ElytraItem.isUsable(stack) ? 0.0F : 1.0F);
+		register(
+			Items.POISONOUS_POLYTRA, new Identifier("broken"), (itemStack, clientWorld, livingEntity, i) -> PoisonousPolytraItem.isUsable(itemStack) ? 0.0F : 1.0F
+		);
 		register(Items.FISHING_ROD, new Identifier("cast"), (stack, world, entity, seed) -> {
 			if (entity == null) {
 				return 0.0F;
@@ -196,10 +202,23 @@ public class ModelPredicateProviderRegistry {
 				return (bl || bl2) && entity instanceof PlayerEntity && ((PlayerEntity)entity).fishHook != null ? 1.0F : 0.0F;
 			}
 		});
+		register(Items.LASHING_POTATO, new Identifier("lashing_potato_extended"), (itemStack, clientWorld, livingEntity, i) -> {
+			if (livingEntity == null) {
+				return 0.0F;
+			} else {
+				boolean bl = livingEntity.getMainHandStack() == itemStack;
+				boolean bl2 = livingEntity.getOffHandStack() == itemStack;
+				if (livingEntity.getMainHandStack().getItem() instanceof LashingPotatoItem) {
+					bl2 = false;
+				}
+
+				return (bl || bl2) && livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).lashingPotatoHook != null ? 1.0F : 0.0F;
+			}
+		});
 		register(
 			Items.SHIELD,
 			new Identifier("blocking"),
-			(stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
+			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
 		);
 		register(
 			Items.TRIDENT,
@@ -214,7 +233,16 @@ public class ModelPredicateProviderRegistry {
 		register(
 			Items.GOAT_HORN,
 			new Identifier("tooting"),
-			(stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
+			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
+		);
+		register(
+			Items.SNEKTATO,
+			new Identifier("hidden"),
+			(itemStack, clientWorld, livingEntity, i) -> itemStack.getOrDefault(DataComponentTypes.SNEK, SnekComponent.DEFAULT).revealed() ? 0.0F : 1.0F
+		);
+		register(
+			new Identifier("hovered"),
+			(itemStack, clientWorld, livingEntity, i) -> itemStack.getOrDefault(DataComponentTypes.HOVERED, Boolean.valueOf(false)) ? 1.0F : 0.0F
 		);
 	}
 }

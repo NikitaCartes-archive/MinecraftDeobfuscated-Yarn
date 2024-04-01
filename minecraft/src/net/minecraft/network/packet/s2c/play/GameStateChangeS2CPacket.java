@@ -27,6 +27,7 @@ public class GameStateChangeS2CPacket implements Packet<ClientPlayPacketListener
 	public static final GameStateChangeS2CPacket.Reason IMMEDIATE_RESPAWN = new GameStateChangeS2CPacket.Reason(11);
 	public static final GameStateChangeS2CPacket.Reason LIMITED_CRAFTING_TOGGLED = new GameStateChangeS2CPacket.Reason(12);
 	public static final GameStateChangeS2CPacket.Reason INITIAL_CHUNKS_COMING = new GameStateChangeS2CPacket.Reason(13);
+	public static final GameStateChangeS2CPacket.Reason field_50265 = new GameStateChangeS2CPacket.Reason(15);
 	public static final int DEMO_OPEN_SCREEN = 0;
 	public static final int DEMO_MOVEMENT_HELP = 101;
 	public static final int DEMO_JUMP_HELP = 102;

@@ -117,7 +117,7 @@ public class BackgroundRenderer {
 			red = red + (s - red) * r;
 			green = green + (t - green) * r;
 			blue = blue + (u - blue) * r;
-			float fx = world.getRainGradient(tickDelta);
+			float fx = world.method_59088(tickDelta, camera.getPos().y);
 			if (fx > 0.0F) {
 				float g = 1.0F - fx * 0.5F;
 				float hx = 1.0F - fx * 0.4F;
@@ -126,7 +126,7 @@ public class BackgroundRenderer {
 				blue *= hx;
 			}
 
-			float g = world.getThunderGradient(tickDelta);
+			float g = world.method_59090(tickDelta, camera.getPos().y);
 			if (g > 0.0F) {
 				float hx = 1.0F - g * 0.5F;
 				red *= hx;

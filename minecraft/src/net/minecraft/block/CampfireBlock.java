@@ -58,6 +58,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 				.apply(instance, CampfireBlock::new)
 	);
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 7.0, 16.0);
+	protected static final VoxelShape field_50838 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0);
 	public static final BooleanProperty LIT = Properties.LIT;
 	public static final BooleanProperty SIGNAL_FIRE = Properties.SIGNAL_FIRE;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -163,7 +164,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return SHAPE;
+		return state.isOf(Blocks.FRYING_TABLE) ? field_50838 : SHAPE;
 	}
 
 	@Override

@@ -26,8 +26,11 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -44,6 +47,7 @@ import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
@@ -64,9 +68,12 @@ import net.minecraft.network.packet.s2c.play.WorldBorderWarningBlocksChangedS2CP
 import net.minecraft.network.packet.s2c.play.WorldBorderWarningTimeChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.network.state.PlayStateFactories;
+import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.ServerDynamicRegistryType;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagPacketSerializer;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -80,6 +87,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stats;
@@ -92,6 +100,7 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
@@ -99,6 +108,7 @@ import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.explosion.Explosion;
 import org.slf4j.Logger;
 
 public abstract class PlayerManager {
@@ -427,6 +437,44 @@ public abstract class PlayerManager {
 		}
 
 		return !set.isEmpty();
+	}
+
+	public ServerPlayerEntity method_58800(ServerPlayerEntity serverPlayerEntity) {
+		ServerPlayerEntity serverPlayerEntity2 = this.respawnPlayer(serverPlayerEntity, true);
+		Random random = Random.create();
+		double d = random.nextGaussian() * 0.3;
+		double e = random.nextGaussian() * 0.3;
+		double f = serverPlayerEntity2.getPos().getX();
+		double g = serverPlayerEntity2.getPos().getY() + 1.0;
+		double h = serverPlayerEntity2.getPos().getZ();
+		DefaultParticleType defaultParticleType = ParticleTypes.SMOKE;
+		DefaultParticleType defaultParticleType2 = ParticleTypes.REVERSE_LIGHTNING;
+		RegistryEntry<SoundEvent> registryEntry = SoundEvents.INTENTIONALLY_EMPTY;
+		ItemStack itemStack = serverPlayerEntity2.getInventory().armor.get(EquipmentSlot.FEET.getEntitySlotId());
+		if (itemStack != ItemStack.EMPTY) {
+			serverPlayerEntity2.dropStack(itemStack, 2.0F);
+		}
+
+		serverPlayerEntity2.equipStack(EquipmentSlot.FEET, Items.POISONOUS_POTA_TOES.getDefaultStack());
+		Explosion explosion = serverPlayerEntity2.getWorld()
+			.createExplosion(null, null, null, f, g, h, 2.0F, false, World.ExplosionSourceType.NONE, false, defaultParticleType, defaultParticleType2, registryEntry);
+		serverPlayerEntity2.networkHandler
+			.sendPacket(
+				new ExplosionS2CPacket(
+					serverPlayerEntity2.getPos().x,
+					serverPlayerEntity2.getPos().y,
+					serverPlayerEntity2.getPos().z,
+					5.0F,
+					explosion.getAffectedBlocks(),
+					new Vec3d(d, 5.0, e),
+					Explosion.DestructionType.KEEP,
+					defaultParticleType,
+					defaultParticleType2,
+					registryEntry
+				)
+			);
+		serverPlayerEntity2.getWorld().playSound(null, serverPlayerEntity2.getBlockPos(), SoundEvents.ENTITY_PLAYER_SPROUT_RESPAWN_TWO, SoundCategory.PLAYERS);
+		return serverPlayerEntity2;
 	}
 
 	public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, boolean alive) {

@@ -38,14 +38,22 @@ public abstract class SpreadableBlock extends SnowyBlock {
 	@Override
 	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (!canSurvive(state, world, pos)) {
-			world.setBlockState(pos, Blocks.DIRT.getDefaultState());
+			world.setBlockState(pos, (world.isPotato() ? Blocks.TERRE_DE_POMME : Blocks.DIRT).getDefaultState());
 		} else {
 			if (world.getLightLevel(pos.up()) >= 9) {
 				BlockState blockState = this.getDefaultState();
 
 				for (int i = 0; i < 4; i++) {
 					BlockPos blockPos = pos.add(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
-					if (world.getBlockState(blockPos).isOf(Blocks.DIRT) && canSpread(blockState, world, blockPos)) {
+					BlockState blockState2 = world.getBlockState(blockPos);
+					if (blockState.isOf(Blocks.CORRUPTED_PEELGRASS_BLOCK)
+						&& random.nextInt(20) == 0
+						&& blockState2.isOf(Blocks.PEELGRASS_BLOCK)
+						&& canSpread(blockState, world, blockPos)) {
+						world.setBlockState(blockPos, blockState);
+					}
+
+					if ((blockState2.isOf(Blocks.DIRT) || blockState2.isOf(Blocks.TERRE_DE_POMME)) && canSpread(blockState, world, blockPos)) {
 						world.setBlockState(blockPos, blockState.with(SNOWY, Boolean.valueOf(world.getBlockState(blockPos.up()).isOf(Blocks.SNOW))));
 					}
 				}

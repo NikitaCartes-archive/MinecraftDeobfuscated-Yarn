@@ -528,7 +528,9 @@ public class ChunkBuilder {
 								BuiltChunk.this.beginBufferBuilding(bufferBuilder);
 							}
 
-							blockRenderManager.renderFluid(blockPos3, chunkRendererRegion, bufferBuilder, blockState, fluidState);
+							blockRenderManager.renderFluid(
+								blockPos3, chunkRendererRegion, bufferBuilder, blockState, fluidState, blockPos3.getX() & 15, blockPos3.getY() & 15, blockPos3.getZ() & 15
+							);
 						}
 
 						if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {

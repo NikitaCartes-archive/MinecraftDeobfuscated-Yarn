@@ -11,7 +11,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.util.Window;
 import org.joml.Matrix4f;
 
 /**
@@ -158,65 +157,11 @@ public class VertexBuffer implements AutoCloseable {
 		}
 	}
 
-	private void drawInternal(Matrix4f viewMatrix, Matrix4f projectionMatrix, ShaderProgram program) {
-		for (int i = 0; i < 12; i++) {
-			int j = RenderSystem.getShaderTexture(i);
-			program.addSampler("Sampler" + i, j);
-		}
-
-		if (program.modelViewMat != null) {
-			program.modelViewMat.set(viewMatrix);
-		}
-
-		if (program.projectionMat != null) {
-			program.projectionMat.set(projectionMatrix);
-		}
-
-		if (program.colorModulator != null) {
-			program.colorModulator.set(RenderSystem.getShaderColor());
-		}
-
-		if (program.glintAlpha != null) {
-			program.glintAlpha.set(RenderSystem.getShaderGlintAlpha());
-		}
-
-		if (program.fogStart != null) {
-			program.fogStart.set(RenderSystem.getShaderFogStart());
-		}
-
-		if (program.fogEnd != null) {
-			program.fogEnd.set(RenderSystem.getShaderFogEnd());
-		}
-
-		if (program.fogColor != null) {
-			program.fogColor.set(RenderSystem.getShaderFogColor());
-		}
-
-		if (program.fogShape != null) {
-			program.fogShape.set(RenderSystem.getShaderFogShape().getId());
-		}
-
-		if (program.textureMat != null) {
-			program.textureMat.set(RenderSystem.getTextureMatrix());
-		}
-
-		if (program.gameTime != null) {
-			program.gameTime.set(RenderSystem.getShaderGameTime());
-		}
-
-		if (program.screenSize != null) {
-			Window window = MinecraftClient.getInstance().getWindow();
-			program.screenSize.set((float)window.getFramebufferWidth(), (float)window.getFramebufferHeight());
-		}
-
-		if (program.lineWidth != null && (this.drawMode == VertexFormat.DrawMode.LINES || this.drawMode == VertexFormat.DrawMode.LINE_STRIP)) {
-			program.lineWidth.set(RenderSystem.getShaderLineWidth());
-		}
-
-		RenderSystem.setupShaderLights(program);
-		program.bind();
+	private void drawInternal(Matrix4f viewMatrix, Matrix4f projectionMatrix, ShaderProgram shaderProgram) {
+		shaderProgram.method_59363(this.drawMode, viewMatrix, projectionMatrix, MinecraftClient.getInstance().getWindow());
+		shaderProgram.bind();
 		this.draw();
-		program.unbind();
+		shaderProgram.unbind();
 	}
 
 	public void close() {

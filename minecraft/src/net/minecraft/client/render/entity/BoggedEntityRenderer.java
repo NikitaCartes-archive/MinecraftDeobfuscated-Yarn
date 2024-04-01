@@ -19,6 +19,6 @@ public class BoggedEntityRenderer extends SkeletonEntityRenderer<BoggedEntity> {
 	}
 
 	public Identifier getTexture(BoggedEntity boggedEntity) {
-		return TEXTURE;
+		return boggedEntity.isPotato() ? SkeletonEntityRenderer.TEXTURE : TEXTURE;
 	}
 }

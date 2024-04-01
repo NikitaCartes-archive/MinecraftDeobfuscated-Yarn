@@ -578,7 +578,7 @@ public abstract class ChunkGenerator {
 		RegistryEntryList<Biome> registryEntryList = structure.getValidBiomes();
 		Predicate<RegistryEntry<Biome>> predicate = registryEntryList::contains;
 		StructureStart structureStart = structure.createStructureStart(
-			dynamicRegistryManager, this, this.biomeSource, noiseConfig, structureManager, seed, pos, i, chunk, predicate
+			dynamicRegistryManager, this, this.biomeSource, noiseConfig, structureManager, seed, pos, i, chunk, predicate, structure.method_59293()
 		);
 		if (structureStart.hasChildren()) {
 			structureAccessor.setStructureStart(sectionPos, structure, structureStart, chunk);

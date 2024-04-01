@@ -77,9 +77,13 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 								structureWorldAccess.setBlockState(blockPos2x, AIR, Block.NOTIFY_LISTENERS);
 							} else if (blockState.isSolid() && !blockState.isOf(Blocks.CHEST)) {
 								if (t == -1 && random.nextInt(4) != 0) {
-									this.setBlockStateIf(structureWorldAccess, blockPos2x, Blocks.MOSSY_COBBLESTONE.getDefaultState(), predicate);
+									this.setBlockStateIf(
+										structureWorldAccess, blockPos2x, (structureWorldAccess.isPotato() ? Blocks.GRAVTATER : Blocks.MOSSY_COBBLESTONE).getDefaultState(), predicate
+									);
 								} else {
-									this.setBlockStateIf(structureWorldAccess, blockPos2x, Blocks.COBBLESTONE.getDefaultState(), predicate);
+									this.setBlockStateIf(
+										structureWorldAccess, blockPos2x, (structureWorldAccess.isPotato() ? Blocks.TATERSTONE : Blocks.COBBLESTONE).getDefaultState(), predicate
+									);
 								}
 							}
 						} else if (!blockState.isOf(Blocks.CHEST) && !blockState.isOf(Blocks.SPAWNER)) {
@@ -108,7 +112,9 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 							this.setBlockStateIf(
 								structureWorldAccess, blockPos3, StructurePiece.orientateChest(structureWorldAccess, blockPos3, Blocks.CHEST.getDefaultState()), predicate
 							);
-							LootableInventory.setLootTable(structureWorldAccess, random, blockPos3, LootTables.SIMPLE_DUNGEON_CHEST);
+							LootableInventory.setLootTable(
+								structureWorldAccess, random, blockPos3, structureWorldAccess.isPotato() ? LootTables.SIMPLE_DUNGEON_POTATO_CHEST : LootTables.SIMPLE_DUNGEON_CHEST
+							);
 							break;
 						}
 					}

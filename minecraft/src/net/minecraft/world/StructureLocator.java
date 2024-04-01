@@ -111,7 +111,8 @@ public class StructureLocator {
 					this.seed,
 					pos,
 					this.world,
-					structure.getValidBiomes()::contains
+					structure.getValidBiomes()::contains,
+					structure.method_59293()
 				)
 			)
 			.isPresent();

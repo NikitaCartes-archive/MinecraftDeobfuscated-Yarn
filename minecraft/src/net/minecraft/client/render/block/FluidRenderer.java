@@ -69,13 +69,15 @@ public class FluidRenderer {
 		return !isOppositeSideCovered(world, pos, blockState, direction) && !isSameFluid(fluidState, neighborFluidState);
 	}
 
-	public void render(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState, FluidState fluidState) {
+	public void render(
+		BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState, FluidState fluidState, double d, double e, double f
+	) {
 		boolean bl = fluidState.isIn(FluidTags.LAVA);
 		Sprite[] sprites = bl ? this.lavaSprites : this.waterSprites;
 		int i = bl ? 16777215 : BiomeColors.getWaterColor(world, pos);
-		float f = (float)(i >> 16 & 0xFF) / 255.0F;
-		float g = (float)(i >> 8 & 0xFF) / 255.0F;
-		float h = (float)(i & 0xFF) / 255.0F;
+		float g = (float)(i >> 16 & 0xFF) / 255.0F;
+		float h = (float)(i >> 8 & 0xFF) / 255.0F;
+		float j = (float)(i & 0xFF) / 255.0F;
 		BlockState blockState2 = world.getBlockState(pos.offset(Direction.DOWN));
 		FluidState fluidState2 = blockState2.getFluidState();
 		BlockState blockState3 = world.getBlockState(pos.offset(Direction.UP));
@@ -96,168 +98,165 @@ public class FluidRenderer {
 		boolean bl6 = shouldRenderSide(world, pos, fluidState, blockState, Direction.WEST, fluidState6);
 		boolean bl7 = shouldRenderSide(world, pos, fluidState, blockState, Direction.EAST, fluidState7);
 		if (bl2 || bl3 || bl7 || bl6 || bl4 || bl5) {
-			float j = world.getBrightness(Direction.DOWN, true);
-			float k = world.getBrightness(Direction.UP, true);
-			float l = world.getBrightness(Direction.NORTH, true);
-			float m = world.getBrightness(Direction.WEST, true);
+			float k = world.getBrightness(Direction.DOWN, true);
+			float l = world.getBrightness(Direction.UP, true);
+			float m = world.getBrightness(Direction.NORTH, true);
+			float n = world.getBrightness(Direction.WEST, true);
 			Fluid fluid = fluidState.getFluid();
-			float n = this.getFluidHeight(world, fluid, pos, blockState, fluidState);
-			float o;
+			float o = this.getFluidHeight(world, fluid, pos, blockState, fluidState);
 			float p;
 			float q;
 			float r;
-			if (n >= 1.0F) {
-				o = 1.0F;
+			float s;
+			if (o >= 1.0F) {
 				p = 1.0F;
 				q = 1.0F;
 				r = 1.0F;
+				s = 1.0F;
 			} else {
-				float s = this.getFluidHeight(world, fluid, pos.north(), blockState4, fluidState4);
-				float t = this.getFluidHeight(world, fluid, pos.south(), blockState5, fluidState5);
-				float u = this.getFluidHeight(world, fluid, pos.east(), blockState7, fluidState7);
-				float v = this.getFluidHeight(world, fluid, pos.west(), blockState6, fluidState6);
-				o = this.calculateFluidHeight(world, fluid, n, s, u, pos.offset(Direction.NORTH).offset(Direction.EAST));
-				p = this.calculateFluidHeight(world, fluid, n, s, v, pos.offset(Direction.NORTH).offset(Direction.WEST));
-				q = this.calculateFluidHeight(world, fluid, n, t, u, pos.offset(Direction.SOUTH).offset(Direction.EAST));
-				r = this.calculateFluidHeight(world, fluid, n, t, v, pos.offset(Direction.SOUTH).offset(Direction.WEST));
+				float t = this.getFluidHeight(world, fluid, pos.north(), blockState4, fluidState4);
+				float u = this.getFluidHeight(world, fluid, pos.south(), blockState5, fluidState5);
+				float v = this.getFluidHeight(world, fluid, pos.east(), blockState7, fluidState7);
+				float w = this.getFluidHeight(world, fluid, pos.west(), blockState6, fluidState6);
+				p = this.calculateFluidHeight(world, fluid, o, t, v, pos.offset(Direction.NORTH).offset(Direction.EAST));
+				q = this.calculateFluidHeight(world, fluid, o, t, w, pos.offset(Direction.NORTH).offset(Direction.WEST));
+				r = this.calculateFluidHeight(world, fluid, o, u, v, pos.offset(Direction.SOUTH).offset(Direction.EAST));
+				s = this.calculateFluidHeight(world, fluid, o, u, w, pos.offset(Direction.SOUTH).offset(Direction.WEST));
 			}
 
-			double d = (double)(pos.getX() & 15);
-			double e = (double)(pos.getY() & 15);
-			double w = (double)(pos.getZ() & 15);
-			float x = 0.001F;
-			float y = bl3 ? 0.001F : 0.0F;
-			if (bl2 && !isSideCovered(world, pos, Direction.UP, Math.min(Math.min(p, r), Math.min(q, o)), blockState3)) {
-				p -= 0.001F;
-				r -= 0.001F;
+			float t = 0.001F;
+			float u = bl3 ? 0.001F : 0.0F;
+			if (bl2 && !isSideCovered(world, pos, Direction.UP, Math.min(Math.min(q, s), Math.min(r, p)), blockState3)) {
 				q -= 0.001F;
-				o -= 0.001F;
+				s -= 0.001F;
+				r -= 0.001F;
+				p -= 0.001F;
 				Vec3d vec3d = fluidState.getVelocity(world, pos);
 				float z;
 				float ab;
-				float ad;
-				float af;
+				float x;
+				float y;
 				float aa;
 				float ac;
-				float ae;
-				float ag;
+				float v;
+				float w;
 				if (vec3d.x == 0.0 && vec3d.z == 0.0) {
 					Sprite sprite = sprites[0];
-					z = sprite.getFrameU(0.0F);
-					aa = sprite.getFrameV(0.0F);
+					v = sprite.getFrameU(0.0F);
+					x = sprite.getFrameV(0.0F);
+					w = v;
+					y = sprite.getFrameV(1.0F);
+					z = sprite.getFrameU(1.0F);
+					aa = y;
 					ab = z;
-					ac = sprite.getFrameV(1.0F);
-					ad = sprite.getFrameU(1.0F);
-					ae = ac;
-					af = ad;
-					ag = aa;
+					ac = x;
 				} else {
 					Sprite sprite = sprites[1];
-					float ah = (float)MathHelper.atan2(vec3d.z, vec3d.x) - (float) (Math.PI / 2);
-					float ai = MathHelper.sin(ah) * 0.25F;
-					float aj = MathHelper.cos(ah) * 0.25F;
-					float ak = 0.5F;
-					z = sprite.getFrameU(0.5F + (-aj - ai));
-					aa = sprite.getFrameV(0.5F + -aj + ai);
-					ab = sprite.getFrameU(0.5F + -aj + ai);
-					ac = sprite.getFrameV(0.5F + aj + ai);
-					ad = sprite.getFrameU(0.5F + aj + ai);
-					ae = sprite.getFrameV(0.5F + (aj - ai));
-					af = sprite.getFrameU(0.5F + (aj - ai));
-					ag = sprite.getFrameV(0.5F + (-aj - ai));
+					float ad = (float)MathHelper.atan2(vec3d.z, vec3d.x) - (float) (Math.PI / 2);
+					float ae = MathHelper.sin(ad) * 0.25F;
+					float af = MathHelper.cos(ad) * 0.25F;
+					float ag = 0.5F;
+					v = sprite.getFrameU(0.5F + (-af - ae));
+					x = sprite.getFrameV(0.5F + -af + ae);
+					w = sprite.getFrameU(0.5F + -af + ae);
+					y = sprite.getFrameV(0.5F + af + ae);
+					z = sprite.getFrameU(0.5F + af + ae);
+					aa = sprite.getFrameV(0.5F + (af - ae));
+					ab = sprite.getFrameU(0.5F + (af - ae));
+					ac = sprite.getFrameV(0.5F + (-af - ae));
 				}
 
-				float al = (z + ab + ad + af) / 4.0F;
-				float ah = (aa + ac + ae + ag) / 4.0F;
-				float ai = sprites[0].getAnimationFrameDelta();
-				z = MathHelper.lerp(ai, z, al);
-				ab = MathHelper.lerp(ai, ab, al);
-				ad = MathHelper.lerp(ai, ad, al);
-				af = MathHelper.lerp(ai, af, al);
-				aa = MathHelper.lerp(ai, aa, ah);
-				ac = MathHelper.lerp(ai, ac, ah);
-				ae = MathHelper.lerp(ai, ae, ah);
-				ag = MathHelper.lerp(ai, ag, ah);
-				int am = this.getLight(world, pos);
-				float ak = k * f;
-				float an = k * g;
-				float ao = k * h;
-				this.vertex(vertexConsumer, d + 0.0, e + (double)p, w + 0.0, ak, an, ao, z, aa, am);
-				this.vertex(vertexConsumer, d + 0.0, e + (double)r, w + 1.0, ak, an, ao, ab, ac, am);
-				this.vertex(vertexConsumer, d + 1.0, e + (double)q, w + 1.0, ak, an, ao, ad, ae, am);
-				this.vertex(vertexConsumer, d + 1.0, e + (double)o, w + 0.0, ak, an, ao, af, ag, am);
+				float ah = (v + w + z + ab) / 4.0F;
+				float ad = (x + y + aa + ac) / 4.0F;
+				float ae = sprites[0].getAnimationFrameDelta();
+				v = MathHelper.lerp(ae, v, ah);
+				w = MathHelper.lerp(ae, w, ah);
+				z = MathHelper.lerp(ae, z, ah);
+				ab = MathHelper.lerp(ae, ab, ah);
+				x = MathHelper.lerp(ae, x, ad);
+				y = MathHelper.lerp(ae, y, ad);
+				aa = MathHelper.lerp(ae, aa, ad);
+				ac = MathHelper.lerp(ae, ac, ad);
+				int ai = this.getLight(world, pos);
+				float ag = l * g;
+				float aj = l * h;
+				float ak = l * j;
+				this.vertex(vertexConsumer, d + 0.0, e + (double)q, f + 0.0, ag, aj, ak, v, x, ai);
+				this.vertex(vertexConsumer, d + 0.0, e + (double)s, f + 1.0, ag, aj, ak, w, y, ai);
+				this.vertex(vertexConsumer, d + 1.0, e + (double)r, f + 1.0, ag, aj, ak, z, aa, ai);
+				this.vertex(vertexConsumer, d + 1.0, e + (double)p, f + 0.0, ag, aj, ak, ab, ac, ai);
 				if (fluidState.canFlowTo(world, pos.up())) {
-					this.vertex(vertexConsumer, d + 0.0, e + (double)p, w + 0.0, ak, an, ao, z, aa, am);
-					this.vertex(vertexConsumer, d + 1.0, e + (double)o, w + 0.0, ak, an, ao, af, ag, am);
-					this.vertex(vertexConsumer, d + 1.0, e + (double)q, w + 1.0, ak, an, ao, ad, ae, am);
-					this.vertex(vertexConsumer, d + 0.0, e + (double)r, w + 1.0, ak, an, ao, ab, ac, am);
+					this.vertex(vertexConsumer, d + 0.0, e + (double)q, f + 0.0, ag, aj, ak, v, x, ai);
+					this.vertex(vertexConsumer, d + 1.0, e + (double)p, f + 0.0, ag, aj, ak, ab, ac, ai);
+					this.vertex(vertexConsumer, d + 1.0, e + (double)r, f + 1.0, ag, aj, ak, z, aa, ai);
+					this.vertex(vertexConsumer, d + 0.0, e + (double)s, f + 1.0, ag, aj, ak, w, y, ai);
 				}
 			}
 
 			if (bl3) {
-				float zx = sprites[0].getMinU();
-				float abx = sprites[0].getMaxU();
-				float adx = sprites[0].getMinV();
-				float afx = sprites[0].getMaxV();
-				int ap = this.getLight(world, pos.down());
-				float acx = j * f;
-				float aex = j * g;
-				float agx = j * h;
-				this.vertex(vertexConsumer, d, e + (double)y, w + 1.0, acx, aex, agx, zx, afx, ap);
-				this.vertex(vertexConsumer, d, e + (double)y, w, acx, aex, agx, zx, adx, ap);
-				this.vertex(vertexConsumer, d + 1.0, e + (double)y, w, acx, aex, agx, abx, adx, ap);
-				this.vertex(vertexConsumer, d + 1.0, e + (double)y, w + 1.0, acx, aex, agx, abx, afx, ap);
+				float vx = sprites[0].getMinU();
+				float wx = sprites[0].getMaxU();
+				float zx = sprites[0].getMinV();
+				float abx = sprites[0].getMaxV();
+				int al = this.getLight(world, pos.down());
+				float yx = k * g;
+				float aax = k * h;
+				float acx = k * j;
+				this.vertex(vertexConsumer, d, e + (double)u, f + 1.0, yx, aax, acx, vx, abx, al);
+				this.vertex(vertexConsumer, d, e + (double)u, f, yx, aax, acx, vx, zx, al);
+				this.vertex(vertexConsumer, d + 1.0, e + (double)u, f, yx, aax, acx, wx, zx, al);
+				this.vertex(vertexConsumer, d + 1.0, e + (double)u, f + 1.0, yx, aax, acx, wx, abx, al);
 			}
 
-			int aq = this.getLight(world, pos);
+			int am = this.getLight(world, pos);
 
 			for (Direction direction : Direction.Type.HORIZONTAL) {
-				float afx;
-				float aax;
-				double ar;
-				double at;
-				double as;
-				double au;
+				float abx;
+				float xx;
+				double an;
+				double ap;
+				double ao;
+				double aq;
 				boolean bl8;
 				switch (direction) {
 					case NORTH:
-						afx = p;
-						aax = o;
-						ar = d;
-						as = d + 1.0;
-						at = w + 0.001F;
-						au = w + 0.001F;
+						abx = q;
+						xx = p;
+						an = d;
+						ao = d + 1.0;
+						ap = f + 0.001F;
+						aq = f + 0.001F;
 						bl8 = bl4;
 						break;
 					case SOUTH:
-						afx = q;
-						aax = r;
-						ar = d + 1.0;
-						as = d;
-						at = w + 1.0 - 0.001F;
-						au = w + 1.0 - 0.001F;
+						abx = r;
+						xx = s;
+						an = d + 1.0;
+						ao = d;
+						ap = f + 1.0 - 0.001F;
+						aq = f + 1.0 - 0.001F;
 						bl8 = bl5;
 						break;
 					case WEST:
-						afx = r;
-						aax = p;
-						ar = d + 0.001F;
-						as = d + 0.001F;
-						at = w + 1.0;
-						au = w;
+						abx = s;
+						xx = q;
+						an = d + 0.001F;
+						ao = d + 0.001F;
+						ap = f + 1.0;
+						aq = f;
 						bl8 = bl6;
 						break;
 					default:
-						afx = o;
-						aax = q;
-						ar = d + 1.0 - 0.001F;
-						as = d + 1.0 - 0.001F;
-						at = w;
-						au = w + 1.0;
+						abx = p;
+						xx = r;
+						an = d + 1.0 - 0.001F;
+						ao = d + 1.0 - 0.001F;
+						ap = f;
+						aq = f + 1.0;
 						bl8 = bl7;
 				}
 
-				if (bl8 && !isSideCovered(world, pos, direction, Math.max(afx, aax), world.getBlockState(pos.offset(direction)))) {
+				if (bl8 && !isSideCovered(world, pos, direction, Math.max(abx, xx), world.getBlockState(pos.offset(direction)))) {
 					BlockPos blockPos = pos.offset(direction);
 					Sprite sprite2 = sprites[1];
 					if (!bl) {
@@ -267,24 +266,24 @@ public class FluidRenderer {
 						}
 					}
 
-					float av = sprite2.getFrameU(0.0F);
-					float aw = sprite2.getFrameU(0.5F);
-					float ax = sprite2.getFrameV((1.0F - afx) * 0.5F);
-					float ay = sprite2.getFrameV((1.0F - aax) * 0.5F);
-					float az = sprite2.getFrameV(0.5F);
-					float ba = direction.getAxis() == Direction.Axis.Z ? l : m;
-					float bb = k * ba * f;
-					float bc = k * ba * g;
-					float bd = k * ba * h;
-					this.vertex(vertexConsumer, ar, e + (double)afx, at, bb, bc, bd, av, ax, aq);
-					this.vertex(vertexConsumer, as, e + (double)aax, au, bb, bc, bd, aw, ay, aq);
-					this.vertex(vertexConsumer, as, e + (double)y, au, bb, bc, bd, aw, az, aq);
-					this.vertex(vertexConsumer, ar, e + (double)y, at, bb, bc, bd, av, az, aq);
+					float ar = sprite2.getFrameU(0.0F);
+					float as = sprite2.getFrameU(0.5F);
+					float at = sprite2.getFrameV((1.0F - abx) * 0.5F);
+					float au = sprite2.getFrameV((1.0F - xx) * 0.5F);
+					float av = sprite2.getFrameV(0.5F);
+					float aw = direction.getAxis() == Direction.Axis.Z ? m : n;
+					float ax = l * aw * g;
+					float ay = l * aw * h;
+					float az = l * aw * j;
+					this.vertex(vertexConsumer, an, e + (double)abx, ap, ax, ay, az, ar, at, am);
+					this.vertex(vertexConsumer, ao, e + (double)xx, aq, ax, ay, az, as, au, am);
+					this.vertex(vertexConsumer, ao, e + (double)u, aq, ax, ay, az, as, av, am);
+					this.vertex(vertexConsumer, an, e + (double)u, ap, ax, ay, az, ar, av, am);
 					if (sprite2 != this.waterOverlaySprite) {
-						this.vertex(vertexConsumer, ar, e + (double)y, at, bb, bc, bd, av, az, aq);
-						this.vertex(vertexConsumer, as, e + (double)y, au, bb, bc, bd, aw, az, aq);
-						this.vertex(vertexConsumer, as, e + (double)aax, au, bb, bc, bd, aw, ay, aq);
-						this.vertex(vertexConsumer, ar, e + (double)afx, at, bb, bc, bd, av, ax, aq);
+						this.vertex(vertexConsumer, an, e + (double)u, ap, ax, ay, az, ar, av, am);
+						this.vertex(vertexConsumer, ao, e + (double)u, aq, ax, ay, az, as, av, am);
+						this.vertex(vertexConsumer, ao, e + (double)xx, aq, ax, ay, az, as, au, am);
+						this.vertex(vertexConsumer, an, e + (double)abx, ap, ax, ay, az, ar, at, am);
 					}
 				}
 			}

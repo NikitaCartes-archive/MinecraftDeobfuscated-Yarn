@@ -36,7 +36,8 @@ public class VanillaDamageTypeTagProvider extends TagProvider<DamageType> {
 				DamageTypes.OUT_OF_WORLD,
 				DamageTypes.GENERIC_KILL,
 				DamageTypes.SONIC_BOOM,
-				DamageTypes.OUTSIDE_BORDER
+				DamageTypes.OUTSIDE_BORDER,
+				DamageTypes.POTATO_MAGIC
 			);
 		this.getOrCreateTagBuilder(DamageTypeTags.BYPASSES_SHIELD)
 			.addTag(DamageTypeTags.BYPASSES_ARMOR)
@@ -55,7 +56,8 @@ public class VanillaDamageTypeTagProvider extends TagProvider<DamageType> {
 				DamageTypes.UNATTRIBUTED_FIREBALL,
 				DamageTypes.FIREBALL,
 				DamageTypes.WITHER_SKULL,
-				DamageTypes.THROWN
+				DamageTypes.THROWN,
+				DamageTypes.POTATO_MAGIC
 			);
 		this.getOrCreateTagBuilder(DamageTypeTags.WITCH_RESISTANT_TO).add(DamageTypes.MAGIC, DamageTypes.INDIRECT_MAGIC, DamageTypes.SONIC_BOOM, DamageTypes.THORNS);
 		this.getOrCreateTagBuilder(DamageTypeTags.IS_EXPLOSION)

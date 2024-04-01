@@ -56,7 +56,7 @@ public class EndPortalBlock extends BlockWithEntity {
 				return;
 			}
 
-			entity.moveToWorld(serverWorld);
+			entity.moveToWorld(serverWorld, false);
 		}
 	}
 

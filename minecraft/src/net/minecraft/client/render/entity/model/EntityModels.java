@@ -59,6 +59,7 @@ public class EntityModels {
 		builder.put(EntityModelLayers.AXOLOTL, AxolotlEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.BANNER, BannerBlockEntityRenderer.getTexturedModelData());
 		builder.put(EntityModelLayers.BAT, BatEntityModel.getTexturedModelData());
+		builder.put(EntityModelLayers.BATATO, BatatoEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.BED_FOOT, BedBlockEntityRenderer.getFootTexturedModelData());
 		builder.put(EntityModelLayers.BED_HEAD, BedBlockEntityRenderer.getHeadTexturedModelData());
 		builder.put(EntityModelLayers.BEE, BeeEntityModel.getTexturedModelData());
@@ -98,8 +99,10 @@ public class EntityModels {
 		builder.put(EntityModelLayers.DROWNED_INNER_ARMOR, texturedModelData4);
 		builder.put(EntityModelLayers.DROWNED_OUTER_ARMOR, texturedModelData4);
 		builder.put(EntityModelLayers.DROWNED_OUTER, DrownedEntityModel.getTexturedModelData(new Dilation(0.25F)));
-		builder.put(EntityModelLayers.ELDER_GUARDIAN, GuardianEntityModel.getTexturedModelData());
+		builder.put(EntityModelLayers.ELDER_GUARDIAN, GuardianEntityModel.getTexturedModelData(false));
+		builder.put(EntityModelLayers.ELDER_GUARDIAN_SLAB, GuardianEntityModel.getTexturedModelData(true));
 		builder.put(EntityModelLayers.ELYTRA, ElytraEntityModel.getTexturedModelData());
+		builder.put(EntityModelLayers.POISONOUS_POLYTRA, ElytraEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.ENDERMAN, EndermanEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.ENDERMITE, EndermiteEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.ENDER_DRAGON, EnderDragonEntityRenderer.getTexturedModelData());
@@ -115,7 +118,8 @@ public class EntityModels {
 		builder.put(EntityModelLayers.GIANT_OUTER_ARMOR, texturedModelData2);
 		builder.put(EntityModelLayers.GLOW_SQUID, SquidEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.GOAT, GoatEntityModel.getTexturedModelData());
-		builder.put(EntityModelLayers.GUARDIAN, GuardianEntityModel.getTexturedModelData());
+		builder.put(EntityModelLayers.GUARDIAN, GuardianEntityModel.getTexturedModelData(false));
+		builder.put(EntityModelLayers.GUARDIAN_SLAB, GuardianEntityModel.getTexturedModelData(true));
 		builder.put(EntityModelLayers.HOGLIN, texturedModelData16);
 		builder.put(EntityModelLayers.HOPPER_MINECART, texturedModelData5);
 		builder.put(EntityModelLayers.HORSE, texturedModelData7);
@@ -175,6 +179,8 @@ public class EntityModels {
 		builder.put(EntityModelLayers.SKELETON_SKULL, texturedModelData6);
 		builder.put(EntityModelLayers.SLIME, SlimeEntityModel.getInnerTexturedModelData());
 		builder.put(EntityModelLayers.SLIME_OUTER, SlimeEntityModel.getOuterTexturedModelData());
+		builder.put(EntityModelLayers.MEGA_SPUD, MegaSpudEntityModel.getInnerTexturedModelData());
+		builder.put(EntityModelLayers.MEGA_SPUD_OUTER, MegaSpudEntityModel.getOuterTexturedModelData());
 		builder.put(EntityModelLayers.SNIFFER, SnifferEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.SNOW_GOLEM, SnowGolemEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.SPAWNER_MINECART, texturedModelData5);

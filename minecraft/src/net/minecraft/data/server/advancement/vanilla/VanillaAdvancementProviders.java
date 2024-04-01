@@ -16,7 +16,8 @@ public class VanillaAdvancementProviders {
 				new VanillaHusbandryTabAdvancementGenerator(),
 				new VanillaAdventureTabAdvancementGenerator(),
 				new VanillaNetherTabAdvancementGenerator(),
-				new VanillaStoryTabAdvancementGenerator()
+				new VanillaStoryTabAdvancementGenerator(),
+				new VanillaPotatoTabAdvancementGenerator()
 			)
 		);
 	}

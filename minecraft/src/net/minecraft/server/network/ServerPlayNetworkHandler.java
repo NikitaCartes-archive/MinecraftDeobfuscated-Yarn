@@ -51,7 +51,6 @@ import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.RideableInventory;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -160,6 +159,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.stat.Stats;
 import net.minecraft.text.RawFilteredPair;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -182,6 +182,7 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 public class ServerPlayNetworkHandler
@@ -410,13 +411,13 @@ public class ServerPlayNetworkHandler
 				double n = i - this.lastTickRiddenZ;
 				double o = entity.getVelocity().lengthSquared();
 				double p = l * l + m * m + n * n;
-				if (p - o > 100.0 && !this.isHost()) {
+				if (p - o > 100.0 && !this.isHost() && !entity.method_58833()) {
 					LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", entity.getName().getString(), this.player.getName().getString(), l, m, n);
 					this.sendPacket(new VehicleMoveS2CPacket(entity));
 					return;
 				}
 
-				boolean bl = serverWorld.isSpaceEmpty(entity, entity.getBoundingBox().contract(0.0625));
+				boolean bl = serverWorld.method_59085(entity, entity.getBoundingBox().contract(0.0625));
 				l = g - this.updatedRiddenX;
 				m = h - this.updatedRiddenY - 1.0E-6;
 				n = i - this.updatedRiddenZ;
@@ -425,7 +426,13 @@ public class ServerPlayNetworkHandler
 					livingEntity.onLanding();
 				}
 
-				entity.move(MovementType.PLAYER, new Vec3d(l, m, n));
+				try {
+					entity.field_50386 = true;
+					entity.move(MovementType.PLAYER, new Vec3d(l, m, n));
+				} finally {
+					entity.field_50386 = false;
+				}
+
 				l = g - entity.getX();
 				m = h - entity.getY();
 				if (m > -0.5 || m < 0.5) {
@@ -441,7 +448,7 @@ public class ServerPlayNetworkHandler
 				}
 
 				entity.updatePositionAndAngles(g, h, i, j, k);
-				boolean bl4 = serverWorld.isSpaceEmpty(entity, entity.getBoundingBox().contract(0.0625));
+				boolean bl4 = serverWorld.method_59085(entity, entity.getBoundingBox().contract(0.0625));
 				if (bl && (bl3 || !bl4)) {
 					entity.updatePositionAndAngles(d, e, f, j, k);
 					this.sendPacket(new VehicleMoveS2CPacket(entity));
@@ -450,7 +457,7 @@ public class ServerPlayNetworkHandler
 
 				this.player.getServerWorld().getChunkManager().updatePosition(this.player);
 				this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
-				this.vehicleFloating = m >= -0.03125 && !bl2 && !this.server.isFlightEnabled() && !entity.hasNoGravity() && this.isEntityOnAir(entity);
+				this.vehicleFloating = method_58799();
 				this.updatedRiddenX = entity.getX();
 				this.updatedRiddenY = entity.getY();
 				this.updatedRiddenZ = entity.getZ();
@@ -871,7 +878,10 @@ public class ServerPlayNetworkHandler
 									q = 1;
 								}
 
-								if (!this.player.isInTeleportationState() && (!this.player.getWorld().getGameRules().getBoolean(GameRules.DISABLE_ELYTRA_MOVEMENT_CHECK) || !bl)) {
+								if (!this.player.isInTeleportationState()
+									&& !this.player.method_58833()
+									&& this.player.lashingPotatoHook == null
+									&& (!this.player.getWorld().getGameRules().getBoolean(GameRules.DISABLE_ELYTRA_MOVEMENT_CHECK) || !bl)) {
 									float r = bl ? 300.0F : 100.0F;
 									if (p - o > (double)(r * (float)q) && !this.isHost()) {
 										LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName().getString(), l, m, n);
@@ -891,7 +901,14 @@ public class ServerPlayNetworkHandler
 							}
 
 							boolean bl3 = this.player.groundCollision;
-							this.player.move(MovementType.PLAYER, new Vec3d(l, m, n));
+
+							try {
+								this.player.field_50386 = true;
+								this.player.move(MovementType.PLAYER, new Vec3d(l, m, n));
+							} finally {
+								this.player.field_50386 = false;
+							}
+
 							l = d - this.player.getX();
 							m = e - this.player.getY();
 							if (m > -0.5 || m < 0.5) {
@@ -912,18 +929,10 @@ public class ServerPlayNetworkHandler
 
 							if (this.player.noClip
 								|| this.player.isSleeping()
-								|| (!bl4 || !serverWorld.isSpaceEmpty(this.player, box)) && !this.isPlayerNotCollidingWithBlocks(serverWorld, box, d, e, f)) {
+								|| (!bl4 || !serverWorld.method_59085(this.player, box)) && !this.isPlayerNotCollidingWithBlocks(serverWorld, box, d, e, f)) {
 								this.player.updatePositionAndAngles(d, e, f, g, h);
 								boolean bl5 = this.player.isUsingRiptide();
-								this.floating = m >= -0.03125
-									&& !bl3
-									&& this.player.interactionManager.getGameMode() != GameMode.SPECTATOR
-									&& !this.server.isFlightEnabled()
-									&& !this.player.getAbilities().allowFlying
-									&& !this.player.hasStatusEffect(StatusEffects.LEVITATION)
-									&& !bl
-									&& !bl5
-									&& this.isEntityOnAir(this.player);
+								this.floating = method_58799();
 								this.player.getServerWorld().getChunkManager().updatePosition(this.player);
 								this.player.handleFall(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k, packet.isOnGround());
 								this.player.setOnGround(packet.isOnGround(), new Vec3d(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k));
@@ -948,6 +957,10 @@ public class ServerPlayNetworkHandler
 				}
 			}
 		}
+	}
+
+	private static boolean method_58799() {
+		return false;
 	}
 
 	private boolean isPlayerNotCollidingWithBlocks(WorldView world, Box box, double newX, double newY, double newZ) {
@@ -1172,11 +1185,17 @@ public class ServerPlayNetworkHandler
 			Optional<LastSeenMessageList> optional = this.validateMessage(packet.acknowledgment());
 			if (optional.isPresent()) {
 				this.server.execute(() -> {
+					int i = StringUtils.countMatches(packet.chatMessage(), "potato");
+					if (i > 0) {
+						this.player.increaseStat(Stats.SAID_POTATO, i);
+						Criteria.SAID_POTATO.trigger(this.player);
+					}
+
 					SignedMessage signedMessage;
 					try {
 						signedMessage = this.getSignedMessage(packet, (LastSeenMessageList)optional.get());
-					} catch (MessageChain.MessageChainException var6) {
-						this.handleMessageChainException(var6);
+					} catch (MessageChain.MessageChainException var7) {
+						this.handleMessageChainException(var7);
 						return;
 					}
 
@@ -1522,6 +1541,10 @@ public class ServerPlayNetworkHandler
 						this.player.getWorld().getGameRules().get(GameRules.SPECTATORS_GENERATE_CHUNKS).set(false, this.server);
 					}
 				}
+				break;
+			case SPROUT_RESPAWN:
+				this.player = this.server.getPlayerManager().method_58800(this.player);
+				Criteria.CHANGED_DIMENSION.trigger(this.player, World.POTATO, World.OVERWORLD);
 				break;
 			case REQUEST_STATS:
 				this.player.getStatHandler().sendStats(this.player);

@@ -146,6 +146,7 @@ public class TradeOffers {
 									.put(VillagerType.JUNGLE, Items.JUNGLE_BOAT)
 									.put(VillagerType.SAVANNA, Items.ACACIA_BOAT)
 									.put(VillagerType.SWAMP, Items.DARK_OAK_BOAT)
+									.put(VillagerType.POTATO, Items.BAMBOO_RAFT)
 									.build()
 							)
 						}
@@ -672,7 +673,7 @@ public class TradeOffers {
 				new TradeOffers.SellItemFactory(Items.RED_MUSHROOM, 1, 1, 12, 1),
 				new TradeOffers.SellItemFactory(Items.LILY_PAD, 1, 2, 5, 1),
 				new TradeOffers.SellItemFactory(Items.SMALL_DRIPLEAF, 1, 2, 5, 1),
-				new TradeOffers.SellItemFactory(Items.SAND, 1, 8, 8, 1),
+				new TradeOffers.SellItemFactory(Items.GRAVTATER, 1, 8, 8, 1),
 				new TradeOffers.SellItemFactory(Items.RED_SAND, 1, 4, 6, 1),
 				new TradeOffers.SellItemFactory(Items.POINTED_DRIPSTONE, 1, 2, 5, 1),
 				new TradeOffers.SellItemFactory(Items.ROOTED_DIRT, 1, 2, 5, 1),
@@ -756,7 +757,8 @@ public class TradeOffers {
 							VillagerType.PLAINS,
 							VillagerType.SAVANNA,
 							VillagerType.SNOW,
-							VillagerType.TAIGA
+							VillagerType.TAIGA,
+							VillagerType.POTATO
 						),
 						TradeOffers.TypedWrapperFactory.of(new TradeOffers.SellItemFactory(Items.CHAINMAIL_BOOTS, 4, 1, 12, 5, 0.05F), VillagerType.JUNGLE, VillagerType.SWAMP),
 						TradeOffers.TypedWrapperFactory.of(
@@ -765,7 +767,8 @@ public class TradeOffers {
 							VillagerType.PLAINS,
 							VillagerType.SAVANNA,
 							VillagerType.SNOW,
-							VillagerType.TAIGA
+							VillagerType.TAIGA,
+							VillagerType.POTATO
 						),
 						TradeOffers.TypedWrapperFactory.of(new TradeOffers.SellItemFactory(Items.CHAINMAIL_HELMET, 5, 1, 12, 5, 0.05F), VillagerType.JUNGLE, VillagerType.SWAMP),
 						TradeOffers.TypedWrapperFactory.of(
@@ -774,7 +777,8 @@ public class TradeOffers {
 							VillagerType.PLAINS,
 							VillagerType.SAVANNA,
 							VillagerType.SNOW,
-							VillagerType.TAIGA
+							VillagerType.TAIGA,
+							VillagerType.POTATO
 						),
 						TradeOffers.TypedWrapperFactory.of(new TradeOffers.SellItemFactory(Items.CHAINMAIL_LEGGINGS, 7, 1, 12, 5, 0.05F), VillagerType.JUNGLE, VillagerType.SWAMP),
 						TradeOffers.TypedWrapperFactory.of(
@@ -783,7 +787,8 @@ public class TradeOffers {
 							VillagerType.PLAINS,
 							VillagerType.SAVANNA,
 							VillagerType.SNOW,
-							VillagerType.TAIGA
+							VillagerType.TAIGA,
+							VillagerType.POTATO
 						),
 						TradeOffers.TypedWrapperFactory.of(
 							new TradeOffers.SellItemFactory(Items.CHAINMAIL_CHESTPLATE, 9, 1, 12, 5, 0.05F), VillagerType.JUNGLE, VillagerType.SWAMP
@@ -814,16 +819,18 @@ public class TradeOffers {
 							new TradeOffers.SellItemFactory(enchant(Items.IRON_CHESTPLATE, Enchantments.THORNS, 1), 13, 1, 3, 15, 0.05F), VillagerType.DESERT
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_BOOTS, Enchantments.PROTECTION, 1), 8, 1, 3, 15, 0.05F), VillagerType.PLAINS
+							new TradeOffers.SellItemFactory(enchant(Items.IRON_BOOTS, Enchantments.PROTECTION, 1), 8, 1, 3, 15, 0.05F), VillagerType.PLAINS, VillagerType.POTATO
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_HELMET, Enchantments.PROTECTION, 1), 9, 1, 3, 15, 0.05F), VillagerType.PLAINS
+							new TradeOffers.SellItemFactory(enchant(Items.IRON_HELMET, Enchantments.PROTECTION, 1), 9, 1, 3, 15, 0.05F), VillagerType.PLAINS, VillagerType.POTATO
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_LEGGINGS, Enchantments.PROTECTION, 1), 11, 1, 3, 15, 0.05F), VillagerType.PLAINS
+							new TradeOffers.SellItemFactory(enchant(Items.IRON_LEGGINGS, Enchantments.PROTECTION, 1), 11, 1, 3, 15, 0.05F), VillagerType.PLAINS, VillagerType.POTATO
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_CHESTPLATE, Enchantments.PROTECTION, 1), 13, 1, 3, 15, 0.05F), VillagerType.PLAINS
+							new TradeOffers.SellItemFactory(enchant(Items.IRON_CHESTPLATE, Enchantments.PROTECTION, 1), 13, 1, 3, 15, 0.05F),
+							VillagerType.PLAINS,
+							VillagerType.POTATO
 						),
 						TradeOffers.TypedWrapperFactory.of(
 							new TradeOffers.SellItemFactory(enchant(Items.IRON_BOOTS, Enchantments.BINDING_CURSE, 1), 2, 1, 3, 15, 0.05F), VillagerType.SAVANNA
@@ -893,10 +900,13 @@ public class TradeOffers {
 						),
 						TradeOffers.TypedWrapperFactory.of(
 							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 3, 16, enchant(Items.DIAMOND_LEGGINGS, Enchantments.PROTECTION, 1), 1, 3, 30, 0.05F),
-							VillagerType.PLAINS
+							VillagerType.PLAINS,
+							VillagerType.POTATO
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 2, 12, enchant(Items.DIAMOND_BOOTS, Enchantments.PROTECTION, 1), 1, 3, 30, 0.05F), VillagerType.PLAINS
+							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 2, 12, enchant(Items.DIAMOND_BOOTS, Enchantments.PROTECTION, 1), 1, 3, 30, 0.05F),
+							VillagerType.PLAINS,
+							VillagerType.POTATO
 						),
 						TradeOffers.TypedWrapperFactory.of(
 							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 2, 6, enchant(Items.DIAMOND_HELMET, Enchantments.BINDING_CURSE, 1), 1, 3, 30, 0.05F),
@@ -941,7 +951,8 @@ public class TradeOffers {
 							VillagerType.PLAINS,
 							VillagerType.SAVANNA,
 							VillagerType.SNOW,
-							VillagerType.SWAMP
+							VillagerType.SWAMP,
+							VillagerType.POTATO
 						)
 					}
 				)
@@ -964,6 +975,7 @@ public class TradeOffers {
 							.put(VillagerType.SNOW, SELL_PLAINS_VILLAGE_MAP_TRADE)
 							.put(VillagerType.JUNGLE, SELL_SAVANNA_VILLAGE_MAP_TRADE)
 							.put(VillagerType.SWAMP, SELL_SNOWY_VILLAGE_MAP_TRADE)
+							.put(VillagerType.POTATO, SELL_PLAINS_VILLAGE_MAP_TRADE)
 							.build()
 					),
 					new TradeOffers.TypedWrapperFactory(
@@ -975,6 +987,7 @@ public class TradeOffers {
 							.put(VillagerType.SNOW, SELL_TAIGA_VILLAGE_MAP_TRADE)
 							.put(VillagerType.JUNGLE, SELL_DESERT_VILLAGE_MAP_TRADE)
 							.put(VillagerType.SWAMP, SELL_TAIGA_VILLAGE_MAP_TRADE)
+							.put(VillagerType.POTATO, SELL_PLAINS_VILLAGE_MAP_TRADE)
 							.build()
 					),
 					new TradeOffers.TypedWrapperFactory(
@@ -986,6 +999,7 @@ public class TradeOffers {
 							.put(VillagerType.SNOW, SELL_SWAMP_HUT_MAP_TRADE)
 							.put(VillagerType.JUNGLE, SELL_SWAMP_HUT_MAP_TRADE)
 							.put(VillagerType.SWAMP, SELL_JUNGLE_TEMPLE_MAP_TRADE)
+							.put(VillagerType.POTATO, SELL_PLAINS_VILLAGE_MAP_TRADE)
 							.build()
 					)
 				},
@@ -1121,7 +1135,7 @@ public class TradeOffers {
 					new TradeOffers.SellItemFactory(Items.RED_MUSHROOM, 1, 3, 4, 1),
 					new TradeOffers.SellItemFactory(Items.LILY_PAD, 1, 5, 2, 1),
 					new TradeOffers.SellItemFactory(Items.SMALL_DRIPLEAF, 1, 2, 5, 1),
-					new TradeOffers.SellItemFactory(Items.SAND, 1, 8, 8, 1),
+					new TradeOffers.SellItemFactory(Items.GRAVTATER, 1, 8, 8, 1),
 					new TradeOffers.SellItemFactory(Items.RED_SAND, 1, 4, 6, 1),
 					new TradeOffers.SellItemFactory(Items.POINTED_DRIPSTONE, 1, 2, 5, 1),
 					new TradeOffers.SellItemFactory(Items.ROOTED_DIRT, 1, 2, 5, 1),
@@ -1144,6 +1158,7 @@ public class TradeOffers {
 				.put(VillagerType.SNOW, new TradeOffers.EnchantBookFactory(experience, Enchantments.AQUA_AFFINITY, Enchantments.LOOTING, Enchantments.FROST_WALKER))
 				.put(VillagerType.SWAMP, new TradeOffers.EnchantBookFactory(experience, Enchantments.DEPTH_STRIDER, Enchantments.RESPIRATION, Enchantments.VANISHING_CURSE))
 				.put(VillagerType.TAIGA, new TradeOffers.EnchantBookFactory(experience, Enchantments.BLAST_PROTECTION, Enchantments.FIRE_ASPECT, Enchantments.FLAME))
+				.put(VillagerType.POTATO, new TradeOffers.EnchantBookFactory(experience, Enchantments.LOYALTY, Enchantments.IMPALING, Enchantments.MULTISHOT))
 				.build()
 		);
 	}
@@ -1158,6 +1173,7 @@ public class TradeOffers {
 				.put(VillagerType.SNOW, new TradeOffers.EnchantBookFactory(30, Enchantments.SILK_TOUCH))
 				.put(VillagerType.SWAMP, new TradeOffers.EnchantBookFactory(30, Enchantments.MENDING))
 				.put(VillagerType.TAIGA, new TradeOffers.EnchantBookFactory(30, 2, 2, Enchantments.FORTUNE))
+				.put(VillagerType.POTATO, new TradeOffers.EnchantBookFactory(30, 2, 2, Enchantments.LUCK_OF_THE_SEA))
 				.build()
 		);
 	}
@@ -1205,7 +1221,7 @@ public class TradeOffers {
 
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
-			return new TradeOffer(this.stack, new ItemStack(Items.EMERALD, this.price), this.maxUses, this.experience, this.multiplier);
+			return new TradeOffer(this.stack, new ItemStack(Items.POISONOUS_POTATO, this.price), this.maxUses, this.experience, this.multiplier);
 		}
 	}
 
@@ -1253,7 +1269,7 @@ public class TradeOffers {
 				l = 64;
 			}
 
-			return new TradeOffer(new TradedItem(Items.EMERALD, l), Optional.of(new TradedItem(Items.BOOK)), itemStack, 12, this.experience, 0.2F);
+			return new TradeOffer(new TradedItem(Items.AMBER_GEM, l), Optional.of(new TradedItem(Items.BOOK)), itemStack, 12, this.experience, 0.2F);
 		}
 	}
 
@@ -1299,7 +1315,7 @@ public class TradeOffers {
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
 			return new TradeOffer(
-				new TradedItem(Items.EMERALD, this.price), Optional.of(this.toBeProcessed), this.processed.copy(), 0, this.maxUses, this.experience, this.multiplier, 0
+				new TradedItem(Items.AMBER_GEM, this.price), Optional.of(this.toBeProcessed), this.processed.copy(), 0, this.maxUses, this.experience, this.multiplier, 0
 			);
 		}
 	}
@@ -1323,7 +1339,7 @@ public class TradeOffers {
 
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
-			TradedItem tradedItem = new TradedItem(Items.EMERALD, this.price);
+			TradedItem tradedItem = new TradedItem(Items.AMBER_GEM, this.price);
 			ItemStack itemStack = new ItemStack(this.sell);
 			if (itemStack.isIn(ItemTags.DYEABLE)) {
 				List<DyeItem> list = Lists.<DyeItem>newArrayList();
@@ -1371,7 +1387,7 @@ public class TradeOffers {
 			int i = 5 + random.nextInt(15);
 			ItemStack itemStack = EnchantmentHelper.enchant(random, new ItemStack(this.tool.getItem()), i, false);
 			int j = Math.min(this.basePrice + i, 64);
-			TradedItem tradedItem = new TradedItem(Items.EMERALD, j);
+			TradedItem tradedItem = new TradedItem(Items.AMBER_GEM, j);
 			return new TradeOffer(tradedItem, itemStack, this.maxUses, this.experience, this.multiplier);
 		}
 	}
@@ -1414,7 +1430,7 @@ public class TradeOffers {
 
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
-			return new TradeOffer(new TradedItem(Items.EMERALD, this.price), this.sell.copy(), this.maxUses, this.experience, this.multiplier);
+			return new TradeOffer(new TradedItem(Items.AMBER_GEM, this.price), this.sell.copy(), this.maxUses, this.experience, this.multiplier);
 		}
 	}
 
@@ -1449,7 +1465,7 @@ public class TradeOffers {
 					MapState.addDecorationsNbt(itemStack, blockPos, "+", this.decoration);
 					itemStack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable(this.nameKey));
 					return new TradeOffer(
-						new TradedItem(Items.EMERALD, this.price), Optional.of(new TradedItem(Items.COMPASS)), itemStack, this.maxUses, this.experience, 0.2F
+						new TradedItem(Items.AMBER_GEM, this.price), Optional.of(new TradedItem(Items.COMPASS)), itemStack, this.maxUses, this.experience, 0.2F
 					);
 				} else {
 					return null;
@@ -1481,7 +1497,7 @@ public class TradeOffers {
 
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
-			TradedItem tradedItem = new TradedItem(Items.EMERALD, this.price);
+			TradedItem tradedItem = new TradedItem(Items.AMBER_GEM, this.price);
 			List<RegistryEntry<Potion>> list = (List<RegistryEntry<Potion>>)Registries.POTION
 				.streamEntries()
 				.filter(potion -> !((Potion)potion.value()).getEffects().isEmpty() && BrewingRecipeRegistry.isBrewable(potion))
@@ -1515,7 +1531,7 @@ public class TradeOffers {
 		public TradeOffer create(Entity entity, Random random) {
 			ItemStack itemStack = new ItemStack(Items.SUSPICIOUS_STEW, 1);
 			itemStack.set(DataComponentTypes.SUSPICIOUS_STEW_EFFECTS, this.stewEffects);
-			return new TradeOffer(new TradedItem(Items.EMERALD), itemStack, 12, this.experience, this.multiplier);
+			return new TradeOffer(new TradedItem(Items.AMBER_GEM), itemStack, 12, this.experience, this.multiplier);
 		}
 	}
 
@@ -1540,7 +1556,7 @@ public class TradeOffers {
 		public TradeOffer create(Entity entity, Random random) {
 			if (entity instanceof VillagerDataContainer villagerDataContainer) {
 				TradedItem tradedItem = new TradedItem((ItemConvertible)this.map.get(villagerDataContainer.getVillagerData().getType()), this.count);
-				return new TradeOffer(tradedItem, new ItemStack(Items.EMERALD), this.maxUses, this.experience, 0.05F);
+				return new TradeOffer(tradedItem, new ItemStack(Items.POISONOUS_POTATO), this.maxUses, this.experience, 0.05F);
 			} else {
 				return null;
 			}

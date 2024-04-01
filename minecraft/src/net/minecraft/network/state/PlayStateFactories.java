@@ -74,6 +74,7 @@ import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.common.ServerTransferS2CPacket;
 import net.minecraft.network.packet.s2c.common.StoreCookieS2CPacket;
 import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
+import net.minecraft.network.packet.s2c.play.AddSubGridS2CPacket;
 import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -161,6 +162,7 @@ import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
 import net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket;
+import net.minecraft.network.packet.s2c.play.SoundSequenceS2CPacket;
 import net.minecraft.network.packet.s2c.play.StartChunkSendS2CPacket;
 import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
@@ -251,6 +253,7 @@ public class PlayStateFactories {
 		builder -> builder.addBundle(PlayPackets.BUNDLE, BundleS2CPacket::new, new BundleDelimiterS2CPacket())
 				.add(PlayPackets.ADD_ENTITY, EntitySpawnS2CPacket.CODEC)
 				.add(PlayPackets.ADD_EXPERIENCE_ORB, ExperienceOrbSpawnS2CPacket.CODEC)
+				.add(PlayPackets.ADD_SUB_GRID, AddSubGridS2CPacket.CODEC)
 				.add(PlayPackets.ANIMATE, EntityAnimationS2CPacket.CODEC)
 				.add(PlayPackets.AWARD_STATS, StatisticsS2CPacket.CODEC)
 				.add(PlayPackets.BLOCK_CHANGED_ACK, PlayerActionResponseS2CPacket.CODEC)
@@ -353,6 +356,7 @@ public class PlayStateFactories {
 				.add(PlayPackets.SET_TITLES_ANIMATION, TitleFadeS2CPacket.CODEC)
 				.add(PlayPackets.SOUND_ENTITY, PlaySoundFromEntityS2CPacket.CODEC)
 				.add(PlayPackets.SOUND, PlaySoundS2CPacket.CODEC)
+				.add(PlayPackets.SOUND_SEQUENCE, SoundSequenceS2CPacket.CODEC)
 				.add(PlayPackets.START_CONFIGURATION, EnterReconfigurationS2CPacket.CODEC)
 				.add(PlayPackets.STOP_SOUND, StopSoundS2CPacket.CODEC)
 				.add(CommonPackets.STORE_COOKIE, StoreCookieS2CPacket.CODEC)

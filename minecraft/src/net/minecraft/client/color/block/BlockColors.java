@@ -60,6 +60,7 @@ public class BlockColors {
 		blockColors.registerColorProvider((state, world, pos, tintIndex) -> FoliageColors.getBirchColor(), Blocks.BIRCH_LEAVES);
 		blockColors.registerColorProvider(
 			(state, world, pos, tintIndex) -> world != null && pos != null ? BiomeColors.getFoliageColor(world, pos) : FoliageColors.getDefaultColor(),
+			Blocks.POTATO_LEAVES,
 			Blocks.OAK_LEAVES,
 			Blocks.JUNGLE_LEAVES,
 			Blocks.ACACIA_LEAVES,

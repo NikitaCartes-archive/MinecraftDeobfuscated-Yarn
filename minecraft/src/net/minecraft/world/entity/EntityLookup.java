@@ -1,5 +1,6 @@
 package net.minecraft.world.entity;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
@@ -15,6 +16,41 @@ import net.minecraft.util.math.Box;
  * @param <T> the type of indexed entity
  */
 public interface EntityLookup<T extends EntityLike> {
+	EntityLookup<?> field_50995 = new EntityLookup<EntityLike>() {
+		@Nullable
+		@Override
+		public EntityLike get(int id) {
+			return null;
+		}
+
+		@Nullable
+		@Override
+		public EntityLike get(UUID uuid) {
+			return null;
+		}
+
+		@Override
+		public Iterable<EntityLike> iterate() {
+			return List.of();
+		}
+
+		@Override
+		public <U extends EntityLike> void forEach(TypeFilter<EntityLike, U> filter, LazyIterationConsumer<U> consumer) {
+		}
+
+		@Override
+		public void forEachIntersects(Box box, Consumer<EntityLike> action) {
+		}
+
+		@Override
+		public <U extends EntityLike> void forEachIntersects(TypeFilter<EntityLike, U> filter, Box box, LazyIterationConsumer<U> consumer) {
+		}
+	};
+
+	static <T extends EntityLike> EntityLookup<T> method_59217() {
+		return (EntityLookup<T>)field_50995;
+	}
+
 	/**
 	 * Returns an entity by its network ID, or {@code null} if none is found.
 	 */

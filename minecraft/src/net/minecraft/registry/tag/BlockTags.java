@@ -55,6 +55,7 @@ public final class BlockTags {
 	public static final TagKey<Block> PIGLIN_REPELLENTS = of("piglin_repellents");
 	public static final TagKey<Block> GOLD_ORES = of("gold_ores");
 	public static final TagKey<Block> IRON_ORES = of("iron_ores");
+	public static final TagKey<Block> POISONOUS_POTATO_ORES = of("poisonous_potato_ores");
 	public static final TagKey<Block> DIAMOND_ORES = of("diamond_ores");
 	public static final TagKey<Block> REDSTONE_ORES = of("redstone_ores");
 	public static final TagKey<Block> LAPIS_ORES = of("lapis_ores");
@@ -91,6 +92,7 @@ public final class BlockTags {
 	public static final TagKey<Block> WITHER_SUMMON_BASE_BLOCKS = of("wither_summon_base_blocks");
 	public static final TagKey<Block> BEEHIVES = of("beehives");
 	public static final TagKey<Block> CROPS = of("crops");
+	public static final TagKey<Block> GROWS_POTATOES = of("grows_potatoes");
 	public static final TagKey<Block> BEE_GROWABLES = of("bee_growables");
 	public static final TagKey<Block> PORTALS = of("portals");
 	public static final TagKey<Block> FIRE = of("fire");
@@ -138,6 +140,7 @@ public final class BlockTags {
 	public static final TagKey<Block> AXE_MINEABLE = of("mineable/axe");
 	public static final TagKey<Block> HOE_MINEABLE = of("mineable/hoe");
 	public static final TagKey<Block> PICKAXE_MINEABLE = of("mineable/pickaxe");
+	public static final TagKey<Block> POTONE_MINEABLE = of("mineable/potone");
 	public static final TagKey<Block> SHOVEL_MINEABLE = of("mineable/shovel");
 	public static final TagKey<Block> SWORD_EFFICIENT = of("sword_efficient");
 	public static final TagKey<Block> NEEDS_DIAMOND_TOOL = of("needs_diamond_tool");
@@ -187,6 +190,7 @@ public final class BlockTags {
 	public static final TagKey<Block> MAINTAINS_FARMLAND = of("maintains_farmland");
 	public static final TagKey<Block> BLOCKS_WIND_CHARGE_EXPLOSIONS = of("blocks_wind_charge_explosions");
 	public static final TagKey<Block> DOES_NOT_BLOCK_HOPPERS = of("does_not_block_hoppers");
+	public static final TagKey<Block> POTATOSTONE_BASE = of("potatostone_base");
 
 	private BlockTags() {
 	}

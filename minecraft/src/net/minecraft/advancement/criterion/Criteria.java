@@ -70,6 +70,17 @@ public class Criteria {
 	public static final RecipeCraftedCriterion RECIPE_CRAFTED = register("recipe_crafted", new RecipeCraftedCriterion());
 	public static final RecipeCraftedCriterion CRAFTER_RECIPE_CRAFTED = register("crafter_recipe_crafted", new RecipeCraftedCriterion());
 	public static final FallAfterExplosionCriterion FALL_AFTER_EXPLOSION = register("fall_after_explosion", new FallAfterExplosionCriterion());
+	public static final TickCriterion GET_PEELED = register("get_peeled", new TickCriterion());
+	public static final TickCriterion EAT_ARMOR = register("eat_armor", new TickCriterion());
+	public static final TickCriterion RUMBLE_PLANT = register("rumble_plant", new TickCriterion());
+	public static final TickCriterion COMPOST_STAFF = register("compost_staff", new TickCriterion());
+	public static final PotatoRefinedCriterion POTATO_REFINED = register("potato_refined", new PotatoRefinedCriterion());
+	public static final ThrowLubricatedCriterion THROW_LUBRICATED = register("throw_lubricated", new ThrowLubricatedCriterion());
+	public static final TickCriterion SAID_POTATO = register("said_potato", new TickCriterion());
+	public static final TickCriterion BRING_HOME_CORRUPTION = register("bring_home_corruption", new TickCriterion());
+	public static final TickCriterion PEEL_BLOCK = register("peel_block", new TickCriterion());
+	public static final TickCriterion PEEL_POTATO_SHEEP = register("peel_potato_sheep", new TickCriterion());
+	public static final TickCriterion PEEL_POTATO_ARMOR = register("peel_potato_armor", new TickCriterion());
 
 	private static <T extends Criterion<?>> T register(String id, T criterion) {
 		return Registry.register(Registries.CRITERION, id, criterion);

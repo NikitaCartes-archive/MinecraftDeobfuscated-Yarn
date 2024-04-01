@@ -284,13 +284,13 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	 * 
 	 * @param radius the radius in blocks
 	 */
-	public void preloadChunks(WorldView world, BlockPos pos, int radius) {
+	public void preloadChunks(WorldView world, BlockPos pos, int radius, ChunkStatus chunkStatus) {
 		ChunkSectionPos.stream(new ChunkPos(pos), Math.floorDiv(radius, 16), this.world.getBottomSectionCoord(), this.world.getTopSectionCoord())
 			.map(sectionPos -> Pair.of(sectionPos, this.get(sectionPos.asLong())))
 			.filter(pair -> !(Boolean)((Optional)pair.getSecond()).map(PointOfInterestSet::isValid).orElse(false))
 			.map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos())
 			.filter(chunkPos -> this.preloadedChunks.add(chunkPos.toLong()))
-			.forEach(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY));
+			.forEach(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z, chunkStatus));
 	}
 
 	public static enum OccupationStatus {

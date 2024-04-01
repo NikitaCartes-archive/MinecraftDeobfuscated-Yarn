@@ -29,6 +29,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -126,7 +127,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		if (SharedConstants.isDevelopment) {
 			String string = this.getClass().getSimpleName();
 			if (!string.endsWith("Item")) {
-				LOGGER.error("Item classes should end with Item and {} doesn't.", string);
+				LOGGER.error("Item classes should end with Item and {} doesn't.", string.trim().isEmpty() ? this.getClass().getName() : string);
 			}
 		}
 	}
@@ -169,6 +170,9 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * @see ItemUsage#spawnItemContents
 	 */
 	public void onItemEntityDestroyed(ItemEntity entity) {
+	}
+
+	public void onViewInChest(ItemStack stack, World world, BlockPos pos, Inventory inventory) {
 	}
 
 	/**
@@ -414,6 +418,11 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		return Registries.ITEM.getId(this).getPath();
 	}
 
+	public Item translationKey(String translationKey) {
+		this.translationKey = translationKey;
+		return this;
+	}
+
 	protected String getOrCreateTranslationKey() {
 		if (this.translationKey == null) {
 			this.translationKey = Util.createTranslationKey("item", Registries.ITEM.getId(this));
@@ -547,7 +556,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * <p>By default, returns true if the item has enchantments.
 	 */
 	public boolean hasGlint(ItemStack stack) {
-		return stack.hasEnchantments();
+		Boolean boolean_ = stack.get(DataComponentTypes.EXPLICIT_FOIL);
+		return boolean_ != null && boolean_ ? true : stack.hasEnchantments();
 	}
 
 	/**
@@ -615,13 +625,6 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 */
 	public SoundEvent getDrinkSound() {
 		return SoundEvents.ENTITY_GENERIC_DRINK;
-	}
-
-	/**
-	 * {@return the sound for eating the item}
-	 */
-	public SoundEvent getEatSound() {
-		return SoundEvents.ENTITY_GENERIC_EAT;
 	}
 
 	public SoundEvent getBreakSound() {

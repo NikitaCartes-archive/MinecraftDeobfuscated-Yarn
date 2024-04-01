@@ -125,7 +125,12 @@ public class FlatLevelGeneratorPresets {
 				Blocks.SHORT_GRASS,
 				BiomeKeys.PLAINS,
 				ImmutableSet.of(
-					StructureSetKeys.VILLAGES, StructureSetKeys.MINESHAFTS, StructureSetKeys.PILLAGER_OUTPOSTS, StructureSetKeys.RUINED_PORTALS, StructureSetKeys.STRONGHOLDS
+					StructureSetKeys.VILLAGES,
+					StructureSetKeys.MINESHAFTS,
+					StructureSetKeys.PILLAGER_OUTPOSTS,
+					StructureSetKeys.RUINED_PORTALS,
+					StructureSetKeys.RUINED_PORTATOLS,
+					StructureSetKeys.STRONGHOLDS
 				),
 				true,
 				true,

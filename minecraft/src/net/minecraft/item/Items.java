@@ -1,9 +1,15 @@
 package net.minecraft.item;
 
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableBiMap.Builder;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.UnaryOperator;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.FletchingTableBlockEntity;
 import net.minecraft.block.entity.Sherds;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BannerPatternsComponent;
@@ -17,14 +23,19 @@ import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.component.type.MapColorComponent;
 import net.minecraft.component.type.MapDecorationsComponent;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.component.type.PotatoBaneComponent;
 import net.minecraft.component.type.PotionContentsComponent;
+import net.minecraft.component.type.SnekComponent;
 import net.minecraft.component.type.SuspiciousStewEffectsComponent;
 import net.minecraft.component.type.WritableBookContentComponent;
+import net.minecraft.component.type.XpComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.trim.ArmorTrimPatterns;
+import net.minecraft.potion.Potions;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -40,6 +51,7 @@ import net.minecraft.util.math.Direction;
 public class Items {
 	public static final Item AIR = register(Blocks.AIR, new AirBlockItem(Blocks.AIR, new Item.Settings()));
 	public static final Item STONE = register(Blocks.STONE);
+	public static final Item POTONE = register(Blocks.POTONE);
 	public static final Item GRANITE = register(Blocks.GRANITE);
 	public static final Item POLISHED_GRANITE = register(Blocks.POLISHED_GRANITE);
 	public static final Item DIORITE = register(Blocks.DIORITE);
@@ -66,7 +78,11 @@ public class Items {
 	public static final Item CHISELED_TUFF_BRICKS = register(Blocks.CHISELED_TUFF_BRICKS);
 	public static final Item DRIPSTONE_BLOCK = register(Blocks.DRIPSTONE_BLOCK);
 	public static final Item GRASS_BLOCK = register(Blocks.GRASS_BLOCK);
+	public static final Item PEELGRASS_BLOCK = register(Blocks.PEELGRASS_BLOCK);
+	public static final Item CORRUPTED_PEELGRASS_BLOCK = register(Blocks.CORRUPTED_PEELGRASS_BLOCK);
 	public static final Item DIRT = register(Blocks.DIRT);
+	public static final Item TERRE_DE_POMME = register(Blocks.TERRE_DE_POMME);
+	public static final Item POISON_FARMLAND = register(Blocks.POISON_FARMLAND);
 	public static final Item COARSE_DIRT = register(Blocks.COARSE_DIRT);
 	public static final Item PODZOL = register(Blocks.PODZOL);
 	public static final Item ROOTED_DIRT = register(Blocks.ROOTED_DIRT);
@@ -74,6 +90,33 @@ public class Items {
 	public static final Item CRIMSON_NYLIUM = register(Blocks.CRIMSON_NYLIUM);
 	public static final Item WARPED_NYLIUM = register(Blocks.WARPED_NYLIUM);
 	public static final Item COBBLESTONE = register(Blocks.COBBLESTONE);
+	public static final Item TATERSTONE = register(Blocks.TATERSTONE);
+	public static final Item BAKED_POTATO_BRICKS = register(Blocks.BAKED_POTATO_BRICKS);
+	public static final Item EXPIRED_BAKED_POTATO_BRICKS = register(Blocks.EXPIRED_BAKED_POTATO_BRICKS);
+	public static final Item CHARRED_BAKED_POTATO_BRICKS = register(Blocks.CHARRED_BAKED_POTATO_BRICKS);
+	public static final Item TATERSTONE_SLAB = register(Blocks.TATERSTONE_SLAB);
+	public static final Item TATERSTONE_STAIRS = register(Blocks.TATERSTONE_STAIRS);
+	public static final Item TATERSTONE_WALL = register(Blocks.TATERSTONE_WALL);
+	public static final Item POTONE_SLAB = register(Blocks.POTONE_SLAB);
+	public static final Item POTONE_STAIRS = register(Blocks.POTONE_STAIRS);
+	public static final Item POTONE_WALL = register(Blocks.POTONE_WALL);
+	public static final Item BAKED_POTATO_BRICK_SLAB = register(Blocks.BAKED_POTATO_BRICK_SLAB);
+	public static final Item BAKED_POTATO_BRICK_STAIRS = register(Blocks.BAKED_POTATO_BRICK_STAIRS);
+	public static final Item BAKED_POTATO_BRICK_WALL = register(Blocks.BAKED_POTATO_BRICK_WALL);
+	public static final Item EXPIRED_BAKED_POTATO_BRICK_SLAB = register(Blocks.EXPIRED_BAKED_POTATO_BRICK_SLAB);
+	public static final Item EXPIRED_BAKED_POTATO_BRICK_STAIRS = register(Blocks.EXPIRED_BAKED_POTATO_BRICK_STAIRS);
+	public static final Item EXPIRED_BAKED_POTATO_BRICK_WALL = register(Blocks.EXPIRED_BAKED_POTATO_BRICK_WALL);
+	public static final Item CHARRED_BAKED_POTATO_BRICK_SLAB = register(Blocks.CHARRED_BAKED_POTATO_BRICK_SLAB);
+	public static final Item CHARRED_BAKED_POTATO_BRICK_STAIRS = register(Blocks.CHARRED_BAKED_POTATO_BRICK_STAIRS);
+	public static final Item CHARRED_BAKED_POTATO_BRICK_WALL = register(Blocks.CHARRED_BAKED_POTATO_BRICK_WALL);
+	public static final Item POISONOUS_MASHED_POTATO = register(Blocks.POISONOUS_MASHED_POTATO);
+	public static final Item POISONOUS_POTATO_BLOCK = register(Blocks.POISONOUS_POTATO_BLOCK);
+	public static final Item COMPRESSED_POISONOUS_POTATO_BLOCK = register(Blocks.COMPRESSED_POISONOUS_POTATO_BLOCK);
+	public static final Item DOUBLE_COMPRESSED_POISONOUS_POTATO_BLOCK = register(Blocks.DOUBLE_COMPRESSED_POISONOUS_POTATO_BLOCK);
+	public static final Item TRIPLE_COMPRESSED_POISONOUS_POTATO_BLOCK = register(Blocks.TRIPLE_COMPRESSED_POISONOUS_POTATO_BLOCK);
+	public static final Item QUADRUPLE_COMPRESSED_POISONOUS_POTATO_BLOCK = register(Blocks.QUADRUPLE_COMPRESSED_POISONOUS_POTATO_BLOCK);
+	public static final Item FLOATATO = register(new FloatatoItem(Blocks.FLOATATO, new Item.Settings()));
+	public static final Item FLOATATER = register(Blocks.FLOATATER);
 	public static final Item OAK_PLANKS = register(Blocks.OAK_PLANKS);
 	public static final Item SPRUCE_PLANKS = register(Blocks.SPRUCE_PLANKS);
 	public static final Item BIRCH_PLANKS = register(Blocks.BIRCH_PLANKS);
@@ -96,6 +139,7 @@ public class Items {
 	public static final Item MANGROVE_PROPAGULE = register(Blocks.MANGROVE_PROPAGULE);
 	public static final Item BEDROCK = register(Blocks.BEDROCK);
 	public static final Item SAND = register(Blocks.SAND);
+	public static final Item GRAVTATER = register(Blocks.GRAVTATER);
 	public static final Item SUSPICIOUS_SAND = register(new BlockItem(Blocks.SUSPICIOUS_SAND, new Item.Settings()));
 	public static final Item SUSPICIOUS_GRAVEL = register(new BlockItem(Blocks.SUSPICIOUS_GRAVEL, new Item.Settings()));
 	public static final Item RED_SAND = register(Blocks.RED_SAND);
@@ -104,6 +148,8 @@ public class Items {
 	public static final Item DEEPSLATE_COAL_ORE = register(Blocks.DEEPSLATE_COAL_ORE);
 	public static final Item IRON_ORE = register(Blocks.IRON_ORE);
 	public static final Item DEEPSLATE_IRON_ORE = register(Blocks.DEEPSLATE_IRON_ORE);
+	public static final Item POISONOUS_POTATO_ORE = register(Blocks.POISONOUS_POTATO_ORE);
+	public static final Item DEEPSLATE_POISONOUS_POTATO_ORE = register(Blocks.DEEPSLATE_POISONOUS_POTATO_ORE);
 	public static final Item COPPER_ORE = register(Blocks.COPPER_ORE);
 	public static final Item DEEPSLATE_COPPER_ORE = register(Blocks.DEEPSLATE_COPPER_ORE);
 	public static final Item GOLD_ORE = register(Blocks.GOLD_ORE);
@@ -113,6 +159,13 @@ public class Items {
 	public static final Item EMERALD_ORE = register(Blocks.EMERALD_ORE);
 	public static final Item DEEPSLATE_EMERALD_ORE = register(Blocks.DEEPSLATE_EMERALD_ORE);
 	public static final Item LAPIS_ORE = register(Blocks.LAPIS_ORE);
+	public static final Item RESIN_ORE = register(Blocks.RESIN_ORE);
+	public static final Item POTONE_IRON_ORE = register(Blocks.POTONE_IRON_ORE);
+	public static final Item POTONE_GOLD_ORE = register(Blocks.POTONE_GOLD_ORE);
+	public static final Item POTONE_REDSTONE_ORE = register(Blocks.POTONE_REDSTONE_ORE);
+	public static final Item POTONE_LAPIS_ORE = register(Blocks.POTONE_LAPIS_ORE);
+	public static final Item POTONE_DIAMOND_ORE = register(Blocks.POTONE_DIAMOND_ORE);
+	public static final Item POTONE_COPPER_ORE = register(Blocks.POTONE_COPPER_ORE);
 	public static final Item DEEPSLATE_LAPIS_ORE = register(Blocks.DEEPSLATE_LAPIS_ORE);
 	public static final Item DIAMOND_ORE = register(Blocks.DIAMOND_ORE);
 	public static final Item DEEPSLATE_DIAMOND_ORE = register(Blocks.DEEPSLATE_DIAMOND_ORE);
@@ -182,6 +235,25 @@ public class Items {
 	public static final Item MUDDY_MANGROVE_ROOTS = register(Blocks.MUDDY_MANGROVE_ROOTS);
 	public static final Item CRIMSON_STEM = register(Blocks.CRIMSON_STEM);
 	public static final Item WARPED_STEM = register(Blocks.WARPED_STEM);
+	public static final Item POTATO_STEM = register(Blocks.POTATO_STEM);
+	public static final Item POTATO_LEAVES = register(Blocks.POTATO_LEAVES);
+	public static final Item POTATO_FRUIT = register(Blocks.POTATO_FRUIT, settings -> settings.food(FoodComponents.POTATO_FRUIT));
+	public static final Item POTATO_PEDICULE = register(Blocks.POTATO_PEDICULE);
+	public static final Item POTATO_BUD = register(Blocks.POTATO_BUD);
+	public static final Item POTATO_SPROUTS = register(Blocks.POTATO_SPROUTS);
+	public static final Item POTATO_PLANKS = register(Blocks.POTATO_PLANKS);
+	public static final Item POTATO_SLAB = register(Blocks.POTATO_SLAB);
+	public static final Item POTATO_STAIRS = register(Blocks.POTATO_STAIRS);
+	public static final Item POTATO_FENCE = register(Blocks.POTATO_FENCE);
+	public static final Item POTATO_FENCE_GATE = register(Blocks.POTATO_FENCE_GATE);
+	public static final Item POTATO_DOOR = register(Blocks.POTATO_DOOR);
+	public static final Item POTATO_TRAPDOOR = register(Blocks.POTATO_TRAPDOOR);
+	public static final Item POTATO_BUTTON = register(Blocks.POTATO_BUTTON);
+	public static final Item POTATO_PRESSURE_PLATE = register(Blocks.POTATO_PRESSURE_PLATE);
+	public static final Item POTATO_HANGING_SIGN = register(
+		"potato_hanging_sign", new HangingSignItem(Blocks.POTATO_HANGING_SIGN, Blocks.POTATO_WALL_HANGING_SIGN, new Item.Settings().maxCount(13))
+	);
+	public static final Item POTATO_SIGN = register("potato_sign", new SignItem(new Item.Settings().maxCount(23), Blocks.POTATO_SIGN, Blocks.POTATO_WALL_SIGN));
 	public static final Item BAMBOO_BLOCK = register(Blocks.BAMBOO_BLOCK);
 	public static final Item STRIPPED_OAK_LOG = register(Blocks.STRIPPED_OAK_LOG);
 	public static final Item STRIPPED_SPRUCE_LOG = register(Blocks.STRIPPED_SPRUCE_LOG);
@@ -268,6 +340,7 @@ public class Items {
 	public static final Item OXEYE_DAISY = register(Blocks.OXEYE_DAISY);
 	public static final Item CORNFLOWER = register(Blocks.CORNFLOWER);
 	public static final Item LILY_OF_THE_VALLEY = register(Blocks.LILY_OF_THE_VALLEY);
+	public static final Item POTATO_FLOWER = register(Blocks.POTATO_FLOWER);
 	public static final Item WITHER_ROSE = register(Blocks.WITHER_ROSE);
 	public static final Item TORCHFLOWER = register(Blocks.TORCHFLOWER);
 	public static final Item PITCHER_PLANT = register(Blocks.PITCHER_PLANT);
@@ -337,6 +410,9 @@ public class Items {
 	public static final Item END_ROD = register(Blocks.END_ROD);
 	public static final Item CHORUS_PLANT = register(Blocks.CHORUS_PLANT);
 	public static final Item CHORUS_FLOWER = register(Blocks.CHORUS_FLOWER);
+	public static final Item POWERFUL_POTATO = register(Blocks.POWERFUL_POTATO, settings -> settings.rarity(Rarity.POTATO));
+	public static final Item STRONG_ROOTS = register(Blocks.STRONG_ROOTS);
+	public static final Item WEAK_ROOTS = register(Blocks.WEAK_ROOTS);
 	public static final Item PURPUR_BLOCK = register(Blocks.PURPUR_BLOCK);
 	public static final Item PURPUR_PILLAR = register(Blocks.PURPUR_PILLAR);
 	public static final Item PURPUR_STAIRS = register(Blocks.PURPUR_STAIRS);
@@ -366,6 +442,8 @@ public class Items {
 	public static final Item WARPED_FENCE = register(Blocks.WARPED_FENCE);
 	public static final Item PUMPKIN = register(Blocks.PUMPKIN);
 	public static final Item CARVED_PUMPKIN = register(Blocks.CARVED_PUMPKIN);
+	public static final Item POISONOUS_POTATO_ZOMBIE_HEAD_HAT = register(Blocks.POISONOUS_POTATO_ZOMBIE_HEAD_HAT);
+	public static final Item POISONOUS_POTATO_ZOMBIE_HEAD_BLOCK = register(Blocks.POISONOUS_POTATO_ZOMBIE_HEAD_BLOCK);
 	public static final Item JACK_O_LANTERN = register(Blocks.JACK_O_LANTERN);
 	public static final Item NETHERRACK = register(Blocks.NETHERRACK);
 	public static final Item SOUL_SAND = register(Blocks.SOUL_SAND);
@@ -427,6 +505,7 @@ public class Items {
 	public static final Item SANDSTONE_STAIRS = register(Blocks.SANDSTONE_STAIRS);
 	public static final Item ENDER_CHEST = register(Blocks.ENDER_CHEST, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
 	public static final Item EMERALD_BLOCK = register(Blocks.EMERALD_BLOCK);
+	public static final Item AMBER_BLOCK = register(Blocks.AMBER_BLOCK);
 	public static final Item OAK_STAIRS = register(Blocks.OAK_STAIRS);
 	public static final Item SPRUCE_STAIRS = register(Blocks.SPRUCE_STAIRS);
 	public static final Item BIRCH_STAIRS = register(Blocks.BIRCH_STAIRS);
@@ -509,6 +588,7 @@ public class Items {
 	public static final Item TERRACOTTA = register(Blocks.TERRACOTTA);
 	public static final Item PACKED_ICE = register(Blocks.PACKED_ICE);
 	public static final Item DIRT_PATH = register(Blocks.DIRT_PATH);
+	public static final Item POISON_PATH = register(Blocks.POISON_PATH);
 	public static final Item SUNFLOWER = register(new TallBlockItem(Blocks.SUNFLOWER, new Item.Settings()));
 	public static final Item LILAC = register(new TallBlockItem(Blocks.LILAC, new Item.Settings()));
 	public static final Item ROSE_BUSH = register(new TallBlockItem(Blocks.ROSE_BUSH, new Item.Settings()));
@@ -770,6 +850,7 @@ public class Items {
 	public static final Item HOPPER = register(Blocks.HOPPER, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
 	public static final Item DISPENSER = register(Blocks.DISPENSER, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
 	public static final Item DROPPER = register(Blocks.DROPPER, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
+	public static final Item VICIOUS_POTATO = register(Blocks.VICIOUS_POTATO, settings -> settings.rarity(Rarity.POTATO));
 	public static final Item LECTERN = register(Blocks.LECTERN);
 	public static final Item TARGET = register(Blocks.TARGET);
 	public static final Item LEVER = register(Blocks.LEVER);
@@ -918,6 +999,11 @@ public class Items {
 	public static final Item DIAMOND = register("diamond", new Item(new Item.Settings()));
 	public static final Item EMERALD = register("emerald", new Item(new Item.Settings()));
 	public static final Item LAPIS_LAZULI = register("lapis_lazuli", new Item(new Item.Settings()));
+	public static final Item AMBER_GEM = register("amber_gem", new Item(new Item.Settings()));
+	public static final Item DENT = register("dent", new Item(new Item.Settings()));
+	public static final Item TOXIC_RESIN = register(
+		"toxic_resin", new Item(new Item.Settings().component(DataComponentTypes.RESIN, FletchingTableBlockEntity.ResinComponent.DEFAULT))
+	);
 	public static final Item QUARTZ = register("quartz", new Item(new Item.Settings()));
 	public static final Item AMETHYST_SHARD = register("amethyst_shard", new Item(new Item.Settings()));
 	public static final Item RAW_IRON = register("raw_iron", new Item(new Item.Settings()));
@@ -1134,6 +1220,11 @@ public class Items {
 		"netherite_boots",
 		new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.BOOTS, new Item.Settings().fireproof().maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(37)))
 	);
+	public static final Item POISONOUS_POTA_TOES = register("poisonous_pota_toes", new ArmorItem(ArmorMaterials.POTATO, ArmorItem.Type.BOOTS, new Item.Settings()));
+	public static final Item POISONOUS_POTATO_CHESTPLATE = register(
+		"poisonous_potato_chestplate",
+		new PoisonousPotatoChestplateItem(ArmorMaterials.POTATO, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(15)))
+	);
 	public static final Item FLINT = register("flint", new Item(new Item.Settings()));
 	public static final Item PORKCHOP = register("porkchop", new Item(new Item.Settings().food(FoodComponents.PORKCHOP)));
 	public static final Item COOKED_PORKCHOP = register("cooked_porkchop", new Item(new Item.Settings().food(FoodComponents.COOKED_PORKCHOP)));
@@ -1142,6 +1233,18 @@ public class Items {
 	public static final Item ENCHANTED_GOLDEN_APPLE = register(
 		"enchanted_golden_apple",
 		new Item(new Item.Settings().rarity(Rarity.EPIC).food(FoodComponents.ENCHANTED_GOLDEN_APPLE).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true))
+	);
+	public static final Item GOLDEN_POISONOUS_POTATO = register(
+		"golden_poisonous_potato", new Item(new Item.Settings().rarity(Rarity.RARE).food(FoodComponents.GOLDEN_POISONOUS_POTATO))
+	);
+	public static final Item ENCHANTED_GOLDEN_POISONOUS_POTATO = register(
+		"enchanted_golden_poisonous_potato",
+		new Item(
+			new Item.Settings()
+				.rarity(Rarity.EPIC)
+				.food(FoodComponents.ENCHANTED_GOLDEN_POISONOUS_POTATO)
+				.component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)
+		)
 	);
 	public static final Item OAK_SIGN = register("oak_sign", new SignItem(new Item.Settings().maxCount(16), Blocks.OAK_SIGN, Blocks.OAK_WALL_SIGN));
 	public static final Item SPRUCE_SIGN = register("spruce_sign", new SignItem(new Item.Settings().maxCount(16), Blocks.SPRUCE_SIGN, Blocks.SPRUCE_WALL_SIGN));
@@ -1360,6 +1463,7 @@ public class Items {
 	public static final Item ALLAY_SPAWN_EGG = register("allay_spawn_egg", new SpawnEggItem(EntityType.ALLAY, 56063, 44543, new Item.Settings()));
 	public static final Item AXOLOTL_SPAWN_EGG = register("axolotl_spawn_egg", new SpawnEggItem(EntityType.AXOLOTL, 16499171, 10890612, new Item.Settings()));
 	public static final Item BAT_SPAWN_EGG = register("bat_spawn_egg", new SpawnEggItem(EntityType.BAT, 4996656, 986895, new Item.Settings()));
+	public static final Item BATATO_SPAWN_EGG = register("batato_spawn_egg", new SpawnEggItem(EntityType.BATATO, 4996656, 986895, new Item.Settings()));
 	public static final Item BEE_SPAWN_EGG = register("bee_spawn_egg", new SpawnEggItem(EntityType.BEE, 15582019, 4400155, new Item.Settings()));
 	public static final Item BLAZE_SPAWN_EGG = register("blaze_spawn_egg", new SpawnEggItem(EntityType.BLAZE, 16167425, 16775294, new Item.Settings()));
 	public static final Item BOGGED_SPAWN_EGG = register("bogged_spawn_egg", new SpawnEggItem(EntityType.BOGGED, 9084018, 3231003, new Item.Settings()));
@@ -1413,6 +1517,9 @@ public class Items {
 		"piglin_brute_spawn_egg", new SpawnEggItem(EntityType.PIGLIN_BRUTE, 5843472, 16380836, new Item.Settings())
 	);
 	public static final Item PILLAGER_SPAWN_EGG = register("pillager_spawn_egg", new SpawnEggItem(EntityType.PILLAGER, 5451574, 9804699, new Item.Settings()));
+	public static final Item PLAGUEWHALE_SPAWN_EGG = register(
+		"plaguewhale_spawn_egg", new SpawnEggItem(EntityType.PLAGUEWHALE, 11568570, 6457646, new Item.Settings())
+	);
 	public static final Item POLAR_BEAR_SPAWN_EGG = register(
 		"polar_bear_spawn_egg", new SpawnEggItem(EntityType.POLAR_BEAR, 15658718, 14014157, new Item.Settings())
 	);
@@ -1432,6 +1539,9 @@ public class Items {
 		"skeleton_horse_spawn_egg", new SpawnEggItem(EntityType.SKELETON_HORSE, 6842447, 15066584, new Item.Settings())
 	);
 	public static final Item SLIME_SPAWN_EGG = register("slime_spawn_egg", new SpawnEggItem(EntityType.SLIME, 5349438, 8306542, new Item.Settings()));
+	public static final Item MEGA_SPUD_SPAWN_EGG = register(
+		"mega_spud_spawn_egg", new SpawnEggItem(EntityType.MEGA_SPUD, 14264913, 13822306, new Item.Settings().rarity(Rarity.POTATO))
+	);
 	public static final Item SNIFFER_SPAWN_EGG = register("sniffer_spawn_egg", new SpawnEggItem(EntityType.SNIFFER, 8855049, 2468720, new Item.Settings()));
 	public static final Item SNOW_GOLEM_SPAWN_EGG = register(
 		"snow_golem_spawn_egg", new SpawnEggItem(EntityType.SNOW_GOLEM, 14283506, 8496292, new Item.Settings())
@@ -1441,6 +1551,7 @@ public class Items {
 	public static final Item STRAY_SPAWN_EGG = register("stray_spawn_egg", new SpawnEggItem(EntityType.STRAY, 6387319, 14543594, new Item.Settings()));
 	public static final Item STRIDER_SPAWN_EGG = register("strider_spawn_egg", new SpawnEggItem(EntityType.STRIDER, 10236982, 5065037, new Item.Settings()));
 	public static final Item TADPOLE_SPAWN_EGG = register("tadpole_spawn_egg", new SpawnEggItem(EntityType.TADPOLE, 7164733, 1444352, new Item.Settings()));
+	public static final Item TOXIFIN_SPAWN_EGG = register("toxifin_spawn_egg", new SpawnEggItem(EntityType.TOXIFIN, 6800197, 11440705, new Item.Settings()));
 	public static final Item TRADER_LLAMA_SPAWN_EGG = register(
 		"trader_llama_spawn_egg", new SpawnEggItem(EntityType.TRADER_LLAMA, 15377456, 4547222, new Item.Settings())
 	);
@@ -1465,6 +1576,9 @@ public class Items {
 	public static final Item WOLF_SPAWN_EGG = register("wolf_spawn_egg", new SpawnEggItem(EntityType.WOLF, 14144467, 13545366, new Item.Settings()));
 	public static final Item ZOGLIN_SPAWN_EGG = register("zoglin_spawn_egg", new SpawnEggItem(EntityType.ZOGLIN, 13004373, 15132390, new Item.Settings()));
 	public static final Item ZOMBIE_SPAWN_EGG = register("zombie_spawn_egg", new SpawnEggItem(EntityType.ZOMBIE, 44975, 7969893, new Item.Settings()));
+	public static final Item POISONOUS_POTATO_ZOMBIE_SPAWN_EGG = register(
+		"poisonous_potato_zombie_spawn_egg", new SpawnEggItem(EntityType.POISONOUS_POTATO_ZOMBIE, 13870150, 974110, new Item.Settings())
+	);
 	public static final Item ZOMBIE_HORSE_SPAWN_EGG = register(
 		"zombie_horse_spawn_egg", new SpawnEggItem(EntityType.ZOMBIE_HORSE, 3232308, 9945732, new Item.Settings())
 	);
@@ -1496,7 +1610,27 @@ public class Items {
 	public static final Item CARROT = register("carrot", new AliasedBlockItem(Blocks.CARROTS, new Item.Settings().food(FoodComponents.CARROT)));
 	public static final Item POTATO = register("potato", new AliasedBlockItem(Blocks.POTATOES, new Item.Settings().food(FoodComponents.POTATO)));
 	public static final Item BAKED_POTATO = register("baked_potato", new Item(new Item.Settings().food(FoodComponents.BAKED_POTATO)));
-	public static final Item POISONOUS_POTATO = register("poisonous_potato", new Item(new Item.Settings().food(FoodComponents.POISONOUS_POTATO)));
+	public static final Item HOT_POTATO = register(
+		"hot_potato", new HotPotatoItem(new Item.Settings().maxCount(1).fireproof().food(FoodComponents.HOT_POTATO).component(DataComponentTypes.HEAT, null))
+	);
+	public static final Item POISONOUS_POTATO_FRIES = register("poisonous_potato_fries", new Item(new Item.Settings().food(FoodComponents.POISONOUS_POTATO_FRIES)));
+	public static final Item POISONOUS_POTATO_STICKS = register(
+		"poisonous_potato_sticks", new Item(new Item.Settings().food(FoodComponents.POISONOUS_POTATO_STICKS))
+	);
+	public static final Item POISONOUS_POTATO_SLICES = register(
+		"poisonous_potato_slices", new Item(new Item.Settings().food(FoodComponents.POISONOUS_POTATO_SLICES))
+	);
+	public static final Item POISONOUS_POTATO_CHIPS = register("poisonous_potato_chips", new Item(new Item.Settings().food(FoodComponents.POISONOUS_POTATO_CHIPS)));
+	public static final Item POTATO_REFINERY = register(Blocks.POTATO_REFINERY);
+	public static final Item POTATO_OIL = register(
+		"potato_oil", new PotionItem(new Item.Settings().maxCount(1).component(DataComponentTypes.POTION_CONTENTS, new PotionContentsComponent(Potions.POTATO_OIL)))
+	);
+	public static final Item POISONOUS_POTATO_OIL = register(
+		"poisonous_potato_oil",
+		new PotionItem(new Item.Settings().maxCount(1).component(DataComponentTypes.POTION_CONTENTS, new PotionContentsComponent(Potions.POISONOUS_POTATO_OIL)))
+	);
+	public static final Item CORRUPTED_POTATO_PEELS_BLOCK = register(Blocks.CORRUPTED_POTATO_PEELS_BLOCK);
+	public static final Item POISONOUS_POTATO = register("poisonous_potato", new Item(new Item.Settings().food(FoodComponents.POISONOUS_POTATO).maxCount(99)));
 	public static final Item MAP = register("map", new EmptyMapItem(new Item.Settings()));
 	public static final Item GOLDEN_CARROT = register("golden_carrot", new Item(new Item.Settings().food(FoodComponents.GOLDEN_CARROT)));
 	public static final Item SKELETON_SKULL = register(
@@ -1833,6 +1967,7 @@ public class Items {
 	public static final Item GRINDSTONE = register(Blocks.GRINDSTONE);
 	public static final Item SMITHING_TABLE = register(Blocks.SMITHING_TABLE);
 	public static final Item STONECUTTER = register(Blocks.STONECUTTER);
+	public static final Item POISONOUS_POTATO_CUTTER = register(Blocks.POISONOUS_POTATO_CUTTER);
 	public static final Item BELL = register(Blocks.BELL);
 	public static final Item LANTERN = register(Blocks.LANTERN);
 	public static final Item SOUL_LANTERN = register(Blocks.SOUL_LANTERN);
@@ -1846,6 +1981,7 @@ public class Items {
 	public static final Item SOUL_CAMPFIRE = register(
 		Blocks.SOUL_CAMPFIRE, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT)
 	);
+	public static final Item FRYING_TABLE = register(Blocks.FRYING_TABLE);
 	public static final Item SHROOMLIGHT = register(Blocks.SHROOMLIGHT);
 	public static final Item HONEYCOMB = register("honeycomb", new HoneycombItem(new Item.Settings()));
 	public static final Item BEE_NEST = register(new BlockItem(Blocks.BEE_NEST, new Item.Settings().component(DataComponentTypes.BEES, List.of())));
@@ -1973,6 +2109,47 @@ public class Items {
 	public static final Item TRIAL_KEY = register("trial_key", new Item(new Item.Settings().requires(FeatureFlags.UPDATE_1_21)));
 	public static final Item VAULT = register(Blocks.VAULT);
 	public static final Item BREEZE_ROD = register("breeze_rod", new Item(new Item.Settings().requires(FeatureFlags.UPDATE_1_21)));
+	public static final Item SNEKTATO = register(
+		"snektato", new SnektatoItem(new Item.Settings().maxCount(16).component(DataComponentTypes.SNEK, new SnekComponent(false)))
+	);
+	public static final Item TOXIC_BEAM = register("toxic_beam", new Item(new Item.Settings()));
+	public static final Item LASHING_POTATO = register("lashing_potato", new LashingPotatoItem(new Item.Settings().maxCount(1).maxDamage(100)));
+	public static final Item POTATO_OF_KNOWLEDGE = register(
+		"potato_of_knowledge",
+		new PotatoOfKnowledgeItem(
+			new Item.Settings().maxCount(16).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true).component(DataComponentTypes.XP, XpComponent.DEFAULT)
+		)
+	);
+	public static final Item POISONOUS_POLYTRA = register("poisonous_polytra", new PoisonousPolytraItem(new Item.Settings().maxDamage(432).rarity(Rarity.POTATO)));
+	public static final Item BIG_BRAIN = register(new BlockItem(Blocks.BIG_BRAIN, new Item.Settings().rarity(Rarity.POTATO)));
+	public static final Item PEDESTAL = register(Blocks.PEDESTAL);
+	public static final Item POTATO_PORTAL = register(Blocks.POTATO_PORTAL);
+	public static final Item POTATO_STAFF = register("potato_staff", new PotatoStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.POTATO)));
+	public static final Item POTATO_BATTERY = register(new BlockItem(Blocks.POTATO_BATTERY, new Item.Settings()));
+	public static final Item POTATO_HAMMER = register(
+		"potato_hammer",
+		new PotatoHammerItem(
+			new Item.Settings()
+				.attributeModifiers(PotatoHammerItem.createAttributeModifiersComponent())
+				.component(DataComponentTypes.ENCHANTMENTS, PotatoHammerItem.createEnchantmentsComponent())
+		)
+	);
+	public static final Item POTATO_PEELER = register(
+		"potato_peeler",
+		new PotatoPeelerItem(
+			new Item.Settings()
+				.maxDamage(238)
+				.attributeModifiers(PotatoPeelerItem.createAttributeModifiersComponent(1, 1.0F))
+				.component(DataComponentTypes.POTATO_BANE, new PotatoBaneComponent(10.0F))
+		)
+	);
+	public static final Item POTATO_EYE = register("potato_eye", new PotatoEyeItem(new Item.Settings()));
+	public static final Ingredient POTATO_PEELS_INGREDIENT;
+	public static final ImmutableBiMap<DyeColor, Item> POTATO_PEELS;
+	public static final Map<DyeColor, Item> POTATO_PEELS_BLOCKS;
+	public static final Item CORRUPTED_POTATO_PEELS;
+	public static final Item HASH_BROWNS;
+	public static final Item POISONOUS_POTATO_PLANT;
 
 	public static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));
@@ -2014,5 +2191,42 @@ public class Items {
 		}
 
 		return Registry.register(Registries.ITEM, key, item);
+	}
+
+	static {
+		Builder<DyeColor, Item> builder = ImmutableBiMap.builder();
+
+		for (DyeColor dyeColor : DyeColor.values()) {
+			String string = "item.minecraft.potato_peels." + dyeColor.getName();
+			String string2 = dyeColor == DyeColor.WHITE ? "potato_peels" : dyeColor.getName() + "_potato_peels";
+			builder.put(dyeColor, register(string2, new PotatoPeelsItem(new Item.Settings(), dyeColor).translationKey(string)));
+		}
+
+		POTATO_PEELS = builder.build();
+		POTATO_PEELS_INGREDIENT = Ingredient.ofItems((ItemConvertible[])POTATO_PEELS.values().toArray(ItemConvertible[]::new));
+		com.google.common.collect.ImmutableMap.Builder<DyeColor, Item> builder2 = ImmutableMap.builder();
+
+		for (Entry<DyeColor, Block> entry : Blocks.POTATO_PEELS_BLOCKS.entrySet()) {
+			builder2.put((DyeColor)entry.getKey(), register((Block)entry.getValue()));
+		}
+
+		POTATO_PEELS_BLOCKS = builder2.build();
+		CORRUPTED_POTATO_PEELS = register("corrupted_potato_peels", new CorruptedPotatoPeelsItem(new Item.Settings()));
+		HASH_BROWNS = register("hash_browns", new Item(new Item.Settings().food(FoodComponents.HASH_BROWNS)));
+		POISONOUS_POTATO_PLANT = register(
+			"poisonous_potato_plant",
+			new PoisonousPotatoPlantItem(
+				ArmorMaterials.POTATO,
+				ArmorItem.Type.HELMET,
+				new Item.Settings()
+					.food(FoodComponents.POISONOUS_POTATO)
+					.maxCount(1)
+					.rarity(Rarity.POTATO)
+					.component(DataComponentTypes.VIEWS, 0)
+					.component(DataComponentTypes.UNDERCOVER_ID, 0)
+					.component(DataComponentTypes.HOVERED, false)
+					.component(DataComponentTypes.CLICKS, 0)
+			)
+		);
 	}
 }

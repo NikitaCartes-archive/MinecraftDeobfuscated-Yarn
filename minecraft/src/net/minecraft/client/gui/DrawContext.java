@@ -53,6 +53,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.world.World;
 import org.joml.Matrix4f;
 import org.joml.Vector2ic;
@@ -262,6 +263,20 @@ public class DrawContext {
 		vertexConsumer.vertex(matrix4f, (float)endX, (float)endY, (float)z).next();
 		vertexConsumer.vertex(matrix4f, (float)endX, (float)startY, (float)z).next();
 		this.tryDraw();
+	}
+
+	public DrawContext.class_9602 method_59319(double d, double e, TextRenderer textRenderer, String string, int i, int j) {
+		List<StringVisitable> list = textRenderer.getTextHandler().wrapLines(string, j, Style.EMPTY);
+		String string2 = (String)list.stream().map(StringVisitable::getString).collect(Collectors.joining("\n"));
+		return new DrawContext.class_9602(d, e, string2, (stringx, jx, k) -> {
+			String[] strings = stringx.split("\\r?\\n");
+			int l = k;
+
+			for (String string2x : strings) {
+				this.drawTextWithShadow(textRenderer, string2x, jx, l, i);
+				l += 9 + 4;
+			}
+		});
 	}
 
 	public void drawCenteredTextWithShadow(TextRenderer textRenderer, String text, int centerX, int y, int color) {
@@ -601,6 +616,41 @@ public class DrawContext {
 		}
 	}
 
+	public void drawItem(@Nullable LivingEntity entity, @Nullable World world, ItemStack stack, float x, float y, float rotation, int seed, int z) {
+		if (!stack.isEmpty()) {
+			BakedModel bakedModel = this.client.getItemRenderer().getModel(stack, world, entity, seed);
+			this.matrices.push();
+			this.matrices.translate(x + 8.0F, y + 8.0F, (float)(150 + (bakedModel.hasDepth() ? z : 0)));
+			this.matrices.multiply(RotationAxis.POSITIVE_X.rotation(rotation), 0.0F, 0.0F, 0.0F);
+			this.matrices.multiply(RotationAxis.POSITIVE_Y.rotation(2.0F * rotation), 0.0F, 0.0F, 0.0F);
+
+			try {
+				this.matrices.scale(16.0F, -16.0F, 16.0F);
+				boolean bl = !bakedModel.isSideLit();
+				if (bl) {
+					DiffuseLighting.disableGuiDepthLighting();
+				}
+
+				this.client
+					.getItemRenderer()
+					.renderItem(stack, ModelTransformationMode.GUI, false, this.matrices, this.getVertexConsumers(), 15728880, OverlayTexture.DEFAULT_UV, bakedModel);
+				this.draw();
+				if (bl) {
+					DiffuseLighting.enableGuiDepthLighting();
+				}
+			} catch (Throwable var13) {
+				CrashReport crashReport = CrashReport.create(var13, "Rendering item");
+				CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
+				crashReportSection.add("Item Type", (CrashCallable<String>)(() -> String.valueOf(stack.getItem())));
+				crashReportSection.add("Item Components", (CrashCallable<String>)(() -> String.valueOf(stack.getComponents())));
+				crashReportSection.add("Item Foil", (CrashCallable<String>)(() -> String.valueOf(stack.hasGlint())));
+				throw new CrashException(crashReport);
+			}
+
+			this.matrices.pop();
+		}
+	}
+
 	public void drawItemInSlot(TextRenderer textRenderer, ItemStack stack, int x, int y) {
 		this.drawItemInSlot(textRenderer, stack, x, y, null);
 	}
@@ -756,6 +806,55 @@ public class DrawContext {
 
 		public boolean contains(int x, int y) {
 			return this.stack.isEmpty() ? true : ((ScreenRect)this.stack.peek()).contains(x, y);
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class class_9602 {
+		private final double field_51074;
+		private final String field_51075;
+		private final DrawContext.class_9602.class_9603 field_51076;
+		private double field_51077;
+		private String field_51078 = "";
+
+		class_9602(double d, double e, String string, DrawContext.class_9602.class_9603 arg) {
+			this.field_51077 = d;
+			this.field_51074 = e;
+			this.field_51075 = string;
+			this.field_51076 = arg;
+		}
+
+		public boolean method_59326(double d, int i, int j) {
+			if (this.field_51075.equals(this.field_51078)) {
+				this.field_51076.apply(this.field_51075, i, j);
+				return false;
+			} else {
+				int k = MathHelper.floor((d - this.field_51077) * this.field_51074);
+				if (k == 0) {
+					this.field_51076.apply(this.field_51078, i, j);
+					return false;
+				} else {
+					int l = Math.min(this.field_51078.length() + k, this.field_51075.length());
+
+					while (l < this.field_51075.length() && Character.isWhitespace(this.field_51075.charAt(l - 1))) {
+						l++;
+					}
+
+					this.field_51078 = this.field_51075.substring(0, l);
+					this.field_51076.apply(this.field_51078, i, j);
+					this.field_51077 = d;
+					return true;
+				}
+			}
+		}
+
+		public double method_59325() {
+			return this.field_51077;
+		}
+
+		@Environment(EnvType.CLIENT)
+		public interface class_9603 {
+			void apply(String string, int i, int j);
 		}
 	}
 }

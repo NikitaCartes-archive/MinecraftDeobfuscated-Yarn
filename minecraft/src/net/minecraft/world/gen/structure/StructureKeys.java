@@ -8,6 +8,7 @@ public interface StructureKeys {
 	RegistryKey<Structure> PILLAGER_OUTPOST = of("pillager_outpost");
 	RegistryKey<Structure> MINESHAFT = of("mineshaft");
 	RegistryKey<Structure> MINESHAFT_MESA = of("mineshaft_mesa");
+	RegistryKey<Structure> MINESHAFT_POTATO = of("mineshaft_potato");
 	RegistryKey<Structure> MANSION = of("mansion");
 	RegistryKey<Structure> JUNGLE_PYRAMID = of("jungle_pyramid");
 	RegistryKey<Structure> DESERT_PYRAMID = of("desert_pyramid");
@@ -24,7 +25,9 @@ public interface StructureKeys {
 	RegistryKey<Structure> END_CITY = of("end_city");
 	RegistryKey<Structure> BURIED_TREASURE = of("buried_treasure");
 	RegistryKey<Structure> BASTION_REMNANT = of("bastion_remnant");
+	RegistryKey<Structure> COLOSSEUM = of("colosseum");
 	RegistryKey<Structure> VILLAGE_PLAINS = of("village_plains");
+	RegistryKey<Structure> VILLAGE_POTATO = of("village_potato");
 	RegistryKey<Structure> VILLAGE_DESERT = of("village_desert");
 	RegistryKey<Structure> VILLAGE_SAVANNA = of("village_savanna");
 	RegistryKey<Structure> VILLAGE_SNOWY = of("village_snowy");
@@ -36,6 +39,7 @@ public interface StructureKeys {
 	RegistryKey<Structure> RUINED_PORTAL_MOUNTAIN = of("ruined_portal_mountain");
 	RegistryKey<Structure> RUINED_PORTAL_OCEAN = of("ruined_portal_ocean");
 	RegistryKey<Structure> RUINED_PORTAL_NETHER = of("ruined_portal_nether");
+	RegistryKey<Structure> RUINED_PORTATOL = of("ruined_portatol");
 	RegistryKey<Structure> ANCIENT_CITY = of("ancient_city");
 	RegistryKey<Structure> TRAIL_RUINS = of("trail_ruins");
 	RegistryKey<Structure> TRIAL_CHAMBERS = of("trial_chambers");

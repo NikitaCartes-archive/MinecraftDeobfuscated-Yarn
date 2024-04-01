@@ -244,6 +244,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.path.SymlinkFinder;
 import net.minecraft.util.profiler.DebugRecorder;
 import net.minecraft.util.profiler.DummyProfiler;
@@ -426,6 +427,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	@Nullable
 	private ClientConnection integratedServerConnection;
 	private boolean integratedServerRunning;
+	private final Random field_51056 = Random.create();
 	@Nullable
 	public Entity cameraEntity;
 	@Nullable
@@ -2137,6 +2139,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		if (this.currentScreen == null && this.overlay == null && this.options.commandKey.wasPressed()) {
 			this.openChatScreen("/");
+		}
+
+		while (this.options.field_51057.wasPressed()) {
+			MinecraftClient.ChatRestriction chatRestriction = this.getChatRestriction();
+			if (chatRestriction.allowsChat(this.isInSingleplayer())) {
+				this.player.networkHandler.sendChatMessage("\ud83e\udd54".repeat(this.field_51056.nextBetween(1, 6)));
+			}
 		}
 
 		boolean bl3 = false;

@@ -8,6 +8,11 @@ public abstract class BiomeKeys {
 	public static final RegistryKey<Biome> THE_VOID = register("the_void");
 	public static final RegistryKey<Biome> PLAINS = register("plains");
 	public static final RegistryKey<Biome> SUNFLOWER_PLAINS = register("sunflower_plains");
+	public static final RegistryKey<Biome> FIELDS = register("fields");
+	public static final RegistryKey<Biome> HASH = register("hash");
+	public static final RegistryKey<Biome> ARBORETUM = register("arboretum");
+	public static final RegistryKey<Biome> WASTELAND = register("wasteland");
+	public static final RegistryKey<Biome> CORRUPTION = register("corruption");
 	public static final RegistryKey<Biome> SNOWY_PLAINS = register("snowy_plains");
 	public static final RegistryKey<Biome> ICE_SPIKES = register("ice_spikes");
 	public static final RegistryKey<Biome> DESERT = register("desert");

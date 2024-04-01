@@ -26,11 +26,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.LadderBlock;
+import net.minecraft.block.PoisonousMashedPotatoBlock;
 import net.minecraft.block.PowderSnowBlock;
 import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
+import net.minecraft.component.type.LubricationComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.FrostWalkerEnchantment;
@@ -70,6 +72,8 @@ import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.PoisonousPotatoChestplateItem;
+import net.minecraft.item.PotatoPeelerItem;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
@@ -100,6 +104,7 @@ import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
@@ -108,6 +113,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypeFilter;
@@ -126,6 +132,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.event.GameEvent;
 import org.slf4j.Logger;
 
@@ -165,6 +172,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	private static final TrackedData<Boolean> POTION_SWIRLS_AMBIENT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> STUCK_ARROW_COUNT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> STINGER_COUNT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<Integer> field_50408 = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Optional<BlockPos>> SLEEPING_POSITION = DataTracker.registerData(
 		LivingEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS
 	);
@@ -185,6 +193,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	public int handSwingTicks;
 	public int stuckArrowTimer;
 	public int stuckStingerTimer;
+	public int field_50407;
 	public int hurtTime;
 	public int maxHurtTime;
 	public int deathTime;
@@ -289,6 +298,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		builder.add(POTION_SWIRLS_AMBIENT, false);
 		builder.add(STUCK_ARROW_COUNT, 0);
 		builder.add(STINGER_COUNT, 0);
+		builder.add(field_50408, 0);
 		builder.add(HEALTH, 1.0F);
 		builder.add(SLEEPING_POSITION, Optional.empty());
 	}
@@ -315,33 +325,106 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			this.checkWaterState();
 		}
 
+		float f = (float)this.getAttributeValue(EntityAttributes.GENERIC_SAFE_FALL_DISTANCE);
 		if (!this.getWorld().isClient && onGround && this.fallDistance > 0.0F) {
 			this.removeSoulSpeedBoost();
 			this.addSoulSpeedBoostIfNeeded();
-			double d = this.getAttributeValue(EntityAttributes.GENERIC_SAFE_FALL_DISTANCE);
-			if ((double)this.fallDistance > d && !state.isAir()) {
-				double e = this.getX();
-				double f = this.getY();
+			if (this.fallDistance > f && !state.isAir()) {
+				double d = this.getX();
+				double e = this.getY();
 				double g = this.getZ();
 				BlockPos blockPos = this.getBlockPos();
 				if (landedPosition.getX() != blockPos.getX() || landedPosition.getZ() != blockPos.getZ()) {
-					double h = e - (double)landedPosition.getX() - 0.5;
+					double h = d - (double)landedPosition.getX() - 0.5;
 					double i = g - (double)landedPosition.getZ() - 0.5;
 					double j = Math.max(Math.abs(h), Math.abs(i));
-					e = (double)landedPosition.getX() + 0.5 + h / j * 0.5;
+					d = (double)landedPosition.getX() + 0.5 + h / j * 0.5;
 					g = (double)landedPosition.getZ() + 0.5 + i / j * 0.5;
 				}
 
-				float k = (float)MathHelper.ceil((double)this.fallDistance - d);
+				float k = (float)MathHelper.ceil(this.fallDistance - f);
 				double l = Math.min((double)(0.2F + k / 15.0F), 2.5);
 				int m = (int)(150.0 * l);
-				((ServerWorld)this.getWorld()).spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, state), e, f, g, m, 0.0, 0.0, 0.0, 0.15F);
+				((ServerWorld)this.getWorld()).spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, state), d, e, g, m, 0.0, 0.0, 0.0, 0.15F);
 			}
+		}
+
+		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.FEET);
+		if (onGround && this.fallDistance > f && itemStack.isOf(Items.POISONOUS_POTA_TOES)) {
+			this.method_58865(itemStack, this.fallDistance - f);
+			this.fallDistance = 0.0F;
 		}
 
 		super.fall(heightDifference, onGround, state, landedPosition);
 		if (onGround) {
 			this.climbingPos = Optional.empty();
+		}
+	}
+
+	private void method_58865(ItemStack itemStack, float f) {
+		float g = MathHelper.clamp(MathHelper.getLerpProgress(f, 0.0F, 50.0F), 0.0F, 1.0F);
+		World world = this.getWorld();
+		if (!world.isClient()) {
+			if (!this.isInCreativeMode()) {
+				this.sendEquipmentBreakStatus(EquipmentSlot.FEET);
+				itemStack.decrement(1);
+			}
+
+			if (this instanceof PlayerEntity playerEntity) {
+				playerEntity.incrementStat(Stats.BROKEN.getOrCreateStat(itemStack.getItem()));
+			}
+
+			BlockPos blockPos = this.getBlockPos();
+			this.method_58863(world, blockPos, 1);
+			int i = (int)MathHelper.lerp(g, 1.0F, 5.0F);
+			int j = (int)MathHelper.lerp(g, 1.0F, 80.0F);
+
+			for (int k = 0; k < j; k++) {
+				this.method_58863(
+					world, blockPos.add(this.random.nextInt(i * 2 + 1) - i, this.random.nextInt(2) - this.random.nextInt(2), this.random.nextInt(i * 2 + 1) - i), 1
+				);
+			}
+
+			((ServerWorld)this.getWorld())
+				.spawnParticles(
+					new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.POISONOUS_MASHED_POTATO.getDefaultState()),
+					this.getX(),
+					this.getY(),
+					this.getZ(),
+					200,
+					1.0,
+					0.0,
+					1.0,
+					0.3F
+				);
+		}
+
+		this.playSound(SoundEvents.ENTITY_SLIME_SQUISH, 1.0F, 1.0F);
+		this.playSound(SoundEvents.BLOCK_SLIME_BLOCK_FALL, 1.0F, 1.0F);
+		this.field_50391 = MathHelper.lerp(g, 0.05F, 0.8F);
+	}
+
+	private void method_58863(World world, BlockPos blockPos, int i) {
+		if (this instanceof PlayerEntity playerEntity && !world.canPlayerModifyAt(playerEntity, blockPos)) {
+			return;
+		}
+
+		BlockState blockState = world.getBlockState(blockPos);
+		if (blockState.isReplaceable()) {
+			if (blockState.isOf(Blocks.POISONOUS_MASHED_POTATO)) {
+				i += blockState.get(PoisonousMashedPotatoBlock.LAYERS);
+			}
+
+			if (i <= 8) {
+				BlockState blockState2 = Blocks.POISONOUS_MASHED_POTATO.getDefaultState().with(PoisonousMashedPotatoBlock.LAYERS, Integer.valueOf(i));
+				if (blockState2.canPlaceAt(world, blockPos)) {
+					if (!blockState.isOf(Blocks.POISONOUS_MASHED_POTATO)) {
+						world.breakBlock(blockPos, true, this);
+					}
+
+					world.setBlockState(blockPos, blockState2);
+				}
+			}
 		}
 	}
 
@@ -456,6 +539,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			}
 		}
 
+		if (this.getWorld().isPotato()
+			&& this.isTouchingWaterOrRain()
+			&& this.getWorld().getBiome(this.getBlockPos()).matchesKey(BiomeKeys.WASTELAND)
+			&& this.getStatusEffect(StatusEffects.POISON) == null) {
+			this.onTouchingWastelandWater();
+		}
+
 		this.tickStatusEffects();
 		this.prevLookDirection = this.lookDirection;
 		this.prevBodyYaw = this.bodyYaw;
@@ -463,6 +553,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.prevYaw = this.getYaw();
 		this.prevPitch = this.getPitch();
 		this.getWorld().getProfiler().pop();
+	}
+
+	protected void onTouchingWastelandWater() {
+		this.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 40));
 	}
 
 	public boolean shouldDisplaySoulSpeedEffects() {
@@ -726,6 +820,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		if (!bl && !ItemStack.areItemsAndComponentsEqual(oldStack, newStack) && !this.firstUpdate) {
 			Equipment equipment = Equipment.fromStack(newStack);
 			if (!this.getWorld().isClient() && !this.isSpectator()) {
+				if (newStack.isOf(Items.POISONOUS_POTATO_PLANT) && !newStack.getItem().equals(oldStack.getItem()) && this instanceof ServerPlayerEntity serverPlayerEntity) {
+					Pair<String, Integer> pair = serverPlayerEntity.method_58936();
+					if (pair.getFirst().equals("intro") && pair.getSecond() == 0) {
+						serverPlayerEntity.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.POTATO_QUEST_TIME));
+					}
+				}
+
 				if (!this.isSilent() && equipment != null && equipment.getSlotType() == slot) {
 					this.getWorld()
 						.playSound(null, this.getX(), this.getY(), this.getZ(), equipment.getEquipSound(), this.getSoundCategory(), 1.0F, 1.0F, this.random.nextLong());
@@ -1500,7 +1601,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 
 		this.dropInventory();
-		this.dropXp();
+		this.dropXp(source);
 	}
 
 	protected void dropInventory() {
@@ -1513,10 +1614,15 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 * {@link #shouldAlwaysDropXp()}, {@link #shouldDropXp()}, and
 	 * {@link #getXpToDrop()}.
 	 */
-	protected void dropXp() {
+	protected void dropXp(DamageSource damageSource) {
 		if (this.getWorld() instanceof ServerWorld
 			&& !this.isExperienceDroppingDisabled()
-			&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.shouldDropXp() && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
+			&& (
+				this.shouldAlwaysDropXp()
+					|| (this.playerHitTimer > 0 || damageSource.isOf(DamageTypes.POTATO_MAGIC))
+						&& this.shouldDropXp()
+						&& this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT)
+			)) {
 			ExperienceOrbEntity.spawn((ServerWorld)this.getWorld(), this.getPos(), this.getXpToDrop());
 		}
 	}
@@ -1604,6 +1710,41 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
+	public boolean tryEatArmor() {
+		if (this.getWorld().getGameRules().getBoolean(GameRules.NEVER_EAT_ARMOR)) {
+			return false;
+		} else {
+			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
+			if (itemStack.isOf(Items.POISONOUS_POTATO_CHESTPLATE)) {
+				itemStack.damage(40, this, EquipmentSlot.CHEST);
+				this.getWorld()
+					.playSoundSequence(
+						this.getX(),
+						this.getY(),
+						this.getZ(),
+						sequencer -> {
+							for (int i = 0; i < 3; i++) {
+								sequencer.waitThenPlay(
+									i == 0 ? 0 : 4,
+									this.getEatSound(itemStack),
+									this.getSoundCategory(),
+									0.5F + 0.5F * (float)this.random.nextInt(2),
+									(this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F
+								);
+							}
+						}
+					);
+				if (this instanceof ServerPlayerEntity serverPlayerEntity) {
+					Criteria.EAT_ARMOR.trigger(serverPlayerEntity);
+				}
+
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+
 	public LivingEntity.FallSounds getFallSounds() {
 		return new LivingEntity.FallSounds(SoundEvents.ENTITY_GENERIC_SMALL_FALL, SoundEvents.ENTITY_GENERIC_BIG_FALL);
 	}
@@ -1629,11 +1770,24 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			if (blockState.isIn(BlockTags.CLIMBABLE)) {
 				this.climbingPos = Optional.of(blockPos);
 				return true;
-			} else if (blockState.getBlock() instanceof TrapdoorBlock && this.canEnterTrapdoor(blockPos, blockState)) {
-				this.climbingPos = Optional.of(blockPos);
-				return true;
 			} else {
-				return false;
+				if (this.hasStatusEffect(StatusEffects.STICKY)) {
+					for (Direction direction : Direction.Type.HORIZONTAL) {
+						BlockPos blockPos2 = blockPos.offset(direction);
+						BlockState blockState2 = this.getWorld().getBlockState(blockPos2);
+						if (!blockState2.getCollisionShape(this.getWorld(), blockPos2).isEmpty()) {
+							this.climbingPos = Optional.of(blockPos);
+							return true;
+						}
+					}
+				}
+
+				if (blockState.getBlock() instanceof TrapdoorBlock && this.canEnterTrapdoor(blockPos, blockState)) {
+					this.climbingPos = Optional.of(blockPos);
+					return true;
+				} else {
+					return false;
+				}
 			}
 		}
 	}
@@ -1839,8 +1993,16 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return this.dataTracker.get(STINGER_COUNT);
 	}
 
+	public final int method_58868() {
+		return this.dataTracker.get(field_50408);
+	}
+
 	public final void setStingerCount(int stingerCount) {
 		this.dataTracker.set(STINGER_COUNT, stingerCount);
+	}
+
+	public final void method_58869(int i) {
+		this.dataTracker.set(field_50408, i);
 	}
 
 	private int getHandSwingDuration() {
@@ -1976,7 +2138,17 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	@Override
 	protected void tickInVoid() {
-		this.damage(this.getDamageSources().outOfWorld(), 4.0F);
+		if (this.getWorld().isPotato() && !this.isRemoved()) {
+			MinecraftServer minecraftServer = this.getServer();
+			if (minecraftServer != null) {
+				ServerWorld serverWorld = minecraftServer.getWorld(World.OVERWORLD);
+				if (serverWorld != null && this instanceof ServerPlayerEntity serverPlayerEntity) {
+					serverPlayerEntity.method_58797();
+				}
+			}
+		} else {
+			this.damage(this.getDamageSources().outOfWorld(), 4.0F);
+		}
 	}
 
 	protected void tickHandSwing() {
@@ -2313,9 +2485,16 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				}
 			} else {
 				BlockPos blockPos = this.getVelocityAffectingPos();
-				float p = this.getWorld().getBlockState(blockPos).getBlock().getSlipperiness();
-				float fxx = this.isOnGround() ? p * 0.91F : 0.91F;
-				Vec3d vec3d6 = this.applyMovementInput(movementInput, p);
+				float fxx = this.getWorld().getBlockState(blockPos).getBlock().getSlipperiness();
+				if (this.isOnGround()) {
+					LubricationComponent lubricationComponent = this.getEquippedStack(EquipmentSlot.FEET).get(DataComponentTypes.LUBRICATION);
+					if (lubricationComponent != null) {
+						fxx = lubricationComponent.method_59187(fxx);
+					}
+				}
+
+				float fxxx = this.isOnGround() ? fxx * 0.91F : 0.91F;
+				Vec3d vec3d6 = this.applyMovementInput(movementInput, fxx);
 				double q = vec3d6.y;
 				if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
 					q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
@@ -2327,15 +2506,19 @@ public abstract class LivingEntity extends Entity implements Attackable {
 					q = 0.0;
 				}
 
-				if (this.hasNoDrag()) {
-					this.setVelocity(vec3d6.x, q, vec3d6.z);
-				} else {
-					this.setVelocity(vec3d6.x * (double)fxx, this instanceof Flutterer ? q * (double)fxx : q * 0.98F, vec3d6.z * (double)fxx);
-				}
+				this.method_58864(vec3d6, q, fxxx);
 			}
 		}
 
 		this.updateLimbs(this instanceof Flutterer);
+	}
+
+	protected void method_58864(Vec3d vec3d, double d, float f) {
+		if (this.hasNoDrag()) {
+			this.setVelocity(vec3d.x, d, vec3d.z);
+		} else {
+			this.setVelocity(vec3d.x * (double)f, this instanceof Flutterer ? d * (double)f : d * 0.98F, vec3d.z * (double)f);
+		}
 	}
 
 	private void travelControlled(PlayerEntity controllingPlayer, Vec3d movementInput) {
@@ -2468,6 +2651,18 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				}
 			}
 
+			int k = this.method_58868();
+			if (k > 0) {
+				if (this.field_50407 <= 0) {
+					this.field_50407 = 20 * (30 - k);
+				}
+
+				this.field_50407--;
+				if (this.field_50407 <= 0) {
+					this.method_58869(k - 1);
+				}
+			}
+
 			this.sendEquipmentChanges();
 			if (this.age % 20 == 0) {
 				this.getDamageTracker().update();
@@ -2488,16 +2683,16 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		float g = this.bodyYaw;
 		float h = 0.0F;
 		this.prevStepBobbingAmount = this.stepBobbingAmount;
-		float k = 0.0F;
+		float l = 0.0F;
 		if (f > 0.0025000002F) {
-			k = 1.0F;
+			l = 1.0F;
 			h = (float)Math.sqrt((double)f) * 3.0F;
-			float l = (float)MathHelper.atan2(e, d) * (180.0F / (float)Math.PI) - 90.0F;
-			float m = MathHelper.abs(MathHelper.wrapDegrees(this.getYaw()) - l);
-			if (95.0F < m && m < 265.0F) {
-				g = l - 180.0F;
+			float m = (float)MathHelper.atan2(e, d) * (180.0F / (float)Math.PI) - 90.0F;
+			float n = MathHelper.abs(MathHelper.wrapDegrees(this.getYaw()) - m);
+			if (95.0F < n && n < 265.0F) {
+				g = m - 180.0F;
 			} else {
-				g = l;
+				g = m;
 			}
 		}
 
@@ -2506,10 +2701,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 
 		if (!this.isOnGround()) {
-			k = 0.0F;
+			l = 0.0F;
 		}
 
-		this.stepBobbingAmount = this.stepBobbingAmount + (k - this.stepBobbingAmount) * 0.3F;
+		this.stepBobbingAmount = this.stepBobbingAmount + (l - this.stepBobbingAmount) * 0.3F;
 		this.getWorld().getProfiler().push("headTurn");
 		h = this.turnHead(g, h);
 		this.getWorld().getProfiler().pop();
@@ -2560,9 +2755,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 
 		this.updateAttributes();
-		float l = this.getScale();
-		if (l != this.prevScale) {
-			this.prevScale = l;
+		float m = this.getScale();
+		if (m != this.prevScale) {
+			this.prevScale = m;
 			this.calculateDimensions();
 		}
 	}
@@ -2849,7 +3044,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		boolean bl = this.getFlag(Entity.FALL_FLYING_FLAG_INDEX);
 		if (bl && !this.isOnGround() && !this.hasVehicle() && !this.hasStatusEffect(StatusEffects.LEVITATION)) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
-			if (itemStack.isOf(Items.ELYTRA) && ElytraItem.isUsable(itemStack)) {
+			if ((itemStack.isOf(Items.ELYTRA) || itemStack.isOf(Items.POISONOUS_POLYTRA)) && ElytraItem.isUsable(itemStack)) {
 				bl = true;
 				int i = this.fallFlyingTicks + 1;
 				if (!this.getWorld().isClient && i % 10 == 0) {
@@ -3657,6 +3852,95 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	public boolean isInCreativeMode() {
 		return false;
+	}
+
+	@Nullable
+	public ItemEntity dropItem(ItemStack stack, boolean retainOwnership) {
+		return this.dropItem(stack, false, retainOwnership);
+	}
+
+	@Nullable
+	public ItemEntity dropItem(ItemStack stack, boolean bl, boolean retainOwnership) {
+		if (stack.isEmpty()) {
+			return null;
+		} else {
+			if (this.getWorld().isClient) {
+				this.swingHand(Hand.MAIN_HAND);
+			}
+
+			double d = this.getEyeY() - 0.3F;
+			ItemEntity itemEntity = new ItemEntity(this.getWorld(), this.getX(), d, this.getZ(), stack);
+			itemEntity.setPickupDelay(40);
+			if (retainOwnership) {
+				itemEntity.setThrower(this);
+			}
+
+			if (bl) {
+				float f = this.random.nextFloat() * 0.5F;
+				float g = this.random.nextFloat() * (float) (Math.PI * 2);
+				itemEntity.setVelocity((double)(-MathHelper.sin(g) * f), 0.2F, (double)(MathHelper.cos(g) * f));
+			} else {
+				float f = 0.3F;
+				float g = MathHelper.sin(this.getPitch() * (float) (Math.PI / 180.0));
+				float h = MathHelper.cos(this.getPitch() * (float) (Math.PI / 180.0));
+				float i = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0));
+				float j = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0));
+				float k = this.random.nextFloat() * (float) (Math.PI * 2);
+				float l = 0.02F * this.random.nextFloat();
+				itemEntity.setVelocity(
+					(double)(-i * h * 0.3F) + Math.cos((double)k) * (double)l,
+					(double)(-g * 0.3F + 0.1F + (this.random.nextFloat() - this.random.nextFloat()) * 0.1F),
+					(double)(j * h * 0.3F) + Math.sin((double)k) * (double)l
+				);
+			}
+
+			if (!(this instanceof PlayerEntity) && !this.getWorld().isClient) {
+				this.getWorld().spawnEntity(itemEntity);
+			}
+
+			return itemEntity;
+		}
+	}
+
+	@Override
+	public ActionResult interact(PlayerEntity player, Hand hand) {
+		if (player.getStackInHand(hand).isOf(Items.POTATO_PEELER)) {
+			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
+			if (itemStack.isOf(Items.POISONOUS_POTATO_CHESTPLATE)) {
+				PotatoPeelerItem.playPeelEntitySound(player.getWorld(), this);
+				if (this.getWorld().isClient) {
+					return ActionResult.CONSUME;
+				}
+
+				if (this instanceof PlayerEntity playerEntity) {
+					playerEntity.incrementStat(Stats.GET_PEELED);
+					if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity) {
+						Criteria.GET_PEELED.trigger(serverPlayerEntity);
+					}
+				}
+
+				if (player instanceof ServerPlayerEntity serverPlayerEntity2) {
+					Criteria.PEEL_POTATO_ARMOR.trigger(serverPlayerEntity2);
+				}
+
+				itemStack.damage(itemStack.getMaxDamage(), this, EquipmentSlot.CHEST);
+				Item item = PoisonousPotatoChestplateItem.getPeels(itemStack);
+
+				for (int i = 0; i < 8; i++) {
+					this.dropItem(new ItemStack(item, 1), true, false);
+				}
+
+				this.emitGameEvent(GameEvent.ENTITY_INTERACT, player);
+				return ActionResult.SUCCESS;
+			}
+		}
+
+		return super.interact(player, hand);
+	}
+
+	@Override
+	public boolean method_58831() {
+		return this.hasStatusEffect(StatusEffects.STICKY) && !this.isTouchingWater() && !this.isSpectator() && !this.isInLava() && this.isAlive();
 	}
 
 	public static record FallSounds(SoundEvent small, SoundEvent big) {

@@ -51,6 +51,11 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
+	public boolean hasPotatoForm() {
+		return true;
+	}
+
+	@Override
 	protected void initGoals() {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.4));

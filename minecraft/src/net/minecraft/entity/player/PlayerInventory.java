@@ -9,6 +9,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
@@ -141,7 +142,7 @@ public class PlayerInventory implements Inventory, Nameable {
 		for (int i = 0; i < this.main.size(); i++) {
 			ItemStack itemStack = this.main.get(i);
 			if (!this.main.get(i).isEmpty()
-				&& ItemStack.areItemsAndComponentsEqual(stack, this.main.get(i))
+				&& (ItemStack.areItemsAndComponentsEqual(stack, this.main.get(i)) || stack.isOf(Items.HOT_POTATO) && this.main.get(i).isOf(Items.HOT_POTATO))
 				&& !this.main.get(i).isDamaged()
 				&& !itemStack.hasEnchantments()
 				&& !itemStack.contains(DataComponentTypes.CUSTOM_NAME)) {
@@ -243,10 +244,13 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	public void updateItems() {
+		int i = 0;
+
 		for (DefaultedList<ItemStack> defaultedList : this.combinedInventory) {
-			for (int i = 0; i < defaultedList.size(); i++) {
-				if (!defaultedList.get(i).isEmpty()) {
-					defaultedList.get(i).inventoryTick(this.player.getWorld(), this.player, i, this.selectedSlot == i);
+			for (int j = 0; j < defaultedList.size(); j++) {
+				i++;
+				if (!defaultedList.get(j).isEmpty()) {
+					defaultedList.get(j).inventoryTick(this.player.getWorld(), this.player, i, this.selectedSlot == j);
 				}
 			}
 		}

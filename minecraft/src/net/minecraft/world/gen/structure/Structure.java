@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -27,6 +28,7 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.math.random.Random;
@@ -41,6 +43,7 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.StructureTerrainAdaptation;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.noise.NoiseConfig;
 
 public abstract class Structure {
@@ -62,6 +65,10 @@ public abstract class Structure {
 
 	public RegistryEntryList<Biome> getValidBiomes() {
 		return this.config.biomes;
+	}
+
+	public List<Structure.class_9594> method_59293() {
+		return this.config.densityChecks;
 	}
 
 	public Map<SpawnGroup, StructureSpawns> getStructureSpawns() {
@@ -90,10 +97,11 @@ public abstract class Structure {
 		ChunkPos chunkPos,
 		int references,
 		HeightLimitView world,
-		Predicate<RegistryEntry<Biome>> validBiomes
+		Predicate<RegistryEntry<Biome>> validBiomes,
+		List<Structure.class_9594> list
 	) {
 		Structure.Context context = new Structure.Context(
-			dynamicRegistryManager, chunkGenerator, biomeSource, noiseConfig, structureTemplateManager, seed, chunkPos, world, validBiomes
+			dynamicRegistryManager, chunkGenerator, biomeSource, noiseConfig, structureTemplateManager, seed, chunkPos, world, validBiomes, list
 		);
 		Optional<Structure.StructurePosition> optional = this.getValidStructurePosition(context);
 		if (optional.isPresent()) {
@@ -130,6 +138,24 @@ public abstract class Structure {
 						context.noiseConfig.getMultiNoiseSampler()
 					)
 			);
+	}
+
+	private static boolean method_59294(Structure.StructurePosition structurePosition, Structure.Context context) {
+		BlockPos blockPos = structurePosition.position();
+
+		for (Structure.class_9594 lv : context.densityChecks()) {
+			Vec3i vec3i = lv.offset();
+			BlockPos blockPos2 = blockPos.add(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+			double d = context.noiseConfig
+				.getNoiseRouter()
+				.finalDensity()
+				.sample(new DensityFunction.UnblendedNoisePos(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
+			if (lv.dense() != d > 0.0) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public void postPlace(
@@ -189,17 +215,22 @@ public abstract class Structure {
 	protected abstract Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context);
 
 	public Optional<Structure.StructurePosition> getValidStructurePosition(Structure.Context context) {
-		return this.getStructurePosition(context).filter(position -> isBiomeValid(position, context));
+		return this.getStructurePosition(context).filter(position -> isBiomeValid(position, context) && method_59294(position, context));
 	}
 
 	public abstract StructureType<?> getType();
 
 	public static record Config(
-		RegistryEntryList<Biome> biomes, Map<SpawnGroup, StructureSpawns> spawnOverrides, GenerationStep.Feature step, StructureTerrainAdaptation terrainAdaptation
+		RegistryEntryList<Biome> biomes,
+		List<Structure.class_9594> densityChecks,
+		Map<SpawnGroup, StructureSpawns> spawnOverrides,
+		GenerationStep.Feature step,
+		StructureTerrainAdaptation terrainAdaptation
 	) {
 		public static final MapCodec<Structure.Config> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
 						RegistryCodecs.entryList(RegistryKeys.BIOME).fieldOf("biomes").forGetter(Structure.Config::biomes),
+						Codec.list(Structure.class_9594.field_51025).fieldOf("density_checks").forGetter(Structure.Config::densityChecks),
 						Codec.simpleMap(SpawnGroup.CODEC, StructureSpawns.CODEC, StringIdentifiable.toKeyable(SpawnGroup.values()))
 							.fieldOf("spawn_overrides")
 							.forGetter(Structure.Config::spawnOverrides),
@@ -220,7 +251,8 @@ public abstract class Structure {
 		long seed,
 		ChunkPos chunkPos,
 		HeightLimitView world,
-		Predicate<RegistryEntry<Biome>> biomePredicate
+		Predicate<RegistryEntry<Biome>> biomePredicate,
+		List<Structure.class_9594> densityChecks
 	) {
 
 		public Context(
@@ -232,7 +264,8 @@ public abstract class Structure {
 			long seed,
 			ChunkPos chunkPos,
 			HeightLimitView world,
-			Predicate<RegistryEntry<Biome>> biomePredicate
+			Predicate<RegistryEntry<Biome>> biomePredicate,
+			List<Structure.class_9594> list
 		) {
 			this(
 				dynamicRegistryManager,
@@ -244,7 +277,8 @@ public abstract class Structure {
 				seed,
 				chunkPos,
 				world,
-				biomePredicate
+				biomePredicate,
+				list
 			);
 		}
 
@@ -266,6 +300,19 @@ public abstract class Structure {
 				generator.accept(structurePiecesCollector);
 				return structurePiecesCollector;
 			}, collector -> collector);
+		}
+	}
+
+	public static record class_9594(Vec3i offset, boolean dense) {
+		public static final Codec<Structure.class_9594> field_51025 = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Vec3i.CODEC.fieldOf("offset").forGetter(Structure.class_9594::offset), Codec.BOOL.fieldOf("dense").forGetter(Structure.class_9594::dense)
+					)
+					.apply(instance, Structure.class_9594::new)
+		);
+
+		public static Structure.class_9594 method_59295(int i, int j, int k, boolean bl) {
+			return new Structure.class_9594(new Vec3i(i, j, k), bl);
 		}
 	}
 }

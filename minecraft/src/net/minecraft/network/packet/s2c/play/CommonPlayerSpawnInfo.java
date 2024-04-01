@@ -1,6 +1,7 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.Optional;
+import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
@@ -9,6 +10,7 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
@@ -23,7 +25,8 @@ public record CommonPlayerSpawnInfo(
 	boolean isDebug,
 	boolean isFlat,
 	Optional<GlobalPos> lastDeathLocation,
-	int portalCooldown
+	int portalCooldown,
+	@Nullable UUID waitForGrid
 ) {
 	private static final PacketCodec<RegistryByteBuf, RegistryEntry<DimensionType>> DIMENSION_TYPE_PACKET_CODEC = PacketCodecs.registryEntry(
 		RegistryKeys.DIMENSION_TYPE
@@ -39,7 +42,8 @@ public record CommonPlayerSpawnInfo(
 			buf.readBoolean(),
 			buf.readBoolean(),
 			buf.readOptional(PacketByteBuf::readGlobalPos),
-			buf.readVarInt()
+			buf.readVarInt(),
+			buf.readNullable(Uuids.PACKET_CODEC)
 		);
 	}
 
@@ -53,5 +57,6 @@ public record CommonPlayerSpawnInfo(
 		buf.writeBoolean(this.isFlat);
 		buf.writeOptional(this.lastDeathLocation, PacketByteBuf::writeGlobalPos);
 		buf.writeVarInt(this.portalCooldown);
+		buf.writeNullable(this.waitForGrid, Uuids.PACKET_CODEC);
 	}
 }

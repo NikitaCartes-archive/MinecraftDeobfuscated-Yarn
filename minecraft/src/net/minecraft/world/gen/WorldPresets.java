@@ -75,6 +75,7 @@ public class WorldPresets {
 		private final RegistryEntry<DimensionType> overworldDimensionType;
 		private final DimensionOptions netherDimensionOptions;
 		private final DimensionOptions endDimensionOptions;
+		private final DimensionOptions field_51018;
 
 		Registrar(Registerable<WorldPreset> presetRegisterable) {
 			this.presetRegisterable = presetRegisterable;
@@ -92,6 +93,10 @@ public class WorldPresets {
 			RegistryEntry<DimensionType> registryEntry3 = registryEntryLookup.getOrThrow(DimensionTypes.THE_END);
 			RegistryEntry<ChunkGeneratorSettings> registryEntry4 = this.chunkGeneratorSettingsLookup.getOrThrow(ChunkGeneratorSettings.END);
 			this.endDimensionOptions = new DimensionOptions(registryEntry3, new NoiseChunkGenerator(TheEndBiomeSource.createVanilla(this.biomeLookup), registryEntry4));
+			RegistryEntry<DimensionType> registryEntry5 = registryEntryLookup.getOrThrow(DimensionTypes.POTATO);
+			RegistryEntry<ChunkGeneratorSettings> registryEntry6 = this.chunkGeneratorSettingsLookup.getOrThrow(ChunkGeneratorSettings.field_50996);
+			RegistryEntry.Reference<MultiNoiseBiomeSourceParameterList> reference2 = this.multiNoisePresetLookup.getOrThrow(MultiNoiseBiomeSourceParameterLists.POTATO);
+			this.field_51018 = new DimensionOptions(registryEntry5, new NoiseChunkGenerator(MultiNoiseBiomeSource.create(reference2), registryEntry6));
 		}
 
 		private DimensionOptions createOverworldOptions(ChunkGenerator chunkGenerator) {
@@ -104,7 +109,16 @@ public class WorldPresets {
 
 		private WorldPreset createPreset(DimensionOptions dimensionOptions) {
 			return new WorldPreset(
-				Map.of(DimensionOptions.OVERWORLD, dimensionOptions, DimensionOptions.NETHER, this.netherDimensionOptions, DimensionOptions.END, this.endDimensionOptions)
+				Map.of(
+					DimensionOptions.OVERWORLD,
+					dimensionOptions,
+					DimensionOptions.NETHER,
+					this.netherDimensionOptions,
+					DimensionOptions.END,
+					this.endDimensionOptions,
+					DimensionOptions.field_50994,
+					this.field_51018
+				)
 			);
 		}
 

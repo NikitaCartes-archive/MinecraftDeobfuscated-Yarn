@@ -24,6 +24,7 @@ public record GenerationShapeConfig(int minimumY, int height, int horizontalSize
 	protected static final GenerationShapeConfig END = create(0, 128, 2, 1);
 	protected static final GenerationShapeConfig CAVES = create(-64, 192, 1, 2);
 	protected static final GenerationShapeConfig FLOATING_ISLANDS = create(0, 256, 2, 1);
+	protected static final GenerationShapeConfig field_50997 = create(0, 256, 4, 1);
 
 	private static DataResult<GenerationShapeConfig> checkHeight(GenerationShapeConfig config) {
 		if (config.minimumY() + config.height() > DimensionType.MAX_COLUMN_HEIGHT + 1) {

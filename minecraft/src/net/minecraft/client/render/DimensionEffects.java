@@ -20,8 +20,9 @@ public abstract class DimensionEffects {
 		map.put(DimensionTypes.OVERWORLD_ID, overworld);
 		map.put(DimensionTypes.THE_NETHER_ID, new DimensionEffects.Nether());
 		map.put(DimensionTypes.THE_END_ID, new DimensionEffects.End());
+		map.put(DimensionTypes.field_50992, new DimensionEffects.class_9615());
 	});
-	private final float[] rgba = new float[4];
+	protected final float[] rgba = new float[4];
 	private final float cloudsHeight;
 	private final boolean alternateSkyColor;
 	private final DimensionEffects.SkyType skyType;
@@ -81,6 +82,10 @@ public abstract class DimensionEffects {
 
 	public DimensionEffects.SkyType getSkyType() {
 		return this.skyType;
+	}
+
+	public int method_59359() {
+		return 16777215;
 	}
 
 	public boolean shouldBrightenLighting() {
@@ -164,5 +169,47 @@ public abstract class DimensionEffects {
 		 * Signals the renderer to draw the end sky box over the sky (as in the vanilla End).
 		 */
 		END;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class class_9615 extends DimensionEffects {
+		public class_9615() {
+			super(112.0F, false, DimensionEffects.SkyType.NORMAL, false, false);
+		}
+
+		@Override
+		public Vec3d adjustFogColor(Vec3d color, float sunHeight) {
+			return color.multiply((double)(sunHeight * 0.94F + 0.06F), (double)(sunHeight * 0.94F + 0.06F), (double)(sunHeight * 0.91F + 0.09F));
+		}
+
+		@Override
+		public boolean useThickFog(int camX, int camY) {
+			return false;
+		}
+
+		@Override
+		public int method_59359() {
+			return 14548906;
+		}
+
+		@Nullable
+		@Override
+		public float[] getFogColorOverride(float skyAngle, float tickDelta) {
+			float f = 0.4F;
+			float g = MathHelper.cos(skyAngle * (float) (Math.PI * 2)) - 0.0F;
+			float h = -0.0F;
+			if (g >= -0.4F && g <= 0.4F) {
+				float i = (g - -0.0F) / 0.4F * 0.5F + 0.5F;
+				float j = 1.0F - (1.0F - MathHelper.sin(i * (float) Math.PI)) * 0.99F;
+				j *= j;
+				this.rgba[0] = i * i * 0.3F + 0.35F;
+				this.rgba[1] = i * 0.7F + 0.2F;
+				this.rgba[2] = i * i * 0.0F + 0.2F;
+				this.rgba[3] = j;
+				return this.rgba;
+			} else {
+				return null;
+			}
+		}
 	}
 }

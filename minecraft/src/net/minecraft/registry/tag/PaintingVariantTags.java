@@ -6,6 +6,7 @@ import net.minecraft.util.Identifier;
 
 public class PaintingVariantTags {
 	public static final TagKey<PaintingVariant> PLACEABLE = of("placeable");
+	public static final TagKey<PaintingVariant> POTATO = of("potato");
 
 	private PaintingVariantTags() {
 	}

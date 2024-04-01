@@ -31,6 +31,11 @@ public class SoundEvents {
 	public static final RegistryEntry.Reference<SoundEvent> AMBIENT_WARPED_FOREST_ADDITIONS = registerReference("ambient.warped_forest.additions");
 	public static final RegistryEntry.Reference<SoundEvent> AMBIENT_WARPED_FOREST_LOOP = registerReference("ambient.warped_forest.loop");
 	public static final RegistryEntry.Reference<SoundEvent> AMBIENT_WARPED_FOREST_MOOD = registerReference("ambient.warped_forest.mood");
+	public static final RegistryEntry.Reference<SoundEvent> AMBIENT_ARBORETUM_LOOP = method_58802("ambient.arboretum.loop");
+	public static final RegistryEntry.Reference<SoundEvent> AMBIENT_CORRUPTION_LOOP = method_58802("ambient.corruption.loop");
+	public static final RegistryEntry.Reference<SoundEvent> AMBIENT_FIELDS_LOOP = method_58802("ambient.fields.loop");
+	public static final RegistryEntry.Reference<SoundEvent> AMBIENT_HASH_LOOP = method_58802("ambient.hash.loop");
+	public static final RegistryEntry.Reference<SoundEvent> AMBIENT_WASTELAND_LOOP = method_58802("ambient.wasteland.loop");
 	public static final SoundEvent AMBIENT_UNDERWATER_ENTER = register("ambient.underwater.enter");
 	public static final SoundEvent AMBIENT_UNDERWATER_EXIT = register("ambient.underwater.exit");
 	public static final SoundEvent AMBIENT_UNDERWATER_LOOP = register("ambient.underwater.loop");
@@ -460,13 +465,26 @@ public class SoundEvents {
 	public static final SoundEvent ITEM_DYE_USE = register("item.dye.use");
 	public static final SoundEvent ENTITY_EGG_THROW = register("entity.egg.throw");
 	public static final SoundEvent ENTITY_ELDER_GUARDIAN_AMBIENT = register("entity.elder_guardian.ambient");
+	public static final SoundEvent ENTITY_PLAGUEWHALE_AMBIENT = method_58801("entity.plaguewhale.ambient");
 	public static final SoundEvent ENTITY_ELDER_GUARDIAN_AMBIENT_LAND = register("entity.elder_guardian.ambient_land");
+	public static final SoundEvent ENTITY_PLAGUEWHALE_AMBIENT_LAND = method_58801("entity.plaguewhale.ambient_land");
 	public static final SoundEvent ENTITY_ELDER_GUARDIAN_CURSE = register("entity.elder_guardian.curse");
 	public static final SoundEvent ENTITY_ELDER_GUARDIAN_DEATH = register("entity.elder_guardian.death");
+	public static final SoundEvent ENTITY_PLAGUEWHALE_DEATH = method_58801("entity.plaguewhale.death");
 	public static final SoundEvent ENTITY_ELDER_GUARDIAN_DEATH_LAND = register("entity.elder_guardian.death_land");
+	public static final SoundEvent ENTITY_PLAGUEWHALE_DEATH_LAND = method_58801("entity.plaguewhale.death_land");
 	public static final SoundEvent ENTITY_ELDER_GUARDIAN_FLOP = register("entity.elder_guardian.flop");
+	public static final SoundEvent ENTITY_PLAGUEWHALE_FLOP = method_58801("entity.plaguewhale.flop");
 	public static final SoundEvent ENTITY_ELDER_GUARDIAN_HURT = register("entity.elder_guardian.hurt");
+	public static final SoundEvent ENTITY_PLAGUEWHALE_HURT = method_58801("entity.plaguewhale.hurt");
 	public static final SoundEvent ENTITY_ELDER_GUARDIAN_HURT_LAND = register("entity.elder_guardian.hurt_land");
+	public static final SoundEvent ENTITY_PLAGUEWHALE_HURT_LAND = method_58801("entity.plaguewhale.hurt_land");
+	public static final SoundEvent ENTITY_PLAYER_SPROUT_RESPAWN = method_58801("entity.player.sprout_respawn");
+	public static final SoundEvent ENTITY_PLAYER_SPROUT_RESPAWN_ONE = method_58801("entity.player.sprout_respawn_one");
+	public static final SoundEvent ENTITY_PLAYER_SPROUT_RESPAWN_TWO = method_58801("entity.player.sprout_respawn_two");
+	public static final SoundEvent ENTITY_POTATO_PEEL = method_58801("entity.potato.peel");
+	public static final RegistryEntry.Reference<SoundEvent> ENTITY_POTATO_CHIPS = method_58802("entity.potato.chips");
+	public static final RegistryEntry.Reference<SoundEvent> INTENTIONALLY_EMPTY = method_58802("intentionally_empty");
 	public static final SoundEvent ITEM_ELYTRA_FLYING = register("item.elytra.flying");
 	public static final SoundEvent BLOCK_ENCHANTMENT_TABLE_USE = register("block.enchantment_table.use");
 	public static final SoundEvent BLOCK_ENDER_CHEST_CLOSE = register("block.ender_chest.close");
@@ -578,7 +596,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_GENERIC_BURN = register("entity.generic.burn");
 	public static final SoundEvent ENTITY_GENERIC_DEATH = register("entity.generic.death");
 	public static final SoundEvent ENTITY_GENERIC_DRINK = register("entity.generic.drink");
-	public static final SoundEvent ENTITY_GENERIC_EAT = register("entity.generic.eat");
+	public static final RegistryEntry.Reference<SoundEvent> ENTITY_GENERIC_EAT = registerReference("entity.generic.eat");
 	public static final RegistryEntry.Reference<SoundEvent> ENTITY_GENERIC_EXPLODE = registerReference("entity.generic.explode");
 	public static final SoundEvent ENTITY_GENERIC_EXTINGUISH_FIRE = register("entity.generic.extinguish_fire");
 	public static final SoundEvent ENTITY_GENERIC_HURT = register("entity.generic.hurt");
@@ -644,13 +662,21 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_GRINDSTONE_USE = register("block.grindstone.use");
 	public static final SoundEvent BLOCK_GROWING_PLANT_CROP = register("block.growing_plant.crop");
 	public static final SoundEvent ENTITY_GUARDIAN_AMBIENT = register("entity.guardian.ambient");
+	public static final SoundEvent ENTITY_TOXIFIN_AMBIENT = method_58801("entity.toxifin.ambient");
 	public static final SoundEvent ENTITY_GUARDIAN_AMBIENT_LAND = register("entity.guardian.ambient_land");
+	public static final SoundEvent ENTITY_TOXIFIN_AMBIENT_LAND = method_58801("entity.toxifin.ambient_land");
 	public static final SoundEvent ENTITY_GUARDIAN_ATTACK = register("entity.guardian.attack");
+	public static final SoundEvent ENTITY_TOXIFIN_ATTACK = method_58801("entity.toxifin.attack");
 	public static final SoundEvent ENTITY_GUARDIAN_DEATH = register("entity.guardian.death");
+	public static final SoundEvent ENTITY_TOXIFIN_DEATH = method_58801("entity.toxifin.death");
 	public static final SoundEvent ENTITY_GUARDIAN_DEATH_LAND = register("entity.guardian.death_land");
+	public static final SoundEvent ENTITY_TOXIFIN_DEATH_LAND = method_58801("entity.toxifin.death_land");
 	public static final SoundEvent ENTITY_GUARDIAN_FLOP = register("entity.guardian.flop");
+	public static final SoundEvent ENTITY_TOXIFIN_FLOP = method_58801("entity.toxifin.flop");
 	public static final SoundEvent ENTITY_GUARDIAN_HURT = register("entity.guardian.hurt");
+	public static final SoundEvent ENTITY_TOXIFIN_HURT = method_58801("entity.toxifin.hurt");
 	public static final SoundEvent ENTITY_GUARDIAN_HURT_LAND = register("entity.guardian.hurt_land");
+	public static final SoundEvent ENTITY_TOXIFIN_HURT_LAND = method_58801("entity.toxifin.hurt_land");
 	public static final SoundEvent BLOCK_HANGING_ROOTS_BREAK = register("block.hanging_roots.break");
 	public static final SoundEvent BLOCK_HANGING_ROOTS_FALL = register("block.hanging_roots.fall");
 	public static final SoundEvent BLOCK_HANGING_ROOTS_HIT = register("block.hanging_roots.hit");
@@ -703,7 +729,7 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_HONEY_BLOCK_SLIDE = register("block.honey_block.slide");
 	public static final SoundEvent BLOCK_HONEY_BLOCK_STEP = register("block.honey_block.step");
 	public static final SoundEvent ITEM_HONEYCOMB_WAX_ON = register("item.honeycomb.wax_on");
-	public static final SoundEvent ITEM_HONEY_BOTTLE_DRINK = register("item.honey_bottle.drink");
+	public static final RegistryEntry.Reference<SoundEvent> ITEM_HONEY_BOTTLE_DRINK = registerReference("item.honey_bottle.drink");
 	public static final int GOAT_HORN_SOUND_COUNT = 8;
 	public static final ImmutableList<RegistryEntry.Reference<SoundEvent>> GOAT_HORN_SOUNDS = registerGoatHornSounds();
 	public static final SoundEvent ENTITY_HORSE_AMBIENT = register("entity.horse.ambient");
@@ -808,6 +834,15 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_MANGROVE_ROOTS_STEP = register("block.mangrove_roots.step");
 	public static final SoundEvent BLOCK_MEDIUM_AMETHYST_BUD_BREAK = register("block.medium_amethyst_bud.break");
 	public static final SoundEvent BLOCK_MEDIUM_AMETHYST_BUD_PLACE = register("block.medium_amethyst_bud.place");
+	public static final SoundEvent ENTITY_MEGASPUD_DEATH = method_58801("entity.megaspud.death");
+	public static final SoundEvent ENTITY_MEGASPUD_HURT = method_58801("entity.megaspud.hurt");
+	public static final SoundEvent ENTITY_MEGASPUD_IDLE = method_58801("entity.megaspud.idle");
+	public static final SoundEvent ENTITY_MEGASPUD_SUMMON = method_58801("entity.megaspud.summon");
+	public static final SoundEvent ENTITY_MEGASPUD_FIREBALL = method_58801("entity.megaspud.fireball");
+	public static final SoundEvent ENTITY_MEGASPUD_JUMP = method_58801("entity.megaspud.jump");
+	public static final SoundEvent ENTITY_MEGASPUD_JUMP_HI = method_58801("entity.megaspud.jump_hi");
+	public static final SoundEvent ENTITY_MEGASPUD_UPSET = method_58801("entity.megaspud.upset");
+	public static final SoundEvent ENTITY_MEGASPUD_CHALLENGE = method_58801("entity.megaspud.challenge");
 	public static final SoundEvent BLOCK_METAL_BREAK = register("block.metal.break");
 	public static final SoundEvent BLOCK_METAL_FALL = register("block.metal.fall");
 	public static final SoundEvent BLOCK_METAL_HIT = register("block.metal.hit");
@@ -929,7 +964,7 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_NETHER_WOOD_PRESSURE_PLATE_CLICK_ON = register("block.nether_wood_pressure_plate.click_on");
 	public static final SoundEvent BLOCK_NETHER_WOOD_FENCE_GATE_CLOSE = register("block.nether_wood_fence_gate.close");
 	public static final SoundEvent BLOCK_NETHER_WOOD_FENCE_GATE_OPEN = register("block.nether_wood_fence_gate.open");
-	public static final SoundEvent INTENTIONALLY_EMPTY = register("minecraft:intentionally_empty");
+	public static final SoundEvent field_42593 = register("minecraft:intentionally_empty");
 	public static final SoundEvent BLOCK_PACKED_MUD_BREAK = register("block.packed_mud.break");
 	public static final SoundEvent BLOCK_PACKED_MUD_FALL = register("block.packed_mud.fall");
 	public static final SoundEvent BLOCK_PACKED_MUD_HIT = register("block.packed_mud.hit");
@@ -1586,6 +1621,12 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_ZOMBIE_HORSE_HURT = register("entity.zombie_horse.hurt");
 	public static final SoundEvent ENTITY_ZOMBIE_HURT = register("entity.zombie.hurt");
 	public static final SoundEvent ENTITY_ZOMBIE_INFECT = register("entity.zombie.infect");
+	public static final SoundEvent ENTITY_ZOMBIE_POTATO_AMBIENT = method_58801("entity.zombie_potato.ambient");
+	public static final SoundEvent ENTITY_ZOMBIE_POTATO_ATTACK_IRON_DOOR = method_58801("entity.zombie_potato.attack_iron_door");
+	public static final SoundEvent ENTITY_ZOMBIE_POTATO_DEATH = method_58801("entity.zombie_potato.death");
+	public static final SoundEvent ENTITY_ZOMBIE_POTATO_HURT = method_58801("entity.zombie_potato.hurt");
+	public static final SoundEvent ENTITY_ZOMBIE_POTATO_INFECT = method_58801("entity.zombie_potato.infect");
+	public static final SoundEvent ENTITY_ZOMBIE_POTATO_STEP = method_58801("entity.zombie_potato.step");
 	public static final SoundEvent ENTITY_ZOMBIFIED_PIGLIN_AMBIENT = register("entity.zombified_piglin.ambient");
 	public static final SoundEvent ENTITY_ZOMBIFIED_PIGLIN_ANGRY = register("entity.zombified_piglin.angry");
 	public static final SoundEvent ENTITY_ZOMBIFIED_PIGLIN_DEATH = register("entity.zombified_piglin.death");
@@ -1597,6 +1638,34 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_DEATH = register("entity.zombie_villager.death");
 	public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_HURT = register("entity.zombie_villager.hurt");
 	public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_STEP = register("entity.zombie_villager.step");
+	public static final SoundEvent THE_JOKE = method_58801("the_joke");
+	public static final SoundEvent OOOF = method_58801("ooof");
+	public static final SoundEvent BLOCK_POTATO_BATTERY_ZAP = method_58801("block.potato_battery.zap");
+	public static final SoundEvent BLOCK_CORRUPTED_PEELGRASS_BLOCK_BREAK = method_58801("block.corrupted_peelgrass_block.break");
+	public static final SoundEvent BLOCK_CORRUPTED_PEELGRASS_BLOCK_STEP = method_58801("block.corrupted_peelgrass_block.step");
+	public static final SoundEvent BLOCK_CORRUPTED_PEELGRASS_BLOCK_PLACE = method_58801("block.corrupted_peelgrass_block.place");
+	public static final SoundEvent BLOCK_CORRUPTED_PEELGRASS_BLOCK_HIT = method_58801("block.corrupted_peelgrass_block.hit");
+	public static final SoundEvent BLOCK_CORRUPTED_PEELGRASS_BLOCK_FALL = method_58801("block.corrupted_peelgrass_block.fall");
+	public static final SoundEvent BLOCK_PEELGRASS_BLOCK_BREAK = method_58801("block.peelgrass_block.break");
+	public static final SoundEvent BLOCK_PEELGRASS_BLOCK_STEP = method_58801("block.peelgrass_block.step");
+	public static final SoundEvent BLOCK_PEELGRASS_BLOCK_PLACE = method_58801("block.peelgrass_block.place");
+	public static final SoundEvent BLOCK_PEELGRASS_BLOCK_HIT = method_58801("block.peelgrass_block.hit");
+	public static final SoundEvent BLOCK_PEELGRASS_BLOCK_FALL = method_58801("block.peelgrass_block.fall");
+	public static final SoundEvent BLOCK_POTONE_BREAK = method_58801("block.potone.break");
+	public static final SoundEvent BLOCK_POTONE_STEP = method_58801("block.potone.step");
+	public static final SoundEvent BLOCK_POTONE_PLACE = method_58801("block.potone.place");
+	public static final SoundEvent BLOCK_POTONE_HIT = method_58801("block.potone.hit");
+	public static final SoundEvent BLOCK_POTONE_FALL = method_58801("block.potone.fall");
+	public static final SoundEvent BLOCK_GRAVTATER_BREAK = method_58801("block.gravtater.break");
+	public static final SoundEvent BLOCK_GRAVTATER_STEP = method_58801("block.gravtater.step");
+	public static final SoundEvent BLOCK_GRAVTATER_PLACE = method_58801("block.gravtater.place");
+	public static final SoundEvent BLOCK_GRAVTATER_HIT = method_58801("block.gravtater.hit");
+	public static final SoundEvent BLOCK_GRAVTATER_FALL = method_58801("block.gravtater.fall");
+	public static final SoundEvent BLOCK_TERREDEPOMME_BREAK = method_58801("block.terredepomme.break");
+	public static final SoundEvent BLOCK_TERREDEPOMME_STEP = method_58801("block.terredepomme.step");
+	public static final SoundEvent BLOCK_TERREDEPOMME_PLACE = method_58801("block.terredepomme.place");
+	public static final SoundEvent BLOCK_TERREDEPOMME_HIT = method_58801("block.terredepomme.hit");
+	public static final SoundEvent BLOCK_TERREDEPOMME_FALL = method_58801("block.terredepomme.fall");
 
 	private static RegistryEntry<SoundEvent> register(Identifier id, Identifier soundId, float distanceToTravel) {
 		return Registry.registerReference(Registries.SOUND_EVENT, id, SoundEvent.of(soundId, distanceToTravel));
@@ -1606,12 +1675,20 @@ public class SoundEvents {
 		return register(new Identifier(id));
 	}
 
+	private static SoundEvent method_58801(String string) {
+		return register(new Identifier("nothingtoseeheremovealong", string));
+	}
+
 	private static SoundEvent register(Identifier id) {
 		return register(id, id);
 	}
 
 	private static RegistryEntry.Reference<SoundEvent> registerReference(String id) {
 		return registerReference(new Identifier(id));
+	}
+
+	private static RegistryEntry.Reference<SoundEvent> method_58802(String string) {
+		return registerReference(new Identifier("nothingtoseeheremovealong", string));
 	}
 
 	private static RegistryEntry.Reference<SoundEvent> registerReference(Identifier id) {

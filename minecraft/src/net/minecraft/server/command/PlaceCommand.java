@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.command.CommandSource;
@@ -257,7 +258,8 @@ public class PlaceCommand {
 			new ChunkPos(pos),
 			0,
 			serverWorld,
-			biome -> true
+			biome -> true,
+			List.of()
 		);
 		if (!structureStart.hasChildren()) {
 			throw STRUCTURE_FAILED_EXCEPTION.create();

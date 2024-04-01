@@ -20,6 +20,7 @@ import net.minecraft.text.TextColor;
 import net.minecraft.text.TextVisitFactory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
@@ -446,24 +447,31 @@ public class TextRenderer {
 				l = this.blue;
 			}
 
-			if (!(glyphRenderer instanceof EmptyGlyphRenderer)) {
-				float m = bl ? glyph.getBoldOffset() : 0.0F;
-				float n = this.shadow ? glyph.getShadowOffset() : 0.0F;
-				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer.getLayer(this.layerType));
-				TextRenderer.this.drawGlyph(glyphRenderer, bl, style.isItalic(), m, this.x + n, this.y + n, this.matrix, vertexConsumer, g, h, l, f, this.light);
+			float m;
+			if (j == 129364) {
+				m = 1.5F * MathHelper.sin(this.x + (float)Util.getMeasuringTimeNano() / 1.0E8F);
+			} else {
+				m = 0.0F;
 			}
 
-			float m = glyph.getAdvance(bl);
-			float n = this.shadow ? 1.0F : 0.0F;
+			if (!(glyphRenderer instanceof EmptyGlyphRenderer)) {
+				float n = bl ? glyph.getBoldOffset() : 0.0F;
+				float o = this.shadow ? glyph.getShadowOffset() : 0.0F;
+				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer.getLayer(this.layerType));
+				TextRenderer.this.drawGlyph(glyphRenderer, bl, style.isItalic(), n, this.x + o, this.y + o + m, this.matrix, vertexConsumer, g, h, l, f, this.light);
+			}
+
+			float n = glyph.getAdvance(bl);
+			float o = this.shadow ? 1.0F : 0.0F;
 			if (style.isStrikethrough()) {
-				this.addRectangle(new GlyphRenderer.Rectangle(this.x + n - 1.0F, this.y + n + 4.5F, this.x + n + m, this.y + n + 4.5F - 1.0F, 0.01F, g, h, l, f));
+				this.addRectangle(new GlyphRenderer.Rectangle(this.x + o - 1.0F, this.y + o + 4.5F, this.x + o + n, this.y + o + 4.5F - 1.0F, 0.01F, g, h, l, f));
 			}
 
 			if (style.isUnderlined()) {
-				this.addRectangle(new GlyphRenderer.Rectangle(this.x + n - 1.0F, this.y + n + 9.0F, this.x + n + m, this.y + n + 9.0F - 1.0F, 0.01F, g, h, l, f));
+				this.addRectangle(new GlyphRenderer.Rectangle(this.x + o - 1.0F, this.y + o + 9.0F, this.x + o + n, this.y + o + 9.0F - 1.0F, 0.01F, g, h, l, f));
 			}
 
-			this.x += m;
+			this.x += n;
 			return true;
 		}
 

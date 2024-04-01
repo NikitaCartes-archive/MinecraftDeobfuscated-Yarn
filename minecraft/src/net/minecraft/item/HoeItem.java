@@ -29,6 +29,14 @@ public class HoeItem extends MiningToolItem {
 	 */
 	protected static final Map<Block, Pair<Predicate<ItemUsageContext>, Consumer<ItemUsageContext>>> TILLING_ACTIONS = Maps.<Block, Pair<Predicate<ItemUsageContext>, Consumer<ItemUsageContext>>>newHashMap(
 		ImmutableMap.of(
+			Blocks.CORRUPTED_PEELGRASS_BLOCK,
+			Pair.of(HoeItem::canTillFarmland, createTillAction(Blocks.POISON_FARMLAND.getDefaultState())),
+			Blocks.PEELGRASS_BLOCK,
+			Pair.of(HoeItem::canTillFarmland, createTillAction(Blocks.POISON_FARMLAND.getDefaultState())),
+			Blocks.TERRE_DE_POMME,
+			Pair.of(HoeItem::canTillFarmland, createTillAction(Blocks.POISON_FARMLAND.getDefaultState())),
+			Blocks.POISON_PATH,
+			Pair.of(HoeItem::canTillFarmland, createTillAction(Blocks.POISON_FARMLAND.getDefaultState())),
 			Blocks.GRASS_BLOCK,
 			Pair.of(HoeItem::canTillFarmland, createTillAction(Blocks.FARMLAND.getDefaultState())),
 			Blocks.DIRT_PATH,

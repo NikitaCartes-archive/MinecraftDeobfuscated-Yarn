@@ -67,7 +67,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	@Override
 	protected void initCustomGoals() {
-		this.goalSelector.add(2, new ZombieAttackGoal(this, 1.0, false));
+		this.goalSelector.add(2, new ZombieAttackGoal<>(this, 1.0, false));
 		this.goalSelector.add(7, new WanderAroundFarGoal(this, 1.0));
 		this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
 		this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));

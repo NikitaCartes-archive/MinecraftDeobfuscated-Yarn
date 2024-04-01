@@ -12,7 +12,7 @@ public class ExperienceDroppingBlock extends Block {
 		instance -> instance.group(IntProvider.createValidatingCodec(0, 10).fieldOf("experience").forGetter(block -> block.experienceDropped), createSettingsCodec())
 				.apply(instance, ExperienceDroppingBlock::new)
 	);
-	private final IntProvider experienceDropped;
+	protected final IntProvider experienceDropped;
 
 	@Override
 	public MapCodec<? extends ExperienceDroppingBlock> getCodec() {

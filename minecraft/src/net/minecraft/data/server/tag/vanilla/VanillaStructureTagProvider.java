@@ -18,6 +18,7 @@ public class VanillaStructureTagProvider extends TagProvider<Structure> {
 	protected void configure(RegistryWrapper.WrapperLookup lookup) {
 		this.getOrCreateTagBuilder(StructureTags.VILLAGE)
 			.add(StructureKeys.VILLAGE_PLAINS)
+			.add(StructureKeys.VILLAGE_POTATO)
 			.add(StructureKeys.VILLAGE_DESERT)
 			.add(StructureKeys.VILLAGE_SAVANNA)
 			.add(StructureKeys.VILLAGE_SNOWY)
@@ -33,6 +34,8 @@ public class VanillaStructureTagProvider extends TagProvider<Structure> {
 			.add(StructureKeys.RUINED_PORTAL_OCEAN)
 			.add(StructureKeys.RUINED_PORTAL)
 			.add(StructureKeys.RUINED_PORTAL_SWAMP);
+		this.getOrCreateTagBuilder(StructureTags.RUINED_PORTATOL).add(StructureKeys.RUINED_PORTATOL);
+		this.getOrCreateTagBuilder(StructureTags.COLOSSEUM).add(StructureKeys.COLOSSEUM);
 		this.getOrCreateTagBuilder(StructureTags.CATS_SPAWN_IN).add(StructureKeys.SWAMP_HUT);
 		this.getOrCreateTagBuilder(StructureTags.CATS_SPAWN_AS_BLACK).add(StructureKeys.SWAMP_HUT);
 		this.getOrCreateTagBuilder(StructureTags.EYE_OF_ENDER_LOCATED).add(StructureKeys.STRONGHOLD);

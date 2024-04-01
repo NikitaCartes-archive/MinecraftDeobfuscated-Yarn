@@ -74,4 +74,9 @@ public class ChunkRendererRegion implements BlockRenderView {
 	public int getHeight() {
 		return this.world.getHeight();
 	}
+
+	@Override
+	public boolean isPotato() {
+		return this.world.isPotato();
+	}
 }

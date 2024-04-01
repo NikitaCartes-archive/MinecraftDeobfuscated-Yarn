@@ -70,7 +70,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.isOf(Blocks.FARMLAND);
+		return floor.isOf(Blocks.FARMLAND) || floor.isOf(Blocks.POISON_FARMLAND);
 	}
 
 	@Override
@@ -86,7 +86,8 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 					Direction direction = Direction.Type.HORIZONTAL.random(random);
 					BlockPos blockPos = pos.offset(direction);
 					BlockState blockState = world.getBlockState(blockPos.down());
-					if (world.getBlockState(blockPos).isAir() && (blockState.isOf(Blocks.FARMLAND) || blockState.isIn(BlockTags.DIRT))) {
+					if (world.getBlockState(blockPos).isAir()
+						&& (blockState.isOf(Blocks.FARMLAND) || blockState.isIn(BlockTags.DIRT) || blockState.isOf(Blocks.POISON_FARMLAND))) {
 						Registry<Block> registry = world.getRegistryManager().get(RegistryKeys.BLOCK);
 						Optional<Block> optional = registry.getOrEmpty(this.gourdBlock);
 						Optional<Block> optional2 = registry.getOrEmpty(this.attachedStemBlock);

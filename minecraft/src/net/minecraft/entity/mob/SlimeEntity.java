@@ -24,6 +24,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -41,6 +42,8 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeKeys;
 
 public class SlimeEntity extends MobEntity implements Monster {
 	private static final TrackedData<Integer> SLIME_SIZE = DataTracker.registerData(SlimeEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -285,7 +288,12 @@ public class SlimeEntity extends MobEntity implements Monster {
 					return canMobSpawn(type, world, spawnReason, pos, random);
 				}
 
-				if (world.getBiome(pos).isIn(BiomeTags.ALLOWS_SURFACE_SLIME_SPAWNS)
+				RegistryEntry<Biome> registryEntry = world.getBiome(pos);
+				if (registryEntry.matchesKey(BiomeKeys.WASTELAND)) {
+					return canMobSpawn(type, world, spawnReason, pos, random);
+				}
+
+				if (registryEntry.isIn(BiomeTags.ALLOWS_SURFACE_SLIME_SPAWNS)
 					&& pos.getY() > 50
 					&& pos.getY() < 70
 					&& random.nextFloat() < 0.5F

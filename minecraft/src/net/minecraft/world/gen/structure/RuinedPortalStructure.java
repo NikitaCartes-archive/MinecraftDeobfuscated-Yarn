@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import net.minecraft.block.BlockState;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.structure.RuinedPortalStructurePiece;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.BlockMirror;
@@ -44,6 +45,19 @@ public class RuinedPortalStructure extends Structure {
 	private static final String[] RARE_PORTAL_STRUCTURE_IDS = new String[]{
 		"ruined_portal/giant_portal_1", "ruined_portal/giant_portal_2", "ruined_portal/giant_portal_3"
 	};
+	private static final String[] field_51029 = new String[]{
+		"ruined_portatol/portal_1",
+		"ruined_portatol/portal_2",
+		"ruined_portatol/portal_3",
+		"ruined_portatol/portal_4",
+		"ruined_portatol/portal_5",
+		"ruined_portatol/portal_6",
+		"ruined_portatol/portal_7",
+		"ruined_portatol/portal_8",
+		"ruined_portatol/portal_9",
+		"ruined_portatol/portal_10"
+	};
+	private static final String[] field_51030 = new String[]{"ruined_portatol/giant_portal_1", "ruined_portatol/giant_portal_2", "ruined_portatol/giant_portal_3"};
 	private static final float RARE_PORTAL_CHANCE = 0.05F;
 	private static final int MIN_BLOCKS_ABOVE_WORLD_BOTTOM = 15;
 	private final List<RuinedPortalStructure.Setup> setups;
@@ -97,11 +111,14 @@ public class RuinedPortalStructure extends Structure {
 			properties.overgrown = setup4.overgrown();
 			properties.vines = setup4.vines();
 			properties.replaceWithBlackstone = setup4.replaceWithBlackstone();
+			properties.field_51028 = setup4.potato;
+			String[] strings = setup4.potato ? field_51030 : RARE_PORTAL_STRUCTURE_IDS;
+			String[] strings2 = setup4.potato ? field_51029 : COMMON_PORTAL_STRUCTURE_IDS;
 			Identifier identifier;
 			if (chunkRandom.nextFloat() < 0.05F) {
-				identifier = new Identifier(RARE_PORTAL_STRUCTURE_IDS[chunkRandom.nextInt(RARE_PORTAL_STRUCTURE_IDS.length)]);
+				identifier = new Identifier(strings[chunkRandom.nextInt(strings.length)]);
 			} else {
-				identifier = new Identifier(COMMON_PORTAL_STRUCTURE_IDS[chunkRandom.nextInt(COMMON_PORTAL_STRUCTURE_IDS.length)]);
+				identifier = new Identifier(strings2[chunkRandom.nextInt(strings2.length)]);
 			}
 
 			StructureTemplate structureTemplate = context.structureTemplateManager().getTemplateOrBlank(identifier);
@@ -119,7 +136,24 @@ public class RuinedPortalStructure extends Structure {
 				)
 				- 1;
 			int j = getFloorHeight(
-				chunkRandom, chunkGenerator, setup4.placement(), properties.airPocket, i, blockBox.getBlockCountY(), blockBox, heightLimitView, noiseConfig
+				chunkRandom,
+				chunkGenerator,
+				setup4.placement(),
+				properties.airPocket,
+				i,
+				blockBox.getBlockCountY(),
+				blockBox,
+				heightLimitView,
+				noiseConfig,
+				context.chunkGenerator()
+					.getBiomeSource()
+					.getBiome(
+						BiomeCoords.fromBlock(blockPos2.getX()),
+						BiomeCoords.fromBlock(blockPos2.getY()),
+						BiomeCoords.fromBlock(blockPos2.getZ()),
+						noiseConfig.getMultiNoiseSampler()
+					)
+					.isIn(BiomeTags.IS_POTATO)
 			);
 			BlockPos blockPos4 = new BlockPos(blockPos2.getX(), j, blockPos2.getZ());
 			return Optional.of(
@@ -172,9 +206,14 @@ public class RuinedPortalStructure extends Structure {
 		int blockCountY,
 		BlockBox box,
 		HeightLimitView world,
-		NoiseConfig noiseConfig
+		NoiseConfig noiseConfig,
+		boolean bl
 	) {
-		int i = world.getBottomY() + 15;
+		int i = world.getBottomY() + (bl ? 40 : 15);
+		if (bl && height < i) {
+			height = i;
+		}
+
 		int j;
 		if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER) {
 			if (airPocket) {
@@ -243,7 +282,8 @@ public class RuinedPortalStructure extends Structure {
 		boolean vines,
 		boolean canBeCold,
 		boolean replaceWithBlackstone,
-		float weight
+		float weight,
+		boolean potato
 	) {
 		public static final Codec<RuinedPortalStructure.Setup> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
@@ -254,7 +294,8 @@ public class RuinedPortalStructure extends Structure {
 						Codec.BOOL.fieldOf("vines").forGetter(RuinedPortalStructure.Setup::vines),
 						Codec.BOOL.fieldOf("can_be_cold").forGetter(RuinedPortalStructure.Setup::canBeCold),
 						Codec.BOOL.fieldOf("replace_with_blackstone").forGetter(RuinedPortalStructure.Setup::replaceWithBlackstone),
-						Codecs.POSITIVE_FLOAT.fieldOf("weight").forGetter(RuinedPortalStructure.Setup::weight)
+						Codecs.POSITIVE_FLOAT.fieldOf("weight").forGetter(RuinedPortalStructure.Setup::weight),
+						Codec.BOOL.fieldOf("potaot").forGetter(RuinedPortalStructure.Setup::potato)
 					)
 					.apply(instance, RuinedPortalStructure.Setup::new)
 		);

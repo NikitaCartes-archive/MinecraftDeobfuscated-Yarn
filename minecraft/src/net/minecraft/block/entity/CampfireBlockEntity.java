@@ -4,6 +4,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
@@ -13,6 +14,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -38,10 +40,12 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	private final DefaultedList<ItemStack> itemsBeingCooked = DefaultedList.ofSize(4, ItemStack.EMPTY);
 	private final int[] cookingTimes = new int[4];
 	private final int[] cookingTotalTimes = new int[4];
+	public final boolean field_50912;
 	private final RecipeManager.MatchGetter<Inventory, CampfireCookingRecipe> matchGetter = RecipeManager.createCachedMatchGetter(RecipeType.CAMPFIRE_COOKING);
 
 	public CampfireBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.CAMPFIRE, pos, state);
+		this.field_50912 = state.isOf(Blocks.FRYING_TABLE);
 	}
 
 	public static void litServerTick(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire) {
@@ -159,9 +163,17 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	}
 
 	public Optional<RecipeEntry<CampfireCookingRecipe>> getRecipeFor(ItemStack stack) {
-		return this.itemsBeingCooked.stream().noneMatch(ItemStack::isEmpty)
-			? Optional.empty()
-			: this.matchGetter.getFirstMatch(new SimpleInventory(stack), this.world);
+		if (this.field_50912 && !this.method_59166(stack)) {
+			return Optional.empty();
+		} else {
+			return this.itemsBeingCooked.stream().noneMatch(ItemStack::isEmpty)
+				? Optional.empty()
+				: this.matchGetter.getFirstMatch(new SimpleInventory(stack), this.world);
+		}
+	}
+
+	private boolean method_59166(ItemStack itemStack) {
+		return itemStack.isOf(Items.POTATO) ? true : Items.POTATO_PEELS_INGREDIENT.test(itemStack);
 	}
 
 	public boolean addItem(@Nullable Entity user, ItemStack stack, int cookTime) {

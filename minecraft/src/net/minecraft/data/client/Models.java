@@ -128,6 +128,10 @@ public class Models {
 	public static final Model TEMPLATE_FIRE_UP = block("template_fire_up", TextureKey.FIRE);
 	public static final Model TEMPLATE_FIRE_UP_ALT = block("template_fire_up_alt", TextureKey.FIRE);
 	public static final Model TEMPLATE_CAMPFIRE = block("template_campfire", TextureKey.FIRE, TextureKey.LIT_LOG);
+	public static final Model FRYING_TABLE = block("frying_table", TextureKey.FRYING_TABLE);
+	public static final Model TEMPLATE_ROOTS = block("template_roots", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_ROOTS_NOSIDE = block("template_roots_noside", "_noside", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_ROOTS_SIDE = block("template_roots_side", "_side", TextureKey.TEXTURE);
 	public static final Model TEMPLATE_LANTERN = block("template_lantern", TextureKey.LANTERN);
 	public static final Model TEMPLATE_HANGING_LANTERN = block("template_hanging_lantern", "_hanging", TextureKey.LANTERN);
 	public static final Model TEMPLATE_TORCH = block("template_torch", TextureKey.TORCH);
@@ -177,6 +181,15 @@ public class Models {
 		"template_sculk_shrieker", TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.TOP, TextureKey.PARTICLE, TextureKey.INNER_TOP
 	);
 	public static final Model TEMPLATE_VAULT = block("template_vault", TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.FRONT);
+	public static final Model[] field_51217 = new Model[]{
+		block("template_layered_height2", TextureKey.TEXTURE),
+		block("template_layered_height4", TextureKey.TEXTURE),
+		block("template_layered_height6", TextureKey.TEXTURE),
+		block("template_layered_height8", TextureKey.TEXTURE),
+		block("template_layered_height10", TextureKey.TEXTURE),
+		block("template_layered_height12", TextureKey.TEXTURE),
+		block("template_layered_height14", TextureKey.TEXTURE)
+	};
 	public static final Model HANDHELD_MACE = item("handheld_mace", TextureKey.LAYER0);
 
 	private static Model make(TextureKey... requiredTextureKeys) {

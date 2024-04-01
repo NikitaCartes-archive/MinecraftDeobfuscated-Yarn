@@ -225,7 +225,7 @@ public class BatEntity extends AmbientEntity {
 		nbt.putByte("BatFlags", this.dataTracker.get(BAT_FLAGS));
 	}
 
-	public static boolean canSpawn(EntityType<BatEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<? extends BatEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		if (pos.getY() >= world.getSeaLevel()) {
 			return false;
 		} else {

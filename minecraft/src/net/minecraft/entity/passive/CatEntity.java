@@ -72,6 +72,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeKeys;
 
 /**
  * Meow.
@@ -364,7 +365,9 @@ public class CatEntity extends TameableEntity implements VariantHolder<RegistryE
 		TagKey<CatVariant> tagKey = bl ? CatVariantTags.FULL_MOON_SPAWNS : CatVariantTags.DEFAULT_SPAWNS;
 		Registries.CAT_VARIANT.getRandomEntry(tagKey, world.getRandom()).ifPresent(this::setVariant);
 		ServerWorld serverWorld = world.toServerWorld();
-		if (serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), StructureTags.CATS_SPAWN_AS_BLACK).hasChildren()) {
+		boolean bl2 = serverWorld.getBiome(this.getBlockPos()).matchesKey(BiomeKeys.CORRUPTION);
+		boolean bl3 = serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), StructureTags.CATS_SPAWN_AS_BLACK).hasChildren();
+		if (bl2 || bl3) {
 			this.setVariant(Registries.CAT_VARIANT.entryOf(CatVariant.ALL_BLACK));
 			this.setPersistent();
 		}

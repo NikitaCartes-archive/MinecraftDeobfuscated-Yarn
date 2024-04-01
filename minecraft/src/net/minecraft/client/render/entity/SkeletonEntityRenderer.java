@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SkeletonEntityRenderer<T extends AbstractSkeletonEntity> extends BipedEntityRenderer<T, SkeletonEntityModel<T>> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/skeleton/skeleton.png");
+	public static final Identifier TEXTURE = new Identifier("textures/entity/skeleton/skeleton.png");
 
 	public SkeletonEntityRenderer(EntityRendererFactory.Context context) {
 		this(context, EntityModelLayers.SKELETON, EntityModelLayers.SKELETON_INNER_ARMOR, EntityModelLayers.SKELETON_OUTER_ARMOR);
@@ -21,13 +21,11 @@ public class SkeletonEntityRenderer<T extends AbstractSkeletonEntity> extends Bi
 		this(ctx, legArmorLayer, bodyArmorLayer, new SkeletonEntityModel<>(ctx.getPart(layer)));
 	}
 
-	public SkeletonEntityRenderer(
-		EntityRendererFactory.Context context, EntityModelLayer entityModelLayer, EntityModelLayer entityModelLayer2, SkeletonEntityModel<T> skeletonEntityModel
-	) {
-		super(context, skeletonEntityModel, 0.5F);
+	public SkeletonEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer legArmorLayer, EntityModelLayer bodyArmorLayer, SkeletonEntityModel<T> model) {
+		super(ctx, model, 0.5F);
 		this.addFeature(
 			new ArmorFeatureRenderer<>(
-				this, new SkeletonEntityModel(context.getPart(entityModelLayer)), new SkeletonEntityModel(context.getPart(entityModelLayer2)), context.getModelManager()
+				this, new SkeletonEntityModel(ctx.getPart(legArmorLayer)), new SkeletonEntityModel(ctx.getPart(bodyArmorLayer)), ctx.getModelManager()
 			)
 		);
 	}

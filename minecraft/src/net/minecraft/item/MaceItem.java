@@ -63,7 +63,7 @@ public class MaceItem extends Item {
 	@Override
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 		stack.damage(1, attacker, EquipmentSlot.MAINHAND);
-		if (attacker instanceof ServerPlayerEntity serverPlayerEntity && serverPlayerEntity.fallDistance > 1.5F) {
+		if (attacker instanceof ServerPlayerEntity serverPlayerEntity && method_59050(serverPlayerEntity)) {
 			ServerWorld serverWorld = (ServerWorld)attacker.getWorld();
 			if (!serverPlayerEntity.ignoreFallDamageFromCurrentExplosion
 				|| serverPlayerEntity.currentExplosionImpactPos == null
@@ -102,7 +102,7 @@ public class MaceItem extends Item {
 
 	@Override
 	public float getBonusAttackDamage(PlayerEntity player, float baseAttackDamage) {
-		return player.fallDistance > 1.5F ? baseAttackDamage * 0.5F * player.fallDistance : 0.0F;
+		return method_59050(player) ? baseAttackDamage * 0.5F * player.fallDistance : 0.0F;
 	}
 
 	private void knockbackNearbyEntities(World world, PlayerEntity player, Entity target) {
@@ -133,5 +133,9 @@ public class MaceItem extends Item {
 					}
 				}
 			);
+	}
+
+	public static boolean method_59050(PlayerEntity playerEntity) {
+		return playerEntity.fallDistance > 1.5F && !playerEntity.isFallFlying();
 	}
 }

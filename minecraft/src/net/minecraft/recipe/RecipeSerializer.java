@@ -48,11 +48,15 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 	RecipeSerializer<SmokingRecipe> SMOKING = register("smoking", new CookingRecipeSerializer<>(SmokingRecipe::new, 100));
 	RecipeSerializer<CampfireCookingRecipe> CAMPFIRE_COOKING = register("campfire_cooking", new CookingRecipeSerializer<>(CampfireCookingRecipe::new, 100));
 	RecipeSerializer<StonecuttingRecipe> STONECUTTING = register("stonecutting", new CuttingRecipe.Serializer<>(StonecuttingRecipe::new));
+	RecipeSerializer<PoisonousPotatoCuttingRecipe> POISONOUS_POTATO_CUTTING = register(
+		"poisonous_potato_cutting", new CuttingRecipe.Serializer<>(PoisonousPotatoCuttingRecipe::new)
+	);
 	RecipeSerializer<SmithingTransformRecipe> SMITHING_TRANSFORM = register("smithing_transform", new SmithingTransformRecipe.Serializer());
 	RecipeSerializer<SmithingTrimRecipe> SMITHING_TRIM = register("smithing_trim", new SmithingTrimRecipe.Serializer());
 	RecipeSerializer<CraftingDecoratedPotRecipe> CRAFTING_DECORATED_POT = register(
 		"crafting_decorated_pot", new SpecialRecipeSerializer<>(CraftingDecoratedPotRecipe::new)
 	);
+	RecipeSerializer<PotatoRefinementRecipe> POTATO_REFINEMENT = register("potato_refinement", new PotatoRefinementRecipe.Serializer());
 
 	Codec<T> codec();
 

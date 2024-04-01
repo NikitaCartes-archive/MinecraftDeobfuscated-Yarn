@@ -19,4 +19,5 @@ public record DimensionOptions(RegistryEntry<DimensionType> dimensionTypeEntry, 
 	public static final RegistryKey<DimensionOptions> OVERWORLD = RegistryKey.of(RegistryKeys.DIMENSION, new Identifier("overworld"));
 	public static final RegistryKey<DimensionOptions> NETHER = RegistryKey.of(RegistryKeys.DIMENSION, new Identifier("the_nether"));
 	public static final RegistryKey<DimensionOptions> END = RegistryKey.of(RegistryKeys.DIMENSION, new Identifier("the_end"));
+	public static final RegistryKey<DimensionOptions> field_50994 = RegistryKey.of(RegistryKeys.DIMENSION, new Identifier("potato"));
 }

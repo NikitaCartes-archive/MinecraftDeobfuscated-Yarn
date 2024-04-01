@@ -86,7 +86,7 @@ public class PitcherCropBlock extends TallPlantBlock implements Fertilizable {
 
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.isOf(Blocks.FARMLAND);
+		return floor.isOf(Blocks.FARMLAND) || floor.isOf(Blocks.POISON_FARMLAND);
 	}
 
 	@Override

@@ -88,9 +88,9 @@ public class LightingProvider implements LightingView {
 
 	public ChunkLightingView get(LightType lightType) {
 		if (lightType == LightType.BLOCK) {
-			return (ChunkLightingView)(this.blockLightProvider == null ? ChunkLightingView.Empty.INSTANCE : this.blockLightProvider);
+			return (ChunkLightingView)(this.blockLightProvider == null ? ChunkLightingView.Empty.MIN : this.blockLightProvider);
 		} else {
-			return (ChunkLightingView)(this.skyLightProvider == null ? ChunkLightingView.Empty.INSTANCE : this.skyLightProvider);
+			return (ChunkLightingView)(this.skyLightProvider == null ? ChunkLightingView.Empty.MIN : this.skyLightProvider);
 		}
 	}
 

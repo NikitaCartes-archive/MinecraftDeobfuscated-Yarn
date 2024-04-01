@@ -3,6 +3,7 @@ package net.minecraft.data.server.recipe;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import net.minecraft.advancement.Advancement;
@@ -13,6 +14,7 @@ import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataWriter;
+import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
@@ -40,6 +42,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 
 public class VanillaRecipeProvider extends RecipeProvider {
@@ -83,6 +86,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerPlanksRecipe(exporter, Blocks.OAK_PLANKS, ItemTags.OAK_LOGS, 4);
 		offerPlanksRecipe(exporter, Blocks.SPRUCE_PLANKS, ItemTags.SPRUCE_LOGS, 4);
 		offerPlanksRecipe(exporter, Blocks.WARPED_PLANKS, ItemTags.WARPED_STEMS, 4);
+		method_59464(exporter, Blocks.POTATO_PLANKS, Items.POTATO_STEM, 4);
 		offerPlanksRecipe(exporter, Blocks.MANGROVE_PLANKS, ItemTags.MANGROVE_LOGS, 4);
 		offerBarkBlockRecipe(exporter, Blocks.ACACIA_WOOD, Blocks.ACACIA_LOG);
 		offerBarkBlockRecipe(exporter, Blocks.BIRCH_WOOD, Blocks.BIRCH_LOG);
@@ -337,6 +341,11 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerCandleDyeingRecipe(exporter, Blocks.RED_CANDLE, Items.RED_DYE);
 		offerCandleDyeingRecipe(exporter, Blocks.WHITE_CANDLE, Items.WHITE_DYE);
 		offerCandleDyeingRecipe(exporter, Blocks.YELLOW_CANDLE, Items.YELLOW_DYE);
+		ShapelessRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.LASHING_POTATO, 1)
+			.input(Items.POISONOUS_POTATO_BLOCK)
+			.input(Items.TOXIC_BEAM)
+			.criterion("has_toxic_beam", conditionsFromItem(Items.TOXIC_BEAM))
+			.offerTo(exporter);
 		ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.PACKED_MUD, 1)
 			.input(Blocks.MUD)
 			.input(Items.WHEAT)
@@ -739,6 +748,21 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("X X")
 			.criterion("has_diamond", conditionsFromItem(Items.DIAMOND))
 			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.POISONOUS_POTA_TOES)
+			.input('X', Items.POISONOUS_POTATO)
+			.input('P', Items.POTATO_PEELS_INGREDIENT)
+			.pattern("P P")
+			.pattern("X X")
+			.criterion("has_poisonous_potato", conditionsFromItem(Items.POISONOUS_POTATO))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.POISONOUS_POTATO_CHESTPLATE)
+			.input('X', Items.POISONOUS_POTATO)
+			.input('P', Items.POTATO_PEELS_INGREDIENT)
+			.pattern("X X")
+			.pattern("PPP")
+			.pattern("PPP")
+			.criterion("has_poisonous_potato", conditionsFromItem(Items.POISONOUS_POTATO))
+			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.DIAMOND_CHESTPLATE)
 			.input('X', Items.DIAMOND)
 			.pattern("X X")
@@ -817,6 +841,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion("has_redstone", conditionsFromItem(Items.REDSTONE))
 			.offerTo(exporter);
 		offerReversibleCompactingRecipes(exporter, RecipeCategory.MISC, Items.EMERALD, RecipeCategory.BUILDING_BLOCKS, Items.EMERALD_BLOCK);
+		offerReversibleCompactingRecipes(exporter, RecipeCategory.MISC, Items.AMBER_GEM, RecipeCategory.BUILDING_BLOCKS, Items.AMBER_BLOCK);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Blocks.ENCHANTING_TABLE)
 			.input('B', Items.BOOK)
 			.input('#', Blocks.OBSIDIAN)
@@ -905,6 +930,13 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("###")
 			.criterion("has_cobblestone", conditionsFromTag(ItemTags.STONE_CRAFTING_MATERIALS))
 			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Blocks.POTATO_REFINERY, 1)
+			.input('#', Items.BAKED_POTATO_BRICKS)
+			.pattern("###")
+			.pattern("# #")
+			.pattern("###")
+			.criterion("has_baked_potato_bricks", conditionsFromItem(Items.BAKED_POTATO_BRICKS))
+			.offerTo(exporter);
 		ShapelessRecipeJsonBuilder.create(RecipeCategory.TRANSPORTATION, Items.FURNACE_MINECART)
 			.input(Blocks.FURNACE)
 			.input(Items.MINECART)
@@ -936,6 +968,22 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("#X#")
 			.pattern("###")
 			.criterion("has_gold_ingot", conditionsFromItem(Items.GOLD_INGOT))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.FOOD, Items.GOLDEN_POISONOUS_POTATO)
+			.input('#', Items.GOLD_INGOT)
+			.input('X', Items.POISONOUS_POTATO)
+			.pattern("###")
+			.pattern("#X#")
+			.pattern("###")
+			.criterion("has_gold_ingot", conditionsFromItem(Items.GOLD_INGOT))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.FOOD, Items.ENCHANTED_GOLDEN_POISONOUS_POTATO)
+			.input('#', Items.GOLD_BLOCK)
+			.input('X', Items.POISONOUS_POTATO)
+			.pattern("###")
+			.pattern("#X#")
+			.pattern("###")
+			.criterion("has_gold_block", conditionsFromItem(Items.GOLD_BLOCK))
 			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.GOLDEN_AXE)
 			.input('#', Items.STICK)
@@ -1038,6 +1086,11 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion("has_black_dye", conditionsFromItem(Items.BLACK_DYE))
 			.offerTo(exporter);
 		offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.HAY_BLOCK, Items.WHEAT);
+		method_59467(exporter, Items.POISONOUS_POTATO, Blocks.POISONOUS_POTATO_BLOCK);
+		method_59467(exporter, Blocks.POISONOUS_POTATO_BLOCK, Blocks.COMPRESSED_POISONOUS_POTATO_BLOCK);
+		method_59467(exporter, Blocks.COMPRESSED_POISONOUS_POTATO_BLOCK, Blocks.DOUBLE_COMPRESSED_POISONOUS_POTATO_BLOCK);
+		method_59467(exporter, Blocks.DOUBLE_COMPRESSED_POISONOUS_POTATO_BLOCK, Blocks.TRIPLE_COMPRESSED_POISONOUS_POTATO_BLOCK);
+		method_59467(exporter, Blocks.TRIPLE_COMPRESSED_POISONOUS_POTATO_BLOCK, Blocks.QUADRUPLE_COMPRESSED_POISONOUS_POTATO_BLOCK);
 		offerPressurePlateRecipe(exporter, Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, Items.IRON_INGOT);
 		ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, Items.HONEY_BOTTLE, 4)
 			.input(Items.HONEY_BLOCK)
@@ -1654,6 +1707,22 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.group("sticks")
 			.criterion("has_bamboo", conditionsFromItem(Blocks.BAMBOO))
 			.offerTo(exporter, "stick_from_bamboo_item");
+		ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.VICIOUS_POTATO, 1)
+			.input('P', Items.GRAVTATER)
+			.input('S', Items.WITHER_SKELETON_SKULL)
+			.pattern("PPP")
+			.pattern("PSP")
+			.pattern("PPP")
+			.criterion("has_skull", conditionsFromItem(Blocks.WITHER_SKELETON_SKULL))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.BIG_BRAIN, 1)
+			.input('P', Items.POISONOUS_POTATO)
+			.input('S', Items.ZOMBIE_HEAD)
+			.pattern("PPP")
+			.pattern("PSP")
+			.pattern("PPP")
+			.criterion("has_skull", conditionsFromItem(Blocks.WITHER_SKELETON_SKULL))
+			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Blocks.STICKY_PISTON)
 			.input('P', Blocks.PISTON)
 			.input('S', Items.SLIME_BALL)
@@ -1667,6 +1736,19 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("##")
 			.criterion("has_stone", conditionsFromItem(Blocks.STONE))
 			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Items.BAKED_POTATO_BRICKS, 4)
+			.input('#', Items.BAKED_POTATO)
+			.pattern("##")
+			.pattern("##")
+			.criterion("has_baked_potato", conditionsFromItem(Items.BAKED_POTATO))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Items.EXPIRED_BAKED_POTATO_BRICKS, 4)
+			.input('#', Items.BAKED_POTATO)
+			.input('X', Items.POISONOUS_POTATO)
+			.pattern("#X")
+			.pattern("X#")
+			.criterion("has_poisonous_potato", conditionsFromItem(Items.POISONOUS_POTATO))
+			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.STONE_AXE)
 			.input('#', Items.STICK)
 			.input('X', ItemTags.STONE_TOOL_MATERIALS)
@@ -1674,6 +1756,10 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("X#")
 			.pattern(" #")
 			.criterion("has_cobblestone", conditionsFromTag(ItemTags.STONE_TOOL_MATERIALS))
+			.offerTo(exporter);
+		ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.POTATO_EYE, 2)
+			.input(Items.POISONOUS_POTATO)
+			.criterion("has_poisonous_potato", conditionsFromItem(Items.POISONOUS_POTATO))
 			.offerTo(exporter);
 		createSlabRecipe(RecipeCategory.BUILDING_BLOCKS, Blocks.STONE_BRICK_SLAB, Ingredient.ofItems(Blocks.STONE_BRICKS))
 			.criterion("has_stone_bricks", conditionsFromTag(ItemTags.STONE_BRICKS))
@@ -1736,7 +1822,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion("has_hay_block", conditionsFromItem(Blocks.HAY_BLOCK))
 			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Blocks.TNT)
-			.input('#', Ingredient.ofItems(Blocks.SAND, Blocks.RED_SAND))
+			.input('#', Ingredient.ofItems(Blocks.SAND, Blocks.RED_SAND, Blocks.GRAVTATER))
 			.input('X', Items.GUNPOWDER)
 			.pattern("X#X")
 			.pattern("#X#")
@@ -1818,6 +1904,14 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion("has_bone_meal", conditionsFromItem(Items.BONE_MEAL))
 			.offerTo(exporter);
 		offerSingleOutputShapelessRecipe(exporter, Items.WHITE_DYE, Blocks.LILY_OF_THE_VALLEY, "white_dye");
+		ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.TRIDENT)
+			.input('^', Items.DENT)
+			.input('/', Items.STICK)
+			.pattern(" ^^")
+			.pattern(" /^")
+			.pattern("/  ")
+			.criterion("has_dent", conditionsFromItem(Items.DENT))
+			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.WOODEN_AXE)
 			.input('#', Items.STICK)
 			.input('X', ItemTags.PLANKS)
@@ -1963,6 +2057,13 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("###")
 			.criterion("has_stone", conditionsFromItem(Blocks.STONE))
 			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Blocks.POISONOUS_POTATO_CUTTER)
+			.input('I', Items.POISONOUS_POTATO)
+			.input('#', Blocks.POTONE)
+			.pattern(" I ")
+			.pattern("###")
+			.criterion("has_potone", conditionsFromItem(Blocks.POTONE))
+			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Blocks.LODESTONE)
 			.input('S', Items.CHISELED_STONE_BRICKS)
 			.input('#', Items.NETHERITE_INGOT)
@@ -2020,6 +2121,16 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("SSS")
 			.criterion("has_echo_shard", conditionsFromItem(Items.ECHO_SHARD))
 			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.FRYING_TABLE)
+			.input('S', Items.STICK)
+			.input('I', Items.IRON_INGOT)
+			.input('P', Items.POTATO_PLANKS)
+			.input('g', Items.GOLD_NUGGET)
+			.pattern("  S")
+			.pattern("IIg")
+			.pattern("PP ")
+			.criterion("has_potato_planks", conditionsFromItem(Items.POTATO_PLANKS))
+			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Items.CALIBRATED_SCULK_SENSOR)
 			.input('#', Items.AMETHYST_SHARD)
 			.input('X', Items.SCULK_SENSOR)
@@ -2044,11 +2155,32 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(Items.POTATO), RecipeCategory.FOOD, Items.BAKED_POTATO, 0.35F, 200)
 			.criterion("has_potato", conditionsFromItem(Items.POTATO))
 			.offerTo(exporter);
+		CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(Items.TERRE_DE_POMME), RecipeCategory.FOOD, Items.BAKED_POTATO_BRICKS, 0.35F, 200)
+			.criterion("has_terredepomme", conditionsFromItem(Items.TERRE_DE_POMME))
+			.offerTo(exporter, "baked_potato_bricks_from_terredepomme");
+		CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(Items.POISONOUS_POTATO_STICKS), RecipeCategory.FOOD, Items.POISONOUS_POTATO_FRIES, 0.35F, 200)
+			.criterion("has_poisonous_potato", conditionsFromItem(Items.POISONOUS_POTATO_STICKS))
+			.offerTo(exporter);
+		CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(Items.POISONOUS_POTATO_SLICES), RecipeCategory.FOOD, Items.POISONOUS_POTATO_CHIPS, 0.35F, 200)
+			.criterion("has_poisonous_potato", conditionsFromItem(Items.POISONOUS_POTATO_SLICES))
+			.offerTo(exporter);
 		CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(Items.CLAY_BALL), RecipeCategory.MISC, Items.BRICK, 0.3F, 200)
 			.criterion("has_clay_ball", conditionsFromItem(Items.CLAY_BALL))
 			.offerTo(exporter);
 		CookingRecipeJsonBuilder.createSmelting(Ingredient.fromTag(ItemTags.LOGS_THAT_BURN), RecipeCategory.MISC, Items.CHARCOAL, 0.15F, 200)
 			.criterion("has_log", conditionsFromTag(ItemTags.LOGS_THAT_BURN))
+			.offerTo(exporter);
+		CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(Items.CHARRED_BAKED_POTATO_BRICKS), RecipeCategory.MISC, Items.CHARCOAL, 0.15F, 200)
+			.criterion("has_charred", conditionsFromItem(Items.CHARRED_BAKED_POTATO_BRICKS))
+			.offerTo(exporter, "overcooked_potatoes");
+		CookingRecipeJsonBuilder.createSmelting(
+				Ingredient.ofItems(Blocks.BAKED_POTATO_BRICKS, Blocks.EXPIRED_BAKED_POTATO_BRICKS),
+				RecipeCategory.BUILDING_BLOCKS,
+				Items.CHARRED_BAKED_POTATO_BRICKS,
+				0.01F,
+				20
+			)
+			.criterion("has_baked_potato_bricks", conditionsFromItem(Blocks.BAKED_POTATO_BRICKS))
 			.offerTo(exporter);
 		CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(Items.CHORUS_FRUIT), RecipeCategory.MISC, Items.POPPED_CHORUS_FRUIT, 0.1F, 200)
 			.criterion("has_chorus_fruit", conditionsFromItem(Items.CHORUS_FRUIT))
@@ -2177,6 +2309,9 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.offerTo(exporter);
 		CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(Blocks.COBBLESTONE), RecipeCategory.BUILDING_BLOCKS, Blocks.STONE.asItem(), 0.1F, 200)
 			.criterion("has_cobblestone", conditionsFromItem(Blocks.COBBLESTONE))
+			.offerTo(exporter);
+		CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(Blocks.TATERSTONE), RecipeCategory.BUILDING_BLOCKS, Blocks.POTONE.asItem(), 0.1F, 200)
+			.criterion("has_taterstone", conditionsFromItem(Blocks.TATERSTONE))
 			.offerTo(exporter);
 		CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(Blocks.STONE), RecipeCategory.BUILDING_BLOCKS, Blocks.SMOOTH_STONE.asItem(), 0.1F, 200)
 			.criterion("has_stone", conditionsFromItem(Blocks.STONE))
@@ -2368,6 +2503,11 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.offerTo(exporter, getBlastingItemPath(Items.NETHERITE_SCRAP));
 		generateCookingRecipes(exporter, "smoking", RecipeSerializer.SMOKING, SmokingRecipe::new, 100);
 		generateCookingRecipes(exporter, "campfire_cooking", RecipeSerializer.CAMPFIRE_COOKING, CampfireCookingRecipe::new, 600);
+		CookingRecipeJsonBuilder.create(
+				Items.POTATO_PEELS_INGREDIENT, RecipeCategory.FOOD, Items.HASH_BROWNS, 0.1F, 600, RecipeSerializer.CAMPFIRE_COOKING, CampfireCookingRecipe::new
+			)
+			.criterion(hasItem(Items.POTATO_PEELS.get(DyeColor.WHITE)), conditionsFromItem(Items.POTATO_PEELS.get(DyeColor.WHITE)))
+			.offerTo(exporter, getItemPath(Items.HASH_BROWNS) + "_from_campfire_cooking");
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.STONE_SLAB, Blocks.STONE, 2);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.STONE_STAIRS, Blocks.STONE);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.STONE_BRICKS, Blocks.STONE);
@@ -2425,6 +2565,21 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.PURPUR_SLAB, Blocks.PURPUR_BLOCK, 2);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.PURPUR_STAIRS, Blocks.PURPUR_BLOCK);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.PURPUR_PILLAR, Blocks.PURPUR_BLOCK);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.POTONE_SLAB, Blocks.POTONE, 2);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.POTONE_STAIRS, Blocks.POTONE);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.POTONE_WALL, Blocks.POTONE);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.BAKED_POTATO_BRICK_SLAB, Blocks.BAKED_POTATO_BRICKS, 2);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.BAKED_POTATO_BRICK_STAIRS, Blocks.BAKED_POTATO_BRICKS);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.BAKED_POTATO_BRICK_WALL, Blocks.BAKED_POTATO_BRICKS);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.EXPIRED_BAKED_POTATO_BRICK_SLAB, Blocks.EXPIRED_BAKED_POTATO_BRICKS, 2);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.EXPIRED_BAKED_POTATO_BRICK_STAIRS, Blocks.EXPIRED_BAKED_POTATO_BRICKS);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.EXPIRED_BAKED_POTATO_BRICK_WALL, Blocks.EXPIRED_BAKED_POTATO_BRICKS);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CHARRED_BAKED_POTATO_BRICK_SLAB, Blocks.CHARRED_BAKED_POTATO_BRICKS, 2);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CHARRED_BAKED_POTATO_BRICK_STAIRS, Blocks.CHARRED_BAKED_POTATO_BRICKS);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CHARRED_BAKED_POTATO_BRICK_WALL, Blocks.CHARRED_BAKED_POTATO_BRICKS);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.TATERSTONE_SLAB, Blocks.TATERSTONE, 2);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.TATERSTONE_STAIRS, Blocks.TATERSTONE);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.TATERSTONE_WALL, Blocks.TATERSTONE);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.PRISMARINE_SLAB, Blocks.PRISMARINE, 2);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.PRISMARINE_STAIRS, Blocks.PRISMARINE);
 		offerStonecuttingRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.PRISMARINE_WALL, Blocks.PRISMARINE);
@@ -2595,6 +2750,23 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.DEEPSLATE_TILE_SLAB, Blocks.DEEPSLATE_TILES, 2);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.DEEPSLATE_TILE_STAIRS, Blocks.DEEPSLATE_TILES);
 		offerStonecuttingRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.DEEPSLATE_TILE_WALL, Blocks.DEEPSLATE_TILES);
+		method_59465(exporter, RecipeCategory.FOOD, Items.POISONOUS_POTATO_SLICES, Items.POISONOUS_POTATO, 1);
+		method_59465(exporter, RecipeCategory.FOOD, Items.POISONOUS_POTATO_STICKS, Items.POISONOUS_POTATO, 1);
+		method_59463(exporter, Items.POTATO_OIL.getDefaultStack(), Items.POTATO, Items.GLASS_BOTTLE, 1.0F);
+		method_59463(exporter, Items.POISONOUS_POTATO_OIL.getDefaultStack(), Items.POISONOUS_POTATO, Items.GLASS_BOTTLE, 1.25F);
+		CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(Items.POISONOUS_POTATO_OIL), RecipeCategory.MISC, Items.TOXIC_RESIN, 0.1F, 300)
+			.criterion("has_potato_oil", conditionsFromItem(Items.POISONOUS_POTATO_OIL))
+			.offerTo(exporter);
+
+		for (Entry<DyeColor, Item> entry : Items.POTATO_PEELS.entrySet()) {
+			ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, (ItemConvertible)entry.getValue())
+				.input(Items.POTATO_PEELS_INGREDIENT)
+				.input(DyeItem.byColor((DyeColor)entry.getKey()))
+				.criterion("has_potato_peels", conditionsFromItem(Items.POTATO_PEELS.get(DyeColor.WHITE)))
+				.offerTo(exporter);
+		}
+
+		offerReversibleCompactingRecipes(exporter, RecipeCategory.MISC, Items.CORRUPTED_POTATO_PEELS, RecipeCategory.TOOLS, Items.CORRUPTED_POTATO_PEELS_BLOCK);
 		streamSmithingTemplates().forEach(template -> offerSmithingTrimRecipe(exporter, template.template(), template.id()));
 		offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_CHESTPLATE, RecipeCategory.COMBAT, Items.NETHERITE_CHESTPLATE);
 		offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_LEGGINGS, RecipeCategory.COMBAT, Items.NETHERITE_LEGGINGS);
@@ -2638,6 +2810,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerHangingSignRecipe(exporter, Items.BAMBOO_HANGING_SIGN, Items.STRIPPED_BAMBOO_BLOCK);
 		offerHangingSignRecipe(exporter, Items.CRIMSON_HANGING_SIGN, Blocks.STRIPPED_CRIMSON_STEM);
 		offerHangingSignRecipe(exporter, Items.WARPED_HANGING_SIGN, Blocks.STRIPPED_WARPED_STEM);
+		offerHangingSignRecipe(exporter, Items.POTATO_HANGING_SIGN, Blocks.POTATO_STEM);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.CHISELED_BOOKSHELF)
 			.input('#', ItemTags.PLANKS)
 			.input('X', ItemTags.WOODEN_SLABS)
@@ -2645,6 +2818,28 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("XXX")
 			.pattern("###")
 			.criterion("has_book", conditionsFromItem(Items.BOOK))
+			.offerTo(exporter);
+		ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, Items.HOT_POTATO)
+			.input(ItemTags.HEATABLE_POTATOS)
+			.input(Items.LAVA_BUCKET)
+			.criterion("has_potato", conditionsFromTag(ItemTags.HEATABLE_POTATOS))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Blocks.FLOATATER)
+			.input('#', Blocks.FLOATATO)
+			.input('T', Items.POISONOUS_POTATO)
+			.input('X', Items.HOT_POTATO)
+			.pattern("TTT")
+			.pattern("#X#")
+			.pattern("###")
+			.criterion("has_floatato", conditionsFromItem(Blocks.FLOATATO))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.FLOATATO, 8)
+			.input('#', Items.POISONOUS_POTATO)
+			.input('X', Items.GHAST_TEAR)
+			.pattern("###")
+			.pattern("#X#")
+			.pattern("###")
+			.criterion("has_ghast_tear", conditionsFromItem(Items.GHAST_TEAR))
 			.offerTo(exporter);
 		offerSingleOutputShapelessRecipe(exporter, Items.ORANGE_DYE, Blocks.TORCHFLOWER, "orange_dye");
 		offerShapelessRecipe(exporter, Items.CYAN_DYE, Blocks.PITCHER_PLANT, "cyan_dye", 2);
@@ -2670,7 +2865,58 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern(" # ")
 			.criterion("has_brick", conditionsFromTag(ItemTags.DECORATED_POT_INGREDIENTS))
 			.offerTo(exporter, "decorated_pot_simple");
+		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Items.POTATO_BATTERY, 1)
+			.input('P', Items.POISONOUS_POTATO)
+			.input('R', Items.REDSTONE)
+			.input('I', Items.IRON_INGOT)
+			.input('C', Items.COPPER_INGOT)
+			.pattern("I C")
+			.pattern("PRP")
+			.pattern("PPP")
+			.criterion("has_poisonous_potato", conditionsFromItem(Items.POISONOUS_POTATO))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.POTATO_PEELER)
+			.input('X', Items.SHEARS)
+			.input('S', Items.STICK)
+			.pattern(" X")
+			.pattern("S ")
+			.criterion("has_shears", conditionsFromItem(Items.SHEARS))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, Items.POTATO_HAMMER)
+			.input('P', Items.POISONOUS_POTATO)
+			.input('R', Items.BLAZE_ROD)
+			.pattern("P")
+			.pattern("R")
+			.criterion("has_poisonous_potato", conditionsFromItem(Items.POISONOUS_POTATO))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, Items.POISONOUS_POLYTRA)
+			.input('P', Items.POISONOUS_POTATO)
+			.input('#', Items.PHANTOM_MEMBRANE)
+			.pattern("#P#")
+			.pattern("# #")
+			.criterion("has_poisonous_potato", conditionsFromItem(Items.POISONOUS_POTATO))
+			.offerTo(exporter);
+
+		for (Entry<DyeColor, Item> entry : Items.POTATO_PEELS.entrySet()) {
+			ItemConvertible itemConvertible = (ItemConvertible)Items.POTATO_PEELS_BLOCKS.get(entry.getKey());
+			ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, itemConvertible)
+				.input('P', (ItemConvertible)entry.getValue())
+				.pattern("PPP")
+				.pattern("PPP")
+				.pattern("PPP")
+				.criterion("has_" + ((DyeColor)entry.getKey()).getName() + "_potato_peels", conditionsFromItem((ItemConvertible)entry.getValue()))
+				.offerTo(exporter);
+		}
+
 		ComplexRecipeJsonBuilder.create(CraftingDecoratedPotRecipe::new).offerTo(exporter, "decorated_pot");
+	}
+
+	private static void method_59467(RecipeExporter recipeExporter, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+		offerCompactingRecipe(recipeExporter, RecipeCategory.BUILDING_BLOCKS, itemConvertible2, itemConvertible);
+		ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, itemConvertible, 9)
+			.input(itemConvertible2)
+			.criterion("has_compressed_block", conditionsFromItem(itemConvertible2))
+			.offerTo(recipeExporter, convertBetween(itemConvertible, itemConvertible2) + "_unpacking");
 	}
 
 	public static Stream<VanillaRecipeProvider.SmithingTemplate> streamSmithingTemplates() {

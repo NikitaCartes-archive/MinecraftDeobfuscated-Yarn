@@ -56,12 +56,21 @@ public abstract class TrunkPlacer {
 	}
 
 	private static boolean canGenerate(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, state -> Feature.isSoil(state) && !state.isOf(Blocks.GRASS_BLOCK) && !state.isOf(Blocks.MYCELIUM));
+		return world.testBlockState(
+			pos,
+			state -> Feature.isSoil(state)
+					&& !state.isOf(Blocks.GRASS_BLOCK)
+					&& !state.isOf(Blocks.PEELGRASS_BLOCK)
+					&& !state.isOf(Blocks.CORRUPTED_PEELGRASS_BLOCK)
+					&& !state.isOf(Blocks.MYCELIUM)
+		);
 	}
 
 	protected static void setToDirt(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, TreeFeatureConfig config) {
-		if (config.forceDirt || !canGenerate(world, pos)) {
-			replacer.accept(pos, config.dirtProvider.get(random, pos));
+		if (!world.isPotato()) {
+			if (config.forceDirt || !canGenerate(world, pos)) {
+				replacer.accept(pos, config.dirtProvider.get(random, pos));
+			}
 		}
 	}
 

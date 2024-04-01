@@ -69,7 +69,9 @@ public class DefaultClientResourcePackProvider extends VanillaResourcePackProvid
 	}
 
 	private static DefaultResourcePack createDefaultPack(Path assetsPath) {
-		DefaultResourcePackBuilder defaultResourcePackBuilder = new DefaultResourcePackBuilder().withMetadataMap(METADATA_MAP).withNamespaces("minecraft", "realms");
+		DefaultResourcePackBuilder defaultResourcePackBuilder = new DefaultResourcePackBuilder()
+			.withMetadataMap(METADATA_MAP)
+			.withNamespaces("minecraft", "realms", "nothingtoseeheremovealong");
 		return defaultResourcePackBuilder.runCallback().withDefaultPaths().withPath(ResourceType.CLIENT_RESOURCES, assetsPath).build(INFO);
 	}
 

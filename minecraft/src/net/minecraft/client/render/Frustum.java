@@ -77,7 +77,7 @@ public class Frustum {
 		return this.isVisible(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
 	}
 
-	private boolean isVisible(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+	public boolean isVisible(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
 		float f = (float)(minX - this.x);
 		float g = (float)(minY - this.y);
 		float h = (float)(minZ - this.z);

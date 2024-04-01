@@ -753,7 +753,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 		if (this.input.jumping && !bl8 && !bl && !this.getAbilities().flying && !this.hasVehicle() && !this.isClimbing()) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
-			if (itemStack.isOf(Items.ELYTRA) && ElytraItem.isUsable(itemStack) && this.checkFallFlying()) {
+			if ((itemStack.isOf(Items.ELYTRA) || itemStack.isOf(Items.POISONOUS_POLYTRA)) && ElytraItem.isUsable(itemStack) && this.checkFallFlying()) {
 				this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
 			}
 		}
@@ -1122,5 +1122,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Override
 	public float getBodyYaw() {
 		return this.getYaw();
+	}
+
+	public String method_59358() {
+		return this.dataTracker.get(field_50479);
 	}
 }

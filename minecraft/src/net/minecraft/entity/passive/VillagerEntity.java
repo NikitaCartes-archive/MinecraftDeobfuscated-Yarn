@@ -194,6 +194,11 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	@Override
+	public boolean hasPotatoForm() {
+		return true;
+	}
+
+	@Override
 	public Brain<VillagerEntity> getBrain() {
 		return (Brain<VillagerEntity>)super.getBrain();
 	}

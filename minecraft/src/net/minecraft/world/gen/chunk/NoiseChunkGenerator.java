@@ -125,7 +125,8 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public int getHeight(int x, int z, Heightmap.Type heightmap, HeightLimitView world, NoiseConfig noiseConfig) {
-		return this.sampleHeightmap(world, noiseConfig, x, z, null, heightmap.getBlockPredicate()).orElse(world.getBottomY());
+		return this.sampleHeightmap(world, noiseConfig, x, z, null, heightmap.getBlockPredicate())
+			.orElse(world.getBottomY() + this.settings.value().bottomGenerationPadding());
 	}
 
 	@Override

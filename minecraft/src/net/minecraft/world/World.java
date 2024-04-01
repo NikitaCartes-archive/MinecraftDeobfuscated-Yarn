@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -17,6 +18,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.type.FireworkExplosionComponent;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.GridCarrierEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.damage.DamageSource;
@@ -41,6 +43,7 @@ import net.minecraft.server.world.ChunkLevelType;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundSequencer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.crash.CrashCallable;
@@ -79,6 +82,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public static final RegistryKey<World> OVERWORLD = RegistryKey.of(RegistryKeys.WORLD, new Identifier("overworld"));
 	public static final RegistryKey<World> NETHER = RegistryKey.of(RegistryKeys.WORLD, new Identifier("the_nether"));
 	public static final RegistryKey<World> END = RegistryKey.of(RegistryKeys.WORLD, new Identifier("the_end"));
+	public static final RegistryKey<World> POTATO = RegistryKey.of(RegistryKeys.WORLD, new Identifier("potato"));
 	public static final int HORIZONTAL_LIMIT = 30000000;
 	public static final int MAX_UPDATE_DEPTH = 512;
 	public static final int field_30967 = 32;
@@ -112,6 +116,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	private final DynamicRegistryManager registryManager;
 	private final DamageSources damageSources;
 	private long tickOrder;
+	private final boolean isPotato;
 
 	protected World(
 		MutableWorldProperties properties,
@@ -152,6 +157,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		this.neighborUpdater = new ChainRestrictedNeighborUpdater(this, maxChainedNeighborUpdates);
 		this.registryManager = registryManager;
 		this.damageSources = new DamageSources(registryManager);
+		this.isPotato = registryRef == POTATO;
 	}
 
 	@Override
@@ -559,6 +565,22 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public boolean shouldTickBlockPos(BlockPos pos) {
 		return this.shouldTickBlocksInChunk(ChunkPos.toLong(pos));
 	}
+
+	@Override
+	public boolean isPotato() {
+		return this.isPotato;
+	}
+
+	public abstract void playSoundWithDelay(int delay, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch);
+
+	public abstract void playSoundSequence(double x, double y, double z, Consumer<SoundSequencer> sequencerConsumer);
+
+	public GridCarrierView createGridCarrierView(GridCarrierEntity gridCarrier) {
+		return new GridCarrierView(this, gridCarrier);
+	}
+
+	@Nullable
+	public abstract GridCarrierView getGridVarrierView(UUID uuid);
 
 	/**
 	 * Creates an explosion without creating fire.
@@ -978,6 +1000,18 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		this.thunderGradient = f;
 	}
 
+	public float method_59088(float f, double d) {
+		return this.method_59091(this.getRainGradient(f), d);
+	}
+
+	public float method_59090(float f, double d) {
+		return this.method_59091(this.getThunderGradient(f), d);
+	}
+
+	private float method_59091(float f, double d) {
+		return f > 0.0F && this.isPotato() && d > 112.0 ? Math.max(0.0F, f - ((float)d - 112.0F) * 0.1F) : f;
+	}
+
 	public float getRainGradient(float delta) {
 		return MathHelper.lerp(delta, this.rainGradientPrev, this.rainGradient);
 	}
@@ -1015,6 +1049,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		} else if (!this.isSkyVisible(pos)) {
 			return false;
 		} else if (this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).getY() > pos.getY()) {
+			return false;
+		} else if (this.isPotato && pos.getY() > 112) {
 			return false;
 		} else {
 			Biome biome = this.getBiome(pos).value();
@@ -1171,6 +1207,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	protected abstract EntityLookup<Entity> getEntityLookup();
 
+	public abstract Iterable<? extends GridCarrierView> getGridCarrierViews();
+
 	@Override
 	public long getTickOrder() {
 		return this.tickOrder++;
@@ -1183,6 +1221,24 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	public DamageSources getDamageSources() {
 		return this.damageSources;
+	}
+
+	@Override
+	public boolean method_59084(@Nullable Entity entity, Box box, boolean bl) {
+		if (!WorldAccess.super.method_59084(entity, box, bl)) {
+			return false;
+		} else {
+			if (!bl) {
+				for (GridCarrierView gridCarrierView : this.getGridCarrierViews()) {
+					Box box2 = gridCarrierView.getGridBox();
+					if (!gridCarrierView.method_59085(entity, box.offset(-box2.minX, -box2.minY, -box2.minZ))) {
+						return false;
+					}
+				}
+			}
+
+			return true;
+		}
 	}
 
 	public static enum ExplosionSourceType {

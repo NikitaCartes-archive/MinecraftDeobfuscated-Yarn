@@ -10,14 +10,14 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class StrayEntityRenderer extends SkeletonEntityRenderer<StrayEntity> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/skeleton/stray.png");
-	private static final Identifier field_49165 = new Identifier("textures/entity/skeleton/stray_overlay.png");
+	private static final Identifier OVERLAY_TEXTURE = new Identifier("textures/entity/skeleton/stray_overlay.png");
 
 	public StrayEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, EntityModelLayers.STRAY, EntityModelLayers.STRAY_INNER_ARMOR, EntityModelLayers.STRAY_OUTER_ARMOR);
-		this.addFeature(new SkeletonOverlayFeatureRenderer<>(this, context.getModelLoader(), EntityModelLayers.STRAY_OUTER, field_49165));
+		this.addFeature(new SkeletonOverlayFeatureRenderer<>(this, context.getModelLoader(), EntityModelLayers.STRAY_OUTER, OVERLAY_TEXTURE));
 	}
 
 	public Identifier getTexture(StrayEntity strayEntity) {
-		return TEXTURE;
+		return strayEntity.isPotato() ? SkeletonEntityRenderer.TEXTURE : TEXTURE;
 	}
 }

@@ -4,7 +4,9 @@ import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.LubricationComponent;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -143,7 +145,7 @@ public class ItemEntity extends Entity implements Ownable {
 			if (this.getWorld().isClient) {
 				this.noClip = false;
 			} else {
-				this.noClip = !this.getWorld().isSpaceEmpty(this, this.getBoundingBox().contract(1.0E-7));
+				this.noClip = !this.getWorld().method_59085(this, this.getBoundingBox().contract(1.0E-7));
 				if (this.noClip) {
 					this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
 				}
@@ -154,6 +156,10 @@ public class ItemEntity extends Entity implements Ownable {
 				float f = 0.98F;
 				if (this.isOnGround()) {
 					f = this.getWorld().getBlockState(this.getVelocityAffectingPos()).getBlock().getSlipperiness() * 0.98F;
+					LubricationComponent lubricationComponent = this.getStack().get(DataComponentTypes.LUBRICATION);
+					if (lubricationComponent != null) {
+						f = lubricationComponent.method_59187(f);
+					}
 				}
 
 				this.setVelocity(this.getVelocity().multiply((double)f, 0.98, (double)f));
@@ -204,6 +210,13 @@ public class ItemEntity extends Entity implements Ownable {
 	private void applyLavaBuoyancy() {
 		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(vec3d.x * 0.95F, vec3d.y + (double)(vec3d.y < 0.06F ? 5.0E-4F : 0.0F), vec3d.z * 0.95F);
+		if (this.getStack().isOf(Items.HOT_POTATO)) {
+			this.setVelocity(
+				vec3d.x + ((double)this.random.nextFloat() - 0.5) * 0.21,
+				vec3d.y + (double)this.random.nextFloat() * 0.1337,
+				vec3d.z + ((double)this.random.nextFloat() - 0.5) * 0.21
+			);
+		}
 	}
 
 	private void tryMerge() {
@@ -271,22 +284,35 @@ public class ItemEntity extends Entity implements Ownable {
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
-		} else if (!this.getStack().isEmpty() && this.getStack().isOf(Items.NETHER_STAR) && source.isIn(DamageTypeTags.IS_EXPLOSION)) {
-			return false;
-		} else if (!this.getStack().takesDamageFrom(source)) {
-			return false;
-		} else if (this.getWorld().isClient) {
-			return true;
 		} else {
-			this.scheduleVelocityUpdate();
-			this.health = (int)((float)this.health - amount);
-			this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
-			if (this.health <= 0) {
-				this.getStack().onItemEntityDestroyed(this);
-				this.discard();
-			}
+			ItemStack itemStack = this.getStack();
+			if (!itemStack.isEmpty() && itemStack.isOf(Items.NETHER_STAR) && source.isIn(DamageTypeTags.IS_EXPLOSION)) {
+				return false;
+			} else if (!itemStack.takesDamageFrom(source)) {
+				return false;
+			} else if (this.getWorld().isClient) {
+				return true;
+			} else if (itemStack.isIn(ItemTags.HEATABLE_POTATOS) && source.isOf(DamageTypes.LAVA)) {
+				this.setStack(itemStack.copyComponentsToNewStack(Items.HOT_POTATO, 1));
 
-			return true;
+				for (int i = 0; i < itemStack.getCount() - 1; i++) {
+					ItemEntity itemEntity = new ItemEntity(this);
+					itemEntity.getStack().setCount(1);
+					this.getWorld().spawnEntity(itemEntity);
+				}
+
+				return true;
+			} else {
+				this.scheduleVelocityUpdate();
+				this.health = (int)((float)this.health - amount);
+				this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
+				if (this.health <= 0) {
+					itemStack.onItemEntityDestroyed(this);
+					this.discard();
+				}
+
+				return true;
+			}
 		}
 	}
 
@@ -369,8 +395,8 @@ public class ItemEntity extends Entity implements Ownable {
 
 	@Nullable
 	@Override
-	public Entity moveToWorld(ServerWorld destination) {
-		Entity entity = super.moveToWorld(destination);
+	public Entity moveToWorld(ServerWorld destination, boolean bl) {
+		Entity entity = super.moveToWorld(destination, bl);
 		if (!this.getWorld().isClient && entity instanceof ItemEntity) {
 			((ItemEntity)entity).tryMerge();
 		}

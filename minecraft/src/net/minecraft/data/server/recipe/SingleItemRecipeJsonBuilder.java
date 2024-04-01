@@ -14,6 +14,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CuttingRecipe;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.PoisonousPotatoCuttingRecipe;
 import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.util.Identifier;
@@ -42,6 +43,10 @@ public class SingleItemRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 
 	public static SingleItemRecipeJsonBuilder createStonecutting(Ingredient input, RecipeCategory category, ItemConvertible output, int count) {
 		return new SingleItemRecipeJsonBuilder(category, StonecuttingRecipe::new, input, output, count);
+	}
+
+	public static SingleItemRecipeJsonBuilder method_59466(Ingredient ingredient, RecipeCategory recipeCategory, ItemConvertible itemConvertible, int i) {
+		return new SingleItemRecipeJsonBuilder(recipeCategory, PoisonousPotatoCuttingRecipe::new, ingredient, itemConvertible, i);
 	}
 
 	public SingleItemRecipeJsonBuilder criterion(String string, AdvancementCriterion<?> advancementCriterion) {

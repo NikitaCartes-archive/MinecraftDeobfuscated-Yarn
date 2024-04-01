@@ -14,10 +14,16 @@ import net.minecraft.world.gen.placementmodifier.BlockFilterPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.CountMultilayerPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.EnvironmentScanPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.PlacementModifier;
+import net.minecraft.world.gen.placementmodifier.RarityFilterPlacementModifier;
 
 public class TreePlacedFeatures {
 	public static final RegistryKey<PlacedFeature> CRIMSON_FUNGI = PlacedFeatures.of("crimson_fungi");
 	public static final RegistryKey<PlacedFeature> WARPED_FUNGI = PlacedFeatures.of("warped_fungi");
+	public static final RegistryKey<PlacedFeature> POTATO_TREE = PlacedFeatures.of("potato_tree");
+	public static final RegistryKey<PlacedFeature> POTATO_TREE_TALL = PlacedFeatures.of("potato_tree_tall");
+	public static final RegistryKey<PlacedFeature> MOTHER_POTATO_TREE = PlacedFeatures.of("mother_potato_tree");
+	public static final RegistryKey<PlacedFeature> POTATO_CHECKED = PlacedFeatures.of("potato_checked");
+	public static final RegistryKey<PlacedFeature> MOTHER_POTATO_CHECKED = PlacedFeatures.of("mother_potato_checked");
 	public static final RegistryKey<PlacedFeature> OAK_CHECKED = PlacedFeatures.of("oak_checked");
 	public static final RegistryKey<PlacedFeature> DARK_OAK_CHECKED = PlacedFeatures.of("dark_oak_checked");
 	public static final RegistryKey<PlacedFeature> BIRCH_CHECKED = PlacedFeatures.of("birch_checked");
@@ -50,64 +56,95 @@ public class TreePlacedFeatures {
 		RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.CRIMSON_FUNGUS);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry2 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.WARPED_FUNGUS);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry3 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.OAK);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry4 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.DARK_OAK);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry5 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.BIRCH);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry6 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.ACACIA);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry7 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.SPRUCE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry8 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.MANGROVE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry9 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.CHERRY);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry10 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.PINE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry11 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.JUNGLE_TREE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry12 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.FANCY_OAK);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry13 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.MEGA_JUNGLE_TREE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry14 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.MEGA_SPRUCE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry15 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.MEGA_PINE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry16 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.TALL_MANGROVE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry17 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.JUNGLE_BUSH);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry18 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.SUPER_BIRCH_BEES_0002);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry19 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.SUPER_BIRCH_BEES);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry20 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.OAK_BEES_0002);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry21 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.OAK_BEES_002);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry22 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.BIRCH_BEES_0002);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry23 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.BIRCH_BEES_002);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry24 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.FANCY_OAK_BEES_0002);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry25 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.FANCY_OAK_BEES_002);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry26 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.FANCY_OAK_BEES);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry27 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.CHERRY_BEES_005);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry3 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.POTATO_TREE_TALL);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry4 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.MOTHER_POTATO_TREE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry5 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.POTATO_TREE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry6 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.OAK);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry7 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.DARK_OAK);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry8 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.BIRCH);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry9 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.ACACIA);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry10 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.SPRUCE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry11 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.MANGROVE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry12 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.CHERRY);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry13 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.PINE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry14 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.JUNGLE_TREE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry15 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.FANCY_OAK);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry16 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.MEGA_JUNGLE_TREE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry17 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.MEGA_SPRUCE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry18 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.MEGA_PINE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry19 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.TALL_MANGROVE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry20 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.JUNGLE_BUSH);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry21 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.SUPER_BIRCH_BEES_0002);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry22 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.SUPER_BIRCH_BEES);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry23 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.OAK_BEES_0002);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry24 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.OAK_BEES_002);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry25 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.BIRCH_BEES_0002);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry26 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.BIRCH_BEES_002);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry27 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.FANCY_OAK_BEES_0002);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry28 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.FANCY_OAK_BEES_002);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry29 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.FANCY_OAK_BEES);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry30 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.CHERRY_BEES_005);
 		PlacedFeatures.register(featureRegisterable, CRIMSON_FUNGI, registryEntry, CountMultilayerPlacementModifier.of(8), BiomePlacementModifier.of());
 		PlacedFeatures.register(featureRegisterable, WARPED_FUNGI, registryEntry2, CountMultilayerPlacementModifier.of(8), BiomePlacementModifier.of());
-		PlacedFeatures.register(featureRegisterable, OAK_CHECKED, registryEntry3, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
-		PlacedFeatures.register(featureRegisterable, DARK_OAK_CHECKED, registryEntry4, PlacedFeatures.wouldSurvive(Blocks.DARK_OAK_SAPLING));
-		PlacedFeatures.register(featureRegisterable, BIRCH_CHECKED, registryEntry5, PlacedFeatures.wouldSurvive(Blocks.BIRCH_SAPLING));
-		PlacedFeatures.register(featureRegisterable, ACACIA_CHECKED, registryEntry6, PlacedFeatures.wouldSurvive(Blocks.ACACIA_SAPLING));
-		PlacedFeatures.register(featureRegisterable, SPRUCE_CHECKED, registryEntry7, PlacedFeatures.wouldSurvive(Blocks.SPRUCE_SAPLING));
-		PlacedFeatures.register(featureRegisterable, MANGROVE_CHECKED, registryEntry8, PlacedFeatures.wouldSurvive(Blocks.MANGROVE_PROPAGULE));
-		PlacedFeatures.register(featureRegisterable, CHERRY_CHECKED, registryEntry9, PlacedFeatures.wouldSurvive(Blocks.CHERRY_SAPLING));
+		PlacedFeatures.register(
+			featureRegisterable,
+			POTATO_TREE,
+			registryEntry5,
+			CountMultilayerPlacementModifier.of(6),
+			BiomePlacementModifier.of(),
+			PlacedFeatures.wouldSurvive(Blocks.POTATO_SPROUTS)
+		);
+		PlacedFeatures.register(
+			featureRegisterable,
+			POTATO_TREE_TALL,
+			registryEntry3,
+			RarityFilterPlacementModifier.of(6),
+			CountMultilayerPlacementModifier.of(1),
+			BiomePlacementModifier.of(),
+			PlacedFeatures.wouldSurvive(Blocks.POTATO_SPROUTS)
+		);
+		PlacedFeatures.register(
+			featureRegisterable,
+			MOTHER_POTATO_TREE,
+			registryEntry4,
+			RarityFilterPlacementModifier.of(48),
+			CountMultilayerPlacementModifier.of(1),
+			BiomePlacementModifier.of(),
+			PlacedFeatures.wouldSurvive(Blocks.POTATO_SPROUTS)
+		);
+		PlacedFeatures.register(featureRegisterable, POTATO_CHECKED, registryEntry5, PlacedFeatures.wouldSurvive(Blocks.POTATO_SPROUTS));
+		PlacedFeatures.register(featureRegisterable, MOTHER_POTATO_CHECKED, registryEntry4, PlacedFeatures.wouldSurvive(Blocks.POTATO_SPROUTS));
+		PlacedFeatures.register(featureRegisterable, OAK_CHECKED, registryEntry6, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
+		PlacedFeatures.register(featureRegisterable, DARK_OAK_CHECKED, registryEntry7, PlacedFeatures.wouldSurvive(Blocks.DARK_OAK_SAPLING));
+		PlacedFeatures.register(featureRegisterable, BIRCH_CHECKED, registryEntry8, PlacedFeatures.wouldSurvive(Blocks.BIRCH_SAPLING));
+		PlacedFeatures.register(featureRegisterable, ACACIA_CHECKED, registryEntry9, PlacedFeatures.wouldSurvive(Blocks.ACACIA_SAPLING));
+		PlacedFeatures.register(featureRegisterable, SPRUCE_CHECKED, registryEntry10, PlacedFeatures.wouldSurvive(Blocks.SPRUCE_SAPLING));
+		PlacedFeatures.register(featureRegisterable, MANGROVE_CHECKED, registryEntry11, PlacedFeatures.wouldSurvive(Blocks.MANGROVE_PROPAGULE));
+		PlacedFeatures.register(featureRegisterable, CHERRY_CHECKED, registryEntry12, PlacedFeatures.wouldSurvive(Blocks.CHERRY_SAPLING));
 		BlockPredicate blockPredicate = BlockPredicate.matchingBlocks(Direction.DOWN.getVector(), Blocks.SNOW_BLOCK, Blocks.POWDER_SNOW);
 		List<PlacementModifier> list = List.of(
 			EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.not(BlockPredicate.matchingBlocks(Blocks.POWDER_SNOW)), 8),
 			BlockFilterPlacementModifier.of(blockPredicate)
 		);
-		PlacedFeatures.register(featureRegisterable, PINE_ON_SNOW, registryEntry10, list);
-		PlacedFeatures.register(featureRegisterable, SPRUCE_ON_SNOW, registryEntry7, list);
-		PlacedFeatures.register(featureRegisterable, PINE_CHECKED, registryEntry10, PlacedFeatures.wouldSurvive(Blocks.SPRUCE_SAPLING));
-		PlacedFeatures.register(featureRegisterable, JUNGLE_TREE, registryEntry11, PlacedFeatures.wouldSurvive(Blocks.JUNGLE_SAPLING));
-		PlacedFeatures.register(featureRegisterable, FANCY_OAK_CHECKED, registryEntry12, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
-		PlacedFeatures.register(featureRegisterable, MEGA_JUNGLE_TREE_CHECKED, registryEntry13, PlacedFeatures.wouldSurvive(Blocks.JUNGLE_SAPLING));
-		PlacedFeatures.register(featureRegisterable, MEGA_SPRUCE_CHECKED, registryEntry14, PlacedFeatures.wouldSurvive(Blocks.SPRUCE_SAPLING));
-		PlacedFeatures.register(featureRegisterable, MEGA_PINE_CHECKED, registryEntry15, PlacedFeatures.wouldSurvive(Blocks.SPRUCE_SAPLING));
-		PlacedFeatures.register(featureRegisterable, TALL_MANGROVE_CHECKED, registryEntry16, PlacedFeatures.wouldSurvive(Blocks.MANGROVE_PROPAGULE));
-		PlacedFeatures.register(featureRegisterable, JUNGLE_BUSH, registryEntry17, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
-		PlacedFeatures.register(featureRegisterable, SUPER_BIRCH_BEES_0002, registryEntry18, PlacedFeatures.wouldSurvive(Blocks.BIRCH_SAPLING));
-		PlacedFeatures.register(featureRegisterable, SUPER_BIRCH_BEES, registryEntry19, PlacedFeatures.wouldSurvive(Blocks.BIRCH_SAPLING));
-		PlacedFeatures.register(featureRegisterable, OAK_BEES_0002, registryEntry20, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
-		PlacedFeatures.register(featureRegisterable, OAK_BEES_002, registryEntry21, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
-		PlacedFeatures.register(featureRegisterable, BIRCH_BEES_0002, registryEntry22, PlacedFeatures.wouldSurvive(Blocks.BIRCH_SAPLING));
-		PlacedFeatures.register(featureRegisterable, BIRCH_BEES_002, registryEntry23, PlacedFeatures.wouldSurvive(Blocks.BIRCH_SAPLING));
-		PlacedFeatures.register(featureRegisterable, FANCY_OAK_BEES_0002, registryEntry24, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
-		PlacedFeatures.register(featureRegisterable, FANCY_OAK_BEES_002, registryEntry25, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
-		PlacedFeatures.register(featureRegisterable, FANCY_OAK_BEES, registryEntry26, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
-		PlacedFeatures.register(featureRegisterable, CHERRY_BEES_005, registryEntry27, PlacedFeatures.wouldSurvive(Blocks.CHERRY_SAPLING));
+		PlacedFeatures.register(featureRegisterable, PINE_ON_SNOW, registryEntry13, list);
+		PlacedFeatures.register(featureRegisterable, SPRUCE_ON_SNOW, registryEntry10, list);
+		PlacedFeatures.register(featureRegisterable, PINE_CHECKED, registryEntry13, PlacedFeatures.wouldSurvive(Blocks.SPRUCE_SAPLING));
+		PlacedFeatures.register(featureRegisterable, JUNGLE_TREE, registryEntry14, PlacedFeatures.wouldSurvive(Blocks.JUNGLE_SAPLING));
+		PlacedFeatures.register(featureRegisterable, FANCY_OAK_CHECKED, registryEntry15, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
+		PlacedFeatures.register(featureRegisterable, MEGA_JUNGLE_TREE_CHECKED, registryEntry16, PlacedFeatures.wouldSurvive(Blocks.JUNGLE_SAPLING));
+		PlacedFeatures.register(featureRegisterable, MEGA_SPRUCE_CHECKED, registryEntry17, PlacedFeatures.wouldSurvive(Blocks.SPRUCE_SAPLING));
+		PlacedFeatures.register(featureRegisterable, MEGA_PINE_CHECKED, registryEntry18, PlacedFeatures.wouldSurvive(Blocks.SPRUCE_SAPLING));
+		PlacedFeatures.register(featureRegisterable, TALL_MANGROVE_CHECKED, registryEntry19, PlacedFeatures.wouldSurvive(Blocks.MANGROVE_PROPAGULE));
+		PlacedFeatures.register(featureRegisterable, JUNGLE_BUSH, registryEntry20, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
+		PlacedFeatures.register(featureRegisterable, SUPER_BIRCH_BEES_0002, registryEntry21, PlacedFeatures.wouldSurvive(Blocks.BIRCH_SAPLING));
+		PlacedFeatures.register(featureRegisterable, SUPER_BIRCH_BEES, registryEntry22, PlacedFeatures.wouldSurvive(Blocks.BIRCH_SAPLING));
+		PlacedFeatures.register(featureRegisterable, OAK_BEES_0002, registryEntry23, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
+		PlacedFeatures.register(featureRegisterable, OAK_BEES_002, registryEntry24, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
+		PlacedFeatures.register(featureRegisterable, BIRCH_BEES_0002, registryEntry25, PlacedFeatures.wouldSurvive(Blocks.BIRCH_SAPLING));
+		PlacedFeatures.register(featureRegisterable, BIRCH_BEES_002, registryEntry26, PlacedFeatures.wouldSurvive(Blocks.BIRCH_SAPLING));
+		PlacedFeatures.register(featureRegisterable, FANCY_OAK_BEES_0002, registryEntry27, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
+		PlacedFeatures.register(featureRegisterable, FANCY_OAK_BEES_002, registryEntry28, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
+		PlacedFeatures.register(featureRegisterable, FANCY_OAK_BEES, registryEntry29, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
+		PlacedFeatures.register(featureRegisterable, CHERRY_BEES_005, registryEntry30, PlacedFeatures.wouldSurvive(Blocks.CHERRY_SAPLING));
 	}
 }

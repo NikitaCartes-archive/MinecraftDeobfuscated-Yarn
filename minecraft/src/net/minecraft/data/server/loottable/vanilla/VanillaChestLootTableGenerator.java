@@ -210,39 +210,62 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 				)
 		);
 		consumer.accept(
-			LootTables.SPAWN_BONUS_CHEST,
+			LootTables.SIMPLE_DUNGEON_POTATO_CHEST,
 			LootTable.builder()
 				.pool(
 					LootPool.builder()
-						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(ItemEntry.builder(Items.STONE_AXE))
-						.with(ItemEntry.builder(Items.WOODEN_AXE).weight(3))
+						.rolls(UniformLootNumberProvider.create(1.0F, 3.0F))
+						.with(ItemEntry.builder(Items.SADDLE).weight(20))
+						.with(ItemEntry.builder(Items.GOLDEN_APPLE).weight(15))
+						.with(ItemEntry.builder(Items.ENCHANTED_GOLDEN_APPLE).weight(2))
+						.with(ItemEntry.builder(Items.MUSIC_DISC_OTHERSIDE).weight(2))
+						.with(ItemEntry.builder(Items.MUSIC_DISC_13).weight(15))
+						.with(ItemEntry.builder(Items.MUSIC_DISC_CAT).weight(15))
+						.with(ItemEntry.builder(Items.NAME_TAG).weight(20))
+						.with(ItemEntry.builder(Items.GOLDEN_HORSE_ARMOR).weight(10))
+						.with(ItemEntry.builder(Items.IRON_HORSE_ARMOR).weight(15))
+						.with(ItemEntry.builder(Items.DIAMOND_HORSE_ARMOR).weight(5))
+						.with(ItemEntry.builder(Items.BOOK).weight(10).apply(EnchantRandomlyLootFunction.builder()))
 				)
 				.pool(
 					LootPool.builder()
-						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(ItemEntry.builder(Items.STONE_PICKAXE))
-						.with(ItemEntry.builder(Items.WOODEN_PICKAXE).weight(3))
+						.rolls(UniformLootNumberProvider.create(1.0F, 4.0F))
+						.with(ItemEntry.builder(Items.IRON_INGOT).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
+						.with(ItemEntry.builder(Items.GOLD_INGOT).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
+						.with(ItemEntry.builder(Items.POTATO_FRUIT).weight(20))
+						.with(ItemEntry.builder(Items.BAKED_POTATO).weight(20).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
+						.with(ItemEntry.builder(Items.BUCKET).weight(10))
+						.with(ItemEntry.builder(Items.POISONOUS_POTATO_OIL).weight(15).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
+						.with(ItemEntry.builder(Items.COAL).weight(15).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
+						.with(ItemEntry.builder(Items.POTATO).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 4.0F))))
+						.with(ItemEntry.builder(Items.POISONOUS_POTATO).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 4.0F))))
+						.with(ItemEntry.builder(Items.POTATO_OIL).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 4.0F))))
 				)
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(3.0F))
-						.with(ItemEntry.builder(Items.APPLE).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
-						.with(ItemEntry.builder(Items.BREAD).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
-						.with(ItemEntry.builder(Items.SALMON).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
+						.with(ItemEntry.builder(Items.BONE).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 8.0F))))
+						.with(ItemEntry.builder(Items.BONE_MEAL).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 8.0F))))
+						.with(ItemEntry.builder(Items.ROTTEN_FLESH).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 8.0F))))
+						.with(ItemEntry.builder(Items.STRING).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 8.0F))))
+				)
+		);
+		consumer.accept(
+			LootTables.SPAWN_BONUS_CHEST,
+			LootTable.builder()
+				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.POISONOUS_POTATO_PLANT)))
+				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.IRON_HOE)))
+				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.WATER_BUCKET)))
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(4.0F))
+						.with(ItemEntry.builder(Items.POTATO).weight(9).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 8.0F))))
+						.with(ItemEntry.builder(Items.POISONOUS_POTATO).weight(6).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 4.0F))))
 				)
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(4.0F))
-						.with(ItemEntry.builder(Items.STICK).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 12.0F))))
-						.with(ItemEntry.builder(Blocks.OAK_PLANKS).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 12.0F))))
-						.with(ItemEntry.builder(Blocks.OAK_LOG).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
-						.with(ItemEntry.builder(Blocks.SPRUCE_LOG).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
-						.with(ItemEntry.builder(Blocks.BIRCH_LOG).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
-						.with(ItemEntry.builder(Blocks.JUNGLE_LOG).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
-						.with(ItemEntry.builder(Blocks.ACACIA_LOG).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
-						.with(ItemEntry.builder(Blocks.DARK_OAK_LOG).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
-						.with(ItemEntry.builder(Blocks.MANGROVE_LOG).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
+						.with(ItemEntry.builder(Items.BONE_MEAL).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 8.0F))))
 				)
 		);
 		consumer.accept(LootTables.STRONGHOLD_CORRIDOR_CHEST, createStrongholdCorridorChestTableBuilder());
@@ -518,6 +541,24 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 				)
 		);
 		consumer.accept(
+			LootTables.VILLAGE_VILLAGE_POTATO_HOUSE_CHEST,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(UniformLootNumberProvider.create(3.0F, 8.0F))
+						.with(ItemEntry.builder(Items.POTATO_OIL).weight(1).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
+						.with(ItemEntry.builder(Items.POTATO_FLOWER).weight(2))
+						.with(ItemEntry.builder(Items.POISONOUS_POTATO_OIL).weight(1))
+						.with(ItemEntry.builder(Items.POTATO).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 7.0F))))
+						.with(ItemEntry.builder(Items.BREAD).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
+						.with(ItemEntry.builder(Items.POTATO_FRUIT).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 5.0F))))
+						.with(ItemEntry.builder(Items.BOOK).weight(1))
+						.with(ItemEntry.builder(Items.FEATHER).weight(1))
+						.with(ItemEntry.builder(Items.POISONOUS_POTATO).weight(2).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
+						.with(ItemEntry.builder(Blocks.POTATO_SPROUTS).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
+				)
+		);
+		consumer.accept(
 			LootTables.VILLAGE_TAIGA_HOUSE_CHEST,
 			LootTable.builder()
 				.pool(
@@ -623,6 +664,48 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.GOLD_BLOCK).weight(1).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
 				)
 		);
+		consumer.accept(
+			LootTables.RUINED_PORTATOL_CHEST,
+			LootTable.builder()
+				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.IRON_HOE)))
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(4.0F))
+						.with(ItemEntry.builder(Items.POTATO).weight(9).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 8.0F))))
+						.with(ItemEntry.builder(Items.POISONOUS_POTATO).weight(6).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 4.0F))))
+				)
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(4.0F))
+						.with(ItemEntry.builder(Items.BONE_MEAL).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 8.0F))))
+				)
+				.pool(
+					LootPool.builder()
+						.rolls(UniformLootNumberProvider.create(4.0F, 8.0F))
+						.with(ItemEntry.builder(Items.OBSIDIAN).weight(40).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
+						.with(ItemEntry.builder(Items.FLINT).weight(40).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
+						.with(ItemEntry.builder(Items.IRON_NUGGET).weight(40).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(9.0F, 18.0F))))
+						.with(ItemEntry.builder(Items.FLINT_AND_STEEL).weight(40))
+						.with(ItemEntry.builder(Items.FIRE_CHARGE).weight(40))
+						.with(ItemEntry.builder(Items.GOLD_NUGGET).weight(15).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 24.0F))))
+						.with(ItemEntry.builder(Items.GOLDEN_SWORD).weight(15).apply(EnchantRandomlyLootFunction.builder()))
+						.with(ItemEntry.builder(Items.GOLDEN_AXE).weight(15).apply(EnchantRandomlyLootFunction.builder()))
+						.with(ItemEntry.builder(Items.GOLDEN_HOE).weight(15).apply(EnchantRandomlyLootFunction.builder()))
+						.with(ItemEntry.builder(Items.POISONOUS_POTA_TOES).weight(15))
+						.with(ItemEntry.builder(Items.POISONOUS_POTATO_CHESTPLATE).weight(15))
+						.with(ItemEntry.builder(Items.GOLDEN_HELMET).weight(15).apply(EnchantRandomlyLootFunction.builder()))
+						.with(ItemEntry.builder(Items.GOLDEN_LEGGINGS).weight(15).apply(EnchantRandomlyLootFunction.builder()))
+						.with(ItemEntry.builder(Items.GLISTERING_MELON_SLICE).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 12.0F))))
+						.with(ItemEntry.builder(Items.GOLDEN_HORSE_ARMOR).weight(5))
+						.with(ItemEntry.builder(Items.POTATO_PRESSURE_PLATE).weight(5))
+						.with(ItemEntry.builder(Items.POTATO_FRUIT).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 12.0F))))
+						.with(ItemEntry.builder(Items.CLOCK).weight(5))
+						.with(ItemEntry.builder(Items.POTATO_OIL).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 8.0F))))
+						.with(ItemEntry.builder(Items.BELL).weight(1))
+						.with(ItemEntry.builder(Items.ENCHANTED_GOLDEN_APPLE).weight(1))
+						.with(ItemEntry.builder(Items.GOLD_BLOCK).weight(1).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
+				)
+		);
 		consumer.accept(LootTables.TRIAL_CHAMBERS_REWARD_CHEST, LootTable.builder());
 		consumer.accept(LootTables.TRIAL_CHAMBERS_REWARD_COMMON_CHEST, LootTable.builder());
 		consumer.accept(LootTables.TRIAL_CHAMBERS_REWARD_RARE_CHEST, LootTable.builder());
@@ -653,6 +736,7 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 					.with(ItemEntry.builder(Items.POTATO).weight(7).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 6.0F))))
 					.with(ItemEntry.builder(Items.MOSS_BLOCK).weight(7).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
 					.with(ItemEntry.builder(Items.POISONOUS_POTATO).weight(7).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 6.0F))))
+					.with(ItemEntry.builder(Items.POISONOUS_POTATO_PLANT).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
 					.with(ItemEntry.builder(Items.CARROT).weight(7).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 8.0F))))
 					.with(ItemEntry.builder(Items.WHEAT).weight(7).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(8.0F, 21.0F))))
 					.with(

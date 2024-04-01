@@ -29,18 +29,20 @@ public class CocoaBeansTreeDecorator extends TreeDecorator {
 		Random random = generator.getRandom();
 		if (!(random.nextFloat() >= this.probability)) {
 			List<BlockPos> list = generator.getLogPositions();
-			int i = ((BlockPos)list.get(0)).getY();
-			list.stream().filter(pos -> pos.getY() - i <= 2).forEach(pos -> {
-				for (Direction direction : Direction.Type.HORIZONTAL) {
-					if (random.nextFloat() <= 0.25F) {
-						Direction direction2 = direction.getOpposite();
-						BlockPos blockPos = pos.add(direction2.getOffsetX(), 0, direction2.getOffsetZ());
-						if (generator.isAir(blockPos)) {
-							generator.replace(blockPos, Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, Integer.valueOf(random.nextInt(3))).with(CocoaBlock.FACING, direction));
+			if (!list.isEmpty()) {
+				int i = ((BlockPos)list.get(0)).getY();
+				list.stream().filter(pos -> pos.getY() - i <= 2).forEach(pos -> {
+					for (Direction direction : Direction.Type.HORIZONTAL) {
+						if (random.nextFloat() <= 0.25F) {
+							Direction direction2 = direction.getOpposite();
+							BlockPos blockPos = pos.add(direction2.getOffsetX(), 0, direction2.getOffsetZ());
+							if (generator.isAir(blockPos)) {
+								generator.replace(blockPos, Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, Integer.valueOf(random.nextInt(3))).with(CocoaBlock.FACING, direction));
+							}
 						}
 					}
-				}
-			});
+				});
+			}
 		}
 	}
 }

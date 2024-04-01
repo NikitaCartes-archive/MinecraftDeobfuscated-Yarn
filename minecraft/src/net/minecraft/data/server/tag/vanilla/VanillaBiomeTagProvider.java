@@ -56,15 +56,17 @@ public class VanillaBiomeTagProvider extends TagProvider<Biome> {
 		this.getOrCreateTagBuilder(BiomeTags.IS_SAVANNA).add(BiomeKeys.SAVANNA).add(BiomeKeys.SAVANNA_PLATEAU).add(BiomeKeys.WINDSWEPT_SAVANNA);
 		TagProvider.ProvidedTagBuilder<Biome> providedTagBuilder = this.getOrCreateTagBuilder(BiomeTags.IS_NETHER);
 		MultiNoiseBiomeSourceParameterList.Preset.NETHER.biomeStream().forEach(providedTagBuilder::add);
-		TagProvider.ProvidedTagBuilder<Biome> providedTagBuilder2 = this.getOrCreateTagBuilder(BiomeTags.IS_OVERWORLD);
-		MultiNoiseBiomeSourceParameterList.Preset.OVERWORLD.biomeStream().forEach(providedTagBuilder2::add);
+		TagProvider.ProvidedTagBuilder<Biome> providedTagBuilder2 = this.getOrCreateTagBuilder(BiomeTags.IS_POTATO);
+		MultiNoiseBiomeSourceParameterList.Preset.POTATO.biomeStream().forEach(providedTagBuilder2::add);
+		TagProvider.ProvidedTagBuilder<Biome> providedTagBuilder3 = this.getOrCreateTagBuilder(BiomeTags.IS_OVERWORLD);
+		MultiNoiseBiomeSourceParameterList.Preset.OVERWORLD.biomeStream().forEach(providedTagBuilder3::add);
 		this.getOrCreateTagBuilder(BiomeTags.IS_END)
 			.add(BiomeKeys.THE_END)
 			.add(BiomeKeys.END_HIGHLANDS)
 			.add(BiomeKeys.END_MIDLANDS)
 			.add(BiomeKeys.SMALL_END_ISLANDS)
 			.add(BiomeKeys.END_BARRENS);
-		this.getOrCreateTagBuilder(BiomeTags.BURIED_TREASURE_HAS_STRUCTURE).addTag(BiomeTags.IS_BEACH);
+		this.getOrCreateTagBuilder(BiomeTags.BURIED_TREASURE_HAS_STRUCTURE).addTag(BiomeTags.IS_BEACH).add(BiomeKeys.HASH);
 		this.getOrCreateTagBuilder(BiomeTags.DESERT_PYRAMID_HAS_STRUCTURE).add(BiomeKeys.DESERT);
 		this.getOrCreateTagBuilder(BiomeTags.IGLOO_HAS_STRUCTURE).add(BiomeKeys.SNOWY_TAIGA).add(BiomeKeys.SNOWY_PLAINS).add(BiomeKeys.SNOWY_SLOPES);
 		this.getOrCreateTagBuilder(BiomeTags.JUNGLE_TEMPLE_HAS_STRUCTURE).add(BiomeKeys.BAMBOO_JUNGLE).add(BiomeKeys.JUNGLE);
@@ -138,11 +140,20 @@ public class VanillaBiomeTagProvider extends TagProvider<Biome> {
 			.add(BiomeKeys.SNOWY_PLAINS)
 			.add(BiomeKeys.PLAINS)
 			.add(BiomeKeys.SUNFLOWER_PLAINS);
+		this.getOrCreateTagBuilder(BiomeTags.RUINED_PORTATOLS_HAS_STRUCTURE)
+			.addTag(BiomeTags.RUINED_PORTAL_DESERT_HAS_STRUCTURE)
+			.addTag(BiomeTags.RUINED_PORTAL_JUNGLE_HAS_STRUCTURE)
+			.addTag(BiomeTags.RUINED_PORTAL_MOUNTAIN_HAS_STRUCTURE)
+			.addTag(BiomeTags.RUINED_PORTAL_STANDARD_HAS_STRUCTURE)
+			.addTag(BiomeTags.RUINED_PORTAL_SWAMP_HAS_STRUCTURE)
+			.addTag(BiomeTags.RUINED_PORTAL_OCEAN_HAS_STRUCTURE)
+			.addTag(BiomeTags.IS_POTATO);
 		this.getOrCreateTagBuilder(BiomeTags.SHIPWRECK_BEACHED_HAS_STRUCTURE).addTag(BiomeTags.IS_BEACH);
-		this.getOrCreateTagBuilder(BiomeTags.SHIPWRECK_HAS_STRUCTURE).addTag(BiomeTags.IS_OCEAN);
-		this.getOrCreateTagBuilder(BiomeTags.SWAMP_HUT_HAS_STRUCTURE).add(BiomeKeys.SWAMP);
+		this.getOrCreateTagBuilder(BiomeTags.SHIPWRECK_HAS_STRUCTURE).addTag(BiomeTags.IS_OCEAN).addTag(BiomeTags.IS_POTATO);
+		this.getOrCreateTagBuilder(BiomeTags.SWAMP_HUT_HAS_STRUCTURE).add(BiomeKeys.SWAMP).add(BiomeKeys.CORRUPTION).add(BiomeKeys.WASTELAND);
 		this.getOrCreateTagBuilder(BiomeTags.VILLAGE_DESERT_HAS_STRUCTURE).add(BiomeKeys.DESERT);
 		this.getOrCreateTagBuilder(BiomeTags.VILLAGE_PLAINS_HAS_STRUCTURE).add(BiomeKeys.PLAINS).add(BiomeKeys.MEADOW);
+		this.getOrCreateTagBuilder(BiomeTags.VILLAGE_POTATO_HAS_STRUCTURE).add(BiomeKeys.CORRUPTION).add(BiomeKeys.FIELDS).add(BiomeKeys.ARBORETUM);
 		this.getOrCreateTagBuilder(BiomeTags.VILLAGE_SAVANNA_HAS_STRUCTURE).add(BiomeKeys.SAVANNA);
 		this.getOrCreateTagBuilder(BiomeTags.VILLAGE_SNOWY_HAS_STRUCTURE).add(BiomeKeys.SNOWY_PLAINS);
 		this.getOrCreateTagBuilder(BiomeTags.VILLAGE_TAIGA_HAS_STRUCTURE).add(BiomeKeys.TAIGA);
@@ -198,19 +209,24 @@ public class VanillaBiomeTagProvider extends TagProvider<Biome> {
 			.add(BiomeKeys.NETHER_WASTES)
 			.add(BiomeKeys.SOUL_SAND_VALLEY)
 			.add(BiomeKeys.WARPED_FOREST);
+		this.getOrCreateTagBuilder(BiomeTags.COLOSSEUM_HAS_STRUCTURE).addTag(BiomeTags.IS_POTATO);
 		this.getOrCreateTagBuilder(BiomeTags.ANCIENT_CITY_HAS_STRUCTURE).add(BiomeKeys.DEEP_DARK);
 		this.getOrCreateTagBuilder(BiomeTags.RUINED_PORTAL_NETHER_HAS_STRUCTURE).addTag(BiomeTags.IS_NETHER);
 		this.getOrCreateTagBuilder(BiomeTags.END_CITY_HAS_STRUCTURE).add(BiomeKeys.END_HIGHLANDS).add(BiomeKeys.END_MIDLANDS);
 		this.getOrCreateTagBuilder(BiomeTags.PRODUCES_CORALS_FROM_BONEMEAL).add(BiomeKeys.WARM_OCEAN);
 		this.getOrCreateTagBuilder(BiomeTags.PLAYS_UNDERWATER_MUSIC).addTag(BiomeTags.IS_OCEAN).addTag(BiomeTags.IS_RIVER);
-		this.getOrCreateTagBuilder(BiomeTags.HAS_CLOSER_WATER_FOG).add(BiomeKeys.SWAMP).add(BiomeKeys.MANGROVE_SWAMP);
+		this.getOrCreateTagBuilder(BiomeTags.HAS_CLOSER_WATER_FOG)
+			.add(BiomeKeys.SWAMP)
+			.add(BiomeKeys.CORRUPTION)
+			.add(BiomeKeys.WASTELAND)
+			.add(BiomeKeys.MANGROVE_SWAMP);
 		this.getOrCreateTagBuilder(BiomeTags.WATER_ON_MAP_OUTLINES)
 			.addTag(BiomeTags.IS_OCEAN)
 			.addTag(BiomeTags.IS_RIVER)
 			.add(BiomeKeys.SWAMP)
 			.add(BiomeKeys.MANGROVE_SWAMP);
 		this.getOrCreateTagBuilder(BiomeTags.WITHOUT_ZOMBIE_SIEGES).add(BiomeKeys.MUSHROOM_FIELDS);
-		this.getOrCreateTagBuilder(BiomeTags.WITHOUT_PATROL_SPAWNS).add(BiomeKeys.MUSHROOM_FIELDS);
+		this.getOrCreateTagBuilder(BiomeTags.WITHOUT_PATROL_SPAWNS).addTag(BiomeTags.IS_POTATO).add(BiomeKeys.MUSHROOM_FIELDS);
 		this.getOrCreateTagBuilder(BiomeTags.WITHOUT_WANDERING_TRADER_SPAWNS).add(BiomeKeys.THE_VOID);
 		this.getOrCreateTagBuilder(BiomeTags.SPAWNS_COLD_VARIANT_FROGS)
 			.add(BiomeKeys.SNOWY_PLAINS)
@@ -250,7 +266,7 @@ public class VanillaBiomeTagProvider extends TagProvider<Biome> {
 		this.getOrCreateTagBuilder(BiomeTags.ALLOWS_TROPICAL_FISH_SPAWNS_AT_ANY_HEIGHT).add(BiomeKeys.LUSH_CAVES);
 		this.getOrCreateTagBuilder(BiomeTags.POLAR_BEARS_SPAWN_ON_ALTERNATE_BLOCKS).add(BiomeKeys.FROZEN_OCEAN).add(BiomeKeys.DEEP_FROZEN_OCEAN);
 		this.getOrCreateTagBuilder(BiomeTags.MORE_FREQUENT_DROWNED_SPAWNS).addTag(BiomeTags.IS_RIVER);
-		this.getOrCreateTagBuilder(BiomeTags.ALLOWS_SURFACE_SLIME_SPAWNS).add(BiomeKeys.SWAMP).add(BiomeKeys.MANGROVE_SWAMP);
+		this.getOrCreateTagBuilder(BiomeTags.ALLOWS_SURFACE_SLIME_SPAWNS).add(BiomeKeys.SWAMP).add(BiomeKeys.WASTELAND).add(BiomeKeys.MANGROVE_SWAMP);
 		this.getOrCreateTagBuilder(BiomeTags.SPAWNS_SNOW_FOXES)
 			.add(BiomeKeys.SNOWY_PLAINS)
 			.add(BiomeKeys.ICE_SPIKES)
@@ -283,6 +299,8 @@ public class VanillaBiomeTagProvider extends TagProvider<Biome> {
 			.add(BiomeKeys.SOUL_SAND_VALLEY)
 			.add(BiomeKeys.WARPED_FOREST)
 			.add(BiomeKeys.WINDSWEPT_SAVANNA)
-			.add(BiomeKeys.WOODED_BADLANDS);
+			.add(BiomeKeys.WOODED_BADLANDS)
+			.add(BiomeKeys.WASTELAND)
+			.add(BiomeKeys.HASH);
 	}
 }

@@ -25,6 +25,11 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
+	public boolean hasPotatoForm() {
+		return true;
+	}
+
+	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
 		super.initDataTracker(builder);
 		builder.add(CONVERTING, false);

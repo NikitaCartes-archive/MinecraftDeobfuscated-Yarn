@@ -17,6 +17,7 @@ public class MiscConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ICE_SPIKE = ConfiguredFeatures.of("ice_spike");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ICE_PATCH = ConfiguredFeatures.of("ice_patch");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> FOREST_ROCK = ConfiguredFeatures.of("forest_rock");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> POTATO_CLOUD = ConfiguredFeatures.of("potato_cloud");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ICEBERG_PACKED = ConfiguredFeatures.of("iceberg_packed");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ICEBERG_BLUE = ConfiguredFeatures.of("iceberg_blue");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> BLUE_ICE = ConfiguredFeatures.of("blue_ice");
@@ -29,6 +30,7 @@ public class MiscConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> BONUS_CHEST = ConfiguredFeatures.of("bonus_chest");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> VOID_START_PLATFORM = ConfiguredFeatures.of("void_start_platform");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> DESERT_WELL = ConfiguredFeatures.of("desert_well");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> HASH_WELL = ConfiguredFeatures.of("hash_well");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> SPRING_LAVA_OVERWORLD = ConfiguredFeatures.of("spring_lava_overworld");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> SPRING_LAVA_FROZEN = ConfiguredFeatures.of("spring_lava_frozen");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> SPRING_WATER = ConfiguredFeatures.of("spring_water");
@@ -41,12 +43,26 @@ public class MiscConfiguredFeatures {
 			Feature.DISK,
 			new DiskFeatureConfig(
 				PredicatedStateProvider.of(Blocks.PACKED_ICE),
-				BlockPredicate.matchingBlocks(List.of(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.PODZOL, Blocks.COARSE_DIRT, Blocks.MYCELIUM, Blocks.SNOW_BLOCK, Blocks.ICE)),
+				BlockPredicate.matchingBlocks(
+					List.of(
+						Blocks.DIRT,
+						Blocks.TERRE_DE_POMME,
+						Blocks.GRASS_BLOCK,
+						Blocks.PEELGRASS_BLOCK,
+						Blocks.CORRUPTED_PEELGRASS_BLOCK,
+						Blocks.PODZOL,
+						Blocks.COARSE_DIRT,
+						Blocks.MYCELIUM,
+						Blocks.SNOW_BLOCK,
+						Blocks.ICE
+					)
+				),
 				UniformIntProvider.create(2, 3),
 				1
 			)
 		);
 		ConfiguredFeatures.register(featureRegisterable, FOREST_ROCK, Feature.FOREST_ROCK, new SingleStateFeatureConfig(Blocks.MOSSY_COBBLESTONE.getDefaultState()));
+		ConfiguredFeatures.register(featureRegisterable, POTATO_CLOUD, Feature.CLOUD, new SingleStateFeatureConfig(Blocks.FLOATATO.getDefaultState()));
 		ConfiguredFeatures.register(featureRegisterable, ICEBERG_PACKED, Feature.ICEBERG, new SingleStateFeatureConfig(Blocks.PACKED_ICE.getDefaultState()));
 		ConfiguredFeatures.register(featureRegisterable, ICEBERG_BLUE, Feature.ICEBERG, new SingleStateFeatureConfig(Blocks.BLUE_ICE.getDefaultState()));
 		ConfiguredFeatures.register(featureRegisterable, BLUE_ICE, Feature.BLUE_ICE);
@@ -61,7 +77,10 @@ public class MiscConfiguredFeatures {
 			DISK_CLAY,
 			Feature.DISK,
 			new DiskFeatureConfig(
-				PredicatedStateProvider.of(Blocks.CLAY), BlockPredicate.matchingBlocks(List.of(Blocks.DIRT, Blocks.CLAY)), UniformIntProvider.create(2, 3), 1
+				PredicatedStateProvider.of(Blocks.CLAY),
+				BlockPredicate.matchingBlocks(List.of(Blocks.DIRT, Blocks.CLAY, Blocks.TERRE_DE_POMME)),
+				UniformIntProvider.create(2, 3),
+				1
 			)
 		);
 		ConfiguredFeatures.register(
@@ -69,7 +88,10 @@ public class MiscConfiguredFeatures {
 			DISK_GRAVEL,
 			Feature.DISK,
 			new DiskFeatureConfig(
-				PredicatedStateProvider.of(Blocks.GRAVEL), BlockPredicate.matchingBlocks(List.of(Blocks.DIRT, Blocks.GRASS_BLOCK)), UniformIntProvider.create(2, 5), 2
+				PredicatedStateProvider.of(Blocks.GRAVEL),
+				BlockPredicate.matchingBlocks(List.of(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.TERRE_DE_POMME, Blocks.PEELGRASS_BLOCK, Blocks.CORRUPTED_PEELGRASS_BLOCK)),
+				UniformIntProvider.create(2, 5),
+				2
 			)
 		);
 		ConfiguredFeatures.register(
@@ -81,7 +103,7 @@ public class MiscConfiguredFeatures {
 					BlockStateProvider.of(Blocks.SAND),
 					List.of(new PredicatedStateProvider.Rule(BlockPredicate.matchingBlocks(Direction.DOWN.getVector(), Blocks.AIR), BlockStateProvider.of(Blocks.SANDSTONE)))
 				),
-				BlockPredicate.matchingBlocks(List.of(Blocks.DIRT, Blocks.GRASS_BLOCK)),
+				BlockPredicate.matchingBlocks(List.of(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.TERRE_DE_POMME, Blocks.PEELGRASS_BLOCK, Blocks.CORRUPTED_PEELGRASS_BLOCK)),
 				UniformIntProvider.create(2, 6),
 				2
 			)
@@ -103,7 +125,7 @@ public class MiscConfiguredFeatures {
 						)
 					)
 				),
-				BlockPredicate.matchingBlocks(List.of(Blocks.DIRT, Blocks.MUD)),
+				BlockPredicate.matchingBlocks(List.of(Blocks.DIRT, Blocks.TERRE_DE_POMME, Blocks.MUD)),
 				UniformIntProvider.create(2, 6),
 				2
 			)
@@ -111,6 +133,7 @@ public class MiscConfiguredFeatures {
 		ConfiguredFeatures.register(featureRegisterable, BONUS_CHEST, Feature.BONUS_CHEST);
 		ConfiguredFeatures.register(featureRegisterable, VOID_START_PLATFORM, Feature.VOID_START_PLATFORM);
 		ConfiguredFeatures.register(featureRegisterable, DESERT_WELL, Feature.DESERT_WELL);
+		ConfiguredFeatures.register(featureRegisterable, HASH_WELL, Feature.HASH_WELL);
 		ConfiguredFeatures.register(
 			featureRegisterable,
 			SPRING_LAVA_OVERWORLD,
@@ -121,7 +144,17 @@ public class MiscConfiguredFeatures {
 				4,
 				1,
 				RegistryEntryList.of(
-					Block::getRegistryEntry, Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DEEPSLATE, Blocks.TUFF, Blocks.CALCITE, Blocks.DIRT
+					Block::getRegistryEntry,
+					Blocks.STONE,
+					Blocks.POTONE,
+					Blocks.GRANITE,
+					Blocks.DIORITE,
+					Blocks.ANDESITE,
+					Blocks.DEEPSLATE,
+					Blocks.TUFF,
+					Blocks.CALCITE,
+					Blocks.DIRT,
+					Blocks.TERRE_DE_POMME
 				)
 			)
 		);
@@ -145,6 +178,7 @@ public class MiscConfiguredFeatures {
 				RegistryEntryList.of(
 					Block::getRegistryEntry,
 					Blocks.STONE,
+					Blocks.POTONE,
 					Blocks.GRANITE,
 					Blocks.DIORITE,
 					Blocks.ANDESITE,
@@ -152,6 +186,7 @@ public class MiscConfiguredFeatures {
 					Blocks.TUFF,
 					Blocks.CALCITE,
 					Blocks.DIRT,
+					Blocks.TERRE_DE_POMME,
 					Blocks.SNOW_BLOCK,
 					Blocks.POWDER_SNOW,
 					Blocks.PACKED_ICE

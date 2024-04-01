@@ -16,8 +16,10 @@ import net.minecraft.world.gen.feature.util.FeatureContext;
 public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 	private static final ImmutableList<Block> CANNOT_REPLACE_BLOCKS = ImmutableList.of(
 		Blocks.LAVA,
+		Blocks.WATER,
 		Blocks.BEDROCK,
 		Blocks.MAGMA_BLOCK,
+		Blocks.SLIME_BLOCK,
 		Blocks.SOUL_SAND,
 		Blocks.NETHER_BRICKS,
 		Blocks.NETHER_BRICK_FENCE,
@@ -56,7 +58,9 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 			)) {
 				int m = j - blockPos2.getManhattanDistance(blockPos);
 				if (m >= 0) {
-					bl2 |= this.placeBasaltColumn(structureWorldAccess, i, blockPos2, m, basaltColumnsFeatureConfig.getReach().get(random));
+					bl2 |= this.placeBasaltColumn(
+						structureWorldAccess, i, blockPos2, m, basaltColumnsFeatureConfig.getReach().get(random), basaltColumnsFeatureConfig.method_59277()
+					);
 				}
 			}
 
@@ -64,7 +68,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 		}
 	}
 
-	private boolean placeBasaltColumn(WorldAccess world, int seaLevel, BlockPos pos, int height, int reach) {
+	private boolean placeBasaltColumn(WorldAccess world, int seaLevel, BlockPos pos, int height, int reach, BlockState blockState) {
 		boolean bl = false;
 
 		for (BlockPos blockPos : BlockPos.iterate(pos.getX() - reach, pos.getY(), pos.getZ() - reach, pos.getX() + reach, pos.getY(), pos.getZ() + reach)) {
@@ -77,11 +81,11 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 
 				for (BlockPos.Mutable mutable = blockPos2.mutableCopy(); j >= 0; j--) {
 					if (isAirOrLavaOcean(world, seaLevel, mutable)) {
-						this.setBlockState(world, mutable, Blocks.BASALT.getDefaultState());
+						this.setBlockState(world, mutable, blockState);
 						mutable.move(Direction.UP);
 						bl = true;
 					} else {
-						if (!world.getBlockState(mutable).isOf(Blocks.BASALT)) {
+						if (!world.getBlockState(mutable).isOf(Blocks.BASALT) && !world.getBlockState(mutable).isOf(Blocks.ANCIENT_DEBRIS)) {
 							break;
 						}
 

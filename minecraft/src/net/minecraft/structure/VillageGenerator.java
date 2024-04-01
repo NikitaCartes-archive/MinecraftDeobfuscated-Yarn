@@ -6,6 +6,7 @@ import net.minecraft.structure.pool.StructurePool;
 public class VillageGenerator {
 	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
 		PlainsVillageData.bootstrap(poolRegisterable);
+		PotatoVillageData.bootstrap(poolRegisterable);
 		SnowyVillageData.bootstrap(poolRegisterable);
 		SavannaVillageData.bootstrap(poolRegisterable);
 		DesertVillageData.bootstrap(poolRegisterable);

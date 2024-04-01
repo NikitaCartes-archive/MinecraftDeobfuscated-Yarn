@@ -52,6 +52,16 @@ public final class SaplingGenerator {
 		Optional.empty(),
 		Optional.empty()
 	);
+	public static final SaplingGenerator POTATO = new SaplingGenerator(
+		"potato",
+		0.05F,
+		Optional.of(TreeConfiguredFeatures.MOTHER_POTATO_TREE),
+		Optional.empty(),
+		Optional.of(TreeConfiguredFeatures.POTATO_TREE),
+		Optional.of(TreeConfiguredFeatures.POTATO_TREE_TALL),
+		Optional.empty(),
+		Optional.empty()
+	);
 	public static final SaplingGenerator AZALEA = new SaplingGenerator(
 		"azalea", Optional.empty(), Optional.of(TreeConfiguredFeatures.AZALEA_TREE), Optional.empty()
 	);

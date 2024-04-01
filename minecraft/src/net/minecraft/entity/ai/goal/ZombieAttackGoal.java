@@ -1,14 +1,14 @@
 package net.minecraft.entity.ai.goal;
 
-import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.mob.PathAwareEntity;
 
-public class ZombieAttackGoal extends MeleeAttackGoal {
-	private final ZombieEntity zombie;
+public class ZombieAttackGoal<T extends PathAwareEntity> extends MeleeAttackGoal {
+	private final T zombie;
 	private int ticks;
 
-	public ZombieAttackGoal(ZombieEntity zombie, double speed, boolean pauseWhenMobIdle) {
-		super(zombie, speed, pauseWhenMobIdle);
-		this.zombie = zombie;
+	public ZombieAttackGoal(T pathAwareEntity, double d, boolean bl) {
+		super(pathAwareEntity, d, bl);
+		this.zombie = pathAwareEntity;
 	}
 
 	@Override

@@ -27,6 +27,7 @@ public record ChunkGeneratorSettings(
 	MaterialRules.MaterialRule surfaceRule,
 	List<MultiNoiseUtil.NoiseHypercube> spawnTarget,
 	int seaLevel,
+	int bottomGenerationPadding,
 	@Deprecated boolean mobGenerationDisabled,
 	boolean aquifers,
 	boolean oreVeins,
@@ -41,6 +42,7 @@ public record ChunkGeneratorSettings(
 					MaterialRules.MaterialRule.CODEC.fieldOf("surface_rule").forGetter(ChunkGeneratorSettings::surfaceRule),
 					MultiNoiseUtil.NoiseHypercube.CODEC.listOf().fieldOf("spawn_target").forGetter(ChunkGeneratorSettings::spawnTarget),
 					Codec.INT.fieldOf("sea_level").forGetter(ChunkGeneratorSettings::seaLevel),
+					Codec.INT.fieldOf("bottom_generation_padding").forGetter(ChunkGeneratorSettings::bottomGenerationPadding),
 					Codec.BOOL.fieldOf("disable_mob_generation").forGetter(ChunkGeneratorSettings::mobGenerationDisabled),
 					Codec.BOOL.fieldOf("aquifers_enabled").forGetter(ChunkGeneratorSettings::hasAquifers),
 					Codec.BOOL.fieldOf("ore_veins_enabled").forGetter(ChunkGeneratorSettings::oreVeins),
@@ -58,6 +60,7 @@ public record ChunkGeneratorSettings(
 	public static final RegistryKey<ChunkGeneratorSettings> FLOATING_ISLANDS = RegistryKey.of(
 		RegistryKeys.CHUNK_GENERATOR_SETTINGS, new Identifier("floating_islands")
 	);
+	public static final RegistryKey<ChunkGeneratorSettings> field_50996 = RegistryKey.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, new Identifier("potato"));
 
 	public boolean hasAquifers() {
 		return this.aquifers;
@@ -75,6 +78,7 @@ public record ChunkGeneratorSettings(
 		chunkGenerationSettingsRegisterable.register(END, createEndSettings(chunkGenerationSettingsRegisterable));
 		chunkGenerationSettingsRegisterable.register(CAVES, createCavesSettings(chunkGenerationSettingsRegisterable));
 		chunkGenerationSettingsRegisterable.register(FLOATING_ISLANDS, createFloatingIslandsSettings(chunkGenerationSettingsRegisterable));
+		chunkGenerationSettingsRegisterable.register(field_50996, method_59219(chunkGenerationSettingsRegisterable));
 	}
 
 	private static ChunkGeneratorSettings createEndSettings(Registerable<?> registerable) {
@@ -85,6 +89,7 @@ public record ChunkGeneratorSettings(
 			DensityFunctions.createEndNoiseRouter(registerable.getRegistryLookup(RegistryKeys.DENSITY_FUNCTION)),
 			VanillaSurfaceRules.getEndStoneRule(),
 			List.of(),
+			0,
 			0,
 			true,
 			false,
@@ -104,6 +109,7 @@ public record ChunkGeneratorSettings(
 			VanillaSurfaceRules.createNetherSurfaceRule(),
 			List.of(),
 			32,
+			0,
 			false,
 			false,
 			false,
@@ -122,6 +128,7 @@ public record ChunkGeneratorSettings(
 			VanillaSurfaceRules.createOverworldSurfaceRule(),
 			new VanillaBiomeParameters().getSpawnSuitabilityNoises(),
 			63,
+			0,
 			false,
 			true,
 			true,
@@ -140,6 +147,7 @@ public record ChunkGeneratorSettings(
 			VanillaSurfaceRules.createDefaultRule(false, true, true),
 			List.of(),
 			32,
+			0,
 			false,
 			false,
 			false,
@@ -158,6 +166,24 @@ public record ChunkGeneratorSettings(
 			VanillaSurfaceRules.createDefaultRule(false, false, false),
 			List.of(),
 			-64,
+			8,
+			false,
+			false,
+			false,
+			true
+		);
+	}
+
+	private static ChunkGeneratorSettings method_59219(Registerable<?> registerable) {
+		return new ChunkGeneratorSettings(
+			GenerationShapeConfig.field_50997,
+			Blocks.POTONE.getDefaultState(),
+			Blocks.WATER.getDefaultState(),
+			DensityFunctions.method_59222(registerable.getRegistryLookup(RegistryKeys.DENSITY_FUNCTION), registerable.getRegistryLookup(RegistryKeys.NOISE_PARAMETERS)),
+			VanillaSurfaceRules.method_59475(),
+			List.of(),
+			0,
+			8,
 			false,
 			false,
 			false,
@@ -174,6 +200,7 @@ public record ChunkGeneratorSettings(
 			VanillaSurfaceRules.getAirRule(),
 			List.of(),
 			63,
+			0,
 			true,
 			false,
 			false,

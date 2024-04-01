@@ -37,13 +37,21 @@ public class ReversePortalParticle extends PortalParticle {
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
 		private final SpriteProvider spriteProvider;
+		private final float field_51169;
+		private final float field_51170;
+		private final float field_51171;
 
-		public Factory(SpriteProvider spriteProvider) {
+		public Factory(SpriteProvider spriteProvider, float f, float g, float h) {
 			this.spriteProvider = spriteProvider;
+			this.field_51169 = f;
+			this.field_51170 = g;
+			this.field_51171 = h;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			ReversePortalParticle reversePortalParticle = new ReversePortalParticle(clientWorld, d, e, f, g, h, i);
+			float j = clientWorld.random.nextFloat() * 0.6F + 0.4F;
+			reversePortalParticle.setColor(this.field_51169 * j, this.field_51170 * j, this.field_51171 * j);
 			reversePortalParticle.setSprite(this.spriteProvider);
 			return reversePortalParticle;
 		}

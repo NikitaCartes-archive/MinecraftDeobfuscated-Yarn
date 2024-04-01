@@ -152,7 +152,7 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.NAUTILUS, ConnectionParticle.NautilusFactory::new);
 		this.registerFactory(ParticleTypes.NOTE, NoteParticle.Factory::new);
 		this.registerFactory(ParticleTypes.POOF, ExplosionSmokeParticle.Factory::new);
-		this.registerFactory(ParticleTypes.PORTAL, PortalParticle.Factory::new);
+		this.registerFactory(ParticleTypes.PORTAL, spriteProvider -> new PortalParticle.Factory(spriteProvider, 0.9F, 0.3F, 1.0F));
 		this.registerFactory(ParticleTypes.RAIN, RainSplashParticle.Factory::new);
 		this.registerFactory(ParticleTypes.SMOKE, FireSmokeParticle.Factory::new);
 		this.registerFactory(ParticleTypes.WHITE_SMOKE, WhiteSmokeParticle.Factory::new);
@@ -169,6 +169,7 @@ public class ParticleManager implements ResourceReloader {
 		this.registerBlockLeakFactory(ParticleTypes.FALLING_HONEY, BlockLeakParticle::createFallingHoney);
 		this.registerBlockLeakFactory(ParticleTypes.LANDING_HONEY, BlockLeakParticle::createLandingHoney);
 		this.registerBlockLeakFactory(ParticleTypes.FALLING_NECTAR, BlockLeakParticle::createFallingNectar);
+		this.registerBlockLeakFactory(ParticleTypes.FALLING_POISON, BlockLeakParticle::createFallingPoison);
 		this.registerBlockLeakFactory(ParticleTypes.FALLING_SPORE_BLOSSOM, BlockLeakParticle::createFallingSporeBlossom);
 		this.registerFactory(ParticleTypes.SPORE_BLOSSOM_AIR, WaterSuspendParticle.SporeBlossomAirFactory::new);
 		this.registerFactory(ParticleTypes.ASH, AshParticle.Factory::new);
@@ -177,7 +178,9 @@ public class ParticleManager implements ResourceReloader {
 		this.registerBlockLeakFactory(ParticleTypes.DRIPPING_OBSIDIAN_TEAR, BlockLeakParticle::createDrippingObsidianTear);
 		this.registerBlockLeakFactory(ParticleTypes.FALLING_OBSIDIAN_TEAR, BlockLeakParticle::createFallingObsidianTear);
 		this.registerBlockLeakFactory(ParticleTypes.LANDING_OBSIDIAN_TEAR, BlockLeakParticle::createLandingObsidianTear);
-		this.registerFactory(ParticleTypes.REVERSE_PORTAL, ReversePortalParticle.Factory::new);
+		this.registerFactory(ParticleTypes.REVERSE_PORTAL, spriteProvider -> new ReversePortalParticle.Factory(spriteProvider, 0.9F, 0.3F, 1.0F));
+		this.registerFactory(ParticleTypes.REVERSE_LIGHTNING, spriteProvider -> new ReversePortalParticle.Factory(spriteProvider, 0.6F, 1.0F, 0.2F));
+		this.registerFactory(ParticleTypes.LIGHTNING, spriteProvider -> new PortalParticle.Factory(spriteProvider, 0.6F, 1.0F, 0.2F));
 		this.registerFactory(ParticleTypes.WHITE_ASH, WhiteAshParticle.Factory::new);
 		this.registerFactory(ParticleTypes.SMALL_FLAME, FlameParticle.SmallFactory::new);
 		this.registerBlockLeakFactory(ParticleTypes.DRIPPING_DRIPSTONE_WATER, BlockLeakParticle::createDrippingDripstoneWater);
@@ -196,6 +199,7 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.ELECTRIC_SPARK, GlowParticle.ElectricSparkFactory::new);
 		this.registerFactory(ParticleTypes.SCRAPE, GlowParticle.ScrapeFactory::new);
 		this.registerFactory(ParticleTypes.SHRIEK, ShriekParticle.Factory::new);
+		this.registerFactory(ParticleTypes.FOOTSTEP, FootstepParticle.Factory::new);
 		this.registerFactory(ParticleTypes.EGG_CRACK, SuspendParticle.EggCrackFactory::new);
 		this.registerFactory(ParticleTypes.DUST_PLUME, DustPlumeParticle.Factory::new);
 		this.registerFactory(ParticleTypes.TRIAL_SPAWNER_DETECTION, TrialSpawnerDetectionParticle.Factory::new);

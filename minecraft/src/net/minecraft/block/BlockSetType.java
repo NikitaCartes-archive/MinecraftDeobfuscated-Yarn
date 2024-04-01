@@ -177,6 +177,24 @@ public record BlockSetType(
 			SoundEvents.BLOCK_NETHER_WOOD_BUTTON_CLICK_ON
 		)
 	);
+	public static final BlockSetType POTATO = register(
+		new BlockSetType(
+			"potato",
+			true,
+			true,
+			true,
+			BlockSetType.ActivationRule.EVERYTHING,
+			BlockSoundGroup.NETHER_WOOD,
+			SoundEvents.BLOCK_NETHER_WOOD_DOOR_CLOSE,
+			SoundEvents.BLOCK_NETHER_WOOD_DOOR_OPEN,
+			SoundEvents.BLOCK_NETHER_WOOD_TRAPDOOR_CLOSE,
+			SoundEvents.BLOCK_NETHER_WOOD_TRAPDOOR_OPEN,
+			SoundEvents.BLOCK_NETHER_WOOD_PRESSURE_PLATE_CLICK_OFF,
+			SoundEvents.BLOCK_NETHER_WOOD_PRESSURE_PLATE_CLICK_ON,
+			SoundEvents.BLOCK_NETHER_WOOD_BUTTON_CLICK_OFF,
+			SoundEvents.BLOCK_NETHER_WOOD_BUTTON_CLICK_ON
+		)
+	);
 	public static final BlockSetType MANGROVE = register(new BlockSetType("mangrove"));
 	public static final BlockSetType BAMBOO = register(
 		new BlockSetType(

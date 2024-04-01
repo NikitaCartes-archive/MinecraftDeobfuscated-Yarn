@@ -8,6 +8,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.AncientCityGenerator;
 import net.minecraft.structure.BastionRemnantGenerator;
+import net.minecraft.structure.ColosseumGenerator;
 import net.minecraft.structure.PillagerOutpostGenerator;
 import net.minecraft.structure.TrailRuinsGenerator;
 import net.minecraft.structure.VillageGenerator;
@@ -29,6 +30,7 @@ public class StructurePools {
 		RegistryEntry<StructurePool> registryEntry = registryEntryLookup.getOrThrow(EMPTY);
 		structurePoolsRegisterable.register(EMPTY, new StructurePool(registryEntry, ImmutableList.of(), StructurePool.Projection.RIGID));
 		BastionRemnantGenerator.bootstrap(structurePoolsRegisterable);
+		ColosseumGenerator.bootstrap(structurePoolsRegisterable);
 		PillagerOutpostGenerator.bootstrap(structurePoolsRegisterable);
 		VillageGenerator.bootstrap(structurePoolsRegisterable);
 		AncientCityGenerator.bootstrap(structurePoolsRegisterable);

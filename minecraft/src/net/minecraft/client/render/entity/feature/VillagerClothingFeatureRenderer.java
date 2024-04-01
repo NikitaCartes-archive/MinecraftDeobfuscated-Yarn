@@ -10,6 +10,7 @@ import java.util.function.UnaryOperator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithHat;
 import net.minecraft.client.util.math.MatrixStack;
@@ -53,6 +54,7 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 			VillagerData villagerData = livingEntity.getVillagerData();
 			VillagerType villagerType = villagerData.getType();
 			VillagerProfession villagerProfession = villagerData.getProfession();
+			boolean bl = livingEntity.isPotato();
 			VillagerResourceMetadata.HatType hatType = this.getHatType(this.villagerTypeToHat, "type", Registries.VILLAGER_TYPE, villagerType);
 			VillagerResourceMetadata.HatType hatType2 = this.getHatType(this.professionToHat, "profession", Registries.VILLAGER_PROFESSION, villagerProfession);
 			M entityModel = this.getContextModel();
@@ -65,6 +67,10 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 			entityModel.setHatVisible(true);
 			if (villagerProfession != VillagerProfession.NONE && !livingEntity.isBaby()) {
 				Identifier identifier2 = this.findTexture("profession", Registries.VILLAGER_PROFESSION.getId(villagerProfession));
+				if (bl) {
+					identifier2 = LivingEntityRenderer.getPotatoTextureId(identifier2);
+				}
+
 				renderModel(entityModel, identifier2, matrixStack, vertexConsumerProvider, i, livingEntity, 1.0F, 1.0F, 1.0F);
 				if (villagerProfession != VillagerProfession.NITWIT) {
 					Identifier identifier3 = this.findTexture("profession_level", LEVEL_TO_ID.get(MathHelper.clamp(villagerData.getLevel(), 1, LEVEL_TO_ID.size())));

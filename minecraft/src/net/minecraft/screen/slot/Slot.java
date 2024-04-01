@@ -43,9 +43,6 @@ public class Slot {
 	public void onTake(int amount) {
 	}
 
-	protected void onCrafted(ItemStack stack) {
-	}
-
 	public void onTakeItem(PlayerEntity player, ItemStack stack) {
 		this.markDirty();
 	}

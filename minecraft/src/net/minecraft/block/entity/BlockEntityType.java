@@ -38,6 +38,9 @@ import org.slf4j.Logger;
 public class BlockEntityType<T extends BlockEntity> {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final BlockEntityType<FurnaceBlockEntity> FURNACE = create("furnace", BlockEntityType.Builder.create(FurnaceBlockEntity::new, Blocks.FURNACE));
+	public static final BlockEntityType<FletchingTableBlockEntity> FLETCHING = create(
+		"fletching", BlockEntityType.Builder.create(FletchingTableBlockEntity::new, Blocks.FLETCHING_TABLE)
+	);
 	public static final BlockEntityType<ChestBlockEntity> CHEST = create("chest", BlockEntityType.Builder.create(ChestBlockEntity::new, Blocks.CHEST));
 	public static final BlockEntityType<TrappedChestBlockEntity> TRAPPED_CHEST = create(
 		"trapped_chest", BlockEntityType.Builder.create(TrappedChestBlockEntity::new, Blocks.TRAPPED_CHEST)
@@ -54,6 +57,8 @@ public class BlockEntityType<T extends BlockEntity> {
 		"sign",
 		BlockEntityType.Builder.create(
 			SignBlockEntity::new,
+			Blocks.POTATO_SIGN,
+			Blocks.POTATO_WALL_SIGN,
 			Blocks.OAK_SIGN,
 			Blocks.SPRUCE_SIGN,
 			Blocks.BIRCH_SIGN,
@@ -82,6 +87,8 @@ public class BlockEntityType<T extends BlockEntity> {
 		"hanging_sign",
 		BlockEntityType.Builder.create(
 			HangingSignBlockEntity::new,
+			Blocks.POTATO_HANGING_SIGN,
+			Blocks.POTATO_WALL_HANGING_SIGN,
 			Blocks.OAK_HANGING_SIGN,
 			Blocks.SPRUCE_HANGING_SIGN,
 			Blocks.BIRCH_HANGING_SIGN,
@@ -250,7 +257,7 @@ public class BlockEntityType<T extends BlockEntity> {
 	public static final BlockEntityType<BellBlockEntity> BELL = create("bell", BlockEntityType.Builder.create(BellBlockEntity::new, Blocks.BELL));
 	public static final BlockEntityType<JigsawBlockEntity> JIGSAW = create("jigsaw", BlockEntityType.Builder.create(JigsawBlockEntity::new, Blocks.JIGSAW));
 	public static final BlockEntityType<CampfireBlockEntity> CAMPFIRE = create(
-		"campfire", BlockEntityType.Builder.create(CampfireBlockEntity::new, Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE)
+		"campfire", BlockEntityType.Builder.create(CampfireBlockEntity::new, Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE, Blocks.FRYING_TABLE)
 	);
 	public static final BlockEntityType<BeehiveBlockEntity> BEEHIVE = create(
 		"beehive", BlockEntityType.Builder.create(BeehiveBlockEntity::new, Blocks.BEE_NEST, Blocks.BEEHIVE)
@@ -281,6 +288,12 @@ public class BlockEntityType<T extends BlockEntity> {
 		"trial_spawner", BlockEntityType.Builder.create(TrialSpawnerBlockEntity::new, Blocks.TRIAL_SPAWNER)
 	);
 	public static final BlockEntityType<VaultBlockEntity> VAULT = create("vault", BlockEntityType.Builder.create(VaultBlockEntity::new, Blocks.VAULT));
+	public static final BlockEntityType<BigBrainBlockEntity> BIG_BRAIN = create(
+		"big_brain", BlockEntityType.Builder.create(BigBrainBlockEntity::new, Blocks.BIG_BRAIN)
+	);
+	public static final BlockEntityType<PotatoRefineryBlockEntity> POTATO_REFINERY = create(
+		"potato_refinery", BlockEntityType.Builder.create(PotatoRefineryBlockEntity::new, Blocks.POTATO_REFINERY)
+	);
 	private final BlockEntityType.BlockEntityFactory<? extends T> factory;
 	private final Set<Block> blocks;
 	private final Type<?> type;

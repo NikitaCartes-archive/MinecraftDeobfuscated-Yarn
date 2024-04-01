@@ -15,7 +15,7 @@ public class LookAtEntityGoal extends Goal {
 	@Nullable
 	protected Entity target;
 	protected final float range;
-	private int lookTime;
+	protected int lookTime;
 	protected final float chance;
 	private final boolean lookForward;
 	protected final Class<? extends LivingEntity> targetType;

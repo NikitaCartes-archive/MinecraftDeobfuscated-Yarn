@@ -90,6 +90,11 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	}
 
 	@Override
+	public boolean hasPotatoForm() {
+		return true;
+	}
+
+	@Override
 	protected void initGoals() {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new EndermanEntity.ChasePlayerGoal(this));

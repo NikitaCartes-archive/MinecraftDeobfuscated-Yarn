@@ -15,6 +15,7 @@ import net.minecraft.block.CandleCakeBlock;
 import net.minecraft.block.CarvedPumpkinBlock;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.FluidDrainable;
+import net.minecraft.block.PoisonousPotatoZombieHeadBlock;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.SkullBlock;
@@ -562,6 +563,16 @@ public interface DispenserBehavior {
 					this.setSuccess(ArmorItem.dispenseArmor(pointer, stack));
 				}
 
+				return stack;
+			}
+		});
+		DispenserBlock.registerBehavior(Blocks.POISONOUS_POTATO_ZOMBIE_HEAD_HAT, new FallibleItemDispenserBehavior() {
+			@Override
+			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+				World world = pointer.world();
+				BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
+				PoisonousPotatoZombieHeadBlock poisonousPotatoZombieHeadBlock = (PoisonousPotatoZombieHeadBlock)Blocks.POISONOUS_POTATO_ZOMBIE_HEAD_HAT;
+				this.setSuccess(ArmorItem.dispenseArmor(pointer, stack));
 				return stack;
 			}
 		});

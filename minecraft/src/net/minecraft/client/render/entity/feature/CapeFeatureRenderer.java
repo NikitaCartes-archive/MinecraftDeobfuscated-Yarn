@@ -39,7 +39,7 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 			SkinTextures skinTextures = abstractClientPlayerEntity.getSkinTextures();
 			if (skinTextures.capeTexture() != null) {
 				ItemStack itemStack = abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.CHEST);
-				if (!itemStack.isOf(Items.ELYTRA)) {
+				if (!itemStack.isOf(Items.ELYTRA) && !itemStack.isOf(Items.POISONOUS_POLYTRA)) {
 					matrixStack.push();
 					matrixStack.translate(0.0F, 0.0F, 0.125F);
 					double d = MathHelper.lerp((double)h, abstractClientPlayerEntity.prevCapeX, abstractClientPlayerEntity.capeX)

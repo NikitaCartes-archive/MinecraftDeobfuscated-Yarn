@@ -20,6 +20,8 @@ import net.minecraft.advancement.criterion.EnterBlockCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
@@ -35,12 +37,14 @@ import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.BlastingRecipe;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.PotatoRefinementRecipe;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SmeltingRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -214,6 +218,14 @@ public abstract class RecipeProvider implements DataProvider {
 			.group("planks")
 			.criterion("has_logs", conditionsFromTag(input))
 			.offerTo(exporter);
+	}
+
+	protected static void method_59464(RecipeExporter recipeExporter, ItemConvertible itemConvertible, ItemConvertible itemConvertible2, int i) {
+		ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, itemConvertible, i)
+			.input(itemConvertible2)
+			.group("planks")
+			.criterion("has_logs", conditionsFromItem(itemConvertible2))
+			.offerTo(recipeExporter);
 	}
 
 	protected static void offerBarkBlockRecipe(RecipeExporter exporter, ItemConvertible output, ItemConvertible input) {
@@ -472,6 +484,32 @@ public abstract class RecipeProvider implements DataProvider {
 			.offerTo(exporter, convertBetween(output, input) + "_stonecutting");
 	}
 
+	protected static void method_59465(
+		RecipeExporter recipeExporter, RecipeCategory recipeCategory, ItemConvertible itemConvertible, ItemConvertible itemConvertible2, int i
+	) {
+		SingleItemRecipeJsonBuilder.method_59466(Ingredient.ofItems(itemConvertible2), recipeCategory, itemConvertible, i)
+			.criterion(hasItem(itemConvertible2), conditionsFromItem(itemConvertible2))
+			.offerTo(recipeExporter, convertBetween(itemConvertible, itemConvertible2) + "_poisonous_potato_cutting");
+	}
+
+	protected static void method_59461(RecipeExporter recipeExporter, ItemStack itemStack, ItemConvertible itemConvertible, ItemStack itemStack2, float f) {
+		method_59462(recipeExporter, itemStack, itemConvertible, Ingredient.ofStacks(itemStack2), f);
+	}
+
+	protected static void method_59463(
+		RecipeExporter recipeExporter, ItemStack itemStack, ItemConvertible itemConvertible, ItemConvertible itemConvertible2, float f
+	) {
+		method_59462(recipeExporter, itemStack, itemConvertible, Ingredient.ofItems(itemConvertible2), f);
+	}
+
+	protected static void method_59462(RecipeExporter recipeExporter, ItemStack itemStack, ItemConvertible itemConvertible, Ingredient ingredient, float f) {
+		recipeExporter.accept(
+			new Identifier(method_59459(itemStack)),
+			new PotatoRefinementRecipe(Ingredient.ofItems(itemConvertible), ingredient, itemStack, 0.1F, (int)(f * 100.0F)),
+			null
+		);
+	}
+
 	/**
 	 * Offers a smelting recipe to the exporter that is used to convert the main block of a block family to its cracked variant.
 	 */
@@ -584,6 +622,8 @@ public abstract class RecipeProvider implements DataProvider {
 		offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.MUTTON, Items.COOKED_MUTTON, 0.35F);
 		offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.PORKCHOP, Items.COOKED_PORKCHOP, 0.35F);
 		offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.POTATO, Items.BAKED_POTATO, 0.35F);
+		offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.POISONOUS_POTATO_STICKS, Items.POISONOUS_POTATO_FRIES, 0.35F);
+		offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.POISONOUS_POTATO_SLICES, Items.POISONOUS_POTATO_CHIPS, 0.35F);
 		offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.RABBIT, Items.COOKED_RABBIT, 0.35F);
 	}
 
@@ -733,6 +773,19 @@ public abstract class RecipeProvider implements DataProvider {
 
 	protected static String getBlastingItemPath(ItemConvertible item) {
 		return getItemPath(item) + "_from_blasting";
+	}
+
+	protected static String method_59459(ItemStack itemStack) {
+		Item item = itemStack.getItem();
+		PotionContentsComponent potionContentsComponent = itemStack.get(DataComponentTypes.POTION_CONTENTS);
+		String string = "_from_potato_refinement";
+		return potionContentsComponent != null
+			? getItemPath(item) + "_with_" + method_59460(potionContentsComponent) + "_from_potato_refinement"
+			: getItemPath(item) + "_from_potato_refinement";
+	}
+
+	private static String method_59460(PotionContentsComponent potionContentsComponent) {
+		return new Identifier(((RegistryEntry)potionContentsComponent.potion().get()).getIdAsString()).getPath();
 	}
 
 	@Override

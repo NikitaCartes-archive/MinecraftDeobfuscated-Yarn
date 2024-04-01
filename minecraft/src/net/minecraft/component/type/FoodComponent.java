@@ -8,12 +8,22 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.dynamic.Codecs;
 
 /**
  * Represents the components that make up the properties of a food item.
  */
-public record FoodComponent(int nutrition, float saturationModifier, boolean canAlwaysEat, float eatSeconds, List<FoodComponent.StatusEffectEntry> effects) {
+public record FoodComponent(
+	int nutrition,
+	float saturationModifier,
+	boolean canAlwaysEat,
+	float eatSeconds,
+	RegistryEntry<SoundEvent> eatSound,
+	List<FoodComponent.StatusEffectEntry> effects
+) {
 	private static final float DEFAULT_EAT_SECONDS = 1.6F;
 	public static final Codec<FoodComponent> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
@@ -21,6 +31,7 @@ public record FoodComponent(int nutrition, float saturationModifier, boolean can
 					Codec.FLOAT.fieldOf("saturation_modifier").forGetter(FoodComponent::saturationModifier),
 					Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "can_always_eat", false).forGetter(FoodComponent::canAlwaysEat),
 					Codecs.createStrictOptionalFieldCodec(Codecs.POSITIVE_FLOAT, "eat_seconds", 1.6F).forGetter(FoodComponent::eatSeconds),
+					SoundEvent.ENTRY_CODEC.fieldOf("eat_sound").forGetter(FoodComponent::eatSound),
 					Codecs.createStrictOptionalFieldCodec(FoodComponent.StatusEffectEntry.CODEC.listOf(), "effects", List.of()).forGetter(FoodComponent::effects)
 				)
 				.apply(instance, FoodComponent::new)
@@ -34,6 +45,8 @@ public record FoodComponent(int nutrition, float saturationModifier, boolean can
 		FoodComponent::canAlwaysEat,
 		PacketCodecs.FLOAT,
 		FoodComponent::eatSeconds,
+		SoundEvent.ENTRY_PACKET_CODEC,
+		FoodComponent::eatSound,
 		FoodComponent.StatusEffectEntry.PACKET_CODEC.collect(PacketCodecs.toList()),
 		FoodComponent::effects,
 		FoodComponent::new
@@ -48,6 +61,7 @@ public record FoodComponent(int nutrition, float saturationModifier, boolean can
 		private float saturationModifier;
 		private boolean alwaysEdible;
 		private float eatSeconds = 1.6F;
+		private RegistryEntry<SoundEvent> eatSound = SoundEvents.ENTITY_GENERIC_EAT;
 		private final ImmutableList.Builder<FoodComponent.StatusEffectEntry> statusEffects = ImmutableList.builder();
 
 		/**
@@ -102,8 +116,13 @@ public record FoodComponent(int nutrition, float saturationModifier, boolean can
 			return this;
 		}
 
+		public FoodComponent.Builder eatSound(RegistryEntry<SoundEvent> eatSound) {
+			this.eatSound = eatSound;
+			return this;
+		}
+
 		public FoodComponent build() {
-			return new FoodComponent(this.hunger, this.saturationModifier, this.alwaysEdible, this.eatSeconds, this.statusEffects.build());
+			return new FoodComponent(this.hunger, this.saturationModifier, this.alwaysEdible, this.eatSeconds, this.eatSound, this.statusEffects.build());
 		}
 	}
 

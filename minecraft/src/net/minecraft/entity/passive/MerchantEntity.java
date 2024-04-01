@@ -183,9 +183,9 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 
 	@Nullable
 	@Override
-	public Entity moveToWorld(ServerWorld destination) {
+	public Entity moveToWorld(ServerWorld destination, boolean bl) {
 		this.resetCustomer();
-		return super.moveToWorld(destination);
+		return super.moveToWorld(destination, bl);
 	}
 
 	protected void resetCustomer() {

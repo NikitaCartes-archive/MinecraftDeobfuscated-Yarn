@@ -281,6 +281,8 @@ public class WorldEvents {
 	 * <p>Called by {@link net.minecraft.block.CrafterBlock#craft(net.minecraft.block.BlockState, net.minecraft.server.world.ServerWorld, net.minecraft.util.math.BlockPos) CrafterBlock#craft}
 	 */
 	public static final int CRAFTER_FAILS = 1050;
+	public static final int field_50845 = 1051;
+	public static final int field_50846 = 1052;
 	/**
 	 * An item is composted in a composter.
 	 * <br>Plays the appropriate composting sound event and spawns composter particles.

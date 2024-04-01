@@ -527,6 +527,39 @@ public class DensityFunctions {
 		);
 	}
 
+	private static NoiseRouter method_59220(
+		RegistryEntryLookup<DensityFunction> registryEntryLookup,
+		RegistryEntryLookup<DoublePerlinNoiseSampler.NoiseParameters> registryEntryLookup2,
+		DensityFunction densityFunction
+	) {
+		DensityFunction densityFunction2 = entryHolder(registryEntryLookup, SHIFT_X);
+		DensityFunction densityFunction3 = entryHolder(registryEntryLookup, SHIFT_Z);
+		DensityFunction densityFunction4 = DensityFunctionTypes.shiftedNoise(
+			densityFunction2, densityFunction3, 0.25, registryEntryLookup2.getOrThrow(NoiseParametersKeys.TEMPERATURE)
+		);
+		DensityFunction densityFunction5 = DensityFunctionTypes.shiftedNoise(
+			densityFunction2, densityFunction3, 0.25, registryEntryLookup2.getOrThrow(NoiseParametersKeys.VEGETATION)
+		);
+		DensityFunction densityFunction6 = applyBlendDensity(densityFunction);
+		return new NoiseRouter(
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			densityFunction4,
+			densityFunction5,
+			entryHolder(registryEntryLookup, CONTINENTS_OVERWORLD),
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			densityFunction6,
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero()
+		);
+	}
+
 	/**
 	 * Applies the slides for the overworld and the surface world type.
 	 * 
@@ -537,6 +570,10 @@ public class DensityFunctions {
 	 */
 	private static DensityFunction applySurfaceSlides(boolean amplified, DensityFunction density) {
 		return applySlides(density, -64, 384, amplified ? 16 : 80, amplified ? 0 : 64, -0.078125, 0, 24, amplified ? 0.4 : 0.1171875);
+	}
+
+	private static DensityFunction method_59221(RegistryEntryLookup<DensityFunction> registryEntryLookup) {
+		return applySlides(entryHolder(registryEntryLookup, BASE_3D_NOISE_END), 0, 256, 192, 96, -0.12, 5, 32, -0.1);
 	}
 
 	/**
@@ -596,6 +633,12 @@ public class DensityFunctions {
 		return createMultiNoiseDependentNoiseRouter(
 			densityFunctionLookup, noiseParametersLookup, applyFloatingIslandsSlides(entryHolder(densityFunctionLookup, BASE_3D_NOISE_END), 0, 256)
 		);
+	}
+
+	public static NoiseRouter method_59222(
+		RegistryEntryLookup<DensityFunction> registryEntryLookup, RegistryEntryLookup<DoublePerlinNoiseSampler.NoiseParameters> registryEntryLookup2
+	) {
+		return method_59220(registryEntryLookup, registryEntryLookup2, method_59221(registryEntryLookup));
 	}
 
 	/**

@@ -157,6 +157,11 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Override
+	public boolean hasPotatoForm() {
+		return true;
+	}
+
+	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
 		super.initDataTracker(builder);
 		builder.add(BEE_FLAGS, (byte)0);
@@ -254,9 +259,15 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		super.tick();
 		if (this.hasNectar() && this.getCropsGrownSincePollination() < 10 && this.random.nextFloat() < 0.05F) {
 			for (int i = 0; i < this.random.nextInt(2) + 1; i++) {
-				this.addParticle(
-					this.getWorld(), this.getX() - 0.3F, this.getX() + 0.3F, this.getZ() - 0.3F, this.getZ() + 0.3F, this.getBodyY(0.5), ParticleTypes.FALLING_NECTAR
-				);
+				if (this.isPotato()) {
+					this.addParticle(
+						this.getWorld(), this.getX() - 0.3F, this.getX() + 0.3F, this.getZ() - 0.3F, this.getZ() + 0.3F, this.getBodyY(0.5), ParticleTypes.FALLING_POISON
+					);
+				} else {
+					this.addParticle(
+						this.getWorld(), this.getX() - 0.3F, this.getX() + 0.3F, this.getZ() - 0.3F, this.getZ() + 0.3F, this.getBodyY(0.5), ParticleTypes.FALLING_NECTAR
+					);
+				}
 			}
 		}
 
@@ -827,7 +838,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 						if (block instanceof CropBlock) {
 							CropBlock cropBlock = (CropBlock)block;
 							if (!cropBlock.isMature(blockState)) {
-								blockState2 = cropBlock.withAge(cropBlock.getAge(blockState) + 1);
+								blockState2 = cropBlock.withAge(cropBlock.getAge(blockState) + 1, blockState);
 							}
 						} else if (block instanceof StemBlock) {
 							int j = (Integer)blockState.get(StemBlock.AGE);

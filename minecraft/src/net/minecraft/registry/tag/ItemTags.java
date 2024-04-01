@@ -96,6 +96,7 @@ public final class ItemTags {
 	public static final TagKey<Item> DIRT = of("dirt");
 	public static final TagKey<Item> TERRACOTTA = of("terracotta");
 	public static final TagKey<Item> COMPLETES_FIND_TREE_TUTORIAL = of("completes_find_tree_tutorial");
+	public static final TagKey<Item> HEATABLE_POTATOS = of("heatable_potatos");
 	public static final TagKey<Item> BOATS = of("boats");
 	public static final TagKey<Item> CHEST_BOATS = of("chest_boats");
 	public static final TagKey<Item> FISHES = of("fishes");

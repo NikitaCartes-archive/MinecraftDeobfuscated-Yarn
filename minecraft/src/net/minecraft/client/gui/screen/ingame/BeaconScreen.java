@@ -132,10 +132,11 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		context.getMatrices().push();
 		context.getMatrices().translate(0.0F, 0.0F, 100.0F);
 		context.drawItem(new ItemStack(Items.NETHERITE_INGOT), i + 20, j + 109);
-		context.drawItem(new ItemStack(Items.EMERALD), i + 41, j + 109);
-		context.drawItem(new ItemStack(Items.DIAMOND), i + 41 + 22, j + 109);
-		context.drawItem(new ItemStack(Items.GOLD_INGOT), i + 42 + 44, j + 109);
-		context.drawItem(new ItemStack(Items.IRON_INGOT), i + 42 + 66, j + 109);
+		context.drawItem(new ItemStack(Items.AMBER_GEM), i + 41, j + 109);
+		context.drawItem(new ItemStack(Items.DIAMOND), i + 41 + 18, j + 109);
+		context.drawItem(new ItemStack(Items.EMERALD), i + 41 + 37, j + 109);
+		context.drawItem(new ItemStack(Items.GOLD_INGOT), i + 42 + 55, j + 109);
+		context.drawItem(new ItemStack(Items.IRON_INGOT), i + 42 + 74, j + 109);
 		context.getMatrices().pop();
 	}
 

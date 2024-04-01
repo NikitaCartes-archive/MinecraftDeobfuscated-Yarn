@@ -38,7 +38,7 @@ public record VillagerProfession(
 		"farmer",
 		PointOfInterestTypes.FARMER,
 		ImmutableSet.of(Items.WHEAT, Items.WHEAT_SEEDS, Items.BEETROOT_SEEDS, Items.BONE_MEAL),
-		ImmutableSet.of(Blocks.FARMLAND),
+		ImmutableSet.of(Blocks.FARMLAND, Blocks.POISON_FARMLAND),
 		SoundEvents.ENTITY_VILLAGER_WORK_FARMER
 	);
 	public static final VillagerProfession FISHERMAN = register("fisherman", PointOfInterestTypes.FISHERMAN, SoundEvents.ENTITY_VILLAGER_WORK_FISHERMAN);

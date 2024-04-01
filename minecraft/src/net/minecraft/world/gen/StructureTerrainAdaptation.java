@@ -6,6 +6,7 @@ import net.minecraft.util.StringIdentifiable;
 public enum StructureTerrainAdaptation implements StringIdentifiable {
 	NONE("none"),
 	BURY("bury"),
+	BURY_PROPER("bury_proper"),
 	BEARD_THIN("beard_thin"),
 	BEARD_BOX("beard_box");
 

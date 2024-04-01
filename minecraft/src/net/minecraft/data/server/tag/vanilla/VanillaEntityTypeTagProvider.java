@@ -18,7 +18,14 @@ public class VanillaEntityTypeTagProvider extends ValueLookupTagProvider<EntityT
 		this.getOrCreateTagBuilder(EntityTypeTags.SKELETONS).add(EntityType.SKELETON, EntityType.STRAY, EntityType.WITHER_SKELETON, EntityType.SKELETON_HORSE);
 		this.getOrCreateTagBuilder(EntityTypeTags.ZOMBIES)
 			.add(
-				EntityType.ZOMBIE_HORSE, EntityType.ZOMBIE, EntityType.ZOMBIE_VILLAGER, EntityType.ZOMBIFIED_PIGLIN, EntityType.ZOGLIN, EntityType.DROWNED, EntityType.HUSK
+				EntityType.ZOMBIE_HORSE,
+				EntityType.ZOMBIE,
+				EntityType.ZOMBIE_VILLAGER,
+				EntityType.ZOMBIFIED_PIGLIN,
+				EntityType.ZOGLIN,
+				EntityType.DROWNED,
+				EntityType.HUSK,
+				EntityType.POISONOUS_POTATO_ZOMBIE
 			);
 		this.getOrCreateTagBuilder(EntityTypeTags.RAIDERS)
 			.add(EntityType.EVOKER, EntityType.PILLAGER, EntityType.RAVAGER, EntityType.VINDICATOR, EntityType.ILLUSIONER, EntityType.WITCH);
@@ -44,12 +51,15 @@ public class VanillaEntityTypeTagProvider extends ValueLookupTagProvider<EntityT
 		this.getOrCreateTagBuilder(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS).add(EntityType.RABBIT, EntityType.ENDERMITE, EntityType.SILVERFISH, EntityType.FOX);
 		this.getOrCreateTagBuilder(EntityTypeTags.AXOLOTL_HUNT_TARGETS)
 			.add(EntityType.TROPICAL_FISH, EntityType.PUFFERFISH, EntityType.SALMON, EntityType.COD, EntityType.SQUID, EntityType.GLOW_SQUID, EntityType.TADPOLE);
-		this.getOrCreateTagBuilder(EntityTypeTags.AXOLOTL_ALWAYS_HOSTILES).add(EntityType.DROWNED, EntityType.GUARDIAN, EntityType.ELDER_GUARDIAN);
+		this.getOrCreateTagBuilder(EntityTypeTags.AXOLOTL_ALWAYS_HOSTILES)
+			.add(EntityType.DROWNED, EntityType.GUARDIAN, EntityType.ELDER_GUARDIAN, EntityType.TOXIFIN, EntityType.PLAGUEWHALE);
 		this.getOrCreateTagBuilder(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES).add(EntityType.STRAY, EntityType.POLAR_BEAR, EntityType.SNOW_GOLEM, EntityType.WITHER);
 		this.getOrCreateTagBuilder(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES).add(EntityType.STRIDER, EntityType.BLAZE, EntityType.MAGMA_CUBE);
 		this.getOrCreateTagBuilder(EntityTypeTags.CAN_BREATHE_UNDER_WATER)
 			.addTag(EntityTypeTags.UNDEAD)
 			.add(
+				EntityType.PLAGUEWHALE,
+				EntityType.TOXIFIN,
 				EntityType.AXOLOTL,
 				EntityType.FROG,
 				EntityType.GUARDIAN,
@@ -72,6 +82,7 @@ public class VanillaEntityTypeTagProvider extends ValueLookupTagProvider<EntityT
 				EntityType.SHULKER,
 				EntityType.ALLAY,
 				EntityType.BAT,
+				EntityType.BATATO,
 				EntityType.BEE,
 				EntityType.BLAZE,
 				EntityType.CAT,
@@ -104,7 +115,7 @@ public class VanillaEntityTypeTagProvider extends ValueLookupTagProvider<EntityT
 			.add(EntityType.TURTLE)
 			.add(EntityType.AXOLOTL)
 			.add(EntityType.GUARDIAN)
-			.add(EntityType.ELDER_GUARDIAN)
+			.add(EntityType.ELDER_GUARDIAN, EntityType.TOXIFIN, EntityType.PLAGUEWHALE)
 			.add(EntityType.COD)
 			.add(EntityType.PUFFERFISH)
 			.add(EntityType.SALMON)
@@ -126,7 +137,7 @@ public class VanillaEntityTypeTagProvider extends ValueLookupTagProvider<EntityT
 		this.getOrCreateTagBuilder(EntityTypeTags.NOT_SCARY_FOR_PUFFERFISH)
 			.add(EntityType.TURTLE)
 			.add(EntityType.GUARDIAN)
-			.add(EntityType.ELDER_GUARDIAN)
+			.add(EntityType.ELDER_GUARDIAN, EntityType.TOXIFIN, EntityType.PLAGUEWHALE)
 			.add(EntityType.COD)
 			.add(EntityType.PUFFERFISH)
 			.add(EntityType.SALMON)

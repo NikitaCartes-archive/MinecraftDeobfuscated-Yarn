@@ -22,6 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.apache.commons.lang3.tuple.Triple;
 
 public class StructurePool {
 	private static final int DEFAULT_Y = Integer.MIN_VALUE;
@@ -78,6 +79,25 @@ public class StructurePool {
 		}
 
 		this.fallback = fallback;
+	}
+
+	public StructurePool(
+		List<Triple<Function<StructurePool.Projection, ? extends StructurePoolElement>, Integer, StructurePool.Projection>> list,
+		RegistryEntry<StructurePool> registryEntry
+	) {
+		this.elementCounts = Lists.<Pair<StructurePoolElement, Integer>>newArrayList();
+		this.elements = new ObjectArrayList<>();
+
+		for (Triple<Function<StructurePool.Projection, ? extends StructurePoolElement>, Integer, StructurePool.Projection> triple : list) {
+			StructurePoolElement structurePoolElement = (StructurePoolElement)triple.getLeft().apply(triple.getRight());
+			this.elementCounts.add(Pair.of(structurePoolElement, triple.getMiddle()));
+
+			for (int i = 0; i < triple.getMiddle(); i++) {
+				this.elements.add(structurePoolElement);
+			}
+		}
+
+		this.fallback = registryEntry;
 	}
 
 	public int getHighestY(StructureTemplateManager structureTemplateManager) {

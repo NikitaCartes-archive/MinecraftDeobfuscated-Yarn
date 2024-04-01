@@ -274,6 +274,10 @@ public class BlockPos extends Vec3i {
 		return new BlockPos.Mutable(this.getX(), this.getY(), this.getZ());
 	}
 
+	public BlockPos method_59389(Direction direction) {
+		return this.add(direction.getVector());
+	}
+
 	/**
 	 * Iterates through {@code count} random block positions in a given range around the given position.
 	 * 
@@ -579,6 +583,10 @@ public class BlockPos extends Vec3i {
 
 		public Mutable(double x, double y, double z) {
 			this(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
+		}
+
+		public Mutable(BlockPos blockPos) {
+			super(blockPos);
 		}
 
 		@Override

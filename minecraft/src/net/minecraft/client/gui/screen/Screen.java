@@ -63,7 +63,9 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Set<String> ALLOWED_PROTOCOLS = Sets.<String>newHashSet("http", "https");
 	private static final Text SCREEN_USAGE_TEXT = Text.translatable("narrator.screen.usage");
-	protected static final CubeMapRenderer PANORAMA_RENDERER = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
+	protected static final CubeMapRenderer PANORAMA_RENDERER = new CubeMapRenderer(
+		new Identifier("nothingtoseeheremovealong", "textures/gui/title/background/panorama")
+	);
 	protected static final RotatingCubeMapRenderer ROTATING_PANORAMA_RENDERER = new RotatingCubeMapRenderer(PANORAMA_RENDERER);
 	public static final Identifier MENU_BACKGROUND_TEXTURE = new Identifier("textures/gui/menu_background.png");
 	public static final Identifier HEADER_SEPARATOR_TEXTURE = new Identifier("textures/gui/header_separator.png");

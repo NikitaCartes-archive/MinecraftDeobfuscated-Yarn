@@ -165,6 +165,12 @@ public class Enchantments {
 			Enchantment.properties(ItemTags.MINING_LOOT_ENCHANTABLE, 2, 3, Enchantment.leveledCost(15, 9), Enchantment.leveledCost(65, 9), 4, EquipmentSlot.MAINHAND)
 		)
 	);
+	public static final Enchantment POTATOFICATION = register(
+		"potatofication",
+		new Enchantment(
+			Enchantment.properties(ItemTags.MINING_ENCHANTABLE, 10, 5, Enchantment.leveledCost(1, 10), Enchantment.leveledCost(16, 10), 1, EquipmentSlot.MAINHAND)
+		)
+	);
 	public static final Enchantment POWER = register(
 		"power",
 		new Enchantment(

@@ -1,5 +1,8 @@
 package net.minecraft.block;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
+import java.util.Map;
 import java.util.function.ToIntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.block.cauldron.CauldronBehavior;
@@ -44,6 +47,17 @@ public class Blocks {
 	public static final Block STONE = register(
 		"stone", new Block(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).instrument(Instrument.BASEDRUM).requiresTool().strength(1.5F, 6.0F))
 	);
+	public static final Block POTONE = register(
+		"potone",
+		new Block(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.TERRACOTTA_ORANGE)
+				.instrument(Instrument.BASEDRUM)
+				.sounds(BlockSoundGroup.POTONE)
+				.requiresTool()
+				.strength(1.5F, 6.0F)
+		)
+	);
 	public static final Block GRANITE = register(
 		"granite", new Block(AbstractBlock.Settings.create().mapColor(MapColor.DIRT_BROWN).instrument(Instrument.BASEDRUM).requiresTool().strength(1.5F, 6.0F))
 	);
@@ -68,8 +82,18 @@ public class Blocks {
 	public static final Block GRASS_BLOCK = register(
 		"grass_block", new GrassBlock(AbstractBlock.Settings.create().mapColor(MapColor.PALE_GREEN).ticksRandomly().strength(0.6F).sounds(BlockSoundGroup.GRASS))
 	);
+	public static final Block PEELGRASS_BLOCK = register(
+		"peelgrass_block", new GrassBlock(AbstractBlock.Settings.create().mapColor(MapColor.LIME).ticksRandomly().strength(0.6F).sounds(BlockSoundGroup.PEELGRASS))
+	);
+	public static final Block CORRUPTED_PEELGRASS_BLOCK = register(
+		"corrupted_peelgrass_block",
+		new GrassBlock(AbstractBlock.Settings.create().mapColor(MapColor.GREEN).ticksRandomly().strength(0.6F).sounds(BlockSoundGroup.CORRUPTED_PEELGRASS))
+	);
 	public static final Block DIRT = register(
 		"dirt", new Block(AbstractBlock.Settings.create().mapColor(MapColor.DIRT_BROWN).strength(0.5F).sounds(BlockSoundGroup.GRAVEL))
+	);
+	public static final Block TERRE_DE_POMME = register(
+		"terredepomme", new Block(AbstractBlock.Settings.create().mapColor(MapColor.TERRACOTTA_YELLOW).strength(0.5F).sounds(BlockSoundGroup.TERRE_DE_POMME))
 	);
 	public static final Block COARSE_DIRT = register(
 		"coarse_dirt", new Block(AbstractBlock.Settings.create().mapColor(MapColor.DIRT_BROWN).strength(0.5F).sounds(BlockSoundGroup.GRAVEL))
@@ -79,6 +103,215 @@ public class Blocks {
 	);
 	public static final Block COBBLESTONE = register(
 		"cobblestone", new Block(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).instrument(Instrument.BASEDRUM).requiresTool().strength(2.0F, 6.0F))
+	);
+	public static final Block TATERSTONE = register(
+		"taterstone",
+		new Block(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.TERRACOTTA_YELLOW)
+				.instrument(Instrument.BASEDRUM)
+				.sounds(BlockSoundGroup.POTONE)
+				.requiresTool()
+				.strength(2.0F, 6.0F)
+		)
+	);
+	public static final Block BAKED_POTATO_BRICKS = register(
+		"baked_potato_bricks",
+		new Block(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.TERRACOTTA_ORANGE)
+				.instrument(Instrument.BASEDRUM)
+				.sounds(BlockSoundGroup.POTONE)
+				.requiresTool()
+				.strength(4.0F, 6.0F)
+		)
+	);
+	public static final Block EXPIRED_BAKED_POTATO_BRICKS = register(
+		"expired_baked_potato_bricks",
+		new Block(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.TERRACOTTA_LIME)
+				.instrument(Instrument.BASEDRUM)
+				.sounds(BlockSoundGroup.POTONE)
+				.requiresTool()
+				.strength(2.0F, 1.0F)
+		)
+	);
+	public static final Block CHARRED_BAKED_POTATO_BRICKS = register(
+		"charred_baked_potato_bricks",
+		new Block(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.BROWN)
+				.instrument(Instrument.BASEDRUM)
+				.sounds(BlockSoundGroup.POTONE)
+				.requiresTool()
+				.strength(1000.0F, 100.0F)
+		)
+	);
+	public static final Block TATERSTONE_SLAB = register(
+		"taterstone_slab",
+		new SlabBlock(AbstractBlock.Settings.create().mapColor(MapColor.TERRACOTTA_YELLOW).instrument(Instrument.BASEDRUM).requiresTool().strength(2.0F, 6.0F))
+	);
+	public static final Block POTONE_SLAB = register(
+		"potone_slab",
+		new SlabBlock(AbstractBlock.Settings.create().mapColor(MapColor.TERRACOTTA_ORANGE).instrument(Instrument.BASEDRUM).requiresTool().strength(2.0F, 6.0F))
+	);
+	public static final Block BAKED_POTATO_BRICK_SLAB = register(
+		"baked_potato_brick_slab",
+		new SlabBlock(AbstractBlock.Settings.create().mapColor(MapColor.TERRACOTTA_ORANGE).instrument(Instrument.BASEDRUM).requiresTool().strength(4.0F, 6.0F))
+	);
+	public static final Block EXPIRED_BAKED_POTATO_BRICK_SLAB = register(
+		"expired_baked_potato_brick_slab",
+		new SlabBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.TERRACOTTA_LIME)
+				.instrument(Instrument.BASEDRUM)
+				.sounds(BlockSoundGroup.POTONE)
+				.requiresTool()
+				.strength(2.0F, 1.0F)
+		)
+	);
+	public static final Block CHARRED_BAKED_POTATO_BRICK_SLAB = register(
+		"charred_baked_potato_brick_slab",
+		new SlabBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.BROWN)
+				.instrument(Instrument.BASEDRUM)
+				.sounds(BlockSoundGroup.POTONE)
+				.requiresTool()
+				.strength(1000.0F, 100.0F)
+		)
+	);
+	public static final Block TATERSTONE_STAIRS = register(
+		"taterstone_stairs",
+		new StairsBlock(
+			TATERSTONE.getDefaultState(),
+			AbstractBlock.Settings.create().mapColor(MapColor.TERRACOTTA_YELLOW).instrument(Instrument.BASEDRUM).requiresTool().strength(2.0F, 6.0F)
+		)
+	);
+	public static final Block POTONE_STAIRS = register(
+		"potone_stairs",
+		new StairsBlock(
+			POTONE.getDefaultState(),
+			AbstractBlock.Settings.create().mapColor(MapColor.TERRACOTTA_ORANGE).instrument(Instrument.BASEDRUM).requiresTool().strength(2.0F, 6.0F)
+		)
+	);
+	public static final Block BAKED_POTATO_BRICK_STAIRS = register(
+		"baked_potato_brick_stairs",
+		new StairsBlock(
+			POTONE.getDefaultState(),
+			AbstractBlock.Settings.create().mapColor(MapColor.TERRACOTTA_ORANGE).instrument(Instrument.BASEDRUM).requiresTool().strength(4.0F, 6.0F)
+		)
+	);
+	public static final Block EXPIRED_BAKED_POTATO_BRICK_STAIRS = register(
+		"expired_baked_potato_brick_stairs",
+		new StairsBlock(
+			POTONE.getDefaultState(),
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.TERRACOTTA_LIME)
+				.instrument(Instrument.BASEDRUM)
+				.sounds(BlockSoundGroup.POTONE)
+				.requiresTool()
+				.strength(2.0F, 1.0F)
+		)
+	);
+	public static final Block CHARRED_BAKED_POTATO_BRICK_STAIRS = register(
+		"charred_baked_potato_brick_stairs",
+		new StairsBlock(
+			POTONE.getDefaultState(),
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.BROWN)
+				.instrument(Instrument.BASEDRUM)
+				.sounds(BlockSoundGroup.POTONE)
+				.requiresTool()
+				.strength(1000.0F, 100.0F)
+		)
+	);
+	public static final Block TATERSTONE_WALL = register(
+		"taterstone_wall",
+		new WallBlock(
+			AbstractBlock.Settings.create().mapColor(MapColor.TERRACOTTA_YELLOW).instrument(Instrument.BASEDRUM).requiresTool().strength(2.0F, 6.0F).solid()
+		)
+	);
+	public static final Block POTONE_WALL = register(
+		"potone_wall",
+		new WallBlock(
+			AbstractBlock.Settings.create().mapColor(MapColor.TERRACOTTA_ORANGE).instrument(Instrument.BASEDRUM).requiresTool().strength(2.0F, 6.0F).solid()
+		)
+	);
+	public static final Block BAKED_POTATO_BRICK_WALL = register(
+		"baked_potato_brick_wall",
+		new WallBlock(
+			AbstractBlock.Settings.create().mapColor(MapColor.TERRACOTTA_ORANGE).instrument(Instrument.BASEDRUM).requiresTool().strength(4.0F, 6.0F).solid()
+		)
+	);
+	public static final Block EXPIRED_BAKED_POTATO_BRICK_WALL = register(
+		"expired_baked_potato_brick_wall",
+		new WallBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.TERRACOTTA_LIME)
+				.instrument(Instrument.BASEDRUM)
+				.sounds(BlockSoundGroup.POTONE)
+				.requiresTool()
+				.strength(2.0F, 1.0F)
+				.solid()
+		)
+	);
+	public static final Block CHARRED_BAKED_POTATO_BRICK_WALL = register(
+		"charred_baked_potato_brick_wall",
+		new WallBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.BROWN)
+				.instrument(Instrument.BASEDRUM)
+				.sounds(BlockSoundGroup.POTONE)
+				.requiresTool()
+				.strength(1000.0F, 100.0F)
+				.solid()
+		)
+	);
+	public static final Block POISONOUS_MASHED_POTATO = register(
+		"poisonous_mashed_potato",
+		new PoisonousMashedPotatoBlock(
+			AbstractBlock.Settings.create()
+				.replaceable()
+				.notSolid()
+				.mapColor(MapColor.GOLD)
+				.instrument(Instrument.BASEDRUM)
+				.sounds(BlockSoundGroup.SLIME)
+				.strength(0.1F)
+				.blockVision((state, world, pos) -> (Integer)state.get(PoisonousMashedPotatoBlock.LAYERS) >= 8)
+				.pistonBehavior(PistonBehavior.DESTROY)
+		)
+	);
+	public static final Block POISONOUS_POTATO_BLOCK = register(
+		"poisonous_potato_block",
+		new Block(AbstractBlock.Settings.create().mapColor(MapColor.PALE_GREEN).instrument(Instrument.BASEDRUM).sounds(BlockSoundGroup.POTONE).strength(0.2F))
+	);
+	public static final Block COMPRESSED_POISONOUS_POTATO_BLOCK = register(
+		"compressed_poisonous_potato_block",
+		new Block(AbstractBlock.Settings.create().mapColor(MapColor.ORANGE).instrument(Instrument.BASEDRUM).sounds(BlockSoundGroup.POTONE).strength(1.8F))
+	);
+	public static final Block DOUBLE_COMPRESSED_POISONOUS_POTATO_BLOCK = register(
+		"double_compressed_poisonous_potato_block",
+		new Block(AbstractBlock.Settings.create().mapColor(MapColor.TERRACOTTA_ORANGE).instrument(Instrument.BASEDRUM).sounds(BlockSoundGroup.POTONE).strength(16.2F))
+	);
+	public static final Block TRIPLE_COMPRESSED_POISONOUS_POTATO_BLOCK = register(
+		"triple_compressed_poisonous_potato_block",
+		new Block(AbstractBlock.Settings.create().mapColor(MapColor.TERRACOTTA_BLACK).instrument(Instrument.BASEDRUM).sounds(BlockSoundGroup.POTONE).strength(145.8F))
+	);
+	public static final Block QUADRUPLE_COMPRESSED_POISONOUS_POTATO_BLOCK = register(
+		"quadruple_compressed_poisonous_potato_block",
+		new Block(AbstractBlock.Settings.create().mapColor(MapColor.BLACK).instrument(Instrument.BASEDRUM).sounds(BlockSoundGroup.POTONE).strength(1312.2F))
+	);
+	public static final Block FLOATATO = register(
+		"floatato",
+		new Block(AbstractBlock.Settings.create().mapColor(MapColor.OFF_WHITE).instrument(Instrument.BASEDRUM).sounds(BlockSoundGroup.WOOL).strength(0.3F))
+	);
+	public static final Block FLOATATER = register(
+		"floatater",
+		new FloataterBlock(
+			AbstractBlock.Settings.create().mapColor(MapColor.OFF_WHITE).instrument(Instrument.BASEDRUM).sounds(BlockSoundGroup.STONE).strength(0.5F).requiresTool()
+		)
 	);
 	public static final Block OAK_PLANKS = register(
 		"oak_planks",
@@ -292,6 +525,13 @@ public class Blocks {
 			AbstractBlock.Settings.create().mapColor(MapColor.PALE_YELLOW).instrument(Instrument.SNARE).strength(0.5F).sounds(BlockSoundGroup.SAND)
 		)
 	);
+	public static final Block GRAVTATER = register(
+		"gravtater",
+		new ColoredFallingBlock(
+			new ColorCode(14188339),
+			AbstractBlock.Settings.create().mapColor(MapColor.ORANGE).instrument(Instrument.SNARE).strength(0.6F).sounds(BlockSoundGroup.GRAVTATER)
+		)
+	);
 	public static final Block SUSPICIOUS_SAND = register(
 		"suspicious_sand",
 		new BrushableBlock(
@@ -356,6 +596,20 @@ public class Blocks {
 	);
 	public static final Block DEEPSLATE_IRON_ORE = register(
 		"deepslate_iron_ore",
+		new ExperienceDroppingBlock(
+			ConstantIntProvider.create(0),
+			AbstractBlock.Settings.copyShallow(IRON_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE)
+		)
+	);
+	public static final Block POISONOUS_POTATO_ORE = register(
+		"poisonous_potato_ore",
+		new ExperienceDroppingBlock(
+			ConstantIntProvider.create(0),
+			AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).instrument(Instrument.BASEDRUM).requiresTool().strength(3.0F, 3.0F)
+		)
+	);
+	public static final Block DEEPSLATE_POISONOUS_POTATO_ORE = register(
+		"deepslate_poisonous_potato_ore",
 		new ExperienceDroppingBlock(
 			ConstantIntProvider.create(0),
 			AbstractBlock.Settings.copyShallow(IRON_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE)
@@ -574,6 +828,19 @@ public class Blocks {
 			AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).instrument(Instrument.BASEDRUM).requiresTool().strength(3.0F, 3.0F)
 		)
 	);
+	public static final Block RESIN_ORE = register(
+		"resin_ore",
+		new ResinOreBlock(
+			UniformIntProvider.create(0, 1),
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.ORANGE)
+				.sounds(BlockSoundGroup.POTONE)
+				.instrument(Instrument.BASEDRUM)
+				.requiresTool()
+				.strength(3.0F, 1.0F)
+				.luminance(blockState -> 3)
+		)
+	);
 	public static final Block DEEPSLATE_LAPIS_ORE = register(
 		"deepslate_lapis_ore",
 		new ExperienceDroppingBlock(
@@ -586,6 +853,12 @@ public class Blocks {
 	);
 	public static final Block DISPENSER = register(
 		"dispenser", new DispenserBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).instrument(Instrument.BASEDRUM).requiresTool().strength(3.5F))
+	);
+	public static final Block VICIOUS_POTATO = register(
+		"vicious_potato",
+		new ViciousPotatoBlock(
+			AbstractBlock.Settings.create().mapColor(MapColor.BROWN).sounds(BlockSoundGroup.GRAVTATER).instrument(Instrument.BANJO).ticksRandomly().strength(3.5F)
+		)
 	);
 	public static final Block SANDSTONE = register(
 		"sandstone", new Block(AbstractBlock.Settings.create().mapColor(MapColor.PALE_YELLOW).instrument(Instrument.BASEDRUM).requiresTool().strength(0.8F))
@@ -976,6 +1249,20 @@ public class Blocks {
 				.pistonBehavior(PistonBehavior.DESTROY)
 		)
 	);
+	public static final Block POTATO_FLOWER = register(
+		"potato_flower",
+		new FlowerBlock(
+			StatusEffects.POISON,
+			12.0F,
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.DARK_GREEN)
+				.noCollision()
+				.breakInstantly()
+				.sounds(BlockSoundGroup.GRASS)
+				.offset(AbstractBlock.OffsetType.XZ)
+				.pistonBehavior(PistonBehavior.DESTROY)
+		)
+	);
 	public static final Block BROWN_MUSHROOM = register(
 		"brown_mushroom",
 		new MushroomPlantBlock(
@@ -1160,6 +1447,18 @@ public class Blocks {
 				.ticksRandomly()
 				.strength(0.6F)
 				.sounds(BlockSoundGroup.GRAVEL)
+				.blockVision(Blocks::always)
+				.suffocates(Blocks::always)
+		)
+	);
+	public static final Block POISON_FARMLAND = register(
+		"poison_farmland",
+		new FarmlandBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.TERRACOTTA_YELLOW)
+				.ticksRandomly()
+				.strength(0.6F)
+				.sounds(BlockSoundGroup.GRAVTATER)
 				.blockVision(Blocks::always)
 				.suffocates(Blocks::always)
 		)
@@ -1425,6 +1724,12 @@ public class Blocks {
 			WoodType.WARPED, AbstractBlock.Settings.create().mapColor(MapColor.DARK_AQUA).solid().instrument(Instrument.BASS).noCollision().strength(1.0F)
 		)
 	);
+	public static final Block POTATO_HANGING_SIGN = register(
+		"potato_hanging_sign",
+		new HangingSignBlock(
+			WoodType.POTATO, AbstractBlock.Settings.create().mapColor(MapColor.EMERALD_GREEN).solid().instrument(Instrument.BASS).noCollision().strength(1.0F)
+		)
+	);
 	public static final Block MANGROVE_HANGING_SIGN = register(
 		"mangrove_hanging_sign",
 		new HangingSignBlock(
@@ -1568,6 +1873,13 @@ public class Blocks {
 		new WallHangingSignBlock(
 			WoodType.WARPED,
 			AbstractBlock.Settings.create().mapColor(MapColor.DARK_AQUA).solid().instrument(Instrument.BASS).noCollision().strength(1.0F).dropsLike(WARPED_HANGING_SIGN)
+		)
+	);
+	public static final Block POTATO_WALL_HANGING_SIGN = register(
+		"potato_wall_hanging_sign",
+		new WallHangingSignBlock(
+			WoodType.POTATO,
+			AbstractBlock.Settings.create().mapColor(MapColor.OAK_TAN).solid().instrument(Instrument.BASS).noCollision().strength(1.0F).dropsLike(POTATO_HANGING_SIGN)
 		)
 	);
 	public static final Block BAMBOO_WALL_HANGING_SIGN = register(
@@ -1933,6 +2245,24 @@ public class Blocks {
 				.pistonBehavior(PistonBehavior.BLOCK)
 		)
 	);
+	public static final Block POTATO_PORTAL = register(
+		"potato_portal",
+		new PotatoPortalBlock(
+			AbstractBlock.Settings.create()
+				.noCollision()
+				.ticksRandomly()
+				.strength(-1.0F)
+				.sounds(BlockSoundGroup.GLASS)
+				.luminance(blockState -> 15)
+				.pistonBehavior(PistonBehavior.BLOCK)
+		)
+	);
+	public static final Block PEDESTAL = register(
+		"pedestal",
+		new PedestalBlock(
+			AbstractBlock.Settings.create().mapColor(MapColor.ORANGE).strength(55.0F, 1200.0F).sounds(BlockSoundGroup.STONE).pistonBehavior(PistonBehavior.BLOCK)
+		)
+	);
 	public static final Block CARVED_PUMPKIN = register(
 		"carved_pumpkin",
 		new WearableCarvedPumpkinBlock(
@@ -1940,6 +2270,28 @@ public class Blocks {
 				.mapColor(MapColor.ORANGE)
 				.strength(1.0F)
 				.sounds(BlockSoundGroup.WOOD)
+				.allowsSpawning(Blocks::always)
+				.pistonBehavior(PistonBehavior.DESTROY)
+		)
+	);
+	public static final Block POISONOUS_POTATO_ZOMBIE_HEAD_HAT = register(
+		"poisonous_potato_zombie_head_hat",
+		new PoisonousPotatoZombieHeadHatBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.TERRACOTTA_YELLOW)
+				.strength(1.0F)
+				.sounds(BlockSoundGroup.CROP)
+				.allowsSpawning(Blocks::always)
+				.pistonBehavior(PistonBehavior.DESTROY)
+		)
+	);
+	public static final Block POISONOUS_POTATO_ZOMBIE_HEAD_BLOCK = register(
+		"poisonous_potato_zombie_head_block",
+		new PoisonousPotatoZombieHeadBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.TERRACOTTA_YELLOW)
+				.strength(1.0F)
+				.sounds(BlockSoundGroup.CROP)
 				.allowsSpawning(Blocks::always)
 				.pistonBehavior(PistonBehavior.DESTROY)
 		)
@@ -2405,6 +2757,12 @@ public class Blocks {
 				.sounds(BlockSoundGroup.METAL)
 		)
 	);
+	public static final Block AMBER_BLOCK = register(
+		"amber_block",
+		new Block(
+			AbstractBlock.Settings.create().mapColor(MapColor.ORANGE).instrument(Instrument.BIT).requiresTool().strength(5.0F, 6.0F).sounds(BlockSoundGroup.METAL)
+		)
+	);
 	public static final Block SPRUCE_STAIRS = register("spruce_stairs", createOldStairsBlock(SPRUCE_PLANKS));
 	public static final Block BIRCH_STAIRS = register("birch_stairs", createOldStairsBlock(BIRCH_PLANKS));
 	public static final Block JUNGLE_STAIRS = register("jungle_stairs", createOldStairsBlock(JUNGLE_PLANKS));
@@ -2448,6 +2806,7 @@ public class Blocks {
 	public static final Block POTTED_OXEYE_DAISY = register("potted_oxeye_daisy", createFlowerPotBlock(OXEYE_DAISY));
 	public static final Block POTTED_CORNFLOWER = register("potted_cornflower", createFlowerPotBlock(CORNFLOWER));
 	public static final Block POTTED_LILY_OF_THE_VALLEY = register("potted_lily_of_the_valley", createFlowerPotBlock(LILY_OF_THE_VALLEY));
+	public static final Block POTTED_POTATO_FLOWER = register("potted_potato_flower", createFlowerPotBlock(POTATO_FLOWER));
 	public static final Block POTTED_WITHER_ROSE = register("potted_wither_rose", createFlowerPotBlock(WITHER_ROSE));
 	public static final Block POTTED_RED_MUSHROOM = register("potted_red_mushroom", createFlowerPotBlock(RED_MUSHROOM));
 	public static final Block POTTED_BROWN_MUSHROOM = register("potted_brown_mushroom", createFlowerPotBlock(BROWN_MUSHROOM));
@@ -2475,6 +2834,7 @@ public class Blocks {
 				.breakInstantly()
 				.sounds(BlockSoundGroup.CROP)
 				.pistonBehavior(PistonBehavior.DESTROY)
+				.offset(AbstractBlock.OffsetType.POTATO)
 		)
 	);
 	public static final Block OAK_BUTTON = register("oak_button", createWoodenButtonBlock(BlockSetType.OAK));
@@ -3910,6 +4270,47 @@ public class Blocks {
 				.solidBlock(Blocks::never)
 		)
 	);
+	public static final Block STRONG_ROOTS = register(
+		"strong_roots",
+		new StrongRootsBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.GREEN)
+				.notSolid()
+				.strength(0.4F)
+				.sounds(BlockSoundGroup.WOOD)
+				.ticksRandomly()
+				.nonOpaque()
+				.pistonBehavior(PistonBehavior.DESTROY)
+		)
+	);
+	public static final Block POWERFUL_POTATO = register(
+		"powerful_potato",
+		new PowerfulPotatoBlock(
+			STRONG_ROOTS,
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.GREEN)
+				.notSolid()
+				.ticksRandomly()
+				.strength(0.4F)
+				.sounds(BlockSoundGroup.NETHER_STEM)
+				.nonOpaque()
+				.allowsSpawning(Blocks::never)
+				.pistonBehavior(PistonBehavior.DESTROY)
+				.solidBlock(Blocks::never)
+		)
+	);
+	public static final Block WEAK_ROOTS = register(
+		"weak_roots",
+		new StrongRootsBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.GREEN)
+				.notSolid()
+				.strength(0.4F)
+				.sounds(BlockSoundGroup.WOOD)
+				.nonOpaque()
+				.pistonBehavior(PistonBehavior.DESTROY)
+		)
+	);
 	public static final Block PURPUR_BLOCK = register(
 		"purpur_block", new Block(AbstractBlock.Settings.create().mapColor(MapColor.MAGENTA).instrument(Instrument.BASEDRUM).requiresTool().strength(1.5F, 6.0F))
 	);
@@ -3978,6 +4379,17 @@ public class Blocks {
 				.mapColor(MapColor.DIRT_BROWN)
 				.strength(0.65F)
 				.sounds(BlockSoundGroup.GRASS)
+				.blockVision(Blocks::always)
+				.suffocates(Blocks::always)
+		)
+	);
+	public static final Block POISON_PATH = register(
+		"poison_path",
+		new DirtPathBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.TERRACOTTA_LIME)
+				.strength(0.65F)
+				.sounds(BlockSoundGroup.MOSS_BLOCK)
 				.blockVision(Blocks::always)
 				.suffocates(Blocks::always)
 		)
@@ -5005,6 +5417,10 @@ public class Blocks {
 		"stonecutter",
 		new StonecutterBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).instrument(Instrument.BASEDRUM).requiresTool().strength(3.5F))
 	);
+	public static final Block POISONOUS_POTATO_CUTTER = register(
+		"poisonous_potato_cutter",
+		new PoisonousPotatoCutterBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).instrument(Instrument.BASEDRUM).requiresTool().strength(3.5F))
+	);
 	public static final Block BELL = register(
 		"bell",
 		new BellBlock(
@@ -5071,6 +5487,21 @@ public class Blocks {
 				.strength(2.0F)
 				.sounds(BlockSoundGroup.WOOD)
 				.luminance(createLightLevelFromLitBlockState(10))
+				.nonOpaque()
+				.burnable()
+		)
+	);
+	public static final Block FRYING_TABLE = register(
+		"frying_table",
+		new CampfireBlock(
+			true,
+			0,
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.SPRUCE_BROWN)
+				.instrument(Instrument.BASS)
+				.strength(2.0F)
+				.sounds(BlockSoundGroup.WOOD)
+				.luminance(createLightLevelFromLitBlockState(0))
 				.nonOpaque()
 				.burnable()
 		)
@@ -5258,6 +5689,12 @@ public class Blocks {
 		"warped_planks",
 		new Block(AbstractBlock.Settings.create().mapColor(MapColor.DARK_AQUA).instrument(Instrument.BASS).strength(2.0F, 3.0F).sounds(BlockSoundGroup.NETHER_WOOD))
 	);
+	public static final Block POTATO_PLANKS = register(
+		"potato_planks",
+		new Block(
+			AbstractBlock.Settings.create().mapColor(MapColor.EMERALD_GREEN).instrument(Instrument.BASS).strength(2.0F, 3.0F).sounds(BlockSoundGroup.NETHER_WOOD)
+		)
+	);
 	public static final Block CRIMSON_SLAB = register(
 		"crimson_slab",
 		new SlabBlock(
@@ -5273,6 +5710,16 @@ public class Blocks {
 		new SlabBlock(
 			AbstractBlock.Settings.create()
 				.mapColor(WARPED_PLANKS.getDefaultMapColor())
+				.instrument(Instrument.BASS)
+				.strength(2.0F, 3.0F)
+				.sounds(BlockSoundGroup.NETHER_WOOD)
+		)
+	);
+	public static final Block POTATO_SLAB = register(
+		"potato_slab",
+		new SlabBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(POTATO_PLANKS.getDefaultMapColor())
 				.instrument(Instrument.BASS)
 				.strength(2.0F, 3.0F)
 				.sounds(BlockSoundGroup.NETHER_WOOD)
@@ -5304,6 +5751,19 @@ public class Blocks {
 				.pistonBehavior(PistonBehavior.DESTROY)
 		)
 	);
+	public static final Block POTATO_PRESSURE_PLATE = register(
+		"potato_pressure_plate",
+		new PressurePlateBlock(
+			BlockSetType.POTATO,
+			AbstractBlock.Settings.create()
+				.mapColor(POTATO_PLANKS.getDefaultMapColor())
+				.solid()
+				.instrument(Instrument.BASS)
+				.noCollision()
+				.strength(0.5F)
+				.pistonBehavior(PistonBehavior.DESTROY)
+		)
+	);
 	public static final Block CRIMSON_FENCE = register(
 		"crimson_fence",
 		new FenceBlock(
@@ -5319,6 +5779,16 @@ public class Blocks {
 		new FenceBlock(
 			AbstractBlock.Settings.create()
 				.mapColor(WARPED_PLANKS.getDefaultMapColor())
+				.instrument(Instrument.BASS)
+				.strength(2.0F, 3.0F)
+				.sounds(BlockSoundGroup.NETHER_WOOD)
+		)
+	);
+	public static final Block POTATO_FENCE = register(
+		"potato_fence",
+		new FenceBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(POTATO_PLANKS.getDefaultMapColor())
 				.instrument(Instrument.BASS)
 				.strength(2.0F, 3.0F)
 				.sounds(BlockSoundGroup.NETHER_WOOD)
@@ -5348,6 +5818,18 @@ public class Blocks {
 				.allowsSpawning(Blocks::never)
 		)
 	);
+	public static final Block POTATO_TRAPDOOR = register(
+		"potato_trapdoor",
+		new TrapdoorBlock(
+			BlockSetType.POTATO,
+			AbstractBlock.Settings.create()
+				.mapColor(POTATO_PLANKS.getDefaultMapColor())
+				.instrument(Instrument.BASS)
+				.strength(3.0F)
+				.nonOpaque()
+				.allowsSpawning(Blocks::never)
+		)
+	);
 	public static final Block CRIMSON_FENCE_GATE = register(
 		"crimson_fence_gate",
 		new FenceGateBlock(
@@ -5360,10 +5842,18 @@ public class Blocks {
 			WoodType.WARPED, AbstractBlock.Settings.create().mapColor(WARPED_PLANKS.getDefaultMapColor()).solid().instrument(Instrument.BASS).strength(2.0F, 3.0F)
 		)
 	);
+	public static final Block POTATO_FENCE_GATE = register(
+		"potato_fence_gate",
+		new FenceGateBlock(
+			WoodType.POTATO, AbstractBlock.Settings.create().mapColor(POTATO_PLANKS.getDefaultMapColor()).solid().instrument(Instrument.BASS).strength(2.0F, 3.0F)
+		)
+	);
 	public static final Block CRIMSON_STAIRS = register("crimson_stairs", createOldStairsBlock(CRIMSON_PLANKS));
 	public static final Block WARPED_STAIRS = register("warped_stairs", createOldStairsBlock(WARPED_PLANKS));
+	public static final Block POTATO_STAIRS = register("potato_stairs", createOldStairsBlock(POTATO_PLANKS));
 	public static final Block CRIMSON_BUTTON = register("crimson_button", createWoodenButtonBlock(BlockSetType.CRIMSON));
 	public static final Block WARPED_BUTTON = register("warped_button", createWoodenButtonBlock(BlockSetType.WARPED));
+	public static final Block POTATO_BUTTON = register("potato_button", createWoodenButtonBlock(BlockSetType.POTATO));
 	public static final Block CRIMSON_DOOR = register(
 		"crimson_door",
 		new DoorBlock(
@@ -5388,6 +5878,18 @@ public class Blocks {
 				.pistonBehavior(PistonBehavior.DESTROY)
 		)
 	);
+	public static final Block POTATO_DOOR = register(
+		"potato_door",
+		new DoorBlock(
+			BlockSetType.POTATO,
+			AbstractBlock.Settings.create()
+				.mapColor(POTATO_PLANKS.getDefaultMapColor())
+				.instrument(Instrument.BASS)
+				.strength(3.0F)
+				.nonOpaque()
+				.pistonBehavior(PistonBehavior.DESTROY)
+		)
+	);
 	public static final Block CRIMSON_SIGN = register(
 		"crimson_sign",
 		new SignBlock(
@@ -5400,6 +5902,13 @@ public class Blocks {
 		new SignBlock(
 			WoodType.WARPED,
 			AbstractBlock.Settings.create().mapColor(WARPED_PLANKS.getDefaultMapColor()).instrument(Instrument.BASS).solid().noCollision().strength(1.0F)
+		)
+	);
+	public static final Block POTATO_SIGN = register(
+		"potato_sign",
+		new SignBlock(
+			WoodType.POTATO,
+			AbstractBlock.Settings.create().mapColor(POTATO_PLANKS.getDefaultMapColor()).instrument(Instrument.BASS).solid().noCollision().strength(1.0F)
 		)
 	);
 	public static final Block CRIMSON_WALL_SIGN = register(
@@ -5426,6 +5935,19 @@ public class Blocks {
 				.noCollision()
 				.strength(1.0F)
 				.dropsLike(WARPED_SIGN)
+		)
+	);
+	public static final Block POTATO_WALL_SIGN = register(
+		"potato_wall_sign",
+		new WallSignBlock(
+			WoodType.POTATO,
+			AbstractBlock.Settings.create()
+				.mapColor(POTATO_PLANKS.getDefaultMapColor())
+				.instrument(Instrument.BASS)
+				.solid()
+				.noCollision()
+				.strength(1.0F)
+				.dropsLike(POTATO_SIGN)
 		)
 	);
 	public static final Block STRUCTURE_BLOCK = register(
@@ -6053,6 +6575,7 @@ public class Blocks {
 	public static final Block POINTED_DRIPSTONE = register(
 		"pointed_dripstone",
 		new PointedDripstoneBlock(
+			false,
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.TERRACOTTA_BROWN)
 				.solid()
@@ -6065,6 +6588,115 @@ public class Blocks {
 				.offset(AbstractBlock.OffsetType.XZ)
 				.pistonBehavior(PistonBehavior.DESTROY)
 				.solidBlock(Blocks::never)
+		)
+	);
+	public static final Block POTATO_BUD = register(
+		"potato_bud",
+		new PointedDripstoneBlock(
+			true,
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.DULL_PINK)
+				.solid()
+				.instrument(Instrument.BASEDRUM)
+				.nonOpaque()
+				.sounds(BlockSoundGroup.NETHER_WOOD)
+				.ticksRandomly()
+				.strength(1.5F, 3.0F)
+				.dynamicBounds()
+				.offset(AbstractBlock.OffsetType.XZ)
+				.pistonBehavior(PistonBehavior.DESTROY)
+				.solidBlock(Blocks::never)
+		)
+	);
+	public static final Block POTATO_STEM = register(
+		"potato_stem",
+		new PillarBlock(
+			AbstractBlock.Settings.create().mapColor(state -> MapColor.EMERALD_GREEN).instrument(Instrument.BASS).strength(2.0F).sounds(BlockSoundGroup.NETHER_STEM)
+		)
+	);
+	public static final Block POTATO_LEAVES = register(
+		"potato_leaves",
+		new LeavesBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.DARK_GREEN)
+				.strength(0.2F)
+				.ticksRandomly()
+				.sounds(BlockSoundGroup.GRASS)
+				.nonOpaque()
+				.allowsSpawning(Blocks::canSpawnOnLeaves)
+				.suffocates(Blocks::never)
+				.blockVision(Blocks::never)
+				.burnable()
+				.pistonBehavior(PistonBehavior.DESTROY)
+				.solidBlock(Blocks::never)
+		)
+	);
+	public static final Block POTATO_FRUIT = register(
+		"potato_fruit",
+		new Block(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.DARK_GREEN)
+				.strength(1.0F)
+				.sounds(BlockSoundGroup.NETHER_WOOD)
+				.pistonBehavior(PistonBehavior.DESTROY)
+				.luminance(blockState -> 15)
+		)
+	);
+	public static final Block POTATO_PEDICULE = register(
+		"potato_pedicule",
+		new ChainBlock(
+			AbstractBlock.Settings.create().mapColor(MapColor.DARK_GREEN).strength(0.2F).sounds(BlockSoundGroup.NETHER_WOOD).pistonBehavior(PistonBehavior.DESTROY)
+		)
+	);
+	public static final Block POTATO_SPROUTS = register(
+		"potato_sprouts",
+		new PotatoSproutsBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.TERRACOTTA_WHITE)
+				.sounds(BlockSoundGroup.NETHER_SPROUTS)
+				.nonOpaque()
+				.dynamicBounds()
+				.offset(AbstractBlock.OffsetType.XZ)
+				.pistonBehavior(PistonBehavior.DESTROY)
+		)
+	);
+	public static final Block POTONE_REDSTONE_ORE = register(
+		"potone_redstone_ore",
+		new RedstoneOreBlock(
+			AbstractBlock.Settings.copyShallow(REDSTONE_ORE).mapColor(MapColor.TERRACOTTA_YELLOW).sounds(BlockSoundGroup.POTONE).strength(4.5F, 3.0F)
+		)
+	);
+	public static final Block POTONE_LAPIS_ORE = register(
+		"potone_lapis_ore",
+		new ExperienceDroppingBlock(
+			UniformIntProvider.create(2, 5), AbstractBlock.Settings.copyShallow(LAPIS_ORE).mapColor(MapColor.BLUE).sounds(BlockSoundGroup.POTONE).strength(4.5F, 3.0F)
+		)
+	);
+	public static final Block POTONE_DIAMOND_ORE = register(
+		"potone_diamond_ore",
+		new ExperienceDroppingBlock(
+			UniformIntProvider.create(3, 7),
+			AbstractBlock.Settings.copyShallow(DIAMOND_ORE).mapColor(MapColor.LIGHT_BLUE).sounds(BlockSoundGroup.POTONE).strength(4.5F, 3.0F)
+		)
+	);
+	public static final Block POTONE_GOLD_ORE = register(
+		"potone_gold_ore",
+		new ExperienceDroppingBlock(
+			UniformIntProvider.create(2, 5), AbstractBlock.Settings.copyShallow(GOLD_ORE).mapColor(MapColor.YELLOW).sounds(BlockSoundGroup.POTONE).strength(4.5F, 3.0F)
+		)
+	);
+	public static final Block POTONE_IRON_ORE = register(
+		"potone_iron_ore",
+		new ExperienceDroppingBlock(
+			UniformIntProvider.create(1, 2),
+			AbstractBlock.Settings.copyShallow(IRON_ORE).mapColor(MapColor.TERRACOTTA_WHITE).sounds(BlockSoundGroup.POTONE).strength(4.5F, 3.0F)
+		)
+	);
+	public static final Block POTONE_COPPER_ORE = register(
+		"potone_copper_ore",
+		new ExperienceDroppingBlock(
+			UniformIntProvider.create(1, 3),
+			AbstractBlock.Settings.copyShallow(COPPER_ORE).mapColor(MapColor.ORANGE).sounds(BlockSoundGroup.POTONE).strength(4.5F, 3.0F)
 		)
 	);
 	public static final Block DRIPSTONE_BLOCK = register(
@@ -6244,6 +6876,17 @@ public class Blocks {
 	public static final Block POLISHED_DEEPSLATE_WALL = register(
 		"polished_deepslate_wall", new WallBlock(AbstractBlock.Settings.copyShallow(POLISHED_DEEPSLATE).solid())
 	);
+	public static final Block POTATO_REFINERY = register(
+		"potato_refinery",
+		new PotatoRefineryBlock(
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.POTATO_REFINERY_YELLOW)
+				.instrument(Instrument.BASEDRUM)
+				.requiresTool()
+				.strength(3.5F)
+				.luminance(createLightLevelFromLitBlockState(13))
+		)
+	);
 	public static final Block DEEPSLATE_TILES = register(
 		"deepslate_tiles", new Block(AbstractBlock.Settings.copyShallow(COBBLED_DEEPSLATE).sounds(BlockSoundGroup.DEEPSLATE_TILES))
 	);
@@ -6360,6 +7003,15 @@ public class Blocks {
 				.requires(FeatureFlags.UPDATE_1_21)
 		)
 	);
+	public static final Block BIG_BRAIN = register(
+		"big_brain",
+		new BigBrainBlock(
+			AbstractBlock.Settings.create().mapColor(MapColor.DARK_GREEN).instrument(Instrument.BASS).strength(2.0F, 3.0F).sounds(BlockSoundGroup.SLIME).burnable()
+		)
+	);
+	public static final Map<DyeColor, Block> POTATO_PEELS_BLOCKS;
+	public static final Block CORRUPTED_POTATO_PEELS_BLOCK;
+	public static final Block POTATO_BATTERY;
 
 	private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {
 		return state -> state.get(Properties.LIT) ? litLevel : 0;
@@ -6550,6 +7202,40 @@ public class Blocks {
 	}
 
 	static {
+		Builder<DyeColor, Block> builder = ImmutableMap.builder();
+
+		for (DyeColor dyeColor : DyeColor.values()) {
+			String string = dyeColor == DyeColor.WHITE ? "potato_peels_block" : dyeColor.getName() + "_potato_peels_block";
+			builder.put(
+				dyeColor,
+				register(
+					string,
+					new PotatoPeelsBlock(
+						AbstractBlock.Settings.create().mapColor(dyeColor).instrument(Instrument.BANJO).strength(2.0F).sounds(BlockSoundGroup.POTONE).burnable(), dyeColor
+					)
+				)
+			);
+		}
+
+		POTATO_PEELS_BLOCKS = builder.build();
+		CORRUPTED_POTATO_PEELS_BLOCK = register(
+			"corrupted_potato_peels_block",
+			new CorruptedPotatoPeelsBlock(
+				AbstractBlock.Settings.create().mapColor(MapColor.TEAL).sounds(BlockSoundGroup.CORRUPTED_PEELGRASS).ticksRandomly().strength(20.0F, 500.0F)
+			)
+		);
+		POTATO_BATTERY = register(
+			"potato_battery",
+			new PotatoBattery(
+				AbstractBlock.Settings.create()
+					.strength(3.0F)
+					.mapColor(MapColor.TERRACOTTA_ORANGE)
+					.sounds(BlockSoundGroup.TERRE_DE_POMME)
+					.solidBlock(Blocks::never)
+					.luminance(blockState -> blockState.get(PotatoBattery.INVERTED) ? 8 : 0)
+			)
+		);
+
 		for (Block block : Registries.BLOCK) {
 			for (BlockState blockState : block.getStateManager().getStates()) {
 				Block.STATE_IDS.add(blockState);

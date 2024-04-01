@@ -29,7 +29,7 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 					bl3 = true;
 				} else if (itemStack.isOf(Blocks.RED_MUSHROOM.asItem()) && !bl2) {
 					bl2 = true;
-				} else if (itemStack.isIn(ItemTags.SMALL_FLOWERS) && !bl) {
+				} else if ((itemStack.isIn(ItemTags.SMALL_FLOWERS) || itemStack.isOf(Items.POISONOUS_POTATO)) && !bl) {
 					bl = true;
 				} else {
 					if (!itemStack.isOf(Items.BOWL) || bl4) {

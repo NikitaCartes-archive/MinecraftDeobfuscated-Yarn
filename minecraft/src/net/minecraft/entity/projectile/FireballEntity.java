@@ -11,15 +11,22 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class FireballEntity extends AbstractFireballEntity {
+	private final boolean field_50484;
 	private int explosionPower = 1;
 
 	public FireballEntity(EntityType<? extends FireballEntity> entityType, World world) {
 		super(entityType, world);
+		this.field_50484 = true;
 	}
 
-	public FireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ, int explosionPower) {
+	public FireballEntity(World world, LivingEntity livingEntity, double d, double e, double f, int i) {
+		this(world, livingEntity, d, e, f, i, true);
+	}
+
+	public FireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ, int explosionPower, boolean bl) {
 		super(EntityType.FIREBALL, owner, velocityX, velocityY, velocityZ, world);
 		this.explosionPower = explosionPower;
+		this.field_50484 = bl;
 	}
 
 	@Override
@@ -27,7 +34,8 @@ public class FireballEntity extends AbstractFireballEntity {
 		super.onCollision(hitResult);
 		if (!this.getWorld().isClient) {
 			boolean bl = this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
-			this.getWorld().createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionPower, bl, World.ExplosionSourceType.MOB);
+			this.getWorld()
+				.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionPower, this.field_50484 && bl, World.ExplosionSourceType.MOB);
 			this.discard();
 		}
 	}

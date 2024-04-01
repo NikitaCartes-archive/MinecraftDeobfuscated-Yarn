@@ -42,14 +42,18 @@ public interface CollisionView extends BlockView {
 	}
 
 	default boolean isSpaceEmpty(Box box) {
-		return this.isSpaceEmpty(null, box);
+		return this.method_59085(null, box);
 	}
 
 	default boolean isSpaceEmpty(Entity entity) {
-		return this.isSpaceEmpty(entity, entity.getBoundingBox());
+		return this.method_59085(entity, entity.getBoundingBox());
 	}
 
-	default boolean isSpaceEmpty(@Nullable Entity entity, Box box) {
+	default boolean method_59085(@Nullable Entity entity, Box box) {
+		return this.method_59084(entity, box, false);
+	}
+
+	default boolean method_59084(@Nullable Entity entity, Box box, boolean bl) {
 		for (VoxelShape voxelShape : this.getBlockCollisions(entity, box)) {
 			if (!voxelShape.isEmpty()) {
 				return false;

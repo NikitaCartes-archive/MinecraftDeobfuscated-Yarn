@@ -76,6 +76,7 @@ public class ParticleTypes {
 	public static final ParticleType<VibrationParticleEffect> VIBRATION = register(
 		"vibration", true, VibrationParticleEffect.PARAMETERS_FACTORY, type -> VibrationParticleEffect.CODEC, type -> VibrationParticleEffect.PACKET_CODEC
 	);
+	public static final DefaultParticleType FOOTSTEP = register("footstep", true);
 	public static final DefaultParticleType ITEM_SLIME = register("item_slime", false);
 	public static final DefaultParticleType ITEM_SNOWBALL = register("item_snowball", false);
 	public static final DefaultParticleType LARGE_SMOKE = register("large_smoke", false);
@@ -106,6 +107,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType FALLING_HONEY = register("falling_honey", false);
 	public static final DefaultParticleType LANDING_HONEY = register("landing_honey", false);
 	public static final DefaultParticleType FALLING_NECTAR = register("falling_nectar", false);
+	public static final DefaultParticleType FALLING_POISON = register("falling_poison", false);
 	public static final DefaultParticleType FALLING_SPORE_BLOSSOM = register("falling_spore_blossom", false);
 	public static final DefaultParticleType ASH = register("ash", false);
 	public static final DefaultParticleType CRIMSON_SPORE = register("crimson_spore", false);
@@ -115,6 +117,8 @@ public class ParticleTypes {
 	public static final DefaultParticleType FALLING_OBSIDIAN_TEAR = register("falling_obsidian_tear", false);
 	public static final DefaultParticleType LANDING_OBSIDIAN_TEAR = register("landing_obsidian_tear", false);
 	public static final DefaultParticleType REVERSE_PORTAL = register("reverse_portal", false);
+	public static final DefaultParticleType LIGHTNING = register("lightning", false);
+	public static final DefaultParticleType REVERSE_LIGHTNING = register("reverse_lightning", false);
 	public static final DefaultParticleType WHITE_ASH = register("white_ash", false);
 	public static final DefaultParticleType SMALL_FLAME = register("small_flame", false);
 	public static final DefaultParticleType SNOWFLAKE = register("snowflake", false);

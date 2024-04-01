@@ -46,18 +46,18 @@ public class Explosion {
 	private final boolean createFire;
 	private final Explosion.DestructionType destructionType;
 	private final Random random = Random.create();
-	private final World world;
-	private final double x;
-	private final double y;
-	private final double z;
+	final World world;
+	final double x;
+	final double y;
+	final double z;
 	@Nullable
 	private final Entity entity;
-	private final float power;
+	final float power;
 	private final DamageSource damageSource;
 	private final ExplosionBehavior behavior;
-	private final ParticleEffect particle;
-	private final ParticleEffect emitterParticle;
-	private final RegistryEntry<SoundEvent> soundEvent;
+	final ParticleEffect particle;
+	final ParticleEffect emitterParticle;
+	final RegistryEntry<SoundEvent> soundEvent;
 	private final ObjectArrayList<BlockPos> affectedBlocks = new ObjectArrayList<>();
 	private final Map<PlayerEntity, Vec3d> affectedPlayers = Maps.<PlayerEntity, Vec3d>newHashMap();
 

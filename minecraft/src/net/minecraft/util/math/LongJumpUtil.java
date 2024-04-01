@@ -67,7 +67,7 @@ public final class LongJumpUtil {
 
 		for (int j = 0; j < i; j++) {
 			vec3d3 = j == i - 1 ? nextPos : vec3d3.add(vec3d2.multiply(d * 0.9F));
-			if (!entity.getWorld().isSpaceEmpty(entity, dimensions.getBoxAt(vec3d3))) {
+			if (!entity.getWorld().method_59085(entity, dimensions.getBoxAt(vec3d3))) {
 				return false;
 			}
 		}

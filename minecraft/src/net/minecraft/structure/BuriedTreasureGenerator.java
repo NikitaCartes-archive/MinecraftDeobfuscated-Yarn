@@ -49,8 +49,12 @@ public class BuriedTreasureGenerator {
 					|| blockState2 == Blocks.STONE.getDefaultState()
 					|| blockState2 == Blocks.ANDESITE.getDefaultState()
 					|| blockState2 == Blocks.GRANITE.getDefaultState()
-					|| blockState2 == Blocks.DIORITE.getDefaultState()) {
-					BlockState blockState3 = !blockState.isAir() && !this.isLiquid(blockState) ? blockState : Blocks.SAND.getDefaultState();
+					|| blockState2 == Blocks.DIORITE.getDefaultState()
+					|| blockState2 == Blocks.TATERSTONE.getDefaultState()
+					|| blockState2 == Blocks.POTONE.getDefaultState()) {
+					BlockState blockState3 = !blockState.isAir() && !this.isLiquid(blockState)
+						? blockState
+						: (world.isPotato() ? Blocks.SAND.getDefaultState() : Blocks.GRAVTATER.getDefaultState());
 
 					for (Direction direction : Direction.values()) {
 						BlockPos blockPos = mutable.offset(direction);

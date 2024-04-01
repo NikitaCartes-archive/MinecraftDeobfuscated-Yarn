@@ -96,6 +96,7 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 			int q = switch (piece.terrainAdjustment()) {
 				case NONE -> 0;
 				case BURY, BEARD_THIN -> p;
+				case BURY_PROPER -> Math.max(0, Math.max(blockBox.getMinY() - j, j - blockBox.getMaxY()));
 				case BEARD_BOX -> Math.max(0, Math.max(o - j, j - blockBox.getMaxY()));
 			};
 
@@ -103,6 +104,7 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 				case NONE -> 0.0;
 				case BURY -> getMagnitudeWeight(m, q, n);
 				case BEARD_THIN, BEARD_BOX -> getStructureWeight(m, q, n, p) * 0.8;
+				case BURY_PROPER -> method_59218(m, q, n);
 			};
 		}
 
@@ -132,6 +134,11 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 
 	private static double getMagnitudeWeight(int x, int y, int z) {
 		double d = MathHelper.magnitude((double)x, (double)y / 2.0, (double)z);
+		return MathHelper.clampedMap(d, 0.0, 6.0, 1.0, 0.0);
+	}
+
+	private static double method_59218(int i, int j, int k) {
+		double d = MathHelper.magnitude((double)i, (double)j, (double)k);
 		return MathHelper.clampedMap(d, 0.0, 6.0, 1.0, 0.0);
 	}
 

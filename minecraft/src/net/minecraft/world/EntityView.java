@@ -14,7 +14,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.function.BooleanBiFunction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 
@@ -136,6 +138,12 @@ public interface EntityView {
 	default PlayerEntity getClosestPlayer(double x, double y, double z, double maxDistance, boolean ignoreCreative) {
 		Predicate<Entity> predicate = ignoreCreative ? EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR : EntityPredicates.EXCEPT_SPECTATOR;
 		return this.getClosestPlayer(x, y, z, maxDistance, predicate);
+	}
+
+	@Nullable
+	default PlayerEntity getClosestPlayer(BlockPos pos, double maxDistance, boolean ignoreCreative) {
+		Vec3d vec3d = pos.toCenterPos();
+		return this.getClosestPlayer(vec3d.getX(), vec3d.getY(), vec3d.getZ(), maxDistance, ignoreCreative);
 	}
 
 	default boolean isPlayerInRange(double x, double y, double z, double range) {

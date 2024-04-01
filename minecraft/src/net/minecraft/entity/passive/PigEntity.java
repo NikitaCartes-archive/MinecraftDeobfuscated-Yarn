@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Dismounting;
@@ -48,10 +49,16 @@ import net.minecraft.world.World;
 public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable {
 	private static final TrackedData<Boolean> SADDLED = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> BOOST_TIME = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<Boolean> POTATO = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private final SaddledComponent saddledComponent = new SaddledComponent(this.dataTracker, BOOST_TIME, SADDLED);
 
 	public PigEntity(EntityType<? extends PigEntity> entityType, World world) {
 		super(entityType, world);
+	}
+
+	@Override
+	public boolean hasPotatoForm() {
+		return true;
 	}
 
 	@Override
@@ -60,10 +67,39 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.25));
 		this.goalSelector.add(3, new AnimalMateGoal(this, 1.0));
 		this.goalSelector.add(4, new TemptGoal(this, 1.2, stack -> stack.isOf(Items.CARROT_ON_A_STICK), false));
-		this.goalSelector.add(4, new TemptGoal(this, 1.2, stack -> stack.isIn(ItemTags.PIG_FOOD), false));
+		this.goalSelector.add(4, new TemptGoal(this, 1.2, stack -> stack.isIn(ItemTags.PIG_FOOD), false) {
+			@Override
+			public void start() {
+				if (PigEntity.this.isPotato()) {
+					PigEntity.this.setPotato(true);
+				}
+
+				super.start();
+			}
+
+			@Override
+			public void stop() {
+				super.stop();
+				PigEntity.this.setPotato(false);
+			}
+		});
 		this.goalSelector.add(5, new FollowParentGoal(this, 1.1));
 		this.goalSelector.add(6, new WanderAroundFarGoal(this, 1.0));
-		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F) {
+			@Override
+			public void start() {
+				super.start();
+				if (PigEntity.this.isPotato() && this.target instanceof PlayerEntity) {
+					PigEntity.this.setPotato(true);
+				}
+			}
+
+			@Override
+			public void stop() {
+				super.stop();
+				PigEntity.this.setPotato(false);
+			}
+		});
 		this.goalSelector.add(8, new LookAroundGoal(this));
 	}
 
@@ -93,6 +129,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 		super.initDataTracker(builder);
 		builder.add(SADDLED, false);
 		builder.add(BOOST_TIME, 0);
+		builder.add(POTATO, false);
 	}
 
 	@Override
@@ -264,5 +301,13 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	@Override
 	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)(0.6F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
+	}
+
+	public boolean getPotato() {
+		return this.dataTracker.get(POTATO);
+	}
+
+	public void setPotato(boolean potato) {
+		this.dataTracker.set(POTATO, potato);
 	}
 }

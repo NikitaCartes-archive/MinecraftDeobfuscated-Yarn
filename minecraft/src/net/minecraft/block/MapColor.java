@@ -76,6 +76,7 @@ public class MapColor {
 	public static final MapColor DEEPSLATE_GRAY = new MapColor(59, 6579300);
 	public static final MapColor RAW_IRON_PINK = new MapColor(60, 14200723);
 	public static final MapColor LICHEN_GREEN = new MapColor(61, 8365974);
+	public static final MapColor POTATO_REFINERY_YELLOW = new MapColor(62, 14865562);
 	public final int color;
 	public final int id;
 

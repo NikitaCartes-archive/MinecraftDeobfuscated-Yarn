@@ -6,8 +6,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityStatuses;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.predicate.block.BlockStatePredicate;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -32,7 +35,9 @@ public class EatGrassGoal extends Goal {
 			return false;
 		} else {
 			BlockPos blockPos = this.mob.getBlockPos();
-			return SHORT_GRASS_PREDICATE.test(this.world.getBlockState(blockPos)) ? true : this.world.getBlockState(blockPos.down()).isOf(Blocks.GRASS_BLOCK);
+			return SHORT_GRASS_PREDICATE.test(this.world.getBlockState(blockPos))
+				? true
+				: this.world.getBlockState(blockPos.down()).isIn(BlockTags.ANIMALS_SPAWNABLE_ON);
 		}
 	}
 
@@ -70,10 +75,15 @@ public class EatGrassGoal extends Goal {
 				this.mob.onEatingGrass();
 			} else {
 				BlockPos blockPos2 = blockPos.down();
-				if (this.world.getBlockState(blockPos2).isOf(Blocks.GRASS_BLOCK)) {
+				BlockState blockState = this.world.getBlockState(blockPos2);
+				if (blockState.isIn(BlockTags.ANIMALS_SPAWNABLE_ON)) {
 					if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
-						this.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, blockPos2, Block.getRawIdFromState(Blocks.GRASS_BLOCK.getDefaultState()));
-						this.world.setBlockState(blockPos2, Blocks.DIRT.getDefaultState(), Block.NOTIFY_LISTENERS);
+						this.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, blockPos2, Block.getRawIdFromState(blockState));
+						this.world.setBlockState(blockPos2, (this.world.isPotato() ? Blocks.TERRE_DE_POMME : Blocks.DIRT).getDefaultState(), Block.NOTIFY_LISTENERS);
+					}
+
+					if (blockState.isOf(Blocks.CORRUPTED_PEELGRASS_BLOCK)) {
+						this.mob.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 20));
 					}
 
 					this.mob.onEatingGrass();

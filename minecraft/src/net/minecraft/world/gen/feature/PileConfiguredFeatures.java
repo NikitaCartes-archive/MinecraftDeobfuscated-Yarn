@@ -11,6 +11,7 @@ import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
 
 public class PileConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> PILE_HAY = ConfiguredFeatures.of("pile_hay");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> PILE_POTATO_FRUIT = ConfiguredFeatures.of("pile_potato_fruit");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> PILE_MELON = ConfiguredFeatures.of("pile_melon");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> PILE_SNOW = ConfiguredFeatures.of("pile_snow");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> PILE_ICE = ConfiguredFeatures.of("pile_ice");
@@ -18,6 +19,9 @@ public class PileConfiguredFeatures {
 
 	public static void bootstrap(Registerable<ConfiguredFeature<?, ?>> featureRegisterable) {
 		ConfiguredFeatures.register(featureRegisterable, PILE_HAY, Feature.BLOCK_PILE, new BlockPileFeatureConfig(new PillarBlockStateProvider(Blocks.HAY_BLOCK)));
+		ConfiguredFeatures.register(
+			featureRegisterable, PILE_POTATO_FRUIT, Feature.BLOCK_PILE, new BlockPileFeatureConfig(BlockStateProvider.of(Blocks.POTATO_FRUIT))
+		);
 		ConfiguredFeatures.register(featureRegisterable, PILE_MELON, Feature.BLOCK_PILE, new BlockPileFeatureConfig(BlockStateProvider.of(Blocks.MELON)));
 		ConfiguredFeatures.register(featureRegisterable, PILE_SNOW, Feature.BLOCK_PILE, new BlockPileFeatureConfig(BlockStateProvider.of(Blocks.SNOW)));
 		ConfiguredFeatures.register(

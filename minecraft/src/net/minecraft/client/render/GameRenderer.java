@@ -859,14 +859,18 @@ public class GameRenderer implements AutoCloseable {
 	}
 
 	private void bobView(MatrixStack matrices, float tickDelta) {
-		if (this.client.getCameraEntity() instanceof PlayerEntity) {
-			PlayerEntity playerEntity = (PlayerEntity)this.client.getCameraEntity();
-			float f = playerEntity.horizontalSpeed - playerEntity.prevHorizontalSpeed;
-			float g = -(playerEntity.horizontalSpeed + f * tickDelta);
-			float h = MathHelper.lerp(tickDelta, playerEntity.prevStrideDistance, playerEntity.strideDistance);
-			matrices.translate(MathHelper.sin(g * (float) Math.PI) * h * 0.5F, -Math.abs(MathHelper.cos(g * (float) Math.PI) * h), 0.0F);
-			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.sin(g * (float) Math.PI) * h * 3.0F));
-			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(Math.abs(MathHelper.cos(g * (float) Math.PI - 0.2F) * h) * 5.0F));
+		Entity entity = this.client.getCameraEntity();
+		if (entity != null) {
+			Vec3d vec3d = entity.field_50393.lerp(entity.field_50392, (double)tickDelta);
+			matrices.translate(vec3d.x, vec3d.y, vec3d.z);
+			if (entity instanceof PlayerEntity playerEntity) {
+				float f = playerEntity.horizontalSpeed - playerEntity.prevHorizontalSpeed;
+				float g = -(playerEntity.horizontalSpeed + f * tickDelta);
+				float h = MathHelper.lerp(tickDelta, playerEntity.prevStrideDistance, playerEntity.strideDistance);
+				matrices.translate(MathHelper.sin(g * (float) Math.PI) * h * 0.5F, -Math.abs(MathHelper.cos(g * (float) Math.PI) * h), 0.0F);
+				matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.sin(g * (float) Math.PI) * h * 3.0F));
+				matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(Math.abs(MathHelper.cos(g * (float) Math.PI - 0.2F) * h) * 5.0F));
+			}
 		}
 	}
 

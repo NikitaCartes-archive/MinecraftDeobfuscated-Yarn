@@ -13,6 +13,7 @@ import net.minecraft.client.render.entity.feature.Deadmau5FeatureRenderer;
 import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.PlayerHeldItemFeatureRenderer;
+import net.minecraft.client.render.entity.feature.PoisonousPolytraFeatureRenderer;
 import net.minecraft.client.render.entity.feature.ShoulderParrotFeatureRenderer;
 import net.minecraft.client.render.entity.feature.StuckArrowsFeatureRenderer;
 import net.minecraft.client.render.entity.feature.StuckStingersFeatureRenderer;
@@ -58,6 +59,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		this.addFeature(new CapeFeatureRenderer(this));
 		this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader(), ctx.getHeldItemRenderer()));
 		this.addFeature(new ElytraFeatureRenderer<>(this, ctx.getModelLoader()));
+		this.addFeature(new PoisonousPolytraFeatureRenderer<>(this, ctx.getModelLoader()));
 		this.addFeature(new ShoulderParrotFeatureRenderer<>(this, ctx.getModelLoader()));
 		this.addFeature(new TridentRiptideFeatureRenderer<>(this, ctx.getModelLoader()));
 		this.addFeature(new StuckStingersFeatureRenderer<>(this));

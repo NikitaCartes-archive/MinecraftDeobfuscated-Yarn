@@ -1,6 +1,8 @@
 package net.minecraft.data.server.loottable.vanilla;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.FletchingTableBlockEntity;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.data.server.loottable.EntityLootTableGenerator;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.FrogVariant;
@@ -11,15 +13,18 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.condition.DamageSourcePropertiesLootCondition;
 import net.minecraft.loot.condition.EntityPropertiesLootCondition;
 import net.minecraft.loot.condition.KilledByPlayerLootCondition;
+import net.minecraft.loot.condition.KillerMainHandToolLootCondition;
 import net.minecraft.loot.condition.RandomChanceLootCondition;
 import net.minecraft.loot.condition.RandomChanceWithLootingLootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.entry.EmptyEntry;
 import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.loot.entry.LootTableEntry;
 import net.minecraft.loot.entry.TagEntry;
 import net.minecraft.loot.function.FurnaceSmeltLootFunction;
 import net.minecraft.loot.function.LootingEnchantLootFunction;
+import net.minecraft.loot.function.SetComponentsLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
@@ -34,6 +39,7 @@ import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.util.DyeColor;
 
 public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 	public VanillaEntityLootTableGenerator() {
@@ -47,7 +53,42 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 		this.register(EntityType.ARMOR_STAND, LootTable.builder());
 		this.register(EntityType.AXOLOTL, LootTable.builder());
 		this.register(EntityType.BAT, LootTable.builder());
-		this.register(EntityType.BEE, LootTable.builder());
+		this.register(
+			EntityType.BATATO,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.with(ItemEntry.builder(Items.POISONOUS_POTATO))
+						.with(ItemEntry.builder(Items.SNEKTATO).conditionally(RandomChanceLootCondition.builder(0.1F)))
+				)
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(ItemEntry.builder(Items.POISONOUS_POTATO_PLANT).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(-1.0F, 1.0F))))
+						.conditionally(KilledByPlayerLootCondition.builder())
+				)
+		);
+		this.register(
+			EntityType.MEGA_SPUD,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(ItemEntry.builder(Items.POTATO_STAFF))
+						.conditionally(KilledByPlayerLootCondition.builder())
+				)
+		);
+		this.register(
+			EntityType.BEE,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(
+							this.addPotatoPeelEntry(DyeColor.YELLOW).conditionally(RandomChanceLootCondition.builder(0.5F)).alternatively(this.addPotatoPeelEntry(DyeColor.BLACK))
+						)
+				)
+		);
 		this.register(
 			EntityType.BLAZE,
 			LootTable.builder()
@@ -62,7 +103,9 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 						.conditionally(KilledByPlayerLootCondition.builder())
 				)
 		);
-		this.register(EntityType.BOGGED, LootTable.builder());
+		this.register(
+			EntityType.BOGGED, LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(this.addPotatoPeelEntry(DyeColor.CYAN)))
+		);
 		this.register(
 			EntityType.CAT,
 			LootTable.builder()
@@ -117,6 +160,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
 						)
 				)
+				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(this.addPotatoPeelEntry(DyeColor.WHITE)))
 		);
 		this.register(
 			EntityType.COD,
@@ -158,6 +202,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
 						)
 				)
+				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(this.addPotatoPeelEntry(DyeColor.BROWN)))
 		);
 		this.register(
 			EntityType.CREEPER,
@@ -176,6 +221,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 						.with(TagEntry.expandBuilder(ItemTags.CREEPER_DROP_MUSIC_DISCS))
 						.conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.KILLER, EntityPredicate.Builder.create().type(EntityTypeTags.SKELETONS)))
 				)
+				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(this.addPotatoPeelEntry(DyeColor.GREEN)))
 		);
 		this.register(
 			EntityType.DOLPHIN,
@@ -238,6 +284,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
 						)
 				)
+				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(this.addPotatoPeelEntry(DyeColor.BLACK)))
 		);
 		this.register(EntityType.ENDERMITE, LootTable.builder());
 		this.register(
@@ -328,6 +375,47 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 						)
 						.conditionally(KilledByPlayerLootCondition.builder())
 						.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+				)
+		);
+		this.register(
+			EntityType.TOXIFIN,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(
+							ItemEntry.builder(Items.TOXIC_RESIN)
+								.apply(SetComponentsLootFunction.builder(DataComponentTypes.RESIN, new FletchingTableBlockEntity.ResinComponent('c', 'f')))
+								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
+						)
+				)
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(
+							ItemEntry.builder(Items.TOXIC_RESIN)
+								.apply(SetComponentsLootFunction.builder(DataComponentTypes.RESIN, new FletchingTableBlockEntity.ResinComponent('j', 'f')))
+								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
+						)
+						.conditionally(RandomChanceWithLootingLootCondition.builder(0.1F, 0.02F))
+				)
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.conditionally(KilledByPlayerLootCondition.builder())
+						.conditionally(RandomChanceWithLootingLootCondition.builder(0.5F, 0.1F))
+						.with(ItemEntry.builder(Items.TOXIC_BEAM).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F))))
+				)
+		);
+		this.register(
+			EntityType.PLAGUEWHALE,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(ItemEntry.builder(Items.DENT).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F))))
 				)
 		);
 		this.register(
@@ -525,6 +613,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
 						)
 				)
+				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(this.addPotatoPeelEntry(DyeColor.PINK)))
 		);
 		this.register(EntityType.PILLAGER, LootTable.builder());
 		this.register(EntityType.PLAYER, LootTable.builder());
@@ -642,6 +731,22 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 		this.register(EntityType.SHEEP, LootTables.RED_SHEEP_ENTITY, createForSheep(Blocks.RED_WOOL));
 		this.register(EntityType.SHEEP, LootTables.WHITE_SHEEP_ENTITY, createForSheep(Blocks.WHITE_WOOL));
 		this.register(EntityType.SHEEP, LootTables.YELLOW_SHEEP_ENTITY, createForSheep(Blocks.YELLOW_WOOL));
+		this.register(EntityType.SHEEP, LootTables.SHEEP_POTATO_BLACK_ENTITIE, createForSheep(Items.POTATO_PEELS.get(DyeColor.BLACK)));
+		this.register(EntityType.SHEEP, LootTables.SHEEP_POTATO_BLUE_ENTITIE, createForSheep(Items.POTATO_PEELS.get(DyeColor.BLUE)));
+		this.register(EntityType.SHEEP, LootTables.SHEEP_POTATO_BROWN_ENTITIE, createForSheep(Items.POTATO_PEELS.get(DyeColor.BROWN)));
+		this.register(EntityType.SHEEP, LootTables.SHEEP_POTATO_CYAN_ENTITIE, createForSheep(Items.POTATO_PEELS.get(DyeColor.CYAN)));
+		this.register(EntityType.SHEEP, LootTables.SHEEP_POTATO_GRAY_ENTITIE, createForSheep(Items.POTATO_PEELS.get(DyeColor.GRAY)));
+		this.register(EntityType.SHEEP, LootTables.SHEEP_POTATO_GREEN_ENTITIE, createForSheep(Items.POTATO_PEELS.get(DyeColor.GREEN)));
+		this.register(EntityType.SHEEP, LootTables.SHEEP_POTATO_LIGHT_BLUE_ENTITIE, createForSheep(Items.POTATO_PEELS.get(DyeColor.LIGHT_BLUE)));
+		this.register(EntityType.SHEEP, LootTables.SHEEP_POTATO_LIGHT_GRAY_ENTITIE, createForSheep(Items.POTATO_PEELS.get(DyeColor.LIGHT_GRAY)));
+		this.register(EntityType.SHEEP, LootTables.SHEEP_POTATO_LIME_ENTITIE, createForSheep(Items.POTATO_PEELS.get(DyeColor.LIME)));
+		this.register(EntityType.SHEEP, LootTables.SHEEP_POTATO_MAGENTA_ENTITIE, createForSheep(Items.POTATO_PEELS.get(DyeColor.MAGENTA)));
+		this.register(EntityType.SHEEP, LootTables.SHEEP_POTATO_ORANGE_ENTITIE, createForSheep(Items.POTATO_PEELS.get(DyeColor.ORANGE)));
+		this.register(EntityType.SHEEP, LootTables.SHEEP_POTATO_PINK_ENTITIE, createForSheep(Items.POTATO_PEELS.get(DyeColor.PINK)));
+		this.register(EntityType.SHEEP, LootTables.SHEEP_POTATO_PURPLE_ENTITIE, createForSheep(Items.POTATO_PEELS.get(DyeColor.PURPLE)));
+		this.register(EntityType.SHEEP, LootTables.SHEEP_POTATO_RED_ENTITIE, createForSheep(Items.POTATO_PEELS.get(DyeColor.RED)));
+		this.register(EntityType.SHEEP, LootTables.SHEEP_POTATO_WHITE_ENTITIE, createForSheep(Items.POTATO_PEELS.get(DyeColor.WHITE)));
+		this.register(EntityType.SHEEP, LootTables.SHEEP_POTATO_YELLOW_ENTITIE, createForSheep(Items.POTATO_PEELS.get(DyeColor.YELLOW)));
 		this.register(
 			EntityType.SHULKER,
 			LootTable.builder()
@@ -674,6 +779,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
 						)
 				)
+				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(this.addPotatoPeelEntry(DyeColor.LIGHT_GRAY)))
 		);
 		this.register(
 			EntityType.SKELETON_HORSE,
@@ -740,6 +846,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 						)
 						.conditionally(KilledByPlayerLootCondition.builder())
 				)
+				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(this.addPotatoPeelEntry(DyeColor.GRAY)))
 		);
 		this.register(
 			EntityType.SQUID,
@@ -786,6 +893,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 						)
 						.conditionally(KilledByPlayerLootCondition.builder())
 				)
+				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(this.addPotatoPeelEntry(DyeColor.LIGHT_BLUE)))
 		);
 		this.register(
 			EntityType.STRIDER,
@@ -985,6 +1093,24 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 				)
 		);
 		this.register(
+			EntityType.POISONOUS_POTATO_ZOMBIE,
+			LootTable.builder()
+				.pool(LootPool.builder().with(ItemEntry.builder(Items.POISONOUS_POTATO)))
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(ItemEntry.builder(Items.POISONOUS_POTATO_PLANT).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(-1.0F, 1.0F))))
+						.conditionally(KilledByPlayerLootCondition.builder())
+				)
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(ItemEntry.builder(Blocks.POISONOUS_POTATO_ZOMBIE_HEAD_HAT).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(-1.0F, 1.0F))))
+						.conditionally(KilledByPlayerLootCondition.builder())
+						.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+				)
+		);
+		this.register(
 			EntityType.ZOMBIE_HORSE,
 			LootTable.builder()
 				.pool(
@@ -1076,6 +1202,13 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 						.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
+	}
+
+	private LootPoolEntry.Builder<?> addPotatoPeelEntry(DyeColor color) {
+		return ItemEntry.builder(Items.POTATO_PEELS.get(color))
+			.conditionally(
+				EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, IS_POTATO).and(KillerMainHandToolLootCondition.builder(Items.POTATO_PEELER))
+			);
 	}
 
 	public static LootTable.Builder createElderGuardianTableBuilder() {

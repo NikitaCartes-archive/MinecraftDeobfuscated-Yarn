@@ -14,6 +14,7 @@ public class LootTables {
 	public static final RegistryKey<LootTable> SPAWN_BONUS_CHEST = register("chests/spawn_bonus_chest");
 	public static final RegistryKey<LootTable> END_CITY_TREASURE_CHEST = register("chests/end_city_treasure");
 	public static final RegistryKey<LootTable> SIMPLE_DUNGEON_CHEST = register("chests/simple_dungeon");
+	public static final RegistryKey<LootTable> SIMPLE_DUNGEON_POTATO_CHEST = register("chests/simple_dungeon_potato");
 	public static final RegistryKey<LootTable> VILLAGE_WEAPONSMITH_CHEST = register("chests/village/village_weaponsmith");
 	public static final RegistryKey<LootTable> VILLAGE_TOOLSMITH_CHEST = register("chests/village/village_toolsmith");
 	public static final RegistryKey<LootTable> VILLAGE_ARMORER_CHEST = register("chests/village/village_armorer");
@@ -27,6 +28,7 @@ public class LootTables {
 	public static final RegistryKey<LootTable> VILLAGE_TEMPLE_CHEST = register("chests/village/village_temple");
 	public static final RegistryKey<LootTable> VILLAGE_DESERT_HOUSE_CHEST = register("chests/village/village_desert_house");
 	public static final RegistryKey<LootTable> VILLAGE_PLAINS_CHEST = register("chests/village/village_plains_house");
+	public static final RegistryKey<LootTable> VILLAGE_VILLAGE_POTATO_HOUSE_CHEST = register("chests/village/village_potato_house");
 	public static final RegistryKey<LootTable> VILLAGE_TAIGA_HOUSE_CHEST = register("chests/village/village_taiga_house");
 	public static final RegistryKey<LootTable> VILLAGE_SNOWY_HOUSE_CHEST = register("chests/village/village_snowy_house");
 	public static final RegistryKey<LootTable> VILLAGE_SAVANNA_HOUSE_CHEST = register("chests/village/village_savanna_house");
@@ -54,6 +56,7 @@ public class LootTables {
 	public static final RegistryKey<LootTable> ANCIENT_CITY_CHEST = register("chests/ancient_city");
 	public static final RegistryKey<LootTable> ANCIENT_CITY_ICE_BOX_CHEST = register("chests/ancient_city_ice_box");
 	public static final RegistryKey<LootTable> RUINED_PORTAL_CHEST = register("chests/ruined_portal");
+	public static final RegistryKey<LootTable> RUINED_PORTATOL_CHEST = register("chests/ruined_portatol");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_REWARD_CHEST = register("chests/trial_chambers/reward");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_REWARD_COMMON_CHEST = register("chests/trial_chambers/reward_common");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_REWARD_RARE_CHEST = register("chests/trial_chambers/reward_rare");
@@ -83,6 +86,22 @@ public class LootTables {
 	public static final RegistryKey<LootTable> GREEN_SHEEP_ENTITY = register("entities/sheep/green");
 	public static final RegistryKey<LootTable> RED_SHEEP_ENTITY = register("entities/sheep/red");
 	public static final RegistryKey<LootTable> BLACK_SHEEP_ENTITY = register("entities/sheep/black");
+	public static final RegistryKey<LootTable> SHEEP_POTATO_WHITE_ENTITIE = register("entities/sheep/potato/white");
+	public static final RegistryKey<LootTable> SHEEP_POTATO_ORANGE_ENTITIE = register("entities/sheep/potato/orange");
+	public static final RegistryKey<LootTable> SHEEP_POTATO_MAGENTA_ENTITIE = register("entities/sheep/potato/magenta");
+	public static final RegistryKey<LootTable> SHEEP_POTATO_LIGHT_BLUE_ENTITIE = register("entities/sheep/potato/light_blue");
+	public static final RegistryKey<LootTable> SHEEP_POTATO_YELLOW_ENTITIE = register("entities/sheep/potato/yellow");
+	public static final RegistryKey<LootTable> SHEEP_POTATO_LIME_ENTITIE = register("entities/sheep/potato/lime");
+	public static final RegistryKey<LootTable> SHEEP_POTATO_PINK_ENTITIE = register("entities/sheep/potato/pink");
+	public static final RegistryKey<LootTable> SHEEP_POTATO_GRAY_ENTITIE = register("entities/sheep/potato/gray");
+	public static final RegistryKey<LootTable> SHEEP_POTATO_LIGHT_GRAY_ENTITIE = register("entities/sheep/potato/light_gray");
+	public static final RegistryKey<LootTable> SHEEP_POTATO_CYAN_ENTITIE = register("entities/sheep/potato/cyan");
+	public static final RegistryKey<LootTable> SHEEP_POTATO_PURPLE_ENTITIE = register("entities/sheep/potato/purple");
+	public static final RegistryKey<LootTable> SHEEP_POTATO_BLUE_ENTITIE = register("entities/sheep/potato/blue");
+	public static final RegistryKey<LootTable> SHEEP_POTATO_BROWN_ENTITIE = register("entities/sheep/potato/brown");
+	public static final RegistryKey<LootTable> SHEEP_POTATO_GREEN_ENTITIE = register("entities/sheep/potato/green");
+	public static final RegistryKey<LootTable> SHEEP_POTATO_RED_ENTITIE = register("entities/sheep/potato/red");
+	public static final RegistryKey<LootTable> SHEEP_POTATO_BLACK_ENTITIE = register("entities/sheep/potato/black");
 	public static final RegistryKey<LootTable> FISHING_GAMEPLAY = register("gameplay/fishing");
 	public static final RegistryKey<LootTable> FISHING_JUNK_GAMEPLAY = register("gameplay/fishing/junk");
 	public static final RegistryKey<LootTable> FISHING_TREASURE_GAMEPLAY = register("gameplay/fishing/treasure");

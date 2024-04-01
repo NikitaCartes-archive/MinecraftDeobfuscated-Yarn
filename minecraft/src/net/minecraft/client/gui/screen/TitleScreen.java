@@ -93,8 +93,7 @@ public class TitleScreen extends Screen {
 
 	public static CompletableFuture<Void> loadTexturesAsync(TextureManager textureManager, Executor executor) {
 		return CompletableFuture.allOf(
-			textureManager.loadTextureAsync(LogoDrawer.LOGO_TEXTURE, executor),
-			textureManager.loadTextureAsync(LogoDrawer.EDITION_TEXTURE, executor),
+			textureManager.loadTextureAsync(LogoDrawer.field_51079, executor),
 			textureManager.loadTextureAsync(RotatingCubeMapRenderer.OVERLAY_TEXTURE, executor),
 			PANORAMA_RENDERER.loadTexturesAsync(textureManager, executor)
 		);

@@ -307,10 +307,11 @@ public class SpriteContents implements TextureStitcher.Stitchable, AutoCloseable
 						for (int o = 0; o < l; o++) {
 							int p = this.getPixelColor(animation, i, k, o, n);
 							int q = this.getPixelColor(animation, j, k, o, n);
-							int r = this.lerp(d, p >> 16 & 0xFF, q >> 16 & 0xFF);
-							int s = this.lerp(d, p >> 8 & 0xFF, q >> 8 & 0xFF);
-							int t = this.lerp(d, p & 0xFF, q & 0xFF);
-							this.images[k].setColor(o, n, p & 0xFF000000 | r << 16 | s << 8 | t);
+							int r = this.lerp(d, p >> 24 & 0xFF, q >> 24 & 0xFF);
+							int s = this.lerp(d, p >> 16 & 0xFF, q >> 16 & 0xFF);
+							int t = this.lerp(d, p >> 8 & 0xFF, q >> 8 & 0xFF);
+							int u = this.lerp(d, p & 0xFF, q & 0xFF);
+							this.images[k].setColor(o, n, r << 24 | s << 16 | t << 8 | u);
 						}
 					}
 				}

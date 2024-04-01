@@ -42,6 +42,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureHolder;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.GenerationSettings;
 import net.minecraft.world.biome.source.BiomeAccess;
@@ -86,6 +87,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, LightSour
 	protected final Map<BlockPos, BlockEntity> blockEntities = new Object2ObjectOpenHashMap<>();
 	protected final HeightLimitView heightLimitView;
 	protected final ChunkSection[] sectionArray;
+	private final boolean field_50990;
 
 	public Chunk(
 		ChunkPos pos,
@@ -99,6 +101,12 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, LightSour
 		this.pos = pos;
 		this.upgradeData = upgradeData;
 		this.heightLimitView = heightLimitView;
+		if (heightLimitView instanceof World world) {
+			this.field_50990 = world.isPotato();
+		} else {
+			this.field_50990 = false;
+		}
+
 		this.sectionArray = new ChunkSection[heightLimitView.countVerticalSections()];
 		this.inhabitedTime = inhabitedTime;
 		this.postProcessingLists = new ShortList[heightLimitView.countVerticalSections()];
@@ -113,6 +121,11 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, LightSour
 		}
 
 		fillSectionArray(biomeRegistry, this.sectionArray);
+	}
+
+	@Override
+	public boolean isPotato() {
+		return this.field_50990;
 	}
 
 	private static void fillSectionArray(Registry<Biome> biomeRegistry, ChunkSection[] sectionArray) {

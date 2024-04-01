@@ -9,7 +9,6 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.GuardianEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
@@ -23,11 +22,12 @@ import net.minecraft.util.math.Vec3d;
 @Environment(EnvType.CLIENT)
 public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/guardian.png");
+	private static final Identifier TOXIFIN_TEXTURE = new Identifier("textures/entity/toxifin.png");
 	private static final Identifier EXPLOSION_BEAM_TEXTURE = new Identifier("textures/entity/guardian_beam.png");
-	private static final RenderLayer LAYER = RenderLayer.getEntityCutoutNoCull(EXPLOSION_BEAM_TEXTURE);
+	public static final Identifier TOXIFIN_BEAM_TEXTURE = new Identifier("textures/entity/toxifin_beam.png");
 
-	public GuardianEntityRenderer(EntityRendererFactory.Context context) {
-		this(context, 0.5F, EntityModelLayers.GUARDIAN);
+	public GuardianEntityRenderer(EntityRendererFactory.Context context, EntityModelLayer layer) {
+		this(context, 0.5F, layer);
 	}
 
 	protected GuardianEntityRenderer(EntityRendererFactory.Context ctx, float shadowRadius, EntityModelLayer layer) {
@@ -61,17 +61,18 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 	public void render(GuardianEntity guardianEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		super.render(guardianEntity, f, g, matrixStack, vertexConsumerProvider, i);
 		LivingEntity livingEntity = guardianEntity.getBeamTarget();
+		boolean bl = guardianEntity.isPotato();
 		if (livingEntity != null) {
 			float h = guardianEntity.getBeamProgress(g);
 			float j = guardianEntity.getBeamTicks() + g;
-			float k = j * 0.5F % 1.0F;
+			float k = j * (bl ? 0.15F : 0.5F) % 1.0F;
 			float l = guardianEntity.getStandingEyeHeight();
 			matrixStack.push();
 			matrixStack.translate(0.0F, l, 0.0F);
 			Vec3d vec3d = this.fromLerpedPosition(livingEntity, (double)livingEntity.getHeight() * 0.5, g);
 			Vec3d vec3d2 = this.fromLerpedPosition(guardianEntity, (double)l, g);
 			Vec3d vec3d3 = vec3d.subtract(vec3d2);
-			float m = (float)(vec3d3.length() + 1.0);
+			float m = (float)(vec3d3.length() + (bl ? 0.1 : 1.0));
 			vec3d3 = vec3d3.normalize();
 			float n = (float)Math.acos(vec3d3.y);
 			float o = (float)Math.atan2(vec3d3.z, vec3d3.x);
@@ -80,9 +81,19 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			int p = 1;
 			float q = j * 0.05F * -1.5F;
 			float r = h * h;
-			int s = 64 + (int)(r * 191.0F);
-			int t = 32 + (int)(r * 191.0F);
-			int u = 128 - (int)(r * 64.0F);
+			int s;
+			int t;
+			int u;
+			if (bl) {
+				s = 255 - (int)(r * 127.0F);
+				t = 255;
+				u = 255 - (int)(r * 127.0F);
+			} else {
+				s = 64 + (int)(r * 191.0F);
+				t = 32 + (int)(r * 191.0F);
+				u = 128 - (int)(r * 64.0F);
+			}
+
 			float v = 0.2F;
 			float w = 0.282F;
 			float x = MathHelper.cos(q + (float) (Math.PI * 3.0 / 4.0)) * 0.282F;
@@ -105,7 +116,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			float ap = 0.4999F;
 			float aq = -1.0F + k;
 			float ar = m * 2.5F + aq;
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(bl ? TOXIFIN_BEAM_TEXTURE : EXPLOSION_BEAM_TEXTURE));
 			MatrixStack.Entry entry = matrixStack.peek();
 			vertex(vertexConsumer, entry, af, m, ag, s, t, u, 0.4999F, ar);
 			vertex(vertexConsumer, entry, af, 0.0F, ag, s, t, u, 0.4999F, aq);
@@ -116,7 +127,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			vertex(vertexConsumer, entry, al, 0.0F, am, s, t, u, 0.0F, aq);
 			vertex(vertexConsumer, entry, al, m, am, s, t, u, 0.0F, ar);
 			float as = 0.0F;
-			if (guardianEntity.age % 2 == 0) {
+			if (!bl && guardianEntity.age % 2 == 0) {
 				as = 0.5F;
 			}
 
@@ -139,6 +150,6 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 	}
 
 	public Identifier getTexture(GuardianEntity guardianEntity) {
-		return TEXTURE;
+		return guardianEntity.isPotato() ? TOXIFIN_TEXTURE : TEXTURE;
 	}
 }

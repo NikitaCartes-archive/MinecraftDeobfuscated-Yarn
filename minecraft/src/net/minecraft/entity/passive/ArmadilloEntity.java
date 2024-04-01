@@ -64,6 +64,11 @@ public class ArmadilloEntity extends AnimalEntity {
 		this.nextScuteShedCooldown = this.getNextScuteShedCooldown();
 	}
 
+	@Override
+	public boolean hasPotatoForm() {
+		return true;
+	}
+
 	@Nullable
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {

@@ -58,8 +58,8 @@ public class TorchflowerBlock extends CropBlock {
 	}
 
 	@Override
-	public BlockState withAge(int age) {
-		return age == 2 ? Blocks.TORCHFLOWER.getDefaultState() : super.withAge(age);
+	public BlockState withAge(int age, BlockState blockState) {
+		return age == 2 ? Blocks.TORCHFLOWER.getDefaultState() : super.withAge(age, blockState);
 	}
 
 	@Override

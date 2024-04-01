@@ -15,7 +15,7 @@ public class GuardianAttackSoundInstance extends MovingSoundInstance {
 	private final GuardianEntity guardian;
 
 	public GuardianAttackSoundInstance(GuardianEntity guardian) {
-		super(SoundEvents.ENTITY_GUARDIAN_ATTACK, SoundCategory.HOSTILE, SoundInstance.createRandom());
+		super(guardian.isPotato() ? SoundEvents.ENTITY_TOXIFIN_ATTACK : SoundEvents.ENTITY_GUARDIAN_ATTACK, SoundCategory.HOSTILE, SoundInstance.createRandom());
 		this.guardian = guardian;
 		this.attenuationType = SoundInstance.AttenuationType.NONE;
 		this.repeat = true;

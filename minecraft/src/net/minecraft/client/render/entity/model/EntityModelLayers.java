@@ -20,6 +20,7 @@ public class EntityModelLayers {
 	public static final EntityModelLayer ARMOR_STAND_OUTER_ARMOR = createOuterArmor("armor_stand");
 	public static final EntityModelLayer AXOLOTL = registerMain("axolotl");
 	public static final EntityModelLayer BANNER = registerMain("banner");
+	public static final EntityModelLayer BATATO = registerMain("batato");
 	public static final EntityModelLayer BAT = registerMain("bat");
 	public static final EntityModelLayer BED_FOOT = registerMain("bed_foot");
 	public static final EntityModelLayer BED_HEAD = registerMain("bed_head");
@@ -61,7 +62,9 @@ public class EntityModelLayers {
 	public static final EntityModelLayer DROWNED_OUTER_ARMOR = createOuterArmor("drowned");
 	public static final EntityModelLayer DROWNED_OUTER = register("drowned", "outer");
 	public static final EntityModelLayer ELDER_GUARDIAN = registerMain("elder_guardian");
+	public static final EntityModelLayer ELDER_GUARDIAN_SLAB = registerMain("elder_guardian_slab");
 	public static final EntityModelLayer ELYTRA = registerMain("elytra");
+	public static final EntityModelLayer POISONOUS_POLYTRA = registerMain("poisonous_polytra");
 	public static final EntityModelLayer ENDERMAN = registerMain("enderman");
 	public static final EntityModelLayer ENDERMITE = registerMain("endermite");
 	public static final EntityModelLayer ENDER_DRAGON = registerMain("ender_dragon");
@@ -78,6 +81,7 @@ public class EntityModelLayers {
 	public static final EntityModelLayer GLOW_SQUID = registerMain("glow_squid");
 	public static final EntityModelLayer GOAT = registerMain("goat");
 	public static final EntityModelLayer GUARDIAN = registerMain("guardian");
+	public static final EntityModelLayer GUARDIAN_SLAB = registerMain("guardian_slab");
 	public static final EntityModelLayer HOGLIN = registerMain("hoglin");
 	public static final EntityModelLayer HOPPER_MINECART = registerMain("hopper_minecart");
 	public static final EntityModelLayer HORSE = registerMain("horse");
@@ -137,6 +141,8 @@ public class EntityModelLayers {
 	public static final EntityModelLayer SKELETON_SKULL = registerMain("skeleton_skull");
 	public static final EntityModelLayer SLIME = registerMain("slime");
 	public static final EntityModelLayer SLIME_OUTER = register("slime", "outer");
+	public static final EntityModelLayer MEGA_SPUD = registerMain("mega_spud");
+	public static final EntityModelLayer MEGA_SPUD_OUTER = register("mega_spud", "outer");
 	public static final EntityModelLayer SNIFFER = registerMain("sniffer");
 	public static final EntityModelLayer SNOW_GOLEM = registerMain("snow_golem");
 	public static final EntityModelLayer SPAWNER_MINECART = registerMain("spawner_minecart");

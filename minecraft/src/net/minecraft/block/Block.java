@@ -28,6 +28,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -397,7 +398,32 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	public static void dropStacks(BlockState state, World world, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity entity, ItemStack tool) {
 		if (world instanceof ServerWorld) {
 			getDroppedStacks(state, (ServerWorld)world, pos, blockEntity, entity, tool).forEach(stack -> dropStack(world, pos, stack));
+			int i = EnchantmentHelper.getLevel(Enchantments.POTATOFICATION, tool);
+			if (i > 0) {
+				int j = world.random.nextInt(i + 1);
+				int k = i - j;
+				dropLotsOfStacks(j, world, pos, Items.POISONOUS_POTATO);
+				dropLotsOfStacks(k, world, pos, Items.POTATO);
+				if (world.random.nextFloat() <= 0.05F) {
+					dropLotsOfStacks(1, world, pos, Items.POISONOUS_POTATO_PLANT);
+				}
+			}
+
 			state.onStacksDropped((ServerWorld)world, pos, tool, true);
+		}
+	}
+
+	public static void dropLotsOfStacks(int countRoot, World world, BlockPos pos, Item item) {
+		for (int i = 0; i < MathHelper.square(countRoot); i++) {
+			ItemStack itemStack = new ItemStack(item);
+			double d = (double)EntityType.ITEM.getHeight() / 2.0;
+			double e = (double)pos.getX() + 0.5 + MathHelper.nextDouble(world.random, -0.25, 0.25);
+			double f = (double)pos.getY() + 0.5 + MathHelper.nextDouble(world.random, -0.25, 0.25) - d;
+			double g = (double)pos.getZ() + 0.5 + MathHelper.nextDouble(world.random, -0.25, 0.25);
+			double h = MathHelper.nextDouble(world.random, -0.25, 0.25);
+			double j = MathHelper.nextDouble(world.random, 0.0, 0.25);
+			double k = MathHelper.nextDouble(world.random, -0.25, 0.25);
+			dropStack(world, () -> new ItemEntity(world, e, f, g, itemStack, h, j, k), itemStack);
 		}
 	}
 

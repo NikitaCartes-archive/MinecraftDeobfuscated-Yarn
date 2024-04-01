@@ -1,12 +1,15 @@
 package net.minecraft.entity;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableList.Builder;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -60,7 +63,9 @@ import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.EntityTypeTags;
@@ -80,6 +85,9 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
+import net.minecraft.structure.StrongholdGenerator;
+import net.minecraft.structure.StructurePiece;
+import net.minecraft.structure.StructureStart;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -112,12 +120,15 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.GridCarrierView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.NetherPortal;
 import net.minecraft.world.entity.EntityChangeListener;
@@ -125,6 +136,10 @@ import net.minecraft.world.entity.EntityLike;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.gen.structure.Structure;
+import net.minecraft.world.gen.structure.StructureKeys;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestTypes;
 import org.slf4j.Logger;
 
 /**
@@ -255,6 +270,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	public static final String UUID_KEY = "UUID";
 	private static double renderDistanceMultiplier = 1.0;
 	private final EntityType<?> type;
+	public boolean field_50386;
 	/**
 	 * The entity's network ID, used as a reference for synchronization over network.
 	 * This is not persistent across save and loads; use {@link #uuid} to identify
@@ -321,6 +337,9 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	public double lastRenderY;
 	public double lastRenderZ;
 	public boolean noClip;
+	protected float field_50391;
+	public Vec3d field_50392 = Vec3d.ZERO;
+	public Vec3d field_50393 = Vec3d.ZERO;
 	protected final Random random = Random.create();
 	public int age;
 	private int fireTicks = -this.getBurningDuration();
@@ -373,6 +392,18 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	private boolean hasVisualFire;
 	@Nullable
 	private BlockState stateAtPos = null;
+	private static final int field_50394 = 30;
+	@Nullable
+	protected GridCarrierView field_50387;
+	protected int field_50388;
+	@Nullable
+	public UUID field_50389;
+	public int field_50390;
+	private static final List<Pair<RegistryKey<Structure>, RegistryKey<Structure>>> field_50395 = List.of(
+		Pair.of(StructureKeys.VILLAGE_PLAINS, StructureKeys.VILLAGE_POTATO),
+		Pair.of(StructureKeys.STRONGHOLD, StructureKeys.COLOSSEUM),
+		Pair.of(StructureKeys.RUINED_PORTATOL, StructureKeys.RUINED_PORTATOL)
+	);
 
 	public Entity(EntityType<?> type, World world) {
 		this.type = type;
@@ -663,6 +694,25 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	}
 
 	public void baseTick() {
+		if (this.field_50388 > 0) {
+			if (--this.field_50388 == 0) {
+				this.field_50387 = null;
+			} else if (this.field_50387 != null && this.field_50387.getGridCarrier().isRemoved()) {
+				this.field_50387 = null;
+			}
+		}
+
+		if (this.field_50389 != null && this.field_50390 > 0) {
+			GridCarrierView gridCarrierView = this.getWorld().getGridVarrierView(this.field_50389);
+			if (gridCarrierView != null) {
+				this.field_50387 = gridCarrierView;
+				this.field_50389 = null;
+				this.field_50390 = 0;
+			} else if (--this.field_50390 == 0 || this.field_50387 != null) {
+				this.field_50389 = null;
+			}
+		}
+
 		this.getWorld().getProfiler().push("entityBaseTick");
 		this.stateAtPos = null;
 		if (this.hasVehicle() && this.getVehicle().isRemoved()) {
@@ -676,6 +726,18 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		this.prevHorizontalSpeed = this.horizontalSpeed;
 		this.prevPitch = this.getPitch();
 		this.prevYaw = this.getYaw();
+		this.field_50391 *= 0.7F;
+		this.field_50393 = this.field_50392;
+		if (this.field_50391 > 0.0F) {
+			this.field_50392 = new Vec3d(
+				(this.random.nextDouble() - this.random.nextDouble()) * (double)this.field_50391,
+				(this.random.nextDouble() - this.random.nextDouble()) * (double)this.field_50391,
+				(this.random.nextDouble() - this.random.nextDouble()) * (double)this.field_50391
+			);
+		} else {
+			this.field_50392 = Vec3d.ZERO;
+		}
+
 		this.tickPortal();
 		if (this.shouldSpawnSprintingParticles()) {
 			this.spawnSprintingParticles();
@@ -847,7 +909,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	}
 
 	private boolean doesNotCollide(Box box) {
-		return this.getWorld().isSpaceEmpty(this, box) && !this.getWorld().containsFluid(box);
+		return this.getWorld().method_59085(this, box) && !this.getWorld().containsFluid(box);
 	}
 
 	public void setOnGround(boolean onGround) {
@@ -893,7 +955,15 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return this.onGround;
 	}
 
+	protected boolean method_58830() {
+		return true;
+	}
+
 	public void move(MovementType movementType, Vec3d movement) {
+		if (this.field_50387 != null && this.method_58830()) {
+			movement = movement.add(this.field_50387.getRenderOFfset());
+		}
+
 		if (this.noClip) {
 			this.setPosition(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
 		} else {
@@ -913,49 +983,57 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			}
 
 			movement = this.adjustMovementForSneaking(movement, movementType);
-			Vec3d vec3d = this.adjustMovementForCollisions(movement);
-			double d = vec3d.lengthSquared();
+			Entity.class_9494 lv = this.adjustMovementForCollisions(movement);
+			if (lv.subGrid != null) {
+				this.field_50387 = lv.subGrid;
+				this.field_50388 = 30;
+			}
+
+			Vec3d vec3d = this.field_50387 != null ? this.field_50387.getRenderOFfset() : Vec3d.ZERO;
+			Vec3d vec3d2 = lv.movement;
+			Vec3d vec3d3 = vec3d2.subtract(vec3d);
+			double d = vec3d2.lengthSquared();
 			if (d > 1.0E-7) {
 				if (this.fallDistance != 0.0F && d >= 1.0) {
 					BlockHitResult blockHitResult = this.getWorld()
 						.raycast(
-							new RaycastContext(this.getPos(), this.getPos().add(vec3d), RaycastContext.ShapeType.FALLDAMAGE_RESETTING, RaycastContext.FluidHandling.WATER, this)
+							new RaycastContext(this.getPos(), this.getPos().add(vec3d2), RaycastContext.ShapeType.FALLDAMAGE_RESETTING, RaycastContext.FluidHandling.WATER, this)
 						);
 					if (blockHitResult.getType() != HitResult.Type.MISS) {
 						this.onLanding();
 					}
 				}
 
-				this.setPosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
+				this.setPosition(this.getX() + vec3d2.x, this.getY() + vec3d2.y, this.getZ() + vec3d2.z);
 			}
 
 			this.getWorld().getProfiler().pop();
 			this.getWorld().getProfiler().push("rest");
-			boolean bl = !MathHelper.approximatelyEquals(movement.x, vec3d.x);
-			boolean bl2 = !MathHelper.approximatelyEquals(movement.z, vec3d.z);
+			boolean bl = !MathHelper.approximatelyEquals(movement.x, vec3d2.x);
+			boolean bl2 = !MathHelper.approximatelyEquals(movement.z, vec3d2.z);
 			this.horizontalCollision = bl || bl2;
-			this.verticalCollision = movement.y != vec3d.y;
-			this.groundCollision = this.verticalCollision && movement.y < 0.0;
+			this.verticalCollision = movement.y != vec3d2.y;
+			this.groundCollision = this.verticalCollision && movement.y < vec3d.y;
 			if (this.horizontalCollision) {
-				this.collidedSoftly = this.hasCollidedSoftly(vec3d);
+				this.collidedSoftly = this.hasCollidedSoftly(vec3d2);
 			} else {
 				this.collidedSoftly = false;
 			}
 
-			this.setOnGround(this.groundCollision, vec3d);
+			this.setOnGround(this.groundCollision, vec3d2);
 			BlockPos blockPos = this.getLandingPos();
-			BlockState blockState = this.getWorld().getBlockState(blockPos);
-			this.fall(vec3d.y, this.isOnGround(), blockState, blockPos);
+			BlockState blockState = this.method_58837();
+			this.fall(vec3d2.y, this.isOnGround(), blockState, blockPos);
 			if (this.isRemoved()) {
 				this.getWorld().getProfiler().pop();
 			} else {
 				if (this.horizontalCollision) {
-					Vec3d vec3d2 = this.getVelocity();
-					this.setVelocity(bl ? 0.0 : vec3d2.x, vec3d2.y, bl2 ? 0.0 : vec3d2.z);
+					Vec3d vec3d4 = this.getVelocity();
+					this.setVelocity(bl ? 0.0 : vec3d4.x, vec3d4.y, bl2 ? 0.0 : vec3d4.z);
 				}
 
 				Block block = blockState.getBlock();
-				if (movement.y != vec3d.y) {
+				if (movement.y != vec3d2.y) {
 					block.onEntityLand(this.getWorld(), this);
 				}
 
@@ -965,10 +1043,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 
 				Entity.MoveEffect moveEffect = this.getMoveEffect();
 				if (moveEffect.hasAny() && !this.hasVehicle()) {
-					double e = vec3d.x;
-					double f = vec3d.y;
-					double g = vec3d.z;
-					this.speed = this.speed + (float)(vec3d.length() * 0.6);
+					double e = vec3d3.x;
+					double f = vec3d3.y;
+					double g = vec3d3.z;
+					this.speed = this.speed + (float)(vec3d3.length() * 0.6);
 					BlockPos blockPos2 = this.getSteppingPos();
 					BlockState blockState2 = this.getWorld().getBlockState(blockPos2);
 					boolean bl3 = this.canClimb(blockState2);
@@ -976,9 +1054,9 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 						f = 0.0;
 					}
 
-					this.horizontalSpeed = this.horizontalSpeed + (float)vec3d.horizontalLength() * 0.6F;
+					this.horizontalSpeed = this.horizontalSpeed + (float)vec3d3.horizontalLength() * 0.6F;
 					this.distanceTraveled = this.distanceTraveled + (float)Math.sqrt(e * e + f * f + g * g) * 0.6F;
-					if (this.distanceTraveled > this.nextStepSoundDistance && !blockState2.isAir()) {
+					if (this.distanceTraveled > this.nextStepSoundDistance && (!blockState2.isAir() || this.field_50387 != null)) {
 						boolean bl4 = blockPos2.equals(blockPos);
 						boolean bl5 = this.stepOnBlock(blockPos, blockState, moveEffect.playsSounds(), bl4, movement);
 						if (!bl4) {
@@ -987,6 +1065,9 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 
 						if (bl5) {
 							this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
+							if (this.method_58831()) {
+								this.method_58832();
+							}
 						} else if (this.isTouchingWater()) {
 							this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
 							if (moveEffect.playsSounds()) {
@@ -1024,6 +1105,14 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 				this.getWorld().getProfiler().pop();
 			}
 		}
+	}
+
+	public boolean method_58831() {
+		return false;
+	}
+
+	protected void method_58832() {
+		this.world.addParticle(ParticleTypes.FOOTSTEP, this.getX(), this.getY() + 0.001, this.getZ(), (double)this.yaw, 0.0, 0.0);
 	}
 
 	private boolean canClimb(BlockState state) {
@@ -1205,48 +1294,100 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return offsetFactor;
 	}
 
-	private Vec3d adjustMovementForCollisions(Vec3d movement) {
+	public boolean method_58833() {
+		return this.field_50387 != null;
+	}
+
+	private Entity.class_9494 adjustMovementForCollisions(Vec3d movement) {
 		Box box = this.getBoundingBox();
 		List<VoxelShape> list = this.getWorld().getEntityCollisions(this, box.stretch(movement));
-		Vec3d vec3d = movement.lengthSquared() == 0.0 ? movement : adjustMovementForCollisions(this, movement, box, this.getWorld(), list);
-		boolean bl = movement.x != vec3d.x;
-		boolean bl2 = movement.y != vec3d.y;
-		boolean bl3 = movement.z != vec3d.z;
+		Entity.class_9494 lv = adjustMovementForCollisions(this, movement, box, this.getWorld(), list);
+		boolean bl = movement.x != lv.movement.x;
+		boolean bl2 = movement.y != lv.movement.y;
+		boolean bl3 = movement.z != lv.movement.z;
 		boolean bl4 = this.isOnGround() || bl2 && movement.y < 0.0;
 		if (this.getStepHeight() > 0.0F && bl4 && (bl || bl3)) {
-			Vec3d vec3d2 = adjustMovementForCollisions(this, new Vec3d(movement.x, (double)this.getStepHeight(), movement.z), box, this.getWorld(), list);
+			Vec3d vec3d = lv.method_58854();
+			Vec3d vec3d2 = adjustMovementForCollisions(this, new Vec3d(movement.x, vec3d.y + (double)this.getStepHeight(), movement.z), box, this.getWorld(), list)
+				.method_58856(vec3d);
 			Vec3d vec3d3 = adjustMovementForCollisions(
-				this, new Vec3d(0.0, (double)this.getStepHeight(), 0.0), box.stretch(movement.x, 0.0, movement.z), this.getWorld(), list
-			);
+					this, vec3d.add(0.0, (double)this.getStepHeight(), 0.0), box.stretch(movement.x, 0.0, movement.z), this.getWorld(), list
+				)
+				.method_58856(vec3d);
 			if (vec3d3.y < (double)this.getStepHeight()) {
-				Vec3d vec3d4 = adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.getWorld(), list).add(vec3d3);
+				Vec3d vec3d4 = adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.getWorld(), list)
+					.method_58855(vec3d3)
+					.method_58856(vec3d);
 				if (vec3d4.horizontalLengthSquared() > vec3d2.horizontalLengthSquared()) {
 					vec3d2 = vec3d4;
 				}
 			}
 
-			if (vec3d2.horizontalLengthSquared() > vec3d.horizontalLengthSquared()) {
-				return vec3d2.add(adjustMovementForCollisions(this, new Vec3d(0.0, -vec3d2.y + movement.y, 0.0), box.offset(vec3d2), this.getWorld(), list));
+			if (vec3d2.horizontalLengthSquared() > lv.method_58856(vec3d).horizontalLengthSquared()) {
+				Vec3d vec3d4 = adjustMovementForCollisions(this, vec3d.add(0.0, -vec3d2.y + movement.y, 0.0), box.offset(vec3d2), this.getWorld(), list)
+					.method_58856(vec3d);
+				return new Entity.class_9494(vec3d4.add(vec3d2).add(vec3d), lv.subGrid);
 			}
 		}
 
-		return vec3d;
+		return lv;
 	}
 
-	public static Vec3d adjustMovementForCollisions(@Nullable Entity entity, Vec3d movement, Box entityBoundingBox, World world, List<VoxelShape> collisions) {
-		Builder<VoxelShape> builder = ImmutableList.builderWithExpectedSize(collisions.size() + 1);
-		if (!collisions.isEmpty()) {
-			builder.addAll(collisions);
+	public static Entity.class_9494 adjustMovementForCollisions(
+		@Nullable Entity entity, Vec3d movement, Box entityBoundingBox, World world, List<VoxelShape> collisions
+	) {
+		if (movement.lengthSquared() > 0.0) {
+			movement = method_58835(entity, movement, entityBoundingBox, world, collisions);
+		}
+
+		return method_58827(entity, new Entity.class_9494(movement, null), entityBoundingBox, world);
+	}
+
+	private static Entity.class_9494 method_58827(@Nullable Entity entity, Entity.class_9494 arg, Box box, World world) {
+		if (entity != null && entity.field_50386) {
+			return arg;
+		} else {
+			List<VoxelShape> list = new ArrayList();
+
+			for (GridCarrierView gridCarrierView : world.getGridCarrierViews()) {
+				arg = method_58826(entity, arg, box, gridCarrierView, list);
+				list.clear();
+			}
+
+			return arg;
+		}
+	}
+
+	private static Entity.class_9494 method_58826(@Nullable Entity entity, Entity.class_9494 arg, Box box, GridCarrierView gridCarrierView, List<VoxelShape> list) {
+		Vec3d vec3d = gridCarrierView.getRenderOFfset();
+		Box box2 = gridCarrierView.getRenderOffsetGridBox();
+		Vec3d vec3d2 = arg.movement.subtract(vec3d);
+		Box box3 = box.stretch(vec3d2);
+		if (!box2.intersects(box3)) {
+			return arg;
+		} else {
+			Box box4 = box.offset(-box2.minX, -box2.minY, -box2.minZ);
+			Box box5 = box3.offset(-box2.minX, -box2.minY, -box2.minZ);
+			Iterables.addAll(list, gridCarrierView.getBlockCollisions(entity, box5));
+			Vec3d vec3d3 = adjustMovementForCollisions(vec3d2, box4, list);
+			return vec3d3.equals(vec3d2) ? arg : new Entity.class_9494(vec3d3.add(vec3d), gridCarrierView);
+		}
+	}
+
+	private static Vec3d method_58835(@Nullable Entity entity, Vec3d vec3d, Box box, World world, List<VoxelShape> list) {
+		Builder<VoxelShape> builder = ImmutableList.builderWithExpectedSize(list.size() + 1);
+		if (!list.isEmpty()) {
+			builder.addAll(list);
 		}
 
 		WorldBorder worldBorder = world.getWorldBorder();
-		boolean bl = entity != null && worldBorder.canCollide(entity, entityBoundingBox.stretch(movement));
+		boolean bl = entity != null && worldBorder.canCollide(entity, box.stretch(vec3d));
 		if (bl) {
 			builder.add(worldBorder.asVoxelShape());
 		}
 
-		builder.addAll(world.getBlockCollisions(entity, entityBoundingBox.stretch(movement)));
-		return adjustMovementForCollisions(movement, entityBoundingBox, builder.build());
+		builder.addAll(world.getBlockCollisions(entity, box.stretch(vec3d)));
+		return adjustMovementForCollisions(vec3d, box, builder.build());
 	}
 
 	private static Vec3d adjustMovementForCollisions(Vec3d movement, Box entityBoundingBox, List<VoxelShape> collisions) {
@@ -1509,7 +1650,11 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	}
 
 	public final double getFinalGravity() {
-		return this.hasNoGravity() ? 0.0 : this.getGravity();
+		if (this.field_50389 != null) {
+			return 0.0;
+		} else {
+			return this.hasNoGravity() ? 0.0 : this.getGravity();
+		}
 	}
 
 	protected void applyGravity() {
@@ -1768,7 +1913,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 */
 	@Deprecated
 	protected BlockState getLandingBlockState() {
-		return this.getWorld().getBlockState(this.getLandingPos());
+		return this.method_58837();
 	}
 
 	/**
@@ -1788,9 +1933,19 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return this.isSprinting() && !this.isTouchingWater() && !this.isSpectator() && !this.isInSneakingPose() && !this.isInLava() && this.isAlive();
 	}
 
+	protected BlockState method_58837() {
+		if (this.field_50387 != null) {
+			Vec3d vec3d = this.pos.subtract(this.field_50387.getGridCarrier().getPos());
+			BlockPos blockPos = BlockPos.ofFloored(vec3d.add(0.0, -0.2F, 0.0));
+			return this.field_50387.getBlockState(blockPos);
+		} else {
+			return this.getWorld().getBlockState(this.getLandingPos());
+		}
+	}
+
 	protected void spawnSprintingParticles() {
 		BlockPos blockPos = this.getLandingPos();
-		BlockState blockState = this.getWorld().getBlockState(blockPos);
+		BlockState blockState = this.method_58837();
 		if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
 			Vec3d vec3d = this.getVelocity();
 			BlockPos blockPos2 = this.getBlockPos();
@@ -2233,6 +2388,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			}
 
 			this.writeCustomDataToNbt(nbt);
+			if (this.field_50387 != null) {
+				nbt.putUuid("attached_to_grid", this.field_50387.getGridCarrierUuid());
+			}
+
 			if (this.hasPassengers()) {
 				NbtList nbtList = new NbtList();
 
@@ -2289,6 +2448,11 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			if (nbt.containsUuid("UUID")) {
 				this.uuid = nbt.getUuid("UUID");
 				this.uuidString = this.uuid.toString();
+			}
+
+			if (nbt.containsUuid("attached_to_grid")) {
+				this.field_50389 = nbt.getUuid("attached_to_grid");
+				this.field_50390 = 40;
 			}
 
 			if (!Double.isFinite(this.getX()) || !Double.isFinite(this.getY()) || !Double.isFinite(this.getZ())) {
@@ -2879,18 +3043,26 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	}
 
 	protected void tickPortal() {
-		if (this.getWorld() instanceof ServerWorld) {
-			int i = this.getMaxNetherPortalTime();
-			ServerWorld serverWorld = (ServerWorld)this.getWorld();
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			int var11 = this.getMaxNetherPortalTime();
 			if (this.inNetherPortal) {
 				MinecraftServer minecraftServer = serverWorld.getServer();
-				RegistryKey<World> registryKey = this.getWorld().getRegistryKey() == World.NETHER ? World.OVERWORLD : World.NETHER;
+				BlockState blockState = serverWorld.getBlockState(this.lastNetherPortalPosition);
+				boolean bl = blockState.isOf(Blocks.POTATO_PORTAL);
+				boolean bl2 = this.world.getBlockState(this.lastNetherPortalPosition.down()).isOf(Blocks.PEDESTAL);
+				RegistryKey<World> registryKey = bl
+					? (this.getWorld().isPotato() ? World.OVERWORLD : World.POTATO)
+					: (this.getWorld().getRegistryKey() == World.NETHER ? World.OVERWORLD : World.NETHER);
 				ServerWorld serverWorld2 = minecraftServer.getWorld(registryKey);
-				if (serverWorld2 != null && minecraftServer.isNetherAllowed() && !this.hasVehicle() && this.netherPortalTime++ >= i) {
+				if (serverWorld2 != null && (minecraftServer.isNetherAllowed() || bl) && !this.hasVehicle() && this.netherPortalTime++ >= var11) {
 					this.getWorld().getProfiler().push("portal");
-					this.netherPortalTime = i;
+					this.netherPortalTime = var11;
 					this.resetPortalCooldown();
-					this.moveToWorld(serverWorld2);
+					this.moveToWorld(serverWorld2, bl2);
+					if (this instanceof ServerPlayerEntity serverPlayerEntity && bl && this.getWorld().isPotato() && !serverPlayerEntity.method_58934("dimension")) {
+						serverPlayerEntity.method_58932("dimension");
+					}
+
 					this.getWorld().getProfiler().pop();
 				}
 
@@ -3779,12 +3951,12 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * @return the entity in the other world
 	 */
 	@Nullable
-	public Entity moveToWorld(ServerWorld destination) {
+	public Entity moveToWorld(ServerWorld destination, boolean bl) {
 		if (this.getWorld() instanceof ServerWorld && !this.isRemoved()) {
 			this.getWorld().getProfiler().push("changeDimension");
 			this.detach();
 			this.getWorld().getProfiler().push("reposition");
-			TeleportTarget teleportTarget = this.getTeleportTarget(destination);
+			TeleportTarget teleportTarget = this.getTeleportTarget(destination, bl);
 			if (teleportTarget == null) {
 				return null;
 			} else {
@@ -3830,53 +4002,187 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * destination worlds, plus any nether portals that may be present}
 	 */
 	@Nullable
-	protected TeleportTarget getTeleportTarget(ServerWorld destination) {
-		boolean bl = this.getWorld().getRegistryKey() == World.END && destination.getRegistryKey() == World.OVERWORLD;
-		boolean bl2 = destination.getRegistryKey() == World.END;
-		if (!bl && !bl2) {
-			boolean bl3 = destination.getRegistryKey() == World.NETHER;
-			if (this.getWorld().getRegistryKey() != World.NETHER && !bl3) {
-				return null;
-			} else {
-				WorldBorder worldBorder = destination.getWorldBorder();
-				double d = DimensionType.getCoordinateScaleFactor(this.getWorld().getDimension(), destination.getDimension());
-				BlockPos blockPos2 = worldBorder.clamp(this.getX() * d, this.getY(), this.getZ() * d);
-				return (TeleportTarget)this.getPortalRect(destination, blockPos2, bl3, worldBorder)
-					.map(
-						rect -> {
-							BlockState blockState = this.getWorld().getBlockState(this.lastNetherPortalPosition);
-							Direction.Axis axis;
-							Vec3d vec3d;
-							if (blockState.contains(Properties.HORIZONTAL_AXIS)) {
-								axis = blockState.get(Properties.HORIZONTAL_AXIS);
-								BlockLocating.Rectangle rectangle = BlockLocating.getLargestRectangle(
-									this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, pos -> this.getWorld().getBlockState(pos) == blockState
-								);
-								vec3d = this.positionInPortal(axis, rectangle);
-							} else {
-								axis = Direction.Axis.X;
-								vec3d = new Vec3d(0.5, 0.0, 0.0);
-							}
-
-							return NetherPortal.getNetherTeleportTarget(destination, rect, axis, vec3d, this, this.getVelocity(), this.getYaw(), this.getPitch());
-						}
-					)
-					.orElse(null);
+	protected TeleportTarget getTeleportTarget(ServerWorld destination, boolean bl) {
+		boolean bl2 = destination.isPotato() || this.getWorld().isPotato();
+		ServerWorld serverWorld = (ServerWorld)this.getWorld();
+		if (bl2) {
+			WorldBorder worldBorder = destination.getWorldBorder();
+			double d = DimensionType.getCoordinateScaleFactor(this.getWorld().getDimension(), destination.getDimension());
+			BlockPos blockPos = worldBorder.clamp(
+				(double)this.lastNetherPortalPosition.getX() * d,
+				(double)MathHelper.clamp(this.lastNetherPortalPosition.getY(), destination.getBottomY() + 1, destination.getTopY() - 1),
+				(double)this.lastNetherPortalPosition.getZ() * d
+			);
+			TeleportTarget teleportTarget = null;
+			if (bl) {
+				teleportTarget = this.method_58824(destination, serverWorld, blockPos);
 			}
+
+			if (teleportTarget == null) {
+				teleportTarget = this.method_58825(destination, blockPos);
+			}
+
+			serverWorld.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(this.lastNetherPortalPosition), 3, this.lastNetherPortalPosition);
+			BlockPos blockPos2 = BlockPos.ofFloored(teleportTarget.position);
+			destination.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos2), 3, blockPos2);
+			return teleportTarget;
 		} else {
-			BlockPos blockPos = bl2 ? ServerWorld.END_SPAWN_POS : destination.getSpawnPos();
-			destination.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);
-			int i;
-			if (bl2) {
-				i = blockPos.getY();
-			} else {
-				i = destination.getWorldChunk(blockPos).sampleHeightmap(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos.getX(), blockPos.getZ()) + 1;
-			}
+			boolean bl3 = this.getWorld().getRegistryKey() == World.END && destination.getRegistryKey() == World.OVERWORLD;
+			boolean bl4 = destination.getRegistryKey() == World.END;
+			if (!bl3 && !bl4) {
+				boolean bl5 = destination.getRegistryKey() == World.NETHER;
+				if (this.getWorld().getRegistryKey() != World.NETHER && !bl5) {
+					return null;
+				} else {
+					WorldBorder worldBorder2 = destination.getWorldBorder();
+					double e = DimensionType.getCoordinateScaleFactor(this.getWorld().getDimension(), destination.getDimension());
+					BlockPos blockPos4 = worldBorder2.clamp(this.getX() * e, this.getY(), this.getZ() * e);
+					return (TeleportTarget)this.getPortalRect(destination, blockPos4, bl5, worldBorder2)
+						.map(
+							rect -> {
+								BlockState blockState = this.getWorld().getBlockState(this.lastNetherPortalPosition);
+								Direction.Axis axis;
+								Vec3d vec3d;
+								if (blockState.contains(Properties.HORIZONTAL_AXIS)) {
+									axis = blockState.get(Properties.HORIZONTAL_AXIS);
+									BlockLocating.Rectangle rectangle = BlockLocating.getLargestRectangle(
+										this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, pos -> this.getWorld().getBlockState(pos) == blockState
+									);
+									vec3d = this.positionInPortal(axis, rectangle);
+								} else {
+									axis = Direction.Axis.X;
+									vec3d = new Vec3d(0.5, 0.0, 0.0);
+								}
 
-			return new TeleportTarget(
-				new Vec3d((double)blockPos.getX() + 0.5, (double)i, (double)blockPos.getZ() + 0.5), this.getVelocity(), this.getYaw(), this.getPitch()
+								return NetherPortal.getNetherTeleportTarget(destination, rect, axis, vec3d, this, this.getVelocity(), this.getYaw(), this.getPitch());
+							}
+						)
+						.orElse(null);
+				}
+			} else {
+				BlockPos blockPos3 = bl4 ? ServerWorld.END_SPAWN_POS : destination.getSpawnPos();
+				destination.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos3), 3, blockPos3);
+				int i;
+				if (bl4) {
+					i = blockPos3.getY();
+				} else {
+					i = destination.getWorldChunk(blockPos3).sampleHeightmap(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos3.getX(), blockPos3.getZ()) + 1;
+				}
+
+				return new TeleportTarget(
+					new Vec3d((double)blockPos3.getX() + 0.5, (double)i, (double)blockPos3.getZ() + 0.5), this.getVelocity(), this.getYaw(), this.getPitch()
+				);
+			}
+		}
+	}
+
+	private TeleportTarget method_58825(ServerWorld serverWorld, BlockPos blockPos) {
+		Vec3d vec3d = this.pos.subtract(Vec3d.of(this.lastNetherPortalPosition));
+		PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
+		pointOfInterestStorage.preloadChunks(serverWorld, blockPos, 64, ChunkStatus.EMPTY);
+		BlockPos blockPos2 = (BlockPos)pointOfInterestStorage.getNearestPosition(
+				registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.POTATO_PORTAL), blockPos, 64, PointOfInterestStorage.OccupationStatus.ANY
+			)
+			.or(() -> method_58834(serverWorld, blockPos))
+			.orElseGet(() -> method_58844(serverWorld, blockPos));
+		if (!serverWorld.getBlockState(blockPos2).isOf(Blocks.POTATO_PORTAL) && serverWorld.isAir(blockPos2)) {
+			serverWorld.setBlockState(blockPos2, Blocks.POTATO_PORTAL.getDefaultState(), Block.NOTIFY_ALL);
+		}
+
+		return new TeleportTarget(Vec3d.of(blockPos2).add(vec3d), this.getVelocity(), this.getYaw(), this.getPitch());
+	}
+
+	private static Optional<BlockPos> method_58834(ServerWorld serverWorld, BlockPos blockPos) {
+		return BlockPos.findClosest(
+			blockPos, 32, 32, blockPosx -> method_58838(serverWorld, blockPosx.down()) && serverWorld.isAir(blockPosx) && serverWorld.isAir(blockPosx.up())
+		);
+	}
+
+	private static boolean method_58838(ServerWorld serverWorld, BlockPos blockPos) {
+		BlockState blockState = serverWorld.getBlockState(blockPos);
+		return !blockState.isOf(Blocks.FLOATATO) && blockState.isSideSolidFullSquare(serverWorld, blockPos, Direction.UP);
+	}
+
+	private static Optional<BlockPos> method_58840(ServerWorld serverWorld, BlockPos blockPos) {
+		return BlockPos.findClosest(
+			blockPos,
+			32,
+			32,
+			blockPosx -> serverWorld.getBlockState(blockPosx.down()).isOf(Blocks.PEDESTAL)
+					&& (serverWorld.isAir(blockPosx) || serverWorld.getBlockState(blockPosx).isReplaceable())
+		);
+	}
+
+	private static BlockPos method_58844(ServerWorld serverWorld, BlockPos blockPos) {
+		if (!serverWorld.getBlockState(blockPos.down()).isSideSolidFullSquare(serverWorld, blockPos, Direction.UP)) {
+			serverWorld.setBlockState(
+				blockPos.down(), serverWorld.isPotato() ? Blocks.PEELGRASS_BLOCK.getDefaultState() : Blocks.GRASS_BLOCK.getDefaultState(), Block.NOTIFY_ALL
 			);
 		}
+
+		serverWorld.setBlockState(blockPos, Blocks.CAVE_AIR.getDefaultState(), Block.NOTIFY_ALL);
+		serverWorld.setBlockState(blockPos.up(), Blocks.CAVE_AIR.getDefaultState(), Block.NOTIFY_ALL);
+		return blockPos;
+	}
+
+	@Nullable
+	private TeleportTarget method_58824(ServerWorld serverWorld, ServerWorld serverWorld2, BlockPos blockPos) {
+		Vec3d vec3d = this.pos.subtract(Vec3d.of(this.lastNetherPortalPosition));
+
+		for (Pair<RegistryKey<Structure>, RegistryKey<Structure>> pair : field_50395) {
+			RegistryKey<Structure> registryKey = serverWorld2.isPotato() ? pair.getSecond() : pair.getFirst();
+			if (serverWorld2.getStructureAccessor()
+				.getStructureContaining(this.lastNetherPortalPosition, registryEntry -> registryEntry.matchesKey(registryKey))
+				.hasChildren()) {
+				RegistryKey<Structure> registryKey2 = serverWorld2.isPotato() ? pair.getFirst() : pair.getSecond();
+				RegistryEntryList<Structure> registryEntryList = RegistryEntryList.of(
+					(RegistryEntry)this.getRegistryManager().get(RegistryKeys.STRUCTURE).getEntry(registryKey2).orElseThrow()
+				);
+				Pair<BlockPos, RegistryEntry<Structure>> pair2 = serverWorld.getChunkManager()
+					.getChunkGenerator()
+					.locateStructure(serverWorld, registryEntryList, blockPos, 128, false);
+				if (pair2 != null) {
+					ChunkPos chunkPos = new ChunkPos(pair2.getFirst());
+					Chunk chunk = serverWorld.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.FEATURES);
+					StructureStart structureStart = serverWorld.getStructureAccessor().getStructureStart(ChunkSectionPos.from(chunk), pair2.getSecond().value(), chunk);
+					if (structureStart != null && structureStart.hasChildren() && !structureStart.getChildren().isEmpty()) {
+						StructurePiece structurePiece = registryKey2 == StructureKeys.STRONGHOLD
+							? (StructurePiece)structureStart.getChildren()
+								.stream()
+								.filter(structurePiecex -> structurePiecex instanceof StrongholdGenerator.PortalRoom)
+								.findFirst()
+								.orElse((StructurePiece)structureStart.getChildren().get(0))
+							: (StructurePiece)structureStart.getChildren().get(0);
+						BlockPos blockPos2 = structurePiece.getBoundingBox().getCenter();
+						PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
+						pointOfInterestStorage.preloadChunks(serverWorld, blockPos2, 64, ChunkStatus.FULL);
+						System.out
+							.println(
+								"Counts on the other side: "
+									+ pointOfInterestStorage.getInSquare(registryEntry -> true, blockPos2, 64, PointOfInterestStorage.OccupationStatus.ANY).count()
+							);
+						BlockPos blockPos3 = (BlockPos)pointOfInterestStorage.getNearestPosition(
+								registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.POTATO_PORTAL), blockPos2.down(16), 64, PointOfInterestStorage.OccupationStatus.ANY
+							)
+							.or(() -> pointOfInterestStorage.getNearestPosition(registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.PEDESTAL), blockPosxx -> {
+									BlockPos blockPos2x = blockPosxx.up();
+									BlockState blockState = serverWorld.getBlockState(blockPos2x);
+									return blockState.getCollisionShape(serverWorld, blockPos2x).isEmpty() || blockState.isReplaceable();
+								}, blockPos2.down(16), 64, PointOfInterestStorage.OccupationStatus.ANY).map(BlockPos::up))
+							.or(() -> method_58840(serverWorld, blockPos2.down(8)))
+							.or(() -> method_58834(serverWorld, blockPos2.down(8)))
+							.orElseGet(() -> method_58844(serverWorld, blockPos2));
+						if (serverWorld.getBlockState(blockPos3.down()).isOf(Blocks.PEDESTAL) && !serverWorld.getBlockState(blockPos3).isOf(Blocks.POTATO_PORTAL)) {
+							serverWorld.setBlockState(blockPos3, Blocks.POTATO_PORTAL.getDefaultState(), Block.NOTIFY_ALL);
+						}
+
+						return new TeleportTarget(Vec3d.of(blockPos3).add(vec3d), this.getVelocity(), this.getYaw(), this.getPitch());
+					}
+				}
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -5336,6 +5642,14 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return this.world;
 	}
 
+	public boolean isPotato() {
+		return this.hasPotatoForm() && this.world.isPotato();
+	}
+
+	public boolean hasPotatoForm() {
+		return false;
+	}
+
 	protected void setWorld(World world) {
 		this.world = world;
 	}
@@ -5459,6 +5773,21 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		 */
 		public boolean shouldSave() {
 			return this.save;
+		}
+	}
+
+	public static record class_9494(Vec3d movement, @Nullable GridCarrierView subGrid) {
+
+		public Entity.class_9494 method_58855(Vec3d vec3d) {
+			return new Entity.class_9494(this.movement.add(vec3d), this.subGrid);
+		}
+
+		public Vec3d method_58854() {
+			return this.subGrid != null ? this.subGrid.getRenderOFfset() : Vec3d.ZERO;
+		}
+
+		public Vec3d method_58856(Vec3d vec3d) {
+			return this.movement.subtract(vec3d);
 		}
 	}
 }

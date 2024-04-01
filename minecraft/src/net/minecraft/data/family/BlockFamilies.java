@@ -134,6 +134,19 @@ public class BlockFamilies {
 		.group("wooden")
 		.unlockCriterionName("has_planks")
 		.build();
+	public static final BlockFamily field_51212 = register(Blocks.POTATO_PLANKS)
+		.button(Blocks.POTATO_BUTTON)
+		.fence(Blocks.POTATO_FENCE)
+		.fenceGate(Blocks.POTATO_FENCE_GATE)
+		.pressurePlate(Blocks.POTATO_PRESSURE_PLATE)
+		.sign(Blocks.POTATO_SIGN, Blocks.POTATO_WALL_SIGN)
+		.slab(Blocks.POTATO_SLAB)
+		.stairs(Blocks.POTATO_STAIRS)
+		.door(Blocks.POTATO_DOOR)
+		.trapdoor(Blocks.POTATO_TRAPDOOR)
+		.group("wooden")
+		.unlockCriterionName("has_planks")
+		.build();
 	public static final BlockFamily MANGROVE = register(Blocks.MANGROVE_PLANKS)
 		.button(Blocks.MANGROVE_BUTTON)
 		.slab(Blocks.MANGROVE_SLAB)
@@ -318,6 +331,26 @@ public class BlockFamilies {
 		.stairs(Blocks.COBBLESTONE_STAIRS)
 		.slab(Blocks.COBBLESTONE_SLAB)
 		.build();
+	public static final BlockFamily field_51207 = register(Blocks.TATERSTONE)
+		.slab(Blocks.TATERSTONE_SLAB)
+		.stairs(Blocks.TATERSTONE_STAIRS)
+		.wall(Blocks.TATERSTONE_WALL)
+		.build();
+	public static final BlockFamily field_51208 = register(Blocks.BAKED_POTATO_BRICKS)
+		.wall(Blocks.BAKED_POTATO_BRICK_WALL)
+		.stairs(Blocks.BAKED_POTATO_BRICK_STAIRS)
+		.slab(Blocks.BAKED_POTATO_BRICK_SLAB)
+		.build();
+	public static final BlockFamily field_51209 = register(Blocks.EXPIRED_BAKED_POTATO_BRICKS)
+		.wall(Blocks.EXPIRED_BAKED_POTATO_BRICK_WALL)
+		.stairs(Blocks.EXPIRED_BAKED_POTATO_BRICK_STAIRS)
+		.slab(Blocks.EXPIRED_BAKED_POTATO_BRICK_SLAB)
+		.build();
+	public static final BlockFamily field_51210 = register(Blocks.CHARRED_BAKED_POTATO_BRICKS)
+		.wall(Blocks.CHARRED_BAKED_POTATO_BRICK_WALL)
+		.stairs(Blocks.CHARRED_BAKED_POTATO_BRICK_STAIRS)
+		.slab(Blocks.CHARRED_BAKED_POTATO_BRICK_SLAB)
+		.build();
 	public static final BlockFamily MOSSY_COBBLESTONE = register(Blocks.MOSSY_COBBLESTONE)
 		.wall(Blocks.MOSSY_COBBLESTONE_WALL)
 		.stairs(Blocks.MOSSY_COBBLESTONE_STAIRS)
@@ -428,6 +461,7 @@ public class BlockFamilies {
 		.button(Blocks.STONE_BUTTON)
 		.stairs(Blocks.STONE_STAIRS)
 		.build();
+	public static final BlockFamily field_51211 = register(Blocks.POTONE).slab(Blocks.POTONE_SLAB).stairs(Blocks.POTONE_STAIRS).wall(Blocks.POTONE_WALL).build();
 	public static final BlockFamily STONE_BRICK = register(Blocks.STONE_BRICKS)
 		.wall(Blocks.STONE_BRICK_WALL)
 		.stairs(Blocks.STONE_BRICK_STAIRS)

@@ -4,10 +4,13 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CropBlock;
+import net.minecraft.block.LightBlock;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
@@ -16,8 +19,11 @@ import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
 
 public class NetherConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> DELTA = ConfiguredFeatures.of("delta");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> POISON = ConfiguredFeatures.of("poison");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> SMALL_BASALT_COLUMNS = ConfiguredFeatures.of("small_basalt_columns");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> SMALL_DEBRIS_COLUMNS = ConfiguredFeatures.of("small_debris_columns");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> SMALL_BASALT_COLUMNS_TEMP = ConfiguredFeatures.of("large_basalt_columns");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> LARGE_POTATO_COLUMNS = ConfiguredFeatures.of("large_potato_columns");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> BASALT_BLOBS = ConfiguredFeatures.of("basalt_blobs");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> BLACKSTONE_BLOBS = ConfiguredFeatures.of("blackstone_blobs");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> GLOWSTONE_EXTRA = ConfiguredFeatures.of("glowstone_extra");
@@ -28,6 +34,8 @@ public class NetherConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> NETHER_SPROUTS = ConfiguredFeatures.of("nether_sprouts");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> NETHER_SPROUTS_BONEMEAL = ConfiguredFeatures.of("nether_sprouts_bonemeal");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> TWISTING_VINES = ConfiguredFeatures.of("twisting_vines");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> CORRUPTED_BUDS = ConfiguredFeatures.of("corrputed_buds");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> POTATO_SPROUTS = ConfiguredFeatures.of("potato_sprouts");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> TWISTING_VINES_BONEMEAL = ConfiguredFeatures.of("twisting_vines_bonemeal");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> WEEPING_VINES = ConfiguredFeatures.of("weeping_vines");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> PATCH_CRIMSON_ROOTS = ConfiguredFeatures.of("patch_crimson_roots");
@@ -47,15 +55,40 @@ public class NetherConfiguredFeatures {
 		);
 		ConfiguredFeatures.register(
 			featureRegisterable,
+			POISON,
+			Feature.DELTA_FEATURE,
+			new DeltaFeatureConfig(
+				Blocks.LIGHT.getDefaultState().with(LightBlock.WATERLOGGED, Boolean.valueOf(true)),
+				Blocks.SLIME_BLOCK.getDefaultState(),
+				UniformIntProvider.create(3, 7),
+				UniformIntProvider.create(0, 2)
+			)
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
 			SMALL_BASALT_COLUMNS,
 			Feature.BASALT_COLUMNS,
-			new BasaltColumnsFeatureConfig(ConstantIntProvider.create(1), UniformIntProvider.create(1, 4))
+			new BasaltColumnsFeatureConfig(Blocks.BASALT.getDefaultState(), ConstantIntProvider.create(1), UniformIntProvider.create(1, 4))
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			SMALL_DEBRIS_COLUMNS,
+			Feature.BASALT_COLUMNS,
+			new BasaltColumnsFeatureConfig(Blocks.ANCIENT_DEBRIS.getDefaultState(), ConstantIntProvider.create(1), UniformIntProvider.create(1, 4))
 		);
 		ConfiguredFeatures.register(
 			featureRegisterable,
 			SMALL_BASALT_COLUMNS_TEMP,
 			Feature.BASALT_COLUMNS,
-			new BasaltColumnsFeatureConfig(UniformIntProvider.create(2, 3), UniformIntProvider.create(5, 10))
+			new BasaltColumnsFeatureConfig(Blocks.BASALT.getDefaultState(), UniformIntProvider.create(2, 3), UniformIntProvider.create(5, 10))
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			LARGE_POTATO_COLUMNS,
+			Feature.BASALT_COLUMNS,
+			new BasaltColumnsFeatureConfig(
+				((Block)Blocks.POTATO_PEELS_BLOCKS.get(DyeColor.BLACK)).getDefaultState(), UniformIntProvider.create(0, 1), UniformIntProvider.create(2, 15)
+			)
 		);
 		ConfiguredFeatures.register(
 			featureRegisterable,
@@ -114,6 +147,25 @@ public class NetherConfiguredFeatures {
 			new NetherForestVegetationFeatureConfig(BlockStateProvider.of(Blocks.NETHER_SPROUTS), 3, 1)
 		);
 		ConfiguredFeatures.register(featureRegisterable, TWISTING_VINES, Feature.TWISTING_VINES, new TwistingVinesFeatureConfig(8, 4, 8));
+		ConfiguredFeatures.register(featureRegisterable, CORRUPTED_BUDS, Feature.POTATO_BUDS, new TwistingVinesFeatureConfig(8, 4, 12));
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			POTATO_SPROUTS,
+			Feature.NETHER_FOREST_VEGETATION,
+			new NetherForestVegetationFeatureConfig(
+				new WeightedBlockStateProvider(
+					DataPool.<BlockState>builder()
+						.add(Blocks.POTATO_SPROUTS.getDefaultState(), 2)
+						.add(Blocks.POTATOES.getDefaultState(), 4)
+						.add(Blocks.POTATOES.getDefaultState().with(CropBlock.AGE, Integer.valueOf(4)), 5)
+						.add(Blocks.POTATOES.getDefaultState().with(CropBlock.AGE, Integer.valueOf(7)), 5)
+						.add(Blocks.SHORT_GRASS.getDefaultState(), 5)
+						.add(Blocks.TALL_GRASS.getDefaultState(), 3)
+				),
+				8,
+				4
+			)
+		);
 		ConfiguredFeatures.register(featureRegisterable, TWISTING_VINES_BONEMEAL, Feature.TWISTING_VINES, new TwistingVinesFeatureConfig(3, 1, 2));
 		ConfiguredFeatures.register(featureRegisterable, WEEPING_VINES, Feature.WEEPING_VINES);
 		ConfiguredFeatures.register(

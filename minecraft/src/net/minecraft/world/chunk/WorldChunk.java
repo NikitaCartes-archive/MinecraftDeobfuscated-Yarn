@@ -638,6 +638,11 @@ public class WorldChunk extends Chunk {
 		return new WorldChunk.DirectBlockEntityTickInvoker<>(blockEntity, blockEntityTicker);
 	}
 
+	@Override
+	public boolean isPotato() {
+		return this.world.isPotato();
+	}
+
 	public static enum CreationType {
 		IMMEDIATE,
 		QUEUED,

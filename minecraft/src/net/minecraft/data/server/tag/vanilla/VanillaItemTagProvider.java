@@ -96,6 +96,7 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 				Items.RED_BANNER,
 				Items.BLACK_BANNER
 			);
+		this.getOrCreateTagBuilder(ItemTags.HEATABLE_POTATOS).add(Items.POTATO, Items.BAKED_POTATO, Items.POISONOUS_POTATO);
 		this.getOrCreateTagBuilder(ItemTags.BOATS)
 			.add(
 				Items.OAK_BOAT,
@@ -148,7 +149,8 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 		this.getOrCreateTagBuilder(ItemTags.COALS).add(Items.COAL, Items.CHARCOAL);
 		this.getOrCreateTagBuilder(ItemTags.ARROWS).add(Items.ARROW, Items.TIPPED_ARROW, Items.SPECTRAL_ARROW);
 		this.getOrCreateTagBuilder(ItemTags.LECTERN_BOOKS).add(Items.WRITTEN_BOOK, Items.WRITABLE_BOOK);
-		this.getOrCreateTagBuilder(ItemTags.BEACON_PAYMENT_ITEMS).add(Items.NETHERITE_INGOT, Items.EMERALD, Items.DIAMOND, Items.GOLD_INGOT, Items.IRON_INGOT);
+		this.getOrCreateTagBuilder(ItemTags.BEACON_PAYMENT_ITEMS)
+			.add(Items.NETHERITE_INGOT, Items.EMERALD, Items.AMBER_GEM, Items.DIAMOND, Items.GOLD_INGOT, Items.IRON_INGOT);
 		this.getOrCreateTagBuilder(ItemTags.PIGLIN_REPELLENTS).add(Items.SOUL_TORCH).add(Items.SOUL_LANTERN).add(Items.SOUL_CAMPFIRE);
 		this.getOrCreateTagBuilder(ItemTags.PIGLIN_LOVED)
 			.addTag(ItemTags.GOLD_ORES)
@@ -159,6 +161,8 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 				Items.GOLD_INGOT,
 				Items.BELL,
 				Items.CLOCK,
+				Items.GOLDEN_POISONOUS_POTATO,
+				Items.ENCHANTED_GOLDEN_POISONOUS_POTATO,
 				Items.GOLDEN_CARROT,
 				Items.GLISTERING_MELON_SLICE,
 				Items.GOLDEN_APPLE,
@@ -181,6 +185,7 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 		this.getOrCreateTagBuilder(ItemTags.FOX_FOOD).add(Items.SWEET_BERRIES, Items.GLOW_BERRIES);
 		this.getOrCreateTagBuilder(ItemTags.NON_FLAMMABLE_WOOD)
 			.add(
+				Items.POTATO_STEM,
 				Items.WARPED_STEM,
 				Items.STRIPPED_WARPED_STEM,
 				Items.WARPED_HYPHAE,
@@ -191,6 +196,16 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 				Items.STRIPPED_CRIMSON_HYPHAE,
 				Items.CRIMSON_PLANKS,
 				Items.WARPED_PLANKS,
+				Items.POTATO_PLANKS,
+				Items.POTATO_SLAB,
+				Items.POTATO_PRESSURE_PLATE,
+				Items.POTATO_FENCE,
+				Items.POTATO_FENCE_GATE,
+				Items.POTATO_BUTTON,
+				Items.POTATO_DOOR,
+				Items.POTATO_TRAPDOOR,
+				Items.POTATO_SIGN,
+				Items.POTATO_HANGING_SIGN,
 				Items.CRIMSON_SLAB,
 				Items.WARPED_SLAB,
 				Items.CRIMSON_PRESSURE_PLATE,
@@ -212,8 +227,8 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 				Items.WARPED_HANGING_SIGN,
 				Items.CRIMSON_HANGING_SIGN
 			);
-		this.getOrCreateTagBuilder(ItemTags.STONE_TOOL_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE, Items.COBBLED_DEEPSLATE);
-		this.getOrCreateTagBuilder(ItemTags.STONE_CRAFTING_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE, Items.COBBLED_DEEPSLATE);
+		this.getOrCreateTagBuilder(ItemTags.STONE_TOOL_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE, Items.COBBLED_DEEPSLATE, Items.TATERSTONE);
+		this.getOrCreateTagBuilder(ItemTags.STONE_CRAFTING_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE, Items.COBBLED_DEEPSLATE, Items.TATERSTONE);
 		this.getOrCreateTagBuilder(ItemTags.FREEZE_IMMUNE_WEARABLES)
 			.add(Items.LEATHER_BOOTS, Items.LEATHER_LEGGINGS, Items.LEATHER_CHESTPLATE, Items.LEATHER_HELMET, Items.LEATHER_HORSE_ARMOR);
 		this.getOrCreateTagBuilder(ItemTags.AXOLOTL_FOOD).add(Items.TROPICAL_FISH_BUCKET);
@@ -289,12 +304,18 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 			);
 		this.getOrCreateTagBuilder(ItemTags.DECORATED_POT_INGREDIENTS).add(Items.BRICK).addTag(ItemTags.DECORATED_POT_SHERDS);
 		this.getOrCreateTagBuilder(ItemTags.FOOT_ARMOR)
-			.add(Items.LEATHER_BOOTS, Items.CHAINMAIL_BOOTS, Items.GOLDEN_BOOTS, Items.IRON_BOOTS, Items.DIAMOND_BOOTS, Items.NETHERITE_BOOTS);
+			.add(Items.LEATHER_BOOTS, Items.CHAINMAIL_BOOTS, Items.GOLDEN_BOOTS, Items.IRON_BOOTS, Items.DIAMOND_BOOTS, Items.NETHERITE_BOOTS, Items.POISONOUS_POTA_TOES);
 		this.getOrCreateTagBuilder(ItemTags.LEG_ARMOR)
 			.add(Items.LEATHER_LEGGINGS, Items.CHAINMAIL_LEGGINGS, Items.GOLDEN_LEGGINGS, Items.IRON_LEGGINGS, Items.DIAMOND_LEGGINGS, Items.NETHERITE_LEGGINGS);
 		this.getOrCreateTagBuilder(ItemTags.CHEST_ARMOR)
 			.add(
-				Items.LEATHER_CHESTPLATE, Items.CHAINMAIL_CHESTPLATE, Items.GOLDEN_CHESTPLATE, Items.IRON_CHESTPLATE, Items.DIAMOND_CHESTPLATE, Items.NETHERITE_CHESTPLATE
+				Items.LEATHER_CHESTPLATE,
+				Items.CHAINMAIL_CHESTPLATE,
+				Items.GOLDEN_CHESTPLATE,
+				Items.IRON_CHESTPLATE,
+				Items.DIAMOND_CHESTPLATE,
+				Items.NETHERITE_CHESTPLATE,
+				Items.POISONOUS_POTATO_CHESTPLATE
 			);
 		this.getOrCreateTagBuilder(ItemTags.HEAD_ARMOR)
 			.add(Items.LEATHER_HELMET, Items.CHAINMAIL_HELMET, Items.GOLDEN_HELMET, Items.IRON_HELMET, Items.DIAMOND_HELMET, Items.NETHERITE_HELMET, Items.TURTLE_HELMET);
@@ -306,7 +327,7 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 			.addTag(ItemTags.CHEST_ARMOR)
 			.addTag(ItemTags.HEAD_ARMOR);
 		this.getOrCreateTagBuilder(ItemTags.TRIM_MATERIALS)
-			.add(Items.IRON_INGOT)
+			.add(Items.IRON_INGOT, Items.AMBER_GEM)
 			.add(Items.COPPER_INGOT)
 			.add(Items.GOLD_INGOT)
 			.add(Items.LAPIS_LAZULI)
@@ -365,6 +386,7 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 			.addTag(ItemTags.CHEST_ARMOR)
 			.addTag(ItemTags.HEAD_ARMOR)
 			.add(Items.ELYTRA)
+			.add(Items.POISONOUS_POLYTRA)
 			.add(Items.SHIELD)
 			.addTag(ItemTags.SWORDS)
 			.addTag(ItemTags.AXES)
@@ -386,6 +408,7 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 			.addTag(ItemTags.CHEST_ARMOR)
 			.addTag(ItemTags.HEAD_ARMOR)
 			.add(Items.ELYTRA)
+			.add(Items.POISONOUS_POLYTRA)
 			.addTag(ItemTags.SKULLS)
 			.add(Items.CARVED_PUMPKIN);
 		this.getOrCreateTagBuilder(ItemTags.CROSSBOW_ENCHANTABLE).add(Items.CROSSBOW);

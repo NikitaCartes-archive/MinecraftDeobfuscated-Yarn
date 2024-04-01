@@ -1,6 +1,7 @@
 package net.minecraft.text;
 
 import com.google.common.collect.Lists;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
@@ -67,11 +68,25 @@ public class MutableText implements Text {
 
 	/**
 	 * Appends a text to this text's siblings.
-	 * 
-	 * @param text the sibling
 	 */
-	public MutableText append(Text text) {
-		this.siblings.add(text);
+	public MutableText append(Text... texts) {
+		this.siblings.addAll(Arrays.asList(texts));
+		return this;
+	}
+
+	public MutableText append(Object... objects) {
+		for (Object object : objects) {
+			if (object instanceof Text text) {
+				this.append(text);
+			} else {
+				if (!(object instanceof String string)) {
+					throw new IllegalArgumentException("Don't know how to turn " + object + " into a Component");
+				}
+
+				this.append(Text.literal(string));
+			}
+		}
+
 		return this;
 	}
 

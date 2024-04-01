@@ -50,6 +50,16 @@ public record WoodType(
 			SoundEvents.BLOCK_NETHER_WOOD_FENCE_GATE_OPEN
 		)
 	);
+	public static final WoodType POTATO = register(
+		new WoodType(
+			"potato",
+			BlockSetType.POTATO,
+			BlockSoundGroup.NETHER_WOOD,
+			BlockSoundGroup.NETHER_WOOD_HANGING_SIGN,
+			SoundEvents.BLOCK_NETHER_WOOD_FENCE_GATE_CLOSE,
+			SoundEvents.BLOCK_NETHER_WOOD_FENCE_GATE_OPEN
+		)
+	);
 	public static final WoodType MANGROVE = register(new WoodType("mangrove", BlockSetType.MANGROVE));
 	public static final WoodType BAMBOO = register(
 		new WoodType(

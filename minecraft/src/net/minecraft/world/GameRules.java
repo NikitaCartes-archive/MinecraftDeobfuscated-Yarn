@@ -145,6 +145,9 @@ public class GameRules {
 	public static final GameRules.Key<GameRules.IntRule> COMMAND_MODIFICATION_BLOCK_LIMIT = register(
 		"commandModificationBlockLimit", GameRules.Category.MISC, GameRules.IntRule.create(32768)
 	);
+	public static final GameRules.Key<GameRules.IntRule> FLOATATER_SIZE_LIMIT = register(
+		"floataterSizeLimit", GameRules.Category.MISC, GameRules.IntRule.create(32)
+	);
 	/**
 	 * A {@linkplain Rule game rule} which regulates whether a player's advancements should be announced in chat.
 	 */
@@ -238,6 +241,9 @@ public class GameRules {
 			ServerWorld serverWorld = server.getOverworld();
 			serverWorld.setSpawnPos(serverWorld.getSpawnPos(), serverWorld.getSpawnAngle());
 		})
+	);
+	public static final GameRules.Key<GameRules.BooleanRule> NEVER_EAT_ARMOR = register(
+		"neverEatArmor", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false)
 	);
 	private final Map<GameRules.Key<?>, GameRules.Rule<?>> rules;
 

@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.DisableableFollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
@@ -38,8 +39,13 @@ import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.event.GameEvent;
 
 public class WitchEntity extends RaiderEntity implements RangedAttackMob {
@@ -246,6 +252,18 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 
 			this.getWorld().spawnEntity(potionEntity);
 		}
+	}
+
+	public static boolean method_58924(
+		EntityType<WitchEntity> entityType, ServerWorldAccess serverWorldAccess, SpawnReason spawnReason, BlockPos blockPos, Random random
+	) {
+		return serverWorldAccess.getDifficulty() != Difficulty.PEACEFUL
+			&& (
+				SpawnReason.isTrialSpawner(spawnReason)
+					|| isSpawnDark(serverWorldAccess, blockPos, random)
+					|| serverWorldAccess.getBiome(blockPos).matchesKey(BiomeKeys.CORRUPTION)
+			)
+			&& canMobSpawn(entityType, serverWorldAccess, spawnReason, blockPos, random);
 	}
 
 	@Override

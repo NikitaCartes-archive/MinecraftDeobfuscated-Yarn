@@ -285,6 +285,7 @@ import net.minecraft.datafixer.schema.Schema3816;
 import net.minecraft.datafixer.schema.Schema3818;
 import net.minecraft.datafixer.schema.Schema3818_3;
 import net.minecraft.datafixer.schema.Schema3818_4;
+import net.minecraft.datafixer.schema.Schema3819;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -1263,9 +1264,12 @@ public class Schemas {
 		builder.addFixer(new ItemStackComponentizationFix(schema215));
 		Schema schema216 = builder.addSchema(3818, 5, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new AreaEffectCloudPotionFix(schema216));
-		Schema schema217 = builder.addSchema(3820, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new PlayerHeadBlockProfileFix(schema217));
-		builder.addFixer(new LodestoneCompassComponentFix(schema217));
+		Schema schema217 = builder.addSchema(3819, Schema3819::new);
+		builder.addFixer(new ChoiceTypesFix(schema217, "Added April Fools Block Entity", TypeReferences.BLOCK_ENTITY));
+		builder.addFixer(new ChoiceTypesFix(schema217, "Added April Fools Entity", TypeReferences.ENTITY));
+		Schema schema218 = builder.addSchema(3820, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new PlayerHeadBlockProfileFix(schema218));
+		builder.addFixer(new LodestoneCompassComponentFix(schema218));
 	}
 
 	private static UnaryOperator<String> replacingRaw(Map<String, String> replacements) {

@@ -127,6 +127,11 @@ public class ChunkRegion implements StructureWorldAccess {
 		return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY);
 	}
 
+	@Override
+	public boolean isPotato() {
+		return this.world.isPotato();
+	}
+
 	@Nullable
 	@Override
 	public Chunk getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {

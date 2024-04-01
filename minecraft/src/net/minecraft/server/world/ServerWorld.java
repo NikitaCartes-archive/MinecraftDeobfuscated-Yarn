@@ -10,6 +10,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -28,6 +30,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -44,6 +47,7 @@ import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.GridCarrierEntity;
 import net.minecraft.entity.InteractionObserver;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
@@ -74,6 +78,7 @@ import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.SoundSequenceS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
@@ -91,6 +96,7 @@ import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundSequencer;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.CsvWriter;
@@ -124,6 +130,7 @@ import net.minecraft.village.raid.RaidManager;
 import net.minecraft.world.EntityList;
 import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.GridCarrierView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IdCountsState;
 import net.minecraft.world.LocalDifficulty;
@@ -206,6 +213,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private final StructureLocator structureLocator;
 	private final boolean shouldTickTime;
 	private final RandomSequencesState randomSequences;
+	final Object2ObjectMap<UUID, GridCarrierView> field_50282 = new Object2ObjectOpenHashMap<>();
 
 	public ServerWorld(
 		MinecraftServer server,
@@ -358,12 +366,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		if (this.sleepManager.canSkipNight(i) && this.sleepManager.canResetTime(i, this.players)) {
 			if (this.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
 				long l = this.properties.getTimeOfDay() + 24000L;
-				this.setTimeOfDay(l - l % 24000L);
+				this.getServer().getOverworld().setTimeOfDay(l - l % 24000L);
 			}
 
 			this.wakeSleepingPlayers();
 			if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE) && this.isRaining()) {
-				this.resetWeather();
+				this.getServer().getOverworld().resetWeather();
 			}
 		}
 
@@ -409,31 +417,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				profiler.pop();
 			}
 
-			this.entityList.forEach(entity -> {
-				if (!entity.isRemoved()) {
-					if (this.shouldCancelSpawn(entity)) {
-						entity.discard();
-					} else if (!tickManager.shouldSkipTick(entity)) {
-						profiler.push("checkDespawn");
-						entity.checkDespawn();
-						profiler.pop();
-						if (this.chunkManager.threadedAnvilChunkStorage.getTicketManager().shouldTickEntities(entity.getChunkPos().toLong())) {
-							Entity entity2 = entity.getVehicle();
-							if (entity2 != null) {
-								if (!entity2.isRemoved() && entity2.hasPassenger(entity)) {
-									return;
-								}
+			for (GridCarrierView gridCarrierView : List.copyOf(this.field_50282.values())) {
+				this.tickEntity(gridCarrierView.getGridCarrier(), tickManager, profiler);
+			}
 
-								entity.stopRiding();
-							}
-
-							profiler.push("tick");
-							this.tickEntity(this::tickEntity, entity);
-							profiler.pop();
-						}
-					}
-				}
-			});
+			this.entityList.forEach(entity -> this.tickEntity(entity, tickManager, profiler));
 			profiler.pop();
 			this.tickBlockEntities();
 		}
@@ -441,6 +429,32 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		profiler.push("entityManagement");
 		this.entityManager.tick();
 		profiler.pop();
+	}
+
+	private void tickEntity(Entity entity, TickManager tickManager, Profiler profiler) {
+		if (!entity.isRemoved()) {
+			if (this.shouldCancelSpawn(entity)) {
+				entity.discard();
+			} else if (!tickManager.shouldSkipTick(entity)) {
+				profiler.push("checkDespawn");
+				entity.checkDespawn();
+				profiler.pop();
+				if (this.chunkManager.threadedAnvilChunkStorage.getTicketManager().shouldTickEntities(entity.getChunkPos().toLong())) {
+					Entity entity2 = entity.getVehicle();
+					if (entity2 != null) {
+						if (!entity2.isRemoved() && entity2.hasPassenger(entity)) {
+							return;
+						}
+
+						entity.stopRiding();
+					}
+
+					profiler.push("tick");
+					this.tickEntity(this::tickEntity, entity);
+					profiler.pop();
+				}
+			}
+		}
 	}
 
 	@Override
@@ -1091,6 +1105,37 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				(double)sound.value().getDistanceToTravel(volume),
 				this.getRegistryKey(),
 				new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch, seed)
+			);
+	}
+
+	@Override
+	public void playSoundWithDelay(int delay, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		this.playSoundSequence(x, y, z, sequencer -> sequencer.waitThenPlay(delay, sound, category, volume, pitch));
+	}
+
+	@Override
+	public void playSoundSequence(double x, double y, double z, Consumer<SoundSequencer> sequencerConsumer) {
+		class SoundSequenceBuilder implements SoundSequencer {
+			private int totalDelay = 0;
+			final List<SoundSequenceS2CPacket.Sound> sequence = new ArrayList();
+			float maxDistanceToTravel = 0.0F;
+
+			@Override
+			public void waitThenPlay(int i, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
+				this.totalDelay += i;
+				long l = 0L;
+				this.sequence
+					.add(new SoundSequenceS2CPacket.Sound(this.totalDelay, new PlaySoundS2CPacket(RegistryEntry.of(soundEvent), soundCategory, x, y, z, f, g, 0L)));
+				this.maxDistanceToTravel = Math.max(this.maxDistanceToTravel, soundEvent.getDistanceToTravel(f));
+			}
+		}
+
+		SoundSequenceBuilder soundSequenceBuilder = new SoundSequenceBuilder();
+		sequencerConsumer.accept(soundSequenceBuilder);
+		this.server
+			.getPlayerManager()
+			.sendToAround(
+				null, x, y, z, (double)soundSequenceBuilder.maxDistanceToTravel, this.getRegistryKey(), new SoundSequenceS2CPacket(soundSequenceBuilder.sequence)
 			);
 	}
 
@@ -1873,6 +1918,17 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		return this.entityManager.getLookup();
 	}
 
+	@Override
+	public Iterable<? extends GridCarrierView> getGridCarrierViews() {
+		return this.field_50282.values();
+	}
+
+	@Nullable
+	@Override
+	public GridCarrierView getGridVarrierView(UUID uuid) {
+		return this.field_50282.get(uuid);
+	}
+
 	public void loadEntities(Stream<Entity> entities) {
 		this.entityManager.loadEntities(entities);
 	}
@@ -1959,7 +2015,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 
 		public void startTicking(Entity entity) {
-			ServerWorld.this.entityList.add(entity);
+			if (!(entity instanceof GridCarrierEntity)) {
+				ServerWorld.this.entityList.add(entity);
+			}
 		}
 
 		public void stopTicking(Entity entity) {
@@ -1988,6 +2046,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				}
 			}
 
+			if (entity instanceof GridCarrierEntity gridCarrierEntity) {
+				ServerWorld.this.field_50282.put(gridCarrierEntity.getUuid(), gridCarrierEntity.method_58953());
+			}
+
 			entity.updateEventHandler(EntityGameEventHandler::onEntitySetPosCallback);
 		}
 
@@ -2011,6 +2073,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				for (EnderDragonPart enderDragonPart : enderDragonEntity.getBodyParts()) {
 					ServerWorld.this.dragonParts.remove(enderDragonPart.getId());
 				}
+			}
+
+			if (entity instanceof GridCarrierEntity gridCarrierEntity) {
+				ServerWorld.this.field_50282.remove(gridCarrierEntity.getUuid(), gridCarrierEntity.method_58953());
 			}
 
 			entity.updateEventHandler(EntityGameEventHandler::onEntityRemoval);

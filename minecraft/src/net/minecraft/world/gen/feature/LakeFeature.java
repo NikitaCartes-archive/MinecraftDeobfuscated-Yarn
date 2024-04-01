@@ -104,6 +104,10 @@ public class LakeFeature extends Feature<LakeFeature.Config> {
 			}
 
 			BlockState blockState3 = config.barrier().get(random, blockPos);
+			if (blockState3.isOf(Blocks.STONE) && structureWorldAccess.isPotato()) {
+				blockState3 = Blocks.TATERSTONE.getDefaultState();
+			}
+
 			if (!blockState3.isAir()) {
 				for (int t = 0; t < 16; t++) {
 					for (int uxx = 0; uxx < 16; uxx++) {

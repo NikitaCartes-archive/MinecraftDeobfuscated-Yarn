@@ -12,8 +12,9 @@ public interface ChunkLightingView extends LightingView {
 
 	int getLightLevel(BlockPos pos);
 
-	public static enum Empty implements ChunkLightingView {
-		INSTANCE;
+	public static record Empty(int lightLevel) implements ChunkLightingView {
+		public static final ChunkLightingView.Empty MIN = new ChunkLightingView.Empty(0);
+		public static final ChunkLightingView.Empty MAX = new ChunkLightingView.Empty(15);
 
 		@Nullable
 		@Override
@@ -23,7 +24,7 @@ public interface ChunkLightingView extends LightingView {
 
 		@Override
 		public int getLightLevel(BlockPos pos) {
-			return 0;
+			return this.lightLevel;
 		}
 
 		@Override

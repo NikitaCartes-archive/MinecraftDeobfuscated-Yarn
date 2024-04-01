@@ -7,6 +7,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CaveVines;
 import net.minecraft.block.CaveVinesHeadBlock;
 import net.minecraft.block.MultifaceGrowthBlock;
+import net.minecraft.block.PointedDripstoneBlock;
 import net.minecraft.block.SmallDripleafBlock;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryEntryLookup;
@@ -41,6 +42,7 @@ public class UndergroundConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> FOSSIL_DIAMONDS = ConfiguredFeatures.of("fossil_diamonds");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> DRIPSTONE_CLUSTER = ConfiguredFeatures.of("dripstone_cluster");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> LARGE_DRIPSTONE = ConfiguredFeatures.of("large_dripstone");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> LARGE_POTATOSTONE = ConfiguredFeatures.of("large_potatostone");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> POINTED_DRIPSTONE = ConfiguredFeatures.of("pointed_dripstone");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> UNDERWATER_MAGMA = ConfiguredFeatures.of("underwater_magma");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> GLOW_LICHEN = ConfiguredFeatures.of("glow_lichen");
@@ -50,6 +52,8 @@ public class UndergroundConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> MOSS_VEGETATION = ConfiguredFeatures.of("moss_vegetation");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> MOSS_PATCH = ConfiguredFeatures.of("moss_patch");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> MOSS_PATCH_BONEMEAL = ConfiguredFeatures.of("moss_patch_bonemeal");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> POTATO_LEAF = ConfiguredFeatures.of("potato_leaf");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> TWISTED_POTATO = ConfiguredFeatures.of("twisted_potato");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> DRIPLEAF = ConfiguredFeatures.of("dripleaf");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> CLAY_WITH_DRIPLEAVES = ConfiguredFeatures.of("clay_with_dripleaves");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> CLAY_POOL_WITH_DRIPLEAVES = ConfiguredFeatures.of("clay_pool_with_dripleaves");
@@ -57,6 +61,7 @@ public class UndergroundConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> MOSS_PATCH_CEILING = ConfiguredFeatures.of("moss_patch_ceiling");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> SPORE_BLOSSOM = ConfiguredFeatures.of("spore_blossom");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> AMETHYST_GEODE = ConfiguredFeatures.of("amethyst_geode");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> POTATO_GEODE = ConfiguredFeatures.of("potato_geode");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> SCULK_PATCH_DEEP_DARK = ConfiguredFeatures.of("sculk_patch_deep_dark");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> SCULK_PATCH_ANCIENT_CITY = ConfiguredFeatures.of("sculk_patch_ancient_city");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> SCULK_VEIN = ConfiguredFeatures.of("sculk_vein");
@@ -164,7 +169,25 @@ public class UndergroundConfiguredFeatures {
 				UniformFloatProvider.create(0.4F, 1.0F),
 				UniformFloatProvider.create(0.0F, 0.3F),
 				4,
-				0.6F
+				0.6F,
+				(PointedDripstoneBlock)Blocks.POINTED_DRIPSTONE
+			)
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			LARGE_POTATOSTONE,
+			Feature.LARGE_DRIPSTONE,
+			new LargeDripstoneFeatureConfig(
+				50,
+				UniformIntProvider.create(6, 12),
+				UniformFloatProvider.create(0.4F, 2.0F),
+				1.0F,
+				UniformFloatProvider.create(0.3F, 0.9F),
+				UniformFloatProvider.create(0.6F, 0.8F),
+				UniformFloatProvider.create(0.2F, 0.3F),
+				4,
+				0.6F,
+				(PointedDripstoneBlock)Blocks.POTATO_BUD
 			)
 		);
 		ConfiguredFeatures.register(
@@ -204,6 +227,7 @@ public class UndergroundConfiguredFeatures {
 				RegistryEntryList.of(
 					Block::getRegistryEntry,
 					Blocks.STONE,
+					Blocks.POTONE,
 					Blocks.ANDESITE,
 					Blocks.DIORITE,
 					Blocks.GRANITE,
@@ -454,6 +478,35 @@ public class UndergroundConfiguredFeatures {
 			)
 		);
 		ConfiguredFeatures.register(
+			featureRegisterable,
+			POTATO_GEODE,
+			Feature.GEODE,
+			new GeodeFeatureConfig(
+				new GeodeLayerConfig(
+					BlockStateProvider.of(Blocks.AIR),
+					BlockStateProvider.of(Blocks.TERRE_DE_POMME),
+					BlockStateProvider.of(Blocks.POISONOUS_POTATO_BLOCK),
+					BlockStateProvider.of(Blocks.GRANITE),
+					BlockStateProvider.of(Blocks.COBBLESTONE),
+					List.of(),
+					BlockTags.FEATURES_CANNOT_REPLACE,
+					BlockTags.GEODE_INVALID_BLOCKS
+				),
+				new GeodeLayerThicknessConfig(1.7, 2.2, 3.2, 4.2),
+				new GeodeCrackConfig(0.95, 2.0, 2),
+				0.35,
+				0.083,
+				true,
+				UniformIntProvider.create(4, 6),
+				UniformIntProvider.create(3, 4),
+				UniformIntProvider.create(1, 2),
+				-16,
+				16,
+				0.05,
+				1
+			)
+		);
+		ConfiguredFeatures.register(
 			featureRegisterable, SCULK_PATCH_DEEP_DARK, Feature.SCULK_PATCH, new SculkPatchFeatureConfig(10, 32, 64, 0, 1, ConstantIntProvider.create(0), 0.5F)
 		);
 		ConfiguredFeatures.register(
@@ -474,6 +527,7 @@ public class UndergroundConfiguredFeatures {
 				RegistryEntryList.of(
 					Block::getRegistryEntry,
 					Blocks.STONE,
+					Blocks.POTONE,
 					Blocks.ANDESITE,
 					Blocks.DIORITE,
 					Blocks.GRANITE,
@@ -484,5 +538,7 @@ public class UndergroundConfiguredFeatures {
 				)
 			)
 		);
+		ConfiguredFeatures.register(featureRegisterable, POTATO_LEAF, Feature.SIMPLE_BLOCK, new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.POTATO_LEAVES)));
+		ConfiguredFeatures.register(featureRegisterable, TWISTED_POTATO, Feature.TWISTED_POTATO);
 	}
 }

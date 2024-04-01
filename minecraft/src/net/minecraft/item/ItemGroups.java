@@ -17,6 +17,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FireworksComponent;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.component.type.PotionContentsComponent;
+import net.minecraft.component.type.XpComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
@@ -53,6 +54,7 @@ public class ItemGroups {
 	private static final RegistryKey<ItemGroup> INGREDIENTS = register("ingredients");
 	private static final RegistryKey<ItemGroup> SPAWN_EGGS = register("spawn_eggs");
 	private static final RegistryKey<ItemGroup> OPERATOR = register("op_blocks");
+	private static final RegistryKey<ItemGroup> POTATOES = register("potatoes");
 	private static final RegistryKey<ItemGroup> INVENTORY = register("inventory");
 	private static final Comparator<RegistryEntry<PaintingVariant>> PAINTING_VARIANT_COMPARATOR = Comparator.comparing(
 		RegistryEntry::value,
@@ -754,6 +756,8 @@ public class ItemGroups {
 					entries.add(Items.DEEPSLATE_LAPIS_ORE);
 					entries.add(Items.DIAMOND_ORE);
 					entries.add(Items.DEEPSLATE_DIAMOND_ORE);
+					entries.add(Items.POISONOUS_POTATO_ORE);
+					entries.add(Items.DEEPSLATE_POISONOUS_POTATO_ORE);
 					entries.add(Items.NETHER_GOLD_ORE);
 					entries.add(Items.NETHER_QUARTZ_ORE);
 					entries.add(Items.ANCIENT_DEBRIS);
@@ -824,6 +828,7 @@ public class ItemGroups {
 					entries.add(Items.OXEYE_DAISY);
 					entries.add(Items.CORNFLOWER);
 					entries.add(Items.LILY_OF_THE_VALLEY);
+					entries.add(Items.POTATO_FLOWER);
 					entries.add(Items.TORCHFLOWER);
 					entries.add(Items.WITHER_ROSE);
 					entries.add(Items.PINK_PETALS);
@@ -1228,6 +1233,142 @@ public class ItemGroups {
 		);
 		Registry.register(
 			registry,
+			POTATOES,
+			ItemGroup.create(ItemGroup.Row.TOP, 7)
+				.displayName(Text.translatable("itemGroup.potatoes"))
+				.icon(() -> new ItemStack(Items.POISONOUS_POTATO))
+				.entries(
+					(displayContext, entries) -> {
+						entries.add(Items.POISONOUS_POTATO);
+						entries.add(Items.POISONOUS_POTATO_PLANT);
+						entries.add(Items.POISONOUS_POTATO_FRIES);
+						entries.add(Items.POISONOUS_POTATO_SLICES);
+						entries.add(Items.POISONOUS_POTATO_STICKS);
+						entries.add(Items.POISONOUS_POTATO_CHIPS);
+						entries.add(Items.HASH_BROWNS);
+						entries.add(Items.PEDESTAL);
+						entries.add(Items.POTATO_PORTAL);
+						entries.add(Items.POTATO_EYE);
+						entries.add(Items.POTATO_STAFF);
+						entries.add(Items.BIG_BRAIN);
+						entries.add(method_59031(Items.POTATO_OF_KNOWLEDGE, 10));
+						entries.add(method_59031(Items.POTATO_OF_KNOWLEDGE, 50));
+						entries.add(method_59031(Items.POTATO_OF_KNOWLEDGE, 100));
+						entries.add(Items.SNEKTATO);
+						entries.add(Items.HOT_POTATO);
+						entries.add(Items.GOLDEN_POISONOUS_POTATO);
+						entries.add(Items.ENCHANTED_GOLDEN_POISONOUS_POTATO);
+						entries.add(Items.POTATO_HAMMER);
+						entries.add(Items.POISONOUS_POTA_TOES);
+						entries.add(Items.POISONOUS_POTATO_CHESTPLATE);
+						entries.add(Items.POISONOUS_POLYTRA);
+						entries.add(Items.POTATO_BATTERY);
+						entries.add(Items.POISONOUS_POTATO_CUTTER);
+						entries.add(Items.FRYING_TABLE);
+						entries.add(Items.POTATO_REFINERY);
+						entries.add(Items.POTATO_OIL);
+						entries.add(Items.POISONOUS_POTATO_OIL);
+						entries.add(Items.TOXIC_BEAM);
+						entries.add(Items.LASHING_POTATO);
+						entries.add(Items.POTATO_PEELER);
+						entries.add(Items.DENT);
+						entries.add(Items.FLOATATO);
+						entries.add(Items.FLOATATER);
+						entries.add(Items.POWERFUL_POTATO);
+						entries.add(Items.STRONG_ROOTS);
+						entries.add(Items.WEAK_ROOTS);
+						entries.add(Items.TOXIC_RESIN);
+						entries.add(Items.AMBER_GEM);
+						entries.add(Items.AMBER_BLOCK);
+						entries.add(Items.POTATO_FLOWER);
+						entries.add(Items.POTATO_BUD);
+						entries.add(Items.POTATO_STEM);
+						entries.add(Items.POTATO_PLANKS);
+						entries.add(Items.POTATO_SLAB);
+						entries.add(Items.POTATO_STAIRS);
+						entries.add(Items.POTATO_FENCE);
+						entries.add(Items.POTATO_FENCE_GATE);
+						entries.add(Items.POTATO_DOOR);
+						entries.add(Items.POTATO_TRAPDOOR);
+						entries.add(Items.POTATO_BUTTON);
+						entries.add(Items.POTATO_PRESSURE_PLATE);
+						entries.add(Items.POTATO_SIGN);
+						entries.add(Items.POTATO_HANGING_SIGN);
+						entries.add(Items.POTATO_LEAVES);
+						entries.add(Items.POTATO_FRUIT);
+						entries.add(Items.POTATO_PEDICULE);
+						entries.add(Items.POTATO_SPROUTS);
+						entries.add(Items.TERRE_DE_POMME);
+						entries.add(Items.PEELGRASS_BLOCK);
+						entries.add(Items.CORRUPTED_PEELGRASS_BLOCK);
+						entries.add(Items.POISON_FARMLAND);
+						entries.add(Items.POISON_PATH);
+						entries.add(Items.GRAVTATER);
+						entries.add(Items.VICIOUS_POTATO);
+						entries.add(Items.POISONOUS_POTATO_ORE);
+						entries.add(Items.DEEPSLATE_POISONOUS_POTATO_ORE);
+						entries.add(Items.RESIN_ORE);
+						entries.add(Items.POTONE_COPPER_ORE);
+						entries.add(Items.POTONE_IRON_ORE);
+						entries.add(Items.POTONE_GOLD_ORE);
+						entries.add(Items.POTONE_REDSTONE_ORE);
+						entries.add(Items.POTONE_LAPIS_ORE);
+						entries.add(Items.POTONE_DIAMOND_ORE);
+						entries.add(Items.POTONE);
+						entries.add(Items.POTONE_SLAB);
+						entries.add(Items.POTONE_STAIRS);
+						entries.add(Items.POTONE_WALL);
+						entries.add(Items.TATERSTONE);
+						entries.add(Items.TATERSTONE_SLAB);
+						entries.add(Items.TATERSTONE_STAIRS);
+						entries.add(Items.TATERSTONE_WALL);
+						entries.add(Items.BAKED_POTATO_BRICKS);
+						entries.add(Items.BAKED_POTATO_BRICK_SLAB);
+						entries.add(Items.BAKED_POTATO_BRICK_STAIRS);
+						entries.add(Items.BAKED_POTATO_BRICK_WALL);
+						entries.add(Items.EXPIRED_BAKED_POTATO_BRICKS);
+						entries.add(Items.EXPIRED_BAKED_POTATO_BRICK_SLAB);
+						entries.add(Items.EXPIRED_BAKED_POTATO_BRICK_STAIRS);
+						entries.add(Items.EXPIRED_BAKED_POTATO_BRICK_WALL);
+						entries.add(Items.CHARRED_BAKED_POTATO_BRICKS);
+						entries.add(Items.CHARRED_BAKED_POTATO_BRICK_SLAB);
+						entries.add(Items.CHARRED_BAKED_POTATO_BRICK_STAIRS);
+						entries.add(Items.CHARRED_BAKED_POTATO_BRICK_WALL);
+						entries.add(Items.POISONOUS_MASHED_POTATO);
+						entries.add(Items.POISONOUS_POTATO_BLOCK);
+						entries.add(Items.COMPRESSED_POISONOUS_POTATO_BLOCK);
+						entries.add(Items.DOUBLE_COMPRESSED_POISONOUS_POTATO_BLOCK);
+						entries.add(Items.TRIPLE_COMPRESSED_POISONOUS_POTATO_BLOCK);
+						entries.add(Items.QUADRUPLE_COMPRESSED_POISONOUS_POTATO_BLOCK);
+						entries.add(Items.POISONOUS_POTATO_ZOMBIE_HEAD_HAT);
+						entries.add(Items.POISONOUS_POTATO_ZOMBIE_HEAD_BLOCK);
+						entries.add(Items.BATATO_SPAWN_EGG);
+						entries.add(Items.POISONOUS_POTATO_ZOMBIE_SPAWN_EGG);
+						entries.add(Items.TOXIFIN_SPAWN_EGG);
+						entries.add(Items.PLAGUEWHALE_SPAWN_EGG);
+						entries.add(Items.MEGA_SPUD_SPAWN_EGG);
+						entries.add(Items.CORRUPTED_POTATO_PEELS);
+
+						for (Item item : Items.POTATO_PEELS.values()) {
+							entries.add(item);
+						}
+
+						for (Item item : Items.POTATO_PEELS_BLOCKS.values()) {
+							entries.add(item);
+						}
+
+						entries.add(Blocks.CORRUPTED_POTATO_PEELS_BLOCK);
+						displayContext.lookup()
+							.getOptionalWrapper(RegistryKeys.PAINTING_VARIANT)
+							.ifPresent(
+								impl -> addPaintings(entries, impl, registryEntry -> registryEntry.isIn(PaintingVariantTags.POTATO), ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS)
+							);
+					}
+				)
+				.build()
+		);
+		Registry.register(
+			registry,
 			TOOLS,
 			ItemGroup.create(ItemGroup.Row.BOTTOM, 0)
 				.displayName(Text.translatable("itemGroup.tools"))
@@ -1291,6 +1432,7 @@ public class ItemGroups {
 						entries.add(Items.ENDER_PEARL);
 						entries.add(Items.ENDER_EYE);
 						entries.add(Items.ELYTRA);
+						entries.add(Items.POISONOUS_POLYTRA);
 						addFireworkRockets(entries, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
 						entries.add(Items.SADDLE);
 						entries.add(Items.CARROT_ON_A_STICK);
@@ -1426,6 +1568,8 @@ public class ItemGroups {
 					entries.add(Items.APPLE);
 					entries.add(Items.GOLDEN_APPLE);
 					entries.add(Items.ENCHANTED_GOLDEN_APPLE);
+					entries.add(Items.GOLDEN_POISONOUS_POTATO);
+					entries.add(Items.ENCHANTED_GOLDEN_POISONOUS_POTATO);
 					entries.add(Items.MELON_SLICE);
 					entries.add(Items.SWEET_BERRIES);
 					entries.add(Items.GLOW_BERRIES);
@@ -1434,7 +1578,12 @@ public class ItemGroups {
 					entries.add(Items.GOLDEN_CARROT);
 					entries.add(Items.POTATO);
 					entries.add(Items.BAKED_POTATO);
+					entries.add(Items.HOT_POTATO);
 					entries.add(Items.POISONOUS_POTATO);
+					entries.add(Items.POISONOUS_POTATO_STICKS);
+					entries.add(Items.POISONOUS_POTATO_SLICES);
+					entries.add(Items.POISONOUS_POTATO_FRIES);
+					entries.add(Items.POISONOUS_POTATO_CHIPS);
 					entries.add(Items.BEETROOT);
 					entries.add(Items.DRIED_KELP);
 					entries.add(Items.BEEF);
@@ -1703,7 +1852,9 @@ public class ItemGroups {
 					entries.add(Items.PIGLIN_SPAWN_EGG);
 					entries.add(Items.PIGLIN_BRUTE_SPAWN_EGG);
 					entries.add(Items.PILLAGER_SPAWN_EGG);
+					entries.add(Items.PLAGUEWHALE_SPAWN_EGG);
 					entries.add(Items.POLAR_BEAR_SPAWN_EGG);
+					entries.add(Items.POISONOUS_POTATO_ZOMBIE_SPAWN_EGG);
 					entries.add(Items.PUFFERFISH_SPAWN_EGG);
 					entries.add(Items.RABBIT_SPAWN_EGG);
 					entries.add(Items.RAVAGER_SPAWN_EGG);
@@ -1721,6 +1872,7 @@ public class ItemGroups {
 					entries.add(Items.STRAY_SPAWN_EGG);
 					entries.add(Items.STRIDER_SPAWN_EGG);
 					entries.add(Items.TADPOLE_SPAWN_EGG);
+					entries.add(Items.TOXIFIN_SPAWN_EGG);
 					entries.add(Items.TRADER_LLAMA_SPAWN_EGG);
 					entries.add(Items.TROPICAL_FISH_SPAWN_EGG);
 					entries.add(Items.TURTLE_SPAWN_EGG);
@@ -1789,6 +1941,12 @@ public class ItemGroups {
 				.noScrollbar()
 				.build()
 		);
+	}
+
+	private static ItemStack method_59031(Item item, int i) {
+		ItemStack itemStack = new ItemStack(item);
+		itemStack.set(DataComponentTypes.XP, new XpComponent(i));
+		return itemStack;
 	}
 
 	public static void collect() {

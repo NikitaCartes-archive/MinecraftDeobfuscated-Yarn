@@ -33,7 +33,9 @@ public class DirtPathBlock extends Block {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		return !this.getDefaultState().canPlaceAt(ctx.getWorld(), ctx.getBlockPos())
-			? Block.pushEntitiesUpBeforeBlockChange(this.getDefaultState(), Blocks.DIRT.getDefaultState(), ctx.getWorld(), ctx.getBlockPos())
+			? Block.pushEntitiesUpBeforeBlockChange(
+				this.getDefaultState(), (ctx.getWorld().isPotato() ? Blocks.TERRE_DE_POMME : Blocks.DIRT).getDefaultState(), ctx.getWorld(), ctx.getBlockPos()
+			)
 			: super.getPlacementState(ctx);
 	}
 

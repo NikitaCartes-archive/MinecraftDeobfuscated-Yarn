@@ -12,6 +12,7 @@ import net.minecraft.block.AbstractFurnaceBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
@@ -294,7 +295,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 				if (blockEntity.cookTime == blockEntity.cookTimeTotal) {
 					blockEntity.cookTime = 0;
 					blockEntity.cookTimeTotal = getCookTime(world, blockEntity);
-					if (craftRecipe(world.getRegistryManager(), recipeEntry, blockEntity.inventory, i)) {
+					if (craftRecipe(world, recipeEntry, blockEntity.inventory, i)) {
 						blockEntity.setLastRecipe(recipeEntry);
 					}
 
@@ -329,6 +330,8 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 				ItemStack itemStack2 = slots.get(2);
 				if (itemStack2.isEmpty()) {
 					return true;
+				} else if (itemStack2.isOf(Items.TOXIC_RESIN)) {
+					return false;
 				} else if (!ItemStack.areItemsAndComponentsEqual(itemStack2, itemStack)) {
 					return false;
 				} else {
@@ -340,10 +343,18 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 	}
 
-	private static boolean craftRecipe(DynamicRegistryManager registryManager, @Nullable RecipeEntry<?> recipe, DefaultedList<ItemStack> slots, int count) {
-		if (recipe != null && canAcceptRecipeOutput(registryManager, recipe, slots, count)) {
+	private static boolean craftRecipe(World world, @Nullable RecipeEntry<?> recipe, DefaultedList<ItemStack> slots, int count) {
+		DynamicRegistryManager dynamicRegistryManager = world.getRegistryManager();
+		if (recipe != null && canAcceptRecipeOutput(dynamicRegistryManager, recipe, slots, count)) {
 			ItemStack itemStack = slots.get(0);
-			ItemStack itemStack2 = recipe.value().getResult(registryManager);
+			ItemStack itemStack2 = recipe.value().getResult(dynamicRegistryManager);
+			if (itemStack2.isOf(Items.TOXIC_RESIN)) {
+				itemStack2.set(
+					DataComponentTypes.RESIN,
+					new FletchingTableBlockEntity.ResinComponent('a', FletchingTableBlockEntity.ResinComponent.getRandomImpurities(world.getRandom()))
+				);
+			}
+
 			ItemStack itemStack3 = slots.get(2);
 			if (itemStack3.isEmpty()) {
 				slots.set(2, itemStack2.copy());

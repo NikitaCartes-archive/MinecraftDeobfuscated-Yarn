@@ -141,24 +141,25 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 		}
 
 		List<BlockState> list4 = geodeLayerConfig.innerBlocks;
+		if (!list4.isEmpty()) {
+			for (BlockPos blockPos2 : list3) {
+				BlockState blockState = Util.getRandom(list4, random);
 
-		for (BlockPos blockPos2 : list3) {
-			BlockState blockState = Util.getRandom(list4, random);
+				for (Direction direction2 : DIRECTIONS) {
+					if (blockState.contains(Properties.FACING)) {
+						blockState = blockState.with(Properties.FACING, direction2);
+					}
 
-			for (Direction direction2 : DIRECTIONS) {
-				if (blockState.contains(Properties.FACING)) {
-					blockState = blockState.with(Properties.FACING, direction2);
-				}
+					BlockPos blockPos6 = blockPos2.offset(direction2);
+					BlockState blockState2 = structureWorldAccess.getBlockState(blockPos6);
+					if (blockState.contains(Properties.WATERLOGGED)) {
+						blockState = blockState.with(Properties.WATERLOGGED, Boolean.valueOf(blockState2.getFluidState().isStill()));
+					}
 
-				BlockPos blockPos6 = blockPos2.offset(direction2);
-				BlockState blockState2 = structureWorldAccess.getBlockState(blockPos6);
-				if (blockState.contains(Properties.WATERLOGGED)) {
-					blockState = blockState.with(Properties.WATERLOGGED, Boolean.valueOf(blockState2.getFluidState().isStill()));
-				}
-
-				if (BuddingAmethystBlock.canGrowIn(blockState2)) {
-					this.setBlockStateIf(structureWorldAccess, blockPos6, blockState, predicate);
-					break;
+					if (BuddingAmethystBlock.canGrowIn(blockState2)) {
+						this.setBlockStateIf(structureWorldAccess, blockPos6, blockState, predicate);
+						break;
+					}
 				}
 			}
 		}

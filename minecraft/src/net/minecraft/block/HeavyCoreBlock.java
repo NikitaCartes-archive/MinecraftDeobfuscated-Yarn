@@ -7,8 +7,10 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.WorldAccess;
 
 public class HeavyCoreBlock extends Block implements Waterloggable {
 	public static final MapCodec<HeavyCoreBlock> CODEC = createCodec(HeavyCoreBlock::new);
@@ -27,6 +29,17 @@ public class HeavyCoreBlock extends Block implements Waterloggable {
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(Properties.WATERLOGGED);
+	}
+
+	@Override
+	protected BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
+		if ((Boolean)state.get(Properties.WATERLOGGED)) {
+			world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+		}
+
+		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
 	@Override

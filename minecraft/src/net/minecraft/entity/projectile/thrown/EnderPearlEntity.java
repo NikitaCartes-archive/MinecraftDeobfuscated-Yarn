@@ -91,12 +91,12 @@ public class EnderPearlEntity extends ThrownItemEntity {
 
 	@Nullable
 	@Override
-	public Entity moveToWorld(ServerWorld destination) {
+	public Entity moveToWorld(ServerWorld destination, boolean bl) {
 		Entity entity = this.getOwner();
 		if (entity != null && entity.getWorld().getRegistryKey() != destination.getRegistryKey()) {
 			this.setOwner(null);
 		}
 
-		return super.moveToWorld(destination);
+		return super.moveToWorld(destination, bl);
 	}
 }

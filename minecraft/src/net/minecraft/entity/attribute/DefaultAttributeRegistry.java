@@ -27,10 +27,12 @@ import net.minecraft.entity.mob.HoglinEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.IllusionerEntity;
 import net.minecraft.entity.mob.MagmaCubeEntity;
+import net.minecraft.entity.mob.MegaSpudEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PiglinBruteEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.mob.PillagerEntity;
+import net.minecraft.entity.mob.PoisonousPotatoZombieEntity;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.SilverfishEntity;
@@ -91,6 +93,7 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.ARMOR_STAND, ArmorStandEntity.createArmorStandAttributes().build())
 		.put(EntityType.AXOLOTL, AxolotlEntity.createAxolotlAttributes().build())
 		.put(EntityType.BAT, BatEntity.createBatAttributes().build())
+		.put(EntityType.BATATO, BatEntity.createBatAttributes().build())
 		.put(EntityType.BEE, BeeEntity.createBeeAttributes().build())
 		.put(EntityType.BLAZE, BlazeEntity.createBlazeAttributes().build())
 		.put(EntityType.BOGGED, BoggedEntity.createBoggedAttributes().build())
@@ -124,6 +127,7 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.IRON_GOLEM, IronGolemEntity.createIronGolemAttributes().build())
 		.put(EntityType.LLAMA, LlamaEntity.createLlamaAttributes().build())
 		.put(EntityType.MAGMA_CUBE, MagmaCubeEntity.createMagmaCubeAttributes().build())
+		.put(EntityType.MEGA_SPUD, MegaSpudEntity.createMegaSpudAttributes().build())
 		.put(EntityType.MOOSHROOM, CowEntity.createCowAttributes().build())
 		.put(EntityType.MULE, AbstractDonkeyEntity.createAbstractDonkeyAttributes().build())
 		.put(EntityType.OCELOT, OcelotEntity.createOcelotAttributes().build())
@@ -134,8 +138,10 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.PIGLIN, PiglinEntity.createPiglinAttributes().build())
 		.put(EntityType.PIGLIN_BRUTE, PiglinBruteEntity.createPiglinBruteAttributes().build())
 		.put(EntityType.PILLAGER, PillagerEntity.createPillagerAttributes().build())
+		.put(EntityType.PLAGUEWHALE, ElderGuardianEntity.createElderGuardianAttributes().build())
 		.put(EntityType.PLAYER, PlayerEntity.createPlayerAttributes().build())
 		.put(EntityType.POLAR_BEAR, PolarBearEntity.createPolarBearAttributes().build())
+		.put(EntityType.POISONOUS_POTATO_ZOMBIE, PoisonousPotatoZombieEntity.createPoisonousPotatoZombieAttributes().build())
 		.put(EntityType.PUFFERFISH, FishEntity.createFishAttributes().build())
 		.put(EntityType.RABBIT, RabbitEntity.createRabbitAttributes().build())
 		.put(EntityType.RAVAGER, RavagerEntity.createRavagerAttributes().build())
@@ -153,6 +159,7 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.STRAY, AbstractSkeletonEntity.createAbstractSkeletonAttributes().build())
 		.put(EntityType.STRIDER, StriderEntity.createStriderAttributes().build())
 		.put(EntityType.TADPOLE, TadpoleEntity.createTadpoleAttributes().build())
+		.put(EntityType.TOXIFIN, GuardianEntity.createGuardianAttributes().build())
 		.put(EntityType.TRADER_LLAMA, LlamaEntity.createLlamaAttributes().build())
 		.put(EntityType.TROPICAL_FISH, FishEntity.createFishAttributes().build())
 		.put(EntityType.TURTLE, TurtleEntity.createTurtleAttributes().build())

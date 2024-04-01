@@ -1,6 +1,9 @@
 package net.minecraft.inventory;
 
+import com.google.common.collect.Lists;
+import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -200,6 +203,25 @@ public interface Inventory extends Clearable {
 	 */
 	default boolean containsAny(Set<Item> items) {
 		return this.containsAny((Predicate<ItemStack>)(stack -> !stack.isEmpty() && items.contains(stack.getItem())));
+	}
+
+	default List<ItemStack> getMatchingStacks(Predicate<ItemStack> stackPredicate) {
+		List<ItemStack> list = Lists.<ItemStack>newArrayList();
+		this.forEachStack(stack -> {
+			if (stackPredicate.test(stack)) {
+				list.add(stack);
+			}
+		});
+		return list;
+	}
+
+	default void forEachStack(Consumer<ItemStack> stackConsumer) {
+		for (int i = 0; i < this.size(); i++) {
+			ItemStack itemStack = this.getStack(i);
+			if (!itemStack.isEmpty()) {
+				stackConsumer.accept(itemStack);
+			}
+		}
 	}
 
 	/**

@@ -181,6 +181,16 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 		return blockLeakParticle;
 	}
 
+	public static SpriteBillboardParticle createFallingPoison(
+		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+	) {
+		BlockLeakParticle blockLeakParticle = new BlockLeakParticle.Falling(world, x, y, z, Fluids.EMPTY);
+		blockLeakParticle.maxAge = (int)(16.0 / (Math.random() * 0.8 + 0.2));
+		blockLeakParticle.gravityStrength = 0.007F;
+		blockLeakParticle.setColor(0.69F, 0.78F, 0.22F);
+		return blockLeakParticle;
+	}
+
 	public static SpriteBillboardParticle createFallingSporeBlossom(
 		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {

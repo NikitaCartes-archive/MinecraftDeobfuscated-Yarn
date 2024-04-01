@@ -7,18 +7,24 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.Function;
+import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class ServerBossBar extends BossBar {
 	private final Set<ServerPlayerEntity> players = Sets.<ServerPlayerEntity>newHashSet();
 	private final Set<ServerPlayerEntity> unmodifiablePlayers = Collections.unmodifiableSet(this.players);
 	private boolean visible = true;
 
+	public ServerBossBar(Entity entity, BossBar.Color color, BossBar.Style style) {
+		super(entity.getUuid(), entity.getDisplayName(), color, style, entity.getPos(), -1);
+	}
+
 	public ServerBossBar(Text displayName, BossBar.Color color, BossBar.Style style) {
-		super(MathHelper.randomUuid(), displayName, color, style);
+		super(MathHelper.randomUuid(), displayName, color, style, Vec3d.ZERO, 0);
 	}
 
 	@Override
@@ -73,6 +79,14 @@ public class ServerBossBar extends BossBar {
 		}
 
 		return this;
+	}
+
+	@Override
+	public void method_58785(Vec3d vec3d, int i) {
+		if (vec3d.squaredDistanceTo(this.field_50378) > 1.0 || i != this.field_50379) {
+			super.method_58785(vec3d, i);
+			this.sendPacket(BossBarS2CPacket::method_58779);
+		}
 	}
 
 	@Override

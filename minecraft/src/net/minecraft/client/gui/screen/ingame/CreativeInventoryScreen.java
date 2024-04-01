@@ -61,7 +61,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		new Identifier("container/creative_inventory/tab_top_unselected_4"),
 		new Identifier("container/creative_inventory/tab_top_unselected_5"),
 		new Identifier("container/creative_inventory/tab_top_unselected_6"),
-		new Identifier("container/creative_inventory/tab_top_unselected_7")
+		new Identifier("container/creative_inventory/tab_top_unselected_7"),
+		new Identifier("container/creative_inventory/tab_top_unselected_8")
 	};
 	private static final Identifier[] TAB_TOP_SELECTED_TEXTURES = new Identifier[]{
 		new Identifier("container/creative_inventory/tab_top_selected_1"),
@@ -70,7 +71,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		new Identifier("container/creative_inventory/tab_top_selected_4"),
 		new Identifier("container/creative_inventory/tab_top_selected_5"),
 		new Identifier("container/creative_inventory/tab_top_selected_6"),
-		new Identifier("container/creative_inventory/tab_top_selected_7")
+		new Identifier("container/creative_inventory/tab_top_selected_7"),
+		new Identifier("container/creative_inventory/tab_top_selected_8")
 	};
 	private static final Identifier[] TAB_BOTTOM_UNSELECTED_TEXTURES = new Identifier[]{
 		new Identifier("container/creative_inventory/tab_bottom_unselected_1"),

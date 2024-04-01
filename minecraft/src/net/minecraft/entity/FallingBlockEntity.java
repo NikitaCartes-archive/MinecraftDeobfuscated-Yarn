@@ -46,7 +46,7 @@ import org.slf4j.Logger;
 
 public class FallingBlockEntity extends Entity {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private BlockState block = Blocks.SAND.getDefaultState();
+	private BlockState block = Blocks.GRAVTATER.getDefaultState();
 	public int timeFalling;
 	public boolean dropItem = true;
 	private boolean destroyedOnLanding;
@@ -295,7 +295,7 @@ public class FallingBlockEntity extends Entity {
 
 		this.destroyedOnLanding = nbt.getBoolean("CancelDrop");
 		if (this.block.isAir()) {
-			this.block = Blocks.SAND.getDefaultState();
+			this.block = Blocks.GRAVTATER.getDefaultState();
 		}
 	}
 

@@ -111,4 +111,8 @@ public interface Random {
 			return min + this.nextInt(max - min);
 		}
 	}
+
+	default float nextBetweenInclusive(float min, float max) {
+		return min + this.nextFloat() * (max - min);
+	}
 }

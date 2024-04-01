@@ -2,6 +2,7 @@ package net.minecraft.component.type;
 
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.sound.SoundEvents;
 
 /**
  * Contains all the default food components used in vanilla food items.
@@ -9,6 +10,27 @@ import net.minecraft.entity.effect.StatusEffects;
 public class FoodComponents {
 	public static final FoodComponent APPLE = new FoodComponent.Builder().hunger(4).saturationModifier(0.3F).build();
 	public static final FoodComponent BAKED_POTATO = new FoodComponent.Builder().hunger(5).saturationModifier(0.6F).build();
+	public static final FoodComponent HOT_POTATO = new FoodComponent.Builder().hunger(5).saturationModifier(0.6F).alwaysEdible().build();
+	public static final FoodComponent POISONOUS_POTATO_STICKS = new FoodComponent.Builder()
+		.hunger(1)
+		.saturationModifier(0.6F)
+		.eatSound(SoundEvents.ENTITY_POTATO_CHIPS)
+		.build();
+	public static final FoodComponent POISONOUS_POTATO_SLICES = new FoodComponent.Builder()
+		.hunger(1)
+		.saturationModifier(0.6F)
+		.eatSound(SoundEvents.ENTITY_POTATO_CHIPS)
+		.build();
+	public static final FoodComponent POISONOUS_POTATO_FRIES = new FoodComponent.Builder()
+		.hunger(10)
+		.saturationModifier(0.6F)
+		.eatSound(SoundEvents.ENTITY_POTATO_CHIPS)
+		.build();
+	public static final FoodComponent POISONOUS_POTATO_CHIPS = new FoodComponent.Builder()
+		.hunger(8)
+		.saturationModifier(0.6F)
+		.eatSound(SoundEvents.ENTITY_POTATO_CHIPS)
+		.build();
 	public static final FoodComponent BEEF = new FoodComponent.Builder().hunger(3).saturationModifier(0.3F).build();
 	public static final FoodComponent BEETROOT = new FoodComponent.Builder().hunger(1).saturationModifier(0.6F).build();
 	public static final FoodComponent BEETROOT_SOUP = createStew(6).build();
@@ -46,8 +68,28 @@ public class FoodComponents {
 		.statusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 2400, 0), 1.0F)
 		.alwaysEdible()
 		.build();
+	public static final FoodComponent GOLDEN_POISONOUS_POTATO = new FoodComponent.Builder()
+		.hunger(2)
+		.saturationModifier(1.2F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.POISON, 100, 1), 1.0F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 2400, 0), 1.0F)
+		.alwaysEdible()
+		.build();
+	public static final FoodComponent ENCHANTED_GOLDEN_POISONOUS_POTATO = new FoodComponent.Builder()
+		.hunger(2)
+		.saturationModifier(1.2F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.POISON, 400, 7), 1.0F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.LUCK, 6000, 4), 1.0F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.UNLUCK, 6000, 4), 1.0F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 2400, 3), 1.0F)
+		.alwaysEdible()
+		.build();
 	public static final FoodComponent GOLDEN_CARROT = new FoodComponent.Builder().hunger(6).saturationModifier(1.2F).build();
-	public static final FoodComponent HONEY_BOTTLE = new FoodComponent.Builder().hunger(6).saturationModifier(0.1F).build();
+	public static final FoodComponent HONEY_BOTTLE = new FoodComponent.Builder()
+		.hunger(6)
+		.saturationModifier(0.1F)
+		.eatSound(SoundEvents.ITEM_HONEY_BOTTLE_DRINK)
+		.build();
 	public static final FoodComponent MELON_SLICE = new FoodComponent.Builder().hunger(2).saturationModifier(0.3F).build();
 	public static final FoodComponent MUSHROOM_STEW = createStew(6).build();
 	public static final FoodComponent MUTTON = new FoodComponent.Builder().hunger(2).saturationModifier(0.3F).build();
@@ -55,6 +97,11 @@ public class FoodComponents {
 		.hunger(2)
 		.saturationModifier(0.3F)
 		.statusEffect(new StatusEffectInstance(StatusEffects.POISON, 100, 0), 0.6F)
+		.build();
+	public static final FoodComponent POTATO_FRUIT = new FoodComponent.Builder()
+		.hunger(6)
+		.saturationModifier(1.2F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.POISON, 40, 0), 1.0F)
 		.build();
 	public static final FoodComponent PORKCHOP = new FoodComponent.Builder().hunger(3).saturationModifier(0.3F).build();
 	public static final FoodComponent POTATO = new FoodComponent.Builder().hunger(1).saturationModifier(0.3F).build();
@@ -83,6 +130,7 @@ public class FoodComponents {
 	public static final FoodComponent SWEET_BERRIES = new FoodComponent.Builder().hunger(2).saturationModifier(0.1F).build();
 	public static final FoodComponent GLOW_BERRIES = new FoodComponent.Builder().hunger(2).saturationModifier(0.1F).build();
 	public static final FoodComponent TROPICAL_FISH = new FoodComponent.Builder().hunger(1).saturationModifier(0.1F).build();
+	public static final FoodComponent HASH_BROWNS = new FoodComponent.Builder().hunger(2).saturationModifier(0.6F).build();
 
 	private static FoodComponent.Builder createStew(int hunger) {
 		return new FoodComponent.Builder().hunger(hunger).saturationModifier(0.6F);

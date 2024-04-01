@@ -16,6 +16,16 @@ public class VanillaPaintingVariantTagProvider extends TagProvider<PaintingVaria
 
 	@Override
 	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+		this.getOrCreateTagBuilder(PaintingVariantTags.POTATO)
+			.add(
+				PaintingVariants.POISONOUS_POTATO,
+				PaintingVariants.MR_POTATO,
+				PaintingVariants.BURNING_POTATO,
+				PaintingVariants.UBIQUITATO,
+				PaintingVariants.ABSTRACTATO,
+				PaintingVariants.CECI,
+				PaintingVariants.POTATOE
+			);
 		this.getOrCreateTagBuilder(PaintingVariantTags.PLACEABLE)
 			.add(
 				PaintingVariants.KEBAB,
@@ -44,6 +54,7 @@ public class VanillaPaintingVariantTagProvider extends TagProvider<PaintingVaria
 				PaintingVariants.BURNING_SKULL,
 				PaintingVariants.SKELETON,
 				PaintingVariants.DONKEY_KONG
-			);
+			)
+			.addTag(PaintingVariantTags.POTATO);
 	}
 }

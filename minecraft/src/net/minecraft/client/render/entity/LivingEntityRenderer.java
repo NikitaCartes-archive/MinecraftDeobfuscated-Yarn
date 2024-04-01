@@ -3,6 +3,7 @@ package net.minecraft.client.render.entity;
 import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
 import java.util.List;
+import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -136,12 +137,20 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
+	public static Identifier getPotatoTextureId(Identifier id) {
+		return id.withPath((UnaryOperator<String>)(path -> path.replaceFirst(".png$", "_potato.png")));
+	}
+
 	/**
 	 * Gets the render layer appropriate for rendering the passed entity. Returns null if the entity should not be rendered.
 	 */
 	@Nullable
 	protected RenderLayer getRenderLayer(T entity, boolean showBody, boolean translucent, boolean showOutline) {
 		Identifier identifier = this.getTexture(entity);
+		if (entity.hasPotatoForm() && entity.isPotato()) {
+			identifier = getPotatoTextureId(identifier);
+		}
+
 		if (translucent) {
 			return RenderLayer.getItemEntityTranslucentCull(identifier);
 		} else if (showBody) {

@@ -16,9 +16,12 @@ public class AttachedToLeavesTreeDecorator extends TreeDecorator {
 	public static final Codec<AttachedToLeavesTreeDecorator> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.floatRange(0.0F, 1.0F).fieldOf("probability").forGetter(treeDecorator -> treeDecorator.probability),
+					Codec.BOOL.optionalFieldOf("use_logs", Boolean.valueOf(false)).forGetter(attachedToLeavesTreeDecorator -> attachedToLeavesTreeDecorator.field_51012),
 					Codec.intRange(0, 16).fieldOf("exclusion_radius_xz").forGetter(treeDecorator -> treeDecorator.exclusionRadiusXZ),
 					Codec.intRange(0, 16).fieldOf("exclusion_radius_y").forGetter(treeDecorator -> treeDecorator.exclusionRadiusY),
-					BlockStateProvider.TYPE_CODEC.fieldOf("block_provider").forGetter(treeDecorator -> treeDecorator.blockProvider),
+					Codec.list(BlockStateProvider.TYPE_CODEC)
+						.fieldOf("block_provider")
+						.forGetter(attachedToLeavesTreeDecorator -> attachedToLeavesTreeDecorator.blockProvider),
 					Codec.intRange(1, 16).fieldOf("required_empty_blocks").forGetter(treeDecorator -> treeDecorator.requiredEmptyBlocks),
 					Codecs.nonEmptyList(Direction.CODEC.listOf()).fieldOf("directions").forGetter(treeDecorator -> treeDecorator.directions)
 				)
@@ -27,19 +30,19 @@ public class AttachedToLeavesTreeDecorator extends TreeDecorator {
 	protected final float probability;
 	protected final int exclusionRadiusXZ;
 	protected final int exclusionRadiusY;
-	protected final BlockStateProvider blockProvider;
+	protected final List<BlockStateProvider> blockProvider;
 	protected final int requiredEmptyBlocks;
 	protected final List<Direction> directions;
+	protected boolean field_51012;
 
-	public AttachedToLeavesTreeDecorator(
-		float probability, int exclusionRadiusXZ, int exclusionRadiusY, BlockStateProvider blockProvider, int requiredEmptyBlocks, List<Direction> directions
-	) {
+	public AttachedToLeavesTreeDecorator(float probability, boolean bl, int i, int j, List<BlockStateProvider> list, int k, List<Direction> list2) {
 		this.probability = probability;
-		this.exclusionRadiusXZ = exclusionRadiusXZ;
-		this.exclusionRadiusY = exclusionRadiusY;
-		this.blockProvider = blockProvider;
-		this.requiredEmptyBlocks = requiredEmptyBlocks;
-		this.directions = directions;
+		this.field_51012 = bl;
+		this.exclusionRadiusXZ = i;
+		this.exclusionRadiusY = j;
+		this.blockProvider = list;
+		this.requiredEmptyBlocks = k;
+		this.directions = list2;
 	}
 
 	@Override
@@ -47,7 +50,9 @@ public class AttachedToLeavesTreeDecorator extends TreeDecorator {
 		Set<BlockPos> set = new HashSet();
 		Random random = generator.getRandom();
 
-		for (BlockPos blockPos : Util.copyShuffled(generator.getLeavesPositions(), random)) {
+		for (BlockPos blockPos : this.field_51012
+			? Util.copyShuffled(generator.getLogPositions(), random)
+			: Util.copyShuffled(generator.getLeavesPositions(), random)) {
 			Direction direction = Util.getRandom(this.directions, random);
 			BlockPos blockPos2 = blockPos.offset(direction);
 			if (!set.contains(blockPos2) && random.nextFloat() < this.probability && this.meetsRequiredEmptyBlocks(generator, blockPos, direction)) {
@@ -58,7 +63,10 @@ public class AttachedToLeavesTreeDecorator extends TreeDecorator {
 					set.add(blockPos5.toImmutable());
 				}
 
-				generator.replace(blockPos2, this.blockProvider.get(random, blockPos2));
+				for (BlockStateProvider blockStateProvider : this.blockProvider) {
+					generator.replace(blockPos2, blockStateProvider.get(random, blockPos2));
+					blockPos2 = blockPos2.offset(direction);
+				}
 			}
 		}
 	}

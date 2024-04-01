@@ -55,7 +55,7 @@ public class BoatItem extends Item {
 				BoatEntity boatEntity = this.createEntity(world, hitResult, itemStack, user);
 				boatEntity.setVariant(this.type);
 				boatEntity.setYaw(user.getYaw());
-				if (!world.isSpaceEmpty(boatEntity, boatEntity.getBoundingBox())) {
+				if (!world.method_59085(boatEntity, boatEntity.getBoundingBox())) {
 					return TypedActionResult.fail(itemStack);
 				} else {
 					if (!world.isClient) {

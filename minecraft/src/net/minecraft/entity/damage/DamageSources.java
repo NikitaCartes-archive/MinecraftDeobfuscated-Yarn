@@ -21,6 +21,7 @@ public class DamageSources {
 	private final DamageSource lightningBolt;
 	private final DamageSource onFire;
 	private final DamageSource lava;
+	private final DamageSource potatoHeat;
 	private final DamageSource hotFloor;
 	private final DamageSource inWall;
 	private final DamageSource cramming;
@@ -40,6 +41,7 @@ public class DamageSources {
 	private final DamageSource stalagmite;
 	private final DamageSource outsideBorder;
 	private final DamageSource genericKill;
+	private final DamageSource potatoMagic;
 
 	public DamageSources(DynamicRegistryManager registryManager) {
 		this.registry = registryManager.get(RegistryKeys.DAMAGE_TYPE);
@@ -47,6 +49,7 @@ public class DamageSources {
 		this.lightningBolt = this.create(DamageTypes.LIGHTNING_BOLT);
 		this.onFire = this.create(DamageTypes.ON_FIRE);
 		this.lava = this.create(DamageTypes.LAVA);
+		this.potatoHeat = this.create(DamageTypes.POTATO_HEAT);
 		this.hotFloor = this.create(DamageTypes.HOT_FLOOR);
 		this.inWall = this.create(DamageTypes.IN_WALL);
 		this.cramming = this.create(DamageTypes.CRAMMING);
@@ -66,6 +69,7 @@ public class DamageSources {
 		this.stalagmite = this.create(DamageTypes.STALAGMITE);
 		this.outsideBorder = this.create(DamageTypes.OUTSIDE_BORDER);
 		this.genericKill = this.create(DamageTypes.GENERIC_KILL);
+		this.potatoMagic = this.create(DamageTypes.POTATO_MAGIC);
 	}
 
 	private DamageSource create(RegistryKey<DamageType> key) {
@@ -94,6 +98,10 @@ public class DamageSources {
 
 	public DamageSource lava() {
 		return this.lava;
+	}
+
+	public DamageSource potatoHeat() {
+		return this.potatoHeat;
 	}
 
 	public DamageSource hotFloor() {
@@ -138,6 +146,10 @@ public class DamageSources {
 
 	public DamageSource magic() {
 		return this.magic;
+	}
+
+	public DamageSource potatoMagic() {
+		return this.potatoMagic;
 	}
 
 	public DamageSource wither() {

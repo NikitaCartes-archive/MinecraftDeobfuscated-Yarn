@@ -10,6 +10,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Arm;
@@ -43,57 +44,58 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			vertex(vertexConsumer, entry, i, 1.0F, 1, 1, 0);
 			vertex(vertexConsumer, entry, i, 0.0F, 1, 0, 0);
 			matrixStack.pop();
-			int j = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
-			ItemStack itemStack = playerEntity.getMainHandStack();
-			if (!itemStack.isOf(Items.FISHING_ROD)) {
-				j = -j;
-			}
-
-			float h = playerEntity.getHandSwingProgress(g);
-			float k = MathHelper.sin(MathHelper.sqrt(h) * (float) Math.PI);
-			float l = MathHelper.lerp(g, playerEntity.prevBodyYaw, playerEntity.bodyYaw) * (float) (Math.PI / 180.0);
-			double d = (double)MathHelper.sin(l);
-			double e = (double)MathHelper.cos(l);
-			double m = (double)j * 0.35;
-			double n = 0.8;
-			double o;
-			double p;
-			double q;
-			float r;
-			if ((this.dispatcher.gameOptions == null || this.dispatcher.gameOptions.getPerspective().isFirstPerson())
-				&& playerEntity == MinecraftClient.getInstance().player) {
-				double s = 960.0 / (double)this.dispatcher.gameOptions.getFov().getValue().intValue();
-				Vec3d vec3d = this.dispatcher.camera.getProjection().getPosition((float)j * 0.525F, -0.1F);
-				vec3d = vec3d.multiply(s);
-				vec3d = vec3d.rotateY(k * 0.5F);
-				vec3d = vec3d.rotateX(-k * 0.7F);
-				o = MathHelper.lerp((double)g, playerEntity.prevX, playerEntity.getX()) + vec3d.x;
-				p = MathHelper.lerp((double)g, playerEntity.prevY, playerEntity.getY()) + vec3d.y;
-				q = MathHelper.lerp((double)g, playerEntity.prevZ, playerEntity.getZ()) + vec3d.z;
-				r = playerEntity.getStandingEyeHeight();
-			} else {
-				o = MathHelper.lerp((double)g, playerEntity.prevX, playerEntity.getX()) - e * m - d * 0.8;
-				p = playerEntity.prevY + (double)playerEntity.getStandingEyeHeight() + (playerEntity.getY() - playerEntity.prevY) * (double)g - 0.45;
-				q = MathHelper.lerp((double)g, playerEntity.prevZ, playerEntity.getZ()) - d * m + e * 0.8;
-				r = playerEntity.isInSneakingPose() ? -0.1875F : 0.0F;
-			}
-
-			double s = MathHelper.lerp((double)g, fishingBobberEntity.prevX, fishingBobberEntity.getX());
-			double t = MathHelper.lerp((double)g, fishingBobberEntity.prevY, fishingBobberEntity.getY()) + 0.25;
-			double u = MathHelper.lerp((double)g, fishingBobberEntity.prevZ, fishingBobberEntity.getZ());
-			float v = (float)(o - s);
-			float w = (float)(p - t) + r;
-			float x = (float)(q - u);
+			Vec3d vec3d = getPlayerHandPos(playerEntity, g, Items.FISHING_ROD, this.dispatcher);
+			double d = MathHelper.lerp((double)g, fishingBobberEntity.prevX, fishingBobberEntity.getX());
+			double e = MathHelper.lerp((double)g, fishingBobberEntity.prevY, fishingBobberEntity.getY()) + 0.25;
+			double h = MathHelper.lerp((double)g, fishingBobberEntity.prevZ, fishingBobberEntity.getZ());
+			float j = (float)(vec3d.x - d);
+			float k = (float)(vec3d.y - e);
+			float l = (float)(vec3d.z - h);
 			VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getLineStrip());
 			MatrixStack.Entry entry2 = matrixStack.peek();
-			int y = 16;
+			int m = 16;
 
-			for (int z = 0; z <= 16; z++) {
-				renderFishingLine(v, w, x, vertexConsumer2, entry2, percentage(z, 16), percentage(z + 1, 16));
+			for (int n = 0; n <= 16; n++) {
+				renderFishingLine(j, k, l, vertexConsumer2, entry2, percentage(n, 16), percentage(n + 1, 16));
 			}
 
 			matrixStack.pop();
 			super.render(fishingBobberEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		}
+	}
+
+	public static Vec3d getPlayerHandPos(PlayerEntity player, float tickDelta, Item item, EntityRenderDispatcher dispatcher) {
+		int i = player.getMainArm() == Arm.RIGHT ? 1 : -1;
+		ItemStack itemStack = player.getMainHandStack();
+		if (!itemStack.isOf(item)) {
+			i = -i;
+		}
+
+		float f = player.getHandSwingProgress(tickDelta);
+		float g = MathHelper.sin(MathHelper.sqrt(f) * (float) Math.PI);
+		float h = MathHelper.lerp(tickDelta, player.prevBodyYaw, player.bodyYaw) * (float) (Math.PI / 180.0);
+		double d = (double)MathHelper.sin(h);
+		double e = (double)MathHelper.cos(h);
+		double j = (double)i * 0.35;
+		double k = 0.8;
+		if ((dispatcher.gameOptions == null || dispatcher.gameOptions.getPerspective().isFirstPerson()) && player == MinecraftClient.getInstance().player) {
+			double m = 960.0 / (double)dispatcher.gameOptions.getFov().getValue().intValue();
+			Vec3d vec3d = dispatcher.camera.getProjection().getPosition((float)i * 0.525F, -0.1F);
+			vec3d = vec3d.multiply(m);
+			vec3d = vec3d.rotateY(g * 0.5F);
+			vec3d = vec3d.rotateX(-g * 0.7F);
+			return new Vec3d(
+				MathHelper.lerp((double)tickDelta, player.prevX, player.getX()) + vec3d.x,
+				MathHelper.lerp((double)tickDelta, player.prevY, player.getY()) + vec3d.y + (double)player.getStandingEyeHeight(),
+				MathHelper.lerp((double)tickDelta, player.prevZ, player.getZ()) + vec3d.z
+			);
+		} else {
+			float l = player.isInSneakingPose() ? -0.1875F : 0.0F;
+			return new Vec3d(
+				MathHelper.lerp((double)tickDelta, player.prevX, player.getX()) - e * j - d * 0.8,
+				player.prevY + (double)player.getStandingEyeHeight() + (player.getY() - player.prevY) * (double)tickDelta - 0.45 + (double)l,
+				MathHelper.lerp((double)tickDelta, player.prevZ, player.getZ()) - d * j + e * 0.8
+			);
 		}
 	}
 

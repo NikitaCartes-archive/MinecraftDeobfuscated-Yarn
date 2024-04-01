@@ -51,6 +51,10 @@ public class DoorBlock extends Block {
 	protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 3.0, 16.0, 16.0);
 	private final BlockSetType blockSetType;
 
+	public static boolean isEitherHalfReceivingRedstonePower(World world, BlockPos pos) {
+		return world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
+	}
+
 	@Override
 	public MapCodec<? extends DoorBlock> getCodec() {
 		return CODEC;
@@ -140,7 +144,7 @@ public class DoorBlock extends Block {
 		BlockPos blockPos = ctx.getBlockPos();
 		World world = ctx.getWorld();
 		if (blockPos.getY() < world.getTopY() - 1 && world.getBlockState(blockPos.up()).canReplace(ctx)) {
-			boolean bl = world.isReceivingRedstonePower(blockPos) || world.isReceivingRedstonePower(blockPos.up());
+			boolean bl = isEitherHalfReceivingRedstonePower(world, blockPos);
 			return this.getDefaultState()
 				.with(FACING, ctx.getHorizontalPlayerFacing())
 				.with(HINGE, this.getHinge(ctx))

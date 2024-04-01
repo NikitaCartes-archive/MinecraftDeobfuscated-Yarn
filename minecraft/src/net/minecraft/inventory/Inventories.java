@@ -1,5 +1,8 @@
 package net.minecraft.inventory;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.item.ItemStack;
@@ -15,6 +18,26 @@ import net.minecraft.util.collection.DefaultedList;
  */
 public class Inventories {
 	public static final String ITEMS_NBT_KEY = "Items";
+
+	public static int tryAddStack(Inventory inventory, ItemStack stack) {
+		IntList intList = new IntArrayList();
+
+		for (int i = 0; i < inventory.size(); i++) {
+			ItemStack itemStack = inventory.getStack(i);
+			if (itemStack.isEmpty()) {
+				intList.add(i);
+			}
+		}
+
+		if (intList.isEmpty()) {
+			return -1;
+		} else {
+			Collections.shuffle(intList);
+			int ix = intList.getInt(0);
+			inventory.setStack(ix, stack);
+			return ix;
+		}
+	}
 
 	/**
 	 * {@return the copy of the stack split from the stack at {@code slot}}

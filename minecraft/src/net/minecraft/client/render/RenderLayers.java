@@ -24,6 +24,8 @@ public class RenderLayers {
 		map.put(Blocks.TRIPWIRE, renderLayer);
 		RenderLayer renderLayer2 = RenderLayer.getCutoutMipped();
 		map.put(Blocks.GRASS_BLOCK, renderLayer2);
+		map.put(Blocks.PEELGRASS_BLOCK, renderLayer2);
+		map.put(Blocks.CORRUPTED_PEELGRASS_BLOCK, renderLayer2);
 		map.put(Blocks.IRON_BARS, renderLayer2);
 		map.put(Blocks.GLASS_PANE, renderLayer2);
 		map.put(Blocks.TRIPWIRE_HOOK, renderLayer2);
@@ -33,6 +35,7 @@ public class RenderLayers {
 		map.put(Blocks.OAK_LEAVES, renderLayer2);
 		map.put(Blocks.SPRUCE_LEAVES, renderLayer2);
 		map.put(Blocks.ACACIA_LEAVES, renderLayer2);
+		map.put(Blocks.POTATO_LEAVES, renderLayer2);
 		map.put(Blocks.CHERRY_LEAVES, renderLayer2);
 		map.put(Blocks.BIRCH_LEAVES, renderLayer2);
 		map.put(Blocks.DARK_OAK_LEAVES, renderLayer2);
@@ -86,6 +89,7 @@ public class RenderLayers {
 		map.put(Blocks.CORNFLOWER, renderLayer3);
 		map.put(Blocks.WITHER_ROSE, renderLayer3);
 		map.put(Blocks.LILY_OF_THE_VALLEY, renderLayer3);
+		map.put(Blocks.POTATO_FLOWER, renderLayer3);
 		map.put(Blocks.BROWN_MUSHROOM, renderLayer3);
 		map.put(Blocks.RED_MUSHROOM, renderLayer3);
 		map.put(Blocks.TORCH, renderLayer3);
@@ -160,6 +164,7 @@ public class RenderLayers {
 		map.put(Blocks.POTTED_OXEYE_DAISY, renderLayer3);
 		map.put(Blocks.POTTED_CORNFLOWER, renderLayer3);
 		map.put(Blocks.POTTED_LILY_OF_THE_VALLEY, renderLayer3);
+		map.put(Blocks.POTTED_POTATO_FLOWER, renderLayer3);
 		map.put(Blocks.POTTED_WITHER_ROSE, renderLayer3);
 		map.put(Blocks.POTTED_RED_MUSHROOM, renderLayer3);
 		map.put(Blocks.POTTED_BROWN_MUSHROOM, renderLayer3);
@@ -243,10 +248,12 @@ public class RenderLayers {
 		map.put(Blocks.POTTED_BAMBOO, renderLayer3);
 		map.put(Blocks.SCAFFOLDING, renderLayer3);
 		map.put(Blocks.STONECUTTER, renderLayer3);
+		map.put(Blocks.POISONOUS_POTATO_CUTTER, renderLayer3);
 		map.put(Blocks.LANTERN, renderLayer3);
 		map.put(Blocks.SOUL_LANTERN, renderLayer3);
 		map.put(Blocks.CAMPFIRE, renderLayer3);
 		map.put(Blocks.SOUL_CAMPFIRE, renderLayer3);
+		map.put(Blocks.FRYING_TABLE, renderLayer3);
 		map.put(Blocks.SWEET_BERRY_BUSH, renderLayer3);
 		map.put(Blocks.WEEPING_VINES, renderLayer3);
 		map.put(Blocks.WEEPING_VINES_PLANT, renderLayer3);
@@ -257,13 +264,18 @@ public class RenderLayers {
 		map.put(Blocks.WARPED_FUNGUS, renderLayer3);
 		map.put(Blocks.CRIMSON_ROOTS, renderLayer3);
 		map.put(Blocks.WARPED_ROOTS, renderLayer3);
+		map.put(Blocks.POTATO_SPROUTS, renderLayer3);
 		map.put(Blocks.POTTED_CRIMSON_FUNGUS, renderLayer3);
 		map.put(Blocks.POTTED_WARPED_FUNGUS, renderLayer3);
 		map.put(Blocks.POTTED_CRIMSON_ROOTS, renderLayer3);
 		map.put(Blocks.POTTED_WARPED_ROOTS, renderLayer3);
 		map.put(Blocks.CRIMSON_DOOR, renderLayer3);
 		map.put(Blocks.WARPED_DOOR, renderLayer3);
+		map.put(Blocks.POTATO_DOOR, renderLayer3);
+		map.put(Blocks.POTATO_TRAPDOOR, renderLayer3);
 		map.put(Blocks.POINTED_DRIPSTONE, renderLayer3);
+		map.put(Blocks.POTATO_BUD, renderLayer3);
+		map.put(Blocks.POTATO_PEDICULE, renderLayer3);
 		map.put(Blocks.SMALL_AMETHYST_BUD, renderLayer3);
 		map.put(Blocks.MEDIUM_AMETHYST_BUD, renderLayer3);
 		map.put(Blocks.LARGE_AMETHYST_BUD, renderLayer3);
@@ -297,6 +309,8 @@ public class RenderLayers {
 		RenderLayer renderLayer4 = RenderLayer.getTranslucent();
 		map.put(Blocks.ICE, renderLayer4);
 		map.put(Blocks.NETHER_PORTAL, renderLayer4);
+		map.put(Blocks.POTATO_PORTAL, renderLayer4);
+		map.put(Blocks.PEDESTAL, renderLayer3);
 		map.put(Blocks.WHITE_STAINED_GLASS, renderLayer4);
 		map.put(Blocks.ORANGE_STAINED_GLASS, renderLayer4);
 		map.put(Blocks.MAGENTA_STAINED_GLASS, renderLayer4);

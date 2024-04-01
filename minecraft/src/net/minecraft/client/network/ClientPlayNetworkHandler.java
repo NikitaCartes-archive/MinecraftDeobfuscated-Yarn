@@ -23,6 +23,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9606;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -33,6 +34,7 @@ import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.DemoScreen;
 import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
+import net.minecraft.client.gui.screen.PotatoCreditsScreen;
 import net.minecraft.client.gui.screen.ReconfiguringScreen;
 import net.minecraft.client.gui.screen.StatsScreen;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
@@ -71,6 +73,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ExperienceOrbEntity;
+import net.minecraft.entity.GridCarrierEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TrackedPosition;
@@ -143,6 +146,7 @@ import net.minecraft.network.packet.s2c.custom.DebugRaidsCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugStructuresCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugVillageSectionsCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugWorldgenAttemptCustomPayload;
+import net.minecraft.network.packet.s2c.play.AddSubGridS2CPacket;
 import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -233,6 +237,7 @@ import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
 import net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket;
+import net.minecraft.network.packet.s2c.play.SoundSequenceS2CPacket;
 import net.minecraft.network.packet.s2c.play.StartChunkSendS2CPacket;
 import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
@@ -426,6 +431,11 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.client.player.setPortalCooldown(commonPlayerSpawnInfo.portalCooldown());
 		this.client.interactionManager.setGameModes(commonPlayerSpawnInfo.gameMode(), commonPlayerSpawnInfo.prevGameMode());
 		this.client.options.setServerViewDistance(packet.viewDistance());
+		if (commonPlayerSpawnInfo.waitForGrid() != null) {
+			this.client.player.field_50389 = commonPlayerSpawnInfo.waitForGrid();
+			this.client.player.field_50390 = 60;
+		}
+
 		this.session = null;
 		this.lastSeenMessagesCollector = new LastSeenMessagesCollector(20);
 		this.signatureStorage = MessageSignatureStorage.create();
@@ -500,6 +510,22 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		entity.setPitch(0.0F);
 		entity.setId(packet.getId());
 		this.world.addEntity(entity);
+	}
+
+	@Override
+	public void onAddSubGrid(AddSubGridS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		GridCarrierEntity gridCarrierEntity = new GridCarrierEntity(EntityType.GRID_CARRIER, this.world);
+		double d = packet.x();
+		double e = packet.y();
+		double f = packet.z();
+		gridCarrierEntity.updateTrackedPosition(d, e, f);
+		gridCarrierEntity.refreshPositionAfterTeleport(d, e, f);
+		gridCarrierEntity.setId(packet.id());
+		gridCarrierEntity.setUuid(packet.uuid());
+		gridCarrierEntity.method_58953().setGrid(packet.blocks());
+		gridCarrierEntity.method_58953().setBiome(packet.biome());
+		this.world.addEntity(gridCarrierEntity);
 	}
 
 	@Override
@@ -1136,6 +1162,10 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 
 		this.client.interactionManager.setGameModes(commonPlayerSpawnInfo.gameMode(), commonPlayerSpawnInfo.prevGameMode());
+		if (commonPlayerSpawnInfo.waitForGrid() != null) {
+			clientPlayerEntity2.field_50389 = commonPlayerSpawnInfo.waitForGrid();
+			clientPlayerEntity2.field_50390 = 60;
+		}
 	}
 
 	@Override
@@ -1367,8 +1397,12 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			this.client.player.setShowsDeathScreen(f == GameStateChangeS2CPacket.DEMO_OPEN_SCREEN);
 		} else if (reason == GameStateChangeS2CPacket.LIMITED_CRAFTING_TOGGLED) {
 			this.client.player.setLimitedCraftingEnabled(f == 1.0F);
-		} else if (reason == GameStateChangeS2CPacket.INITIAL_CHUNKS_COMING && this.worldLoadingState != null) {
-			this.worldLoadingState.handleChunksComingPacket();
+		} else if (reason == GameStateChangeS2CPacket.INITIAL_CHUNKS_COMING) {
+			if (this.worldLoadingState != null) {
+				this.worldLoadingState.handleChunksComingPacket();
+			}
+		} else if (reason == GameStateChangeS2CPacket.field_50265) {
+			this.client.setScreen(new PotatoCreditsScreen(() -> this.client.setScreen(new class_9606())));
 		}
 	}
 
@@ -1808,6 +1842,27 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				packet.getPitch(),
 				packet.getSeed()
 			);
+	}
+
+	@Override
+	public void onSoundSequence(SoundSequenceS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+
+		for (SoundSequenceS2CPacket.Sound sound : packet.getSounds()) {
+			PlaySoundS2CPacket playSoundS2CPacket = sound.packet();
+			this.client
+				.world
+				.playSoundWithDelay(
+					sound.ticks(),
+					playSoundS2CPacket.getX(),
+					playSoundS2CPacket.getY(),
+					playSoundS2CPacket.getZ(),
+					playSoundS2CPacket.getSound().value(),
+					playSoundS2CPacket.getCategory(),
+					playSoundS2CPacket.getVolume(),
+					playSoundS2CPacket.getPitch()
+				);
+		}
 	}
 
 	@Override

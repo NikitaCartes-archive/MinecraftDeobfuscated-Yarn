@@ -37,18 +37,17 @@ public class TradeOutputSlot extends Slot {
 	@Override
 	protected void onCrafted(ItemStack stack, int amount) {
 		this.amount += amount;
-		this.onCrafted(stack);
+		this.method_59007(stack);
 	}
 
-	@Override
-	protected void onCrafted(ItemStack stack) {
-		stack.onCraftByPlayer(this.player.getWorld(), this.player, this.amount);
+	protected void method_59007(ItemStack itemStack) {
+		itemStack.onCraftByPlayer(this.player.getWorld(), this.player, this.amount);
 		this.amount = 0;
 	}
 
 	@Override
 	public void onTakeItem(PlayerEntity player, ItemStack stack) {
-		this.onCrafted(stack);
+		this.method_59007(stack);
 		TradeOffer tradeOffer = this.merchantInventory.getTradeOffer();
 		if (tradeOffer != null) {
 			ItemStack itemStack = this.merchantInventory.getStack(0);

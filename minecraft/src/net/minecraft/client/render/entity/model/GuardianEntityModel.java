@@ -19,9 +19,22 @@ public class GuardianEntityModel extends SinglePartEntityModel<GuardianEntity> {
 	private static final float[] SPIKE_PITCHES = new float[]{1.75F, 0.25F, 0.0F, 0.0F, 0.5F, 0.5F, 0.5F, 0.5F, 1.25F, 0.75F, 0.0F, 0.0F};
 	private static final float[] SPIKE_YAWS = new float[]{0.0F, 0.0F, 0.0F, 0.0F, 0.25F, 1.75F, 1.25F, 0.75F, 0.0F, 0.0F, 0.0F, 0.0F};
 	private static final float[] SPIKE_ROLLS = new float[]{0.0F, 0.0F, 0.25F, 1.75F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.75F, 1.25F};
-	private static final float[] SPIKE_PIVOTS_X = new float[]{0.0F, 0.0F, 8.0F, -8.0F, -8.0F, 8.0F, 8.0F, -8.0F, 0.0F, 0.0F, 8.0F, -8.0F};
-	private static final float[] SPIKE_PIVOTS_Y = new float[]{-8.0F, -8.0F, -8.0F, -8.0F, 0.0F, 0.0F, 0.0F, 0.0F, 8.0F, 8.0F, 8.0F, 8.0F};
-	private static final float[] SPIKE_PIVOTS_Z = new float[]{8.0F, -8.0F, 0.0F, 0.0F, -8.0F, -8.0F, 8.0F, 8.0F, 8.0F, -8.0F, 0.0F, 0.0F};
+	private static final float[] SPIKE_PIVOTS_X;
+	private static final float[] SPIKE_PIVOTS_Y;
+	private static final float field_51139 = 16.0F;
+	private static final float[] SPIKE_PIVOTS_Z;
+	private static final float field_51140 = 9.4F;
+	private static final float field_51141;
+	private static final float field_51142;
+	private static final float[] field_51143;
+	private static final float[] field_51144;
+	private static final float[] field_51145;
+	private static final float[] field_51146;
+	private static final float[] field_51147;
+	private static final float[] field_51148;
+	private static final float[] field_51149;
+	private static final float field_51150 = 19.0F;
+	private static final float[] field_51151;
 	/**
 	 * The key of the eye model part, whose value is {@value}.
 	 */
@@ -64,46 +77,59 @@ public class GuardianEntityModel extends SinglePartEntityModel<GuardianEntity> {
 		return "spike" + index;
 	}
 
-	public static TexturedModelData getTexturedModelData() {
+	public static TexturedModelData getTexturedModelData(boolean bl) {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
+		int i = bl ? 3 : 0;
 		ModelPartData modelPartData2 = modelPartData.addChild(
 			EntityModelPartNames.HEAD,
 			ModelPartBuilder.create()
 				.uv(0, 0)
-				.cuboid(-6.0F, 10.0F, -8.0F, 12.0F, 12.0F, 16.0F)
+				.cuboid(-6.0F, (float)(10 + i * 2), -8.0F, 12.0F, (float)(12 - i * 2), 16.0F)
 				.uv(0, 28)
-				.cuboid(-8.0F, 10.0F, -6.0F, 2.0F, 12.0F, 12.0F)
+				.cuboid(-8.0F, (float)(10 + i * 2), -6.0F, 2.0F, (float)(12 - i * 2), 12.0F)
 				.uv(0, 28)
-				.cuboid(6.0F, 10.0F, -6.0F, 2.0F, 12.0F, 12.0F, true)
+				.cuboid(6.0F, (float)(10 + i * 2), -6.0F, 2.0F, (float)(12 - i * 2), 12.0F, true)
 				.uv(16, 40)
-				.cuboid(-6.0F, 8.0F, -6.0F, 12.0F, 2.0F, 12.0F)
+				.cuboid(-6.0F, (float)(8 + i * 2), -6.0F, 12.0F, 2.0F, 12.0F)
 				.uv(16, 40)
 				.cuboid(-6.0F, 22.0F, -6.0F, 12.0F, 2.0F, 12.0F),
 			ModelTransform.NONE
 		);
 		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(0, 0).cuboid(-1.0F, -4.5F, -1.0F, 2.0F, 9.0F, 2.0F);
 
-		for (int i = 0; i < 12; i++) {
-			float f = getSpikePivotX(i, 0.0F, 0.0F);
-			float g = getSpikePivotY(i, 0.0F, 0.0F);
-			float h = getSpikePivotZ(i, 0.0F, 0.0F);
-			float j = (float) Math.PI * SPIKE_PITCHES[i];
-			float k = (float) Math.PI * SPIKE_YAWS[i];
-			float l = (float) Math.PI * SPIKE_ROLLS[i];
-			modelPartData2.addChild(getSpikeName(i), modelPartBuilder, ModelTransform.of(f, g, h, j, k, l));
+		for (int j = 0; j < 12; j++) {
+			if (bl) {
+				float f = field_51148[j] + field_51147[j];
+				float g = 19.0F + field_51149[j];
+				float h = field_51151[j];
+				float k = field_51143[j];
+				float l = field_51144[j];
+				float m = field_51145[j];
+				modelPartData2.addChild(getSpikeName(j), modelPartBuilder, ModelTransform.of(f, g, h, k, l, m));
+			} else {
+				float f = SPIKE_PIVOTS_X[j];
+				float g = 16.0F + SPIKE_PIVOTS_Y[j];
+				float h = SPIKE_PIVOTS_Z[j];
+				float k = SPIKE_PITCHES[j];
+				float l = SPIKE_YAWS[j];
+				float m = SPIKE_ROLLS[j];
+				modelPartData2.addChild(getSpikeName(j), modelPartBuilder, ModelTransform.of(f, g, h, k, l, m));
+			}
 		}
 
-		modelPartData2.addChild("eye", ModelPartBuilder.create().uv(8, 0).cuboid(-1.0F, 15.0F, 0.0F, 2.0F, 2.0F, 1.0F), ModelTransform.pivot(0.0F, 0.0F, -8.25F));
+		modelPartData2.addChild(
+			"eye", ModelPartBuilder.create().uv(8, 0).cuboid(-1.0F, (float)(15 + i), 0.0F, 2.0F, 2.0F, 1.0F), ModelTransform.pivot(0.0F, 0.0F, -8.25F)
+		);
 		ModelPartData modelPartData3 = modelPartData2.addChild(
-			"tail0", ModelPartBuilder.create().uv(40, 0).cuboid(-2.0F, 14.0F, 7.0F, 4.0F, 4.0F, 8.0F), ModelTransform.NONE
+			"tail0", ModelPartBuilder.create().uv(40, 0).cuboid(-2.0F, (float)(14 + i), 7.0F, 4.0F, 4.0F, 8.0F), ModelTransform.NONE
 		);
 		ModelPartData modelPartData4 = modelPartData3.addChild(
-			"tail1", ModelPartBuilder.create().uv(0, 54).cuboid(0.0F, 14.0F, 0.0F, 3.0F, 3.0F, 7.0F), ModelTransform.pivot(-1.5F, 0.5F, 14.0F)
+			"tail1", ModelPartBuilder.create().uv(0, 54).cuboid(0.0F, (float)(14 + i), 0.0F, 3.0F, 3.0F, 7.0F), ModelTransform.pivot(-1.5F, 0.5F, 14.0F)
 		);
 		modelPartData4.addChild(
 			"tail2",
-			ModelPartBuilder.create().uv(41, 32).cuboid(0.0F, 14.0F, 0.0F, 2.0F, 2.0F, 6.0F).uv(25, 19).cuboid(1.0F, 10.5F, 3.0F, 1.0F, 9.0F, 9.0F),
+			ModelPartBuilder.create().uv(41, 32).cuboid(0.0F, (float)(14 + i), 0.0F, 2.0F, 2.0F, 6.0F).uv(25, 19).cuboid(1.0F, 10.5F + (float)i, 3.0F, 1.0F, 9.0F, 9.0F),
 			ModelTransform.pivot(0.5F, 0.5F, 6.0F)
 		);
 		return TexturedModelData.of(modelData, 64, 64);
@@ -119,7 +145,12 @@ public class GuardianEntityModel extends SinglePartEntityModel<GuardianEntity> {
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		this.head.pitch = j * (float) (Math.PI / 180.0);
 		float l = (1.0F - guardianEntity.getSpikesExtension(k)) * 0.55F;
-		this.updateSpikeExtensions(h, l);
+		if (guardianEntity.isPotato()) {
+			this.method_59345(h, l, guardianEntity.hasPassengers(), guardianEntity.hasVehicle());
+		} else {
+			this.updateSpikeExtensions(h, l);
+		}
+
 		Entity entity = MinecraftClient.getInstance().getCameraEntity();
 		if (guardianEntity.hasBeamTarget()) {
 			entity = guardianEntity.getBeamTarget();
@@ -151,9 +182,36 @@ public class GuardianEntityModel extends SinglePartEntityModel<GuardianEntity> {
 
 	private void updateSpikeExtensions(float animationProgress, float extension) {
 		for (int i = 0; i < 12; i++) {
-			this.spikes[i].pivotX = getSpikePivotX(i, animationProgress, extension);
-			this.spikes[i].pivotY = getSpikePivotY(i, animationProgress, extension);
-			this.spikes[i].pivotZ = getSpikePivotZ(i, animationProgress, extension);
+			this.spikes[i].pivotX = SPIKE_PIVOTS_X[i] * getAngle(i, animationProgress, extension);
+			this.spikes[i].pivotY = 16.0F + SPIKE_PIVOTS_Y[i] * getAngle(i, animationProgress, extension);
+			this.spikes[i].pivotZ = SPIKE_PIVOTS_Z[i] * getAngle(i, animationProgress, extension);
+			this.spikes[i].roll = SPIKE_ROLLS[i];
+		}
+
+		for (int i = 0; i < 4; i++) {
+			this.spikes[i].visible = true;
+		}
+	}
+
+	private void method_59345(float f, float g, boolean bl, boolean bl2) {
+		int i = bl ? -1 : 1;
+		float[] fs = bl ? field_51146 : field_51145;
+
+		for (int j = 0; j < 12; j++) {
+			this.spikes[j].pivotX = field_51148[j] * getAngle(j, f, g) + field_51147[j];
+			this.spikes[j].pivotY = 19.0F + (float)i * field_51149[j] * getAngle(j, f, g);
+			this.spikes[j].pivotZ = field_51151[j] * getAngle(j, f, g);
+			this.spikes[j].roll = fs[j];
+		}
+
+		if (bl && bl2) {
+			for (int j = 0; j < 4; j++) {
+				this.spikes[j].visible = false;
+			}
+		} else {
+			for (int j = 0; j < 4; j++) {
+				this.spikes[j].visible = true;
+			}
 		}
 	}
 
@@ -161,15 +219,85 @@ public class GuardianEntityModel extends SinglePartEntityModel<GuardianEntity> {
 		return 1.0F + MathHelper.cos(animationProgress * 1.5F + (float)index) * 0.01F - magnitude;
 	}
 
-	private static float getSpikePivotX(int index, float animationProgress, float extension) {
-		return SPIKE_PIVOTS_X[index] * getAngle(index, animationProgress, extension);
-	}
+	static {
+		for (int i = 0; i < 12; i++) {
+			SPIKE_PITCHES[i] = (float) Math.PI * SPIKE_PITCHES[i];
+			SPIKE_YAWS[i] = (float) Math.PI * SPIKE_YAWS[i];
+			SPIKE_ROLLS[i] = (float) Math.PI * SPIKE_ROLLS[i];
+		}
 
-	private static float getSpikePivotY(int index, float animationProgress, float extension) {
-		return 16.0F + SPIKE_PIVOTS_Y[index] * getAngle(index, animationProgress, extension);
-	}
+		SPIKE_PIVOTS_X = new float[]{0.0F, 0.0F, 8.0F, -8.0F, -8.0F, 8.0F, 8.0F, -8.0F, 0.0F, 0.0F, 8.0F, -8.0F};
+		SPIKE_PIVOTS_Y = new float[]{-8.0F, -8.0F, -8.0F, -8.0F, 0.0F, 0.0F, 0.0F, 0.0F, 8.0F, 8.0F, 8.0F, 8.0F};
+		SPIKE_PIVOTS_Z = new float[]{8.0F, -8.0F, 0.0F, 0.0F, -8.0F, -8.0F, 8.0F, 8.0F, 8.0F, -8.0F, 0.0F, 0.0F};
+		field_51141 = (float)Math.atan2(2.0, 1.0);
+		field_51142 = (float)Math.atan2(1.0, 2.0);
+		field_51143 = new float[]{
+			field_51141,
+			field_51142,
+			-field_51142,
+			-field_51141,
+			field_51141,
+			field_51142,
+			-field_51142,
+			-field_51141,
+			field_51141,
+			field_51142,
+			-field_51142,
+			-field_51141
+		};
+		field_51144 = new float[]{0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F};
+		field_51145 = new float[]{0.0F, 0.0F, 0.0F, 0.0F, 0.5F, 0.5F, 0.5F, 0.5F, -0.5F, -0.5F, -0.5F, -0.5F};
+		field_51146 = new float[]{1.0F, 1.0F, 1.0F, 1.0F, 0.5F, 0.5F, 0.5F, 0.5F, -0.5F, -0.5F, -0.5F, -0.5F};
+		field_51147 = new float[]{0.0F, 0.0F, 0.0F, 0.0F, 3.0F, 3.0F, 3.0F, 3.0F, -3.0F, -3.0F, -3.0F, -3.0F};
+		field_51148 = new float[]{
+			0.0F,
+			0.0F,
+			0.0F,
+			0.0F,
+			MathHelper.cos(field_51141),
+			MathHelper.cos(field_51142),
+			MathHelper.cos(field_51142),
+			MathHelper.cos(field_51141),
+			-MathHelper.cos(field_51141),
+			-MathHelper.cos(field_51142),
+			-MathHelper.cos(field_51142),
+			-MathHelper.cos(field_51141)
+		};
+		field_51149 = new float[]{
+			-MathHelper.cos(field_51141),
+			-MathHelper.cos(field_51142),
+			-MathHelper.cos(field_51142),
+			-MathHelper.cos(field_51141),
+			0.0F,
+			0.0F,
+			0.0F,
+			0.0F,
+			0.0F,
+			0.0F,
+			0.0F,
+			0.0F
+		};
+		field_51151 = new float[]{
+			-MathHelper.sin(field_51141),
+			-MathHelper.sin(field_51142),
+			MathHelper.sin(field_51142),
+			MathHelper.sin(field_51141),
+			-MathHelper.sin(field_51141),
+			-MathHelper.sin(field_51142),
+			MathHelper.sin(field_51142),
+			MathHelper.sin(field_51141),
+			-MathHelper.sin(field_51141),
+			-MathHelper.sin(field_51142),
+			MathHelper.sin(field_51142),
+			MathHelper.sin(field_51141)
+		};
 
-	private static float getSpikePivotZ(int index, float animationProgress, float extension) {
-		return SPIKE_PIVOTS_Z[index] * getAngle(index, animationProgress, extension);
+		for (int i = 0; i < 12; i++) {
+			field_51145[i] = field_51145[i] * (float) Math.PI;
+			field_51146[i] = field_51146[i] * (float) Math.PI;
+			field_51148[i] = field_51148[i] * 9.4F;
+			field_51149[i] = field_51149[i] * 9.4F;
+			field_51151[i] = field_51151[i] * 9.4F;
+		}
 	}
 }

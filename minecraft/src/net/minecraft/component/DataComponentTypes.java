@@ -1,9 +1,12 @@
 package net.minecraft.component;
 
 import com.mojang.serialization.Codec;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import java.util.List;
 import java.util.function.UnaryOperator;
 import net.minecraft.block.entity.BeehiveBlockEntity;
+import net.minecraft.block.entity.FletchingTableBlockEntity;
 import net.minecraft.block.entity.Sherds;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.BannerPatternsComponent;
@@ -18,21 +21,26 @@ import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.component.type.FireworkExplosionComponent;
 import net.minecraft.component.type.FireworksComponent;
 import net.minecraft.component.type.FoodComponent;
+import net.minecraft.component.type.HeatComponent;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.component.type.LodestoneTrackerComponent;
 import net.minecraft.component.type.LoreComponent;
+import net.minecraft.component.type.LubricationComponent;
 import net.minecraft.component.type.MapColorComponent;
 import net.minecraft.component.type.MapDecorationsComponent;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.component.type.MapPostProcessingComponent;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.component.type.PotatoBaneComponent;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.component.type.ProfileComponent;
+import net.minecraft.component.type.SnekComponent;
 import net.minecraft.component.type.SuspiciousStewEffectsComponent;
 import net.minecraft.component.type.ToolComponent;
 import net.minecraft.component.type.UnbreakableComponent;
 import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.component.type.WrittenBookContentComponent;
+import net.minecraft.component.type.XpComponent;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.item.BlockPredicatesChecker;
 import net.minecraft.item.Instrument;
@@ -152,6 +160,13 @@ public class DataComponentTypes {
 	public static final DataComponentType<NbtComponent> ENTITY_DATA = register(
 		"entity_data", builder -> builder.codec(NbtComponent.CODEC_WITH_ID).packetCodec(NbtComponent.PACKET_CODEC)
 	);
+	public static final DataComponentType<FletchingTableBlockEntity.FletchingComponent> FLETCHING = register(
+		"fletching",
+		builder -> builder.codec(FletchingTableBlockEntity.FletchingComponent.CODEC).packetCodec(FletchingTableBlockEntity.FletchingComponent.PACKET_CODEC)
+	);
+	public static final DataComponentType<FletchingTableBlockEntity.ResinComponent> RESIN = register(
+		"resin", builder -> builder.codec(FletchingTableBlockEntity.ResinComponent.CODEC).packetCodec(FletchingTableBlockEntity.ResinComponent.PACKET_CODEC)
+	);
 	public static final DataComponentType<NbtComponent> BUCKET_ENTITY_DATA = register(
 		"bucket_entity_data", builder -> builder.codec(NbtComponent.CODEC).packetCodec(NbtComponent.PACKET_CODEC)
 	);
@@ -198,6 +213,30 @@ public class DataComponentTypes {
 	public static final DataComponentType<ContainerLock> LOCK = register("lock", builder -> builder.codec(ContainerLock.CODEC));
 	public static final DataComponentType<ContainerLootComponent> CONTAINER_LOOT = register(
 		"container_loot", builder -> builder.codec(ContainerLootComponent.CODEC)
+	);
+	public static final DataComponentType<XpComponent> XP = register("xp", builder -> builder.codec(XpComponent.CODEC).packetCodec(XpComponent.PACKET_CODEC));
+	public static final DataComponentType<SnekComponent> SNEK = register(
+		"snek", builder -> builder.codec(SnekComponent.CODEC).packetCodec(SnekComponent.PACKET_CODEC)
+	);
+	public static final DataComponentType<Boolean> HOVERED = register("hovered", builder -> builder.codec(Codec.BOOL).packetCodec(PacketCodecs.BOOL));
+	public static final DataComponentType<Integer> CLICKS = register("clicks", builder -> builder.codec(Codec.INT).packetCodec(PacketCodecs.INTEGER));
+	public static final DataComponentType<Integer> VIEWS = register("views", builder -> builder.codec(Codec.INT).packetCodec(PacketCodecs.INTEGER));
+	public static final DataComponentType<Integer> UNDERCOVER_ID = register("undercover_id", builder -> builder.codec(Codec.INT).packetCodec(PacketCodecs.INTEGER));
+	public static final DataComponentType<Int2IntMap> CONTACTS_MESSAGES = register(
+		"contacts_messages", builder -> builder.codec(Codecs.method_58804()).packetCodec(PacketCodecs.codec(Codecs.method_58804()))
+	);
+	public static final DataComponentType<IntIntPair> SECRET_MESSAGE = register(
+		"secret_message", builder -> builder.codec(Codecs.method_58811()).packetCodec(PacketCodecs.codec(Codecs.method_58811()))
+	);
+	public static final DataComponentType<LubricationComponent> LUBRICATION = register(
+		"lubrication", builder -> builder.codec(LubricationComponent.CODEC).packetCodec(LubricationComponent.PACKET_CODEC)
+	);
+	public static final DataComponentType<Boolean> EXPLICIT_FOIL = register("explicit_foil", builder -> builder.codec(Codec.BOOL).packetCodec(PacketCodecs.BOOL));
+	public static final DataComponentType<HeatComponent> HEAT = register(
+		"heat", builder -> builder.codec(HeatComponent.CODEC).packetCodec(HeatComponent.PACKET_CODEC)
+	);
+	public static final DataComponentType<PotatoBaneComponent> POTATO_BANE = register(
+		"potato_bane", builder -> builder.codec(PotatoBaneComponent.CODEC).packetCodec(PotatoBaneComponent.PACKET_CODEC)
 	);
 	public static final ComponentMap DEFAULT_ITEM_COMPONENTS = ComponentMap.builder()
 		.add(MAX_STACK_SIZE, 64)

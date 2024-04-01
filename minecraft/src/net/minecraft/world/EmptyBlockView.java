@@ -36,4 +36,9 @@ public enum EmptyBlockView implements BlockView {
 	public int getHeight() {
 		return 0;
 	}
+
+	@Override
+	public boolean isPotato() {
+		return false;
+	}
 }

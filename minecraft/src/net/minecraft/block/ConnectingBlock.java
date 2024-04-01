@@ -1,13 +1,10 @@
 package net.minecraft.block;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -22,14 +19,9 @@ public abstract class ConnectingBlock extends Block {
 	public static final BooleanProperty WEST = Properties.WEST;
 	public static final BooleanProperty UP = Properties.UP;
 	public static final BooleanProperty DOWN = Properties.DOWN;
-	public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ImmutableMap.copyOf(Util.make(Maps.newEnumMap(Direction.class), directions -> {
-		directions.put(Direction.NORTH, NORTH);
-		directions.put(Direction.EAST, EAST);
-		directions.put(Direction.SOUTH, SOUTH);
-		directions.put(Direction.WEST, WEST);
-		directions.put(Direction.UP, UP);
-		directions.put(Direction.DOWN, DOWN);
-	}));
+	public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = Map.of(
+		Direction.NORTH, NORTH, Direction.EAST, EAST, Direction.SOUTH, SOUTH, Direction.WEST, WEST, Direction.UP, UP, Direction.DOWN, DOWN
+	);
 	protected final VoxelShape[] facingsToShape;
 
 	protected ConnectingBlock(float radius, AbstractBlock.Settings settings) {

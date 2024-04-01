@@ -18,6 +18,8 @@ import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 import net.minecraft.world.gen.heightprovider.VeryBiasedToBottomHeightProvider;
 import net.minecraft.world.gen.placementmodifier.BiomePlacementModifier;
 import net.minecraft.world.gen.placementmodifier.BlockFilterPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.CloudPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.CountMultilayerPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.CountPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.EnvironmentScanPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.HeightRangePlacementModifier;
@@ -33,6 +35,7 @@ public class MiscPlacedFeatures {
 	public static final RegistryKey<PlacedFeature> ICEBERG_PACKED = PlacedFeatures.of("iceberg_packed");
 	public static final RegistryKey<PlacedFeature> ICEBERG_BLUE = PlacedFeatures.of("iceberg_blue");
 	public static final RegistryKey<PlacedFeature> BLUE_ICE = PlacedFeatures.of("blue_ice");
+	public static final RegistryKey<PlacedFeature> POTATO_CLOUD = PlacedFeatures.of("potato_cloud");
 	public static final RegistryKey<PlacedFeature> LAKE_LAVA_UNDERGROUND = PlacedFeatures.of("lake_lava_underground");
 	public static final RegistryKey<PlacedFeature> LAKE_LAVA_SURFACE = PlacedFeatures.of("lake_lava_surface");
 	public static final RegistryKey<PlacedFeature> DISK_CLAY = PlacedFeatures.of("disk_clay");
@@ -42,6 +45,7 @@ public class MiscPlacedFeatures {
 	public static final RegistryKey<PlacedFeature> FREEZE_TOP_LAYER = PlacedFeatures.of("freeze_top_layer");
 	public static final RegistryKey<PlacedFeature> VOID_START_PLATFORM = PlacedFeatures.of("void_start_platform");
 	public static final RegistryKey<PlacedFeature> DESERT_WELL = PlacedFeatures.of("desert_well");
+	public static final RegistryKey<PlacedFeature> HASH_WELL = PlacedFeatures.of("hash_well");
 	public static final RegistryKey<PlacedFeature> SPRING_LAVA = PlacedFeatures.of("spring_lava");
 	public static final RegistryKey<PlacedFeature> SPRING_LAVA_FROZEN = PlacedFeatures.of("spring_lava_frozen");
 	public static final RegistryKey<PlacedFeature> SPRING_WATER = PlacedFeatures.of("spring_water");
@@ -62,9 +66,11 @@ public class MiscPlacedFeatures {
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry12 = registryEntryLookup.getOrThrow(MiscConfiguredFeatures.FREEZE_TOP_LAYER);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry13 = registryEntryLookup.getOrThrow(MiscConfiguredFeatures.VOID_START_PLATFORM);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry14 = registryEntryLookup.getOrThrow(MiscConfiguredFeatures.DESERT_WELL);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry15 = registryEntryLookup.getOrThrow(MiscConfiguredFeatures.SPRING_LAVA_OVERWORLD);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry16 = registryEntryLookup.getOrThrow(MiscConfiguredFeatures.SPRING_LAVA_FROZEN);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry17 = registryEntryLookup.getOrThrow(MiscConfiguredFeatures.SPRING_WATER);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry15 = registryEntryLookup.getOrThrow(MiscConfiguredFeatures.HASH_WELL);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry16 = registryEntryLookup.getOrThrow(MiscConfiguredFeatures.SPRING_LAVA_OVERWORLD);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry17 = registryEntryLookup.getOrThrow(MiscConfiguredFeatures.SPRING_LAVA_FROZEN);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry18 = registryEntryLookup.getOrThrow(MiscConfiguredFeatures.SPRING_WATER);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry19 = registryEntryLookup.getOrThrow(MiscConfiguredFeatures.POTATO_CLOUD);
 		PlacedFeatures.register(
 			featureRegisterable,
 			ICE_SPIKE,
@@ -107,6 +113,15 @@ public class MiscPlacedFeatures {
 			CountPlacementModifier.of(UniformIntProvider.create(0, 19)),
 			SquarePlacementModifier.of(),
 			HeightRangePlacementModifier.uniform(YOffset.fixed(30), YOffset.fixed(61)),
+			BiomePlacementModifier.of()
+		);
+		PlacedFeatures.register(
+			featureRegisterable,
+			POTATO_CLOUD,
+			registryEntry19,
+			RarityFilterPlacementModifier.of(10),
+			SquarePlacementModifier.of(),
+			new CloudPlacementModifier(),
 			BiomePlacementModifier.of()
 		);
 		PlacedFeatures.register(
@@ -183,16 +198,15 @@ public class MiscPlacedFeatures {
 		);
 		PlacedFeatures.register(
 			featureRegisterable,
-			SPRING_LAVA,
+			HASH_WELL,
 			registryEntry15,
-			CountPlacementModifier.of(20),
-			SquarePlacementModifier.of(),
-			HeightRangePlacementModifier.of(VeryBiasedToBottomHeightProvider.create(YOffset.getBottom(), YOffset.belowTop(8), 8)),
+			CountMultilayerPlacementModifier.of(1, 2),
+			RarityFilterPlacementModifier.of(100),
 			BiomePlacementModifier.of()
 		);
 		PlacedFeatures.register(
 			featureRegisterable,
-			SPRING_LAVA_FROZEN,
+			SPRING_LAVA,
 			registryEntry16,
 			CountPlacementModifier.of(20),
 			SquarePlacementModifier.of(),
@@ -201,8 +215,17 @@ public class MiscPlacedFeatures {
 		);
 		PlacedFeatures.register(
 			featureRegisterable,
-			SPRING_WATER,
+			SPRING_LAVA_FROZEN,
 			registryEntry17,
+			CountPlacementModifier.of(20),
+			SquarePlacementModifier.of(),
+			HeightRangePlacementModifier.of(VeryBiasedToBottomHeightProvider.create(YOffset.getBottom(), YOffset.belowTop(8), 8)),
+			BiomePlacementModifier.of()
+		);
+		PlacedFeatures.register(
+			featureRegisterable,
+			SPRING_WATER,
+			registryEntry18,
 			CountPlacementModifier.of(25),
 			SquarePlacementModifier.of(),
 			HeightRangePlacementModifier.uniform(YOffset.getBottom(), YOffset.fixed(192)),

@@ -3,6 +3,7 @@ package net.minecraft.entity.boss;
 import java.util.UUID;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.Vec3d;
 
 public abstract class BossBar {
 	private final UUID uuid;
@@ -10,15 +11,19 @@ public abstract class BossBar {
 	protected float percent;
 	protected BossBar.Color color;
 	protected BossBar.Style style;
+	protected Vec3d field_50378;
+	protected int field_50379;
 	protected boolean darkenSky;
 	protected boolean dragonMusic;
 	protected boolean thickenFog;
 
-	public BossBar(UUID uuid, Text name, BossBar.Color color, BossBar.Style style) {
+	public BossBar(UUID uuid, Text name, BossBar.Color color, BossBar.Style style, Vec3d vec3d, int i) {
 		this.uuid = uuid;
 		this.name = name;
 		this.color = color;
 		this.style = style;
+		this.field_50378 = vec3d;
+		this.field_50379 = i;
 		this.percent = 1.0F;
 	}
 
@@ -83,6 +88,19 @@ public abstract class BossBar {
 
 	public boolean shouldThickenFog() {
 		return this.thickenFog;
+	}
+
+	public void method_58785(Vec3d vec3d, int i) {
+		this.field_50378 = vec3d;
+		this.field_50379 = i;
+	}
+
+	public Vec3d method_58815() {
+		return this.field_50378;
+	}
+
+	public int method_58816() {
+		return this.field_50379;
 	}
 
 	public static enum Color {

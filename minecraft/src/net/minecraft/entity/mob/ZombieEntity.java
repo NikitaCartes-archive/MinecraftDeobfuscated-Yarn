@@ -75,6 +75,7 @@ public class ZombieEntity extends HostileEntity {
 	 */
 	private static final TrackedData<Integer> ZOMBIE_TYPE = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> CONVERTING_IN_WATER = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> field_50474 = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	public static final float field_30519 = 0.05F;
 	public static final int field_30515 = 50;
 	public static final int field_30516 = 40;
@@ -104,7 +105,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	protected void initCustomGoals() {
-		this.goalSelector.add(2, new ZombieAttackGoal(this, 1.0, false));
+		this.goalSelector.add(2, new ZombieAttackGoal<>(this, 1.0, false));
 		this.goalSelector.add(6, new MoveThroughVillageGoal(this, 1.0, true, 4, this::canBreakDoors));
 		this.goalSelector.add(7, new WanderAroundFarGoal(this, 1.0));
 		this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge(ZombifiedPiglinEntity.class));
@@ -129,10 +130,15 @@ public class ZombieEntity extends HostileEntity {
 		builder.add(BABY, false);
 		builder.add(ZOMBIE_TYPE, 0);
 		builder.add(CONVERTING_IN_WATER, false);
+		builder.add(field_50474, false);
 	}
 
 	public boolean isConvertingInWater() {
 		return this.getDataTracker().get(CONVERTING_IN_WATER);
+	}
+
+	public boolean method_58926() {
+		return this.getDataTracker().get(field_50474);
 	}
 
 	public boolean canBreakDoors() {
@@ -202,7 +208,9 @@ public class ZombieEntity extends HostileEntity {
 	@Override
 	public void tick() {
 		if (!this.getWorld().isClient && this.isAlive() && !this.isAiDisabled()) {
-			if (this.isConvertingInWater()) {
+			if (this.method_58926()) {
+				this.method_58927();
+			} else if (this.isConvertingInWater()) {
 				this.ticksUntilWaterConversion--;
 				if (this.ticksUntilWaterConversion < 0) {
 					this.convertInWater();
@@ -256,6 +264,17 @@ public class ZombieEntity extends HostileEntity {
 
 	protected void convertInWater() {
 		this.convertTo(EntityType.DROWNED);
+		if (!this.isSilent()) {
+			this.getWorld().syncWorldEvent(null, WorldEvents.ZOMBIE_CONVERTS_TO_DROWNED, this.getBlockPos(), 0);
+		}
+	}
+
+	private void method_58925() {
+		this.getDataTracker().set(field_50474, true);
+	}
+
+	protected void method_58927() {
+		this.convertTo(EntityType.POISONOUS_POTATO_ZOMBIE);
 		if (!this.isSilent()) {
 			this.getWorld().syncWorldEvent(null, WorldEvents.ZOMBIE_CONVERTS_TO_DROWNED, this.getBlockPos(), 0);
 		}

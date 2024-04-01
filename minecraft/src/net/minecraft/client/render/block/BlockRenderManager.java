@@ -70,11 +70,11 @@ public class BlockRenderManager implements SynchronousResourceReloader {
 		}
 	}
 
-	public void renderFluid(BlockPos pos, BlockRenderView world, VertexConsumer vertexConsumer, BlockState blockState, FluidState fluidState) {
+	public void renderFluid(BlockPos pos, BlockRenderView world, VertexConsumer vertexConsumer, BlockState blockState, FluidState fluidState, int i, int j, int k) {
 		try {
-			this.fluidRenderer.render(world, pos, vertexConsumer, blockState, fluidState);
-		} catch (Throwable var9) {
-			CrashReport crashReport = CrashReport.create(var9, "Tesselating liquid in world");
+			this.fluidRenderer.render(world, pos, vertexConsumer, blockState, fluidState, (double)i, (double)j, (double)k);
+		} catch (Throwable var12) {
+			CrashReport crashReport = CrashReport.create(var12, "Tesselating liquid in world");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");
 			CrashReportSection.addBlockInfo(crashReportSection, world, pos, null);
 			throw new CrashException(crashReport);

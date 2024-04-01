@@ -578,6 +578,7 @@ public class GameOptions {
 	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_P the P key} by default.
 	 */
 	public final KeyBinding socialInteractionsKey = new KeyBinding("key.socialInteractions", GLFW.GLFW_KEY_P, KeyBinding.MULTIPLAYER_CATEGORY);
+	public final KeyBinding field_51057 = new KeyBinding("key.potato", GLFW.GLFW_KEY_APOSTROPHE, KeyBinding.MULTIPLAYER_CATEGORY);
 	/**
 	 * A key binding for taking a screenshot.
 	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_F2 the F2 key} by default.
@@ -660,6 +661,7 @@ public class GameOptions {
 			this.pickItemKey,
 			this.commandKey,
 			this.socialInteractionsKey,
+			this.field_51057,
 			this.screenshotKey,
 			this.togglePerspectiveKey,
 			this.smoothCameraKey,

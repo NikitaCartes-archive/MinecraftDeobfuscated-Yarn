@@ -46,6 +46,11 @@ public class BoggedEntity extends AbstractSkeletonEntity implements Shearable {
 	}
 
 	@Override
+	public boolean hasPotatoForm() {
+		return true;
+	}
+
+	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
 		super.initDataTracker(builder);
 		builder.add(SHEARED, false);

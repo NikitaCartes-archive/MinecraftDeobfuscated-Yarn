@@ -1692,7 +1692,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	public static enum OffsetType {
 		NONE,
 		XZ,
-		XYZ;
+		XYZ,
+		POTATO;
 	}
 
 	public interface Offsetter {
@@ -1985,6 +1986,12 @@ public abstract class AbstractBlock implements ToggleableFeature {
 
 		public AbstractBlock.Settings offset(AbstractBlock.OffsetType offsetType) {
 			switch (offsetType) {
+				case POTATO:
+					this.offsetter = Optional.of((AbstractBlock.Offsetter)(blockState, blockView, blockPos) -> {
+						BlockPos blockPos2 = blockPos.down();
+						return blockView.getBlockState(blockPos2).isFullCube(blockView, blockPos2) ? new Vec3d(0.0, 0.0625, 0.0) : Vec3d.ZERO;
+					});
+					break;
 				case XYZ:
 					this.offsetter = Optional.of((AbstractBlock.Offsetter)(state, world, pos) -> {
 						Block block = state.getBlock();

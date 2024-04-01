@@ -88,5 +88,25 @@ public class DimensionTypeRegistrar {
 				new DimensionType.MonsterSettings(false, true, UniformIntProvider.create(0, 7), 0)
 			)
 		);
+		dimensionTypeRegisterable.register(
+			DimensionTypes.POTATO,
+			new DimensionType(
+				OptionalLong.empty(),
+				true,
+				false,
+				false,
+				true,
+				1.0,
+				true,
+				false,
+				0,
+				256,
+				256,
+				BlockTags.INFINIBURN_OVERWORLD,
+				DimensionTypes.field_50992,
+				0.04F,
+				new DimensionType.MonsterSettings(true, false, UniformIntProvider.create(0, 7), 0)
+			)
+		);
 	}
 }

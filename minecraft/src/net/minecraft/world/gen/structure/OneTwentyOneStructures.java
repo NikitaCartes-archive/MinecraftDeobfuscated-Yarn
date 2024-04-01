@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.structure;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,6 +29,7 @@ public class OneTwentyOneStructures {
 			new JigsawStructure(
 				Structures.createConfig(
 					registryEntryLookup.getOrThrow(BiomeTags.TRIAL_CHAMBERS_HAS_STRUCTURE),
+					List.of(),
 					(Map<SpawnGroup, StructureSpawns>)Arrays.stream(SpawnGroup.values())
 						.collect(Collectors.toMap(group -> group, group -> new StructureSpawns(StructureSpawns.BoundingBox.PIECE, Pool.empty()))),
 					GenerationStep.Feature.UNDERGROUND_STRUCTURES,

@@ -12,6 +12,10 @@ public class Potions {
 	public static final RegistryEntry<Potion> MUNDANE = register("mundane", new Potion());
 	public static final RegistryEntry<Potion> THICK = register("thick", new Potion());
 	public static final RegistryEntry<Potion> AWKWARD = register("awkward", new Potion());
+	public static final RegistryEntry<Potion> POTATO_OIL = register("potato_oil", new Potion(new StatusEffectInstance(StatusEffects.POTATO_OIL, 1)));
+	public static final RegistryEntry<Potion> POISONOUS_POTATO_OIL = register(
+		"poisonous_potato_oil", new Potion(new StatusEffectInstance(StatusEffects.POTATO_OIL, 1), new StatusEffectInstance(StatusEffects.POISON, 200))
+	);
 	public static final RegistryEntry<Potion> NIGHT_VISION = register("night_vision", new Potion(new StatusEffectInstance(StatusEffects.NIGHT_VISION, 3600)));
 	public static final RegistryEntry<Potion> LONG_NIGHT_VISION = register(
 		"long_night_vision", new Potion("night_vision", new StatusEffectInstance(StatusEffects.NIGHT_VISION, 9600))
@@ -101,6 +105,7 @@ public class Potions {
 	public static final RegistryEntry<Potion> LONG_SLOW_FALLING = register(
 		"long_slow_falling", new Potion("slow_falling", new StatusEffectInstance(StatusEffects.SLOW_FALLING, 4800))
 	);
+	public static final RegistryEntry<Potion> STICKY = register("sticky", new Potion("sticky", new StatusEffectInstance(StatusEffects.STICKY, 1800)));
 
 	private static RegistryEntry<Potion> register(String name, Potion potion) {
 		return Registry.registerReference(Registries.POTION, new Identifier(name), potion);

@@ -51,7 +51,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.isOf(Blocks.FARMLAND);
+		return floor.isOf(Blocks.FARMLAND) || floor.isOf(Blocks.POISON_FARMLAND);
 	}
 
 	protected IntProperty getAgeProperty() {
@@ -66,7 +66,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 		return (Integer)state.get(this.getAgeProperty());
 	}
 
-	public BlockState withAge(int age) {
+	public BlockState withAge(int age, BlockState blockState) {
 		return this.getDefaultState().with(this.getAgeProperty(), Integer.valueOf(age));
 	}
 
@@ -85,8 +85,12 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 			int i = this.getAge(state);
 			if (i < this.getMaxAge()) {
 				float f = getAvailableMoisture(this, world, pos);
-				if (random.nextInt((int)(25.0F / f) + 1) == 0) {
-					world.setBlockState(pos, this.withAge(i + 1), Block.NOTIFY_LISTENERS);
+				if (state.isOf(Blocks.POTATOES)) {
+					if (random.nextInt((int)(6.25F / f) + 1) == 0) {
+						world.setBlockState(pos, this.withAge(i + 1, state), Block.NOTIFY_LISTENERS);
+					}
+				} else if (random.nextInt((int)(25.0F / f) + 1) == 0) {
+					world.setBlockState(pos, this.withAge(i + 1, state), Block.NOTIFY_LISTENERS);
 				}
 			}
 		}
@@ -99,7 +103,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 			i = j;
 		}
 
-		world.setBlockState(pos, this.withAge(i), Block.NOTIFY_LISTENERS);
+		world.setBlockState(pos, this.withAge(i, state), Block.NOTIFY_LISTENERS);
 	}
 
 	protected int getGrowthAmount(World world) {
@@ -113,10 +117,15 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
 				float g = 0.0F;
-				BlockState blockState = world.getBlockState(blockPos.add(i, 0, j));
-				if (blockState.isOf(Blocks.FARMLAND)) {
+				BlockPos blockPos2 = blockPos.add(i, 0, j);
+				BlockState blockState = world.getBlockState(blockPos2);
+				if (block instanceof PlantBlock plantBlock && plantBlock.canPlantOnTop(blockState, world, blockPos2)) {
 					g = 1.0F;
-					if ((Integer)blockState.get(FarmlandBlock.MOISTURE) > 0) {
+					if ((blockState.isOf(Blocks.FARMLAND) || blockState.isOf(Blocks.POISON_FARMLAND)) && (Integer)blockState.get(FarmlandBlock.MOISTURE) > 0) {
+						g = 3.0F;
+					}
+
+					if (blockState.isOf(Blocks.CORRUPTED_PEELGRASS_BLOCK)) {
 						g = 3.0F;
 					}
 				}
@@ -129,19 +138,19 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 			}
 		}
 
-		BlockPos blockPos2 = pos.north();
-		BlockPos blockPos3 = pos.south();
-		BlockPos blockPos4 = pos.west();
-		BlockPos blockPos5 = pos.east();
-		boolean bl = world.getBlockState(blockPos4).isOf(block) || world.getBlockState(blockPos5).isOf(block);
-		boolean bl2 = world.getBlockState(blockPos2).isOf(block) || world.getBlockState(blockPos3).isOf(block);
+		BlockPos blockPos3 = pos.north();
+		BlockPos blockPos4 = pos.south();
+		BlockPos blockPos5 = pos.west();
+		BlockPos blockPos2x = pos.east();
+		boolean bl = world.getBlockState(blockPos5).isOf(block) || world.getBlockState(blockPos2x).isOf(block);
+		boolean bl2 = world.getBlockState(blockPos3).isOf(block) || world.getBlockState(blockPos4).isOf(block);
 		if (bl && bl2) {
 			f /= 2.0F;
 		} else {
-			boolean bl3 = world.getBlockState(blockPos4.north()).isOf(block)
-				|| world.getBlockState(blockPos5.north()).isOf(block)
-				|| world.getBlockState(blockPos5.south()).isOf(block)
-				|| world.getBlockState(blockPos4.south()).isOf(block);
+			boolean bl3 = world.getBlockState(blockPos5.north()).isOf(block)
+				|| world.getBlockState(blockPos2x.north()).isOf(block)
+				|| world.getBlockState(blockPos2x.south()).isOf(block)
+				|| world.getBlockState(blockPos5.south()).isOf(block);
 			if (bl3) {
 				f /= 2.0F;
 			}

@@ -45,11 +45,13 @@ import net.minecraft.entity.mob.HoglinEntity;
 import net.minecraft.entity.mob.HuskEntity;
 import net.minecraft.entity.mob.IllusionerEntity;
 import net.minecraft.entity.mob.MagmaCubeEntity;
+import net.minecraft.entity.mob.MegaSpudEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.entity.mob.PiglinBruteEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.mob.PillagerEntity;
+import net.minecraft.entity.mob.PoisonousPotatoZombieEntity;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.SilverfishEntity;
@@ -72,6 +74,7 @@ import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.passive.ArmadilloEntity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.BatEntity;
+import net.minecraft.entity.passive.BatatoEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.CamelEntity;
 import net.minecraft.entity.passive.CatEntity;
@@ -116,11 +119,13 @@ import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
+import net.minecraft.entity.projectile.LashingPotatoHookEntity;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.entity.projectile.SpectralArrowEntity;
 import net.minecraft.entity.projectile.TridentEntity;
+import net.minecraft.entity.projectile.VineProjectileEntity;
 import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.entity.projectile.thrown.EggEntity;
@@ -207,11 +212,18 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.maxTrackingRange(4)
 			.trackingTickInterval(20)
 	);
+	public static final EntityType<VineProjectileEntity> VINE_PROJECTILE = register(
+		"vine_projectile",
+		EntityType.Builder.create(VineProjectileEntity::new, SpawnGroup.MISC).dimensions(0.1F, 0.1F).eyeHeight(0.13F).maxTrackingRange(4).trackingTickInterval(20)
+	);
 	public static final EntityType<AxolotlEntity> AXOLOTL = register(
 		"axolotl", EntityType.Builder.create(AxolotlEntity::new, SpawnGroup.AXOLOTLS).dimensions(0.75F, 0.42F).eyeHeight(0.2751F).maxTrackingRange(10)
 	);
 	public static final EntityType<BatEntity> BAT = register(
 		"bat", EntityType.Builder.create(BatEntity::new, SpawnGroup.AMBIENT).dimensions(0.5F, 0.9F).eyeHeight(0.45F).maxTrackingRange(5)
+	);
+	public static final EntityType<BatatoEntity> BATATO = register(
+		"batato", EntityType.Builder.create(BatatoEntity::new, SpawnGroup.AMBIENT).dimensions(0.5F, 0.9F).eyeHeight(0.45F).maxTrackingRange(5)
 	);
 	public static final EntityType<BeeEntity> BEE = register(
 		"bee", EntityType.Builder.create(BeeEntity::new, SpawnGroup.CREATURE).dimensions(0.7F, 0.6F).eyeHeight(0.3F).maxTrackingRange(8)
@@ -231,6 +243,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		EntityType.Builder.create(BoggedEntity::new, SpawnGroup.MONSTER)
 			.dimensions(0.6F, 1.99F)
 			.eyeHeight(1.74F)
+			.vehicleAttachment(-0.7F)
 			.maxTrackingRange(8)
 			.requires(FeatureFlags.UPDATE_1_21)
 	);
@@ -329,7 +342,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<ElderGuardianEntity> ELDER_GUARDIAN = register(
 		"elder_guardian",
-		EntityType.Builder.create(ElderGuardianEntity::new, SpawnGroup.MONSTER)
+		EntityType.Builder.create(ElderGuardianEntity::createElderGuardian, SpawnGroup.MONSTER)
 			.dimensions(1.9975F, 1.9975F)
 			.eyeHeight(0.99875F)
 			.passengerAttachments(2.350625F)
@@ -457,7 +470,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<GuardianEntity> GUARDIAN = register(
 		"guardian",
-		EntityType.Builder.create(GuardianEntity::new, SpawnGroup.MONSTER)
+		EntityType.Builder.create(GuardianEntity::createGuardian, SpawnGroup.MONSTER)
 			.dimensions(0.85F, 0.85F)
 			.eyeHeight(0.425F)
 			.passengerAttachments(0.975F)
@@ -640,6 +653,14 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.vehicleAttachment(-0.6F)
 			.maxTrackingRange(8)
 	);
+	public static final EntityType<ElderGuardianEntity> PLAGUEWHALE = register(
+		"plaguewhale",
+		EntityType.Builder.create(ElderGuardianEntity::createPlaguewhale, SpawnGroup.MONSTER)
+			.dimensions(1.9975F, 0.99875F)
+			.eyeHeight(0.499375F)
+			.passengerAttachments(1.1753125F)
+			.maxTrackingRange(10)
+	);
 	public static final EntityType<PolarBearEntity> POLAR_BEAR = register(
 		"polar_bear",
 		EntityType.Builder.create(PolarBearEntity::new, SpawnGroup.CREATURE).allowSpawningInside(Blocks.POWDER_SNOW).dimensions(1.4F, 1.4F).maxTrackingRange(10)
@@ -701,6 +722,9 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<SlimeEntity> SLIME = register(
 		"slime", EntityType.Builder.create(SlimeEntity::new, SpawnGroup.MONSTER).dimensions(0.52F, 0.52F).eyeHeight(0.325F).maxTrackingRange(10)
+	);
+	public static final EntityType<MegaSpudEntity> MEGA_SPUD = register(
+		"mega_spud", EntityType.Builder.create(MegaSpudEntity::new, SpawnGroup.MONSTER).dimensions(0.52F, 0.52F).eyeHeight(0.325F).maxTrackingRange(10)
 	);
 	public static final EntityType<SmallFireballEntity> SMALL_FIREBALL = register(
 		"small_fireball",
@@ -789,6 +813,14 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		EntityType.Builder.<TntMinecartEntity>create(TntMinecartEntity::new, SpawnGroup.MISC)
 			.dimensions(0.98F, 0.7F)
 			.passengerAttachments(0.1875F)
+			.maxTrackingRange(8)
+	);
+	public static final EntityType<GuardianEntity> TOXIFIN = register(
+		"toxifin",
+		EntityType.Builder.create(GuardianEntity::createToxifin, SpawnGroup.MONSTER)
+			.dimensions(0.85F, 0.425F)
+			.eyeHeight(0.2125F)
+			.passengerAttachments(0.4875F)
 			.maxTrackingRange(8)
 	);
 	public static final EntityType<TraderLlamaEntity> TRADER_LLAMA = register(
@@ -913,6 +945,15 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.vehicleAttachment(-0.7F)
 			.maxTrackingRange(8)
 	);
+	public static final EntityType<PoisonousPotatoZombieEntity> POISONOUS_POTATO_ZOMBIE = register(
+		"poisonous_potato_zombie",
+		EntityType.Builder.create(PoisonousPotatoZombieEntity::new, SpawnGroup.MONSTER)
+			.dimensions(0.6F, 1.95F)
+			.eyeHeight(1.74F)
+			.passengerAttachments(2.0125F)
+			.vehicleAttachment(-0.7F)
+			.maxTrackingRange(8)
+	);
 	public static final EntityType<ZombieHorseEntity> ZOMBIE_HORSE = register(
 		"zombie_horse",
 		EntityType.Builder.create(ZombieHorseEntity::new, SpawnGroup.CREATURE)
@@ -940,6 +981,10 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.vehicleAttachment(-0.7F)
 			.maxTrackingRange(8)
 	);
+	public static final EntityType<EyeOfPotatoEntity> EYE_OF_POTATO = register(
+		"eye_of_potato",
+		EntityType.Builder.<EyeOfPotatoEntity>create(EyeOfPotatoEntity::new, SpawnGroup.MISC).dimensions(0.25F, 0.25F).maxTrackingRange(4).trackingTickInterval(4)
+	);
 	public static final EntityType<PlayerEntity> PLAYER = register(
 		"player",
 		EntityType.Builder.<PlayerEntity>create(SpawnGroup.MISC)
@@ -959,6 +1004,19 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.dimensions(0.25F, 0.25F)
 			.maxTrackingRange(4)
 			.trackingTickInterval(5)
+	);
+	public static final EntityType<LashingPotatoHookEntity> LASHING_POTATO_HOOK = register(
+		"lashing_potato_hook",
+		EntityType.Builder.<LashingPotatoHookEntity>create(LashingPotatoHookEntity::new, SpawnGroup.MISC)
+			.disableSaving()
+			.disableSummon()
+			.dimensions(0.25F, 0.25F)
+			.maxTrackingRange(4)
+			.trackingTickInterval(5)
+	);
+	public static final EntityType<GridCarrierEntity> GRID_CARRIER = register(
+		"grid_carrier",
+		EntityType.Builder.create(GridCarrierEntity::new, SpawnGroup.MISC).disableSummon().dimensions(0.0F, 0.0F).maxTrackingRange(10).trackingTickInterval(2)
 	);
 	private final EntityType.EntityFactory<T> factory;
 	private final SpawnGroup spawnGroup;

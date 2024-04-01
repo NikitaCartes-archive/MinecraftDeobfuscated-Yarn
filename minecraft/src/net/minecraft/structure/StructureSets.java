@@ -25,6 +25,7 @@ public interface StructureSets {
 			new StructureSet(
 				List.of(
 					StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.VILLAGE_PLAINS)),
+					StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.VILLAGE_POTATO)),
 					StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.VILLAGE_DESERT)),
 					StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.VILLAGE_SAVANNA)),
 					StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.VILLAGE_SNOWY)),
@@ -91,7 +92,8 @@ public interface StructureSets {
 			new StructureSet(
 				List.of(
 					StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.MINESHAFT)),
-					StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.MINESHAFT_MESA))
+					StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.MINESHAFT_MESA)),
+					StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.MINESHAFT_POTATO))
 				),
 				new RandomSpreadStructurePlacement(
 					Vec3i.ZERO, StructurePlacement.FrequencyReductionMethod.LEGACY_TYPE_3, 0.004F, 0, Optional.empty(), 1, 0, SpreadType.LINEAR
@@ -111,6 +113,13 @@ public interface StructureSets {
 					StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.RUINED_PORTAL_NETHER))
 				),
 				new RandomSpreadStructurePlacement(40, 15, SpreadType.LINEAR, 34222645)
+			)
+		);
+		structureSetRegisterable.register(
+			StructureSetKeys.RUINED_PORTATOLS,
+			new StructureSet(
+				List.of(StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.RUINED_PORTATOL))),
+				new RandomSpreadStructurePlacement(28, 8, SpreadType.LINEAR, 31415926)
 			)
 		);
 		structureSetRegisterable.register(
@@ -142,6 +151,10 @@ public interface StructureSets {
 				),
 				new RandomSpreadStructurePlacement(27, 4, SpreadType.LINEAR, 30084232)
 			)
+		);
+		structureSetRegisterable.register(
+			StructureSetKeys.COLOSSEA,
+			new StructureSet(registryEntryLookup.getOrThrow(StructureKeys.COLOSSEUM), new RandomSpreadStructurePlacement(24, 5, SpreadType.LINEAR, 123456789))
 		);
 		structureSetRegisterable.register(
 			StructureSetKeys.NETHER_FOSSILS,

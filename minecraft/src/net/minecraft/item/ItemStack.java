@@ -31,6 +31,7 @@ import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.component.DataComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.enchantment.Enchantment;
@@ -66,6 +67,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
@@ -428,7 +430,7 @@ public final class ItemStack implements ComponentHolder {
 		if (this.isEmpty()) {
 			throw new IllegalStateException("Cannot encode empty ItemStack");
 		} else {
-			return Util.getResult(CODEC.encode(this, registries.getOps(NbtOps.INSTANCE), prefix), IllegalStateException::new);
+			return Util.getResult(CODEC.encode(this, registries.getOps(NbtOps.INSTANCE), prefix), string -> new IllegalStateException(string));
 		}
 	}
 
@@ -960,13 +962,19 @@ public final class ItemStack implements ComponentHolder {
 				this.getItem().appendTooltip(this, player == null ? null : player.getWorld(), list, context);
 			}
 
+			this.appendTooltip(DataComponentTypes.POTATO_BANE, consumer, context);
 			this.appendTooltip(DataComponentTypes.TRIM, consumer, context);
+			this.appendTooltip(DataComponentTypes.RESIN, consumer, context);
+			this.appendTooltip(DataComponentTypes.FLETCHING, consumer, context);
 			this.appendTooltip(DataComponentTypes.STORED_ENCHANTMENTS, consumer, context);
 			this.appendTooltip(DataComponentTypes.ENCHANTMENTS, consumer, context);
 			this.appendTooltip(DataComponentTypes.DYED_COLOR, consumer, context);
 			this.appendTooltip(DataComponentTypes.LORE, consumer, context);
+			this.appendTooltip(DataComponentTypes.XP, consumer, context);
 			this.appendAttributeModifiersTooltip(consumer, player);
 			this.appendTooltip(DataComponentTypes.UNBREAKABLE, consumer, context);
+			this.appendTooltip(DataComponentTypes.LUBRICATION, consumer, context);
+			this.appendTooltip(DataComponentTypes.BASE_COLOR, consumer, context);
 			BlockPredicatesChecker blockPredicatesChecker = this.get(DataComponentTypes.CAN_BREAK);
 			if (blockPredicatesChecker != null && blockPredicatesChecker.showInTooltip()) {
 				consumer.accept(ScreenTexts.EMPTY);
@@ -1007,13 +1015,15 @@ public final class ItemStack implements ComponentHolder {
 			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 				MutableBoolean mutableBoolean = new MutableBoolean(true);
 				this.applyAttributeModifiers(equipmentSlot, (attribute, modifier) -> {
-					if (mutableBoolean.isTrue()) {
-						textConsumer.accept(ScreenTexts.EMPTY);
-						textConsumer.accept(Text.translatable("item.modifiers." + equipmentSlot.getName()).formatted(Formatting.GRAY));
-						mutableBoolean.setFalse();
-					}
+					if (modifier.value() != 0.0) {
+						if (mutableBoolean.isTrue()) {
+							textConsumer.accept(ScreenTexts.EMPTY);
+							textConsumer.accept(Text.translatable("item.modifiers." + equipmentSlot.getName()).formatted(Formatting.GRAY));
+							mutableBoolean.setFalse();
+						}
 
-					this.appendAttributeModifierTooltip(textConsumer, player, attribute, modifier);
+						this.appendAttributeModifierTooltip(textConsumer, player, attribute, modifier);
+					}
 				});
 			}
 		}
@@ -1299,7 +1309,8 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	public SoundEvent getEatSound() {
-		return this.getItem().getEatSound();
+		FoodComponent foodComponent = this.get(DataComponentTypes.FOOD);
+		return foodComponent == null ? SoundEvents.ENTITY_GENERIC_EAT.value() : foodComponent.eatSound().value();
 	}
 
 	public SoundEvent getBreakSound() {
@@ -1308,5 +1319,10 @@ public final class ItemStack implements ComponentHolder {
 
 	public boolean takesDamageFrom(DamageSource source) {
 		return !this.contains(DataComponentTypes.FIRE_RESISTANT) || !source.isIn(DamageTypeTags.IS_FIRE);
+	}
+
+	public ItemStack setExplicitFoil() {
+		this.set(DataComponentTypes.EXPLICIT_FOIL, true);
+		return this;
 	}
 }

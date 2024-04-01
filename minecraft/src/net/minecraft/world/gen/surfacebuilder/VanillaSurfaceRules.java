@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.DyeColor;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.noise.NoiseParametersKeys;
@@ -19,13 +20,21 @@ public class VanillaSurfaceRules {
 	private static final MaterialRules.MaterialRule STONE = block(Blocks.STONE);
 	private static final MaterialRules.MaterialRule DEEPSLATE = block(Blocks.DEEPSLATE);
 	private static final MaterialRules.MaterialRule DIRT = block(Blocks.DIRT);
+	private static final MaterialRules.MaterialRule field_51233 = block(Blocks.TERRE_DE_POMME);
 	private static final MaterialRules.MaterialRule PODZOL = block(Blocks.PODZOL);
 	private static final MaterialRules.MaterialRule COARSE_DIRT = block(Blocks.COARSE_DIRT);
 	private static final MaterialRules.MaterialRule MYCELIUM = block(Blocks.MYCELIUM);
 	private static final MaterialRules.MaterialRule GRASS_BLOCK = block(Blocks.GRASS_BLOCK);
+	private static final MaterialRules.MaterialRule field_51234 = block(Blocks.PEELGRASS_BLOCK);
+	private static final MaterialRules.MaterialRule field_51235 = block(Blocks.CORRUPTED_PEELGRASS_BLOCK);
+	private static final MaterialRules.MaterialRule field_51236 = block((Block)Blocks.POTATO_PEELS_BLOCKS.get(DyeColor.GREEN));
+	private static final MaterialRules.MaterialRule field_51237 = block((Block)Blocks.POTATO_PEELS_BLOCKS.get(DyeColor.GRAY));
+	private static final MaterialRules.MaterialRule field_51238 = block((Block)Blocks.POTATO_PEELS_BLOCKS.get(DyeColor.LIGHT_GRAY));
+	private static final MaterialRules.MaterialRule field_51239 = block((Block)Blocks.POTATO_PEELS_BLOCKS.get(DyeColor.WHITE));
 	private static final MaterialRules.MaterialRule CALCITE = block(Blocks.CALCITE);
 	private static final MaterialRules.MaterialRule GRAVEL = block(Blocks.GRAVEL);
 	private static final MaterialRules.MaterialRule SAND = block(Blocks.SAND);
+	private static final MaterialRules.MaterialRule field_51240 = block(Blocks.GRAVTATER);
 	private static final MaterialRules.MaterialRule SANDSTONE = block(Blocks.SANDSTONE);
 	private static final MaterialRules.MaterialRule PACKED_ICE = block(Blocks.PACKED_ICE);
 	private static final MaterialRules.MaterialRule SNOW_BLOCK = block(Blocks.SNOW_BLOCK);
@@ -281,6 +290,37 @@ public class VanillaSurfaceRules {
 		MaterialRules.MaterialRule materialRule10 = MaterialRules.condition(MaterialRules.surface(), materialRule9);
 		builder.add(surface ? materialRule10 : materialRule9);
 		builder.add(MaterialRules.condition(MaterialRules.verticalGradient("deepslate", YOffset.fixed(0), YOffset.fixed(8)), DEEPSLATE));
+		return MaterialRules.sequence((MaterialRules.MaterialRule[])builder.build().toArray(MaterialRules.MaterialRule[]::new));
+	}
+
+	public static MaterialRules.MaterialRule method_59475() {
+		MaterialRules.MaterialRule materialRule = MaterialRules.sequence(
+			MaterialRules.condition(
+				MaterialRules.biome(BiomeKeys.HASH), MaterialRules.sequence(MaterialRules.condition(MaterialRules.STONE_DEPTH_CEILING, field_51233), field_51240)
+			)
+		);
+		MaterialRules.MaterialRule materialRule2 = MaterialRules.sequence(
+			MaterialRules.condition(
+				MaterialRules.STONE_DEPTH_FLOOR,
+				MaterialRules.sequence(
+					materialRule,
+					MaterialRules.condition(
+						MaterialRules.biome(BiomeKeys.WASTELAND),
+						MaterialRules.sequence(
+							MaterialRules.condition(surfaceNoiseThreshold(2.0), field_51235),
+							MaterialRules.condition(surfaceNoiseThreshold(1.0), field_51236),
+							MaterialRules.condition(surfaceNoiseThreshold(0.0), field_51237),
+							MaterialRules.condition(surfaceNoiseThreshold(-1.0), field_51238)
+						)
+					),
+					MaterialRules.condition(MaterialRules.biome(BiomeKeys.CORRUPTION), field_51235),
+					field_51234
+				)
+			),
+			MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH, MaterialRules.sequence(materialRule, field_51233))
+		);
+		Builder<MaterialRules.MaterialRule> builder = ImmutableList.builder();
+		builder.add(materialRule2);
 		return MaterialRules.sequence((MaterialRules.MaterialRule[])builder.build().toArray(MaterialRules.MaterialRule[]::new));
 	}
 

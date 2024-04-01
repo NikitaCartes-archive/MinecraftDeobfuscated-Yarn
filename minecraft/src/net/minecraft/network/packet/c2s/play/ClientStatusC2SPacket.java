@@ -38,6 +38,7 @@ public class ClientStatusC2SPacket implements Packet<ServerPlayPacketListener> {
 
 	public static enum Mode {
 		PERFORM_RESPAWN,
+		SPROUT_RESPAWN,
 		REQUEST_STATS;
 	}
 }

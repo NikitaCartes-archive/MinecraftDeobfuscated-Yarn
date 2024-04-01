@@ -4,6 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.RecipeUnlocker;
 import net.minecraft.util.collection.DefaultedList;
@@ -36,7 +37,7 @@ public class CraftingResultSlot extends Slot {
 	@Override
 	protected void onCrafted(ItemStack stack, int amount) {
 		this.amount += amount;
-		this.onCrafted(stack);
+		this.method_59028(stack);
 	}
 
 	@Override
@@ -44,10 +45,9 @@ public class CraftingResultSlot extends Slot {
 		this.amount += amount;
 	}
 
-	@Override
-	protected void onCrafted(ItemStack stack) {
+	protected void method_59028(ItemStack itemStack) {
 		if (this.amount > 0) {
-			stack.onCraftByPlayer(this.player.getWorld(), this.player, this.amount);
+			itemStack.onCraftByPlayer(this.player.getWorld(), this.player, this.amount);
 		}
 
 		if (this.inventory instanceof RecipeUnlocker recipeUnlocker) {
@@ -59,7 +59,11 @@ public class CraftingResultSlot extends Slot {
 
 	@Override
 	public void onTakeItem(PlayerEntity player, ItemStack stack) {
-		this.onCrafted(stack);
+		this.method_59028(stack);
+		if (player.method_58931("wrote_thoughts", 19) && stack.isOf(Items.POTATO_EYE)) {
+			player.method_58932("crafted_eyes");
+		}
+
 		DefaultedList<ItemStack> defaultedList = player.getWorld().getRecipeManager().getRemainingStacks(RecipeType.CRAFTING, this.input, player.getWorld());
 
 		for (int i = 0; i < defaultedList.size(); i++) {

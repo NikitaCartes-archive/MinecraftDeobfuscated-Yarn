@@ -45,7 +45,9 @@ public class BlockPileFeature extends Feature<BlockPileFeatureConfig> {
 	private boolean canPlace(WorldAccess world, BlockPos pos, Random random) {
 		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
-		return blockState.isOf(Blocks.DIRT_PATH) ? random.nextBoolean() : blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
+		return !blockState.isOf(Blocks.DIRT_PATH) && !blockState.isOf(Blocks.POISON_PATH)
+			? blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)
+			: random.nextBoolean();
 	}
 
 	private void addPileBlock(WorldAccess world, BlockPos pos, Random random, BlockPileFeatureConfig config) {

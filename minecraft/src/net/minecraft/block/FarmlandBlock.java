@@ -59,7 +59,9 @@ public class FarmlandBlock extends Block {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return !this.getDefaultState().canPlaceAt(ctx.getWorld(), ctx.getBlockPos()) ? Blocks.DIRT.getDefaultState() : super.getPlacementState(ctx);
+		return !this.getDefaultState().canPlaceAt(ctx.getWorld(), ctx.getBlockPos())
+			? (ctx.getWorld().isPotato() ? Blocks.TERRE_DE_POMME : Blocks.DIRT).getDefaultState()
+			: super.getPlacementState(ctx);
 	}
 
 	@Override
@@ -107,13 +109,13 @@ public class FarmlandBlock extends Block {
 	}
 
 	public static void setToDirt(@Nullable Entity entity, BlockState state, World world, BlockPos pos) {
-		BlockState blockState = pushEntitiesUpBeforeBlockChange(state, Blocks.DIRT.getDefaultState(), world, pos);
+		BlockState blockState = pushEntitiesUpBeforeBlockChange(state, (world.isPotato() ? Blocks.TERRE_DE_POMME : Blocks.DIRT).getDefaultState(), world, pos);
 		world.setBlockState(pos, blockState);
 		world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(entity, blockState));
 	}
 
 	private static boolean hasCrop(BlockView world, BlockPos pos) {
-		return world.getBlockState(pos.up()).isIn(BlockTags.MAINTAINS_FARMLAND);
+		return world.isPotato() ? true : world.getBlockState(pos.up()).isIn(BlockTags.MAINTAINS_FARMLAND);
 	}
 
 	private static boolean isWaterNearby(WorldView world, BlockPos pos) {

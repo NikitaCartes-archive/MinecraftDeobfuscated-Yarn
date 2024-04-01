@@ -33,6 +33,7 @@ public final class TextureKey {
 	public static final TextureKey DIRT = of("dirt");
 	public static final TextureKey FIRE = of("fire");
 	public static final TextureKey LANTERN = of("lantern");
+	public static final TextureKey FRYING_TABLE = of("frying_table");
 	public static final TextureKey PLATFORM = of("platform");
 	public static final TextureKey UNSTICKY = of("unsticky");
 	public static final TextureKey TORCH = of("torch");

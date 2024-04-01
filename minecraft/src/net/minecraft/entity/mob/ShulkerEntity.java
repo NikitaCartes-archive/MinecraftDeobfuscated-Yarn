@@ -357,7 +357,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 				return false;
 			} else {
 				Box box = calculateBoundingBox(this.getScale(), direction2, 1.0F).offset(pos).contract(1.0E-6);
-				return this.getWorld().isSpaceEmpty(this, box);
+				return this.getWorld().method_59085(this, box);
 			}
 		}
 	}
@@ -383,7 +383,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 				if (blockPos2.getY() > this.getWorld().getBottomY()
 					&& this.getWorld().isAir(blockPos2)
 					&& this.getWorld().getWorldBorder().contains(blockPos2)
-					&& this.getWorld().isSpaceEmpty(this, new Box(blockPos2).contract(1.0E-6))) {
+					&& this.getWorld().method_59085(this, new Box(blockPos2).contract(1.0E-6))) {
 					Direction direction = this.findAttachSide(blockPos2);
 					if (direction != null) {
 						this.detach();

@@ -1091,6 +1091,7 @@ public class StrongholdGenerator {
 			this.addBlock(world, blockState7.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[9])), 7, 3, 9, chunkBox);
 			this.addBlock(world, blockState7.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[10])), 7, 3, 10, chunkBox);
 			this.addBlock(world, blockState7.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[11])), 7, 3, 11, chunkBox);
+			this.addBlock(world, Blocks.PEDESTAL.getDefaultState(), 5, 2, 10, chunkBox);
 			if (bl) {
 				BlockState blockState8 = Blocks.END_PORTAL.getDefaultState();
 				this.addBlock(world, blockState8, 4, 3, 9, chunkBox);

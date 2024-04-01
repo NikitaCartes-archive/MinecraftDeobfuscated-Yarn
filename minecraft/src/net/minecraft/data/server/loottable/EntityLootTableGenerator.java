@@ -25,6 +25,7 @@ import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.EntitySubPredicateTypes;
+import net.minecraft.predicate.entity.PotatoPredicate;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
@@ -36,6 +37,7 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 	private static final Set<EntityType<?>> ENTITY_TYPES_IN_MISC_GROUP_TO_CHECK = ImmutableSet.of(
 		EntityType.PLAYER, EntityType.ARMOR_STAND, EntityType.IRON_GOLEM, EntityType.SNOW_GOLEM, EntityType.VILLAGER
 	);
+	protected static final EntityPredicate.Builder IS_POTATO = EntityPredicate.Builder.create().typeSpecific(new PotatoPredicate(true));
 	private final FeatureSet requiredFeatures;
 	private final FeatureSet featureSet;
 	private final Map<EntityType<?>, Map<RegistryKey<LootTable>, LootTable.Builder>> lootTables = Maps.<EntityType<?>, Map<RegistryKey<LootTable>, LootTable.Builder>>newHashMap();

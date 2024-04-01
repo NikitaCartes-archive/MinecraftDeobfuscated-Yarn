@@ -212,6 +212,12 @@ public final class Biome {
 		return FoliageColors.getColor(d, e);
 	}
 
+	public int method_59092(float f, float g) {
+		double d = (double)MathHelper.clamp(this.weather.temperature + f, 0.0F, 1.0F);
+		double e = (double)MathHelper.clamp(this.weather.downfall + g, 0.0F, 1.0F);
+		return FoliageColors.getColor(d, e);
+	}
+
 	public float getTemperature() {
 		return this.weather.temperature;
 	}

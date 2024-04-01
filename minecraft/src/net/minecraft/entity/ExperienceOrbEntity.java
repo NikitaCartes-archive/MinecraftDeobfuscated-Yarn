@@ -2,6 +2,7 @@ package net.minecraft.entity;
 
 import java.util.List;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.damage.DamageSource;
@@ -31,7 +32,8 @@ public class ExperienceOrbEntity extends Entity {
 	private int health = 5;
 	private int amount;
 	private int pickingCount = 1;
-	private PlayerEntity target;
+	@Nullable
+	private ExperienceOrbEntity.class_9497 target;
 
 	public ExperienceOrbEntity(World world, double x, double y, double z, int amount) {
 		this(EntityType.EXPERIENCE_ORB, world);
@@ -85,18 +87,16 @@ public class ExperienceOrbEntity extends Entity {
 			this.expensiveUpdate();
 		}
 
-		if (this.target != null && (this.target.isSpectator() || this.target.isDead())) {
-			this.target = null;
-		}
-
 		if (this.target != null) {
-			Vec3d vec3d = new Vec3d(
-				this.target.getX() - this.getX(), this.target.getY() + (double)this.target.getStandingEyeHeight() / 2.0 - this.getY(), this.target.getZ() - this.getZ()
-			);
-			double d = vec3d.lengthSquared();
-			if (d < 64.0) {
-				double e = 1.0 - Math.sqrt(d) / 8.0;
-				this.setVelocity(this.getVelocity().add(vec3d.normalize().multiply(e * e * 0.1)));
+			if (this.target.method_58860()) {
+				Vec3d vec3d = this.target.method_58859().subtract(this.getX(), this.getY(), this.getZ());
+				double d = vec3d.lengthSquared();
+				if (d < 64.0) {
+					double e = 1.0 - Math.sqrt(d) / 8.0;
+					this.setVelocity(this.getVelocity().add(vec3d.normalize().multiply(e * e * 0.1)));
+				}
+			} else {
+				this.target = null;
 			}
 		}
 
@@ -130,8 +130,11 @@ public class ExperienceOrbEntity extends Entity {
 	 * and assigns a new target if there is none. It then tries to merge nearby experience orbs.
 	 */
 	private void expensiveUpdate() {
-		if (this.target == null || this.target.squaredDistanceTo(this) > 64.0) {
-			this.target = this.getWorld().getClosestPlayer(this, 8.0);
+		if (this.target == null || this.target.method_58859().squaredDistanceTo(this.getX(), this.getY(), this.getZ()) > 64.0) {
+			PlayerEntity playerEntity = this.getWorld().getClosestPlayer(this, 8.0);
+			if (playerEntity != null) {
+				this.target = new ExperienceOrbEntity.class_9496(playerEntity);
+			}
 		}
 
 		if (this.getWorld() instanceof ServerWorld) {
@@ -272,6 +275,10 @@ public class ExperienceOrbEntity extends Entity {
 		return this.amount;
 	}
 
+	public int method_58858() {
+		return this.amount * this.pickingCount;
+	}
+
 	public int getOrbSize() {
 		if (this.amount >= 2477) {
 			return 10;
@@ -330,8 +337,57 @@ public class ExperienceOrbEntity extends Entity {
 		return new ExperienceOrbSpawnS2CPacket(this);
 	}
 
+	public void method_58857(BlockPos blockPos) {
+		ExperienceOrbEntity.class_9495 lv = new ExperienceOrbEntity.class_9495(blockPos);
+		if (this.target == null || this.target.method_58859().distanceTo(this.getPos()) > lv.method_58859().distanceTo(this.getPos())) {
+			this.target = lv;
+		}
+	}
+
 	@Override
 	public SoundCategory getSoundCategory() {
 		return SoundCategory.AMBIENT;
+	}
+
+	static class class_9495 implements ExperienceOrbEntity.class_9497 {
+		private final BlockPos field_50405;
+
+		class_9495(BlockPos blockPos) {
+			this.field_50405 = blockPos;
+		}
+
+		@Override
+		public Vec3d method_58859() {
+			return Vec3d.ofCenter(this.field_50405);
+		}
+
+		@Override
+		public boolean method_58860() {
+			return true;
+		}
+	}
+
+	static class class_9496 implements ExperienceOrbEntity.class_9497 {
+		private final PlayerEntity field_50406;
+
+		class_9496(PlayerEntity playerEntity) {
+			this.field_50406 = playerEntity;
+		}
+
+		@Override
+		public Vec3d method_58859() {
+			return new Vec3d(this.field_50406.getX(), this.field_50406.getY() + (double)this.field_50406.getStandingEyeHeight() / 2.0, this.field_50406.getZ());
+		}
+
+		@Override
+		public boolean method_58860() {
+			return !this.field_50406.isSpectator() && !this.field_50406.isDead();
+		}
+	}
+
+	interface class_9497 {
+		Vec3d method_58859();
+
+		boolean method_58860();
 	}
 }

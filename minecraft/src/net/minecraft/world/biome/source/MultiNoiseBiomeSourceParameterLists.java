@@ -10,11 +10,13 @@ import net.minecraft.world.biome.Biome;
 public class MultiNoiseBiomeSourceParameterLists {
 	public static final RegistryKey<MultiNoiseBiomeSourceParameterList> NETHER = of("nether");
 	public static final RegistryKey<MultiNoiseBiomeSourceParameterList> OVERWORLD = of("overworld");
+	public static final RegistryKey<MultiNoiseBiomeSourceParameterList> POTATO = of("potato");
 
 	public static void bootstrap(Registerable<MultiNoiseBiomeSourceParameterList> registry) {
 		RegistryEntryLookup<Biome> registryEntryLookup = registry.getRegistryLookup(RegistryKeys.BIOME);
 		registry.register(NETHER, new MultiNoiseBiomeSourceParameterList(MultiNoiseBiomeSourceParameterList.Preset.NETHER, registryEntryLookup));
 		registry.register(OVERWORLD, new MultiNoiseBiomeSourceParameterList(MultiNoiseBiomeSourceParameterList.Preset.OVERWORLD, registryEntryLookup));
+		registry.register(POTATO, new MultiNoiseBiomeSourceParameterList(MultiNoiseBiomeSourceParameterList.Preset.POTATO, registryEntryLookup));
 	}
 
 	private static RegistryKey<MultiNoiseBiomeSourceParameterList> of(String id) {
