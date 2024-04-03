@@ -32,7 +32,6 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	private Entity owner;
 	private boolean leftOwner;
 	private boolean shot;
-	protected boolean deflected;
 
 	public ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
 		super(entityType, world);
@@ -191,19 +190,25 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 		this.setVelocity(this.getVelocity().add(vec3d.x, shooter.isOnGround() ? 0.0 : vec3d.y, vec3d.z));
 	}
 
+	protected ProjectileDeflector deflectOrCollide(HitResult hitResult) {
+		if (hitResult.getType() == HitResult.Type.ENTITY) {
+			EntityHitResult entityHitResult = (EntityHitResult)hitResult;
+			ProjectileDeflector projectileDeflector = entityHitResult.getEntity().getProjectileDeflector(this);
+			if (projectileDeflector != ProjectileDeflector.NONE) {
+				projectileDeflector.deflect(this, entityHitResult.getEntity(), this.random);
+				this.scheduleVelocityUpdate();
+				return projectileDeflector;
+			}
+		}
+
+		this.onCollision(hitResult);
+		return ProjectileDeflector.NONE;
+	}
+
 	protected void onCollision(HitResult hitResult) {
 		HitResult.Type type = hitResult.getType();
 		if (type == HitResult.Type.ENTITY) {
 			EntityHitResult entityHitResult = (EntityHitResult)hitResult;
-			if (!this.deflected) {
-				ProjectileDeflector projectileDeflector = entityHitResult.getEntity().getProjectileDeflector(this);
-				if (projectileDeflector != ProjectileDeflector.NONE) {
-					projectileDeflector.deflect(this, entityHitResult.getEntity(), this.random);
-					this.deflected = true;
-					return;
-				}
-			}
-
 			this.onEntityHit(entityHitResult);
 			this.getWorld().emitGameEvent(GameEvent.PROJECTILE_LAND, hitResult.getPos(), GameEvent.Emitter.of(this, null));
 		} else if (type == HitResult.Type.BLOCK) {
@@ -286,5 +291,8 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 
 	public boolean canBreakBlocks(World world) {
 		return this.getType().isIn(EntityTypeTags.IMPACT_PROJECTILES) && world.getGameRules().getBoolean(GameRules.PROJECTILES_CAN_BREAK_BLOCKS);
+	}
+
+	public void onDeflected() {
 	}
 }

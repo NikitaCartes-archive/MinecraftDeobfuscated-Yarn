@@ -434,7 +434,7 @@ public class ChunkBuilder {
 			protected ChunkRendererRegion region;
 
 			public RebuildTask(double distance, @Nullable ChunkRendererRegion region, boolean prioritized) {
-				super(distance, prioritized);
+				super(BuiltChunk.this, distance, prioritized);
 				this.region = region;
 			}
 
@@ -601,7 +601,7 @@ public class ChunkBuilder {
 			private final ChunkBuilder.ChunkData data;
 
 			public SortTask(double distance, ChunkBuilder.ChunkData data) {
-				super(distance, true);
+				super(BuiltChunk.this, distance, true);
 				this.data = data;
 			}
 
@@ -668,7 +668,7 @@ public class ChunkBuilder {
 			protected final AtomicBoolean cancelled = new AtomicBoolean(false);
 			protected final boolean prioritized;
 
-			public Task(double distance, boolean prioritized) {
+			public Task(ChunkBuilder.BuiltChunk builtChunk, double distance, boolean prioritized) {
 				this.distance = distance;
 				this.prioritized = prioritized;
 			}

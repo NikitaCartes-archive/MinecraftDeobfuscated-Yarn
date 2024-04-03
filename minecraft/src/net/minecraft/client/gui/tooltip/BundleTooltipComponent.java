@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import org.apache.commons.lang3.math.Fraction;
 
 @Environment(EnvType.CLIENT)
 public class BundleTooltipComponent implements TooltipComponent {
@@ -45,7 +46,7 @@ public class BundleTooltipComponent implements TooltipComponent {
 		int i = this.getColumns();
 		int j = this.getRows();
 		context.drawGuiTexture(BACKGROUND_TEXTURE, x, y, this.getColumnsWidth(), this.getRowsHeight());
-		boolean bl = this.field_49537.getOccupancy() >= 64;
+		boolean bl = this.field_49537.getOccupancy().compareTo(Fraction.ONE) >= 0;
 		int k = 0;
 
 		for (int l = 0; l < j; l++) {

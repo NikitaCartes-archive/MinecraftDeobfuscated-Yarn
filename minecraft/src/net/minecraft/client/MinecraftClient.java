@@ -89,7 +89,7 @@ import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsScreen;
 import net.minecraft.client.gui.screen.world.LevelLoadingScreen;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -107,7 +107,6 @@ import net.minecraft.client.option.Perspective;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.RealmsPeriodicCheckers;
-import net.minecraft.client.realms.util.Realms32BitWarningChecker;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferBuilderStorage;
@@ -361,7 +360,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final String versionType;
 	private final Proxy networkProxy;
 	private final LevelStorage levelStorage;
-	private final boolean is64Bit;
 	private final boolean isDemo;
 	private final boolean multiplayerEnabled;
 	private final boolean onlineChatEnabled;
@@ -483,7 +481,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private double gpuUtilizationPercentage;
 	@Nullable
 	private GlTimer.Query currentGlTimerQuery;
-	private final Realms32BitWarningChecker realms32BitWarningChecker;
 	private final NarratorManager narratorManager;
 	private final MessageHandler messageHandler;
 	private AbuseReportContext abuseReportContext;
@@ -537,7 +534,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.isDemo = args.game.demo;
 		this.multiplayerEnabled = !args.game.multiplayerDisabled;
 		this.onlineChatEnabled = !args.game.onlineChatDisabled;
-		this.is64Bit = checkIs64Bit();
 		this.server = null;
 		KeybindTranslations.setFactory(KeyBinding::getLocalizedName);
 		this.dataFixer = Schemas.getFixer();
@@ -625,9 +621,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		try {
 			int i = Runtime.getRuntime().availableProcessors();
-			int j = this.is64Bit() ? i : Math.min(i, 4);
 			Tessellator.initialize();
-			this.bufferBuilders = new BufferBuilderStorage(j);
+			this.bufferBuilders = new BufferBuilderStorage(i);
 		} catch (OutOfMemoryError var12) {
 			TinyFileDialogs.tinyfd_messageBox(
 				"Minecraft",
@@ -696,7 +691,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.gameRenderer.preloadPrograms(this.defaultResourcePack.getFactory());
 		this.telemetryManager = new TelemetryManager(this, this.userApiService, this.session);
 		this.profileKeys = ProfileKeys.create(this.userApiService, this.session, path);
-		this.realms32BitWarningChecker = new Realms32BitWarningChecker(this);
 		this.narratorManager = new NarratorManager(this);
 		this.narratorManager.checkNarratorLibrary(this.options.getNarrator().getValue() != NarratorMode.OFF);
 		this.messageHandler = new MessageHandler(this);
@@ -927,7 +921,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			.put(
 				SearchManager.ITEM_TOOLTIP,
 				stacks -> new TextSearchProvider(
-						stack -> stack.getTooltip(null, TooltipContext.Default.BASIC.withCreative())
+						stack -> stack.getTooltip(Item.TooltipContext.DEFAULT, null, TooltipType.Default.BASIC.withCreative())
 								.stream()
 								.map(tooltip -> Formatting.strip(tooltip.getString()).trim())
 								.filter(string -> !string.isEmpty()),
@@ -940,13 +934,16 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			.put(
 				SearchManager.RECIPE_OUTPUT,
 				stacks -> new TextSearchProvider(
-						recipeResultCollection -> recipeResultCollection.getAllRecipes()
+						recipeResults -> {
+							Item.TooltipContext tooltipContext = Item.TooltipContext.create(recipeResults.getRegistryManager());
+							return recipeResults.getAllRecipes()
 								.stream()
 								.flatMap(
-									recipeEntry -> recipeEntry.value().getResult(recipeResultCollection.getRegistryManager()).getTooltip(null, TooltipContext.Default.BASIC).stream()
+									recipeEntry -> recipeEntry.value().getResult(recipeResults.getRegistryManager()).getTooltip(tooltipContext, null, TooltipType.Default.BASIC).stream()
 								)
 								.map(text -> Formatting.strip(text.getString()).trim())
-								.filter(string -> !string.isEmpty()),
+								.filter(string -> !string.isEmpty());
+						},
 						recipeResultCollection -> recipeResultCollection.getAllRecipes()
 								.stream()
 								.map(recipeEntry -> Registries.ITEM.getId(recipeEntry.value().getResult(recipeResultCollection.getRegistryManager()).getItem())),
@@ -962,19 +959,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private void handleGlErrorByDisableVsync(int error, long description) {
 		this.options.getEnableVsync().setValue(false);
 		this.options.write();
-	}
-
-	private static boolean checkIs64Bit() {
-		String[] strings = new String[]{"sun.arch.data.model", "com.ibm.vm.bitmode", "os.arch"};
-
-		for (String string : strings) {
-			String string2 = System.getProperty(string);
-			if (string2 != null && string2.contains("64")) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	public Framebuffer getFramebuffer() {
@@ -2526,7 +2510,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private void addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity, DynamicRegistryManager registryManager) {
-		NbtCompound nbtCompound = blockEntity.createComponentlessNbt(registryManager);
+		NbtCompound nbtCompound = blockEntity.createComponentlessNbtWithIdentifyingData(registryManager);
 		blockEntity.removeFromCopiedStackNbt(nbtCompound);
 		BlockItem.setBlockEntityData(stack, blockEntity.getType(), nbtCompound);
 		stack.applyComponentsFrom(blockEntity.createComponentMap());
@@ -2722,10 +2706,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public Function<Identifier, Sprite> getSpriteAtlas(Identifier id) {
 		return this.bakedModelManager.getAtlas(id)::getSprite;
-	}
-
-	public boolean is64Bit() {
-		return this.is64Bit;
 	}
 
 	public boolean isPaused() {
@@ -3077,10 +3057,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public void loadBlockList() {
 		this.socialInteractionsManager.loadBlockList();
 		this.getProfileKeys().fetchKeyPair();
-	}
-
-	public Realms32BitWarningChecker getRealms32BitWarningChecker() {
-		return this.realms32BitWarningChecker;
 	}
 
 	@Nullable

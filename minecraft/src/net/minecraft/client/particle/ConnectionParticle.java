@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 
 @Environment(EnvType.CLIENT)
 public class ConnectionParticle extends SpriteBillboardParticle {
@@ -112,14 +112,14 @@ public class ConnectionParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class EnchantFactory implements ParticleFactory<DefaultParticleType> {
+	public static class EnchantFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public EnchantFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			ConnectionParticle connectionParticle = new ConnectionParticle(clientWorld, d, e, f, g, h, i);
 			connectionParticle.setSprite(this.spriteProvider);
 			return connectionParticle;
@@ -127,14 +127,14 @@ public class ConnectionParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class NautilusFactory implements ParticleFactory<DefaultParticleType> {
+	public static class NautilusFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public NautilusFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			ConnectionParticle connectionParticle = new ConnectionParticle(clientWorld, d, e, f, g, h, i);
 			connectionParticle.setSprite(this.spriteProvider);
 			return connectionParticle;
@@ -142,14 +142,14 @@ public class ConnectionParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class VaultConnectionFactory implements ParticleFactory<DefaultParticleType> {
+	public static class VaultConnectionFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public VaultConnectionFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			ConnectionParticle connectionParticle = new ConnectionParticle(clientWorld, d, e, f, g, h, i, true, new Particle.DynamicAlpha(0.0F, 0.6F, 0.25F, 1.0F));
 			connectionParticle.scale(1.5F);
 			connectionParticle.setSprite(this.spriteProvider);

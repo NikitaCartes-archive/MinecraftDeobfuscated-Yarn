@@ -77,9 +77,12 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 			int k = jx;
 
 			for (int l : intList) {
-				int m = RecipeMatcher.getStackFromId(l).getMaxCount();
-				if (m < k) {
-					k = m;
+				ItemStack itemStack2 = RecipeMatcher.getStackFromId(l);
+				if (!itemStack2.isEmpty()) {
+					int m = itemStack2.getMaxCount();
+					if (m < k) {
+						k = m;
+					}
 				}
 			}
 

@@ -19,8 +19,8 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.recipe.CampfireCookingRecipe;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.tag.BlockTags;
@@ -248,9 +248,9 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	public static void spawnSmokeParticle(World world, BlockPos pos, boolean isSignal, boolean lotsOfSmoke) {
 		Random random = world.getRandom();
-		DefaultParticleType defaultParticleType = isSignal ? ParticleTypes.CAMPFIRE_SIGNAL_SMOKE : ParticleTypes.CAMPFIRE_COSY_SMOKE;
+		SimpleParticleType simpleParticleType = isSignal ? ParticleTypes.CAMPFIRE_SIGNAL_SMOKE : ParticleTypes.CAMPFIRE_COSY_SMOKE;
 		world.addImportantParticle(
-			defaultParticleType,
+			simpleParticleType,
 			true,
 			(double)pos.getX() + 0.5 + random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1),
 			(double)pos.getY() + random.nextDouble() + random.nextDouble(),

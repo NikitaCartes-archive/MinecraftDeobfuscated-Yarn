@@ -37,10 +37,10 @@ public class ItemStackArgument {
 
 	public ItemStack createStack(int amount, boolean checkOverstack) throws CommandSyntaxException {
 		ItemStack itemStack = new ItemStack(this.item, amount);
+		itemStack.applyComponentsFrom(this.components);
 		if (checkOverstack && amount > itemStack.getMaxCount()) {
 			throw OVERSTACKED_EXCEPTION.create(this.getIdString(), itemStack.getMaxCount());
 		} else {
-			itemStack.applyComponentsFrom(this.components);
 			return itemStack;
 		}
 	}

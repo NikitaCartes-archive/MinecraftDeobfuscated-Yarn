@@ -301,16 +301,12 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 			case EMPTY:
 				this.rightArm.yaw = 0.0F;
 				break;
-			case BLOCK:
-				this.positionBlockingArm(this.rightArm, true);
-				break;
 			case ITEM:
 				this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) (Math.PI / 10);
 				this.rightArm.yaw = 0.0F;
 				break;
-			case THROW_SPEAR:
-				this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) Math.PI;
-				this.rightArm.yaw = 0.0F;
+			case BLOCK:
+				this.positionBlockingArm(this.rightArm, true);
 				break;
 			case BOW_AND_ARROW:
 				this.rightArm.yaw = -0.1F + this.head.yaw;
@@ -318,15 +314,15 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 				this.rightArm.pitch = (float) (-Math.PI / 2) + this.head.pitch;
 				this.leftArm.pitch = (float) (-Math.PI / 2) + this.head.pitch;
 				break;
+			case THROW_SPEAR:
+				this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) Math.PI;
+				this.rightArm.yaw = 0.0F;
+				break;
 			case CROSSBOW_CHARGE:
 				CrossbowPosing.charge(this.rightArm, this.leftArm, entity, true);
 				break;
 			case CROSSBOW_HOLD:
 				CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, true);
-				break;
-			case BRUSH:
-				this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) (Math.PI / 5);
-				this.rightArm.yaw = 0.0F;
 				break;
 			case SPYGLASS:
 				this.rightArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622F - (entity.isInSneakingPose() ? (float) (Math.PI / 12) : 0.0F), -2.4F, 3.3F);
@@ -335,6 +331,10 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 			case TOOT_HORN:
 				this.rightArm.pitch = MathHelper.clamp(this.head.pitch, -1.2F, 1.2F) - 1.4835298F;
 				this.rightArm.yaw = this.head.yaw - (float) (Math.PI / 6);
+				break;
+			case BRUSH:
+				this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) (Math.PI / 5);
+				this.rightArm.yaw = 0.0F;
 		}
 	}
 
@@ -343,16 +343,12 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 			case EMPTY:
 				this.leftArm.yaw = 0.0F;
 				break;
-			case BLOCK:
-				this.positionBlockingArm(this.leftArm, false);
-				break;
 			case ITEM:
 				this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) (Math.PI / 10);
 				this.leftArm.yaw = 0.0F;
 				break;
-			case THROW_SPEAR:
-				this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) Math.PI;
-				this.leftArm.yaw = 0.0F;
+			case BLOCK:
+				this.positionBlockingArm(this.leftArm, false);
 				break;
 			case BOW_AND_ARROW:
 				this.rightArm.yaw = -0.1F + this.head.yaw - 0.4F;
@@ -360,15 +356,15 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 				this.rightArm.pitch = (float) (-Math.PI / 2) + this.head.pitch;
 				this.leftArm.pitch = (float) (-Math.PI / 2) + this.head.pitch;
 				break;
+			case THROW_SPEAR:
+				this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) Math.PI;
+				this.leftArm.yaw = 0.0F;
+				break;
 			case CROSSBOW_CHARGE:
 				CrossbowPosing.charge(this.rightArm, this.leftArm, entity, false);
 				break;
 			case CROSSBOW_HOLD:
 				CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, false);
-				break;
-			case BRUSH:
-				this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) (Math.PI / 5);
-				this.leftArm.yaw = 0.0F;
 				break;
 			case SPYGLASS:
 				this.leftArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622F - (entity.isInSneakingPose() ? (float) (Math.PI / 12) : 0.0F), -2.4F, 3.3F);
@@ -377,6 +373,10 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 			case TOOT_HORN:
 				this.leftArm.pitch = MathHelper.clamp(this.head.pitch, -1.2F, 1.2F) - 1.4835298F;
 				this.leftArm.yaw = this.head.yaw + (float) (Math.PI / 6);
+				break;
+			case BRUSH:
+				this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) (Math.PI / 5);
+				this.leftArm.yaw = 0.0F;
 		}
 	}
 

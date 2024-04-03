@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -61,27 +61,27 @@ public class CloudParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class CloudFactory implements ParticleFactory<DefaultParticleType> {
+	public static class CloudFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public CloudFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			return new CloudParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class SneezeFactory implements ParticleFactory<DefaultParticleType> {
+	public static class SneezeFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public SneezeFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new CloudParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 			particle.setColor(200.0F, 50.0F, 120.0F);
 			particle.setAlpha(0.4F);

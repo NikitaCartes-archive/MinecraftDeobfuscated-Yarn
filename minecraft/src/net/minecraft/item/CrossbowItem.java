@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ChargedProjectilesComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -248,14 +248,14 @@ public class CrossbowItem extends RangedWeaponItem {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 		ChargedProjectilesComponent chargedProjectilesComponent = stack.get(DataComponentTypes.CHARGED_PROJECTILES);
 		if (chargedProjectilesComponent != null && !chargedProjectilesComponent.isEmpty()) {
 			ItemStack itemStack = (ItemStack)chargedProjectilesComponent.getProjectiles().get(0);
 			tooltip.add(Text.translatable("item.minecraft.crossbow.projectile").append(ScreenTexts.SPACE).append(itemStack.toHoverableText()));
-			if (context.isAdvanced() && itemStack.isOf(Items.FIREWORK_ROCKET)) {
+			if (type.isAdvanced() && itemStack.isOf(Items.FIREWORK_ROCKET)) {
 				List<Text> list = Lists.<Text>newArrayList();
-				Items.FIREWORK_ROCKET.appendTooltip(itemStack, world, list, context);
+				Items.FIREWORK_ROCKET.appendTooltip(itemStack, context, list, type);
 				if (!list.isEmpty()) {
 					for (int i = 0; i < list.size(); i++) {
 						list.set(i, Text.literal("  ").append((Text)list.get(i)).formatted(Formatting.GRAY));

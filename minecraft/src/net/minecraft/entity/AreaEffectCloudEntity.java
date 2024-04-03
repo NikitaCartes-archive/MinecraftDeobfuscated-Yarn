@@ -95,8 +95,11 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 	}
 
 	private void updateColor() {
-		int i = this.potionContentsComponent.equals(PotionContentsComponent.DEFAULT) ? 0 : this.potionContentsComponent.getColor();
-		this.dataTracker.set(PARTICLE_ID, EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, i));
+		ParticleEffect particleEffect = this.dataTracker.get(PARTICLE_ID);
+		if (particleEffect instanceof EntityEffectParticleEffect entityEffectParticleEffect) {
+			int i = this.potionContentsComponent.equals(PotionContentsComponent.DEFAULT) ? 0 : this.potionContentsComponent.getColor();
+			this.dataTracker.set(PARTICLE_ID, EntityEffectParticleEffect.create(entityEffectParticleEffect.getType(), i));
+		}
 	}
 
 	public void addEffect(StatusEffectInstance effect) {
@@ -154,10 +157,16 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 				double d = this.getX() + (double)(MathHelper.cos(h) * k);
 				double e = this.getY();
 				double l = this.getZ() + (double)(MathHelper.sin(h) * k);
-				if (bl && this.random.nextBoolean()) {
-					this.getWorld().addImportantParticle(EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, -1), d, e, l, 0.0, 0.0, 0.0);
-				} else {
+				if (particleEffect.getType() == ParticleTypes.ENTITY_EFFECT) {
+					if (bl && this.random.nextBoolean()) {
+						this.getWorld().addImportantParticle(EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, -1), d, e, l, 0.0, 0.0, 0.0);
+					} else {
+						this.getWorld().addImportantParticle(particleEffect, d, e, l, 0.0, 0.0, 0.0);
+					}
+				} else if (bl) {
 					this.getWorld().addImportantParticle(particleEffect, d, e, l, 0.0, 0.0, 0.0);
+				} else {
+					this.getWorld().addImportantParticle(particleEffect, d, e, l, (0.5 - this.random.nextDouble()) * 0.15, 0.01F, (0.5 - this.random.nextDouble()) * 0.15);
 				}
 			}
 		} else {

@@ -87,8 +87,6 @@ public class TitleScreen extends Screen {
 		if (this.isRealmsNotificationsGuiDisplayed()) {
 			this.realmsNotificationGui.tick();
 		}
-
-		this.client.getRealms32BitWarningChecker().showWarningIfNeeded(this);
 	}
 
 	public static CompletableFuture<Void> loadTexturesAsync(TextureManager textureManager, Executor executor) {
@@ -155,12 +153,6 @@ public class TitleScreen extends Screen {
 
 		if (this.isRealmsNotificationsGuiDisplayed()) {
 			this.realmsNotificationGui.init(this.client, this.width, this.height);
-		}
-
-		if (!this.client.is64Bit()) {
-			this.deprecationNotice = new TitleScreen.DeprecationNotice(
-				this.textRenderer, MultilineText.create(this.textRenderer, Text.translatable("title.32bit.deprecation"), 350, 2), this.width / 2, l - 24
-			);
 		}
 	}
 

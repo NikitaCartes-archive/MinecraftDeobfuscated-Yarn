@@ -1,10 +1,10 @@
 package net.minecraft.item;
 
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.type.AttributeModifierSlot;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.ToolComponent;
 import net.minecraft.enchantment.DensityEnchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -12,13 +12,11 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -37,19 +35,24 @@ public class MaceItem extends Item {
 	public static final float KNOCKBACK_RANGE = 3.5F;
 	private static final float KNOCKBACK_POWER = 0.7F;
 	private static final float FALL_DISTANCE_MULTIPLIER = 3.0F;
-	private static final ImmutableMultimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> ATTRIBUTE_MODIFIERS = ImmutableMultimap.<RegistryEntry<EntityAttribute>, EntityAttributeModifier>builder()
-		.put(
-			EntityAttributes.GENERIC_ATTACK_DAMAGE,
-			new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Weapon modifier", 6.0, EntityAttributeModifier.Operation.ADD_VALUE)
-		)
-		.put(
-			EntityAttributes.GENERIC_ATTACK_SPEED,
-			new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Weapon modifier", -2.4F, EntityAttributeModifier.Operation.ADD_VALUE)
-		)
-		.build();
 
 	public MaceItem(Item.Settings settings) {
 		super(settings);
+	}
+
+	public static AttributeModifiersComponent createAttributeModifiers() {
+		return AttributeModifiersComponent.builder()
+			.add(
+				EntityAttributes.GENERIC_ATTACK_DAMAGE,
+				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Weapon modifier", 6.0, EntityAttributeModifier.Operation.ADD_VALUE),
+				AttributeModifierSlot.MAINHAND
+			)
+			.add(
+				EntityAttributes.GENERIC_ATTACK_SPEED,
+				new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Weapon modifier", -2.4F, EntityAttributeModifier.Operation.ADD_VALUE),
+				AttributeModifierSlot.MAINHAND
+			)
+			.build();
 	}
 
 	public static ToolComponent createToolComponent() {
@@ -103,13 +106,6 @@ public class MaceItem extends Item {
 		}
 
 		return true;
-	}
-
-	@Override
-	public Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-		return (Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier>)(slot == EquipmentSlot.MAINHAND
-			? ATTRIBUTE_MODIFIERS
-			: super.getAttributeModifiers(slot));
 	}
 
 	@Override

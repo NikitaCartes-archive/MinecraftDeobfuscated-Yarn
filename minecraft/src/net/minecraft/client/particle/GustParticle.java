@@ -3,7 +3,7 @@ package net.minecraft.client.particle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 
 @Environment(EnvType.CLIENT)
 public class GustParticle extends SpriteBillboardParticle {
@@ -38,27 +38,27 @@ public class GustParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements ParticleFactory<DefaultParticleType> {
+	public static class Factory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public Factory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			return new GustParticle(clientWorld, d, e, f, this.spriteProvider);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class SmallGustFactory implements ParticleFactory<DefaultParticleType> {
+	public static class SmallGustFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider field_50230;
 
 		public SmallGustFactory(SpriteProvider spriteProvider) {
 			this.field_50230 = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new GustParticle(clientWorld, d, e, f, this.field_50230);
 			particle.scale(0.15F);
 			return particle;

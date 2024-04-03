@@ -3,8 +3,7 @@ package net.minecraft.item;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nullable;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registries;
@@ -34,8 +33,8 @@ public class GoatHornItem extends Item {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		super.appendTooltip(stack, world, tooltip, context);
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
+		super.appendTooltip(stack, context, tooltip, type);
 		Optional<RegistryKey<Instrument>> optional = this.getInstrument(stack).flatMap(RegistryEntry::getKey);
 		if (optional.isPresent()) {
 			MutableText mutableText = Text.translatable(Util.createTranslationKey("instrument", ((RegistryKey)optional.get()).getValue()));
@@ -57,9 +56,9 @@ public class GoatHornItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		RegistryEntry<Instrument> registryEntry = itemStack.get(DataComponentTypes.INSTRUMENT);
-		if (registryEntry != null) {
-			Instrument instrument = registryEntry.value();
+		Optional<? extends RegistryEntry<Instrument>> optional = this.getInstrument(itemStack);
+		if (optional.isPresent()) {
+			Instrument instrument = (Instrument)((RegistryEntry)optional.get()).value();
 			user.setCurrentHand(hand);
 			playSound(world, user, instrument);
 			user.getItemCooldownManager().set(this, instrument.useDuration());

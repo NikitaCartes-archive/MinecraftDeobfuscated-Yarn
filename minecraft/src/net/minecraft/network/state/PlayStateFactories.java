@@ -148,6 +148,7 @@ import net.minecraft.network.packet.s2c.play.PlayerRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.ProjectilePowerS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
@@ -371,5 +372,6 @@ public class PlayStateFactories {
 				.add(PlayPackets.UPDATE_MOB_EFFECT, EntityStatusEffectS2CPacket.CODEC)
 				.add(PlayPackets.UPDATE_RECIPES, SynchronizeRecipesS2CPacket.CODEC)
 				.add(CommonPackets.UPDATE_TAGS, SynchronizeTagsS2CPacket.CODEC)
+				.add(PlayPackets.PROJECTILE_POWER, ProjectilePowerS2CPacket.CODEC)
 	);
 }

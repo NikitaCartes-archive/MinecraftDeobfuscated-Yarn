@@ -1,14 +1,12 @@
 package net.minecraft.item;
 
 import java.util.List;
-import javax.annotation.Nullable;
 import net.minecraft.block.entity.BannerPattern;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
 
 public class BannerPatternItem extends Item {
 	private final TagKey<BannerPattern> patternItemTag;
@@ -23,7 +21,7 @@ public class BannerPatternItem extends Item {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 		tooltip.add(this.getDescription().formatted(Formatting.GRAY));
 	}
 

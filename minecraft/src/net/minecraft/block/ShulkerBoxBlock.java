@@ -11,7 +11,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.entity.ItemEntity;
@@ -23,7 +23,6 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -182,10 +181,8 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void appendTooltip(
-		ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options, @Nullable DynamicRegistryManager registryManager
-	) {
-		super.appendTooltip(stack, world, tooltip, options, registryManager);
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
+		super.appendTooltip(stack, context, tooltip, options);
 		if (stack.contains(DataComponentTypes.CONTAINER_LOOT)) {
 			tooltip.add(UNKNOWN_CONTENTS_TEXT);
 		}

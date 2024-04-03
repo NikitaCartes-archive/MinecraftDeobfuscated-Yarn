@@ -16,7 +16,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.HotbarStorage;
 import net.minecraft.client.option.HotbarStorageEntry;
@@ -660,9 +660,9 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		boolean bl = this.focusedSlot != null && this.focusedSlot instanceof CreativeInventoryScreen.LockableSlot;
 		boolean bl2 = selectedTab.getType() == ItemGroup.Type.CATEGORY;
 		boolean bl3 = selectedTab.getType() == ItemGroup.Type.SEARCH;
-		TooltipContext.Default default_ = this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.BASIC;
-		TooltipContext tooltipContext = bl ? default_.withCreative() : default_;
-		List<Text> list = stack.getTooltip(this.client.player, tooltipContext);
+		TooltipType.Default default_ = this.client.options.advancedItemTooltips ? TooltipType.Default.ADVANCED : TooltipType.Default.BASIC;
+		TooltipType tooltipType = bl ? default_.withCreative() : default_;
+		List<Text> list = stack.getTooltip(Item.TooltipContext.create(this.client.world), this.client.player, tooltipType);
 		if (bl2 && bl) {
 			return list;
 		} else {

@@ -2,8 +2,7 @@ package net.minecraft.item;
 
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nullable;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.EntityType;
@@ -85,8 +84,8 @@ public class DecorationItem extends Item {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		super.appendTooltip(stack, world, tooltip, context);
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
+		super.appendTooltip(stack, context, tooltip, type);
 		if (this.entityType == EntityType.PAINTING) {
 			NbtComponent nbtComponent = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
 			if (!nbtComponent.isEmpty()) {
@@ -108,7 +107,7 @@ public class DecorationItem extends Item {
 						},
 						() -> tooltip.add(RANDOM_TEXT)
 					);
-			} else if (context.isCreative()) {
+			} else if (type.isCreative()) {
 				tooltip.add(RANDOM_TEXT);
 			}
 		}

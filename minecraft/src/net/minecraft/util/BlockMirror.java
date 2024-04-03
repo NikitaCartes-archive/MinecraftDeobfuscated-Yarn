@@ -25,10 +25,10 @@ public enum BlockMirror implements StringIdentifiable {
 		int i = fullTurn / 2;
 		int j = rotation > i ? rotation - fullTurn : rotation;
 		switch (this) {
-			case FRONT_BACK:
-				return (fullTurn - j) % fullTurn;
 			case LEFT_RIGHT:
 				return (i - j + fullTurn) % fullTurn;
+			case FRONT_BACK:
+				return (fullTurn - j) % fullTurn;
 			default:
 				return rotation;
 		}

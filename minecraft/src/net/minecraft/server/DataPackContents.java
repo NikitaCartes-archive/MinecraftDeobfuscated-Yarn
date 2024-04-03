@@ -178,8 +178,8 @@ public class DataPackContents {
 				@Override
 				public RegistryWrapper.Impl<T> getBase() {
 					return switch (ConfigurableWrapperLookup.this.entryListCreationPolicy) {
-						case FAIL -> readOnlyWrapper;
 						case CREATE_NEW -> tagCreatingWrapper;
+						case FAIL -> readOnlyWrapper;
 					};
 				}
 			};

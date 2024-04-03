@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.TooltipAppender;
 import net.minecraft.network.RegistryByteBuf;
@@ -56,7 +56,7 @@ public class ItemEnchantmentsComponent implements TooltipAppender {
 	}
 
 	@Override
-	public void appendTooltip(Consumer<Text> textConsumer, TooltipContext context) {
+	public void appendTooltip(Consumer<Text> textConsumer, TooltipType context) {
 		if (this.showInTooltip) {
 			for (Entry<RegistryEntry<Enchantment>> entry : this.enchantments.object2IntEntrySet()) {
 				textConsumer.accept(((Enchantment)((RegistryEntry)entry.getKey()).value()).getName(entry.getIntValue()));

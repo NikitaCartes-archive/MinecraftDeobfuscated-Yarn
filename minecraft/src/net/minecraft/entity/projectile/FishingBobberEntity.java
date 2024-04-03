@@ -251,7 +251,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 
 	private void checkForCollision() {
 		HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
-		this.onCollision(hitResult);
+		this.deflectOrCollide(hitResult);
 	}
 
 	@Override
@@ -369,8 +369,6 @@ public class FishingBobberEntity extends ProjectileEntity {
 		for (int i = -1; i <= 2; i++) {
 			FishingBobberEntity.PositionType positionType2 = this.getPositionType(pos.add(-2, i, -2), pos.add(2, i, 2));
 			switch (positionType2) {
-				case INVALID:
-					return false;
 				case ABOVE_WATER:
 					if (positionType == FishingBobberEntity.PositionType.INVALID) {
 						return false;
@@ -380,6 +378,9 @@ public class FishingBobberEntity extends ProjectileEntity {
 					if (positionType == FishingBobberEntity.PositionType.ABOVE_WATER) {
 						return false;
 					}
+					break;
+				case INVALID:
+					return false;
 			}
 
 			positionType = positionType2;

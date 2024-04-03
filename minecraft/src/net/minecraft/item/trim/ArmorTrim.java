@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.TooltipAppender;
 import net.minecraft.network.RegistryByteBuf;
@@ -118,7 +118,7 @@ public class ArmorTrim implements TooltipAppender {
 	}
 
 	@Override
-	public void appendTooltip(Consumer<Text> textConsumer, TooltipContext context) {
+	public void appendTooltip(Consumer<Text> textConsumer, TooltipType context) {
 		if (this.showInTooltip) {
 			textConsumer.accept(UPGRADE_TEXT);
 			textConsumer.accept(ScreenTexts.space().append(this.pattern.value().getDescription(this.material)));

@@ -476,7 +476,7 @@ public class DebugHud {
 		long n = Runtime.getRuntime().freeMemory();
 		long o = m - n;
 		List<String> list = Lists.<String>newArrayList(
-			String.format(Locale.ROOT, "Java: %s %dbit", System.getProperty("java.version"), this.client.is64Bit() ? 64 : 32),
+			String.format(Locale.ROOT, "Java: %s", System.getProperty("java.version")),
 			String.format(Locale.ROOT, "Mem: %2d%% %03d/%03dMB", o * 100L / l, toMiB(o), toMiB(l)),
 			String.format(Locale.ROOT, "Allocation rate: %03dMB/s", toMiB(this.allocationRateCalculator.get(o))),
 			String.format(Locale.ROOT, "Allocated: %2d%% %03dMB", m * 100L / l, toMiB(m)),

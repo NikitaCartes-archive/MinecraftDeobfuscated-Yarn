@@ -46,6 +46,55 @@ public class ItemStackComponentizationFix extends DataFix {
 	private static final List<String> RELEVANT_ENTITY_NBT_KEYS = List.of(
 		"NoAI", "Silent", "NoGravity", "Glowing", "Invulnerable", "Health", "Age", "Variant", "HuntingCooldown", "BucketVariantTag"
 	);
+	private static final Set<String> BOOLEAN_BLOCK_STATE_PROPERTIES = Set.of(
+		"attached",
+		"bottom",
+		"conditional",
+		"disarmed",
+		"drag",
+		"enabled",
+		"extended",
+		"eye",
+		"falling",
+		"hanging",
+		"has_bottle_0",
+		"has_bottle_1",
+		"has_bottle_2",
+		"has_record",
+		"has_book",
+		"inverted",
+		"in_wall",
+		"lit",
+		"locked",
+		"occupied",
+		"open",
+		"persistent",
+		"powered",
+		"short",
+		"signal_fire",
+		"snowy",
+		"triggered",
+		"unstable",
+		"waterlogged",
+		"berries",
+		"bloom",
+		"shrieking",
+		"can_summon",
+		"up",
+		"down",
+		"north",
+		"east",
+		"south",
+		"west",
+		"slot_0_occupied",
+		"slot_1_occupied",
+		"slot_2_occupied",
+		"slot_3_occupied",
+		"slot_4_occupied",
+		"slot_5_occupied",
+		"cracked",
+		"crafting"
+	);
 	private static final Splitter COMMA_SPLITTER = Splitter.on(',');
 
 	public ItemStackComponentizationFix(Schema outputSchema) {
@@ -57,7 +106,9 @@ public class ItemStackComponentizationFix extends DataFix {
 		data.moveToComponent("Damage", "minecraft:damage", dynamic.createInt(0));
 		data.moveToComponent("RepairCost", "minecraft:repair_cost", dynamic.createInt(0));
 		data.moveToComponent("CustomModelData", "minecraft:custom_model_data");
-		data.getAndRemove("BlockStateTag").result().ifPresent(dynamicx -> data.setComponent("minecraft:block_state", method_58050(dynamicx)));
+		data.getAndRemove("BlockStateTag")
+			.result()
+			.ifPresent(blockStateTagDynamic -> data.setComponent("minecraft:block_state", fixBlockStateTag(blockStateTagDynamic)));
 		data.moveToComponent("EntityTag", "minecraft:entity_data");
 		data.applyFixer("BlockEntityTag", false, blockEntityTagDynamic -> {
 			String string = IdentifierNormalizingSchema.normalize(blockEntityTagDynamic.get("id").asString(""));
@@ -166,16 +217,20 @@ public class ItemStackComponentizationFix extends DataFix {
 		}
 	}
 
-	private static Dynamic<?> method_58050(Dynamic<?> dynamic) {
-		return dynamic.createMap(dynamic.asMap(dynamicx -> dynamicx, dynamicx -> {
-			Optional<Boolean> optional = dynamicx.asBoolean().result();
-			if (optional.isPresent()) {
-				return dynamicx.createString(String.valueOf(optional.get()));
-			} else {
-				Optional<Number> optional2 = dynamicx.asNumber().result();
-				return optional2.isPresent() ? dynamicx.createString(((Number)optional2.get()).toString()) : dynamicx;
-			}
-		}));
+	private static Dynamic<?> fixBlockStateTag(Dynamic<?> dynamic) {
+		return DataFixUtils.orElse(dynamic.asMapOpt().result().map(stream -> (Map)stream.collect(Collectors.toMap(Pair::getFirst, pair -> {
+				String string = ((Dynamic)pair.getFirst()).asString("");
+				Dynamic<?> dynamicx = (Dynamic<?>)pair.getSecond();
+				if (BOOLEAN_BLOCK_STATE_PROPERTIES.contains(string)) {
+					Optional<Boolean> optional = dynamicx.asBoolean().result();
+					if (optional.isPresent()) {
+						return dynamicx.createString(String.valueOf(optional.get()));
+					}
+				}
+
+				Optional<Number> optional = dynamicx.asNumber().result();
+				return optional.isPresent() ? dynamicx.createString(((Number)optional.get()).toString()) : dynamicx;
+			}))).map(dynamic::createMap), dynamic);
 	}
 
 	private static Dynamic<?> fixDisplay(ItemStackComponentizationFix.StackData data, Dynamic<?> dynamic, int hideFlags) {
@@ -266,13 +321,16 @@ public class ItemStackComponentizationFix extends DataFix {
 	}
 
 	private static void fixEnchantments(ItemStackComponentizationFix.StackData data, Dynamic<?> dynamic, String nbtKey, String componentId, boolean hideInTooltip) {
-		List<? extends Dynamic<?>> list = data.getAndRemove(nbtKey).asList(Function.identity());
-		List<Pair<String, Integer>> list2 = list.stream().flatMap(enchantmentsDynamic -> getEnchantmentAndLevelPair(enchantmentsDynamic).stream()).toList();
-		if (!list2.isEmpty() || hideInTooltip) {
+		OptionalDynamic<?> optionalDynamic = data.getAndRemove(nbtKey);
+		List<Pair<String, Integer>> list = optionalDynamic.asList(Function.identity())
+			.stream()
+			.flatMap(enchantmentsDynamic -> getEnchantmentAndLevelPair(enchantmentsDynamic).stream())
+			.toList();
+		if (!list.isEmpty() || hideInTooltip) {
 			Dynamic<?> dynamic2 = dynamic.emptyMap();
 			Dynamic<?> dynamic3 = dynamic.emptyMap();
 
-			for (Pair<String, Integer> pair : list2) {
+			for (Pair<String, Integer> pair : list) {
 				dynamic3 = dynamic3.set(pair.getFirst(), dynamic.createInt(pair.getSecond()));
 			}
 
@@ -284,7 +342,7 @@ public class ItemStackComponentizationFix extends DataFix {
 			data.setComponent(componentId, dynamic2);
 		}
 
-		if (!list.isEmpty() && list2.isEmpty()) {
+		if (optionalDynamic.result().isPresent() && list.isEmpty()) {
 			data.setComponent("minecraft:enchantment_glint_override", dynamic.createBoolean(true));
 		}
 	}
@@ -506,7 +564,7 @@ public class ItemStackComponentizationFix extends DataFix {
 	}
 
 	private static Dynamic<?> createFilterableTextDynamic(Dynamic<?> dynamic, String unfiltered, Optional<String> filtered) {
-		Dynamic<?> dynamic2 = dynamic.emptyMap().set("text", dynamic.createString(unfiltered));
+		Dynamic<?> dynamic2 = dynamic.emptyMap().set("raw", dynamic.createString(unfiltered));
 		if (filtered.isPresent()) {
 			dynamic2 = dynamic2.set("filtered", dynamic.createString((String)filtered.get()));
 		}

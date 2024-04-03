@@ -10,7 +10,7 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BlockStateComponent;
 import net.minecraft.component.type.ContainerComponent;
@@ -185,9 +185,9 @@ public class BlockItem extends Item {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		super.appendTooltip(stack, world, tooltip, context);
-		this.getBlock().appendTooltip(stack, world, tooltip, context, world != null ? world.getRegistryManager() : null);
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
+		super.appendTooltip(stack, context, tooltip, type);
+		this.getBlock().appendTooltip(stack, context, tooltip, type);
 	}
 
 	public Block getBlock() {

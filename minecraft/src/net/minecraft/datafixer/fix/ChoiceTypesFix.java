@@ -23,16 +23,16 @@ public class ChoiceTypesFix extends DataFix {
 	public TypeRewriteRule makeRule() {
 		TaggedChoiceType<?> taggedChoiceType = this.getInputSchema().findChoiceType(this.types);
 		TaggedChoiceType<?> taggedChoiceType2 = this.getOutputSchema().findChoiceType(this.types);
-		return this.fixChoiceTypes(this.name, taggedChoiceType, taggedChoiceType2);
+		return this.fixChoiceTypes(taggedChoiceType, taggedChoiceType2);
 	}
 
-	protected final <K> TypeRewriteRule fixChoiceTypes(String name, TaggedChoiceType<K> inputChoiceType, TaggedChoiceType<?> outputChoiceType) {
+	private <K> TypeRewriteRule fixChoiceTypes(TaggedChoiceType<K> inputChoiceType, TaggedChoiceType<?> outputChoiceType) {
 		if (inputChoiceType.getKeyType() != outputChoiceType.getKeyType()) {
 			throw new IllegalStateException("Could not inject: key type is not the same");
 		} else {
-			return this.fixTypeEverywhere(name, inputChoiceType, (Type<Pair<K, ?>>)outputChoiceType, dynamicOps -> pair -> {
+			return this.fixTypeEverywhere(this.name, inputChoiceType, (Type<Pair<K, ?>>)outputChoiceType, dynamicOps -> pair -> {
 					if (!((TaggedChoiceType<Object>)outputChoiceType).hasType(pair.getFirst())) {
-						throw new IllegalArgumentException(String.format(Locale.ROOT, "Unknown type %s in %s ", pair.getFirst(), this.types));
+						throw new IllegalArgumentException(String.format(Locale.ROOT, "%s: Unknown type %s in '%s'", this.name, pair.getFirst(), this.types.typeName()));
 					} else {
 						return pair;
 					}

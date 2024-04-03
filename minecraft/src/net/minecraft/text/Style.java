@@ -520,6 +520,9 @@ public class Style {
 		class Writer {
 			private boolean shouldAppendComma;
 
+			Writer(Style style) {
+			}
+
 			private void appendComma() {
 				if (this.shouldAppendComma) {
 					stringBuilder.append(',');
@@ -549,7 +552,7 @@ public class Style {
 			}
 		}
 
-		Writer writer = new Writer();
+		Writer writer = new Writer(this);
 		writer.append("color", this.color);
 		writer.append("bold", this.bold);
 		writer.append("italic", this.italic);

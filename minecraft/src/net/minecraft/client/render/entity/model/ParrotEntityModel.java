@@ -112,6 +112,23 @@ public class ParrotEntityModel extends SinglePartEntityModel<ParrotEntity> {
 		this.rightWing.pivotX = -1.5F;
 		this.leftWing.pivotX = 1.5F;
 		switch (pose) {
+			case STANDING:
+				this.leftLeg.pitch = this.leftLeg.pitch + MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
+				this.rightLeg.pitch = this.rightLeg.pitch + MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
+			case FLYING:
+			case ON_SHOULDER:
+			default:
+				float h = age * 0.3F;
+				this.head.pivotY = 15.69F + h;
+				this.tail.pitch = 1.015F + MathHelper.cos(limbAngle * 0.6662F) * 0.3F * limbDistance;
+				this.tail.pivotY = 21.07F + h;
+				this.body.pivotY = 16.5F + h;
+				this.leftWing.roll = -0.0873F - age;
+				this.leftWing.pivotY = 16.94F + h;
+				this.rightWing.roll = 0.0873F + age;
+				this.rightWing.pivotY = 16.94F + h;
+				this.leftLeg.pivotY = 22.0F + h;
+				this.rightLeg.pivotY = 22.0F + h;
 			case SITTING:
 				break;
 			case PARTY:
@@ -132,24 +149,6 @@ public class ParrotEntityModel extends SinglePartEntityModel<ParrotEntity> {
 				this.rightWing.pivotY = 16.94F + g;
 				this.tail.pivotX = f;
 				this.tail.pivotY = 21.07F + g;
-				break;
-			case STANDING:
-				this.leftLeg.pitch = this.leftLeg.pitch + MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
-				this.rightLeg.pitch = this.rightLeg.pitch + MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
-			case FLYING:
-			case ON_SHOULDER:
-			default:
-				float h = age * 0.3F;
-				this.head.pivotY = 15.69F + h;
-				this.tail.pitch = 1.015F + MathHelper.cos(limbAngle * 0.6662F) * 0.3F * limbDistance;
-				this.tail.pivotY = 21.07F + h;
-				this.body.pivotY = 16.5F + h;
-				this.leftWing.roll = -0.0873F - age;
-				this.leftWing.pivotY = 16.94F + h;
-				this.rightWing.roll = 0.0873F + age;
-				this.rightWing.pivotY = 16.94F + h;
-				this.leftLeg.pivotY = 22.0F + h;
-				this.rightLeg.pivotY = 22.0F + h;
 		}
 	}
 
@@ -167,6 +166,13 @@ public class ParrotEntityModel extends SinglePartEntityModel<ParrotEntity> {
 		this.leftLeg.roll = 0.0F;
 		this.rightLeg.roll = 0.0F;
 		switch (pose) {
+			case FLYING:
+				this.leftLeg.pitch += (float) (Math.PI * 2.0 / 9.0);
+				this.rightLeg.pitch += (float) (Math.PI * 2.0 / 9.0);
+			case STANDING:
+			case ON_SHOULDER:
+			default:
+				break;
 			case SITTING:
 				float f = 1.9F;
 				this.head.pivotY = 17.59F;
@@ -185,13 +191,6 @@ public class ParrotEntityModel extends SinglePartEntityModel<ParrotEntity> {
 			case PARTY:
 				this.leftLeg.roll = (float) (-Math.PI / 9);
 				this.rightLeg.roll = (float) (Math.PI / 9);
-			case STANDING:
-			case ON_SHOULDER:
-			default:
-				break;
-			case FLYING:
-				this.leftLeg.pitch += (float) (Math.PI * 2.0 / 9.0);
-				this.rightLeg.pitch += (float) (Math.PI * 2.0 / 9.0);
 		}
 	}
 

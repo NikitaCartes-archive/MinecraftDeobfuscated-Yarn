@@ -6,8 +6,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ItemStackParticleEffect;
+import net.minecraft.particle.SimpleParticleType;
 
 @Environment(EnvType.CLIENT)
 public class CrackParticle extends SpriteBillboardParticle {
@@ -59,8 +59,8 @@ public class CrackParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class CobwebFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+	public static class CobwebFactory implements ParticleFactory<SimpleParticleType> {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			return new CrackParticle(clientWorld, d, e, f, new ItemStack(Items.COBWEB));
 		}
 	}
@@ -75,15 +75,15 @@ public class CrackParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class SlimeballFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+	public static class SlimeballFactory implements ParticleFactory<SimpleParticleType> {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			return new CrackParticle(clientWorld, d, e, f, new ItemStack(Items.SLIME_BALL));
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class SnowballFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+	public static class SnowballFactory implements ParticleFactory<SimpleParticleType> {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			return new CrackParticle(clientWorld, d, e, f, new ItemStack(Items.SNOWBALL));
 		}
 	}

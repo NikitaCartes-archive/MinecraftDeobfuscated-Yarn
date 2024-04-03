@@ -3,7 +3,7 @@ package net.minecraft.client.particle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
@@ -70,14 +70,14 @@ public class OminousSpawningParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements ParticleFactory<DefaultParticleType> {
+	public static class Factory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public Factory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			OminousSpawningParticle ominousSpawningParticle = new OminousSpawningParticle(clientWorld, d, e, f, g, h, i, -12210434, -1);
 			ominousSpawningParticle.scale(MathHelper.nextBetween(clientWorld.getRandom(), 3.0F, 5.0F));
 			ominousSpawningParticle.setSprite(this.spriteProvider);

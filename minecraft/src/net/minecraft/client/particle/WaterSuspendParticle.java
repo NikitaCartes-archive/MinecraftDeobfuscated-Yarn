@@ -4,7 +4,7 @@ import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
@@ -38,14 +38,14 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class CrimsonSporeFactory implements ParticleFactory<DefaultParticleType> {
+	public static class CrimsonSporeFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public CrimsonSporeFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			Random random = clientWorld.random;
 			double j = random.nextGaussian() * 1.0E-6F;
 			double k = random.nextGaussian() * 1.0E-4F;
@@ -57,14 +57,14 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class SporeBlossomAirFactory implements ParticleFactory<DefaultParticleType> {
+	public static class SporeBlossomAirFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public SporeBlossomAirFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.spriteProvider, d, e, f, 0.0, -0.8F, 0.0) {
 				@Override
 				public Optional<ParticleGroup> getGroup() {
@@ -79,14 +79,14 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class UnderwaterFactory implements ParticleFactory<DefaultParticleType> {
+	public static class UnderwaterFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public UnderwaterFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.spriteProvider, d, e, f);
 			waterSuspendParticle.setColor(0.4F, 0.4F, 0.7F);
 			return waterSuspendParticle;
@@ -94,14 +94,14 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class WarpedSporeFactory implements ParticleFactory<DefaultParticleType> {
+	public static class WarpedSporeFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public WarpedSporeFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			double j = (double)clientWorld.random.nextFloat() * -1.9 * (double)clientWorld.random.nextFloat() * 0.1;
 			WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.spriteProvider, d, e, f, 0.0, j, 0.0);
 			waterSuspendParticle.setColor(0.1F, 0.1F, 0.3F);

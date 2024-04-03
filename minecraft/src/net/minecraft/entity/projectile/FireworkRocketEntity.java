@@ -144,7 +144,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 		HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
 		if (!this.noClip) {
-			this.onCollision(hitResult);
+			this.deflectOrCollide(hitResult);
 			this.velocityDirty = true;
 		}
 

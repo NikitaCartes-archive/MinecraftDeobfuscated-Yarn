@@ -329,9 +329,9 @@ public final class DensityFunctionTypes {
 
 			return switch (this.type) {
 				case ADD -> d + this.argument2.sample(pos);
-				case MAX -> d > this.argument2.maxValue() ? d : Math.max(d, this.argument2.sample(pos));
-				case MIN -> d < this.argument2.minValue() ? d : Math.min(d, this.argument2.sample(pos));
 				case MUL -> d == 0.0 ? 0.0 : d * this.argument2.sample(pos);
+				case MIN -> d < this.argument2.minValue() ? d : Math.min(d, this.argument2.sample(pos));
+				case MAX -> d > this.argument2.maxValue() ? d : Math.max(d, this.argument2.sample(pos));
 			};
 		}
 
@@ -347,12 +347,10 @@ public final class DensityFunctionTypes {
 						densities[i] += ds[i];
 					}
 					break;
-				case MAX:
-					double e = this.argument2.maxValue();
-
-					for (int k = 0; k < densities.length; k++) {
-						double f = densities[k];
-						densities[k] = f > e ? f : Math.max(f, this.argument2.sample(applier.at(k)));
+				case MUL:
+					for (int j = 0; j < densities.length; j++) {
+						double d = densities[j];
+						densities[j] = d == 0.0 ? 0.0 : d * this.argument2.sample(applier.at(j));
 					}
 					break;
 				case MIN:
@@ -363,10 +361,12 @@ public final class DensityFunctionTypes {
 						densities[k] = f < e ? f : Math.min(f, this.argument2.sample(applier.at(k)));
 					}
 					break;
-				case MUL:
-					for (int j = 0; j < densities.length; j++) {
-						double d = densities[j];
-						densities[j] = d == 0.0 ? 0.0 : d * this.argument2.sample(applier.at(j));
+				case MAX:
+					double e = this.argument2.maxValue();
+
+					for (int k = 0; k < densities.length; k++) {
+						double f = densities[k];
+						densities[k] = f > e ? f : Math.max(f, this.argument2.sample(applier.at(k)));
 					}
 			}
 		}
@@ -396,16 +396,16 @@ public final class DensityFunctionTypes {
 			}
 			double h = switch (type) {
 				case ADD -> d + e;
-				case MAX -> Math.max(d, e);
-				case MIN -> Math.min(d, e);
 				case MUL -> d > 0.0 && e > 0.0 ? d * e : (f < 0.0 && g < 0.0 ? f * g : Math.min(d * g, f * e));
+				case MIN -> Math.min(d, e);
+				case MAX -> Math.max(d, e);
 			};
 
 			double i = switch (type) {
 				case ADD -> f + g;
-				case MAX -> Math.max(f, g);
-				case MIN -> Math.min(f, g);
 				case MUL -> d > 0.0 && e > 0.0 ? f * g : (f < 0.0 && g < 0.0 ? d * e : Math.max(d * e, f * g));
+				case MIN -> Math.min(f, g);
+				case MAX -> Math.max(f, g);
 			};
 			if (type == DensityFunctionTypes.BinaryOperationLike.Type.MUL || type == DensityFunctionTypes.BinaryOperationLike.Type.ADD) {
 				if (argument1 instanceof DensityFunctionTypes.Constant constant) {

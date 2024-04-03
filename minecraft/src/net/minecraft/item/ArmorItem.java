@@ -1,9 +1,6 @@
 package net.minecraft.item;
 
 import com.google.common.base.Suppliers;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.ImmutableMultimap.Builder;
 import com.mojang.serialization.Codec;
 import java.util.EnumMap;
 import java.util.List;
@@ -12,9 +9,10 @@ import java.util.function.Supplier;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
+import net.minecraft.component.type.AttributeModifierSlot;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
@@ -48,7 +46,7 @@ public class ArmorItem extends Item implements Equipment {
 	};
 	protected final ArmorItem.Type type;
 	protected final RegistryEntry<ArmorMaterial> material;
-	private final Supplier<Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier>> attributeModifiers;
+	private final Supplier<AttributeModifiersComponent> attributeModifiers;
 
 	public static boolean dispenseArmor(BlockPointer pointer, ItemStack armor) {
 		BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
@@ -79,17 +77,25 @@ public class ArmorItem extends Item implements Equipment {
 			() -> {
 				int i = material.value().getProtection(type);
 				float f = material.value().toughness();
-				Builder<RegistryEntry<EntityAttribute>, EntityAttributeModifier> builder = ImmutableMultimap.builder();
+				AttributeModifiersComponent.Builder builder = AttributeModifiersComponent.builder();
+				AttributeModifierSlot attributeModifierSlot = AttributeModifierSlot.forEquipmentSlot(type.getEquipmentSlot());
 				UUID uUID = (UUID)MODIFIERS.get(type);
-				builder.put(EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier(uUID, "Armor modifier", (double)i, EntityAttributeModifier.Operation.ADD_VALUE));
-				builder.put(
-					EntityAttributes.GENERIC_ARMOR_TOUGHNESS, new EntityAttributeModifier(uUID, "Armor toughness", (double)f, EntityAttributeModifier.Operation.ADD_VALUE)
+				builder.add(
+					EntityAttributes.GENERIC_ARMOR,
+					new EntityAttributeModifier(uUID, "Armor modifier", (double)i, EntityAttributeModifier.Operation.ADD_VALUE),
+					attributeModifierSlot
+				);
+				builder.add(
+					EntityAttributes.GENERIC_ARMOR_TOUGHNESS,
+					new EntityAttributeModifier(uUID, "Armor toughness", (double)f, EntityAttributeModifier.Operation.ADD_VALUE),
+					attributeModifierSlot
 				);
 				float g = material.value().knockbackResistance();
 				if (g > 0.0F) {
-					builder.put(
+					builder.add(
 						EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE,
-						new EntityAttributeModifier(uUID, "Armor knockback resistance", (double)g, EntityAttributeModifier.Operation.ADD_VALUE)
+						new EntityAttributeModifier(uUID, "Armor knockback resistance", (double)g, EntityAttributeModifier.Operation.ADD_VALUE),
+						attributeModifierSlot
 					);
 				}
 
@@ -122,8 +128,8 @@ public class ArmorItem extends Item implements Equipment {
 	}
 
 	@Override
-	public Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-		return slot == this.type.getEquipmentSlot() ? (Multimap)this.attributeModifiers.get() : super.getAttributeModifiers(slot);
+	public AttributeModifiersComponent getAttributeModifiers() {
+		return (AttributeModifiersComponent)this.attributeModifiers.get();
 	}
 
 	public int getProtection() {

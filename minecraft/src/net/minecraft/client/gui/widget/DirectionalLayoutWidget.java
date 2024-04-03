@@ -118,8 +118,8 @@ public class DirectionalLayoutWidget implements LayoutWidget {
 
 		public <T extends Widget> T add(GridWidget grid, T widget, int index, Positioner positioner) {
 			return (T)(switch (this) {
-				case HORIZONTAL -> grid.add(widget, 0, index, positioner);
-				case VERTICAL -> grid.add(widget, index, 0, positioner);
+				case HORIZONTAL -> (Widget)grid.add(widget, 0, index, positioner);
+				case VERTICAL -> (Widget)grid.add(widget, index, 0, positioner);
 			});
 		}
 	}

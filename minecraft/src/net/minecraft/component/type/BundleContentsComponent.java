@@ -14,22 +14,20 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.screen.slot.Slot;
+import org.apache.commons.lang3.math.Fraction;
 
 public final class BundleContentsComponent implements TooltipData {
-	public static final int MAX_SIZE = 64;
 	public static final BundleContentsComponent DEFAULT = new BundleContentsComponent(List.of());
-	public static final Codec<BundleContentsComponent> CODEC = ItemStack.CODEC
-		.sizeLimitedListOf(64)
-		.xmap(BundleContentsComponent::new, component -> component.stacks);
+	public static final Codec<BundleContentsComponent> CODEC = ItemStack.CODEC.listOf().xmap(BundleContentsComponent::new, component -> component.stacks);
 	public static final PacketCodec<RegistryByteBuf, BundleContentsComponent> PACKET_CODEC = ItemStack.PACKET_CODEC
-		.collect(PacketCodecs.toList(64))
+		.collect(PacketCodecs.toList())
 		.xmap(BundleContentsComponent::new, component -> component.stacks);
-	private static final int NESTED_BUNDLE_OCCUPANCY = 4;
+	private static final Fraction NESTED_BUNDLE_OCCUPANCY = Fraction.getFraction(1, 16);
 	private static final int ADD_TO_NEW_SLOT = -1;
 	final List<ItemStack> stacks;
-	final int occupancy;
+	final Fraction occupancy;
 
-	BundleContentsComponent(List<ItemStack> stacks, int occupancy) {
+	BundleContentsComponent(List<ItemStack> stacks, Fraction occupancy) {
 		this.stacks = stacks;
 		this.occupancy = occupancy;
 	}
@@ -38,23 +36,23 @@ public final class BundleContentsComponent implements TooltipData {
 		this(stacks, calculateOccupancy(stacks));
 	}
 
-	private static int calculateOccupancy(List<ItemStack> stacks) {
-		int i = 0;
+	private static Fraction calculateOccupancy(List<ItemStack> stacks) {
+		Fraction fraction = Fraction.ZERO;
 
 		for (ItemStack itemStack : stacks) {
-			i += getOccupancy(itemStack) * itemStack.getCount();
+			fraction = fraction.add(getOccupancy(itemStack).multiplyBy(Fraction.getFraction(itemStack.getCount(), 1)));
 		}
 
-		return i;
+		return fraction;
 	}
 
-	static int getOccupancy(ItemStack stack) {
+	static Fraction getOccupancy(ItemStack stack) {
 		BundleContentsComponent bundleContentsComponent = stack.get(DataComponentTypes.BUNDLE_CONTENTS);
 		if (bundleContentsComponent != null) {
-			return 4 + bundleContentsComponent.getOccupancy();
+			return NESTED_BUNDLE_OCCUPANCY.add(bundleContentsComponent.getOccupancy());
 		} else {
 			List<BeehiveBlockEntity.BeeData> list = stack.getOrDefault(DataComponentTypes.BEES, List.of());
-			return !list.isEmpty() ? 64 : 64 / stack.getMaxCount();
+			return !list.isEmpty() ? Fraction.ONE : Fraction.getFraction(1, stack.getMaxCount());
 		}
 	}
 
@@ -70,7 +68,7 @@ public final class BundleContentsComponent implements TooltipData {
 		return this.stacks.size();
 	}
 
-	public int getOccupancy() {
+	public Fraction getOccupancy() {
 		return this.occupancy;
 	}
 
@@ -84,7 +82,7 @@ public final class BundleContentsComponent implements TooltipData {
 		} else {
 			return !(o instanceof BundleContentsComponent bundleContentsComponent)
 				? false
-				: this.occupancy == bundleContentsComponent.occupancy && ItemStack.stacksEqual(this.stacks, bundleContentsComponent.stacks);
+				: this.occupancy.equals(bundleContentsComponent.occupancy) && ItemStack.stacksEqual(this.stacks, bundleContentsComponent.stacks);
 		}
 	}
 
@@ -98,7 +96,7 @@ public final class BundleContentsComponent implements TooltipData {
 
 	public static class Builder {
 		private final List<ItemStack> stacks;
-		private int occupancy;
+		private Fraction occupancy;
 
 		public Builder(BundleContentsComponent base) {
 			this.stacks = new ArrayList(base.stacks);
@@ -120,7 +118,8 @@ public final class BundleContentsComponent implements TooltipData {
 		}
 
 		private int getMaxAllowed(ItemStack stack) {
-			return Math.max(64 - this.occupancy, 0) / BundleContentsComponent.getOccupancy(stack);
+			Fraction fraction = Fraction.ONE.subtract(this.occupancy);
+			return Math.max(fraction.divideBy(BundleContentsComponent.getOccupancy(stack)).intValue(), 0);
 		}
 
 		public int add(ItemStack stack) {
@@ -129,7 +128,7 @@ public final class BundleContentsComponent implements TooltipData {
 				if (i == 0) {
 					return 0;
 				} else {
-					this.occupancy = this.occupancy + BundleContentsComponent.getOccupancy(stack) * i;
+					this.occupancy = this.occupancy.add(BundleContentsComponent.getOccupancy(stack).multiplyBy(Fraction.getFraction(i, 1)));
 					int j = this.addInternal(stack);
 					if (j != -1) {
 						ItemStack itemStack = (ItemStack)this.stacks.remove(j);
@@ -159,12 +158,12 @@ public final class BundleContentsComponent implements TooltipData {
 				return null;
 			} else {
 				ItemStack itemStack = ((ItemStack)this.stacks.remove(0)).copy();
-				this.occupancy = this.occupancy - BundleContentsComponent.getOccupancy(itemStack) * itemStack.getCount();
+				this.occupancy = this.occupancy.subtract(BundleContentsComponent.getOccupancy(itemStack).multiplyBy(Fraction.getFraction(itemStack.getCount(), 1)));
 				return itemStack;
 			}
 		}
 
-		public int getOccupancy() {
+		public Fraction getOccupancy() {
 			return this.occupancy;
 		}
 

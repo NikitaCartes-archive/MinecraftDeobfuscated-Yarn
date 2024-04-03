@@ -2,8 +2,7 @@ package net.minecraft.item;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.component.type.SuspiciousStewEffectsComponent;
@@ -20,9 +19,9 @@ public class SuspiciousStewItem extends Item {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		super.appendTooltip(stack, world, tooltip, context);
-		if (context.isCreative()) {
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
+		super.appendTooltip(stack, context, tooltip, type);
+		if (type.isCreative()) {
 			List<StatusEffectInstance> list = new ArrayList();
 			SuspiciousStewEffectsComponent suspiciousStewEffectsComponent = stack.getOrDefault(
 				DataComponentTypes.SUSPICIOUS_STEW_EFFECTS, SuspiciousStewEffectsComponent.DEFAULT
@@ -32,7 +31,7 @@ public class SuspiciousStewItem extends Item {
 				list.add(stewEffect.createStatusEffectInstance());
 			}
 
-			PotionContentsComponent.buildTooltip(list, tooltip::add, 1.0F, world == null ? 20.0F : world.getTickManager().getTickRate());
+			PotionContentsComponent.buildTooltip(list, tooltip::add, 1.0F, context.getUpdateTickRate());
 		}
 	}
 

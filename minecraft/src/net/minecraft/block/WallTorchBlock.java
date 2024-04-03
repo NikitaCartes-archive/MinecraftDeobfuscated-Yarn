@@ -7,8 +7,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.BlockMirror;
@@ -46,8 +46,8 @@ public class WallTorchBlock extends TorchBlock {
 		return CODEC;
 	}
 
-	protected WallTorchBlock(DefaultParticleType defaultParticleType, AbstractBlock.Settings settings) {
-		super(defaultParticleType, settings);
+	protected WallTorchBlock(SimpleParticleType simpleParticleType, AbstractBlock.Settings settings) {
+		super(simpleParticleType, settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
 	}
 

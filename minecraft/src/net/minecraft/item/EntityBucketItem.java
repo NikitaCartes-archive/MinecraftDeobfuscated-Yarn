@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Bucketable;
@@ -57,7 +57,7 @@ public class EntityBucketItem extends BucketItem {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 		if (this.entityType == EntityType.TROPICAL_FISH) {
 			NbtComponent nbtComponent = stack.getOrDefault(DataComponentTypes.BUCKET_ENTITY_DATA, NbtComponent.DEFAULT);
 			if (nbtComponent.isEmpty()) {

@@ -261,8 +261,7 @@ public class SignBlockEntity extends BlockEntity {
 
 	public boolean isPlayerTooFarToEdit(UUID uuid) {
 		PlayerEntity playerEntity = this.world.getPlayerByUuid(uuid);
-		return playerEntity == null
-			|| playerEntity.squaredDistanceTo((double)this.getPos().getX(), (double)this.getPos().getY(), (double)this.getPos().getZ()) > 64.0;
+		return playerEntity == null || !playerEntity.canInteractWithBlockAt(this.getPos(), 4.0);
 	}
 
 	public static void tick(World world, BlockPos pos, BlockState state, SignBlockEntity blockEntity) {

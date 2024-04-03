@@ -112,8 +112,8 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 
 		public DataComponentType<Text> getComponentType() {
 			return switch (this) {
-				case ITEM_NAME -> DataComponentTypes.ITEM_NAME;
 				case CUSTOM_NAME -> DataComponentTypes.CUSTOM_NAME;
+				case ITEM_NAME -> DataComponentTypes.ITEM_NAME;
 			};
 		}
 	}

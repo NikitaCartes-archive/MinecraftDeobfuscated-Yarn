@@ -20,6 +20,7 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
+	public static final double field_51351 = 0.05;
 	public double powerX;
 	public double powerY;
 	public double powerZ;
@@ -80,7 +81,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 
 			HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit, this.getRaycastShapeType());
 			if (hitResult.getType() != HitResult.Type.MISS) {
-				this.onCollision(hitResult);
+				this.deflectOrCollide(hitResult);
 			}
 
 			this.checkBlockCollision();
@@ -228,5 +229,12 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 			this.powerY = velocityY / d * 0.1;
 			this.powerZ = velocityZ / d * 0.1;
 		}
+	}
+
+	@Override
+	public void onDeflected() {
+		this.powerX = this.getVelocity().x * 0.05;
+		this.powerY = this.getVelocity().y * 0.05;
+		this.powerZ = this.getVelocity().z * 0.05;
 	}
 }

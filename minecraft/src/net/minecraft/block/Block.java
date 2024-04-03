@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -30,7 +30,6 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
@@ -721,9 +720,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	 * 
 	 * @see Item#appendTooltip
 	 */
-	public void appendTooltip(
-		ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options, @Nullable DynamicRegistryManager registryManager
-	) {
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
 	}
 
 	@Override

@@ -9,9 +9,11 @@ public interface ProjectileDeflector {
 	};
 	ProjectileDeflector SIMPLE = (projectile, hitEntity, random) -> {
 		float f = 180.0F + random.nextFloat() * 20.0F;
-		projectile.setVelocity(projectile.getVelocity().multiply(-0.25));
+		projectile.setVelocity(projectile.getVelocity().multiply(-0.5));
 		projectile.setYaw(projectile.getYaw() + f);
 		projectile.prevYaw += f;
+		projectile.velocityModified = true;
+		projectile.onDeflected();
 	};
 
 	void deflect(ProjectileEntity projectile, Entity hitEntity, Random random);

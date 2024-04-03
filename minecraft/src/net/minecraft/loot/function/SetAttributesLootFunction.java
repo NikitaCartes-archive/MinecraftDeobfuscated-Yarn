@@ -33,14 +33,21 @@ import net.minecraft.util.math.random.Random;
 public class SetAttributesLootFunction extends ConditionalLootFunction {
 	public static final MapCodec<SetAttributesLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
-				.and(Codecs.nonEmptyList(SetAttributesLootFunction.Attribute.CODEC.listOf()).fieldOf("modifiers").forGetter(function -> function.attributes))
+				.<List<SetAttributesLootFunction.Attribute>, boolean>and(
+					instance.group(
+						Codecs.nonEmptyList(SetAttributesLootFunction.Attribute.CODEC.listOf()).fieldOf("modifiers").forGetter(function -> function.attributes),
+						Codec.BOOL.optionalFieldOf("replace", Boolean.valueOf(true)).forGetter(setAttributesLootFunction -> setAttributesLootFunction.replace)
+					)
+				)
 				.apply(instance, SetAttributesLootFunction::new)
 	);
 	private final List<SetAttributesLootFunction.Attribute> attributes;
+	private final boolean replace;
 
-	SetAttributesLootFunction(List<LootCondition> conditions, List<SetAttributesLootFunction.Attribute> attributes) {
+	SetAttributesLootFunction(List<LootCondition> conditions, List<SetAttributesLootFunction.Attribute> attributes, boolean replace) {
 		super(conditions);
 		this.attributes = List.copyOf(attributes);
+		this.replace = replace;
 	}
 
 	@Override
@@ -58,26 +65,33 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		stack.apply(
-			DataComponentTypes.ATTRIBUTE_MODIFIERS,
-			AttributeModifiersComponent.DEFAULT,
-			component -> {
-				Random random = context.getRandom();
+		if (this.replace) {
+			stack.set(DataComponentTypes.ATTRIBUTE_MODIFIERS, this.applyTo(context, AttributeModifiersComponent.DEFAULT));
+		} else {
+			stack.apply(
+				DataComponentTypes.ATTRIBUTE_MODIFIERS,
+				AttributeModifiersComponent.DEFAULT,
+				component -> component.modifiers().isEmpty() ? this.applyTo(context, stack.getItem().getAttributeModifiers()) : this.applyTo(context, component)
+			);
+		}
 
-				for (SetAttributesLootFunction.Attribute attribute : this.attributes) {
-					UUID uUID = (UUID)attribute.id.orElseGet(UUID::randomUUID);
-					AttributeModifierSlot attributeModifierSlot = Util.getRandom(attribute.slots, random);
-					component = component.with(
-						attribute.attribute,
-						new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amount.nextFloat(context), attribute.operation),
-						attributeModifierSlot
-					);
-				}
-
-				return component;
-			}
-		);
 		return stack;
+	}
+
+	private AttributeModifiersComponent applyTo(LootContext context, AttributeModifiersComponent attributeModifiersComponent) {
+		Random random = context.getRandom();
+
+		for (SetAttributesLootFunction.Attribute attribute : this.attributes) {
+			UUID uUID = (UUID)attribute.id.orElseGet(UUID::randomUUID);
+			AttributeModifierSlot attributeModifierSlot = Util.getRandom(attribute.slots, random);
+			attributeModifiersComponent = attributeModifiersComponent.with(
+				attribute.attribute,
+				new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amount.nextFloat(context), attribute.operation),
+				attributeModifierSlot
+			);
+		}
+
+		return attributeModifiersComponent;
 	}
 
 	public static SetAttributesLootFunction.AttributeBuilder attributeBuilder(
@@ -100,7 +114,10 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 	) {
 		private static final Codec<List<AttributeModifierSlot>> EQUIPMENT_SLOT_LIST_CODEC = Codecs.nonEmptyList(
 			Codec.either(AttributeModifierSlot.CODEC, AttributeModifierSlot.CODEC.listOf())
-				.xmap(either -> either.map(List::of, Function.identity()), list -> list.size() == 1 ? Either.left((AttributeModifierSlot)list.get(0)) : Either.right(list))
+				.xmap(
+					either -> either.map(List::of, Function.identity()),
+					slots -> slots.size() == 1 ? Either.left((AttributeModifierSlot)slots.getFirst()) : Either.right(slots)
+				)
 		);
 		public static final Codec<SetAttributesLootFunction.Attribute> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
@@ -146,7 +163,16 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Builder extends ConditionalLootFunction.Builder<SetAttributesLootFunction.Builder> {
+		private final boolean replace;
 		private final List<SetAttributesLootFunction.Attribute> attributes = Lists.<SetAttributesLootFunction.Attribute>newArrayList();
+
+		public Builder(boolean replace) {
+			this.replace = replace;
+		}
+
+		public Builder() {
+			this(false);
+		}
 
 		protected SetAttributesLootFunction.Builder getThisBuilder() {
 			return this;
@@ -159,7 +185,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 
 		@Override
 		public LootFunction build() {
-			return new SetAttributesLootFunction(this.getConditions(), this.attributes);
+			return new SetAttributesLootFunction(this.getConditions(), this.attributes, this.replace);
 		}
 	}
 }

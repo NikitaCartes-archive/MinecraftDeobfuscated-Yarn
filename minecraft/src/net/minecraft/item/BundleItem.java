@@ -3,8 +3,8 @@ package net.minecraft.item;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.item.BundleTooltipData;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.entity.Entity;
@@ -22,9 +22,11 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.math.Fraction;
 
 public class BundleItem extends Item {
 	private static final int ITEM_BAR_COLOR = MathHelper.packRgb(0.4F, 0.4F, 1.0F);
+	private static final int field_51352 = 64;
 
 	public BundleItem(Item.Settings settings) {
 		super(settings);
@@ -32,7 +34,7 @@ public class BundleItem extends Item {
 
 	public static float getAmountFilled(ItemStack stack) {
 		BundleContentsComponent bundleContentsComponent = stack.getOrDefault(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT);
-		return (float)bundleContentsComponent.getOccupancy() / 64.0F;
+		return bundleContentsComponent.getOccupancy().floatValue();
 	}
 
 	@Override
@@ -110,13 +112,13 @@ public class BundleItem extends Item {
 	@Override
 	public boolean isItemBarVisible(ItemStack stack) {
 		BundleContentsComponent bundleContentsComponent = stack.getOrDefault(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT);
-		return bundleContentsComponent.getOccupancy() > 0;
+		return bundleContentsComponent.getOccupancy().compareTo(Fraction.ZERO) > 0;
 	}
 
 	@Override
 	public int getItemBarStep(ItemStack stack) {
 		BundleContentsComponent bundleContentsComponent = stack.getOrDefault(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT);
-		return Math.min(1 + 12 * bundleContentsComponent.getOccupancy() / 64, 13);
+		return Math.min(1 + MathHelper.multiplyFraction(bundleContentsComponent.getOccupancy(), 12), 13);
 	}
 
 	@Override
@@ -146,10 +148,11 @@ public class BundleItem extends Item {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 		BundleContentsComponent bundleContentsComponent = stack.get(DataComponentTypes.BUNDLE_CONTENTS);
 		if (bundleContentsComponent != null) {
-			tooltip.add(Text.translatable("item.minecraft.bundle.fullness", bundleContentsComponent.getOccupancy(), 64).formatted(Formatting.GRAY));
+			int i = MathHelper.multiplyFraction(bundleContentsComponent.getOccupancy(), 64);
+			tooltip.add(Text.translatable("item.minecraft.bundle.fullness", i, 64).formatted(Formatting.GRAY));
 		}
 	}
 

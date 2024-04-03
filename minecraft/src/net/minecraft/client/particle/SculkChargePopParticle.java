@@ -3,7 +3,7 @@ package net.minecraft.client.particle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 
 @Environment(EnvType.CLIENT)
 public class SculkChargePopParticle extends SpriteBillboardParticle {
@@ -35,8 +35,8 @@ public class SculkChargePopParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static record Factory(SpriteProvider spriteProvider) implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+	public static record Factory(SpriteProvider spriteProvider) implements ParticleFactory<SimpleParticleType> {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			SculkChargePopParticle sculkChargePopParticle = new SculkChargePopParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 			sculkChargePopParticle.setAlpha(1.0F);
 			sculkChargePopParticle.setVelocity(g, h, i);

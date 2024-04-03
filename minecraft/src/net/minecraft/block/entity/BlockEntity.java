@@ -203,14 +203,20 @@ public abstract class BlockEntity {
 		this.writeNbt(nbtCompound, registryLookup);
 		BlockEntity.Components.CODEC
 			.encodeStart(registryLookup.getOps(NbtOps.INSTANCE), this.components)
-			.resultOrPartial(string -> LOGGER.warn("Failed to save components: {}", string))
-			.ifPresent(nbtElement -> nbtCompound.copyFrom((NbtCompound)nbtElement));
+			.resultOrPartial(snbt -> LOGGER.warn("Failed to save components: {}", snbt))
+			.ifPresent(nbt -> nbtCompound.copyFrom((NbtCompound)nbt));
 		return nbtCompound;
 	}
 
 	public final NbtCompound createComponentlessNbt(RegistryWrapper.WrapperLookup registryLookup) {
 		NbtCompound nbtCompound = new NbtCompound();
 		this.writeNbt(nbtCompound, registryLookup);
+		return nbtCompound;
+	}
+
+	public final NbtCompound createComponentlessNbtWithIdentifyingData(RegistryWrapper.WrapperLookup registryLookup) {
+		NbtCompound nbtCompound = this.createComponentlessNbt(registryLookup);
+		this.writeIdentifyingData(nbtCompound);
 		return nbtCompound;
 	}
 

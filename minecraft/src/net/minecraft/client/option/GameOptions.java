@@ -474,7 +474,6 @@ public class GameOptions {
 		}
 	);
 	public boolean skipMultiplayerWarning;
-	public boolean skipRealms32BitWarning;
 	private static final Text HIDE_MATCHED_NAMES_TOOLTIP = Text.translatable("options.hideMatchedNames.tooltip");
 	private final SimpleOption<Boolean> hideMatchedNames = SimpleOption.ofBoolean(
 		"options.hideMatchedNames", SimpleOption.constantTooltip(HIDE_MATCHED_NAMES_TOOLTIP), true
@@ -1193,22 +1192,21 @@ public class GameOptions {
 	public GameOptions(MinecraftClient client, File optionsFile) {
 		this.client = client;
 		this.optionsFile = new File(optionsFile, "options.txt");
-		boolean bl = client.is64Bit();
-		boolean bl2 = bl && Runtime.getRuntime().maxMemory() >= 1000000000L;
+		boolean bl = Runtime.getRuntime().maxMemory() >= 1000000000L;
 		this.viewDistance = new SimpleOption<>(
 			"options.renderDistance",
 			SimpleOption.emptyTooltip(),
 			(optionText, value) -> getGenericValueText(optionText, Text.translatable("options.chunks", value)),
-			new SimpleOption.ValidatingIntSliderCallbacks(2, bl2 ? 32 : 16),
-			bl ? 12 : 8,
+			new SimpleOption.ValidatingIntSliderCallbacks(2, bl ? 32 : 16),
+			12,
 			value -> MinecraftClient.getInstance().worldRenderer.scheduleTerrainUpdate()
 		);
 		this.simulationDistance = new SimpleOption<>(
 			"options.simulationDistance",
 			SimpleOption.emptyTooltip(),
 			(optionText, value) -> getGenericValueText(optionText, Text.translatable("options.chunks", value)),
-			new SimpleOption.ValidatingIntSliderCallbacks(5, bl2 ? 32 : 16),
-			bl ? 12 : 8,
+			new SimpleOption.ValidatingIntSliderCallbacks(5, bl ? 32 : 16),
+			12,
 			value -> {
 			}
 		);
@@ -1315,7 +1313,6 @@ public class GameOptions {
 		visitor.accept("rawMouseInput", this.rawMouseInput);
 		this.glDebugVerbosity = visitor.visitInt("glDebugVerbosity", this.glDebugVerbosity);
 		this.skipMultiplayerWarning = visitor.visitBoolean("skipMultiplayerWarning", this.skipMultiplayerWarning);
-		this.skipRealms32BitWarning = visitor.visitBoolean("skipRealms32bitWarning", this.skipRealms32BitWarning);
 		visitor.accept("hideMatchedNames", this.hideMatchedNames);
 		this.joinedFirstServer = visitor.visitBoolean("joinedFirstServer", this.joinedFirstServer);
 		this.hideBundleTutorial = visitor.visitBoolean("hideBundleTutorial", this.hideBundleTutorial);

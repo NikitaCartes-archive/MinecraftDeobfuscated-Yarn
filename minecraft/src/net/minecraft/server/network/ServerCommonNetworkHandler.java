@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 public abstract class ServerCommonNetworkHandler implements ServerCommonPacketListener {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int KEEP_ALIVE_INTERVAL = 15000;
+	private static final int TRANSITION_TIMEOUT = 15000;
 	private static final Text TIMEOUT_TEXT = Text.translatable("disconnect.timeout");
 	static final Text UNEXPECTED_QUERY_RESPONSE_TEXT = Text.translatable("multiplayer.disconnect.unexpected_query_response");
 	protected final MinecraftServer server;
@@ -37,6 +38,8 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 	private long lastKeepAliveTime;
 	private boolean waitingForKeepAlive;
 	private long keepAliveId;
+	private long transitionStartTime;
+	private boolean transitioning = false;
 	private int latency;
 	private volatile boolean flushDisabled = false;
 
@@ -46,6 +49,13 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 		this.lastKeepAliveTime = Util.getMeasuringTimeMs();
 		this.latency = clientData.latency();
 		this.transferred = clientData.transferred();
+	}
+
+	private void markTransitionTime() {
+		if (!this.transitioning) {
+			this.transitionStartTime = Util.getMeasuringTimeMs();
+			this.transitioning = true;
+		}
 	}
 
 	@Override
@@ -95,7 +105,7 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 		if (!this.isHost() && l - this.lastKeepAliveTime >= 15000L) {
 			if (this.waitingForKeepAlive) {
 				this.disconnect(TIMEOUT_TEXT);
-			} else {
+			} else if (this.checkTransitionTimeout(l)) {
 				this.waitingForKeepAlive = true;
 				this.lastKeepAliveTime = l;
 				this.keepAliveId = l;
@@ -104,6 +114,18 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 		}
 
 		this.server.getProfiler().pop();
+	}
+
+	private boolean checkTransitionTimeout(long time) {
+		if (this.transitioning) {
+			if (time - this.transitionStartTime >= 15000L) {
+				this.disconnect(TIMEOUT_TEXT);
+			}
+
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	public void disableFlush() {
@@ -120,6 +142,10 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 	}
 
 	public void send(Packet<?> packet, @Nullable PacketCallbacks callbacks) {
+		if (packet.transitionsNetworkState()) {
+			this.markTransitionTime();
+		}
+
 		boolean bl = !this.flushDisabled || !this.server.isOnThread();
 
 		try {

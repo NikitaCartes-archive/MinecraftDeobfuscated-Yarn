@@ -38,8 +38,9 @@ import net.minecraft.client.gui.screen.narration.ScreenNarrator;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.MusicSound;
 import net.minecraft.text.ClickEvent;
@@ -252,7 +253,9 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	public static List<Text> getTooltipFromItem(MinecraftClient client, ItemStack stack) {
-		return stack.getTooltip(client.player, client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.BASIC);
+		return stack.getTooltip(
+			Item.TooltipContext.create(client.world), client.player, client.options.advancedItemTooltips ? TooltipType.Default.ADVANCED : TooltipType.Default.BASIC
+		);
 	}
 
 	protected void insertText(String text, boolean override) {

@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 import java.util.function.Consumer;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.item.TooltipAppender;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -32,7 +32,7 @@ public record FireworksComponent(int flightDuration, List<FireworkExplosionCompo
 	);
 
 	@Override
-	public void appendTooltip(Consumer<Text> textConsumer, TooltipContext context) {
+	public void appendTooltip(Consumer<Text> textConsumer, TooltipType context) {
 		if (this.flightDuration > 0) {
 			textConsumer.accept(
 				Text.translatable("item.minecraft.firework_rocket.flight").append(ScreenTexts.SPACE).append(String.valueOf(this.flightDuration)).formatted(Formatting.GRAY)

@@ -1,11 +1,9 @@
 package net.minecraft.item;
 
 import java.util.List;
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.text.Text;
-import net.minecraft.world.World;
 
 public class AirBlockItem extends Item {
 	private final Block block;
@@ -21,8 +19,8 @@ public class AirBlockItem extends Item {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		super.appendTooltip(stack, world, tooltip, context);
-		this.block.appendTooltip(stack, world, tooltip, context, world != null ? world.getRegistryManager() : null);
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
+		super.appendTooltip(stack, context, tooltip, type);
+		this.block.appendTooltip(stack, context, tooltip, type);
 	}
 }

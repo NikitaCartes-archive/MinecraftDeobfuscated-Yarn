@@ -1985,6 +1985,16 @@ public abstract class AbstractBlock implements ToggleableFeature {
 
 		public AbstractBlock.Settings offset(AbstractBlock.OffsetType offsetType) {
 			switch (offsetType) {
+				case XZ:
+					this.offsetter = Optional.of((AbstractBlock.Offsetter)(state, world, pos) -> {
+						Block block = state.getBlock();
+						long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
+						float f = block.getMaxHorizontalModelOffset();
+						double d = MathHelper.clamp(((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
+						double e = MathHelper.clamp(((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
+						return new Vec3d(d, 0.0, e);
+					});
+					break;
 				case XYZ:
 					this.offsetter = Optional.of((AbstractBlock.Offsetter)(state, world, pos) -> {
 						Block block = state.getBlock();
@@ -1994,16 +2004,6 @@ public abstract class AbstractBlock implements ToggleableFeature {
 						double e = MathHelper.clamp(((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
 						double g = MathHelper.clamp(((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
 						return new Vec3d(e, d, g);
-					});
-					break;
-				case XZ:
-					this.offsetter = Optional.of((AbstractBlock.Offsetter)(state, world, pos) -> {
-						Block block = state.getBlock();
-						long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
-						float f = block.getMaxHorizontalModelOffset();
-						double d = MathHelper.clamp(((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
-						double e = MathHelper.clamp(((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
-						return new Vec3d(d, 0.0, e);
 					});
 					break;
 				default:

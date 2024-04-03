@@ -22,8 +22,8 @@ import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentHolder;
 import net.minecraft.component.ComponentMap;
@@ -934,15 +934,15 @@ public final class ItemStack implements ComponentHolder {
 		}
 	}
 
-	private <T extends TooltipAppender> void appendTooltip(DataComponentType<T> componentType, Consumer<Text> textConsumer, TooltipContext context) {
+	private <T extends TooltipAppender> void appendTooltip(DataComponentType<T> componentType, Consumer<Text> textConsumer, TooltipType context) {
 		T tooltipAppender = (T)this.get(componentType);
 		if (tooltipAppender != null) {
 			tooltipAppender.appendTooltip(textConsumer, context);
 		}
 	}
 
-	public List<Text> getTooltip(@Nullable PlayerEntity player, TooltipContext context) {
-		if (!context.isCreative() && this.contains(DataComponentTypes.HIDE_TOOLTIP)) {
+	public List<Text> getTooltip(Item.TooltipContext context, @Nullable PlayerEntity player, TooltipType type) {
+		if (!type.isCreative() && this.contains(DataComponentTypes.HIDE_TOOLTIP)) {
 			return List.of();
 		} else {
 			List<Text> list = Lists.<Text>newArrayList();
@@ -952,7 +952,7 @@ public final class ItemStack implements ComponentHolder {
 			}
 
 			list.add(mutableText);
-			if (!context.isAdvanced() && !this.contains(DataComponentTypes.CUSTOM_NAME) && this.isOf(Items.FILLED_MAP)) {
+			if (!type.isAdvanced() && !this.contains(DataComponentTypes.CUSTOM_NAME) && this.isOf(Items.FILLED_MAP)) {
 				MapIdComponent mapIdComponent = this.get(DataComponentTypes.MAP_ID);
 				if (mapIdComponent != null) {
 					list.add(FilledMapItem.getIdText(mapIdComponent));
@@ -961,16 +961,16 @@ public final class ItemStack implements ComponentHolder {
 
 			Consumer<Text> consumer = list::add;
 			if (!this.contains(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP)) {
-				this.getItem().appendTooltip(this, player == null ? null : player.getWorld(), list, context);
+				this.getItem().appendTooltip(this, context, list, type);
 			}
 
-			this.appendTooltip(DataComponentTypes.TRIM, consumer, context);
-			this.appendTooltip(DataComponentTypes.STORED_ENCHANTMENTS, consumer, context);
-			this.appendTooltip(DataComponentTypes.ENCHANTMENTS, consumer, context);
-			this.appendTooltip(DataComponentTypes.DYED_COLOR, consumer, context);
-			this.appendTooltip(DataComponentTypes.LORE, consumer, context);
+			this.appendTooltip(DataComponentTypes.TRIM, consumer, type);
+			this.appendTooltip(DataComponentTypes.STORED_ENCHANTMENTS, consumer, type);
+			this.appendTooltip(DataComponentTypes.ENCHANTMENTS, consumer, type);
+			this.appendTooltip(DataComponentTypes.DYED_COLOR, consumer, type);
+			this.appendTooltip(DataComponentTypes.LORE, consumer, type);
 			this.appendAttributeModifiersTooltip(consumer, player);
-			this.appendTooltip(DataComponentTypes.UNBREAKABLE, consumer, context);
+			this.appendTooltip(DataComponentTypes.UNBREAKABLE, consumer, type);
 			BlockPredicatesChecker blockPredicatesChecker = this.get(DataComponentTypes.CAN_BREAK);
 			if (blockPredicatesChecker != null && blockPredicatesChecker.showInTooltip()) {
 				consumer.accept(ScreenTexts.EMPTY);
@@ -985,7 +985,7 @@ public final class ItemStack implements ComponentHolder {
 				blockPredicatesChecker2.addTooltips(consumer);
 			}
 
-			if (context.isAdvanced()) {
+			if (type.isAdvanced()) {
 				if (this.isDamaged()) {
 					list.add(Text.translatable("item.durability", this.getMaxDamage() - this.getDamage(), this.getMaxDamage()));
 				}
@@ -1200,7 +1200,7 @@ public final class ItemStack implements ComponentHolder {
 		if (!attributeModifiersComponent.modifiers().isEmpty()) {
 			attributeModifiersComponent.applyModifiers(slot, attributeModifierConsumer);
 		} else {
-			this.getItem().getAttributeModifiers(slot).forEach(attributeModifierConsumer);
+			this.getItem().getAttributeModifiers().applyModifiers(slot, attributeModifierConsumer);
 		}
 	}
 

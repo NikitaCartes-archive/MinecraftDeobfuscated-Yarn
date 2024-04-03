@@ -213,12 +213,7 @@ public abstract class ScreenHandler {
 	 * @see #canUse(PlayerEntity)
 	 */
 	protected static boolean canUse(ScreenHandlerContext context, PlayerEntity player, Block block) {
-		return context.get(
-			(world, pos) -> !world.getBlockState(pos).isOf(block)
-					? false
-					: player.squaredDistanceTo((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5) <= 64.0,
-			true
-		);
+		return context.get((world, pos) -> !world.getBlockState(pos).isOf(block) ? false : player.canInteractWithBlockAt(pos, 4.0), true);
 	}
 
 	/**

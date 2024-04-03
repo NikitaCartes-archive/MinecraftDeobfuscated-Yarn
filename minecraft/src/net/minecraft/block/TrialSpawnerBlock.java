@@ -9,9 +9,9 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.Spawner;
 import net.minecraft.block.entity.TrialSpawnerBlockEntity;
 import net.minecraft.block.enums.TrialSpawnerState;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -19,7 +19,6 @@ import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class TrialSpawnerBlock extends BlockWithEntity {
@@ -70,10 +69,8 @@ public class TrialSpawnerBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void appendTooltip(
-		ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options, @Nullable DynamicRegistryManager registryManager
-	) {
-		super.appendTooltip(stack, world, tooltip, options, registryManager);
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
+		super.appendTooltip(stack, context, tooltip, options);
 		Spawner.appendSpawnDataToTooltip(stack, tooltip, "spawn_data");
 	}
 }

@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.component.type.MapPostProcessingComponent;
@@ -325,15 +325,15 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 		MapIdComponent mapIdComponent = stack.get(DataComponentTypes.MAP_ID);
-		MapState mapState = world == null ? null : getMapState(mapIdComponent, world);
+		MapState mapState = mapIdComponent != null ? context.getMapState(mapIdComponent) : null;
 		MapPostProcessingComponent mapPostProcessingComponent = stack.get(DataComponentTypes.MAP_POST_PROCESSING);
 		if (mapState != null && (mapState.locked || mapPostProcessingComponent == MapPostProcessingComponent.LOCK)) {
 			tooltip.add(Text.translatable("filled_map.locked", mapIdComponent.id()).formatted(Formatting.GRAY));
 		}
 
-		if (context.isAdvanced()) {
+		if (type.isAdvanced()) {
 			if (mapState != null) {
 				if (mapPostProcessingComponent == null) {
 					tooltip.add(getIdText(mapIdComponent));

@@ -1,12 +1,10 @@
 package net.minecraft.item;
 
 import java.util.List;
-import javax.annotation.Nullable;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FireworkExplosionComponent;
 import net.minecraft.text.Text;
-import net.minecraft.world.World;
 
 public class FireworkStarItem extends Item {
 	public FireworkStarItem(Item.Settings settings) {
@@ -14,10 +12,10 @@ public class FireworkStarItem extends Item {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 		FireworkExplosionComponent fireworkExplosionComponent = stack.get(DataComponentTypes.FIREWORK_EXPLOSION);
 		if (fireworkExplosionComponent != null) {
-			fireworkExplosionComponent.appendTooltip(tooltip::add, context);
+			fireworkExplosionComponent.appendTooltip(tooltip::add, type);
 		}
 	}
 }

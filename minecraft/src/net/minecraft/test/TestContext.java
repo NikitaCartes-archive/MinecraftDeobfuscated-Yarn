@@ -372,7 +372,7 @@ public class TestContext {
 	public <T extends Comparable<T>> void expectBlockProperty(BlockPos pos, Property<T> property, T value) {
 		BlockState blockState = this.getBlockState(pos);
 		boolean bl = blockState.contains(property);
-		if (!bl || !blockState.get(property).equals(value)) {
+		if (!bl || !blockState.<T>get(property).equals(value)) {
 			String string = bl ? "was " + blockState.get(property) : "property " + property.getName() + " is missing";
 			String string2 = String.format(Locale.ROOT, "Expected property %s to be %s, %s", property.getName(), value, string);
 			throw new PositionedException(string2, this.getAbsolutePos(pos), pos, this.test.getTick());

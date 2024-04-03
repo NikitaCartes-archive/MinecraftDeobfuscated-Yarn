@@ -164,8 +164,8 @@ public class VertexFormat {
 
 		public int getIndexCount(int vertexCount) {
 			return switch (this) {
-				case LINE_STRIP, DEBUG_LINES, DEBUG_LINE_STRIP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN -> vertexCount;
 				case LINES, QUADS -> vertexCount / 4 * 6;
+				case LINE_STRIP, DEBUG_LINES, DEBUG_LINE_STRIP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN -> vertexCount;
 				default -> 0;
 			};
 		}

@@ -13,6 +13,9 @@ import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.FeatureUpdater;
 import net.minecraft.world.PersistentStateManager;
@@ -42,22 +45,30 @@ public class VersionedChunkStorage implements AutoCloseable {
 		Optional<RegistryKey<MapCodec<? extends ChunkGenerator>>> generatorCodecKey
 	) {
 		int i = getDataVersion(nbt);
-		if (i < 1493) {
-			nbt = DataFixTypes.CHUNK.update(this.dataFixer, nbt, i, 1493);
-			if (nbt.getCompound("Level").getBoolean("hasLegacyStructureData")) {
-				FeatureUpdater featureUpdater = this.getFeatureUpdater(worldKey, persistentStateManagerFactory);
-				nbt = featureUpdater.getUpdatedReferences(nbt);
+
+		try {
+			if (i < 1493) {
+				nbt = DataFixTypes.CHUNK.update(this.dataFixer, nbt, i, 1493);
+				if (nbt.getCompound("Level").getBoolean("hasLegacyStructureData")) {
+					FeatureUpdater featureUpdater = this.getFeatureUpdater(worldKey, persistentStateManagerFactory);
+					nbt = featureUpdater.getUpdatedReferences(nbt);
+				}
 			}
-		}
 
-		saveContextToNbt(nbt, worldKey, generatorCodecKey);
-		nbt = DataFixTypes.CHUNK.update(this.dataFixer, nbt, Math.max(1493, i));
-		if (i < SharedConstants.getGameVersion().getSaveVersion().getId()) {
-			NbtHelper.putDataVersion(nbt);
-		}
+			saveContextToNbt(nbt, worldKey, generatorCodecKey);
+			nbt = DataFixTypes.CHUNK.update(this.dataFixer, nbt, Math.max(1493, i));
+			if (i < SharedConstants.getGameVersion().getSaveVersion().getId()) {
+				NbtHelper.putDataVersion(nbt);
+			}
 
-		nbt.remove("__context");
-		return nbt;
+			nbt.remove("__context");
+			return nbt;
+		} catch (Exception var9) {
+			CrashReport crashReport = CrashReport.create(var9, "Updated chunk");
+			CrashReportSection crashReportSection = crashReport.addElement("Updated chunk details");
+			crashReportSection.add("Data version", i);
+			throw new CrashException(crashReport);
+		}
 	}
 
 	private FeatureUpdater getFeatureUpdater(RegistryKey<World> worldKey, Supplier<PersistentStateManager> stateManagerGetter) {

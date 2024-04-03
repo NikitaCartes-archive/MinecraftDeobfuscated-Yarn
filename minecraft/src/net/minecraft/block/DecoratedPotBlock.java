@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.block.entity.Sherds;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -23,7 +23,6 @@ import net.minecraft.item.Items;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenTexts;
@@ -208,10 +207,8 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	}
 
 	@Override
-	public void appendTooltip(
-		ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options, @Nullable DynamicRegistryManager registryManager
-	) {
-		super.appendTooltip(stack, world, tooltip, options, registryManager);
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
+		super.appendTooltip(stack, context, tooltip, options);
 		Sherds sherds = stack.getOrDefault(DataComponentTypes.POT_DECORATIONS, Sherds.DEFAULT);
 		if (!sherds.equals(Sherds.DEFAULT)) {
 			tooltip.add(ScreenTexts.EMPTY);

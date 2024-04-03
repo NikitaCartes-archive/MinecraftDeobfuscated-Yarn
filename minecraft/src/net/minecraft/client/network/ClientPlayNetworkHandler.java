@@ -88,6 +88,7 @@ import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.SnifferEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.SimpleInventory;
@@ -221,6 +222,7 @@ import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.ProjectilePowerS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
@@ -2207,6 +2209,16 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 		for (Packet<? super ClientPlayPacketListener> packet2 : packet.getPackets()) {
 			packet2.apply(this);
+		}
+	}
+
+	@Override
+	public void onProjectilePower(ProjectilePowerS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		if (this.world.getEntityById(packet.getEntityId()) instanceof ExplosiveProjectileEntity explosiveProjectileEntity) {
+			explosiveProjectileEntity.powerX = packet.getPowerX();
+			explosiveProjectileEntity.powerY = packet.getPowerY();
+			explosiveProjectileEntity.powerZ = packet.getPowerZ();
 		}
 	}
 

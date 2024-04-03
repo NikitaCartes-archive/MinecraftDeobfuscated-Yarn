@@ -84,6 +84,9 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 
 				this.pushEntities(world, pos, state);
 				break;
+			case OPENED:
+				this.animationProgress = 1.0F;
+				break;
 			case CLOSING:
 				this.animationProgress -= 0.1F;
 				if (this.prevAnimationProgress == 1.0F) {
@@ -95,9 +98,6 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 					this.animationProgress = 0.0F;
 					updateNeighborStates(world, pos, state);
 				}
-				break;
-			case OPENED:
-				this.animationProgress = 1.0F;
 		}
 	}
 

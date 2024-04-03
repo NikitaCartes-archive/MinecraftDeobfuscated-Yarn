@@ -6,7 +6,7 @@ import io.netty.buffer.ByteBuf;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
@@ -87,7 +87,7 @@ public record DyedColorComponent(int rgb, boolean showInTooltip) implements Tool
 	}
 
 	@Override
-	public void appendTooltip(Consumer<Text> textConsumer, TooltipContext context) {
+	public void appendTooltip(Consumer<Text> textConsumer, TooltipType context) {
 		if (this.showInTooltip) {
 			if (context.isAdvanced()) {
 				textConsumer.accept(Text.translatable("item.color", String.format(Locale.ROOT, "#%06X", this.rgb)).formatted(Formatting.GRAY));

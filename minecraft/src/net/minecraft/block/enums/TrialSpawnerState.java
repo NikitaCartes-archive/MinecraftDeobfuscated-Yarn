@@ -15,8 +15,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.OminousItemSpawnerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -281,7 +281,7 @@ public enum TrialSpawnerState implements StringIdentifiable {
 			}
 		};
 
-		private static void emitParticle(DefaultParticleType type, Vec3d pos, World world) {
+		private static void emitParticle(SimpleParticleType type, Vec3d pos, World world) {
 			world.addParticle(type, pos.getX(), pos.getY(), pos.getZ(), 0.0, 0.0, 0.0);
 		}
 

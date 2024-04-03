@@ -9,8 +9,8 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.component.type.FireworkExplosionComponent;
-import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -91,14 +91,14 @@ public class FireworksSparkParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class ExplosionFactory implements ParticleFactory<DefaultParticleType> {
+	public static class ExplosionFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public ExplosionFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			FireworksSparkParticle.Explosion explosion = new FireworksSparkParticle.Explosion(
 				clientWorld, d, e, f, g, h, i, MinecraftClient.getInstance().particleManager, this.spriteProvider
 			);
@@ -339,14 +339,14 @@ public class FireworksSparkParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class FlashFactory implements ParticleFactory<DefaultParticleType> {
+	public static class FlashFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public FlashFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			FireworksSparkParticle.Flash flash = new FireworksSparkParticle.Flash(clientWorld, d, e, f);
 			flash.setSprite(this.spriteProvider);
 			return flash;

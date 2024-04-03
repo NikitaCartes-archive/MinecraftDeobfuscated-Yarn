@@ -129,7 +129,7 @@ public class CopyComponentsLootFunction extends ConditionalLootFunction {
 					BlockEntity blockEntity = context.get(LootContextParameters.BLOCK_ENTITY);
 					return blockEntity != null ? blockEntity.createComponentMap() : ComponentMap.EMPTY;
 				default:
-					throw new IncompatibleClassChangeError();
+					throw new MatchException(null, null);
 			}
 		}
 
@@ -138,7 +138,7 @@ public class CopyComponentsLootFunction extends ConditionalLootFunction {
 				case BLOCK_ENTITY:
 					return Set.of(LootContextParameters.BLOCK_ENTITY);
 				default:
-					throw new IncompatibleClassChangeError();
+					throw new MatchException(null, null);
 			}
 		}
 

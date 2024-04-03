@@ -290,15 +290,15 @@ public class ServerResourcePackManager {
 
 						for (ServerResourcePackManager.PackEntry packEntry : ServerResourcePackManager.this.packs) {
 							switch (packEntry.status) {
-								case ACTIVE:
-									list.add(packEntry);
+								case INACTIVE:
+									packEntry.discard(ServerResourcePackManager.DiscardReason.DISCARDED);
 									break;
 								case PENDING:
 									packEntry.status = ServerResourcePackManager.Status.INACTIVE;
 									packEntry.discard(ServerResourcePackManager.DiscardReason.ACTIVATION_FAILED);
 									break;
-								case INACTIVE:
-									packEntry.discard(ServerResourcePackManager.DiscardReason.DISCARDED);
+								case ACTIVE:
+									list.add(packEntry);
 							}
 						}
 

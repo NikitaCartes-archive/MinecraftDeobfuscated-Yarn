@@ -124,6 +124,7 @@ import net.minecraft.network.packet.s2c.play.PlayerRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.ProjectilePowerS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
@@ -271,6 +272,7 @@ public class PlayPackets {
 	public static final PacketType<EntityAttributesS2CPacket> UPDATE_ATTRIBUTES = s2c("update_attributes");
 	public static final PacketType<EntityStatusEffectS2CPacket> UPDATE_MOB_EFFECT = s2c("update_mob_effect");
 	public static final PacketType<SynchronizeRecipesS2CPacket> UPDATE_RECIPES = s2c("update_recipes");
+	public static final PacketType<ProjectilePowerS2CPacket> PROJECTILE_POWER = s2c("projectile_power");
 	public static final PacketType<TeleportConfirmC2SPacket> ACCEPT_TELEPORTATION = c2s("accept_teleportation");
 	public static final PacketType<QueryBlockNbtC2SPacket> BLOCK_ENTITY_TAG_QUERY = c2s("block_entity_tag_query");
 	public static final PacketType<UpdateDifficultyC2SPacket> CHANGE_DIFFICULTY_C2S = c2s("change_difficulty");

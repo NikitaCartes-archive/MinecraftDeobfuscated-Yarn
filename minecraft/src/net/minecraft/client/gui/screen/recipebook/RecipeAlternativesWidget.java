@@ -201,7 +201,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 		public void acceptAlignedInput(Iterator<Ingredient> inputs, int slot, int amount, int gridX, int gridY) {
 			ItemStack[] itemStacks = ((Ingredient)inputs.next()).getMatchingStacks();
 			if (itemStacks.length != 0) {
-				this.slots.add(new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(3 + gridY * 7, 3 + gridX * 7, itemStacks));
+				this.slots.add(new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(this, 3 + gridY * 7, 3 + gridX * 7, itemStacks));
 			}
 		}
 
@@ -249,7 +249,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 			public final int y;
 			public final int x;
 
-			public InputSlot(int y, int x, ItemStack[] stacks) {
+			public InputSlot(RecipeAlternativesWidget.AlternativeButtonWidget widget, int y, int x, ItemStack[] stacks) {
 				this.y = y;
 				this.x = x;
 				this.stacks = stacks;
@@ -267,7 +267,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 		protected void alignRecipe(RecipeEntry<?> recipe) {
 			Ingredient ingredient = recipe.value().getIngredients().get(0);
 			ItemStack[] itemStacks = ingredient.getMatchingStacks();
-			this.slots.add(new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(10, 10, itemStacks));
+			this.slots.add(new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(this, 10, 10, itemStacks));
 		}
 	}
 }

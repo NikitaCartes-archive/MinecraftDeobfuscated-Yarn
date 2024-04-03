@@ -41,6 +41,18 @@ public enum AttributeModifierSlot implements StringIdentifiable {
 		this(id, name, slotx -> slotx == slot);
 	}
 
+	public static AttributeModifierSlot forEquipmentSlot(EquipmentSlot slot) {
+		return switch (slot) {
+			case MAINHAND -> MAINHAND;
+			case OFFHAND -> OFFHAND;
+			case FEET -> FEET;
+			case LEGS -> LEGS;
+			case CHEST -> CHEST;
+			case HEAD -> HEAD;
+			case BODY -> BODY;
+		};
+	}
+
 	@Override
 	public String asString() {
 		return this.name;

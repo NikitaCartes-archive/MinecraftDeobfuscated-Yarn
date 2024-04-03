@@ -3,7 +3,7 @@ package net.minecraft.client.particle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 
 @Environment(EnvType.CLIENT)
 public class WhiteSmokeParticle extends AscendingParticle {
@@ -19,14 +19,14 @@ public class WhiteSmokeParticle extends AscendingParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements ParticleFactory<DefaultParticleType> {
+	public static class Factory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public Factory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			return new WhiteSmokeParticle(clientWorld, d, e, f, g, h, i, 1.0F, this.spriteProvider);
 		}
 	}

@@ -3,7 +3,7 @@ package net.minecraft.client.particle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
@@ -49,7 +49,7 @@ public class GlowParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class ElectricSparkFactory implements ParticleFactory<DefaultParticleType> {
+	public static class ElectricSparkFactory implements ParticleFactory<SimpleParticleType> {
 		private final double velocityMultiplier = 0.25;
 		private final SpriteProvider spriteProvider;
 
@@ -57,7 +57,7 @@ public class GlowParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			GlowParticle glowParticle = new GlowParticle(clientWorld, d, e, f, 0.0, 0.0, 0.0, this.spriteProvider);
 			glowParticle.setColor(1.0F, 0.9F, 1.0F);
 			glowParticle.setVelocity(g * 0.25, h * 0.25, i * 0.25);
@@ -69,14 +69,14 @@ public class GlowParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class GlowFactory implements ParticleFactory<DefaultParticleType> {
+	public static class GlowFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public GlowFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			GlowParticle glowParticle = new GlowParticle(
 				clientWorld, d, e, f, 0.5 - GlowParticle.RANDOM.nextDouble(), h, 0.5 - GlowParticle.RANDOM.nextDouble(), this.spriteProvider
 			);
@@ -98,7 +98,7 @@ public class GlowParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class ScrapeFactory implements ParticleFactory<DefaultParticleType> {
+	public static class ScrapeFactory implements ParticleFactory<SimpleParticleType> {
 		private final double velocityMultiplier = 0.01;
 		private final SpriteProvider spriteProvider;
 
@@ -106,7 +106,7 @@ public class GlowParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			GlowParticle glowParticle = new GlowParticle(clientWorld, d, e, f, 0.0, 0.0, 0.0, this.spriteProvider);
 			if (clientWorld.random.nextBoolean()) {
 				glowParticle.setColor(0.29F, 0.58F, 0.51F);
@@ -123,7 +123,7 @@ public class GlowParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class WaxOffFactory implements ParticleFactory<DefaultParticleType> {
+	public static class WaxOffFactory implements ParticleFactory<SimpleParticleType> {
 		private final double velocityMultiplier = 0.01;
 		private final SpriteProvider spriteProvider;
 
@@ -131,7 +131,7 @@ public class GlowParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			GlowParticle glowParticle = new GlowParticle(clientWorld, d, e, f, 0.0, 0.0, 0.0, this.spriteProvider);
 			glowParticle.setColor(1.0F, 0.9F, 1.0F);
 			glowParticle.setVelocity(g * 0.01 / 2.0, h * 0.01, i * 0.01 / 2.0);
@@ -143,7 +143,7 @@ public class GlowParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class WaxOnFactory implements ParticleFactory<DefaultParticleType> {
+	public static class WaxOnFactory implements ParticleFactory<SimpleParticleType> {
 		private final double velocityMultiplier = 0.01;
 		private final SpriteProvider spriteProvider;
 
@@ -151,7 +151,7 @@ public class GlowParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			GlowParticle glowParticle = new GlowParticle(clientWorld, d, e, f, 0.0, 0.0, 0.0, this.spriteProvider);
 			glowParticle.setColor(0.91F, 0.55F, 0.08F);
 			glowParticle.setVelocity(g * 0.01 / 2.0, h * 0.01, i * 0.01 / 2.0);

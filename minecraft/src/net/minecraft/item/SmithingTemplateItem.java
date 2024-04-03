@@ -1,8 +1,7 @@
 package net.minecraft.item;
 
 import java.util.List;
-import javax.annotation.Nullable;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.item.trim.ArmorTrimPattern;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
@@ -11,7 +10,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.world.World;
 
 public class SmithingTemplateItem extends Item {
 	private static final Formatting TITLE_FORMATTING = Formatting.GRAY;
@@ -158,8 +156,8 @@ public class SmithingTemplateItem extends Item {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		super.appendTooltip(stack, world, tooltip, context);
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
+		super.appendTooltip(stack, context, tooltip, type);
 		tooltip.add(this.titleText);
 		tooltip.add(ScreenTexts.EMPTY);
 		tooltip.add(APPLIES_TO_TEXT);

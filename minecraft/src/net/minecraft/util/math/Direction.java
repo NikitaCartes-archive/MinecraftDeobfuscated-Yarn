@@ -151,8 +151,8 @@ public enum Direction implements StringIdentifiable {
 	public static Direction getLookDirectionForAxis(Entity entity, Direction.Axis axis) {
 		return switch (axis) {
 			case X -> EAST.pointsTo(entity.getYaw(1.0F)) ? EAST : WEST;
-			case Z -> SOUTH.pointsTo(entity.getYaw(1.0F)) ? SOUTH : NORTH;
 			case Y -> entity.getPitch(1.0F) < 0.0F ? UP : DOWN;
+			case Z -> SOUTH.pointsTo(entity.getYaw(1.0F)) ? SOUTH : NORTH;
 		};
 	}
 
@@ -163,16 +163,16 @@ public enum Direction implements StringIdentifiable {
 	public Direction rotateClockwise(Direction.Axis axis) {
 		return switch (axis) {
 			case X -> this != WEST && this != EAST ? this.rotateXClockwise() : this;
-			case Z -> this != NORTH && this != SOUTH ? this.rotateZClockwise() : this;
 			case Y -> this != UP && this != DOWN ? this.rotateYClockwise() : this;
+			case Z -> this != NORTH && this != SOUTH ? this.rotateZClockwise() : this;
 		};
 	}
 
 	public Direction rotateCounterclockwise(Direction.Axis axis) {
 		return switch (axis) {
 			case X -> this != WEST && this != EAST ? this.rotateXCounterclockwise() : this;
-			case Z -> this != NORTH && this != SOUTH ? this.rotateZCounterclockwise() : this;
 			case Y -> this != UP && this != DOWN ? this.rotateYCounterclockwise() : this;
+			case Z -> this != NORTH && this != SOUTH ? this.rotateZCounterclockwise() : this;
 		};
 	}
 
@@ -313,8 +313,8 @@ public enum Direction implements StringIdentifiable {
 	public static Direction from(Direction.Axis axis, Direction.AxisDirection direction) {
 		return switch (axis) {
 			case X -> direction == Direction.AxisDirection.POSITIVE ? EAST : WEST;
-			case Z -> direction == Direction.AxisDirection.POSITIVE ? SOUTH : NORTH;
 			case Y -> direction == Direction.AxisDirection.POSITIVE ? UP : DOWN;
+			case Z -> direction == Direction.AxisDirection.POSITIVE ? SOUTH : NORTH;
 		};
 	}
 

@@ -46,10 +46,17 @@ public record ProfileComponent(Optional<String> name, Optional<UUID> id, Propert
 	}
 
 	public CompletableFuture<ProfileComponent> getFuture() {
-		return this.isCompleted() ? CompletableFuture.completedFuture(this) : SkullBlockEntity.fetchProfile((String)this.name.orElseThrow()).thenApply(profile -> {
-			GameProfile gameProfile = (GameProfile)profile.orElseGet(() -> new GameProfile(Util.NIL_UUID, (String)this.name.get()));
-			return new ProfileComponent(gameProfile);
-		});
+		if (this.isCompleted()) {
+			return CompletableFuture.completedFuture(this);
+		} else {
+			return this.id.isPresent() ? SkullBlockEntity.fetchProfileByUuid((UUID)this.id.get()).thenApply(optional -> {
+				GameProfile gameProfile = (GameProfile)optional.orElseGet(() -> new GameProfile((UUID)this.id.get(), (String)this.name.orElse("")));
+				return new ProfileComponent(gameProfile);
+			}) : SkullBlockEntity.fetchProfileByName((String)this.name.orElseThrow()).thenApply(profile -> {
+				GameProfile gameProfile = (GameProfile)profile.orElseGet(() -> new GameProfile(Util.NIL_UUID, (String)this.name.get()));
+				return new ProfileComponent(gameProfile);
+			});
+		}
 	}
 
 	private static GameProfile createProfile(Optional<String> name, Optional<UUID> id, PropertyMap properties) {
@@ -59,6 +66,6 @@ public record ProfileComponent(Optional<String> name, Optional<UUID> id, Propert
 	}
 
 	public boolean isCompleted() {
-		return this.id.isPresent() || !this.properties.isEmpty() || this.name.isEmpty();
+		return !this.properties.isEmpty() ? true : this.id.isPresent() == this.name.isPresent();
 	}
 }

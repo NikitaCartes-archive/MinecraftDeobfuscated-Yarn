@@ -183,7 +183,9 @@ public class BreezeEntity extends HostileEntity {
 
 	@Override
 	public ProjectileDeflector getProjectileDeflector(ProjectileEntity projectile) {
-		return projectile.getType() == EntityType.BREEZE_WIND_CHARGE ? ProjectileDeflector.NONE : PROJECTILE_DEFLECTOR;
+		return projectile.getType() != EntityType.BREEZE_WIND_CHARGE && projectile.getType() != EntityType.WIND_CHARGE
+			? PROJECTILE_DEFLECTOR
+			: ProjectileDeflector.NONE;
 	}
 
 	@Override

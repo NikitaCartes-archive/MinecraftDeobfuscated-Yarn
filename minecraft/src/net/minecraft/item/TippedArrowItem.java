@@ -1,14 +1,12 @@
 package net.minecraft.item;
 
 import java.util.List;
-import javax.annotation.Nullable;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import net.minecraft.text.Text;
-import net.minecraft.world.World;
 
 public class TippedArrowItem extends ArrowItem {
 	public TippedArrowItem(Item.Settings settings) {
@@ -23,10 +21,10 @@ public class TippedArrowItem extends ArrowItem {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 		PotionContentsComponent potionContentsComponent = stack.get(DataComponentTypes.POTION_CONTENTS);
 		if (potionContentsComponent != null) {
-			potionContentsComponent.buildTooltip(tooltip::add, 0.125F, world == null ? 20.0F : world.getTickManager().getTickRate());
+			potionContentsComponent.buildTooltip(tooltip::add, 0.125F, context.getUpdateTickRate());
 		}
 	}
 

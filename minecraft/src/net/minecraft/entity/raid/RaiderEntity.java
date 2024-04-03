@@ -453,7 +453,6 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	protected class PatrolApproachGoal extends Goal {
-		private final RaiderEntity raider;
 		private final float squaredDistance;
 		public final TargetPredicate closeRaiderPredicate = TargetPredicate.createNonAttackable()
 			.setBaseMaxDistance(8.0)
@@ -461,46 +460,43 @@ public abstract class RaiderEntity extends PatrolEntity {
 			.ignoreDistanceScalingFactor();
 
 		public PatrolApproachGoal(IllagerEntity illager, float distance) {
-			this.raider = illager;
 			this.squaredDistance = distance * distance;
 			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		}
 
 		@Override
 		public boolean canStart() {
-			LivingEntity livingEntity = this.raider.getAttacker();
-			return this.raider.getRaid() == null
-				&& this.raider.isRaidCenterSet()
-				&& this.raider.getTarget() != null
-				&& !this.raider.isAttacking()
+			LivingEntity livingEntity = RaiderEntity.this.getAttacker();
+			return RaiderEntity.this.getRaid() == null
+				&& RaiderEntity.this.isRaidCenterSet()
+				&& RaiderEntity.this.getTarget() != null
+				&& !RaiderEntity.this.isAttacking()
 				&& (livingEntity == null || livingEntity.getType() != EntityType.PLAYER);
 		}
 
 		@Override
 		public void start() {
 			super.start();
-			this.raider.getNavigation().stop();
+			RaiderEntity.this.getNavigation().stop();
 
-			for (RaiderEntity raiderEntity : this.raider
-				.getWorld()
-				.getTargets(RaiderEntity.class, this.closeRaiderPredicate, this.raider, this.raider.getBoundingBox().expand(8.0, 8.0, 8.0))) {
-				raiderEntity.setTarget(this.raider.getTarget());
+			for (RaiderEntity raiderEntity : RaiderEntity.this.getWorld()
+				.getTargets(RaiderEntity.class, this.closeRaiderPredicate, RaiderEntity.this, RaiderEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0))) {
+				raiderEntity.setTarget(RaiderEntity.this.getTarget());
 			}
 		}
 
 		@Override
 		public void stop() {
 			super.stop();
-			LivingEntity livingEntity = this.raider.getTarget();
+			LivingEntity livingEntity = RaiderEntity.this.getTarget();
 			if (livingEntity != null) {
-				for (RaiderEntity raiderEntity : this.raider
-					.getWorld()
-					.getTargets(RaiderEntity.class, this.closeRaiderPredicate, this.raider, this.raider.getBoundingBox().expand(8.0, 8.0, 8.0))) {
+				for (RaiderEntity raiderEntity : RaiderEntity.this.getWorld()
+					.getTargets(RaiderEntity.class, this.closeRaiderPredicate, RaiderEntity.this, RaiderEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0))) {
 					raiderEntity.setTarget(livingEntity);
 					raiderEntity.setAttacking(true);
 				}
 
-				this.raider.setAttacking(true);
+				RaiderEntity.this.setAttacking(true);
 			}
 		}
 
@@ -511,15 +507,15 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 		@Override
 		public void tick() {
-			LivingEntity livingEntity = this.raider.getTarget();
+			LivingEntity livingEntity = RaiderEntity.this.getTarget();
 			if (livingEntity != null) {
-				if (this.raider.squaredDistanceTo(livingEntity) > (double)this.squaredDistance) {
-					this.raider.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
-					if (this.raider.random.nextInt(50) == 0) {
-						this.raider.playAmbientSound();
+				if (RaiderEntity.this.squaredDistanceTo(livingEntity) > (double)this.squaredDistance) {
+					RaiderEntity.this.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
+					if (RaiderEntity.this.random.nextInt(50) == 0) {
+						RaiderEntity.this.playAmbientSound();
 					}
 				} else {
-					this.raider.setAttacking(true);
+					RaiderEntity.this.setAttacking(true);
 				}
 
 				super.tick();

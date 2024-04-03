@@ -6,9 +6,9 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -76,7 +76,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	public static SpriteBillboardParticle createDrippingWater(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		BlockLeakParticle blockLeakParticle = new BlockLeakParticle.Dripping(world, x, y, z, Fluids.WATER, ParticleTypes.FALLING_WATER);
 		blockLeakParticle.setColor(0.2F, 0.3F, 1.0F);
@@ -84,7 +84,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	public static SpriteBillboardParticle createFallingWater(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		BlockLeakParticle blockLeakParticle = new BlockLeakParticle.ContinuousFalling(world, x, y, z, Fluids.WATER, ParticleTypes.SPLASH);
 		blockLeakParticle.setColor(0.2F, 0.3F, 1.0F);
@@ -92,13 +92,13 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	public static SpriteBillboardParticle createDrippingLava(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		return new BlockLeakParticle.DrippingLava(world, x, y, z, Fluids.LAVA, ParticleTypes.FALLING_LAVA);
 	}
 
 	public static SpriteBillboardParticle createFallingLava(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		BlockLeakParticle blockLeakParticle = new BlockLeakParticle.ContinuousFalling(world, x, y, z, Fluids.LAVA, ParticleTypes.LANDING_LAVA);
 		blockLeakParticle.setColor(1.0F, 0.2857143F, 0.083333336F);
@@ -106,7 +106,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	public static SpriteBillboardParticle createLandingLava(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		BlockLeakParticle blockLeakParticle = new BlockLeakParticle.Landing(world, x, y, z, Fluids.LAVA);
 		blockLeakParticle.setColor(1.0F, 0.2857143F, 0.083333336F);
@@ -114,7 +114,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	public static SpriteBillboardParticle createDrippingHoney(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		BlockLeakParticle.Dripping dripping = new BlockLeakParticle.Dripping(world, x, y, z, Fluids.EMPTY, ParticleTypes.FALLING_HONEY);
 		dripping.gravityStrength *= 0.01F;
@@ -124,7 +124,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	public static SpriteBillboardParticle createFallingHoney(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		BlockLeakParticle blockLeakParticle = new BlockLeakParticle.FallingHoney(world, x, y, z, Fluids.EMPTY, ParticleTypes.LANDING_HONEY);
 		blockLeakParticle.gravityStrength = 0.01F;
@@ -133,7 +133,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	public static SpriteBillboardParticle createLandingHoney(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		BlockLeakParticle blockLeakParticle = new BlockLeakParticle.Landing(world, x, y, z, Fluids.EMPTY);
 		blockLeakParticle.maxAge = (int)(128.0 / (Math.random() * 0.8 + 0.2));
@@ -142,7 +142,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	public static SpriteBillboardParticle createDrippingDripstoneWater(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		BlockLeakParticle blockLeakParticle = new BlockLeakParticle.Dripping(world, x, y, z, Fluids.WATER, ParticleTypes.FALLING_DRIPSTONE_WATER);
 		blockLeakParticle.setColor(0.2F, 0.3F, 1.0F);
@@ -150,7 +150,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	public static SpriteBillboardParticle createFallingDripstoneWater(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		BlockLeakParticle blockLeakParticle = new BlockLeakParticle.DripstoneLavaDrip(world, x, y, z, Fluids.WATER, ParticleTypes.SPLASH);
 		blockLeakParticle.setColor(0.2F, 0.3F, 1.0F);
@@ -158,13 +158,13 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	public static SpriteBillboardParticle createDrippingDripstoneLava(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		return new BlockLeakParticle.DrippingLava(world, x, y, z, Fluids.LAVA, ParticleTypes.FALLING_DRIPSTONE_LAVA);
 	}
 
 	public static SpriteBillboardParticle createFallingDripstoneLava(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		BlockLeakParticle blockLeakParticle = new BlockLeakParticle.DripstoneLavaDrip(world, x, y, z, Fluids.LAVA, ParticleTypes.LANDING_LAVA);
 		blockLeakParticle.setColor(1.0F, 0.2857143F, 0.083333336F);
@@ -172,7 +172,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	public static SpriteBillboardParticle createFallingNectar(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		BlockLeakParticle blockLeakParticle = new BlockLeakParticle.Falling(world, x, y, z, Fluids.EMPTY);
 		blockLeakParticle.maxAge = (int)(16.0 / (Math.random() * 0.8 + 0.2));
@@ -182,7 +182,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	public static SpriteBillboardParticle createFallingSporeBlossom(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		int i = (int)(64.0F / MathHelper.nextBetween(world.getRandom(), 0.1F, 0.9F));
 		BlockLeakParticle blockLeakParticle = new BlockLeakParticle.Falling(world, x, y, z, Fluids.EMPTY, i);
@@ -192,7 +192,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	public static SpriteBillboardParticle createDrippingObsidianTear(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		BlockLeakParticle.Dripping dripping = new BlockLeakParticle.Dripping(world, x, y, z, Fluids.EMPTY, ParticleTypes.FALLING_OBSIDIAN_TEAR);
 		dripping.obsidianTear = true;
@@ -203,7 +203,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	public static SpriteBillboardParticle createFallingObsidianTear(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		BlockLeakParticle blockLeakParticle = new BlockLeakParticle.ContinuousFalling(world, x, y, z, Fluids.EMPTY, ParticleTypes.LANDING_OBSIDIAN_TEAR);
 		blockLeakParticle.obsidianTear = true;
@@ -213,7 +213,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	public static SpriteBillboardParticle createLandingObsidianTear(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		SimpleParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		BlockLeakParticle blockLeakParticle = new BlockLeakParticle.Landing(world, x, y, z, Fluids.EMPTY);
 		blockLeakParticle.obsidianTear = true;

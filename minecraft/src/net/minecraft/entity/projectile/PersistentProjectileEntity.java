@@ -15,6 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.ProjectileDeflector;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -186,7 +187,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				vec3d2 = hitResult.getPos();
 			}
 
-			while (!this.isRemoved() && !this.deflected) {
+			while (!this.isRemoved()) {
 				EntityHitResult entityHitResult = this.getEntityCollision(vec3d3, vec3d2);
 				if (entityHitResult != null) {
 					hitResult = entityHitResult;
@@ -202,8 +203,11 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				}
 
 				if (hitResult != null && !bl) {
-					this.onCollision(hitResult);
+					ProjectileDeflector projectileDeflector = this.deflectOrCollide(hitResult);
 					this.velocityDirty = true;
+					if (projectileDeflector != ProjectileDeflector.NONE) {
+						break;
+					}
 				}
 
 				if (entityHitResult == null || this.getPierceLevel() <= 0) {
@@ -213,7 +217,6 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				hitResult = null;
 			}
 
-			this.deflected = false;
 			vec3d = this.getVelocity();
 			double e = vec3d.x;
 			double f = vec3d.y;

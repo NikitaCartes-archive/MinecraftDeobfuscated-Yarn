@@ -1488,7 +1488,13 @@ public class Items {
 	);
 	public static final Item MACE = register(
 		"mace",
-		new MaceItem(new Item.Settings().maxDamage(250).component(DataComponentTypes.TOOL, MaceItem.createToolComponent()).requires(FeatureFlags.UPDATE_1_21))
+		new MaceItem(
+			new Item.Settings()
+				.maxDamage(250)
+				.component(DataComponentTypes.TOOL, MaceItem.createToolComponent())
+				.attributeModifiers(MaceItem.createAttributeModifiers())
+				.requires(FeatureFlags.UPDATE_1_21)
+		)
 	);
 	public static final Item ITEM_FRAME = register("item_frame", new ItemFrameItem(EntityType.ITEM_FRAME, new Item.Settings()));
 	public static final Item GLOW_ITEM_FRAME = register("glow_item_frame", new ItemFrameItem(EntityType.GLOW_ITEM_FRAME, new Item.Settings()));

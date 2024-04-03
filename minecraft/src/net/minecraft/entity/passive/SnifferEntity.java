@@ -161,20 +161,22 @@ public class SnifferEntity extends AnimalEntity {
 			SnifferEntity.State state = this.getState();
 			this.stopAnimations();
 			switch (state) {
+				case FEELING_HAPPY:
+					this.feelingHappyAnimationState.startIfNotRunning(this.age);
+					break;
 				case SCENTING:
 					this.scentingAnimationState.startIfNotRunning(this.age);
 					break;
 				case SNIFFING:
 					this.sniffingAnimationState.startIfNotRunning(this.age);
+				case SEARCHING:
+				default:
 					break;
 				case DIGGING:
 					this.diggingAnimationState.startIfNotRunning(this.age);
 					break;
 				case RISING:
 					this.risingAnimationState.startIfNotRunning(this.age);
-					break;
-				case FEELING_HAPPY:
-					this.feelingHappyAnimationState.startIfNotRunning(this.age);
 			}
 
 			this.calculateDimensions();
@@ -193,6 +195,13 @@ public class SnifferEntity extends AnimalEntity {
 
 	public SnifferEntity startState(SnifferEntity.State state) {
 		switch (state) {
+			case IDLING:
+				this.setState(SnifferEntity.State.IDLING);
+				break;
+			case FEELING_HAPPY:
+				this.playSound(SoundEvents.ENTITY_SNIFFER_HAPPY, 1.0F, 1.0F);
+				this.setState(SnifferEntity.State.FEELING_HAPPY);
+				break;
 			case SCENTING:
 				this.setState(SnifferEntity.State.SCENTING).playScentingSound();
 				break;
@@ -200,22 +209,15 @@ public class SnifferEntity extends AnimalEntity {
 				this.playSound(SoundEvents.ENTITY_SNIFFER_SNIFFING, 1.0F, 1.0F);
 				this.setState(SnifferEntity.State.SNIFFING);
 				break;
+			case SEARCHING:
+				this.setState(SnifferEntity.State.SEARCHING);
+				break;
 			case DIGGING:
 				this.setState(SnifferEntity.State.DIGGING).setDigging();
 				break;
 			case RISING:
 				this.playSound(SoundEvents.ENTITY_SNIFFER_DIGGING_STOP, 1.0F, 1.0F);
 				this.setState(SnifferEntity.State.RISING);
-				break;
-			case FEELING_HAPPY:
-				this.playSound(SoundEvents.ENTITY_SNIFFER_HAPPY, 1.0F, 1.0F);
-				this.setState(SnifferEntity.State.FEELING_HAPPY);
-				break;
-			case IDLING:
-				this.setState(SnifferEntity.State.IDLING);
-				break;
-			case SEARCHING:
-				this.setState(SnifferEntity.State.SEARCHING);
 		}
 
 		return this;
@@ -354,11 +356,11 @@ public class SnifferEntity extends AnimalEntity {
 	@Override
 	public void tick() {
 		switch (this.getState()) {
-			case DIGGING:
-				this.spawnDiggingParticles(this.diggingAnimationState).dropSeeds();
-				break;
 			case SEARCHING:
 				this.playSearchingSound();
+				break;
+			case DIGGING:
+				this.spawnDiggingParticles(this.diggingAnimationState).dropSeeds();
 		}
 
 		super.tick();

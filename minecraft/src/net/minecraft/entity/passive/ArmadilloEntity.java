@@ -173,11 +173,6 @@ public class ArmadilloEntity extends AnimalEntity {
 				this.rollingAnimationState.stop();
 				this.scaredAnimationState.stop();
 				break;
-			case UNROLLING:
-				this.unrollingAnimationState.startIfNotRunning(this.age);
-				this.rollingAnimationState.stop();
-				this.scaredAnimationState.stop();
-				break;
 			case ROLLING:
 				this.unrollingAnimationState.stop();
 				this.rollingAnimationState.startIfNotRunning(this.age);
@@ -197,6 +192,11 @@ public class ArmadilloEntity extends AnimalEntity {
 				} else {
 					this.scaredAnimationState.startIfNotRunning(this.age);
 				}
+				break;
+			case UNROLLING:
+				this.unrollingAnimationState.startIfNotRunning(this.age);
+				this.rollingAnimationState.stop();
+				this.scaredAnimationState.stop();
 		}
 	}
 

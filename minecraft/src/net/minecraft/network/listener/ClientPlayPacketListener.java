@@ -73,6 +73,7 @@ import net.minecraft.network.packet.s2c.play.PlayerRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.ProjectilePowerS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
@@ -337,4 +338,6 @@ public interface ClientPlayPacketListener extends ClientPingResultPacketListener
 	void onChunkSent(ChunkSentS2CPacket packet);
 
 	void onDebugSample(DebugSampleS2CPacket packet);
+
+	void onProjectilePower(ProjectilePowerS2CPacket packet);
 }

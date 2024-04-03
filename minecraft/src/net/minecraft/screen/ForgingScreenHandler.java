@@ -115,13 +115,7 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
-		return this.context
-			.get(
-				(world, pos) -> !this.canUse(world.getBlockState(pos))
-						? false
-						: player.squaredDistanceTo((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5) <= 64.0,
-				true
-			);
+		return this.context.get((world, pos) -> !this.canUse(world.getBlockState(pos)) ? false : player.canInteractWithBlockAt(pos, 4.0), true);
 	}
 
 	@Override

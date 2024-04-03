@@ -48,7 +48,7 @@ public class EntityEffectParticleEffect implements ParticleEffect {
 	}
 
 	@Override
-	public ParticleType<?> getType() {
+	public ParticleType<? extends EntityEffectParticleEffect> getType() {
 		return this.type;
 	}
 

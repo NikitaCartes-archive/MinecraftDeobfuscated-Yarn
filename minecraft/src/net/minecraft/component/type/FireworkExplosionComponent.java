@@ -8,7 +8,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.item.TooltipAppender;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -55,7 +55,7 @@ public record FireworkExplosionComponent(FireworkExplosionComponent.Type shape, 
 	private static final Text CUSTOM_COLOR_TEXT = Text.translatable("item.minecraft.firework_star.custom_color");
 
 	@Override
-	public void appendTooltip(Consumer<Text> textConsumer, TooltipContext context) {
+	public void appendTooltip(Consumer<Text> textConsumer, TooltipType context) {
 		this.appendShapeTooltip(textConsumer);
 		this.appendOptionalTooltip(textConsumer);
 	}

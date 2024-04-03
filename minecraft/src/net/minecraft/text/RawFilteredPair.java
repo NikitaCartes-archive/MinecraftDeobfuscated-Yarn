@@ -13,7 +13,7 @@ public record RawFilteredPair<T>(T raw, Optional<T> filtered) {
 	public static <T> Codec<RawFilteredPair<T>> createCodec(Codec<T> baseCodec) {
 		Codec<RawFilteredPair<T>> codec = RecordCodecBuilder.create(
 			instance -> instance.group(
-						baseCodec.fieldOf("text").forGetter(RawFilteredPair::raw), baseCodec.optionalFieldOf("filtered").forGetter(RawFilteredPair::filtered)
+						baseCodec.fieldOf("raw").forGetter(RawFilteredPair::raw), baseCodec.optionalFieldOf("filtered").forGetter(RawFilteredPair::filtered)
 					)
 					.apply(instance, RawFilteredPair::new)
 		);

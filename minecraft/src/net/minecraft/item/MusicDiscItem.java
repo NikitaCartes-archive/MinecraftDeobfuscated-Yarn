@@ -8,7 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.JukeboxBlock;
 import net.minecraft.block.entity.JukeboxBlockEntity;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
@@ -65,7 +65,7 @@ public class MusicDiscItem extends Item {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 		tooltip.add(this.getDescription().formatted(Formatting.GRAY));
 	}
 

@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.function.Consumer;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.item.TooltipAppender;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -34,7 +34,7 @@ public record LoreComponent(List<Text> lines, List<Text> styledLines) implements
 	}
 
 	@Override
-	public void appendTooltip(Consumer<Text> textConsumer, TooltipContext context) {
+	public void appendTooltip(Consumer<Text> textConsumer, TooltipType context) {
 		this.styledLines.forEach(textConsumer);
 	}
 }

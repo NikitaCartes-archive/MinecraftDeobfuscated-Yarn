@@ -88,7 +88,7 @@ public class ItemCommand {
 																		)
 																)
 																.then(
-																	CommandManager.argument("count", IntegerArgumentType.integer(1, 64))
+																	CommandManager.argument("count", IntegerArgumentType.integer(1, 99))
 																		.executes(
 																			context -> executeBlockReplace(
 																					context.getSource(),
@@ -189,7 +189,7 @@ public class ItemCommand {
 																		)
 																)
 																.then(
-																	CommandManager.argument("count", IntegerArgumentType.integer(1, 64))
+																	CommandManager.argument("count", IntegerArgumentType.integer(1, 99))
 																		.executes(
 																			context -> executeEntityReplace(
 																					context.getSource(),

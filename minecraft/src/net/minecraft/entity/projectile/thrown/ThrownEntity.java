@@ -63,7 +63,7 @@ public abstract class ThrownEntity extends ProjectileEntity {
 		}
 
 		if (hitResult.getType() != HitResult.Type.MISS && !bl) {
-			this.onCollision(hitResult);
+			this.deflectOrCollide(hitResult);
 		}
 
 		this.checkBlockCollision();

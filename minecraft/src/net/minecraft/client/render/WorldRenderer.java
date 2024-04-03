@@ -72,12 +72,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.MusicDiscItem;
-import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.SculkChargeParticleEffect;
 import net.minecraft.particle.ShriekParticleEffect;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.resource.ResourceManager;
@@ -3232,7 +3232,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		return this.cloudsFramebuffer;
 	}
 
-	private void shootParticles(int direction, BlockPos pos, Random random, DefaultParticleType particleType) {
+	private void shootParticles(int direction, BlockPos pos, Random random, SimpleParticleType particleType) {
 		Direction direction2 = Direction.byId(direction);
 		int i = direction2.getOffsetX();
 		int j = direction2.getOffsetY();

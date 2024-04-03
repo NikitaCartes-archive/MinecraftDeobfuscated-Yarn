@@ -2,7 +2,7 @@ package net.minecraft.item;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.WrittenBookContentComponent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -34,7 +34,7 @@ public class WrittenBookItem extends Item {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 		WrittenBookContentComponent writtenBookContentComponent = stack.get(DataComponentTypes.WRITTEN_BOOK_CONTENT);
 		if (writtenBookContentComponent != null) {
 			if (!StringHelper.isBlank(writtenBookContentComponent.author())) {

@@ -3,7 +3,7 @@ package net.minecraft.client.particle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 
 @Environment(EnvType.CLIENT)
 public class SuspendParticle extends SpriteBillboardParticle {
@@ -48,14 +48,14 @@ public class SuspendParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class DolphinFactory implements ParticleFactory<DefaultParticleType> {
+	public static class DolphinFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public DolphinFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
 			suspendParticle.setColor(0.3F, 0.5F, 1.0F);
 			suspendParticle.setSprite(this.spriteProvider);
@@ -66,14 +66,14 @@ public class SuspendParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class EggCrackFactory implements ParticleFactory<DefaultParticleType> {
+	public static class EggCrackFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public EggCrackFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
 			suspendParticle.setSprite(this.spriteProvider);
 			suspendParticle.setColor(1.0F, 1.0F, 1.0F);
@@ -82,14 +82,14 @@ public class SuspendParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements ParticleFactory<DefaultParticleType> {
+	public static class Factory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public Factory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
 			suspendParticle.setSprite(this.spriteProvider);
 			suspendParticle.setColor(1.0F, 1.0F, 1.0F);
@@ -99,14 +99,14 @@ public class SuspendParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class HappyVillagerFactory implements ParticleFactory<DefaultParticleType> {
+	public static class HappyVillagerFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public HappyVillagerFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
 			suspendParticle.setSprite(this.spriteProvider);
 			suspendParticle.setColor(1.0F, 1.0F, 1.0F);
@@ -115,14 +115,14 @@ public class SuspendParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class MyceliumFactory implements ParticleFactory<DefaultParticleType> {
+	public static class MyceliumFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public MyceliumFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
 			suspendParticle.setSprite(this.spriteProvider);
 			return suspendParticle;

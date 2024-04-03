@@ -52,8 +52,8 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 
 	private void updateTooltip(RealmsWorldSlotButton.State state, @Nullable String minigameName) {
 		Text text = switch (state.action) {
-			case JOIN -> ACTIVE_TOOLTIP;
 			case SWITCH_SLOT -> state.minigame ? MINIGAME_TOOLTIP : TOOLTIP;
+			case JOIN -> ACTIVE_TOOLTIP;
 			default -> null;
 		};
 		if (text != null) {

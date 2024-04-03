@@ -386,7 +386,9 @@ public class Keyboard {
 			if (action != 0) {
 				boolean bl2 = screen == null || !(screen.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)screen.getFocused()).isActive();
 				if (bl2) {
-					if (Screen.hasControlDown() && key == GLFW.GLFW_KEY_B && this.client.getNarratorManager().isActive()) {
+					if (Screen.hasControlDown() && key == GLFW.GLFW_KEY_B && this.client.getNarratorManager().isActive() && this.client.options.getNarratorHotkey().getValue()
+						)
+					 {
 						boolean bl3 = this.client.options.getNarrator().getValue() == NarratorMode.OFF;
 						this.client.options.getNarrator().setValue(NarratorMode.byId(this.client.options.getNarrator().getValue().getId() + 1));
 						this.client.options.write();
@@ -421,17 +423,17 @@ public class Keyboard {
 			InputUtil.Key key2;
 			boolean bl3x;
 			boolean var10000;
-			label185: {
+			label187: {
 				key2 = InputUtil.fromKeyCode(key, scancode);
 				bl3x = this.client.currentScreen == null;
-				label145:
+				label147:
 				if (!bl3x) {
 					if (this.client.currentScreen instanceof GameMenuScreen gameMenuScreen && !gameMenuScreen.shouldShowMenu()) {
-						break label145;
+						break label147;
 					}
 
 					var10000 = false;
-					break label185;
+					break label187;
 				}
 
 				var10000 = true;

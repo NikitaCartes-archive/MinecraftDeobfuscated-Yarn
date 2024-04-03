@@ -51,9 +51,16 @@ public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry
 	}
 
 	public AttributeModifiersComponent with(RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier modifier, AttributeModifierSlot slot) {
-		return new AttributeModifiersComponent(
-			Util.withAppended(this.modifiers, new AttributeModifiersComponent.Entry(attribute, modifier, slot)), this.showInTooltip
-		);
+		ImmutableList.Builder<AttributeModifiersComponent.Entry> builder = ImmutableList.builderWithExpectedSize(this.modifiers.size() + 1);
+
+		for (AttributeModifiersComponent.Entry entry : this.modifiers) {
+			if (!entry.modifier.uuid().equals(modifier.uuid())) {
+				builder.add(entry);
+			}
+		}
+
+		builder.add(new AttributeModifiersComponent.Entry(attribute, modifier, slot));
+		return new AttributeModifiersComponent(builder.build(), this.showInTooltip);
 	}
 
 	public void applyModifiers(EquipmentSlot slot, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeConsumer) {

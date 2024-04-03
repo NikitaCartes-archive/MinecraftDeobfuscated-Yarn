@@ -1,10 +1,8 @@
 package net.minecraft.item;
 
-import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Interner;
 import com.google.common.collect.Interners;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Map;
@@ -14,23 +12,24 @@ import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.FoodComponent;
+import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.component.type.ToolComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
+import net.minecraft.item.map.MapState;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
@@ -530,7 +529,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * 
 	 * @param tooltip the list of tooltips to show
 	 */
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 	}
 
 	public Optional<TooltipData> getTooltipData(ItemStack stack) {
@@ -592,8 +591,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * <p>Tools and armor should override this to specify the attack damage or armor points.
 	 */
 	@Deprecated
-	public Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-		return ImmutableMultimap.of();
+	public AttributeModifiersComponent getAttributeModifiers() {
+		return AttributeModifiersComponent.DEFAULT;
 	}
 
 	public boolean isUsedOnRelease(ItemStack stack) {
@@ -758,6 +757,74 @@ public class Item implements ToggleableFeature, ItemConvertible {
 
 		private ComponentMap getComponents() {
 			return this.components == null ? DataComponentTypes.DEFAULT_ITEM_COMPONENTS : COMPONENT_MAP_INTERNER.intern(this.components.build());
+		}
+	}
+
+	public interface TooltipContext {
+		Item.TooltipContext DEFAULT = new Item.TooltipContext() {
+			@Nullable
+			@Override
+			public RegistryWrapper.WrapperLookup getRegistryLookup() {
+				return null;
+			}
+
+			@Override
+			public float getUpdateTickRate() {
+				return 20.0F;
+			}
+
+			@Nullable
+			@Override
+			public MapState getMapState(MapIdComponent mapIdComponent) {
+				return null;
+			}
+		};
+
+		@Nullable
+		RegistryWrapper.WrapperLookup getRegistryLookup();
+
+		float getUpdateTickRate();
+
+		@Nullable
+		MapState getMapState(MapIdComponent mapIdComponent);
+
+		static Item.TooltipContext create(@Nullable World world) {
+			return world == null ? DEFAULT : new Item.TooltipContext() {
+				@Override
+				public RegistryWrapper.WrapperLookup getRegistryLookup() {
+					return world.getRegistryManager();
+				}
+
+				@Override
+				public float getUpdateTickRate() {
+					return world.getTickManager().getTickRate();
+				}
+
+				@Override
+				public MapState getMapState(MapIdComponent mapIdComponent) {
+					return world.getMapState(mapIdComponent);
+				}
+			};
+		}
+
+		static Item.TooltipContext create(RegistryWrapper.WrapperLookup registryLookup) {
+			return new Item.TooltipContext() {
+				@Override
+				public RegistryWrapper.WrapperLookup getRegistryLookup() {
+					return registryLookup;
+				}
+
+				@Override
+				public float getUpdateTickRate() {
+					return 20.0F;
+				}
+
+				@Nullable
+				@Override
+				public MapState getMapState(MapIdComponent mapIdComponent) {
+					return null;
+				}
+			};
 		}
 	}
 }

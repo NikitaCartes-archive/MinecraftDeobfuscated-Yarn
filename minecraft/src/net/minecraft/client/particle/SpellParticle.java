@@ -5,8 +5,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.EntityEffectParticleEffect;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
@@ -62,14 +62,14 @@ public class SpellParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class DefaultFactory implements ParticleFactory<DefaultParticleType> {
+	public static class DefaultFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public DefaultFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			return new SpellParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 		}
 	}
@@ -93,27 +93,27 @@ public class SpellParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class InstantFactory implements ParticleFactory<DefaultParticleType> {
+	public static class InstantFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public InstantFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			return new SpellParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class WitchFactory implements ParticleFactory<DefaultParticleType> {
+	public static class WitchFactory implements ParticleFactory<SimpleParticleType> {
 		private final SpriteProvider spriteProvider;
 
 		public WitchFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			SpellParticle spellParticle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 			float j = clientWorld.random.nextFloat() * 0.5F + 0.35F;
 			spellParticle.setColor(1.0F * j, 0.0F * j, 1.0F * j);

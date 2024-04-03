@@ -1,11 +1,10 @@
 package net.minecraft.item;
 
 import java.util.List;
-import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.LivingEntity;
@@ -142,10 +141,10 @@ public class PotionItem extends Item {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 		PotionContentsComponent potionContentsComponent = stack.get(DataComponentTypes.POTION_CONTENTS);
 		if (potionContentsComponent != null) {
-			potionContentsComponent.buildTooltip(tooltip::add, 1.0F, world == null ? 20.0F : world.getTickManager().getTickRate());
+			potionContentsComponent.buildTooltip(tooltip::add, 1.0F, context.getUpdateTickRate());
 		}
 	}
 }

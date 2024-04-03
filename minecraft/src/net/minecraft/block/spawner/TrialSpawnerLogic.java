@@ -23,9 +23,9 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -319,7 +319,7 @@ public final class TrialSpawnerLogic {
 		return blockHitResult.getBlockPos().equals(BlockPos.ofFloored(spawnerPos)) || blockHitResult.getType() == HitResult.Type.MISS;
 	}
 
-	public static void addMobSpawnParticles(World world, BlockPos pos, Random random, DefaultParticleType particle) {
+	public static void addMobSpawnParticles(World world, BlockPos pos, Random random, SimpleParticleType particle) {
 		for (int i = 0; i < 20; i++) {
 			double d = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 2.0;
 			double e = (double)pos.getY() + 0.5 + (random.nextDouble() - 0.5) * 2.0;
@@ -394,9 +394,9 @@ public final class TrialSpawnerLogic {
 		NORMAL(ParticleTypes.FLAME),
 		OMINOUS(ParticleTypes.SOUL_FIRE_FLAME);
 
-		public final DefaultParticleType particle;
+		public final SimpleParticleType particle;
 
-		private Type(DefaultParticleType particle) {
+		private Type(SimpleParticleType particle) {
 			this.particle = particle;
 		}
 

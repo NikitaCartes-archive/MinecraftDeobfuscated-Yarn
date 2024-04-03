@@ -6,6 +6,7 @@ import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
+import org.apache.commons.lang3.math.Fraction;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -941,6 +942,10 @@ public class MathHelper {
 	public static Quaternionf rotateAround(Vector3f axis, Quaternionf rotation, Quaternionf result) {
 		float f = axis.dot(rotation.x, rotation.y, rotation.z);
 		return result.set(axis.x * f, axis.y * f, axis.z * f, rotation.w).normalize();
+	}
+
+	public static int multiplyFraction(Fraction fraction, int multiplier) {
+		return fraction.getNumerator() * multiplier / fraction.getDenominator();
 	}
 
 	static {

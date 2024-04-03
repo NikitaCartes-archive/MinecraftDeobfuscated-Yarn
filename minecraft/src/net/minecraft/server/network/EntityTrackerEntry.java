@@ -21,6 +21,7 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
@@ -38,6 +39,7 @@ import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ProjectilePowerS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -210,6 +212,14 @@ public class EntityTrackerEntry {
 		this.trackingTick++;
 		if (this.entity.velocityModified) {
 			this.sendSyncPacket(new EntityVelocityUpdateS2CPacket(this.entity));
+			if (this.entity instanceof ExplosiveProjectileEntity explosiveProjectileEntity) {
+				this.sendSyncPacket(
+					new ProjectilePowerS2CPacket(
+						explosiveProjectileEntity.getId(), explosiveProjectileEntity.powerX, explosiveProjectileEntity.powerY, explosiveProjectileEntity.powerZ
+					)
+				);
+			}
+
 			this.entity.velocityModified = false;
 		}
 	}

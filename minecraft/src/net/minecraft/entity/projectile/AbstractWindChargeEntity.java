@@ -98,11 +98,9 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
-		if (!this.getWorld().isClient && !this.deflected) {
+		if (!this.getWorld().isClient) {
 			this.discard();
 		}
-
-		this.deflected = false;
 	}
 
 	@Override

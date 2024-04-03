@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class BlockBufferBuilderPool {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final int field_46903 = 4;
 	private final Queue<BlockBufferBuilderStorage> availableBuilders;
 	private volatile int availableBuilderCount;
 
