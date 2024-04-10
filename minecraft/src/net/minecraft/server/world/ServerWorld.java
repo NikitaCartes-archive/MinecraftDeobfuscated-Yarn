@@ -76,6 +76,7 @@ import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
@@ -1933,6 +1934,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	@Override
 	public FeatureSet getEnabledFeatures() {
 		return this.server.getSaveProperties().getEnabledFeatures();
+	}
+
+	@Override
+	public BrewingRecipeRegistry getBrewingRecipeRegistry() {
+		return this.server.getBrewingRecipeRegistry();
 	}
 
 	public Random getOrCreateRandom(Identifier id) {

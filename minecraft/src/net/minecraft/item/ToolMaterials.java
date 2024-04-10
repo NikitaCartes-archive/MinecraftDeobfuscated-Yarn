@@ -27,7 +27,12 @@ public enum ToolMaterials implements ToolMaterial {
 	private final Supplier<Ingredient> repairIngredient;
 
 	private ToolMaterials(
-		TagKey<Block> inverseTag, int itemDurability, float miningSpeed, float attackDamage, int enchantability, Supplier<Ingredient> repairIngredient
+		final TagKey<Block> inverseTag,
+		final int itemDurability,
+		final float miningSpeed,
+		final float attackDamage,
+		final int enchantability,
+		final Supplier<Ingredient> repairIngredient
 	) {
 		this.inverseTag = inverseTag;
 		this.itemDurability = itemDurability;

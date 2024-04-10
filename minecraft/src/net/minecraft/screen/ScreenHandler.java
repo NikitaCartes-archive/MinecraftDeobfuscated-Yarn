@@ -902,14 +902,15 @@ public abstract class ScreenHandler {
 				ItemStack itemStack = slot.getStack();
 				if (!itemStack.isEmpty() && ItemStack.areItemsAndComponentsEqual(stack, itemStack)) {
 					int j = itemStack.getCount() + stack.getCount();
-					if (j <= stack.getMaxCount()) {
+					int k = slot.getMaxItemCount(itemStack);
+					if (j <= k) {
 						stack.setCount(0);
 						itemStack.setCount(j);
 						slot.markDirty();
 						bl = true;
-					} else if (itemStack.getCount() < stack.getMaxCount()) {
-						stack.decrement(stack.getMaxCount() - itemStack.getCount());
-						itemStack.setCount(stack.getMaxCount());
+					} else if (itemStack.getCount() < k) {
+						stack.decrement(k - itemStack.getCount());
+						itemStack.setCount(k);
 						slot.markDirty();
 						bl = true;
 					}

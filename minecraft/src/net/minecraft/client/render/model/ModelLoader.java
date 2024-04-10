@@ -449,7 +449,7 @@ public class ModelLoader {
 	class BakerImpl implements Baker {
 		private final Function<SpriteIdentifier, Sprite> textureGetter;
 
-		BakerImpl(BiFunction<Identifier, SpriteIdentifier, Sprite> spriteLoader, Identifier modelId) {
+		BakerImpl(final BiFunction<Identifier, SpriteIdentifier, Sprite> spriteLoader, final Identifier modelId) {
 			this.textureGetter = spriteId -> (Sprite)spriteLoader.apply(modelId, spriteId);
 		}
 

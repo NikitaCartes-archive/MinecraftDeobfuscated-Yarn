@@ -18,7 +18,7 @@ public enum AttackIndicator implements TranslatableOption {
 	private final int id;
 	private final String translationKey;
 
-	private AttackIndicator(int id, String translationKey) {
+	private AttackIndicator(final int id, final String translationKey) {
 		this.id = id;
 		this.translationKey = translationKey;
 	}

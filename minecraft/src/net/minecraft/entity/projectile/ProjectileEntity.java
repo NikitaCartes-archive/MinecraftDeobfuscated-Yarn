@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Ownable;
 import net.minecraft.entity.ProjectileDeflector;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -294,5 +295,39 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	}
 
 	public void onDeflected() {
+	}
+
+	protected void setVelocityAfterPunching(Entity attacker) {
+		Vec3d vec3d = attacker.getRotationVector();
+		this.setVelocity(vec3d.multiply(this.getVelocity().length()));
+	}
+
+	@Override
+	public boolean canHit() {
+		return this.getType().isIn(EntityTypeTags.PUNCHABLE_PROJECTILES);
+	}
+
+	@Override
+	public float getTargetingMargin() {
+		return this.canHit() ? 1.0F : 0.0F;
+	}
+
+	public boolean onPunched(DamageSource damageSource) {
+		if (this.isInvulnerableTo(damageSource)) {
+			return false;
+		} else {
+			this.scheduleVelocityUpdate();
+			Entity entity = damageSource.getAttacker();
+			if (entity != null) {
+				if (!this.getWorld().isClient) {
+					this.setVelocityAfterPunching(entity);
+					this.setOwner(entity);
+				}
+
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 }

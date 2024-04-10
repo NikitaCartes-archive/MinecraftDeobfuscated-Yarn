@@ -491,7 +491,7 @@ public class SnifferEntity extends AnimalEntity {
 		public static final PacketCodec<ByteBuf, SnifferEntity.State> PACKET_CODEC = PacketCodecs.indexed(INDEX_TO_VALUE, SnifferEntity.State::getIndex);
 		private final int index;
 
-		private State(int index) {
+		private State(final int index) {
 			this.index = index;
 		}
 

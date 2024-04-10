@@ -247,7 +247,7 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
 		private final V value;
 		private final Function<V, String> stringifier;
 
-		PropertyAccessor(String key, V value, Function<V, String> stringifier) {
+		PropertyAccessor(final String key, final V value, final Function<V, String> stringifier) {
 			this.key = key;
 			this.value = value;
 			this.stringifier = stringifier;

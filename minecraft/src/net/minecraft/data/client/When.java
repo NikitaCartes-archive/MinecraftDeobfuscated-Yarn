@@ -57,7 +57,7 @@ public interface When extends Supplier<JsonElement> {
 
 		final String name;
 
-		private LogicalOperator(String name) {
+		private LogicalOperator(final String name) {
 			this.name = name;
 		}
 	}

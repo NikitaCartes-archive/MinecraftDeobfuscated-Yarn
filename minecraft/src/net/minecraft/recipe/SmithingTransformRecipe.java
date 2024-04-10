@@ -31,7 +31,7 @@ public class SmithingTransformRecipe implements SmithingRecipe {
 	@Override
 	public ItemStack craft(Inventory inventory, RegistryWrapper.WrapperLookup lookup) {
 		ItemStack itemStack = inventory.getStack(1).copyComponentsToNewStack(this.result.getItem(), this.result.getCount());
-		itemStack.applyChanges(this.result.getComponentChanges());
+		itemStack.applyUnvalidatedChanges(this.result.getComponentChanges());
 		return itemStack;
 	}
 
@@ -71,7 +71,7 @@ public class SmithingTransformRecipe implements SmithingRecipe {
 						Ingredient.ALLOW_EMPTY_CODEC.fieldOf("template").forGetter(recipe -> recipe.template),
 						Ingredient.ALLOW_EMPTY_CODEC.fieldOf("base").forGetter(recipe -> recipe.base),
 						Ingredient.ALLOW_EMPTY_CODEC.fieldOf("addition").forGetter(recipe -> recipe.addition),
-						ItemStack.CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
+						ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
 					)
 					.apply(instance, SmithingTransformRecipe::new)
 		);

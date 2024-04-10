@@ -12,6 +12,7 @@ public enum ActionResult {
 	 * indicate the performance.
 	 */
 	SUCCESS,
+	SUCCESS_NO_ITEM_USED,
 	/**
 	 * Indicates an action is performed but no animation should accompany the
 	 * performance.
@@ -37,7 +38,7 @@ public enum ActionResult {
 	 * {@return whether an action is performed}
 	 */
 	public boolean isAccepted() {
-		return this == SUCCESS || this == CONSUME || this == CONSUME_PARTIAL;
+		return this == SUCCESS || this == CONSUME || this == CONSUME_PARTIAL || this == SUCCESS_NO_ITEM_USED;
 	}
 
 	/**
@@ -45,7 +46,7 @@ public enum ActionResult {
 	 * action performance}
 	 */
 	public boolean shouldSwingHand() {
-		return this == SUCCESS;
+		return this == SUCCESS || this == SUCCESS_NO_ITEM_USED;
 	}
 
 	/**

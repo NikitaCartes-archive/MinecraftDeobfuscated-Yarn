@@ -9,7 +9,7 @@ public enum SlabType implements StringIdentifiable {
 
 	private final String name;
 
-	private SlabType(String name) {
+	private SlabType(final String name) {
 		this.name = name;
 	}
 

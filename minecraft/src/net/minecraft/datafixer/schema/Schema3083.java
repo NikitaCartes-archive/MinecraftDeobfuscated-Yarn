@@ -19,14 +19,11 @@ public class Schema3083 extends IdentifierNormalizingSchema {
 			map,
 			"minecraft:allay",
 			(Supplier<TypeTemplate>)(() -> DSL.optionalFields(
-					"ArmorItems",
-					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
-					"HandItems",
-					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
 					"Inventory",
 					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
 					"listener",
-					DSL.optionalFields("event", DSL.optionalFields("game_event", TypeReferences.GAME_EVENT_NAME.in(schema)))
+					DSL.optionalFields("event", DSL.optionalFields("game_event", TypeReferences.GAME_EVENT_NAME.in(schema))),
+					Schema100.targetItems(schema)
 				))
 		);
 		return map;

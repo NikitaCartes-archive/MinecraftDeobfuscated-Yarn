@@ -13,7 +13,7 @@ public enum SampleType {
 
 	private final String name;
 
-	private SampleType(String name) {
+	private SampleType(final String name) {
 		this.name = name;
 	}
 

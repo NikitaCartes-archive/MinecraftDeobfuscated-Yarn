@@ -25,7 +25,9 @@ public enum AdvancementObtainedStatus {
 	private final Identifier challengeFrameTexture;
 	private final Identifier goalFrameTexture;
 
-	private AdvancementObtainedStatus(Identifier boxTexture, Identifier taskFrameTexture, Identifier challengeFrameTexture, Identifier goalFrameTexture) {
+	private AdvancementObtainedStatus(
+		final Identifier boxTexture, final Identifier taskFrameTexture, final Identifier challengeFrameTexture, final Identifier goalFrameTexture
+	) {
 		this.boxTexture = boxTexture;
 		this.taskFrameTexture = taskFrameTexture;
 		this.challengeFrameTexture = challengeFrameTexture;

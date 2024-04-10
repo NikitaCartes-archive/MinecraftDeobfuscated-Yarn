@@ -74,7 +74,7 @@ public class ResourcePackOrganizer {
 	abstract class AbstractPack implements ResourcePackOrganizer.Pack {
 		private final ResourcePackProfile profile;
 
-		public AbstractPack(ResourcePackProfile profile) {
+		public AbstractPack(final ResourcePackProfile profile) {
 			this.profile = profile;
 		}
 
@@ -172,7 +172,7 @@ public class ResourcePackOrganizer {
 
 	@Environment(EnvType.CLIENT)
 	class DisabledPack extends ResourcePackOrganizer.AbstractPack {
-		public DisabledPack(ResourcePackProfile resourcePackProfile) {
+		public DisabledPack(final ResourcePackProfile resourcePackProfile) {
 			super(resourcePackProfile);
 		}
 
@@ -203,7 +203,7 @@ public class ResourcePackOrganizer {
 
 	@Environment(EnvType.CLIENT)
 	class EnabledPack extends ResourcePackOrganizer.AbstractPack {
-		public EnabledPack(ResourcePackProfile resourcePackProfile) {
+		public EnabledPack(final ResourcePackProfile resourcePackProfile) {
 			super(resourcePackProfile);
 		}
 

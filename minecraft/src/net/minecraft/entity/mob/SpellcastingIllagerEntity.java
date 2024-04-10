@@ -223,7 +223,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		final int id;
 		final double[] particleVelocity;
 
-		private Spell(int id, double particleVelocityX, double particleVelocityY, double particleVelocityZ) {
+		private Spell(final int id, final double particleVelocityX, final double particleVelocityY, final double particleVelocityZ) {
 			this.id = id;
 			this.particleVelocity = new double[]{particleVelocityX, particleVelocityY, particleVelocityZ};
 		}

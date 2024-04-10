@@ -1,165 +1,73 @@
 package net.minecraft.client.sound;
 
-import com.google.common.collect.Lists;
+import com.jcraft.jogg.Packet;
+import com.jcraft.jogg.Page;
+import com.jcraft.jogg.StreamState;
+import com.jcraft.jogg.SyncState;
+import com.jcraft.jorbis.Block;
+import com.jcraft.jorbis.Comment;
+import com.jcraft.jorbis.DspState;
+import com.jcraft.jorbis.Info;
+import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.List;
+import javax.annotation.Nullable;
 import javax.sound.sampled.AudioFormat;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.math.MathHelper;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.stb.STBVorbis;
-import org.lwjgl.stb.STBVorbisInfo;
-import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 
 @Environment(EnvType.CLIENT)
-public class OggAudioStream implements AudioStream {
-	private static final int BUFFER_SIZE = 8192;
-	private long pointer;
+public class OggAudioStream implements BufferedAudioStream {
+	private static final int field_51442 = 8192;
+	private static final int field_51443 = -1;
+	private static final int field_51444 = 0;
+	private static final int field_51445 = 1;
+	private static final int field_51446 = -1;
+	private static final int field_51447 = 0;
+	private static final int field_51448 = 1;
+	private final SyncState syncState = new SyncState();
+	private final Page page = new Page();
+	private final StreamState streamState = new StreamState();
+	private final Packet packet = new Packet();
+	private final Info info = new Info();
+	private final DspState dspState = new DspState();
+	private final Block block = new Block(this.dspState);
 	private final AudioFormat format;
 	private final InputStream inputStream;
-	private ByteBuffer buffer = MemoryUtil.memAlloc(8192);
+	private long field_51456;
+	private long field_51457 = Long.MAX_VALUE;
 
 	public OggAudioStream(InputStream inputStream) throws IOException {
 		this.inputStream = inputStream;
-		this.buffer.limit(0);
-
-		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-			IntBuffer intBuffer = memoryStack.mallocInt(1);
-			IntBuffer intBuffer2 = memoryStack.mallocInt(1);
-
-			while (this.pointer == 0L) {
-				if (!this.readHeader()) {
-					throw new IOException("Failed to find Ogg header");
-				}
-
-				int i = this.buffer.position();
-				this.buffer.position(0);
-				this.pointer = STBVorbis.stb_vorbis_open_pushdata(this.buffer, intBuffer, intBuffer2, null);
-				this.buffer.position(i);
-				int j = intBuffer2.get(0);
-				if (j == 1) {
-					this.increaseBufferSize();
-				} else if (j != 0) {
-					throw new IOException("Failed to read Ogg file " + j);
-				}
-			}
-
-			this.buffer.position(this.buffer.position() + intBuffer.get(0));
-			STBVorbisInfo sTBVorbisInfo = STBVorbisInfo.mallocStack(memoryStack);
-			STBVorbis.stb_vorbis_get_info(this.pointer, sTBVorbisInfo);
-			this.format = new AudioFormat((float)sTBVorbisInfo.sample_rate(), 16, sTBVorbisInfo.channels(), true, false);
-		}
-	}
-
-	private boolean readHeader() throws IOException {
-		int i = this.buffer.limit();
-		int j = this.buffer.capacity() - i;
-		if (j == 0) {
-			return true;
+		Comment comment = new Comment();
+		Page page = this.readPage();
+		if (page == null) {
+			throw new IOException("Invalid Ogg file - can't find first page");
 		} else {
-			byte[] bs = new byte[j];
-			int k = this.inputStream.read(bs);
-			if (k == -1) {
-				return false;
+			Packet packet = this.readIdentificationPacket(page);
+			if (isError(this.info.synthesis_headerin(comment, packet))) {
+				throw new IOException("Invalid Ogg identification packet");
 			} else {
-				int l = this.buffer.position();
-				this.buffer.limit(i + k);
-				this.buffer.position(i);
-				this.buffer.put(bs, 0, k);
-				this.buffer.position(l);
-				return true;
-			}
-		}
-	}
+				for (int i = 0; i < 2; i++) {
+					packet = this.readPacket();
+					if (packet == null) {
+						throw new IOException("Unexpected end of Ogg stream");
+					}
 
-	private void increaseBufferSize() {
-		boolean bl = this.buffer.position() == 0;
-		boolean bl2 = this.buffer.position() == this.buffer.limit();
-		if (bl2 && !bl) {
-			this.buffer.position(0);
-			this.buffer.limit(0);
-		} else {
-			ByteBuffer byteBuffer = MemoryUtil.memAlloc(bl ? 2 * this.buffer.capacity() : this.buffer.capacity());
-			byteBuffer.put(this.buffer);
-			MemoryUtil.memFree(this.buffer);
-			byteBuffer.flip();
-			this.buffer = byteBuffer;
-		}
-	}
-
-	private boolean readOggFile(OggAudioStream.ChannelList channelList) throws IOException {
-		if (this.pointer == 0L) {
-			return false;
-		} else {
-			try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-				PointerBuffer pointerBuffer = memoryStack.mallocPointer(1);
-				IntBuffer intBuffer = memoryStack.mallocInt(1);
-				IntBuffer intBuffer2 = memoryStack.mallocInt(1);
-
-				while (true) {
-					int i = STBVorbis.stb_vorbis_decode_frame_pushdata(this.pointer, this.buffer, intBuffer, pointerBuffer, intBuffer2);
-					this.buffer.position(this.buffer.position() + i);
-					int j = STBVorbis.stb_vorbis_get_error(this.pointer);
-					if (j == 1) {
-						this.increaseBufferSize();
-						if (!this.readHeader()) {
-							return false;
-						}
-					} else {
-						if (j != 0) {
-							throw new IOException("Failed to read Ogg file " + j);
-						}
-
-						int k = intBuffer2.get(0);
-						if (k != 0) {
-							int l = intBuffer.get(0);
-							PointerBuffer pointerBuffer2 = pointerBuffer.getPointerBuffer(l);
-							if (l == 1) {
-								this.readChannels(pointerBuffer2.getFloatBuffer(0, k), channelList);
-								return true;
-							}
-
-							if (l != 2) {
-								throw new IllegalStateException("Invalid number of channels: " + l);
-							}
-
-							this.readChannels(pointerBuffer2.getFloatBuffer(0, k), pointerBuffer2.getFloatBuffer(1, k), channelList);
-							return true;
-						}
+					if (isError(this.info.synthesis_headerin(comment, packet))) {
+						throw new IOException("Invalid Ogg header packet " + i);
 					}
 				}
+
+				this.dspState.synthesis_init(this.info);
+				this.block.init(this.dspState);
+				this.format = new AudioFormat((float)this.info.rate, 16, this.info.channels, true, false);
 			}
 		}
 	}
 
-	private void readChannels(FloatBuffer buf, OggAudioStream.ChannelList channelList) {
-		while (buf.hasRemaining()) {
-			channelList.addChannel(buf.get());
-		}
-	}
-
-	private void readChannels(FloatBuffer buf, FloatBuffer buf2, OggAudioStream.ChannelList channelList) {
-		while (buf.hasRemaining() && buf2.hasRemaining()) {
-			channelList.addChannel(buf.get());
-			channelList.addChannel(buf2.get());
-		}
-	}
-
-	public void close() throws IOException {
-		if (this.pointer != 0L) {
-			STBVorbis.stb_vorbis_close(this.pointer);
-			this.pointer = 0L;
-		}
-
-		MemoryUtil.memFree(this.buffer);
-		this.inputStream.close();
+	private static boolean isError(int code) {
+		return code < 0;
 	}
 
 	@Override
@@ -167,64 +75,155 @@ public class OggAudioStream implements AudioStream {
 		return this.format;
 	}
 
-	@Override
-	public ByteBuffer getBuffer(int size) throws IOException {
-		OggAudioStream.ChannelList channelList = new OggAudioStream.ChannelList(size + 8192);
-
-		while (this.readOggFile(channelList) && channelList.currentBufferSize < size) {
+	private boolean read() throws IOException {
+		int i = this.syncState.buffer(8192);
+		byte[] bs = this.syncState.data;
+		int j = this.inputStream.read(bs, i, 8192);
+		if (j == -1) {
+			return false;
+		} else {
+			this.syncState.wrote(j);
+			return true;
 		}
-
-		return channelList.getBuffer();
 	}
 
-	public ByteBuffer getBuffer() throws IOException {
-		OggAudioStream.ChannelList channelList = new OggAudioStream.ChannelList(16384);
+	@Nullable
+	private Page readPage() throws IOException {
+		while (true) {
+			int i = this.syncState.pageout(this.page);
+			switch (i) {
+				case -1:
+					throw new IllegalStateException("Corrupt or missing data in bitstream");
+				case 0:
+					if (this.read()) {
+						break;
+					}
 
-		while (this.readOggFile(channelList)) {
-		}
+					return null;
+				case 1:
+					if (this.page.eos() != 0) {
+						this.field_51457 = this.page.granulepos();
+					}
 
-		return channelList.getBuffer();
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class ChannelList {
-		private final List<ByteBuffer> buffers = Lists.<ByteBuffer>newArrayList();
-		private final int size;
-		int currentBufferSize;
-		private ByteBuffer buffer;
-
-		public ChannelList(int size) {
-			this.size = size + 1 & -2;
-			this.init();
-		}
-
-		private void init() {
-			this.buffer = BufferUtils.createByteBuffer(this.size);
-		}
-
-		public void addChannel(float data) {
-			if (this.buffer.remaining() == 0) {
-				this.buffer.flip();
-				this.buffers.add(this.buffer);
-				this.init();
+					return this.page;
+				default:
+					throw new IllegalStateException("Unknown page decode result: " + i);
 			}
-
-			int i = MathHelper.clamp((int)(data * 32767.5F - 0.5F), -32768, 32767);
-			this.buffer.putShort((short)i);
-			this.currentBufferSize += 2;
 		}
+	}
 
-		public ByteBuffer getBuffer() {
-			this.buffer.flip();
-			if (this.buffers.isEmpty()) {
-				return this.buffer;
+	private Packet readIdentificationPacket(Page page) throws IOException {
+		this.streamState.init(page.serialno());
+		if (isError(this.streamState.pagein(page))) {
+			throw new IOException("Failed to parse page");
+		} else {
+			int i = this.streamState.packetout(this.packet);
+			if (i != 1) {
+				throw new IOException("Failed to read identification packet: " + i);
 			} else {
-				ByteBuffer byteBuffer = BufferUtils.createByteBuffer(this.currentBufferSize);
-				this.buffers.forEach(byteBuffer::put);
-				byteBuffer.put(this.buffer);
-				byteBuffer.flip();
-				return byteBuffer;
+				return this.packet;
 			}
 		}
+	}
+
+	@Nullable
+	private Packet readPacket() throws IOException {
+		while (true) {
+			int i = this.streamState.packetout(this.packet);
+			switch (i) {
+				case -1:
+					throw new IOException("Failed to parse packet");
+				case 0:
+					Page page = this.readPage();
+					if (page == null) {
+						return null;
+					}
+
+					if (!isError(this.streamState.pagein(page))) {
+						break;
+					}
+
+					throw new IOException("Failed to parse page");
+				case 1:
+					return this.packet;
+				default:
+					throw new IllegalStateException("Unknown packet decode result: " + i);
+			}
+		}
+	}
+
+	private long method_59765(int i) {
+		long l = this.field_51456 + (long)i;
+		long m;
+		if (l > this.field_51457) {
+			m = this.field_51457 - this.field_51456;
+			this.field_51456 = this.field_51457;
+		} else {
+			this.field_51456 = l;
+			m = (long)i;
+		}
+
+		return m;
+	}
+
+	@Override
+	public boolean read(FloatConsumer consumer) throws IOException {
+		float[][][] fs = new float[1][][];
+		int[] is = new int[this.info.channels];
+		Packet packet = this.readPacket();
+		if (packet == null) {
+			return false;
+		} else if (isError(this.block.synthesis(packet))) {
+			throw new IOException("Can't decode audio packet");
+		} else {
+			this.dspState.synthesis_blockin(this.block);
+
+			int i;
+			while ((i = this.dspState.synthesis_pcmout(fs, is)) > 0) {
+				float[][] gs = fs[0];
+				long l = this.method_59765(i);
+				switch (this.info.channels) {
+					case 1:
+						method_59760(gs[0], is[0], l, consumer);
+						break;
+					case 2:
+						method_59761(gs[0], is[0], gs[1], is[1], l, consumer);
+						break;
+					default:
+						method_59762(gs, this.info.channels, is, l, consumer);
+				}
+
+				this.dspState.synthesis_read(i);
+			}
+
+			return true;
+		}
+	}
+
+	private static void method_59762(float[][] fs, int i, int[] is, long l, FloatConsumer floatConsumer) {
+		for (int j = 0; (long)j < l; j++) {
+			for (int k = 0; k < i; k++) {
+				int m = is[k];
+				float f = fs[k][m + j];
+				floatConsumer.accept(f);
+			}
+		}
+	}
+
+	private static void method_59760(float[] fs, int i, long l, FloatConsumer floatConsumer) {
+		for (int j = i; (long)j < (long)i + l; j++) {
+			floatConsumer.accept(fs[j]);
+		}
+	}
+
+	private static void method_59761(float[] fs, int i, float[] gs, int j, long l, FloatConsumer floatConsumer) {
+		for (int k = 0; (long)k < l; k++) {
+			floatConsumer.accept(fs[i + k]);
+			floatConsumer.accept(gs[j + k]);
+		}
+	}
+
+	public void close() throws IOException {
+		this.inputStream.close();
 	}
 }

@@ -83,7 +83,7 @@ public class ResourceReloadLogger {
 
 		final String name;
 
-		private ReloadReason(String name) {
+		private ReloadReason(final String name) {
 			this.name = name;
 		}
 	}

@@ -22,7 +22,7 @@ public record StructureSpawns(StructureSpawns.BoundingBox boundingBox, Pool<Spaw
 		public static final Codec<StructureSpawns.BoundingBox> CODEC = StringIdentifiable.createCodec(StructureSpawns.BoundingBox::values);
 		private final String name;
 
-		private BoundingBox(String name) {
+		private BoundingBox(final String name) {
 			this.name = name;
 		}
 

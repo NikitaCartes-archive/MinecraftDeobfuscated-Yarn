@@ -32,7 +32,7 @@ public enum EntityPose {
 	public static final PacketCodec<ByteBuf, EntityPose> PACKET_CODEC = PacketCodecs.indexed(INDEX_TO_VALUE, EntityPose::getIndex);
 	private final int index;
 
-	private EntityPose(int index) {
+	private EntityPose(final int index) {
 		this.index = index;
 	}
 

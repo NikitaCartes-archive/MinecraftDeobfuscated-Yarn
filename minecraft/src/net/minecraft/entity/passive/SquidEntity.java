@@ -299,7 +299,7 @@ public class SquidEntity extends WaterCreatureEntity {
 	class SwimGoal extends Goal {
 		private final SquidEntity squid;
 
-		public SwimGoal(SquidEntity squid) {
+		public SwimGoal(final SquidEntity squid) {
 			this.squid = squid;
 		}
 

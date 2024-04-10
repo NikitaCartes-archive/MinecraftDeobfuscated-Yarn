@@ -157,7 +157,7 @@ public class Heightmap {
 		private final Heightmap.Purpose purpose;
 		private final Predicate<BlockState> blockPredicate;
 
-		private Type(String name, Heightmap.Purpose purpose, Predicate<BlockState> blockPredicate) {
+		private Type(final String name, final Heightmap.Purpose purpose, final Predicate<BlockState> blockPredicate) {
 			this.name = name;
 			this.purpose = purpose;
 			this.blockPredicate = blockPredicate;

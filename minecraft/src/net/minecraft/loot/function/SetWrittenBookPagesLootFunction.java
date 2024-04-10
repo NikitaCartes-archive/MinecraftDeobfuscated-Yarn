@@ -24,7 +24,7 @@ public class SetWrittenBookPagesLootFunction extends ConditionalLootFunction {
 				.<List<RawFilteredPair<Text>>, ListOperation>and(
 					instance.group(
 						WrittenBookContentComponent.createPagesCodec(TEXT_CODEC).fieldOf("pages").forGetter(function -> function.pages),
-						ListOperation.createCodec(100).forGetter(function -> function.operation)
+						ListOperation.UNLIMITED_SIZE_CODEC.forGetter(function -> function.operation)
 					)
 				)
 				.apply(instance, SetWrittenBookPagesLootFunction::new)
@@ -46,12 +46,12 @@ public class SetWrittenBookPagesLootFunction extends ConditionalLootFunction {
 
 	@VisibleForTesting
 	public WrittenBookContentComponent apply(WrittenBookContentComponent current) {
-		List<RawFilteredPair<Text>> list = this.operation.apply(current.pages(), this.pages, 100);
+		List<RawFilteredPair<Text>> list = this.operation.method_59742(current.pages(), this.pages);
 		return current.withPages(list);
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<SetWrittenBookPagesLootFunction> getType() {
 		return LootFunctionTypes.SET_WRITTEN_BOOK_PAGES;
 	}
 }

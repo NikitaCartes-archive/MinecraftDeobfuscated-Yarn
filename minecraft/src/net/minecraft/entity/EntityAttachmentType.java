@@ -11,7 +11,7 @@ public enum EntityAttachmentType {
 
 	private final EntityAttachmentType.Point point;
 
-	private EntityAttachmentType(EntityAttachmentType.Point point) {
+	private EntityAttachmentType(final EntityAttachmentType.Point point) {
 		this.point = point;
 	}
 

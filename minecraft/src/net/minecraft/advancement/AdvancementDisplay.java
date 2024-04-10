@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 public class AdvancementDisplay {
 	public static final Codec<AdvancementDisplay> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					ItemStack.CODEC.fieldOf("icon").forGetter(AdvancementDisplay::getIcon),
+					ItemStack.VALIDATED_CODEC.fieldOf("icon").forGetter(AdvancementDisplay::getIcon),
 					TextCodecs.CODEC.fieldOf("title").forGetter(AdvancementDisplay::getTitle),
 					TextCodecs.CODEC.fieldOf("description").forGetter(AdvancementDisplay::getDescription),
 					Identifier.CODEC.optionalFieldOf("background").forGetter(AdvancementDisplay::getBackground),

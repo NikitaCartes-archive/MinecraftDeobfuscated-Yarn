@@ -37,7 +37,6 @@ import net.minecraft.item.map.MapDecorationTypes;
 import net.minecraft.item.map.MapState;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
-import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.ItemTags;
@@ -1484,7 +1483,7 @@ public class TradeOffers {
 			TradedItem tradedItem = new TradedItem(Items.EMERALD, this.price);
 			List<RegistryEntry<Potion>> list = (List<RegistryEntry<Potion>>)Registries.POTION
 				.streamEntries()
-				.filter(potion -> !((Potion)potion.value()).getEffects().isEmpty() && BrewingRecipeRegistry.isBrewable(potion))
+				.filter(entry -> !((Potion)entry.value()).getEffects().isEmpty() && entity.getWorld().getBrewingRecipeRegistry().isBrewable(entry))
 				.collect(Collectors.toList());
 			RegistryEntry<Potion> registryEntry = Util.getRandom(list, random);
 			ItemStack itemStack = new ItemStack(this.sell.getItem(), this.sellCount);

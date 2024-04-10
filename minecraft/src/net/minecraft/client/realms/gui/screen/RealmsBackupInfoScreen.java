@@ -81,7 +81,7 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 
 	@Environment(EnvType.CLIENT)
 	class BackupInfoList extends AlwaysSelectedEntryListWidget<RealmsBackupInfoScreen.BackupInfoListEntry> {
-		public BackupInfoList(MinecraftClient client) {
+		public BackupInfoList(final MinecraftClient client) {
 			super(
 				client, RealmsBackupInfoScreen.this.width, RealmsBackupInfoScreen.this.layout.getContentHeight(), RealmsBackupInfoScreen.this.layout.getHeaderHeight(), 36
 			);
@@ -107,7 +107,7 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 		private final String key;
 		private final String value;
 
-		public BackupInfoListEntry(String key, String value) {
+		public BackupInfoListEntry(final String key, final String value) {
 			this.key = key;
 			this.value = value;
 		}

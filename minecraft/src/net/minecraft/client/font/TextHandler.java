@@ -332,7 +332,7 @@ public class TextHandler {
 		private int count;
 		private int startOffset;
 
-		public LineBreakingVisitor(float maxWidth) {
+		public LineBreakingVisitor(final float maxWidth) {
 			this.maxWidth = Math.max(maxWidth, 1.0F);
 		}
 
@@ -492,7 +492,7 @@ public class TextHandler {
 		private float widthLeft;
 		private int length;
 
-		public WidthLimitingVisitor(float maxWidth) {
+		public WidthLimitingVisitor(final float maxWidth) {
 			this.widthLeft = maxWidth;
 		}
 

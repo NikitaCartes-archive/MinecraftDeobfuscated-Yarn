@@ -20,6 +20,7 @@ import net.minecraft.advancement.criterion.LightningStrikeCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
 import net.minecraft.advancement.criterion.PlayerGeneratesContainerLootCriterion;
 import net.minecraft.advancement.criterion.PlayerHurtEntityCriterion;
+import net.minecraft.advancement.criterion.PlayerInteractedWithEntityCriterion;
 import net.minecraft.advancement.criterion.RecipeCraftedCriterion;
 import net.minecraft.advancement.criterion.ShotCrossbowCriterion;
 import net.minecraft.advancement.criterion.SlideDownBlockCriterion;
@@ -680,6 +681,26 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.criterion("chiseled_bookshelf", requirePlacedBlockReadByComparator(Blocks.CHISELED_BOOKSHELF))
 			.criterion("comparator", requirePlacedComparatorReadingBlock(Blocks.CHISELED_BOOKSHELF))
 			.build(exporter, "adventure/read_power_of_chiseled_bookshelf");
+		Advancement.Builder.create()
+			.parent(advancementEntry)
+			.display(
+				Items.ARMADILLO_SCUTE,
+				Text.translatable("advancements.adventure.brush_armadillo.title"),
+				Text.translatable("advancements.adventure.brush_armadillo.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"brush_armadillo",
+				PlayerInteractedWithEntityCriterion.Conditions.create(
+					ItemPredicate.Builder.create().items(Items.BRUSH),
+					Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(EntityPredicate.Builder.create().type(EntityType.ARMADILLO)))
+				)
+			)
+			.build(exporter, "adventure/brush_armadillo");
 	}
 
 	public static AdvancementEntry createKillMobAdvancements(AdvancementEntry parent, Consumer<AdvancementEntry> exporter, List<EntityType<?>> monsters) {

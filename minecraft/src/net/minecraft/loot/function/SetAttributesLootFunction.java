@@ -51,7 +51,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<SetAttributesLootFunction> getType() {
 		return LootFunctionTypes.SET_ATTRIBUTES;
 	}
 

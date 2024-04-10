@@ -280,7 +280,7 @@ public class WorldCreator {
 		public final Text name;
 		private final Text info;
 
-		private Mode(String name, GameMode defaultGameMode) {
+		private Mode(final String name, final GameMode defaultGameMode) {
 			this.defaultGameMode = defaultGameMode;
 			this.name = Text.translatable("selectWorld.gameMode." + name);
 			this.info = Text.translatable("selectWorld.gameMode." + name + ".info");

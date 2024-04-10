@@ -90,7 +90,7 @@ public interface Oxidizable extends Degradable<Oxidizable.OxidationLevel> {
 		public static final Codec<Oxidizable.OxidationLevel> CODEC = StringIdentifiable.createCodec(Oxidizable.OxidationLevel::values);
 		private final String id;
 
-		private OxidationLevel(String id) {
+		private OxidationLevel(final String id) {
 			this.id = id;
 		}
 

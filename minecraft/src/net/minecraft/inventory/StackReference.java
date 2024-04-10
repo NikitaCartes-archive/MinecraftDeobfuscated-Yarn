@@ -1,6 +1,8 @@
 package net.minecraft.inventory;
 
+import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -29,6 +31,21 @@ public interface StackReference {
 			return false;
 		}
 	};
+
+	static StackReference of(Supplier<ItemStack> getter, Consumer<ItemStack> setter) {
+		return new StackReference() {
+			@Override
+			public ItemStack get() {
+				return (ItemStack)getter.get();
+			}
+
+			@Override
+			public boolean set(ItemStack stack) {
+				setter.accept(stack);
+				return true;
+			}
+		};
+	}
 
 	/**
 	 * Creates a stack reference backed by an index within an inventory and guarded

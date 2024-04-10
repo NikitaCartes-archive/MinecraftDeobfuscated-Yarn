@@ -11,7 +11,7 @@ public enum Tilt implements StringIdentifiable {
 	private final String name;
 	private final boolean stable;
 
-	private Tilt(String name, boolean stable) {
+	private Tilt(final String name, final boolean stable) {
 		this.name = name;
 		this.stable = stable;
 	}

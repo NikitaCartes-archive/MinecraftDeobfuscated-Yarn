@@ -156,6 +156,10 @@ public class EntitySubPredicateTypes {
 		return FROG.createPredicate(RegistryEntryList.of(frogVariant));
 	}
 
+	public static EntitySubPredicate wolfVariant(RegistryEntryList<WolfVariant> wolfVariant) {
+		return WOLF.createPredicate(wolfVariant);
+	}
+
 	public static class DynamicVariantType<V> {
 		final MapCodec<EntitySubPredicateTypes.DynamicVariantType<V>.DynamicPredicate> codec;
 		final Function<Entity, Optional<RegistryEntry<V>>> variantGetter;
@@ -181,7 +185,7 @@ public class EntitySubPredicateTypes {
 		class DynamicPredicate implements EntitySubPredicate {
 			final RegistryEntryList<V> variants;
 
-			DynamicPredicate(RegistryEntryList<V> variants) {
+			DynamicPredicate(final RegistryEntryList<V> variants) {
 				this.variants = variants;
 			}
 
@@ -224,7 +228,7 @@ public class EntitySubPredicateTypes {
 		class VariantPredicate implements EntitySubPredicate {
 			final V variant;
 
-			VariantPredicate(V variant) {
+			VariantPredicate(final V variant) {
 				this.variant = variant;
 			}
 

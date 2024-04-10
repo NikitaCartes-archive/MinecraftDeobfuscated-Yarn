@@ -6,7 +6,7 @@ public enum NetworkSide {
 
 	private final String name;
 
-	private NetworkSide(String name) {
+	private NetworkSide(final String name) {
 		this.name = name;
 	}
 

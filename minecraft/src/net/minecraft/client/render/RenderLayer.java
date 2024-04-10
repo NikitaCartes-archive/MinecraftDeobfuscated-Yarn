@@ -1448,7 +1448,7 @@ public abstract class RenderLayer extends RenderPhase {
 
 		private final String name;
 
-		private OutlineMode(String name) {
+		private OutlineMode(final String name) {
 			this.name = name;
 		}
 

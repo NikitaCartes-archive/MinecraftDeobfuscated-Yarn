@@ -33,7 +33,7 @@ public enum NarratorMode {
 	private final int id;
 	private final Text name;
 
-	private NarratorMode(int id, String name) {
+	private NarratorMode(final int id, final String name) {
 		this.id = id;
 		this.name = Text.translatable(name);
 	}

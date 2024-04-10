@@ -152,7 +152,7 @@ public class RecipeMatcher {
 		private final BitSet requirementsMatrix;
 		private final IntList ingredientItemLookup = new IntArrayList();
 
-		public Matcher(Recipe<?> recipe) {
+		public Matcher(final Recipe<?> recipe) {
 			this.recipe = recipe;
 			this.ingredients.addAll(recipe.getIngredients());
 			this.ingredients.removeIf(Ingredient::isEmpty);

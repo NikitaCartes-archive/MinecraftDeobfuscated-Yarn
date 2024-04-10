@@ -6,7 +6,7 @@ public enum ResourceType {
 
 	private final String directory;
 
-	private ResourceType(String directory) {
+	private ResourceType(final String directory) {
 		this.directory = directory;
 	}
 

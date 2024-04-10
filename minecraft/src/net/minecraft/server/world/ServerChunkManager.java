@@ -552,7 +552,7 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	final class MainThreadExecutor extends ThreadExecutor<Runnable> {
-		MainThreadExecutor(World world) {
+		MainThreadExecutor(final World world) {
 			super("Chunk source main thread executor for " + world.getRegistryKey().getValue());
 		}
 

@@ -41,10 +41,11 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		checkDataCount(propertyDelegate, 2);
 		this.inventory = inventory;
 		this.propertyDelegate = propertyDelegate;
+		BrewingRecipeRegistry brewingRecipeRegistry = playerInventory.player.getWorld().getBrewingRecipeRegistry();
 		this.addSlot(new BrewingStandScreenHandler.PotionSlot(inventory, 0, 56, 51));
 		this.addSlot(new BrewingStandScreenHandler.PotionSlot(inventory, 1, 79, 58));
 		this.addSlot(new BrewingStandScreenHandler.PotionSlot(inventory, 2, 102, 51));
-		this.ingredientSlot = this.addSlot(new BrewingStandScreenHandler.IngredientSlot(inventory, 3, 79, 17));
+		this.ingredientSlot = this.addSlot(new BrewingStandScreenHandler.IngredientSlot(brewingRecipeRegistry, inventory, 3, 79, 17));
 		this.addSlot(new BrewingStandScreenHandler.FuelSlot(inventory, 4, 17, 17));
 		this.addProperties(propertyDelegate);
 
@@ -80,7 +81,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 					if (!this.insertItem(itemStack2, 3, 4, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (BrewingStandScreenHandler.PotionSlot.matches(itemStack) && itemStack.getCount() == 1) {
+				} else if (BrewingStandScreenHandler.PotionSlot.matches(itemStack)) {
 					if (!this.insertItem(itemStack2, 0, 3, false)) {
 						return ItemStack.EMPTY;
 					}
@@ -140,26 +141,19 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		public static boolean matches(ItemStack stack) {
 			return stack.isOf(Items.BLAZE_POWDER);
 		}
-
-		@Override
-		public int getMaxItemCount() {
-			return 64;
-		}
 	}
 
 	static class IngredientSlot extends Slot {
-		public IngredientSlot(Inventory inventory, int i, int j, int k) {
-			super(inventory, i, j, k);
+		private final BrewingRecipeRegistry brewingRecipeRegistry;
+
+		public IngredientSlot(BrewingRecipeRegistry brewingRecipeRegistry, Inventory inventory, int index, int x, int y) {
+			super(inventory, index, x, y);
+			this.brewingRecipeRegistry = brewingRecipeRegistry;
 		}
 
 		@Override
 		public boolean canInsert(ItemStack stack) {
-			return BrewingRecipeRegistry.isValidIngredient(stack);
-		}
-
-		@Override
-		public int getMaxItemCount() {
-			return 64;
+			return this.brewingRecipeRegistry.isValidIngredient(stack);
 		}
 	}
 

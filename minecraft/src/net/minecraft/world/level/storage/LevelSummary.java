@@ -200,7 +200,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		private final boolean dangerous;
 		private final String translationKeySuffix;
 
-		private ConversionWarning(boolean backup, boolean dangerous, String translationKeySuffix) {
+		private ConversionWarning(final boolean backup, final boolean dangerous, final String translationKeySuffix) {
 			this.backup = backup;
 			this.dangerous = dangerous;
 			this.translationKeySuffix = translationKeySuffix;

@@ -30,15 +30,15 @@ public final class Uuids {
 			return DataResult.error(() -> "Invalid UUID " + string + ": " + var2.getMessage());
 		}
 	}, UUID::toString);
-	public static Codec<UUID> CODEC = Codec.withAlternative(Codec.STRING.comapFlatMap(string -> {
+	public static final Codec<UUID> CODEC = Codec.withAlternative(Codec.STRING.comapFlatMap(string -> {
 		try {
 			return DataResult.success(UndashedUuid.fromStringLenient(string), Lifecycle.stable());
 		} catch (IllegalArgumentException var2) {
 			return DataResult.error(() -> "Invalid UUID " + string + ": " + var2.getMessage());
 		}
 	}, UndashedUuid::toString), INT_STREAM_CODEC);
-	public static Codec<UUID> STRICT_CODEC = Codec.withAlternative(INT_STREAM_CODEC, STRING_CODEC);
-	public static PacketCodec<ByteBuf, UUID> PACKET_CODEC = new PacketCodec<ByteBuf, UUID>() {
+	public static final Codec<UUID> STRICT_CODEC = Codec.withAlternative(INT_STREAM_CODEC, STRING_CODEC);
+	public static final PacketCodec<ByteBuf, UUID> PACKET_CODEC = new PacketCodec<ByteBuf, UUID>() {
 		public UUID decode(ByteBuf byteBuf) {
 			return PacketByteBuf.readUuid(byteBuf);
 		}

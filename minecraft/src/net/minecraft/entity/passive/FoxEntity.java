@@ -707,7 +707,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	class AttackGoal extends MeleeAttackGoal {
-		public AttackGoal(double speed, boolean pauseWhenIdle) {
+		public AttackGoal(final double speed, final boolean pauseWhenIdle) {
 			super(FoxEntity.this, speed, pauseWhenIdle);
 		}
 
@@ -735,7 +735,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	class AvoidDaylightGoal extends EscapeSunlightGoal {
 		private int timer = toGoalTicks(100);
 
-		public AvoidDaylightGoal(double speed) {
+		public AvoidDaylightGoal(final double speed) {
 			super(FoxEntity.this, speed);
 		}
 
@@ -793,7 +793,10 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		private int lastAttackedTime;
 
 		public DefendFriendGoal(
-			Class<LivingEntity> targetEntityClass, boolean checkVisibility, boolean checkCanNavigate, @Nullable Predicate<LivingEntity> targetPredicate
+			final Class<LivingEntity> targetEntityClass,
+			final boolean checkVisibility,
+			final boolean checkCanNavigate,
+			@Nullable final Predicate<LivingEntity> targetPredicate
 		) {
 			super(FoxEntity.this, targetEntityClass, 10, checkVisibility, checkCanNavigate, targetPredicate);
 		}
@@ -884,7 +887,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		private static final int EATING_TIME = 40;
 		protected int timer;
 
-		public EatBerriesGoal(double speed, int range, int maxYDifference) {
+		public EatBerriesGoal(final double speed, final int range, final int maxYDifference) {
 			super(FoxEntity.this, speed, range, maxYDifference);
 		}
 
@@ -967,7 +970,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	class EscapeWhenNotAggressiveGoal extends EscapeDangerGoal {
-		public EscapeWhenNotAggressiveGoal(double speed) {
+		public EscapeWhenNotAggressiveGoal(final double speed) {
 			super(FoxEntity.this, speed);
 		}
 
@@ -980,7 +983,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	class FollowParentGoal extends net.minecraft.entity.ai.goal.FollowParentGoal {
 		private final FoxEntity fox;
 
-		public FollowParentGoal(FoxEntity fox, double speed) {
+		public FollowParentGoal(final FoxEntity fox, final double speed) {
 			super(fox, speed);
 			this.fox = fox;
 		}
@@ -1060,7 +1063,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	class GoToVillageGoal extends net.minecraft.entity.ai.goal.GoToVillageGoal {
-		public GoToVillageGoal(int unused, int searchRange) {
+		public GoToVillageGoal(final int unused, final int searchRange) {
 			super(FoxEntity.this, searchRange);
 		}
 
@@ -1186,7 +1189,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	class LookAtEntityGoal extends net.minecraft.entity.ai.goal.LookAtEntityGoal {
-		public LookAtEntityGoal(MobEntity fox, Class<? extends LivingEntity> targetType, float range) {
+		public LookAtEntityGoal(final MobEntity fox, final Class<? extends LivingEntity> targetType, final float range) {
 			super(fox, targetType, range);
 		}
 
@@ -1202,7 +1205,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	class MateGoal extends AnimalMateGoal {
-		public MateGoal(double chance) {
+		public MateGoal(final double chance) {
 			super(FoxEntity.this, chance);
 		}
 
@@ -1461,7 +1464,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		private final int id;
 		private final String key;
 
-		private Type(int id, String key) {
+		private Type(final int id, final String key) {
 			this.id = id;
 			this.key = key;
 		}

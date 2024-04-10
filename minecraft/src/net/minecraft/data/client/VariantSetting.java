@@ -24,7 +24,7 @@ public class VariantSetting<T> {
 	public class Value {
 		private final T value;
 
-		public Value(T value) {
+		public Value(final T value) {
 			this.value = value;
 		}
 

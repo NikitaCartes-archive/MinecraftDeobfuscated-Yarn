@@ -51,7 +51,7 @@ public class SetFireworksLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<SetFireworksLootFunction> getType() {
 		return LootFunctionTypes.SET_FIREWORKS;
 	}
 }

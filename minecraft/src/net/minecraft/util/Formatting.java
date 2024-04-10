@@ -60,15 +60,15 @@ public enum Formatting implements StringIdentifiable {
 		return name.toLowerCase(Locale.ROOT).replaceAll("[^a-z]", "");
 	}
 
-	private Formatting(String name, char code, int colorIndex, @Nullable Integer colorValue) {
+	private Formatting(final String name, final char code, final int colorIndex, @Nullable final Integer colorValue) {
 		this(name, code, false, colorIndex, colorValue);
 	}
 
-	private Formatting(String name, char code, boolean modifier) {
+	private Formatting(final String name, final char code, final boolean modifier) {
 		this(name, code, modifier, -1, null);
 	}
 
-	private Formatting(String name, char code, boolean modifier, int colorIndex, @Nullable Integer colorValue) {
+	private Formatting(final String name, final char code, final boolean modifier, final int colorIndex, @Nullable final Integer colorValue) {
 		this.name = name;
 		this.code = code;
 		this.modifier = modifier;

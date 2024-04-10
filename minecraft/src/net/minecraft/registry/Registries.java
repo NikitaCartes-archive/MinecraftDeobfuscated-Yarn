@@ -163,7 +163,7 @@ public class Registries {
 	public static final Registry<Schedule> SCHEDULE = create(RegistryKeys.SCHEDULE, registry -> Schedule.EMPTY);
 	public static final Registry<Activity> ACTIVITY = create(RegistryKeys.ACTIVITY, registry -> Activity.IDLE);
 	public static final Registry<LootPoolEntryType> LOOT_POOL_ENTRY_TYPE = create(RegistryKeys.LOOT_POOL_ENTRY_TYPE, registry -> LootPoolEntryTypes.EMPTY);
-	public static final Registry<LootFunctionType> LOOT_FUNCTION_TYPE = create(RegistryKeys.LOOT_FUNCTION_TYPE, registry -> LootFunctionTypes.SET_COUNT);
+	public static final Registry<LootFunctionType<?>> LOOT_FUNCTION_TYPE = create(RegistryKeys.LOOT_FUNCTION_TYPE, registry -> LootFunctionTypes.SET_COUNT);
 	public static final Registry<LootConditionType> LOOT_CONDITION_TYPE = create(RegistryKeys.LOOT_CONDITION_TYPE, registry -> LootConditionTypes.INVERTED);
 	public static final Registry<LootNumberProviderType> LOOT_NUMBER_PROVIDER_TYPE = create(
 		RegistryKeys.LOOT_NUMBER_PROVIDER_TYPE, registry -> LootNumberProviderTypes.CONSTANT

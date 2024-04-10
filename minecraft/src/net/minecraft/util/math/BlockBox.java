@@ -225,9 +225,17 @@ public class BlockBox {
 	 * {@return a new box that is expanded on each direction by {@code offset}}
 	 */
 	public BlockBox expand(int offset) {
-		return new BlockBox(
-			this.getMinX() - offset, this.getMinY() - offset, this.getMinZ() - offset, this.getMaxX() + offset, this.getMaxY() + offset, this.getMaxZ() + offset
-		);
+		return this.expand(offset, offset, offset);
+	}
+
+	/**
+	 * {@return a new box that is expanded by {@code x}, {@code y}, {@code z}
+	 * on each axis}
+	 * 
+	 * @see #expand(int)
+	 */
+	public BlockBox expand(int x, int y, int z) {
+		return new BlockBox(this.getMinX() - x, this.getMinY() - y, this.getMinZ() - z, this.getMaxX() + x, this.getMaxY() + y, this.getMaxZ() + z);
 	}
 
 	/**

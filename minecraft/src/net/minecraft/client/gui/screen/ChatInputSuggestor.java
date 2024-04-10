@@ -404,7 +404,7 @@ public class ChatInputSuggestor {
 		boolean completed;
 		private int lastNarrationIndex;
 
-		SuggestionWindow(int x, int y, int width, List<Suggestion> suggestions, boolean narrateFirstSuggestion) {
+		SuggestionWindow(final int x, final int y, final int width, final List<Suggestion> suggestions, final boolean narrateFirstSuggestion) {
 			int i = x - (ChatInputSuggestor.this.textField.drawsBackground() ? 0 : 1);
 			int j = ChatInputSuggestor.this.chatScreenSized
 				? y - 3 - Math.min(suggestions.size(), ChatInputSuggestor.this.maxSuggestionSize) * 12

@@ -163,7 +163,7 @@ public class WorldUpdater {
 	}
 
 	abstract class ChunkPosKeyedStorageUpdate extends WorldUpdater.Update<ChunkPosKeyedStorage> {
-		ChunkPosKeyedStorageUpdate(DataFixTypes dataFixTypes, String targetName, MutableText upgradingText, MutableText finishedText) {
+		ChunkPosKeyedStorageUpdate(final DataFixTypes dataFixTypes, final String targetName, final MutableText upgradingText, final MutableText finishedText) {
 			super(dataFixTypes, targetName, targetName, upgradingText, finishedText);
 		}
 
@@ -294,7 +294,7 @@ public class WorldUpdater {
 		protected CompletableFuture<Void> pendingUpdateFuture;
 		protected final DataFixTypes dataFixTypes;
 
-		Update(DataFixTypes dataFixTypes, String name, String targetName, MutableText upgradingText, MutableText finishedText) {
+		Update(final DataFixTypes dataFixTypes, final String name, final String targetName, final MutableText upgradingText, final MutableText finishedText) {
 			this.dataFixTypes = dataFixTypes;
 			this.name = name;
 			this.targetName = targetName;

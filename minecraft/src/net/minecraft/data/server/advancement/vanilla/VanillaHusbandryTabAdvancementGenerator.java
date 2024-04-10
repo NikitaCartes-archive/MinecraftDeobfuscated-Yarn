@@ -24,14 +24,18 @@ import net.minecraft.advancement.criterion.StartedRidingCriterion;
 import net.minecraft.advancement.criterion.TameAnimalCriterion;
 import net.minecraft.advancement.criterion.ThrownItemPickedUpByEntityCriterion;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.data.server.advancement.AdvancementTabGenerator;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.passive.WolfVariant;
 import net.minecraft.item.HoneycombItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.BlockPredicate;
+import net.minecraft.predicate.ComponentPredicate;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.EntitySubPredicateTypes;
@@ -41,7 +45,11 @@ import net.minecraft.predicate.item.EnchantmentsPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.predicate.item.ItemSubPredicateTypes;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
@@ -287,6 +295,20 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.rewards(AdvancementRewards.Builder.experience(50))
 			.build(exporter, "husbandry/complete_catalogue");
+		requireAllWolvesTamed(Advancement.Builder.create(), lookup)
+			.parent(advancementEntry4)
+			.display(
+				Items.BONE,
+				Text.translatable("advancements.husbandry.whole_pack.title"),
+				Text.translatable("advancements.husbandry.whole_pack.description"),
+				null,
+				AdvancementFrame.CHALLENGE,
+				true,
+				true,
+				false
+			)
+			.rewards(AdvancementRewards.Builder.experience(50))
+			.build(exporter, "husbandry/whole_pack");
 		AdvancementEntry advancementEntry8 = Advancement.Builder.create()
 			.parent(advancementEntry)
 			.criterion(
@@ -549,6 +571,55 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.criterion("torchflower", ItemCriterion.Conditions.createPlacedBlock(Blocks.TORCHFLOWER_CROP))
 			.criterion("pitcher_pod", ItemCriterion.Conditions.createPlacedBlock(Blocks.PITCHER_CROP))
 			.build(exporter, "husbandry/plant_any_sniffer_seed");
+		Advancement.Builder.create()
+			.parent(advancementEntry4)
+			.display(
+				Items.SHEARS,
+				Text.translatable("advancements.husbandry.remove_wolf_armor.title"),
+				Text.translatable("advancements.husbandry.remove_wolf_armor.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"remove_wolf_armor",
+				PlayerInteractedWithEntityCriterion.Conditions.create(
+					ItemPredicate.Builder.create().items(Items.SHEARS),
+					Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(EntityPredicate.Builder.create().type(EntityType.WOLF)))
+				)
+			)
+			.build(exporter, "husbandry/remove_wolf_armor");
+		Advancement.Builder.create()
+			.parent(advancementEntry4)
+			.display(
+				Items.WOLF_ARMOR,
+				Text.translatable("advancements.husbandry.repair_wolf_armor.title"),
+				Text.translatable("advancements.husbandry.repair_wolf_armor.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"repair_wolf_armor",
+				PlayerInteractedWithEntityCriterion.Conditions.create(
+					ItemPredicate.Builder.create().items(Items.ARMADILLO_SCUTE),
+					Optional.of(
+						EntityPredicate.contextPredicateFromEntityPredicate(
+							EntityPredicate.Builder.create()
+								.type(EntityType.WOLF)
+								.equipment(
+									EntityEquipmentPredicate.Builder.create()
+										.body(ItemPredicate.Builder.create().items(Items.WOLF_ARMOR).component(ComponentPredicate.builder().add(DataComponentTypes.DAMAGE, 0).build()))
+								)
+						)
+					)
+				)
+			)
+			.build(exporter, "husbandry/repair_wolf_armor");
 	}
 
 	public static AdvancementEntry createBreedAllAnimalsAdvancement(
@@ -642,6 +713,24 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 						entry.registryKey().getValue().toString(),
 						TameAnimalCriterion.Conditions.create(EntityPredicate.Builder.create().typeSpecific(EntitySubPredicateTypes.catVariant(entry)))
 					)
+			);
+		return builder;
+	}
+
+	private static Advancement.Builder requireAllWolvesTamed(Advancement.Builder builder, RegistryWrapper.WrapperLookup registryLookup) {
+		RegistryWrapper.Impl<WolfVariant> impl = registryLookup.getWrapperOrThrow(RegistryKeys.WOLF_VARIANT);
+		impl.streamKeys()
+			.sorted(Comparator.comparing(RegistryKey::getValue))
+			.forEach(
+				key -> {
+					RegistryEntry<WolfVariant> registryEntry = impl.getOrThrow(key);
+					builder.criterion(
+						key.getValue().toString(),
+						TameAnimalCriterion.Conditions.create(
+							EntityPredicate.Builder.create().typeSpecific(EntitySubPredicateTypes.wolfVariant(RegistryEntryList.of(registryEntry)))
+						)
+					);
+				}
 			);
 		return builder;
 	}

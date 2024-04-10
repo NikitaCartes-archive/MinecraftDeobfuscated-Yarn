@@ -205,19 +205,12 @@ public class Schema99 extends Schema {
 					"Inventory",
 					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
 					"Offers",
-					DSL.optionalFields(
-						"Recipes",
-						DSL.list(
-							DSL.optionalFields(
-								"buy", TypeReferences.ITEM_STACK.in(schema), "buyB", TypeReferences.ITEM_STACK.in(schema), "sell", TypeReferences.ITEM_STACK.in(schema)
-							)
-						)
-					),
+					DSL.optionalFields("Recipes", DSL.list(TypeReferences.VILLAGER_TRADE.in(schema))),
 					targetEquipment(schema)
 				))
 		);
 		schema.registerSimple(map, "EnderCrystal");
-		schema.registerSimple(map, "AreaEffectCloud");
+		schema.register(map, "AreaEffectCloud", (Function<String, TypeTemplate>)(string -> DSL.optionalFields("Particle", TypeReferences.PARTICLE.in(schema))));
 		schema.registerSimple(map, "ShulkerBullet");
 		targetEquipment(schema, map, "Shulker");
 		return map;
@@ -342,6 +335,14 @@ public class Schema99 extends Schema {
 		schema.registerType(false, TypeReferences.WORLD_GEN_SETTINGS, DSL::remainder);
 		schema.registerType(false, TypeReferences.ENTITY_CHUNK, () -> DSL.optionalFields("Entities", DSL.list(TypeReferences.ENTITY_TREE.in(schema))));
 		schema.registerType(true, TypeReferences.DATA_COMPONENTS, DSL::remainder);
+		schema.registerType(
+			true,
+			TypeReferences.VILLAGER_TRADE,
+			() -> DSL.optionalFields(
+					"buy", TypeReferences.ITEM_STACK.in(schema), "buyB", TypeReferences.ITEM_STACK.in(schema), "sell", TypeReferences.ITEM_STACK.in(schema)
+				)
+		);
+		schema.registerType(true, TypeReferences.PARTICLE, () -> DSL.constType(DSL.string()));
 	}
 
 	protected static <T> T updateBlockEntityTags(Dynamic<T> stack, Map<String, String> renames, Map<String, String> map) {

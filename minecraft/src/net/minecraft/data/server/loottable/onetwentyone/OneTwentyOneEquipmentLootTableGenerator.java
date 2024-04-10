@@ -3,6 +3,7 @@ package net.minecraft.data.server.loottable.onetwentyone;
 import java.util.function.BiConsumer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.data.server.loottable.LootTableGenerator;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.item.trim.ArmorTrim;
@@ -17,6 +18,7 @@ import net.minecraft.loot.condition.RandomChanceLootCondition;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LootTableEntry;
 import net.minecraft.loot.function.SetComponentsLootFunction;
+import net.minecraft.loot.function.SetEnchantmentsLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -49,6 +51,41 @@ public class OneTwentyOneEquipmentLootTableGenerator implements LootTableGenerat
 						.with(LootTableEntry.builder(builder(Items.DIAMOND_HELMET, Items.DIAMOND_CHESTPLATE, armorTrim).build()).weight(1))
 				)
 		);
+		consumer.accept(
+			LootTables.TRIAL_CHAMBER_MELEE_EQUIPMENT,
+			LootTable.builder()
+				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(LootTableEntry.builder(LootTables.TRIAL_CHAMBER_EQUIPMENT)))
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(ItemEntry.builder(Items.IRON_SWORD).weight(4))
+						.with(
+							ItemEntry.builder(Items.IRON_SWORD)
+								.apply(new SetEnchantmentsLootFunction.Builder().enchantment(Enchantments.SHARPNESS, ConstantLootNumberProvider.create(1.0F)))
+						)
+						.with(
+							ItemEntry.builder(Items.IRON_SWORD)
+								.apply(new SetEnchantmentsLootFunction.Builder().enchantment(Enchantments.KNOCKBACK, ConstantLootNumberProvider.create(1.0F)))
+						)
+						.with(ItemEntry.builder(Items.DIAMOND_SWORD))
+				)
+		);
+		consumer.accept(
+			LootTables.TRIAL_CHAMBER_RANGED_EQUIPMENT,
+			LootTable.builder()
+				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(LootTableEntry.builder(LootTables.TRIAL_CHAMBER_EQUIPMENT)))
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(ItemEntry.builder(Items.BOW).weight(2))
+						.with(
+							ItemEntry.builder(Items.BOW).apply(new SetEnchantmentsLootFunction.Builder().enchantment(Enchantments.POWER, ConstantLootNumberProvider.create(1.0F)))
+						)
+						.with(
+							ItemEntry.builder(Items.BOW).apply(new SetEnchantmentsLootFunction.Builder().enchantment(Enchantments.PUNCH, ConstantLootNumberProvider.create(1.0F)))
+						)
+				)
+		);
 	}
 
 	public static LootTable.Builder builder(Item helmet, Item chestplate, ArmorTrim trim) {
@@ -57,13 +94,31 @@ public class OneTwentyOneEquipmentLootTableGenerator implements LootTableGenerat
 				LootPool.builder()
 					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.conditionally(RandomChanceLootCondition.builder(0.5F))
-					.with(ItemEntry.builder(helmet).apply(SetComponentsLootFunction.builder(DataComponentTypes.TRIM, trim)))
+					.with(
+						ItemEntry.builder(helmet)
+							.apply(SetComponentsLootFunction.builder(DataComponentTypes.TRIM, trim))
+							.apply(
+								new SetEnchantmentsLootFunction.Builder()
+									.enchantment(Enchantments.PROTECTION, ConstantLootNumberProvider.create(4.0F))
+									.enchantment(Enchantments.PROJECTILE_PROTECTION, ConstantLootNumberProvider.create(4.0F))
+									.enchantment(Enchantments.FIRE_PROTECTION, ConstantLootNumberProvider.create(4.0F))
+							)
+					)
 			)
 			.pool(
 				LootPool.builder()
 					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.conditionally(RandomChanceLootCondition.builder(0.5F))
-					.with(ItemEntry.builder(chestplate).apply(SetComponentsLootFunction.builder(DataComponentTypes.TRIM, trim)))
+					.with(
+						ItemEntry.builder(chestplate)
+							.apply(SetComponentsLootFunction.builder(DataComponentTypes.TRIM, trim))
+							.apply(
+								new SetEnchantmentsLootFunction.Builder()
+									.enchantment(Enchantments.PROTECTION, ConstantLootNumberProvider.create(4.0F))
+									.enchantment(Enchantments.PROJECTILE_PROTECTION, ConstantLootNumberProvider.create(4.0F))
+									.enchantment(Enchantments.FIRE_PROTECTION, ConstantLootNumberProvider.create(4.0F))
+							)
+					)
 			);
 	}
 }

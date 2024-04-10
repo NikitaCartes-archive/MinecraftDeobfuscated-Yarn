@@ -84,19 +84,12 @@ public class Schema100 extends Schema {
 					"Inventory",
 					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
 					"Offers",
-					DSL.optionalFields(
-						"Recipes",
-						DSL.list(
-							DSL.optionalFields(
-								"buy", TypeReferences.ITEM_STACK.in(schema), "buyB", TypeReferences.ITEM_STACK.in(schema), "sell", TypeReferences.ITEM_STACK.in(schema)
-							)
-						)
-					),
+					DSL.optionalFields("Recipes", DSL.list(TypeReferences.VILLAGER_TRADE.in(schema))),
 					targetItems(schema)
 				))
 		);
 		targetEntityItems(schema, map, "Shulker");
-		schema.registerSimple(map, "AreaEffectCloud");
+		schema.register(map, "AreaEffectCloud", (Function<String, TypeTemplate>)(string -> DSL.optionalFields("Particle", TypeReferences.PARTICLE.in(schema))));
 		schema.registerSimple(map, "ShulkerBullet");
 		return map;
 	}

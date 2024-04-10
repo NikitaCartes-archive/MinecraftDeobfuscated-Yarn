@@ -126,7 +126,7 @@ public class StatusEffects {
 	);
 	public static final RegistryEntry<StatusEffect> WEAVING = register(
 		"weaving",
-		new WeavingStatusEffect(StatusEffectCategory.HARMFUL, 7891290, random -> MathHelper.nextBetween(random, 1, 3))
+		new WeavingStatusEffect(StatusEffectCategory.HARMFUL, 7891290, random -> MathHelper.nextBetween(random, 2, 3))
 			.requires(new FeatureFlag[]{FeatureFlags.UPDATE_1_21})
 	);
 	public static final RegistryEntry<StatusEffect> OOZING = register(
@@ -134,7 +134,7 @@ public class StatusEffects {
 	);
 	public static final RegistryEntry<StatusEffect> INFESTED = register(
 		"infested",
-		new InfestedStatusEffect(StatusEffectCategory.HARMFUL, 9214860, 0.05F, random -> MathHelper.nextBetween(random, 1, 3))
+		new InfestedStatusEffect(StatusEffectCategory.HARMFUL, 9214860, 0.1F, random -> MathHelper.nextBetween(random, 1, 2))
 			.requires(new FeatureFlag[]{FeatureFlags.UPDATE_1_21})
 	);
 

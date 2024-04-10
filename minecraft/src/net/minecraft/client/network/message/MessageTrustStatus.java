@@ -21,7 +21,7 @@ public enum MessageTrustStatus implements StringIdentifiable {
 	public static final Codec<MessageTrustStatus> CODEC = StringIdentifiable.createCodec(MessageTrustStatus::values);
 	private final String id;
 
-	private MessageTrustStatus(String id) {
+	private MessageTrustStatus(final String id) {
 		this.id = id;
 	}
 

@@ -47,7 +47,7 @@ public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<SetEnchantmentsLootFunction> getType() {
 		return LootFunctionTypes.SET_ENCHANTMENTS;
 	}
 

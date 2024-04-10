@@ -256,14 +256,13 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 			.add(Items.NETHERITE_HOE)
 			.add(Items.WOODEN_HOE)
 			.add(Items.IRON_HOE);
-		this.getOrCreateTagBuilder(ItemTags.TOOLS)
+		this.getOrCreateTagBuilder(ItemTags.BREAKS_DECORATED_POTS)
 			.addTag(ItemTags.SWORDS)
 			.addTag(ItemTags.AXES)
 			.addTag(ItemTags.PICKAXES)
 			.addTag(ItemTags.SHOVELS)
 			.addTag(ItemTags.HOES)
 			.add(Items.TRIDENT);
-		this.getOrCreateTagBuilder(ItemTags.BREAKS_DECORATED_POTS).addTag(ItemTags.TOOLS);
 		this.getOrCreateTagBuilder(ItemTags.DECORATED_POT_SHERDS)
 			.add(
 				Items.ANGLER_POTTERY_SHERD,

@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.DyeItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.TooltipAppender;
 import net.minecraft.network.codec.PacketCodec;
@@ -87,12 +88,12 @@ public record DyedColorComponent(int rgb, boolean showInTooltip) implements Tool
 	}
 
 	@Override
-	public void appendTooltip(Consumer<Text> textConsumer, TooltipType context) {
+	public void appendTooltip(Item.TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
 		if (this.showInTooltip) {
-			if (context.isAdvanced()) {
-				textConsumer.accept(Text.translatable("item.color", String.format(Locale.ROOT, "#%06X", this.rgb)).formatted(Formatting.GRAY));
+			if (type.isAdvanced()) {
+				tooltip.accept(Text.translatable("item.color", String.format(Locale.ROOT, "#%06X", this.rgb)).formatted(Formatting.GRAY));
 			} else {
-				textConsumer.accept(Text.translatable("item.dyed").formatted(Formatting.GRAY, Formatting.ITALIC));
+				tooltip.accept(Text.translatable("item.dyed").formatted(Formatting.GRAY, Formatting.ITALIC));
 			}
 		}
 	}

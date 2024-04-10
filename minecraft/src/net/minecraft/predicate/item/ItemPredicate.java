@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 import net.minecraft.component.ComponentHolder;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -22,7 +23,7 @@ public record ItemPredicate(
 	NumberRange.IntRange count,
 	ComponentPredicate components,
 	Map<ItemSubPredicate.Type<?>, ItemSubPredicate> subPredicates
-) {
+) implements Predicate<ItemStack> {
 	public static final Codec<ItemPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					RegistryCodecs.entryList(RegistryKeys.ITEM).optionalFieldOf("items").forGetter(ItemPredicate::items),

@@ -12,6 +12,9 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.registry.RegistryKey;
@@ -23,9 +26,12 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class ParticleEffectArgumentType implements ArgumentType<ParticleEffect> {
-	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "particle with options");
+	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "particle{foo:bar}");
 	public static final DynamicCommandExceptionType UNKNOWN_PARTICLE_EXCEPTION = new DynamicCommandExceptionType(
 		id -> Text.stringifiedTranslatable("particle.notFound", id)
+	);
+	public static final DynamicCommandExceptionType INVALID_OPTIONS_EXCEPTION = new DynamicCommandExceptionType(
+		error -> Text.stringifiedTranslatable("particle.invalidOptions", error)
 	);
 	private final RegistryWrapper.WrapperLookup registryLookup;
 
@@ -64,7 +70,14 @@ public class ParticleEffectArgumentType implements ArgumentType<ParticleEffect> 
 	}
 
 	private static <T extends ParticleEffect> T readParameters(StringReader reader, ParticleType<T> type, RegistryWrapper.WrapperLookup registryLookup) throws CommandSyntaxException {
-		return type.getParametersFactory().read(type, reader, registryLookup);
+		NbtCompound nbtCompound;
+		if (reader.canRead() && reader.peek() == '{') {
+			nbtCompound = new StringNbtReader(reader).parseCompound();
+		} else {
+			nbtCompound = new NbtCompound();
+		}
+
+		return type.getCodec().codec().parse(registryLookup.getOps(NbtOps.INSTANCE), nbtCompound).getOrThrow(INVALID_OPTIONS_EXCEPTION::create);
 	}
 
 	@Override

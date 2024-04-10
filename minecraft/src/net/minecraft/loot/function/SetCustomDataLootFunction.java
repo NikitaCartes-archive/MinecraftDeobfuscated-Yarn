@@ -14,7 +14,7 @@ import net.minecraft.nbt.StringNbtReader;
 public class SetCustomDataLootFunction extends ConditionalLootFunction {
 	public static final MapCodec<SetCustomDataLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
-				.and(StringNbtReader.STRINGIFIED_CODEC.fieldOf("tag").forGetter(function -> function.nbt))
+				.and(StringNbtReader.NBT_COMPOUND_CODEC.fieldOf("tag").forGetter(function -> function.nbt))
 				.apply(instance, SetCustomDataLootFunction::new)
 	);
 	private final NbtCompound nbt;
@@ -25,7 +25,7 @@ public class SetCustomDataLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<SetCustomDataLootFunction> getType() {
 		return LootFunctionTypes.SET_CUSTOM_DATA;
 	}
 

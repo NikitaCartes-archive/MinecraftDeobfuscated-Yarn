@@ -17,7 +17,7 @@ public enum FontFilterType implements StringIdentifiable {
 	public static final Codec<FontFilterType> CODEC = StringIdentifiable.createCodec(FontFilterType::values);
 	private final String id;
 
-	private FontFilterType(String id) {
+	private FontFilterType(final String id) {
 		this.id = id;
 	}
 

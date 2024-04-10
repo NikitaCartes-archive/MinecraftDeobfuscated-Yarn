@@ -137,7 +137,7 @@ public record TelemetryEventProperty<T>(String id, String exportKey, Codec<T> co
 		private final String id;
 		private final int rawId;
 
-		private GameMode(String id, int rawId) {
+		private GameMode(final String id, final int rawId) {
 			this.id = id;
 			this.rawId = rawId;
 		}
@@ -166,7 +166,7 @@ public record TelemetryEventProperty<T>(String id, String exportKey, Codec<T> co
 		public static final Codec<TelemetryEventProperty.ServerType> CODEC = StringIdentifiable.createCodec(TelemetryEventProperty.ServerType::values);
 		private final String id;
 
-		private ServerType(String id) {
+		private ServerType(final String id) {
 			this.id = id;
 		}
 

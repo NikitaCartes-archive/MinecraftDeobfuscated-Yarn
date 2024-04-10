@@ -2,6 +2,7 @@ package net.minecraft.entity.mob;
 
 import com.mojang.serialization.Dynamic;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.AnimationState;
@@ -279,5 +280,11 @@ public class BreezeEntity extends HostileEntity {
 	@Override
 	protected Entity.MoveEffect getMoveEffect() {
 		return Entity.MoveEffect.EVENTS;
+	}
+
+	@Nullable
+	@Override
+	public LivingEntity getTarget() {
+		return this.getTargetInBrain();
 	}
 }

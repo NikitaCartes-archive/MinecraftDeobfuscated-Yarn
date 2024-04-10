@@ -9,7 +9,7 @@ public enum StatusEffectCategory {
 
 	private final Formatting formatting;
 
-	private StatusEffectCategory(Formatting format) {
+	private StatusEffectCategory(final Formatting format) {
 		this.formatting = format;
 	}
 

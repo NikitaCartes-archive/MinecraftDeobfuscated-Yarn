@@ -422,7 +422,7 @@ public class AdvancementCommand {
 
 		private final String commandPrefix;
 
-		Operation(String name) {
+		Operation(final String name) {
 			this.commandPrefix = "commands.advancement." + name;
 		}
 
@@ -457,7 +457,7 @@ public class AdvancementCommand {
 		final boolean before;
 		final boolean after;
 
-		private Selection(boolean before, boolean after) {
+		private Selection(final boolean before, final boolean after) {
 			this.before = before;
 			this.after = after;
 		}

@@ -9,7 +9,7 @@ public enum BambooLeaves implements StringIdentifiable {
 
 	private final String name;
 
-	private BambooLeaves(String name) {
+	private BambooLeaves(final String name) {
 		this.name = name;
 	}
 

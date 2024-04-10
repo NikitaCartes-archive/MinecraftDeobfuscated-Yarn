@@ -180,7 +180,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 			final boolean single;
 			final boolean playersOnly;
 
-			Properties(boolean single, boolean playersOnly) {
+			Properties(final boolean single, final boolean playersOnly) {
 				this.single = single;
 				this.playersOnly = playersOnly;
 			}

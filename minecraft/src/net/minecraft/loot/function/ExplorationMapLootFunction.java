@@ -67,7 +67,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<ExplorationMapLootFunction> getType() {
 		return LootFunctionTypes.EXPLORATION_MAP;
 	}
 

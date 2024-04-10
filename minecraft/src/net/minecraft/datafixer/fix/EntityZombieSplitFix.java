@@ -6,8 +6,8 @@ import com.mojang.serialization.Dynamic;
 import java.util.Objects;
 
 public class EntityZombieSplitFix extends EntitySimpleTransformFix {
-	public EntityZombieSplitFix(Schema outputSchema, boolean changesType) {
-		super("EntityZombieSplitFix", outputSchema, changesType);
+	public EntityZombieSplitFix(Schema schema, boolean bl) {
+		super("EntityZombieSplitFix", schema, bl);
 	}
 
 	@Override

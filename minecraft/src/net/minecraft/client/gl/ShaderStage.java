@@ -101,7 +101,7 @@ public class ShaderStage {
 		private final int glType;
 		private final Map<String, ShaderStage> loadedShaders = Maps.<String, ShaderStage>newHashMap();
 
-		private Type(String name, String extension, int glType) {
+		private Type(final String name, final String extension, final int glType) {
 			this.name = name;
 			this.fileExtension = extension;
 			this.glType = glType;

@@ -9,7 +9,7 @@ public enum BlockFace implements StringIdentifiable {
 
 	private final String name;
 
-	private BlockFace(String name) {
+	private BlockFace(final String name) {
 		this.name = name;
 	}
 

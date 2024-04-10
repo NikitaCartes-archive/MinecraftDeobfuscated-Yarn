@@ -370,4 +370,10 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		super.sendAiDebugData();
 		DebugInfoSender.sendBrainDebugData(this);
 	}
+
+	@Nullable
+	@Override
+	public LivingEntity getTarget() {
+		return this.getTargetInBrain();
+	}
 }

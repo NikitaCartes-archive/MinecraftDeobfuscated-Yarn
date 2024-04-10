@@ -290,18 +290,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	@Override
 	public StackReference getStackReference(int mappedIndex) {
-		return mappedIndex == 0 ? new StackReference() {
-			@Override
-			public ItemStack get() {
-				return ItemFrameEntity.this.getHeldItemStack();
-			}
-
-			@Override
-			public boolean set(ItemStack stack) {
-				ItemFrameEntity.this.setHeldItemStack(stack);
-				return true;
-			}
-		} : super.getStackReference(mappedIndex);
+		return mappedIndex == 0 ? StackReference.of(this::getHeldItemStack, this::setHeldItemStack) : super.getStackReference(mappedIndex);
 	}
 
 	@Override

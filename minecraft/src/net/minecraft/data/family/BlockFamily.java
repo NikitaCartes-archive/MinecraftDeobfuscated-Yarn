@@ -189,7 +189,7 @@ public class BlockFamily {
 
 		private final String name;
 
-		private Variant(String name) {
+		private Variant(final String name) {
 			this.name = name;
 		}
 

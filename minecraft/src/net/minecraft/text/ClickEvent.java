@@ -61,7 +61,7 @@ public class ClickEvent {
 		private final boolean userDefinable;
 		private final String name;
 
-		private Action(String name, boolean userDefinable) {
+		private Action(final String name, final boolean userDefinable) {
 			this.name = name;
 			this.userDefinable = userDefinable;
 		}

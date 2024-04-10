@@ -53,7 +53,7 @@ public record MessageIndicator(int indicatorColor, @Nullable MessageIndicator.Ic
 		public final int width;
 		public final int height;
 
-		private Icon(Identifier texture, int width, int height) {
+		private Icon(final Identifier texture, final int width, final int height) {
 			this.texture = texture;
 			this.width = width;
 			this.height = height;

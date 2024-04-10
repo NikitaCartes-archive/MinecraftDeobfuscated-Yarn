@@ -58,7 +58,7 @@ public enum VaultState implements StringIdentifiable {
 	private final String id;
 	private final VaultState.Light light;
 
-	VaultState(String id, VaultState.Light light) {
+	VaultState(final String id, final VaultState.Light light) {
 		this.id = id;
 		this.light = light;
 	}
@@ -128,7 +128,7 @@ public enum VaultState implements StringIdentifiable {
 
 		final int luminance;
 
-		private Light(int luminance) {
+		private Light(final int luminance) {
 			this.luminance = luminance;
 		}
 	}

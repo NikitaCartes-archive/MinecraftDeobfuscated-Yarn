@@ -71,11 +71,12 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 		super.onEntityHit(entityHitResult);
 		if (!this.getWorld().isClient) {
 			LivingEntity livingEntity2 = this.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null;
+			Entity entity = (Entity)entityHitResult.getEntity().getPassengerNearestTo(entityHitResult.getPos()).orElse(entityHitResult.getEntity());
 			if (livingEntity2 != null) {
-				livingEntity2.onAttacking(entityHitResult.getEntity());
+				livingEntity2.onAttacking(entity);
 			}
 
-			entityHitResult.getEntity().damage(this.getDamageSources().windCharge(this, livingEntity2), 1.0F);
+			entity.damage(this.getDamageSources().windCharge(this, livingEntity2), 1.0F);
 			this.createExplosion();
 		}
 	}

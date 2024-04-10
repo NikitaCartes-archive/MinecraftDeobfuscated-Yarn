@@ -11,7 +11,7 @@ public enum DeathMessageType implements StringIdentifiable {
 	public static final Codec<DeathMessageType> CODEC = StringIdentifiable.createCodec(DeathMessageType::values);
 	private final String id;
 
-	private DeathMessageType(String id) {
+	private DeathMessageType(final String id) {
 		this.id = id;
 	}
 

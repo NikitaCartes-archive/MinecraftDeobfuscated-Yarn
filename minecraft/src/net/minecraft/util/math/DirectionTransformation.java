@@ -111,7 +111,7 @@ public enum DirectionTransformation implements StringIdentifiable {
 		)
 		.toArray(DirectionTransformation[]::new);
 
-	private DirectionTransformation(String name, AxisTransformation axisTransformation, boolean flipX, boolean flipY, boolean flipZ) {
+	private DirectionTransformation(final String name, final AxisTransformation axisTransformation, final boolean flipX, final boolean flipY, final boolean flipZ) {
 		this.name = name;
 		this.flipX = flipX;
 		this.flipY = flipY;

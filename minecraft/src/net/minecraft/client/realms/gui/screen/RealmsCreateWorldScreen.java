@@ -258,7 +258,7 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 		private static final int TEXTURE_SIZE = 56;
 		private final Identifier image;
 
-		FrameButton(TextRenderer textRenderer, Text message, Identifier image, ButtonWidget.PressAction onPress) {
+		FrameButton(final TextRenderer textRenderer, final Text message, final Identifier image, final ButtonWidget.PressAction onPress) {
 			super(0, 0, 60, 60 + 9, message, onPress, DEFAULT_NARRATION_SUPPLIER);
 			this.image = image;
 		}

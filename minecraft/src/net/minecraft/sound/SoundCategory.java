@@ -14,7 +14,7 @@ public enum SoundCategory {
 
 	private final String name;
 
-	private SoundCategory(String name) {
+	private SoundCategory(final String name) {
 		this.name = name;
 	}
 

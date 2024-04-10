@@ -103,7 +103,7 @@ public class TimeArgumentType implements ArgumentType<Integer> {
 		public final class Properties implements ArgumentSerializer.ArgumentTypeProperties<TimeArgumentType> {
 			final int minimum;
 
-			Properties(int minimum) {
+			Properties(final int minimum) {
 				this.minimum = minimum;
 			}
 

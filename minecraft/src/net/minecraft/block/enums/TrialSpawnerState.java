@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.spawner.MobSpawnerEntry;
 import net.minecraft.block.spawner.TrialSpawnerConfig;
@@ -47,7 +48,9 @@ public enum TrialSpawnerState implements StringIdentifiable {
 	private final TrialSpawnerState.ParticleEmitter particleEmitter;
 	private final boolean playsSound;
 
-	private TrialSpawnerState(String id, int luminance, TrialSpawnerState.ParticleEmitter particleEmitter, double displayRotationSpeed, boolean playsSound) {
+	private TrialSpawnerState(
+		final String id, final int luminance, final TrialSpawnerState.ParticleEmitter particleEmitter, final double displayRotationSpeed, final boolean playsSound
+	) {
 		this.id = id;
 		this.luminance = luminance;
 		this.particleEmitter = particleEmitter;
@@ -179,14 +182,13 @@ public enum TrialSpawnerState implements StringIdentifiable {
 			return Optional.empty();
 		} else {
 			Entity entity = getRandomEntity(list, data.spawnedMobsAlive, logic, pos, world);
-			return getPosAbove(entity, world);
+			return entity == null ? Optional.empty() : getPosAbove(entity, world);
 		}
 	}
 
 	private static Optional<Vec3d> getPosAbove(Entity entity, ServerWorld world) {
 		Vec3d vec3d = entity.getPos();
-		Vec3d vec3d2 = vec3d.offset(Direction.UP, (double)(entity.getHeight() + 2.0F + (float)world.random.nextInt(4)))
-			.offset(Direction.Type.HORIZONTAL.random(world.random), (double)world.random.nextInt(5));
+		Vec3d vec3d2 = vec3d.offset(Direction.UP, (double)(entity.getHeight() + 2.0F + (float)world.random.nextInt(4)));
 		BlockHitResult blockHitResult = world.raycast(
 			new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.VISUAL, RaycastContext.FluidHandling.NONE, ShapeContext.absent())
 		);
@@ -195,13 +197,18 @@ public enum TrialSpawnerState implements StringIdentifiable {
 		return !world.getBlockState(blockPos).getCollisionShape(world, blockPos).isEmpty() ? Optional.empty() : Optional.of(vec3d3);
 	}
 
+	@Nullable
 	private static Entity getRandomEntity(List<PlayerEntity> players, Set<UUID> entityUuids, TrialSpawnerLogic logic, BlockPos pos, ServerWorld world) {
 		Stream<Entity> stream = entityUuids.stream()
 			.map(world::getEntity)
 			.filter(Objects::nonNull)
 			.filter(entity -> entity.isAlive() && entity.squaredDistanceTo(pos.toCenterPos()) <= (double)MathHelper.square(logic.getDetectionRadius()));
-		List<Entity> list = Stream.concat(players.stream(), stream).toList();
-		return Util.getRandom(list, world.random);
+		List<? extends Entity> list = world.random.nextBoolean() ? stream.toList() : players;
+		if (list.isEmpty()) {
+			return null;
+		} else {
+			return list.size() == 1 ? (Entity)list.getFirst() : Util.getRandom(list, world.random);
+		}
 	}
 
 	private boolean shouldCooldownEnd(ServerWorld world, TrialSpawnerData data) {

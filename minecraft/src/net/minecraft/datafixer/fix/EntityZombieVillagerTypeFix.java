@@ -11,8 +11,8 @@ public class EntityZombieVillagerTypeFix extends ChoiceFix {
 	private static final int field_29883 = 6;
 	private static final Random RANDOM = Random.create();
 
-	public EntityZombieVillagerTypeFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType, "EntityZombieVillagerTypeFix", TypeReferences.ENTITY, "Zombie");
+	public EntityZombieVillagerTypeFix(Schema schema, boolean bl) {
+		super(schema, bl, "EntityZombieVillagerTypeFix", TypeReferences.ENTITY, "Zombie");
 	}
 
 	public Dynamic<?> fixZombieType(Dynamic<?> dynamic) {

@@ -253,7 +253,7 @@ public class PresetsScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	class SuperflatPresetsListWidget extends AlwaysSelectedEntryListWidget<PresetsScreen.SuperflatPresetsListWidget.SuperflatPresetEntry> {
-		public SuperflatPresetsListWidget(DynamicRegistryManager dynamicRegistryManager, FeatureSet featureSet) {
+		public SuperflatPresetsListWidget(final DynamicRegistryManager dynamicRegistryManager, final FeatureSet featureSet) {
 			super(PresetsScreen.this.client, PresetsScreen.this.width, PresetsScreen.this.height - 117, 80, 24);
 
 			for (RegistryEntry<FlatLevelGeneratorPreset> registryEntry : dynamicRegistryManager.get(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET)
@@ -302,7 +302,7 @@ public class PresetsScreen extends Screen {
 			private final FlatLevelGeneratorPreset preset;
 			private final Text text;
 
-			public SuperflatPresetEntry(RegistryEntry<FlatLevelGeneratorPreset> preset) {
+			public SuperflatPresetEntry(final RegistryEntry<FlatLevelGeneratorPreset> preset) {
 				this.preset = preset.value();
 				this.text = (Text)preset.getKey()
 					.map(key -> Text.translatable(key.getValue().toTranslationKey("flat_world_preset")))

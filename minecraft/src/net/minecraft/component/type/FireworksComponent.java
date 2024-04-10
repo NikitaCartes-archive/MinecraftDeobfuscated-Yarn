@@ -6,6 +6,7 @@ import io.netty.buffer.ByteBuf;
 import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.client.item.TooltipType;
+import net.minecraft.item.Item;
 import net.minecraft.item.TooltipAppender;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -31,17 +32,26 @@ public record FireworksComponent(int flightDuration, List<FireworkExplosionCompo
 		FireworksComponent::new
 	);
 
+	public FireworksComponent(int flightDuration, List<FireworkExplosionComponent> explosions) {
+		if (explosions.size() > 256) {
+			throw new IllegalArgumentException("Got " + explosions.size() + " explosions, but maximum is 256");
+		} else {
+			this.flightDuration = flightDuration;
+			this.explosions = explosions;
+		}
+	}
+
 	@Override
-	public void appendTooltip(Consumer<Text> textConsumer, TooltipType context) {
+	public void appendTooltip(Item.TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
 		if (this.flightDuration > 0) {
-			textConsumer.accept(
+			tooltip.accept(
 				Text.translatable("item.minecraft.firework_rocket.flight").append(ScreenTexts.SPACE).append(String.valueOf(this.flightDuration)).formatted(Formatting.GRAY)
 			);
 		}
 
 		for (FireworkExplosionComponent fireworkExplosionComponent : this.explosions) {
-			fireworkExplosionComponent.appendShapeTooltip(textConsumer);
-			fireworkExplosionComponent.appendOptionalTooltip(text -> textConsumer.accept(Text.literal("  ").append(text)));
+			fireworkExplosionComponent.appendShapeTooltip(tooltip);
+			fireworkExplosionComponent.appendOptionalTooltip(text -> tooltip.accept(Text.literal("  ").append(text)));
 		}
 	}
 }

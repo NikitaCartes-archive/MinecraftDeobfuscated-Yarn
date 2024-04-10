@@ -15,7 +15,7 @@ public enum EntityTrackingStatus {
 	private final boolean tracked;
 	private final boolean tick;
 
-	private EntityTrackingStatus(boolean tracked, boolean tick) {
+	private EntityTrackingStatus(final boolean tracked, final boolean tick) {
 		this.tracked = tracked;
 		this.tick = tick;
 	}

@@ -868,7 +868,7 @@ public class BoatEntity extends VehicleEntity implements VariantHolder<BoatEntit
 		public static final StringIdentifiable.EnumCodec<BoatEntity.Type> CODEC = StringIdentifiable.createCodec(BoatEntity.Type::values);
 		private static final IntFunction<BoatEntity.Type> BY_ID = ValueLists.createIdToValueFunction(Enum::ordinal, values(), ValueLists.OutOfBoundsHandling.ZERO);
 
-		private Type(Block baseBlock, String name) {
+		private Type(final Block baseBlock, final String name) {
 			this.name = name;
 			this.baseBlock = baseBlock;
 		}

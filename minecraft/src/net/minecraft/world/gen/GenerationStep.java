@@ -11,7 +11,7 @@ public class GenerationStep {
 		public static final Codec<GenerationStep.Carver> CODEC = StringIdentifiable.createCodec(GenerationStep.Carver::values);
 		private final String name;
 
-		private Carver(String name) {
+		private Carver(final String name) {
 			this.name = name;
 		}
 
@@ -41,7 +41,7 @@ public class GenerationStep {
 		public static final Codec<GenerationStep.Feature> CODEC = StringIdentifiable.createCodec(GenerationStep.Feature::values);
 		private final String name;
 
-		private Feature(String name) {
+		private Feature(final String name) {
 			this.name = name;
 		}
 

@@ -28,13 +28,13 @@ public class RepeatingAudioStream implements AudioStream {
 	}
 
 	@Override
-	public ByteBuffer getBuffer(int size) throws IOException {
-		ByteBuffer byteBuffer = this.delegate.getBuffer(size);
+	public ByteBuffer read(int size) throws IOException {
+		ByteBuffer byteBuffer = this.delegate.read(size);
 		if (!byteBuffer.hasRemaining()) {
 			this.delegate.close();
 			this.inputStream.reset();
 			this.delegate = this.delegateFactory.create(new RepeatingAudioStream.ReusableInputStream(this.inputStream));
-			byteBuffer = this.delegate.getBuffer(size);
+			byteBuffer = this.delegate.read(size);
 		}
 
 		return byteBuffer;

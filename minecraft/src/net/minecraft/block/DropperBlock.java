@@ -15,6 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import org.slf4j.Logger;
 
@@ -33,7 +34,7 @@ public class DropperBlock extends DispenserBlock {
 	}
 
 	@Override
-	protected DispenserBehavior getBehaviorForItem(ItemStack stack) {
+	protected DispenserBehavior getBehaviorForItem(World world, ItemStack stack) {
 		return BEHAVIOR;
 	}
 

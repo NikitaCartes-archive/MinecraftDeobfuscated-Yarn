@@ -332,7 +332,7 @@ public class WorldBorder {
 		private final long timeStart;
 		private final double timeDuration;
 
-		MovingArea(double oldSize, double newSize, long timeDuration) {
+		MovingArea(final double oldSize, final double newSize, final long timeDuration) {
 			this.oldSize = oldSize;
 			this.newSize = newSize;
 			this.timeDuration = (double)timeDuration;
@@ -531,7 +531,7 @@ public class WorldBorder {
 		private double boundSouth;
 		private VoxelShape shape;
 
-		public StaticArea(double size) {
+		public StaticArea(final double size) {
 			this.size = size;
 			this.recalculateBounds();
 		}

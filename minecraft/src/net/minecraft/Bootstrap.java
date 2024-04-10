@@ -22,7 +22,6 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
-import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.util.Language;
@@ -49,7 +48,6 @@ public class Bootstrap {
 				if (EntityType.getId(EntityType.PLAYER) == null) {
 					throw new IllegalStateException("Failed loading EntityTypes");
 				} else {
-					BrewingRecipeRegistry.registerDefaults();
 					EntitySelectorOptions.register();
 					DispenserBehavior.registerDefaults();
 					CauldronBehavior.registerBehavior();

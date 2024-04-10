@@ -35,6 +35,7 @@ import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneBannerPatternTagPr
 import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneBiomeTagProvider;
 import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneBlockTagProvider;
 import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneDamageTypeTagProvider;
+import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneEnchantmentTagProvider;
 import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneEntityTypeTagProvider;
 import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneItemTagProvider;
 import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneStructureTagProvider;
@@ -44,6 +45,7 @@ import net.minecraft.data.server.tag.vanilla.VanillaBiomeTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaBlockTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaCatVariantTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaDamageTypeTagProvider;
+import net.minecraft.data.server.tag.vanilla.VanillaEnchantmentTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaEntityTypeTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaFlatLevelGeneratorPresetTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaFluidTagProvider;
@@ -154,6 +156,7 @@ public class Main {
 		pack3.addProvider(toFactory(VanillaPaintingVariantTagProvider::new, completableFuture));
 		pack3.addProvider(toFactory(VanillaPointOfInterestTypeTagProvider::new, completableFuture));
 		pack3.addProvider(toFactory(VanillaWorldPresetTagProvider::new, completableFuture));
+		pack3.addProvider(toFactory(VanillaEnchantmentTagProvider::new, completableFuture));
 		pack3 = dataGenerator.createVanillaPack(includeDev);
 		pack3.addProvider(outputx -> new NbtProvider(outputx, inputs));
 		pack3 = dataGenerator.createVanillaPack(includeReports);
@@ -190,6 +193,7 @@ public class Main {
 		pack4.addProvider(toFactory(OneTwentyOneAdvancementProviders::createOneTwentyOneProvider, completableFuture3));
 		pack4.addProvider(outputx -> new OneTwentyOneBannerPatternTagProvider(outputx, completableFuture3, tagProvider4.getTagLookupFuture()));
 		pack4.addProvider(outputx -> new OneTwentyOneStructureTagProvider(outputx, completableFuture3, tagProvider5.getTagLookupFuture()));
+		pack4.addProvider(toFactory(OneTwentyOneEnchantmentTagProvider::new, completableFuture3));
 		return dataGenerator;
 	}
 }

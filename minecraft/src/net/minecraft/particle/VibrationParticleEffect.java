@@ -1,25 +1,25 @@
 package net.minecraft.particle;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Locale;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.event.BlockPositionSource;
+import net.minecraft.world.event.EntityPositionSource;
 import net.minecraft.world.event.PositionSource;
 
 public class VibrationParticleEffect implements ParticleEffect {
+	private static final Codec<PositionSource> POSITION_SOURCE_CODEC = PositionSource.CODEC
+		.validate(
+			positionSource -> positionSource instanceof EntityPositionSource
+					? DataResult.error(() -> "Entity position sources are not allowed")
+					: DataResult.success(positionSource)
+		);
 	public static final MapCodec<VibrationParticleEffect> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					PositionSource.CODEC.fieldOf("destination").forGetter(VibrationParticleEffect::getVibration),
+					POSITION_SOURCE_CODEC.fieldOf("destination").forGetter(VibrationParticleEffect::getVibration),
 					Codec.INT.fieldOf("arrival_in_ticks").forGetter(VibrationParticleEffect::getArrivalInTicks)
 				)
 				.apply(instance, VibrationParticleEffect::new)
@@ -31,37 +31,12 @@ public class VibrationParticleEffect implements ParticleEffect {
 		VibrationParticleEffect::getArrivalInTicks,
 		VibrationParticleEffect::new
 	);
-	public static final ParticleEffect.Factory<VibrationParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<VibrationParticleEffect>() {
-		public VibrationParticleEffect read(
-			ParticleType<VibrationParticleEffect> particleType, StringReader stringReader, RegistryWrapper.WrapperLookup wrapperLookup
-		) throws CommandSyntaxException {
-			stringReader.expect(' ');
-			float f = (float)stringReader.readDouble();
-			stringReader.expect(' ');
-			float g = (float)stringReader.readDouble();
-			stringReader.expect(' ');
-			float h = (float)stringReader.readDouble();
-			stringReader.expect(' ');
-			int i = stringReader.readInt();
-			BlockPos blockPos = BlockPos.ofFloored((double)f, (double)g, (double)h);
-			return new VibrationParticleEffect(new BlockPositionSource(blockPos), i);
-		}
-	};
 	private final PositionSource destination;
 	private final int arrivalInTicks;
 
 	public VibrationParticleEffect(PositionSource destination, int arrivalInTicks) {
 		this.destination = destination;
 		this.arrivalInTicks = arrivalInTicks;
-	}
-
-	@Override
-	public String asString(RegistryWrapper.WrapperLookup registryLookup) {
-		Vec3d vec3d = (Vec3d)this.destination.getPos(null).get();
-		double d = vec3d.getX();
-		double e = vec3d.getY();
-		double f = vec3d.getZ();
-		return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %d", Registries.PARTICLE_TYPE.getId(this.getType()), d, e, f, this.arrivalInTicks);
 	}
 
 	@Override

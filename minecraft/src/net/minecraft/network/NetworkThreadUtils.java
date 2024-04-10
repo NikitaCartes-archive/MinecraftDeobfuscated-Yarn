@@ -4,8 +4,10 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.thread.ThreadExecutor;
 import org.slf4j.Logger;
 
@@ -25,12 +27,12 @@ public class NetworkThreadUtils {
 					} catch (Exception var6) {
 						if (var6 instanceof CrashException crashException && crashException.getCause() instanceof OutOfMemoryError || listener.shouldCrashOnException()) {
 							if (var6 instanceof CrashException crashException2) {
-								listener.fillCrashReport(crashException2.getReport());
+								fillCrashReport(crashException2.getReport(), listener, packet);
 								throw var6;
 							}
 
 							CrashReport crashReport = CrashReport.create(var6, "Main thread packet handler");
-							listener.fillCrashReport(crashReport);
+							fillCrashReport(crashReport, listener, packet);
 							throw new CrashException(crashReport);
 						}
 
@@ -42,5 +44,13 @@ public class NetworkThreadUtils {
 			});
 			throw OffThreadException.INSTANCE;
 		}
+	}
+
+	private static <T extends PacketListener> void fillCrashReport(CrashReport report, T listener, Packet<T> packet) {
+		CrashReportSection crashReportSection = report.addElement("Incoming Packet");
+		crashReportSection.add("Type", (CrashCallable<String>)(() -> packet.getPacketId().toString()));
+		crashReportSection.add("Is Terminal", (CrashCallable<String>)(() -> Boolean.toString(packet.transitionsNetworkState())));
+		crashReportSection.add("Is Skippable", (CrashCallable<String>)(() -> Boolean.toString(packet.isWritingErrorSkippable())));
+		listener.fillCrashReport(report);
 	}
 }

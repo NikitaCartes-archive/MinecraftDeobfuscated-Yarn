@@ -14,7 +14,7 @@ public enum PositionFlag {
 	public static final Set<PositionFlag> ROT = Set.of(X_ROT, Y_ROT);
 	private final int shift;
 
-	private PositionFlag(int shift) {
+	private PositionFlag(final int shift) {
 		this.shift = shift;
 	}
 

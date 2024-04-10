@@ -11,7 +11,7 @@ public enum Thickness implements StringIdentifiable {
 
 	private final String name;
 
-	private Thickness(String name) {
+	private Thickness(final String name) {
 		this.name = name;
 	}
 

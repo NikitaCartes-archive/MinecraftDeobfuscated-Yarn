@@ -120,7 +120,7 @@ public class ChunkRandom extends CheckedRandom {
 
 		private final LongFunction<Random> provider;
 
-		private RandomProvider(LongFunction<Random> provider) {
+		private RandomProvider(final LongFunction<Random> provider) {
 			this.provider = provider;
 		}
 

@@ -419,7 +419,7 @@ public class ArmadilloEntity extends AnimalEntity {
 		private final int lengthInTicks;
 		private final int index;
 
-		State(String name, boolean runRollUpTask, int lengthInTicks, int index) {
+		State(final String name, final boolean runRollUpTask, final int lengthInTicks, final int index) {
 			this.name = name;
 			this.runRollUpTask = runRollUpTask;
 			this.lengthInTicks = lengthInTicks;

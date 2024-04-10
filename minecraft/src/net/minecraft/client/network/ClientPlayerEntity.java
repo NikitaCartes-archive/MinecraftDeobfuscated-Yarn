@@ -51,6 +51,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ElytraItem;
@@ -672,7 +673,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		boolean bl = this.input.jumping;
 		boolean bl2 = this.input.sneaking;
 		boolean bl3 = this.isWalking();
-		this.inSneakingPose = !this.getAbilities().flying
+		PlayerAbilities playerAbilities = this.getAbilities();
+		this.inSneakingPose = !playerAbilities.flying
 			&& !this.isSwimming()
 			&& !this.hasVehicle()
 			&& this.canChangeIntoPose(EntityPose.CROUCHING)
@@ -732,10 +734,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		boolean bl8 = false;
-		if (this.getAbilities().allowFlying) {
+		if (playerAbilities.allowFlying) {
 			if (this.client.interactionManager.isFlyingLocked()) {
-				if (!this.getAbilities().flying) {
-					this.getAbilities().flying = true;
+				if (!playerAbilities.flying) {
+					playerAbilities.flying = true;
 					bl8 = true;
 					this.sendAbilitiesUpdate();
 				}
@@ -743,7 +745,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 				if (this.abilityResyncCountdown == 0) {
 					this.abilityResyncCountdown = 7;
 				} else if (!this.isSwimming()) {
-					this.getAbilities().flying = !this.getAbilities().flying;
+					playerAbilities.flying = !playerAbilities.flying;
+					if (playerAbilities.flying && this.isOnGround()) {
+						this.jump();
+					}
+
 					bl8 = true;
 					this.sendAbilitiesUpdate();
 					this.abilityResyncCountdown = 0;
@@ -751,7 +757,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 		}
 
-		if (this.input.jumping && !bl8 && !bl && !this.getAbilities().flying && !this.hasVehicle() && !this.isClimbing()) {
+		if (this.input.jumping && !bl8 && !bl && !playerAbilities.flying && !this.hasVehicle() && !this.isClimbing()) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
 			if (itemStack.isOf(Items.ELYTRA) && ElytraItem.isUsable(itemStack) && this.checkFallFlying()) {
 				this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
@@ -771,7 +777,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.underwaterVisibilityTicks = MathHelper.clamp(this.underwaterVisibilityTicks - 10, 0, 600);
 		}
 
-		if (this.getAbilities().flying && this.isCamera()) {
+		if (playerAbilities.flying && this.isCamera()) {
 			int i = 0;
 			if (this.input.sneaking) {
 				i--;
@@ -782,7 +788,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 
 			if (i != 0) {
-				this.setVelocity(this.getVelocity().add(0.0, (double)((float)i * this.getAbilities().getFlySpeed() * 3.0F), 0.0));
+				this.setVelocity(this.getVelocity().add(0.0, (double)((float)i * playerAbilities.getFlySpeed() * 3.0F), 0.0));
 			}
 		}
 
@@ -815,8 +821,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		super.tickMovement();
-		if (this.isOnGround() && this.getAbilities().flying && !this.client.interactionManager.isFlyingLocked()) {
-			this.getAbilities().flying = false;
+		if (this.isOnGround() && playerAbilities.flying && !this.client.interactionManager.isFlyingLocked()) {
+			playerAbilities.flying = false;
 			this.sendAbilitiesUpdate();
 		}
 	}

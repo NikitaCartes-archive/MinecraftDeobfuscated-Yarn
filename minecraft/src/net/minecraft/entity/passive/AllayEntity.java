@@ -563,7 +563,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		private final PositionSource positionSource;
 		private final int range;
 
-		public JukeboxEventListener(PositionSource positionSource, int range) {
+		public JukeboxEventListener(final PositionSource positionSource, final int range) {
 			this.positionSource = positionSource;
 			this.range = range;
 		}

@@ -17,7 +17,7 @@ public enum RealmsWorldGeneratorType {
 	private final int id;
 	private final Text text;
 
-	private RealmsWorldGeneratorType(int id, RegistryKey<WorldPreset> presetKey) {
+	private RealmsWorldGeneratorType(final int id, final RegistryKey<WorldPreset> presetKey) {
 		this.id = id;
 		this.text = Text.translatable(presetKey.getValue().toTranslationKey("generator"));
 	}

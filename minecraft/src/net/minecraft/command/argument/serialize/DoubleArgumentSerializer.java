@@ -45,7 +45,7 @@ public class DoubleArgumentSerializer implements ArgumentSerializer<DoubleArgume
 		final double min;
 		final double max;
 
-		Properties(double min, double max) {
+		Properties(final double min, final double max) {
 			this.min = min;
 			this.max = max;
 		}

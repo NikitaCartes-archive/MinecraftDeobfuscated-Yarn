@@ -17,7 +17,7 @@ public enum Difficulty implements StringIdentifiable {
 	private final int id;
 	private final String name;
 
-	private Difficulty(int id, String name) {
+	private Difficulty(final int id, final String name) {
 		this.id = id;
 		this.name = name;
 	}

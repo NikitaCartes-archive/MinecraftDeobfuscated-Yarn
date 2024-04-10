@@ -11,7 +11,7 @@ public enum SpreadType implements StringIdentifiable {
 	public static final Codec<SpreadType> CODEC = StringIdentifiable.createCodec(SpreadType::values);
 	private final String name;
 
-	private SpreadType(String name) {
+	private SpreadType(final String name) {
 		this.name = name;
 	}
 

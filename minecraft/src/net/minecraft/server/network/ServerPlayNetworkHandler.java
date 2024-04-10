@@ -152,6 +152,7 @@ import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
 import net.minecraft.network.state.ConfigurationStates;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.BeaconScreenHandler;
@@ -1508,7 +1509,8 @@ public class ServerPlayNetworkHandler
 								ItemStack itemStack2 = itemStack.copy();
 								ActionResult actionResult = action.run(ServerPlayNetworkHandler.this.player, entity, hand);
 								if (actionResult.isAccepted()) {
-									Criteria.PLAYER_INTERACTED_WITH_ENTITY.trigger(ServerPlayNetworkHandler.this.player, itemStack2, entity);
+									Criteria.PLAYER_INTERACTED_WITH_ENTITY
+										.trigger(ServerPlayNetworkHandler.this.player, actionResult.shouldIncrementStat() ? itemStack2 : ItemStack.EMPTY, entity);
 									if (actionResult.shouldSwingHand()) {
 										ServerPlayNetworkHandler.this.player.swingHand(hand, true);
 									}
@@ -1530,8 +1532,8 @@ public class ServerPlayNetworkHandler
 						public void attack() {
 							if (!(entity instanceof ItemEntity)
 								&& !(entity instanceof ExperienceOrbEntity)
-								&& !(entity instanceof PersistentProjectileEntity)
-								&& entity != ServerPlayNetworkHandler.this.player) {
+								&& entity != ServerPlayNetworkHandler.this.player
+								&& (!(entity instanceof PersistentProjectileEntity) || entity.getType().isIn(EntityTypeTags.PUNCHABLE_PROJECTILES))) {
 								ItemStack itemStack = ServerPlayNetworkHandler.this.player.getStackInHand(Hand.MAIN_HAND);
 								if (itemStack.isItemEnabled(serverWorld.getEnabledFeatures())) {
 									ServerPlayNetworkHandler.this.player.attack(entity);
@@ -1653,8 +1655,8 @@ public class ServerPlayNetworkHandler
 	public void onCreativeInventoryAction(CreativeInventoryActionC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.interactionManager.isCreative()) {
-			boolean bl = packet.getSlot() < 0;
-			ItemStack itemStack = packet.getStack();
+			boolean bl = packet.slot() < 0;
+			ItemStack itemStack = packet.stack();
 			if (!itemStack.isItemEnabled(this.player.getWorld().getEnabledFeatures())) {
 				return;
 			}
@@ -1670,10 +1672,10 @@ public class ServerPlayNetworkHandler
 				}
 			}
 
-			boolean bl2 = packet.getSlot() >= 1 && packet.getSlot() <= 45;
-			boolean bl3 = itemStack.isEmpty() || itemStack.getDamage() >= 0 && itemStack.getCount() <= itemStack.getMaxCount() && !itemStack.isEmpty();
+			boolean bl2 = packet.slot() >= 1 && packet.slot() <= 45;
+			boolean bl3 = itemStack.isEmpty() || itemStack.getCount() <= itemStack.getMaxCount();
 			if (bl2 && bl3) {
-				this.player.playerScreenHandler.getSlot(packet.getSlot()).setStack(itemStack);
+				this.player.playerScreenHandler.getSlot(packet.slot()).setStack(itemStack);
 				this.player.playerScreenHandler.sendContentUpdates();
 			} else if (bl && bl3 && this.creativeItemDropThreshold < 200) {
 				this.creativeItemDropThreshold += 20;

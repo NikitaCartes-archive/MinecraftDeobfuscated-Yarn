@@ -71,7 +71,7 @@ public class Session {
 			.collect(Collectors.toMap(type -> type.name, Function.identity()));
 		private final String name;
 
-		private AccountType(String name) {
+		private AccountType(final String name) {
 			this.name = name;
 		}
 

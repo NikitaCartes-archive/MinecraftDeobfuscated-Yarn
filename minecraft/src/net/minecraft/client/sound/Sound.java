@@ -92,7 +92,7 @@ public class Sound implements SoundContainer<Sound> {
 
 		private final String name;
 
-		private RegistrationType(String name) {
+		private RegistrationType(final String name) {
 			this.name = name;
 		}
 

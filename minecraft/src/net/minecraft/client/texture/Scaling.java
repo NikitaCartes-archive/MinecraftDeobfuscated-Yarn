@@ -106,7 +106,7 @@ public interface Scaling {
 		private final String name;
 		private final MapCodec<? extends Scaling> codec;
 
-		private Type(String name, MapCodec<? extends Scaling> codec) {
+		private Type(final String name, final MapCodec<? extends Scaling> codec) {
 			this.name = name;
 			this.codec = codec;
 		}

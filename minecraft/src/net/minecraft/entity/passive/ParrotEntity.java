@@ -496,7 +496,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 		final int id;
 		private final String name;
 
-		private Variant(int id, String name) {
+		private Variant(final int id, final String name) {
 			this.id = id;
 			this.name = name;
 		}

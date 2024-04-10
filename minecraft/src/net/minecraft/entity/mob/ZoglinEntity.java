@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
@@ -298,6 +299,12 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 
 	protected void playAngrySound() {
 		this.playSound(SoundEvents.ENTITY_ZOGLIN_ANGRY);
+	}
+
+	@Nullable
+	@Override
+	public LivingEntity getTarget() {
+		return this.getTargetInBrain();
 	}
 
 	@Override

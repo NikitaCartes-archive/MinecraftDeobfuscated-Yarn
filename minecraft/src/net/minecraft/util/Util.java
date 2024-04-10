@@ -1181,7 +1181,7 @@ public class Util {
 
 		private final String name;
 
-		OperatingSystem(String name) {
+		OperatingSystem(final String name) {
 			this.name = name;
 		}
 

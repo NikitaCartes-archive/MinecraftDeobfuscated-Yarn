@@ -1308,7 +1308,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		ChunkSectionPos trackedSection;
 		private final Set<PlayerAssociatedNetworkHandler> listeners = Sets.newIdentityHashSet();
 
-		public EntityTracker(Entity entity, int maxDistance, int tickInterval, boolean alwaysUpdateVelocity) {
+		public EntityTracker(final Entity entity, final int maxDistance, final int tickInterval, final boolean alwaysUpdateVelocity) {
 			this.entry = new EntityTrackerEntry(ThreadedAnvilChunkStorage.this.world, entity, tickInterval, alwaysUpdateVelocity, this::sendToOtherNearbyPlayers);
 			this.entity = entity;
 			this.maxDistance = maxDistance;
@@ -1406,7 +1406,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	class TicketManager extends ChunkTicketManager {
-		protected TicketManager(Executor workerExecutor, Executor mainThreadExecutor) {
+		protected TicketManager(final Executor workerExecutor, final Executor mainThreadExecutor) {
 			super(workerExecutor, mainThreadExecutor);
 		}
 

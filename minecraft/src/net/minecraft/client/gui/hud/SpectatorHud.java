@@ -101,9 +101,11 @@ public class SpectatorHud implements SpectatorMenuCloseCallback {
 			SpectatorMenuCommand spectatorMenuCommand = this.spectatorMenu.getSelectedCommand();
 			Text text = spectatorMenuCommand == SpectatorMenu.BLANK_COMMAND ? this.spectatorMenu.getCurrentGroup().getPrompt() : spectatorMenuCommand.getName();
 			if (text != null) {
-				int j = (context.getScaledWindowWidth() - this.client.textRenderer.getWidth(text)) / 2;
-				int k = context.getScaledWindowHeight() - 35;
-				context.drawTextWithShadow(this.client.textRenderer, text, j, k, 16777215 + (i << 24));
+				int j = this.client.textRenderer.getWidth(text);
+				int k = (context.getScaledWindowWidth() - j) / 2;
+				int l = context.getScaledWindowHeight() - 35;
+				context.fill(k - 2, l - 2, k + j + 2, l + 9 + 2, this.client.options.getTextBackgroundColor(0));
+				context.drawTextWithShadow(this.client.textRenderer, text, k, l, 16777215 + (i << 24));
 			}
 		}
 	}

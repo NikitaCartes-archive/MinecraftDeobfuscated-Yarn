@@ -60,7 +60,15 @@ public enum Direction implements StringIdentifiable {
 		.sorted(Comparator.comparingInt(direction -> direction.idHorizontal))
 		.toArray(Direction[]::new);
 
-	private Direction(int id, int idOpposite, int idHorizontal, String name, Direction.AxisDirection direction, Direction.Axis axis, Vec3i vector) {
+	private Direction(
+		final int id,
+		final int idOpposite,
+		final int idHorizontal,
+		final String name,
+		final Direction.AxisDirection direction,
+		final Direction.Axis axis,
+		final Vec3i vector
+	) {
 		this.id = id;
 		this.idHorizontal = idHorizontal;
 		this.idOpposite = idOpposite;
@@ -429,7 +437,7 @@ public enum Direction implements StringIdentifiable {
 		public static final StringIdentifiable.EnumCodec<Direction.Axis> CODEC = StringIdentifiable.createCodec(Direction.Axis::values);
 		private final String name;
 
-		Axis(String name) {
+		Axis(final String name) {
 			this.name = name;
 		}
 
@@ -486,7 +494,7 @@ public enum Direction implements StringIdentifiable {
 		private final int offset;
 		private final String description;
 
-		private AxisDirection(int offset, String description) {
+		private AxisDirection(final int offset, final String description) {
 			this.offset = offset;
 			this.description = description;
 		}
@@ -515,7 +523,7 @@ public enum Direction implements StringIdentifiable {
 		private final Direction[] facingArray;
 		private final Direction.Axis[] axisArray;
 
-		private Type(Direction[] facingArray, Direction.Axis[] axisArray) {
+		private Type(final Direction[] facingArray, final Direction.Axis[] axisArray) {
 			this.facingArray = facingArray;
 			this.axisArray = axisArray;
 		}

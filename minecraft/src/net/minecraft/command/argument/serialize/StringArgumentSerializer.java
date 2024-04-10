@@ -31,7 +31,7 @@ public class StringArgumentSerializer implements ArgumentSerializer<StringArgume
 	public final class Properties implements ArgumentSerializer.ArgumentTypeProperties<StringArgumentType> {
 		final StringType type;
 
-		public Properties(StringType type) {
+		public Properties(final StringType type) {
 			this.type = type;
 		}
 

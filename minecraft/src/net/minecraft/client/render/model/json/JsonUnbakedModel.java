@@ -406,7 +406,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 
 		private final String name;
 
-		private GuiLight(String name) {
+		private GuiLight(final String name) {
 			this.name = name;
 		}
 

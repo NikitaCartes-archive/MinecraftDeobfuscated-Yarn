@@ -445,7 +445,7 @@ public class RealmsClient {
 		public final String baseUrl;
 		public final String protocol;
 
-		private Environment(String baseUrl, String protocol) {
+		private Environment(final String baseUrl, final String protocol) {
 			this.baseUrl = baseUrl;
 			this.protocol = protocol;
 		}

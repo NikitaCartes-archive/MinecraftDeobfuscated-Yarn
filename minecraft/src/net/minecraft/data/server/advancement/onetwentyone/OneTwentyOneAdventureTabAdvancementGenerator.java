@@ -16,6 +16,7 @@ import net.minecraft.advancement.criterion.RecipeCraftedCriterion;
 import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.BulbBlock;
+import net.minecraft.block.VaultBlock;
 import net.minecraft.data.server.advancement.AdvancementTabGenerator;
 import net.minecraft.data.server.advancement.vanilla.VanillaAdventureTabAdvancementGenerator;
 import net.minecraft.data.server.advancement.vanilla.VanillaHusbandryTabAdvancementGenerator;
@@ -100,7 +101,7 @@ public class OneTwentyOneAdventureTabAdvancementGenerator implements Advancement
 				)
 			)
 			.build(exporter, "adventure/lighten_up");
-		Advancement.Builder.create()
+		AdvancementEntry advancementEntry3 = Advancement.Builder.create()
 			.parent(advancementEntry2)
 			.display(
 				Items.TRIAL_KEY,
@@ -119,6 +120,27 @@ public class OneTwentyOneAdventureTabAdvancementGenerator implements Advancement
 				)
 			)
 			.build(exporter, "adventure/under_lock_and_key");
+		Advancement.Builder.create()
+			.parent(advancementEntry3)
+			.display(
+				Items.OMINOUS_TRIAL_KEY,
+				Text.translatable("advancements.adventure.revaulting.title"),
+				Text.translatable("advancements.adventure.revaulting.description"),
+				null,
+				AdvancementFrame.GOAL,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"revaulting",
+				ItemCriterion.Conditions.createItemUsedOnBlock(
+					LocationPredicate.Builder.create()
+						.block(BlockPredicate.Builder.create().blocks(Blocks.VAULT).state(StatePredicate.Builder.create().exactMatch(VaultBlock.OMINOUS, true))),
+					ItemPredicate.Builder.create().items(Items.OMINOUS_TRIAL_KEY)
+				)
+			)
+			.build(exporter, "adventure/revaulting");
 		Advancement.Builder.create()
 			.parent(advancementEntry2)
 			.display(

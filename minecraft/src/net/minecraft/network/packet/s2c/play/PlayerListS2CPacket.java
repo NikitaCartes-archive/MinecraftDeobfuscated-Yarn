@@ -124,7 +124,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		final PlayerListS2CPacket.Action.Reader reader;
 		final PlayerListS2CPacket.Action.Writer writer;
 
-		private Action(PlayerListS2CPacket.Action.Reader reader, PlayerListS2CPacket.Action.Writer writer) {
+		private Action(final PlayerListS2CPacket.Action.Reader reader, final PlayerListS2CPacket.Action.Writer writer) {
 			this.reader = reader;
 			this.writer = writer;
 		}

@@ -461,7 +461,7 @@ public class LevelStorage {
 		private final String directoryName;
 		private final Map<WorldSavePath, Path> paths = Maps.<WorldSavePath, Path>newHashMap();
 
-		Session(String directoryName, Path path) throws IOException {
+		Session(final String directoryName, final Path path) throws IOException {
 			this.directoryName = directoryName;
 			this.directory = new LevelStorage.LevelSave(path);
 			this.lock = SessionLock.create(path);

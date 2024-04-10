@@ -22,7 +22,7 @@ public enum AbuseReportReason {
 	private final Text text;
 	private final Text description;
 
-	private AbuseReportReason(String id) {
+	private AbuseReportReason(final String id) {
 		this.id = id.toUpperCase(Locale.ROOT);
 		String string2 = "gui.abuseReport.reason." + id;
 		this.text = Text.translatable(string2);

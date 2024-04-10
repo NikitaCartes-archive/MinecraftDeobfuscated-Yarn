@@ -15,7 +15,7 @@ public enum Angriness {
 	private final SoundEvent sound;
 	private final SoundEvent listeningSound;
 
-	private Angriness(int threshold, SoundEvent sound, SoundEvent listeningSound) {
+	private Angriness(final int threshold, final SoundEvent sound, final SoundEvent listeningSound) {
 		this.threshold = threshold;
 		this.sound = sound;
 		this.listeningSound = listeningSound;

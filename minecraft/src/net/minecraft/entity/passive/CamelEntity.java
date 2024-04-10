@@ -617,7 +617,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	}
 
 	class CamelBodyControl extends BodyControl {
-		public CamelBodyControl(CamelEntity camel) {
+		public CamelBodyControl(final CamelEntity camel) {
 			super(camel);
 		}
 

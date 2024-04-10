@@ -11,5 +11,7 @@ public class VanillaEquipmentLootTableGenerator implements LootTableGenerator {
 	@Override
 	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<RegistryKey<LootTable>, LootTable.Builder> consumer) {
 		consumer.accept(LootTables.TRIAL_CHAMBER_EQUIPMENT, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBER_MELEE_EQUIPMENT, LootTable.builder());
+		consumer.accept(LootTables.TRIAL_CHAMBER_RANGED_EQUIPMENT, LootTable.builder());
 	}
 }

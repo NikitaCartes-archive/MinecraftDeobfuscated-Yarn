@@ -17,7 +17,7 @@ public enum AdvancementFrame implements StringIdentifiable {
 	private final Formatting titleFormat;
 	private final Text toastText;
 
-	private AdvancementFrame(String id, Formatting titleFormat) {
+	private AdvancementFrame(final String id, final Formatting titleFormat) {
 		this.id = id;
 		this.titleFormat = titleFormat;
 		this.toastText = Text.translatable("advancements.toast." + id);

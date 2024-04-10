@@ -9,7 +9,7 @@ public enum WallShape implements StringIdentifiable {
 
 	private final String name;
 
-	private WallShape(String name) {
+	private WallShape(final String name) {
 		this.name = name;
 	}
 

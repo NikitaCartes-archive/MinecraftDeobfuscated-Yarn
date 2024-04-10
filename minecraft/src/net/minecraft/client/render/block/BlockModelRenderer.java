@@ -893,13 +893,13 @@ public class BlockModelRenderer {
 		});
 
 		private NeighborData(
-			Direction[] faces,
-			float f,
-			boolean nonCubicWeight,
-			BlockModelRenderer.NeighborOrientation[] neighborOrientations,
-			BlockModelRenderer.NeighborOrientation[] neighborOrientations2,
-			BlockModelRenderer.NeighborOrientation[] neighborOrientations3,
-			BlockModelRenderer.NeighborOrientation[] neighborOrientations4
+			final Direction[] faces,
+			final float f,
+			final boolean nonCubicWeight,
+			final BlockModelRenderer.NeighborOrientation[] neighborOrientations,
+			final BlockModelRenderer.NeighborOrientation[] neighborOrientations2,
+			final BlockModelRenderer.NeighborOrientation[] neighborOrientations3,
+			final BlockModelRenderer.NeighborOrientation[] neighborOrientations4
 		) {
 			this.faces = faces;
 			this.nonCubicWeight = nonCubicWeight;
@@ -931,7 +931,7 @@ public class BlockModelRenderer {
 
 		final int shape;
 
-		private NeighborOrientation(Direction direction, boolean flip) {
+		private NeighborOrientation(final Direction direction, final boolean flip) {
 			this.shape = direction.getId() + (flip ? BlockModelRenderer.DIRECTIONS.length : 0);
 		}
 	}
@@ -958,7 +958,7 @@ public class BlockModelRenderer {
 			values[Direction.EAST.getId()] = EAST;
 		});
 
-		private Translation(int firstCorner, int secondCorner, int thirdCorner, int fourthCorner) {
+		private Translation(final int firstCorner, final int secondCorner, final int thirdCorner, final int fourthCorner) {
 			this.firstCorner = firstCorner;
 			this.secondCorner = secondCorner;
 			this.thirdCorner = thirdCorner;

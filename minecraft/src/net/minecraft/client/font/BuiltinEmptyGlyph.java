@@ -33,7 +33,7 @@ public enum BuiltinEmptyGlyph implements Glyph {
 		return nativeImage;
 	}
 
-	private BuiltinEmptyGlyph(Supplier<NativeImage> imageSupplier) {
+	private BuiltinEmptyGlyph(final Supplier<NativeImage> imageSupplier) {
 		this.image = (NativeImage)imageSupplier.get();
 	}
 

@@ -41,10 +41,8 @@ class BadOmenStatusEffect extends StatusEffect {
 
 	private boolean tryStartRaid(ServerPlayerEntity player, ServerWorld world) {
 		BlockPos blockPos = player.getBlockPos();
-		if (world.getDifficulty() != Difficulty.PEACEFUL && world.isNearOccupiedPointOfInterest(blockPos)) {
-			world.getRaidManager().startRaid(player, blockPos);
-		}
-
-		return true;
+		return world.getDifficulty() != Difficulty.PEACEFUL && world.isNearOccupiedPointOfInterest(blockPos)
+			? world.getRaidManager().startRaid(player, blockPos) == null
+			: true;
 	}
 }

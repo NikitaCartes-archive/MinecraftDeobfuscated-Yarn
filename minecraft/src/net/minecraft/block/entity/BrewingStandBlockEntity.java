@@ -99,7 +99,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 			markDirty(world, pos, state);
 		}
 
-		boolean bl = canCraft(blockEntity.inventory);
+		boolean bl = canCraft(world.getBrewingRecipeRegistry(), blockEntity.inventory);
 		boolean bl2 = blockEntity.brewTime > 0;
 		ItemStack itemStack2 = blockEntity.inventory.get(3);
 		if (bl2) {
@@ -147,16 +147,16 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		return bls;
 	}
 
-	private static boolean canCraft(DefaultedList<ItemStack> slots) {
+	private static boolean canCraft(BrewingRecipeRegistry brewingRecipeRegistry, DefaultedList<ItemStack> slots) {
 		ItemStack itemStack = slots.get(3);
 		if (itemStack.isEmpty()) {
 			return false;
-		} else if (!BrewingRecipeRegistry.isValidIngredient(itemStack)) {
+		} else if (!brewingRecipeRegistry.isValidIngredient(itemStack)) {
 			return false;
 		} else {
 			for (int i = 0; i < 3; i++) {
 				ItemStack itemStack2 = slots.get(i);
-				if (!itemStack2.isEmpty() && BrewingRecipeRegistry.hasRecipe(itemStack2, itemStack)) {
+				if (!itemStack2.isEmpty() && brewingRecipeRegistry.hasRecipe(itemStack2, itemStack)) {
 					return true;
 				}
 			}
@@ -167,9 +167,10 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 
 	private static void craft(World world, BlockPos pos, DefaultedList<ItemStack> slots) {
 		ItemStack itemStack = slots.get(3);
+		BrewingRecipeRegistry brewingRecipeRegistry = world.getBrewingRecipeRegistry();
 
 		for (int i = 0; i < 3; i++) {
-			slots.set(i, BrewingRecipeRegistry.craft(itemStack, slots.get(i)));
+			slots.set(i, brewingRecipeRegistry.craft(itemStack, slots.get(i)));
 		}
 
 		itemStack.decrement(1);
@@ -206,7 +207,8 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	@Override
 	public boolean isValid(int slot, ItemStack stack) {
 		if (slot == 3) {
-			return BrewingRecipeRegistry.isValidIngredient(stack);
+			BrewingRecipeRegistry brewingRecipeRegistry = this.world != null ? this.world.getBrewingRecipeRegistry() : BrewingRecipeRegistry.EMPTY;
+			return brewingRecipeRegistry.isValidIngredient(stack);
 		} else {
 			return slot == 4
 				? stack.isOf(Items.BLAZE_POWDER)

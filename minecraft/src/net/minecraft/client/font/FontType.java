@@ -18,7 +18,7 @@ public enum FontType implements StringIdentifiable {
 	private final String id;
 	private final MapCodec<? extends FontLoader> loaderCodec;
 
-	private FontType(String id, MapCodec<? extends FontLoader> loaderCodec) {
+	private FontType(final String id, final MapCodec<? extends FontLoader> loaderCodec) {
 		this.id = id;
 		this.loaderCodec = loaderCodec;
 	}

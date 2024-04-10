@@ -21,7 +21,7 @@ public record SkinTextures(
 
 		private final String name;
 
-		private Model(String name) {
+		private Model(final String name) {
 			this.name = name;
 		}
 

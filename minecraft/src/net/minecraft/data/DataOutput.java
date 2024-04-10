@@ -29,7 +29,7 @@ public class DataOutput {
 
 		final String path;
 
-		private OutputType(String path) {
+		private OutputType(final String path) {
 			this.path = path;
 		}
 	}

@@ -11,7 +11,7 @@ public enum DamageScaling implements StringIdentifiable {
 	public static final Codec<DamageScaling> CODEC = StringIdentifiable.createCodec(DamageScaling::values);
 	private final String id;
 
-	private DamageScaling(String id) {
+	private DamageScaling(final String id) {
 		this.id = id;
 	}
 

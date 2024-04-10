@@ -58,6 +58,8 @@ public class TypeReferences {
 	public static final TypeReference BLOCK_STATE = create("block_state");
 	public static final TypeReference FLAT_BLOCK_STATE = create("flat_block_state");
 	public static final TypeReference DATA_COMPONENTS = create("data_components");
+	public static final TypeReference VILLAGER_TRADE = create("villager_trade");
+	public static final TypeReference PARTICLE = create("particle");
 	/**
 	 * A type reference which refers to an entity's identifier.
 	 */

@@ -4723,7 +4723,7 @@ public class BlockStateModelGenerator {
 		private Identifier baseModelId;
 		private final Set<Block> children = new HashSet();
 
-		public BlockTexturePool(TextureMap textures) {
+		public BlockTexturePool(final TextureMap textures) {
 			this.textures = textures;
 		}
 
@@ -4901,7 +4901,7 @@ public class BlockStateModelGenerator {
 	class BuiltinModelPool {
 		private final Identifier modelId;
 
-		public BuiltinModelPool(Identifier modelId, Block block) {
+		public BuiltinModelPool(final Identifier modelId, final Block block) {
 			this.modelId = Models.PARTICLE.upload(modelId, TextureMap.particle(block), BlockStateModelGenerator.this.modelCollector);
 		}
 
@@ -4936,7 +4936,7 @@ public class BlockStateModelGenerator {
 	class LogTexturePool {
 		private final TextureMap textures;
 
-		public LogTexturePool(TextureMap textures) {
+		public LogTexturePool(final TextureMap textures) {
 			this.textures = textures;
 		}
 

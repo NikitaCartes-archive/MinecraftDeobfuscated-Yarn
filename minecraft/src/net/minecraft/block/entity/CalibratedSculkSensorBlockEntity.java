@@ -22,7 +22,7 @@ public class CalibratedSculkSensorBlockEntity extends SculkSensorBlockEntity {
 	}
 
 	protected class Callback extends SculkSensorBlockEntity.VibrationCallback {
-		public Callback(BlockPos pos) {
+		public Callback(final BlockPos pos) {
 			super(pos);
 		}
 

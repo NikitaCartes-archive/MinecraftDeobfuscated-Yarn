@@ -86,7 +86,7 @@ public class SkullBlock extends AbstractSkullBlock {
 
 		private final String id;
 
-		private Type(String id) {
+		private Type(final String id) {
 			this.id = id;
 			TYPES.put(id, this);
 		}

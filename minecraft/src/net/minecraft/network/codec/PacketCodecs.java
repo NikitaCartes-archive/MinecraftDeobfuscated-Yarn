@@ -93,6 +93,21 @@ public interface PacketCodecs {
 		}
 	};
 	/**
+	 * A codec for an unsigned short value.
+	 * 
+	 * @see io.netty.buffer.ByteBuf#readUnsignedShort
+	 * @see io.netty.buffer.ByteBuf#writeShort
+	 */
+	PacketCodec<ByteBuf, Integer> UNSIGNED_SHORT = new PacketCodec<ByteBuf, Integer>() {
+		public Integer decode(ByteBuf byteBuf) {
+			return byteBuf.readUnsignedShort();
+		}
+
+		public void encode(ByteBuf byteBuf, Integer integer) {
+			byteBuf.writeShort(integer);
+		}
+	};
+	/**
 	 * A codec for an integer value.
 	 * 
 	 * @see io.netty.buffer.ByteBuf#readInt
@@ -174,12 +189,12 @@ public interface PacketCodecs {
 	 * @see net.minecraft.network.PacketByteBuf#writeByteArray(byte[])
 	 */
 	PacketCodec<ByteBuf, byte[]> BYTE_ARRAY = new PacketCodec<ByteBuf, byte[]>() {
-		public byte[] decode(ByteBuf buf) {
-			return PacketByteBuf.readByteArray(buf);
+		public byte[] method_59799(ByteBuf byteBuf) {
+			return PacketByteBuf.readByteArray(byteBuf);
 		}
 
-		public void encode(ByteBuf buf, byte[] value) {
-			PacketByteBuf.writeByteArray(buf, value);
+		public void method_59800(ByteBuf byteBuf, byte[] bs) {
+			PacketByteBuf.writeByteArray(byteBuf, bs);
 		}
 	};
 	/**
@@ -325,15 +340,15 @@ public interface PacketCodecs {
 	 */
 	static PacketCodec<ByteBuf, byte[]> byteArray(int maxLength) {
 		return new PacketCodec<ByteBuf, byte[]>() {
-			public byte[] read(ByteBuf buf) {
+			public byte[] decode(ByteBuf buf) {
 				return PacketByteBuf.readByteArray(buf, maxLength);
 			}
 
-			public void write(ByteBuf buf, byte[] bytes) {
-				if (bytes.length > maxLength) {
-					throw new EncoderException("ByteArray with size " + bytes.length + " is bigger than allowed " + maxLength);
+			public void encode(ByteBuf byteBuf, byte[] bs) {
+				if (bs.length > maxLength) {
+					throw new EncoderException("ByteArray with size " + bs.length + " is bigger than allowed " + maxLength);
 				} else {
-					PacketByteBuf.writeByteArray(buf, bytes);
+					PacketByteBuf.writeByteArray(byteBuf, bs);
 				}
 			}
 		};
@@ -754,7 +769,7 @@ public interface PacketCodecs {
 
 	static <T> PacketCodec<RegistryByteBuf, RegistryEntryList<T>> registryEntryList(RegistryKey<? extends Registry<T>> registryRef) {
 		return new PacketCodec<RegistryByteBuf, RegistryEntryList<T>>() {
-			private static final int DIRECT_ENTRY_MARKER = -1;
+			private static final int DIRECT_MARKER = -1;
 			private final PacketCodec<RegistryByteBuf, RegistryEntry<T>> entryPacketCodec = PacketCodecs.registryEntry(registryRef);
 
 			public RegistryEntryList<T> decode(RegistryByteBuf registryByteBuf) {

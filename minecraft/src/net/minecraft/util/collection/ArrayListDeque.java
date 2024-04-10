@@ -295,7 +295,7 @@ public class ArrayListDeque<T> extends AbstractList<T> implements ListDeque<T> {
 	class ReversedWrapper extends AbstractList<T> implements ListDeque<T> {
 		private final ArrayListDeque<T> original;
 
-		public ReversedWrapper(ArrayListDeque<T> original) {
+		public ReversedWrapper(final ArrayListDeque<T> original) {
 			this.original = original;
 		}
 

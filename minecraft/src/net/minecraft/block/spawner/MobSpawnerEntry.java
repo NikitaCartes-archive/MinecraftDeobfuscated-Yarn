@@ -5,6 +5,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
+import net.minecraft.entity.EquipmentTable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -13,13 +14,13 @@ import net.minecraft.util.dynamic.Range;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.LightType;
 
-public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.CustomSpawnRules> customSpawnRules, Optional<Identifier> equipmentLootTable) {
+public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.CustomSpawnRules> customSpawnRules, Optional<EquipmentTable> equipment) {
 	public static final String ENTITY_KEY = "entity";
 	public static final Codec<MobSpawnerEntry> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					NbtCompound.CODEC.fieldOf("entity").forGetter(entry -> entry.entity),
 					MobSpawnerEntry.CustomSpawnRules.CODEC.optionalFieldOf("custom_spawn_rules").forGetter(entry -> entry.customSpawnRules),
-					Identifier.CODEC.optionalFieldOf("equipment_loot_table").forGetter(entry -> entry.equipmentLootTable)
+					EquipmentTable.CODEC.optionalFieldOf("equipment").forGetter(entry -> entry.equipment)
 				)
 				.apply(instance, MobSpawnerEntry::new)
 	);
@@ -29,7 +30,7 @@ public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.Custo
 		this(new NbtCompound(), Optional.empty(), Optional.empty());
 	}
 
-	public MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.CustomSpawnRules> customSpawnRules, Optional<Identifier> equipmentLootTable) {
+	public MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.CustomSpawnRules> customSpawnRules, Optional<EquipmentTable> equipment) {
 		if (entity.contains("id")) {
 			Identifier identifier = Identifier.tryParse(entity.getString("id"));
 			if (identifier != null) {
@@ -41,7 +42,7 @@ public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.Custo
 
 		this.entity = entity;
 		this.customSpawnRules = customSpawnRules;
-		this.equipmentLootTable = equipmentLootTable;
+		this.equipment = equipment;
 	}
 
 	public NbtCompound getNbt() {
@@ -52,8 +53,8 @@ public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.Custo
 		return this.customSpawnRules;
 	}
 
-	public Optional<Identifier> getEquipmentLootTable() {
-		return this.equipmentLootTable;
+	public Optional<EquipmentTable> getEquipment() {
+		return this.equipment;
 	}
 
 	public static record CustomSpawnRules(Range<Integer> blockLightLimit, Range<Integer> skyLightLimit) {

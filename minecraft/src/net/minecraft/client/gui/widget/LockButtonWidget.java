@@ -57,7 +57,7 @@ public class LockButtonWidget extends ButtonWidget {
 
 		final Identifier texture;
 
-		private Icon(Identifier texture) {
+		private Icon(final Identifier texture) {
 			this.texture = texture;
 		}
 	}

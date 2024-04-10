@@ -16,9 +16,7 @@ public class Schema3818_4 extends IdentifierNormalizingSchema {
 	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> map, Map<String, Supplier<TypeTemplate>> map2) {
 		super.registerTypes(schema, map, map2);
 		schema.registerType(
-			true,
-			TypeReferences.ITEM_STACK,
-			() -> DSL.optionalFields("id", TypeReferences.ITEM_NAME.in(schema), "components", TypeReferences.DATA_COMPONENTS.in(schema))
+			true, TypeReferences.PARTICLE, () -> DSL.optionalFields("item", TypeReferences.ITEM_STACK.in(schema), "block_state", TypeReferences.BLOCK_STATE.in(schema))
 		);
 	}
 }

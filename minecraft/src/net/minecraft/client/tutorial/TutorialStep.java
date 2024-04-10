@@ -16,7 +16,7 @@ public enum TutorialStep {
 	private final String name;
 	private final Function<TutorialManager, ? extends TutorialStepHandler> handlerFactory;
 
-	private <T extends TutorialStepHandler> TutorialStep(String name, Function<TutorialManager, T> factory) {
+	private <T extends TutorialStepHandler> TutorialStep(final String name, final Function<TutorialManager, T> factory) {
 		this.name = name;
 		this.handlerFactory = factory;
 	}

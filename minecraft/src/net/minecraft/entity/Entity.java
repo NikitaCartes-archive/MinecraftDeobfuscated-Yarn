@@ -8,6 +8,7 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -4507,6 +4508,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return this.passengerList;
 	}
 
+	public Optional<Entity> getPassengerNearestTo(Vec3d pos) {
+		return this.getPassengerList().stream().filter(entity -> entity != this).min(Comparator.comparingDouble(entity -> pos.squaredDistanceTo(entity.getPos())));
+	}
+
 	/**
 	 * {@return the first passenger of the {@linkplain #getPassengerList passenger list},
 	 * or {@code null} if there is no passengers}
@@ -5374,7 +5379,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		final boolean sounds;
 		final boolean events;
 
-		private MoveEffect(boolean sounds, boolean events) {
+		private MoveEffect(final boolean sounds, final boolean events) {
 			this.sounds = sounds;
 			this.events = events;
 		}
@@ -5440,7 +5445,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		private final boolean destroy;
 		private final boolean save;
 
-		private RemovalReason(boolean destroy, boolean save) {
+		private RemovalReason(final boolean destroy, final boolean save) {
 			this.destroy = destroy;
 			this.save = save;
 		}

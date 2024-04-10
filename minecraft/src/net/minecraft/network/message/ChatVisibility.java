@@ -15,7 +15,7 @@ public enum ChatVisibility implements TranslatableOption {
 	private final int id;
 	private final String translationKey;
 
-	private ChatVisibility(int id, String translationKey) {
+	private ChatVisibility(final int id, final String translationKey) {
 		this.id = id;
 		this.translationKey = translationKey;
 	}

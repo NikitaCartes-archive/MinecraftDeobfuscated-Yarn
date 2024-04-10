@@ -23,14 +23,7 @@ public class Schema1929 extends IdentifierNormalizingSchema {
 					"Inventory",
 					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
 					"Offers",
-					DSL.optionalFields(
-						"Recipes",
-						DSL.list(
-							DSL.optionalFields(
-								"buy", TypeReferences.ITEM_STACK.in(schema), "buyB", TypeReferences.ITEM_STACK.in(schema), "sell", TypeReferences.ITEM_STACK.in(schema)
-							)
-						)
-					),
+					DSL.optionalFields("Recipes", DSL.list(TypeReferences.VILLAGER_TRADE.in(schema))),
 					Schema100.targetItems(schema)
 				))
 		);

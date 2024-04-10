@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.minecraft.block.Block;
@@ -32,6 +33,7 @@ import org.slf4j.Logger;
 
 public class StructureTestUtil {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	public static final int field_51468 = 10;
 	public static final String TEST_STRUCTURES_DIRECTORY_NAME = "gameteststructures";
 	public static String testStructuresDirectoryName = "gameteststructures";
 
@@ -127,7 +129,7 @@ public class StructureTestUtil {
 	}
 
 	public static void placeBarrierBox(Box box, ServerWorld world, boolean noSkyAccess) {
-		BlockPos blockPos = BlockPos.ofFloored(box.minX, box.minY, box.minZ).add(-1, 1, -1);
+		BlockPos blockPos = BlockPos.ofFloored(box.minX, box.minY, box.minZ).add(-1, 0, -1);
 		BlockPos blockPos2 = BlockPos.ofFloored(box.maxX, box.maxY, box.maxZ);
 		BlockPos.stream(blockPos, blockPos2).forEach(pos -> {
 			boolean bl2 = pos.getX() == blockPos.getX() || pos.getX() == blockPos2.getX() || pos.getZ() == blockPos.getZ() || pos.getZ() == blockPos2.getZ();
@@ -139,7 +141,7 @@ public class StructureTestUtil {
 	}
 
 	public static void clearBarrierBox(Box box, ServerWorld world) {
-		BlockPos blockPos = BlockPos.ofFloored(box.minX, box.minY, box.minZ).add(-1, 1, -1);
+		BlockPos blockPos = BlockPos.ofFloored(box.minX, box.minY, box.minZ).add(-1, 0, -1);
 		BlockPos blockPos2 = BlockPos.ofFloored(box.maxX, box.maxY, box.maxZ);
 		BlockPos.stream(blockPos, blockPos2).forEach(pos -> {
 			boolean bl = pos.getX() == blockPos.getX() || pos.getX() == blockPos2.getX() || pos.getZ() == blockPos.getZ() || pos.getZ() == blockPos2.getZ();
@@ -194,8 +196,17 @@ public class StructureTestUtil {
 		return findStructureBlocks(pos, radius, world).min(comparator);
 	}
 
+	public static Stream<BlockPos> findStructureBlocks(BlockPos pos, int radius, ServerWorld world, String templateName) {
+		return findStructureBlocks(pos, radius, world)
+			.map(posx -> (StructureBlockBlockEntity)world.getBlockEntity(posx))
+			.filter(Objects::nonNull)
+			.filter(blockEntity -> Objects.equals(blockEntity.getTemplateName(), templateName))
+			.map(BlockEntity::getPos)
+			.map(BlockPos::toImmutable);
+	}
+
 	public static Stream<BlockPos> findStructureBlocks(BlockPos pos, int radius, ServerWorld world) {
-		BlockBox blockBox = new BlockBox(pos).expand(radius);
+		BlockBox blockBox = createBox(pos, radius, world);
 		return BlockPos.stream(blockBox).filter(p -> world.getBlockState(p).isOf(Blocks.STRUCTURE_BLOCK)).map(BlockPos::toImmutable);
 	}
 
@@ -214,11 +225,9 @@ public class StructureTestUtil {
 		}
 	}
 
-	public static Stream<BlockPos> findSurfaceStructureBlocks(int radius, Vec3d pos, ServerWorld world) {
-		BlockPos blockPos = BlockPos.ofFloored(pos.x, (double)world.getTopPosition(Heightmap.Type.WORLD_SURFACE, BlockPos.ofFloored(pos)).getY(), pos.z);
-		BlockPos blockPos2 = blockPos.add(-radius, 0, -radius);
-		BlockPos blockPos3 = blockPos.add(radius, 0, radius);
-		return BlockPos.stream(blockPos2, blockPos3).filter(p -> world.getBlockState(p).isOf(Blocks.STRUCTURE_BLOCK));
+	private static BlockBox createBox(BlockPos pos, int radius, ServerWorld world) {
+		BlockPos blockPos = BlockPos.ofFloored((double)pos.getX(), (double)world.getTopPosition(Heightmap.Type.WORLD_SURFACE, pos).getY(), (double)pos.getZ());
+		return new BlockBox(blockPos).expand(radius, 10, radius);
 	}
 
 	public static Stream<BlockPos> findTargetedStructureBlock(BlockPos pos, Entity entity, ServerWorld world) {

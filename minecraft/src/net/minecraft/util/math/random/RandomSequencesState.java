@@ -107,7 +107,7 @@ public class RandomSequencesState extends PersistentState {
 	class WrappedRandom implements Random {
 		private final Random random;
 
-		WrappedRandom(Random random) {
+		WrappedRandom(final Random random) {
 			this.random = random;
 		}
 

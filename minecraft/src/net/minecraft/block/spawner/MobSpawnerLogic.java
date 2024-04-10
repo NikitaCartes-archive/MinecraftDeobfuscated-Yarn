@@ -148,7 +148,7 @@ public abstract class MobSpawnerLogic {
 								((MobEntity)entity).initialize(world, world.getLocalDifficulty(entity.getBlockPos()), SpawnReason.SPAWNER, null);
 							}
 
-							mobSpawnerEntry.getEquipmentLootTable().ifPresent(mobEntity::setEquipmentFromLootTable);
+							mobSpawnerEntry.getEquipment().ifPresent(mobEntity::setEquipmentFromTable);
 						}
 
 						if (!world.spawnNewEntityAndPassengers(entity)) {

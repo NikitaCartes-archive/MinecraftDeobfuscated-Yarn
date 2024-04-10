@@ -22,6 +22,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -30,6 +31,7 @@ import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -496,7 +498,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		if (nbt.contains("item", NbtElement.COMPOUND_TYPE)) {
 			this.setStack((ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("item")).orElse(this.getDefaultItemStack()));
 		} else {
-			this.setStack(this.stack);
+			this.setStack(this.getDefaultItemStack());
 		}
 	}
 
@@ -566,7 +568,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	@Override
 	public boolean isAttackable() {
-		return false;
+		return this.getType().isIn(EntityTypeTags.PUNCHABLE_PROJECTILES);
 	}
 
 	public void setCritical(boolean critical) {
@@ -587,7 +589,11 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	protected void setStack(ItemStack stack) {
-		this.stack = stack;
+		if (!stack.isEmpty()) {
+			this.stack = stack;
+		} else {
+			this.stack = this.getDefaultItemStack();
+		}
 	}
 
 	public boolean isCritical() {
@@ -636,6 +642,16 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	public void setShotFromCrossbow(boolean shotFromCrossbow) {
 		this.setProjectileFlag(SHOT_FROM_CROSSBOW_FLAG, shotFromCrossbow);
+	}
+
+	@Override
+	public boolean canHit() {
+		return super.canHit() && !this.inGround;
+	}
+
+	@Override
+	public StackReference getStackReference(int mappedIndex) {
+		return mappedIndex == 0 ? StackReference.of(this::getItemStack, this::setStack) : super.getStackReference(mappedIndex);
 	}
 
 	public static enum PickupPermission {

@@ -534,7 +534,7 @@ public abstract class DisplayEntity extends Entity {
 		private final byte index;
 		private final String name;
 
-		private BillboardMode(byte index, String name) {
+		private BillboardMode(final byte index, final String name) {
 			this.name = name;
 			this.index = index;
 		}
@@ -673,18 +673,7 @@ public abstract class DisplayEntity extends Entity {
 		private static final String ITEM_DISPLAY_NBT_KEY = "item_display";
 		private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(DisplayEntity.ItemDisplayEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 		private static final TrackedData<Byte> ITEM_DISPLAY = DataTracker.registerData(DisplayEntity.ItemDisplayEntity.class, TrackedDataHandlerRegistry.BYTE);
-		private final StackReference stackReference = new StackReference() {
-			@Override
-			public ItemStack get() {
-				return ItemDisplayEntity.this.getItemStack();
-			}
-
-			@Override
-			public boolean set(ItemStack stack) {
-				ItemDisplayEntity.this.setItemStack(stack);
-				return true;
-			}
-		};
+		private final StackReference stackReference = StackReference.of(this::getItemStack, this::setItemStack);
 		@Nullable
 		private DisplayEntity.ItemDisplayEntity.Data data;
 
@@ -707,11 +696,11 @@ public abstract class DisplayEntity extends Entity {
 			}
 		}
 
-		ItemStack getItemStack() {
+		private ItemStack getItemStack() {
 			return this.dataTracker.get(ITEM);
 		}
 
-		void setItemStack(ItemStack stack) {
+		private void setItemStack(ItemStack stack) {
 			this.dataTracker.set(ITEM, stack);
 		}
 
@@ -1017,7 +1006,7 @@ public abstract class DisplayEntity extends Entity {
 			);
 			private final String name;
 
-			private TextAlignment(String name) {
+			private TextAlignment(final String name) {
 				this.name = name;
 			}
 

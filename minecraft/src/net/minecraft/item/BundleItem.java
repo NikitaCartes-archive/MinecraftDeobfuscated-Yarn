@@ -131,7 +131,7 @@ public class BundleItem extends Item {
 		if (bundleContentsComponent != null && !bundleContentsComponent.isEmpty()) {
 			stack.set(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT);
 			if (player instanceof ServerPlayerEntity) {
-				bundleContentsComponent.stream().forEach(stackx -> player.dropItem(stackx, true));
+				bundleContentsComponent.iterateCopy().forEach(stackx -> player.dropItem(stackx, true));
 			}
 
 			return true;
@@ -161,7 +161,7 @@ public class BundleItem extends Item {
 		BundleContentsComponent bundleContentsComponent = entity.getStack().get(DataComponentTypes.BUNDLE_CONTENTS);
 		if (bundleContentsComponent != null) {
 			entity.getStack().set(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT);
-			ItemUsage.spawnItemContents(entity, bundleContentsComponent.stream());
+			ItemUsage.spawnItemContents(entity, bundleContentsComponent.iterateCopy());
 		}
 	}
 

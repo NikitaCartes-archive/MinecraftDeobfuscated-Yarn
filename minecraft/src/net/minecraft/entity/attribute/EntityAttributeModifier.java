@@ -99,7 +99,7 @@ public record EntityAttributeModifier(UUID uuid, String name, double value, Enti
 		private final String name;
 		private final int id;
 
-		private Operation(String name, int id) {
+		private Operation(final String name, final int id) {
 			this.name = name;
 			this.id = id;
 		}

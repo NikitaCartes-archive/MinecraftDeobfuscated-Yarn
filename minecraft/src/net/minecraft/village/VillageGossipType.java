@@ -20,7 +20,7 @@ public enum VillageGossipType implements StringIdentifiable {
 	public final int shareDecrement;
 	public static final Codec<VillageGossipType> CODEC = StringIdentifiable.createCodec(VillageGossipType::values);
 
-	private VillageGossipType(String key, int multiplier, int maxReputation, int decay, int shareDecrement) {
+	private VillageGossipType(final String key, final int multiplier, final int maxReputation, final int decay, final int shareDecrement) {
 		this.key = key;
 		this.multiplier = multiplier;
 		this.maxValue = maxReputation;

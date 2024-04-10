@@ -93,7 +93,7 @@ public class BundleTooltipComponent implements TooltipComponent {
 		public final int width;
 		public final int height;
 
-		private SlotSprite(Identifier texture, int width, int height) {
+		private SlotSprite(final Identifier texture, final int width, final int height) {
 			this.texture = texture;
 			this.width = width;
 			this.height = height;

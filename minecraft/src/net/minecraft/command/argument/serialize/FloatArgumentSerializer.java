@@ -45,7 +45,7 @@ public class FloatArgumentSerializer implements ArgumentSerializer<FloatArgument
 		final float min;
 		final float max;
 
-		Properties(float min, float max) {
+		Properties(final float min, final float max) {
 			this.min = min;
 			this.max = max;
 		}

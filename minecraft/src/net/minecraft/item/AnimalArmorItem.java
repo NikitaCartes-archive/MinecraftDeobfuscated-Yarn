@@ -52,7 +52,7 @@ public class AnimalArmorItem extends ArmorItem {
 		final Function<Identifier, Identifier> textureIdFunction;
 		final SoundEvent breakSound;
 
-		private Type(Function<Identifier, Identifier> textureIdFunction, SoundEvent breakSound) {
+		private Type(final Function<Identifier, Identifier> textureIdFunction, final SoundEvent breakSound) {
 			this.textureIdFunction = textureIdFunction;
 			this.breakSound = breakSound;
 		}

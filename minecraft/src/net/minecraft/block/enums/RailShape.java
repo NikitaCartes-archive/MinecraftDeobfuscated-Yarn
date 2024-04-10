@@ -16,7 +16,7 @@ public enum RailShape implements StringIdentifiable {
 
 	private final String name;
 
-	private RailShape(String name) {
+	private RailShape(final String name) {
 		this.name = name;
 	}
 

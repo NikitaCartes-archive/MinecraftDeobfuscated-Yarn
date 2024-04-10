@@ -601,7 +601,7 @@ public class HeldItemRenderer {
 		final boolean renderMainHand;
 		final boolean renderOffHand;
 
-		private HandRenderType(boolean renderMainHand, boolean renderOffHand) {
+		private HandRenderType(final boolean renderMainHand, final boolean renderOffHand) {
 			this.renderMainHand = renderMainHand;
 			this.renderOffHand = renderOffHand;
 		}

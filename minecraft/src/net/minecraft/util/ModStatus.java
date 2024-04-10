@@ -44,7 +44,7 @@ public record ModStatus(ModStatus.Confidence confidence, String description) {
 		final String description;
 		final boolean modded;
 
-		private Confidence(String description, boolean modded) {
+		private Confidence(final String description, final boolean modded) {
 			this.description = description;
 			this.modded = modded;
 		}

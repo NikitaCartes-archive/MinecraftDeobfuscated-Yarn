@@ -73,7 +73,7 @@ public class MapRenderer implements AutoCloseable {
 		private final RenderLayer renderLayer;
 		private boolean needsUpdate = true;
 
-		MapTexture(int id, MapState state) {
+		MapTexture(final int id, final MapState state) {
 			this.state = state;
 			this.texture = new NativeImageBackedTexture(128, 128, true);
 			Identifier identifier = MapRenderer.this.textureManager.registerDynamicTexture("map/" + id, this.texture);

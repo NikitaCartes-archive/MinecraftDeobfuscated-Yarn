@@ -50,7 +50,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<SetStewEffectLootFunction> getType() {
 		return LootFunctionTypes.SET_STEW_EFFECT;
 	}
 

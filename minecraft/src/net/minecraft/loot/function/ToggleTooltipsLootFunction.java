@@ -63,7 +63,7 @@ public class ToggleTooltipsLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<ToggleTooltipsLootFunction> getType() {
 		return LootFunctionTypes.TOGGLE_TOOLTIPS;
 	}
 

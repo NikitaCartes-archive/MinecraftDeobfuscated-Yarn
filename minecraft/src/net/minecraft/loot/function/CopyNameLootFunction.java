@@ -29,7 +29,7 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<CopyNameLootFunction> getType() {
 		return LootFunctionTypes.COPY_NAME;
 	}
 
@@ -61,7 +61,7 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 		private final String name;
 		final LootContextParameter<?> parameter;
 
-		private Source(String name, LootContextParameter<?> parameter) {
+		private Source(final String name, final LootContextParameter<?> parameter) {
 			this.name = name;
 			this.parameter = parameter;
 		}

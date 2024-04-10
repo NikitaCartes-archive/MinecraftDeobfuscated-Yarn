@@ -30,14 +30,14 @@ public class SoundLoader {
 
 					StaticSound var5;
 					try {
-						OggAudioStream oggAudioStream = new OggAudioStream(inputStream);
+						NonRepeatingAudioStream nonRepeatingAudioStream = new OggAudioStream(inputStream);
 
 						try {
-							ByteBuffer byteBuffer = oggAudioStream.getBuffer();
-							var5 = new StaticSound(byteBuffer, oggAudioStream.getFormat());
+							ByteBuffer byteBuffer = nonRepeatingAudioStream.readAll();
+							var5 = new StaticSound(byteBuffer, nonRepeatingAudioStream.getFormat());
 						} catch (Throwable var8) {
 							try {
-								oggAudioStream.close();
+								nonRepeatingAudioStream.close();
 							} catch (Throwable var7) {
 								var8.addSuppressed(var7);
 							}
@@ -45,7 +45,7 @@ public class SoundLoader {
 							throw var8;
 						}
 
-						oggAudioStream.close();
+						nonRepeatingAudioStream.close();
 					} catch (Throwable var9) {
 						if (inputStream != null) {
 							try {
@@ -66,7 +66,7 @@ public class SoundLoader {
 				} catch (IOException var10) {
 					throw new CompletionException(var10);
 				}
-			}, Util.getMainWorkerExecutor()));
+			}, Util.getDownloadWorkerExecutor()));
 	}
 
 	public CompletableFuture<AudioStream> loadStreamed(Identifier id, boolean repeatInstantly) {
@@ -77,7 +77,7 @@ public class SoundLoader {
 			} catch (IOException var4) {
 				throw new CompletionException(var4);
 			}
-		}, Util.getMainWorkerExecutor());
+		}, Util.getDownloadWorkerExecutor());
 	}
 
 	public void close() {

@@ -11,5 +11,5 @@ import net.fabricmc.api.Environment;
 public interface AudioStream extends Closeable {
 	AudioFormat getFormat();
 
-	ByteBuffer getBuffer(int size) throws IOException;
+	ByteBuffer read(int size) throws IOException;
 }

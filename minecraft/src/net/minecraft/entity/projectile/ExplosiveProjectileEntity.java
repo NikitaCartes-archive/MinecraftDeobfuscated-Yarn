@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -156,37 +155,12 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public boolean canHit() {
-		return true;
-	}
-
-	@Override
-	public float getTargetingMargin() {
-		return 1.0F;
-	}
-
-	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
-			return false;
-		} else {
-			this.scheduleVelocityUpdate();
-			Entity entity = source.getAttacker();
-			if (entity != null) {
-				if (!this.getWorld().isClient) {
-					Vec3d vec3d = entity.getRotationVector();
-					this.setVelocity(vec3d);
-					this.powerX = vec3d.x * 0.1;
-					this.powerY = vec3d.y * 0.1;
-					this.powerZ = vec3d.z * 0.1;
-					this.setOwner(entity);
-				}
-
-				return true;
-			} else {
-				return false;
-			}
-		}
+	protected void setVelocityAfterPunching(Entity attacker) {
+		Vec3d vec3d = attacker.getRotationVector();
+		this.setVelocity(vec3d);
+		this.powerX = vec3d.x * 0.1;
+		this.powerY = vec3d.y * 0.1;
+		this.powerZ = vec3d.z * 0.1;
 	}
 
 	@Override

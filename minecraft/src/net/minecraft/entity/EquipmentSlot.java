@@ -32,7 +32,7 @@ public enum EquipmentSlot implements StringIdentifiable {
 	private final int armorStandId;
 	private final String name;
 
-	private EquipmentSlot(EquipmentSlot.Type type, int entityId, int armorStandId, String name) {
+	private EquipmentSlot(final EquipmentSlot.Type type, final int entityId, final int armorStandId, final String name) {
 		this.type = type;
 		this.entityId = entityId;
 		this.armorStandId = armorStandId;

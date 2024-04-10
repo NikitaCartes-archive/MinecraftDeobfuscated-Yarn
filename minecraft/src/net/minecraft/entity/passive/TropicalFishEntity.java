@@ -215,7 +215,7 @@ public class TropicalFishEntity extends SchoolingFishEntity implements VariantHo
 
 		final int id;
 
-		private Size(int id) {
+		private Size(final int id) {
 			this.id = id;
 		}
 	}
@@ -262,7 +262,7 @@ public class TropicalFishEntity extends SchoolingFishEntity implements VariantHo
 		private final TropicalFishEntity.Size size;
 		private final int id;
 
-		private Variety(String name, TropicalFishEntity.Size size, int id) {
+		private Variety(final String name, final TropicalFishEntity.Size size, final int id) {
 			this.name = name;
 			this.size = size;
 			this.id = size.id | id << 8;

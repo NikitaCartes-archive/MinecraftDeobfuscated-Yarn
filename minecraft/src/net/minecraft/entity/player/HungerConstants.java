@@ -59,4 +59,8 @@ public class HungerConstants {
 	public static final float field_30727 = 0.0F;
 	public static final float field_30728 = 0.1F;
 	public static final float field_30729 = 0.01F;
+
+	public static float calculateSaturation(int nutrition, float saturationModifier) {
+		return (float)nutrition * saturationModifier * 2.0F;
+	}
 }

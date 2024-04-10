@@ -45,7 +45,7 @@ public class IntegerArgumentSerializer implements ArgumentSerializer<IntegerArgu
 		final int min;
 		final int max;
 
-		Properties(int min, int max) {
+		Properties(final int min, final int max) {
 			this.min = min;
 			this.max = max;
 		}

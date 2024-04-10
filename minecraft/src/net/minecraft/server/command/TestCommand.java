@@ -49,6 +49,7 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -56,11 +57,13 @@ import net.minecraft.util.PathUtil;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.slf4j.Logger;
 
 public class TestCommand {
@@ -151,7 +154,7 @@ public class TestCommand {
 					CommandManager.literal("run")
 						.then(
 							testAttemptAndPlacementConfig(
-								CommandManager.argument("testName", TestFunctionArgumentType.testFunction()), context -> RUNNERS.named(context, "testName")
+								CommandManager.argument("testName", TestFunctionArgumentType.testFunction()), context -> RUNNERS.functionNamed(context, "testName")
 							)
 						)
 				)
@@ -159,10 +162,10 @@ public class TestCommand {
 					CommandManager.literal("runmultiple")
 						.then(
 							CommandManager.argument("testName", TestFunctionArgumentType.testFunction())
-								.executes(context -> RUNNERS.named(context, "testName").runOnce())
+								.executes(context -> RUNNERS.functionNamed(context, "testName").runOnce())
 								.then(
 									CommandManager.argument("amount", IntegerArgumentType.integer())
-										.executes(context -> RUNNERS.repeat(IntegerArgumentType.getInteger(context, "amount")).named(context, "testName").runOnce())
+										.executes(context -> RUNNERS.repeat(IntegerArgumentType.getInteger(context, "amount")).functionNamed(context, "testName").runOnce())
 								)
 						)
 				)
@@ -171,6 +174,13 @@ public class TestCommand {
 				.then(testAttemptConfig(CommandManager.literal("runclosest"), RUNNERS::nearest))
 				.then(testAttemptConfig(CommandManager.literal("runthat"), RUNNERS::targeted))
 				.then(testAttemptAndPlacementConfig(CommandManager.literal("runfailed").then(argumentBuilder), RUNNERS::failed))
+				.then(
+					CommandManager.literal("locate")
+						.then(
+							CommandManager.argument("testName", TestFunctionArgumentType.testFunction())
+								.executes(context -> RUNNERS.structureNamed(context, "minecraft:" + TestFunctionArgumentType.getFunction(context, "testName").templateName()).locate())
+						)
+				)
 				.then(CommandManager.literal("resetclosest").executes(context -> RUNNERS.nearest(context).reset()))
 				.then(CommandManager.literal("resetthese").executes(context -> RUNNERS.allStructures(context).reset()))
 				.then(CommandManager.literal("resetthat").executes(context -> RUNNERS.targeted(context).reset()))
@@ -601,6 +611,45 @@ public class TestCommand {
 
 		public int runOnce() {
 			return this.run(TestAttemptConfig.once());
+		}
+
+		public int locate() {
+			TestCommand.sendMessage(this.finder.getCommandSource(), "Started locating test structures, this might take a while..");
+			MutableInt mutableInt = new MutableInt(0);
+			BlockPos blockPos = BlockPos.ofFloored(this.finder.getCommandSource().getPosition());
+			this.finder
+				.findStructureBlockPos()
+				.forEach(
+					pos -> {
+						StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)this.finder.getCommandSource().getWorld().getBlockEntity(pos);
+						if (structureBlockBlockEntity != null) {
+							Direction direction = structureBlockBlockEntity.getRotation().rotate(Direction.NORTH);
+							BlockPos blockPos2 = structureBlockBlockEntity.getPos().offset(direction, 2);
+							int ix = (int)direction.getOpposite().asRotation();
+							String string = String.format("/tp @s %d %d %d %d 0", blockPos2.getX(), blockPos2.getY(), blockPos2.getZ(), ix);
+							int j = blockPos.getX() - pos.getX();
+							int k = blockPos.getZ() - pos.getZ();
+							int l = MathHelper.floor(MathHelper.sqrt((float)(j * j + k * k)));
+							Text text = Texts.bracketed(Text.translatable("chat.coordinates", pos.getX(), pos.getY(), pos.getZ()))
+								.styled(
+									style -> style.withColor(Formatting.GREEN)
+											.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, string))
+											.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.coordinates.tooltip")))
+								);
+							Text text2 = Text.literal("Found structure at: ").append(text).append(" (distance: " + l + ")");
+							this.finder.getCommandSource().sendFeedback(() -> text2, false);
+							mutableInt.increment();
+						}
+					}
+				);
+			int i = mutableInt.intValue();
+			if (i == 0) {
+				TestCommand.sendMessage(this.finder.getCommandSource().getWorld(), "No such test structure found", Formatting.RED);
+				return 0;
+			} else {
+				TestCommand.sendMessage(this.finder.getCommandSource().getWorld(), "Finished locating, found " + i + " structure(s)", Formatting.GREEN);
+				return 1;
+			}
 		}
 	}
 }

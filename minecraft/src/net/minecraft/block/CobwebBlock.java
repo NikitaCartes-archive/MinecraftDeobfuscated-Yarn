@@ -2,6 +2,8 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -20,6 +22,11 @@ public class CobwebBlock extends Block {
 
 	@Override
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		entity.slowMovement(state, new Vec3d(0.25, 0.05F, 0.25));
+		Vec3d vec3d = new Vec3d(0.25, 0.05F, 0.25);
+		if (entity instanceof LivingEntity livingEntity && livingEntity.hasStatusEffect(StatusEffects.WEAVING)) {
+			vec3d = new Vec3d(0.5, 0.25, 0.5);
+		}
+
+		entity.slowMovement(state, vec3d);
 	}
 }

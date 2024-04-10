@@ -116,7 +116,7 @@ public class StructurePool {
 		private final String id;
 		private final ImmutableList<StructureProcessor> processors;
 
-		private Projection(String id, ImmutableList<StructureProcessor> processors) {
+		private Projection(final String id, final ImmutableList<StructureProcessor> processors) {
 			this.id = id;
 			this.processors = processors;
 		}

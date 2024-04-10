@@ -465,7 +465,7 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	public void increaseAngerAt(@Nullable Entity entity, int amount, boolean listening) {
 		if (!this.isAiDisabled() && this.isValidTarget(entity)) {
 			WardenBrain.resetDigCooldown(this);
-			boolean bl = !(this.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).orElse(null) instanceof PlayerEntity);
+			boolean bl = !(this.getTarget() instanceof PlayerEntity);
 			int i = this.angerManager.increaseAngerAt(entity, amount);
 			if (entity instanceof PlayerEntity && bl && Angriness.getForAnger(i).isAngry()) {
 				this.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
@@ -484,7 +484,7 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	@Nullable
 	@Override
 	public LivingEntity getTarget() {
-		return (LivingEntity)this.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
+		return this.getTargetInBrain();
 	}
 
 	@Override

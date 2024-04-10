@@ -36,7 +36,7 @@ public enum DataFixTypes {
 	public static final Set<TypeReference> REQUIRED_TYPES;
 	private final TypeReference typeReference;
 
-	private DataFixTypes(TypeReference typeReference) {
+	private DataFixTypes(final TypeReference typeReference) {
 		this.typeReference = typeReference;
 	}
 

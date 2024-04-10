@@ -500,17 +500,6 @@ public class ItemEntity extends Entity implements Ownable {
 
 	@Override
 	public StackReference getStackReference(int mappedIndex) {
-		return mappedIndex == 0 ? new StackReference() {
-			@Override
-			public ItemStack get() {
-				return ItemEntity.this.getStack();
-			}
-
-			@Override
-			public boolean set(ItemStack stack) {
-				ItemEntity.this.setStack(stack);
-				return true;
-			}
-		} : super.getStackReference(mappedIndex);
+		return mappedIndex == 0 ? StackReference.of(this::getStack, this::setStack) : super.getStackReference(mappedIndex);
 	}
 }

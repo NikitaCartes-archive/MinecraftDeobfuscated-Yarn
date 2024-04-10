@@ -56,7 +56,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<ApplyBonusLootFunction> getType() {
 		return LootFunctionTypes.APPLY_BONUS;
 	}
 

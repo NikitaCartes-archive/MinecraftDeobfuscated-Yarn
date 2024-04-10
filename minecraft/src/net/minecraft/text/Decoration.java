@@ -106,7 +106,7 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 		private final String name;
 		private final Decoration.Parameter.Selector selector;
 
-		private Parameter(String name, Decoration.Parameter.Selector selector) {
+		private Parameter(final String name, final Decoration.Parameter.Selector selector) {
 			this.name = name;
 			this.selector = selector;
 		}

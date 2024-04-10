@@ -118,7 +118,7 @@ public class ToastManager {
 		private long showTime = -1L;
 		private Toast.Visibility visibility = Toast.Visibility.SHOW;
 
-		Entry(T instance, int topIndex, int requiredSpaceCount) {
+		Entry(final T instance, final int topIndex, final int requiredSpaceCount) {
 			this.instance = instance;
 			this.topIndex = topIndex;
 			this.requiredSpaceCount = requiredSpaceCount;

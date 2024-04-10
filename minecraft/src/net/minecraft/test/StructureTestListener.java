@@ -132,7 +132,7 @@ class StructureTestListener implements TestListener {
 	protected static void visualizeTest(GameTestState test, Block block) {
 		ServerWorld serverWorld = test.getWorld();
 		BlockPos blockPos = test.getPos();
-		BlockPos blockPos2 = new BlockPos(-1, -1, -1);
+		BlockPos blockPos2 = new BlockPos(-1, -2, -1);
 		BlockPos blockPos3 = StructureTemplate.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, test.getRotation(), blockPos);
 		serverWorld.setBlockState(blockPos3, Blocks.BEACON.getDefaultState().rotate(test.getRotation()));
 		BlockPos blockPos4 = blockPos3.add(0, 1, 0);
@@ -149,7 +149,7 @@ class StructureTestListener implements TestListener {
 	private static void createTestOutputLectern(GameTestState test, String output) {
 		ServerWorld serverWorld = test.getWorld();
 		BlockPos blockPos = test.getPos();
-		BlockPos blockPos2 = new BlockPos(-1, 1, -1);
+		BlockPos blockPos2 = new BlockPos(-1, 0, -1);
 		BlockPos blockPos3 = StructureTemplate.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, test.getRotation(), blockPos);
 		serverWorld.setBlockState(blockPos3, Blocks.LECTERN.getDefaultState().rotate(test.getRotation()));
 		BlockState blockState = serverWorld.getBlockState(blockPos3);

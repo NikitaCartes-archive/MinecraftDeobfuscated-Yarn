@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import net.minecraft.client.item.TooltipType;
+import net.minecraft.item.Item;
 import net.minecraft.item.TooltipAppender;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -55,9 +56,9 @@ public record FireworkExplosionComponent(FireworkExplosionComponent.Type shape, 
 	private static final Text CUSTOM_COLOR_TEXT = Text.translatable("item.minecraft.firework_star.custom_color");
 
 	@Override
-	public void appendTooltip(Consumer<Text> textConsumer, TooltipType context) {
-		this.appendShapeTooltip(textConsumer);
-		this.appendOptionalTooltip(textConsumer);
+	public void appendTooltip(Item.TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+		this.appendShapeTooltip(tooltip);
+		this.appendOptionalTooltip(tooltip);
 	}
 
 	public void appendShapeTooltip(Consumer<Text> textConsumer) {
@@ -120,7 +121,7 @@ public record FireworkExplosionComponent(FireworkExplosionComponent.Type shape, 
 		private final int id;
 		private final String name;
 
-		private Type(int id, String name) {
+		private Type(final int id, final String name) {
 			this.id = id;
 			this.name = name;
 		}

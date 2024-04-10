@@ -440,7 +440,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		private final BufferBuilder.DrawParameters parameters;
 		private boolean released;
 
-		BuiltBuffer(int batchOffset, BufferBuilder.DrawParameters parameters) {
+		BuiltBuffer(final int batchOffset, final BufferBuilder.DrawParameters parameters) {
 			this.batchOffset = batchOffset;
 			this.parameters = parameters;
 		}

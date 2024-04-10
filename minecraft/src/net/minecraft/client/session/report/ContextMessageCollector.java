@@ -75,7 +75,7 @@ public class ContextMessageCollector {
 		private boolean linkSuccessful = true;
 		private int count;
 
-		ContextMessage(SignedMessage message) {
+		ContextMessage(final SignedMessage message) {
 			this.lastSeenEntries = new ObjectOpenHashSet<>(message.signedBody().lastSeenMessages().entries());
 			this.message = message;
 		}

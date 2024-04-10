@@ -155,7 +155,7 @@ public class VertexFormat {
 		 */
 		public final boolean shareVertices;
 
-		private DrawMode(int glMode, int firstVertexCount, int additionalVertexCount, boolean shareVertices) {
+		private DrawMode(final int glMode, final int firstVertexCount, final int additionalVertexCount, final boolean shareVertices) {
 			this.glMode = glMode;
 			this.firstVertexCount = firstVertexCount;
 			this.additionalVertexCount = additionalVertexCount;
@@ -179,7 +179,7 @@ public class VertexFormat {
 		public final int glType;
 		public final int size;
 
-		private IndexType(int glType, int size) {
+		private IndexType(final int glType, final int size) {
 			this.glType = glType;
 			this.size = size;
 		}

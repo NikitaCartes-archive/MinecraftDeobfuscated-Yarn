@@ -133,7 +133,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<IntProviderType<?>>> INT_PROVIDER_TYPE = of("int_provider_type");
 	public static final RegistryKey<Registry<Item>> ITEM = of("item");
 	public static final RegistryKey<Registry<LootConditionType>> LOOT_CONDITION_TYPE = of("loot_condition_type");
-	public static final RegistryKey<Registry<LootFunctionType>> LOOT_FUNCTION_TYPE = of("loot_function_type");
+	public static final RegistryKey<Registry<LootFunctionType<?>>> LOOT_FUNCTION_TYPE = of("loot_function_type");
 	public static final RegistryKey<Registry<LootNbtProviderType>> LOOT_NBT_PROVIDER_TYPE = of("loot_nbt_provider_type");
 	public static final RegistryKey<Registry<LootNumberProviderType>> LOOT_NUMBER_PROVIDER_TYPE = of("loot_number_provider_type");
 	public static final RegistryKey<Registry<LootPoolEntryType>> LOOT_POOL_ENTRY_TYPE = of("loot_pool_entry_type");

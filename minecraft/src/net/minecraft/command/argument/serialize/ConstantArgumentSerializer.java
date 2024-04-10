@@ -39,7 +39,7 @@ public class ConstantArgumentSerializer<A extends ArgumentType<?>> implements Ar
 	public final class Properties implements ArgumentSerializer.ArgumentTypeProperties<A> {
 		private final Function<CommandRegistryAccess, A> typeSupplier;
 
-		public Properties(Function<CommandRegistryAccess, A> typeSupplier) {
+		public Properties(final Function<CommandRegistryAccess, A> typeSupplier) {
 			this.typeSupplier = typeSupplier;
 		}
 

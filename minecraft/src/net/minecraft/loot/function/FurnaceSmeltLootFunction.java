@@ -25,7 +25,7 @@ public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<FurnaceSmeltLootFunction> getType() {
 		return LootFunctionTypes.FURNACE_SMELT;
 	}
 

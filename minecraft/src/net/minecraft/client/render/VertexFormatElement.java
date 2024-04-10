@@ -125,7 +125,7 @@ public class VertexFormatElement {
 		private final String name;
 		private final int glType;
 
-		private ComponentType(int byteLength, String name, int glType) {
+		private ComponentType(final int byteLength, final String name, final int glType) {
 			this.byteLength = byteLength;
 			this.name = name;
 			this.glType = glType;
@@ -181,7 +181,7 @@ public class VertexFormatElement {
 		private final VertexFormatElement.Type.SetupTask setupTask;
 		private final VertexFormatElement.Type.ClearTask clearTask;
 
-		private Type(String name, VertexFormatElement.Type.SetupTask setupTask, VertexFormatElement.Type.ClearTask clearTask) {
+		private Type(final String name, final VertexFormatElement.Type.SetupTask setupTask, final VertexFormatElement.Type.ClearTask clearTask) {
 			this.name = name;
 			this.setupTask = setupTask;
 			this.clearTask = clearTask;

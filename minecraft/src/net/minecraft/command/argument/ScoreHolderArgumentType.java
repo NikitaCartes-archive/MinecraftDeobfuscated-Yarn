@@ -208,7 +208,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 		public final class Properties implements ArgumentSerializer.ArgumentTypeProperties<ScoreHolderArgumentType> {
 			final boolean multiple;
 
-			Properties(boolean multiple) {
+			Properties(final boolean multiple) {
 				this.multiple = multiple;
 			}
 

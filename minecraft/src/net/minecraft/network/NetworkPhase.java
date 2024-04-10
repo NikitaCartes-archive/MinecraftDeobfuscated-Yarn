@@ -9,7 +9,7 @@ public enum NetworkPhase {
 
 	private final String id;
 
-	private NetworkPhase(String id) {
+	private NetworkPhase(final String id) {
 		this.id = id;
 	}
 

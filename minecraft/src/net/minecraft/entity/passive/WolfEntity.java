@@ -482,7 +482,7 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 							this.jumping = false;
 							this.navigation.stop();
 							this.setTarget(null);
-							return ActionResult.SUCCESS;
+							return ActionResult.SUCCESS_NO_ITEM_USED;
 						} else {
 							return actionResult;
 						}
@@ -673,7 +673,7 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	class AvoidLlamaGoal<T extends LivingEntity> extends FleeEntityGoal<T> {
 		private final WolfEntity wolf;
 
-		public AvoidLlamaGoal(WolfEntity wolf, Class<T> fleeFromType, float distance, double slowSpeed, double fastSpeed) {
+		public AvoidLlamaGoal(final WolfEntity wolf, final Class<T> fleeFromType, final float distance, final double slowSpeed, final double fastSpeed) {
 			super(wolf, fleeFromType, distance, slowSpeed, fastSpeed);
 			this.wolf = wolf;
 		}
@@ -710,7 +710,7 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	}
 
 	class WolfEscapeDangerGoal extends EscapeDangerGoal {
-		public WolfEscapeDangerGoal(double speed) {
+		public WolfEscapeDangerGoal(final double speed) {
 			super(WolfEntity.this, speed);
 		}
 

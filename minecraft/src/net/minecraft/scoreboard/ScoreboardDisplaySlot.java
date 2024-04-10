@@ -34,7 +34,7 @@ public enum ScoreboardDisplaySlot implements StringIdentifiable {
 	private final int id;
 	private final String name;
 
-	private ScoreboardDisplaySlot(int id, String name) {
+	private ScoreboardDisplaySlot(final int id, final String name) {
 		this.id = id;
 		this.name = name;
 	}

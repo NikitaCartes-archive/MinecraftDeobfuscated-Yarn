@@ -33,7 +33,7 @@ public enum Orientation implements StringIdentifiable {
 		return rotation.ordinal() << 3 | facing.ordinal();
 	}
 
-	private Orientation(String name, Direction facing, Direction rotation) {
+	private Orientation(final String name, final Direction facing, final Direction rotation) {
 		this.name = name;
 		this.facing = facing;
 		this.rotation = rotation;

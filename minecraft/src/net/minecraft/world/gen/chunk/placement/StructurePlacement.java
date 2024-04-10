@@ -154,7 +154,7 @@ public abstract class StructurePlacement {
 		private final String name;
 		private final StructurePlacement.GenerationPredicate generationPredicate;
 
-		private FrequencyReductionMethod(String name, StructurePlacement.GenerationPredicate generationPredicate) {
+		private FrequencyReductionMethod(final String name, final StructurePlacement.GenerationPredicate generationPredicate) {
 			this.name = name;
 			this.generationPredicate = generationPredicate;
 		}

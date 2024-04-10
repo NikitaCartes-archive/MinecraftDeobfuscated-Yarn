@@ -84,7 +84,7 @@ public final class OreVeinSampler {
 		public final int minY;
 		public final int maxY;
 
-		private VeinType(BlockState ore, BlockState rawOreBlock, BlockState stone, int minY, int maxY) {
+		private VeinType(final BlockState ore, final BlockState rawOreBlock, final BlockState stone, final int minY, final int maxY) {
 			this.ore = ore;
 			this.rawOreBlock = rawOreBlock;
 			this.stone = stone;

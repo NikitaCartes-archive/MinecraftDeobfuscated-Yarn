@@ -4,6 +4,10 @@ package net.minecraft.util.math;
  * Contains color-related helper methods.
  */
 public class ColorHelper {
+	public static int channelFromFloat(float f) {
+		return MathHelper.floor(f * 255.0F);
+	}
+
 	public static class Abgr {
 		public static int getAlpha(int abgr) {
 			return abgr >>> 24;
@@ -113,6 +117,10 @@ public class ColorHelper {
 
 		public static int withAlpha(int alpha, int rgb) {
 			return alpha << 24 | rgb & 16777215;
+		}
+
+		public static int fromFloats(float a, float r, float g, float b) {
+			return getArgb(ColorHelper.channelFromFloat(a), ColorHelper.channelFromFloat(r), ColorHelper.channelFromFloat(g), ColorHelper.channelFromFloat(b));
 		}
 	}
 }

@@ -143,7 +143,7 @@ public class PeriodicNotificationManager
 	@Environment(EnvType.CLIENT)
 	public static record Entry(long delay, long period, String title, String message) {
 
-		public Entry(long delay, long period, String title, String message) {
+		public Entry(final long delay, final long period, final String title, final String message) {
 			this.delay = delay != 0L ? delay : period;
 			this.period = period;
 			this.title = title;

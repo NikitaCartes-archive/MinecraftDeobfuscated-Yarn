@@ -179,7 +179,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 		private final boolean craftable;
 		protected final List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> slots = Lists.<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot>newArrayList();
 
-		public AlternativeButtonWidget(int x, int y, RecipeEntry<?> recipe, boolean craftable) {
+		public AlternativeButtonWidget(final int x, final int y, final RecipeEntry<?> recipe, final boolean craftable) {
 			super(x, y, 200, 20, ScreenTexts.EMPTY);
 			this.width = 24;
 			this.height = 24;
@@ -201,7 +201,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 		public void acceptAlignedInput(Iterator<Ingredient> inputs, int slot, int amount, int gridX, int gridY) {
 			ItemStack[] itemStacks = ((Ingredient)inputs.next()).getMatchingStacks();
 			if (itemStacks.length != 0) {
-				this.slots.add(new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(this, 3 + gridY * 7, 3 + gridX * 7, itemStacks));
+				this.slots.add(new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(3 + gridY * 7, 3 + gridX * 7, itemStacks));
 			}
 		}
 
@@ -249,7 +249,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 			public final int y;
 			public final int x;
 
-			public InputSlot(RecipeAlternativesWidget.AlternativeButtonWidget widget, int y, int x, ItemStack[] stacks) {
+			public InputSlot(final int y, final int x, final ItemStack[] stacks) {
 				this.y = y;
 				this.x = x;
 				this.stacks = stacks;
@@ -259,7 +259,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 
 	@Environment(EnvType.CLIENT)
 	class FurnaceAlternativeButtonWidget extends RecipeAlternativesWidget.AlternativeButtonWidget {
-		public FurnaceAlternativeButtonWidget(int i, int j, RecipeEntry<?> recipeEntry, boolean bl) {
+		public FurnaceAlternativeButtonWidget(final int i, final int j, final RecipeEntry<?> recipeEntry, final boolean bl) {
 			super(i, j, recipeEntry, bl);
 		}
 
@@ -267,7 +267,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 		protected void alignRecipe(RecipeEntry<?> recipe) {
 			Ingredient ingredient = recipe.value().getIngredients().get(0);
 			ItemStack[] itemStacks = ingredient.getMatchingStacks();
-			this.slots.add(new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(this, 10, 10, itemStacks));
+			this.slots.add(new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(10, 10, itemStacks));
 		}
 	}
 }

@@ -54,7 +54,7 @@ public class CopyComponentsLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<CopyComponentsLootFunction> getType() {
 		return LootFunctionTypes.COPY_COMPONENTS;
 	}
 
@@ -119,7 +119,7 @@ public class CopyComponentsLootFunction extends ConditionalLootFunction {
 		public static final Codec<CopyComponentsLootFunction.Source> CODEC = StringIdentifiable.createBasicCodec(CopyComponentsLootFunction.Source::values);
 		private final String id;
 
-		private Source(String id) {
+		private Source(final String id) {
 			this.id = id;
 		}
 

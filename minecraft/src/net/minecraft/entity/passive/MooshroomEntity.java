@@ -258,7 +258,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 		final String name;
 		final BlockState mushroom;
 
-		private Type(String name, BlockState mushroom) {
+		private Type(final String name, final BlockState mushroom) {
 			this.name = name;
 			this.mushroom = mushroom;
 		}

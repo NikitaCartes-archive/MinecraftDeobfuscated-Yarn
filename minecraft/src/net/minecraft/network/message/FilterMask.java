@@ -154,7 +154,7 @@ public class FilterMask {
 		private final String id;
 		private final Supplier<MapCodec<FilterMask>> codecSupplier;
 
-		private FilterStatus(String id, Supplier<MapCodec<FilterMask>> codecSupplier) {
+		private FilterStatus(final String id, final Supplier<MapCodec<FilterMask>> codecSupplier) {
 			this.id = id;
 			this.codecSupplier = codecSupplier;
 		}

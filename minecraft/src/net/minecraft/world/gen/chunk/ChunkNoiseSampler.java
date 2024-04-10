@@ -602,7 +602,7 @@ public class ChunkNoiseSampler implements DensityFunction.EachApplier, DensityFu
 		@Nullable
 		private double[] cache;
 
-		CacheOnce(DensityFunction delegate) {
+		CacheOnce(final DensityFunction delegate) {
 			this.delegate = delegate;
 		}
 
@@ -653,7 +653,7 @@ public class ChunkNoiseSampler implements DensityFunction.EachApplier, DensityFu
 		final DensityFunction delegate;
 		final double[] cache;
 
-		CellCache(DensityFunction delegate) {
+		CellCache(final DensityFunction delegate) {
 			this.delegate = delegate;
 			this.cache = new double[ChunkNoiseSampler.this.horizontalCellBlockCount
 				* ChunkNoiseSampler.this.horizontalCellBlockCount
@@ -720,7 +720,7 @@ public class ChunkNoiseSampler implements DensityFunction.EachApplier, DensityFu
 		private double z1;
 		private double result;
 
-		DensityInterpolator(DensityFunction delegate) {
+		DensityInterpolator(final DensityFunction delegate) {
 			this.delegate = delegate;
 			this.startDensityBuffer = this.createBuffer(ChunkNoiseSampler.this.verticalCellCount, ChunkNoiseSampler.this.horizontalCellCount);
 			this.endDensityBuffer = this.createBuffer(ChunkNoiseSampler.this.verticalCellCount, ChunkNoiseSampler.this.horizontalCellCount);
@@ -837,7 +837,7 @@ public class ChunkNoiseSampler implements DensityFunction.EachApplier, DensityFu
 		private final DensityFunction delegate;
 		final double[][] cache;
 
-		FlatCache(DensityFunction delegate, boolean sample) {
+		FlatCache(final DensityFunction delegate, final boolean sample) {
 			this.delegate = delegate;
 			this.cache = new double[ChunkNoiseSampler.this.horizontalBiomeEnd + 1][ChunkNoiseSampler.this.horizontalBiomeEnd + 1];
 			if (sample) {

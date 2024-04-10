@@ -17,7 +17,7 @@ public record ImmutableBlockBox(BlockPos min, BlockPos max) implements Iterable<
 		}
 	};
 
-	public ImmutableBlockBox(BlockPos min, BlockPos max) {
+	public ImmutableBlockBox(final BlockPos min, final BlockPos max) {
 		this.min = BlockPos.min(min, max);
 		this.max = BlockPos.max(min, max);
 	}

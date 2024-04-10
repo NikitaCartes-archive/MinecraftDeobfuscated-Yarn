@@ -463,7 +463,9 @@ public class ItemCommand {
 			.build(LootContextTypes.COMMAND);
 		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
 		lootContext.markActive(LootContext.itemModifier(lootFunction.value()));
-		return (ItemStack)lootFunction.value().apply(stack, lootContext);
+		ItemStack itemStack = (ItemStack)lootFunction.value().apply(stack, lootContext);
+		itemStack.capCount(itemStack.getMaxCount());
+		return itemStack;
 	}
 
 	private static ItemStack getStackInSlot(Entity entity, int slotId) throws CommandSyntaxException {

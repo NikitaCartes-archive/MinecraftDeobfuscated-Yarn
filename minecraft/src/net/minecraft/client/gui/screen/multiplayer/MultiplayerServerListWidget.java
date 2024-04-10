@@ -240,7 +240,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		@Nullable
 		private Text statusTooltipText;
 
-		protected ServerEntry(MultiplayerScreen screen, ServerInfo server) {
+		protected ServerEntry(final MultiplayerScreen screen, final ServerInfo server) {
 			this.screen = screen;
 			this.server = server;
 			this.client = MinecraftClient.getInstance();

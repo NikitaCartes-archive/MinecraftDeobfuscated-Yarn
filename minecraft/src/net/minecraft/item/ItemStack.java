@@ -5,6 +5,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.DataResult.Error;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
@@ -15,7 +16,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -56,6 +56,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
@@ -77,9 +78,11 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.Unit;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.dynamic.NullOps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
@@ -131,30 +134,30 @@ import org.slf4j.Logger;
  * </div>
  */
 public final class ItemStack implements ComponentHolder {
-	private static final Codec<RegistryEntry<Item>> ITEM_CODEC = Registries.ITEM
+	public static final Codec<RegistryEntry<Item>> ITEM_CODEC = Registries.ITEM
 		.getEntryCodec()
 		.validate(entry -> entry.matches(Items.AIR.getRegistryEntry()) ? DataResult.error(() -> "Item must not be minecraft:air") : DataResult.success(entry));
 	public static final Codec<ItemStack> CODEC = Codec.lazyInitialized(
 		() -> RecordCodecBuilder.create(
-					instance -> instance.group(
-								ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry),
-								Codecs.POSITIVE_INT.fieldOf("count").orElse(1).forGetter(ItemStack::getCount),
-								ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.EMPTY).forGetter(stack -> stack.components.getChanges())
-							)
-							.apply(instance, ItemStack::new)
-				)
-				.validate(ItemStack::validate)
+				instance -> instance.group(
+							ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry),
+							Codecs.POSITIVE_INT.fieldOf("count").orElse(1).forGetter(ItemStack::getCount),
+							ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.EMPTY).forGetter(stack -> stack.components.getChanges())
+						)
+						.apply(instance, ItemStack::new)
+			)
 	);
-	public static final Codec<ItemStack> COOKING_RECIPE_RESULT_CODEC = Codec.lazyInitialized(
+	public static final Codec<ItemStack> UNCOUNTED_CODEC = Codec.lazyInitialized(
 		() -> RecordCodecBuilder.create(
-					instance -> instance.group(
-								ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry),
-								ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.EMPTY).forGetter(stack -> stack.components.getChanges())
-							)
-							.apply(instance, (item, components) -> new ItemStack(item, 1, components))
-				)
-				.validate(ItemStack::validate)
+				instance -> instance.group(
+							ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry),
+							ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.EMPTY).forGetter(stack -> stack.components.getChanges())
+						)
+						.apply(instance, (item, components) -> new ItemStack(item, 1, components))
+			)
 	);
+	public static final Codec<ItemStack> VALIDATED_CODEC = CODEC.validate(ItemStack::validate);
+	public static final Codec<ItemStack> VALIDATED_UNCOUNTED_CODEC = UNCOUNTED_CODEC.validate(ItemStack::validate);
 	public static final Codec<ItemStack> OPTIONAL_CODEC = Codecs.optional(CODEC)
 		.xmap(optional -> (ItemStack)optional.orElse(ItemStack.EMPTY), stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack));
 	public static final Codec<ItemStack> REGISTRY_ENTRY_CODEC = ITEM_CODEC.xmap(ItemStack::new, ItemStack::getRegistryEntry);
@@ -224,10 +227,39 @@ public final class ItemStack implements ComponentHolder {
 	private Entity holder;
 
 	private static DataResult<ItemStack> validate(ItemStack stack) {
-		return stack.getCount() > stack.getMaxCount()
-			? DataResult.<ItemStack>error(() -> "Item stack with stack size of " + stack.getCount() + " was larger than maximum: " + stack.getMaxCount())
-				.setPartial((Supplier<ItemStack>)(() -> stack.copyWithCount(stack.getMaxCount())))
-			: DataResult.success(stack);
+		DataResult<Unit> dataResult = validateComponents(stack.getComponents());
+		if (dataResult.isError()) {
+			return dataResult.map(v -> stack);
+		} else {
+			return stack.getCount() > stack.getMaxCount()
+				? DataResult.error(() -> "Item stack with stack size of " + stack.getCount() + " was larger than maximum: " + stack.getMaxCount())
+				: DataResult.success(stack);
+		}
+	}
+
+	/**
+	 * {@return a packet codec that ensures the validity of the decoded stack by
+	 * checking if it can be re-encoded}
+	 * 
+	 * <p>This should be used when serializing {@link ItemStack} in C2S packets.
+	 * Encoding is unaffected.
+	 */
+	public static PacketCodec<RegistryByteBuf, ItemStack> createExtraValidatingPacketCodec(PacketCodec<RegistryByteBuf, ItemStack> basePacketCodec) {
+		return new PacketCodec<RegistryByteBuf, ItemStack>() {
+			public ItemStack decode(RegistryByteBuf registryByteBuf) {
+				ItemStack itemStack = basePacketCodec.decode(registryByteBuf);
+				if (!itemStack.isEmpty()) {
+					RegistryOps<Unit> registryOps = registryByteBuf.getRegistryManager().getOps(NullOps.INSTANCE);
+					ItemStack.CODEC.encodeStart(registryOps, itemStack).getOrThrow(DecoderException::new);
+				}
+
+				return itemStack;
+			}
+
+			public void encode(RegistryByteBuf registryByteBuf, ItemStack itemStack) {
+				basePacketCodec.encode(registryByteBuf, itemStack);
+			}
+		};
 	}
 
 	public Optional<TooltipData> getTooltipData() {
@@ -277,6 +309,12 @@ public final class ItemStack implements ComponentHolder {
 	private ItemStack(@Nullable Void v) {
 		this.item = null;
 		this.components = new ComponentMapImpl(ComponentMap.EMPTY);
+	}
+
+	public static DataResult<Unit> validateComponents(ComponentMap components) {
+		return components.contains(DataComponentTypes.MAX_DAMAGE) && components.getOrDefault(DataComponentTypes.MAX_STACK_SIZE, 1) > 1
+			? DataResult.error(() -> "Item cannot be both damageable and stackable")
+			: DataResult.success(Unit.INSTANCE);
 	}
 
 	public static Optional<ItemStack> fromNbt(RegistryWrapper.WrapperLookup registries, NbtElement nbt) {
@@ -621,10 +659,12 @@ public final class ItemStack implements ComponentHolder {
 		return this.getItem().onClicked(this, stack, slot, clickType, player, cursorStackReference);
 	}
 
-	public void postHit(LivingEntity target, PlayerEntity attacker) {
+	public void postHit(LivingEntity target, PlayerEntity player) {
 		Item item = this.getItem();
-		if (item.postHit(this, target, attacker)) {
-			attacker.incrementStat(Stats.USED.getOrCreateStat(item));
+		ItemEnchantmentsComponent itemEnchantmentsComponent = this.getEnchantments();
+		if (item.postHit(this, target, player)) {
+			player.incrementStat(Stats.USED.getOrCreateStat(item));
+			EnchantmentHelper.onAttack(player, target, itemEnchantmentsComponent);
 		}
 	}
 
@@ -912,6 +952,18 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	public void applyChanges(ComponentChanges changes) {
+		ComponentChanges componentChanges = this.components.getChanges();
+		this.components.applyChanges(changes);
+		Optional<Error<ItemStack>> optional = validate(this).error();
+		if (optional.isPresent()) {
+			LOGGER.error("Failed to apply component patch '{}' to item: '{}'", changes, ((Error)optional.get()).message());
+			this.components.setChanges(componentChanges);
+		} else {
+			this.getItem().postProcessComponents(this);
+		}
+	}
+
+	public void applyUnvalidatedChanges(ComponentChanges changes) {
 		this.components.applyChanges(changes);
 		this.getItem().postProcessComponents(this);
 	}
@@ -934,10 +986,12 @@ public final class ItemStack implements ComponentHolder {
 		}
 	}
 
-	private <T extends TooltipAppender> void appendTooltip(DataComponentType<T> componentType, Consumer<Text> textConsumer, TooltipType context) {
+	private <T extends TooltipAppender> void appendTooltip(
+		DataComponentType<T> componentType, Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type
+	) {
 		T tooltipAppender = (T)this.get(componentType);
 		if (tooltipAppender != null) {
-			tooltipAppender.appendTooltip(textConsumer, context);
+			tooltipAppender.appendTooltip(context, textConsumer, type);
 		}
 	}
 
@@ -964,13 +1018,13 @@ public final class ItemStack implements ComponentHolder {
 				this.getItem().appendTooltip(this, context, list, type);
 			}
 
-			this.appendTooltip(DataComponentTypes.TRIM, consumer, type);
-			this.appendTooltip(DataComponentTypes.STORED_ENCHANTMENTS, consumer, type);
-			this.appendTooltip(DataComponentTypes.ENCHANTMENTS, consumer, type);
-			this.appendTooltip(DataComponentTypes.DYED_COLOR, consumer, type);
-			this.appendTooltip(DataComponentTypes.LORE, consumer, type);
+			this.appendTooltip(DataComponentTypes.TRIM, context, consumer, type);
+			this.appendTooltip(DataComponentTypes.STORED_ENCHANTMENTS, context, consumer, type);
+			this.appendTooltip(DataComponentTypes.ENCHANTMENTS, context, consumer, type);
+			this.appendTooltip(DataComponentTypes.DYED_COLOR, context, consumer, type);
+			this.appendTooltip(DataComponentTypes.LORE, context, consumer, type);
 			this.appendAttributeModifiersTooltip(consumer, player);
-			this.appendTooltip(DataComponentTypes.UNBREAKABLE, consumer, type);
+			this.appendTooltip(DataComponentTypes.UNBREAKABLE, context, consumer, type);
 			BlockPredicatesChecker blockPredicatesChecker = this.get(DataComponentTypes.CAN_BREAK);
 			if (blockPredicatesChecker != null && blockPredicatesChecker.showInTooltip()) {
 				consumer.accept(ScreenTexts.EMPTY);

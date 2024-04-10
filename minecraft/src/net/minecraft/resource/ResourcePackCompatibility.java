@@ -12,7 +12,7 @@ public enum ResourcePackCompatibility {
 	private final Text notification;
 	private final Text confirmMessage;
 
-	private ResourcePackCompatibility(String translationSuffix) {
+	private ResourcePackCompatibility(final String translationSuffix) {
 		this.notification = Text.translatable("pack.incompatible." + translationSuffix).formatted(Formatting.GRAY);
 		this.confirmMessage = Text.translatable("pack.incompatible.confirm." + translationSuffix);
 	}

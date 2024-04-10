@@ -192,7 +192,7 @@ public class ServerInfo {
 
 		private final Text name;
 
-		private ResourcePackPolicy(String name) {
+		private ResourcePackPolicy(final String name) {
 			this.name = Text.translatable("addServer.resourcePack." + name);
 		}
 

@@ -34,7 +34,7 @@ public enum SpawnGroup implements StringIdentifiable {
 	private final int despawnStartRange = 32;
 	private final int immediateDespawnRange;
 
-	private SpawnGroup(String name, int spawnCap, boolean peaceful, boolean rare, int immediateDespawnRange) {
+	private SpawnGroup(final String name, final int spawnCap, final boolean peaceful, final boolean rare, final int immediateDespawnRange) {
 		this.name = name;
 		this.capacity = spawnCap;
 		this.peaceful = peaceful;

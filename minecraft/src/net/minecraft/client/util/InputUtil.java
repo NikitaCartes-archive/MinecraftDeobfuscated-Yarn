@@ -335,7 +335,7 @@ public class InputUtil {
 			type.map.put(keyCode, key);
 		}
 
-		private Type(String name, BiFunction<Integer, String, Text> textTranslator) {
+		private Type(final String name, final BiFunction<Integer, String, Text> textTranslator) {
 			this.name = name;
 			this.textTranslator = textTranslator;
 		}

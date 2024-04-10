@@ -56,7 +56,7 @@ public class RaycastContext {
 
 		private final Predicate<FluidState> predicate;
 
-		private FluidHandling(Predicate<FluidState> predicate) {
+		private FluidHandling(final Predicate<FluidState> predicate) {
 			this.predicate = predicate;
 		}
 
@@ -77,7 +77,7 @@ public class RaycastContext {
 
 		private final RaycastContext.ShapeProvider provider;
 
-		private ShapeType(RaycastContext.ShapeProvider provider) {
+		private ShapeType(final RaycastContext.ShapeProvider provider) {
 			this.provider = provider;
 		}
 

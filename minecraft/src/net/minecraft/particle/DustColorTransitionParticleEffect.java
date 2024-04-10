@@ -1,16 +1,11 @@
 package net.minecraft.particle;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Locale;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Vector3f;
@@ -20,8 +15,8 @@ public class DustColorTransitionParticleEffect extends AbstractDustParticleEffec
 	public static final DustColorTransitionParticleEffect DEFAULT = new DustColorTransitionParticleEffect(SCULK_BLUE, DustParticleEffect.RED, 1.0F);
 	public static final MapCodec<DustColorTransitionParticleEffect> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Codecs.VECTOR_3F.fieldOf("fromColor").forGetter(effect -> effect.color),
-					Codecs.VECTOR_3F.fieldOf("toColor").forGetter(effect -> effect.toColor),
+					Codecs.VECTOR_3F.fieldOf("from_color").forGetter(effect -> effect.color),
+					Codecs.VECTOR_3F.fieldOf("to_color").forGetter(effect -> effect.toColor),
 					Codec.FLOAT.fieldOf("scale").forGetter(effect -> effect.scale)
 				)
 				.apply(instance, DustColorTransitionParticleEffect::new)
@@ -35,17 +30,6 @@ public class DustColorTransitionParticleEffect extends AbstractDustParticleEffec
 		effect -> effect.scale,
 		DustColorTransitionParticleEffect::new
 	);
-	public static final ParticleEffect.Factory<DustColorTransitionParticleEffect> FACTORY = new ParticleEffect.Factory<DustColorTransitionParticleEffect>() {
-		public DustColorTransitionParticleEffect read(
-			ParticleType<DustColorTransitionParticleEffect> particleType, StringReader stringReader, RegistryWrapper.WrapperLookup wrapperLookup
-		) throws CommandSyntaxException {
-			Vector3f vector3f = AbstractDustParticleEffect.readColor(stringReader);
-			stringReader.expect(' ');
-			float f = stringReader.readFloat();
-			Vector3f vector3f2 = AbstractDustParticleEffect.readColor(stringReader);
-			return new DustColorTransitionParticleEffect(vector3f, vector3f2, f);
-		}
-	};
 	private final Vector3f toColor;
 
 	public DustColorTransitionParticleEffect(Vector3f fromColor, Vector3f toColor, float scale) {
@@ -59,22 +43,6 @@ public class DustColorTransitionParticleEffect extends AbstractDustParticleEffec
 
 	public Vector3f getToColor() {
 		return this.toColor;
-	}
-
-	@Override
-	public String asString(RegistryWrapper.WrapperLookup registryLookup) {
-		return String.format(
-			Locale.ROOT,
-			"%s %.2f %.2f %.2f %.2f %.2f %.2f %.2f",
-			Registries.PARTICLE_TYPE.getId(this.getType()),
-			this.color.x(),
-			this.color.y(),
-			this.color.z(),
-			this.scale,
-			this.toColor.x(),
-			this.toColor.y(),
-			this.toColor.z()
-		);
 	}
 
 	@Override

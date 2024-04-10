@@ -337,7 +337,7 @@ public final class Biome {
 		public static final Codec<Biome.Precipitation> CODEC = StringIdentifiable.createCodec(Biome.Precipitation::values);
 		private final String name;
 
-		private Precipitation(String name) {
+		private Precipitation(final String name) {
 			this.name = name;
 		}
 
@@ -376,7 +376,7 @@ public final class Biome {
 
 		public abstract float getModifiedTemperature(BlockPos pos, float temperature);
 
-		TemperatureModifier(String name) {
+		TemperatureModifier(final String name) {
 			this.name = name;
 		}
 

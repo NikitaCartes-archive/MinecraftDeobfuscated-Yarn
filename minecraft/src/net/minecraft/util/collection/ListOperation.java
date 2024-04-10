@@ -16,6 +16,8 @@ import net.minecraft.util.dynamic.Codecs;
 import org.slf4j.Logger;
 
 public interface ListOperation {
+	MapCodec<ListOperation> UNLIMITED_SIZE_CODEC = createCodec(Integer.MAX_VALUE);
+
 	static MapCodec<ListOperation> createCodec(int maxSize) {
 		return ListOperation.Mode.CODEC.<ListOperation>dispatchMap("mode", ListOperation::getMode, mode -> mode.codec).validate(operation -> {
 			if (operation instanceof ListOperation.ReplaceSection replaceSection && replaceSection.size().isPresent()) {
@@ -30,6 +32,10 @@ public interface ListOperation {
 	}
 
 	ListOperation.Mode getMode();
+
+	default <T> List<T> method_59742(List<T> list, List<T> list2) {
+		return this.apply(list, list2, Integer.MAX_VALUE);
+	}
 
 	<T> List<T> apply(List<T> current, List<T> values, int maxSize);
 
@@ -98,7 +104,7 @@ public interface ListOperation {
 		private final String id;
 		final MapCodec<? extends ListOperation> codec;
 
-		private Mode(String id, MapCodec<? extends ListOperation> codec) {
+		private Mode(final String id, final MapCodec<? extends ListOperation> codec) {
 			this.id = id;
 			this.codec = codec;
 		}

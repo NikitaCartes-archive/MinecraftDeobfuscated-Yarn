@@ -168,7 +168,7 @@ public class BeaconScreenHandler extends ScreenHandler {
 	}
 
 	class PaymentSlot extends Slot {
-		public PaymentSlot(Inventory inventory, int index, int x, int y) {
+		public PaymentSlot(final Inventory inventory, final int index, final int x, final int y) {
 			super(inventory, index, x, y);
 		}
 

@@ -9,7 +9,7 @@ public enum SculkSensorPhase implements StringIdentifiable {
 
 	private final String name;
 
-	private SculkSensorPhase(String name) {
+	private SculkSensorPhase(final String name) {
 		this.name = name;
 	}
 

@@ -742,7 +742,7 @@ public class PandaEntity extends AnimalEntity {
 		private final String name;
 		private final boolean recessive;
 
-		private Gene(int id, String name, boolean recessive) {
+		private Gene(final int id, final String name, final boolean recessive) {
 			this.id = id;
 			this.name = name;
 			this.recessive = recessive;

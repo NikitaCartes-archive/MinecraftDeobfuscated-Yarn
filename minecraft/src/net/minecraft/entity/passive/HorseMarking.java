@@ -13,7 +13,7 @@ public enum HorseMarking {
 	private static final IntFunction<HorseMarking> BY_ID = ValueLists.createIdToValueFunction(HorseMarking::getId, values(), ValueLists.OutOfBoundsHandling.WRAP);
 	private final int id;
 
-	private HorseMarking(int id) {
+	private HorseMarking(final int id) {
 		this.id = id;
 	}
 

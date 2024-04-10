@@ -43,7 +43,7 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<SetLootTableLootFunction> getType() {
 		return LootFunctionTypes.SET_LOOT_TABLE;
 	}
 

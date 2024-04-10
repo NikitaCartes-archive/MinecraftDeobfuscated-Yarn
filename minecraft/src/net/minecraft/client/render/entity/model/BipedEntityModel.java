@@ -489,7 +489,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 
 		private final boolean twoHanded;
 
-		private ArmPose(boolean twoHanded) {
+		private ArmPose(final boolean twoHanded) {
 			this.twoHanded = twoHanded;
 		}
 

@@ -190,7 +190,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		int i = 0;
 		int j = 0;
 
-		for (ItemStack itemStack : stack.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT)) {
+		for (ItemStack itemStack : stack.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT).iterateNonEmpty()) {
 			j++;
 			if (i <= 4) {
 				i++;

@@ -300,7 +300,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 
 		private final Predicate<? super PointOfInterest> predicate;
 
-		private OccupationStatus(Predicate<? super PointOfInterest> predicate) {
+		private OccupationStatus(final Predicate<? super PointOfInterest> predicate) {
 			this.predicate = predicate;
 		}
 

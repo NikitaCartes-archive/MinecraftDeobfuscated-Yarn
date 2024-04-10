@@ -1382,14 +1382,14 @@ public class InGameHud {
 		private final Identifier hardcoreHalfBlinkingTexture;
 
 		private HeartType(
-			Identifier fullTexture,
-			Identifier fullBlinkingTexture,
-			Identifier halfTexture,
-			Identifier halfBlinkingTexture,
-			Identifier hardcoreFullTexture,
-			Identifier hardcoreFullBlinkingTexture,
-			Identifier hardcoreHalfTexture,
-			Identifier hardcoreHalfBlinkingTexture
+			final Identifier fullTexture,
+			final Identifier fullBlinkingTexture,
+			final Identifier halfTexture,
+			final Identifier halfBlinkingTexture,
+			final Identifier hardcoreFullTexture,
+			final Identifier hardcoreFullBlinkingTexture,
+			final Identifier hardcoreHalfTexture,
+			final Identifier hardcoreHalfBlinkingTexture
 		) {
 			this.fullTexture = fullTexture;
 			this.fullBlinkingTexture = fullBlinkingTexture;

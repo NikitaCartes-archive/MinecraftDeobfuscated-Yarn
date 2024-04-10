@@ -649,7 +649,7 @@ public class WorldChunk extends Chunk {
 		private final BlockEntityTicker<T> ticker;
 		private boolean hasWarned;
 
-		DirectBlockEntityTickInvoker(T blockEntity, BlockEntityTicker<T> ticker) {
+		DirectBlockEntityTickInvoker(final T blockEntity, final BlockEntityTicker<T> ticker) {
 			this.blockEntity = blockEntity;
 			this.ticker = ticker;
 		}
@@ -710,7 +710,7 @@ public class WorldChunk extends Chunk {
 	class WrappedBlockEntityTickInvoker implements BlockEntityTickInvoker {
 		private BlockEntityTickInvoker wrapped;
 
-		WrappedBlockEntityTickInvoker(BlockEntityTickInvoker wrapped) {
+		WrappedBlockEntityTickInvoker(final BlockEntityTickInvoker wrapped) {
 			this.wrapped = wrapped;
 		}
 

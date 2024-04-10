@@ -11,8 +11,8 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.Util;
 
 public class EntityHorseSplitFix extends EntityTransformFix {
-	public EntityHorseSplitFix(Schema outputSchema, boolean changesType) {
-		super("EntityHorseSplitFix", outputSchema, changesType);
+	public EntityHorseSplitFix(Schema schema, boolean bl) {
+		super("EntityHorseSplitFix", schema, bl);
 	}
 
 	@Override

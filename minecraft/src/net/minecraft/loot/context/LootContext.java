@@ -126,7 +126,7 @@ public class LootContext {
 		private final String type;
 		private final LootContextParameter<? extends Entity> parameter;
 
-		private EntityTarget(String type, LootContextParameter<? extends Entity> parameter) {
+		private EntityTarget(final String type, final LootContextParameter<? extends Entity> parameter) {
 			this.type = type;
 			this.parameter = parameter;
 		}

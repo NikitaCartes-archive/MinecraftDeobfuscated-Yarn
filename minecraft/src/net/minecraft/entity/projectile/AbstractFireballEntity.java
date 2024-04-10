@@ -6,6 +6,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -63,5 +64,10 @@ public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity i
 
 	private ItemStack getItem() {
 		return new ItemStack(Items.FIRE_CHARGE);
+	}
+
+	@Override
+	public StackReference getStackReference(int mappedIndex) {
+		return mappedIndex == 0 ? StackReference.of(this::getStack, this::setItem) : super.getStackReference(mappedIndex);
 	}
 }

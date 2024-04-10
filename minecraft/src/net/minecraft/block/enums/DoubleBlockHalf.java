@@ -9,7 +9,7 @@ public enum DoubleBlockHalf implements StringIdentifiable {
 
 	private final Direction oppositeDirection;
 
-	private DoubleBlockHalf(Direction oppositeDirection) {
+	private DoubleBlockHalf(final Direction oppositeDirection) {
 		this.oppositeDirection = oppositeDirection;
 	}
 

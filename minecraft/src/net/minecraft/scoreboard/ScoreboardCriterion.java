@@ -138,7 +138,7 @@ public class ScoreboardCriterion {
 			ScoreboardCriterion.RenderType::values
 		);
 
-		private RenderType(String name) {
+		private RenderType(final String name) {
 			this.name = name;
 		}
 

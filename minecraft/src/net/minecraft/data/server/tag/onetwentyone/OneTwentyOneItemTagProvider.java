@@ -55,5 +55,6 @@ public class OneTwentyOneItemTagProvider extends ItemTagProvider {
 		this.getOrCreateTagBuilder(ItemTags.WEAPON_ENCHANTABLE).add(Items.MACE);
 		this.getOrCreateTagBuilder(ItemTags.FIRE_ASPECT_ENCHANTABLE).add(Items.MACE);
 		this.getOrCreateTagBuilder(ItemTags.VANISHING_ENCHANTABLE).add(Items.MACE);
+		this.getOrCreateTagBuilder(ItemTags.BREAKS_DECORATED_POTS).add(Items.MACE);
 	}
 }

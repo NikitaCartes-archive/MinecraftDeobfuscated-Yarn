@@ -47,7 +47,7 @@ public enum DyeColor implements StringIdentifiable {
 	private final int fireworkColor;
 	private final int signColor;
 
-	private DyeColor(int id, String name, int color, MapColor mapColor, int fireworkColor, int signColor) {
+	private DyeColor(final int id, final String name, final int color, final MapColor mapColor, final int fireworkColor, final int signColor) {
 		this.id = id;
 		this.name = name;
 		this.mapColor = mapColor;

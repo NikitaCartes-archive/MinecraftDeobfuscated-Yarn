@@ -192,7 +192,10 @@ public class ExperienceCommand {
 		final ToIntFunction<ServerPlayerEntity> getter;
 
 		private Component(
-			String name, BiConsumer<ServerPlayerEntity, Integer> adder, BiPredicate<ServerPlayerEntity, Integer> setter, ToIntFunction<ServerPlayerEntity> getter
+			final String name,
+			final BiConsumer<ServerPlayerEntity, Integer> adder,
+			final BiPredicate<ServerPlayerEntity, Integer> setter,
+			final ToIntFunction<ServerPlayerEntity> getter
 		) {
 			this.adder = adder;
 			this.name = name;

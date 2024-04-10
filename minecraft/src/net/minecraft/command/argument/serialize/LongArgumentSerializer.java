@@ -45,7 +45,7 @@ public class LongArgumentSerializer implements ArgumentSerializer<LongArgumentTy
 		final long min;
 		final long max;
 
-		Properties(long min, long max) {
+		Properties(final long min, final long max) {
 			this.min = min;
 			this.max = max;
 		}

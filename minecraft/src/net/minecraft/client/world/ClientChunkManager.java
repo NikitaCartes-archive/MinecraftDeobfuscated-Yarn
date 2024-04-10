@@ -178,7 +178,7 @@ public class ClientChunkManager extends ChunkManager {
 		volatile int centerChunkZ;
 		int loadedChunkCount;
 
-		ClientChunkMap(int radius) {
+		ClientChunkMap(final int radius) {
 			this.radius = radius;
 			this.diameter = radius * 2 + 1;
 			this.chunks = new AtomicReferenceArray(this.diameter * this.diameter);

@@ -400,11 +400,11 @@ public class UpgradeData {
 
 		public static final Direction[] DIRECTIONS = Direction.values();
 
-		BuiltinLogic(Block... blocks) {
+		BuiltinLogic(final Block... blocks) {
 			this(false, blocks);
 		}
 
-		BuiltinLogic(boolean addCallback, Block... blocks) {
+		BuiltinLogic(final boolean addCallback, final Block... blocks) {
 			for (Block block : blocks) {
 				UpgradeData.BLOCK_TO_LOGIC.put(block, this);
 			}

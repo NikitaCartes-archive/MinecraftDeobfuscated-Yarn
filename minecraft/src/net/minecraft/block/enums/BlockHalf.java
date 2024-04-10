@@ -8,7 +8,7 @@ public enum BlockHalf implements StringIdentifiable {
 
 	private final String name;
 
-	private BlockHalf(String name) {
+	private BlockHalf(final String name) {
 		this.name = name;
 	}
 

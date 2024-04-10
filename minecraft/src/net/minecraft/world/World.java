@@ -29,6 +29,7 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
@@ -1184,6 +1185,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public DamageSources getDamageSources() {
 		return this.damageSources;
 	}
+
+	public abstract BrewingRecipeRegistry getBrewingRecipeRegistry();
 
 	public static enum ExplosionSourceType {
 		NONE,

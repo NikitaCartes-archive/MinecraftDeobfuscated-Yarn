@@ -523,7 +523,7 @@ public class MapState extends PersistentState {
 		private int emptyPacketsRequested;
 		public int field_131;
 
-		PlayerUpdateTracker(PlayerEntity player) {
+		PlayerUpdateTracker(final PlayerEntity player) {
 			this.player = player;
 		}
 

@@ -23,7 +23,7 @@ public enum GameMode implements StringIdentifiable {
 	private final Text simpleTranslatableName;
 	private final Text translatableName;
 
-	private GameMode(int id, String name) {
+	private GameMode(final int id, final String name) {
 		this.id = id;
 		this.name = name;
 		this.simpleTranslatableName = Text.translatable("selectWorld.gameMode." + name);

@@ -370,7 +370,9 @@ public class FileDownload {
 		private final LevelStorage levelStorageSource;
 		private final RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus;
 
-		ProgressListener(String worldName, File tempFile, LevelStorage levelStorageSource, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus) {
+		ProgressListener(
+			final String worldName, final File tempFile, final LevelStorage levelStorageSource, final RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus
+		) {
 			this.worldName = worldName;
 			this.tempFile = tempFile;
 			this.levelStorageSource = levelStorageSource;
@@ -397,7 +399,7 @@ public class FileDownload {
 		private final RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus;
 		private final WorldDownload worldDownload;
 
-		ResourcePackProgressListener(File tempFile, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus, WorldDownload worldDownload) {
+		ResourcePackProgressListener(final File tempFile, final RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus, final WorldDownload worldDownload) {
 			this.tempFile = tempFile;
 			this.downloadStatus = downloadStatus;
 			this.worldDownload = worldDownload;

@@ -88,7 +88,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 		final Map<ChunkPos, String> clientStates;
 		final CompletableFuture<Map<ChunkPos, String>> serverStates;
 
-		ChunkLoadingStatus(IntegratedServer server, double x, double z) {
+		ChunkLoadingStatus(final IntegratedServer server, final double x, final double z) {
 			ClientWorld clientWorld = ChunkLoadingDebugRenderer.this.client.world;
 			RegistryKey<World> registryKey = clientWorld.getRegistryKey();
 			int i = ChunkSectionPos.getSectionCoord(x);

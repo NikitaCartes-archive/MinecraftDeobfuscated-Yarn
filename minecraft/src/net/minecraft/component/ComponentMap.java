@@ -54,6 +54,22 @@ public interface ComponentMap extends Iterable<Component<?>> {
 		}
 	});
 
+	static ComponentMap of(ComponentMap base, ComponentMap overrides) {
+		return new ComponentMap() {
+			@Nullable
+			@Override
+			public <T> T get(DataComponentType<? extends T> type) {
+				T object = overrides.get(type);
+				return object != null ? object : base.get(type);
+			}
+
+			@Override
+			public Set<DataComponentType<?>> getTypes() {
+				return Sets.<DataComponentType<?>>union(base.getTypes(), overrides.getTypes());
+			}
+		};
+	}
+
 	static ComponentMap.Builder builder() {
 		return new ComponentMap.Builder();
 	}

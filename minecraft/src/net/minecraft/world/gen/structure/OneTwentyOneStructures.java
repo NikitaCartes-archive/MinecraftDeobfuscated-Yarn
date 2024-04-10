@@ -31,7 +31,7 @@ public class OneTwentyOneStructures {
 					(Map<SpawnGroup, StructureSpawns>)Arrays.stream(SpawnGroup.values())
 						.collect(Collectors.toMap(group -> group, group -> new StructureSpawns(StructureSpawns.BoundingBox.PIECE, Pool.empty()))),
 					GenerationStep.Feature.UNDERGROUND_STRUCTURES,
-					StructureTerrainAdaptation.BURY
+					StructureTerrainAdaptation.ENCAPSULATE
 				),
 				registryEntryLookup2.getOrThrow(TrialChamberData.CHAMBER_END_POOL_KEY),
 				Optional.empty(),

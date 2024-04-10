@@ -165,7 +165,7 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 
 		final Function<PacketByteBuf, PlayerInteractEntityC2SPacket.InteractTypeHandler> handlerGetter;
 
-		private InteractType(Function<PacketByteBuf, PlayerInteractEntityC2SPacket.InteractTypeHandler> handlerGetter) {
+		private InteractType(final Function<PacketByteBuf, PlayerInteractEntityC2SPacket.InteractTypeHandler> handlerGetter) {
 			this.handlerGetter = handlerGetter;
 		}
 	}

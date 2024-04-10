@@ -124,7 +124,7 @@ public class RegistryPredicateArgumentType<T> implements ArgumentType<RegistryPr
 		public final class Properties implements ArgumentSerializer.ArgumentTypeProperties<RegistryPredicateArgumentType<T>> {
 			final RegistryKey<? extends Registry<T>> registryRef;
 
-			Properties(RegistryKey<? extends Registry<T>> registryRef) {
+			Properties(final RegistryKey<? extends Registry<T>> registryRef) {
 				this.registryRef = registryRef;
 			}
 

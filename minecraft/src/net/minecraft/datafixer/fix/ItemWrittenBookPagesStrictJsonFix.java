@@ -11,8 +11,8 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
-	public ItemWrittenBookPagesStrictJsonFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public ItemWrittenBookPagesStrictJsonFix(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	public Dynamic<?> fixBookPages(Dynamic<?> dynamic) {

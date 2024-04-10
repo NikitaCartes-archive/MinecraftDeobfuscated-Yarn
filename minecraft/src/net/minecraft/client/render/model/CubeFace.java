@@ -58,7 +58,7 @@ public enum CubeFace {
 		return DIRECTION_LOOKUP[direction.getId()];
 	}
 
-	private CubeFace(CubeFace.Corner... corners) {
+	private CubeFace(final CubeFace.Corner... corners) {
 		this.corners = corners;
 	}
 

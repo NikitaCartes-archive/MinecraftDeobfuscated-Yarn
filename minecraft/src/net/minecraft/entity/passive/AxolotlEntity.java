@@ -522,6 +522,12 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 		return !this.isFromBucket() && !this.hasCustomName();
 	}
 
+	@Nullable
+	@Override
+	public LivingEntity getTarget() {
+		return this.getTargetInBrain();
+	}
+
 	public static boolean canSpawn(EntityType<? extends LivingEntity> type, ServerWorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
 		return world.getBlockState(pos.down()).isIn(BlockTags.AXOLOTLS_SPAWNABLE_ON);
 	}
@@ -540,7 +546,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	}
 
 	class AxolotlLookControl extends YawAdjustingLookControl {
-		public AxolotlLookControl(AxolotlEntity axolotl, int yawAdjustThreshold) {
+		public AxolotlLookControl(final AxolotlEntity axolotl, final int yawAdjustThreshold) {
 			super(axolotl, yawAdjustThreshold);
 		}
 
@@ -583,7 +589,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 		private final String name;
 		private final boolean natural;
 
-		private Variant(int id, String name, boolean natural) {
+		private Variant(final int id, final String name, final boolean natural) {
 			this.id = id;
 			this.name = name;
 			this.natural = natural;

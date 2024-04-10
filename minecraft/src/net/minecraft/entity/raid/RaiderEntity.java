@@ -415,7 +415,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	public class CelebrateGoal extends Goal {
 		private final RaiderEntity raider;
 
-		CelebrateGoal(RaiderEntity raider) {
+		CelebrateGoal(final RaiderEntity raider) {
 			this.raider = raider;
 			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
@@ -459,7 +459,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			.ignoreVisibility()
 			.ignoreDistanceScalingFactor();
 
-		public PatrolApproachGoal(IllagerEntity illager, float distance) {
+		public PatrolApproachGoal(final IllagerEntity illager, final float distance) {
 			this.squaredDistance = distance * distance;
 			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		}
@@ -526,7 +526,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	public class PickupBannerAsLeaderGoal<T extends RaiderEntity> extends Goal {
 		private final T actor;
 
-		public PickupBannerAsLeaderGoal(T actor) {
+		public PickupBannerAsLeaderGoal(final T actor) {
 			this.actor = actor;
 			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}

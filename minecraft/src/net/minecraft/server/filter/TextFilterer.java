@@ -368,7 +368,7 @@ public class TextFilterer implements AutoCloseable {
 		private final GameProfile gameProfile;
 		private final Executor executor;
 
-		Impl(GameProfile gameProfile) {
+		Impl(final GameProfile gameProfile) {
 			this.gameProfile = gameProfile;
 			TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(TextFilterer.this.executor, "chat stream for " + gameProfile.getName());
 			this.executor = taskExecutor::send;

@@ -543,7 +543,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	class DestroyEggGoal extends StepAndDestroyBlockGoal {
-		DestroyEggGoal(PathAwareEntity mob, double speed, int maxYDifference) {
+		DestroyEggGoal(final PathAwareEntity mob, final double speed, final int maxYDifference) {
 			super(Blocks.TURTLE_EGG, mob, speed, maxYDifference);
 		}
 

@@ -20,7 +20,7 @@ public enum Rarity implements StringIdentifiable {
 	private final String name;
 	private final Formatting formatting;
 
-	private Rarity(int index, String name, Formatting formatting) {
+	private Rarity(final int index, final String name, final Formatting formatting) {
 		this.index = index;
 		this.name = name;
 		this.formatting = formatting;

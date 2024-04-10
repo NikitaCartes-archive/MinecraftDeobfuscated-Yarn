@@ -139,7 +139,7 @@ public class RegistryEntryReferenceArgumentType<T> implements ArgumentType<Regis
 		public final class Properties implements ArgumentSerializer.ArgumentTypeProperties<RegistryEntryReferenceArgumentType<T>> {
 			final RegistryKey<? extends Registry<T>> registryRef;
 
-			Properties(RegistryKey<? extends Registry<T>> registryRef) {
+			Properties(final RegistryKey<? extends Registry<T>> registryRef) {
 				this.registryRef = registryRef;
 			}
 

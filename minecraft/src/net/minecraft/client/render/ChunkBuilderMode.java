@@ -18,7 +18,7 @@ public enum ChunkBuilderMode implements TranslatableOption {
 	private final int id;
 	private final String name;
 
-	private ChunkBuilderMode(int id, String name) {
+	private ChunkBuilderMode(final int id, final String name) {
 		this.id = id;
 		this.name = name;
 	}

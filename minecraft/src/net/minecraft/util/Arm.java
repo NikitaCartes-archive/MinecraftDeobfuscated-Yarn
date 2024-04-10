@@ -19,7 +19,7 @@ public enum Arm implements TranslatableOption, StringIdentifiable {
 	private final String name;
 	private final String translationKey;
 
-	private Arm(int id, String name, String translationKey) {
+	private Arm(final int id, final String name, final String translationKey) {
 		this.id = id;
 		this.name = name;
 		this.translationKey = translationKey;

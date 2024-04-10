@@ -55,7 +55,7 @@ public class PeriodicRunnerFactory {
 		PeriodicRunnerFactory.TimedResult<T> lastResult;
 		private long nextTime = -1L;
 
-		PeriodicRunner(String name, Callable<T> task, long unitDuration, Backoff backoff) {
+		PeriodicRunner(final String name, final Callable<T> task, final long unitDuration, final Backoff backoff) {
 			this.name = name;
 			this.task = task;
 			this.unitDuration = unitDuration;
@@ -108,7 +108,7 @@ public class PeriodicRunnerFactory {
 		private final Consumer<T> resultListener;
 		private long lastRunTime = -1L;
 
-		ResultListenableRunner(PeriodicRunnerFactory.PeriodicRunner<T> runner, Consumer<T> resultListener) {
+		ResultListenableRunner(final PeriodicRunnerFactory.PeriodicRunner<T> runner, final Consumer<T> resultListener) {
 			this.runner = runner;
 			this.resultListener = resultListener;
 		}

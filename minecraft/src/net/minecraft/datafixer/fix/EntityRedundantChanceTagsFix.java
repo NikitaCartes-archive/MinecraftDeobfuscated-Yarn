@@ -12,8 +12,8 @@ import net.minecraft.datafixer.TypeReferences;
 public class EntityRedundantChanceTagsFix extends DataFix {
 	private static final Codec<List<Float>> FLOAT_LIST_CODEC = Codec.FLOAT.listOf();
 
-	public EntityRedundantChanceTagsFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public EntityRedundantChanceTagsFix(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	@Override

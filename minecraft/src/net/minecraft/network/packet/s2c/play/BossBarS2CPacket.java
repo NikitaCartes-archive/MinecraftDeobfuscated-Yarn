@@ -194,7 +194,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		final PacketDecoder<RegistryByteBuf, BossBarS2CPacket.Action> parser;
 
-		private Type(PacketDecoder<RegistryByteBuf, BossBarS2CPacket.Action> parser) {
+		private Type(final PacketDecoder<RegistryByteBuf, BossBarS2CPacket.Action> parser) {
 			this.parser = parser;
 		}
 	}

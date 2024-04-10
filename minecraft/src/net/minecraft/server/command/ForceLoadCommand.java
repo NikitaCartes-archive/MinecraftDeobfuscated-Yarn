@@ -156,10 +156,11 @@ public class ForceLoadCommand {
 				}
 
 				ChunkPos chunkPos2 = chunkPos;
-				if (r == 0) {
+				int tx = r;
+				if (tx == 0) {
 					throw (forceLoaded ? ADDED_FAILURE_EXCEPTION : REMOVED_FAILURE_EXCEPTION).create();
 				} else {
-					if (r == 1) {
+					if (tx == 1) {
 						source.sendFeedback(
 							() -> Text.translatable("commands.forceload." + (forceLoaded ? "added" : "removed") + ".single", Text.of(chunkPos2), Text.of(registryKey.getValue())),
 							true
@@ -169,17 +170,13 @@ public class ForceLoadCommand {
 						ChunkPos chunkPos4 = new ChunkPos(o, p);
 						source.sendFeedback(
 							() -> Text.translatable(
-									"commands.forceload." + (forceLoaded ? "added" : "removed") + ".multiple",
-									Text.of(chunkPos2),
-									Text.of(registryKey.getValue()),
-									Text.of(chunkPos3),
-									Text.of(chunkPos4)
+									"commands.forceload." + (forceLoaded ? "added" : "removed") + ".multiple", t, Text.of(registryKey.getValue()), Text.of(chunkPos3), Text.of(chunkPos4)
 								),
 							true
 						);
 					}
 
-					return r;
+					return tx;
 				}
 			}
 		} else {

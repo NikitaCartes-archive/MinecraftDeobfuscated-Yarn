@@ -4,11 +4,11 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.world.ServerWorld;
@@ -24,7 +24,7 @@ public class EntityPositionSource implements PositionSource {
 				)
 				.apply(instance, (uuid, yOffset) -> new EntityPositionSource(Either.right(Either.left(uuid)), yOffset))
 	);
-	public static final PacketCodec<RegistryByteBuf, EntityPositionSource> PACKET_CODEC = PacketCodec.tuple(
+	public static final PacketCodec<ByteBuf, EntityPositionSource> PACKET_CODEC = PacketCodec.tuple(
 		PacketCodecs.VAR_INT,
 		EntityPositionSource::getEntityId,
 		PacketCodecs.FLOAT,
@@ -87,7 +87,7 @@ public class EntityPositionSource implements PositionSource {
 		}
 
 		@Override
-		public PacketCodec<RegistryByteBuf, EntityPositionSource> getPacketCodec() {
+		public PacketCodec<ByteBuf, EntityPositionSource> getPacketCodec() {
 			return EntityPositionSource.PACKET_CODEC;
 		}
 	}

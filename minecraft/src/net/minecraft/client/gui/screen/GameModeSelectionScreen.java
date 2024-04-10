@@ -149,7 +149,7 @@ public class GameModeSelectionScreen extends Screen {
 		final GameModeSelectionScreen.GameModeSelection gameMode;
 		private boolean selected;
 
-		public ButtonWidget(GameModeSelectionScreen.GameModeSelection gameMode, int x, int y) {
+		public ButtonWidget(final GameModeSelectionScreen.GameModeSelection gameMode, final int x, final int y) {
 			super(x, y, 26, 26, gameMode.getText());
 			this.gameMode = gameMode;
 		}
@@ -200,7 +200,7 @@ public class GameModeSelectionScreen extends Screen {
 		final String command;
 		final ItemStack icon;
 
-		private GameModeSelection(Text text, String command, ItemStack icon) {
+		private GameModeSelection(final Text text, final String command, final ItemStack icon) {
 			this.text = text;
 			this.command = command;
 			this.icon = icon;

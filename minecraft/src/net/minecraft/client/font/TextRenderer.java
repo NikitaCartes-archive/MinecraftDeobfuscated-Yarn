@@ -408,7 +408,14 @@ public class TextRenderer {
 		}
 
 		public Drawer(
-			VertexConsumerProvider vertexConsumers, float x, float y, int color, boolean shadow, Matrix4f matrix, TextRenderer.TextLayerType layerType, int light
+			final VertexConsumerProvider vertexConsumers,
+			final float x,
+			final float y,
+			final int color,
+			final boolean shadow,
+			final Matrix4f matrix,
+			final TextRenderer.TextLayerType layerType,
+			final int light
 		) {
 			this.vertexConsumers = vertexConsumers;
 			this.x = x;

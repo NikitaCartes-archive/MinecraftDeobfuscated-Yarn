@@ -16,7 +16,7 @@ public enum ParticlesMode implements TranslatableOption {
 	private final int id;
 	private final String translationKey;
 
-	private ParticlesMode(int id, String translationKey) {
+	private ParticlesMode(final int id, final String translationKey) {
 		this.id = id;
 		this.translationKey = translationKey;
 	}

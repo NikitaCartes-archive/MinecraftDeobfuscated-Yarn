@@ -31,13 +31,13 @@ public enum AttributeModifierSlot implements StringIdentifiable {
 	private final String name;
 	private final Predicate<EquipmentSlot> slotPredicate;
 
-	private AttributeModifierSlot(int id, String name, Predicate<EquipmentSlot> slotPredicate) {
+	private AttributeModifierSlot(final int id, final String name, final Predicate<EquipmentSlot> slotPredicate) {
 		this.id = id;
 		this.name = name;
 		this.slotPredicate = slotPredicate;
 	}
 
-	private AttributeModifierSlot(int id, String name, EquipmentSlot slot) {
+	private AttributeModifierSlot(final int id, final String name, final EquipmentSlot slot) {
 		this(id, name, slotx -> slotx == slot);
 	}
 

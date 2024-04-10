@@ -197,7 +197,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 	@Environment(EnvType.CLIENT)
 	class CancelButtonWidget extends BeaconScreen.IconButtonWidget {
-		public CancelButtonWidget(int x, int y) {
+		public CancelButtonWidget(final int x, final int y) {
 			super(x, y, BeaconScreen.CANCEL_TEXTURE, ScreenTexts.CANCEL);
 		}
 
@@ -213,7 +213,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 	@Environment(EnvType.CLIENT)
 	class DoneButtonWidget extends BeaconScreen.IconButtonWidget {
-		public DoneButtonWidget(int x, int y) {
+		public DoneButtonWidget(final int x, final int y) {
 			super(x, y, BeaconScreen.CONFIRM_TEXTURE, ScreenTexts.DONE);
 		}
 
@@ -238,7 +238,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		private RegistryEntry<StatusEffect> effect;
 		private Sprite sprite;
 
-		public EffectButtonWidget(int x, int y, RegistryEntry<StatusEffect> effect, boolean primary, int level) {
+		public EffectButtonWidget(final int x, final int y, final RegistryEntry<StatusEffect> effect, final boolean primary, final int level) {
 			super(x, y);
 			this.primary = primary;
 			this.level = level;
@@ -302,7 +302,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 	@Environment(EnvType.CLIENT)
 	class LevelTwoEffectButtonWidget extends BeaconScreen.EffectButtonWidget {
-		public LevelTwoEffectButtonWidget(int x, int y, RegistryEntry<StatusEffect> effect) {
+		public LevelTwoEffectButtonWidget(final int x, final int y, final RegistryEntry<StatusEffect> effect) {
 			super(x, y, effect, false, 3);
 		}
 

@@ -354,7 +354,7 @@ public abstract class ChunkTicketManager {
 		protected final Long2ByteMap distanceFromNearestPlayer = new Long2ByteOpenHashMap();
 		protected final int maxDistance;
 
-		protected DistanceFromNearestPlayerTracker(int maxDistance) {
+		protected DistanceFromNearestPlayerTracker(final int maxDistance) {
 			super(maxDistance + 2, 16, 256);
 			this.maxDistance = maxDistance;
 			this.distanceFromNearestPlayer.defaultReturnValue((byte)(maxDistance + 2));
@@ -426,7 +426,7 @@ public abstract class ChunkTicketManager {
 		private final Long2IntMap distances = Long2IntMaps.synchronize(new Long2IntOpenHashMap());
 		private final LongSet positionsAffected = new LongOpenHashSet();
 
-		protected NearbyChunkTicketUpdater(int i) {
+		protected NearbyChunkTicketUpdater(final int i) {
 			super(i);
 			this.watchDistance = 0;
 			this.distances.defaultReturnValue(i + 2);

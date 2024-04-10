@@ -293,7 +293,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	class WidgetButtonPage extends ButtonWidget {
 		final int index;
 
-		public WidgetButtonPage(int x, int y, int index, ButtonWidget.PressAction onPress) {
+		public WidgetButtonPage(final int x, final int y, final int index, final ButtonWidget.PressAction onPress) {
 			super(x, y, 88, 20, ScreenTexts.EMPTY, onPress, DEFAULT_NARRATION_SUPPLIER);
 			this.index = index;
 			this.visible = false;

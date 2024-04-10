@@ -71,7 +71,7 @@ public class EntityAnchorArgumentType implements ArgumentType<EntityAnchorArgume
 		private final String id;
 		private final BiFunction<Vec3d, Entity, Vec3d> offset;
 
-		private EntityAnchor(String id, BiFunction<Vec3d, Entity, Vec3d> offset) {
+		private EntityAnchor(final String id, final BiFunction<Vec3d, Entity, Vec3d> offset) {
 			this.id = id;
 			this.offset = offset;
 		}

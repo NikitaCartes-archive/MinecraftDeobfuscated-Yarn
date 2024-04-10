@@ -19,6 +19,7 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentType;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringNbtReader;
@@ -29,6 +30,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Unit;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 public class ItemStringReader {
@@ -44,6 +46,9 @@ public class ItemStringReader {
 	static final SimpleCommandExceptionType COMPONENT_EXPECTED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("arguments.item.component.expected"));
 	static final DynamicCommandExceptionType REPEATED_COMPONENT_EXCEPTION = new DynamicCommandExceptionType(
 		type -> Text.stringifiedTranslatable("arguments.item.component.repeated", type)
+	);
+	private static final DynamicCommandExceptionType MALFORMED_ITEM_EXCEPTION = new DynamicCommandExceptionType(
+		error -> Text.stringifiedTranslatable("arguments.item.malformed", error)
 	);
 	public static final char OPEN_SQUARE_BRACKET = '[';
 	public static final char CLOSED_SQUARE_BRACKET = ']';
@@ -72,7 +77,16 @@ public class ItemStringReader {
 				builder.add(type, value);
 			}
 		});
-		return new ItemStringReader.ItemResult((RegistryEntry<Item>)Objects.requireNonNull(mutableObject.getValue(), "Parser gave no item"), builder.build());
+		RegistryEntry<Item> registryEntry = (RegistryEntry<Item>)Objects.requireNonNull(mutableObject.getValue(), "Parser gave no item");
+		ComponentMap componentMap = builder.build();
+		validate(reader, registryEntry, componentMap);
+		return new ItemStringReader.ItemResult(registryEntry, componentMap);
+	}
+
+	private static void validate(StringReader reader, RegistryEntry<Item> item, ComponentMap components) throws CommandSyntaxException {
+		ComponentMap componentMap = ComponentMap.of(item.value().getComponents(), components);
+		DataResult<Unit> dataResult = ItemStack.validateComponents(componentMap);
+		dataResult.getOrThrow(error -> MALFORMED_ITEM_EXCEPTION.createWithContext(reader, error));
 	}
 
 	public void consume(StringReader reader, ItemStringReader.Callbacks callbacks) throws CommandSyntaxException {
@@ -118,7 +132,7 @@ public class ItemStringReader {
 		private final StringReader reader;
 		private final ItemStringReader.Callbacks callbacks;
 
-		Reader(StringReader reader, ItemStringReader.Callbacks callbacks) {
+		Reader(final StringReader reader, final ItemStringReader.Callbacks callbacks) {
 			this.reader = reader;
 			this.callbacks = callbacks;
 		}

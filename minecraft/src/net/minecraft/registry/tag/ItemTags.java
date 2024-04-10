@@ -131,7 +131,6 @@ public final class ItemTags {
 	public static final TagKey<Item> HOES = of("hoes");
 	public static final TagKey<Item> PICKAXES = of("pickaxes");
 	public static final TagKey<Item> SHOVELS = of("shovels");
-	public static final TagKey<Item> TOOLS = of("tools");
 	public static final TagKey<Item> BREAKS_DECORATED_POTS = of("breaks_decorated_pots");
 	public static final TagKey<Item> VILLAGER_PLANTABLE_SEEDS = of("villager_plantable_seeds");
 	public static final TagKey<Item> DYEABLE = of("dyeable");

@@ -24,7 +24,7 @@ public class LimitCountLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<LimitCountLootFunction> getType() {
 		return LootFunctionTypes.LIMIT_COUNT;
 	}
 

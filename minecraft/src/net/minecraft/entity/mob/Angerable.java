@@ -44,12 +44,14 @@ public interface Angerable {
 				this.setAngryAt(uUID);
 				Entity entity = ((ServerWorld)world).getEntity(uUID);
 				if (entity != null) {
-					if (entity instanceof MobEntity) {
-						this.setAttacker((MobEntity)entity);
+					if (entity instanceof MobEntity mobEntity) {
+						this.setTarget(mobEntity);
+						this.setAttacker(mobEntity);
 					}
 
-					if (entity.getType() == EntityType.PLAYER) {
-						this.setAttacking((PlayerEntity)entity);
+					if (entity instanceof PlayerEntity playerEntity) {
+						this.setTarget(playerEntity);
+						this.setAttacking(playerEntity);
 					}
 				}
 			}

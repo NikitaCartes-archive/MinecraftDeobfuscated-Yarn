@@ -763,19 +763,19 @@ public final class NativeImage implements AutoCloseable {
 		private final boolean writeable;
 
 		private Format(
-			int channelCount,
-			int glFormat,
-			boolean hasRed,
-			boolean hasGreen,
-			boolean hasBlue,
-			boolean hasLuminance,
-			boolean hasAlpha,
-			int redOffset,
-			int greenOffset,
-			int blueOffset,
-			int luminanceOffset,
-			int alphaOffset,
-			boolean writeable
+			final int channelCount,
+			final int glFormat,
+			final boolean hasRed,
+			final boolean hasGreen,
+			final boolean hasBlue,
+			final boolean hasLuminance,
+			final boolean hasAlpha,
+			final int redOffset,
+			final int greenOffset,
+			final int blueOffset,
+			final int luminanceOffset,
+			final int alphaOffset,
+			final boolean writeable
 		) {
 			this.channelCount = channelCount;
 			this.glFormat = glFormat;
@@ -921,7 +921,7 @@ public final class NativeImage implements AutoCloseable {
 
 		private final int value;
 
-		private InternalFormat(int value) {
+		private InternalFormat(final int value) {
 			this.value = value;
 		}
 

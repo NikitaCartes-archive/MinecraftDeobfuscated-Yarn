@@ -7,8 +7,8 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class EntityShulkerColorFix extends ChoiceFix {
-	public EntityShulkerColorFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType, "EntityShulkerColorFix", TypeReferences.ENTITY, "minecraft:shulker");
+	public EntityShulkerColorFix(Schema schema, boolean bl) {
+		super(schema, bl, "EntityShulkerColorFix", TypeReferences.ENTITY, "minecraft:shulker");
 	}
 
 	public Dynamic<?> fixShulkerColor(Dynamic<?> dynamic) {

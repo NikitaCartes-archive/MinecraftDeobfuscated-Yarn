@@ -53,6 +53,7 @@ public class StringNbtReader {
 			return DataResult.error(var2::getMessage);
 		}
 	}, NbtCompound::toString);
+	public static final Codec<NbtCompound> NBT_COMPOUND_CODEC = Codec.withAlternative(STRINGIFIED_CODEC, NbtCompound.CODEC);
 	private final StringReader reader;
 
 	/**

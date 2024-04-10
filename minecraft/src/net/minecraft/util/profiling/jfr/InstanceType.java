@@ -8,7 +8,7 @@ public enum InstanceType {
 
 	private final String name;
 
-	private InstanceType(String name) {
+	private InstanceType(final String name) {
 		this.name = name;
 	}
 

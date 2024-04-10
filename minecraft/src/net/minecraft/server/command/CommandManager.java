@@ -451,7 +451,7 @@ public class CommandManager {
 		final boolean integrated;
 		final boolean dedicated;
 
-		private RegistrationEnvironment(boolean integrated, boolean dedicated) {
+		private RegistrationEnvironment(final boolean integrated, final boolean dedicated) {
 			this.integrated = integrated;
 			this.dedicated = dedicated;
 		}

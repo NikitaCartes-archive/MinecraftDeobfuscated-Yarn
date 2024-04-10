@@ -16,7 +16,7 @@ public enum GraphicsMode implements TranslatableOption {
 	private final int id;
 	private final String translationKey;
 
-	private GraphicsMode(int id, String translationKey) {
+	private GraphicsMode(final int id, final String translationKey) {
 		this.id = id;
 		this.translationKey = translationKey;
 	}

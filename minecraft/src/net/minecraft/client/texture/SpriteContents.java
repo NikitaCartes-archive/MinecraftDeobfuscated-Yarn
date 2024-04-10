@@ -188,7 +188,7 @@ public class SpriteContents implements TextureStitcher.Stitchable, AutoCloseable
 		private final int frameCount;
 		private final boolean interpolation;
 
-		Animation(List<SpriteContents.AnimationFrame> frames, int frameCount, boolean interpolation) {
+		Animation(final List<SpriteContents.AnimationFrame> frames, final int frameCount, final boolean interpolation) {
 			this.frames = frames;
 			this.frameCount = frameCount;
 			this.interpolation = interpolation;
@@ -240,7 +240,7 @@ public class SpriteContents implements TextureStitcher.Stitchable, AutoCloseable
 		@Nullable
 		private final SpriteContents.Interpolation interpolation;
 
-		AnimatorImpl(SpriteContents.Animation animation, @Nullable SpriteContents.Interpolation interpolation) {
+		AnimatorImpl(final SpriteContents.Animation animation, @Nullable final SpriteContents.Interpolation interpolation) {
 			this.animation = animation;
 			this.interpolation = interpolation;
 		}

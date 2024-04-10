@@ -41,7 +41,7 @@ public class AndLootFunction implements LootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<AndLootFunction> getType() {
 		return LootFunctionTypes.SEQUENCE;
 	}
 }

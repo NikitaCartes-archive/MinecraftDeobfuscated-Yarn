@@ -869,7 +869,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		private final RealmsServer server;
 		private final TooltipState tooltip = new TooltipState();
 
-		public ParentRealmSelectionListEntry(RealmsServer server) {
+		public ParentRealmSelectionListEntry(final RealmsServer server) {
 			this.server = server;
 			if (!server.expired) {
 				this.tooltip.setTooltip(Tooltip.of(Text.translatable("mco.snapshot.parent.tooltip")));
@@ -933,7 +933,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		private final RealmsServer server;
 		private final TooltipState tooltip = new TooltipState();
 
-		public RealmSelectionListEntry(RealmsServer server) {
+		public RealmSelectionListEntry(final RealmsServer server) {
 			this.server = server;
 			boolean bl = RealmsMainScreen.this.isSelfOwnedServer(server);
 			if (RealmsMainScreen.isSnapshotRealmsEligible() && bl && server.hasParentWorld()) {
@@ -1054,7 +1054,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		private final TooltipState tooltip = new TooltipState();
 		private final RealmsServer server;
 
-		public SnapshotEntry(RealmsServer server) {
+		public SnapshotEntry(final RealmsServer server) {
 			this.server = server;
 			this.tooltip.setTooltip(Tooltip.of(Text.translatable("mco.snapshot.tooltip")));
 		}
@@ -1111,7 +1111,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	class VisitButtonEntry extends RealmsMainScreen.Entry {
 		private final ButtonWidget button;
 
-		public VisitButtonEntry(ButtonWidget button) {
+		public VisitButtonEntry(final ButtonWidget button) {
 			this.button = button;
 		}
 
@@ -1158,7 +1158,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		private final SimplePositioningWidget textGrid;
 		private int width = -1;
 
-		public VisitUrlNotification(Text message, int lines, RealmsNotification notification) {
+		public VisitUrlNotification(final Text message, final int lines, final RealmsNotification notification) {
 			this.message = message;
 			this.lines = lines;
 			this.grid = new GridWidget();

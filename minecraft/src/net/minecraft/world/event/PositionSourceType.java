@@ -12,7 +12,7 @@ public interface PositionSourceType<T extends PositionSource> {
 
 	MapCodec<T> getCodec();
 
-	PacketCodec<RegistryByteBuf, T> getPacketCodec();
+	PacketCodec<? super RegistryByteBuf, T> getPacketCodec();
 
 	static <S extends PositionSourceType<T>, T extends PositionSource> S register(String id, S positionSourceType) {
 		return Registry.register(Registries.POSITION_SOURCE_TYPE, id, positionSourceType);

@@ -318,7 +318,7 @@ public class VexEntity extends HostileEntity implements Ownable {
 	class TrackOwnerTargetGoal extends TrackTargetGoal {
 		private final TargetPredicate targetPredicate = TargetPredicate.createNonAttackable().ignoreVisibility().ignoreDistanceScalingFactor();
 
-		public TrackOwnerTargetGoal(PathAwareEntity mob) {
+		public TrackOwnerTargetGoal(final PathAwareEntity mob) {
 			super(mob, false);
 		}
 
@@ -335,7 +335,7 @@ public class VexEntity extends HostileEntity implements Ownable {
 	}
 
 	class VexMoveControl extends MoveControl {
-		public VexMoveControl(VexEntity owner) {
+		public VexMoveControl(final VexEntity owner) {
 			super(owner);
 		}
 

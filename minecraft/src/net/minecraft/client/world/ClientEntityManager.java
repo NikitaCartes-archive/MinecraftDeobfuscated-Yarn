@@ -96,7 +96,7 @@ public class ClientEntityManager<T extends EntityLike> {
 		private long lastSectionPos;
 		private EntityTrackingSection<T> section;
 
-		Listener(T entity, long pos, EntityTrackingSection<T> section) {
+		Listener(final T entity, final long pos, final EntityTrackingSection<T> section) {
 			this.entity = entity;
 			this.lastSectionPos = pos;
 			this.section = section;

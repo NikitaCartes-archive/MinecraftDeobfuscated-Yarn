@@ -260,7 +260,7 @@ public class ChunkBuilder {
 		});
 		private boolean needsImportantRebuild;
 
-		public BuiltChunk(int index, int originX, int originY, int originZ) {
+		public BuiltChunk(final int index, final int originX, final int originY, final int originZ) {
 			this.index = index;
 			this.setOrigin(originX, originY, originZ);
 		}
@@ -433,8 +433,8 @@ public class ChunkBuilder {
 			@Nullable
 			protected ChunkRendererRegion region;
 
-			public RebuildTask(double distance, @Nullable ChunkRendererRegion region, boolean prioritized) {
-				super(BuiltChunk.this, distance, prioritized);
+			public RebuildTask(final double distance, @Nullable final ChunkRendererRegion region, final boolean prioritized) {
+				super(distance, prioritized);
 				this.region = region;
 			}
 
@@ -600,8 +600,8 @@ public class ChunkBuilder {
 		class SortTask extends ChunkBuilder.BuiltChunk.Task {
 			private final ChunkBuilder.ChunkData data;
 
-			public SortTask(double distance, ChunkBuilder.ChunkData data) {
-				super(BuiltChunk.this, distance, true);
+			public SortTask(final double distance, final ChunkBuilder.ChunkData data) {
+				super(distance, true);
 				this.data = data;
 			}
 
@@ -668,7 +668,7 @@ public class ChunkBuilder {
 			protected final AtomicBoolean cancelled = new AtomicBoolean(false);
 			protected final boolean prioritized;
 
-			public Task(ChunkBuilder.BuiltChunk builtChunk, double distance, boolean prioritized) {
+			public Task(final double distance, final boolean prioritized) {
 				this.distance = distance;
 				this.prioritized = prioritized;
 			}

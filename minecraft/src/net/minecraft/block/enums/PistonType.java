@@ -8,7 +8,7 @@ public enum PistonType implements StringIdentifiable {
 
 	private final String name;
 
-	private PistonType(String name) {
+	private PistonType(final String name) {
 		this.name = name;
 	}
 

@@ -259,7 +259,7 @@ public class WanderingTraderEntity extends MerchantEntity {
 		final double proximityDistance;
 		final double speed;
 
-		WanderToTargetGoal(WanderingTraderEntity trader, double proximityDistance, double speed) {
+		WanderToTargetGoal(final WanderingTraderEntity trader, final double proximityDistance, final double speed) {
 			this.trader = trader;
 			this.proximityDistance = proximityDistance;
 			this.speed = speed;

@@ -9,7 +9,7 @@ public enum ChestType implements StringIdentifiable {
 
 	private final String name;
 
-	private ChestType(String name) {
+	private ChestType(final String name) {
 		this.name = name;
 	}
 

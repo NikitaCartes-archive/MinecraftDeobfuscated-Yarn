@@ -186,7 +186,7 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 
 		public final int lengthInTicks;
 
-		private WobbleType(int lengthInTicks) {
+		private WobbleType(final int lengthInTicks) {
 			this.lengthInTicks = lengthInTicks;
 		}
 	}

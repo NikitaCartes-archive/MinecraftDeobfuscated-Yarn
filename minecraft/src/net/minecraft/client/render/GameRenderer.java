@@ -266,6 +266,10 @@ public class GameRenderer implements AutoCloseable {
 		this.overlayTexture.close();
 		this.disablePostProcessor();
 		this.clearPrograms();
+		if (this.blurPostProcessor != null) {
+			this.blurPostProcessor.close();
+		}
+
 		if (this.blitScreenProgram != null) {
 			this.blitScreenProgram.close();
 		}

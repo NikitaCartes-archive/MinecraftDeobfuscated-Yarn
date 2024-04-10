@@ -23,7 +23,7 @@ public class SetComponentsLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<SetComponentsLootFunction> getType() {
 		return LootFunctionTypes.SET_COMPONENTS;
 	}
 

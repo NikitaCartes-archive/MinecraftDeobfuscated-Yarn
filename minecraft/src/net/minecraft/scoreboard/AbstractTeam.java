@@ -53,7 +53,7 @@ public abstract class AbstractTeam {
 			return (AbstractTeam.CollisionRule)COLLISION_RULES.get(name);
 		}
 
-		private CollisionRule(String name, int value) {
+		private CollisionRule(final String name, final int value) {
 			this.name = name;
 			this.value = value;
 		}
@@ -83,7 +83,7 @@ public abstract class AbstractTeam {
 			return (AbstractTeam.VisibilityRule)VISIBILITY_RULES.get(name);
 		}
 
-		private VisibilityRule(String name, int value) {
+		private VisibilityRule(final String name, final int value) {
 			this.name = name;
 			this.value = value;
 		}

@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.player.HungerConstants;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -13,12 +14,12 @@ import net.minecraft.util.dynamic.Codecs;
 /**
  * Represents the components that make up the properties of a food item.
  */
-public record FoodComponent(int nutrition, float saturationModifier, boolean canAlwaysEat, float eatSeconds, List<FoodComponent.StatusEffectEntry> effects) {
+public record FoodComponent(int nutrition, float saturation, boolean canAlwaysEat, float eatSeconds, List<FoodComponent.StatusEffectEntry> effects) {
 	private static final float DEFAULT_EAT_SECONDS = 1.6F;
 	public static final Codec<FoodComponent> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.NONNEGATIVE_INT.fieldOf("nutrition").forGetter(FoodComponent::nutrition),
-					Codec.FLOAT.fieldOf("saturation_modifier").forGetter(FoodComponent::saturationModifier),
+					Codec.FLOAT.fieldOf("saturation").forGetter(FoodComponent::saturation),
 					Codec.BOOL.optionalFieldOf("can_always_eat", Boolean.valueOf(false)).forGetter(FoodComponent::canAlwaysEat),
 					Codecs.POSITIVE_FLOAT.optionalFieldOf("eat_seconds", 1.6F).forGetter(FoodComponent::eatSeconds),
 					FoodComponent.StatusEffectEntry.CODEC.listOf().optionalFieldOf("effects", List.of()).forGetter(FoodComponent::effects)
@@ -29,7 +30,7 @@ public record FoodComponent(int nutrition, float saturationModifier, boolean can
 		PacketCodecs.VAR_INT,
 		FoodComponent::nutrition,
 		PacketCodecs.FLOAT,
-		FoodComponent::saturationModifier,
+		FoodComponent::saturation,
 		PacketCodecs.BOOL,
 		FoodComponent::canAlwaysEat,
 		PacketCodecs.FLOAT,
@@ -44,21 +45,21 @@ public record FoodComponent(int nutrition, float saturationModifier, boolean can
 	}
 
 	public static class Builder {
-		private int hunger;
+		private int nutrition;
 		private float saturationModifier;
-		private boolean alwaysEdible;
+		private boolean canAlwaysEat;
 		private float eatSeconds = 1.6F;
-		private final ImmutableList.Builder<FoodComponent.StatusEffectEntry> statusEffects = ImmutableList.builder();
+		private final ImmutableList.Builder<FoodComponent.StatusEffectEntry> effects = ImmutableList.builder();
 
 		/**
 		 * Specifies the amount of hunger a food item will fill.
 		 * 
 		 * <p>One hunger is equivalent to half of a hunger bar icon.
 		 * 
-		 * @param hunger the amount of hunger
+		 * @param nutrition the amount of hunger
 		 */
-		public FoodComponent.Builder hunger(int hunger) {
-			this.hunger = hunger;
+		public FoodComponent.Builder nutrition(int nutrition) {
+			this.nutrition = nutrition;
 			return this;
 		}
 
@@ -78,7 +79,7 @@ public record FoodComponent(int nutrition, float saturationModifier, boolean can
 		 * Specifies that a food item can be eaten when the current hunger bar is full.
 		 */
 		public FoodComponent.Builder alwaysEdible() {
-			this.alwaysEdible = true;
+			this.canAlwaysEat = true;
 			return this;
 		}
 
@@ -98,12 +99,13 @@ public record FoodComponent(int nutrition, float saturationModifier, boolean can
 		 * @param effect the effect instance to apply
 		 */
 		public FoodComponent.Builder statusEffect(StatusEffectInstance effect, float chance) {
-			this.statusEffects.add(new FoodComponent.StatusEffectEntry(effect, chance));
+			this.effects.add(new FoodComponent.StatusEffectEntry(effect, chance));
 			return this;
 		}
 
 		public FoodComponent build() {
-			return new FoodComponent(this.hunger, this.saturationModifier, this.alwaysEdible, this.eatSeconds, this.statusEffects.build());
+			float f = HungerConstants.calculateSaturation(this.nutrition, this.saturationModifier);
+			return new FoodComponent(this.nutrition, f, this.canAlwaysEat, this.eatSeconds, this.effects.build());
 		}
 	}
 

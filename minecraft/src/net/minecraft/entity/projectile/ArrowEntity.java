@@ -54,7 +54,7 @@ public class ArrowEntity extends PersistentProjectileEntity {
 
 	private void initColor() {
 		PotionContentsComponent potionContentsComponent = this.getPotionContents();
-		this.dataTracker.set(COLOR, potionContentsComponent.equals(PotionContentsComponent.DEFAULT) ? -1 : potionContentsComponent.getCustomColor());
+		this.dataTracker.set(COLOR, potionContentsComponent.equals(PotionContentsComponent.DEFAULT) ? -1 : potionContentsComponent.getColor());
 	}
 
 	public void addEffect(StatusEffectInstance effect) {

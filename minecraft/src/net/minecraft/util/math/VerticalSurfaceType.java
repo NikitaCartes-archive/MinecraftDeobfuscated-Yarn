@@ -12,7 +12,7 @@ public enum VerticalSurfaceType implements StringIdentifiable {
 	private final int offset;
 	private final String name;
 
-	private VerticalSurfaceType(Direction direction, int offset, String name) {
+	private VerticalSurfaceType(final Direction direction, final int offset, final String name) {
 		this.direction = direction;
 		this.offset = offset;
 		this.name = name;

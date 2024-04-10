@@ -165,7 +165,7 @@ public class GridWidget extends WrapperWidget {
 		private final int columns;
 		private int totalOccupiedColumns;
 
-		Adder(int columns) {
+		Adder(final int columns) {
 			this.columns = columns;
 		}
 

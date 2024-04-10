@@ -83,7 +83,7 @@ public class TutorialToast implements Toast {
 
 		private final Identifier texture;
 
-		private Type(Identifier texture) {
+		private Type(final Identifier texture) {
 			this.texture = texture;
 		}
 

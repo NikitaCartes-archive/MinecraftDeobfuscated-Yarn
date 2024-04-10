@@ -12,7 +12,7 @@ public enum AbuseReportType {
 
 	private final String name;
 
-	private AbuseReportType(String name) {
+	private AbuseReportType(final String name) {
 		this.name = name.toUpperCase(Locale.ROOT);
 	}
 

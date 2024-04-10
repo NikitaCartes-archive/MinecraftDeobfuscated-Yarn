@@ -78,7 +78,7 @@ public class RecipeBookGhostSlots {
 		private final int x;
 		private final int y;
 
-		public GhostInputSlot(Ingredient ingredient, int x, int y) {
+		public GhostInputSlot(final Ingredient ingredient, final int x, final int y) {
 			this.ingredient = ingredient;
 			this.x = x;
 			this.y = y;

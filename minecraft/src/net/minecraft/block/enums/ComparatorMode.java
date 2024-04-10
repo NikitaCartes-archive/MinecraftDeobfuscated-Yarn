@@ -8,7 +8,7 @@ public enum ComparatorMode implements StringIdentifiable {
 
 	private final String name;
 
-	private ComparatorMode(String name) {
+	private ComparatorMode(final String name) {
 		this.name = name;
 	}
 

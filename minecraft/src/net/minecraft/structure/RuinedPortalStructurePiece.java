@@ -331,7 +331,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		);
 		private final String id;
 
-		private VerticalPlacement(String id) {
+		private VerticalPlacement(final String id) {
 			this.id = id;
 		}
 

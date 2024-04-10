@@ -1,5 +1,6 @@
 package net.minecraft.component.type;
 
+import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +65,14 @@ public final class BundleContentsComponent implements TooltipData {
 		return this.stacks.stream().map(ItemStack::copy);
 	}
 
+	public Iterable<ItemStack> iterate() {
+		return this.stacks;
+	}
+
+	public Iterable<ItemStack> iterateCopy() {
+		return Lists.<ItemStack, ItemStack>transform(this.stacks, ItemStack::copy);
+	}
+
 	public int size() {
 		return this.stacks.size();
 	}
@@ -101,6 +110,12 @@ public final class BundleContentsComponent implements TooltipData {
 		public Builder(BundleContentsComponent base) {
 			this.stacks = new ArrayList(base.stacks);
 			this.occupancy = base.occupancy;
+		}
+
+		public BundleContentsComponent.Builder clear() {
+			this.stacks.clear();
+			this.occupancy = Fraction.ZERO;
+			return this;
 		}
 
 		private int addInternal(ItemStack stack) {

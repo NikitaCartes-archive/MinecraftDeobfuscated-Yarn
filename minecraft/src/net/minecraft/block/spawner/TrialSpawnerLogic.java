@@ -230,7 +230,7 @@ public final class TrialSpawnerLogic {
 								}
 
 								mobEntity.setPersistent();
-								mobSpawnerEntry.getEquipmentLootTable().ifPresent(mobEntity::setEquipmentFromLootTable);
+								mobSpawnerEntry.getEquipment().ifPresent(mobEntity::setEquipmentFromTable);
 							}
 
 							if (!world.spawnNewEntityAndPassengers(entity)) {
@@ -396,7 +396,7 @@ public final class TrialSpawnerLogic {
 
 		public final SimpleParticleType particle;
 
-		private Type(SimpleParticleType particle) {
+		private Type(final SimpleParticleType particle) {
 			this.particle = particle;
 		}
 

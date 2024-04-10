@@ -3,10 +3,12 @@ package net.minecraft.loot.function;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import java.util.Set;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 
@@ -24,7 +26,12 @@ public class SetOminousBottleAmplifierLootFunction extends ConditionalLootFuncti
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return this.amplifier.getRequiredParameters();
+	}
+
+	@Override
+	public LootFunctionType<SetOminousBottleAmplifierLootFunction> getType() {
 		return LootFunctionTypes.SET_OMINOUS_BOTTLE_AMPLIFIER;
 	}
 

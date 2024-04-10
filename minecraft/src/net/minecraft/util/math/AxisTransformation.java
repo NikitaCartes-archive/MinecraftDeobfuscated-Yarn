@@ -36,7 +36,7 @@ public enum AxisTransformation {
 		}
 	);
 
-	private AxisTransformation(int xMapping, int yMapping, int zMapping) {
+	private AxisTransformation(final int xMapping, final int yMapping, final int zMapping) {
 		this.mappings = new int[]{xMapping, yMapping, zMapping};
 		this.matrix = new Matrix3f();
 		this.matrix.set(this.map(0), 0, 1.0F);

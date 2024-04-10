@@ -90,7 +90,7 @@ public class SculkSensorBlockEntity extends BlockEntity implements GameEventList
 		protected final BlockPos pos;
 		private final PositionSource positionSource;
 
-		public VibrationCallback(BlockPos pos) {
+		public VibrationCallback(final BlockPos pos) {
 			this.pos = pos;
 			this.positionSource = new BlockPositionSource(pos);
 		}

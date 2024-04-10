@@ -12,7 +12,6 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.predicate.ComponentPredicate;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.dynamic.Codecs;
@@ -20,7 +19,7 @@ import net.minecraft.util.dynamic.Codecs;
 public record TradedItem(RegistryEntry<Item> item, int count, ComponentPredicate components, ItemStack itemStack) {
 	public static final Codec<TradedItem> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registries.ITEM.getEntryCodec().fieldOf("id").forGetter(TradedItem::item),
+					ItemStack.ITEM_CODEC.fieldOf("id").forGetter(TradedItem::item),
 					Codecs.POSITIVE_INT.fieldOf("count").orElse(1).forGetter(TradedItem::count),
 					ComponentPredicate.CODEC.optionalFieldOf("components", ComponentPredicate.EMPTY).forGetter(TradedItem::components)
 				)

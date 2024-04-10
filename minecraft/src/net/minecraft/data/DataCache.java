@@ -240,7 +240,7 @@ public class DataCache {
 		private final AtomicInteger cacheMissCount = new AtomicInteger();
 		private volatile boolean closed;
 
-		CachedDataWriter(String providerName, String version, DataCache.CachedData oldCache) {
+		CachedDataWriter(final String providerName, final String version, final DataCache.CachedData oldCache) {
 			this.providerName = providerName;
 			this.oldCache = oldCache;
 			this.newCache = new DataCache.IntermediaryCache(version);

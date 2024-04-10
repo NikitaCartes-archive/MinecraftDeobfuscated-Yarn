@@ -19,6 +19,7 @@ public record EntityEquipmentPredicate(
 	Optional<ItemPredicate> chest,
 	Optional<ItemPredicate> legs,
 	Optional<ItemPredicate> feet,
+	Optional<ItemPredicate> body,
 	Optional<ItemPredicate> mainhand,
 	Optional<ItemPredicate> offhand
 ) {
@@ -28,6 +29,7 @@ public record EntityEquipmentPredicate(
 					ItemPredicate.CODEC.optionalFieldOf("chest").forGetter(EntityEquipmentPredicate::chest),
 					ItemPredicate.CODEC.optionalFieldOf("legs").forGetter(EntityEquipmentPredicate::legs),
 					ItemPredicate.CODEC.optionalFieldOf("feet").forGetter(EntityEquipmentPredicate::feet),
+					ItemPredicate.CODEC.optionalFieldOf("body").forGetter(EntityEquipmentPredicate::body),
 					ItemPredicate.CODEC.optionalFieldOf("mainhand").forGetter(EntityEquipmentPredicate::mainhand),
 					ItemPredicate.CODEC.optionalFieldOf("offhand").forGetter(EntityEquipmentPredicate::offhand)
 				)
@@ -50,6 +52,8 @@ public record EntityEquipmentPredicate(
 				return false;
 			} else if (this.feet.isPresent() && !((ItemPredicate)this.feet.get()).test(livingEntity.getEquippedStack(EquipmentSlot.FEET))) {
 				return false;
+			} else if (this.body.isPresent() && !((ItemPredicate)this.body.get()).test(livingEntity.getEquippedStack(EquipmentSlot.BODY))) {
+				return false;
 			} else {
 				return this.mainhand.isPresent() && !((ItemPredicate)this.mainhand.get()).test(livingEntity.getEquippedStack(EquipmentSlot.MAINHAND))
 					? false
@@ -65,6 +69,7 @@ public record EntityEquipmentPredicate(
 		private Optional<ItemPredicate> chest = Optional.empty();
 		private Optional<ItemPredicate> legs = Optional.empty();
 		private Optional<ItemPredicate> feet = Optional.empty();
+		private Optional<ItemPredicate> body = Optional.empty();
 		private Optional<ItemPredicate> mainhand = Optional.empty();
 		private Optional<ItemPredicate> offhand = Optional.empty();
 
@@ -92,6 +97,11 @@ public record EntityEquipmentPredicate(
 			return this;
 		}
 
+		public EntityEquipmentPredicate.Builder body(ItemPredicate.Builder item) {
+			this.body = Optional.of(item.build());
+			return this;
+		}
+
 		public EntityEquipmentPredicate.Builder mainhand(ItemPredicate.Builder item) {
 			this.mainhand = Optional.of(item.build());
 			return this;
@@ -103,7 +113,7 @@ public record EntityEquipmentPredicate(
 		}
 
 		public EntityEquipmentPredicate build() {
-			return new EntityEquipmentPredicate(this.head, this.chest, this.legs, this.feet, this.mainhand, this.offhand);
+			return new EntityEquipmentPredicate(this.head, this.chest, this.legs, this.feet, this.body, this.mainhand, this.offhand);
 		}
 	}
 }

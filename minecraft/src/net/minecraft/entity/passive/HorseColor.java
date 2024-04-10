@@ -19,7 +19,7 @@ public enum HorseColor implements StringIdentifiable {
 	private final int id;
 	private final String name;
 
-	private HorseColor(int id, String name) {
+	private HorseColor(final int id, final String name) {
 		this.id = id;
 		this.name = name;
 	}

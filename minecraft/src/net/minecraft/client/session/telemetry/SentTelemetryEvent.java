@@ -12,8 +12,8 @@ public record SentTelemetryEvent(TelemetryEventType type, PropertyMap properties
 
 	public SentTelemetryEvent(TelemetryEventType type, PropertyMap properties) {
 		properties.keySet().forEach(property -> {
-			if (!telemetryEventType.hasProperty(property)) {
-				throw new IllegalArgumentException("Property '" + property.id() + "' not expected for event: '" + telemetryEventType.getId() + "'");
+			if (!type.hasProperty(property)) {
+				throw new IllegalArgumentException("Property '" + property.id() + "' not expected for event: '" + type.getId() + "'");
 			}
 		});
 		this.type = type;

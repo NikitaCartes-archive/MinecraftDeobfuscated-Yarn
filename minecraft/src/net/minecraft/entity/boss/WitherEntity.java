@@ -34,6 +34,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -446,7 +447,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 		} else {
 			if (this.shouldRenderOverlay()) {
 				Entity entity = source.getSource();
-				if (entity instanceof PersistentProjectileEntity) {
+				if (entity instanceof PersistentProjectileEntity || entity instanceof WindChargeEntity) {
 					return false;
 				}
 			}

@@ -16,7 +16,7 @@ public enum BlockRotation implements StringIdentifiable {
 	private final String id;
 	private final DirectionTransformation directionTransformation;
 
-	private BlockRotation(String id, DirectionTransformation directionTransformation) {
+	private BlockRotation(final String id, final DirectionTransformation directionTransformation) {
 		this.id = id;
 		this.directionTransformation = directionTransformation;
 	}

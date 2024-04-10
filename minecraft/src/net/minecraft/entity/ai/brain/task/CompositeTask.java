@@ -100,7 +100,7 @@ public class CompositeTask<E extends LivingEntity> implements Task<E> {
 
 		private final Consumer<WeightedList<?>> listModifier;
 
-		private Order(Consumer<WeightedList<?>> listModifier) {
+		private Order(final Consumer<WeightedList<?>> listModifier) {
 			this.listModifier = listModifier;
 		}
 

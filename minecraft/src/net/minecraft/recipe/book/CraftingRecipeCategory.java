@@ -22,7 +22,7 @@ public enum CraftingRecipeCategory implements StringIdentifiable {
 	private final String id;
 	private final int index;
 
-	private CraftingRecipeCategory(String id, int index) {
+	private CraftingRecipeCategory(final String id, final int index) {
 		this.id = id;
 		this.index = index;
 	}

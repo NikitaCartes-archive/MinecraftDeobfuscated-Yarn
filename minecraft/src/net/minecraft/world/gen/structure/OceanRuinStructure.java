@@ -55,7 +55,7 @@ public class OceanRuinStructure extends Structure {
 		public static final Codec<OceanRuinStructure.BiomeTemperature> CODEC = StringIdentifiable.createCodec(OceanRuinStructure.BiomeTemperature::values);
 		private final String name;
 
-		private BiomeTemperature(String name) {
+		private BiomeTemperature(final String name) {
 			this.name = name;
 		}
 

@@ -14,6 +14,7 @@ import net.minecraft.util.math.random.Random;
 public class SpellParticle extends SpriteBillboardParticle {
 	private static final Random RANDOM = Random.create();
 	private final SpriteProvider spriteProvider;
+	private float defaultAlpha;
 
 	SpellParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
 		super(world, x, y, z, 0.5 - RANDOM.nextDouble(), velocityY, 0.5 - RANDOM.nextDouble());
@@ -46,10 +47,16 @@ public class SpellParticle extends SpriteBillboardParticle {
 		super.tick();
 		this.setSpriteForAge(this.spriteProvider);
 		if (this.isInvisible()) {
-			this.setAlpha(0.0F);
+			this.alpha = 0.0F;
 		} else {
-			this.setAlpha(MathHelper.lerp(0.05F, this.alpha, 1.0F));
+			this.alpha = MathHelper.lerp(0.05F, this.alpha, this.defaultAlpha);
 		}
+	}
+
+	@Override
+	protected void setAlpha(float alpha) {
+		super.setAlpha(alpha);
+		this.defaultAlpha = alpha;
 	}
 
 	private boolean isInvisible() {

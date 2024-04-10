@@ -70,7 +70,7 @@ public class FireworkRocketItem extends Item implements ProjectileItem {
 	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 		FireworksComponent fireworksComponent = stack.get(DataComponentTypes.FIREWORKS);
 		if (fireworksComponent != null) {
-			fireworksComponent.appendTooltip(tooltip::add, type);
+			fireworksComponent.appendTooltip(context, tooltip::add, type);
 		}
 	}
 

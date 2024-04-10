@@ -68,7 +68,7 @@ public interface DynamicRegistryManager extends RegistryWrapper.WrapperLookup {
 
 	default DynamicRegistryManager.Immutable toImmutable() {
 		class Immutablized extends DynamicRegistryManager.ImmutableImpl implements DynamicRegistryManager.Immutable {
-			protected Immutablized(Stream<DynamicRegistryManager.Entry<?>> entryStream) {
+			protected Immutablized(final Stream<DynamicRegistryManager.Entry<?>> entryStream) {
 				super(entryStream);
 			}
 		}

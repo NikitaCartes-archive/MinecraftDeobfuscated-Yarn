@@ -258,7 +258,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		final Text name;
 		final Set<ClientLoginNetworkHandler.State> prevStates;
 
-		private State(Text name, Set<ClientLoginNetworkHandler.State> prevStates) {
+		private State(final Text name, final Set<ClientLoginNetworkHandler.State> prevStates) {
 			this.name = name;
 			this.prevStates = prevStates;
 		}

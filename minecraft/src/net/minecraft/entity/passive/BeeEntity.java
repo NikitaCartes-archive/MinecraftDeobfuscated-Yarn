@@ -651,7 +651,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	class BeeLookControl extends LookControl {
-		BeeLookControl(MobEntity entity) {
+		BeeLookControl(final MobEntity entity) {
 			super(entity);
 		}
 
@@ -669,7 +669,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	class BeeRevengeGoal extends RevengeGoal {
-		BeeRevengeGoal(BeeEntity bee) {
+		BeeRevengeGoal(final BeeEntity bee) {
 			super(bee);
 		}
 
@@ -1235,7 +1235,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	class StingGoal extends MeleeAttackGoal {
-		StingGoal(PathAwareEntity mob, double speed, boolean pauseWhenMobIdle) {
+		StingGoal(final PathAwareEntity mob, final double speed, final boolean pauseWhenMobIdle) {
 			super(mob, speed, pauseWhenMobIdle);
 		}
 

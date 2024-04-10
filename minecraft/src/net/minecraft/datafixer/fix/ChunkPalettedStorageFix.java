@@ -134,8 +134,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 	static final Dynamic<?> AIR = BlockStateFlattening.lookupState(0);
 	private static final int field_29870 = 4096;
 
-	public ChunkPalettedStorageFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public ChunkPalettedStorageFix(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	private static void buildSkull(Map<String, Dynamic<?>> out, int variant, String mob, String block) {
@@ -584,7 +584,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 		private final ChunkPalettedStorageFix.Facing.Axis axis;
 		private final ChunkPalettedStorageFix.Facing.Direction direction;
 
-		private Facing(ChunkPalettedStorageFix.Facing.Direction direction, ChunkPalettedStorageFix.Facing.Axis axis) {
+		private Facing(final ChunkPalettedStorageFix.Facing.Direction direction, final ChunkPalettedStorageFix.Facing.Axis axis) {
 			this.axis = axis;
 			this.direction = direction;
 		}
@@ -609,7 +609,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 
 			private final int offset;
 
-			private Direction(int offset) {
+			private Direction(final int offset) {
 				this.offset = offset;
 			}
 

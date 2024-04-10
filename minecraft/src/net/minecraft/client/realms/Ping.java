@@ -73,7 +73,7 @@ public class Ping {
 		final String name;
 		final String endpoint;
 
-		private Region(String name, String endpoint) {
+		private Region(final String name, final String endpoint) {
 			this.name = name;
 			this.endpoint = endpoint;
 		}

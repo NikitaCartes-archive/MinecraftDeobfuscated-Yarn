@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.NavigationConditions;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.data.DataTracker;
@@ -105,7 +104,7 @@ public abstract class AbstractPiglinEntity extends HostileEntity {
 	@Nullable
 	@Override
 	public LivingEntity getTarget() {
-		return (LivingEntity)this.brain.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
+		return this.getTargetInBrain();
 	}
 
 	protected boolean isHoldingTool() {

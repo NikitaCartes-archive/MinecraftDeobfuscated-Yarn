@@ -74,14 +74,9 @@ public class MaceItem extends Item {
 		stack.damage(1, attacker, EquipmentSlot.MAINHAND);
 		if (attacker instanceof ServerPlayerEntity serverPlayerEntity && shouldDealAdditionalDamage(serverPlayerEntity)) {
 			ServerWorld serverWorld = (ServerWorld)attacker.getWorld();
-			if (!serverPlayerEntity.ignoreFallDamageFromCurrentExplosion
-				|| serverPlayerEntity.currentExplosionImpactPos == null
-				|| serverPlayerEntity.currentExplosionImpactPos.getY() > serverPlayerEntity.getY()) {
-				serverPlayerEntity.currentExplosionImpactPos = serverPlayerEntity.getPos();
-				serverPlayerEntity.ignoreFallDamageFromCurrentExplosion = true;
-			}
-
-			serverPlayerEntity.setVelocity(serverPlayerEntity.getVelocity().withAxis(Direction.Axis.Y, 0.0));
+			serverPlayerEntity.currentExplosionImpactPos = serverPlayerEntity.getPos();
+			serverPlayerEntity.ignoreFallDamageFromCurrentExplosion = true;
+			serverPlayerEntity.setVelocity(serverPlayerEntity.getVelocity().withAxis(Direction.Axis.Y, 0.01F));
 			serverPlayerEntity.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(serverPlayerEntity));
 			if (target.isOnGround()) {
 				serverPlayerEntity.setSpawnExtraParticlesOnFall(true);
@@ -103,9 +98,10 @@ public class MaceItem extends Item {
 			}
 
 			knockbackNearbyEntities(serverWorld, serverPlayerEntity, target);
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	@Override

@@ -658,7 +658,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	}
 
 	class ShulkerLookControl extends LookControl {
-		public ShulkerLookControl(MobEntity entity) {
+		public ShulkerLookControl(final MobEntity entity) {
 			super(entity);
 		}
 
@@ -721,7 +721,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	 * A hostile target goal on players.
 	 */
 	class TargetPlayerGoal extends ActiveTargetGoal<PlayerEntity> {
-		public TargetPlayerGoal(ShulkerEntity shulker) {
+		public TargetPlayerGoal(final ShulkerEntity shulker) {
 			super(shulker, PlayerEntity.class, true);
 		}
 

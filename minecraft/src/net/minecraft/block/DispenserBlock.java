@@ -45,9 +45,8 @@ public class DispenserBlock extends BlockWithEntity {
 	public static final MapCodec<DispenserBlock> CODEC = createCodec(DispenserBlock::new);
 	public static final DirectionProperty FACING = FacingBlock.FACING;
 	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
-	public static final Map<Item, DispenserBehavior> BEHAVIORS = Util.make(
-		new Object2ObjectOpenHashMap<>(), map -> map.defaultReturnValue(new ItemDispenserBehavior())
-	);
+	private static final ItemDispenserBehavior DEFAULT_BEHAVIOR = new ItemDispenserBehavior();
+	public static final Map<Item, DispenserBehavior> BEHAVIORS = Util.make(new Object2ObjectOpenHashMap<>(), map -> map.defaultReturnValue(DEFAULT_BEHAVIOR));
 	private static final int SCHEDULED_TICK_DELAY = 4;
 
 	@Override
@@ -99,7 +98,7 @@ public class DispenserBlock extends BlockWithEntity {
 				world.emitGameEvent(GameEvent.BLOCK_ACTIVATE, pos, GameEvent.Emitter.of(dispenserBlockEntity.getCachedState()));
 			} else {
 				ItemStack itemStack = dispenserBlockEntity.getStack(i);
-				DispenserBehavior dispenserBehavior = this.getBehaviorForItem(itemStack);
+				DispenserBehavior dispenserBehavior = this.getBehaviorForItem(world, itemStack);
 				if (dispenserBehavior != DispenserBehavior.NOOP) {
 					dispenserBlockEntity.setStack(i, dispenserBehavior.dispense(blockPointer, itemStack));
 				}
@@ -107,8 +106,8 @@ public class DispenserBlock extends BlockWithEntity {
 		}
 	}
 
-	protected DispenserBehavior getBehaviorForItem(ItemStack stack) {
-		return (DispenserBehavior)BEHAVIORS.get(stack.getItem());
+	protected DispenserBehavior getBehaviorForItem(World world, ItemStack stack) {
+		return (DispenserBehavior)(!stack.isItemEnabled(world.getEnabledFeatures()) ? DEFAULT_BEHAVIOR : (DispenserBehavior)BEHAVIORS.get(stack.getItem()));
 	}
 
 	@Override

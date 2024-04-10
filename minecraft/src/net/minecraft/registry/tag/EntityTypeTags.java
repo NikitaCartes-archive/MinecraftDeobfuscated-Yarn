@@ -38,6 +38,7 @@ public interface EntityTypeTags {
 	TagKey<EntityType<?>> NO_ANGER_FROM_WIND_CHARGE = of("no_anger_from_wind_charge");
 	TagKey<EntityType<?>> IMMUNE_TO_OOZING = of("immune_to_oozing");
 	TagKey<EntityType<?>> IMMUNE_TO_INFESTED = of("immune_to_infested");
+	TagKey<EntityType<?>> PUNCHABLE_PROJECTILES = of("punchable_projectiles");
 
 	private static TagKey<EntityType<?>> of(String id) {
 		return TagKey.of(RegistryKeys.ENTITY_TYPE, new Identifier(id));

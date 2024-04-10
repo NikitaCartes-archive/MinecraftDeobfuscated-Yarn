@@ -97,7 +97,7 @@ public abstract class BossBar {
 		private final String name;
 		private final Formatting format;
 
-		private Color(String name, Formatting format) {
+		private Color(final String name, final Formatting format) {
 			this.name = name;
 			this.format = format;
 		}
@@ -130,7 +130,7 @@ public abstract class BossBar {
 
 		private final String name;
 
-		private Style(String name) {
+		private Style(final String name) {
 			this.name = name;
 		}
 

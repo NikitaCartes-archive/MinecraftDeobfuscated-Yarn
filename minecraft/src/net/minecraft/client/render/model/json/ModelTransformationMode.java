@@ -23,7 +23,7 @@ public enum ModelTransformationMode implements StringIdentifiable {
 	private final byte index;
 	private final String name;
 
-	private ModelTransformationMode(int index, String name) {
+	private ModelTransformationMode(final int index, final String name) {
 		this.name = name;
 		this.index = (byte)index;
 	}

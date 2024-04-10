@@ -13,7 +13,7 @@ public enum Perspective {
 	private final boolean firstPerson;
 	private final boolean frontView;
 
-	private Perspective(boolean firstPerson, boolean frontView) {
+	private Perspective(final boolean firstPerson, final boolean frontView) {
 		this.firstPerson = firstPerson;
 		this.frontView = frontView;
 	}

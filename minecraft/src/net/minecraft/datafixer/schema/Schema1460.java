@@ -27,7 +27,9 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = Maps.<String, Supplier<TypeTemplate>>newHashMap();
-		schema.registerSimple(map, "minecraft:area_effect_cloud");
+		schema.register(
+			map, "minecraft:area_effect_cloud", (Function<String, TypeTemplate>)(string -> DSL.optionalFields("Particle", TypeReferences.PARTICLE.in(schema)))
+		);
 		targetEntityItems(schema, map, "minecraft:armor_stand");
 		schema.register(map, "minecraft:arrow", (Function<String, TypeTemplate>)(name -> DSL.optionalFields("inBlockState", TypeReferences.BLOCK_STATE.in(schema))));
 		targetEntityItems(schema, map, "minecraft:bat");
@@ -177,14 +179,7 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 					"Inventory",
 					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
 					"Offers",
-					DSL.optionalFields(
-						"Recipes",
-						DSL.list(
-							DSL.optionalFields(
-								"buy", TypeReferences.ITEM_STACK.in(schema), "buyB", TypeReferences.ITEM_STACK.in(schema), "sell", TypeReferences.ITEM_STACK.in(schema)
-							)
-						)
-					),
+					DSL.optionalFields("Recipes", DSL.list(TypeReferences.VILLAGER_TRADE.in(schema))),
 					Schema100.targetItems(schema)
 				))
 		);
@@ -204,7 +199,13 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 			(Function<String, TypeTemplate>)(name -> DSL.optionalFields("SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.targetItems(schema)))
 		);
 		targetEntityItems(schema, map, "minecraft:zombie_pigman");
-		targetEntityItems(schema, map, "minecraft:zombie_villager");
+		schema.register(
+			map,
+			"minecraft:zombie_villager",
+			(Function<String, TypeTemplate>)(string -> DSL.optionalFields(
+					"Offers", DSL.optionalFields("Recipes", DSL.list(TypeReferences.VILLAGER_TRADE.in(schema))), Schema100.targetItems(schema)
+				))
+		);
 		return map;
 	}
 
@@ -393,5 +394,13 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 		schema.registerType(false, TypeReferences.WORLD_GEN_SETTINGS, DSL::remainder);
 		schema.registerType(false, TypeReferences.ENTITY_CHUNK, () -> DSL.optionalFields("Entities", DSL.list(TypeReferences.ENTITY_TREE.in(schema))));
 		schema.registerType(true, TypeReferences.DATA_COMPONENTS, DSL::remainder);
+		schema.registerType(
+			true,
+			TypeReferences.VILLAGER_TRADE,
+			() -> DSL.optionalFields(
+					"buy", TypeReferences.ITEM_STACK.in(schema), "buyB", TypeReferences.ITEM_STACK.in(schema), "sell", TypeReferences.ITEM_STACK.in(schema)
+				)
+		);
+		schema.registerType(true, TypeReferences.PARTICLE, () -> DSL.constType(DSL.string()));
 	}
 }

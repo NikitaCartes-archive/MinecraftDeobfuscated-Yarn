@@ -810,7 +810,7 @@ public class MaterialRules {
 			final RandomSplitter randomSplitter = materialRuleContext.noiseConfig.getOrCreateRandomDeriver(this.randomName());
 
 			class VerticalGradientPredicate extends MaterialRules.FullLazyAbstractPredicate {
-				VerticalGradientPredicate(MaterialRules.VerticalGradientMaterialCondition verticalGradientMaterialCondition) {
+				VerticalGradientPredicate() {
 					super(materialRuleContext);
 				}
 
@@ -829,7 +829,7 @@ public class MaterialRules {
 				}
 			}
 
-			return new VerticalGradientPredicate(this);
+			return new VerticalGradientPredicate();
 		}
 	}
 

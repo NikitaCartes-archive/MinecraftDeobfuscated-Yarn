@@ -86,7 +86,7 @@ public class ScreenNarrator {
 	class MessageBuilder implements NarrationMessageBuilder {
 		private final int depth;
 
-		MessageBuilder(int depth) {
+		MessageBuilder(final int depth) {
 			this.depth = depth;
 		}
 

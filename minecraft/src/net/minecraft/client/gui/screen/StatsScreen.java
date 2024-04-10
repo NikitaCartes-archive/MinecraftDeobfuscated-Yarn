@@ -157,7 +157,7 @@ public class StatsScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	class EntityStatsListWidget extends AlwaysSelectedEntryListWidget<StatsScreen.EntityStatsListWidget.Entry> {
-		public EntityStatsListWidget(MinecraftClient client) {
+		public EntityStatsListWidget(final MinecraftClient client) {
 			super(client, StatsScreen.this.width, StatsScreen.this.height - 33 - 58, 33, 9 * 4);
 
 			for (EntityType<?> entityType : Registries.ENTITY_TYPE) {
@@ -181,7 +181,7 @@ public class StatsScreen extends Screen {
 			private final boolean killedAny;
 			private final boolean killedByAny;
 
-			public Entry(EntityType<?> entityType) {
+			public Entry(final EntityType<?> entityType) {
 				this.entityTypeName = entityType.getName();
 				int i = StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(entityType));
 				if (i == 0) {
@@ -220,7 +220,7 @@ public class StatsScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	class GeneralStatsListWidget extends AlwaysSelectedEntryListWidget<StatsScreen.GeneralStatsListWidget.Entry> {
-		public GeneralStatsListWidget(MinecraftClient client) {
+		public GeneralStatsListWidget(final MinecraftClient client) {
 			super(client, StatsScreen.this.width, StatsScreen.this.height - 33 - 58, 33, 14);
 			ObjectArrayList<Stat<Identifier>> objectArrayList = new ObjectArrayList<>(Stats.CUSTOM.iterator());
 			objectArrayList.sort(Comparator.comparing(statx -> I18n.translate(StatsScreen.getStatTranslationKey(statx))));
@@ -240,7 +240,7 @@ public class StatsScreen extends Screen {
 			private final Stat<Identifier> stat;
 			private final Text displayName;
 
-			Entry(Stat<Identifier> stat) {
+			Entry(final Stat<Identifier> stat) {
 				this.stat = stat;
 				this.displayName = Text.translatable(StatsScreen.getStatTranslationKey(stat));
 			}
@@ -289,7 +289,7 @@ public class StatsScreen extends Screen {
 		protected int selectedHeaderColumn = -1;
 		protected int listOrder;
 
-		public ItemStatsListWidget(MinecraftClient client) {
+		public ItemStatsListWidget(final MinecraftClient client) {
 			super(client, StatsScreen.this.width, StatsScreen.this.height - 33 - 58, 33, 22);
 			this.blockStatTypes = Lists.<StatType<Block>>newArrayList();
 			this.blockStatTypes.add(Stats.MINED);
@@ -450,7 +450,7 @@ public class StatsScreen extends Screen {
 		class Entry extends AlwaysSelectedEntryListWidget.Entry<StatsScreen.ItemStatsListWidget.Entry> {
 			private final Item item;
 
-			Entry(Item item) {
+			Entry(final Item item) {
 				this.item = item;
 			}
 

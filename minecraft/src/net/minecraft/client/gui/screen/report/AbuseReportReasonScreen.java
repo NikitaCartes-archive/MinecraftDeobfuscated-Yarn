@@ -130,7 +130,7 @@ public class AbuseReportReasonScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	public class ReasonListWidget extends AlwaysSelectedEntryListWidget<AbuseReportReasonScreen.ReasonListWidget.ReasonEntry> {
-		public ReasonListWidget(MinecraftClient client) {
+		public ReasonListWidget(final MinecraftClient client) {
 			super(
 				client, AbuseReportReasonScreen.this.width, AbuseReportReasonScreen.this.getReasonListHeight(), AbuseReportReasonScreen.this.layout.getHeaderHeight(), 18
 			);
@@ -159,7 +159,7 @@ public class AbuseReportReasonScreen extends Screen {
 		public class ReasonEntry extends AlwaysSelectedEntryListWidget.Entry<AbuseReportReasonScreen.ReasonListWidget.ReasonEntry> {
 			final AbuseReportReason reason;
 
-			public ReasonEntry(AbuseReportReason reason) {
+			public ReasonEntry(final AbuseReportReason reason) {
 				this.reason = reason;
 			}
 

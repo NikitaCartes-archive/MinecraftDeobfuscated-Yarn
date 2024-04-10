@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.client.item.TooltipType;
+import net.minecraft.item.Item;
 import net.minecraft.item.TooltipAppender;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -29,12 +30,21 @@ public record LoreComponent(List<Text> lines, List<Text> styledLines) implements
 		this(lines, Lists.transform(lines, style -> Texts.setStyleIfAbsent(style.copy(), STYLE)));
 	}
 
+	public LoreComponent(List<Text> lines, List<Text> styledLines) {
+		if (lines.size() > 256) {
+			throw new IllegalArgumentException("Got " + lines.size() + " lines, but maximum is 256");
+		} else {
+			this.lines = lines;
+			this.styledLines = styledLines;
+		}
+	}
+
 	public LoreComponent with(Text line) {
 		return new LoreComponent(Util.withAppended(this.lines, line));
 	}
 
 	@Override
-	public void appendTooltip(Consumer<Text> textConsumer, TooltipType context) {
-		this.styledLines.forEach(textConsumer);
+	public void appendTooltip(Item.TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+		this.styledLines.forEach(tooltip);
 	}
 }

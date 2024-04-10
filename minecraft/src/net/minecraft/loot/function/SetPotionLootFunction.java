@@ -26,7 +26,7 @@ public class SetPotionLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<SetPotionLootFunction> getType() {
 		return LootFunctionTypes.SET_POTION;
 	}
 

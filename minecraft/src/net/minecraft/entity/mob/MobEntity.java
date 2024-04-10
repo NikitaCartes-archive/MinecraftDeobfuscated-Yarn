@@ -21,10 +21,12 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentHolder;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.EquipmentTable;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.Targeter;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.control.BodyControl;
 import net.minecraft.entity.ai.control.JumpControl;
 import net.minecraft.entity.ai.control.LookControl;
@@ -276,6 +278,11 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	@Override
 	public LivingEntity getTarget() {
 		return this.target;
+	}
+
+	@Nullable
+	protected final LivingEntity getTargetInBrain() {
+		return (LivingEntity)this.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
 	}
 
 	public void setTarget(@Nullable LivingEntity target) {
@@ -1064,9 +1071,13 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 			.build(LootContextTypes.EQUIPMENT);
 	}
 
-	public void setEquipmentFromLootTable(Identifier lootTableId) {
+	public void setEquipmentFromTable(EquipmentTable equipmentTable) {
+		this.setEquipmentFromTable(equipmentTable.lootTable(), equipmentTable.slotDropChances());
+	}
+
+	public void setEquipmentFromTable(RegistryKey<LootTable> lootTable, Map<EquipmentSlot, Float> slotDropChances) {
 		if (this.getWorld() instanceof ServerWorld serverWorld) {
-			this.setEquipmentFromLootTable(lootTableId, this.createEquipmentLootParameters(serverWorld));
+			this.setEquipmentFromTable(lootTable, this.createEquipmentLootParameters(serverWorld), slotDropChances);
 		}
 	}
 

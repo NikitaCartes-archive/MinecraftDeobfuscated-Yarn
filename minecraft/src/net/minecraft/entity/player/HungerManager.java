@@ -19,15 +19,19 @@ public class HungerManager {
 		this.saturationLevel = 5.0F;
 	}
 
+	private void addInternal(int nutrition, float saturation) {
+		this.foodLevel = Math.min(nutrition + this.foodLevel, 20);
+		this.saturationLevel = Math.min(saturation + this.saturationLevel, (float)this.foodLevel);
+	}
+
 	public void add(int food, float saturationModifier) {
-		this.foodLevel = Math.min(food + this.foodLevel, 20);
-		this.saturationLevel = Math.min(this.saturationLevel + (float)food * saturationModifier * 2.0F, (float)this.foodLevel);
+		this.addInternal(food, HungerConstants.calculateSaturation(food, saturationModifier));
 	}
 
 	public void eat(ItemStack stack) {
 		FoodComponent foodComponent = stack.get(DataComponentTypes.FOOD);
 		if (foodComponent != null) {
-			this.add(foodComponent.nutrition(), foodComponent.saturationModifier());
+			this.addInternal(foodComponent.nutrition(), foodComponent.saturation());
 		}
 	}
 

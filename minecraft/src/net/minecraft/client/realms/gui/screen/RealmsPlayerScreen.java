@@ -149,7 +149,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		private final ButtonWidget opButton;
 		private final ButtonWidget deopButton;
 
-		public InvitedObjectSelectionListEntry(PlayerInfo playerInfo) {
+		public InvitedObjectSelectionListEntry(final PlayerInfo playerInfo) {
 			this.playerInfo = playerInfo;
 			int i = RealmsPlayerScreen.this.serverData.players.indexOf(this.playerInfo);
 			this.opButton = TextIconButtonWidget.builder(NORMAL_TOOLTIP_TEXT, button -> this.op(i), false)

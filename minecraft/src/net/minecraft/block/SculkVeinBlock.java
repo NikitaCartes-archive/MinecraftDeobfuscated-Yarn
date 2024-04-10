@@ -179,7 +179,7 @@ public class SculkVeinBlock extends MultifaceGrowthBlock implements SculkSpreada
 	class SculkVeinGrowChecker extends LichenGrower.LichenGrowChecker {
 		private final LichenGrower.GrowType[] growTypes;
 
-		public SculkVeinGrowChecker(LichenGrower.GrowType... growTypes) {
+		public SculkVeinGrowChecker(final LichenGrower.GrowType... growTypes) {
 			super(SculkVeinBlock.this);
 			this.growTypes = growTypes;
 		}

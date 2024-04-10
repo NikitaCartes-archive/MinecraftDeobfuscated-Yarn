@@ -3157,7 +3157,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		static final Text MORE_INFO_TEXT = Text.translatable("chat.disabled.profile.moreInfo");
 		private final Text description;
 
-		ChatRestriction(Text description) {
+		ChatRestriction(final Text description) {
 			this.description = description;
 		}
 

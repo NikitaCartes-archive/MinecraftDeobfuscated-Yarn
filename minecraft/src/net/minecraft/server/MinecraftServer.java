@@ -64,6 +64,7 @@ import net.minecraft.network.message.MessageType;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.obfuscate.DontObfuscate;
+import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -271,6 +272,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private final StructureTemplateManager structureTemplateManager;
 	private final ServerTickManager tickManager;
 	protected final SaveProperties saveProperties;
+	private final BrewingRecipeRegistry brewingRecipeRegistry;
 	private volatile boolean saving;
 
 	public static <S extends MinecraftServer> S startServer(Function<Thread, S> serverFactory) {
@@ -326,6 +328,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.structureTemplateManager = new StructureTemplateManager(saveLoader.resourceManager(), session, dataFixer, registryEntryLookup);
 			this.serverThread = serverThread;
 			this.workerExecutor = Util.getMainWorkerExecutor();
+			this.brewingRecipeRegistry = BrewingRecipeRegistry.create(this.saveProperties.getEnabledFeatures());
 		}
 	}
 
@@ -2114,6 +2117,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public void onChunkSaveFailure(ChunkPos pos) {
+	}
+
+	public BrewingRecipeRegistry getBrewingRecipeRegistry() {
+		return this.brewingRecipeRegistry;
 	}
 
 	static class DebugStart {

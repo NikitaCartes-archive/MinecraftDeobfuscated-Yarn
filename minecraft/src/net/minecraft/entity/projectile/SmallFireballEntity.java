@@ -65,11 +65,6 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 	}
 
 	@Override
-	public boolean canHit() {
-		return false;
-	}
-
-	@Override
 	public boolean damage(DamageSource source, float amount) {
 		return false;
 	}

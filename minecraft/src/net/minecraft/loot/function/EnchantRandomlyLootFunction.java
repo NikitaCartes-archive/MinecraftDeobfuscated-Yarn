@@ -39,7 +39,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<EnchantRandomlyLootFunction> getType() {
 		return LootFunctionTypes.ENCHANT_RANDOMLY;
 	}
 

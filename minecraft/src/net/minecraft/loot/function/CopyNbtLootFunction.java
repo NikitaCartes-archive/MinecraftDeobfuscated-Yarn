@@ -46,7 +46,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<CopyNbtLootFunction> getType() {
 		return LootFunctionTypes.COPY_CUSTOM_DATA;
 	}
 
@@ -179,7 +179,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 		public abstract void merge(NbtElement itemNbt, NbtPathArgumentType.NbtPath targetPath, List<NbtElement> sourceNbts) throws CommandSyntaxException;
 
-		Operator(String name) {
+		Operator(final String name) {
 			this.name = name;
 		}
 

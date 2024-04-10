@@ -28,7 +28,7 @@ public final class ChargedProjectilesComponent {
 	}
 
 	public static ChargedProjectilesComponent of(List<ItemStack> projectiles) {
-		return new ChargedProjectilesComponent(Lists.transform(projectiles, ItemStack::copy));
+		return new ChargedProjectilesComponent(List.copyOf(Lists.<ItemStack, ItemStack>transform(projectiles, ItemStack::copy)));
 	}
 
 	public boolean contains(Item item) {

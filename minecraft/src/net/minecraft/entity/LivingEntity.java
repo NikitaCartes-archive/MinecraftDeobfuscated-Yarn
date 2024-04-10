@@ -1326,6 +1326,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			if (bl3) {
 				this.lastDamageSource = source;
 				this.lastDamageTime = this.getWorld().getTime();
+
+				for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
+					statusEffectInstance.onEntityDamage(this, source, amount);
+				}
 			}
 
 			if (this instanceof ServerPlayerEntity) {
@@ -1337,10 +1341,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 			if (entity2 instanceof ServerPlayerEntity) {
 				Criteria.PLAYER_HURT_ENTITY.trigger((ServerPlayerEntity)entity2, this, source, f, amount, bl);
-			}
-
-			for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
-				statusEffectInstance.onEntityDamage(this, source, amount);
 			}
 
 			return bl3;
@@ -2184,14 +2184,17 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	protected void jump() {
-		Vec3d vec3d = this.getVelocity();
-		this.setVelocity(vec3d.x, (double)this.getJumpVelocity(), vec3d.z);
-		if (this.isSprinting()) {
-			float f = this.getYaw() * (float) (Math.PI / 180.0);
-			this.setVelocity(this.getVelocity().add((double)(-MathHelper.sin(f) * 0.2F), 0.0, (double)(MathHelper.cos(f) * 0.2F)));
-		}
+		float f = this.getJumpVelocity();
+		if (!(f <= 1.0E-5F)) {
+			Vec3d vec3d = this.getVelocity();
+			this.setVelocity(vec3d.x, (double)f, vec3d.z);
+			if (this.isSprinting()) {
+				float g = this.getYaw() * (float) (Math.PI / 180.0);
+				this.addVelocity(new Vec3d((double)(-MathHelper.sin(g)) * 0.2, 0.0, (double)MathHelper.cos(g) * 0.2));
+			}
 
-		this.velocityDirty = true;
+			this.velocityDirty = true;
+		}
 	}
 
 	protected void knockDownwards() {

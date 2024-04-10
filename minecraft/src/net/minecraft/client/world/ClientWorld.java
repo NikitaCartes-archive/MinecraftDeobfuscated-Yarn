@@ -42,6 +42,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
@@ -847,6 +848,11 @@ public class ClientWorld extends World {
 	@Override
 	public FeatureSet getEnabledFeatures() {
 		return this.networkHandler.getEnabledFeatures();
+	}
+
+	@Override
+	public BrewingRecipeRegistry getBrewingRecipeRegistry() {
+		return this.networkHandler.getBrewingRecipeRegistry();
 	}
 
 	@Environment(EnvType.CLIENT)

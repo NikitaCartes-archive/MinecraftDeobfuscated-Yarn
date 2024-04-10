@@ -806,7 +806,7 @@ public class GlStateManager {
 
 		public final int value;
 
-		private DstFactor(int value) {
+		private DstFactor(final int value) {
 			this.value = value;
 		}
 	}
@@ -832,7 +832,7 @@ public class GlStateManager {
 
 		public final int value;
 
-		private LogicOp(int value) {
+		private LogicOp(final int value) {
 			this.value = value;
 		}
 	}
@@ -877,7 +877,7 @@ public class GlStateManager {
 
 		public final int value;
 
-		private SrcFactor(int value) {
+		private SrcFactor(final int value) {
 			this.value = value;
 		}
 	}

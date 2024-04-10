@@ -13,7 +13,7 @@ public enum RecipeCategory {
 
 	private final String name;
 
-	private RecipeCategory(String name) {
+	private RecipeCategory(final String name) {
 		this.name = name;
 	}
 

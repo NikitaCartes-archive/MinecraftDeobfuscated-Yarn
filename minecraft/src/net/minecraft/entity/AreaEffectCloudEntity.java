@@ -2,15 +2,12 @@ package net.minecraft.entity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.command.argument.ParticleEffectArgumentType;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -23,8 +20,10 @@ import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
@@ -98,7 +97,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 		ParticleEffect particleEffect = this.dataTracker.get(PARTICLE_ID);
 		if (particleEffect instanceof EntityEffectParticleEffect entityEffectParticleEffect) {
 			int i = this.potionContentsComponent.equals(PotionContentsComponent.DEFAULT) ? 0 : this.potionContentsComponent.getColor();
-			this.dataTracker.set(PARTICLE_ID, EntityEffectParticleEffect.create(entityEffectParticleEffect.getType(), i));
+			this.dataTracker.set(PARTICLE_ID, EntityEffectParticleEffect.create(entityEffectParticleEffect.getType(), ColorHelper.Argb.fullAlpha(i)));
 		}
 	}
 
@@ -322,17 +321,17 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 			this.ownerUuid = nbt.getUuid("Owner");
 		}
 
-		if (nbt.contains("Particle", NbtElement.STRING_TYPE)) {
-			try {
-				this.setParticleType(ParticleEffectArgumentType.readParameters(new StringReader(nbt.getString("Particle")), this.getRegistryManager()));
-			} catch (CommandSyntaxException var3) {
-				LOGGER.warn("Couldn't load custom particle {}", nbt.getString("Particle"), var3);
-			}
+		RegistryOps<NbtElement> registryOps = this.getRegistryManager().getOps(NbtOps.INSTANCE);
+		if (nbt.contains("Particle", NbtElement.COMPOUND_TYPE)) {
+			ParticleTypes.TYPE_CODEC
+				.parse(registryOps, nbt.get("Particle"))
+				.resultOrPartial(string -> LOGGER.warn("Failed to parse area effect cloud particle options: '{}'", string))
+				.ifPresent(this::setParticleType);
 		}
 
 		if (nbt.contains("potion_contents")) {
 			PotionContentsComponent.CODEC
-				.parse(NbtOps.INSTANCE, nbt.get("potion_contents"))
+				.parse(registryOps, nbt.get("potion_contents"))
 				.resultOrPartial(string -> LOGGER.warn("Failed to parse area effect cloud potions: '{}'", string))
 				.ifPresent(this::setPotionContents);
 		}
@@ -348,13 +347,14 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 		nbt.putFloat("RadiusOnUse", this.radiusOnUse);
 		nbt.putFloat("RadiusPerTick", this.radiusGrowth);
 		nbt.putFloat("Radius", this.getRadius());
-		nbt.putString("Particle", this.getParticleType().asString(this.getRegistryManager()));
+		RegistryOps<NbtElement> registryOps = this.getRegistryManager().getOps(NbtOps.INSTANCE);
+		nbt.put("Particle", ParticleTypes.TYPE_CODEC.encodeStart(registryOps, this.getParticleType()).getOrThrow());
 		if (this.ownerUuid != null) {
 			nbt.putUuid("Owner", this.ownerUuid);
 		}
 
 		if (!this.potionContentsComponent.equals(PotionContentsComponent.DEFAULT)) {
-			NbtElement nbtElement = PotionContentsComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.potionContentsComponent).getOrThrow();
+			NbtElement nbtElement = PotionContentsComponent.CODEC.encodeStart(registryOps, this.potionContentsComponent).getOrThrow();
 			nbt.put("potion_contents", nbtElement);
 		}
 	}

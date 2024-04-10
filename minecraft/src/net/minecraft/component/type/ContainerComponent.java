@@ -1,12 +1,11 @@
 package net.minecraft.component.type;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.stream.Stream;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
@@ -14,7 +13,8 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.collection.DefaultedList;
 
-public final class ContainerComponent implements Iterable<ItemStack> {
+public final class ContainerComponent {
+	private static final int ALL_SLOTS_EMPTY = -1;
 	private static final int MAX_SLOTS = 256;
 	public static final ContainerComponent DEFAULT = new ContainerComponent(DefaultedList.of());
 	public static final Codec<ContainerComponent> CODEC = ContainerComponent.Slot.CODEC
@@ -26,7 +26,11 @@ public final class ContainerComponent implements Iterable<ItemStack> {
 	private final DefaultedList<ItemStack> stacks;
 
 	private ContainerComponent(DefaultedList<ItemStack> stacks) {
-		this.stacks = stacks;
+		if (stacks.size() > 256) {
+			throw new IllegalArgumentException("Got " + stacks.size() + " items, but maximum is 256");
+		} else {
+			this.stacks = stacks;
+		}
 	}
 
 	private ContainerComponent(int size) {
@@ -42,24 +46,28 @@ public final class ContainerComponent implements Iterable<ItemStack> {
 	}
 
 	private static ContainerComponent fromSlots(List<ContainerComponent.Slot> slots) {
-		int i = slots.stream().mapToInt(ContainerComponent.Slot::index).max().orElse(-1);
-		ContainerComponent containerComponent = new ContainerComponent(i + 1);
+		OptionalInt optionalInt = slots.stream().mapToInt(ContainerComponent.Slot::index).max();
+		if (optionalInt.isEmpty()) {
+			return DEFAULT;
+		} else {
+			ContainerComponent containerComponent = new ContainerComponent(optionalInt.getAsInt() + 1);
 
-		for (ContainerComponent.Slot slot : slots) {
-			containerComponent.stacks.set(slot.index(), slot.item());
+			for (ContainerComponent.Slot slot : slots) {
+				containerComponent.stacks.set(slot.index(), slot.item());
+			}
+
+			return containerComponent;
 		}
-
-		return containerComponent;
 	}
 
 	public static ContainerComponent fromStacks(List<ItemStack> stacks) {
-		int i = getSize(stacks);
-		if (i == 0) {
+		int i = findFirstNonEmptyIndex(stacks);
+		if (i == -1) {
 			return DEFAULT;
 		} else {
-			ContainerComponent containerComponent = new ContainerComponent(i);
+			ContainerComponent containerComponent = new ContainerComponent(i + 1);
 
-			for (int j = 0; j < i; j++) {
+			for (int j = 0; j <= i; j++) {
 				containerComponent.stacks.set(j, ((ItemStack)stacks.get(j)).copy());
 			}
 
@@ -67,14 +75,14 @@ public final class ContainerComponent implements Iterable<ItemStack> {
 		}
 	}
 
-	private static int getSize(List<ItemStack> size) {
-		for (int i = size.size() - 1; i >= 0; i--) {
-			if (!((ItemStack)size.get(i)).isEmpty()) {
-				return i + 1;
+	private static int findFirstNonEmptyIndex(List<ItemStack> stacks) {
+		for (int i = stacks.size() - 1; i >= 0; i--) {
+			if (!((ItemStack)stacks.get(i)).isEmpty()) {
+				return i;
 			}
 		}
 
-		return 0;
+		return -1;
 	}
 
 	private List<ContainerComponent.Slot> collectSlots() {
@@ -102,11 +110,19 @@ public final class ContainerComponent implements Iterable<ItemStack> {
 	}
 
 	public Stream<ItemStack> stream() {
+		return this.stacks.stream().map(ItemStack::copy);
+	}
+
+	public Stream<ItemStack> streamNonEmpty() {
 		return this.stacks.stream().filter(stack -> !stack.isEmpty()).map(ItemStack::copy);
 	}
 
-	public Iterator<ItemStack> iterator() {
-		return Iterators.transform(Iterators.filter(this.stacks.iterator(), (Predicate<? super ItemStack>)(stack -> !stack.isEmpty())), ItemStack::copy);
+	public Iterable<ItemStack> iterateNonEmpty() {
+		return Iterables.filter(this.stacks, stack -> !stack.isEmpty());
+	}
+
+	public Iterable<ItemStack> iterateNonEmptyCopy() {
+		return Iterables.transform(this.iterateNonEmpty(), ItemStack::copy);
 	}
 
 	public boolean equals(Object o) {

@@ -206,7 +206,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 		private ButtonWidget field_49452;
 		private final List<ClickableWidget> buttons = new ArrayList();
 
-		public BackupObjectSelectionListEntry(Backup backup) {
+		public BackupObjectSelectionListEntry(final Backup backup) {
 			this.mBackup = backup;
 			this.updateChangeList(backup);
 			if (!backup.changeList.isEmpty()) {

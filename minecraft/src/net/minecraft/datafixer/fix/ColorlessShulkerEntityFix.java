@@ -6,8 +6,8 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixer.TypeReferences;
 
 public class ColorlessShulkerEntityFix extends ChoiceFix {
-	public ColorlessShulkerEntityFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType, "Colorless shulker entity fix", TypeReferences.ENTITY, "minecraft:shulker");
+	public ColorlessShulkerEntityFix(Schema schema, boolean bl) {
+		super(schema, bl, "Colorless shulker entity fix", TypeReferences.ENTITY, "minecraft:shulker");
 	}
 
 	@Override

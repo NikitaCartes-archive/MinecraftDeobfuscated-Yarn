@@ -339,7 +339,7 @@ public class ServerResourcePackManager {
 		@Nullable
 		final PackStateChangeCallback.FinishState state;
 
-		private DiscardReason(@Nullable PackStateChangeCallback.FinishState state) {
+		private DiscardReason(@Nullable final PackStateChangeCallback.FinishState state) {
 			this.state = state;
 		}
 	}

@@ -8,8 +8,8 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixer.TypeReferences;
 
 public class MapIdFix extends DataFix {
-	public MapIdFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public MapIdFix(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	@Override

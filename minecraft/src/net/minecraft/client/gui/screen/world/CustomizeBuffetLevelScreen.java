@@ -124,7 +124,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			final RegistryEntry.Reference<Biome> biome;
 			final Text text;
 
-			public BuffetBiomeItem(RegistryEntry.Reference<Biome> biome) {
+			public BuffetBiomeItem(final RegistryEntry.Reference<Biome> biome) {
 				this.biome = biome;
 				Identifier identifier = biome.registryKey().getValue();
 				String string = identifier.toTranslationKey("biome");

@@ -24,7 +24,7 @@ public interface ChatLogEntry {
 		private final String id;
 		private final Supplier<MapCodec<? extends ChatLogEntry>> codecSupplier;
 
-		private Type(String id, Supplier<MapCodec<? extends ChatLogEntry>> codecSupplier) {
+		private Type(final String id, final Supplier<MapCodec<? extends ChatLogEntry>> codecSupplier) {
 			this.id = id;
 			this.codecSupplier = codecSupplier;
 		}

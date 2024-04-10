@@ -245,7 +245,7 @@ public class ItemModelGenerator {
 		private final int offsetX;
 		private final int offsetY;
 
-		private Side(Direction direction, int offsetX, int offsetY) {
+		private Side(final Direction direction, final int offsetX, final int offsetY) {
 			this.direction = direction;
 			this.offsetX = offsetX;
 			this.offsetY = offsetY;

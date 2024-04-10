@@ -15,7 +15,7 @@ public enum BlockMirror implements StringIdentifiable {
 	private final Text name;
 	private final DirectionTransformation directionTransformation;
 
-	private BlockMirror(String id, DirectionTransformation directionTransformation) {
+	private BlockMirror(final String id, final DirectionTransformation directionTransformation) {
 		this.id = id;
 		this.name = Text.translatable("mirror." + id);
 		this.directionTransformation = directionTransformation;

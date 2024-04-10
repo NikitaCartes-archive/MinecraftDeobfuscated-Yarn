@@ -460,7 +460,7 @@ public final class DensityFunctionTypes {
 			);
 			private final String name;
 
-			private Type(String name) {
+			private Type(final String name) {
 				this.name = name;
 			}
 
@@ -1192,7 +1192,7 @@ public final class DensityFunctionTypes {
 				input -> DensityFunctionTypes.UnaryOperation.create(this, input), DensityFunctionTypes.UnaryOperation::input
 			);
 
-			private Type(String name) {
+			private Type(final String name) {
 				this.name = name;
 			}
 
@@ -1255,7 +1255,7 @@ public final class DensityFunctionTypes {
 			final Double2DoubleFunction scaleFunction;
 			final double maxValueMultiplier;
 
-			private RarityValueMapper(String name, Double2DoubleFunction scaleFunction, double maxValueMultiplier) {
+			private RarityValueMapper(final String name, final Double2DoubleFunction scaleFunction, final double maxValueMultiplier) {
 				this.name = name;
 				this.scaleFunction = scaleFunction;
 				this.maxValueMultiplier = maxValueMultiplier;
@@ -1317,7 +1317,7 @@ public final class DensityFunctionTypes {
 				densityFunction -> new DensityFunctionTypes.Wrapping(this, densityFunction), DensityFunctionTypes.Wrapper::wrapped
 			);
 
-			private Type(String name) {
+			private Type(final String name) {
 				this.name = name;
 			}
 

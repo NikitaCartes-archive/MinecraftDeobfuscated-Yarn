@@ -113,7 +113,7 @@ public class QuickPlayLogger {
 		static final Codec<QuickPlayLogger.WorldType> CODEC = StringIdentifiable.createCodec(QuickPlayLogger.WorldType::values);
 		private final String id;
 
-		private WorldType(String id) {
+		private WorldType(final String id) {
 			this.id = id;
 		}
 

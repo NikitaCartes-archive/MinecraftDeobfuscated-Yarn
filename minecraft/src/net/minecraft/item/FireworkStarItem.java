@@ -15,7 +15,7 @@ public class FireworkStarItem extends Item {
 	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 		FireworkExplosionComponent fireworkExplosionComponent = stack.get(DataComponentTypes.FIREWORK_EXPLOSION);
 		if (fireworkExplosionComponent != null) {
-			fireworkExplosionComponent.appendTooltip(tooltip::add, type);
+			fireworkExplosionComponent.appendTooltip(context, tooltip::add, type);
 		}
 	}
 }

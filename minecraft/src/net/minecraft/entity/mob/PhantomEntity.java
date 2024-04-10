@@ -329,7 +329,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	class PhantomBodyControl extends BodyControl {
-		public PhantomBodyControl(MobEntity entity) {
+		public PhantomBodyControl(final MobEntity entity) {
 			super(entity);
 		}
 
@@ -341,7 +341,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	class PhantomLookControl extends LookControl {
-		public PhantomLookControl(MobEntity entity) {
+		public PhantomLookControl(final MobEntity entity) {
 			super(entity);
 		}
 
@@ -356,7 +356,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		 */
 		private float targetSpeed = 0.1F;
 
-		public PhantomMoveControl(MobEntity owner) {
+		public PhantomMoveControl(final MobEntity owner) {
 			super(owner);
 		}
 

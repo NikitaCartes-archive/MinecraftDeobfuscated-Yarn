@@ -11,7 +11,6 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
-import net.minecraft.util.math.MathHelper;
 
 public class SetCountLootFunction extends ConditionalLootFunction {
 	public static final MapCodec<SetCountLootFunction> CODEC = RecordCodecBuilder.mapCodec(
@@ -34,7 +33,7 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<SetCountLootFunction> getType() {
 		return LootFunctionTypes.SET_COUNT;
 	}
 
@@ -46,7 +45,7 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		int i = this.add ? stack.getCount() : 0;
-		stack.setCount(MathHelper.clamp(i + this.countRange.nextInt(context), 0, stack.getMaxCount()));
+		stack.setCount(i + this.countRange.nextInt(context));
 		return stack;
 	}
 

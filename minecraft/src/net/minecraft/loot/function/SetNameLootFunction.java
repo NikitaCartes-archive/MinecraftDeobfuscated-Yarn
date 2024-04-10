@@ -49,7 +49,7 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<SetNameLootFunction> getType() {
 		return LootFunctionTypes.SET_NAME;
 	}
 
@@ -101,7 +101,7 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 		public static final Codec<SetNameLootFunction.Target> CODEC = StringIdentifiable.createCodec(SetNameLootFunction.Target::values);
 		private final String id;
 
-		private Target(String id) {
+		private Target(final String id) {
 			this.id = id;
 		}
 

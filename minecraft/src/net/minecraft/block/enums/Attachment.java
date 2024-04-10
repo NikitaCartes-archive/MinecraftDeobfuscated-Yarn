@@ -10,7 +10,7 @@ public enum Attachment implements StringIdentifiable {
 
 	private final String name;
 
-	private Attachment(String name) {
+	private Attachment(final String name) {
 		this.name = name;
 	}
 

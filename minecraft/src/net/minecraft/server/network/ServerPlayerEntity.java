@@ -376,10 +376,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 
 		this.spawnExtraParticlesOnFall = nbt.getBoolean("spawn_extra_particles_on_fall");
-		BlockPos.CODEC
-			.parse(NbtOps.INSTANCE, nbt.get("raid_omen_position"))
-			.resultOrPartial(LOGGER::error)
-			.ifPresent(startRaidPos -> this.startRaidPos = startRaidPos);
+		NbtElement nbtElement = nbt.get("raid_omen_position");
+		if (nbtElement != null) {
+			BlockPos.CODEC.parse(NbtOps.INSTANCE, nbtElement).resultOrPartial(LOGGER::error).ifPresent(startRaidPos -> this.startRaidPos = startRaidPos);
+		}
 	}
 
 	@Override

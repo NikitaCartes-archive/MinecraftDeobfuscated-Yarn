@@ -103,10 +103,9 @@ public class TestFinder<T> implements StructureBlockFinder, TestFunctionFinder {
 
 		public T surface(CommandContext<ServerCommandSource> context, int radius) {
 			ServerCommandSource serverCommandSource = context.getSource();
+			BlockPos blockPos = BlockPos.ofFloored(serverCommandSource.getPosition());
 			return this.createRunner(
-				serverCommandSource,
-				TestFinder.NOOP_TEST_FUNCTION_FINDER,
-				() -> StructureTestUtil.findSurfaceStructureBlocks(radius, serverCommandSource.getPosition(), serverCommandSource.getWorld())
+				serverCommandSource, TestFinder.NOOP_TEST_FUNCTION_FINDER, () -> StructureTestUtil.findStructureBlocks(blockPos, radius, serverCommandSource.getWorld())
 			);
 		}
 
@@ -163,8 +162,18 @@ public class TestFinder<T> implements StructureBlockFinder, TestFunctionFinder {
 			);
 		}
 
-		public T named(CommandContext<ServerCommandSource> context, String name) {
+		public T functionNamed(CommandContext<ServerCommandSource> context, String name) {
 			return this.createRunner(context.getSource(), () -> Stream.of(TestFunctionArgumentType.getFunction(context, name)), TestFinder.NOOP_STRUCTURE_BLOCK_FINDER);
+		}
+
+		public T structureNamed(CommandContext<ServerCommandSource> context, String name) {
+			ServerCommandSource serverCommandSource = context.getSource();
+			BlockPos blockPos = BlockPos.ofFloored(serverCommandSource.getPosition());
+			return this.createRunner(
+				serverCommandSource,
+				TestFinder.NOOP_TEST_FUNCTION_FINDER,
+				() -> StructureTestUtil.findStructureBlocks(blockPos, 1024, serverCommandSource.getWorld(), name)
+			);
 		}
 
 		public T failed(CommandContext<ServerCommandSource> context) {

@@ -28,7 +28,7 @@ public class ReferenceLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<ReferenceLootFunction> getType() {
 		return LootFunctionTypes.REFERENCE;
 	}
 

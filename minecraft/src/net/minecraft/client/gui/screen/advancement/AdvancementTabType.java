@@ -67,7 +67,13 @@ enum AdvancementTabType {
 	private final int height;
 	private final int tabCount;
 
-	private AdvancementTabType(AdvancementTabType.Textures selectedTextures, AdvancementTabType.Textures unselectedTextures, int width, int height, int tabCount) {
+	private AdvancementTabType(
+		final AdvancementTabType.Textures selectedTextures,
+		final AdvancementTabType.Textures unselectedTextures,
+		final int width,
+		final int height,
+		final int tabCount
+	) {
 		this.selectedTextures = selectedTextures;
 		this.unselectedTextures = unselectedTextures;
 		this.width = width;

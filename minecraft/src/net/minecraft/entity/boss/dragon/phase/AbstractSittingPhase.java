@@ -3,6 +3,7 @@ package net.minecraft.entity.boss.dragon.phase;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.WindChargeEntity;
 
 public abstract class AbstractSittingPhase extends AbstractPhase {
 	public AbstractSittingPhase(EnderDragonEntity enderDragonEntity) {
@@ -16,11 +17,11 @@ public abstract class AbstractSittingPhase extends AbstractPhase {
 
 	@Override
 	public float modifyDamageTaken(DamageSource damageSource, float damage) {
-		if (damageSource.getSource() instanceof PersistentProjectileEntity) {
+		if (!(damageSource.getSource() instanceof PersistentProjectileEntity) && !(damageSource.getSource() instanceof WindChargeEntity)) {
+			return super.modifyDamageTaken(damageSource, damage);
+		} else {
 			damageSource.getSource().setOnFireFor(1);
 			return 0.0F;
-		} else {
-			return super.modifyDamageTaken(damageSource, damage);
 		}
 	}
 }

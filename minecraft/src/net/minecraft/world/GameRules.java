@@ -395,7 +395,7 @@ public class GameRules {
 
 		private final String category;
 
-		private Category(String category) {
+		private Category(final String category) {
 			this.category = category;
 		}
 

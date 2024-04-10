@@ -16,7 +16,7 @@ public enum MapPostProcessingComponent {
 	public static final PacketCodec<ByteBuf, MapPostProcessingComponent> PACKET_CODEC = PacketCodecs.indexed(ID_TO_VALUE, MapPostProcessingComponent::getId);
 	private final int id;
 
-	private MapPostProcessingComponent(int id) {
+	private MapPostProcessingComponent(final int id) {
 		this.id = id;
 	}
 

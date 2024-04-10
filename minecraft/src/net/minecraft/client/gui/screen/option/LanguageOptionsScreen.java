@@ -69,7 +69,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 
 	@Environment(EnvType.CLIENT)
 	class LanguageSelectionListWidget extends AlwaysSelectedEntryListWidget<LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry> {
-		public LanguageSelectionListWidget(MinecraftClient client) {
+		public LanguageSelectionListWidget(final MinecraftClient client) {
 			super(client, LanguageOptionsScreen.this.width, LanguageOptionsScreen.this.height - 33 - 53, 33, 18);
 			String string = LanguageOptionsScreen.this.languageManager.getLanguage();
 			LanguageOptionsScreen.this.languageManager
@@ -101,7 +101,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			private final Text languageDefinition;
 			private long clickTime;
 
-			public LanguageEntry(String languageCode, LanguageDefinition languageDefinition) {
+			public LanguageEntry(final String languageCode, final LanguageDefinition languageDefinition) {
 				this.languageCode = languageCode;
 				this.languageDefinition = languageDefinition.getDisplayText();
 			}

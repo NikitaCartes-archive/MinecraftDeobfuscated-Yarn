@@ -113,6 +113,12 @@ public final class ComponentMapImpl implements ComponentMap {
 		}
 	}
 
+	public void setChanges(ComponentChanges changes) {
+		this.onWrite();
+		this.changedComponents.clear();
+		this.changedComponents.putAll(changes.changedComponents);
+	}
+
 	public void setAll(ComponentMap components) {
 		for (Component<?> component : components) {
 			component.apply(this);

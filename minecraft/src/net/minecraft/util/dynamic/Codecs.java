@@ -55,12 +55,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
+import net.minecraft.util.math.ColorHelper;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.joml.AxisAngle4f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 /**
  * A few extensions for {@link Codec} or {@link DynamicOps}.
@@ -83,6 +85,12 @@ public class Codecs {
 		.comapFlatMap(
 			list -> Util.decodeFixedLengthList(list, 3).map(listx -> new Vector3f((Float)listx.get(0), (Float)listx.get(1), (Float)listx.get(2))),
 			vec3f -> List.of(vec3f.x(), vec3f.y(), vec3f.z())
+		);
+	public static final Codec<Vector4f> VECTOR_4F = Codec.FLOAT
+		.listOf()
+		.comapFlatMap(
+			list -> Util.decodeFixedLengthList(list, 4).map(listx -> new Vector4f((Float)listx.get(0), (Float)listx.get(1), (Float)listx.get(2), (Float)listx.get(3))),
+			vec4f -> List.of(vec4f.x(), vec4f.y(), vec4f.z(), vec4f.w())
 		);
 	public static final Codec<Quaternionf> QUATERNIONF = Codec.FLOAT
 		.listOf()
@@ -116,6 +124,9 @@ public class Codecs {
 
 		return floatList;
 	});
+	public static final Codec<Integer> ARGB = Codec.withAlternative(
+		Codec.INT, VECTOR_4F, vec4f -> ColorHelper.Argb.fromFloats(vec4f.w(), vec4f.x(), vec4f.y(), vec4f.z())
+	);
 	public static final Codec<Integer> UNSIGNED_BYTE = Codec.BYTE
 		.flatComapMap(
 			UnsignedBytes::toInt,

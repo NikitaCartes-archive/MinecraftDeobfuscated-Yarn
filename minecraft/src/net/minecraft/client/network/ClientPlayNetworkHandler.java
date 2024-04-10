@@ -262,6 +262,7 @@ import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
 import net.minecraft.network.state.ConfigurationStates;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
@@ -332,6 +333,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private Set<RegistryKey<World>> worldKeys;
 	private final DynamicRegistryManager.Immutable combinedDynamicRegistries;
 	private final FeatureSet enabledFeatures;
+	private final BrewingRecipeRegistry brewingRecipeRegistry;
 	@Nullable
 	private ClientPlayerSession session;
 	private MessageChain.Packer messagePacker = MessageChain.Packer.NONE;
@@ -360,6 +362,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		if (clientConnectionState.chatState() != null) {
 			client.inGameHud.getChatHud().restoreChatState(clientConnectionState.chatState());
 		}
+
+		this.brewingRecipeRegistry = BrewingRecipeRegistry.create(this.enabledFeatures);
 	}
 
 	public ClientCommandSource getCommandSource() {
@@ -2425,5 +2429,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 	public Scoreboard getScoreboard() {
 		return this.scoreboard;
+	}
+
+	public BrewingRecipeRegistry getBrewingRecipeRegistry() {
+		return this.brewingRecipeRegistry;
 	}
 }

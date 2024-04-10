@@ -165,23 +165,27 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 
 	@Override
 	public void onServerTransfer(ServerTransferS2CPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		if (this.serverInfo == null) {
 			throw new IllegalStateException("Cannot transfer to server from singleplayer");
 		} else {
 			this.transferring = true;
 			this.connection.disconnect(Text.translatable("disconnect.transfer"));
-			this.connection.tryDisableAutoRead();
-			this.connection.handleDisconnection();
-			ServerAddress serverAddress = new ServerAddress(packet.host(), packet.port());
-			ConnectScreen.connect(
-				(Screen)Objects.requireNonNullElseGet(this.postDisconnectScreen, TitleScreen::new),
-				this.client,
-				serverAddress,
-				this.serverInfo,
-				false,
-				new CookieStorage(this.serverCookies)
-			);
+			this.client
+				.executeSync(
+					() -> {
+						this.connection.tryDisableAutoRead();
+						this.connection.handleDisconnection();
+						ServerAddress serverAddress = new ServerAddress(packet.host(), packet.port());
+						ConnectScreen.connect(
+							(Screen)Objects.requireNonNullElseGet(this.postDisconnectScreen, TitleScreen::new),
+							this.client,
+							serverAddress,
+							this.serverInfo,
+							false,
+							new CookieStorage(this.serverCookies)
+						);
+					}
+				);
 		}
 	}
 
@@ -257,11 +261,11 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 		private final Screen parent;
 
 		ConfirmServerResourcePackScreen(
-			MinecraftClient client,
-			@Nullable Screen parent,
-			List<ClientCommonNetworkHandler.ConfirmServerResourcePackScreen.Pack> pack,
-			boolean required,
-			@Nullable Text prompt
+			final MinecraftClient client,
+			@Nullable final Screen parent,
+			final List<ClientCommonNetworkHandler.ConfirmServerResourcePackScreen.Pack> pack,
+			final boolean required,
+			@Nullable final Text prompt
 		) {
 			super(
 				confirmed -> {

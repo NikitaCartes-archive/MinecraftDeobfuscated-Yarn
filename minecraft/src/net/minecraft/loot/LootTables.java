@@ -72,6 +72,8 @@ public class LootTables {
 	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_WATER_DISPENSER = register("dispensers/trial_chambers/water");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBERS_CORRIDOR_POT = register("pots/trial_chambers/corridor");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBER_EQUIPMENT = register("equipment/trial_chamber");
+	public static final RegistryKey<LootTable> TRIAL_CHAMBER_RANGED_EQUIPMENT = register("equipment/trial_chamber_ranged");
+	public static final RegistryKey<LootTable> TRIAL_CHAMBER_MELEE_EQUIPMENT = register("equipment/trial_chamber_melee");
 	public static final RegistryKey<LootTable> WHITE_SHEEP_ENTITY = register("entities/sheep/white");
 	public static final RegistryKey<LootTable> ORANGE_SHEEP_ENTITY = register("entities/sheep/orange");
 	public static final RegistryKey<LootTable> MAGENTA_SHEEP_ENTITY = register("entities/sheep/magenta");

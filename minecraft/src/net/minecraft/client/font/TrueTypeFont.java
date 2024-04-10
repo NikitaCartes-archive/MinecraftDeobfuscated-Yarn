@@ -113,7 +113,7 @@ public class TrueTypeFont implements Font {
 		private final float advance;
 		final int glyphIndex;
 
-		TtfGlyph(float bearingX, float ascent, int width, int height, float advance, int glyphIndex) {
+		TtfGlyph(final float bearingX, final float ascent, final int width, final int height, final float advance, final int glyphIndex) {
 			this.width = width;
 			this.height = height;
 			this.advance = advance / TrueTypeFont.this.oversample;

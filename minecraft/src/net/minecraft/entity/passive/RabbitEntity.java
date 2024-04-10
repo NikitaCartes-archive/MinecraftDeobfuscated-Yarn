@@ -606,7 +606,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 		final int id;
 		private final String name;
 
-		private RabbitType(int id, String name) {
+		private RabbitType(final int id, final String name) {
 			this.id = id;
 			this.name = name;
 		}

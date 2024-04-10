@@ -50,7 +50,7 @@ public class CopyStateLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<CopyStateLootFunction> getType() {
 		return LootFunctionTypes.COPY_STATE;
 	}
 

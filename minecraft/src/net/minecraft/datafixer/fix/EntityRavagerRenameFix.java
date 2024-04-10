@@ -10,8 +10,8 @@ public class EntityRavagerRenameFix extends EntityRenameFix {
 		.put("minecraft:illager_beast_spawn_egg", "minecraft:ravager_spawn_egg")
 		.build();
 
-	public EntityRavagerRenameFix(Schema outputSchema, boolean changesType) {
-		super("EntityRavagerRenameFix", outputSchema, changesType);
+	public EntityRavagerRenameFix(Schema schema, boolean bl) {
+		super("EntityRavagerRenameFix", schema, bl);
 	}
 
 	@Override

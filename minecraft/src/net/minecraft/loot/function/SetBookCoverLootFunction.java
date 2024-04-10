@@ -53,7 +53,7 @@ public class SetBookCoverLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<SetBookCoverLootFunction> getType() {
 		return LootFunctionTypes.SET_BOOK_COVER;
 	}
 }

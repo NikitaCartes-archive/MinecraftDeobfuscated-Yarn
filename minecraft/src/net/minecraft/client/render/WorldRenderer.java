@@ -72,6 +72,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.MusicDiscItem;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -2491,7 +2492,10 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			CrashReport crashReport = CrashReport.create(var19, "Exception while adding particle");
 			CrashReportSection crashReportSection = crashReport.addElement("Particle being added");
 			crashReportSection.add("ID", Registries.PARTICLE_TYPE.getId(parameters.getType()));
-			crashReportSection.add("Parameters", (CrashCallable<String>)(() -> parameters.asString(this.world.getRegistryManager())));
+			crashReportSection.add(
+				"Parameters",
+				(CrashCallable<String>)(() -> ParticleTypes.TYPE_CODEC.encodeStart(this.world.getRegistryManager().getOps(NbtOps.INSTANCE), parameters).toString())
+			);
 			crashReportSection.add("Position", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(this.world, x, y, z)));
 			throw new CrashException(crashReport);
 		}

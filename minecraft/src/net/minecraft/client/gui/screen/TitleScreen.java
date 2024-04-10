@@ -276,13 +276,9 @@ public class TitleScreen extends Screen {
 				g = MathHelper.clamp(g, 0.0F, 1.0F);
 				f = MathHelper.clampedMap(g, 0.5F, 1.0F, 0.0F, 1.0F);
 				this.backgroundAlpha = MathHelper.clampedMap(g, 0.0F, 0.5F, 0.0F, 1.0F);
-
-				for (Element element : this.children()) {
-					if (element instanceof ClickableWidget clickableWidget) {
-						clickableWidget.setAlpha(f);
-					}
-				}
 			}
+
+			this.setWidgetAlpha(f);
 		}
 
 		this.renderPanoramaBackground(context, delta);
@@ -313,6 +309,14 @@ public class TitleScreen extends Screen {
 			if (this.isRealmsNotificationsGuiDisplayed() && f >= 1.0F) {
 				RenderSystem.enableDepthTest();
 				this.realmsNotificationGui.render(context, mouseX, mouseY, delta);
+			}
+		}
+	}
+
+	private void setWidgetAlpha(float alpha) {
+		for (Element element : this.children()) {
+			if (element instanceof ClickableWidget clickableWidget) {
+				clickableWidget.setAlpha(alpha);
 			}
 		}
 	}

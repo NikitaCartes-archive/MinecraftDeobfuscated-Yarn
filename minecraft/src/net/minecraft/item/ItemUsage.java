@@ -1,6 +1,5 @@
 package net.minecraft.item;
 
-import java.util.stream.Stream;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
@@ -77,7 +76,7 @@ public class ItemUsage {
 	 * 
 	 * @see Item#onItemEntityDestroyed
 	 */
-	public static void spawnItemContents(ItemEntity itemEntity, Stream<ItemStack> contents) {
+	public static void spawnItemContents(ItemEntity itemEntity, Iterable<ItemStack> contents) {
 		World world = itemEntity.getWorld();
 		if (!world.isClient) {
 			contents.forEach(stack -> world.spawnEntity(new ItemEntity(world, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), stack)));

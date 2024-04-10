@@ -74,7 +74,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		final Text text;
 		private final int textWidth;
 
-		public CategoryEntry(Text text) {
+		public CategoryEntry(final Text text) {
 			this.text = text;
 			this.textWidth = ControlsListWidget.this.client.textRenderer.getWidth(this.text);
 		}
@@ -137,7 +137,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		private final ButtonWidget resetButton;
 		private boolean duplicate = false;
 
-		KeyBindingEntry(KeyBinding binding, Text bindingName) {
+		KeyBindingEntry(final KeyBinding binding, final Text bindingName) {
 			this.binding = binding;
 			this.bindingName = bindingName;
 			this.editButton = ButtonWidget.builder(bindingName, button -> {

@@ -13,10 +13,10 @@ import net.minecraft.registry.RegistryKeys;
 public class ParticleTypes {
 	public static final SimpleParticleType ANGRY_VILLAGER = register("angry_villager", false);
 	public static final ParticleType<BlockStateParticleEffect> BLOCK = register(
-		"block", false, BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec, BlockStateParticleEffect::createPacketCodec
+		"block", false, BlockStateParticleEffect::createCodec, BlockStateParticleEffect::createPacketCodec
 	);
 	public static final ParticleType<BlockStateParticleEffect> BLOCK_MARKER = register(
-		"block_marker", true, BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec, BlockStateParticleEffect::createPacketCodec
+		"block_marker", true, BlockStateParticleEffect::createCodec, BlockStateParticleEffect::createPacketCodec
 	);
 	public static final SimpleParticleType BUBBLE = register("bubble", false);
 	public static final SimpleParticleType CLOUD = register("cloud", false);
@@ -28,15 +28,9 @@ public class ParticleTypes {
 	public static final SimpleParticleType LANDING_LAVA = register("landing_lava", false);
 	public static final SimpleParticleType DRIPPING_WATER = register("dripping_water", false);
 	public static final SimpleParticleType FALLING_WATER = register("falling_water", false);
-	public static final ParticleType<DustParticleEffect> DUST = register(
-		"dust", false, DustParticleEffect.PARAMETERS_FACTORY, type -> DustParticleEffect.CODEC, type -> DustParticleEffect.PACKET_CODEC
-	);
+	public static final ParticleType<DustParticleEffect> DUST = register("dust", false, type -> DustParticleEffect.CODEC, type -> DustParticleEffect.PACKET_CODEC);
 	public static final ParticleType<DustColorTransitionParticleEffect> DUST_COLOR_TRANSITION = register(
-		"dust_color_transition",
-		false,
-		DustColorTransitionParticleEffect.FACTORY,
-		type -> DustColorTransitionParticleEffect.CODEC,
-		type -> DustColorTransitionParticleEffect.PACKET_CODEC
+		"dust_color_transition", false, type -> DustColorTransitionParticleEffect.CODEC, type -> DustColorTransitionParticleEffect.PACKET_CODEC
 	);
 	public static final SimpleParticleType EFFECT = register("effect", false);
 	public static final SimpleParticleType ELDER_GUARDIAN = register("elder_guardian", true);
@@ -44,7 +38,7 @@ public class ParticleTypes {
 	public static final SimpleParticleType ENCHANT = register("enchant", false);
 	public static final SimpleParticleType END_ROD = register("end_rod", false);
 	public static final ParticleType<EntityEffectParticleEffect> ENTITY_EFFECT = register(
-		"entity_effect", false, EntityEffectParticleEffect.PARAMETERS_FACTORY, EntityEffectParticleEffect::createCodec, EntityEffectParticleEffect::createPacketCodec
+		"entity_effect", false, EntityEffectParticleEffect::createCodec, EntityEffectParticleEffect::createPacketCodec
 	);
 	public static final SimpleParticleType EXPLOSION_EMITTER = register("explosion_emitter", true);
 	public static final SimpleParticleType EXPLOSION = register("explosion", true);
@@ -54,7 +48,7 @@ public class ParticleTypes {
 	public static final SimpleParticleType GUST_EMITTER_SMALL = register("gust_emitter_small", true);
 	public static final SimpleParticleType SONIC_BOOM = register("sonic_boom", true);
 	public static final ParticleType<BlockStateParticleEffect> FALLING_DUST = register(
-		"falling_dust", false, BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec, BlockStateParticleEffect::createPacketCodec
+		"falling_dust", false, BlockStateParticleEffect::createCodec, BlockStateParticleEffect::createPacketCodec
 	);
 	public static final SimpleParticleType FIREWORK = register("firework", false);
 	public static final SimpleParticleType FISHING = register("fishing", false);
@@ -63,7 +57,7 @@ public class ParticleTypes {
 	public static final SimpleParticleType CHERRY_LEAVES = register("cherry_leaves", false);
 	public static final SimpleParticleType SCULK_SOUL = register("sculk_soul", false);
 	public static final ParticleType<SculkChargeParticleEffect> SCULK_CHARGE = register(
-		"sculk_charge", true, SculkChargeParticleEffect.FACTORY, type -> SculkChargeParticleEffect.CODEC, type -> SculkChargeParticleEffect.PACKET_CODEC
+		"sculk_charge", true, type -> SculkChargeParticleEffect.CODEC, type -> SculkChargeParticleEffect.PACKET_CODEC
 	);
 	public static final SimpleParticleType SCULK_CHARGE_POP = register("sculk_charge_pop", true);
 	public static final SimpleParticleType SOUL_FIRE_FLAME = register("soul_fire_flame", false);
@@ -74,10 +68,10 @@ public class ParticleTypes {
 	public static final SimpleParticleType HEART = register("heart", false);
 	public static final SimpleParticleType INSTANT_EFFECT = register("instant_effect", false);
 	public static final ParticleType<ItemStackParticleEffect> ITEM = register(
-		"item", false, ItemStackParticleEffect.PARAMETERS_FACTORY, ItemStackParticleEffect::createCodec, ItemStackParticleEffect::createPacketCodec
+		"item", false, ItemStackParticleEffect::createCodec, ItemStackParticleEffect::createPacketCodec
 	);
 	public static final ParticleType<VibrationParticleEffect> VIBRATION = register(
-		"vibration", true, VibrationParticleEffect.PARAMETERS_FACTORY, type -> VibrationParticleEffect.CODEC, type -> VibrationParticleEffect.PACKET_CODEC
+		"vibration", true, type -> VibrationParticleEffect.CODEC, type -> VibrationParticleEffect.PACKET_CODEC
 	);
 	public static final SimpleParticleType ITEM_SLIME = register("item_slime", false);
 	public static final SimpleParticleType ITEM_COBWEB = register("item_cobweb", false);
@@ -133,7 +127,7 @@ public class ParticleTypes {
 	public static final SimpleParticleType ELECTRIC_SPARK = register("electric_spark", true);
 	public static final SimpleParticleType SCRAPE = register("scrape", true);
 	public static final ParticleType<ShriekParticleEffect> SHRIEK = register(
-		"shriek", false, ShriekParticleEffect.FACTORY, type -> ShriekParticleEffect.CODEC, type -> ShriekParticleEffect.PACKET_CODEC
+		"shriek", false, type -> ShriekParticleEffect.CODEC, type -> ShriekParticleEffect.PACKET_CODEC
 	);
 	public static final SimpleParticleType EGG_CRACK = register("egg_crack", false);
 	public static final SimpleParticleType DUST_PLUME = register("dust_plume", false);
@@ -141,7 +135,7 @@ public class ParticleTypes {
 	public static final SimpleParticleType TRIAL_SPAWNER_DETECTION_OMINOUS = register("trial_spawner_detection_ominous", true);
 	public static final SimpleParticleType VAULT_CONNECTION = register("vault_connection", true);
 	public static final ParticleType<BlockStateParticleEffect> DUST_PILLAR = register(
-		"dust_pillar", true, BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec, BlockStateParticleEffect::createPacketCodec
+		"dust_pillar", true, BlockStateParticleEffect::createCodec, BlockStateParticleEffect::createPacketCodec
 	);
 	public static final SimpleParticleType OMINOUS_SPAWNING = register("ominous_spawning", true);
 	public static final SimpleParticleType RAID_OMEN = register("raid_omen", false);
@@ -157,11 +151,10 @@ public class ParticleTypes {
 	private static <T extends ParticleEffect> ParticleType<T> register(
 		String name,
 		boolean alwaysShow,
-		ParticleEffect.Factory<T> factory,
 		Function<ParticleType<T>, MapCodec<T>> codecGetter,
 		Function<ParticleType<T>, PacketCodec<? super RegistryByteBuf, T>> packetCodecGetter
 	) {
-		return Registry.register(Registries.PARTICLE_TYPE, name, new ParticleType<T>(alwaysShow, factory) {
+		return Registry.register(Registries.PARTICLE_TYPE, name, new ParticleType<T>(alwaysShow) {
 			@Override
 			public MapCodec<T> getCodec() {
 				return (MapCodec<T>)codecGetter.apply(this);

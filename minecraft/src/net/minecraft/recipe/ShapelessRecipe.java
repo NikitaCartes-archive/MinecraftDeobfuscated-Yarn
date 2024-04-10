@@ -80,7 +80,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 			instance -> instance.group(
 						Codec.STRING.optionalFieldOf("group", "").forGetter(recipe -> recipe.group),
 						CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(recipe -> recipe.category),
-						ItemStack.CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+						ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
 						Ingredient.DISALLOW_EMPTY_CODEC
 							.listOf()
 							.fieldOf("ingredients")

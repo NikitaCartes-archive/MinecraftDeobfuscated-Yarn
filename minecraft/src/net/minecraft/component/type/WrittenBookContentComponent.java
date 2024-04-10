@@ -24,7 +24,6 @@ public record WrittenBookContentComponent(RawFilteredPair<String> title, String 
 	implements BookContent<Text, WrittenBookContentComponent> {
 	public static final WrittenBookContentComponent DEFAULT = new WrittenBookContentComponent(RawFilteredPair.of(""), "", 0, List.of(), true);
 	public static final int MAX_SERIALIZED_PAGE_LENGTH = 32767;
-	public static final int MAX_PAGE_COUNT = 100;
 	public static final int field_49377 = 16;
 	public static final int MAX_TITLE_LENGTH = 32;
 	public static final int MAX_GENERATION = 3;
@@ -48,19 +47,31 @@ public record WrittenBookContentComponent(RawFilteredPair<String> title, String 
 		WrittenBookContentComponent::author,
 		PacketCodecs.VAR_INT,
 		WrittenBookContentComponent::generation,
-		RawFilteredPair.createPacketCodec(TextCodecs.REGISTRY_PACKET_CODEC).collect(PacketCodecs.toList(100)),
+		RawFilteredPair.createPacketCodec(TextCodecs.REGISTRY_PACKET_CODEC).collect(PacketCodecs.toList()),
 		WrittenBookContentComponent::pages,
 		PacketCodecs.BOOL,
 		WrittenBookContentComponent::resolved,
 		WrittenBookContentComponent::new
 	);
 
+	public WrittenBookContentComponent(RawFilteredPair<String> title, String author, int generation, List<RawFilteredPair<Text>> pages, boolean resolved) {
+		if (generation >= 0 && generation <= 3) {
+			this.title = title;
+			this.author = author;
+			this.generation = generation;
+			this.pages = pages;
+			this.resolved = resolved;
+		} else {
+			throw new IllegalArgumentException("Generation was " + generation + ", but must be between 0 and 3");
+		}
+	}
+
 	private static Codec<RawFilteredPair<Text>> createPageCodec(Codec<Text> textCodec) {
 		return RawFilteredPair.createCodec(textCodec);
 	}
 
 	public static Codec<List<RawFilteredPair<Text>>> createPagesCodec(Codec<Text> textCodec) {
-		return createPageCodec(textCodec).sizeLimitedListOf(100);
+		return createPageCodec(textCodec).listOf();
 	}
 
 	@Nullable

@@ -40,7 +40,7 @@ public enum ModelRotation implements ModelBakeSettings {
 		return x * 360 + y;
 	}
 
-	private ModelRotation(int x, int y) {
+	private ModelRotation(final int x, final int y) {
 		this.index = getIndex(x, y);
 		Quaternionf quaternionf = new Quaternionf().rotateYXZ((float)(-y) * (float) (Math.PI / 180.0), (float)(-x) * (float) (Math.PI / 180.0), 0.0F);
 		DirectionTransformation directionTransformation = DirectionTransformation.IDENTITY;

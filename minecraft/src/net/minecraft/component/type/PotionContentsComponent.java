@@ -100,14 +100,6 @@ public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Op
 	}
 
 	public int getColor() {
-		if (this.customColor.isPresent()) {
-			return (Integer)this.customColor.get();
-		} else {
-			return this.potion.isEmpty() ? -524040 : getColor(this.getEffects());
-		}
-	}
-
-	public int getCustomColor() {
 		return this.customColor.isPresent() ? (Integer)this.customColor.get() : getColor(this.getEffects());
 	}
 

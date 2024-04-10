@@ -40,7 +40,7 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<LootingEnchantLootFunction> getType() {
 		return LootFunctionTypes.LOOTING_ENCHANT;
 	}
 
@@ -64,8 +64,8 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 
 			float f = (float)i * this.countRange.nextFloat(context);
 			stack.increment(Math.round(f));
-			if (this.hasLimit() && stack.getCount() > this.limit) {
-				stack.setCount(this.limit);
+			if (this.hasLimit()) {
+				stack.capCount(this.limit);
 			}
 		}
 

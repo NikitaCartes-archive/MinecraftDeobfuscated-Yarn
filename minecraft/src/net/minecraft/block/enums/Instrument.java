@@ -34,7 +34,7 @@ public enum Instrument implements StringIdentifiable {
 	private final RegistryEntry<SoundEvent> sound;
 	private final Instrument.Type type;
 
-	private Instrument(String name, RegistryEntry<SoundEvent> sound, Instrument.Type type) {
+	private Instrument(final String name, final RegistryEntry<SoundEvent> sound, final Instrument.Type type) {
 		this.name = name;
 		this.sound = sound;
 		this.type = type;

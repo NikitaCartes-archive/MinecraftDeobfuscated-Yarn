@@ -938,6 +938,10 @@ public class ItemGroups {
 						entries.add(Items.END_ROD);
 						entries.add(Items.SEA_LANTERN);
 						entries.add(Items.REDSTONE_LAMP);
+						entries.add(Items.COPPER_BULB);
+						entries.add(Items.EXPOSED_COPPER_BULB);
+						entries.add(Items.WEATHERED_COPPER_BULB);
+						entries.add(Items.OXIDIZED_COPPER_BULB);
 						entries.add(Items.WAXED_COPPER_BULB);
 						entries.add(Items.WAXED_EXPOSED_COPPER_BULB);
 						entries.add(Items.WAXED_WEATHERED_COPPER_BULB);

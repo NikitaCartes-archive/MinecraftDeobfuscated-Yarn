@@ -67,7 +67,7 @@ public class DataGenerator {
 		private final String packName;
 		private final DataOutput output;
 
-		Pack(boolean shouldRun, String name, DataOutput output) {
+		Pack(final boolean shouldRun, final String name, final DataOutput output) {
 			this.shouldRun = shouldRun;
 			this.packName = name;
 			this.output = output;

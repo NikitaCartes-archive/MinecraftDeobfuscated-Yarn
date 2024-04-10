@@ -8,7 +8,7 @@ public enum BedPart implements StringIdentifiable {
 
 	private final String name;
 
-	private BedPart(String name) {
+	private BedPart(final String name) {
 		this.name = name;
 	}
 

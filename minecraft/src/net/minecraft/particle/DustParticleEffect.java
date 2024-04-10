@@ -1,14 +1,11 @@
 package net.minecraft.particle;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Vector3f;
@@ -25,14 +22,6 @@ public class DustParticleEffect extends AbstractDustParticleEffect {
 	public static final PacketCodec<RegistryByteBuf, DustParticleEffect> PACKET_CODEC = PacketCodec.tuple(
 		PacketCodecs.VECTOR3F, effect -> effect.color, PacketCodecs.FLOAT, effect -> effect.scale, DustParticleEffect::new
 	);
-	public static final ParticleEffect.Factory<DustParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<DustParticleEffect>() {
-		public DustParticleEffect read(ParticleType<DustParticleEffect> particleType, StringReader stringReader, RegistryWrapper.WrapperLookup wrapperLookup) throws CommandSyntaxException {
-			Vector3f vector3f = AbstractDustParticleEffect.readColor(stringReader);
-			stringReader.expect(' ');
-			float f = stringReader.readFloat();
-			return new DustParticleEffect(vector3f, f);
-		}
-	};
 
 	public DustParticleEffect(Vector3f vector3f, float f) {
 		super(vector3f, f);

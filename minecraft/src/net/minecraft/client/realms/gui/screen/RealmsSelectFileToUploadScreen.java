@@ -133,7 +133,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 		private final Text nameAndLastPlayed;
 		private final Text details;
 
-		public WorldListEntry(LevelSummary summary) {
+		public WorldListEntry(final LevelSummary summary) {
 			this.summary = summary;
 			this.displayName = summary.getDisplayName();
 			this.nameAndLastPlayed = Text.translatable("mco.upload.entry.id", summary.getName(), RealmsSelectFileToUploadScreen.getLastPlayed(summary));

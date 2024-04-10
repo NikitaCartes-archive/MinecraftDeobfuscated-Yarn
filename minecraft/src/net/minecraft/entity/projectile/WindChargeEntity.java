@@ -1,5 +1,6 @@
 package net.minecraft.entity.projectile;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
@@ -43,7 +44,7 @@ public class WindChargeEntity extends AbstractWindChargeEntity {
 
 	public static final class WindChargeExplosionBehavior extends AbstractWindChargeEntity.WindChargeExplosionBehavior {
 		@Override
-		public float getKnockbackModifier() {
+		public float getKnockbackModifier(Entity entity) {
 			return 1.1F;
 		}
 	}

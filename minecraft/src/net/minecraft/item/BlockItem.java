@@ -207,7 +207,7 @@ public class BlockItem extends Item {
 	public void onItemEntityDestroyed(ItemEntity entity) {
 		ContainerComponent containerComponent = entity.getStack().set(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT);
 		if (containerComponent != null) {
-			ItemUsage.spawnItemContents(entity, containerComponent.stream());
+			ItemUsage.spawnItemContents(entity, containerComponent.iterateNonEmptyCopy());
 		}
 	}
 

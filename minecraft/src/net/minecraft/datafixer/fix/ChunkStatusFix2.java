@@ -26,8 +26,8 @@ public class ChunkStatusFix2 extends DataFix {
 		.put("fullchunk", "full")
 		.build();
 
-	public ChunkStatusFix2(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public ChunkStatusFix2(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	@Override

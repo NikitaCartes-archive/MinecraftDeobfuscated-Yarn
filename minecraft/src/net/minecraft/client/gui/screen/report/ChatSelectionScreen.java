@@ -123,7 +123,7 @@ public class ChatSelectionScreen extends Screen {
 		@Nullable
 		private ChatSelectionScreen.SelectionListWidget.SenderEntryPair lastSenderEntryPair;
 
-		public SelectionListWidget(MinecraftClient client, int contextMessagesHeight) {
+		public SelectionListWidget(final MinecraftClient client, final int contextMessagesHeight) {
 			super(client, ChatSelectionScreen.this.width, ChatSelectionScreen.this.height - contextMessagesHeight - 80, 40, 16);
 		}
 
@@ -165,9 +165,9 @@ public class ChatSelectionScreen extends Screen {
 
 		@Override
 		public void addText(Text text) {
-			this.addEntryToTop(new ChatSelectionScreen.SelectionListWidget.SeparatorEntry(this));
+			this.addEntryToTop(new ChatSelectionScreen.SelectionListWidget.SeparatorEntry());
 			this.addEntryToTop(new ChatSelectionScreen.SelectionListWidget.TextEntry(text));
-			this.addEntryToTop(new ChatSelectionScreen.SelectionListWidget.SeparatorEntry(this));
+			this.addEntryToTop(new ChatSelectionScreen.SelectionListWidget.SeparatorEntry());
 			this.lastSenderEntryPair = null;
 		}
 
@@ -228,9 +228,6 @@ public class ChatSelectionScreen extends Screen {
 
 		@Environment(EnvType.CLIENT)
 		public abstract class Entry extends AlwaysSelectedEntryListWidget.Entry<ChatSelectionScreen.SelectionListWidget.Entry> {
-			public Entry(ChatSelectionScreen.SelectionListWidget selectionListWidget) {
-			}
-
 			@Override
 			public Text getNarration() {
 				return ScreenTexts.EMPTY;
@@ -267,8 +264,14 @@ public class ChatSelectionScreen extends Screen {
 			private final boolean fromReportedPlayer;
 			private final boolean isChatMessage;
 
-			public MessageEntry(int index, Text message, Text narration, @Nullable MessageIndicator indicator, boolean fromReportedPlayer, boolean isChatMessage) {
-				super(SelectionListWidget.this);
+			public MessageEntry(
+				final int index,
+				final Text message,
+				final Text narration,
+				@Nullable final MessageIndicator indicator,
+				final boolean fromReportedPlayer,
+				final boolean isChatMessage
+			) {
 				this.index = index;
 				this.indicatorIcon = Nullables.map(indicator, MessageIndicator::icon);
 				this.originalContent = indicator != null && indicator.text() != null
@@ -384,8 +387,7 @@ public class ChatSelectionScreen extends Screen {
 			private final Supplier<SkinTextures> skinTexturesSupplier;
 			private final boolean fromReportedPlayer;
 
-			public SenderEntry(GameProfile gameProfile, Text headingText, boolean fromReportedPlayer) {
-				super(SelectionListWidget.this);
+			public SenderEntry(final GameProfile gameProfile, final Text headingText, final boolean fromReportedPlayer) {
 				this.headingText = headingText;
 				this.fromReportedPlayer = fromReportedPlayer;
 				this.skinTexturesSupplier = SelectionListWidget.this.client.getSkinProvider().getSkinTexturesSupplier(gameProfile);
@@ -410,10 +412,6 @@ public class ChatSelectionScreen extends Screen {
 
 		@Environment(EnvType.CLIENT)
 		public class SeparatorEntry extends ChatSelectionScreen.SelectionListWidget.Entry {
-			public SeparatorEntry(ChatSelectionScreen.SelectionListWidget selectionListWidget) {
-				super(selectionListWidget);
-			}
-
 			@Override
 			public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			}
@@ -424,8 +422,7 @@ public class ChatSelectionScreen extends Screen {
 			private static final int TEXT_COLOR = -6250336;
 			private final Text text;
 
-			public TextEntry(Text text) {
-				super(SelectionListWidget.this);
+			public TextEntry(final Text text) {
 				this.text = text;
 			}
 

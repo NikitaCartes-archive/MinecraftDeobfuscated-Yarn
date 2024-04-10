@@ -111,7 +111,7 @@ public class EditGameRulesScreen extends Screen {
 	public class BooleanRuleWidget extends EditGameRulesScreen.NamedRuleWidget {
 		private final CyclingButtonWidget<Boolean> toggleButton;
 
-		public BooleanRuleWidget(Text name, List<OrderedText> description, String ruleName, GameRules.BooleanRule rule) {
+		public BooleanRuleWidget(final Text name, final List<OrderedText> description, final String ruleName, final GameRules.BooleanRule rule) {
 			super(description, name);
 			this.toggleButton = CyclingButtonWidget.onOffBuilder(rule.get())
 				.omitKeyText()
@@ -133,7 +133,7 @@ public class EditGameRulesScreen extends Screen {
 	public class IntRuleWidget extends EditGameRulesScreen.NamedRuleWidget {
 		private final TextFieldWidget valueWidget;
 
-		public IntRuleWidget(Text name, List<OrderedText> description, String ruleName, GameRules.IntRule rule) {
+		public IntRuleWidget(final Text name, final List<OrderedText> description, final String ruleName, final GameRules.IntRule rule) {
 			super(description, name);
 			this.valueWidget = new TextFieldWidget(EditGameRulesScreen.this.client.textRenderer, 10, 5, 44, 20, name.copy().append("\n").append(ruleName).append("\n"));
 			this.valueWidget.setText(Integer.toString(rule.get()));
@@ -163,7 +163,7 @@ public class EditGameRulesScreen extends Screen {
 		private final List<OrderedText> name;
 		protected final List<ClickableWidget> children = Lists.<ClickableWidget>newArrayList();
 
-		public NamedRuleWidget(@Nullable List<OrderedText> description, Text name) {
+		public NamedRuleWidget(@Nullable final List<OrderedText> description, final Text name) {
 			super(description);
 			this.name = EditGameRulesScreen.this.client.textRenderer.wrapLines(name, 175);
 		}
@@ -192,7 +192,7 @@ public class EditGameRulesScreen extends Screen {
 	public class RuleCategoryWidget extends EditGameRulesScreen.AbstractRuleWidget {
 		final Text name;
 
-		public RuleCategoryWidget(Text text) {
+		public RuleCategoryWidget(final Text text) {
 			super(null);
 			this.name = text;
 		}
@@ -227,7 +227,7 @@ public class EditGameRulesScreen extends Screen {
 	public class RuleListWidget extends ElementListWidget<EditGameRulesScreen.AbstractRuleWidget> {
 		private static final int field_49561 = 24;
 
-		public RuleListWidget(GameRules gameRules) {
+		public RuleListWidget(final GameRules gameRules) {
 			super(
 				MinecraftClient.getInstance(),
 				EditGameRulesScreen.this.width,

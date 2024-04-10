@@ -43,7 +43,7 @@ public class SetWritableBookPagesLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<SetWritableBookPagesLootFunction> getType() {
 		return LootFunctionTypes.SET_WRITABLE_BOOK_PAGES;
 	}
 }

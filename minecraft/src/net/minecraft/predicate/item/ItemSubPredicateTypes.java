@@ -12,6 +12,18 @@ public class ItemSubPredicateTypes {
 	);
 	public static final ItemSubPredicate.Type<PotionContentsPredicate> POTION_CONTENTS = register("potion_contents", PotionContentsPredicate.CODEC);
 	public static final ItemSubPredicate.Type<CustomDataPredicate> CUSTOM_DATA = register("custom_data", CustomDataPredicate.CODEC);
+	public static final ItemSubPredicate.Type<ContainerPredicate> CONTAINER = register("container", ContainerPredicate.CODEC);
+	public static final ItemSubPredicate.Type<BundleContentsPredicate> BUNDLE_CONTENTS = register("bundle_contents", BundleContentsPredicate.CODEC);
+	public static final ItemSubPredicate.Type<FireworkExplosionPredicate> FIREWORK_EXPLOSION = register("firework_explosion", FireworkExplosionPredicate.CODEC);
+	public static final ItemSubPredicate.Type<FireworksPredicate> FIREWORKS = register("fireworks", FireworksPredicate.CODEC);
+	public static final ItemSubPredicate.Type<WritableBookContentPredicate> WRITABLE_BOOK_CONTENT = register(
+		"writable_book_content", WritableBookContentPredicate.CODEC
+	);
+	public static final ItemSubPredicate.Type<WrittenBookContentPredicate> WRITTEN_BOOK_CONTENT = register(
+		"written_book_content", WrittenBookContentPredicate.CODEC
+	);
+	public static final ItemSubPredicate.Type<AttributeModifiersPredicate> ATTRIBUTE_MODIFIERS = register("attribute_modifiers", AttributeModifiersPredicate.CODEC);
+	public static final ItemSubPredicate.Type<TrimPredicate> TRIM = register("trim", TrimPredicate.CODEC);
 
 	private static <T extends ItemSubPredicate> ItemSubPredicate.Type<T> register(String id, Codec<T> codec) {
 		return Registry.register(Registries.ITEM_SUB_PREDICATE_TYPE, id, new ItemSubPredicate.Type<>(codec));

@@ -3,6 +3,7 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractWindChargeEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.ItemTags;
@@ -12,10 +13,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
 public class WindBurstEnchantment extends Enchantment {
-	private static final WindBurstEnchantment.ExplosionBehaviour[] EXPLOSION_BEHAVIOURS = new WindBurstEnchantment.ExplosionBehaviour[]{
-		new WindBurstEnchantment.ExplosionBehaviour(0.5F), new WindBurstEnchantment.ExplosionBehaviour(0.75F), new WindBurstEnchantment.ExplosionBehaviour(1.0F)
-	};
-
 	public WindBurstEnchantment() {
 		super(
 			Enchantment.properties(
@@ -33,11 +30,12 @@ public class WindBurstEnchantment extends Enchantment {
 
 	@Override
 	public void onAttack(LivingEntity attacket, Entity target, int level) {
+		float f = 0.25F + 0.25F * (float)level;
 		attacket.getWorld()
 			.createExplosion(
 				null,
 				null,
-				EXPLOSION_BEHAVIOURS[level - 1],
+				new WindBurstEnchantment.ExplosionBehaviour(f),
 				attacket.getX(),
 				attacket.getY(),
 				attacket.getZ(),
@@ -50,6 +48,16 @@ public class WindBurstEnchantment extends Enchantment {
 			);
 	}
 
+	@Override
+	public boolean isAvailableForEnchantedBookOffer() {
+		return false;
+	}
+
+	@Override
+	public boolean isAvailableForRandomSelection() {
+		return false;
+	}
+
 	static final class ExplosionBehaviour extends AbstractWindChargeEntity.WindChargeExplosionBehavior {
 		private final float knockbackModifier;
 
@@ -58,8 +66,19 @@ public class WindBurstEnchantment extends Enchantment {
 		}
 
 		@Override
-		public float getKnockbackModifier() {
-			return this.knockbackModifier;
+		public float getKnockbackModifier(Entity entity) {
+			boolean var10000;
+			label17: {
+				if (entity instanceof PlayerEntity playerEntity && playerEntity.getAbilities().flying) {
+					var10000 = true;
+					break label17;
+				}
+
+				var10000 = false;
+			}
+
+			boolean bl = var10000;
+			return !bl ? this.knockbackModifier : 0.0F;
 		}
 	}
 }

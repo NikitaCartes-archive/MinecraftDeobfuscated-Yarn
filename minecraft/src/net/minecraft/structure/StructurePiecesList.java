@@ -29,7 +29,7 @@ public record StructurePiecesList(List<StructurePiece> pieces) {
 		.put(new Identifier("runtime"), JIGSAW)
 		.build();
 
-	public StructurePiecesList(List<StructurePiece> pieces) {
+	public StructurePiecesList(final List<StructurePiece> pieces) {
 		this.pieces = List.copyOf(pieces);
 	}
 

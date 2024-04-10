@@ -340,7 +340,7 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> {
 
 		private final String sigil;
 
-		private Status(String sigil) {
+		private Status(final String sigil) {
 			this.sigil = sigil;
 		}
 

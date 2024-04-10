@@ -139,7 +139,7 @@ public class Source {
 		if (this.stream != null) {
 			try {
 				for (int i = 0; i < count; i++) {
-					ByteBuffer byteBuffer = this.stream.getBuffer(this.bufferSize);
+					ByteBuffer byteBuffer = this.stream.read(this.bufferSize);
 					if (byteBuffer != null) {
 						new StaticSound(byteBuffer, this.stream.getFormat())
 							.takeStreamBufferPointer()

@@ -267,7 +267,7 @@ public class Explosion {
 							entity.damage(this.damageSource, this.behavior.calculateDamage(this, entity));
 						}
 
-						double aa = (1.0 - v) * (double)getExposure(vec3d, entity) * (double)this.behavior.getKnockbackModifier();
+						double aa = (1.0 - v) * (double)getExposure(vec3d, entity) * (double)this.behavior.getKnockbackModifier(entity);
 						double ab;
 						if (entity instanceof LivingEntity livingEntity) {
 							ab = ProtectionEnchantment.transformExplosionKnockback(livingEntity, aa);

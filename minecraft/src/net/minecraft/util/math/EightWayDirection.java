@@ -17,7 +17,7 @@ public enum EightWayDirection {
 	private final Set<Direction> directions;
 	private final Vec3i offset;
 
-	private EightWayDirection(Direction... directions) {
+	private EightWayDirection(final Direction... directions) {
 		this.directions = Sets.immutableEnumSet(Arrays.asList(directions));
 		this.offset = new Vec3i(0, 0, 0);
 

@@ -28,7 +28,7 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<FillPlayerHeadLootFunction> getType() {
 		return LootFunctionTypes.FILL_PLAYER_HEAD;
 	}
 

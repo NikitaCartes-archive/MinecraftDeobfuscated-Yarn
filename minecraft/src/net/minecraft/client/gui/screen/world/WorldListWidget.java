@@ -295,7 +295,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		private Path iconPath;
 		private long time;
 
-		public WorldEntry(WorldListWidget levelList, LevelSummary level) {
+		public WorldEntry(final WorldListWidget levelList, final LevelSummary level) {
 			this.client = levelList.client;
 			this.screen = levelList.getParent();
 			this.level = level;

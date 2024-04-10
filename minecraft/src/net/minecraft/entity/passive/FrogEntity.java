@@ -344,6 +344,12 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<RegistryEn
 		return new FrogEntity.FrogSwimNavigation(this, world);
 	}
 
+	@Nullable
+	@Override
+	public LivingEntity getTarget() {
+		return this.getTargetInBrain();
+	}
+
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
 		return stack.isIn(ItemTags.FROG_FOOD);
@@ -354,7 +360,7 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<RegistryEn
 	}
 
 	class FrogLookControl extends LookControl {
-		FrogLookControl(MobEntity entity) {
+		FrogLookControl(final MobEntity entity) {
 			super(entity);
 		}
 

@@ -72,7 +72,7 @@ public class Channel {
 			return this.stopped;
 		}
 
-		public SourceManager(Source source) {
+		public SourceManager(final Source source) {
 			this.source = source;
 		}
 

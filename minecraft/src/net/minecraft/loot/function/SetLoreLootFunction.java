@@ -42,7 +42,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<SetLoreLootFunction> getType() {
 		return LootFunctionTypes.SET_LORE;
 	}
 

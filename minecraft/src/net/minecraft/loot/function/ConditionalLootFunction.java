@@ -24,6 +24,9 @@ public abstract class ConditionalLootFunction implements LootFunction {
 		this.predicate = Util.allOf(conditions);
 	}
 
+	@Override
+	public abstract LootFunctionType<? extends ConditionalLootFunction> getType();
+
 	protected static <T extends ConditionalLootFunction> P1<Mu<T>, List<LootCondition>> addConditionsField(Instance<T> instance) {
 		return instance.group(LootConditionTypes.CODEC.listOf().optionalFieldOf("conditions", List.of()).forGetter(function -> function.conditions));
 	}

@@ -23,7 +23,7 @@ public enum BanReason {
 
 	private final Text description;
 
-	private BanReason(String id) {
+	private BanReason(final String id) {
 		this.description = Text.translatable("gui.banned.reason." + id);
 	}
 

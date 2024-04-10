@@ -16,7 +16,7 @@ public enum PlayerModelPart {
 	private final String name;
 	private final Text optionName;
 
-	private PlayerModelPart(int id, String name) {
+	private PlayerModelPart(final int id, final String name) {
 		this.id = id;
 		this.bitFlag = 1 << id;
 		this.name = name;

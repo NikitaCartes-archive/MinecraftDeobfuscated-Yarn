@@ -4,42 +4,39 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.ContainerComponent;
+import java.util.stream.Stream;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.ContainerComponentModifier;
+import net.minecraft.loot.ContainerComponentModifiers;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.loot.entry.LootPoolEntryTypes;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.collection.DefaultedList;
 
 public class SetContentsLootFunction extends ConditionalLootFunction {
 	public static final MapCodec<SetContentsLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
-				.<RegistryEntry<BlockEntityType<?>>, List<LootPoolEntry>>and(
+				.<ContainerComponentModifier<?>, List<LootPoolEntry>>and(
 					instance.group(
-						Registries.BLOCK_ENTITY_TYPE.getEntryCodec().fieldOf("type").forGetter(function -> function.type),
+						ContainerComponentModifiers.MODIFIER_CODEC.fieldOf("component").forGetter(function -> function.component),
 						LootPoolEntryTypes.CODEC.listOf().fieldOf("entries").forGetter(function -> function.entries)
 					)
 				)
 				.apply(instance, SetContentsLootFunction::new)
 	);
-	private final RegistryEntry<BlockEntityType<?>> type;
+	private final ContainerComponentModifier<?> component;
 	private final List<LootPoolEntry> entries;
 
-	SetContentsLootFunction(List<LootCondition> conditions, RegistryEntry<BlockEntityType<?>> blockEntityType, List<LootPoolEntry> entries) {
+	SetContentsLootFunction(List<LootCondition> conditions, ContainerComponentModifier<?> component, List<LootPoolEntry> entries) {
 		super(conditions);
-		this.type = blockEntityType;
+		this.component = component;
 		this.entries = List.copyOf(entries);
 	}
 
 	@Override
-	public LootFunctionType getType() {
+	public LootFunctionType<SetContentsLootFunction> getType() {
 		return LootFunctionTypes.SET_CONTENTS;
 	}
 
@@ -48,10 +45,9 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 		if (stack.isEmpty()) {
 			return stack;
 		} else {
-			DefaultedList<ItemStack> defaultedList = DefaultedList.of();
-			this.entries
-				.forEach(entry -> entry.expand(context, choice -> choice.generateLoot(LootTable.processStacks(context.getWorld(), defaultedList::add), context)));
-			stack.set(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(defaultedList));
+			java.util.stream.Stream.Builder<ItemStack> builder = Stream.builder();
+			this.entries.forEach(entry -> entry.expand(context, choice -> choice.generateLoot(LootTable.processStacks(context.getWorld(), builder::add), context)));
+			this.component.apply(stack, builder.build());
 			return stack;
 		}
 	}
@@ -65,16 +61,16 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 		}
 	}
 
-	public static SetContentsLootFunction.Builder builder(BlockEntityType<?> type) {
-		return new SetContentsLootFunction.Builder(type);
+	public static SetContentsLootFunction.Builder builder(ContainerComponentModifier<?> componentModifier) {
+		return new SetContentsLootFunction.Builder(componentModifier);
 	}
 
 	public static class Builder extends ConditionalLootFunction.Builder<SetContentsLootFunction.Builder> {
 		private final ImmutableList.Builder<LootPoolEntry> entries = ImmutableList.builder();
-		private final BlockEntityType<?> type;
+		private final ContainerComponentModifier<?> componentModifier;
 
-		public Builder(BlockEntityType<?> type) {
-			this.type = type;
+		public Builder(ContainerComponentModifier<?> componentModifier) {
+			this.componentModifier = componentModifier;
 		}
 
 		protected SetContentsLootFunction.Builder getThisBuilder() {
@@ -88,7 +84,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 
 		@Override
 		public LootFunction build() {
-			return new SetContentsLootFunction(this.getConditions(), this.type.getRegistryEntry(), this.entries.build());
+			return new SetContentsLootFunction(this.getConditions(), this.componentModifier, this.entries.build());
 		}
 	}
 }

@@ -23,7 +23,7 @@ public class ExplosionBehavior {
 		return true;
 	}
 
-	public float getKnockbackModifier() {
+	public float getKnockbackModifier(Entity entity) {
 		return 1.0F;
 	}
 

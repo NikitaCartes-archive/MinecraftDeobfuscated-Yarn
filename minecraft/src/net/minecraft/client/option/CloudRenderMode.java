@@ -17,7 +17,7 @@ public enum CloudRenderMode implements TranslatableOption, StringIdentifiable {
 	private final String serializedId;
 	private final String translationKey;
 
-	private CloudRenderMode(int id, String serializedId, String translationKey) {
+	private CloudRenderMode(final int id, final String serializedId, final String translationKey) {
 		this.id = id;
 		this.serializedId = serializedId;
 		this.translationKey = translationKey;

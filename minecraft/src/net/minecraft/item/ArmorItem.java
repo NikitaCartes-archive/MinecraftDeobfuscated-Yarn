@@ -162,7 +162,7 @@ public class ArmorItem extends Item implements Equipment {
 		private final String name;
 		private final int baseMaxDamage;
 
-		private Type(EquipmentSlot equipmentSlot, int baseMaxDamage, String name) {
+		private Type(final EquipmentSlot equipmentSlot, final int baseMaxDamage, final String name) {
 			this.equipmentSlot = equipmentSlot;
 			this.name = name;
 			this.baseMaxDamage = baseMaxDamage;
