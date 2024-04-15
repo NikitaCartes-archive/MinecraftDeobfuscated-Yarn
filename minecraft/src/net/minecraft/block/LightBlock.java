@@ -63,7 +63,7 @@ public class LightBlock extends Block implements Waterloggable {
 
 	@Override
 	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
-		return true;
+		return state.getFluidState().isEmpty();
 	}
 
 	@Override

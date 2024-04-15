@@ -1105,59 +1105,59 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	protected Vec3d adjustMovementForSneaking(Vec3d movement, MovementType type) {
-		if (!this.abilities.flying && movement.y <= 0.0 && (type == MovementType.SELF || type == MovementType.PLAYER) && this.clipAtLedge() && this.method_30263()) {
+		float f = this.getStepHeight();
+		if (!this.abilities.flying && !(movement.y > 0.0) && (type == MovementType.SELF || type == MovementType.PLAYER) && this.clipAtLedge() && this.method_30263(f)
+			)
+		 {
 			double d = movement.x;
 			double e = movement.z;
-			double f = 0.05;
+			double g = 0.05;
+			double h = Math.signum(d) * 0.05;
 
-			while (d != 0.0 && this.getWorld().isSpaceEmpty(this, this.getBoundingBox().offset(d, (double)(-this.getStepHeight()), 0.0))) {
-				if (d < 0.05 && d >= -0.05) {
+			double i;
+			for (i = Math.signum(e) * 0.05; d != 0.0 && this.method_59818(d, 0.0, f); d -= h) {
+				if (Math.abs(d) <= 0.05) {
 					d = 0.0;
-				} else if (d > 0.0) {
-					d -= 0.05;
-				} else {
-					d += 0.05;
+					break;
 				}
 			}
 
-			while (e != 0.0 && this.getWorld().isSpaceEmpty(this, this.getBoundingBox().offset(0.0, (double)(-this.getStepHeight()), e))) {
-				if (e < 0.05 && e >= -0.05) {
+			while (e != 0.0 && this.method_59818(0.0, e, f)) {
+				if (Math.abs(e) <= 0.05) {
 					e = 0.0;
-				} else if (e > 0.0) {
-					e -= 0.05;
-				} else {
-					e += 0.05;
+					break;
 				}
+
+				e -= i;
 			}
 
-			while (d != 0.0 && e != 0.0 && this.getWorld().isSpaceEmpty(this, this.getBoundingBox().offset(d, (double)(-this.getStepHeight()), e))) {
-				if (d < 0.05 && d >= -0.05) {
+			while (d != 0.0 && e != 0.0 && this.method_59818(d, e, f)) {
+				if (Math.abs(d) <= 0.05) {
 					d = 0.0;
-				} else if (d > 0.0) {
-					d -= 0.05;
 				} else {
-					d += 0.05;
+					d -= h;
 				}
 
-				if (e < 0.05 && e >= -0.05) {
+				if (Math.abs(e) <= 0.05) {
 					e = 0.0;
-				} else if (e > 0.0) {
-					e -= 0.05;
 				} else {
-					e += 0.05;
+					e -= i;
 				}
 			}
 
-			movement = new Vec3d(d, movement.y, e);
+			return new Vec3d(d, movement.y, e);
+		} else {
+			return movement;
 		}
-
-		return movement;
 	}
 
-	private boolean method_30263() {
-		return this.isOnGround()
-			|| this.fallDistance < this.getStepHeight()
-				&& !this.getWorld().isSpaceEmpty(this, this.getBoundingBox().offset(0.0, (double)(this.fallDistance - this.getStepHeight()), 0.0));
+	private boolean method_30263(float f) {
+		return this.isOnGround() || this.fallDistance < f && !this.method_59818(0.0, 0.0, f - this.fallDistance);
+	}
+
+	private boolean method_59818(double d, double e, float f) {
+		Box box = this.getBoundingBox();
+		return this.getWorld().isSpaceEmpty(this, new Box(box.minX + d, box.minY - (double)f - 1.0E-5F, box.minZ + e, box.maxX + d, box.minY, box.maxZ + e));
 	}
 
 	public void attack(Entity target) {

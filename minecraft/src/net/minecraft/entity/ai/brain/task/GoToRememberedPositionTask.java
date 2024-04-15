@@ -43,7 +43,7 @@ public class GoToRememberedPositionTask {
 											return false;
 										}
 									}
-
+		
 									for (int j = 0; j < 10; j++) {
 										Vec3d vec3d4 = FuzzyTargeting.findFrom(entity, 16, 7, vec3d2);
 										if (vec3d4 != null) {
@@ -51,7 +51,7 @@ public class GoToRememberedPositionTask {
 											break;
 										}
 									}
-
+		
 									return true;
 								}
 							}

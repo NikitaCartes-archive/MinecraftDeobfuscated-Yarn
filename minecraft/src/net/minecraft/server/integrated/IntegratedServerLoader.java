@@ -344,8 +344,12 @@ public class IntegratedServerLoader {
 		SaveLoader saveLoader;
 		try {
 			saveLoader = this.load(levelProperties, safeMode, resourcePackManager);
-		} catch (Exception var8) {
-			LOGGER.warn("Failed to load level data or datapacks, can't proceed with server load", (Throwable)var8);
+
+			for (DimensionOptions dimensionOptions : saveLoader.combinedDynamicRegistries().getCombinedRegistryManager().get(RegistryKeys.DIMENSION)) {
+				dimensionOptions.chunkGenerator().method_59825();
+			}
+		} catch (Exception var9) {
+			LOGGER.warn("Failed to load level data or datapacks, can't proceed with server load", (Throwable)var9);
 			if (!safeMode) {
 				this.client.setScreen(new DataPackFailureScreen(() -> {
 					session.tryClose();

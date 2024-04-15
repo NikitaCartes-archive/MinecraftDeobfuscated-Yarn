@@ -378,7 +378,7 @@ public class Schemas {
 		Schema schema20 = builder.addSchema(701, Schema701::new);
 		builder.addFixer(new EntitySkeletonSplitFix(schema20, true));
 		Schema schema21 = builder.addSchema(702, Schema702::new);
-		builder.addFixer(new EntityZombieSplitFix(schema21, true));
+		builder.addFixer(new EntityZombieSplitFix(schema21));
 		Schema schema22 = builder.addSchema(703, Schema703::new);
 		builder.addFixer(new EntityHorseSplitFix(schema22, true));
 		Schema schema23 = builder.addSchema(704, Schema704::new);

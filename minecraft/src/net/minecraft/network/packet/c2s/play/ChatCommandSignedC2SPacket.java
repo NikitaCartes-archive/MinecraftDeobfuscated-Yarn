@@ -42,11 +42,11 @@ public record ChatCommandSignedC2SPacket(
 	);
 
 	private ChatCommandSignedC2SPacket(PacketByteBuf buf) {
-		this(buf.readString(256), buf.readInstant(), buf.readLong(), new ArgumentSignatureDataMap(buf), new LastSeenMessageList.Acknowledgment(buf));
+		this(buf.readString(), buf.readInstant(), buf.readLong(), new ArgumentSignatureDataMap(buf), new LastSeenMessageList.Acknowledgment(buf));
 	}
 
 	private void write(PacketByteBuf buf) {
-		buf.writeString(this.command, 256);
+		buf.writeString(this.command);
 		buf.writeInstant(this.timestamp);
 		buf.writeLong(this.salt);
 		this.argumentSignatures.write(buf);

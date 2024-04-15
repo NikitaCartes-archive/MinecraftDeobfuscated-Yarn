@@ -46,7 +46,7 @@ public class NbtProvider implements DataProvider {
 						() -> {
 							try {
 								Stream<Path> stream = Files.walk(path2);
-
+			
 								CompletableFuture var4;
 								try {
 									var4 = CompletableFuture.allOf(
@@ -62,14 +62,14 @@ public class NbtProvider implements DataProvider {
 											var7.addSuppressed(var6);
 										}
 									}
-
+			
 									throw var7;
 								}
-
+			
 								if (stream != null) {
 									stream.close();
 								}
-
+			
 								return var4;
 							} catch (IOException var8) {
 								LOGGER.error("Failed to read structure input directory", (Throwable)var8);

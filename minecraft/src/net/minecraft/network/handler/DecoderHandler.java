@@ -45,7 +45,7 @@ public class DecoderHandler<T extends PacketListener> extends ByteToMessageDecod
 			} else {
 				objects.add(packet);
 				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug(ClientConnection.PACKET_RECEIVED_MARKER, " IN: [{}:{}] {}", this.state.id().getId(), packetType, packet.getClass().getName());
+					LOGGER.debug(ClientConnection.PACKET_RECEIVED_MARKER, " IN: [{}:{}] {} -> {} bytes", this.state.id().getId(), packetType, packet.getClass().getName(), i);
 				}
 
 				NetworkStateTransitionHandler.onDecoded(context, packet);

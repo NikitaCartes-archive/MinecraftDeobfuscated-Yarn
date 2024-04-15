@@ -111,11 +111,11 @@ public class LeavesFix extends DataFix {
 										return typedxx;
 									} else {
 										List<IntSet> list = Lists.<IntSet>newArrayList();
-
+			
 										for (int i = 0; i < 7; i++) {
 											list.add(new IntOpenHashSet());
 										}
-
+			
 										for (LeavesFix.LeavesLogFixer leavesLogFixer : int2ObjectMap.values()) {
 											if (!leavesLogFixer.isFixed()) {
 												for (int j = 0; j < 4096; j++) {
@@ -130,18 +130,18 @@ public class LeavesFix extends DataFix {
 												}
 											}
 										}
-
+			
 										for (int i = 1; i < 7; i++) {
 											IntSet intSet = (IntSet)list.get(i - 1);
 											IntSet intSet2 = (IntSet)list.get(i);
 											IntIterator intIterator = intSet.iterator();
-
+			
 											while (intIterator.hasNext()) {
 												int l = intIterator.nextInt();
 												int m = this.getX(l);
 												int n = this.getY(l);
 												int o = this.getZ(l);
-
+			
 												for (int[] js : AXIAL_OFFSETS) {
 													int p = m + js[0];
 													int q = n + js[1];
@@ -163,7 +163,7 @@ public class LeavesFix extends DataFix {
 												}
 											}
 										}
-
+			
 										return typedxx.updateTyped(opticFinder3, typedxxx -> int2ObjectMap.get(typedxxx.get(DSL.remainderFinder()).get("Y").asInt(0)).method_5083(typedxxx));
 									}
 								}
@@ -174,7 +174,7 @@ public class LeavesFix extends DataFix {
 									return dynamic.set("UpgradeData", dynamic2.set("Sides", dynamic.createByte((byte)(dynamic2.get("Sides").asByte((byte)0) | is[0]))));
 								});
 							}
-
+		
 							return typed2;
 						}
 					)

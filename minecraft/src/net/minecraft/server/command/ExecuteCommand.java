@@ -147,20 +147,20 @@ public class ExecuteCommand {
 				.then(addConditionArguments(literalCommandNode, CommandManager.literal("unless"), false, commandRegistryAccess))
 				.then(CommandManager.literal("as").then(CommandManager.argument("targets", EntityArgumentType.entities()).fork(literalCommandNode, context -> {
 					List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
-
+		
 					for (Entity entity : EntityArgumentType.getOptionalEntities(context, "targets")) {
 						list.add(context.getSource().withEntity(entity));
 					}
-
+		
 					return list;
 				})))
 				.then(CommandManager.literal("at").then(CommandManager.argument("targets", EntityArgumentType.entities()).fork(literalCommandNode, context -> {
 					List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
-
+		
 					for (Entity entity : EntityArgumentType.getOptionalEntities(context, "targets")) {
 						list.add(context.getSource().withWorld((ServerWorld)entity.getWorld()).withPosition(entity.getPos()).withRotation(entity.getRotationClient()));
 					}
-
+		
 					return list;
 				})))
 				.then(
@@ -179,11 +179,11 @@ public class ExecuteCommand {
 						)
 						.then(CommandManager.literal("as").then(CommandManager.argument("targets", EntityArgumentType.entities()).fork(literalCommandNode, context -> {
 							List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
-
+				
 							for (Entity entity : EntityArgumentType.getOptionalEntities(context, "targets")) {
 								list.add(context.getSource().withPosition(entity.getPos()));
 							}
-
+				
 							return list;
 						})))
 						.then(
@@ -212,11 +212,11 @@ public class ExecuteCommand {
 						)
 						.then(CommandManager.literal("as").then(CommandManager.argument("targets", EntityArgumentType.entities()).fork(literalCommandNode, context -> {
 							List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
-
+				
 							for (Entity entity : EntityArgumentType.getOptionalEntities(context, "targets")) {
 								list.add(context.getSource().withRotation(entity.getRotationClient()));
 							}
-
+				
 							return list;
 						})))
 				)
@@ -229,11 +229,11 @@ public class ExecuteCommand {
 										.then(CommandManager.argument("anchor", EntityAnchorArgumentType.entityAnchor()).fork(literalCommandNode, context -> {
 											List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 											EntityAnchorArgumentType.EntityAnchor entityAnchor = EntityAnchorArgumentType.getEntityAnchor(context, "anchor");
-
+								
 											for (Entity entity : EntityArgumentType.getOptionalEntities(context, "targets")) {
 												list.add(context.getSource().withLookingAt(entity, entityAnchor));
 											}
-
+								
 											return list;
 										}))
 								)

@@ -62,6 +62,7 @@ public class TestServer extends MinecraftServer {
 	private static final GameRules GAME_RULES = Util.make(new GameRules(), gameRules -> {
 		gameRules.get(GameRules.DO_MOB_SPAWNING).set(false, null);
 		gameRules.get(GameRules.DO_WEATHER_CYCLE).set(false, null);
+		gameRules.get(GameRules.RANDOM_TICK_SPEED).set(0, null);
 	});
 	private static final GeneratorOptions TEST_LEVEL = new GeneratorOptions(0L, false, false);
 	@Nullable

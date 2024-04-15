@@ -219,7 +219,7 @@ public class TitleScreen extends Screen {
 					Text.translatable("menu.resetdemo"),
 					button -> {
 						LevelStorage levelStorage = this.client.getLevelStorage();
-
+			
 						try (LevelStorage.Session session = levelStorage.createSessionWithoutSymlinkCheck("Demo_World")) {
 							if (session.levelDatExists()) {
 								this.client

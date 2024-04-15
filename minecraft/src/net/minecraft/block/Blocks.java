@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.block.cauldron.CauldronBehavior;
@@ -2805,6 +2806,7 @@ public class Blocks {
 		new BarrierBlock(
 			AbstractBlock.Settings.create()
 				.strength(-1.0F, 3600000.8F)
+				.mapColor(method_59823(MapColor.CLEAR))
 				.dropsNothing()
 				.nonOpaque()
 				.allowsSpawning(Blocks::never)
@@ -2814,7 +2816,15 @@ public class Blocks {
 	);
 	public static final Block LIGHT = register(
 		"light",
-		new LightBlock(AbstractBlock.Settings.create().replaceable().strength(-1.0F, 3600000.8F).dropsNothing().nonOpaque().luminance(LightBlock.STATE_TO_LUMINANCE))
+		new LightBlock(
+			AbstractBlock.Settings.create()
+				.replaceable()
+				.strength(-1.0F, 3600000.8F)
+				.mapColor(method_59823(MapColor.CLEAR))
+				.dropsNothing()
+				.nonOpaque()
+				.luminance(LightBlock.STATE_TO_LUMINANCE)
+		)
 	);
 	public static final Block IRON_TRAPDOOR = register(
 		"iron_trapdoor",
@@ -6370,6 +6380,10 @@ public class Blocks {
 
 	private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {
 		return state -> state.get(Properties.LIT) ? litLevel : 0;
+	}
+
+	private static Function<BlockState, MapColor> method_59823(MapColor mapColor) {
+		return blockState -> blockState.get(Properties.WATERLOGGED) ? MapColor.WATER_BLUE : mapColor;
 	}
 
 	/**

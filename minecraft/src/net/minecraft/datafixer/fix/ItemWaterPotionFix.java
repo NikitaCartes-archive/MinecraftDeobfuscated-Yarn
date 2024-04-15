@@ -41,11 +41,11 @@ public class ItemWaterPotionFix extends DataFix {
 						if (dynamic.get("Potion").asString().result().isEmpty()) {
 							dynamic = dynamic.set("Potion", dynamic.createString("minecraft:water"));
 						}
-
+	
 						return typed.set(opticFinder2, typed2.set(DSL.remainderFinder(), dynamic));
 					}
 				}
-
+	
 				return typed;
 			}
 		);

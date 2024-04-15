@@ -128,12 +128,12 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 			.thenCompose(
 				models -> {
 					List<CompletableFuture<Pair<Identifier, JsonUnbakedModel>>> list = new ArrayList(models.size());
-
+		
 					for (Entry<Identifier, Resource> entry : models.entrySet()) {
 						list.add(CompletableFuture.supplyAsync(() -> {
 							try {
 								Reader reader = ((Resource)entry.getValue()).getReader();
-
+		
 								Pair var2x;
 								try {
 									var2x = Pair.of((Identifier)entry.getKey(), JsonUnbakedModel.deserialize(reader));
@@ -145,14 +145,14 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 											var5.addSuppressed(var4x);
 										}
 									}
-
+		
 									throw var5;
 								}
-
+		
 								if (reader != null) {
 									reader.close();
 								}
-
+		
 								return var2x;
 							} catch (Exception var6) {
 								LOGGER.error("Failed to load model {}", entry.getKey(), var6);
@@ -160,7 +160,7 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 							}
 						}, executor));
 					}
-
+		
 					return Util.combineSafe(list)
 						.thenApply(modelsx -> (Map)modelsx.stream().filter(Objects::nonNull).collect(Collectors.toUnmodifiableMap(Pair::getFirst, Pair::getSecond)));
 				}
@@ -172,16 +172,16 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 			.thenCompose(
 				blockStates -> {
 					List<CompletableFuture<Pair<Identifier, List<ModelLoader.SourceTrackedData>>>> list = new ArrayList(blockStates.size());
-
+		
 					for (Entry<Identifier, List<Resource>> entry : blockStates.entrySet()) {
 						list.add(CompletableFuture.supplyAsync(() -> {
 							List<Resource> listx = (List<Resource>)entry.getValue();
 							List<ModelLoader.SourceTrackedData> list2 = new ArrayList(listx.size());
-
+		
 							for (Resource resource : listx) {
 								try {
 									Reader reader = resource.getReader();
-
+		
 									try {
 										JsonObject jsonObject = JsonHelper.deserialize(reader);
 										list2.add(new ModelLoader.SourceTrackedData(resource.getPackId(), jsonObject));
@@ -193,10 +193,10 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 												var9.addSuppressed(var8);
 											}
 										}
-
+		
 										throw var9;
 									}
-
+		
 									if (reader != null) {
 										reader.close();
 									}
@@ -204,11 +204,11 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 									LOGGER.error("Failed to load blockstate {} from pack {}", entry.getKey(), resource.getPackId(), var10);
 								}
 							}
-
+		
 							return Pair.of((Identifier)entry.getKey(), list2);
 						}, executor));
 					}
-
+		
 					return Util.combineSafe(list)
 						.thenApply(blockStatesx -> (Map)blockStatesx.stream().filter(Objects::nonNull).collect(Collectors.toUnmodifiableMap(Pair::getFirst, Pair::getSecond)));
 				}

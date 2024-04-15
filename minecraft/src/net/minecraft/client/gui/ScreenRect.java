@@ -36,6 +36,7 @@ public record ScreenRect(ScreenPos position, int width, int height) {
 		return switch (axis) {
 			case HORIZONTAL -> new ScreenRect(sameAxisCoord, otherAxisCoord, sameAxisLength, otherAxisLength);
 			case VERTICAL -> new ScreenRect(otherAxisCoord, sameAxisCoord, otherAxisLength, sameAxisLength);
+			default -> throw new MatchException(null, null);
 		};
 	}
 
@@ -53,6 +54,7 @@ public record ScreenRect(ScreenPos position, int width, int height) {
 		return switch (axis) {
 			case HORIZONTAL -> this.width;
 			case VERTICAL -> this.height;
+			default -> throw new MatchException(null, null);
 		};
 	}
 

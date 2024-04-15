@@ -29,7 +29,7 @@ public class SeekWaterTask {
 								BlockPos blockPos = null;
 								BlockPos blockPos2 = null;
 								BlockPos blockPos3 = entity.getBlockPos();
-
+		
 								for (BlockPos blockPos4 : BlockPos.iterateOutwards(blockPos3, range, range, range)) {
 									if (blockPos4.getX() != blockPos3.getX() || blockPos4.getZ() != blockPos3.getZ()) {
 										BlockState blockState = entity.getWorld().getBlockState(blockPos4.up());
@@ -39,23 +39,23 @@ public class SeekWaterTask {
 												blockPos = blockPos4.toImmutable();
 												break;
 											}
-
+		
 											if (blockPos2 == null && !blockPos4.isWithinDistance(entity.getPos(), 1.5)) {
 												blockPos2 = blockPos4.toImmutable();
 											}
 										}
 									}
 								}
-
+		
 								if (blockPos == null) {
 									blockPos = blockPos2;
 								}
-
+		
 								if (blockPos != null) {
 									lookTarget.remember(new BlockPosLookTarget(blockPos));
 									walkTarget.remember(new WalkTarget(new BlockPosLookTarget(blockPos), speed, 0));
 								}
-
+		
 								mutableLong.setValue(time + 40L);
 								return true;
 							}

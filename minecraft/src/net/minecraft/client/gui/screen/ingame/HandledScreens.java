@@ -18,7 +18,9 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class HandledScreens {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Map<ScreenHandlerType<?>, HandledScreens.Provider<?, ?>> PROVIDERS = Maps.<ScreenHandlerType<?>, HandledScreens.Provider<?, ?>>newHashMap();
+	private static final Map<ScreenHandlerType<?>, HandledScreens.Provider<?, ?>> PROVIDERS = Maps.<ScreenHandlerType<?>, HandledScreens.Provider<?, ?>>newHashMap(
+		
+	);
 
 	public static <T extends ScreenHandler> void open(ScreenHandlerType<T> type, MinecraftClient client, int id, Text title) {
 		HandledScreens.Provider<T, ?> provider = getProvider(type);

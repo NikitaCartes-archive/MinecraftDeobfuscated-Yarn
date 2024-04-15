@@ -45,7 +45,7 @@ public class TeamMsgCommand {
 									if (!list.isEmpty()) {
 										MessageArgumentType.getSignedMessage(context, "message", message -> execute(serverCommandSource, entity, team, list, message));
 									}
-
+					
 									return list.size();
 								}
 							}

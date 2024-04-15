@@ -181,4 +181,19 @@ public interface ListOperation {
 			}
 		}
 	}
+
+	public static record class_9677<T>(List<T> value, ListOperation operation) {
+		public static <T> Codec<ListOperation.class_9677<T>> method_59828(Codec<T> codec, int i) {
+			return RecordCodecBuilder.create(
+				instance -> instance.group(
+							codec.sizeLimitedListOf(i).fieldOf("values").forGetter(arg -> arg.value), ListOperation.createCodec(i).forGetter(arg -> arg.operation)
+						)
+						.apply(instance, ListOperation.class_9677::new)
+			);
+		}
+
+		public List<T> method_59831(List<T> list) {
+			return this.operation.method_59742(list, this.value);
+		}
+	}
 }

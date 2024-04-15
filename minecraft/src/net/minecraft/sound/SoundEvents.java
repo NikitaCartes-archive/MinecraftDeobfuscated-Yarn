@@ -794,7 +794,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_LLAMA_HURT = register("entity.llama.hurt");
 	public static final SoundEvent ENTITY_LLAMA_SPIT = register("entity.llama.spit");
 	public static final SoundEvent ENTITY_LLAMA_STEP = register("entity.llama.step");
-	public static final SoundEvent ENTITY_LLAMA_SWAG = register("entity.llama.swag");
+	public static final RegistryEntry<SoundEvent> ENTITY_LLAMA_SWAG = registerReference("entity.llama.swag");
 	public static final SoundEvent ENTITY_MAGMA_CUBE_DEATH_SMALL = register("entity.magma_cube.death_small");
 	public static final SoundEvent BLOCK_LODESTONE_BREAK = register("block.lodestone.break");
 	public static final SoundEvent BLOCK_LODESTONE_STEP = register("block.lodestone.step");

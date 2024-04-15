@@ -88,7 +88,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createComponentlessNbt(registryLookup);
+		return this.createNbt(registryLookup);
 	}
 
 	public BannerPatternsComponent getPatterns() {

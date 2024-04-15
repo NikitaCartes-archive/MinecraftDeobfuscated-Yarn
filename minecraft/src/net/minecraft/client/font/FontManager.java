@@ -28,7 +28,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -112,7 +111,7 @@ public class FontManager implements ResourceReloader, AutoCloseable {
 				entries -> {
 					List<CompletableFuture<Optional<Font>>> listx = (List<CompletableFuture<Optional<Font>>>)entries.stream()
 						.flatMap(FontManager.FontEntry::getImmediateProviders)
-						.collect(Collectors.toCollection(ArrayList::new));
+						.collect(Util.toArrayList());
 					Font.FontFilterPair fontFilterPair = createEmptyFont();
 					listx.add(CompletableFuture.completedFuture(Optional.of(fontFilterPair.provider())));
 					return Util.combineSafe(listx)
@@ -187,6 +186,7 @@ public class FontManager implements ResourceReloader, AutoCloseable {
 	private void reload(FontManager.ProviderIndex index, Profiler profiler) {
 		profiler.startTick();
 		profiler.push("closing");
+		this.currentStorage = null;
 		this.fontStorages.values().forEach(FontStorage::close);
 		this.fontStorages.clear();
 		this.fonts.forEach(Font::close);
@@ -199,7 +199,6 @@ public class FontManager implements ResourceReloader, AutoCloseable {
 			this.fontStorages.put(id, fontStorage);
 		});
 		this.fonts.addAll(index.allProviders);
-		this.currentStorage = null;
 		profiler.pop();
 		profiler.endTick();
 		if (!this.fontStorages.containsKey(MinecraftClient.DEFAULT_FONT_ID)) {

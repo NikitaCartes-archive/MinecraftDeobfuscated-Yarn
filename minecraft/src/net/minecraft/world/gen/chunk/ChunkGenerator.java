@@ -105,6 +105,10 @@ public abstract class ChunkGenerator {
 		);
 	}
 
+	public void method_59825() {
+		this.indexedFeaturesListSupplier.get();
+	}
+
 	protected abstract MapCodec<? extends ChunkGenerator> getCodec();
 
 	public StructurePlacementCalculator createStructurePlacementCalculator(RegistryWrapper<StructureSet> structureSetRegistry, NoiseConfig noiseConfig, long seed) {
@@ -494,14 +498,14 @@ public abstract class ChunkGenerator {
 				structureSet -> {
 					StructurePlacement structurePlacement = ((StructureSet)structureSet.value()).placement();
 					List<StructureSet.WeightedEntry> list = ((StructureSet)structureSet.value()).structures();
-
+		
 					for (StructureSet.WeightedEntry weightedEntry : list) {
 						StructureStart structureStart = structureAccessor.getStructureStart(chunkSectionPos, weightedEntry.structure().value(), chunk);
 						if (structureStart != null && structureStart.hasChildren()) {
 							return;
 						}
 					}
-
+		
 					if (structurePlacement.shouldGenerate(placementCalculator, chunkPos.x, chunkPos.z)) {
 						if (list.size() == 1) {
 							this.trySetStructureStart(
@@ -521,24 +525,24 @@ public abstract class ChunkGenerator {
 							ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
 							chunkRandom.setCarverSeed(placementCalculator.getStructureSeed(), chunkPos.x, chunkPos.z);
 							int i = 0;
-
+		
 							for (StructureSet.WeightedEntry weightedEntry2 : arrayList) {
 								i += weightedEntry2.weight();
 							}
-
+		
 							while (!arrayList.isEmpty()) {
 								int j = chunkRandom.nextInt(i);
 								int k = 0;
-
+		
 								for (StructureSet.WeightedEntry weightedEntry3 : arrayList) {
 									j -= weightedEntry3.weight();
 									if (j < 0) {
 										break;
 									}
-
+		
 									k++;
 								}
-
+		
 								StructureSet.WeightedEntry weightedEntry4 = (StructureSet.WeightedEntry)arrayList.get(k);
 								if (this.trySetStructureStart(
 									weightedEntry4,
@@ -553,7 +557,7 @@ public abstract class ChunkGenerator {
 								)) {
 									return;
 								}
-
+		
 								arrayList.remove(k);
 								i -= weightedEntry4.weight();
 							}

@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.widget;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
@@ -173,7 +174,9 @@ public abstract class ScrollableWidget extends ClickableWidget implements Drawab
 		int i = this.getScrollbarThumbHeight();
 		int j = this.getX() + this.width;
 		int k = Math.max(this.getY(), (int)this.scrollY * (this.height - i) / this.getMaxScrollY() + this.getY());
+		RenderSystem.enableBlend();
 		context.drawGuiTexture(SCROLLER_TEXTURE, j, k, 8, i);
+		RenderSystem.disableBlend();
 	}
 
 	protected boolean isVisible(int top, int bottom) {

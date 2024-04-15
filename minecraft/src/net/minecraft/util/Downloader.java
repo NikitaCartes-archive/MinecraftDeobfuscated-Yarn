@@ -46,7 +46,7 @@ public class Downloader implements AutoCloseable {
 			(id, entry) -> {
 				Path path = this.directory.resolve(id.toString());
 				Path path2 = null;
-
+	
 				try {
 					path2 = NetworkUtils.download(path, entry.url, config.headers, config.hashFunction, entry.hash, config.maxSize, config.proxy, config.listener);
 					downloadResult.downloaded.put(id, path2);
@@ -54,7 +54,7 @@ public class Downloader implements AutoCloseable {
 					LOGGER.error("Failed to download {}", entry.url, var9);
 					downloadResult.failed.add(id);
 				}
-
+	
 				try {
 					this.logWriter
 						.write(

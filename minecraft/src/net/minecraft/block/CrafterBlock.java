@@ -118,6 +118,7 @@ public class CrafterBlock extends BlockWithEntity {
 			case DOWN -> ctx.getHorizontalPlayerFacing().getOpposite();
 			case UP -> ctx.getHorizontalPlayerFacing();
 			case NORTH, SOUTH, WEST, EAST -> Direction.UP;
+			default -> throw new MatchException(null, null);
 		};
 		return this.getDefaultState()
 			.with(ORIENTATION, Orientation.byDirections(direction, direction2))

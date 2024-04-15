@@ -56,13 +56,13 @@ public class ItemBannerColorFix extends DataFix {
 										return typed.set(DSL.remainderFinder(), dynamic);
 									}
 								}
-
+	
 								dynamic3.remove("Base");
 								return typed.set(DSL.remainderFinder(), dynamic).set(opticFinder2, typed2.set(opticFinder3, typed3.set(DSL.remainderFinder(), dynamic3)));
 							}
 						}
 					}
-
+	
 					return typed.set(DSL.remainderFinder(), dynamic);
 				} else {
 					return typed;

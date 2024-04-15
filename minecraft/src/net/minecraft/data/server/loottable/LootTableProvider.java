@@ -67,7 +67,7 @@ public class LootTableProvider implements DataProvider {
 					if (identifier2 != null) {
 						Util.error("Loot table random sequence seed collision on " + identifier2 + " and " + lootTable.getValue());
 					}
-
+	
 					builder.randomSequenceId(identifier);
 					LootTable lootTable2 = builder.type(lootTypeGenerator.paramSet).build();
 					mutableRegistry.add(lootTable, lootTable2, RegistryEntryInfo.DEFAULT);

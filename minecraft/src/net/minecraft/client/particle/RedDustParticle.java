@@ -19,6 +19,10 @@ public class RedDustParticle extends AbstractDustParticle<DustParticleEffect> {
 		SpriteProvider spriteProvider
 	) {
 		super(world, x, y, z, velocityX, velocityY, velocityZ, parameters, spriteProvider);
+		float f = this.random.nextFloat() * 0.4F + 0.6F;
+		this.red = this.darken(parameters.method_59843().x(), f);
+		this.green = this.darken(parameters.method_59843().y(), f);
+		this.blue = this.darken(parameters.method_59843().z(), f);
 	}
 
 	@Environment(EnvType.CLIENT)

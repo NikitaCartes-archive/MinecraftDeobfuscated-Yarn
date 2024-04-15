@@ -213,15 +213,15 @@ public class MerchantScreenHandler extends ScreenHandler {
 			ItemStack itemStack = this.slots.get(i).getStack();
 			if (!itemStack.isEmpty() && stack.matches(itemStack)) {
 				ItemStack itemStack2 = this.merchantInventory.getStack(slot);
-				int j = itemStack2.isEmpty() ? 0 : itemStack2.getCount();
-				int k = Math.min(stack.itemStack().getMaxCount() - j, itemStack.getCount());
-				ItemStack itemStack3 = itemStack.copy();
-				int l = j + k;
-				itemStack.decrement(k);
-				itemStack3.setCount(l);
-				this.merchantInventory.setStack(slot, itemStack3);
-				if (l >= stack.itemStack().getMaxCount()) {
-					break;
+				if (itemStack2.isEmpty() || ItemStack.areItemsAndComponentsEqual(itemStack, itemStack2)) {
+					int j = itemStack.getMaxCount();
+					int k = Math.min(j - itemStack2.getCount(), itemStack.getCount());
+					ItemStack itemStack3 = itemStack.copyWithCount(itemStack2.getCount() + k);
+					itemStack.decrement(k);
+					this.merchantInventory.setStack(slot, itemStack3);
+					if (itemStack3.getCount() >= j) {
+						break;
+					}
 				}
 			}
 		}

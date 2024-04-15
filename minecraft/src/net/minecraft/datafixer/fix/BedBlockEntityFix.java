@@ -55,7 +55,7 @@ public class BedBlockEntityFix extends DataFix {
 					int ix = dynamic.get("xPos").asInt(0);
 					int j = dynamic.get("zPos").asInt(0);
 					List<TE> list = Lists.<TE>newArrayList(typed2.getOrCreate(opticFinder2));
-
+		
 					for (Dynamic<?> dynamic2 : dynamic.get("Sections").asList(Function.identity())) {
 						int k = dynamic2.get("Y").asInt(0);
 						Streams.mapWithIndex(dynamic2.get("Blocks").asIntStream(), (l, m) -> {
@@ -86,7 +86,7 @@ public class BedBlockEntityFix extends DataFix {
 								}
 							);
 					}
-
+		
 					return !list.isEmpty() ? typed.set(opticFinder, typed2.set(opticFinder2, list)) : typed;
 				}
 			)

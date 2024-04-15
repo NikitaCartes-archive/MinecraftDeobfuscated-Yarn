@@ -10,6 +10,7 @@ import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.component.DataComponentType;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -447,6 +448,7 @@ public abstract class BlockEntity {
 
 	public final void readComponents(ComponentMap defaultComponents, ComponentChanges components) {
 		final Set<DataComponentType<?>> set = new HashSet();
+		set.add(DataComponentTypes.BLOCK_ENTITY_DATA);
 		final ComponentMap componentMap = ComponentMapImpl.create(defaultComponents, components);
 		this.readComponents(new BlockEntity.ComponentsAccess() {
 			@Nullable

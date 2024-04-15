@@ -336,7 +336,7 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	 * @param tickDelta progress for linearly interpolating between the previous and current game state
 	 */
 	public float getFurWetBrightnessMultiplier(float tickDelta) {
-		return Math.min(0.5F + MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress) / 2.0F * 0.5F, 1.0F);
+		return Math.min(0.75F + MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress) / 2.0F * 0.25F, 1.0F);
 	}
 
 	public float getShakeAnimationProgress(float tickDelta, float f) {
@@ -457,7 +457,10 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 						this.equipBodyArmor(itemStack.copyWithCount(1));
 						itemStack.decrementUnlessCreative(1, player);
 						return ActionResult.SUCCESS;
-					} else if (itemStack.isOf(Items.SHEARS) && this.isOwner(player) && this.hasArmor() && !EnchantmentHelper.hasBindingCurse(this.getBodyArmor())) {
+					} else if (itemStack.isOf(Items.SHEARS)
+						&& this.isOwner(player)
+						&& this.hasArmor()
+						&& (!EnchantmentHelper.hasBindingCurse(this.getBodyArmor()) || player.isCreative())) {
 						itemStack.damage(1, player, getSlotForHand(hand));
 						this.playSoundIfNotSilent(SoundEvents.ITEM_ARMOR_UNEQUIP_WOLF);
 						ItemStack itemStack2 = this.getBodyArmor();

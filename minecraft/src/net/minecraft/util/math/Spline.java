@@ -52,14 +52,14 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 						float[] fs = new float[splines.size()];
 						ImmutableList.Builder<Spline<C, I>> builder = ImmutableList.builder();
 						float[] gs = new float[splines.size()];
-
+		
 						for (int i = 0; i < splines.size(); i++) {
 							Serialized<C, I> serialized = (Serialized<C, I>)splines.get(i);
 							fs[i] = serialized.location();
 							builder.add(serialized.value());
 							gs[i] = serialized.derivative();
 						}
-
+		
 						return Spline.Implementation.build((I)locationFunction, fs, builder.build(), gs);
 					})
 		);

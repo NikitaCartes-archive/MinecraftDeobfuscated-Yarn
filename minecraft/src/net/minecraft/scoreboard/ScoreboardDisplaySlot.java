@@ -68,6 +68,7 @@ public enum ScoreboardDisplaySlot implements StringIdentifiable {
 			case YELLOW -> TEAM_YELLOW;
 			case WHITE -> TEAM_WHITE;
 			case BOLD, ITALIC, UNDERLINE, RESET, OBFUSCATED, STRIKETHROUGH -> null;
+			default -> throw new MatchException(null, null);
 		};
 	}
 }

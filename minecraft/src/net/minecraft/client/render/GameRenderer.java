@@ -336,18 +336,18 @@ public class GameRenderer implements AutoCloseable {
 		}
 	}
 
-	public void loadBlurPostProcessor() {
+	private void loadBlurPostProcessor(ResourceFactory resourceFactory) {
 		if (this.blurPostProcessor != null) {
 			this.blurPostProcessor.close();
 		}
 
 		try {
-			this.blurPostProcessor = new PostEffectProcessor(this.client.getTextureManager(), this.resourceManager, this.client.getFramebuffer(), BLUR_PROCESSOR);
+			this.blurPostProcessor = new PostEffectProcessor(this.client.getTextureManager(), resourceFactory, this.client.getFramebuffer(), BLUR_PROCESSOR);
 			this.blurPostProcessor.setupDimensions(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
-		} catch (IOException var2) {
-			LOGGER.warn("Failed to load shader: {}", BLUR_PROCESSOR, var2);
-		} catch (JsonSyntaxException var3) {
-			LOGGER.warn("Failed to parse shader: {}", BLUR_PROCESSOR, var3);
+		} catch (IOException var3) {
+			LOGGER.warn("Failed to load shader: {}", BLUR_PROCESSOR, var3);
+		} catch (JsonSyntaxException var4) {
+			LOGGER.warn("Failed to parse shader: {}", BLUR_PROCESSOR, var4);
 		}
 	}
 
@@ -679,7 +679,7 @@ public class GameRenderer implements AutoCloseable {
 					program -> renderTypeBreezeWindProgram = program
 				)
 			);
-			this.loadBlurPostProcessor();
+			this.loadBlurPostProcessor(factory);
 		} catch (IOException var5) {
 			list2.forEach(pair -> ((ShaderProgram)pair.getFirst()).close());
 			throw new RuntimeException("could not reload shaders", var5);

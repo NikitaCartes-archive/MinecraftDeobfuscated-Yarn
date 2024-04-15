@@ -21,11 +21,11 @@ public enum AxisTransformation {
 			for (AxisTransformation axisTransformation : values()) {
 				for (AxisTransformation axisTransformation2 : values()) {
 					int[] is = new int[3];
-
+	
 					for (int i = 0; i < 3; i++) {
 						is[i] = axisTransformation.mappings[axisTransformation2.mappings[i]];
 					}
-
+	
 					AxisTransformation axisTransformation3 = (AxisTransformation)Arrays.stream(values())
 						.filter(axisTransformationx -> Arrays.equals(axisTransformationx.mappings, is))
 						.findFirst()

@@ -45,6 +45,11 @@ public class AnimalArmorItem extends ArmorItem {
 		return this.type.breakSound;
 	}
 
+	@Override
+	public boolean isEnchantable(ItemStack stack) {
+		return false;
+	}
+
 	public static enum Type {
 		EQUESTRIAN(id -> id.withPath((UnaryOperator<String>)(path -> "textures/entity/horse/armor/horse_armor_" + path)), SoundEvents.ENTITY_ITEM_BREAK),
 		CANINE(id -> id.withPath("textures/entity/wolf/wolf_armor"), SoundEvents.ITEM_WOLF_ARMOR_BREAK);

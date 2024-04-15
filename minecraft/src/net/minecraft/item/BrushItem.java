@@ -132,6 +132,7 @@ public class BrushItem extends Item {
 				case SOUTH -> new BrushItem.DustParticlesOffset(-1.0, 0.0, 0.1);
 				case WEST -> new BrushItem.DustParticlesOffset(-0.1, 0.0, -1.0);
 				case EAST -> new BrushItem.DustParticlesOffset(0.1, 0.0, 1.0);
+				default -> throw new MatchException(null, null);
 			};
 		}
 	}

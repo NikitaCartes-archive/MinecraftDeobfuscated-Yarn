@@ -172,6 +172,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 				case GREEN -> LootTables.GREEN_SHEEP_ENTITY;
 				case RED -> LootTables.RED_SHEEP_ENTITY;
 				case BLACK -> LootTables.BLACK_SHEEP_ENTITY;
+				default -> throw new MatchException(null, null);
 			};
 		}
 	}

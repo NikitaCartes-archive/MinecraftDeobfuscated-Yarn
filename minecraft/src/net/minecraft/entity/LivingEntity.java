@@ -2613,6 +2613,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				case HAND -> this.getSyncedHandStack(equipmentSlot);
 				case ARMOR -> this.getSyncedArmorStack(equipmentSlot);
 				case BODY -> this.syncedBodyArmorStack;
+				default -> throw new MatchException(null, null);
 			};
 			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 			if (this.areItemsDifferent(itemStack, itemStack2)) {
@@ -3553,6 +3554,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			case FEET -> 52;
 			case LEGS -> 51;
 			case BODY -> 65;
+			default -> throw new MatchException(null, null);
 		};
 	}
 
@@ -3618,7 +3620,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			boolean bl = !this.getEquippedStack(EquipmentSlot.HEAD).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES)
 				&& !this.getEquippedStack(EquipmentSlot.CHEST).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES)
 				&& !this.getEquippedStack(EquipmentSlot.LEGS).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES)
-				&& !this.getEquippedStack(EquipmentSlot.FEET).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES);
+				&& !this.getEquippedStack(EquipmentSlot.FEET).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES)
+				&& !this.getEquippedStack(EquipmentSlot.BODY).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES);
 			return bl && super.canFreeze();
 		}
 	}

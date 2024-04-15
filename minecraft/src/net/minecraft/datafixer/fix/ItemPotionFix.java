@@ -182,15 +182,15 @@ public class ItemPotionFix extends DataFix {
 								typed2 = typed2.set(opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), "minecraft:splash_potion"));
 							}
 						}
-
+	
 						if (s != 0) {
 							dynamic = dynamic.set("Damage", dynamic.createShort((short)0));
 						}
-
+	
 						return typed2.set(DSL.remainderFinder(), dynamic);
 					}
 				}
-
+	
 				return typed;
 			}
 		);

@@ -22,6 +22,7 @@ public record TextRenderLayerSet(RenderLayer normal, RenderLayer seeThrough, Ren
 			case NORMAL -> this.normal;
 			case SEE_THROUGH -> this.seeThrough;
 			case POLYGON_OFFSET -> this.polygonOffset;
+			default -> throw new MatchException(null, null);
 		};
 	}
 }

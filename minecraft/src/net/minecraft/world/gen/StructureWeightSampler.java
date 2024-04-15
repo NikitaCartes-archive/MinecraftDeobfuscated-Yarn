@@ -42,7 +42,7 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 			.forEach(
 				start -> {
 					StructureTerrainAdaptation structureTerrainAdaptation = start.getStructure().getTerrainAdaptation();
-
+		
 					for (StructurePiece structurePiece : start.getChildren()) {
 						if (structurePiece.intersectsChunk(pos, 12)) {
 							if (structurePiece instanceof PoolStructurePiece) {
@@ -53,7 +53,7 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 										new StructureWeightSampler.Piece(poolStructurePiece.getBoundingBox(), structureTerrainAdaptation, poolStructurePiece.getGroundLevelDelta())
 									);
 								}
-
+		
 								for (JigsawJunction jigsawJunction : poolStructurePiece.getJunctions()) {
 									int ix = jigsawJunction.getSourceX();
 									int jx = jigsawJunction.getSourceZ();
@@ -98,6 +98,7 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 				case BURY, BEARD_THIN -> p;
 				case BEARD_BOX -> Math.max(0, Math.max(o - j, j - blockBox.getMaxY()));
 				case ENCAPSULATE -> Math.max(0, Math.max(blockBox.getMinY() - j, j - blockBox.getMaxY()));
+				default -> throw new MatchException(null, null);
 			};
 
 			d += switch (piece.terrainAdjustment()) {
@@ -105,6 +106,7 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 				case BURY -> getMagnitudeWeight((double)m, (double)q / 2.0, (double)n);
 				case BEARD_THIN, BEARD_BOX -> getStructureWeight(m, q, n, p) * 0.8;
 				case ENCAPSULATE -> getMagnitudeWeight((double)m / 2.0, (double)q / 2.0, (double)n / 2.0) * 0.8;
+				default -> throw new MatchException(null, null);
 			};
 		}
 

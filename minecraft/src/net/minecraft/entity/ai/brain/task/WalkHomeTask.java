@@ -74,7 +74,7 @@ public class WalkHomeTask {
 										} else if (mutableInt.getValue() < 5) {
 											long2LongMap.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < mutableLong.getValue());
 										}
-
+			
 										return true;
 									} else {
 										return false;

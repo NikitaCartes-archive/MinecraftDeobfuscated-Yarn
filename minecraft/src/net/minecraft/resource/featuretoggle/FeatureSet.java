@@ -67,6 +67,12 @@ public final class FeatureSet {
 		}
 	}
 
+	public boolean method_59819(FeatureSet featureSet) {
+		return this.universe != null && featureSet.universe != null && this.universe == featureSet.universe
+			? (this.featuresMask & featureSet.featuresMask) != 0L
+			: false;
+	}
+
 	public FeatureSet combine(FeatureSet features) {
 		if (this.universe == null) {
 			return features;
@@ -76,6 +82,17 @@ public final class FeatureSet {
 			throw new IllegalArgumentException("Mismatched set elements: '" + this.universe + "' != '" + features.universe + "'");
 		} else {
 			return new FeatureSet(this.universe, this.featuresMask | features.featuresMask);
+		}
+	}
+
+	public FeatureSet method_59820(FeatureSet featureSet) {
+		if (this.universe == null || featureSet.universe == null) {
+			return this;
+		} else if (this.universe != featureSet.universe) {
+			throw new IllegalArgumentException("Mismatched set elements: '" + this.universe + "' != '" + featureSet.universe + "'");
+		} else {
+			long l = this.featuresMask & ~featureSet.featuresMask;
+			return l == 0L ? EMPTY : new FeatureSet(this.universe, l);
 		}
 	}
 

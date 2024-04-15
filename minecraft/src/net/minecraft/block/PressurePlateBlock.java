@@ -42,6 +42,7 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 		Class<? extends Entity> class_ = switch (this.blockSetType.pressurePlateSensitivity()) {
 			case EVERYTHING -> Entity.class;
 			case MOBS -> LivingEntity.class;
+			default -> throw new MatchException(null, null);
 		};
 		return getEntityCount(world, BOX.offset(pos), class_) > 0 ? 15 : 0;
 	}

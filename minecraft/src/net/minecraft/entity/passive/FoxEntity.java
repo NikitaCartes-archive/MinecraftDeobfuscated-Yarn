@@ -283,7 +283,8 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
 			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0);
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0)
+			.add(EntityAttributes.GENERIC_SAFE_FALL_DISTANCE, 5.0);
 	}
 
 	@Nullable
@@ -602,11 +603,6 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		}
 
 		super.setTarget(target);
-	}
-
-	@Override
-	protected int computeFallDamage(float fallDistance, float damageMultiplier) {
-		return MathHelper.ceil((fallDistance - 5.0F) * damageMultiplier);
 	}
 
 	void stopSleeping() {

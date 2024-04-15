@@ -185,11 +185,11 @@ public class Mouse {
 			(windowx, offsetX, offsetY) -> this.client.execute(() -> this.onMouseScroll(windowx, offsetX, offsetY)),
 			(windowx, count, names) -> {
 				Path[] paths = new Path[count];
-
+	
 				for (int i = 0; i < count; i++) {
 					paths[i] = Paths.get(GLFWDropCallback.getName(names, i));
 				}
-
+	
 				this.client.execute(() -> this.onFilesDropped(windowx, Arrays.asList(paths)));
 			}
 		);

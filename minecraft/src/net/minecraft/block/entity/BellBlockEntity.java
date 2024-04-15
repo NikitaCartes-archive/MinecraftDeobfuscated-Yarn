@@ -161,7 +161,7 @@ public class BellBlockEntity extends BlockEntity {
 					double e = (double)((float)pos.getX() + 0.5F) + 1.0 / d * (entity.getX() - (double)pos.getX());
 					double g = (double)((float)pos.getZ() + 0.5F) + 1.0 / d * (entity.getZ() - (double)pos.getZ());
 					int j = MathHelper.clamp((i - 21) / -2, 3, 15);
-
+		
 					for (int k = 0; k < j; k++) {
 						int l = mutableInt.addAndGet(5);
 						world.addParticle(EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, l), e, (double)((float)pos.getY() + 0.5F), g, 0.0, 0.0, 0.0);

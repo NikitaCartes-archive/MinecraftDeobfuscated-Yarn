@@ -46,7 +46,7 @@ public class OpenDoorsTask {
 								} else if (mutableInt.decrementAndGet() > 0) {
 									return false;
 								}
-
+		
 								mutableObject.setValue(pathx.getCurrentNode());
 								PathNode pathNode = pathx.getLastNode();
 								PathNode pathNode2 = pathx.getCurrentNode();
@@ -57,10 +57,10 @@ public class OpenDoorsTask {
 									if (!doorBlock.isOpen(blockState)) {
 										doorBlock.setOpen(entity, world, blockState, blockPos, true);
 									}
-
+		
 									optional = storePos(doorsToClose, optional, world, blockPos);
 								}
-
+		
 								BlockPos blockPos2 = pathNode2.getBlockPos();
 								BlockState blockState2 = world.getBlockState(blockPos2);
 								if (blockState2.isIn(BlockTags.WOODEN_DOORS, state -> state.getBlock() instanceof DoorBlock)) {
@@ -70,7 +70,7 @@ public class OpenDoorsTask {
 										optional = storePos(doorsToClose, optional, world, blockPos2);
 									}
 								}
-
+		
 								optional.ifPresent(doors -> pathToDoor(world, entity, pathNode, pathNode2, doors, context.getOptionalValue(mobs)));
 								return true;
 							} else {

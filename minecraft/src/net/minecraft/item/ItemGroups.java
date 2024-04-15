@@ -1215,13 +1215,13 @@ public class ItemGroups {
 				.icon(() -> new ItemStack(Items.COMPASS))
 				.entries((displayContext, entries) -> {
 					Set<ItemStack> set = ItemStackSet.create();
-
+		
 					for (ItemGroup itemGroup : registry) {
 						if (itemGroup.getType() != ItemGroup.Type.SEARCH) {
 							set.addAll(itemGroup.getSearchTabStacks());
 						}
 					}
-
+		
 					entries.addAll(set);
 				})
 				.texture("item_search.png")
@@ -1283,7 +1283,7 @@ public class ItemGroups {
 						if (displayContext.enabledFeatures().contains(FeatureFlags.BUNDLE)) {
 							entries.add(Items.BUNDLE);
 						}
-
+			
 						entries.add(Items.COMPASS);
 						entries.add(Items.RECOVERY_COMPASS);
 						entries.add(Items.CLOCK);
@@ -1767,11 +1767,11 @@ public class ItemGroups {
 							entries.add(Items.STRUCTURE_VOID);
 							entries.add(Items.BARRIER);
 							entries.add(Items.DEBUG_STICK);
-
+			
 							for (int i = 15; i >= 0; i--) {
 								entries.add(LightBlock.addNbtForLevel(new ItemStack(Items.LIGHT), i));
 							}
-
+			
 							displayContext.lookup()
 								.getOptionalWrapper(RegistryKeys.PAINTING_VARIANT)
 								.ifPresent(

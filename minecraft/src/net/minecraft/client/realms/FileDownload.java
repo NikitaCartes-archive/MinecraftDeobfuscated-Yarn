@@ -118,7 +118,7 @@ public class FileDownload {
 			this.currentThread = new Thread(
 				() -> {
 					CloseableHttpClient closeableHttpClient = null;
-
+	
 					try {
 						this.backupFile = File.createTempFile("backup", ".tar.gz");
 						this.httpRequest = new HttpGet(download.downloadLink);
@@ -133,7 +133,7 @@ public class FileDownload {
 							IOUtils.copy(httpResponse.getEntity().getContent(), downloadCountingOutputStream2);
 							return;
 						}
-
+	
 						this.error = true;
 						this.httpRequest.abort();
 					} catch (Exception var93) {
@@ -145,7 +145,7 @@ public class FileDownload {
 						if (this.backupFile != null) {
 							this.backupFile.delete();
 						}
-
+	
 						if (!this.error) {
 							if (!download.resourcePackUrl.isEmpty() && !download.resourcePackHash.isEmpty()) {
 								try {
@@ -158,7 +158,7 @@ public class FileDownload {
 										this.httpRequest.abort();
 										return;
 									}
-
+	
 									OutputStream outputStream3 = new FileOutputStream(this.backupFile);
 									FileDownload.ResourcePackProgressListener resourcePackProgressListener3 = new FileDownload.ResourcePackProgressListener(
 										this.backupFile, status, download
@@ -179,7 +179,7 @@ public class FileDownload {
 								this.finished = true;
 							}
 						}
-
+	
 						if (closeableHttpClient != null) {
 							try {
 								closeableHttpClient.close();

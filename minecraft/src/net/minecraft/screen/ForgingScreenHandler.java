@@ -59,12 +59,12 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 				public boolean canInsert(ItemStack stack) {
 					return false;
 				}
-
+	
 				@Override
 				public boolean canTakeItems(PlayerEntity playerEntity) {
 					return ForgingScreenHandler.this.canTakeOutput(playerEntity, this.hasStack());
 				}
-
+	
 				@Override
 				public void onTakeItem(PlayerEntity player, ItemStack stack) {
 					ForgingScreenHandler.this.onTakeOutput(player, stack);

@@ -25,7 +25,9 @@ import org.slf4j.Logger;
 
 public class StructuresToConfiguredStructuresFix extends DataFix {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Map<String, StructuresToConfiguredStructuresFix.Mapping> STRUCTURE_TO_CONFIGURED_STRUCTURES_MAPPING = ImmutableMap.<String, StructuresToConfiguredStructuresFix.Mapping>builder()
+	private static final Map<String, StructuresToConfiguredStructuresFix.Mapping> STRUCTURE_TO_CONFIGURED_STRUCTURES_MAPPING = ImmutableMap.<String, StructuresToConfiguredStructuresFix.Mapping>builder(
+			
+		)
 		.put(
 			"mineshaft",
 			StructuresToConfiguredStructuresFix.Mapping.create(

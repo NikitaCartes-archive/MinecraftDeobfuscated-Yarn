@@ -24,7 +24,7 @@ public class StopPanickingTask {
 									hurtByEntity.forget();
 									entity.getBrain().refreshActivities(world.getTimeOfDay(), world.getTime());
 								}
-
+			
 								return true;
 							}
 					)

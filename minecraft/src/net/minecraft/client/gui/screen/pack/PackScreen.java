@@ -238,13 +238,13 @@ public class PackScreen extends Screen {
 								protected Path openZip(Path path) {
 									return path;
 								}
-
+			
 								protected Path openDirectory(Path path) {
 									return path;
 								}
 							};
 							List<SymlinkEntry> list3 = new ArrayList();
-
+			
 							for (Path path : paths) {
 								try {
 									Path path2 = resourcePackOpener.open(path, list3);
@@ -258,17 +258,17 @@ public class PackScreen extends Screen {
 									LOGGER.warn("Failed to check {} for packs", path, var10);
 								}
 							}
-
+			
 							if (!list3.isEmpty()) {
 								this.client.setScreen(SymlinkWarningScreen.pack(() -> this.client.setScreen(this)));
 								return;
 							}
-
+			
 							if (!list2.isEmpty()) {
 								copyPacks(this.client, list2, this.file);
 								this.refresh();
 							}
-
+			
 							if (!set.isEmpty()) {
 								String stringx = (String)streamFileNames(set).collect(Collectors.joining(", "));
 								this.client
@@ -280,7 +280,7 @@ public class PackScreen extends Screen {
 								return;
 							}
 						}
-
+			
 						this.client.setScreen(this);
 					},
 					Text.translatable("pack.dropConfirm"),

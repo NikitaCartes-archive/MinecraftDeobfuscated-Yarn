@@ -27,7 +27,9 @@ import org.slf4j.Logger;
 public class PointOfInterestSet {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Short2ObjectMap<PointOfInterest> pointsOfInterestByPos = new Short2ObjectOpenHashMap<>();
-	private final Map<RegistryEntry<PointOfInterestType>, Set<PointOfInterest>> pointsOfInterestByType = Maps.<RegistryEntry<PointOfInterestType>, Set<PointOfInterest>>newHashMap();
+	private final Map<RegistryEntry<PointOfInterestType>, Set<PointOfInterest>> pointsOfInterestByType = Maps.<RegistryEntry<PointOfInterestType>, Set<PointOfInterest>>newHashMap(
+		
+	);
 	private final Runnable updateListener;
 	private boolean valid;
 

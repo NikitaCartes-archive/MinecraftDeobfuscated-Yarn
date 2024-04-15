@@ -91,7 +91,7 @@ public class ExperimentalWarningScreen extends Screen {
 		protected void init() {
 			this.layout.addHeader(TITLE, this.textRenderer);
 			this.packListWidget = this.layout
-				.addBody(new ExperimentalWarningScreen.DetailsScreen.PackListWidget(this.client, ExperimentalWarningScreen.this.enabledProfiles));
+				.addBody(new ExperimentalWarningScreen.DetailsScreen.PackListWidget(this, this.client, ExperimentalWarningScreen.this.enabledProfiles));
 			this.layout.addFooter(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).build());
 			this.layout.forEachChild(child -> {
 				ClickableWidget var10000 = this.addDrawableChild(child);
@@ -115,15 +115,15 @@ public class ExperimentalWarningScreen extends Screen {
 
 		@Environment(EnvType.CLIENT)
 		class PackListWidget extends AlwaysSelectedEntryListWidget<ExperimentalWarningScreen.DetailsScreen.PackListWidgetEntry> {
-			public PackListWidget(final MinecraftClient client, final Collection<ResourcePackProfile> enabledProfiles) {
-				super(client, DetailsScreen.this.width, DetailsScreen.this.layout.getContentHeight(), DetailsScreen.this.layout.getHeaderHeight(), (9 + 2) * 3);
+			public PackListWidget(final MinecraftClient detailsScreen, final Collection<ResourcePackProfile> client, final Collection enabledProfiles) {
+				super(client, detailsScreen.width, detailsScreen.layout.getContentHeight(), detailsScreen.layout.getHeaderHeight(), (9 + 2) * 3);
 
 				for (ResourcePackProfile resourcePackProfile : enabledProfiles) {
 					String string = FeatureFlags.printMissingFlags(FeatureFlags.VANILLA_FEATURES, resourcePackProfile.getRequestedFeatures());
 					if (!string.isEmpty()) {
 						Text text = Texts.setStyleIfAbsent(resourcePackProfile.getDisplayName().copy(), Style.EMPTY.withBold(true));
 						Text text2 = Text.translatable("selectWorld.experimental.details.entry", string);
-						this.addEntry(DetailsScreen.this.new PackListWidgetEntry(text, text2, MultilineText.create(DetailsScreen.this.textRenderer, text2, this.getRowWidth())));
+						this.addEntry(detailsScreen.new PackListWidgetEntry(text, text2, MultilineText.create(detailsScreen.textRenderer, text2, this.getRowWidth())));
 					}
 				}
 			}

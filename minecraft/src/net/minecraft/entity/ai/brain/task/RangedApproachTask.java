@@ -37,7 +37,7 @@ public class RangedApproachTask {
 									lookTarget.remember(new EntityLookTarget(livingEntity, true));
 									walkTarget.remember(new WalkTarget(new EntityLookTarget(livingEntity, false), (Float)speed.apply(entity), 0));
 								}
-
+			
 								return true;
 							}
 					)

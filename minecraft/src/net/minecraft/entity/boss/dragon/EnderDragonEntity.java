@@ -914,4 +914,9 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	public boolean canTarget(LivingEntity target) {
 		return target.canTakeDamage();
 	}
+
+	@Override
+	protected float clampScale(float scale) {
+		return 1.0F;
+	}
 }

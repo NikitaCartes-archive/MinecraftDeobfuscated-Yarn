@@ -44,42 +44,42 @@ public class BlockListProvider implements DataProvider {
 								StateManager<Block, BlockState> stateManager = ((Block)entry.value()).getStateManager();
 								if (!stateManager.getProperties().isEmpty()) {
 									JsonObject jsonObject3 = new JsonObject();
-
+				
 									for (Property<?> property : stateManager.getProperties()) {
 										JsonArray jsonArray = new JsonArray();
-
+				
 										for (Comparable<?> comparable : property.getValues()) {
 											jsonArray.add(Util.getValueAsString(property, comparable));
 										}
-
+				
 										jsonObject3.add(property.getName(), jsonArray);
 									}
-
+				
 									jsonObject2.add("properties", jsonObject3);
 								}
-
+				
 								JsonArray jsonArray2 = new JsonArray();
-
+				
 								for (BlockState blockState : stateManager.getStates()) {
 									JsonObject jsonObject4 = new JsonObject();
 									JsonObject jsonObject5 = new JsonObject();
-
+				
 									for (Property<?> property2 : stateManager.getProperties()) {
 										jsonObject5.addProperty(property2.getName(), Util.getValueAsString(property2, blockState.get(property2)));
 									}
-
+				
 									if (jsonObject5.size() > 0) {
 										jsonObject4.add("properties", jsonObject5);
 									}
-
+				
 									jsonObject4.addProperty("id", Block.getRawIdFromState(blockState));
 									if (blockState == ((Block)entry.value()).getDefaultState()) {
 										jsonObject4.addProperty("default", true);
 									}
-
+				
 									jsonArray2.add(jsonObject4);
 								}
-
+				
 								jsonObject2.add("states", jsonArray2);
 								String string = entry.getIdAsString();
 								JsonElement jsonElement = BlockTypes.CODEC

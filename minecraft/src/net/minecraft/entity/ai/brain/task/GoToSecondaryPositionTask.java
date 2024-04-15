@@ -36,7 +36,7 @@ public class GoToSecondaryPositionTask {
 											walkTarget.remember(new WalkTarget(globalPos2.pos(), speed, completionRange));
 											mutableLong.setValue(time + 100L);
 										}
-
+			
 										return true;
 									} else {
 										return false;

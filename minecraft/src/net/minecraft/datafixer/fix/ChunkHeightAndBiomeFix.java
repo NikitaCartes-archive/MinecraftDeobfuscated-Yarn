@@ -144,7 +144,7 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 								if (kx >= 0 && kx < dynamics.length) {
 									dynamic4x = dynamic2xx.set("biomes", dynamics[kx]);
 								}
-
+		
 								intSet.add(jx);
 								if (dynamic2xx.get("Y").asInt(Integer.MAX_VALUE) == 0) {
 									mutableObject.setValue(() -> {
@@ -153,10 +153,10 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 										return new ProtoChunkTickListFix.class_6741(listx, ls);
 									});
 								}
-
+		
 								return dynamic4x.set("block_states", dynamic3x).remove("Palette").remove("BlockStates");
 							}).collect(Collectors.toCollection(ArrayList::new));
-
+		
 							for (int j = 0; j < dynamics.length; j++) {
 								int k = j + i;
 								if (intSet.add(k)) {
@@ -166,14 +166,14 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 									list.add(dynamic4);
 								}
 							}
-
+		
 							return Util.readTyped(type4, dynamic.createList(list.stream()));
 						});
 						return level.update(DSL.remainderFinder(), level2 -> {
 							if (bl) {
 								level2 = this.fixStatus(level2, set);
 							}
-
+		
 							return fixLevel(level2, bl, mutableBoolean.booleanValue(), "minecraft:noise".equals(string2), mutableObject.getValue());
 						});
 					}

@@ -83,18 +83,18 @@ public enum DirectionTransformation implements StringIdentifiable {
 						directionTransformationx -> directionTransformationx
 					)
 				);
-
+	
 			for (DirectionTransformation directionTransformation : values()) {
 				for (DirectionTransformation directionTransformation2 : values()) {
 					BooleanList booleanList = directionTransformation.getAxisFlips();
 					BooleanList booleanList2 = directionTransformation2.getAxisFlips();
 					AxisTransformation axisTransformation = directionTransformation2.axisTransformation.prepend(directionTransformation.axisTransformation);
 					BooleanArrayList booleanArrayList = new BooleanArrayList(3);
-
+	
 					for (int i = 0; i < 3; i++) {
 						booleanArrayList.add(booleanList.getBoolean(i) ^ booleanList2.getBoolean(directionTransformation.axisTransformation.map(i)));
 					}
-
+	
 					directionTransformations[directionTransformation.ordinal()][directionTransformation2.ordinal()] = (DirectionTransformation)map.get(
 						Pair.of(axisTransformation, booleanArrayList)
 					);

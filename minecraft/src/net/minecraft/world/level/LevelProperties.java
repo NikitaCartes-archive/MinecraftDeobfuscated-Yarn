@@ -169,7 +169,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	) {
 		long l = dynamic.get("Time").asLong(0L);
 		return new LevelProperties(
-			(NbtCompound)NbtCompound.CODEC.parse(dynamic.get("Player").orElseEmptyMap()).result().orElse(null),
+			(NbtCompound)dynamic.get("Player").flatMap(NbtCompound.CODEC::parse).result().orElse(null),
 			dynamic.get("WasModded").asBoolean(false),
 			new BlockPos(dynamic.get("SpawnX").asInt(0), dynamic.get("SpawnY").asInt(0), dynamic.get("SpawnZ").asInt(0)),
 			dynamic.get("SpawnAngle").asFloat(0.0F),

@@ -386,6 +386,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 			case RIGHT, LEFT -> 0;
 			case UP -> -1;
 			case DOWN -> 1;
+			default -> throw new MatchException(null, null);
 		};
 		if (!this.children().isEmpty() && i != 0) {
 			int j;

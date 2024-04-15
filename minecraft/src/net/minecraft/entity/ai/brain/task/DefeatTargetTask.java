@@ -23,13 +23,13 @@ public class DefeatTargetTask {
 								if (predicate.test(entity, livingEntity)) {
 									dancing.remember(true, (long)celebrationDuration);
 								}
-
+		
 								celebrateLocation.remember(livingEntity.getBlockPos(), (long)celebrationDuration);
 								if (livingEntity.getType() != EntityType.PLAYER || world.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
 									attackTarget.forget();
 									angryAt.forget();
 								}
-
+		
 								return true;
 							}
 						})

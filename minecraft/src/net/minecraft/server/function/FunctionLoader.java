@@ -93,11 +93,13 @@ public class FunctionLoader implements ResourceReloader {
 			)
 			.thenCompose(
 				functions -> {
-					Map<Identifier, CompletableFuture<CommandFunction<ServerCommandSource>>> map = Maps.<Identifier, CompletableFuture<CommandFunction<ServerCommandSource>>>newHashMap();
+					Map<Identifier, CompletableFuture<CommandFunction<ServerCommandSource>>> map = Maps.<Identifier, CompletableFuture<CommandFunction<ServerCommandSource>>>newHashMap(
+						
+					);
 					ServerCommandSource serverCommandSource = new ServerCommandSource(
 						CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", ScreenTexts.EMPTY, null, null
 					);
-
+		
 					for (Entry<Identifier, Resource> entry : functions.entrySet()) {
 						Identifier identifier = (Identifier)entry.getKey();
 						Identifier identifier2 = FINDER.toResourceId(identifier);
@@ -106,7 +108,7 @@ public class FunctionLoader implements ResourceReloader {
 							return CommandFunction.create(identifier2, this.commandDispatcher, serverCommandSource, list);
 						}, prepareExecutor));
 					}
-
+		
 					CompletableFuture<?>[] completableFutures = (CompletableFuture<?>[])map.values().toArray(new CompletableFuture[0]);
 					return CompletableFuture.allOf(completableFutures).handle((unused, ex) -> map);
 				}
@@ -115,7 +117,9 @@ public class FunctionLoader implements ResourceReloader {
 			.thenCompose(synchronizer::whenPrepared)
 			.thenAcceptAsync(
 				intermediate -> {
-					Map<Identifier, CompletableFuture<CommandFunction<ServerCommandSource>>> map = (Map<Identifier, CompletableFuture<CommandFunction<ServerCommandSource>>>)intermediate.getSecond();
+					Map<Identifier, CompletableFuture<CommandFunction<ServerCommandSource>>> map = (Map<Identifier, CompletableFuture<CommandFunction<ServerCommandSource>>>)intermediate.getSecond(
+						
+					);
 					Builder<Identifier, CommandFunction<ServerCommandSource>> builder = ImmutableMap.builder();
 					map.forEach((id, functionFuture) -> functionFuture.handle((function, ex) -> {
 							if (ex != null) {
@@ -123,7 +127,7 @@ public class FunctionLoader implements ResourceReloader {
 							} else {
 								builder.put(id, function);
 							}
-
+		
 							return null;
 						}).join());
 					this.functions = builder.build();

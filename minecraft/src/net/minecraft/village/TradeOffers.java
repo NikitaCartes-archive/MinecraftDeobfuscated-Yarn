@@ -1022,7 +1022,9 @@ public class TradeOffers {
 			)
 		)
 	);
-	public static final List<Pair<TradeOffers.Factory[], Integer>> REBALANCED_WANDERING_TRADER_TRADES = ImmutableList.<Pair<TradeOffers.Factory[], Integer>>builder()
+	public static final List<Pair<TradeOffers.Factory[], Integer>> REBALANCED_WANDERING_TRADER_TRADES = ImmutableList.<Pair<TradeOffers.Factory[], Integer>>builder(
+			
+		)
 		.add(
 			Pair.of(
 				new TradeOffers.Factory[]{

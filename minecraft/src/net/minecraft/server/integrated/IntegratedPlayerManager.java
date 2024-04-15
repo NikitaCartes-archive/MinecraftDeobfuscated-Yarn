@@ -2,6 +2,7 @@ package net.minecraft.server.integrated;
 
 import com.mojang.authlib.GameProfile;
 import java.net.SocketAddress;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.NbtCompound;
@@ -14,6 +15,7 @@ import net.minecraft.world.WorldSaveHandler;
 
 @Environment(EnvType.CLIENT)
 public class IntegratedPlayerManager extends PlayerManager {
+	@Nullable
 	private NbtCompound userData;
 
 	public IntegratedPlayerManager(IntegratedServer server, CombinedDynamicRegistries<ServerDynamicRegistryType> registryManager, WorldSaveHandler saveHandler) {
@@ -41,6 +43,7 @@ public class IntegratedPlayerManager extends PlayerManager {
 		return (IntegratedServer)super.getServer();
 	}
 
+	@Nullable
 	@Override
 	public NbtCompound getUserData() {
 		return this.userData;

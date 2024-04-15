@@ -235,6 +235,8 @@ public class PlaceCommand {
 
 	public static int executePlaceJigsaw(ServerCommandSource source, RegistryEntry<StructurePool> structurePool, Identifier id, int maxDepth, BlockPos pos) throws CommandSyntaxException {
 		ServerWorld serverWorld = source.getWorld();
+		ChunkPos chunkPos = new ChunkPos(pos);
+		throwOnUnloadedPos(serverWorld, chunkPos, chunkPos);
 		if (!StructurePoolBasedGenerator.generate(serverWorld, structurePool, id, maxDepth, pos, false)) {
 			throw JIGSAW_FAILED_EXCEPTION.create();
 		} else {

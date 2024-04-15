@@ -50,6 +50,7 @@ public final class JigsawStructure extends Structure {
 		int i = switch (structure.getTerrainAdaptation()) {
 			case NONE -> 0;
 			case BURY, BEARD_THIN, BEARD_BOX, ENCAPSULATE -> 12;
+			default -> throw new MatchException(null, null);
 		};
 		return structure.maxDistanceFromCenter + i > 128
 			? DataResult.error(() -> "Structure size including terrain adaptation must not exceed 128")

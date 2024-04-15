@@ -24,7 +24,7 @@ public class ExperimentalRegistriesValidator {
 						(RegistryWrapper<Biome>)optional.orElseGet(() -> lookup.getWrapperOrThrow(RegistryKeys.BIOME))
 					);
 				}
-
+	
 				return fullPatchesRegistriesPair;
 			}
 		);

@@ -60,7 +60,7 @@ public class QuickPlayLogger {
 						} catch (IOException var3) {
 							LOGGER.error("Failed to delete quickplay log file {}", this.path, var3);
 						}
-
+		
 						QuickPlayLogger.Log log = new QuickPlayLogger.Log(this.world, Instant.now(), client.interactionManager.getCurrentGameMode());
 						Codec.list(QuickPlayLogger.Log.CODEC)
 							.encodeStart(JsonOps.INSTANCE, List.of(log))

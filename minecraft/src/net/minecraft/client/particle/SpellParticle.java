@@ -14,7 +14,7 @@ import net.minecraft.util.math.random.Random;
 public class SpellParticle extends SpriteBillboardParticle {
 	private static final Random RANDOM = Random.create();
 	private final SpriteProvider spriteProvider;
-	private float defaultAlpha;
+	private float defaultAlpha = 1.0F;
 
 	SpellParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
 		super(world, x, y, z, 0.5 - RANDOM.nextDouble(), velocityY, 0.5 - RANDOM.nextDouble());

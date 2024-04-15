@@ -15,12 +15,13 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.dynamic.Codecs;
 
 public record TableBonusLootCondition(RegistryEntry<Enchantment> enchantment, List<Float> chances) implements LootCondition {
 	public static final MapCodec<TableBonusLootCondition> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Registries.ENCHANTMENT.getEntryCodec().fieldOf("enchantment").forGetter(TableBonusLootCondition::enchantment),
-					Codec.FLOAT.listOf().fieldOf("chances").forGetter(TableBonusLootCondition::chances)
+					Codecs.nonEmptyList(Codec.FLOAT.listOf()).fieldOf("chances").forGetter(TableBonusLootCondition::chances)
 				)
 				.apply(instance, TableBonusLootCondition::new)
 	);

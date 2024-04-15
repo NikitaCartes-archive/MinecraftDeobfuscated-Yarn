@@ -42,7 +42,7 @@ public class RemoveFeatureTogglesFix extends DataFix {
 							if (bl) {
 								list.add(dynamic.createString((String)optional.get()));
 							}
-
+	
 							return !bl;
 						}
 					})).map(dynamic::createList), enabledFeatures)

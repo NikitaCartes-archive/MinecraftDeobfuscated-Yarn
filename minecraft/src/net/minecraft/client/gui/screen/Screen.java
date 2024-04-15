@@ -634,6 +634,10 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		this.setScreenNarrationDelay(NARRATOR_MODE_CHANGE_DELAY, false);
 	}
 
+	protected void method_59840() {
+		this.tooltip = null;
+	}
+
 	public void setTooltip(List<OrderedText> tooltip) {
 		this.setTooltip(tooltip, HoveredTooltipPositioner.INSTANCE, true);
 	}

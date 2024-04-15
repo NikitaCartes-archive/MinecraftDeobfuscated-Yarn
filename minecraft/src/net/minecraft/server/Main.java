@@ -210,7 +210,7 @@ public class Main {
 												: serverPropertiesHandler.generatorOptions;
 											dimensionOptionsRegistryHolder = serverPropertiesHandler.createDimensionsRegistryHolder(context.worldGenRegistryManager());
 										}
-
+			
 										DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = dimensionOptionsRegistryHolder.toConfig(registry);
 										Lifecycle lifecycle = dimensionsConfig.getLifecycle().add(context.worldGenRegistryManager().getRegistryLifecycle());
 										return new SaveLoading.LoadContext<>(
@@ -251,7 +251,7 @@ public class Main {
 					if (blx && !GraphicsEnvironment.isHeadless()) {
 						minecraftDedicatedServerx.createGui();
 					}
-
+	
 					return minecraftDedicatedServerx;
 				}
 			);

@@ -69,13 +69,9 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
-			return false;
-		} else {
-			this.loveTicks = 0;
-			return super.damage(source, amount);
-		}
+	protected void applyDamage(DamageSource source, float amount) {
+		this.resetLoveTicks();
+		super.applyDamage(source, amount);
 	}
 
 	@Override

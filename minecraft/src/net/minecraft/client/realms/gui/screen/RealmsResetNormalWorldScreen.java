@@ -79,13 +79,13 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 			ButtonWidget.builder(
 					Text.translatable("selectWorld.experiments"), button -> this.client.setScreen(new ExperimentsScreen(this, resourcePackManager, packManager -> {
 							this.experiments.clear();
-
+			
 							for (ResourcePackProfile resourcePackProfile : packManager.getEnabledProfiles()) {
 								if (resourcePackProfile.getSource() == ResourcePackSource.FEATURE) {
 									this.experiments.add(resourcePackProfile.getId());
 								}
 							}
-
+			
 							this.client.setScreen(this);
 						}))
 				)

@@ -242,7 +242,7 @@ public class PresetsScreen extends Screen {
 		context.getMatrices().translate(0.0F, 0.0F, 400.0F);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		context.drawTextWithShadow(this.textRenderer, this.shareText, 51, 30, 10526880);
-		context.drawTextWithShadow(this.textRenderer, this.listText, 51, 70, 10526880);
+		context.drawTextWithShadow(this.textRenderer, this.listText, 51, 68, 10526880);
 		context.getMatrices().pop();
 		this.customPresetField.render(context, mouseX, mouseY, delta);
 	}

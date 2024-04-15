@@ -315,11 +315,6 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		}
 	}
 
-	@Override
-	protected int computeFallDamage(float fallDistance, float damageMultiplier) {
-		return MathHelper.ceil((fallDistance * 0.5F - 3.0F) * damageMultiplier);
-	}
-
 	protected int getInventorySize() {
 		return 1;
 	}
@@ -423,7 +418,9 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 			.add(EntityAttributes.GENERIC_JUMP_STRENGTH, 0.7)
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, 53.0)
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.225F)
-			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
+			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0)
+			.add(EntityAttributes.GENERIC_SAFE_FALL_DISTANCE, 6.0)
+			.add(EntityAttributes.GENERIC_FALL_DAMAGE_MULTIPLIER, 0.5);
 	}
 
 	@Override

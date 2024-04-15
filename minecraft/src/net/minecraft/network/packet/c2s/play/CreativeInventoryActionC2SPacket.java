@@ -9,14 +9,18 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
-public record CreativeInventoryActionC2SPacket(int slot, ItemStack stack) implements Packet<ServerPlayPacketListener> {
+public record CreativeInventoryActionC2SPacket(short slot, ItemStack stack) implements Packet<ServerPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, CreativeInventoryActionC2SPacket> CODEC = PacketCodec.tuple(
-		PacketCodecs.UNSIGNED_SHORT,
+		PacketCodecs.SHORT,
 		CreativeInventoryActionC2SPacket::slot,
 		ItemStack.createExtraValidatingPacketCodec(ItemStack.OPTIONAL_PACKET_CODEC),
 		CreativeInventoryActionC2SPacket::stack,
 		CreativeInventoryActionC2SPacket::new
 	);
+
+	public CreativeInventoryActionC2SPacket(int i, ItemStack itemStack) {
+		this((short)i, itemStack);
+	}
 
 	@Override
 	public PacketType<CreativeInventoryActionC2SPacket> getPacketId() {

@@ -413,7 +413,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			bl,
 			commonPlayerSpawnInfo.seed()
 		);
-		this.client.joinWorld(this.world);
+		this.client.joinWorld(this.world, DownloadingTerrainScreen.class_9678.OTHER);
 		if (this.client.player == null) {
 			this.client.player = this.client.interactionManager.createPlayer(this.world, new StatHandler(), new ClientRecipeBook());
 			this.client.player.setYaw(-180.0F);
@@ -429,7 +429,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.client.player.input = new KeyboardInput(this.client.options);
 		this.client.interactionManager.copyAbilities(this.client.player);
 		this.client.cameraEntity = this.client.player;
-		this.startWorldLoading(this.client.player, this.world);
+		this.startWorldLoading(this.client.player, this.world, DownloadingTerrainScreen.class_9678.OTHER);
 		this.client.player.setReducedDebugInfo(packet.reducedDebugInfo());
 		this.client.player.setShowsDeathScreen(packet.showDeathScreen());
 		this.client.player.setLimitedCraftingEnabled(packet.doLimitedCrafting());
@@ -1078,11 +1078,14 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		RegistryKey<World> registryKey = commonPlayerSpawnInfo.dimension();
 		RegistryEntry<DimensionType> registryEntry = commonPlayerSpawnInfo.dimensionType();
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
-		if (registryKey != clientPlayerEntity.getWorld().getRegistryKey()) {
+		RegistryKey<World> registryKey2 = clientPlayerEntity.getWorld().getRegistryKey();
+		boolean bl = registryKey != registryKey2;
+		DownloadingTerrainScreen.class_9678 lv = this.method_59842(clientPlayerEntity.isDead(), registryKey, registryKey2);
+		if (bl) {
 			Map<MapIdComponent, MapState> map = this.world.getMapStates();
-			boolean bl = commonPlayerSpawnInfo.isDebug();
-			boolean bl2 = commonPlayerSpawnInfo.isFlat();
-			ClientWorld.Properties properties = new ClientWorld.Properties(this.worldProperties.getDifficulty(), this.worldProperties.isHardcore(), bl2);
+			boolean bl2 = commonPlayerSpawnInfo.isDebug();
+			boolean bl3 = commonPlayerSpawnInfo.isFlat();
+			ClientWorld.Properties properties = new ClientWorld.Properties(this.worldProperties.getDifficulty(), this.worldProperties.isHardcore(), bl3);
 			this.worldProperties = properties;
 			this.world = new ClientWorld(
 				this,
@@ -1093,11 +1096,11 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				this.simulationDistance,
 				this.client::getProfiler,
 				this.client.worldRenderer,
-				bl,
+				bl2,
 				commonPlayerSpawnInfo.seed()
 			);
 			this.world.putMapStates(map);
-			this.client.joinWorld(this.world);
+			this.client.joinWorld(this.world, lv);
 		}
 
 		this.client.cameraEntity = null;
@@ -1116,10 +1119,10 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			clientPlayerEntity2 = this.client.interactionManager.createPlayer(this.world, clientPlayerEntity.getStatHandler(), clientPlayerEntity.getRecipeBook());
 		}
 
-		this.startWorldLoading(clientPlayerEntity2, this.world);
+		this.startWorldLoading(clientPlayerEntity2, this.world, lv);
 		clientPlayerEntity2.setId(clientPlayerEntity.getId());
 		this.client.player = clientPlayerEntity2;
-		if (registryKey != clientPlayerEntity.getWorld().getRegistryKey()) {
+		if (bl) {
 			this.client.getMusicTracker().stop();
 		}
 
@@ -1151,6 +1154,19 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 
 		this.client.interactionManager.setGameModes(commonPlayerSpawnInfo.gameMode(), commonPlayerSpawnInfo.prevGameMode());
+	}
+
+	private DownloadingTerrainScreen.class_9678 method_59842(boolean bl, RegistryKey<World> registryKey, RegistryKey<World> registryKey2) {
+		DownloadingTerrainScreen.class_9678 lv = DownloadingTerrainScreen.class_9678.OTHER;
+		if (!bl) {
+			if (registryKey == World.NETHER || registryKey2 == World.NETHER) {
+				lv = DownloadingTerrainScreen.class_9678.NETHER_PORTAL;
+			} else if (registryKey == World.END || registryKey2 == World.END) {
+				lv = DownloadingTerrainScreen.class_9678.END_PORTAL;
+			}
+		}
+
+		return lv;
 	}
 
 	@Override
@@ -1325,7 +1341,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		} else if (reason == GameStateChangeS2CPacket.GAME_WON) {
 			if (i == 0) {
 				this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN));
-				this.client.setScreen(new DownloadingTerrainScreen(() -> false));
+				this.client.setScreen(new DownloadingTerrainScreen(() -> false, DownloadingTerrainScreen.class_9678.END_PORTAL));
 			} else if (i == 1) {
 				this.client.setScreen(new CreditsScreen(true, () -> {
 					this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN));
@@ -1387,9 +1403,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 	}
 
-	private void startWorldLoading(ClientPlayerEntity player, ClientWorld world) {
+	private void startWorldLoading(ClientPlayerEntity player, ClientWorld world, DownloadingTerrainScreen.class_9678 arg) {
 		this.worldLoadingState = new WorldLoadingState(player, world, this.client.worldRenderer);
-		this.client.setScreen(new DownloadingTerrainScreen(this.worldLoadingState::isReady));
+		this.client.setScreen(new DownloadingTerrainScreen(this.worldLoadingState::isReady, arg));
 	}
 
 	@Override
@@ -1458,7 +1474,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.recipeManager.setRecipes(packet.getRecipes());
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
-		clientRecipeBook.reload(this.recipeManager.values(), this.client.world.getRegistryManager());
+		clientRecipeBook.reload(this.recipeManager.method_59822(), this.client.world.getRegistryManager());
 		this.client.reloadSearchProvider(SearchManager.RECIPE_OUTPUT, clientRecipeBook.getOrderedResults());
 	}
 

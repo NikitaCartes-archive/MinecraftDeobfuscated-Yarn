@@ -21,6 +21,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtException;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtLongArray;
@@ -508,7 +509,7 @@ public class ChunkSerializer {
 		return nbtList;
 	}
 
-	public static class ChunkLoadingException extends RuntimeException {
+	public static class ChunkLoadingException extends NbtException {
 		public ChunkLoadingException(String message) {
 			super(message);
 		}

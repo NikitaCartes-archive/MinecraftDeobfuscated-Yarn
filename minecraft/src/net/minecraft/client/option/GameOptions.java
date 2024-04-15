@@ -168,6 +168,7 @@ public class GameOptions {
 				case FANCY -> Tooltip.of(FANCY_GRAPHICS_TOOLTIP);
 				case FAST -> Tooltip.of(FAST_GRAPHICS_TOOLTIP);
 				case FABULOUS -> Tooltip.of(FABULOUS_GRAPHICS_TOOLTIP);
+				default -> throw new MatchException(null, null);
 			};
 		},
 		(optionText, value) -> {
@@ -205,6 +206,7 @@ public class GameOptions {
 				case NONE -> Tooltip.of(NONE_CHUNK_BUILDER_MODE_TOOLTIP);
 				case PLAYER_AFFECTED -> Tooltip.of(BY_PLAYER_CHUNK_BUILDER_MODE_TOOLTIP);
 				case NEARBY -> Tooltip.of(NEARBY_CHUNK_BUILDER_MODE_TOOLTIP);
+				default -> throw new MatchException(null, null);
 			};
 		},
 		SimpleOption.enumValueText(),
@@ -241,7 +243,7 @@ public class GameOptions {
 	private final SimpleOption<Double> menuBackgroundBlurriness = new SimpleOption<>(
 		"options.accessibility.menu_background_blurriness",
 		SimpleOption.constantTooltip(MENU_BACKGROUND_BLURRINESS_TOOLTIP),
-		GameOptions::getPercentValueText,
+		GameOptions::method_59835,
 		SimpleOption.DoubleSliderCallbacks.INSTANCE,
 		0.5,
 		double_ -> {
@@ -716,7 +718,7 @@ public class GameOptions {
 	private final SimpleOption<Double> distortionEffectScale = new SimpleOption<>(
 		"options.screenEffectScale",
 		SimpleOption.constantTooltip(SCREEN_EFFECT_SCALE_TOOLTIP),
-		(optionText, value) -> value == 0.0 ? getGenericValueText(optionText, ScreenTexts.OFF) : getPercentValueText(optionText, value),
+		GameOptions::method_59835,
 		SimpleOption.DoubleSliderCallbacks.INSTANCE,
 		1.0,
 		value -> {
@@ -726,7 +728,7 @@ public class GameOptions {
 	private final SimpleOption<Double> fovEffectScale = new SimpleOption<>(
 		"options.fovEffectScale",
 		SimpleOption.constantTooltip(FOV_EFFECT_SCALE_TOOLTIP),
-		(optionText, value) -> value == 0.0 ? getGenericValueText(optionText, ScreenTexts.OFF) : getPercentValueText(optionText, value),
+		GameOptions::method_59835,
 		SimpleOption.DoubleSliderCallbacks.INSTANCE.withModifier(MathHelper::square, Math::sqrt),
 		Codec.doubleRange(0.0, 1.0),
 		1.0,
@@ -737,7 +739,7 @@ public class GameOptions {
 	private final SimpleOption<Double> darknessEffectScale = new SimpleOption<>(
 		"options.darknessEffectScale",
 		SimpleOption.constantTooltip(DARKNESS_EFFECT_SCALE_TOOLTIP),
-		(optionText, value) -> value == 0.0 ? getGenericValueText(optionText, ScreenTexts.OFF) : getPercentValueText(optionText, value),
+		GameOptions::method_59835,
 		SimpleOption.DoubleSliderCallbacks.INSTANCE.withModifier(MathHelper::square, Math::sqrt),
 		1.0,
 		value -> {
@@ -747,7 +749,7 @@ public class GameOptions {
 	private final SimpleOption<Double> glintSpeed = new SimpleOption<>(
 		"options.glintSpeed",
 		SimpleOption.constantTooltip(GLINT_SPEED_TOOLTIP),
-		(optionText, value) -> value == 0.0 ? getGenericValueText(optionText, ScreenTexts.OFF) : getPercentValueText(optionText, value),
+		GameOptions::method_59835,
 		SimpleOption.DoubleSliderCallbacks.INSTANCE,
 		0.5,
 		value -> {
@@ -757,7 +759,7 @@ public class GameOptions {
 	private final SimpleOption<Double> glintStrength = new SimpleOption<>(
 		"options.glintStrength",
 		SimpleOption.constantTooltip(GLINT_STRENGTH_TOOLTIP),
-		(optionText, value) -> value == 0.0 ? getGenericValueText(optionText, ScreenTexts.OFF) : getPercentValueText(optionText, value),
+		GameOptions::method_59835,
 		SimpleOption.DoubleSliderCallbacks.INSTANCE,
 		0.75,
 		RenderSystem::setShaderGlintAlpha
@@ -766,7 +768,7 @@ public class GameOptions {
 	private final SimpleOption<Double> damageTiltStrength = new SimpleOption<>(
 		"options.damageTiltStrength",
 		SimpleOption.constantTooltip(DAMAGE_TILT_STRENGTH_TOOLTIP),
-		(optionText, value) -> value == 0.0 ? getGenericValueText(optionText, ScreenTexts.OFF) : getPercentValueText(optionText, value),
+		GameOptions::method_59835,
 		SimpleOption.DoubleSliderCallbacks.INSTANCE,
 		1.0,
 		value -> {
@@ -1086,7 +1088,7 @@ public class GameOptions {
 		return new SimpleOption<>(
 			key,
 			SimpleOption.emptyTooltip(),
-			(prefix, value) -> value == 0.0 ? getGenericValueText(prefix, ScreenTexts.OFF) : getPercentValueText(prefix, value),
+			GameOptions::method_59835,
 			SimpleOption.DoubleSliderCallbacks.INSTANCE,
 			1.0,
 			value -> MinecraftClient.getInstance().getSoundManager().updateSoundVolume(category, value.floatValue())
@@ -1395,7 +1397,7 @@ public class GameOptions {
 					private String find(String key) {
 						return nbtCompound2.contains(key) ? nbtCompound2.getString(key) : null;
 					}
-
+	
 					@Override
 					public <T> void accept(String key, SimpleOption<T> option) {
 						String string = this.find(key);
@@ -1408,7 +1410,7 @@ public class GameOptions {
 							dataResult.ifSuccess(option::setValue);
 						}
 					}
-
+	
 					@Override
 					public int visitInt(String key, int current) {
 						String string = this.find(key);
@@ -1419,21 +1421,21 @@ public class GameOptions {
 								GameOptions.LOGGER.warn("Invalid integer value for option {} = {}", key, string, var5);
 							}
 						}
-
+	
 						return current;
 					}
-
+	
 					@Override
 					public boolean visitBoolean(String key, boolean current) {
 						String string = this.find(key);
 						return string != null ? GameOptions.isTrue(string) : current;
 					}
-
+	
 					@Override
 					public String visitString(String key, String current) {
 						return MoreObjects.firstNonNull(this.find(key), current);
 					}
-
+	
 					@Override
 					public float visitFloat(String key, float current) {
 						String string = this.find(key);
@@ -1452,7 +1454,7 @@ public class GameOptions {
 							}
 						}
 					}
-
+	
 					@Override
 					public <T> T visitObject(String key, T current, Function<String, T> decoder, Function<T, String> encoder) {
 						String string = this.find(key);
@@ -1505,7 +1507,7 @@ public class GameOptions {
 							printWriter.print(key);
 							printWriter.print(':');
 						}
-
+	
 						@Override
 						public <T> void accept(String key, SimpleOption<T> option) {
 							option.getCodec()
@@ -1516,35 +1518,35 @@ public class GameOptions {
 									printWriter.println(GameOptions.GSON.toJson(json));
 								});
 						}
-
+	
 						@Override
 						public int visitInt(String key, int current) {
 							this.print(key);
 							printWriter.println(current);
 							return current;
 						}
-
+	
 						@Override
 						public boolean visitBoolean(String key, boolean current) {
 							this.print(key);
 							printWriter.println(current);
 							return current;
 						}
-
+	
 						@Override
 						public String visitString(String key, String current) {
 							this.print(key);
 							printWriter.println(current);
 							return current;
 						}
-
+	
 						@Override
 						public float visitFloat(String key, float current) {
 							this.print(key);
 							printWriter.println(current);
 							return current;
 						}
-
+	
 						@Override
 						public <T> T visitObject(String key, T current, Function<String, T> decoder, Function<T, String> encoder) {
 							this.print(key);
@@ -1715,6 +1717,10 @@ public class GameOptions {
 
 	public static Text getGenericValueText(Text prefix, Text value) {
 		return Text.translatable("options.generic_value", prefix, value);
+	}
+
+	private static Text method_59835(Text text, double d) {
+		return d == 0.0 ? getGenericValueText(text, ScreenTexts.OFF) : getPercentValueText(text, d);
 	}
 
 	public static Text getGenericValueText(Text prefix, int value) {

@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 public class NbtTextFormatter implements NbtElementVisitor {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_33271 = 8;
+	private static final int field_51497 = 64;
 	private static final ByteCollection SINGLE_LINE_ELEMENT_TYPES = new ByteOpenHashSet(Arrays.asList((byte)1, (byte)2, (byte)3, (byte)4, (byte)5, (byte)6));
 	private static final Formatting NAME_COLOR = Formatting.AQUA;
 	private static final Formatting STRING_COLOR = Formatting.GREEN;
@@ -53,13 +54,20 @@ public class NbtTextFormatter implements NbtElementVisitor {
 	private static final String CURLY_OPEN_BRACKET = "{";
 	private static final String CURLY_CLOSE_BRACKET = "}";
 	private static final String NEW_LINE = "\n";
+	private static final Text field_51498 = Text.literal("<...>").formatted(Formatting.GRAY);
 	private final String prefix;
+	private final int field_51499;
 	private final int indentationLevel;
 	private Text result = ScreenTexts.EMPTY;
 
-	public NbtTextFormatter(String prefix, int indentationLevel) {
+	public NbtTextFormatter(String string) {
+		this(string, 0, 0);
+	}
+
+	private NbtTextFormatter(String prefix, int indentationLevel, int i) {
 		this.prefix = prefix;
-		this.indentationLevel = indentationLevel;
+		this.field_51499 = indentationLevel;
+		this.indentationLevel = i;
 	}
 
 	/**
@@ -170,6 +178,8 @@ public class NbtTextFormatter implements NbtElementVisitor {
 	public void visitList(NbtList element) {
 		if (element.isEmpty()) {
 			this.result = Text.literal("[]");
+		} else if (this.indentationLevel >= 64) {
+			this.result = Text.literal("[").append(field_51498).append("]");
 		} else if (SINGLE_LINE_ELEMENT_TYPES.contains(element.getHeldType()) && element.size() <= 8) {
 			String string = ENTRY_SEPARATOR + " ";
 			MutableText mutableText = Text.literal("[");
@@ -179,7 +189,7 @@ public class NbtTextFormatter implements NbtElementVisitor {
 					mutableText.append(string);
 				}
 
-				mutableText.append(new NbtTextFormatter(this.prefix, this.indentationLevel).apply(element.get(i)));
+				mutableText.append(this.method_59850(element.get(i), false));
 			}
 
 			mutableText.append("]");
@@ -190,10 +200,12 @@ public class NbtTextFormatter implements NbtElementVisitor {
 				mutableText2.append("\n");
 			}
 
-			for (int j = 0; j < element.size(); j++) {
-				MutableText mutableText3 = Text.literal(Strings.repeat(this.prefix, this.indentationLevel + 1));
-				mutableText3.append(new NbtTextFormatter(this.prefix, this.indentationLevel + 1).apply(element.get(j)));
-				if (j != element.size() - 1) {
+			String string2 = Strings.repeat(this.prefix, this.field_51499 + 1);
+
+			for (int i = 0; i < element.size(); i++) {
+				MutableText mutableText3 = Text.literal(string2);
+				mutableText3.append(this.method_59850(element.get(i), true));
+				if (i != element.size() - 1) {
 					mutableText3.append(ENTRY_SEPARATOR).append(this.prefix.isEmpty() ? " " : "\n");
 				}
 
@@ -201,7 +213,7 @@ public class NbtTextFormatter implements NbtElementVisitor {
 			}
 
 			if (!this.prefix.isEmpty()) {
-				mutableText2.append("\n").append(Strings.repeat(this.prefix, this.indentationLevel));
+				mutableText2.append("\n").append(Strings.repeat(this.prefix, this.field_51499));
 			}
 
 			mutableText2.append("]");
@@ -213,6 +225,8 @@ public class NbtTextFormatter implements NbtElementVisitor {
 	public void visitCompound(NbtCompound compound) {
 		if (compound.isEmpty()) {
 			this.result = Text.literal("{}");
+		} else if (this.indentationLevel >= 64) {
+			this.result = Text.literal("{").append(field_51498).append("}");
 		} else {
 			MutableText mutableText = Text.literal("{");
 			Collection<String> collection = compound.getKeys();
@@ -226,15 +240,16 @@ public class NbtTextFormatter implements NbtElementVisitor {
 				mutableText.append("\n");
 			}
 
+			String string = Strings.repeat(this.prefix, this.field_51499 + 1);
 			Iterator<String> iterator = collection.iterator();
 
 			while (iterator.hasNext()) {
-				String string = (String)iterator.next();
-				MutableText mutableText2 = Text.literal(Strings.repeat(this.prefix, this.indentationLevel + 1))
-					.append(escapeName(string))
+				String string2 = (String)iterator.next();
+				MutableText mutableText2 = Text.literal(string)
+					.append(escapeName(string2))
 					.append(KEY_VALUE_SEPARATOR)
 					.append(" ")
-					.append(new NbtTextFormatter(this.prefix, this.indentationLevel + 1).apply(compound.get(string)));
+					.append(this.method_59850(compound.get(string2), true));
 				if (iterator.hasNext()) {
 					mutableText2.append(ENTRY_SEPARATOR).append(this.prefix.isEmpty() ? " " : "\n");
 				}
@@ -243,12 +258,16 @@ public class NbtTextFormatter implements NbtElementVisitor {
 			}
 
 			if (!this.prefix.isEmpty()) {
-				mutableText.append("\n").append(Strings.repeat(this.prefix, this.indentationLevel));
+				mutableText.append("\n").append(Strings.repeat(this.prefix, this.field_51499));
 			}
 
 			mutableText.append("}");
 			this.result = mutableText;
 		}
+	}
+
+	private Text method_59850(NbtElement nbtElement, boolean bl) {
+		return new NbtTextFormatter(this.prefix, bl ? this.field_51499 + 1 : this.field_51499, this.indentationLevel + 1).apply(nbtElement);
 	}
 
 	protected static Text escapeName(String name) {

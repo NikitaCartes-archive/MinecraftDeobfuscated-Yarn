@@ -29,7 +29,7 @@ public class WalkTowardsPosTask {
 							if (!bl) {
 								LookTargetUtil.walkTowards(entity, fuzz(entity, blockPos), speed, completionRange);
 							}
-
+		
 							return true;
 						})
 		);

@@ -91,7 +91,7 @@ public class ServerResourcePackLoader implements AutoCloseable {
 				public void onStateChanged(UUID id, PackStateChangeCallback.State state) {
 					ServerResourcePackLoader.this.packStateChangeCallback.onStateChanged(id, state);
 				}
-
+	
 				@Override
 				public void onFinish(UUID id, PackStateChangeCallback.FinishState state) {
 					ServerResourcePackLoader.this.packStateChangeCallback.onFinish(id, state);
@@ -335,6 +335,7 @@ public class ServerResourcePackLoader implements AutoCloseable {
 				ResourcePackStatusC2SPacket.Status status = switch (state) {
 					case ACCEPTED -> ResourcePackStatusC2SPacket.Status.ACCEPTED;
 					case DOWNLOADED -> ResourcePackStatusC2SPacket.Status.DOWNLOADED;
+					default -> throw new MatchException(null, null);
 				};
 				connection.send(new ResourcePackStatusC2SPacket(id, status));
 			}
@@ -349,6 +350,7 @@ public class ServerResourcePackLoader implements AutoCloseable {
 					case DECLINED -> ResourcePackStatusC2SPacket.Status.DECLINED;
 					case DISCARDED -> ResourcePackStatusC2SPacket.Status.DISCARDED;
 					case ACTIVATION_FAILED -> ResourcePackStatusC2SPacket.Status.FAILED_RELOAD;
+					default -> throw new MatchException(null, null);
 				};
 				connection.send(new ResourcePackStatusC2SPacket(id, status));
 			}

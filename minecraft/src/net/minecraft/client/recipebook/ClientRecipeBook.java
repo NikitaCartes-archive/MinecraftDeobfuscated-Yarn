@@ -89,6 +89,7 @@ public class ClientRecipeBook extends RecipeBook {
 				case EQUIPMENT -> RecipeBookGroup.CRAFTING_EQUIPMENT;
 				case REDSTONE -> RecipeBookGroup.CRAFTING_REDSTONE;
 				case MISC -> RecipeBookGroup.CRAFTING_MISC;
+				default -> throw new MatchException(null, null);
 			};
 		} else {
 			RecipeType<?> recipeType = recipe2.getType();
@@ -99,6 +100,7 @@ public class ClientRecipeBook extends RecipeBook {
 						case BLOCKS -> RecipeBookGroup.FURNACE_BLOCKS;
 						case FOOD -> RecipeBookGroup.FURNACE_FOOD;
 						case MISC -> RecipeBookGroup.FURNACE_MISC;
+						default -> throw new MatchException(null, null);
 					};
 				}
 

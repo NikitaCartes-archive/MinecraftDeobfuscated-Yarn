@@ -2,12 +2,17 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.Equipment;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 
 /**
  * A carpet that has an associated carpet color for {@linkplain net.minecraft.entity.passive.LlamaEntity llamas}.
  */
-public class DyedCarpetBlock extends CarpetBlock {
+public class DyedCarpetBlock extends CarpetBlock implements Equipment {
 	public static final MapCodec<DyedCarpetBlock> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(DyeColor.CODEC.fieldOf("color").forGetter(DyedCarpetBlock::getDyeColor), createSettingsCodec())
 				.apply(instance, DyedCarpetBlock::new)
@@ -35,5 +40,15 @@ public class DyedCarpetBlock extends CarpetBlock {
 	 */
 	public DyeColor getDyeColor() {
 		return this.dyeColor;
+	}
+
+	@Override
+	public EquipmentSlot getSlotType() {
+		return EquipmentSlot.BODY;
+	}
+
+	@Override
+	public RegistryEntry<SoundEvent> getEquipSound() {
+		return SoundEvents.ENTITY_LLAMA_SWAG;
 	}
 }

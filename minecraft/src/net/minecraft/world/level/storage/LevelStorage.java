@@ -266,12 +266,8 @@ public class LevelStorage {
 		NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
 		int i = NbtHelper.getDataVersion(nbtCompound2, -1);
 		Dynamic<?> dynamic = DataFixTypes.LEVEL.update(dataFixer, new Dynamic<>(NbtOps.INSTANCE, nbtCompound2), i);
-		Dynamic<?> dynamic2 = dynamic.get("Player").orElseEmptyMap();
-		Dynamic<?> dynamic3 = DataFixTypes.PLAYER.update(dataFixer, dynamic2, i);
-		dynamic = dynamic.set("Player", dynamic3);
-		Dynamic<?> dynamic4 = dynamic.get("WorldGenSettings").orElseEmptyMap();
-		Dynamic<?> dynamic5 = DataFixTypes.WORLD_GEN_SETTINGS.update(dataFixer, dynamic4, i);
-		return dynamic.set("WorldGenSettings", dynamic5);
+		dynamic = dynamic.update("Player", dynamicx -> DataFixTypes.PLAYER.update(dataFixer, dynamicx, i));
+		return dynamic.update("WorldGenSettings", dynamicx -> DataFixTypes.WORLD_GEN_SETTINGS.update(dataFixer, dynamicx, i));
 	}
 
 	private LevelSummary readSummary(LevelStorage.LevelSave save, boolean locked) {

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -27,6 +28,12 @@ public class ResourcePackManager {
 
 	public ResourcePackManager(ResourcePackProvider... providers) {
 		this.providers = ImmutableSet.copyOf(providers);
+	}
+
+	public static String method_59809(Collection<ResourcePackProfile> collection) {
+		return (String)collection.stream()
+			.map(resourcePackProfile -> resourcePackProfile.getId() + (resourcePackProfile.getCompatibility().isCompatible() ? "" : " (incompatible)"))
+			.collect(Collectors.joining(", "));
 	}
 
 	public void scanPacks() {

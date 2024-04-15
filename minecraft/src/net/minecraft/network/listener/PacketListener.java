@@ -2,9 +2,11 @@ package net.minecraft.network.listener;
 
 import net.minecraft.network.NetworkPhase;
 import net.minecraft.network.NetworkSide;
+import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.text.Text;
 import net.minecraft.util.crash.CrashCallable;
+import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 
@@ -28,27 +30,14 @@ public interface PacketListener {
 	 */
 	void onDisconnected(Text reason);
 
+	default void method_59807(Packet packet, Exception exception) throws CrashException {
+		throw NetworkThreadUtils.method_59854(exception, packet, this);
+	}
+
 	boolean isConnectionOpen();
 
 	default boolean accepts(Packet<?> packet) {
 		return this.isConnectionOpen();
-	}
-
-	/**
-	 * {@return whether uncaught exceptions in main thread should crash the game
-	 * instead of logging and ignoring them}
-	 * 
-	 * @implNote This is {@code true} by default.
-	 * 
-	 * @apiNote This only affects the processing on the main thread done by calling
-	 * methods in {@link net.minecraft.network.NetworkThreadUtils}. Uncaught exceptions
-	 * in other threads or processing in the main thread using the {@code client.execute(() -> {})}
-	 * code will be unaffected, and always gets logged without crashing.
-	 * 
-	 * @see ServerPacketListener
-	 */
-	default boolean shouldCrashOnException() {
-		return true;
 	}
 
 	default void fillCrashReport(CrashReport report) {

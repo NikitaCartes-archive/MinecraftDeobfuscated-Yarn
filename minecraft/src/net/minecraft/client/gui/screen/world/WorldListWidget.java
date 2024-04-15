@@ -464,7 +464,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 								this.client.setScreen(new ProgressScreen(true));
 								this.delete();
 							}
-
+			
 							this.client.setScreen(this.screen);
 						},
 						Text.translatable("selectWorld.deleteQuestion"),

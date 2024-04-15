@@ -22,26 +22,22 @@ public class EncoderHandler<T extends PacketListener> extends MessageToByteEncod
 
 	protected void encode(ChannelHandlerContext channelHandlerContext, Packet<T> packet, ByteBuf byteBuf) throws Exception {
 		PacketType<? extends Packet<? super T>> packetType = packet.getPacketId();
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug(ClientConnection.PACKET_SENT_MARKER, "OUT: [{}:{}] {}", this.state.id().getId(), packetType, packet.getClass().getName());
-		}
 
 		try {
-			int i = byteBuf.writerIndex();
 			this.state.codec().encode(byteBuf, packet);
-			int j = byteBuf.writerIndex() - i;
-			if (j > 8388608) {
-				throw new IllegalArgumentException("Packet too big (is " + j + ", should be less than 8388608): " + packet);
+			int i = byteBuf.readableBytes();
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(ClientConnection.PACKET_SENT_MARKER, "OUT: [{}:{}] {} -> {} bytes", this.state.id().getId(), packetType, packet.getClass().getName(), i);
 			}
 
-			FlightProfiler.INSTANCE.onPacketSent(this.state.id(), packetType, channelHandlerContext.channel().remoteAddress(), j);
-		} catch (Throwable var10) {
-			LOGGER.error("Error sending packet {}", packetType, var10);
+			FlightProfiler.INSTANCE.onPacketSent(this.state.id(), packetType, channelHandlerContext.channel().remoteAddress(), i);
+		} catch (Throwable var9) {
+			LOGGER.error("Error sending packet {}", packetType, var9);
 			if (packet.isWritingErrorSkippable()) {
-				throw new PacketEncoderException(var10);
+				throw new PacketEncoderException(var9);
 			}
 
-			throw var10;
+			throw var9;
 		} finally {
 			NetworkStateTransitionHandler.onEncoded(channelHandlerContext, packet);
 		}

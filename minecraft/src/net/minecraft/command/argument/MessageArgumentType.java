@@ -4,12 +4,12 @@ import com.google.common.collect.Lists;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.network.message.MessageDecorator;
@@ -24,6 +24,9 @@ import net.minecraft.text.Text;
 
 public class MessageArgumentType implements SignedArgumentType<MessageArgumentType.MessageFormat> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("Hello world!", "foo", "@e", "Hello @p :)");
+	static final Dynamic2CommandExceptionType field_51482 = new Dynamic2CommandExceptionType(
+		(object, object2) -> Text.stringifiedTranslatable("argument.message.too_long", object, object2)
+	);
 
 	public static MessageArgumentType message() {
 		return new MessageArgumentType();
@@ -79,22 +82,7 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 		return EXAMPLES;
 	}
 
-	public static class MessageFormat {
-		final String contents;
-		private final MessageArgumentType.MessageSelector[] selectors;
-
-		public MessageFormat(String contents, MessageArgumentType.MessageSelector[] selectors) {
-			this.contents = contents;
-			this.selectors = selectors;
-		}
-
-		public String getContents() {
-			return this.contents;
-		}
-
-		public MessageArgumentType.MessageSelector[] getSelectors() {
-			return this.selectors;
-		}
+	public static record MessageFormat(String contents, MessageArgumentType.MessageSelector[] selectors) {
 
 		Text format(ServerCommandSource source) throws CommandSyntaxException {
 			return this.format(source, source.hasPermissionLevel(2));
@@ -102,20 +90,17 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 
 		public Text format(ServerCommandSource source, boolean canUseSelectors) throws CommandSyntaxException {
 			if (this.selectors.length != 0 && canUseSelectors) {
-				MutableText mutableText = Text.literal(this.contents.substring(0, this.selectors[0].getStart()));
-				int i = this.selectors[0].getStart();
+				MutableText mutableText = Text.literal(this.contents.substring(0, this.selectors[0].start()));
+				int i = this.selectors[0].start();
 
 				for (MessageArgumentType.MessageSelector messageSelector : this.selectors) {
 					Text text = messageSelector.format(source);
-					if (i < messageSelector.getStart()) {
-						mutableText.append(this.contents.substring(i, messageSelector.getStart()));
+					if (i < messageSelector.start()) {
+						mutableText.append(this.contents.substring(i, messageSelector.start()));
 					}
 
-					if (text != null) {
-						mutableText.append(text);
-					}
-
-					i = messageSelector.getEnd();
+					mutableText.append(text);
+					i = messageSelector.end();
 				}
 
 				if (i < this.contents.length()) {
@@ -129,71 +114,52 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 		}
 
 		public static MessageArgumentType.MessageFormat parse(StringReader reader, boolean canUseSelectors) throws CommandSyntaxException {
-			String string = reader.getString().substring(reader.getCursor(), reader.getTotalLength());
-			if (!canUseSelectors) {
-				reader.setCursor(reader.getTotalLength());
-				return new MessageArgumentType.MessageFormat(string, new MessageArgumentType.MessageSelector[0]);
+			if (reader.getRemainingLength() > 256) {
+				throw MessageArgumentType.field_51482.create(reader.getRemainingLength(), 256);
 			} else {
-				List<MessageArgumentType.MessageSelector> list = Lists.<MessageArgumentType.MessageSelector>newArrayList();
-				int i = reader.getCursor();
+				String string = reader.getRemaining();
+				if (!canUseSelectors) {
+					reader.setCursor(reader.getTotalLength());
+					return new MessageArgumentType.MessageFormat(string, new MessageArgumentType.MessageSelector[0]);
+				} else {
+					List<MessageArgumentType.MessageSelector> list = Lists.<MessageArgumentType.MessageSelector>newArrayList();
+					int i = reader.getCursor();
 
-				while (true) {
-					int j;
-					EntitySelector entitySelector;
 					while (true) {
-						if (!reader.canRead()) {
-							return new MessageArgumentType.MessageFormat(string, (MessageArgumentType.MessageSelector[])list.toArray(new MessageArgumentType.MessageSelector[0]));
-						}
-
-						if (reader.peek() == '@') {
-							j = reader.getCursor();
-
-							try {
-								EntitySelectorReader entitySelectorReader = new EntitySelectorReader(reader);
-								entitySelector = entitySelectorReader.read();
-								break;
-							} catch (CommandSyntaxException var8) {
-								if (var8.getType() != EntitySelectorReader.MISSING_EXCEPTION && var8.getType() != EntitySelectorReader.UNKNOWN_SELECTOR_EXCEPTION) {
-									throw var8;
-								}
-
-								reader.setCursor(j + 1);
+						int j;
+						EntitySelector entitySelector;
+						while (true) {
+							if (!reader.canRead()) {
+								return new MessageArgumentType.MessageFormat(string, (MessageArgumentType.MessageSelector[])list.toArray(new MessageArgumentType.MessageSelector[0]));
 							}
-						} else {
-							reader.skip();
-						}
-					}
 
-					list.add(new MessageArgumentType.MessageSelector(j - i, reader.getCursor() - i, entitySelector));
+							if (reader.peek() == '@') {
+								j = reader.getCursor();
+
+								try {
+									EntitySelectorReader entitySelectorReader = new EntitySelectorReader(reader);
+									entitySelector = entitySelectorReader.read();
+									break;
+								} catch (CommandSyntaxException var8) {
+									if (var8.getType() != EntitySelectorReader.MISSING_EXCEPTION && var8.getType() != EntitySelectorReader.UNKNOWN_SELECTOR_EXCEPTION) {
+										throw var8;
+									}
+
+									reader.setCursor(j + 1);
+								}
+							} else {
+								reader.skip();
+							}
+						}
+
+						list.add(new MessageArgumentType.MessageSelector(j - i, reader.getCursor() - i, entitySelector));
+					}
 				}
 			}
 		}
 	}
 
-	public static class MessageSelector {
-		private final int start;
-		private final int end;
-		private final EntitySelector selector;
-
-		public MessageSelector(int start, int end, EntitySelector selector) {
-			this.start = start;
-			this.end = end;
-			this.selector = selector;
-		}
-
-		public int getStart() {
-			return this.start;
-		}
-
-		public int getEnd() {
-			return this.end;
-		}
-
-		public EntitySelector getSelector() {
-			return this.selector;
-		}
-
-		@Nullable
+	public static record MessageSelector(int start, int end, EntitySelector selector) {
 		public Text format(ServerCommandSource source) throws CommandSyntaxException {
 			return EntitySelector.getNames(this.selector.getEntities(source));
 		}

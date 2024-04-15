@@ -50,6 +50,7 @@ public enum AttributeModifierSlot implements StringIdentifiable {
 			case CHEST -> CHEST;
 			case HEAD -> HEAD;
 			case BODY -> BODY;
+			default -> throw new MatchException(null, null);
 		};
 	}
 

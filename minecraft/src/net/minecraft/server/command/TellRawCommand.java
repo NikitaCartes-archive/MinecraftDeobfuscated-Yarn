@@ -19,14 +19,14 @@ public class TellRawCommand {
 								.executes(
 									context -> {
 										int i = 0;
-
+							
 										for (ServerPlayerEntity serverPlayerEntity : EntityArgumentType.getPlayers(context, "targets")) {
 											serverPlayerEntity.sendMessageToClient(
 												Texts.parse(context.getSource(), TextArgumentType.getTextArgument(context, "message"), serverPlayerEntity, 0), false
 											);
 											i++;
 										}
-
+							
 										return i;
 									}
 								)

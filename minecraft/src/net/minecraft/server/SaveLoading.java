@@ -16,8 +16,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
-import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.command.CommandManager;
 import org.slf4j.Logger;
 
@@ -92,12 +90,7 @@ public class SaveLoading {
 
 	public static record DataPacks(ResourcePackManager manager, DataConfiguration initialDataConfig, boolean safeMode, boolean initMode) {
 		public Pair<DataConfiguration, LifecycledResourceManager> load() {
-			FeatureSet featureSet = this.initMode ? FeatureFlags.FEATURE_MANAGER.getFeatureSet() : this.initialDataConfig.enabledFeatures();
-			DataConfiguration dataConfiguration = MinecraftServer.loadDataPacks(this.manager, this.initialDataConfig.dataPacks(), this.safeMode, featureSet);
-			if (!this.initMode) {
-				dataConfiguration = dataConfiguration.withFeaturesAdded(this.initialDataConfig.enabledFeatures());
-			}
-
+			DataConfiguration dataConfiguration = MinecraftServer.loadDataPacks(this.manager, this.initialDataConfig, this.initMode, this.safeMode);
 			List<ResourcePack> list = this.manager.createResourcePacks();
 			LifecycledResourceManager lifecycledResourceManager = new LifecycledResourceManagerImpl(ResourceType.SERVER_DATA, list);
 			return Pair.of(dataConfiguration, lifecycledResourceManager);

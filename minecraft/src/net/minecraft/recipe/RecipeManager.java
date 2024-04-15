@@ -2,18 +2,17 @@ package net.minecraft.recipe;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.ImmutableMultimap.Builder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,6 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.World;
@@ -44,7 +42,7 @@ public class RecipeManager extends JsonDataLoader {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final RegistryWrapper.WrapperLookup registryLookup;
-	private Map<RecipeType<?>, Map<Identifier, RecipeEntry<?>>> recipes = ImmutableMap.of();
+	private Multimap<RecipeType<?>, RecipeEntry<?>> field_51481 = ImmutableMultimap.of();
 	private Map<Identifier, RecipeEntry<?>> recipesById = ImmutableMap.of();
 	/**
 	 * This isn't quite indicating an errored state; its value is only set to
@@ -59,29 +57,26 @@ public class RecipeManager extends JsonDataLoader {
 
 	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
 		this.errored = false;
-		Map<RecipeType<?>, Builder<Identifier, RecipeEntry<?>>> map2 = Maps.<RecipeType<?>, Builder<Identifier, RecipeEntry<?>>>newHashMap();
-		Builder<Identifier, RecipeEntry<?>> builder = ImmutableMap.builder();
+		Builder<RecipeType<?>, RecipeEntry<?>> builder = ImmutableMultimap.builder();
+		com.google.common.collect.ImmutableMap.Builder<Identifier, RecipeEntry<?>> builder2 = ImmutableMap.builder();
 		RegistryOps<JsonElement> registryOps = this.registryLookup.getOps(JsonOps.INSTANCE);
 
 		for (Entry<Identifier, JsonElement> entry : map.entrySet()) {
 			Identifier identifier = (Identifier)entry.getKey();
 
 			try {
-				JsonObject jsonObject = JsonHelper.asObject((JsonElement)entry.getValue(), "top element");
-				Recipe<?> recipe = Recipe.CODEC.parse(registryOps, jsonObject).getOrThrow(JsonParseException::new);
+				Recipe<?> recipe = Recipe.CODEC.parse(registryOps, (JsonElement)entry.getValue()).getOrThrow(JsonParseException::new);
 				RecipeEntry<?> recipeEntry = new RecipeEntry<>(identifier, recipe);
-				((Builder)map2.computeIfAbsent(recipe.getType(), recipeType -> ImmutableMap.builder())).put(identifier, recipeEntry);
-				builder.put(identifier, recipeEntry);
-			} catch (IllegalArgumentException | JsonParseException var13) {
-				LOGGER.error("Parsing error loading recipe {}", identifier, var13);
+				builder.put(recipe.getType(), recipeEntry);
+				builder2.put(identifier, recipeEntry);
+			} catch (IllegalArgumentException | JsonParseException var12) {
+				LOGGER.error("Parsing error loading recipe {}", identifier, var12);
 			}
 		}
 
-		this.recipes = (Map<RecipeType<?>, Map<Identifier, RecipeEntry<?>>>)map2.entrySet()
-			.stream()
-			.collect(ImmutableMap.toImmutableMap(Entry::getKey, entryx -> ((Builder)entryx.getValue()).build()));
-		this.recipesById = builder.build();
-		LOGGER.info("Loaded {} recipes", map2.size());
+		this.field_51481 = builder.build();
+		this.recipesById = builder2.build();
+		LOGGER.info("Loaded {} recipes", this.field_51481.size());
 	}
 
 	/**
@@ -105,25 +100,18 @@ public class RecipeManager extends JsonDataLoader {
 	 * @param inventory the input inventory
 	 */
 	public <C extends Inventory, T extends Recipe<C>> Optional<RecipeEntry<T>> getFirstMatch(RecipeType<T> type, C inventory, World world) {
-		return this.getAllOfType(type).values().stream().filter(recipe -> recipe.value().matches(inventory, world)).findFirst();
+		return this.getAllOfType(type).stream().filter(recipe -> recipe.value().matches(inventory, world)).findFirst();
 	}
 
-	public <C extends Inventory, T extends Recipe<C>> Optional<Pair<Identifier, RecipeEntry<T>>> getFirstMatch(
-		RecipeType<T> type, C inventory, World world, @Nullable Identifier id
-	) {
-		Map<Identifier, RecipeEntry<T>> map = this.getAllOfType(type);
+	public <C extends Inventory, T extends Recipe<C>> Optional<RecipeEntry<T>> getFirstMatch(RecipeType<T> type, C inventory, World world, @Nullable Identifier id) {
 		if (id != null) {
-			RecipeEntry<T> recipeEntry = (RecipeEntry<T>)map.get(id);
+			RecipeEntry<T> recipeEntry = this.method_59821(type, id);
 			if (recipeEntry != null && recipeEntry.value().matches(inventory, world)) {
-				return Optional.of(Pair.of(id, recipeEntry));
+				return Optional.of(recipeEntry);
 			}
 		}
 
-		return map.entrySet()
-			.stream()
-			.filter(entry -> ((RecipeEntry)entry.getValue()).value().matches(inventory, world))
-			.findFirst()
-			.map(entry -> Pair.of((Identifier)entry.getKey(), (RecipeEntry)entry.getValue()));
+		return this.getAllOfType(type).stream().filter(recipeEntryx -> recipeEntryx.value().matches(inventory, world)).findFirst();
 	}
 
 	/**
@@ -138,7 +126,7 @@ public class RecipeManager extends JsonDataLoader {
 	 * @param type the desired recipe type
 	 */
 	public <C extends Inventory, T extends Recipe<C>> List<RecipeEntry<T>> listAllOfType(RecipeType<T> type) {
-		return List.copyOf(this.getAllOfType(type).values());
+		return List.copyOf(this.getAllOfType(type));
 	}
 
 	/**
@@ -157,15 +145,14 @@ public class RecipeManager extends JsonDataLoader {
 	 */
 	public <C extends Inventory, T extends Recipe<C>> List<RecipeEntry<T>> getAllMatches(RecipeType<T> type, C inventory, World world) {
 		return (List<RecipeEntry<T>>)this.getAllOfType(type)
-			.values()
 			.stream()
 			.filter(recipe -> recipe.value().matches(inventory, world))
 			.sorted(Comparator.comparing(recipeEntry -> recipeEntry.value().getResult(world.getRegistryManager()).getTranslationKey()))
 			.collect(Collectors.toList());
 	}
 
-	private <C extends Inventory, T extends Recipe<C>> Map<Identifier, RecipeEntry<T>> getAllOfType(RecipeType<T> type) {
-		return (Map<Identifier, RecipeEntry<T>>)this.recipes.getOrDefault(type, Collections.emptyMap());
+	private <C extends Inventory, T extends Recipe<C>> Collection<RecipeEntry<T>> getAllOfType(RecipeType<T> type) {
+		return (Collection<RecipeEntry<T>>)this.field_51481.get(type);
 	}
 
 	/**
@@ -207,6 +194,16 @@ public class RecipeManager extends JsonDataLoader {
 		return Optional.ofNullable((RecipeEntry)this.recipesById.get(id));
 	}
 
+	@Nullable
+	private <T extends Recipe<?>> RecipeEntry<T> method_59821(RecipeType<T> recipeType, Identifier identifier) {
+		RecipeEntry<?> recipeEntry = (RecipeEntry<?>)this.recipesById.get(identifier);
+		return (RecipeEntry<T>)(recipeEntry != null && recipeEntry.value().getType().equals(recipeType) ? recipeEntry : null);
+	}
+
+	public Collection<RecipeEntry<?>> method_59822() {
+		return this.field_51481.values();
+	}
+
 	/**
 	 * {@return all recipes in this manager}
 	 * 
@@ -214,7 +211,7 @@ public class RecipeManager extends JsonDataLoader {
 	 * returned set does not affect this manager.
 	 */
 	public Collection<RecipeEntry<?>> values() {
-		return (Collection<RecipeEntry<?>>)this.recipes.values().stream().flatMap(map -> map.values().stream()).collect(Collectors.toSet());
+		return this.recipesById.values();
 	}
 
 	/**
@@ -227,7 +224,7 @@ public class RecipeManager extends JsonDataLoader {
 	 * arguments.
 	 */
 	public Stream<Identifier> keys() {
-		return this.recipes.values().stream().flatMap(map -> map.keySet().stream());
+		return this.recipesById.keySet().stream();
 	}
 
 	/**
@@ -257,19 +254,17 @@ public class RecipeManager extends JsonDataLoader {
 	 */
 	public void setRecipes(Iterable<RecipeEntry<?>> recipes) {
 		this.errored = false;
-		Map<RecipeType<?>, Map<Identifier, RecipeEntry<?>>> map = Maps.<RecipeType<?>, Map<Identifier, RecipeEntry<?>>>newHashMap();
-		Builder<Identifier, RecipeEntry<?>> builder = ImmutableMap.builder();
-		recipes.forEach(recipe -> {
-			Map<Identifier, RecipeEntry<?>> map2 = (Map<Identifier, RecipeEntry<?>>)map.computeIfAbsent(recipe.value().getType(), t -> Maps.newHashMap());
-			Identifier identifier = recipe.id();
-			RecipeEntry<?> recipeEntry = (RecipeEntry<?>)map2.put(identifier, recipe);
-			builder.put(identifier, recipe);
-			if (recipeEntry != null) {
-				throw new IllegalStateException("Duplicate recipe ignored with ID " + identifier);
-			}
-		});
-		this.recipes = ImmutableMap.copyOf(map);
-		this.recipesById = builder.build();
+		Builder<RecipeType<?>, RecipeEntry<?>> builder = ImmutableMultimap.builder();
+		com.google.common.collect.ImmutableMap.Builder<Identifier, RecipeEntry<?>> builder2 = ImmutableMap.builder();
+
+		for (RecipeEntry<?> recipeEntry : recipes) {
+			RecipeType<?> recipeType = recipeEntry.value().getType();
+			builder.put(recipeType, recipeEntry);
+			builder2.put(recipeEntry.id(), recipeEntry);
+		}
+
+		this.field_51481 = builder.build();
+		this.recipesById = builder2.build();
 	}
 
 	/**
@@ -284,11 +279,11 @@ public class RecipeManager extends JsonDataLoader {
 			@Override
 			public Optional<RecipeEntry<T>> getFirstMatch(C inventory, World world) {
 				RecipeManager recipeManager = world.getRecipeManager();
-				Optional<Pair<Identifier, RecipeEntry<T>>> optional = recipeManager.getFirstMatch(type, inventory, world, this.id);
+				Optional<RecipeEntry<T>> optional = recipeManager.getFirstMatch(type, inventory, world, this.id);
 				if (optional.isPresent()) {
-					Pair<Identifier, RecipeEntry<T>> pair = (Pair<Identifier, RecipeEntry<T>>)optional.get();
-					this.id = pair.getFirst();
-					return Optional.of(pair.getSecond());
+					RecipeEntry<T> recipeEntry = (RecipeEntry<T>)optional.get();
+					this.id = recipeEntry.id();
+					return Optional.of(recipeEntry);
 				} else {
 					return Optional.empty();
 				}

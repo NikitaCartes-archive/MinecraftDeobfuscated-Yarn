@@ -263,7 +263,7 @@ public final class ComponentChanges {
 					if (bl) {
 						id = id.substring("!".length());
 					}
-
+		
 					Identifier identifier = Identifier.tryParse(id);
 					DataComponentType<?> dataComponentType = Registries.DATA_COMPONENT_TYPE.get(identifier);
 					if (dataComponentType == null) {

@@ -74,6 +74,7 @@ import net.minecraft.client.gui.screen.AccessibilityOnboardingScreen;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.DeathScreen;
+import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.MessageScreen;
 import net.minecraft.client.gui.screen.OutOfMemoryScreen;
@@ -174,8 +175,6 @@ import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -318,7 +317,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public static final Identifier ALT_TEXT_RENDERER_ID = new Identifier("alt");
 	private static final Identifier REGIONAL_COMPLIANCIES_ID = new Identifier("regional_compliancies.json");
 	private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
-	private static final Text NBT_TOOLTIP_TEXT = Text.literal("(+NBT)");
 	private static final Text SOCIAL_INTERACTIONS_NOT_AVAILABLE = Text.translatable("multiplayer.socialInteractions.not_available");
 	/**
 	 * A message, in English, displayed in a dialog when a GLFW error is encountered.
@@ -709,7 +707,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 						if (SharedConstants.isDevelopment) {
 							this.checkGameData();
 						}
-
+		
 						this.resourceReloadLogger.finish();
 						this.onFinishedLoading(loadingContext);
 					}), false
@@ -2233,10 +2231,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.integratedServerConnection = clientConnection;
 	}
 
-	public void joinWorld(ClientWorld world) {
-		ProgressScreen progressScreen = new ProgressScreen(true);
-		progressScreen.setTitle(Text.translatable("connect.joining"));
-		this.reset(progressScreen);
+	public void joinWorld(ClientWorld world, DownloadingTerrainScreen.class_9678 arg) {
+		this.reset(new DownloadingTerrainScreen(() -> false, arg));
 		this.world = world;
 		this.setWorld(world);
 		if (!this.integratedServerRunning) {
@@ -2514,7 +2510,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		blockEntity.removeFromCopiedStackNbt(nbtCompound);
 		BlockItem.setBlockEntityData(stack, blockEntity.getType(), nbtCompound);
 		stack.applyComponentsFrom(blockEntity.createComponentMap());
-		stack.apply(DataComponentTypes.LORE, LoreComponent.DEFAULT, NBT_TOOLTIP_TEXT, LoreComponent::with);
 	}
 
 	public CrashReport addDetailsToCrashReport(CrashReport report) {
@@ -2586,22 +2581,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			systemDetails.addSection("Graphics mode", options.getGraphicsMode().getValue().toString());
 			systemDetails.addSection("Render Distance", options.getClampedViewDistance() + "/" + options.getViewDistance().getValue() + " chunks");
-			systemDetails.addSection("Resource Packs", (Supplier<String>)(() -> {
-				StringBuilder stringBuilder = new StringBuilder();
+		}
 
-				for (String stringx : options.resourcePacks) {
-					if (stringBuilder.length() > 0) {
-						stringBuilder.append(", ");
-					}
-
-					stringBuilder.append(stringx);
-					if (options.incompatibleResourcePacks.contains(stringx)) {
-						stringBuilder.append(" (incompatible)");
-					}
-				}
-
-				return stringBuilder.toString();
-			}));
+		if (client != null) {
+			systemDetails.addSection("Resource Packs", (Supplier<String>)(() -> ResourcePackManager.method_59809(client.getResourcePackManager().getEnabledProfiles())));
 		}
 
 		if (languageManager != null) {

@@ -51,6 +51,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtException;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.ChunkBiomeDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
@@ -333,12 +334,12 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				chunks -> {
 					List<Chunk> listx = Lists.<Chunk>newArrayList();
 					int l = 0;
-
+	
 					for (OptionalChunk<Chunk> optionalChunk : chunks) {
 						if (optionalChunk == null) {
 							throw this.crash(new IllegalStateException("At least one of the chunk futures were null"), "n/a");
 						}
-
+	
 						Chunk chunk = optionalChunk.orElse(null);
 						if (chunk == null) {
 							int mx = l;
@@ -346,11 +347,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 								(Supplier<String>)(() -> "Unloaded " + new ChunkPos(i + mx % (margin * 2 + 1), j + mx / (margin * 2 + 1)) + " " + optionalChunk.getError())
 							);
 						}
-
+	
 						listx.add(chunk);
 						l++;
 					}
-
+	
 					return OptionalChunk.of(listx);
 				}
 			);
@@ -616,7 +617,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		Throwable throwable2 = throwable instanceof CompletionException completionException ? completionException.getCause() : throwable;
 		Throwable throwable3 = throwable2 instanceof CrashException crashException ? crashException.getCause() : throwable2;
 		boolean bl = throwable3 instanceof Error;
-		boolean bl2 = throwable3 instanceof IOException || throwable3 instanceof ChunkSerializer.ChunkLoadingException;
+		boolean bl2 = throwable3 instanceof IOException || throwable3 instanceof NbtException;
 		if (!bl && bl2) {
 			LOGGER.error("Couldn't load chunk {}", chunkPos, throwable3);
 			this.world.getServer().onChunkLoadFailure(chunkPos);

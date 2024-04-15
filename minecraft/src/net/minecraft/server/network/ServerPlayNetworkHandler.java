@@ -562,11 +562,12 @@ public class ServerPlayNetworkHandler
 				BlockState blockState = this.player.getWorld().getBlockState(blockPos);
 				Direction direction = blockState.get(CommandBlock.FACING);
 
-				BlockState blockState3 = (switch (packet.getType()) {
+				BlockState blockState2 = switch (packet.getType()) {
 					case SEQUENCE -> Blocks.CHAIN_COMMAND_BLOCK.getDefaultState();
 					case AUTO -> Blocks.REPEATING_COMMAND_BLOCK.getDefaultState();
 					default -> Blocks.COMMAND_BLOCK.getDefaultState();
-				}).with(CommandBlock.FACING, direction).with(CommandBlock.CONDITIONAL, Boolean.valueOf(packet.isConditional()));
+				};
+				BlockState blockState3 = blockState2.with(CommandBlock.FACING, direction).with(CommandBlock.CONDITIONAL, Boolean.valueOf(packet.isConditional()));
 				if (blockState3 != blockState) {
 					this.player.getWorld().setBlockState(blockPos, blockState3, Block.NOTIFY_LISTENERS);
 					blockEntity.setCachedState(blockState3);
@@ -1517,17 +1518,17 @@ public class ServerPlayNetworkHandler
 								}
 							}
 						}
-
+	
 						@Override
 						public void interact(Hand hand) {
 							this.processInteract(hand, PlayerEntity::interact);
 						}
-
+	
 						@Override
 						public void interactAt(Hand hand, Vec3d pos) {
 							this.processInteract(hand, (player, entityxx, handx) -> entityxx.interactAt(player, pos, handx));
 						}
-
+	
 						@Override
 						public void attack() {
 							if (!(entity instanceof ItemEntity)
@@ -1639,11 +1640,11 @@ public class ServerPlayNetworkHandler
 	public void onButtonClick(ButtonClickC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
-		if (this.player.currentScreenHandler.syncId == packet.getSyncId() && !this.player.isSpectator()) {
+		if (this.player.currentScreenHandler.syncId == packet.syncId() && !this.player.isSpectator()) {
 			if (!this.player.currentScreenHandler.canUse(this.player)) {
 				LOGGER.debug("Player {} interacted with invalid menu {}", this.player, this.player.currentScreenHandler);
 			} else {
-				boolean bl = this.player.currentScreenHandler.onButtonClick(this.player, packet.getButtonId());
+				boolean bl = this.player.currentScreenHandler.onButtonClick(this.player, packet.buttonId());
 				if (bl) {
 					this.player.currentScreenHandler.sendContentUpdates();
 				}

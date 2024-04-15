@@ -219,6 +219,11 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
+	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+		return false;
+	}
+
+	@Override
 	protected boolean hasComparatorOutput(BlockState state) {
 		return true;
 	}
@@ -266,6 +271,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 				case RED -> Blocks.RED_SHULKER_BOX;
 				case BLACK -> Blocks.BLACK_SHULKER_BOX;
 				case PURPLE -> Blocks.PURPLE_SHULKER_BOX;
+				default -> throw new MatchException(null, null);
 			};
 		}
 	}

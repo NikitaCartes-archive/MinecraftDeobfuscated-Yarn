@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.screen.ingame;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -99,20 +100,25 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 			int n = m + 20;
 			int o = this.handler.enchantmentPower[l];
 			if (o == 0) {
+				RenderSystem.enableBlend();
 				context.drawGuiTexture(ENCHANTMENT_SLOT_DISABLED_TEXTURE, m, j + 14 + 19 * l, 108, 19);
+				RenderSystem.disableBlend();
 			} else {
 				String string = o + "";
 				int p = 86 - this.textRenderer.getWidth(string);
 				StringVisitable stringVisitable = EnchantingPhrases.getInstance().generatePhrase(this.textRenderer, p);
 				int q = 6839882;
 				if ((k < l + 1 || this.client.player.experienceLevel < o) && !this.client.player.getAbilities().creativeMode) {
+					RenderSystem.enableBlend();
 					context.drawGuiTexture(ENCHANTMENT_SLOT_DISABLED_TEXTURE, m, j + 14 + 19 * l, 108, 19);
 					context.drawGuiTexture(LEVEL_DISABLED_TEXTURES[l], m + 1, j + 15 + 19 * l, 16, 16);
+					RenderSystem.disableBlend();
 					context.drawTextWrapped(this.textRenderer, stringVisitable, n, j + 16 + 19 * l, p, (q & 16711422) >> 1);
 					q = 4226832;
 				} else {
 					int r = mouseX - (i + 60);
 					int s = mouseY - (j + 14 + 19 * l);
+					RenderSystem.enableBlend();
 					if (r >= 0 && s >= 0 && r < 108 && s < 19) {
 						context.drawGuiTexture(ENCHANTMENT_SLOT_HIGHLIGHTED_TEXTURE, m, j + 14 + 19 * l, 108, 19);
 						q = 16777088;
@@ -121,6 +127,7 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 					}
 
 					context.drawGuiTexture(LEVEL_TEXTURES[l], m + 1, j + 15 + 19 * l, 16, 16);
+					RenderSystem.disableBlend();
 					context.drawTextWrapped(this.textRenderer, stringVisitable, n, j + 16 + 19 * l, p, q);
 					q = 8453920;
 				}

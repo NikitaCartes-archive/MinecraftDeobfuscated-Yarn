@@ -169,6 +169,7 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 					case LEFT -> -1;
 					case RIGHT -> 1;
 					case UP, DOWN -> 0;
+					default -> throw new MatchException(null, null);
 				};
 				if (i == 0) {
 					return null;

@@ -278,7 +278,7 @@ public class NamespaceResourceManager implements ResourceManager {
 						if (!allowedPathPredicate.test(identifier)) {
 							return;
 						}
-
+	
 						((NamespaceResourceManager.EntryList)idToEntryList.computeIfAbsent(identifier, NamespaceResourceManager.EntryList::new))
 							.metaSources
 							.put(resourcePack, supplier);
@@ -286,7 +286,7 @@ public class NamespaceResourceManager implements ResourceManager {
 						if (!allowedPathPredicate.test(id)) {
 							return;
 						}
-
+	
 						((NamespaceResourceManager.EntryList)idToEntryList.computeIfAbsent(id, NamespaceResourceManager.EntryList::new))
 							.fileSources
 							.add(new NamespaceResourceManager.FileSource(resourcePack, supplier));

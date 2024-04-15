@@ -279,7 +279,7 @@ public class ArmadilloEntity extends AnimalEntity {
 	@Override
 	protected void applyDamage(DamageSource source, float amount) {
 		super.applyDamage(source, amount);
-		if (!this.isAiDisabled()) {
+		if (!this.isAiDisabled() && !this.isDead()) {
 			if (source.getAttacker() instanceof LivingEntity) {
 				this.getBrain().remember(MemoryModuleType.DANGER_DETECTED_RECENTLY, true, 80L);
 				if (this.canRollUp()) {

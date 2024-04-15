@@ -110,7 +110,7 @@ public class ChunkBuilder {
 								} else {
 									blockBufferBuilderStorage.reset();
 								}
-
+	
 								this.buffersPool.release(blockBufferBuilderStorage);
 								this.scheduleRunTasks();
 							});
@@ -434,7 +434,7 @@ public class ChunkBuilder {
 			protected ChunkRendererRegion region;
 
 			public RebuildTask(final double distance, @Nullable final ChunkRendererRegion region, final boolean prioritized) {
-				super(distance, prioritized);
+				super(BuiltChunk.this, distance, prioritized);
 				this.region = region;
 			}
 
@@ -601,7 +601,7 @@ public class ChunkBuilder {
 			private final ChunkBuilder.ChunkData data;
 
 			public SortTask(final double distance, final ChunkBuilder.ChunkData data) {
-				super(distance, true);
+				super(BuiltChunk.this, distance, true);
 				this.data = data;
 			}
 
@@ -668,7 +668,7 @@ public class ChunkBuilder {
 			protected final AtomicBoolean cancelled = new AtomicBoolean(false);
 			protected final boolean prioritized;
 
-			public Task(final double distance, final boolean prioritized) {
+			public Task(final ChunkBuilder.BuiltChunk builtChunk, final double distance, final boolean prioritized) {
 				this.distance = distance;
 				this.prioritized = prioritized;
 			}

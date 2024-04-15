@@ -56,7 +56,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 					RAYCAST_SHAPE, Block.createCuboidShape(2.0, (double)Math.max(2, 1 + i * 2), 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST
 				);
 			}
-
+	
 			shapes[8] = shapes[7];
 		}
 	);

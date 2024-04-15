@@ -72,12 +72,12 @@ public class SonicBoomTask extends MultiTickTask<WardenEntity> {
 					Vec3d vec3d2 = target.getEyePos().subtract(vec3d);
 					Vec3d vec3d3 = vec3d2.normalize();
 					int i = MathHelper.floor(vec3d2.length()) + 7;
-
+	
 					for (int j = 1; j < i; j++) {
 						Vec3d vec3d4 = vec3d.add(vec3d3.multiply((double)j));
 						serverWorld.spawnParticles(ParticleTypes.SONIC_BOOM, vec3d4.x, vec3d4.y, vec3d4.z, 1, 0.0, 0.0, 0.0, 0.0);
 					}
-
+	
 					wardenEntity.playSound(SoundEvents.ENTITY_WARDEN_SONIC_BOOM, 3.0F, 1.0F);
 					if (target.damage(serverWorld.getDamageSources().sonicBoom(wardenEntity), 10.0F)) {
 						double d = 0.5 * (1.0 - target.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));

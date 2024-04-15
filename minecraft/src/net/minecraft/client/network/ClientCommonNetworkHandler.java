@@ -85,6 +85,13 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	}
 
 	@Override
+	public void method_59807(Packet packet, Exception exception) {
+		LOGGER.error("Failed to handle packet {}, disconnecting", packet, exception);
+		ClientCommonPacketListener.super.method_59807(packet, exception);
+		this.connection.disconnect(Text.translatable("disconnect.packetError"));
+	}
+
+	@Override
 	public void onKeepAlive(KeepAliveS2CPacket packet) {
 		this.send(new KeepAliveC2SPacket(packet.getId()), () -> !RenderSystem.isFrozenAtPollEvents(), Duration.ofMinutes(1L));
 	}
@@ -275,7 +282,7 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 						if (ClientCommonNetworkHandler.this.serverInfo != null) {
 							ClientCommonNetworkHandler.this.serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.ENABLED);
 						}
-
+	
 						serverResourcePackLoader.acceptAll();
 					} else {
 						serverResourcePackLoader.declineAll();
@@ -285,11 +292,11 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 							ClientCommonNetworkHandler.this.serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.DISABLED);
 						}
 					}
-
+	
 					for (ClientCommonNetworkHandler.ConfirmServerResourcePackScreen.Pack packx : pack) {
 						serverResourcePackLoader.addResourcePack(packx.id, packx.url, packx.hash);
 					}
-
+	
 					if (ClientCommonNetworkHandler.this.serverInfo != null) {
 						ServerList.updateServerListEntry(ClientCommonNetworkHandler.this.serverInfo);
 					}

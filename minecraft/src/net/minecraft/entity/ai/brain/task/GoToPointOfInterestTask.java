@@ -19,7 +19,7 @@ public class GoToPointOfInterestTask {
 							PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
 							int j = pointOfInterestStorage.getDistanceFromNearestOccupied(ChunkSectionPos.from(entity.getBlockPos()));
 							Vec3d vec3d = null;
-
+	
 							for (int k = 0; k < 5; k++) {
 								Vec3d vec3d2 = FuzzyTargeting.find(entity, 15, 7, pos -> (double)(-pointOfInterestStorage.getDistanceFromNearestOccupied(ChunkSectionPos.from(pos))));
 								if (vec3d2 != null) {
@@ -28,17 +28,17 @@ public class GoToPointOfInterestTask {
 										vec3d = vec3d2;
 										break;
 									}
-
+	
 									if (l == j) {
 										vec3d = vec3d2;
 									}
 								}
 							}
-
+	
 							if (vec3d != null) {
 								walkTarget.remember(new WalkTarget(vec3d, speed, completionRange));
 							}
-
+	
 							return true;
 						}
 					})

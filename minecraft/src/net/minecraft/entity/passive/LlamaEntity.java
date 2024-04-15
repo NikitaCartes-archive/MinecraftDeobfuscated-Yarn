@@ -40,7 +40,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -297,16 +296,6 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	@Override
 	public boolean canBeSaddled() {
 		return false;
-	}
-
-	@Override
-	public void onInventoryChanged(Inventory sender) {
-		DyeColor dyeColor = this.getCarpetColor();
-		super.onInventoryChanged(sender);
-		DyeColor dyeColor2 = this.getCarpetColor();
-		if (this.age > 20 && dyeColor2 != null && dyeColor2 != dyeColor) {
-			this.playSound(SoundEvents.ENTITY_LLAMA_SWAG, 0.5F, 1.0F);
-		}
 	}
 
 	@Nullable

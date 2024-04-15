@@ -22,7 +22,7 @@ public class MessageCommand {
 							if (!collection.isEmpty()) {
 								MessageArgumentType.getSignedMessage(context, "message", message -> execute(context.getSource(), collection, message));
 							}
-
+				
 							return collection.size();
 						}))
 				)

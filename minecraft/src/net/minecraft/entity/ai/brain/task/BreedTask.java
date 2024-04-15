@@ -112,7 +112,7 @@ public class BreedTask extends MultiTickTask<AnimalEntity> {
 						&& !animalEntity2.isPanicking()) {
 						return true;
 					}
-
+		
 					return false;
 				}
 			)

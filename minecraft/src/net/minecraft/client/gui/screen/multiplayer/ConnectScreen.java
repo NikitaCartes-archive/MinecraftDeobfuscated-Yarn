@@ -185,6 +185,7 @@ public class ConnectScreen extends Screen {
 					case ENABLED -> ServerResourcePackManager.AcceptanceStatus.ALLOWED;
 					case DISABLED -> ServerResourcePackManager.AcceptanceStatus.DECLINED;
 					case PROMPT -> ServerResourcePackManager.AcceptanceStatus.PENDING;
+					default -> throw new MatchException(null, null);
 				};
 			}
 		};

@@ -32,7 +32,7 @@ public class WalkTowardsWaterTask {
 									ShapeContext shapeContext = ShapeContext.of(entity);
 									BlockPos blockPos = entity.getBlockPos();
 									BlockPos.Mutable mutable = new BlockPos.Mutable();
-
+			
 									label45:
 									for (BlockPos blockPos2 : BlockPos.iterateOutwards(blockPos, range, range, range)) {
 										if ((blockPos2.getX() != blockPos.getX() || blockPos2.getZ() != blockPos.getZ())
@@ -48,7 +48,7 @@ public class WalkTowardsWaterTask {
 											}
 										}
 									}
-
+			
 									mutableLong.setValue(time + 40L);
 									return true;
 								}

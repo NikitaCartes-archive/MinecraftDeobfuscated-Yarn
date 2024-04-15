@@ -22,15 +22,15 @@ public class TippedArrowPotionToItemFix extends ChoiceWriteReadFix {
 				if (optional.isPresent()) {
 					dynamic2 = dynamic2.set("Potion", (Dynamic<?>)optional.get());
 				}
-
+	
 				if (optional2.isPresent()) {
 					dynamic2 = dynamic2.set("custom_potion_effects", (Dynamic<?>)optional2.get());
 				}
-
+	
 				if (optional3.isPresent()) {
 					dynamic2 = dynamic2.set("CustomPotionColor", (Dynamic<?>)optional3.get());
 				}
-
+	
 				return dynamic.set("tag", dynamic2);
 			});
 	}

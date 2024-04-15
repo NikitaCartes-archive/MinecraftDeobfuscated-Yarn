@@ -23,11 +23,11 @@ public class EntityRedundantChanceTagsFix extends DataFix {
 					if (hasZeroDropChance(dynamic.get("HandDropChances"), 2)) {
 						dynamic = dynamic.remove("HandDropChances");
 					}
-
+	
 					if (hasZeroDropChance(dynamic.get("ArmorDropChances"), 4)) {
 						dynamic = dynamic.remove("ArmorDropChances");
 					}
-
+	
 					return dynamic;
 				})
 		);

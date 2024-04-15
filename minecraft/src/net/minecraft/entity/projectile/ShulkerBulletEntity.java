@@ -52,11 +52,8 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 	public ShulkerBulletEntity(World world, LivingEntity owner, Entity target, Direction.Axis axis) {
 		this(EntityType.SHULKER_BULLET, world);
 		this.setOwner(owner);
-		BlockPos blockPos = owner.getBlockPos();
-		double d = (double)blockPos.getX() + 0.5;
-		double e = (double)blockPos.getY() + 0.5;
-		double f = (double)blockPos.getZ() + 0.5;
-		this.refreshPositionAndAngles(d, e, f, this.getYaw(), this.getPitch());
+		Vec3d vec3d = owner.getBoundingBox().getCenter();
+		this.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, this.getYaw(), this.getPitch());
 		this.target = target;
 		this.direction = Direction.UP;
 		this.changeTargetDirection(axis);

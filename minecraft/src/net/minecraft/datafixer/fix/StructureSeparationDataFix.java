@@ -34,7 +34,9 @@ public class StructureSeparationDataFix extends DataFix {
 	private static final String END_CITY_STRUCTURE_ID = "minecraft:endcity";
 	private static final String MANSION_STRUCTURE_ID = "minecraft:mansion";
 	private static final String MONUMENT_STRUCTURE_ID = "minecraft:monument";
-	private static final ImmutableMap<String, StructureSeparationDataFix.Information> STRUCTURE_SPACING = ImmutableMap.<String, StructureSeparationDataFix.Information>builder()
+	private static final ImmutableMap<String, StructureSeparationDataFix.Information> STRUCTURE_SPACING = ImmutableMap.<String, StructureSeparationDataFix.Information>builder(
+			
+		)
 		.put("minecraft:village", new StructureSeparationDataFix.Information(32, 8, 10387312))
 		.put("minecraft:desert_pyramid", new StructureSeparationDataFix.Information(32, 8, 14357617))
 		.put("minecraft:igloo", new StructureSeparationDataFix.Information(32, 8, 14357618))
@@ -327,13 +329,13 @@ public class StructureSeparationDataFix extends DataFix {
 																int i = method_28280(string3, information.separation, 1);
 																map.put("minecraft:monument", new StructureSeparationDataFix.Information(i, information.separation, information.salt));
 															}
-
+						
 															return;
 														case "spacing":
 															if ("oceanmonument".equals(string)) {
 																method_28281(map, "minecraft:monument", string3, 1);
 															}
-
+						
 															return;
 													}
 												}

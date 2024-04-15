@@ -13,7 +13,7 @@ public class HideWhenBellRingsTask {
 						if (raid == null) {
 							entity.getBrain().doExclusively(Activity.HIDE);
 						}
-
+	
 						return true;
 					})
 		);

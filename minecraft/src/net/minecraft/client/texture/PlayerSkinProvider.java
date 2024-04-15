@@ -57,7 +57,7 @@ public class PlayerSkinProvider {
 							if (minecraftProfileTextures.signatureState() == SignatureState.INVALID) {
 								PlayerSkinProvider.LOGGER.warn("Profile contained invalid signature for textures property (profile id: {})", key.profileId());
 							}
-
+	
 							return minecraftProfileTextures;
 						}
 					}, Util.getMainWorkerExecutor()).thenComposeAsync(textures -> PlayerSkinProvider.this.fetchSkinTextures(key.profileId(), textures), executor);
@@ -157,6 +157,7 @@ public class PlayerSkinProvider {
 				case SKIN -> "skins";
 				case CAPE -> "capes";
 				case ELYTRA -> "elytra";
+				default -> throw new MatchException(null, null);
 			};
 			return new Identifier(string + "/" + hash);
 		}

@@ -42,14 +42,15 @@ public class WolfArmorFeatureRenderer extends FeatureRenderer<WolfEntity, WolfEn
 	) {
 		if (wolfEntity.hasArmor()) {
 			ItemStack itemStack = wolfEntity.getBodyArmor();
-			if (itemStack.getItem() instanceof AnimalArmorItem animalArmorItem) {
+			if (itemStack.getItem() instanceof AnimalArmorItem animalArmorItem && animalArmorItem.getType() == AnimalArmorItem.Type.CANINE) {
 				this.getContextModel().copyStateTo(this.model);
 				this.model.animateModel(wolfEntity, f, g, h);
 				this.model.setAngles(wolfEntity, f, g, j, k, l);
-				VertexConsumer var14 = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(animalArmorItem.getEntityTexture()));
-				this.model.render(matrixStack, var14, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+				VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(animalArmorItem.getEntityTexture()));
+				this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 				this.renderDyed(matrixStack, vertexConsumerProvider, i, itemStack, animalArmorItem);
 				this.renderCracks(matrixStack, vertexConsumerProvider, i, itemStack);
+				return;
 			}
 		}
 	}

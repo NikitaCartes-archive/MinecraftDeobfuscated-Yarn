@@ -43,6 +43,7 @@ public enum AdvancementObtainedStatus {
 			case TASK -> this.taskFrameTexture;
 			case CHALLENGE -> this.challengeFrameTexture;
 			case GOAL -> this.goalFrameTexture;
+			default -> throw new MatchException(null, null);
 		};
 	}
 }

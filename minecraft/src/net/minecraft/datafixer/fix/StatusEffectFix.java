@@ -180,14 +180,14 @@ public class StatusEffectFix extends DataFix {
 					if (string.equals("minecraft:suspicious_stew")) {
 						return typed.updateTyped(opticFinder2, typedx -> typedx.update(DSL.remainderFinder(), StatusEffectFix::method_53106));
 					}
-
+	
 					if (POTION_ITEM_IDS.contains(string)) {
 						return typed.updateTyped(
 							opticFinder2, typedx -> typedx.update(DSL.remainderFinder(), dynamic -> fixEffectList(dynamic, "CustomPotionEffects", "custom_potion_effects"))
 						);
 					}
 				}
-
+	
 				return typed;
 			}
 		);

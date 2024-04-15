@@ -281,7 +281,9 @@ public class ModelLoader {
 				ImmutableList<BlockState> immutableList = stateManager.getStates();
 				Map<ModelIdentifier, BlockState> map = Maps.<ModelIdentifier, BlockState>newHashMap();
 				immutableList.forEach(state -> map.put(BlockModels.getModelId(identifier, state), state));
-				Map<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>> map2 = Maps.<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>>newHashMap();
+				Map<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>> map2 = Maps.<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>>newHashMap(
+					
+				);
 				Identifier identifier2 = BLOCK_STATES_FINDER.toResourcePath(id);
 				UnbakedModel unbakedModel = (UnbakedModel)this.unbakedModels.get(MISSING_ID);
 				ModelLoader.ModelDefinition modelDefinition = new ModelLoader.ModelDefinition(ImmutableList.of(unbakedModel), ImmutableList.of());
@@ -305,7 +307,9 @@ public class ModelLoader {
 						)
 						.toList()) {
 						ModelVariantMap modelVariantMap = pair2.getSecond();
-						Map<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>> map3 = Maps.<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>>newIdentityHashMap();
+						Map<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>> map3 = Maps.<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>>newIdentityHashMap(
+							
+						);
 						MultipartUnbakedModel multipartUnbakedModel;
 						if (modelVariantMap.hasMultipartModel()) {
 							multipartUnbakedModel = modelVariantMap.getMultipartModel();

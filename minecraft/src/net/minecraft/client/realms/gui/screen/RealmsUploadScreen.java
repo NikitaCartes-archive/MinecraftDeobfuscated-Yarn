@@ -258,20 +258,20 @@ public class RealmsUploadScreen extends RealmsScreen {
 				() -> {
 					File file = null;
 					RealmsClient realmsClient = RealmsClient.create();
-
+		
 					try {
 						if (!UPLOAD_LOCK.tryLock(1L, TimeUnit.SECONDS)) {
 							this.status = Text.translatable("mco.upload.close.failure");
 						} else {
 							UploadInfo uploadInfo = null;
-
+		
 							for (int i = 0; i < 20; i++) {
 								try {
 									if (this.cancelled) {
 										this.uploadCancelled();
 										return;
 									}
-
+		
 									uploadInfo = realmsClient.upload(this.worldId, UploadTokenCache.get(this.worldId));
 									if (uploadInfo != null) {
 										break;
@@ -280,7 +280,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 									Thread.sleep((long)(var18.delaySeconds * 1000));
 								}
 							}
-
+		
 							if (uploadInfo == null) {
 								this.status = Text.translatable("mco.upload.close.failure");
 							} else {
@@ -313,7 +313,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 												if (this.backButton != null) {
 													this.backButton.setMessage(ScreenTexts.DONE);
 												}
-
+		
 												UploadTokenCache.invalidate(this.worldId);
 											} else if (result.statusCode == 400 && result.errorMessage != null) {
 												this.setStatusTexts(Text.translatable("mco.upload.failed", result.errorMessage));
@@ -321,14 +321,14 @@ public class RealmsUploadScreen extends RealmsScreen {
 												this.setStatusTexts(Text.translatable("mco.upload.failed", result.statusCode));
 											}
 										});
-
+		
 										while (!fileUpload.isFinished()) {
 											if (this.cancelled) {
 												fileUpload.cancel();
 												this.uploadCancelled();
 												return;
 											}
-
+		
 											try {
 												Thread.sleep(500L);
 											} catch (InterruptedException var17) {
@@ -369,11 +369,11 @@ public class RealmsUploadScreen extends RealmsScreen {
 							if (this.backButton != null) {
 								this.backButton.visible = true;
 							}
-
+		
 							if (this.cancelButton != null) {
 								this.cancelButton.visible = false;
 							}
-
+		
 							if (file != null) {
 								LOGGER.debug("Deleting file {}", file.getAbsolutePath());
 								file.delete();

@@ -486,7 +486,7 @@ public class ParticleManager implements ResourceReloader {
 					int i = Math.max(2, MathHelper.ceil(dx / 0.25));
 					int j = Math.max(2, MathHelper.ceil(e / 0.25));
 					int k = Math.max(2, MathHelper.ceil(f / 0.25));
-
+	
 					for (int l = 0; l < i; l++) {
 						for (int m = 0; m < j; m++) {
 							for (int n = 0; n < k; n++) {

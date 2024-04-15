@@ -515,7 +515,7 @@ public final class NbtHelper {
 	 * @see net.minecraft.nbt.visitor.NbtTextFormatter
 	 */
 	public static Text toPrettyPrintedText(NbtElement element) {
-		return new NbtTextFormatter("", 0).apply(element);
+		return new NbtTextFormatter("").apply(element);
 	}
 
 	/**

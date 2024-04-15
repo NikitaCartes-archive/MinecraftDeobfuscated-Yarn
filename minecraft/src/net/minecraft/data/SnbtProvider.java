@@ -57,7 +57,7 @@ public class SnbtProvider implements DataProvider {
 						() -> {
 							try {
 								Stream<Path> stream = Files.walk(path2);
-
+			
 								CompletableFuture var5x;
 								try {
 									var5x = CompletableFuture.allOf(
@@ -74,14 +74,14 @@ public class SnbtProvider implements DataProvider {
 											var8.addSuppressed(var7);
 										}
 									}
-
+			
 									throw var8;
 								}
-
+			
 								if (stream != null) {
 									stream.close();
 								}
-
+			
 								return var5x;
 							} catch (Exception var9) {
 								throw new RuntimeException("Failed to read structure input directory, aborting", var9);

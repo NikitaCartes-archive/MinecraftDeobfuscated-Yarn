@@ -13,11 +13,11 @@ public record CommandExecutionC2SPacket(String command) implements Packet<Server
 	);
 
 	private CommandExecutionC2SPacket(PacketByteBuf buf) {
-		this(buf.readString(256));
+		this(buf.readString());
 	}
 
 	private void write(PacketByteBuf buf) {
-		buf.writeString(this.command, 256);
+		buf.writeString(this.command);
 	}
 
 	@Override
