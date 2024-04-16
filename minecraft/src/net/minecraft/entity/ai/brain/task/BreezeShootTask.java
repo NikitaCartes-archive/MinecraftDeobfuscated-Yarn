@@ -58,7 +58,7 @@ public class BreezeShootTask extends MultiTickTask<BreezeEntity> {
 					if (!withinRange) {
 						breezeEntity.getBrain().forget(MemoryModuleType.BREEZE_SHOOT);
 					}
-		
+
 					return withinRange;
 				})
 				.orElse(false);

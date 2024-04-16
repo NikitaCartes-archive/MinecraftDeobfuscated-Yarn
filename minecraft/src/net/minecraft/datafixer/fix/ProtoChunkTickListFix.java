@@ -72,7 +72,7 @@ public class ProtoChunkTickListFix extends DataFix {
 													if (typedxxx.getOptionalTyped(opticFinder5).isPresent()) {
 														mutableInt.setValue(Math.min(ix, mutableInt.getValue()));
 													}
-						
+
 													typedxxx.getOptionalTyped(opticFinder4)
 														.ifPresent(
 															typedxxxx -> int2ObjectMap.put(
@@ -105,7 +105,7 @@ public class ProtoChunkTickListFix extends DataFix {
 							if (optional.isPresent()) {
 								typedx = typedx.set(opticFinder7, (Typed)((Pair)optional.get()).getFirst());
 							}
-		
+
 							return typedx.update(DSL.remainderFinder(), dynamic2x -> dynamic2x.remove("ToBeTicked").remove("LiquidsToBeTicked").set("fluid_ticks", dynamic2));
 						} else {
 							return typedx;

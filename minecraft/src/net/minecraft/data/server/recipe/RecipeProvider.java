@@ -50,9 +50,7 @@ public abstract class RecipeProvider implements DataProvider {
 	final DataOutput.PathResolver recipesPathResolver;
 	final DataOutput.PathResolver advancementsPathResolver;
 	private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
-	private static final Map<BlockFamily.Variant, BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonBuilder>> VARIANT_FACTORIES = ImmutableMap.<BlockFamily.Variant, BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonBuilder>>builder(
-			
-		)
+	private static final Map<BlockFamily.Variant, BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonBuilder>> VARIANT_FACTORIES = ImmutableMap.<BlockFamily.Variant, BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonBuilder>>builder()
 		.put(BlockFamily.Variant.BUTTON, (output, input) -> createTransmutationRecipe(output, Ingredient.ofItems(input)))
 		.put(BlockFamily.Variant.CHISELED, (output, input) -> createChiseledBlockRecipe(RecipeCategory.BUILDING_BLOCKS, output, Ingredient.ofItems(input)))
 		.put(BlockFamily.Variant.CUT, (output, input) -> createCutCopperRecipe(RecipeCategory.BUILDING_BLOCKS, output, Ingredient.ofItems(input)))
@@ -101,7 +99,7 @@ public abstract class RecipeProvider implements DataProvider {
 						}
 					}
 				}
-	
+
 				@Override
 				public Advancement.Builder getAdvancementBuilder() {
 					return Advancement.Builder.createUntelemetered().parent(CraftingRecipeJsonBuilder.ROOT);
@@ -659,7 +657,7 @@ public abstract class RecipeProvider implements DataProvider {
 							);
 							craftingRecipeJsonBuilder.offerTo(exporter);
 						}
-		
+
 						if (variant == BlockFamily.Variant.CRACKED) {
 							offerCrackingRecipe(exporter, block, itemConvertible);
 						}

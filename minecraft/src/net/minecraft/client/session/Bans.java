@@ -45,7 +45,7 @@ public class Bans {
 				if (confirmed) {
 					Util.getOperatingSystem().open("https://aka.ms/mcjavamoderation");
 				}
-	
+
 				onClose.run();
 			},
 			NAME_TITLE,

@@ -52,6 +52,7 @@ public interface DataComponentType<T> {
 		private Codec<T> codec;
 		@Nullable
 		private PacketCodec<? super RegistryByteBuf, T> packetCodec;
+		private boolean cache;
 
 		public DataComponentType.Builder<T> codec(Codec<T> codec) {
 			this.codec = codec;
@@ -63,11 +64,17 @@ public interface DataComponentType<T> {
 			return this;
 		}
 
+		public DataComponentType.Builder<T> cache() {
+			this.cache = true;
+			return this;
+		}
+
 		public DataComponentType<T> build() {
 			PacketCodec<? super RegistryByteBuf, T> packetCodec = (PacketCodec<? super RegistryByteBuf, T>)Objects.requireNonNullElseGet(
 				this.packetCodec, () -> PacketCodecs.registryCodec((Codec<T>)Objects.requireNonNull(this.codec, "Missing Codec for component"))
 			);
-			return new DataComponentType.Builder.SimpleDataComponentType<>(this.codec, packetCodec);
+			Codec<T> codec = this.cache && this.codec != null ? DataComponentTypes.CACHE.wrap(this.codec) : this.codec;
+			return new DataComponentType.Builder.SimpleDataComponentType<>(codec, packetCodec);
 		}
 
 		static class SimpleDataComponentType<T> implements DataComponentType<T> {

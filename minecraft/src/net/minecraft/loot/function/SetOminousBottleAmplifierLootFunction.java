@@ -11,6 +11,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
+import net.minecraft.util.math.MathHelper;
 
 public class SetOminousBottleAmplifierLootFunction extends ConditionalLootFunction {
 	static final MapCodec<SetOminousBottleAmplifierLootFunction> CODEC = RecordCodecBuilder.mapCodec(
@@ -37,7 +38,8 @@ public class SetOminousBottleAmplifierLootFunction extends ConditionalLootFuncti
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		stack.set(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER, this.amplifier.nextInt(context));
+		int i = MathHelper.clamp(this.amplifier.nextInt(context), 0, 4);
+		stack.set(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER, i);
 		return stack;
 	}
 

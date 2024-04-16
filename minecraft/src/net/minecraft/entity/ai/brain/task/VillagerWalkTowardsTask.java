@@ -25,7 +25,7 @@ public class VillagerWalkTowardsTask {
 									Vec3d vec3d = null;
 									int l = 0;
 									int m = 1000;
-		
+
 									while (vec3d == null || BlockPos.ofFloored(vec3d).getManhattanDistance(entity.getBlockPos()) > maxDistance) {
 										vec3d = NoPenaltyTargeting.findTo(entity, 15, 7, Vec3d.ofBottomCenter(globalPos.pos()), (float) (Math.PI / 2));
 										if (++l == 1000) {
@@ -35,7 +35,7 @@ public class VillagerWalkTowardsTask {
 											return true;
 										}
 									}
-		
+
 									walkTarget.remember(new WalkTarget(vec3d, speed, completionRange));
 								} else if (globalPos.pos().getManhattanDistance(entity.getBlockPos()) > completionRange) {
 									walkTarget.remember(new WalkTarget(globalPos.pos(), speed, completionRange));
@@ -45,7 +45,7 @@ public class VillagerWalkTowardsTask {
 								destinationResult.forget();
 								cantReachWalkTargetSince.remember(time);
 							}
-		
+
 							return true;
 						})
 		);

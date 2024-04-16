@@ -24,7 +24,7 @@ public class LevelLegacyWorldGenSettingsFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"LevelLegacyWorldGenSettingsFix", this.getInputSchema().getType(TypeReferences.LEVEL), typed -> typed.update(DSL.remainderFinder(), data -> {
 					Dynamic<?> dynamic = data.get("WorldGenSettings").orElseEmptyMap();
-	
+
 					for (String string : SETTINGS_TO_FIX) {
 						Optional<? extends Dynamic<?>> optional = data.get(string).result();
 						if (optional.isPresent()) {
@@ -32,7 +32,7 @@ public class LevelLegacyWorldGenSettingsFix extends DataFix {
 							dynamic = dynamic.set(string, (Dynamic<?>)optional.get());
 						}
 					}
-	
+
 					return data.set("WorldGenSettings", dynamic);
 				})
 		);

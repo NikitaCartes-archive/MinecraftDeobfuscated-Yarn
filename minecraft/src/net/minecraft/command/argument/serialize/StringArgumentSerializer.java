@@ -21,7 +21,6 @@ public class StringArgumentSerializer implements ArgumentSerializer<StringArgume
 			case SINGLE_WORD -> "word";
 			case QUOTABLE_PHRASE -> "phrase";
 			case GREEDY_PHRASE -> "greedy";
-			default -> throw new MatchException(null, null);
 		});
 	}
 
@@ -41,7 +40,6 @@ public class StringArgumentSerializer implements ArgumentSerializer<StringArgume
 				case SINGLE_WORD -> StringArgumentType.word();
 				case QUOTABLE_PHRASE -> StringArgumentType.string();
 				case GREEDY_PHRASE -> StringArgumentType.greedyString();
-				default -> throw new MatchException(null, null);
 			};
 		}
 

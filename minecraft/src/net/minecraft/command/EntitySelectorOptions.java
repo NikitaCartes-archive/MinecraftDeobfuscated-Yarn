@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Map.Entry;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementProgress;
@@ -176,26 +175,17 @@ public class EntitySelectorOptions {
 				int i = reader.getReader().getCursor();
 				String string = reader.getReader().readUnquotedString();
 				reader.setSuggestionProvider((builder, consumer) -> CommandSource.suggestMatching(Arrays.asList("nearest", "furthest", "random", "arbitrary"), builder));
-				BiConsumer var10001;
-				switch (string) {
-					case "nearest":
-						var10001 = EntitySelectorReader.NEAREST;
-						break;
-					case "furthest":
-						var10001 = EntitySelectorReader.FURTHEST;
-						break;
-					case "random":
-						var10001 = EntitySelectorReader.RANDOM;
-						break;
-					case "arbitrary":
-						var10001 = EntitySelector.ARBITRARY;
-						break;
-					default:
+
+				reader.setSorter(switch (string) {
+					case "nearest" -> EntitySelectorReader.NEAREST;
+					case "furthest" -> EntitySelectorReader.FURTHEST;
+					case "random" -> EntitySelectorReader.RANDOM;
+					case "arbitrary" -> EntitySelector.ARBITRARY;
+					default -> {
 						reader.getReader().setCursor(i);
 						throw IRREVERSIBLE_SORT_EXCEPTION.createWithContext(reader.getReader(), string);
-				}
-
-				reader.setSorter(var10001);
+					}
+				});
 				reader.setHasSorter(true);
 			}, reader -> !reader.isSenderOnly() && !reader.hasSorter(), Text.translatable("argument.entity.options.sort.description"));
 			putOption("gamemode", reader -> {

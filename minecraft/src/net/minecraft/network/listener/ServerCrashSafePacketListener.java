@@ -12,10 +12,10 @@ import org.slf4j.Logger;
  * without crashing.
  */
 public interface ServerCrashSafePacketListener extends ServerPacketListener {
-	Logger field_51479 = LogUtils.getLogger();
+	Logger LOGGER = LogUtils.getLogger();
 
 	@Override
-	default void method_59807(Packet packet, Exception exception) throws CrashException {
-		field_51479.error("Failed to handle packet {}, suppressing error", packet, exception);
+	default void onPacketException(Packet packet, Exception exception) throws CrashException {
+		LOGGER.error("Failed to handle packet {}, suppressing error", packet, exception);
 	}
 }

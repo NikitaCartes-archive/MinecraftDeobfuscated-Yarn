@@ -23,6 +23,7 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ShipwreckGenerator {
+	private static final int LARGE_SIZE_LIMIT = 32;
 	static final BlockPos DEFAULT_POSITION = new BlockPos(4, 0, 15);
 	private static final Identifier[] BEACHED_TEMPLATES = new Identifier[]{
 		new Identifier("shipwreck/with_mast"),
@@ -63,11 +64,13 @@ public class ShipwreckGenerator {
 		"map_chest", LootTables.SHIPWRECK_MAP_CHEST, "treasure_chest", LootTables.SHIPWRECK_TREASURE_CHEST, "supply_chest", LootTables.SHIPWRECK_SUPPLY_CHEST
 	);
 
-	public static void addParts(
+	public static ShipwreckGenerator.Piece addParts(
 		StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, boolean beached
 	) {
 		Identifier identifier = Util.getRandom(beached ? BEACHED_TEMPLATES : REGULAR_TEMPLATES, random);
-		holder.addPiece(new ShipwreckGenerator.Piece(structureTemplateManager, identifier, pos, rotation, beached));
+		ShipwreckGenerator.Piece piece = new ShipwreckGenerator.Piece(structureTemplateManager, identifier, pos, rotation, beached);
+		holder.addPiece(piece);
+		return piece;
 	}
 
 	public static class Piece extends SimpleStructurePiece {
@@ -116,28 +119,44 @@ public class ShipwreckGenerator {
 			ChunkPos chunkPos,
 			BlockPos pivot
 		) {
-			int i = world.getTopY();
-			int j = 0;
-			Vec3i vec3i = this.template.getSize();
-			Heightmap.Type type = this.grounded ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG;
-			int k = vec3i.getX() * vec3i.getZ();
-			if (k == 0) {
-				j = world.getTopY(type, this.pos.getX(), this.pos.getZ());
+			if (this.isTooLargeForNormalGeneration()) {
+				super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);
 			} else {
-				BlockPos blockPos = this.pos.add(vec3i.getX() - 1, 0, vec3i.getZ() - 1);
+				int i = world.getTopY();
+				int j = 0;
+				Vec3i vec3i = this.template.getSize();
+				Heightmap.Type type = this.grounded ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG;
+				int k = vec3i.getX() * vec3i.getZ();
+				if (k == 0) {
+					j = world.getTopY(type, this.pos.getX(), this.pos.getZ());
+				} else {
+					BlockPos blockPos = this.pos.add(vec3i.getX() - 1, 0, vec3i.getZ() - 1);
 
-				for (BlockPos blockPos2 : BlockPos.iterate(this.pos, blockPos)) {
-					int l = world.getTopY(type, blockPos2.getX(), blockPos2.getZ());
-					j += l;
-					i = Math.min(i, l);
+					for (BlockPos blockPos2 : BlockPos.iterate(this.pos, blockPos)) {
+						int l = world.getTopY(type, blockPos2.getX(), blockPos2.getZ());
+						j += l;
+						i = Math.min(i, l);
+					}
+
+					j /= k;
 				}
 
-				j /= k;
+				this.setY(this.grounded ? this.findGroundedY(i, random) : j);
+				super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);
 			}
+		}
 
-			int m = this.grounded ? i - vec3i.getY() / 2 - random.nextInt(3) : j;
-			this.pos = new BlockPos(this.pos.getX(), m, this.pos.getZ());
-			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);
+		public boolean isTooLargeForNormalGeneration() {
+			Vec3i vec3i = this.template.getSize();
+			return vec3i.getX() > 32 || vec3i.getY() > 32;
+		}
+
+		public int findGroundedY(int y, Random random) {
+			return y - this.template.getSize().getY() / 2 - random.nextInt(3);
+		}
+
+		public void setY(int y) {
+			this.pos = new BlockPos(this.pos.getX(), y, this.pos.getZ());
 		}
 	}
 }

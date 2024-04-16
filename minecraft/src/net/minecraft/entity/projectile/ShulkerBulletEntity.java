@@ -219,7 +219,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 
 			HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
 			if (hitResult.getType() != HitResult.Type.MISS) {
-				this.deflectOrCollide(hitResult);
+				this.hitOrDeflect(hitResult);
 			}
 		}
 

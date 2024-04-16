@@ -5,9 +5,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.logging.LogUtils;
-import it.unimi.dsi.fastutil.floats.FloatArraySet;
-import it.unimi.dsi.fastutil.floats.FloatArrays;
-import it.unimi.dsi.fastutil.floats.FloatSet;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import java.util.Arrays;
@@ -1216,64 +1213,41 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		boolean bl = movement.x != vec3d.x;
 		boolean bl2 = movement.y != vec3d.y;
 		boolean bl3 = movement.z != vec3d.z;
-		boolean bl4 = bl2 && movement.y < 0.0;
-		if (this.getStepHeight() > 0.0F && (bl4 || this.isOnGround()) && (bl || bl3)) {
-			Box box2 = bl4 ? box.offset(0.0, vec3d.y, 0.0) : box;
-			Box box3 = box2.stretch(movement.x, (double)this.getStepHeight(), movement.z);
-			List<VoxelShape> list2 = method_59816(this, this.world, list, box3);
-			float[] fs = method_59817(box2, list2, this.getStepHeight());
-
-			for (float f : fs) {
-				Vec3d vec3d2 = adjustMovementForCollisions(new Vec3d(movement.x, (double)f, movement.z), box2, list2);
-				if (vec3d2.horizontalLengthSquared() > vec3d.horizontalLengthSquared()) {
-					return vec3d2;
+		boolean bl4 = this.isOnGround() || bl2 && movement.y < 0.0;
+		if (this.getStepHeight() > 0.0F && bl4 && (bl || bl3)) {
+			Vec3d vec3d2 = adjustMovementForCollisions(this, new Vec3d(movement.x, (double)this.getStepHeight(), movement.z), box, this.getWorld(), list);
+			Vec3d vec3d3 = adjustMovementForCollisions(
+				this, new Vec3d(0.0, (double)this.getStepHeight(), 0.0), box.stretch(movement.x, 0.0, movement.z), this.getWorld(), list
+			);
+			if (vec3d3.y < (double)this.getStepHeight()) {
+				Vec3d vec3d4 = adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.getWorld(), list).add(vec3d3);
+				if (vec3d4.horizontalLengthSquared() > vec3d2.horizontalLengthSquared()) {
+					vec3d2 = vec3d4;
 				}
+			}
+
+			if (vec3d2.horizontalLengthSquared() > vec3d.horizontalLengthSquared()) {
+				return vec3d2.add(adjustMovementForCollisions(this, new Vec3d(0.0, -vec3d2.y + movement.y, 0.0), box.offset(vec3d2), this.getWorld(), list));
 			}
 		}
 
 		return vec3d;
 	}
 
-	private static float[] method_59817(Box box, List<VoxelShape> list, float f) {
-		FloatSet floatSet = new FloatArraySet(4);
-
-		for (VoxelShape voxelShape : list) {
-			for (double d : voxelShape.getPointPositions(Direction.Axis.Y)) {
-				float g = (float)(d - box.minY);
-				if (!(g < 1.0E-5F)) {
-					if (g > f) {
-						break;
-					}
-
-					floatSet.add(g);
-				}
-			}
-		}
-
-		float[] fs = floatSet.toFloatArray();
-		FloatArrays.unstableSort(fs);
-		return fs;
-	}
-
 	public static Vec3d adjustMovementForCollisions(@Nullable Entity entity, Vec3d movement, Box entityBoundingBox, World world, List<VoxelShape> collisions) {
-		List<VoxelShape> list = method_59816(entity, world, collisions, entityBoundingBox.stretch(movement));
-		return adjustMovementForCollisions(movement, entityBoundingBox, list);
-	}
-
-	private static List<VoxelShape> method_59816(@Nullable Entity entity, World world, List<VoxelShape> list, Box box) {
-		Builder<VoxelShape> builder = ImmutableList.builderWithExpectedSize(list.size() + 1);
-		if (!list.isEmpty()) {
-			builder.addAll(list);
+		Builder<VoxelShape> builder = ImmutableList.builderWithExpectedSize(collisions.size() + 1);
+		if (!collisions.isEmpty()) {
+			builder.addAll(collisions);
 		}
 
 		WorldBorder worldBorder = world.getWorldBorder();
-		boolean bl = entity != null && worldBorder.canCollide(entity, box);
+		boolean bl = entity != null && worldBorder.canCollide(entity, entityBoundingBox.stretch(movement));
 		if (bl) {
 			builder.add(worldBorder.asVoxelShape());
 		}
 
-		builder.addAll(world.getBlockCollisions(entity, box));
-		return builder.build();
+		builder.addAll(world.getBlockCollisions(entity, entityBoundingBox.stretch(movement)));
+		return adjustMovementForCollisions(movement, entityBoundingBox, builder.build());
 	}
 
 	private static Vec3d adjustMovementForCollisions(Vec3d movement, Box entityBoundingBox, List<VoxelShape> collisions) {
@@ -3884,7 +3858,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 								axis = Direction.Axis.X;
 								vec3d = new Vec3d(0.5, 0.0, 0.0);
 							}
-		
+
 							return NetherPortal.getNetherTeleportTarget(destination, rect, axis, vec3d, this, this.getVelocity(), this.getYaw(), this.getPitch());
 						}
 					)
@@ -4490,8 +4464,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return false;
 	}
 
-	public ProjectileDeflector getProjectileDeflector(ProjectileEntity projectile) {
-		return this.getType().isIn(EntityTypeTags.DEFLECTS_PROJECTILES) ? ProjectileDeflector.SIMPLE : ProjectileDeflector.NONE;
+	public ProjectileDeflection getProjectileDeflection(ProjectileEntity projectile) {
+		return this.getType().isIn(EntityTypeTags.DEFLECTS_PROJECTILES) ? ProjectileDeflection.SIMPLE : ProjectileDeflection.NONE;
 	}
 
 	/**

@@ -98,7 +98,7 @@ public class ArmorItem extends Item implements Equipment {
 						attributeModifierSlot
 					);
 				}
-	
+
 				return builder.build();
 			}
 		);

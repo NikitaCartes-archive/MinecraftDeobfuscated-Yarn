@@ -155,6 +155,11 @@ public abstract class Structure {
 		};
 	}
 
+	public static int getAverageCornerHeights(Structure.Context context, int x, int width, int z, int height) {
+		int[] is = getCornerHeights(context, x, width, z, height);
+		return (is[0] + is[1] + is[2] + is[3]) / 4;
+	}
+
 	protected static int getMinCornerHeight(Structure.Context context, int width, int height) {
 		ChunkPos chunkPos = context.chunkPos();
 		int i = chunkPos.getStartX();

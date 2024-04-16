@@ -421,9 +421,9 @@ public class CreateWorldScreen extends Screen {
 			)
 			.thenApplyAsync(generatorOptionsHolder -> {
 				for (DimensionOptions dimensionOptions : generatorOptionsHolder.dimensionOptionsRegistry()) {
-					dimensionOptions.chunkGenerator().method_59825();
+					dimensionOptions.chunkGenerator().initializeIndexedFeaturesList();
 				}
-	
+
 				return generatorOptionsHolder;
 			})
 			.thenAcceptAsync(this.worldCreator::setGeneratorOptionsHolder, this.client)
@@ -450,7 +450,7 @@ public class CreateWorldScreen extends Screen {
 					} else {
 						this.client.setScreen(this);
 					}
-		
+
 					return null;
 				},
 				this.client

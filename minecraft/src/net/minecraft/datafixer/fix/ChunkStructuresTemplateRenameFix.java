@@ -11,9 +11,7 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class ChunkStructuresTemplateRenameFix extends DataFix {
-	private static final ImmutableMap<String, Pair<String, ImmutableMap<String, String>>> STRUCTURES = ImmutableMap.<String, Pair<String, ImmutableMap<String, String>>>builder(
-			
-		)
+	private static final ImmutableMap<String, Pair<String, ImmutableMap<String, String>>> STRUCTURES = ImmutableMap.<String, Pair<String, ImmutableMap<String, String>>>builder()
 		.put(
 			"EndCity",
 			Pair.of(

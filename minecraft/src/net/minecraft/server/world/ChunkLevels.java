@@ -32,7 +32,6 @@ public class ChunkLevels {
 			case FULL -> 33;
 			case BLOCK_TICKING -> 32;
 			case ENTITY_TICKING -> 31;
-			default -> throw new MatchException(null, null);
 		};
 	}
 

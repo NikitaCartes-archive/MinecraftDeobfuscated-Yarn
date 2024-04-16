@@ -54,7 +54,7 @@ public class SerializableRegistries {
 										.getOrThrow(error -> new IllegalArgumentException("Failed to serialize " + registryEntry.registryKey() + ": " + error));
 									optional = Optional.of(nbtElement);
 								}
-				
+
 								list.add(new SerializableRegistries.SerializedRegistryEntry(registryEntry.registryKey().getValue(), optional));
 							}
 						);

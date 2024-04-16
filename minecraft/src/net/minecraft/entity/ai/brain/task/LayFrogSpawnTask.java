@@ -24,7 +24,7 @@ public class LayFrogSpawnTask {
 						(attackTarget, walkTarget, isPregnant) -> (world, entity, time) -> {
 								if (!entity.isTouchingWater() && entity.isOnGround()) {
 									BlockPos blockPos = entity.getBlockPos().down();
-			
+
 									for (Direction direction : Direction.Type.HORIZONTAL) {
 										BlockPos blockPos2 = blockPos.offset(direction);
 										if (world.getBlockState(blockPos2).getCollisionShape(world, blockPos2).getFace(Direction.UP).isEmpty()
@@ -40,7 +40,7 @@ public class LayFrogSpawnTask {
 											}
 										}
 									}
-			
+
 									return true;
 								} else {
 									return false;

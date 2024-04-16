@@ -93,7 +93,7 @@ public class FindPointOfInterestTask {
 											);
 										}
 									}
-			
+
 									return true;
 								}
 							}

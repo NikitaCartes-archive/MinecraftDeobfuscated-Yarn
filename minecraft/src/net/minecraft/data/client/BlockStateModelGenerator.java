@@ -105,9 +105,7 @@ public class BlockStateModelGenerator {
 		.put(Blocks.CHISELED_TUFF_BRICKS, TexturedModel.SIDE_END_WALL.get(Blocks.CHISELED_TUFF_BRICKS))
 		.put(Blocks.CHISELED_TUFF, TexturedModel.SIDE_END_WALL.get(Blocks.CHISELED_TUFF))
 		.build();
-	static final Map<BlockFamily.Variant, BiConsumer<BlockStateModelGenerator.BlockTexturePool, Block>> VARIANT_POOL_FUNCTIONS = ImmutableMap.<BlockFamily.Variant, BiConsumer<BlockStateModelGenerator.BlockTexturePool, Block>>builder(
-			
-		)
+	static final Map<BlockFamily.Variant, BiConsumer<BlockStateModelGenerator.BlockTexturePool, Block>> VARIANT_POOL_FUNCTIONS = ImmutableMap.<BlockFamily.Variant, BiConsumer<BlockStateModelGenerator.BlockTexturePool, Block>>builder()
 		.put(BlockFamily.Variant.BUTTON, BlockStateModelGenerator.BlockTexturePool::button)
 		.put(BlockFamily.Variant.DOOR, BlockStateModelGenerator.BlockTexturePool::door)
 		.put(BlockFamily.Variant.CHISELED, BlockStateModelGenerator.BlockTexturePool::block)
@@ -1397,7 +1395,6 @@ public class BlockStateModelGenerator {
 			return switch (half) {
 				case UPPER -> BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(block, "_top_stage_" + age));
 				case LOWER -> BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(block, "_bottom_stage_" + age));
-				default -> throw new MatchException(null, null);
 			};
 		});
 		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(blockStateVariantMap));
@@ -3173,7 +3170,6 @@ public class BlockStateModelGenerator {
 										case WAITING_FOR_PLAYERS, ACTIVE, WAITING_FOR_REWARD_EJECTION -> BlockStateVariant.create()
 										.put(VariantSettings.MODEL, ominous ? identifier5 : identifier2);
 										case EJECTING_REWARD -> BlockStateVariant.create().put(VariantSettings.MODEL, ominous ? identifier6 : identifier3);
-										default -> throw new MatchException(null, null);
 									};
 								}
 							)
@@ -3210,7 +3206,6 @@ public class BlockStateModelGenerator {
 							case ACTIVE -> BlockStateVariant.create().put(VariantSettings.MODEL, ominous ? identifier6 : identifier2);
 							case UNLOCKING -> BlockStateVariant.create().put(VariantSettings.MODEL, ominous ? identifier7 : identifier3);
 							case EJECTING -> BlockStateVariant.create().put(VariantSettings.MODEL, ominous ? identifier8 : identifier4);
-							default -> throw new MatchException(null, null);
 						};
 					}))
 			);
@@ -3329,11 +3324,11 @@ public class BlockStateModelGenerator {
 						if (on) {
 							stringBuilder.append("_on");
 						}
-			
+
 						if (locked) {
 							stringBuilder.append("_locked");
 						}
-			
+
 						return BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.REPEATER, stringBuilder.toString()));
 					}))
 					.coordinate(createSouthDefaultHorizontalRotationStates())

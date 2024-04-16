@@ -85,10 +85,17 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	}
 
 	@Override
-	public void method_59807(Packet packet, Exception exception) {
+	public void onPacketException(Packet packet, Exception exception) {
 		LOGGER.error("Failed to handle packet {}, disconnecting", packet, exception);
-		ClientCommonPacketListener.super.method_59807(packet, exception);
+		ClientCommonPacketListener.super.onPacketException(packet, exception);
 		this.connection.disconnect(Text.translatable("disconnect.packetError"));
+	}
+
+	@Override
+	public boolean accepts(Packet<?> packet) {
+		return ClientCommonPacketListener.super.accepts(packet)
+			? true
+			: this.transferring && (packet instanceof StoreCookieS2CPacket || packet instanceof ServerTransferS2CPacket);
 	}
 
 	@Override
@@ -172,27 +179,23 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 
 	@Override
 	public void onServerTransfer(ServerTransferS2CPacket packet) {
+		this.transferring = true;
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		if (this.serverInfo == null) {
 			throw new IllegalStateException("Cannot transfer to server from singleplayer");
 		} else {
-			this.transferring = true;
 			this.connection.disconnect(Text.translatable("disconnect.transfer"));
-			this.client
-				.executeSync(
-					() -> {
-						this.connection.tryDisableAutoRead();
-						this.connection.handleDisconnection();
-						ServerAddress serverAddress = new ServerAddress(packet.host(), packet.port());
-						ConnectScreen.connect(
-							(Screen)Objects.requireNonNullElseGet(this.postDisconnectScreen, TitleScreen::new),
-							this.client,
-							serverAddress,
-							this.serverInfo,
-							false,
-							new CookieStorage(this.serverCookies)
-						);
-					}
-				);
+			this.connection.tryDisableAutoRead();
+			this.connection.handleDisconnection();
+			ServerAddress serverAddress = new ServerAddress(packet.host(), packet.port());
+			ConnectScreen.connect(
+				(Screen)Objects.requireNonNullElseGet(this.postDisconnectScreen, TitleScreen::new),
+				this.client,
+				serverAddress,
+				this.serverInfo,
+				false,
+				new CookieStorage(this.serverCookies)
+			);
 		}
 	}
 
@@ -282,7 +285,7 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 						if (ClientCommonNetworkHandler.this.serverInfo != null) {
 							ClientCommonNetworkHandler.this.serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.ENABLED);
 						}
-	
+
 						serverResourcePackLoader.acceptAll();
 					} else {
 						serverResourcePackLoader.declineAll();
@@ -292,11 +295,11 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 							ClientCommonNetworkHandler.this.serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.DISABLED);
 						}
 					}
-	
+
 					for (ClientCommonNetworkHandler.ConfirmServerResourcePackScreen.Pack packx : pack) {
 						serverResourcePackLoader.addResourcePack(packx.id, packx.url, packx.hash);
 					}
-	
+
 					if (ClientCommonNetworkHandler.this.serverInfo != null) {
 						ServerList.updateServerListEntry(ClientCommonNetworkHandler.this.serverInfo);
 					}

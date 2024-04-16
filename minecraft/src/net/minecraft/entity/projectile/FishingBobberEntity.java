@@ -251,7 +251,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 
 	private void checkForCollision() {
 		HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
-		this.deflectOrCollide(hitResult);
+		this.hitOrDeflect(hitResult);
 	}
 
 	@Override

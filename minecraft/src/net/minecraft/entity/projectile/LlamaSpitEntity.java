@@ -39,7 +39,7 @@ public class LlamaSpitEntity extends ProjectileEntity {
 		super.tick();
 		Vec3d vec3d = this.getVelocity();
 		HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
-		this.deflectOrCollide(hitResult);
+		this.hitOrDeflect(hitResult);
 		double d = this.getX() + vec3d.x;
 		double e = this.getY() + vec3d.y;
 		double f = this.getZ() + vec3d.z;

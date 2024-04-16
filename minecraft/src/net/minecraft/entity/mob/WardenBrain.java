@@ -86,7 +86,7 @@ public class WardenBrain {
 					if (context.getOptionalValue(digCooldown).isPresent()) {
 						digCooldown.remember(Unit.INSTANCE, 1200L);
 					}
-	
+
 					return true;
 				})
 	);

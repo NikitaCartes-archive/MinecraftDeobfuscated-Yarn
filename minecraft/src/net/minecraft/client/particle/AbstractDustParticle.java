@@ -2,12 +2,12 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9679;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.particle.AbstractDustParticleEffect;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class AbstractDustParticle<T extends class_9679> extends SpriteBillboardParticle {
+public class AbstractDustParticle<T extends AbstractDustParticleEffect> extends SpriteBillboardParticle {
 	private final SpriteProvider spriteProvider;
 
 	protected AbstractDustParticle(
@@ -20,9 +20,9 @@ public class AbstractDustParticle<T extends class_9679> extends SpriteBillboardP
 		this.velocityX *= 0.1F;
 		this.velocityY *= 0.1F;
 		this.velocityZ *= 0.1F;
-		this.scale = this.scale * 0.75F * parameters.method_59846();
+		this.scale = this.scale * 0.75F * parameters.getScale();
 		int i = (int)(8.0 / (this.random.nextDouble() * 0.8 + 0.2));
-		this.maxAge = (int)Math.max((float)i * parameters.method_59846(), 1.0F);
+		this.maxAge = (int)Math.max((float)i * parameters.getScale(), 1.0F);
 		this.setSpriteForAge(spriteProvider);
 	}
 

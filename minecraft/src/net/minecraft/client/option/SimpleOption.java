@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
@@ -29,6 +30,7 @@ import net.minecraft.client.gui.widget.OptionSliderWidget;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.TranslatableOption;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.slf4j.Logger;
 
@@ -521,11 +523,14 @@ public final class SimpleOption<T> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static final class OptionSliderWidgetImpl<N> extends OptionSliderWidget {
+	public static final class OptionSliderWidgetImpl<N> extends OptionSliderWidget {
 		private final SimpleOption<N> option;
 		private final SimpleOption.SliderCallbacks<N> callbacks;
 		private final SimpleOption.TooltipFactory<N> tooltipFactory;
 		private final Consumer<N> changeCallback;
+		@Nullable
+		private Long timeToApply;
+		private final boolean shouldApplyImmediately;
 
 		OptionSliderWidgetImpl(
 			GameOptions options,
@@ -536,27 +541,49 @@ public final class SimpleOption<T> {
 			SimpleOption<N> option,
 			SimpleOption.SliderCallbacks<N> callbacks,
 			SimpleOption.TooltipFactory<N> tooltipFactory,
-			Consumer<N> changeCallback
+			Consumer<N> changeCallback,
+			boolean shouldApplyImmediately
 		) {
 			super(options, x, y, width, height, callbacks.toSliderProgress(option.getValue()));
 			this.option = option;
 			this.callbacks = callbacks;
 			this.tooltipFactory = tooltipFactory;
 			this.changeCallback = changeCallback;
+			this.shouldApplyImmediately = shouldApplyImmediately;
 			this.updateMessage();
 		}
 
 		@Override
 		protected void updateMessage() {
-			this.setMessage((Text)this.option.textGetter.apply(this.option.getValue()));
+			this.setMessage((Text)this.option.textGetter.apply(this.callbacks.toValue(this.value)));
 			this.setTooltip(this.tooltipFactory.apply(this.callbacks.toValue(this.value)));
 		}
 
 		@Override
 		protected void applyValue() {
-			this.option.setValue(this.callbacks.toValue(this.value));
-			this.options.write();
-			this.changeCallback.accept(this.option.getValue());
+			if (this.shouldApplyImmediately) {
+				this.applyPendingValue();
+			} else {
+				this.timeToApply = Util.getMeasuringTimeMs() + 600L;
+			}
+		}
+
+		public void applyPendingValue() {
+			N object = this.callbacks.toValue(this.value);
+			if (!Objects.equals(object, this.option.getValue())) {
+				this.option.setValue(object);
+				this.options.write();
+				this.changeCallback.accept(this.option.getValue());
+			}
+		}
+
+		@Override
+		public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+			super.renderWidget(context, mouseX, mouseY, delta);
+			if (this.timeToApply != null && Util.getMeasuringTimeMs() >= this.timeToApply) {
+				this.timeToApply = null;
+				this.applyPendingValue();
+			}
 		}
 	}
 
@@ -595,11 +622,17 @@ public final class SimpleOption<T> {
 		 */
 		T toValue(double sliderProgress);
 
+		default boolean applyValueImmediately() {
+			return true;
+		}
+
 		@Override
 		default Function<SimpleOption<T>, ClickableWidget> getWidgetCreator(
 			SimpleOption.TooltipFactory<T> tooltipFactory, GameOptions gameOptions, int x, int y, int width, Consumer<T> changeCallback
 		) {
-			return option -> new SimpleOption.OptionSliderWidgetImpl<>(gameOptions, x, y, width, 20, option, this, tooltipFactory, changeCallback);
+			return option -> new SimpleOption.OptionSliderWidgetImpl<>(
+					gameOptions, x, y, width, 20, option, this, tooltipFactory, changeCallback, this.applyValueImmediately()
+				);
 		}
 	}
 
@@ -630,7 +663,12 @@ public final class SimpleOption<T> {
 	 * @see <a href="SimpleOption.html#callbacks">Callbacks</a>
 	 */
 	@Environment(EnvType.CLIENT)
-	public static record ValidatingIntSliderCallbacks(int minInclusive, int maxInclusive) implements SimpleOption.IntSliderCallbacks {
+	public static record ValidatingIntSliderCallbacks(int minInclusive, int maxInclusive, boolean applyValueImmediately)
+		implements SimpleOption.IntSliderCallbacks {
+		public ValidatingIntSliderCallbacks(int minInclusive, int maxInclusive) {
+			this(minInclusive, maxInclusive, true);
+		}
+
 		public Optional<Integer> validate(Integer integer) {
 			return integer.compareTo(this.minInclusive()) >= 0 && integer.compareTo(this.maxInclusive()) <= 0 ? Optional.of(integer) : Optional.empty();
 		}

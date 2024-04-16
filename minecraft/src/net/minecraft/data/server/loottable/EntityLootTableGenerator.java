@@ -38,9 +38,7 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 	);
 	private final FeatureSet requiredFeatures;
 	private final FeatureSet featureSet;
-	private final Map<EntityType<?>, Map<RegistryKey<LootTable>, LootTable.Builder>> lootTables = Maps.<EntityType<?>, Map<RegistryKey<LootTable>, LootTable.Builder>>newHashMap(
-		
-	);
+	private final Map<EntityType<?>, Map<RegistryKey<LootTable>, LootTable.Builder>> lootTables = Maps.<EntityType<?>, Map<RegistryKey<LootTable>, LootTable.Builder>>newHashMap();
 
 	protected EntityLootTableGenerator(FeatureSet requiredFeatures) {
 		this(requiredFeatures, requiredFeatures);
@@ -75,7 +73,7 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 							if (registryKey != LootTables.EMPTY && entityType2.isEnabled(this.featureSet) && (map == null || !map.containsKey(registryKey))) {
 								throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", registryKey, entityType.registryKey().getValue()));
 							}
-		
+
 							if (map != null) {
 								map.forEach((tableKey, lootTableBuilder) -> {
 									if (!set.add(tableKey)) {

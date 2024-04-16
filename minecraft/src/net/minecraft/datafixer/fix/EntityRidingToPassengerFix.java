@@ -61,7 +61,7 @@ public class EntityRidingToPassengerFix extends DataFix {
 					dynamicOps -> pair -> {
 							Optional<Pair<String, Pair<Either<List<NewEntityTree>, Unit>, Entity>>> optional = Optional.empty();
 							Pair<String, Pair<Either<OldEntityTree, Unit>, Entity>> pair2 = pair;
-		
+
 							while (true) {
 								Either<List<NewEntityTree>, Unit> either = DataFixUtils.orElse(
 									optional.map(
@@ -81,7 +81,7 @@ public class EntityRidingToPassengerFix extends DataFix {
 								if (optional2.isEmpty()) {
 									return (Pair)optional.orElseThrow(() -> new IllegalStateException("Should always have an entity tree here"));
 								}
-		
+
 								pair2 = (Pair<String, Pair<Either<OldEntityTree, Unit>, Entity>>)new Typed<>(inputEntityTreeType, dynamicOps, (OldEntityTree)optional2.get())
 									.getOptional(opticFinder)
 									.orElseThrow(() -> new IllegalStateException("Should always have an entity here"));

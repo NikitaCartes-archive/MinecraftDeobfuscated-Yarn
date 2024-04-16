@@ -73,9 +73,7 @@ public class WorldChunk extends Chunk {
 			return "<null>";
 		}
 	};
-	private final Map<BlockPos, WorldChunk.WrappedBlockEntityTickInvoker> blockEntityTickers = Maps.<BlockPos, WorldChunk.WrappedBlockEntityTickInvoker>newHashMap(
-		
-	);
+	private final Map<BlockPos, WorldChunk.WrappedBlockEntityTickInvoker> blockEntityTickers = Maps.<BlockPos, WorldChunk.WrappedBlockEntityTickInvoker>newHashMap();
 	private boolean loadedToWorld;
 	final World world;
 	@Nullable

@@ -48,9 +48,11 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.Unit;
+import net.minecraft.util.dynamic.CodecCache;
 import net.minecraft.util.dynamic.Codecs;
 
 public class DataComponentTypes {
+	static final CodecCache CACHE = new CodecCache(512);
 	public static final DataComponentType<NbtComponent> CUSTOM_DATA = register("custom_data", builder -> builder.codec(NbtComponent.CODEC));
 	public static final DataComponentType<Integer> MAX_STACK_SIZE = register(
 		"max_stack_size", builder -> builder.codec(Codecs.rangedInt(1, 99)).packetCodec(PacketCodecs.VAR_INT)
@@ -63,26 +65,26 @@ public class DataComponentTypes {
 		"unbreakable", builder -> builder.codec(UnbreakableComponent.CODEC).packetCodec(UnbreakableComponent.PACKET_CODEC)
 	);
 	public static final DataComponentType<Text> CUSTOM_NAME = register(
-		"custom_name", builder -> builder.codec(TextCodecs.STRINGIFIED_CODEC).packetCodec(TextCodecs.REGISTRY_PACKET_CODEC)
+		"custom_name", builder -> builder.codec(TextCodecs.STRINGIFIED_CODEC).packetCodec(TextCodecs.REGISTRY_PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<Text> ITEM_NAME = register(
-		"item_name", builder -> builder.codec(TextCodecs.STRINGIFIED_CODEC).packetCodec(TextCodecs.REGISTRY_PACKET_CODEC)
+		"item_name", builder -> builder.codec(TextCodecs.STRINGIFIED_CODEC).packetCodec(TextCodecs.REGISTRY_PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<LoreComponent> LORE = register(
-		"lore", builder -> builder.codec(LoreComponent.CODEC).packetCodec(LoreComponent.PACKET_CODEC)
+		"lore", builder -> builder.codec(LoreComponent.CODEC).packetCodec(LoreComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<Rarity> RARITY = register("rarity", builder -> builder.codec(Rarity.CODEC).packetCodec(Rarity.PACKET_CODEC));
 	public static final DataComponentType<ItemEnchantmentsComponent> ENCHANTMENTS = register(
-		"enchantments", builder -> builder.codec(ItemEnchantmentsComponent.CODEC).packetCodec(ItemEnchantmentsComponent.PACKET_CODEC)
+		"enchantments", builder -> builder.codec(ItemEnchantmentsComponent.CODEC).packetCodec(ItemEnchantmentsComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<BlockPredicatesChecker> CAN_PLACE_ON = register(
-		"can_place_on", builder -> builder.codec(BlockPredicatesChecker.CODEC).packetCodec(BlockPredicatesChecker.PACKET_CODEC)
+		"can_place_on", builder -> builder.codec(BlockPredicatesChecker.CODEC).packetCodec(BlockPredicatesChecker.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<BlockPredicatesChecker> CAN_BREAK = register(
-		"can_break", builder -> builder.codec(BlockPredicatesChecker.CODEC).packetCodec(BlockPredicatesChecker.PACKET_CODEC)
+		"can_break", builder -> builder.codec(BlockPredicatesChecker.CODEC).packetCodec(BlockPredicatesChecker.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<AttributeModifiersComponent> ATTRIBUTE_MODIFIERS = register(
-		"attribute_modifiers", builder -> builder.codec(AttributeModifiersComponent.CODEC).packetCodec(AttributeModifiersComponent.PACKET_CODEC)
+		"attribute_modifiers", builder -> builder.codec(AttributeModifiersComponent.CODEC).packetCodec(AttributeModifiersComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<CustomModelDataComponent> CUSTOM_MODEL_DATA = register(
 		"custom_model_data", builder -> builder.codec(CustomModelDataComponent.CODEC).packetCodec(CustomModelDataComponent.PACKET_CODEC)
@@ -104,16 +106,16 @@ public class DataComponentTypes {
 	);
 	public static final DataComponentType<Unit> INTANGIBLE_PROJECTILE = register("intangible_projectile", builder -> builder.codec(Codec.unit(Unit.INSTANCE)));
 	public static final DataComponentType<FoodComponent> FOOD = register(
-		"food", builder -> builder.codec(FoodComponent.CODEC).packetCodec(FoodComponent.PACKET_CODEC)
+		"food", builder -> builder.codec(FoodComponent.CODEC).packetCodec(FoodComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<Unit> FIRE_RESISTANT = register(
 		"fire_resistant", builder -> builder.codec(Codec.unit(Unit.INSTANCE)).packetCodec(PacketCodec.unit(Unit.INSTANCE))
 	);
 	public static final DataComponentType<ToolComponent> TOOL = register(
-		"tool", builder -> builder.codec(ToolComponent.CODEC).packetCodec(ToolComponent.PACKET_CODEC)
+		"tool", builder -> builder.codec(ToolComponent.CODEC).packetCodec(ToolComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<ItemEnchantmentsComponent> STORED_ENCHANTMENTS = register(
-		"stored_enchantments", builder -> builder.codec(ItemEnchantmentsComponent.CODEC).packetCodec(ItemEnchantmentsComponent.PACKET_CODEC)
+		"stored_enchantments", builder -> builder.codec(ItemEnchantmentsComponent.CODEC).packetCodec(ItemEnchantmentsComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<DyedColorComponent> DYED_COLOR = register(
 		"dyed_color", builder -> builder.codec(DyedColorComponent.CODEC).packetCodec(DyedColorComponent.PACKET_CODEC)
@@ -125,32 +127,32 @@ public class DataComponentTypes {
 		"map_id", builder -> builder.codec(MapIdComponent.CODEC).packetCodec(MapIdComponent.PACKET_CODEC)
 	);
 	public static final DataComponentType<MapDecorationsComponent> MAP_DECORATIONS = register(
-		"map_decorations", builder -> builder.codec(MapDecorationsComponent.CODEC)
+		"map_decorations", builder -> builder.codec(MapDecorationsComponent.CODEC).cache()
 	);
 	public static final DataComponentType<MapPostProcessingComponent> MAP_POST_PROCESSING = register(
 		"map_post_processing", builder -> builder.packetCodec(MapPostProcessingComponent.PACKET_CODEC)
 	);
 	public static final DataComponentType<ChargedProjectilesComponent> CHARGED_PROJECTILES = register(
-		"charged_projectiles", builder -> builder.codec(ChargedProjectilesComponent.CODEC).packetCodec(ChargedProjectilesComponent.PACKET_CODEC)
+		"charged_projectiles", builder -> builder.codec(ChargedProjectilesComponent.CODEC).packetCodec(ChargedProjectilesComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<BundleContentsComponent> BUNDLE_CONTENTS = register(
-		"bundle_contents", builder -> builder.codec(BundleContentsComponent.CODEC).packetCodec(BundleContentsComponent.PACKET_CODEC)
+		"bundle_contents", builder -> builder.codec(BundleContentsComponent.CODEC).packetCodec(BundleContentsComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<PotionContentsComponent> POTION_CONTENTS = register(
-		"potion_contents", builder -> builder.codec(PotionContentsComponent.CODEC).packetCodec(PotionContentsComponent.PACKET_CODEC)
+		"potion_contents", builder -> builder.codec(PotionContentsComponent.CODEC).packetCodec(PotionContentsComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<SuspiciousStewEffectsComponent> SUSPICIOUS_STEW_EFFECTS = register(
-		"suspicious_stew_effects", builder -> builder.codec(SuspiciousStewEffectsComponent.CODEC).packetCodec(SuspiciousStewEffectsComponent.PACKET_CODEC)
+		"suspicious_stew_effects", builder -> builder.codec(SuspiciousStewEffectsComponent.CODEC).packetCodec(SuspiciousStewEffectsComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<WritableBookContentComponent> WRITABLE_BOOK_CONTENT = register(
-		"writable_book_content", builder -> builder.codec(WritableBookContentComponent.CODEC).packetCodec(WritableBookContentComponent.PACKET_CODEC)
+		"writable_book_content", builder -> builder.codec(WritableBookContentComponent.CODEC).packetCodec(WritableBookContentComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<WrittenBookContentComponent> WRITTEN_BOOK_CONTENT = register(
-		"written_book_content", builder -> builder.codec(WrittenBookContentComponent.CODEC).packetCodec(WrittenBookContentComponent.PACKET_CODEC)
+		"written_book_content", builder -> builder.codec(WrittenBookContentComponent.CODEC).packetCodec(WrittenBookContentComponent.PACKET_CODEC).cache()
 	);
-	public static final DataComponentType<ArmorTrim> TRIM = register("trim", builder -> builder.codec(ArmorTrim.CODEC).packetCodec(ArmorTrim.PACKET_CODEC));
+	public static final DataComponentType<ArmorTrim> TRIM = register("trim", builder -> builder.codec(ArmorTrim.CODEC).packetCodec(ArmorTrim.PACKET_CODEC).cache());
 	public static final DataComponentType<DebugStickStateComponent> DEBUG_STICK_STATE = register(
-		"debug_stick_state", builder -> builder.codec(DebugStickStateComponent.CODEC)
+		"debug_stick_state", builder -> builder.codec(DebugStickStateComponent.CODEC).cache()
 	);
 	public static final DataComponentType<NbtComponent> ENTITY_DATA = register(
 		"entity_data", builder -> builder.codec(NbtComponent.CODEC_WITH_ID).packetCodec(NbtComponent.PACKET_CODEC)
@@ -162,44 +164,45 @@ public class DataComponentTypes {
 		"block_entity_data", builder -> builder.codec(NbtComponent.CODEC_WITH_ID).packetCodec(NbtComponent.PACKET_CODEC)
 	);
 	public static final DataComponentType<RegistryEntry<Instrument>> INSTRUMENT = register(
-		"instrument", builder -> builder.codec(Instrument.ENTRY_CODEC).packetCodec(Instrument.ENTRY_PACKET_CODEC)
+		"instrument", builder -> builder.codec(Instrument.ENTRY_CODEC).packetCodec(Instrument.ENTRY_PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<Integer> OMINOUS_BOTTLE_AMPLIFIER = register(
 		"ominous_bottle_amplifier", builder -> builder.codec(Codecs.rangedInt(0, 4)).packetCodec(PacketCodecs.VAR_INT)
 	);
-	public static final DataComponentType<List<Identifier>> RECIPES = register("recipes", builder -> builder.codec(Identifier.CODEC.listOf()));
+	public static final DataComponentType<List<Identifier>> RECIPES = register("recipes", builder -> builder.codec(Identifier.CODEC.listOf()).cache());
 	public static final DataComponentType<LodestoneTrackerComponent> LODESTONE_TRACKER = register(
-		"lodestone_tracker", builder -> builder.codec(LodestoneTrackerComponent.CODEC).packetCodec(LodestoneTrackerComponent.PACKET_CODEC)
+		"lodestone_tracker", builder -> builder.codec(LodestoneTrackerComponent.CODEC).packetCodec(LodestoneTrackerComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<FireworkExplosionComponent> FIREWORK_EXPLOSION = register(
-		"firework_explosion", builder -> builder.codec(FireworkExplosionComponent.CODEC).packetCodec(FireworkExplosionComponent.PACKET_CODEC)
+		"firework_explosion", builder -> builder.codec(FireworkExplosionComponent.CODEC).packetCodec(FireworkExplosionComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<FireworksComponent> FIREWORKS = register(
-		"fireworks", builder -> builder.codec(FireworksComponent.CODEC).packetCodec(FireworksComponent.PACKET_CODEC)
+		"fireworks", builder -> builder.codec(FireworksComponent.CODEC).packetCodec(FireworksComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<ProfileComponent> PROFILE = register(
-		"profile", builder -> builder.codec(ProfileComponent.CODEC).packetCodec(ProfileComponent.PACKET_CODEC)
+		"profile", builder -> builder.codec(ProfileComponent.CODEC).packetCodec(ProfileComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<Identifier> NOTE_BLOCK_SOUND = register(
 		"note_block_sound", builder -> builder.codec(Identifier.CODEC).packetCodec(Identifier.PACKET_CODEC)
 	);
 	public static final DataComponentType<BannerPatternsComponent> BANNER_PATTERNS = register(
-		"banner_patterns", builder -> builder.codec(BannerPatternsComponent.CODEC).packetCodec(BannerPatternsComponent.PACKET_CODEC)
+		"banner_patterns", builder -> builder.codec(BannerPatternsComponent.CODEC).packetCodec(BannerPatternsComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<DyeColor> BASE_COLOR = register(
 		"base_color", builder -> builder.codec(DyeColor.CODEC).packetCodec(DyeColor.PACKET_CODEC)
 	);
 	public static final DataComponentType<Sherds> POT_DECORATIONS = register(
-		"pot_decorations", builder -> builder.codec(Sherds.CODEC).packetCodec(Sherds.PACKET_CODEC)
+		"pot_decorations", builder -> builder.codec(Sherds.CODEC).packetCodec(Sherds.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<ContainerComponent> CONTAINER = register(
-		"container", builder -> builder.codec(ContainerComponent.CODEC).packetCodec(ContainerComponent.PACKET_CODEC)
+		"container", builder -> builder.codec(ContainerComponent.CODEC).packetCodec(ContainerComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<BlockStateComponent> BLOCK_STATE = register(
-		"block_state", builder -> builder.codec(BlockStateComponent.CODEC).packetCodec(BlockStateComponent.PACKET_CODEC)
+		"block_state", builder -> builder.codec(BlockStateComponent.CODEC).packetCodec(BlockStateComponent.PACKET_CODEC).cache()
 	);
 	public static final DataComponentType<List<BeehiveBlockEntity.BeeData>> BEES = register(
-		"bees", builder -> builder.codec(BeehiveBlockEntity.BeeData.LIST_CODEC).packetCodec(BeehiveBlockEntity.BeeData.PACKET_CODEC.collect(PacketCodecs.toList()))
+		"bees",
+		builder -> builder.codec(BeehiveBlockEntity.BeeData.LIST_CODEC).packetCodec(BeehiveBlockEntity.BeeData.PACKET_CODEC.collect(PacketCodecs.toList())).cache()
 	);
 	public static final DataComponentType<ContainerLock> LOCK = register("lock", builder -> builder.codec(ContainerLock.CODEC));
 	public static final DataComponentType<ContainerLootComponent> CONTAINER_LOOT = register(

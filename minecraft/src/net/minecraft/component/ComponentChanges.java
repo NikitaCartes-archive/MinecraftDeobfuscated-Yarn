@@ -263,7 +263,7 @@ public final class ComponentChanges {
 					if (bl) {
 						id = id.substring("!".length());
 					}
-		
+
 					Identifier identifier = Identifier.tryParse(id);
 					DataComponentType<?> dataComponentType = Registries.DATA_COMPONENT_TYPE.get(identifier);
 					if (dataComponentType == null) {
@@ -284,7 +284,7 @@ public final class ComponentChanges {
 			);
 
 		public Codec<?> getValueCodec() {
-			return this.removed ? Codec.unit(Unit.INSTANCE) : this.type.getCodecOrThrow();
+			return this.removed ? Codec.EMPTY.codec() : this.type.getCodecOrThrow();
 		}
 	}
 }

@@ -14,7 +14,6 @@ public record ScreenPos(int x, int y) {
 		return switch (axis) {
 			case HORIZONTAL -> new ScreenPos(sameAxis, otherAxis);
 			case VERTICAL -> new ScreenPos(otherAxis, sameAxis);
-			default -> throw new MatchException(null, null);
 		};
 	}
 
@@ -24,7 +23,6 @@ public record ScreenPos(int x, int y) {
 			case UP -> new ScreenPos(this.x, this.y - 1);
 			case LEFT -> new ScreenPos(this.x - 1, this.y);
 			case RIGHT -> new ScreenPos(this.x + 1, this.y);
-			default -> throw new MatchException(null, null);
 		};
 	}
 
@@ -32,7 +30,6 @@ public record ScreenPos(int x, int y) {
 		return switch (axis) {
 			case HORIZONTAL -> this.x;
 			case VERTICAL -> this.y;
-			default -> throw new MatchException(null, null);
 		};
 	}
 }

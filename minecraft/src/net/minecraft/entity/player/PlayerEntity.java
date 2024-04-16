@@ -37,6 +37,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.ProjectileDeflection;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
@@ -1169,8 +1170,8 @@ public abstract class PlayerEntity extends LivingEntity {
 				f *= 0.2F + h * h * 0.8F;
 				g *= h;
 				this.resetLastAttackedTicks();
-				if (target.getType().isIn(EntityTypeTags.PUNCHABLE_PROJECTILES) && target instanceof ProjectileEntity projectileEntity) {
-					projectileEntity.onPunched(this.getDamageSources().playerAttack(this));
+				if (target.getType().isIn(EntityTypeTags.REDIRECTABLE_PROJECTILE) && target instanceof ProjectileEntity projectileEntity) {
+					projectileEntity.deflect(ProjectileDeflection.REDIRECTED, this, this, true);
 				} else {
 					if (f > 0.0F || g > 0.0F) {
 						boolean bl = h > 0.9F;

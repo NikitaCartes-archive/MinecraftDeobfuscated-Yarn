@@ -157,7 +157,7 @@ public class OptionsKeyLwjgl3Fix extends DataFix {
 											} else {
 												string = "key.mouse." + (j + 1);
 											}
-			
+
 											return Pair.of((Dynamic)entry.getKey(), ((Dynamic)entry.getValue()).createString(string));
 										} else {
 											String string2 = NUMERICAL_KEY_IDS_TO_KEY_NAMES.getOrDefault(i, "key.unknown");

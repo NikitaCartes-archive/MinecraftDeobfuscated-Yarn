@@ -219,7 +219,7 @@ public class TitleScreen extends Screen {
 					Text.translatable("menu.resetdemo"),
 					button -> {
 						LevelStorage levelStorage = this.client.getLevelStorage();
-			
+
 						try (LevelStorage.Session session = levelStorage.createSessionWithoutSymlinkCheck("Demo_World")) {
 							if (session.levelDatExists()) {
 								this.client
@@ -327,7 +327,7 @@ public class TitleScreen extends Screen {
 
 	@Override
 	protected void renderPanoramaBackground(DrawContext context, float delta) {
-		ROTATING_PANORAMA_RENDERER.render(context, this.width, this.height, this.backgroundAlpha, delta);
+		ROTATING_PANORAMA_RENDERER.render(context, this.width, this.height, this.backgroundAlpha, this.getPanoramaTickDelta());
 	}
 
 	@Override

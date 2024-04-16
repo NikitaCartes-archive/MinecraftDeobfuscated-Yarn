@@ -334,12 +334,12 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				chunks -> {
 					List<Chunk> listx = Lists.<Chunk>newArrayList();
 					int l = 0;
-	
+
 					for (OptionalChunk<Chunk> optionalChunk : chunks) {
 						if (optionalChunk == null) {
 							throw this.crash(new IllegalStateException("At least one of the chunk futures were null"), "n/a");
 						}
-	
+
 						Chunk chunk = optionalChunk.orElse(null);
 						if (chunk == null) {
 							int mx = l;
@@ -347,11 +347,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 								(Supplier<String>)(() -> "Unloaded " + new ChunkPos(i + mx % (margin * 2 + 1), j + mx / (margin * 2 + 1)) + " " + optionalChunk.getError())
 							);
 						}
-	
+
 						listx.add(chunk);
 						l++;
 					}
-	
+
 					return OptionalChunk.of(listx);
 				}
 			);

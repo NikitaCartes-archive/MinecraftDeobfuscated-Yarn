@@ -49,7 +49,7 @@ public interface AbuseReportSender {
 					AbuseReportRequest abuseReportRequest = new AbuseReportRequest(
 						1, id, report, this.environment.toClientInfo(), this.environment.toThirdPartyServerInfo(), this.environment.toRealmInfo(), type.getName()
 					);
-	
+
 					try {
 						this.userApiService.reportAbuse(abuseReportRequest);
 						return Unit.INSTANCE;
@@ -79,7 +79,6 @@ public interface AbuseReportSender {
 				case SERVICE_UNAVAILABLE -> SERVICE_UNAVAILABLE_ERROR_TEXT;
 				case HTTP_ERROR -> HTTP_ERROR_TEXT;
 				case JSON_ERROR -> JSON_ERROR_TEXT;
-				default -> throw new MatchException(null, null);
 			};
 		}
 

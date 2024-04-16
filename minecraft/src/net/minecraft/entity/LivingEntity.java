@@ -2613,7 +2613,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				case HAND -> this.getSyncedHandStack(equipmentSlot);
 				case ARMOR -> this.getSyncedArmorStack(equipmentSlot);
 				case BODY -> this.syncedBodyArmorStack;
-				default -> throw new MatchException(null, null);
 			};
 			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 			if (this.areItemsDifferent(itemStack, itemStack2)) {
@@ -3554,7 +3553,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			case FEET -> 52;
 			case LEGS -> 51;
 			case BODY -> 65;
-			default -> throw new MatchException(null, null);
 		};
 	}
 

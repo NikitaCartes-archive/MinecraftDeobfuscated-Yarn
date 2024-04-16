@@ -85,7 +85,7 @@ public class StructurePlacementCalculator {
 				structureSet -> {
 					StructureSet structureSet2 = (StructureSet)structureSet.value();
 					boolean bl = false;
-		
+
 					for (StructureSet.WeightedEntry weightedEntry : structureSet2.structures()) {
 						Structure structure = weightedEntry.structure().value();
 						if (structure.getValidBiomes().stream().anyMatch(set::contains)) {
@@ -93,7 +93,7 @@ public class StructurePlacementCalculator {
 							bl = true;
 						}
 					}
-		
+
 					if (bl && structureSet2.placement() instanceof ConcentricRingsStructurePlacement concentricRingsStructurePlacement) {
 						this.concentricPlacementsToPositions
 							.put(concentricRingsStructurePlacement, this.calculateConcentricsRingPlacementPos(structureSet, concentricRingsStructurePlacement));

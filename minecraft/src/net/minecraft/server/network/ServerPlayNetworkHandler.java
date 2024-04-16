@@ -152,7 +152,6 @@ import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
 import net.minecraft.network.state.ConfigurationStates;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.BeaconScreenHandler;
@@ -1518,31 +1517,36 @@ public class ServerPlayNetworkHandler
 								}
 							}
 						}
-	
+
 						@Override
 						public void interact(Hand hand) {
 							this.processInteract(hand, PlayerEntity::interact);
 						}
-	
+
 						@Override
 						public void interactAt(Hand hand, Vec3d pos) {
 							this.processInteract(hand, (player, entityxx, handx) -> entityxx.interactAt(player, pos, handx));
 						}
-	
+
 						@Override
 						public void attack() {
-							if (!(entity instanceof ItemEntity)
-								&& !(entity instanceof ExperienceOrbEntity)
-								&& entity != ServerPlayNetworkHandler.this.player
-								&& (!(entity instanceof PersistentProjectileEntity) || entity.getType().isIn(EntityTypeTags.PUNCHABLE_PROJECTILES))) {
-								ItemStack itemStack = ServerPlayNetworkHandler.this.player.getStackInHand(Hand.MAIN_HAND);
-								if (itemStack.isItemEnabled(serverWorld.getEnabledFeatures())) {
-									ServerPlayNetworkHandler.this.player.attack(entity);
+							label23:
+							if (!(entity instanceof ItemEntity) && !(entity instanceof ExperienceOrbEntity) && entity != ServerPlayNetworkHandler.this.player) {
+								if (entity instanceof PersistentProjectileEntity persistentProjectileEntity && !persistentProjectileEntity.isAttackable()) {
+									break label23;
 								}
-							} else {
-								ServerPlayNetworkHandler.this.disconnect(Text.translatable("multiplayer.disconnect.invalid_entity_attacked"));
-								ServerPlayNetworkHandler.LOGGER.warn("Player {} tried to attack an invalid entity", ServerPlayNetworkHandler.this.player.getName().getString());
+
+								ItemStack itemStack = ServerPlayNetworkHandler.this.player.getStackInHand(Hand.MAIN_HAND);
+								if (!itemStack.isItemEnabled(serverWorld.getEnabledFeatures())) {
+									return;
+								}
+
+								ServerPlayNetworkHandler.this.player.attack(entity);
+								return;
 							}
+
+							ServerPlayNetworkHandler.this.disconnect(Text.translatable("multiplayer.disconnect.invalid_entity_attacked"));
+							ServerPlayNetworkHandler.LOGGER.warn("Player {} tried to attack an invalid entity", ServerPlayNetworkHandler.this.player.getName().getString());
 						}
 					}
 				);

@@ -64,28 +64,28 @@ public class BitmapFont implements Font {
 					public float getOversample() {
 						return 1.0F / BitmapFontGlyph.this.scaleFactor;
 					}
-	
+
 					@Override
 					public int getWidth() {
 						return BitmapFontGlyph.this.width;
 					}
-	
+
 					@Override
 					public int getHeight() {
 						return BitmapFontGlyph.this.height;
 					}
-	
+
 					@Override
 					public float getAscent() {
 						return (float)BitmapFontGlyph.this.ascent;
 					}
-	
+
 					@Override
 					public void upload(int x, int y) {
 						BitmapFontGlyph.this.image
 							.upload(0, x, y, BitmapFontGlyph.this.x, BitmapFontGlyph.this.y, BitmapFontGlyph.this.width, BitmapFontGlyph.this.height, false, false);
 					}
-	
+
 					@Override
 					public boolean hasColor() {
 						return BitmapFontGlyph.this.image.getFormat().getChannelCount() > 1;

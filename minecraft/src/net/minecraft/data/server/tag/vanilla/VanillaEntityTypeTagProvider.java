@@ -138,6 +138,6 @@ public class VanillaEntityTypeTagProvider extends ValueLookupTagProvider<EntityT
 		this.getOrCreateTagBuilder(EntityTypeTags.SENSITIVE_TO_IMPALING).addTag(EntityTypeTags.AQUATIC);
 		this.getOrCreateTagBuilder(EntityTypeTags.SENSITIVE_TO_BANE_OF_ARTHROPODS).addTag(EntityTypeTags.ARTHROPOD);
 		this.getOrCreateTagBuilder(EntityTypeTags.SENSITIVE_TO_SMITE).addTag(EntityTypeTags.UNDEAD);
-		this.getOrCreateTagBuilder(EntityTypeTags.PUNCHABLE_PROJECTILES).add(EntityType.FIREBALL);
+		this.getOrCreateTagBuilder(EntityTypeTags.REDIRECTABLE_PROJECTILE).add(EntityType.FIREBALL);
 	}
 }

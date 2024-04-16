@@ -31,7 +31,6 @@ public class ParrotEntityRenderer extends MobEntityRenderer<ParrotEntity, Parrot
 			case GREEN -> GREEN_TEXTURE;
 			case YELLOW_BLUE -> YELLOW_TEXTURE;
 			case GRAY -> GREY_TEXTURE;
-			default -> throw new MatchException(null, null);
 		};
 	}
 

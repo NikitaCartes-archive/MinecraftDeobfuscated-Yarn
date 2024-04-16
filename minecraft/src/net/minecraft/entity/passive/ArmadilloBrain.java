@@ -104,7 +104,7 @@ public class ArmadilloBrain {
 					if (mobEntity instanceof ArmadilloEntity armadilloEntity && armadilloEntity.isNotIdle()) {
 						return false;
 					}
-	
+
 					return super.shouldRun(serverWorld, mobEntity);
 				}
 			}, new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS), new TemptationCooldownTask(MemoryModuleType.GAZE_COOLDOWN_TICKS), UNROLL_TASK)

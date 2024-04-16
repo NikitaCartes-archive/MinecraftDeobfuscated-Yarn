@@ -104,7 +104,7 @@ public class ServerStatHandler extends StatHandler {
 									Registries.STAT_TYPE.getOrEmpty(new Identifier(string)),
 									statType -> {
 										NbtCompound nbtCompound2x = nbtCompound2.getCompound(string);
-	
+
 										for (String string2 : nbtCompound2x.getKeys()) {
 											if (nbtCompound2x.contains(string2, NbtElement.NUMBER_TYPE)) {
 												Util.ifPresentOrElse(

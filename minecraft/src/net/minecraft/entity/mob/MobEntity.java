@@ -1014,7 +1014,6 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 			case HAND -> (ItemStack)this.handItems.get(slot.getEntitySlotId());
 			case ARMOR -> (ItemStack)this.armorItems.get(slot.getEntitySlotId());
 			case BODY -> this.bodyArmor;
-			default -> throw new MatchException(null, null);
 		};
 	}
 
@@ -1062,7 +1061,6 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 			case HAND -> this.handDropChances[slot.getEntitySlotId()];
 			case ARMOR -> this.armorDropChances[slot.getEntitySlotId()];
 			case BODY -> this.bodyArmorDropChance;
-			default -> throw new MatchException(null, null);
 		};
 	}
 

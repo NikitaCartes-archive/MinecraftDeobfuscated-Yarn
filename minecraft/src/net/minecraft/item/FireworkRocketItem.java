@@ -81,7 +81,7 @@ public class FireworkRocketItem extends Item implements ProjectileItem {
 
 	@Override
 	public ProjectileItem.Settings getProjectileSettings() {
-		return ProjectileItem.Settings.builder().positionFunction(FireworkRocketItem::position).uncertainty(0.5F).power(1.0F).overrideDispenseEvent(1004).build();
+		return ProjectileItem.Settings.builder().positionFunction(FireworkRocketItem::position).uncertainty(1.0F).power(0.5F).overrideDispenseEvent(1004).build();
 	}
 
 	private static Vec3d position(BlockPointer pointer, Direction facing) {

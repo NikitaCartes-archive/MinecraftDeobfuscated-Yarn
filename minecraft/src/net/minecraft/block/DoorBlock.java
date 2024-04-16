@@ -131,7 +131,6 @@ public class DoorBlock extends Block {
 		return switch (type) {
 			case LAND, AIR -> state.get(OPEN);
 			case WATER -> false;
-			default -> throw new MatchException(null, null);
 		};
 	}
 

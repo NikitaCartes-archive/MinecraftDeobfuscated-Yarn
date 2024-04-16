@@ -28,13 +28,13 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 		.listOf()
 		.validate(stewEffects -> {
 			Set<RegistryEntry<StatusEffect>> set = new ObjectOpenHashSet<>();
-	
+
 			for (SetStewEffectLootFunction.StewEffect stewEffect : stewEffects) {
 				if (!set.add(stewEffect.effect())) {
 					return DataResult.error(() -> "Encountered duplicate mob effect: '" + stewEffect.effect() + "'");
 				}
 			}
-	
+
 			return DataResult.success(stewEffects);
 		});
 	public static final MapCodec<SetStewEffectLootFunction> CODEC = RecordCodecBuilder.mapCodec(

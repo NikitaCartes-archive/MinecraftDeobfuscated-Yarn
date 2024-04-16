@@ -10,7 +10,7 @@ public final class SimpleVoxelShape extends VoxelShape {
 	}
 
 	@Override
-	public DoubleList getPointPositions(Direction.Axis axis) {
+	protected DoubleList getPointPositions(Direction.Axis axis) {
 		return new FractionalDoubleList(this.voxels.getSize(axis));
 	}
 

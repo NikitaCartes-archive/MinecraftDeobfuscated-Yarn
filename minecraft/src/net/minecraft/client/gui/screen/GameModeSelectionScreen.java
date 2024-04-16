@@ -233,7 +233,6 @@ public class GameModeSelectionScreen extends Screen {
 				case SURVIVAL -> SURVIVAL;
 				case CREATIVE -> CREATIVE;
 				case ADVENTURE -> ADVENTURE;
-				default -> throw new MatchException(null, null);
 			};
 		}
 	}

@@ -212,6 +212,7 @@ public class Schema99 extends Schema {
 		schema.registerSimple(map, "EnderCrystal");
 		schema.register(map, "AreaEffectCloud", (Function<String, TypeTemplate>)(string -> DSL.optionalFields("Particle", TypeReferences.PARTICLE.in(schema))));
 		schema.registerSimple(map, "ShulkerBullet");
+		schema.registerSimple(map, "DragonFireball");
 		targetEquipment(schema, map, "Shulker");
 		return map;
 	}

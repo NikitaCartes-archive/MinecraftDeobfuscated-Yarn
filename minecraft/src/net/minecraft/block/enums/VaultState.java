@@ -73,22 +73,17 @@ public enum VaultState implements StringIdentifiable {
 	}
 
 	public VaultState update(ServerWorld world, BlockPos pos, VaultConfig config, VaultServerData serverData, VaultSharedData sharedData) {
-		VaultState var10000;
-		switch (this) {
-			case INACTIVE:
-				var10000 = updateActiveState(world, pos, config, serverData, sharedData, config.activationRange());
-				break;
-			case ACTIVE:
-				var10000 = updateActiveState(world, pos, config, serverData, sharedData, config.deactivationRange());
-				break;
-			case UNLOCKING:
+		return switch (this) {
+			case INACTIVE -> updateActiveState(world, pos, config, serverData, sharedData, config.activationRange());
+			case ACTIVE -> updateActiveState(world, pos, config, serverData, sharedData, config.deactivationRange());
+			case UNLOCKING -> {
 				serverData.setStateUpdatingResumeTime(world.getTime() + 20L);
-				var10000 = EJECTING;
-				break;
-			case EJECTING:
+				yield EJECTING;
+			}
+			case EJECTING -> {
 				if (serverData.getItemsToEject().isEmpty()) {
 					serverData.finishEjecting();
-					var10000 = updateActiveState(world, pos, config, serverData, sharedData, config.deactivationRange());
+					yield updateActiveState(world, pos, config, serverData, sharedData, config.deactivationRange());
 				} else {
 					float f = serverData.getEjectSoundPitchModifier();
 					this.ejectItem(world, pos, serverData.getItemToEject(), f);
@@ -96,14 +91,10 @@ public enum VaultState implements StringIdentifiable {
 					boolean bl = serverData.getItemsToEject().isEmpty();
 					int i = bl ? 20 : 20;
 					serverData.setStateUpdatingResumeTime(world.getTime() + (long)i);
-					var10000 = EJECTING;
+					yield EJECTING;
 				}
-				break;
-			default:
-				throw new MatchException(null, null);
-		}
-
-		return var10000;
+			}
+		};
 	}
 
 	private static VaultState updateActiveState(

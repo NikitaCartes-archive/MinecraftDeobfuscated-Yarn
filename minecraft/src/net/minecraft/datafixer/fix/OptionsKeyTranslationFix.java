@@ -30,7 +30,7 @@ public class OptionsKeyTranslationFix extends DataFix {
 											return Pair.of((Dynamic)entry.getKey(), dynamic.createString("key.keyboard." + string.substring("key.".length())));
 										}
 									}
-			
+
 									return Pair.of((Dynamic)entry.getKey(), (Dynamic)entry.getValue());
 								}).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))))
 							.result()

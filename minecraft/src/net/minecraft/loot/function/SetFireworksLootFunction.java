@@ -16,24 +16,24 @@ import net.minecraft.util.dynamic.Codecs;
 public class SetFireworksLootFunction extends ConditionalLootFunction {
 	public static final MapCodec<SetFireworksLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
-				.<Optional<ListOperation.class_9677<FireworkExplosionComponent>>, Optional<Integer>>and(
+				.<Optional<ListOperation.Values<FireworkExplosionComponent>>, Optional<Integer>>and(
 					instance.group(
-						ListOperation.class_9677.method_59828(FireworkExplosionComponent.CODEC, 256).optionalFieldOf("explosions").forGetter(function -> function.explosions),
+						ListOperation.Values.createCodec(FireworkExplosionComponent.CODEC, 256).optionalFieldOf("explosions").forGetter(function -> function.explosions),
 						Codecs.UNSIGNED_BYTE.optionalFieldOf("flight_duration").forGetter(function -> function.flightDuration)
 					)
 				)
 				.apply(instance, SetFireworksLootFunction::new)
 	);
 	public static final FireworksComponent DEFAULT_FIREWORKS = new FireworksComponent(0, List.of());
-	private final Optional<ListOperation.class_9677<FireworkExplosionComponent>> explosions;
+	private final Optional<ListOperation.Values<FireworkExplosionComponent>> explosions;
 	private final Optional<Integer> flightDuration;
 
 	protected SetFireworksLootFunction(
-		List<LootCondition> conditions, Optional<ListOperation.class_9677<FireworkExplosionComponent>> optional, Optional<Integer> optional2
+		List<LootCondition> conditions, Optional<ListOperation.Values<FireworkExplosionComponent>> explosions, Optional<Integer> flightDuration
 	) {
 		super(conditions);
-		this.explosions = optional;
-		this.flightDuration = optional2;
+		this.explosions = explosions;
+		this.flightDuration = flightDuration;
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class SetFireworksLootFunction extends ConditionalLootFunction {
 	private FireworksComponent apply(FireworksComponent fireworksComponent) {
 		return new FireworksComponent(
 			(Integer)this.flightDuration.orElseGet(fireworksComponent::flightDuration),
-			(List<FireworkExplosionComponent>)this.explosions.map(arg -> arg.method_59831(fireworksComponent.explosions())).orElse(fireworksComponent.explosions())
+			(List<FireworkExplosionComponent>)this.explosions.map(values -> values.apply(fireworksComponent.explosions())).orElse(fireworksComponent.explosions())
 		);
 	}
 

@@ -393,7 +393,7 @@ public class TaskTriggerer<E extends LivingEntity, M> implements App<TaskTrigger
 							}
 						}
 					}
-	
+
 					@Override
 					public String asString() {
 						return taskFunction5.asString()
@@ -406,7 +406,7 @@ public class TaskTriggerer<E extends LivingEntity, M> implements App<TaskTrigger
 							+ " * "
 							+ taskFunction4.asString();
 					}
-	
+
 					public String toString() {
 						return this.asString();
 					}

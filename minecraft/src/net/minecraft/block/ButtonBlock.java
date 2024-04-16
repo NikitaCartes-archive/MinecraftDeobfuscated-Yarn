@@ -90,7 +90,6 @@ public class ButtonBlock extends WallMountedBlock {
 					case WEST -> bl ? WEST_PRESSED_SHAPE : WEST_SHAPE;
 					case SOUTH -> bl ? SOUTH_PRESSED_SHAPE : SOUTH_SHAPE;
 					case NORTH, UP, DOWN -> bl ? NORTH_PRESSED_SHAPE : NORTH_SHAPE;
-					default -> throw new MatchException(null, null);
 				};
 			case CEILING:
 			default:

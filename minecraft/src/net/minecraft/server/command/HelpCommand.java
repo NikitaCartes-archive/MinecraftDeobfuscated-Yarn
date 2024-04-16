@@ -18,11 +18,11 @@ public class HelpCommand {
 			CommandManager.literal("help")
 				.executes(context -> {
 					Map<CommandNode<ServerCommandSource>, String> map = dispatcher.getSmartUsage(dispatcher.getRoot(), context.getSource());
-		
+
 					for (String string : map.values()) {
 						context.getSource().sendFeedback(() -> Text.literal("/" + string), false);
 					}
-		
+
 					return map.size();
 				})
 				.then(
@@ -36,11 +36,11 @@ public class HelpCommand {
 									Map<CommandNode<ServerCommandSource>, String> map = dispatcher.getSmartUsage(
 										Iterables.<ParsedCommandNode<ServerCommandSource>>getLast(parseResults.getContext().getNodes()).getNode(), context.getSource()
 									);
-					
+
 									for (String string : map.values()) {
 										context.getSource().sendFeedback(() -> Text.literal("/" + parseResults.getReader().getString() + " " + string), false);
 									}
-					
+
 									return map.size();
 								}
 							}

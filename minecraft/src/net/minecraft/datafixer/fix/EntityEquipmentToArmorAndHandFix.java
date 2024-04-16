@@ -56,18 +56,18 @@ public class EntityEquipmentToArmorAndHandFix extends DataFix {
 					if (!list.isEmpty()) {
 						either = Either.left(Lists.<IS>newArrayList((IS[])(new Object[]{list.get(0), object})));
 					}
-	
+
 					if (list.size() > 1) {
 						List<IS> list2 = Lists.<IS>newArrayList(object, object, object, object);
-	
+
 						for (int i = 1; i < Math.min(list.size(), 5); i++) {
 							list2.set(i - 1, list.get(i));
 						}
-	
+
 						either2 = Either.left(list2);
 					}
 				}
-	
+
 				Dynamic<?> dynamic2 = dynamic;
 				Optional<? extends Stream<? extends Dynamic<?>>> optional2 = dynamic.get("DropChances").asStreamOpt().result();
 				if (optional2.isPresent()) {
@@ -77,7 +77,7 @@ public class EntityEquipmentToArmorAndHandFix extends DataFix {
 						Dynamic<?> dynamic3 = dynamic.createList(Stream.of(f, 0.0F).map(dynamic::createFloat));
 						dynamic = dynamic.set("HandDropChances", dynamic3);
 					}
-	
+
 					if (dynamic.get("ArmorDropChances").result().isEmpty()) {
 						Dynamic<?> dynamic3 = dynamic.createList(
 							Stream.of(
@@ -90,10 +90,10 @@ public class EntityEquipmentToArmorAndHandFix extends DataFix {
 						);
 						dynamic = dynamic.set("ArmorDropChances", dynamic3);
 					}
-	
+
 					dynamic = dynamic.remove("DropChances");
 				}
-	
+
 				return typed.set(opticFinder, type3, Pair.of(either, Pair.of(either2, Pair.of(either3, dynamic))));
 			}
 		);

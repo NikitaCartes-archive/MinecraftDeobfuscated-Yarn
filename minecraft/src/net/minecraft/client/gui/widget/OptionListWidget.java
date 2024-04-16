@@ -69,6 +69,20 @@ public class OptionListWidget extends ElementListWidget<OptionListWidget.WidgetE
 		return null;
 	}
 
+	public void applyAllPendingValues() {
+		for (OptionListWidget.WidgetEntry widgetEntry : this.children()) {
+			if (widgetEntry instanceof OptionListWidget.OptionWidgetEntry) {
+				OptionListWidget.OptionWidgetEntry optionWidgetEntry = (OptionListWidget.OptionWidgetEntry)widgetEntry;
+
+				for (ClickableWidget clickableWidget : optionWidgetEntry.optionWidgets.values()) {
+					if (clickableWidget instanceof SimpleOption.OptionSliderWidgetImpl<?> optionSliderWidgetImpl) {
+						optionSliderWidgetImpl.applyPendingValue();
+					}
+				}
+			}
+		}
+	}
+
 	public Optional<Element> getHoveredWidget(double mouseX, double mouseY) {
 		for (OptionListWidget.WidgetEntry widgetEntry : this.children()) {
 			for (Element element : widgetEntry.children()) {

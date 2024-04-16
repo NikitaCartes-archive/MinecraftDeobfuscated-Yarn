@@ -10,7 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ProjectileDeflector;
+import net.minecraft.entity.ProjectileDeflection;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -48,9 +48,9 @@ public class BreezeEntity extends HostileEntity {
 	public AnimationState field_47270 = new AnimationState();
 	private int longJumpingParticleAddCount = 0;
 	private int ticksUntilWhirlSound = 0;
-	private static final ProjectileDeflector PROJECTILE_DEFLECTOR = (projectile, hitEntity, random) -> {
+	private static final ProjectileDeflection PROJECTILE_DEFLECTOR = (projectile, hitEntity, random) -> {
 		hitEntity.getWorld().playSoundFromEntity(hitEntity, SoundEvents.ENTITY_BREEZE_DEFLECT, hitEntity.getSoundCategory(), 1.0F, 1.0F);
-		ProjectileDeflector.SIMPLE.deflect(projectile, hitEntity, random);
+		ProjectileDeflection.SIMPLE.deflect(projectile, hitEntity, random);
 	};
 
 	public static DefaultAttributeContainer.Builder createBreezeAttributes() {
@@ -183,10 +183,10 @@ public class BreezeEntity extends HostileEntity {
 	}
 
 	@Override
-	public ProjectileDeflector getProjectileDeflector(ProjectileEntity projectile) {
+	public ProjectileDeflection getProjectileDeflection(ProjectileEntity projectile) {
 		return projectile.getType() != EntityType.BREEZE_WIND_CHARGE && projectile.getType() != EntityType.WIND_CHARGE
 			? PROJECTILE_DEFLECTOR
-			: ProjectileDeflector.NONE;
+			: ProjectileDeflection.NONE;
 	}
 
 	@Override

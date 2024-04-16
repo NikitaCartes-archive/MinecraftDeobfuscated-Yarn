@@ -36,12 +36,12 @@ public class FlowerbedBlock extends PlantBlock implements Fertilizable {
 				Block.createCuboidShape(0.0, 0.0, 8.0, 8.0, 3.0, 16.0)
 			};
 			VoxelShape voxelShape = VoxelShapes.empty();
-	
+
 			for (int i = 0; i < flowerAmount; i++) {
 				int j = Math.floorMod(i - facing.getHorizontal(), 4);
 				voxelShape = VoxelShapes.union(voxelShape, voxelShapes[j]);
 			}
-	
+
 			return voxelShape.asCuboid();
 		})
 	);

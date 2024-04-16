@@ -15,7 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.ProjectileDeflector;
+import net.minecraft.entity.ProjectileDeflection;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -205,9 +205,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				}
 
 				if (hitResult != null && !bl) {
-					ProjectileDeflector projectileDeflector = this.deflectOrCollide(hitResult);
+					ProjectileDeflection projectileDeflection = this.hitOrDeflect(hitResult);
 					this.velocityDirty = true;
-					if (projectileDeflector != ProjectileDeflector.NONE) {
+					if (projectileDeflection != ProjectileDeflection.NONE) {
 						break;
 					}
 				}
@@ -400,9 +400,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			}
 		} else {
 			entity.setFireTicks(j);
-			this.setVelocity(this.getVelocity().multiply(-0.1));
-			this.setYaw(this.getYaw() + 180.0F);
-			this.prevYaw += 180.0F;
+			this.deflect(ProjectileDeflection.SIMPLE, entity, this.getOwner(), false);
+			this.setVelocity(this.getVelocity().multiply(0.2));
 			if (!this.getWorld().isClient && this.getVelocity().lengthSquared() < 1.0E-7) {
 				if (this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED) {
 					this.dropStack(this.asItemStack(), 0.1F);
@@ -568,7 +567,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	@Override
 	public boolean isAttackable() {
-		return this.getType().isIn(EntityTypeTags.PUNCHABLE_PROJECTILES);
+		return this.getType().isIn(EntityTypeTags.REDIRECTABLE_PROJECTILE);
 	}
 
 	public void setCritical(boolean critical) {

@@ -26,7 +26,7 @@ public class RingBellTask {
 									bellBlock.ring(entity, world, blockPos, null);
 								}
 							}
-	
+
 							return true;
 						}
 					})

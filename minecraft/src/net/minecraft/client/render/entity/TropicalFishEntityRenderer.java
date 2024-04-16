@@ -31,7 +31,6 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 		return switch (tropicalFishEntity.getVariant().getSize()) {
 			case SMALL -> A_TEXTURE;
 			case LARGE -> B_TEXTURE;
-			default -> throw new MatchException(null, null);
 		};
 	}
 
@@ -39,7 +38,6 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 		TintableCompositeModel<TropicalFishEntity> tintableCompositeModel = switch (tropicalFishEntity.getVariant().getSize()) {
 			case SMALL -> this.smallModel;
 			case LARGE -> this.largeModel;
-			default -> throw new MatchException(null, null);
 		};
 		this.model = tintableCompositeModel;
 		float[] fs = tropicalFishEntity.getBaseColorComponents().getColorComponents();

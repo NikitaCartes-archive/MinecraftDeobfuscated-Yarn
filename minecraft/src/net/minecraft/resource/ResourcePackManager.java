@@ -30,9 +30,9 @@ public class ResourcePackManager {
 		this.providers = ImmutableSet.copyOf(providers);
 	}
 
-	public static String method_59809(Collection<ResourcePackProfile> collection) {
-		return (String)collection.stream()
-			.map(resourcePackProfile -> resourcePackProfile.getId() + (resourcePackProfile.getCompatibility().isCompatible() ? "" : " (incompatible)"))
+	public static String listPacks(Collection<ResourcePackProfile> profiles) {
+		return (String)profiles.stream()
+			.map(profile -> profile.getId() + (profile.getCompatibility().isCompatible() ? "" : " (incompatible)"))
 			.collect(Collectors.joining(", "));
 	}
 

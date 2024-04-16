@@ -131,7 +131,6 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 				case WEST -> Optional.of(new Vec2f((float)f, (float)e));
 				case EAST -> Optional.of(new Vec2f((float)(1.0 - f), (float)e));
 				case DOWN, UP -> Optional.empty();
-				default -> throw new MatchException(null, null);
 			};
 		}
 	}

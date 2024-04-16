@@ -27,7 +27,7 @@ public class SlicedVoxelShape extends VoxelShape {
 	}
 
 	@Override
-	public DoubleList getPointPositions(Direction.Axis axis) {
+	protected DoubleList getPointPositions(Direction.Axis axis) {
 		return axis == this.axis ? POINTS : this.shape.getPointPositions(axis);
 	}
 }

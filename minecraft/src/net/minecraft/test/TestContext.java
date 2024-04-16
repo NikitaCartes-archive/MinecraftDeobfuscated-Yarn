@@ -567,6 +567,15 @@ public class TestContext {
 		}
 	}
 
+	public void dontExpectEntityBetween(EntityType<?> type, Vec3d pos1, Vec3d pos2) {
+		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, new Box(pos1, pos2), Entity::isAlive);
+		if (!list.isEmpty()) {
+			throw new PositionedException(
+				"Did not expect " + type.getUntranslatedName() + " between ", BlockPos.ofFloored(pos1), BlockPos.ofFloored(pos2), this.test.getTick()
+			);
+		}
+	}
+
 	public void expectEntityToTouch(EntityType<?> type, double x, double y, double z) {
 		Vec3d vec3d = new Vec3d(x, y, z);
 		Vec3d vec3d2 = this.getAbsolute(vec3d);

@@ -24,8 +24,8 @@ import net.minecraft.text.Text;
 
 public class MessageArgumentType implements SignedArgumentType<MessageArgumentType.MessageFormat> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("Hello world!", "foo", "@e", "Hello @p :)");
-	static final Dynamic2CommandExceptionType field_51482 = new Dynamic2CommandExceptionType(
-		(object, object2) -> Text.stringifiedTranslatable("argument.message.too_long", object, object2)
+	static final Dynamic2CommandExceptionType MESSAGE_TOO_LONG_EXCEPTION = new Dynamic2CommandExceptionType(
+		(length, maxLength) -> Text.stringifiedTranslatable("argument.message.too_long", length, maxLength)
 	);
 
 	public static MessageArgumentType message() {
@@ -115,7 +115,7 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 
 		public static MessageArgumentType.MessageFormat parse(StringReader reader, boolean canUseSelectors) throws CommandSyntaxException {
 			if (reader.getRemainingLength() > 256) {
-				throw MessageArgumentType.field_51482.create(reader.getRemainingLength(), 256);
+				throw MessageArgumentType.MESSAGE_TOO_LONG_EXCEPTION.create(reader.getRemainingLength(), 256);
 			} else {
 				String string = reader.getRemaining();
 				if (!canUseSelectors) {

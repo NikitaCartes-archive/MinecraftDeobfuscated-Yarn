@@ -26,7 +26,6 @@ public class LlamaEntityRenderer extends MobEntityRenderer<LlamaEntity, LlamaEnt
 			case WHITE -> WHITE_TEXTURE;
 			case BROWN -> BROWN_TEXTURE;
 			case GRAY -> GRAY_TEXTURE;
-			default -> throw new MatchException(null, null);
 		};
 	}
 }

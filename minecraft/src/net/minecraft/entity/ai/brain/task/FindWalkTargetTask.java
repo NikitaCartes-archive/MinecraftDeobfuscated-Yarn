@@ -34,7 +34,7 @@ public class FindWalkTargetTask {
 								vec3d = FuzzyTargeting.find(entity, horizontalRange, verticalRange);
 							}
 						}
-	
+
 						walkTarget.remember(Optional.ofNullable(vec3d).map(pos -> new WalkTarget(pos, walkSpeed, 0)));
 						return true;
 					})

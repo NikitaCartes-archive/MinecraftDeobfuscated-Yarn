@@ -140,7 +140,7 @@ public class RuinedPortalStructure extends Structure {
 									)
 							);
 						}
-		
+
 						collector.addPiece(
 							new RuinedPortalStructurePiece(
 								context.structureTemplateManager(), blockPos4, setup4.placement(), properties, identifier, structureTemplate, blockRotation, blockMirror, blockPos

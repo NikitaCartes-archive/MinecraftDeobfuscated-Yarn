@@ -58,6 +58,13 @@ public class ItemEnchantmentsComponent implements TooltipAppender {
 	ItemEnchantmentsComponent(Object2IntOpenHashMap<RegistryEntry<Enchantment>> enchantments, boolean showInTooltip) {
 		this.enchantments = enchantments;
 		this.showInTooltip = showInTooltip;
+
+		for (Entry<RegistryEntry<Enchantment>> entry : enchantments.object2IntEntrySet()) {
+			int i = entry.getIntValue();
+			if (i < 0 || i > 255) {
+				throw new IllegalArgumentException("Enchantment " + entry.getKey() + " has invalid level " + i);
+			}
+		}
 	}
 
 	public int getLevel(Enchantment enchantment) {
@@ -151,13 +158,13 @@ public class ItemEnchantmentsComponent implements TooltipAppender {
 			if (level <= 0) {
 				this.enchantments.removeInt(enchantment.getRegistryEntry());
 			} else {
-				this.enchantments.put(enchantment.getRegistryEntry(), level);
+				this.enchantments.put(enchantment.getRegistryEntry(), Math.min(level, 255));
 			}
 		}
 
 		public void add(Enchantment enchantment, int level) {
 			if (level > 0) {
-				this.enchantments.merge(enchantment.getRegistryEntry(), level, Integer::max);
+				this.enchantments.merge(enchantment.getRegistryEntry(), Math.min(level, 255), Integer::max);
 			}
 		}
 

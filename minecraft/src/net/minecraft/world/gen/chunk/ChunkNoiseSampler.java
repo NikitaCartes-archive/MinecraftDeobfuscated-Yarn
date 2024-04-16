@@ -454,7 +454,6 @@ public class ChunkNoiseSampler implements DensityFunction.EachApplier, DensityFu
 				case CACHE2D -> new ChunkNoiseSampler.Cache2D(wrapping.wrapped());
 				case CACHE_ONCE -> new ChunkNoiseSampler.CacheOnce(wrapping.wrapped());
 				case CACHE_ALL_IN_CELL -> new ChunkNoiseSampler.CellCache(wrapping.wrapped());
-				default -> throw new MatchException(null, null);
 			});
 		} else {
 			if (this.blender != Blender.getNoBlending()) {

@@ -55,7 +55,6 @@ public class TropicalFishColorFeatureRenderer extends FeatureRenderer<TropicalFi
 		EntityModel<TropicalFishEntity> entityModel = (EntityModel<TropicalFishEntity>)(switch (variety.getSize()) {
 			case SMALL -> this.smallModel;
 			case LARGE -> this.largeModel;
-			default -> throw new MatchException(null, null);
 		});
 
 		Identifier identifier = switch (variety) {
@@ -71,7 +70,6 @@ public class TropicalFishColorFeatureRenderer extends FeatureRenderer<TropicalFi
 			case BLOCKFISH -> BLOCKFISH_TEXTURE;
 			case BETTY -> BETTY_TEXTURE;
 			case CLAYFISH -> CLAYFISH_TEXTURE;
-			default -> throw new MatchException(null, null);
 		};
 		float[] fs = tropicalFishEntity.getPatternColorComponents().getColorComponents();
 		render(this.getContextModel(), entityModel, identifier, matrixStack, vertexConsumerProvider, i, tropicalFishEntity, f, g, j, k, l, h, fs[0], fs[1], fs[2]);

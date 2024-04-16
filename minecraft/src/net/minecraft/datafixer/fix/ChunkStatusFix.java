@@ -27,7 +27,7 @@ public class ChunkStatusFix extends DataFix {
 					if (Objects.equals(string, "postprocessed")) {
 						dynamic = dynamic.set("Status", dynamic.createString("fullchunk"));
 					}
-	
+
 					return typedx.set(DSL.remainderFinder(), dynamic);
 				})
 		);

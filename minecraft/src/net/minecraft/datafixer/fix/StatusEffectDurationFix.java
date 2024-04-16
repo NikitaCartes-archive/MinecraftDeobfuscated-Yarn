@@ -48,7 +48,7 @@ public class StatusEffectDurationFix extends DataFix {
 						return typed.set(opticFinder2, typed2);
 					}
 				}
-	
+
 				return typed;
 			})
 		);

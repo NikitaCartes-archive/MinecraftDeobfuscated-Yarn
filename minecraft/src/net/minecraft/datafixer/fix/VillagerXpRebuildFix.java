@@ -54,12 +54,12 @@ public class VillagerXpRebuildFix extends DataFix {
 								typed2 = fixLevel(typedx, i);
 							}
 						}
-		
+
 						Optional<Number> optional = dynamic.get("Xp").asNumber().result();
 						if (optional.isEmpty()) {
 							typed2 = fixXp(typed2, i);
 						}
-		
+
 						return typed2;
 					}
 				)

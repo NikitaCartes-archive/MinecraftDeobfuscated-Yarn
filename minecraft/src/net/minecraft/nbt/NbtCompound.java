@@ -7,7 +7,7 @@ import com.mojang.serialization.Dynamic;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -758,6 +758,10 @@ public class NbtCompound implements NbtElement {
 		return crashReport;
 	}
 
+	protected NbtCompound shallowCopy() {
+		return new NbtCompound(new HashMap(this.entries));
+	}
+
 	public NbtCompound copy() {
 		Map<String, NbtElement> map = Maps.<String, NbtElement>newHashMap(Maps.transformValues(this.entries, NbtElement::copy));
 		return new NbtCompound(map);
@@ -821,13 +825,8 @@ public class NbtCompound implements NbtElement {
 		visitor.visitCompound(this);
 	}
 
-	/**
-	 * {@return the compound as an unmodifiable map}
-	 * 
-	 * <p>Changes to this compound will be propagated to the returned map.
-	 */
-	protected Map<String, NbtElement> toMap() {
-		return Collections.unmodifiableMap(this.entries);
+	protected Set<Entry<String, NbtElement>> entrySet() {
+		return this.entries.entrySet();
 	}
 
 	@Override

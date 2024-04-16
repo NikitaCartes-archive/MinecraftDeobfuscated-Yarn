@@ -43,7 +43,7 @@ public class PackratParsing {
 				if (list != null) {
 					builder.addAll(list);
 				}
-	
+
 				return builder.build();
 			}
 		);
@@ -78,7 +78,7 @@ public class PackratParsing {
 			),
 			(state, results) -> {
 				P object = results.get(symbol12);
-	
+
 				try {
 					if (object != null) {
 						NbtElement nbtElement = results.getOrThrow(symbol14);

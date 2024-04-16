@@ -2806,7 +2806,7 @@ public class Blocks {
 		new BarrierBlock(
 			AbstractBlock.Settings.create()
 				.strength(-1.0F, 3600000.8F)
-				.mapColor(method_59823(MapColor.CLEAR))
+				.mapColor(createMapColorFromWaterloggedBlockState(MapColor.CLEAR))
 				.dropsNothing()
 				.nonOpaque()
 				.allowsSpawning(Blocks::never)
@@ -2820,7 +2820,7 @@ public class Blocks {
 			AbstractBlock.Settings.create()
 				.replaceable()
 				.strength(-1.0F, 3600000.8F)
-				.mapColor(method_59823(MapColor.CLEAR))
+				.mapColor(createMapColorFromWaterloggedBlockState(MapColor.CLEAR))
 				.dropsNothing()
 				.nonOpaque()
 				.luminance(LightBlock.STATE_TO_LUMINANCE)
@@ -6382,8 +6382,8 @@ public class Blocks {
 		return state -> state.get(Properties.LIT) ? litLevel : 0;
 	}
 
-	private static Function<BlockState, MapColor> method_59823(MapColor mapColor) {
-		return blockState -> blockState.get(Properties.WATERLOGGED) ? MapColor.WATER_BLUE : mapColor;
+	private static Function<BlockState, MapColor> createMapColorFromWaterloggedBlockState(MapColor mapColor) {
+		return state -> state.get(Properties.WATERLOGGED) ? MapColor.WATER_BLUE : mapColor;
 	}
 
 	/**

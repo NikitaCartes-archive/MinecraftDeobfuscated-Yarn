@@ -22,7 +22,7 @@ public class ForgetBellRingTask {
 								if (blockPos.isWithinDistance(entity.getBlockPos(), (double)distance)) {
 									mutableInt.increment();
 								}
-		
+
 								return true;
 							} else {
 								heardBellTime.forget();

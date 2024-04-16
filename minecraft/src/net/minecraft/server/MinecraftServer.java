@@ -1154,8 +1154,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			);
 		}
 
-		details.addSection("Active Data Packs", (Supplier<String>)(() -> ResourcePackManager.method_59809(this.dataPackManager.getEnabledProfiles())));
-		details.addSection("Available Data Packs", (Supplier<String>)(() -> ResourcePackManager.method_59809(this.dataPackManager.getProfiles())));
+		details.addSection("Active Data Packs", (Supplier<String>)(() -> ResourcePackManager.listPacks(this.dataPackManager.getEnabledProfiles())));
+		details.addSection("Available Data Packs", (Supplier<String>)(() -> ResourcePackManager.listPacks(this.dataPackManager.getProfiles())));
 		details.addSection(
 			"Enabled Feature Flags",
 			(Supplier<String>)(() -> (String)FeatureFlags.FEATURE_MANAGER
@@ -1578,13 +1578,13 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return completableFuture;
 	}
 
-	public static DataConfiguration loadDataPacks(ResourcePackManager resourcePackManager, DataConfiguration dataConfiguration, boolean safeMode, boolean bl) {
+	public static DataConfiguration loadDataPacks(ResourcePackManager resourcePackManager, DataConfiguration dataConfiguration, boolean initMode, boolean safeMode) {
 		DataPackSettings dataPackSettings = dataConfiguration.dataPacks();
-		FeatureSet featureSet = safeMode ? FeatureSet.empty() : dataConfiguration.enabledFeatures();
-		FeatureSet featureSet2 = safeMode ? FeatureFlags.FEATURE_MANAGER.getFeatureSet() : dataConfiguration.enabledFeatures();
+		FeatureSet featureSet = initMode ? FeatureSet.empty() : dataConfiguration.enabledFeatures();
+		FeatureSet featureSet2 = initMode ? FeatureFlags.FEATURE_MANAGER.getFeatureSet() : dataConfiguration.enabledFeatures();
 		resourcePackManager.scanPacks();
-		if (bl) {
-			return method_59848(resourcePackManager, List.of("vanilla"), featureSet, false);
+		if (safeMode) {
+			return loadDataPacks(resourcePackManager, List.of("vanilla"), featureSet, false);
 		} else {
 			Set<String> set = Sets.<String>newLinkedHashSet();
 
@@ -1600,8 +1600,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				String string2 = resourcePackProfile.getId();
 				if (!dataPackSettings.getDisabled().contains(string2)) {
 					FeatureSet featureSet3 = resourcePackProfile.getRequestedFeatures();
-					boolean bl2 = set.contains(string2);
-					if (!bl2 && resourcePackProfile.getSource().canBeEnabledLater()) {
+					boolean bl = set.contains(string2);
+					if (!bl && resourcePackProfile.getSource().canBeEnabledLater()) {
 						if (featureSet3.isSubsetOf(featureSet2)) {
 							LOGGER.info("Found new data pack {}, loading it automatically", string2);
 							set.add(string2);
@@ -1610,7 +1610,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 						}
 					}
 
-					if (bl2 && !featureSet3.isSubsetOf(featureSet2)) {
+					if (bl && !featureSet3.isSubsetOf(featureSet2)) {
 						LOGGER.warn(
 							"Pack {} requires features {} that are not enabled for this world, disabling pack.", string2, FeatureFlags.printMissingFlags(featureSet2, featureSet3)
 						);
@@ -1624,39 +1624,41 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				set.add("vanilla");
 			}
 
-			return method_59848(resourcePackManager, set, featureSet, true);
+			return loadDataPacks(resourcePackManager, set, featureSet, true);
 		}
 	}
 
-	private static DataConfiguration method_59848(ResourcePackManager resourcePackManager, Collection<String> collection, FeatureSet featureSet, boolean bl) {
-		resourcePackManager.setEnabledProfiles(collection);
-		method_59847(resourcePackManager, featureSet);
-		DataPackSettings dataPackSettings = createDataPackSettings(resourcePackManager, bl);
-		FeatureSet featureSet2 = resourcePackManager.getRequestedFeatures().combine(featureSet);
-		return new DataConfiguration(dataPackSettings, featureSet2);
+	private static DataConfiguration loadDataPacks(
+		ResourcePackManager resourcePackManager, Collection<String> enabledProfiles, FeatureSet enabledFeatures, boolean allowEnabling
+	) {
+		resourcePackManager.setEnabledProfiles(enabledProfiles);
+		forceEnableRequestedFeatures(resourcePackManager, enabledFeatures);
+		DataPackSettings dataPackSettings = createDataPackSettings(resourcePackManager, allowEnabling);
+		FeatureSet featureSet = resourcePackManager.getRequestedFeatures().combine(enabledFeatures);
+		return new DataConfiguration(dataPackSettings, featureSet);
 	}
 
-	private static void method_59847(ResourcePackManager resourcePackManager, FeatureSet featureSet) {
-		FeatureSet featureSet2 = resourcePackManager.getRequestedFeatures();
-		FeatureSet featureSet3 = featureSet.method_59820(featureSet2);
-		if (!featureSet3.isEmpty()) {
+	private static void forceEnableRequestedFeatures(ResourcePackManager resourcePackManager, FeatureSet enabledFeatures) {
+		FeatureSet featureSet = resourcePackManager.getRequestedFeatures();
+		FeatureSet featureSet2 = enabledFeatures.subtract(featureSet);
+		if (!featureSet2.isEmpty()) {
 			Set<String> set = new ObjectArraySet<>(resourcePackManager.getEnabledIds());
 
 			for (ResourcePackProfile resourcePackProfile : resourcePackManager.getProfiles()) {
-				if (featureSet3.isEmpty()) {
+				if (featureSet2.isEmpty()) {
 					break;
 				}
 
 				if (resourcePackProfile.getSource() == ResourcePackSource.FEATURE) {
 					String string = resourcePackProfile.getId();
-					FeatureSet featureSet4 = resourcePackProfile.getRequestedFeatures();
-					if (!featureSet4.isEmpty() && featureSet4.method_59819(featureSet3) && featureSet4.isSubsetOf(featureSet)) {
+					FeatureSet featureSet3 = resourcePackProfile.getRequestedFeatures();
+					if (!featureSet3.isEmpty() && featureSet3.intersects(featureSet2) && featureSet3.isSubsetOf(enabledFeatures)) {
 						if (!set.add(string)) {
 							throw new IllegalStateException("Tried to force '" + string + "', but it was already enabled");
 						}
 
 						LOGGER.info("Found feature pack ('{}') for requested feature, forcing to enabled", string);
-						featureSet3 = featureSet3.method_59820(featureSet4);
+						featureSet2 = featureSet2.subtract(featureSet3);
 					}
 				}
 			}
@@ -1665,10 +1667,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	private static DataPackSettings createDataPackSettings(ResourcePackManager dataPackManager, boolean bl) {
+	private static DataPackSettings createDataPackSettings(ResourcePackManager dataPackManager, boolean allowEnabling) {
 		Collection<String> collection = dataPackManager.getEnabledIds();
 		List<String> list = ImmutableList.copyOf(collection);
-		List<String> list2 = bl ? dataPackManager.getIds().stream().filter(name -> !collection.contains(name)).toList() : List.of();
+		List<String> list2 = allowEnabling ? dataPackManager.getIds().stream().filter(name -> !collection.contains(name)).toList() : List.of();
 		return new DataPackSettings(list, list2);
 	}
 

@@ -43,7 +43,6 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 						case SEQUENCE -> Text.translatable("advMode.mode.sequence");
 						case AUTO -> Text.translatable("advMode.mode.auto");
 						case REDSTONE -> Text.translatable("advMode.mode.redstone");
-						default -> throw new MatchException(null, null);
 					};
 				})
 				.values(CommandBlockBlockEntity.Type.values())

@@ -39,9 +39,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 	private static final int field_32407 = 5;
 	private static final float field_33739 = 0.375F;
 	public static final int field_42162 = 25;
-	private final List<RecipeAlternativesWidget.AlternativeButtonWidget> alternativeButtons = Lists.<RecipeAlternativesWidget.AlternativeButtonWidget>newArrayList(
-		
-	);
+	private final List<RecipeAlternativesWidget.AlternativeButtonWidget> alternativeButtons = Lists.<RecipeAlternativesWidget.AlternativeButtonWidget>newArrayList();
 	private boolean visible;
 	private int buttonX;
 	private int buttonY;
@@ -179,9 +177,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 	class AlternativeButtonWidget extends ClickableWidget implements RecipeGridAligner<Ingredient> {
 		final RecipeEntry<?> recipe;
 		private final boolean craftable;
-		protected final List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> slots = Lists.<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot>newArrayList(
-			
-		);
+		protected final List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> slots = Lists.<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot>newArrayList();
 
 		public AlternativeButtonWidget(final int x, final int y, final RecipeEntry<?> recipe, final boolean craftable) {
 			super(x, y, 200, 20, ScreenTexts.EMPTY);

@@ -142,7 +142,6 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		return switch (indexType) {
 			case SHORT -> index -> this.buffer.putShort(mutableInt.getAndAdd(2), (short)index);
 			case INT -> index -> this.buffer.putInt(mutableInt.getAndAdd(4), index);
-			default -> throw new MatchException(null, null);
 		};
 	}
 

@@ -114,7 +114,7 @@ public class ServerNetworkIo {
 					clientConnection.setInitialPacketListener(new LocalServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
 					ServerNetworkIo.this.connections.add(clientConnection);
 					ChannelPipeline channelPipeline = channel.pipeline();
-					ClientConnection.addValidator(channelPipeline, NetworkSide.SERVERBOUND);
+					ClientConnection.addLocalValidator(channelPipeline, NetworkSide.SERVERBOUND);
 					clientConnection.addFlowControlHandler(channelPipeline);
 				}
 			}).group((EventLoopGroup)DEFAULT_CHANNEL.get()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();

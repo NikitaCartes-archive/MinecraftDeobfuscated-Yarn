@@ -60,7 +60,6 @@ public enum RecipeBookGroup {
 			case FURNACE -> FURNACE;
 			case BLAST_FURNACE -> BLAST_FURNACE;
 			case SMOKER -> SMOKER;
-			default -> throw new MatchException(null, null);
 		};
 	}
 

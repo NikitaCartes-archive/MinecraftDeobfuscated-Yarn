@@ -119,32 +119,32 @@ public class DataCommand {
 								.then(CommandManager.literal("set").then(modifier.create((context, sourceNbt, path, elements) -> path.put(sourceNbt, Iterables.getLast(elements)))))
 								.then(CommandManager.literal("merge").then(modifier.create((context, element, path, elements) -> {
 									NbtCompound nbtCompound = new NbtCompound();
-				
+
 									for (NbtElement nbtElement : elements) {
 										if (NbtPathArgumentType.NbtPath.isTooDeep(nbtElement, 0)) {
 											throw NbtPathArgumentType.TOO_DEEP_EXCEPTION.create();
 										}
-				
+
 										if (!(nbtElement instanceof NbtCompound nbtCompound2)) {
 											throw MODIFY_EXPECTED_OBJECT_EXCEPTION.create(nbtElement);
 										}
-				
+
 										nbtCompound.copyFrom(nbtCompound2);
 									}
-				
+
 									Collection<NbtElement> collection = path.getOrInit(element, NbtCompound::new);
 									int i = 0;
-				
+
 									for (NbtElement nbtElement2 : collection) {
 										if (!(nbtElement2 instanceof NbtCompound nbtCompound3)) {
 											throw MODIFY_EXPECTED_OBJECT_EXCEPTION.create(nbtElement2);
 										}
-				
+
 										NbtCompound nbtCompound4 = nbtCompound3.copy();
 										nbtCompound3.copyFrom(nbtCompound);
 										i += nbtCompound4.equals(nbtCompound3) ? 0 : 1;
 									}
-				
+
 									return i;
 								})))
 					)
@@ -183,7 +183,7 @@ public class DataCommand {
 				literalArgumentBuilder,
 				builder -> {
 					ArgumentBuilder<ServerCommandSource, ?> argumentBuilder = CommandManager.argument("targetPath", NbtPathArgumentType.nbtPath());
-	
+
 					for (DataCommand.ObjectType objectType2 : SOURCE_OBJECT_TYPES) {
 						subArgumentAdder.accept(
 							argumentBuilder,
@@ -233,7 +233,7 @@ public class DataCommand {
 								)
 						);
 					}
-	
+
 					subArgumentAdder.accept(
 						argumentBuilder,
 						(DataCommand.ModifyArgumentCreator)modifier -> CommandManager.literal("value")

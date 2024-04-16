@@ -18,8 +18,8 @@ public record CreativeInventoryActionC2SPacket(short slot, ItemStack stack) impl
 		CreativeInventoryActionC2SPacket::new
 	);
 
-	public CreativeInventoryActionC2SPacket(int i, ItemStack itemStack) {
-		this((short)i, itemStack);
+	public CreativeInventoryActionC2SPacket(int slot, ItemStack stack) {
+		this((short)slot, stack);
 	}
 
 	@Override

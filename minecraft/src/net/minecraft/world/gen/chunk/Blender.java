@@ -126,7 +126,7 @@ public class Blender {
 									if (dx < mutableDouble3.doubleValue()) {
 										mutableDouble3.setValue(dx);
 									}
-			
+
 									double ex = 1.0 / (dx * dx * dx * dx);
 									mutableDouble2.add(height * ex);
 									mutableDouble.add(ex);
@@ -176,7 +176,7 @@ public class Blender {
 									if (dx < mutableDouble3.doubleValue()) {
 										mutableDouble3.setValue(dx);
 									}
-			
+
 									double ex = 1.0 / (dx * dx * dx * dx);
 									mutableDouble2.add(collidableBlockDensity * ex);
 									mutableDouble.add(ex);

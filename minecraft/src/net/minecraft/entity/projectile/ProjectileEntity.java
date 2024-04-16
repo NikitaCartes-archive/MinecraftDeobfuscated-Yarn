@@ -7,8 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Ownable;
-import net.minecraft.entity.ProjectileDeflector;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.ProjectileDeflection;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -191,25 +190,40 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 		this.setVelocity(this.getVelocity().add(vec3d.x, shooter.isOnGround() ? 0.0 : vec3d.y, vec3d.z));
 	}
 
-	protected ProjectileDeflector deflectOrCollide(HitResult hitResult) {
+	protected ProjectileDeflection hitOrDeflect(HitResult hitResult) {
 		if (hitResult.getType() == HitResult.Type.ENTITY) {
 			EntityHitResult entityHitResult = (EntityHitResult)hitResult;
-			ProjectileDeflector projectileDeflector = entityHitResult.getEntity().getProjectileDeflector(this);
-			if (projectileDeflector != ProjectileDeflector.NONE) {
-				projectileDeflector.deflect(this, entityHitResult.getEntity(), this.random);
-				this.scheduleVelocityUpdate();
-				return projectileDeflector;
+			ProjectileDeflection projectileDeflection = entityHitResult.getEntity().getProjectileDeflection(this);
+			if (projectileDeflection != ProjectileDeflection.NONE) {
+				this.deflect(projectileDeflection, entityHitResult.getEntity(), this.getOwner(), false);
+				return projectileDeflection;
 			}
 		}
 
 		this.onCollision(hitResult);
-		return ProjectileDeflector.NONE;
+		return ProjectileDeflection.NONE;
+	}
+
+	public void deflect(ProjectileDeflection deflection, @Nullable Entity deflector, @Nullable Entity owner, boolean fromAttack) {
+		if (!this.getWorld().isClient) {
+			deflection.deflect(this, deflector, this.random);
+			this.setOwner(owner);
+			this.onDeflected(deflector, fromAttack);
+		}
+	}
+
+	protected void onDeflected(@Nullable Entity deflector, boolean fromAttack) {
 	}
 
 	protected void onCollision(HitResult hitResult) {
 		HitResult.Type type = hitResult.getType();
 		if (type == HitResult.Type.ENTITY) {
 			EntityHitResult entityHitResult = (EntityHitResult)hitResult;
+			Entity entity = entityHitResult.getEntity();
+			if (entity.getType().isIn(EntityTypeTags.REDIRECTABLE_PROJECTILE) && entity instanceof ProjectileEntity projectileEntity) {
+				projectileEntity.deflect(ProjectileDeflection.REDIRECTED, this.getOwner(), this.getOwner(), true);
+			}
+
 			this.onEntityHit(entityHitResult);
 			this.getWorld().emitGameEvent(GameEvent.PROJECTILE_LAND, hitResult.getPos(), GameEvent.Emitter.of(this, null));
 		} else if (type == HitResult.Type.BLOCK) {
@@ -294,40 +308,13 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 		return this.getType().isIn(EntityTypeTags.IMPACT_PROJECTILES) && world.getGameRules().getBoolean(GameRules.PROJECTILES_CAN_BREAK_BLOCKS);
 	}
 
-	public void onDeflected() {
-	}
-
-	protected void setVelocityAfterPunching(Entity attacker) {
-		Vec3d vec3d = attacker.getRotationVector();
-		this.setVelocity(vec3d.multiply(this.getVelocity().length()));
-	}
-
 	@Override
 	public boolean canHit() {
-		return this.getType().isIn(EntityTypeTags.PUNCHABLE_PROJECTILES);
+		return this.getType().isIn(EntityTypeTags.REDIRECTABLE_PROJECTILE);
 	}
 
 	@Override
 	public float getTargetingMargin() {
 		return this.canHit() ? 1.0F : 0.0F;
-	}
-
-	public boolean onPunched(DamageSource damageSource) {
-		if (this.isInvulnerableTo(damageSource)) {
-			return false;
-		} else {
-			this.scheduleVelocityUpdate();
-			Entity entity = damageSource.getAttacker();
-			if (entity != null) {
-				if (!this.getWorld().isClient) {
-					this.setVelocityAfterPunching(entity);
-					this.setOwner(entity);
-				}
-
-				return true;
-			} else {
-				return false;
-			}
-		}
 	}
 }

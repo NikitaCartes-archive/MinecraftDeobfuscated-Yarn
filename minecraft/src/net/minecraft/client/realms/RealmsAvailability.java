@@ -43,7 +43,7 @@ public class RealmsAvailability {
 			: CompletableFuture.supplyAsync(
 				() -> {
 					RealmsClient realmsClient = RealmsClient.create();
-		
+
 					try {
 						if (realmsClient.clientCompatible() != RealmsClient.CompatibleVersionResponse.COMPATIBLE) {
 							return new RealmsAvailability.Info(RealmsAvailability.Type.INCOMPATIBLE_CLIENT);

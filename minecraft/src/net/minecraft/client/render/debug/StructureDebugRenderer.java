@@ -23,9 +23,7 @@ import net.minecraft.world.World;
 public class StructureDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
 	private final Map<RegistryKey<World>, Map<String, BlockBox>> structureBoundingBoxes = Maps.<RegistryKey<World>, Map<String, BlockBox>>newIdentityHashMap();
-	private final Map<RegistryKey<World>, Map<String, DebugStructuresCustomPayload.Piece>> structurePiecesBoundingBoxes = Maps.<RegistryKey<World>, Map<String, DebugStructuresCustomPayload.Piece>>newIdentityHashMap(
-		
-	);
+	private final Map<RegistryKey<World>, Map<String, DebugStructuresCustomPayload.Piece>> structurePiecesBoundingBoxes = Maps.<RegistryKey<World>, Map<String, DebugStructuresCustomPayload.Piece>>newIdentityHashMap();
 	private static final int RANGE = 500;
 
 	public StructureDebugRenderer(MinecraftClient client) {

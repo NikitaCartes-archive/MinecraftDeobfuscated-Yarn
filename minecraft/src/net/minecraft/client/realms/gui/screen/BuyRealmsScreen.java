@@ -119,7 +119,7 @@ public class BuyRealmsScreen extends RealmsScreen {
 		this.parent.render(context, -1, -1, delta);
 		context.draw();
 		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
-		this.method_59840();
+		this.clearTooltip();
 		this.renderInGameBackground(context);
 		context.drawGuiTexture(POPUP_BACKGROUND_TEXTURE, this.getLeft(), this.getTop(), 320, 172);
 		if (!realmsImages.isEmpty()) {

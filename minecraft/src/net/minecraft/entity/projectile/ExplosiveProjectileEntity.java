@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -19,7 +20,8 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
-	public static final double field_51351 = 0.05;
+	public static final double field_51507 = 0.1;
+	public static final double field_51508 = 0.05;
 	public double powerX;
 	public double powerY;
 	public double powerZ;
@@ -80,7 +82,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 
 			HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit, this.getRaycastShapeType());
 			if (hitResult.getType() != HitResult.Type.MISS) {
-				this.deflectOrCollide(hitResult);
+				this.hitOrDeflect(hitResult);
 			}
 
 			this.checkBlockCollision();
@@ -111,6 +113,11 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		} else {
 			this.discard();
 		}
+	}
+
+	@Override
+	public boolean damage(DamageSource source, float amount) {
+		return !this.isInvulnerableTo(source);
 	}
 
 	@Override
@@ -152,15 +159,6 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 				this.powerZ = nbtList.getDouble(2);
 			}
 		}
-	}
-
-	@Override
-	protected void setVelocityAfterPunching(Entity attacker) {
-		Vec3d vec3d = attacker.getRotationVector();
-		this.setVelocity(vec3d);
-		this.powerX = vec3d.x * 0.1;
-		this.powerY = vec3d.y * 0.1;
-		this.powerZ = vec3d.z * 0.1;
 	}
 
 	@Override
@@ -206,9 +204,17 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void onDeflected() {
-		this.powerX = this.getVelocity().x * 0.05;
-		this.powerY = this.getVelocity().y * 0.05;
-		this.powerZ = this.getVelocity().z * 0.05;
+	protected void onDeflected(@Nullable Entity deflector, boolean fromAttack) {
+		super.onDeflected(deflector, fromAttack);
+		if (fromAttack) {
+			this.setVelocity(this.getVelocity().normalize());
+			this.powerX = this.getVelocity().x * 0.1;
+			this.powerY = this.getVelocity().y * 0.1;
+			this.powerZ = this.getVelocity().z * 0.1;
+		} else {
+			this.powerX = this.getVelocity().x * 0.05;
+			this.powerY = this.getVelocity().y * 0.05;
+			this.powerZ = this.getVelocity().z * 0.05;
+		}
 	}
 }

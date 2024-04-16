@@ -707,7 +707,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 						if (SharedConstants.isDevelopment) {
 							this.checkGameData();
 						}
-		
+
 						this.resourceReloadLogger.finish();
 						this.onFinishedLoading(loadingContext);
 					}), false
@@ -2231,8 +2231,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.integratedServerConnection = clientConnection;
 	}
 
-	public void joinWorld(ClientWorld world, DownloadingTerrainScreen.class_9678 arg) {
-		this.reset(new DownloadingTerrainScreen(() -> false, arg));
+	public void joinWorld(ClientWorld world, DownloadingTerrainScreen.WorldEntryReason worldEntryReason) {
+		this.reset(new DownloadingTerrainScreen(() -> false, worldEntryReason));
 		this.world = world;
 		this.setWorld(world);
 		if (!this.integratedServerRunning) {
@@ -2584,7 +2584,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		if (client != null) {
-			systemDetails.addSection("Resource Packs", (Supplier<String>)(() -> ResourcePackManager.method_59809(client.getResourcePackManager().getEnabledProfiles())));
+			systemDetails.addSection("Resource Packs", (Supplier<String>)(() -> ResourcePackManager.listPacks(client.getResourcePackManager().getEnabledProfiles())));
 		}
 
 		if (languageManager != null) {

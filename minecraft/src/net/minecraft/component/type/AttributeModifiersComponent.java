@@ -82,7 +82,6 @@ public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry
 					case ADD_VALUE -> e;
 					case ADD_MULTIPLIED_BASE -> e * base;
 					case ADD_MULTIPLIED_TOTAL -> e * d;
-					default -> throw new MatchException(null, null);
 				};
 			}
 		}

@@ -67,10 +67,8 @@ public final class FeatureSet {
 		}
 	}
 
-	public boolean method_59819(FeatureSet featureSet) {
-		return this.universe != null && featureSet.universe != null && this.universe == featureSet.universe
-			? (this.featuresMask & featureSet.featuresMask) != 0L
-			: false;
+	public boolean intersects(FeatureSet features) {
+		return this.universe != null && features.universe != null && this.universe == features.universe ? (this.featuresMask & features.featuresMask) != 0L : false;
 	}
 
 	public FeatureSet combine(FeatureSet features) {
@@ -85,13 +83,13 @@ public final class FeatureSet {
 		}
 	}
 
-	public FeatureSet method_59820(FeatureSet featureSet) {
-		if (this.universe == null || featureSet.universe == null) {
+	public FeatureSet subtract(FeatureSet features) {
+		if (this.universe == null || features.universe == null) {
 			return this;
-		} else if (this.universe != featureSet.universe) {
-			throw new IllegalArgumentException("Mismatched set elements: '" + this.universe + "' != '" + featureSet.universe + "'");
+		} else if (this.universe != features.universe) {
+			throw new IllegalArgumentException("Mismatched set elements: '" + this.universe + "' != '" + features.universe + "'");
 		} else {
-			long l = this.featuresMask & ~featureSet.featuresMask;
+			long l = this.featuresMask & ~features.featuresMask;
 			return l == 0L ? EMPTY : new FeatureSet(this.universe, l);
 		}
 	}

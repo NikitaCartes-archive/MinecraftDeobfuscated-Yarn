@@ -24,12 +24,14 @@ public final class ContainerComponent {
 		.collect(PacketCodecs.toList(256))
 		.xmap(ContainerComponent::new, component -> component.stacks);
 	private final DefaultedList<ItemStack> stacks;
+	private final int hashCode;
 
 	private ContainerComponent(DefaultedList<ItemStack> stacks) {
 		if (stacks.size() > 256) {
 			throw new IllegalArgumentException("Got " + stacks.size() + " items, but maximum is 256");
 		} else {
 			this.stacks = stacks;
+			this.hashCode = ItemStack.listHashCode(stacks);
 		}
 	}
 
@@ -138,7 +140,7 @@ public final class ContainerComponent {
 	}
 
 	public int hashCode() {
-		return ItemStack.listHashCode(this.stacks);
+		return this.hashCode;
 	}
 
 	static record Slot(int index, ItemStack item) {

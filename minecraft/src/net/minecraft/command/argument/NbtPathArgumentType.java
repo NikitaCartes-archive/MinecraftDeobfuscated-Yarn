@@ -87,41 +87,34 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 	}
 
 	private static NbtPathArgumentType.PathNode parseNode(StringReader reader, boolean root) throws CommandSyntaxException {
-		Object var10000;
-		switch (reader.peek()) {
-			case '"':
-			case '\'':
-				var10000 = readCompoundChildNode(reader, reader.readString());
-				break;
-			case '[':
+		return (NbtPathArgumentType.PathNode)(switch (reader.peek()) {
+			case '"', '\'' -> readCompoundChildNode(reader, reader.readString());
+			case '[' -> {
 				reader.skip();
 				int i = reader.peek();
 				if (i == 123) {
 					NbtCompound nbtCompound2 = new StringNbtReader(reader).parseCompound();
 					reader.expect(']');
-					var10000 = new NbtPathArgumentType.FilteredListElementNode(nbtCompound2);
+					yield new NbtPathArgumentType.FilteredListElementNode(nbtCompound2);
 				} else if (i == 93) {
 					reader.skip();
-					var10000 = NbtPathArgumentType.AllListElementNode.INSTANCE;
+					yield NbtPathArgumentType.AllListElementNode.INSTANCE;
 				} else {
 					int j = reader.readInt();
 					reader.expect(']');
-					var10000 = new NbtPathArgumentType.IndexedListElementNode(j);
+					yield new NbtPathArgumentType.IndexedListElementNode(j);
 				}
-				break;
-			case '{':
+			}
+			case '{' -> {
 				if (!root) {
 					throw INVALID_PATH_NODE_EXCEPTION.createWithContext(reader);
 				}
 
 				NbtCompound nbtCompound = new StringNbtReader(reader).parseCompound();
-				var10000 = new NbtPathArgumentType.FilteredRootNode(nbtCompound);
-				break;
-			default:
-				var10000 = readCompoundChildNode(reader, readName(reader));
-		}
-
-		return (NbtPathArgumentType.PathNode)var10000;
+				yield new NbtPathArgumentType.FilteredRootNode(nbtCompound);
+			}
+			default -> readCompoundChildNode(reader, readName(reader));
+		});
 	}
 
 	private static NbtPathArgumentType.PathNode readCompoundChildNode(StringReader reader, String name) throws CommandSyntaxException {

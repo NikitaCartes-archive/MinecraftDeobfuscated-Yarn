@@ -188,7 +188,7 @@ public interface DispenserBehavior {
 				@Override
 				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 					BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
-	
+
 					for (AbstractDonkeyEntity abstractDonkeyEntity : pointer.world()
 						.getEntitiesByClass(
 							AbstractDonkeyEntity.class, new Box(blockPos), abstractDonkeyEntityx -> abstractDonkeyEntityx.isAlive() && !abstractDonkeyEntityx.hasChest()
@@ -199,7 +199,7 @@ public interface DispenserBehavior {
 							return stack;
 						}
 					}
-	
+
 					return super.dispenseSilently(pointer, stack);
 				}
 			}
@@ -366,13 +366,13 @@ public interface DispenserBehavior {
 						if (blockEntity instanceof SkullBlockEntity) {
 							WitherSkullBlock.onPlaced(world, blockPos, (SkullBlockEntity)blockEntity);
 						}
-	
+
 						stack.decrement(1);
 						this.setSuccess(true);
 					} else {
 						this.setSuccess(ArmorItem.dispenseArmor(pointer, stack));
 					}
-	
+
 					return stack;
 				}
 			}
@@ -408,7 +408,7 @@ public interface DispenserBehavior {
 			Items.GLASS_BOTTLE.asItem(),
 			new FallibleItemDispenserBehavior() {
 				private final ItemDispenserBehavior fallbackBehavior = new ItemDispenserBehavior();
-	
+
 				private ItemStack replace(BlockPointer pointer, ItemStack oldStack, ItemStack newStack) {
 					oldStack.decrement(1);
 					if (oldStack.isEmpty()) {
@@ -418,11 +418,11 @@ public interface DispenserBehavior {
 						if (pointer.blockEntity().addToFirstFreeSlot(newStack.copy()) < 0) {
 							this.fallbackBehavior.dispense(pointer, newStack.copy());
 						}
-	
+
 						return oldStack;
 					}
 				}
-	
+
 				@Override
 				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 					this.setSuccess(false);
@@ -513,7 +513,7 @@ public interface DispenserBehavior {
 			Items.POTION,
 			new ItemDispenserBehavior() {
 				private final ItemDispenserBehavior fallbackBehavior = new ItemDispenserBehavior();
-	
+
 				@Override
 				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 					PotionContentsComponent potionContentsComponent = stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
@@ -541,7 +541,7 @@ public interface DispenserBehavior {
 									);
 								}
 							}
-	
+
 							serverWorld.playSound(null, blockPos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 							serverWorld.emitGameEvent(null, GameEvent.FLUID_PLACE, blockPos);
 							serverWorld.setBlockState(blockPos2, Blocks.MUD.getDefaultState());

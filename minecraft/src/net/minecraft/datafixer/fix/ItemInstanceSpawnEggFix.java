@@ -99,7 +99,7 @@ public class ItemInstanceSpawnEggFix extends DataFix {
 						);
 					}
 				}
-	
+
 				return stack;
 			}
 		);

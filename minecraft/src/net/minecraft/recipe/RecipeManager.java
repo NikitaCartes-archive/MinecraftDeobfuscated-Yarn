@@ -42,7 +42,7 @@ public class RecipeManager extends JsonDataLoader {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final RegistryWrapper.WrapperLookup registryLookup;
-	private Multimap<RecipeType<?>, RecipeEntry<?>> field_51481 = ImmutableMultimap.of();
+	private Multimap<RecipeType<?>, RecipeEntry<?>> recipesByType = ImmutableMultimap.of();
 	private Map<Identifier, RecipeEntry<?>> recipesById = ImmutableMap.of();
 	/**
 	 * This isn't quite indicating an errored state; its value is only set to
@@ -74,9 +74,9 @@ public class RecipeManager extends JsonDataLoader {
 			}
 		}
 
-		this.field_51481 = builder.build();
+		this.recipesByType = builder.build();
 		this.recipesById = builder2.build();
-		LOGGER.info("Loaded {} recipes", this.field_51481.size());
+		LOGGER.info("Loaded {} recipes", this.recipesByType.size());
 	}
 
 	/**
@@ -105,13 +105,13 @@ public class RecipeManager extends JsonDataLoader {
 
 	public <C extends Inventory, T extends Recipe<C>> Optional<RecipeEntry<T>> getFirstMatch(RecipeType<T> type, C inventory, World world, @Nullable Identifier id) {
 		if (id != null) {
-			RecipeEntry<T> recipeEntry = this.method_59821(type, id);
+			RecipeEntry<T> recipeEntry = this.get(type, id);
 			if (recipeEntry != null && recipeEntry.value().matches(inventory, world)) {
 				return Optional.of(recipeEntry);
 			}
 		}
 
-		return this.getAllOfType(type).stream().filter(recipeEntryx -> recipeEntryx.value().matches(inventory, world)).findFirst();
+		return this.getAllOfType(type).stream().filter(entry -> entry.value().matches(inventory, world)).findFirst();
 	}
 
 	/**
@@ -147,12 +147,12 @@ public class RecipeManager extends JsonDataLoader {
 		return (List<RecipeEntry<T>>)this.getAllOfType(type)
 			.stream()
 			.filter(recipe -> recipe.value().matches(inventory, world))
-			.sorted(Comparator.comparing(recipeEntry -> recipeEntry.value().getResult(world.getRegistryManager()).getTranslationKey()))
+			.sorted(Comparator.comparing(entry -> entry.value().getResult(world.getRegistryManager()).getTranslationKey()))
 			.collect(Collectors.toList());
 	}
 
 	private <C extends Inventory, T extends Recipe<C>> Collection<RecipeEntry<T>> getAllOfType(RecipeType<T> type) {
-		return (Collection<RecipeEntry<T>>)this.field_51481.get(type);
+		return (Collection<RecipeEntry<T>>)this.recipesByType.get(type);
 	}
 
 	/**
@@ -194,14 +194,20 @@ public class RecipeManager extends JsonDataLoader {
 		return Optional.ofNullable((RecipeEntry)this.recipesById.get(id));
 	}
 
+	/**
+	 * {@return a recipe with the given {@code id} and {@code type}, or empty if there is no such recipe}
+	 * 
+	 * @param type the type of the desired recipe
+	 * @param id the ID of the desired recipe
+	 */
 	@Nullable
-	private <T extends Recipe<?>> RecipeEntry<T> method_59821(RecipeType<T> recipeType, Identifier identifier) {
-		RecipeEntry<?> recipeEntry = (RecipeEntry<?>)this.recipesById.get(identifier);
-		return (RecipeEntry<T>)(recipeEntry != null && recipeEntry.value().getType().equals(recipeType) ? recipeEntry : null);
+	private <T extends Recipe<?>> RecipeEntry<T> get(RecipeType<T> type, Identifier id) {
+		RecipeEntry<?> recipeEntry = (RecipeEntry<?>)this.recipesById.get(id);
+		return (RecipeEntry<T>)(recipeEntry != null && recipeEntry.value().getType().equals(type) ? recipeEntry : null);
 	}
 
-	public Collection<RecipeEntry<?>> method_59822() {
-		return this.field_51481.values();
+	public Collection<RecipeEntry<?>> sortedValues() {
+		return this.recipesByType.values();
 	}
 
 	/**
@@ -263,7 +269,7 @@ public class RecipeManager extends JsonDataLoader {
 			builder2.put(recipeEntry.id(), recipeEntry);
 		}
 
-		this.field_51481 = builder.build();
+		this.recipesByType = builder.build();
 		this.recipesById = builder2.build();
 	}
 

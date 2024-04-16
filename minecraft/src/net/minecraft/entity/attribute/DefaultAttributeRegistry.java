@@ -85,9 +85,7 @@ import org.slf4j.Logger;
 
 public class DefaultAttributeRegistry {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Map<EntityType<? extends LivingEntity>, DefaultAttributeContainer> DEFAULT_ATTRIBUTE_REGISTRY = ImmutableMap.<EntityType<? extends LivingEntity>, DefaultAttributeContainer>builder(
-			
-		)
+	private static final Map<EntityType<? extends LivingEntity>, DefaultAttributeContainer> DEFAULT_ATTRIBUTE_REGISTRY = ImmutableMap.<EntityType<? extends LivingEntity>, DefaultAttributeContainer>builder()
 		.put(EntityType.ALLAY, AllayEntity.createAllayAttributes().build())
 		.put(EntityType.ARMADILLO, ArmadilloEntity.createArmadilloAttributes().build())
 		.put(EntityType.ARMOR_STAND, ArmorStandEntity.createArmorStandAttributes().build())

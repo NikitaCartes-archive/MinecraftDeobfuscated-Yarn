@@ -14,7 +14,7 @@ public class HuntFinishTask {
 							if (livingEntity.getType() == EntityType.HOGLIN && livingEntity.isDead()) {
 								huntedRecently.remember(true, (long)PiglinBrain.HUNT_MEMORY_DURATION.get(entity.getWorld().random));
 							}
-		
+
 							return true;
 						})
 		);

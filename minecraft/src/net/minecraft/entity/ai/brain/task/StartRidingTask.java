@@ -27,7 +27,7 @@ public class StartRidingTask {
 									lookTarget.remember(new EntityLookTarget(entity2, true));
 									walkTarget.remember(new WalkTarget(new EntityLookTarget(entity2, false), speed, 1));
 								}
-		
+
 								return true;
 							}
 						})

@@ -41,20 +41,20 @@ public class RealmsConnection {
 		(new Thread("Realms-connect-task") {
 				public void run() {
 					InetSocketAddress inetSocketAddress = null;
-	
+
 					try {
 						inetSocketAddress = new InetSocketAddress(string, i);
 						if (RealmsConnection.this.aborted) {
 							return;
 						}
-	
+
 						RealmsConnection.this.connection = ClientConnection.connect(
 							inetSocketAddress, minecraftClient.options.shouldUseNativeTransport(), minecraftClient.getDebugHud().getPacketSizeLog()
 						);
 						if (RealmsConnection.this.aborted) {
 							return;
 						}
-	
+
 						ClientLoginNetworkHandler clientLoginNetworkHandler = new ClientLoginNetworkHandler(
 							RealmsConnection.this.connection, minecraftClient, server.createServerInfo(string), RealmsConnection.this.onlineScreen, false, null, status -> {
 							}, null
@@ -62,16 +62,16 @@ public class RealmsConnection {
 						if (server.worldType == RealmsServer.WorldType.MINIGAME) {
 							clientLoginNetworkHandler.setMinigameName(server.minigameName);
 						}
-	
+
 						if (RealmsConnection.this.aborted) {
 							return;
 						}
-	
+
 						RealmsConnection.this.connection.connect(string, i, clientLoginNetworkHandler);
 						if (RealmsConnection.this.aborted) {
 							return;
 						}
-	
+
 						RealmsConnection.this.connection.send(new LoginHelloC2SPacket(minecraftClient.getSession().getUsername(), minecraftClient.getSession().getUuidOrNull()));
 						minecraftClient.ensureAbuseReportContext(ReporterEnvironment.ofRealm(server));
 						minecraftClient.getQuickPlayLogger().setWorld(QuickPlayLogger.WorldType.REALMS, String.valueOf(server.id), server.name);
@@ -81,14 +81,14 @@ public class RealmsConnection {
 						if (RealmsConnection.this.aborted) {
 							return;
 						}
-	
+
 						RealmsConnection.LOGGER.error("Couldn't connect to world", (Throwable)var5);
 						String string = var5.toString();
 						if (inetSocketAddress != null) {
 							String string2 = inetSocketAddress + ":" + i;
 							string = string.replaceAll(string2, "");
 						}
-	
+
 						DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(
 							RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, Text.translatable("disconnect.genericReason", string)
 						);

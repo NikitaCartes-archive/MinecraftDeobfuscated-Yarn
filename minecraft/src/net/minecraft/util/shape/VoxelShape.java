@@ -67,7 +67,7 @@ public abstract class VoxelShape {
 		return this.getPointPositions(axis).getDouble(index);
 	}
 
-	public abstract DoubleList getPointPositions(Direction.Axis axis);
+	protected abstract DoubleList getPointPositions(Direction.Axis axis);
 
 	public boolean isEmpty() {
 		return this.voxels.isEmpty();

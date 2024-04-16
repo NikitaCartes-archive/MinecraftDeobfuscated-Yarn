@@ -61,22 +61,20 @@ public enum TrialSpawnerState implements StringIdentifiable {
 	public TrialSpawnerState tick(BlockPos pos, TrialSpawnerLogic logic, ServerWorld world) {
 		TrialSpawnerData trialSpawnerData = logic.getData();
 		TrialSpawnerConfig trialSpawnerConfig = logic.getConfig();
-		TrialSpawnerState var10000;
-		switch (this) {
-			case INACTIVE:
-				var10000 = trialSpawnerData.setDisplayEntity(logic, world, WAITING_FOR_PLAYERS) == null ? this : WAITING_FOR_PLAYERS;
-				break;
-			case WAITING_FOR_PLAYERS:
+
+		return switch (this) {
+			case INACTIVE -> trialSpawnerData.setDisplayEntity(logic, world, WAITING_FOR_PLAYERS) == null ? this : WAITING_FOR_PLAYERS;
+			case WAITING_FOR_PLAYERS -> {
 				if (!trialSpawnerData.hasSpawnData(logic, world.random)) {
-					var10000 = INACTIVE;
+					yield INACTIVE;
 				} else {
 					trialSpawnerData.updatePlayers(world, pos, logic);
-					var10000 = trialSpawnerData.players.isEmpty() ? this : ACTIVE;
+					yield trialSpawnerData.players.isEmpty() ? this : ACTIVE;
 				}
-				break;
-			case ACTIVE:
+			}
+			case ACTIVE -> {
 				if (!trialSpawnerData.hasSpawnData(logic, world.random)) {
-					var10000 = INACTIVE;
+					yield INACTIVE;
 				} else {
 					int i = trialSpawnerData.getAdditionalPlayers(pos);
 					trialSpawnerData.updatePlayers(world, pos, logic);
@@ -89,8 +87,7 @@ public enum TrialSpawnerState implements StringIdentifiable {
 							trialSpawnerData.cooldownEnd = world.getTime() + (long)logic.getCooldownLength();
 							trialSpawnerData.totalSpawnedMobs = 0;
 							trialSpawnerData.nextMobSpawnsAt = 0L;
-							var10000 = WAITING_FOR_REWARD_EJECTION;
-							break;
+							yield WAITING_FOR_REWARD_EJECTION;
 						}
 					} else if (trialSpawnerData.canSpawnMore(world, trialSpawnerConfig, i)) {
 						logic.trySpawnMob(world, pos).ifPresent(uuid -> {
@@ -104,24 +101,24 @@ public enum TrialSpawnerState implements StringIdentifiable {
 						});
 					}
 
-					var10000 = this;
+					yield this;
 				}
-				break;
-			case WAITING_FOR_REWARD_EJECTION:
+			}
+			case WAITING_FOR_REWARD_EJECTION -> {
 				if (trialSpawnerData.isCooldownPast(world, 40.0F, logic.getCooldownLength())) {
 					world.playSound(null, pos, SoundEvents.BLOCK_TRIAL_SPAWNER_OPEN_SHUTTER, SoundCategory.BLOCKS);
-					var10000 = EJECTING_REWARD;
+					yield EJECTING_REWARD;
 				} else {
-					var10000 = this;
+					yield this;
 				}
-				break;
-			case EJECTING_REWARD:
+			}
+			case EJECTING_REWARD -> {
 				if (!trialSpawnerData.isCooldownAtRepeating(world, (float)BETWEEN_EJECTING_REWARDS_COOLDOWN, logic.getCooldownLength())) {
-					var10000 = this;
+					yield this;
 				} else if (trialSpawnerData.players.isEmpty()) {
 					world.playSound(null, pos, SoundEvents.BLOCK_TRIAL_SPAWNER_CLOSE_SHUTTER, SoundCategory.BLOCKS);
 					trialSpawnerData.rewardLootTable = Optional.empty();
-					var10000 = COOLDOWN;
+					yield COOLDOWN;
 				} else {
 					if (trialSpawnerData.rewardLootTable.isEmpty()) {
 						trialSpawnerData.rewardLootTable = trialSpawnerConfig.lootTablesToEject().getDataOrEmpty(world.getRandom());
@@ -129,28 +126,24 @@ public enum TrialSpawnerState implements StringIdentifiable {
 
 					trialSpawnerData.rewardLootTable.ifPresent(lootTable -> logic.ejectLootTable(world, pos, lootTable));
 					trialSpawnerData.players.remove(trialSpawnerData.players.iterator().next());
-					var10000 = this;
+					yield this;
 				}
-				break;
-			case COOLDOWN:
+			}
+			case COOLDOWN -> {
 				trialSpawnerData.updatePlayers(world, pos, logic);
 				if (!trialSpawnerData.players.isEmpty()) {
 					trialSpawnerData.totalSpawnedMobs = 0;
 					trialSpawnerData.nextMobSpawnsAt = 0L;
-					var10000 = ACTIVE;
+					yield ACTIVE;
 				} else if (trialSpawnerData.isCooldownOver(world)) {
 					trialSpawnerData.cooldownEnd = 0L;
 					logic.setNotOminous(world, pos);
-					var10000 = WAITING_FOR_PLAYERS;
+					yield WAITING_FOR_PLAYERS;
 				} else {
-					var10000 = this;
+					yield this;
 				}
-				break;
-			default:
-				throw new MatchException(null, null);
-		}
-
-		return var10000;
+			}
+		};
 	}
 
 	private void spawnOminousItemSpawner(ServerWorld world, BlockPos pos, TrialSpawnerLogic logic) {

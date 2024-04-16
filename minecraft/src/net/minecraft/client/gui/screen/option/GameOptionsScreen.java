@@ -2,8 +2,10 @@ package net.minecraft.client.gui.screen.option;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.OptionListWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.screen.ScreenTexts;
@@ -34,7 +36,7 @@ public class GameOptionsScreen extends Screen {
 	}
 
 	protected void initFooter() {
-		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, buttonWidget -> this.close()).width(200).build());
+		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).width(200).build());
 	}
 
 	@Override
@@ -49,6 +51,12 @@ public class GameOptionsScreen extends Screen {
 
 	@Override
 	public void close() {
+		for (Element element : this.children()) {
+			if (element instanceof OptionListWidget optionListWidget) {
+				optionListWidget.applyAllPendingValues();
+			}
+		}
+
 		this.client.setScreen(this.parent);
 	}
 }

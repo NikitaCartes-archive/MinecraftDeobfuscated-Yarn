@@ -59,7 +59,7 @@ public class WorldGenSettingsHeightAndBiomeFix extends DataFix {
 																	if (dynamicxxx.get("large_biomes").asBoolean(false)) {
 																		mutableBoolean.setTrue();
 																	}
-							
+
 																	return dynamicxxx.createMap(
 																		ImmutableMap.of(
 																			dynamicxxx.createString("preset"),

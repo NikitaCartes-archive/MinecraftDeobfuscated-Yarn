@@ -11,16 +11,16 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class FreeTypeUtil {
-	private static final Logger field_51484 = LogUtils.getLogger();
-	public static final Object field_51483 = new Object();
+	private static final Logger LOGGER = LogUtils.getLogger();
+	public static final Object LOCK = new Object();
 	private static long freeType = 0L;
 
 	public static long initialize() {
-		synchronized (field_51483) {
+		synchronized (LOCK) {
 			if (freeType == 0L) {
 				try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 					PointerBuffer pointerBuffer = memoryStack.mallocPointer(1);
-					method_59837(FreeType.FT_Init_FreeType(pointerBuffer), "Initializing FreeType library");
+					checkFatalError(FreeType.FT_Init_FreeType(pointerBuffer), "Initializing FreeType library");
 					freeType = pointerBuffer.get();
 				}
 			}
@@ -29,15 +29,15 @@ public class FreeTypeUtil {
 		}
 	}
 
-	public static void method_59837(int i, String string) {
-		if (i != 0) {
-			throw new IllegalStateException("FreeType error: " + getErrorMessage(i) + " (" + string + ")");
+	public static void checkFatalError(int code, String description) {
+		if (code != 0) {
+			throw new IllegalStateException("FreeType error: " + getErrorMessage(code) + " (" + description + ")");
 		}
 	}
 
 	public static boolean checkError(int code, String description) {
 		if (code != 0) {
-			field_51484.error("FreeType error: {} ({})", getErrorMessage(code), description);
+			LOGGER.error("FreeType error: {} ({})", getErrorMessage(code), description);
 			return true;
 		} else {
 			return false;
@@ -60,7 +60,7 @@ public class FreeTypeUtil {
 	}
 
 	public static void release() {
-		synchronized (field_51483) {
+		synchronized (LOCK) {
 			if (freeType != 0L) {
 				FreeType.FT_Done_Library(freeType);
 				freeType = 0L;

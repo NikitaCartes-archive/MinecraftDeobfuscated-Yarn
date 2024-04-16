@@ -55,10 +55,10 @@ public record TrueTypeFontLoader(Identifier location, float size, float oversamp
 			try {
 				byteBuffer = TextureUtil.readResource(inputStream);
 				byteBuffer.flip();
-				synchronized (FreeTypeUtil.field_51483) {
+				synchronized (FreeTypeUtil.LOCK) {
 					try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 						PointerBuffer pointerBuffer = memoryStack.mallocPointer(1);
-						FreeTypeUtil.method_59837(FreeType.FT_New_Memory_Face(FreeTypeUtil.initialize(), byteBuffer, 0L, pointerBuffer), "Initializing font face");
+						FreeTypeUtil.checkFatalError(FreeType.FT_New_Memory_Face(FreeTypeUtil.initialize(), byteBuffer, 0L, pointerBuffer), "Initializing font face");
 						fT_Face = FT_Face.create(pointerBuffer.get());
 					}
 
@@ -67,7 +67,7 @@ public record TrueTypeFontLoader(Identifier location, float size, float oversamp
 						throw new IOException("Font is not in TTF format, was " + string);
 					}
 
-					FreeTypeUtil.method_59837(FreeType.FT_Select_Charmap(fT_Face, FreeType.FT_ENCODING_UNICODE), "Find unicode charmap");
+					FreeTypeUtil.checkFatalError(FreeType.FT_Select_Charmap(fT_Face, FreeType.FT_ENCODING_UNICODE), "Find unicode charmap");
 					var20 = new TrueTypeFont(byteBuffer, fT_Face, this.size, this.oversample, this.shift.x, this.shift.y, this.skip);
 				}
 			} catch (Throwable var16) {
@@ -88,7 +88,7 @@ public record TrueTypeFontLoader(Identifier location, float size, float oversamp
 
 			return var20;
 		} catch (Exception var17) {
-			synchronized (FreeTypeUtil.field_51483) {
+			synchronized (FreeTypeUtil.LOCK) {
 				if (fT_Face != null) {
 					FreeType.FT_Done_Face(fT_Face);
 				}

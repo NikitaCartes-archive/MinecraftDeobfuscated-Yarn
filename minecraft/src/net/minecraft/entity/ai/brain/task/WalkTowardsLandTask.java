@@ -35,7 +35,7 @@ public class WalkTowardsLandTask {
 									BlockPos blockPos = entity.getBlockPos();
 									BlockPos.Mutable mutable = new BlockPos.Mutable();
 									ShapeContext shapeContext = ShapeContext.of(entity);
-			
+
 									for (BlockPos blockPos2 : BlockPos.iterateOutwards(blockPos, range, range, range)) {
 										if (blockPos2.getX() != blockPos.getX() || blockPos2.getZ() != blockPos.getZ()) {
 											BlockState blockState = world.getBlockState(blockPos2);
@@ -51,7 +51,7 @@ public class WalkTowardsLandTask {
 											}
 										}
 									}
-			
+
 									mutableLong.setValue(time + 60L);
 									return true;
 								}

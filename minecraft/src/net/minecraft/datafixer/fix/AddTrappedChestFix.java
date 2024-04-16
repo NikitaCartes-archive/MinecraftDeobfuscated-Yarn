@@ -55,7 +55,7 @@ public class AddTrappedChestFix extends DataFix {
 							} else {
 								List<? extends Typed<?>> list = ((Typed)optional.get()).getAllTyped(opticFinder4);
 								IntSet intSet = new IntOpenHashSet();
-	
+
 								for (Typed<?> typed2 : list) {
 									AddTrappedChestFix.ListFixer listFixer = new AddTrappedChestFix.ListFixer(typed2, this.getInputSchema());
 									if (!listFixer.isFixed()) {
@@ -67,7 +67,7 @@ public class AddTrappedChestFix extends DataFix {
 										}
 									}
 								}
-	
+
 								Dynamic<?> dynamic = typedx.get(DSL.remainderFinder());
 								int k = dynamic.get("xPos").asInt(0);
 								int l = dynamic.get("zPos").asInt(0);
@@ -81,7 +81,7 @@ public class AddTrappedChestFix extends DataFix {
 												if (!Objects.equals(string, "minecraft:chest")) {
 													LOGGER.warn("Block Entity was expected to be a chest");
 												}
-	
+
 												return "minecraft:trapped_chest";
 											})) : typedxxx;
 									}));

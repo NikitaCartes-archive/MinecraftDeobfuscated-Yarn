@@ -56,14 +56,10 @@ public class Brain<E extends LivingEntity> {
 	private final Supplier<Codec<Brain<E>>> codecSupplier;
 	private static final int ACTIVITY_REFRESH_COOLDOWN = 20;
 	private final Map<MemoryModuleType<?>, Optional<? extends Memory<?>>> memories = Maps.<MemoryModuleType<?>, Optional<? extends Memory<?>>>newHashMap();
-	private final Map<SensorType<? extends Sensor<? super E>>, Sensor<? super E>> sensors = Maps.<SensorType<? extends Sensor<? super E>>, Sensor<? super E>>newLinkedHashMap(
-		
-	);
+	private final Map<SensorType<? extends Sensor<? super E>>, Sensor<? super E>> sensors = Maps.<SensorType<? extends Sensor<? super E>>, Sensor<? super E>>newLinkedHashMap();
 	private final Map<Integer, Map<Activity, Set<Task<? super E>>>> tasks = Maps.newTreeMap();
 	private Schedule schedule = Schedule.EMPTY;
-	private final Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryModuleState>>> requiredActivityMemories = Maps.<Activity, Set<Pair<MemoryModuleType<?>, MemoryModuleState>>>newHashMap(
-		
-	);
+	private final Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryModuleState>>> requiredActivityMemories = Maps.<Activity, Set<Pair<MemoryModuleType<?>, MemoryModuleState>>>newHashMap();
 	/**
 	 * The map from activities to the memories to forget after the activity is
 	 * completed.
@@ -92,7 +88,7 @@ public class Brain<E extends LivingEntity> {
 							.flatMap(memoryType -> memoryType.getCodec().map(codec -> Registries.MEMORY_MODULE_TYPE.getId(memoryType)).stream())
 							.map(id -> ops.createString(id.toString()));
 					}
-		
+
 					@Override
 					public <T> DataResult<Brain<E>> decode(DynamicOps<T> ops, MapLike<T> map) {
 						MutableObject<DataResult<Builder<Brain.MemoryEntry<?>>>> mutableObject = new MutableObject<>(DataResult.success(ImmutableList.builder()));
@@ -107,13 +103,13 @@ public class Brain<E extends LivingEntity> {
 							.orElseGet(ImmutableList::of);
 						return DataResult.success(new Brain<>(memoryModules, sensors, immutableList, mutableObject::getValue));
 					}
-		
+
 					private <T, U> DataResult<Brain.MemoryEntry<U>> parse(MemoryModuleType<U> memoryType, DynamicOps<T> ops, T value) {
 						return ((DataResult)memoryType.getCodec().map(DataResult::success).orElseGet(() -> DataResult.error(() -> "No codec for memory: " + memoryType)))
 							.flatMap(codec -> codec.parse(ops, value))
 							.map(data -> new Brain.MemoryEntry<>(memoryType, Optional.of(data)));
 					}
-		
+
 					public <T> RecordBuilder<T> encode(Brain<E> brain, DynamicOps<T> dynamicOps, RecordBuilder<T> recordBuilder) {
 						brain.streamMemories().forEach(entry -> entry.serialize(dynamicOps, recordBuilder));
 						return recordBuilder;

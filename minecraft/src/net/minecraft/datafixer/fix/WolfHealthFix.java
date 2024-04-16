@@ -42,7 +42,7 @@ public class WolfHealthFix extends ChoiceFix {
 				if (mutableBoolean.isTrue()) {
 					dynamic = dynamic.update("Health", dynamicx -> dynamicx.createFloat(dynamicx.asFloat(0.0F) * 2.0F));
 				}
-	
+
 				return dynamic;
 			}
 		);

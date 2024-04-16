@@ -7,6 +7,7 @@ import java.util.Optional;
 import net.minecraft.structure.ShipwreckGenerator;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 
@@ -31,7 +32,21 @@ public class ShipwreckStructure extends Structure {
 	private void addPieces(StructurePiecesCollector collector, Structure.Context context) {
 		BlockRotation blockRotation = BlockRotation.random(context.random());
 		BlockPos blockPos = new BlockPos(context.chunkPos().getStartX(), 90, context.chunkPos().getStartZ());
-		ShipwreckGenerator.addParts(context.structureTemplateManager(), blockPos, blockRotation, collector, context.random(), this.beached);
+		ShipwreckGenerator.Piece piece = ShipwreckGenerator.addParts(
+			context.structureTemplateManager(), blockPos, blockRotation, collector, context.random(), this.beached
+		);
+		if (piece.isTooLargeForNormalGeneration()) {
+			BlockBox blockBox = piece.getBoundingBox();
+			int j;
+			if (this.beached) {
+				int i = Structure.getMinCornerHeight(context, blockBox.getMinX(), blockBox.getBlockCountX(), blockBox.getMinZ(), blockBox.getBlockCountZ());
+				j = piece.findGroundedY(i, context.random());
+			} else {
+				j = Structure.getAverageCornerHeights(context, blockBox.getMinX(), blockBox.getBlockCountX(), blockBox.getMinZ(), blockBox.getBlockCountZ());
+			}
+
+			piece.setY(j);
+		}
 	}
 
 	@Override

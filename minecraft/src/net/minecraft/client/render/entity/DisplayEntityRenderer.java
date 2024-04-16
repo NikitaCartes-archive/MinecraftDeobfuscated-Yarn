@@ -68,7 +68,6 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity, S> extends 
 			case HORIZONTAL -> rotation.rotationYXZ((float) (-Math.PI / 180.0) * lerpYaw(entity, yaw), (float) (Math.PI / 180.0) * getNegatedPitch(camera), 0.0F);
 			case VERTICAL -> rotation.rotationYXZ((float) (-Math.PI / 180.0) * getBackwardsYaw(camera), (float) (Math.PI / 180.0) * lerpPitch(entity, yaw), 0.0F);
 			case CENTER -> rotation.rotationYXZ((float) (-Math.PI / 180.0) * getBackwardsYaw(camera), (float) (Math.PI / 180.0) * getNegatedPitch(camera), 0.0F);
-			default -> throw new MatchException(null, null);
 		};
 	}
 
@@ -228,7 +227,6 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity, S> extends 
 					case LEFT -> 0.0F;
 					case RIGHT -> (float)(l - textLine.width());
 					case CENTER -> (float)l / 2.0F - (float)textLine.width() / 2.0F;
-					default -> throw new MatchException(null, null);
 				};
 				this.displayTextRenderer
 					.draw(

@@ -90,9 +90,7 @@ public class GenerationSettings {
 	}
 
 	public static class Builder {
-		private final Map<GenerationStep.Carver, List<RegistryEntry<ConfiguredCarver<?>>>> carverStepsToCarvers = Maps.<GenerationStep.Carver, List<RegistryEntry<ConfiguredCarver<?>>>>newLinkedHashMap(
-			
-		);
+		private final Map<GenerationStep.Carver, List<RegistryEntry<ConfiguredCarver<?>>>> carverStepsToCarvers = Maps.<GenerationStep.Carver, List<RegistryEntry<ConfiguredCarver<?>>>>newLinkedHashMap();
 		private final List<List<RegistryEntry<PlacedFeature>>> indexedFeaturesList = Lists.<List<RegistryEntry<PlacedFeature>>>newArrayList();
 
 		public GenerationSettings.Builder feature(GenerationStep.Feature featureStep, RegistryEntry<PlacedFeature> featureEntry) {

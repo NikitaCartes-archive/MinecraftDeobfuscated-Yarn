@@ -16,24 +16,8 @@ import net.minecraft.util.dynamic.ForwardingDynamicOps;
 public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	private final RegistryOps.RegistryInfoGetter registryInfoGetter;
 
-	private static RegistryOps.RegistryInfoGetter caching(RegistryOps.RegistryInfoGetter registryInfoGetter) {
-		return new RegistryOps.RegistryInfoGetter() {
-			private final Map<RegistryKey<? extends Registry<?>>, Optional<? extends RegistryOps.RegistryInfo<?>>> registryRefToInfo = new HashMap();
-
-			@Override
-			public <T> Optional<RegistryOps.RegistryInfo<T>> getRegistryInfo(RegistryKey<? extends Registry<? extends T>> registryRef) {
-				return (Optional<RegistryOps.RegistryInfo<T>>)this.registryRefToInfo.computeIfAbsent(registryRef, registryInfoGetter::getRegistryInfo);
-			}
-		};
-	}
-
 	public static <T> RegistryOps<T> of(DynamicOps<T> delegate, RegistryWrapper.WrapperLookup wrapperLookup) {
-		return of(delegate, caching(new RegistryOps.RegistryInfoGetter() {
-			@Override
-			public <E> Optional<RegistryOps.RegistryInfo<E>> getRegistryInfo(RegistryKey<? extends Registry<? extends E>> registryRef) {
-				return wrapperLookup.getOptionalWrapper(registryRef).map(RegistryOps.RegistryInfo::fromWrapper);
-			}
-		}));
+		return of(delegate, new RegistryOps.CachedRegistryInfoGetter(wrapperLookup));
 	}
 
 	public static <T> RegistryOps<T> of(DynamicOps<T> delegate, RegistryOps.RegistryInfoGetter registryInfoGetter) {
@@ -61,6 +45,21 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 		return this.registryInfoGetter.getRegistryInfo(registryRef).map(RegistryOps.RegistryInfo::entryLookup);
 	}
 
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		} else if (o != null && this.getClass() == o.getClass()) {
+			RegistryOps<?> registryOps = (RegistryOps<?>)o;
+			return this.delegate.equals(registryOps.delegate) && this.registryInfoGetter.equals(registryOps.registryInfoGetter);
+		} else {
+			return false;
+		}
+	}
+
+	public int hashCode() {
+		return this.delegate.hashCode() * 31 + this.registryInfoGetter.hashCode();
+	}
+
 	public static <E, O> RecordCodecBuilder<O, RegistryEntryLookup<E>> getEntryLookupCodec(RegistryKey<? extends Registry<? extends E>> registryRef) {
 		return Codecs.<RegistryEntryLookup<E>>createContextRetrievalCodec(
 				ops -> ops instanceof RegistryOps<?> registryOps
@@ -85,6 +84,40 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 						: DataResult.error(() -> "Not a registry ops")
 			)
 			.forGetter(object -> null);
+	}
+
+	static final class CachedRegistryInfoGetter implements RegistryOps.RegistryInfoGetter {
+		private final RegistryWrapper.WrapperLookup registriesLookup;
+		private final Map<RegistryKey<? extends Registry<?>>, Optional<? extends RegistryOps.RegistryInfo<?>>> cache = new HashMap();
+
+		public CachedRegistryInfoGetter(RegistryWrapper.WrapperLookup registriesLookup) {
+			this.registriesLookup = registriesLookup;
+		}
+
+		@Override
+		public <E> Optional<RegistryOps.RegistryInfo<E>> getRegistryInfo(RegistryKey<? extends Registry<? extends E>> registryRef) {
+			return (Optional<RegistryOps.RegistryInfo<E>>)this.cache.computeIfAbsent(registryRef, this::compute);
+		}
+
+		private Optional<RegistryOps.RegistryInfo<Object>> compute(RegistryKey<? extends Registry<?>> registryRef) {
+			return this.registriesLookup.getOptionalWrapper(registryRef).map(RegistryOps.RegistryInfo::fromWrapper);
+		}
+
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			} else {
+				if (o instanceof RegistryOps.CachedRegistryInfoGetter cachedRegistryInfoGetter && this.registriesLookup.equals(cachedRegistryInfoGetter.registriesLookup)) {
+					return true;
+				}
+
+				return false;
+			}
+		}
+
+		public int hashCode() {
+			return this.registriesLookup.hashCode();
+		}
 	}
 
 	public static record RegistryInfo<T>(RegistryEntryOwner<T> owner, RegistryEntryLookup<T> entryLookup, Lifecycle elementsLifecycle) {

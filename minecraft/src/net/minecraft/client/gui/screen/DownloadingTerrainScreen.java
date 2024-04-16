@@ -17,14 +17,14 @@ public class DownloadingTerrainScreen extends Screen {
 	private static final long MIN_LOAD_TIME_MS = 30000L;
 	private final long loadStartTime;
 	private final BooleanSupplier shouldClose;
-	private final DownloadingTerrainScreen.class_9678 field_51485;
+	private final DownloadingTerrainScreen.WorldEntryReason worldEntryReason;
 	@Nullable
-	private Sprite field_51486;
+	private Sprite backgroundSprite;
 
-	public DownloadingTerrainScreen(BooleanSupplier shouldClose, DownloadingTerrainScreen.class_9678 arg) {
+	public DownloadingTerrainScreen(BooleanSupplier shouldClose, DownloadingTerrainScreen.WorldEntryReason worldEntryReason) {
 		super(NarratorManager.EMPTY);
 		this.shouldClose = shouldClose;
-		this.field_51485 = arg;
+		this.worldEntryReason = worldEntryReason;
 		this.loadStartTime = System.currentTimeMillis();
 	}
 
@@ -46,9 +46,9 @@ public class DownloadingTerrainScreen extends Screen {
 
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		switch (this.field_51485) {
+		switch (this.worldEntryReason) {
 			case NETHER_PORTAL:
-				context.drawSprite(0, 0, -90, context.getScaledWindowWidth(), context.getScaledWindowHeight(), this.method_59838());
+				context.drawSprite(0, 0, -90, context.getScaledWindowWidth(), context.getScaledWindowHeight(), this.getBackgroundSprite());
 				break;
 			case END_PORTAL:
 				context.fillWithLayer(RenderLayer.getEndPortal(), 0, 0, this.width, this.height, 0);
@@ -60,12 +60,12 @@ public class DownloadingTerrainScreen extends Screen {
 		}
 	}
 
-	private Sprite method_59838() {
-		if (this.field_51486 != null) {
-			return this.field_51486;
+	private Sprite getBackgroundSprite() {
+		if (this.backgroundSprite != null) {
+			return this.backgroundSprite;
 		} else {
-			this.field_51486 = this.client.getBlockRenderManager().getModels().getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
-			return this.field_51486;
+			this.backgroundSprite = this.client.getBlockRenderManager().getModels().getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
+			return this.backgroundSprite;
 		}
 	}
 
@@ -88,7 +88,7 @@ public class DownloadingTerrainScreen extends Screen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum class_9678 {
+	public static enum WorldEntryReason {
 		NETHER_PORTAL,
 		END_PORTAL,
 		OTHER;

@@ -79,6 +79,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	public int width;
 	public int height;
 	private final List<Drawable> drawables = Lists.<Drawable>newArrayList();
+	private long lastPanoramaTickTime = Util.getMeasuringTimeMs();
 	public TextRenderer textRenderer;
 	@Nullable
 	private URI clickedLink;
@@ -396,8 +397,16 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		this.client.getFramebuffer().beginWrite(false);
 	}
 
+	protected float getPanoramaTickDelta() {
+		long l = Util.getMeasuringTimeMs();
+		long m = 50L;
+		float f = (float)(l - this.lastPanoramaTickTime) / 50.0F;
+		this.lastPanoramaTickTime = l;
+		return f > 7.0F ? 0.5F : f;
+	}
+
 	protected void renderPanoramaBackground(DrawContext context, float delta) {
-		ROTATING_PANORAMA_RENDERER.render(context, this.width, this.height, 1.0F, delta);
+		ROTATING_PANORAMA_RENDERER.render(context, this.width, this.height, 1.0F, this.getPanoramaTickDelta());
 	}
 
 	protected void renderDarkening(DrawContext context) {
@@ -634,7 +643,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		this.setScreenNarrationDelay(NARRATOR_MODE_CHANGE_DELAY, false);
 	}
 
-	protected void method_59840() {
+	protected void clearTooltip() {
 		this.tooltip = null;
 	}
 

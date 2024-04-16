@@ -30,8 +30,8 @@ public interface PacketListener {
 	 */
 	void onDisconnected(Text reason);
 
-	default void method_59807(Packet packet, Exception exception) throws CrashException {
-		throw NetworkThreadUtils.method_59854(exception, packet, this);
+	default void onPacketException(Packet packet, Exception exception) throws CrashException {
+		throw NetworkThreadUtils.createCrashException(exception, packet, this);
 	}
 
 	boolean isConnectionOpen();

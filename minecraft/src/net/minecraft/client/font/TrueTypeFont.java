@@ -55,7 +55,7 @@ public class TrueTypeFont implements Font {
 			if (i == 0) {
 				return null;
 			} else {
-				FreeTypeUtil.method_59837(FreeType.FT_Load_Glyph(fT_Face, i, 4194312), "Loading glyph");
+				FreeTypeUtil.checkFatalError(FreeType.FT_Load_Glyph(fT_Face, i, 4194312), "Loading glyph");
 				FT_GlyphSlot fT_GlyphSlot = (FT_GlyphSlot)Objects.requireNonNull(fT_Face.glyph(), "Glyph not initialized");
 				float f = FreeTypeUtil.getX(fT_GlyphSlot.advance());
 				FT_Bitmap fT_Bitmap = fT_GlyphSlot.bitmap();
@@ -79,7 +79,7 @@ public class TrueTypeFont implements Font {
 	@Override
 	public void close() {
 		if (this.face != null) {
-			synchronized (FreeTypeUtil.field_51483) {
+			synchronized (FreeTypeUtil.LOCK) {
 				FreeTypeUtil.checkError(FreeType.FT_Done_Face(this.face), "Deleting face");
 			}
 

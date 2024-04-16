@@ -26,10 +26,10 @@ public class NetworkThreadUtils {
 						packet.apply(listener);
 					} catch (Exception var4) {
 						if (var4 instanceof CrashException crashException && crashException.getCause() instanceof OutOfMemoryError) {
-							throw method_59854(var4, packet, listener);
+							throw createCrashException(var4, packet, listener);
 						}
 
-						listener.method_59807(packet, var4);
+						listener.onPacketException(packet, var4);
 					}
 				} else {
 					LOGGER.debug("Ignoring packet due to disconnection: {}", packet);
@@ -39,13 +39,13 @@ public class NetworkThreadUtils {
 		}
 	}
 
-	public static <T extends PacketListener> CrashException method_59854(Exception exception, Packet<T> packet, T packetListener) {
+	public static <T extends PacketListener> CrashException createCrashException(Exception exception, Packet<T> packet, T listener) {
 		if (exception instanceof CrashException crashException) {
-			fillCrashReport(crashException.getReport(), packetListener, packet);
+			fillCrashReport(crashException.getReport(), listener, packet);
 			return crashException;
 		} else {
 			CrashReport crashReport = CrashReport.create(exception, "Main thread packet handler");
-			fillCrashReport(crashReport, packetListener, packet);
+			fillCrashReport(crashReport, listener, packet);
 			return new CrashException(crashReport);
 		}
 	}

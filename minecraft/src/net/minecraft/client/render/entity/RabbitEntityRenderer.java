@@ -36,7 +36,6 @@ public class RabbitEntityRenderer extends MobEntityRenderer<RabbitEntity, Rabbit
 				case SALT -> SALT_TEXTURE;
 				case WHITE_SPLOTCHED -> WHITE_SPLOTCHED_TEXTURE;
 				case EVIL -> CAERBANNOG_TEXTURE;
-				default -> throw new MatchException(null, null);
 			};
 		}
 	}

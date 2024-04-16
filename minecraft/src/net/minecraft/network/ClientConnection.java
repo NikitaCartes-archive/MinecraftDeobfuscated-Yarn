@@ -43,19 +43,19 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_9680;
-import net.minecraft.class_9681;
-import net.minecraft.class_9682;
 import net.minecraft.network.encryption.PacketDecryptor;
 import net.minecraft.network.encryption.PacketEncryptor;
 import net.minecraft.network.handler.DecoderHandler;
 import net.minecraft.network.handler.EncoderHandler;
 import net.minecraft.network.handler.NetworkStateTransitions;
+import net.minecraft.network.handler.NoopInboundHandler;
+import net.minecraft.network.handler.NoopOutboundHandler;
 import net.minecraft.network.handler.PacketBundleHandler;
 import net.minecraft.network.handler.PacketBundler;
 import net.minecraft.network.handler.PacketDeflater;
 import net.minecraft.network.handler.PacketEncoderException;
 import net.minecraft.network.handler.PacketInflater;
+import net.minecraft.network.handler.PacketSizeLogHandler;
 import net.minecraft.network.handler.PacketSizeLogger;
 import net.minecraft.network.handler.PacketUnbundler;
 import net.minecraft.network.handler.SizePrepender;
@@ -231,9 +231,9 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		}
 	}
 
-	private static void method_59851(ChannelFuture channelFuture) {
+	private static void syncUninterruptibly(ChannelFuture future) {
 		try {
-			channelFuture.syncUninterruptibly();
+			future.syncUninterruptibly();
 		} catch (Exception var2) {
 			if (var2 instanceof ClosedChannelException) {
 				LOGGER.info("Connection closed during protocol change");
@@ -257,7 +257,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 				decoderTransitioner = decoderTransitioner.andThen(context -> context.pipeline().addAfter("decoder", "bundler", packetBundler));
 			}
 
-			method_59851(this.channel.writeAndFlush(decoderTransitioner));
+			syncUninterruptibly(this.channel.writeAndFlush(decoderTransitioner));
 		}
 	}
 
@@ -273,7 +273,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			}
 
 			boolean bl = newState.id() == NetworkPhase.LOGIN;
-			method_59851(this.channel.writeAndFlush(encoderTransitioner.andThen(context -> this.duringLogin = bl)));
+			syncUninterruptibly(this.channel.writeAndFlush(encoderTransitioner.andThen(context -> this.duringLogin = bl)));
 		}
 	}
 
@@ -533,30 +533,30 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		}).addLast("packet_handler", this);
 	}
 
-	public static void addHandlers(ChannelPipeline pipeline, NetworkSide side, boolean bl, @Nullable PacketSizeLogger packetSizeLogger) {
+	public static void addHandlers(ChannelPipeline pipeline, NetworkSide side, boolean local, @Nullable PacketSizeLogger packetSizeLogger) {
 		NetworkSide networkSide = side.getOpposite();
-		boolean bl2 = side == NetworkSide.SERVERBOUND;
-		boolean bl3 = networkSide == NetworkSide.SERVERBOUND;
-		pipeline.addLast("splitter", method_59852(packetSizeLogger, bl))
+		boolean bl = side == NetworkSide.SERVERBOUND;
+		boolean bl2 = networkSide == NetworkSide.SERVERBOUND;
+		pipeline.addLast("splitter", getSplitter(packetSizeLogger, local))
 			.addLast(new FlowControlHandler())
-			.addLast(getInboundHandlerName(bl2), (ChannelHandler)(bl2 ? new DecoderHandler<>(C2S_HANDSHAKE_STATE) : new NetworkStateTransitions.InboundConfigurer()))
-			.addLast("prepender", method_59853(bl))
-			.addLast(getOutboundHandlerName(bl3), (ChannelHandler)(bl3 ? new EncoderHandler<>(C2S_HANDSHAKE_STATE) : new NetworkStateTransitions.OutboundConfigurer()));
+			.addLast(getInboundHandlerName(bl), (ChannelHandler)(bl ? new DecoderHandler<>(C2S_HANDSHAKE_STATE) : new NetworkStateTransitions.InboundConfigurer()))
+			.addLast("prepender", getPrepender(local))
+			.addLast(getOutboundHandlerName(bl2), (ChannelHandler)(bl2 ? new EncoderHandler<>(C2S_HANDSHAKE_STATE) : new NetworkStateTransitions.OutboundConfigurer()));
 	}
 
-	private static ChannelOutboundHandler method_59853(boolean bl) {
-		return (ChannelOutboundHandler)(bl ? new class_9682() : new SizePrepender());
+	private static ChannelOutboundHandler getPrepender(boolean local) {
+		return (ChannelOutboundHandler)(local ? new NoopOutboundHandler() : new SizePrepender());
 	}
 
-	private static ChannelInboundHandler method_59852(@Nullable PacketSizeLogger packetSizeLogger, boolean bl) {
-		if (!bl) {
+	private static ChannelInboundHandler getSplitter(@Nullable PacketSizeLogger packetSizeLogger, boolean local) {
+		if (!local) {
 			return new SplitterHandler(packetSizeLogger);
 		} else {
-			return (ChannelInboundHandler)(packetSizeLogger != null ? new class_9680(packetSizeLogger) : new class_9681());
+			return (ChannelInboundHandler)(packetSizeLogger != null ? new PacketSizeLogHandler(packetSizeLogger) : new NoopInboundHandler());
 		}
 	}
 
-	public static void addValidator(ChannelPipeline pipeline, NetworkSide side) {
+	public static void addLocalValidator(ChannelPipeline pipeline, NetworkSide side) {
 		addHandlers(pipeline, side, true, null);
 	}
 
@@ -566,7 +566,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			@Override
 			protected void initChannel(Channel channel) {
 				ChannelPipeline channelPipeline = channel.pipeline();
-				ClientConnection.addValidator(channelPipeline, NetworkSide.CLIENTBOUND);
+				ClientConnection.addLocalValidator(channelPipeline, NetworkSide.CLIENTBOUND);
 				clientConnection.addFlowControlHandler(channelPipeline);
 			}
 		}).channel(LocalChannel.class).connect(address).syncUninterruptibly();

@@ -33,8 +33,8 @@ public interface ListOperation {
 
 	ListOperation.Mode getMode();
 
-	default <T> List<T> method_59742(List<T> list, List<T> list2) {
-		return this.apply(list, list2, Integer.MAX_VALUE);
+	default <T> List<T> apply(List<T> current, List<T> values) {
+		return this.apply(current, values, Integer.MAX_VALUE);
 	}
 
 	<T> List<T> apply(List<T> current, List<T> values, int maxSize);
@@ -182,18 +182,19 @@ public interface ListOperation {
 		}
 	}
 
-	public static record class_9677<T>(List<T> value, ListOperation operation) {
-		public static <T> Codec<ListOperation.class_9677<T>> method_59828(Codec<T> codec, int i) {
+	public static record Values<T>(List<T> value, ListOperation operation) {
+		public static <T> Codec<ListOperation.Values<T>> createCodec(Codec<T> codec, int maxSize) {
 			return RecordCodecBuilder.create(
 				instance -> instance.group(
-							codec.sizeLimitedListOf(i).fieldOf("values").forGetter(arg -> arg.value), ListOperation.createCodec(i).forGetter(arg -> arg.operation)
+							codec.sizeLimitedListOf(maxSize).fieldOf("values").forGetter(values -> values.value),
+							ListOperation.createCodec(maxSize).forGetter(values -> values.operation)
 						)
-						.apply(instance, ListOperation.class_9677::new)
+						.apply(instance, ListOperation.Values::new)
 			);
 		}
 
-		public List<T> method_59831(List<T> list) {
-			return this.operation.method_59742(list, this.value);
+		public List<T> apply(List<T> current) {
+			return this.operation.apply(current, this.value);
 		}
 	}
 }
