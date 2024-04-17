@@ -419,11 +419,21 @@ public final class SimpleOption<T> {
 		int maxInclusive();
 
 		default double toSliderProgress(Integer integer) {
-			return (double)MathHelper.map((float)integer.intValue(), (float)this.minInclusive(), (float)this.maxInclusive(), 0.0F, 1.0F);
+			if (integer == this.minInclusive()) {
+				return 0.0;
+			} else {
+				return integer == this.maxInclusive()
+					? 1.0
+					: MathHelper.map((double)integer.intValue() + 0.5, (double)this.minInclusive(), (double)this.maxInclusive() + 1.0, 0.0, 1.0);
+			}
 		}
 
 		default Integer toValue(double d) {
-			return MathHelper.floor(MathHelper.map(d, 0.0, 1.0, (double)this.minInclusive(), (double)this.maxInclusive()));
+			if (d >= 1.0) {
+				d = 0.99999F;
+			}
+
+			return MathHelper.floor(MathHelper.map(d, 0.0, 1.0, (double)this.minInclusive(), (double)this.maxInclusive() + 1.0));
 		}
 
 		/**

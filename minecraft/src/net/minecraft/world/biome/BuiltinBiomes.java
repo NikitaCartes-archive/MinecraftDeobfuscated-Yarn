@@ -16,8 +16,10 @@ public abstract class BuiltinBiomes {
 		biomeRegisterable.register(BiomeKeys.SNOWY_PLAINS, OverworldBiomeCreator.createPlains(registryEntryLookup, registryEntryLookup2, false, true, false));
 		biomeRegisterable.register(BiomeKeys.ICE_SPIKES, OverworldBiomeCreator.createPlains(registryEntryLookup, registryEntryLookup2, false, true, true));
 		biomeRegisterable.register(BiomeKeys.DESERT, OverworldBiomeCreator.createDesert(registryEntryLookup, registryEntryLookup2));
-		biomeRegisterable.register(BiomeKeys.SWAMP, OverworldBiomeCreator.createSwamp(registryEntryLookup, registryEntryLookup2));
-		biomeRegisterable.register(BiomeKeys.MANGROVE_SWAMP, OverworldBiomeCreator.createMangroveSwamp(registryEntryLookup, registryEntryLookup2));
+		biomeRegisterable.register(BiomeKeys.SWAMP, OverworldBiomeCreator.createSwamp(registryEntryLookup, registryEntryLookup2, builder -> {
+		}));
+		biomeRegisterable.register(BiomeKeys.MANGROVE_SWAMP, OverworldBiomeCreator.createMangroveSwamp(registryEntryLookup, registryEntryLookup2, builder -> {
+		}));
 		biomeRegisterable.register(BiomeKeys.FOREST, OverworldBiomeCreator.createNormalForest(registryEntryLookup, registryEntryLookup2, false, false, false));
 		biomeRegisterable.register(BiomeKeys.FLOWER_FOREST, OverworldBiomeCreator.createNormalForest(registryEntryLookup, registryEntryLookup2, false, false, true));
 		biomeRegisterable.register(BiomeKeys.BIRCH_FOREST, OverworldBiomeCreator.createNormalForest(registryEntryLookup, registryEntryLookup2, true, false, false));

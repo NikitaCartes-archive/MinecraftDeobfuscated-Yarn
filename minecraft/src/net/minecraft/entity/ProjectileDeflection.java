@@ -18,15 +18,15 @@ public interface ProjectileDeflection {
 	};
 	ProjectileDeflection REDIRECTED = (projectile, hitEntity, random) -> {
 		if (hitEntity != null) {
-			Vec3d vec3d = hitEntity.getRotationVector();
-			projectile.setVelocity(vec3d.multiply(projectile.getVelocity().length()));
+			Vec3d vec3d = hitEntity.getRotationVector().normalize();
+			projectile.setVelocity(vec3d);
 			projectile.velocityModified = true;
 		}
 	};
 	ProjectileDeflection TRANSFER_VELOCITY_DIRECTION = (projectile, hitEntity, random) -> {
 		if (hitEntity != null) {
 			Vec3d vec3d = hitEntity.getVelocity().normalize();
-			projectile.setVelocity(vec3d.multiply(projectile.getVelocity().length()));
+			projectile.setVelocity(vec3d);
 			projectile.velocityModified = true;
 		}
 	};

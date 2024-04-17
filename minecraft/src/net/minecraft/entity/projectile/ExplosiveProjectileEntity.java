@@ -207,7 +207,6 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	protected void onDeflected(@Nullable Entity deflector, boolean fromAttack) {
 		super.onDeflected(deflector, fromAttack);
 		if (fromAttack) {
-			this.setVelocity(this.getVelocity().normalize());
 			this.powerX = this.getVelocity().x * 0.1;
 			this.powerY = this.getVelocity().y * 0.1;
 			this.powerZ = this.getVelocity().z * 0.1;

@@ -102,7 +102,7 @@ public record TrueTypeFontLoader(Identifier location, float size, float oversamp
 	@Environment(EnvType.CLIENT)
 	public static record Shift(float x, float y) {
 		public static final TrueTypeFontLoader.Shift NONE = new TrueTypeFontLoader.Shift(0.0F, 0.0F);
-		public static final Codec<TrueTypeFontLoader.Shift> CODEC = Codec.floatRange(-100.0F, 100.0F)
+		public static final Codec<TrueTypeFontLoader.Shift> CODEC = Codec.floatRange(-512.0F, 512.0F)
 			.listOf()
 			.comapFlatMap(
 				floatList -> Util.decodeFixedLengthList(floatList, 2).map(floatListx -> new TrueTypeFontLoader.Shift((Float)floatListx.get(0), (Float)floatListx.get(1))),

@@ -17,8 +17,8 @@ public class EntityHorseSplitFix extends EntityTransformFix {
 
 	@Override
 	protected Pair<String, Typed<?>> transform(String choice, Typed<?> typed) {
-		Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
 		if (Objects.equals("EntityHorse", choice)) {
+			Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
 			int i = dynamic.get("Type").asInt(0);
 
 			String string = switch (i) {
@@ -28,9 +28,8 @@ public class EntityHorseSplitFix extends EntityTransformFix {
 				case 4 -> "SkeletonHorse";
 				default -> "Horse";
 			};
-			dynamic.remove("Type");
 			Type<?> type = (Type<?>)this.getOutputSchema().findChoiceType(TypeReferences.ENTITY).types().get(string);
-			return Pair.of(string, Util.apply(typed, type, dynamicx -> dynamicx));
+			return Pair.of(string, Util.apply(typed, type, dynamicx -> dynamicx.remove("Type")));
 		} else {
 			return Pair.of(choice, typed);
 		}

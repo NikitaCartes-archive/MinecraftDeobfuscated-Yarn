@@ -341,7 +341,7 @@ public class Schemas {
 		Schema schema5 = builder.addSchema(106, Schema106::new);
 		builder.addFixer(new MobSpawnerEntityIdentifiersFix(schema5, true));
 		Schema schema6 = builder.addSchema(107, Schema107::new);
-		builder.addFixer(new EntityMinecartIdentifiersFix(schema6, true));
+		builder.addFixer(new EntityMinecartIdentifiersFix(schema6));
 		Schema schema7 = builder.addSchema(108, EMPTY);
 		builder.addFixer(new EntityStringUuidFix(schema7, true));
 		Schema schema8 = builder.addSchema(109, EMPTY);
