@@ -9,9 +9,11 @@ import net.minecraft.network.packet.LoginPackets;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 
-public record LoginSuccessS2CPacket(GameProfile profile) implements Packet<ClientLoginPacketListener> {
-	public static final PacketCodec<ByteBuf, LoginSuccessS2CPacket> CODEC = PacketCodecs.GAME_PROFILE
-		.xmap(LoginSuccessS2CPacket::new, LoginSuccessS2CPacket::profile);
+public record LoginSuccessS2CPacket(GameProfile profile, @Deprecated(forRemoval = true) boolean strictErrorHandling)
+	implements Packet<ClientLoginPacketListener> {
+	public static final PacketCodec<ByteBuf, LoginSuccessS2CPacket> CODEC = PacketCodec.tuple(
+		PacketCodecs.GAME_PROFILE, LoginSuccessS2CPacket::profile, PacketCodecs.BOOL, LoginSuccessS2CPacket::strictErrorHandling, LoginSuccessS2CPacket::new
+	);
 
 	@Override
 	public PacketType<LoginSuccessS2CPacket> getPacketId() {

@@ -71,6 +71,10 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	@Nullable
 	protected final Screen postDisconnectScreen;
 	protected boolean transferring;
+	@Deprecated(
+		forRemoval = true
+	)
+	protected final boolean strictErrorHandling;
 	private final List<ClientCommonNetworkHandler.QueuedPacket> queuedPackets = new ArrayList();
 	protected final Map<Identifier, byte[]> serverCookies;
 
@@ -82,13 +86,15 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 		this.worldSession = connectionState.worldSession();
 		this.postDisconnectScreen = connectionState.postDisconnectScreen();
 		this.serverCookies = connectionState.serverCookies();
+		this.strictErrorHandling = connectionState.strictErrorHandling();
 	}
 
 	@Override
 	public void onPacketException(Packet packet, Exception exception) {
-		LOGGER.error("Failed to handle packet {}, disconnecting", packet, exception);
-		ClientCommonPacketListener.super.onPacketException(packet, exception);
-		this.connection.disconnect(Text.translatable("disconnect.packetError"));
+		LOGGER.error("Failed to handle packet {}", packet, exception);
+		if (this.strictErrorHandling) {
+			this.connection.disconnect(Text.translatable("disconnect.packetError"));
+		}
 	}
 
 	@Override

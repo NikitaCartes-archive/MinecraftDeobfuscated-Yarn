@@ -22,6 +22,7 @@ public record ClientConnectionState(
 	@Nullable ServerInfo serverInfo,
 	@Nullable Screen postDisconnectScreen,
 	Map<Identifier, byte[]> serverCookies,
-	@Nullable ChatHud.ChatState chatState
+	@Nullable ChatHud.ChatState chatState,
+	@Deprecated(forRemoval = true) boolean strictErrorHandling
 ) {
 }

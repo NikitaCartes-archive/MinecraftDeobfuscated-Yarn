@@ -1,18 +1,18 @@
 package net.minecraft.registry;
 
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.class_9686;
 import net.minecraft.block.entity.OneTwentyOneBannerPatterns;
 import net.minecraft.entity.damage.OneTwentyOneDamageTypes;
 import net.minecraft.item.trim.OneTwentyOneArmorTrimPatterns;
 import net.minecraft.structure.OneTwentyOneStructureSets;
 import net.minecraft.structure.pool.OneTwentyOneStructurePools;
 import net.minecraft.structure.processor.OneTwentyOneStructureProcessorLists;
+import net.minecraft.world.biome.OneTwentyOneBiomes;
 import net.minecraft.world.gen.structure.OneTwentyOneStructures;
 
 public class OneTwentyOneBuiltinRegistries {
 	private static final RegistryBuilder REGISTRY_BUILDER = new RegistryBuilder()
-		.addRegistry(RegistryKeys.BIOME, class_9686::method_59883)
+		.addRegistry(RegistryKeys.BIOME, OneTwentyOneBiomes::bootstrap)
 		.addRegistry(RegistryKeys.TEMPLATE_POOL, OneTwentyOneStructurePools::bootstrap)
 		.addRegistry(RegistryKeys.STRUCTURE, OneTwentyOneStructures::bootstrap)
 		.addRegistry(RegistryKeys.STRUCTURE_SET, OneTwentyOneStructureSets::bootstrap)

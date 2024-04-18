@@ -190,7 +190,8 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 						this.serverInfo,
 						this.parentScreen,
 						this.serverCookies,
-						null
+						null,
+						packet.strictErrorHandling()
 					)
 				)
 			);

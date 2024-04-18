@@ -167,6 +167,7 @@ import net.minecraft.datafixer.fix.ProjectileItemTypeFix;
 import net.minecraft.datafixer.fix.ProtoChunkTickListFix;
 import net.minecraft.datafixer.fix.RandomSequenceSettingsFix;
 import net.minecraft.datafixer.fix.RedstoneConnectionsFix;
+import net.minecraft.datafixer.fix.RemoveEmptyItemInSuspiciousBlockFix;
 import net.minecraft.datafixer.fix.RemoveFeatureTogglesFix;
 import net.minecraft.datafixer.fix.RemoveFilteredBookTextFix;
 import net.minecraft.datafixer.fix.RemoveFilteredSignTextFix;
@@ -1242,9 +1243,9 @@ public class Schemas {
 		Schema schema203 = builder.addSchema(3807, 1, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new MapBannerBlockPosFormatFix(schema203));
 		Schema schema204 = builder.addSchema(3808, Schema3808::new);
-		builder.addFixer(new HorseArmorFix(schema204, "minecraft:horse", "ArmorItem"));
+		builder.addFixer(new HorseArmorFix(schema204, "minecraft:horse", "ArmorItem", true));
 		Schema schema205 = builder.addSchema(3808, 1, Schema3808_1::new);
-		builder.addFixer(new HorseArmorFix(schema205, "minecraft:llama", "DecorItem"));
+		builder.addFixer(new HorseArmorFix(schema205, "minecraft:llama", "DecorItem", false));
 		Schema schema206 = builder.addSchema(3809, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new HorseChestIndexingFix(schema206));
 		Schema schema207 = builder.addSchema(3812, EMPTY_IDENTIFIER_NORMALIZE);
@@ -1282,6 +1283,8 @@ public class Schemas {
 		builder.addFixer(new ChoiceTypesFix(schema219, "Added Ominous Item Spawner", TypeReferences.ENTITY));
 		Schema schema220 = builder.addSchema(3828, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new EmptyItemInVillagerTradeFix(schema220));
+		Schema schema221 = builder.addSchema(3833, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new RemoveEmptyItemInSuspiciousBlockFix(schema221));
 	}
 
 	private static UnaryOperator<String> replacingRaw(Map<String, String> replacements) {

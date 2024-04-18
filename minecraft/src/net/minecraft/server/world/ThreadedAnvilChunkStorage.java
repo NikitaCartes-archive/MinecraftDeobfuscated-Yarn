@@ -618,7 +618,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		Throwable throwable3 = throwable2 instanceof CrashException crashException ? crashException.getCause() : throwable2;
 		boolean bl = throwable3 instanceof Error;
 		boolean bl2 = throwable3 instanceof IOException || throwable3 instanceof NbtException;
-		if (!bl && bl2) {
+		if (!bl) {
+			if (!bl2) {
+			}
+
 			LOGGER.error("Couldn't load chunk {}", chunkPos, throwable3);
 			this.world.getServer().onChunkLoadFailure(chunkPos);
 			return this.getProtoChunk(chunkPos);

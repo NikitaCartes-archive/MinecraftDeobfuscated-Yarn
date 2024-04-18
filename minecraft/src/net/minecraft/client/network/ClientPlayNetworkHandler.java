@@ -806,7 +806,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 						this.serverInfo,
 						this.postDisconnectScreen,
 						this.serverCookies,
-						chatState
+						chatState,
+						this.strictErrorHandling
 					)
 				)
 			);
