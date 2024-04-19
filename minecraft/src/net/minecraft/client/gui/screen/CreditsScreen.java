@@ -305,7 +305,7 @@ public class CreditsScreen extends Screen {
 
 	@Override
 	public boolean shouldPause() {
-		return false;
+		return !this.endCredits;
 	}
 
 	@Override

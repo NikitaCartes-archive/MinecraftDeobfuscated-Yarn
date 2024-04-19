@@ -7,6 +7,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import net.minecraft.nbt.NbtElement;
 
 public class CodecCache {
 	final LoadingCache<CodecCache.Key<?, ?>, DataResult<?>> cache;
@@ -32,7 +33,9 @@ public class CodecCache {
 
 			@Override
 			public <T> DataResult<T> encode(A value, DynamicOps<T> ops, T prefix) {
-				return (DataResult<T>)CodecCache.this.cache.getUnchecked(new CodecCache.Key<>(codec, value, ops));
+				return CodecCache.this.cache
+					.getUnchecked(new CodecCache.Key<>(codec, value, ops))
+					.map(object -> object instanceof NbtElement nbtElement ? nbtElement.copy() : object);
 			}
 		};
 	}

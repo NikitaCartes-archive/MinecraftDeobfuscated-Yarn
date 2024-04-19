@@ -42,6 +42,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.StructureTags;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
@@ -1236,9 +1237,14 @@ public class TradeOffers {
 			this.possibleEnchantments = Arrays.asList(possibleEnchantments);
 		}
 
+		private Enchantment chooseEnchantment(Random random, FeatureSet enabledFeatures) {
+			List<Enchantment> list = this.possibleEnchantments.stream().filter(enchantment -> enchantment.isEnabled(enabledFeatures)).toList();
+			return (Enchantment)list.get(random.nextInt(list.size()));
+		}
+
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
-			Enchantment enchantment = (Enchantment)this.possibleEnchantments.get(random.nextInt(this.possibleEnchantments.size()));
+			Enchantment enchantment = this.chooseEnchantment(random, entity.getWorld().getEnabledFeatures());
 			int i = Math.max(enchantment.getMinLevel(), this.minLevel);
 			int j = Math.min(enchantment.getMaxLevel(), this.maxLevel);
 			int k = MathHelper.nextInt(random, i, j);
