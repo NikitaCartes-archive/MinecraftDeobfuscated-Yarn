@@ -85,6 +85,7 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 			return SimpleRegistry.this.streamTagsAndEntries().map(Pair::getSecond);
 		}
 	};
+	private final Object tagLock = new Object();
 
 	public SimpleRegistry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle) {
 		this(key, lifecycle, false);
@@ -275,14 +276,22 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 	@Override
 	public RegistryEntryList.Named<T> getOrCreateEntryList(TagKey<T> tag) {
 		RegistryEntryList.Named<T> named = (RegistryEntryList.Named<T>)this.tagToEntryList.get(tag);
-		if (named == null) {
-			named = this.createNamedEntryList(tag);
-			Map<TagKey<T>, RegistryEntryList.Named<T>> map = new IdentityHashMap(this.tagToEntryList);
-			map.put(tag, named);
-			this.tagToEntryList = map;
+		if (named != null) {
+			return named;
+		} else {
+			synchronized (this.tagLock) {
+				named = (RegistryEntryList.Named<T>)this.tagToEntryList.get(tag);
+				if (named != null) {
+					return named;
+				} else {
+					named = this.createNamedEntryList(tag);
+					Map<TagKey<T>, RegistryEntryList.Named<T>> map = new IdentityHashMap(this.tagToEntryList);
+					map.put(tag, named);
+					this.tagToEntryList = map;
+					return named;
+				}
+			}
 		}
-
-		return named;
 	}
 
 	private RegistryEntryList.Named<T> createNamedEntryList(TagKey<T> tag) {
@@ -386,10 +395,12 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 			);
 		}
 
-		Map<TagKey<T>, RegistryEntryList.Named<T>> map2 = new IdentityHashMap(this.tagToEntryList);
-		tagEntries.forEach((tag, entries) -> ((RegistryEntryList.Named)map2.computeIfAbsent(tag, this::createNamedEntryList)).copyOf(entries));
-		map.forEach(RegistryEntry.Reference::setTags);
-		this.tagToEntryList = map2;
+		synchronized (this.tagLock) {
+			Map<TagKey<T>, RegistryEntryList.Named<T>> map2 = new IdentityHashMap(this.tagToEntryList);
+			tagEntries.forEach((tag, entries) -> ((RegistryEntryList.Named)map2.computeIfAbsent(tag, this::createNamedEntryList)).copyOf(entries));
+			map.forEach(RegistryEntry.Reference::setTags);
+			this.tagToEntryList = map2;
+		}
 	}
 
 	@Override

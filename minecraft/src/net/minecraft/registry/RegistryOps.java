@@ -5,9 +5,9 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryOwner;
 import net.minecraft.util.dynamic.Codecs;
@@ -88,7 +88,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 
 	static final class CachedRegistryInfoGetter implements RegistryOps.RegistryInfoGetter {
 		private final RegistryWrapper.WrapperLookup registriesLookup;
-		private final Map<RegistryKey<? extends Registry<?>>, Optional<? extends RegistryOps.RegistryInfo<?>>> cache = new HashMap();
+		private final Map<RegistryKey<? extends Registry<?>>, Optional<? extends RegistryOps.RegistryInfo<?>>> cache = new ConcurrentHashMap();
 
 		public CachedRegistryInfoGetter(RegistryWrapper.WrapperLookup registriesLookup) {
 			this.registriesLookup = registriesLookup;
