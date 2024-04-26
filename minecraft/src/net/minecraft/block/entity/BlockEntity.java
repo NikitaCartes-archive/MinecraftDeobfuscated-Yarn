@@ -19,6 +19,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
@@ -488,6 +489,16 @@ public abstract class BlockEntity {
 
 	public void setComponents(ComponentMap components) {
 		this.components = components;
+	}
+
+	@Nullable
+	public static Text tryParseCustomName(String json, RegistryWrapper.WrapperLookup registryLookup) {
+		try {
+			return Text.Serialization.fromJson(json, registryLookup);
+		} catch (Exception var3) {
+			LOGGER.warn("Failed to parse custom name from string '{}', discarding", json, var3);
+			return null;
+		}
 	}
 
 	static class Components {

@@ -66,7 +66,7 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 		nbt.putInt("last_interacted_slot", this.lastInteractedSlot);
 	}
 
-	public int getOpenSlotCount() {
+	public int getFilledSlotCount() {
 		return (int)this.inventory.stream().filter(Predicate.not(ItemStack::isEmpty)).count();
 	}
 

@@ -941,7 +941,7 @@ public class InGameHud {
 		RenderSystem.disableBlend();
 	}
 
-	private void renderFood(DrawContext context, PlayerEntity player, int top, int left) {
+	private void renderFood(DrawContext context, PlayerEntity player, int top, int right) {
 		HungerManager hungerManager = player.getHungerManager();
 		int i = hungerManager.getFoodLevel();
 		RenderSystem.enableBlend();
@@ -965,7 +965,7 @@ public class InGameHud {
 				k = top + (this.random.nextInt(3) - 1);
 			}
 
-			int l = left - j * 8 - 9;
+			int l = right - j * 8 - 9;
 			context.drawGuiTexture(identifier, l, k, 9, 9);
 			if (j * 2 + 1 < i) {
 				context.drawGuiTexture(identifier3, l, k, 9, 9);

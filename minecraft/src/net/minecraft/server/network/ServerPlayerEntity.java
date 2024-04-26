@@ -924,7 +924,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			return Either.left(PlayerEntity.SleepFailureReason.OTHER_PROBLEM);
 		} else if (!this.getWorld().getDimension().natural()) {
 			return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_HERE);
-		} else if (!this.isBedTooFarAway(pos, direction)) {
+		} else if (!this.isBedWithinRange(pos, direction)) {
 			return Either.left(PlayerEntity.SleepFailureReason.TOO_FAR_AWAY);
 		} else if (this.isBedObstructed(pos, direction)) {
 			return Either.left(PlayerEntity.SleepFailureReason.OBSTRUCTED);
@@ -968,11 +968,11 @@ public class ServerPlayerEntity extends PlayerEntity {
 		super.sleep(pos);
 	}
 
-	private boolean isBedTooFarAway(BlockPos pos, Direction direction) {
-		return this.isBedTooFarAway(pos) || this.isBedTooFarAway(pos.offset(direction.getOpposite()));
+	private boolean isBedWithinRange(BlockPos pos, Direction direction) {
+		return this.isBedWithinRange(pos) || this.isBedWithinRange(pos.offset(direction.getOpposite()));
 	}
 
-	private boolean isBedTooFarAway(BlockPos pos) {
+	private boolean isBedWithinRange(BlockPos pos) {
 		Vec3d vec3d = Vec3d.ofBottomCenter(pos);
 		return Math.abs(this.getX() - vec3d.getX()) <= 3.0 && Math.abs(this.getY() - vec3d.getY()) <= 2.0 && Math.abs(this.getZ() - vec3d.getZ()) <= 3.0;
 	}

@@ -302,7 +302,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		this.primary = readStatusEffect(nbt, "primary_effect");
 		this.secondary = readStatusEffect(nbt, "secondary_effect");
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
-			this.customName = Text.Serialization.fromJson(nbt.getString("CustomName"), registryLookup);
+			this.customName = tryParseCustomName(nbt.getString("CustomName"), registryLookup);
 		}
 
 		this.lock = ContainerLock.fromNbt(nbt);

@@ -71,7 +71,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
-			this.customName = Text.Serialization.fromJson(nbt.getString("CustomName"), registryLookup);
+			this.customName = tryParseCustomName(nbt.getString("CustomName"), registryLookup);
 		}
 
 		if (nbt.contains("patterns")) {

@@ -25,6 +25,7 @@ public class HorseChestIndexingFix extends DataFix {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.ENTITY);
 		return TypeRewriteRule.seq(
 			this.fixIndexing(opticFinder, type, "minecraft:llama"),
+			this.fixIndexing(opticFinder, type, "minecraft:trader_llama"),
 			this.fixIndexing(opticFinder, type, "minecraft:mule"),
 			this.fixIndexing(opticFinder, type, "minecraft:donkey")
 		);

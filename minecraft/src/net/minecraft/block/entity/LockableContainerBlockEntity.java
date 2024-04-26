@@ -37,7 +37,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 		super.readNbt(nbt, registryLookup);
 		this.lock = ContainerLock.fromNbt(nbt);
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
-			this.customName = Text.Serialization.fromJson(nbt.getString("CustomName"), registryLookup);
+			this.customName = tryParseCustomName(nbt.getString("CustomName"), registryLookup);
 		}
 	}
 

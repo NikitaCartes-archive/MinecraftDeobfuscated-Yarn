@@ -3,6 +3,7 @@ package net.minecraft.world;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.annotation.Nullable;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -76,7 +77,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		this.command = nbt.getString("Command");
 		this.successCount = nbt.getInt("SuccessCount");
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
-			this.setCustomName(Text.Serialization.fromJson(nbt.getString("CustomName"), registries));
+			this.setCustomName(BlockEntity.tryParseCustomName(nbt.getString("CustomName"), registries));
 		} else {
 			this.setCustomName(null);
 		}

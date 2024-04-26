@@ -1,5 +1,6 @@
 package net.minecraft.component.type;
 
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapDecoder;
@@ -20,8 +21,10 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryWrapper;
+import org.slf4j.Logger;
 
 public final class NbtComponent {
+	private static final Logger field_51522 = LogUtils.getLogger();
 	public static final NbtComponent DEFAULT = new NbtComponent(new NbtCompound());
 	public static final Codec<NbtComponent> CODEC = NbtCompound.CODEC.xmap(NbtComponent::new, component -> component.nbt);
 	public static final Codec<NbtComponent> CODEC_WITH_ID = CODEC.validate(
@@ -88,9 +91,21 @@ public final class NbtComponent {
 		NbtCompound nbtCompound2 = nbtCompound.copy();
 		nbtCompound.copyFrom(this.nbt);
 		if (!nbtCompound.equals(nbtCompound2)) {
-			blockEntity.readComponentlessNbt(nbtCompound, registryLookup);
-			blockEntity.markDirty();
-			return true;
+			try {
+				blockEntity.readComponentlessNbt(nbtCompound, registryLookup);
+				blockEntity.markDirty();
+				return true;
+			} catch (Exception var8) {
+				field_51522.warn("Failed to apply custom data to block entity at {}", blockEntity.getPos(), var8);
+
+				try {
+					blockEntity.readComponentlessNbt(nbtCompound2, registryLookup);
+				} catch (Exception var7) {
+					field_51522.warn("Failed to rollback block entity at {} after failure", blockEntity.getPos(), var7);
+				}
+
+				return false;
+			}
 		} else {
 			return false;
 		}
