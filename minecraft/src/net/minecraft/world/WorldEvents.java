@@ -38,12 +38,6 @@ public class WorldEvents {
 	 */
 	public static final int DISPENSER_LAUNCHES_PROJECTILE = 1002;
 	/**
-	 * An eye of ender is launched.
-	 * <br>Plays the eye of ender launching sound event.
-	 * <p>Called by {@link net.minecraft.item.EnderEyeItem#use(net.minecraft.world.World, net.minecraft.entity.player.PlayerEntity, net.minecraft.util.Hand) EnderEyeItem#use}
-	 */
-	public static final int EYE_OF_ENDER_LAUNCHES = 1003;
-	/**
 	 * A firework rocket is shot.
 	 * <br>Plays the firework shoot sound event.
 	 * <p>Called by {@link net.minecraft.block.dispenser.DispenserBehavior DispenserBehavior}
@@ -281,6 +275,7 @@ public class WorldEvents {
 	 * <p>Called by {@link net.minecraft.block.CrafterBlock#craft(net.minecraft.block.BlockState, net.minecraft.server.world.ServerWorld, net.minecraft.util.math.BlockPos) CrafterBlock#craft}
 	 */
 	public static final int CRAFTER_FAILS = 1050;
+	public static final int field_51787 = 1051;
 	/**
 	 * An item is composted in a composter.
 	 * <br>Plays the appropriate composting sound event and spawns composter particles.

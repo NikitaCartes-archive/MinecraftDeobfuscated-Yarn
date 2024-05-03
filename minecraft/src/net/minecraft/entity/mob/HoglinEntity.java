@@ -247,7 +247,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	@Override
-	public int getXpToDrop() {
+	protected int getXpToDrop() {
 		return this.experiencePoints;
 	}
 

@@ -7,7 +7,6 @@ import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
@@ -260,15 +259,6 @@ public class CatEntity extends TameableEntity implements VariantHolder<RegistryE
 		}
 
 		super.eat(player, hand, stack);
-	}
-
-	private float getAttackDamage() {
-		return (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-	}
-
-	@Override
-	public boolean tryAttack(Entity target) {
-		return target.damage(this.getDamageSources().mobAttack(this), this.getAttackDamage());
 	}
 
 	@Override

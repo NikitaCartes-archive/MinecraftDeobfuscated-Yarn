@@ -18,6 +18,7 @@ import net.minecraft.world.explosion.Explosion;
 public class DamageSources {
 	private final Registry<DamageType> registry;
 	private final DamageSource inFire;
+	private final DamageSource campfire;
 	private final DamageSource lightningBolt;
 	private final DamageSource onFire;
 	private final DamageSource lava;
@@ -44,6 +45,7 @@ public class DamageSources {
 	public DamageSources(DynamicRegistryManager registryManager) {
 		this.registry = registryManager.get(RegistryKeys.DAMAGE_TYPE);
 		this.inFire = this.create(DamageTypes.IN_FIRE);
+		this.campfire = this.create(DamageTypes.CAMPFIRE);
 		this.lightningBolt = this.create(DamageTypes.LIGHTNING_BOLT);
 		this.onFire = this.create(DamageTypes.ON_FIRE);
 		this.lava = this.create(DamageTypes.LAVA);
@@ -82,6 +84,10 @@ public class DamageSources {
 
 	public DamageSource inFire() {
 		return this.inFire;
+	}
+
+	public DamageSource campfire() {
+		return this.campfire;
 	}
 
 	public DamageSource lightningBolt() {

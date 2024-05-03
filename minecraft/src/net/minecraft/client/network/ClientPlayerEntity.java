@@ -39,13 +39,13 @@ import net.minecraft.client.sound.MinecartInsideSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.ClientPlayerTickable;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.effect.StatusEffect;
@@ -102,7 +102,6 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private static final float field_32674 = 0.6F;
 	private static final double field_32675 = 0.35;
 	private static final double MAX_SOFT_COLLISION_RADIANS = 0.13962634F;
-	private static final float field_38337 = 0.3F;
 	public final ClientPlayNetworkHandler networkHandler;
 	private final StatHandler statHandler;
 	private final ClientRecipeBook recipeBook;
@@ -371,11 +370,6 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Override
 	public boolean shouldSpawnSprintingParticles() {
 		return !this.getAbilities().flying && super.shouldSpawnSprintingParticles();
-	}
-
-	@Override
-	public boolean shouldDisplaySoulSpeedEffects() {
-		return !this.getAbilities().flying && super.shouldDisplaySoulSpeedEffects();
 	}
 
 	protected void startRidingJump() {
@@ -679,7 +673,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			&& !this.hasVehicle()
 			&& this.canChangeIntoPose(EntityPose.CROUCHING)
 			&& (this.isSneaking() || !this.isSleeping() && !this.canChangeIntoPose(EntityPose.STANDING));
-		float f = MathHelper.clamp(0.3F + EnchantmentHelper.getSwiftSneakSpeedBoost(this), 0.0F, 1.0F);
+		float f = (float)this.getAttributeValue(EntityAttributes.PLAYER_SNEAKING_SPEED);
 		this.input.tick(this.shouldSlowDown(), f);
 		this.client.getTutorialManager().onMovement(this.input);
 		if (this.isUsingItem() && !this.hasVehicle()) {

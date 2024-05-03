@@ -10,7 +10,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
-import net.minecraft.enchantment.Enchantments;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.provider.EnchantmentProviders;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -331,12 +332,12 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
-		super.dropEquipment(source, lootingMultiplier, allowDrops);
+	protected void dropEquipment(DamageSource source, boolean causedByPlayer) {
+		super.dropEquipment(source, causedByPlayer);
 		BlockState blockState = this.getCarriedBlock();
 		if (blockState != null) {
 			ItemStack itemStack = new ItemStack(Items.DIAMOND_AXE);
-			itemStack.addEnchantment(Enchantments.SILK_TOUCH, 1);
+			EnchantmentHelper.applyEnchantmentProvider(itemStack, EnchantmentProviders.ENDERMAN_LOOT_DROP, this.getWorld(), this.getBlockPos(), this.getRandom());
 			LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)this.getWorld())
 				.add(LootContextParameters.ORIGIN, this.getPos())
 				.add(LootContextParameters.TOOL, itemStack)

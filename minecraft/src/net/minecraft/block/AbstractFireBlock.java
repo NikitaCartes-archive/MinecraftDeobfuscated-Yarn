@@ -126,7 +126,7 @@ public abstract class AbstractFireBlock extends Block {
 		if (!entity.isFireImmune()) {
 			entity.setFireTicks(entity.getFireTicks() + 1);
 			if (entity.getFireTicks() == 0) {
-				entity.setOnFireFor(8);
+				entity.setOnFireFor(8.0F);
 			}
 		}
 

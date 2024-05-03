@@ -22,6 +22,7 @@ import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.DoubleBlockHalf;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Flutterer;
@@ -224,11 +225,15 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		boolean bl = target.damage(this.getDamageSources().sting(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
+		DamageSource damageSource = this.getDamageSources().sting(this);
+		boolean bl = target.damage(damageSource, (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
 		if (bl) {
-			this.applyDamageEffects(this, target);
-			if (target instanceof LivingEntity) {
-				((LivingEntity)target).setStingerCount(((LivingEntity)target).getStingerCount() + 1);
+			if (this.getWorld() instanceof ServerWorld serverWorld) {
+				EnchantmentHelper.onTargetDamaged(serverWorld, target, damageSource);
+			}
+
+			if (target instanceof LivingEntity livingEntity) {
+				livingEntity.setStingerCount(livingEntity.getStingerCount() + 1);
 				int i = 0;
 				if (this.getWorld().getDifficulty() == Difficulty.NORMAL) {
 					i = 10;
@@ -237,7 +242,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 				}
 
 				if (i > 0) {
-					((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0), this);
+					livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0), this);
 				}
 			}
 

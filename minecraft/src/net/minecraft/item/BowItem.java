@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -27,12 +28,12 @@ public class BowItem extends RangedWeaponItem {
 		if (user instanceof PlayerEntity playerEntity) {
 			ItemStack itemStack = playerEntity.getProjectileType(stack);
 			if (!itemStack.isEmpty()) {
-				int i = this.getMaxUseTime(stack) - remainingUseTicks;
+				int i = this.getMaxUseTime(stack, user) - remainingUseTicks;
 				float f = getPullProgress(i);
 				if (!((double)f < 0.1)) {
 					List<ItemStack> list = load(stack, itemStack, playerEntity);
-					if (!world.isClient() && !list.isEmpty()) {
-						this.shootAll(world, playerEntity, playerEntity.getActiveHand(), stack, list, f * 3.0F, 1.0F, f == 1.0F, null);
+					if (world instanceof ServerWorld serverWorld && !list.isEmpty()) {
+						this.shootAll(serverWorld, playerEntity, playerEntity.getActiveHand(), stack, list, f * 3.0F, 1.0F, f == 1.0F, null);
 					}
 
 					world.playSound(
@@ -67,7 +68,7 @@ public class BowItem extends RangedWeaponItem {
 	}
 
 	@Override
-	public int getMaxUseTime(ItemStack stack) {
+	public int getMaxUseTime(ItemStack stack, LivingEntity user) {
 		return 72000;
 	}
 

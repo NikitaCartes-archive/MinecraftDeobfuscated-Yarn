@@ -18,7 +18,6 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
@@ -40,8 +39,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		instance -> addConditionsField(instance)
 				.<RegistryEntry<Enchantment>, ApplyBonusLootFunction.Formula>and(
 					instance.group(
-						Registries.ENCHANTMENT.getEntryCodec().fieldOf("enchantment").forGetter(function -> function.enchantment),
-						FORMULA_CODEC.forGetter(function -> function.formula)
+						Enchantment.ENTRY_CODEC.fieldOf("enchantment").forGetter(function -> function.enchantment), FORMULA_CODEC.forGetter(function -> function.formula)
 					)
 				)
 				.apply(instance, ApplyBonusLootFunction::new)
@@ -69,7 +67,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 	public ItemStack process(ItemStack stack, LootContext context) {
 		ItemStack itemStack = context.get(LootContextParameters.TOOL);
 		if (itemStack != null) {
-			int i = EnchantmentHelper.getLevel(this.enchantment.value(), itemStack);
+			int i = EnchantmentHelper.getLevel(this.enchantment, itemStack);
 			int j = this.formula.getValue(context.getRandom(), stack.getCount(), i);
 			stack.setCount(j);
 		}
@@ -77,24 +75,20 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		return stack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> binomialWithBonusCount(Enchantment enchantment, float probability, int extra) {
-		return builder(
-			conditions -> new ApplyBonusLootFunction(conditions, enchantment.getRegistryEntry(), new ApplyBonusLootFunction.BinomialWithBonusCount(extra, probability))
-		);
+	public static ConditionalLootFunction.Builder<?> binomialWithBonusCount(RegistryEntry<Enchantment> registryEntry, float probability, int extra) {
+		return builder(conditions -> new ApplyBonusLootFunction(conditions, registryEntry, new ApplyBonusLootFunction.BinomialWithBonusCount(extra, probability)));
 	}
 
-	public static ConditionalLootFunction.Builder<?> oreDrops(Enchantment enchantment) {
-		return builder(conditions -> new ApplyBonusLootFunction(conditions, enchantment.getRegistryEntry(), new ApplyBonusLootFunction.OreDrops()));
+	public static ConditionalLootFunction.Builder<?> oreDrops(RegistryEntry<Enchantment> registryEntry) {
+		return builder(conditions -> new ApplyBonusLootFunction(conditions, registryEntry, new ApplyBonusLootFunction.OreDrops()));
 	}
 
-	public static ConditionalLootFunction.Builder<?> uniformBonusCount(Enchantment enchantment) {
-		return builder(conditions -> new ApplyBonusLootFunction(conditions, enchantment.getRegistryEntry(), new ApplyBonusLootFunction.UniformBonusCount(1)));
+	public static ConditionalLootFunction.Builder<?> uniformBonusCount(RegistryEntry<Enchantment> registryEntry) {
+		return builder(conditions -> new ApplyBonusLootFunction(conditions, registryEntry, new ApplyBonusLootFunction.UniformBonusCount(1)));
 	}
 
-	public static ConditionalLootFunction.Builder<?> uniformBonusCount(Enchantment enchantment, int bonusMultiplier) {
-		return builder(
-			conditions -> new ApplyBonusLootFunction(conditions, enchantment.getRegistryEntry(), new ApplyBonusLootFunction.UniformBonusCount(bonusMultiplier))
-		);
+	public static ConditionalLootFunction.Builder<?> uniformBonusCount(RegistryEntry<Enchantment> registryEntry, int bonusMultiplier) {
+		return builder(conditions -> new ApplyBonusLootFunction(conditions, registryEntry, new ApplyBonusLootFunction.UniformBonusCount(bonusMultiplier)));
 	}
 
 	static record BinomialWithBonusCount(int extra, float probability) implements ApplyBonusLootFunction.Formula {

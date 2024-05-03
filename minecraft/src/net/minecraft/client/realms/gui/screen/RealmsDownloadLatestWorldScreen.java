@@ -17,12 +17,12 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.FileDownload;
 import net.minecraft.client.realms.SizeUnit;
 import net.minecraft.client.realms.dto.WorldDownload;
+import net.minecraft.client.realms.gui.RealmsPopups;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Util;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -73,23 +73,21 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.cancelButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> {
-			this.cancelled = true;
-			this.backButtonClicked();
-		}).dimensions((this.width - 200) / 2, this.height - 42, 200, 20).build());
+		this.cancelButton = this.addDrawableChild(
+			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).dimensions((this.width - 200) / 2, this.height - 42, 200, 20).build()
+		);
 		this.checkDownloadSize();
 	}
 
 	private void checkDownloadSize() {
-		if (!this.finished) {
-			if (!this.checked && this.getContentLength(this.worldDownload.downloadLink) >= 5368709120L) {
-				Text text = Text.translatable("mco.download.confirmation.line1", SizeUnit.getUserFriendlyString(5368709120L));
-				Text text2 = Text.translatable("mco.download.confirmation.line2");
-				this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> {
-					this.checked = true;
+		if (!this.finished && !this.checked) {
+			this.checked = true;
+			if (this.getContentLength(this.worldDownload.downloadLink) >= 5368709120L) {
+				Text text = Text.translatable("mco.download.confirmation.oversized", SizeUnit.getUserFriendlyString(5368709120L));
+				this.client.setScreen(RealmsPopups.createNonContinuableWarningPopup(this, text, popupScreen -> {
 					this.client.setScreen(this);
 					this.downloadSave();
-				}, RealmsLongConfirmationScreen.Type.WARNING, text, text2, false));
+				}));
 			} else {
 				this.downloadSave();
 			}
@@ -128,17 +126,8 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.cancelled = true;
-			this.backButtonClicked();
-			return true;
-		} else {
-			return super.keyPressed(keyCode, scanCode, modifiers);
-		}
-	}
-
-	private void backButtonClicked() {
+	public void close() {
+		this.cancelled = true;
 		if (this.finished && this.onBack != null && this.downloadError == null) {
 			this.onBack.accept(true);
 		}
@@ -167,7 +156,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 
 	private void drawDots(DrawContext context) {
 		int i = this.textRenderer.getWidth(this.status);
-		if (this.animTick % 10 == 0) {
+		if (this.animTick != 0 && this.animTick % 10 == 0) {
 			this.dotIndex++;
 		}
 

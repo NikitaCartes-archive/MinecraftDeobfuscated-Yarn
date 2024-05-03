@@ -20,7 +20,7 @@ public abstract class AbstractSittingPhase extends AbstractPhase {
 		if (!(damageSource.getSource() instanceof PersistentProjectileEntity) && !(damageSource.getSource() instanceof WindChargeEntity)) {
 			return super.modifyDamageTaken(damageSource, damage);
 		} else {
-			damageSource.getSource().setOnFireFor(1);
+			damageSource.getSource().setOnFireFor(1.0F);
 			return 0.0F;
 		}
 	}

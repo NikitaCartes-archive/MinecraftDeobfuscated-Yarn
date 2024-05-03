@@ -1,13 +1,13 @@
 package net.minecraft.recipe;
 
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CookingRecipeCategory;
+import net.minecraft.recipe.input.SingleStackRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
-public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
+public abstract class AbstractCookingRecipe implements Recipe<SingleStackRecipeInput> {
 	protected final RecipeType<?> type;
 	protected final CookingRecipeCategory category;
 	protected final String group;
@@ -28,13 +28,11 @@ public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
 		this.cookingTime = cookingTime;
 	}
 
-	@Override
-	public boolean matches(Inventory inventory, World world) {
-		return this.ingredient.test(inventory.getStack(0));
+	public boolean matches(SingleStackRecipeInput singleStackRecipeInput, World world) {
+		return this.ingredient.test(singleStackRecipeInput.item());
 	}
 
-	@Override
-	public ItemStack craft(Inventory inventory, RegistryWrapper.WrapperLookup lookup) {
+	public ItemStack craft(SingleStackRecipeInput singleStackRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
 		return this.result.copy();
 	}
 

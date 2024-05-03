@@ -11,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionConsumingBuilder;
-import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.Util;
 
@@ -28,7 +27,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 	public abstract LootFunctionType<? extends ConditionalLootFunction> getType();
 
 	protected static <T extends ConditionalLootFunction> P1<Mu<T>, List<LootCondition>> addConditionsField(Instance<T> instance) {
-		return instance.group(LootConditionTypes.CODEC.listOf().optionalFieldOf("conditions", List.of()).forGetter(function -> function.conditions));
+		return instance.group(LootCondition.CODEC.listOf().optionalFieldOf("conditions", List.of()).forGetter(function -> function.conditions));
 	}
 
 	public final ItemStack apply(ItemStack itemStack, LootContext lootContext) {

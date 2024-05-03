@@ -1,10 +1,8 @@
 package net.minecraft.entity.effect;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.Difficulty;
 
@@ -22,10 +20,6 @@ class BadOmenStatusEffect extends StatusEffect {
 	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
 		if (entity instanceof ServerPlayerEntity serverPlayerEntity && !serverPlayerEntity.isSpectator()) {
 			ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
-			if (!serverWorld.getEnabledFeatures().contains(FeatureFlags.UPDATE_1_21)) {
-				return this.tryStartRaid(serverPlayerEntity, serverWorld);
-			}
-
 			if (serverWorld.getDifficulty() != Difficulty.PEACEFUL && serverWorld.isNearOccupiedPointOfInterest(serverPlayerEntity.getBlockPos())) {
 				Raid raid = serverWorld.getRaidAt(serverPlayerEntity.getBlockPos());
 				if (raid == null || raid.getBadOmenLevel() < raid.getMaxAcceptableBadOmenLevel()) {
@@ -37,12 +31,5 @@ class BadOmenStatusEffect extends StatusEffect {
 		}
 
 		return true;
-	}
-
-	private boolean tryStartRaid(ServerPlayerEntity player, ServerWorld world) {
-		BlockPos blockPos = player.getBlockPos();
-		return world.getDifficulty() != Difficulty.PEACEFUL && world.isNearOccupiedPointOfInterest(blockPos)
-			? world.getRaidManager().startRaid(player, blockPos) == null
-			: true;
 	}
 }

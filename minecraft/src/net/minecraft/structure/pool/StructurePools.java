@@ -10,6 +10,7 @@ import net.minecraft.structure.AncientCityGenerator;
 import net.minecraft.structure.BastionRemnantGenerator;
 import net.minecraft.structure.PillagerOutpostGenerator;
 import net.minecraft.structure.TrailRuinsGenerator;
+import net.minecraft.structure.TrialChamberData;
 import net.minecraft.structure.VillageGenerator;
 import net.minecraft.util.Identifier;
 
@@ -33,5 +34,6 @@ public class StructurePools {
 		VillageGenerator.bootstrap(structurePoolsRegisterable);
 		AncientCityGenerator.bootstrap(structurePoolsRegisterable);
 		TrailRuinsGenerator.bootstrap(structurePoolsRegisterable);
+		TrialChamberData.bootstrap(structurePoolsRegisterable);
 	}
 }

@@ -268,10 +268,13 @@ public class ItemModelGenerator {
 		this.register(Items.MUSIC_DISC_BLOCKS, Models.TEMPLATE_MUSIC_DISC);
 		this.register(Items.MUSIC_DISC_CAT, Models.TEMPLATE_MUSIC_DISC);
 		this.register(Items.MUSIC_DISC_CHIRP, Models.TEMPLATE_MUSIC_DISC);
+		this.register(Items.MUSIC_DISC_CREATOR, Models.TEMPLATE_MUSIC_DISC);
+		this.register(Items.MUSIC_DISC_CREATOR_MUSIC_BOX, Models.TEMPLATE_MUSIC_DISC);
 		this.register(Items.MUSIC_DISC_FAR, Models.TEMPLATE_MUSIC_DISC);
 		this.register(Items.MUSIC_DISC_MALL, Models.TEMPLATE_MUSIC_DISC);
 		this.register(Items.MUSIC_DISC_MELLOHI, Models.TEMPLATE_MUSIC_DISC);
 		this.register(Items.MUSIC_DISC_PIGSTEP, Models.TEMPLATE_MUSIC_DISC);
+		this.register(Items.MUSIC_DISC_PRECIPICE, Models.TEMPLATE_MUSIC_DISC);
 		this.register(Items.MUSIC_DISC_STAL, Models.TEMPLATE_MUSIC_DISC);
 		this.register(Items.MUSIC_DISC_STRAD, Models.TEMPLATE_MUSIC_DISC);
 		this.register(Items.MUSIC_DISC_WAIT, Models.TEMPLATE_MUSIC_DISC);

@@ -397,7 +397,7 @@ public class ArmorStandEntity extends LivingEntity {
 			if (this.isOnFire()) {
 				this.updateHealth(source, 0.15F);
 			} else {
-				this.setOnFireFor(5);
+				this.setOnFireFor(5.0F);
 			}
 
 			return false;

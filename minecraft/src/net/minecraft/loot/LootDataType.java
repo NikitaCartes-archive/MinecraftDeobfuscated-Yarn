@@ -7,7 +7,6 @@ import com.mojang.serialization.DynamicOps;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContextAware;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionTypes;
@@ -19,9 +18,7 @@ import org.slf4j.Logger;
 
 public record LootDataType<T>(RegistryKey<Registry<T>> registryKey, Codec<T> codec, String directory, LootDataType.Validator<T> validator) {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final LootDataType<LootCondition> PREDICATES = new LootDataType<>(
-		RegistryKeys.PREDICATE, LootConditionTypes.CODEC, "predicates", simpleValidator()
-	);
+	public static final LootDataType<LootCondition> PREDICATES = new LootDataType<>(RegistryKeys.PREDICATE, LootCondition.CODEC, "predicates", simpleValidator());
 	public static final LootDataType<LootFunction> ITEM_MODIFIERS = new LootDataType<>(
 		RegistryKeys.ITEM_MODIFIER, LootFunctionTypes.CODEC, "item_modifiers", simpleValidator()
 	);

@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -13,13 +14,13 @@ public class ArrowItem extends Item implements ProjectileItem {
 		super(settings);
 	}
 
-	public PersistentProjectileEntity createArrow(World world, ItemStack stack, LivingEntity shooter) {
-		return new ArrowEntity(world, shooter, stack.copyWithCount(1));
+	public PersistentProjectileEntity createArrow(World world, ItemStack stack, LivingEntity shooter, @Nullable ItemStack shotFrom) {
+		return new ArrowEntity(world, shooter, stack.copyWithCount(1), shotFrom);
 	}
 
 	@Override
 	public ProjectileEntity createEntity(World world, Position pos, ItemStack stack, Direction direction) {
-		ArrowEntity arrowEntity = new ArrowEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack.copyWithCount(1));
+		ArrowEntity arrowEntity = new ArrowEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack.copyWithCount(1), null);
 		arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
 		return arrowEntity;
 	}

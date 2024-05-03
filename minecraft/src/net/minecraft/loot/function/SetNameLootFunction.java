@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -110,7 +110,7 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 			return this.id;
 		}
 
-		public DataComponentType<Text> getComponentType() {
+		public ComponentType<Text> getComponentType() {
 			return switch (this) {
 				case CUSTOM_NAME -> DataComponentTypes.CUSTOM_NAME;
 				case ITEM_NAME -> DataComponentTypes.ITEM_NAME;

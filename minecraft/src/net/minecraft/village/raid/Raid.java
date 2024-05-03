@@ -29,7 +29,6 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.raid.RaiderEntity;
@@ -42,8 +41,6 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -229,13 +226,11 @@ public class Raid {
 	}
 
 	public boolean start(ServerPlayerEntity serverPlayerEntity) {
-		RegistryEntry<StatusEffect> registryEntry = this.world.getEnabledFeatures().contains(FeatureFlags.UPDATE_1_21)
-			? StatusEffects.RAID_OMEN
-			: StatusEffects.BAD_OMEN;
-		if (!serverPlayerEntity.hasStatusEffect(registryEntry)) {
+		StatusEffectInstance statusEffectInstance = serverPlayerEntity.getStatusEffect(StatusEffects.RAID_OMEN);
+		if (statusEffectInstance == null) {
 			return false;
 		} else {
-			this.badOmenLevel = this.badOmenLevel + serverPlayerEntity.getStatusEffect(registryEntry).getAmplifier() + 1;
+			this.badOmenLevel = this.badOmenLevel + statusEffectInstance.getAmplifier() + 1;
 			this.badOmenLevel = MathHelper.clamp(this.badOmenLevel, 0, this.getMaxAcceptableBadOmenLevel());
 			if (!this.hasSpawned()) {
 				serverPlayerEntity.incrementStat(Stats.RAID_TRIGGER);

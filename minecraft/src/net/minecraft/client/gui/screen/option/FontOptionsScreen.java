@@ -8,12 +8,17 @@ import net.minecraft.client.option.SimpleOption;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
-public class FontOptionsScreen extends SimpleOptionsScreen {
+public class FontOptionsScreen extends GameOptionsScreen {
 	private static SimpleOption<?>[] getOptions(GameOptions gameOptions) {
 		return new SimpleOption[]{gameOptions.getForceUnicodeFont(), gameOptions.getJapaneseGlyphVariants()};
 	}
 
 	public FontOptionsScreen(Screen parent, GameOptions gameOptions) {
-		super(parent, gameOptions, Text.translatable("options.font.title"), getOptions(gameOptions));
+		super(parent, gameOptions, Text.translatable("options.font.title"));
+	}
+
+	@Override
+	protected void method_60325() {
+		this.field_51824.addAll(getOptions(this.gameOptions));
 	}
 }

@@ -115,7 +115,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	public int getXpToDrop() {
+	protected int getXpToDrop() {
 		return 1 + this.getWorld().random.nextInt(3);
 	}
 

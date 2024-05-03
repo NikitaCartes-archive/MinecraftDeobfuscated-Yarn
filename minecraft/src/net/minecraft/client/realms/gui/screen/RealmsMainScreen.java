@@ -54,6 +54,7 @@ import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RegionPingResult;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.gui.RealmsLoadingWidget;
+import net.minecraft.client.realms.gui.RealmsPopups;
 import net.minecraft.client.realms.task.RealmsPrepareConnectionTask;
 import net.minecraft.client.realms.util.PeriodicRunnerFactory;
 import net.minecraft.client.realms.util.RealmsPersistence;
@@ -104,6 +105,8 @@ public class RealmsMainScreen extends RealmsScreen {
 	private static final Text NO_REALMS_TEXT = Text.translatable("mco.selectServer.noRealms");
 	private static final Text NO_PENDING_TOOLTIP = Text.translatable("mco.invites.nopending");
 	private static final Text PENDING_TOOLTIP = Text.translatable("mco.invites.pending");
+	private static final Text field_51815 = Text.translatable("mco.compatibility.incompatible.popup.title");
+	private static final Text field_51816 = Text.translatable("mco.compatibility.incompatible.releaseType.popup.message");
 	private static final int field_42862 = 100;
 	private static final int field_45209 = 3;
 	private static final int field_45210 = 4;
@@ -537,11 +540,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	private void leaveClicked(@Nullable RealmsServer selectedServer) {
 		if (selectedServer != null && !this.client.uuidEquals(selectedServer.ownerUUID)) {
 			Text text = Text.translatable("mco.configure.world.leave.question.line1");
-			Text text2 = Text.translatable("mco.configure.world.leave.question.line2");
-			this.client
-				.setScreen(
-					new RealmsLongConfirmationScreen(confirmed -> this.leaveServer(confirmed, selectedServer), RealmsLongConfirmationScreen.Type.INFO, text, text2, true)
-				);
+			this.client.setScreen(RealmsPopups.createInfoPopup(this, text, popupScreen -> this.leaveServer(selectedServer)));
 		}
 	}
 
@@ -552,22 +551,19 @@ public class RealmsMainScreen extends RealmsScreen {
 			: null;
 	}
 
-	private void leaveServer(boolean confirmed, RealmsServer realmsServer) {
-		if (confirmed) {
-			(new Thread("Realms-leave-server") {
-				public void run() {
-					try {
-						RealmsClient realmsClient = RealmsClient.create();
-						realmsClient.uninviteMyselfFrom(realmsServer.id);
-						RealmsMainScreen.this.client.execute(RealmsMainScreen::resetServerList);
-					} catch (RealmsServiceException var2) {
-						RealmsMainScreen.LOGGER.error("Couldn't configure world", (Throwable)var2);
-						RealmsMainScreen.this.client.execute(() -> RealmsMainScreen.this.client.setScreen(new RealmsGenericErrorScreen(var2, RealmsMainScreen.this)));
-					}
+	private void leaveServer(RealmsServer realmsServer) {
+		(new Thread("Realms-leave-server") {
+			public void run() {
+				try {
+					RealmsClient realmsClient = RealmsClient.create();
+					realmsClient.uninviteMyselfFrom(realmsServer.id);
+					RealmsMainScreen.this.client.execute(RealmsMainScreen::resetServerList);
+				} catch (RealmsServiceException var2) {
+					RealmsMainScreen.LOGGER.error("Couldn't configure world", (Throwable)var2);
+					RealmsMainScreen.this.client.execute(() -> RealmsMainScreen.this.client.setScreen(new RealmsGenericErrorScreen(var2, RealmsMainScreen.this)));
 				}
-			}).start();
-		}
-
+			}
+		}).start();
 		this.client.setScreen(this);
 	}
 
@@ -625,7 +621,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 	public static void play(@Nullable RealmsServer serverData, Screen parent, boolean needsPreparation) {
 		if (serverData != null) {
-			if (!isSnapshotRealmsEligible() || needsPreparation) {
+			if (!isSnapshotRealmsEligible() || needsPreparation || serverData.method_60315()) {
 				MinecraftClient.getInstance().setScreen(new RealmsLongRunningMcoTaskScreen(parent, new RealmsPrepareConnectionTask(parent, serverData)));
 				return;
 			}
@@ -668,6 +664,25 @@ public class RealmsMainScreen extends RealmsScreen {
 						),
 						Text.translatable("mco.compatibility.upgrade")
 					);
+					break;
+				case INCOMPATIBLE:
+					MinecraftClient.getInstance()
+						.setScreen(
+							new PopupScreen.Builder(parent, field_51815)
+								.message(
+									Text.translatable(
+										"mco.compatibility.incompatible.series.popup.message",
+										Text.literal(serverData.activeVersion).withColor(Colors.LIGHT_YELLOW),
+										Text.literal(SharedConstants.getGameVersion().getName()).withColor(Colors.LIGHT_YELLOW)
+									)
+								)
+								.button(ScreenTexts.BACK, PopupScreen::close)
+								.build()
+						);
+					break;
+				case RELEASE_TYPE_INCOMPATIBLE:
+					MinecraftClient.getInstance()
+						.setScreen(new PopupScreen.Builder(parent, field_51815).message(field_51816).button(ScreenTexts.BACK, PopupScreen::close).build());
 			}
 		}
 	}
@@ -967,7 +982,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			Text text = RealmsMainScreen.getVersionText(this.server.activeVersion, this.server.isCompatible());
 			int k = this.getVersionRight(x, width, text);
 			this.drawTrimmedText(context, this.server.getName(), i, j, k, -1);
-			if (text != ScreenTexts.EMPTY) {
+			if (text != ScreenTexts.EMPTY && !this.server.method_60315()) {
 				context.drawText(RealmsMainScreen.this.textRenderer, text, k, j, Colors.GRAY, false);
 			}
 		}
@@ -977,7 +992,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			int j = this.getNameY(y);
 			int k = this.getDescriptionY(j);
 			String string = this.server.getMinigameName();
-			if (this.server.worldType == RealmsServer.WorldType.MINIGAME && string != null) {
+			if (this.server.method_60315() && string != null) {
 				Text text = Text.literal(string).formatted(Formatting.GRAY);
 				context.drawText(
 					RealmsMainScreen.this.textRenderer, Text.translatable("mco.selectServer.minigameName", text).withColor(Colors.LIGHT_YELLOW), i, k, Colors.WHITE, false

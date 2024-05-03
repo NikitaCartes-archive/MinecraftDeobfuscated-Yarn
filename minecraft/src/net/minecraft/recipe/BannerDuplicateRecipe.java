@@ -2,11 +2,11 @@ package net.minecraft.recipe;
 
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BannerPatternsComponent;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.collection.DefaultedList;
@@ -17,13 +17,13 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		super(craftingRecipeCategory);
 	}
 
-	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
+	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
 		DyeColor dyeColor = null;
 		ItemStack itemStack = null;
 		ItemStack itemStack2 = null;
 
-		for (int i = 0; i < recipeInputInventory.size(); i++) {
-			ItemStack itemStack3 = recipeInputInventory.getStack(i);
+		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+			ItemStack itemStack3 = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack3.isEmpty()) {
 				Item item = itemStack3.getItem();
 				if (!(item instanceof BannerItem)) {
@@ -61,9 +61,9 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		return itemStack != null && itemStack2 != null;
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
-		for (int i = 0; i < recipeInputInventory.size(); i++) {
-			ItemStack itemStack = recipeInputInventory.getStack(i);
+	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
+		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack.isEmpty()) {
 				int j = itemStack.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT).layers().size();
 				if (j > 0 && j <= 6) {
@@ -75,11 +75,11 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		return ItemStack.EMPTY;
 	}
 
-	public DefaultedList<ItemStack> getRemainder(RecipeInputInventory recipeInputInventory) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(recipeInputInventory.size(), ItemStack.EMPTY);
+	public DefaultedList<ItemStack> getRemainder(CraftingRecipeInput craftingRecipeInput) {
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingRecipeInput.getSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
-			ItemStack itemStack = recipeInputInventory.getStack(i);
+			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack.isEmpty()) {
 				if (itemStack.getItem().hasRecipeRemainder()) {
 					defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));

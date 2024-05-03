@@ -13,6 +13,7 @@ import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.criterion.ChanneledLightningCriterion;
+import net.minecraft.advancement.criterion.FallAfterExplosionCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.ItemCriterion;
 import net.minecraft.advancement.criterion.KilledByCrossbowCriterion;
@@ -33,7 +34,9 @@ import net.minecraft.advancement.criterion.UsingItemCriterion;
 import net.minecraft.advancement.criterion.VillagerTradeCriterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.BulbBlock;
 import net.minecraft.block.ComparatorBlock;
+import net.minecraft.block.VaultBlock;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.block.entity.Sherds;
@@ -78,14 +81,17 @@ import net.minecraft.village.raid.Raid;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterList;
+import net.minecraft.world.gen.structure.StructureKeys;
 
 public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGenerator {
 	private static final int OVERWORLD_HEIGHT = 384;
 	private static final int OVERWORLD_MAX_Y = 320;
 	private static final int OVERWORLD_MIN_Y = -64;
 	private static final int OVERWORLD_BEDROCK_LAYER_HEIGHT = 5;
-	public static final List<EntityType<?>> MONSTERS = Arrays.asList(
+	protected static final List<EntityType<?>> MONSTERS = Arrays.asList(
 		EntityType.BLAZE,
+		EntityType.BOGGED,
+		EntityType.BREEZE,
 		EntityType.CAVE_SPIDER,
 		EntityType.CREEPER,
 		EntityType.DROWNED,
@@ -701,6 +707,185 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				)
 			)
 			.build(exporter, "adventure/brush_armadillo");
+		AdvancementEntry advancementEntry13 = Advancement.Builder.create()
+			.parent(advancementEntry)
+			.display(
+				Blocks.CHISELED_TUFF,
+				Text.translatable("advancements.adventure.minecraft_trials_edition.title"),
+				Text.translatable("advancements.adventure.minecraft_trials_edition.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"minecraft_trials_edition",
+				TickCriterion.Conditions.createLocation(
+					LocationPredicate.Builder.createStructure(lookup.getWrapperOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.TRIAL_CHAMBERS))
+				)
+			)
+			.build(exporter, "adventure/minecraft_trials_edition");
+		Advancement.Builder.create()
+			.parent(advancementEntry13)
+			.display(
+				Items.COPPER_BULB,
+				Text.translatable("advancements.adventure.lighten_up.title"),
+				Text.translatable("advancements.adventure.lighten_up.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"lighten_up",
+				ItemCriterion.Conditions.createItemUsedOnBlock(
+					LocationPredicate.Builder.create()
+						.block(
+							BlockPredicate.Builder.create()
+								.blocks(
+									Blocks.OXIDIZED_COPPER_BULB,
+									Blocks.WEATHERED_COPPER_BULB,
+									Blocks.EXPOSED_COPPER_BULB,
+									Blocks.WAXED_OXIDIZED_COPPER_BULB,
+									Blocks.WAXED_WEATHERED_COPPER_BULB,
+									Blocks.WAXED_EXPOSED_COPPER_BULB
+								)
+								.state(StatePredicate.Builder.create().exactMatch(BulbBlock.LIT, true))
+						),
+					ItemPredicate.Builder.create().items(VanillaHusbandryTabAdvancementGenerator.AXE_ITEMS)
+				)
+			)
+			.build(exporter, "adventure/lighten_up");
+		AdvancementEntry advancementEntry14 = Advancement.Builder.create()
+			.parent(advancementEntry13)
+			.display(
+				Items.TRIAL_KEY,
+				Text.translatable("advancements.adventure.under_lock_and_key.title"),
+				Text.translatable("advancements.adventure.under_lock_and_key.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"under_lock_and_key",
+				ItemCriterion.Conditions.createItemUsedOnBlock(
+					LocationPredicate.Builder.create()
+						.block(BlockPredicate.Builder.create().blocks(Blocks.VAULT).state(StatePredicate.Builder.create().exactMatch(VaultBlock.OMINOUS, false))),
+					ItemPredicate.Builder.create().items(Items.TRIAL_KEY)
+				)
+			)
+			.build(exporter, "adventure/under_lock_and_key");
+		Advancement.Builder.create()
+			.parent(advancementEntry14)
+			.display(
+				Items.OMINOUS_TRIAL_KEY,
+				Text.translatable("advancements.adventure.revaulting.title"),
+				Text.translatable("advancements.adventure.revaulting.description"),
+				null,
+				AdvancementFrame.GOAL,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"revaulting",
+				ItemCriterion.Conditions.createItemUsedOnBlock(
+					LocationPredicate.Builder.create()
+						.block(BlockPredicate.Builder.create().blocks(Blocks.VAULT).state(StatePredicate.Builder.create().exactMatch(VaultBlock.OMINOUS, true))),
+					ItemPredicate.Builder.create().items(Items.OMINOUS_TRIAL_KEY)
+				)
+			)
+			.build(exporter, "adventure/revaulting");
+		Advancement.Builder.create()
+			.parent(advancementEntry13)
+			.display(
+				Items.WIND_CHARGE,
+				Text.translatable("advancements.adventure.blowback.title"),
+				Text.translatable("advancements.adventure.blowback.description"),
+				null,
+				AdvancementFrame.CHALLENGE,
+				true,
+				true,
+				false
+			)
+			.rewards(AdvancementRewards.Builder.experience(40))
+			.criterion(
+				"blowback",
+				OnKilledCriterion.Conditions.createPlayerKilledEntity(
+					EntityPredicate.Builder.create().type(EntityType.BREEZE),
+					DamageSourcePredicate.Builder.create()
+						.tag(TagPredicate.expected(DamageTypeTags.IS_PROJECTILE))
+						.directEntity(EntityPredicate.Builder.create().type(EntityType.BREEZE_WIND_CHARGE))
+				)
+			)
+			.build(exporter, "adventure/blowback");
+		Advancement.Builder.create()
+			.parent(advancementEntry)
+			.display(
+				Items.CRAFTER,
+				Text.translatable("advancements.adventure.crafters_crafting_crafters.title"),
+				Text.translatable("advancements.adventure.crafters_crafting_crafters.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion("crafter_crafted_crafter", RecipeCraftedCriterion.Conditions.createCrafterRecipeCrafted(new Identifier("minecraft:crafter")))
+			.build(exporter, "adventure/crafters_crafting_crafters");
+		Advancement.Builder.create()
+			.parent(advancementEntry13)
+			.display(
+				Items.WIND_CHARGE,
+				Text.translatable("advancements.adventure.who_needs_rockets.title"),
+				Text.translatable("advancements.adventure.who_needs_rockets.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"who_needs_rockets",
+				FallAfterExplosionCriterion.Conditions.create(
+					DistancePredicate.y(NumberRange.DoubleRange.atLeast(7.0)), EntityPredicate.Builder.create().type(EntityType.WIND_CHARGE)
+				)
+			)
+			.build(exporter, "adventure/who_needs_rockets");
+		Advancement.Builder.create()
+			.parent(advancementEntry13)
+			.display(
+				Items.MACE,
+				Text.translatable("advancements.adventure.overoverkill.title"),
+				Text.translatable("advancements.adventure.overoverkill.description"),
+				null,
+				AdvancementFrame.CHALLENGE,
+				true,
+				true,
+				false
+			)
+			.rewards(AdvancementRewards.Builder.experience(50))
+			.criterion(
+				"overoverkill",
+				PlayerHurtEntityCriterion.Conditions.create(
+					DamagePredicate.Builder.create()
+						.dealt(NumberRange.DoubleRange.atLeast(100.0))
+						.type(
+							DamageSourcePredicate.Builder.create()
+								.tag(TagPredicate.expected(DamageTypeTags.IS_PLAYER_ATTACK))
+								.directEntity(
+									EntityPredicate.Builder.create()
+										.type(EntityType.PLAYER)
+										.equipment(EntityEquipmentPredicate.Builder.create().mainhand(ItemPredicate.Builder.create().items(Items.MACE)))
+								)
+						)
+				)
+			)
+			.build(exporter, "adventure/overoverkill");
 	}
 
 	public static AdvancementEntry createKillMobAdvancements(AdvancementEntry parent, Consumer<AdvancementEntry> exporter, List<EntityType<?>> monsters) {

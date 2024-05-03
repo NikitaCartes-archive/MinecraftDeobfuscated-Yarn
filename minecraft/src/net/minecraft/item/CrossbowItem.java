@@ -1,22 +1,27 @@
 package net.minecraft.item;
 
 import com.google.common.collect.Lists;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.component.type.ChargedProjectilesComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -26,6 +31,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -33,7 +39,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class CrossbowItem extends RangedWeaponItem {
-	private static final int DEFAULT_PULL_TIME = 25;
+	private static final float DEFAULT_PULL_TIME = 1.25F;
 	public static final int RANGE = 8;
 	private boolean charged = false;
 	private boolean loaded = false;
@@ -42,6 +48,11 @@ public class CrossbowItem extends RangedWeaponItem {
 	private static final float DEFAULT_SPEED = 3.15F;
 	private static final float FIREWORK_ROCKET_SPEED = 1.6F;
 	public static final float field_49258 = 1.6F;
+	private static final CrossbowItem.LoadingSounds DEFAULT_LOADING_SOUNDS = new CrossbowItem.LoadingSounds(
+		Optional.of(SoundEvents.ITEM_CROSSBOW_LOADING_START),
+		Optional.of(SoundEvents.ITEM_CROSSBOW_LOADING_MIDDLE),
+		Optional.of(SoundEvents.ITEM_CROSSBOW_LOADING_END)
+	);
 
 	public CrossbowItem(Item.Settings settings) {
 		super(settings);
@@ -80,19 +91,23 @@ public class CrossbowItem extends RangedWeaponItem {
 
 	@Override
 	public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-		int i = this.getMaxUseTime(stack) - remainingUseTicks;
-		float f = getPullProgress(i, stack);
+		int i = this.getMaxUseTime(stack, user) - remainingUseTicks;
+		float f = getPullProgress(i, stack, user);
 		if (f >= 1.0F && !isCharged(stack) && loadProjectiles(user, stack)) {
-			world.playSound(
-				null,
-				user.getX(),
-				user.getY(),
-				user.getZ(),
-				SoundEvents.ITEM_CROSSBOW_LOADING_END,
-				user.getSoundCategory(),
-				1.0F,
-				1.0F / (world.getRandom().nextFloat() * 0.5F + 1.0F) + 0.2F
-			);
+			CrossbowItem.LoadingSounds loadingSounds = this.getLoadingSounds(stack);
+			loadingSounds.end()
+				.ifPresent(
+					sound -> world.playSound(
+							null,
+							user.getX(),
+							user.getY(),
+							user.getZ(),
+							(SoundEvent)sound.value(),
+							user.getSoundCategory(),
+							1.0F,
+							1.0F / (world.getRandom().nextFloat() * 0.5F + 1.0F) + 0.2F
+						)
+				);
 		}
 	}
 
@@ -151,7 +166,6 @@ public class CrossbowItem extends RangedWeaponItem {
 		} else {
 			ProjectileEntity projectileEntity = super.createArrowEntity(world, shooter, weaponStack, projectileStack, critical);
 			if (projectileEntity instanceof PersistentProjectileEntity persistentProjectileEntity) {
-				persistentProjectileEntity.setShotFromCrossbow(true);
 				persistentProjectileEntity.setSound(SoundEvents.ITEM_CROSSBOW_HIT);
 			}
 
@@ -165,10 +179,12 @@ public class CrossbowItem extends RangedWeaponItem {
 	}
 
 	public void shootAll(World world, LivingEntity shooter, Hand hand, ItemStack stack, float speed, float divergence, @Nullable LivingEntity livingEntity) {
-		if (!world.isClient()) {
+		if (world instanceof ServerWorld serverWorld) {
 			ChargedProjectilesComponent chargedProjectilesComponent = stack.set(DataComponentTypes.CHARGED_PROJECTILES, ChargedProjectilesComponent.DEFAULT);
 			if (chargedProjectilesComponent != null && !chargedProjectilesComponent.isEmpty()) {
-				this.shootAll(world, shooter, hand, stack, chargedProjectilesComponent.getProjectiles(), speed, divergence, shooter instanceof PlayerEntity, livingEntity);
+				this.shootAll(
+					serverWorld, shooter, hand, stack, chargedProjectilesComponent.getProjectiles(), speed, divergence, shooter instanceof PlayerEntity, livingEntity
+				);
 				if (shooter instanceof ServerPlayerEntity serverPlayerEntity) {
 					Criteria.SHOT_CROSSBOW.trigger(serverPlayerEntity, stack);
 					serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
@@ -189,10 +205,8 @@ public class CrossbowItem extends RangedWeaponItem {
 	@Override
 	public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
 		if (!world.isClient) {
-			int i = EnchantmentHelper.getLevel(Enchantments.QUICK_CHARGE, stack);
-			SoundEvent soundEvent = this.getQuickChargeSound(i);
-			SoundEvent soundEvent2 = i == 0 ? SoundEvents.ITEM_CROSSBOW_LOADING_MIDDLE : null;
-			float f = (float)(stack.getMaxUseTime() - remainingUseTicks) / (float)getPullTime(stack);
+			CrossbowItem.LoadingSounds loadingSounds = this.getLoadingSounds(stack);
+			float f = (float)(stack.getMaxUseTime(user) - remainingUseTicks) / (float)getPullTime(stack, user);
 			if (f < 0.2F) {
 				this.charged = false;
 				this.loaded = false;
@@ -200,24 +214,32 @@ public class CrossbowItem extends RangedWeaponItem {
 
 			if (f >= 0.2F && !this.charged) {
 				this.charged = true;
-				world.playSound(null, user.getX(), user.getY(), user.getZ(), soundEvent, SoundCategory.PLAYERS, 0.5F, 1.0F);
+				loadingSounds.start()
+					.ifPresent(sound -> world.playSound(null, user.getX(), user.getY(), user.getZ(), (SoundEvent)sound.value(), SoundCategory.PLAYERS, 0.5F, 1.0F));
 			}
 
-			if (f >= 0.5F && soundEvent2 != null && !this.loaded) {
+			if (f >= 0.5F && !this.loaded) {
 				this.loaded = true;
-				world.playSound(null, user.getX(), user.getY(), user.getZ(), soundEvent2, SoundCategory.PLAYERS, 0.5F, 1.0F);
+				loadingSounds.mid()
+					.ifPresent(sound -> world.playSound(null, user.getX(), user.getY(), user.getZ(), (SoundEvent)sound.value(), SoundCategory.PLAYERS, 0.5F, 1.0F));
 			}
 		}
 	}
 
 	@Override
-	public int getMaxUseTime(ItemStack stack) {
-		return getPullTime(stack) + 3;
+	public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+		return getPullTime(stack, user) + 3;
 	}
 
-	public static int getPullTime(ItemStack stack) {
-		int i = EnchantmentHelper.getLevel(Enchantments.QUICK_CHARGE, stack);
-		return i == 0 ? 25 : 25 - 5 * i;
+	public static int getPullTime(ItemStack stack, LivingEntity user) {
+		float f;
+		if (user.getWorld() instanceof ServerWorld serverWorld) {
+			f = EnchantmentHelper.getCrossbowChargeTime(serverWorld, stack, user, 1.25F);
+		} else {
+			f = 1.25F;
+		}
+
+		return MathHelper.floor(f * 20.0F);
 	}
 
 	@Override
@@ -225,21 +247,13 @@ public class CrossbowItem extends RangedWeaponItem {
 		return UseAction.CROSSBOW;
 	}
 
-	private SoundEvent getQuickChargeSound(int stage) {
-		switch (stage) {
-			case 1:
-				return SoundEvents.ITEM_CROSSBOW_QUICK_CHARGE_1;
-			case 2:
-				return SoundEvents.ITEM_CROSSBOW_QUICK_CHARGE_2;
-			case 3:
-				return SoundEvents.ITEM_CROSSBOW_QUICK_CHARGE_3;
-			default:
-				return SoundEvents.ITEM_CROSSBOW_LOADING_START;
-		}
+	CrossbowItem.LoadingSounds getLoadingSounds(ItemStack stack) {
+		return (CrossbowItem.LoadingSounds)EnchantmentHelper.getEffect(stack, EnchantmentEffectComponentTypes.CROSSBOW_CHARGING_SOUNDS)
+			.orElse(DEFAULT_LOADING_SOUNDS);
 	}
 
-	private static float getPullProgress(int useTicks, ItemStack stack) {
-		float f = (float)useTicks / (float)getPullTime(stack);
+	private static float getPullProgress(int useTicks, ItemStack stack, LivingEntity user) {
+		float f = (float)useTicks / (float)getPullTime(stack, user);
 		if (f > 1.0F) {
 			f = 1.0F;
 		}
@@ -275,5 +289,16 @@ public class CrossbowItem extends RangedWeaponItem {
 	@Override
 	public int getRange() {
 		return 8;
+	}
+
+	public static record LoadingSounds(Optional<RegistryEntry<SoundEvent>> start, Optional<RegistryEntry<SoundEvent>> mid, Optional<RegistryEntry<SoundEvent>> end) {
+		public static final Codec<CrossbowItem.LoadingSounds> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						SoundEvent.ENTRY_CODEC.optionalFieldOf("start").forGetter(CrossbowItem.LoadingSounds::start),
+						SoundEvent.ENTRY_CODEC.optionalFieldOf("mid").forGetter(CrossbowItem.LoadingSounds::mid),
+						SoundEvent.ENTRY_CODEC.optionalFieldOf("end").forGetter(CrossbowItem.LoadingSounds::end)
+					)
+					.apply(instance, CrossbowItem.LoadingSounds::new)
+		);
 	}
 }

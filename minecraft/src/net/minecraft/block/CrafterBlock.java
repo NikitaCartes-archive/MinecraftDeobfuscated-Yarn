@@ -14,12 +14,12 @@ import net.minecraft.block.enums.Orientation;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeCache;
 import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -153,12 +153,13 @@ public class CrafterBlock extends BlockWithEntity {
 
 	protected void craft(BlockState state, ServerWorld world, BlockPos pos) {
 		if (world.getBlockEntity(pos) instanceof CrafterBlockEntity crafterBlockEntity) {
-			Optional<RecipeEntry<CraftingRecipe>> optional = getCraftingRecipe(world, crafterBlockEntity);
+			CraftingRecipeInput var11 = crafterBlockEntity.createRecipeInput();
+			Optional<RecipeEntry<CraftingRecipe>> optional = getCraftingRecipe(world, var11);
 			if (optional.isEmpty()) {
 				world.syncWorldEvent(WorldEvents.CRAFTER_FAILS, pos, 0);
 			} else {
 				RecipeEntry<CraftingRecipe> recipeEntry = (RecipeEntry<CraftingRecipe>)optional.get();
-				ItemStack itemStack = recipeEntry.value().craft(crafterBlockEntity, world.getRegistryManager());
+				ItemStack itemStack = recipeEntry.value().craft(var11, world.getRegistryManager());
 				if (itemStack.isEmpty()) {
 					world.syncWorldEvent(WorldEvents.CRAFTER_FAILS, pos, 0);
 				} else {
@@ -167,7 +168,7 @@ public class CrafterBlock extends BlockWithEntity {
 					itemStack.onCraftByCrafter(world);
 					this.transferOrSpawnStack(world, pos, crafterBlockEntity, itemStack, state, recipeEntry);
 
-					for (ItemStack itemStack2 : recipeEntry.value().getRemainder(crafterBlockEntity)) {
+					for (ItemStack itemStack2 : recipeEntry.value().getRemainder(var11)) {
 						if (!itemStack2.isEmpty()) {
 							this.transferOrSpawnStack(world, pos, crafterBlockEntity, itemStack2, state, recipeEntry);
 						}
@@ -184,8 +185,8 @@ public class CrafterBlock extends BlockWithEntity {
 		}
 	}
 
-	public static Optional<RecipeEntry<CraftingRecipe>> getCraftingRecipe(World world, RecipeInputInventory inputInventory) {
-		return recipeCache.getRecipe(world, inputInventory);
+	public static Optional<RecipeEntry<CraftingRecipe>> getCraftingRecipe(World world, CraftingRecipeInput craftingRecipeInput) {
+		return recipeCache.getRecipe(world, craftingRecipeInput);
 	}
 
 	private void transferOrSpawnStack(

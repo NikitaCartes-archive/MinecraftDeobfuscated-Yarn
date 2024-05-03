@@ -5,8 +5,6 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +18,6 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.MathHelper;
 
@@ -29,7 +26,7 @@ public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
 		instance -> addConditionsField(instance)
 				.<Map<RegistryEntry<Enchantment>, LootNumberProvider>, boolean>and(
 					instance.group(
-						Codec.unboundedMap(Registries.ENCHANTMENT.getEntryCodec(), LootNumberProviderTypes.CODEC)
+						Codec.unboundedMap(Enchantment.ENTRY_CODEC, LootNumberProviderTypes.CODEC)
 							.optionalFieldOf("enchantments", Map.of())
 							.forGetter(function -> function.enchantments),
 						Codec.BOOL.fieldOf("add").orElse(false).forGetter(function -> function.add)
@@ -62,21 +59,27 @@ public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		Object2IntMap<Enchantment> object2IntMap = new Object2IntOpenHashMap<>();
-		this.enchantments
-			.forEach((enchantment, numberProvider) -> object2IntMap.put((Enchantment)enchantment.value(), MathHelper.clamp(numberProvider.nextInt(context), 0, 255)));
 		if (stack.isOf(Items.BOOK)) {
 			stack = stack.copyComponentsToNewStack(Items.ENCHANTED_BOOK, stack.getCount());
 			stack.set(DataComponentTypes.STORED_ENCHANTMENTS, stack.remove(DataComponentTypes.ENCHANTMENTS));
 		}
 
-		EnchantmentHelper.apply(stack, builder -> {
-			if (this.add) {
-				object2IntMap.forEach((enchantment, level) -> builder.set(enchantment, builder.getLevel(enchantment) + level));
-			} else {
-				object2IntMap.forEach(builder::set);
+		EnchantmentHelper.apply(
+			stack,
+			builder -> {
+				if (this.add) {
+					this.enchantments
+						.forEach(
+							(registryEntry, lootNumberProvider) -> builder.set(
+									registryEntry, MathHelper.clamp(builder.getLevel(registryEntry) + lootNumberProvider.nextInt(context), 0, 255)
+								)
+						);
+				} else {
+					this.enchantments
+						.forEach((registryEntry, lootNumberProvider) -> builder.set(registryEntry, MathHelper.clamp(lootNumberProvider.nextInt(context), 0, 255)));
+				}
 			}
-		});
+		);
 		return stack;
 	}
 
@@ -96,8 +99,8 @@ public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
 			return this;
 		}
 
-		public SetEnchantmentsLootFunction.Builder enchantment(Enchantment enchantment, LootNumberProvider level) {
-			this.enchantments.put(enchantment.getRegistryEntry(), level);
+		public SetEnchantmentsLootFunction.Builder enchantment(RegistryEntry<Enchantment> registryEntry, LootNumberProvider level) {
+			this.enchantments.put(registryEntry, level);
 			return this;
 		}
 

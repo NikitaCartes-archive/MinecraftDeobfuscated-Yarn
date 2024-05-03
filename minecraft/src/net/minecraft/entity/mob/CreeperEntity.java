@@ -173,8 +173,8 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
-		super.dropEquipment(source, lootingMultiplier, allowDrops);
+	protected void dropEquipment(DamageSource source, boolean causedByPlayer) {
+		super.dropEquipment(source, causedByPlayer);
 		Entity entity = source.getAttacker();
 		if (entity != this && entity instanceof CreeperEntity creeperEntity && creeperEntity.shouldDropHead()) {
 			creeperEntity.onHeadDropped();

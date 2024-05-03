@@ -2,10 +2,10 @@ package net.minecraft.recipe;
 
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.block.entity.Sherds;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.world.World;
@@ -15,12 +15,12 @@ public class CraftingDecoratedPotRecipe extends SpecialCraftingRecipe {
 		super(craftingRecipeCategory);
 	}
 
-	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
-		if (!this.fits(recipeInputInventory.getWidth(), recipeInputInventory.getHeight())) {
+	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
+		if (!this.fits(craftingRecipeInput.getWidth(), craftingRecipeInput.getHeight())) {
 			return false;
 		} else {
-			for (int i = 0; i < recipeInputInventory.size(); i++) {
-				ItemStack itemStack = recipeInputInventory.getStack(i);
+			for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+				ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
 				switch (i) {
 					case 1:
 					case 3:
@@ -44,12 +44,12 @@ public class CraftingDecoratedPotRecipe extends SpecialCraftingRecipe {
 		}
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
+	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
 		Sherds sherds = new Sherds(
-			recipeInputInventory.getStack(1).getItem(),
-			recipeInputInventory.getStack(3).getItem(),
-			recipeInputInventory.getStack(5).getItem(),
-			recipeInputInventory.getStack(7).getItem()
+			craftingRecipeInput.getStackInSlot(1).getItem(),
+			craftingRecipeInput.getStackInSlot(3).getItem(),
+			craftingRecipeInput.getStackInSlot(5).getItem(),
+			craftingRecipeInput.getStackInSlot(7).getItem()
 		);
 		return DecoratedPotBlockEntity.getStackWith(sherds);
 	}

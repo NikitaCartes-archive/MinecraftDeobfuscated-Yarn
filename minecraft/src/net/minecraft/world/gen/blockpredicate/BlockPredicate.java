@@ -130,4 +130,12 @@ public interface BlockPredicate extends BiPredicate<StructureWorldAccess, BlockP
 	static BlockPredicate alwaysTrue() {
 		return AlwaysTrueBlockPredicate.instance;
 	}
+
+	static BlockPredicate unobstructed(Vec3i offset) {
+		return new UnobstructedBlockPredicate(offset);
+	}
+
+	static BlockPredicate unobstructed() {
+		return unobstructed(Vec3i.ZERO);
+	}
 }

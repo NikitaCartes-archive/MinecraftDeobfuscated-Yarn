@@ -9,6 +9,7 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
@@ -213,7 +214,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 			ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 			if (!itemStack.isEmpty()) {
-				if (EnchantmentHelper.hasBindingCurse(itemStack)) {
+				if (EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)) {
 					villagerEntity.getStackReference(equipmentSlot.getEntitySlotId() + 300).set(itemStack);
 				} else {
 					double d = (double)this.getDropChance(equipmentSlot);

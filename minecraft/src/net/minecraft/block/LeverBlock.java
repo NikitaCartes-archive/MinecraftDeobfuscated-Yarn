@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import java.util.function.BiConsumer;
+import javax.annotation.Nullable;
 import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -93,28 +94,31 @@ public class LeverBlock extends WallMountedBlock {
 
 			return ActionResult.SUCCESS;
 		} else {
-			BlockState blockState = this.togglePower(state, world, pos);
-			float f = blockState.get(POWERED) ? 0.6F : 0.5F;
-			world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, f);
-			world.emitGameEvent(player, blockState.get(POWERED) ? GameEvent.BLOCK_ACTIVATE : GameEvent.BLOCK_DEACTIVATE, pos);
+			this.togglePower(state, world, pos, null);
 			return ActionResult.CONSUME;
 		}
 	}
 
 	@Override
 	protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
-		if (explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK && !world.isClient()) {
-			this.togglePower(state, world, pos);
+		if (explosion.canTriggerBlocks()) {
+			this.togglePower(state, world, pos, null);
 		}
 
 		super.onExploded(state, world, pos, explosion, stackMerger);
 	}
 
-	public BlockState togglePower(BlockState state, World world, BlockPos pos) {
+	public void togglePower(BlockState state, World world, BlockPos pos, @Nullable PlayerEntity player) {
 		state = state.cycle(POWERED);
 		world.setBlockState(pos, state, Block.NOTIFY_ALL);
 		this.updateNeighbors(state, world, pos);
-		return state;
+		playClickSound(player, world, pos, state);
+		world.emitGameEvent(player, state.get(POWERED) ? GameEvent.BLOCK_ACTIVATE : GameEvent.BLOCK_DEACTIVATE, pos);
+	}
+
+	protected static void playClickSound(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos, BlockState state) {
+		float f = state.get(POWERED) ? 0.6F : 0.5F;
+		world.playSound(player, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, f);
 	}
 
 	private static void spawnParticles(BlockState state, WorldAccess world, BlockPos pos, float alpha) {

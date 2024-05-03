@@ -9,7 +9,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.CampfireBlockEntity;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -112,8 +111,8 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if ((Boolean)state.get(LIT) && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity)entity)) {
-			entity.damage(world.getDamageSources().inFire(), (float)this.fireDamage);
+		if ((Boolean)state.get(LIT) && entity instanceof LivingEntity) {
+			entity.damage(world.getDamageSources().campfire(), (float)this.fireDamage);
 		}
 
 		super.onEntityCollision(state, world, pos, entity);

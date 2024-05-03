@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -280,9 +281,13 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		Entity entity = entityHitResult.getEntity();
 		Entity entity2 = this.getOwner();
 		LivingEntity livingEntity = entity2 instanceof LivingEntity ? (LivingEntity)entity2 : null;
-		boolean bl = entity.damage(this.getDamageSources().mobProjectile(this, livingEntity), 4.0F);
+		DamageSource damageSource = this.getDamageSources().mobProjectile(this, livingEntity);
+		boolean bl = entity.damage(damageSource, 4.0F);
 		if (bl) {
-			this.applyDamageEffects(livingEntity, entity);
+			if (this.getWorld() instanceof ServerWorld serverWorld) {
+				EnchantmentHelper.onTargetDamaged(serverWorld, entity, damageSource);
+			}
+
 			if (entity instanceof LivingEntity livingEntity2) {
 				livingEntity2.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 200), MoreObjects.firstNonNull(entity2, this));
 			}

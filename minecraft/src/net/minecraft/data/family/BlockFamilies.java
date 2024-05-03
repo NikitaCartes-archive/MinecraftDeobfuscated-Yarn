@@ -209,12 +209,7 @@ public class BlockFamilies {
 		.stairs(Blocks.MOSSY_STONE_BRICK_STAIRS)
 		.slab(Blocks.MOSSY_STONE_BRICK_SLAB)
 		.build();
-	public static final BlockFamily COPPER_BLOCK = register(Blocks.COPPER_BLOCK)
-		.cut(Blocks.CUT_COPPER)
-		.door(Blocks.COPPER_DOOR)
-		.trapdoor(Blocks.COPPER_TRAPDOOR)
-		.noGenerateModels()
-		.build();
+	public static final BlockFamily COPPER_BLOCK = register(Blocks.COPPER_BLOCK).cut(Blocks.CUT_COPPER).noGenerateModels().build();
 	public static final BlockFamily CUT_COPPER = register(Blocks.CUT_COPPER)
 		.slab(Blocks.CUT_COPPER_SLAB)
 		.stairs(Blocks.CUT_COPPER_STAIRS)
@@ -223,8 +218,6 @@ public class BlockFamilies {
 		.build();
 	public static final BlockFamily WAXED_COPPER_BLOCK = register(Blocks.WAXED_COPPER_BLOCK)
 		.cut(Blocks.WAXED_CUT_COPPER)
-		.door(Blocks.WAXED_COPPER_DOOR)
-		.trapdoor(Blocks.WAXED_COPPER_TRAPDOOR)
 		.group("waxed_cut_copper")
 		.noGenerateModels()
 		.build();
@@ -235,12 +228,7 @@ public class BlockFamilies {
 		.group("waxed_cut_copper")
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily EXPOSED_COPPER = register(Blocks.EXPOSED_COPPER)
-		.cut(Blocks.EXPOSED_CUT_COPPER)
-		.door(Blocks.EXPOSED_COPPER_DOOR)
-		.trapdoor(Blocks.EXPOSED_COPPER_TRAPDOOR)
-		.noGenerateModels()
-		.build();
+	public static final BlockFamily EXPOSED_COPPER = register(Blocks.EXPOSED_COPPER).cut(Blocks.EXPOSED_CUT_COPPER).noGenerateModels().build();
 	public static final BlockFamily EXPOSED_CUT_COPPER = register(Blocks.EXPOSED_CUT_COPPER)
 		.slab(Blocks.EXPOSED_CUT_COPPER_SLAB)
 		.stairs(Blocks.EXPOSED_CUT_COPPER_STAIRS)
@@ -249,8 +237,6 @@ public class BlockFamilies {
 		.build();
 	public static final BlockFamily WAXED_EXPOSED_COPPER = register(Blocks.WAXED_EXPOSED_COPPER)
 		.cut(Blocks.WAXED_EXPOSED_CUT_COPPER)
-		.door(Blocks.WAXED_EXPOSED_COPPER_DOOR)
-		.trapdoor(Blocks.WAXED_EXPOSED_COPPER_TRAPDOOR)
 		.group("waxed_exposed_cut_copper")
 		.noGenerateModels()
 		.build();
@@ -261,12 +247,7 @@ public class BlockFamilies {
 		.group("waxed_exposed_cut_copper")
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily WEATHERED_COPPER = register(Blocks.WEATHERED_COPPER)
-		.cut(Blocks.WEATHERED_CUT_COPPER)
-		.door(Blocks.WEATHERED_COPPER_DOOR)
-		.trapdoor(Blocks.WEATHERED_COPPER_TRAPDOOR)
-		.noGenerateModels()
-		.build();
+	public static final BlockFamily WEATHERED_COPPER = register(Blocks.WEATHERED_COPPER).cut(Blocks.WEATHERED_CUT_COPPER).noGenerateModels().build();
 	public static final BlockFamily WEATHERED_CUT_COPPER = register(Blocks.WEATHERED_CUT_COPPER)
 		.slab(Blocks.WEATHERED_CUT_COPPER_SLAB)
 		.stairs(Blocks.WEATHERED_CUT_COPPER_STAIRS)
@@ -275,8 +256,6 @@ public class BlockFamilies {
 		.build();
 	public static final BlockFamily WAXED_WEATHERED_COPPER = register(Blocks.WAXED_WEATHERED_COPPER)
 		.cut(Blocks.WAXED_WEATHERED_CUT_COPPER)
-		.door(Blocks.WAXED_WEATHERED_COPPER_DOOR)
-		.trapdoor(Blocks.WAXED_WEATHERED_COPPER_TRAPDOOR)
 		.group("waxed_weathered_cut_copper")
 		.noGenerateModels()
 		.build();
@@ -287,12 +266,7 @@ public class BlockFamilies {
 		.group("waxed_weathered_cut_copper")
 		.noGenerateModels()
 		.build();
-	public static final BlockFamily OXIDIZED_COPPER = register(Blocks.OXIDIZED_COPPER)
-		.cut(Blocks.OXIDIZED_CUT_COPPER)
-		.door(Blocks.OXIDIZED_COPPER_DOOR)
-		.trapdoor(Blocks.OXIDIZED_COPPER_TRAPDOOR)
-		.noGenerateModels()
-		.build();
+	public static final BlockFamily OXIDIZED_COPPER = register(Blocks.OXIDIZED_COPPER).cut(Blocks.OXIDIZED_CUT_COPPER).noGenerateModels().build();
 	public static final BlockFamily OXIDIZED_CUT_COPPER = register(Blocks.OXIDIZED_CUT_COPPER)
 		.slab(Blocks.OXIDIZED_CUT_COPPER_SLAB)
 		.stairs(Blocks.OXIDIZED_CUT_COPPER_STAIRS)
@@ -301,8 +275,6 @@ public class BlockFamilies {
 		.build();
 	public static final BlockFamily WAXED_OXIDIZED_COPPER = register(Blocks.WAXED_OXIDIZED_COPPER)
 		.cut(Blocks.WAXED_OXIDIZED_CUT_COPPER)
-		.door(Blocks.WAXED_OXIDIZED_COPPER_DOOR)
-		.trapdoor(Blocks.WAXED_OXIDIZED_COPPER_TRAPDOOR)
 		.group("waxed_oxidized_cut_copper")
 		.noGenerateModels()
 		.build();

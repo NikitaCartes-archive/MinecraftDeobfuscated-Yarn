@@ -13,8 +13,10 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.provider.EnchantmentProviders;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityStatuses;
@@ -43,7 +45,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -200,7 +201,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	}
 
 	public static DefaultAttributeContainer.Builder createMobAttributes() {
-		return LivingEntity.createLivingAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 16.0).add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
+		return LivingEntity.createLivingAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 16.0);
 	}
 
 	protected EntityNavigation createNavigation(World world) {
@@ -339,7 +340,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	}
 
 	@Override
-	public int getXpToDrop() {
+	protected int getXpToDrop() {
 		if (this.experiencePoints > 0) {
 			int i = this.experiencePoints;
 
@@ -467,8 +468,8 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		Either<UUID, BlockPos> either = this.leashNbt;
 		if (this.holdingEntity instanceof LivingEntity) {
 			either = Either.left(this.holdingEntity.getUuid());
-		} else if (this.holdingEntity instanceof AbstractDecorationEntity abstractDecorationEntity) {
-			either = Either.right(abstractDecorationEntity.getDecorationBlockPos());
+		} else if (this.holdingEntity instanceof LeashKnotEntity leashKnotEntity) {
+			either = Either.right(leashKnotEntity.getAttachedBlockPos());
 		}
 
 		if (either != null) {
@@ -704,7 +705,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		} else if (newStack.getItem() instanceof CrossbowItem && oldStack.getItem() instanceof CrossbowItem) {
 			return this.prefersNewDamageableItem(newStack, oldStack);
 		} else if (newStack.getItem() instanceof ArmorItem armorItem) {
-			if (EnchantmentHelper.hasBindingCurse(oldStack)) {
+			if (EnchantmentHelper.hasAnyEnchantmentsWith(oldStack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)) {
 				return false;
 			} else if (!(oldStack.getItem() instanceof ArmorItem)) {
 				return true;
@@ -1035,23 +1036,33 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
-		super.dropEquipment(source, lootingMultiplier, allowDrops);
+	protected void dropEquipment(DamageSource source, boolean causedByPlayer) {
+		super.dropEquipment(source, causedByPlayer);
 
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 			ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 			float f = this.getDropChance(equipmentSlot);
-			boolean bl = f > 1.0F;
-			if (!itemStack.isEmpty()
-				&& !EnchantmentHelper.hasVanishingCurse(itemStack)
-				&& (allowDrops || bl)
-				&& Math.max(this.random.nextFloat() - (float)lootingMultiplier * 0.01F, 0.0F) < f) {
-				if (!bl && itemStack.isDamageable()) {
-					itemStack.setDamage(itemStack.getMaxDamage() - this.random.nextInt(1 + this.random.nextInt(Math.max(itemStack.getMaxDamage() - 3, 1))));
+			if (f != 0.0F) {
+				boolean bl = f > 1.0F;
+				Entity var12 = source.getAttacker();
+				if (var12 instanceof LivingEntity) {
+					LivingEntity livingEntity = (LivingEntity)var12;
+					if (this.getWorld() instanceof ServerWorld serverWorld) {
+						f = EnchantmentHelper.getEquipmentDropChance(serverWorld, livingEntity, source, f);
+					}
 				}
 
-				this.dropStack(itemStack);
-				this.equipStack(equipmentSlot, ItemStack.EMPTY);
+				if (!itemStack.isEmpty()
+					&& !EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)
+					&& (causedByPlayer || bl)
+					&& this.random.nextFloat() < f) {
+					if (!bl && itemStack.isDamageable()) {
+						itemStack.setDamage(itemStack.getMaxDamage() - this.random.nextInt(1 + this.random.nextInt(Math.max(itemStack.getMaxDamage() - 3, 1))));
+					}
+
+					this.dropStack(itemStack);
+					this.equipStack(equipmentSlot, ItemStack.EMPTY);
+				}
 			}
 		}
 	}
@@ -1186,20 +1197,18 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	}
 
 	protected void enchantMainHandItem(Random random, float power) {
-		if (!this.getMainHandStack().isEmpty() && random.nextFloat() < 0.25F * power) {
-			this.equipStack(
-				EquipmentSlot.MAINHAND,
-				EnchantmentHelper.enchant(this.getWorld().getEnabledFeatures(), random, this.getMainHandStack(), (int)(5.0F + power * (float)random.nextInt(18)), false)
-			);
-		}
+		this.method_59927(EquipmentSlot.MAINHAND, random, 0.25F, power);
 	}
 
 	protected void enchantEquipment(Random random, float power, EquipmentSlot slot) {
-		ItemStack itemStack = this.getEquippedStack(slot);
-		if (!itemStack.isEmpty() && random.nextFloat() < 0.5F * power) {
-			this.equipStack(
-				slot, EnchantmentHelper.enchant(this.getWorld().getEnabledFeatures(), random, itemStack, (int)(5.0F + power * (float)random.nextInt(18)), false)
-			);
+		this.method_59927(slot, random, 0.5F, power);
+	}
+
+	private void method_59927(EquipmentSlot equipmentSlot, Random random, float f, float g) {
+		ItemStack itemStack = this.getEquippedStack(equipmentSlot);
+		if (!itemStack.isEmpty() && random.nextFloat() < f * g) {
+			EnchantmentHelper.applyEnchantmentProvider(itemStack, EnchantmentProviders.MOB_SPAWN_EQUIPMENT, this.getWorld(), this.getBlockPos(), random);
+			this.equipStack(equipmentSlot, itemStack);
 		}
 	}
 
@@ -1563,34 +1572,35 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	@Override
 	public boolean tryAttack(Entity target) {
 		float f = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-		float g = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
-		if (target instanceof LivingEntity) {
-			f += EnchantmentHelper.getAttackDamage(this.getMainHandStack(), target.getType());
-			g += (float)EnchantmentHelper.getKnockback(this);
+		DamageSource damageSource = this.getDamageSources().mobAttack(this);
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			f = EnchantmentHelper.getDamage(serverWorld, this.getMainHandStack(), target, damageSource, f);
 		}
 
-		int i = EnchantmentHelper.getFireAspect(this);
-		if (i > 0) {
-			target.setOnFireFor(i * 4);
-		}
-
-		boolean bl = target.damage(this.getDamageSources().mobAttack(this), f);
+		boolean bl = target.damage(damageSource, f);
 		if (bl) {
-			if (g > 0.0F && target instanceof LivingEntity) {
-				((LivingEntity)target)
-					.takeKnockback(
-						(double)(g * 0.5F),
-						(double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)),
-						(double)(-MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)))
-					);
+			float g = this.getKnockbackAgainst(target, damageSource);
+			if (g > 0.0F && target instanceof LivingEntity livingEntity) {
+				livingEntity.takeKnockback(
+					(double)(g * 0.5F),
+					(double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)),
+					(double)(-MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)))
+				);
 				this.setVelocity(this.getVelocity().multiply(0.6, 1.0, 0.6));
 			}
 
-			this.applyDamageEffects(this, target);
+			if (this.getWorld() instanceof ServerWorld serverWorld2) {
+				EnchantmentHelper.onTargetDamaged(serverWorld2, target, damageSource);
+			}
+
 			this.onAttacking(target);
+			this.method_59928();
 		}
 
 		return bl;
+	}
+
+	protected void method_59928() {
 	}
 
 	protected boolean isAffectedByDaylight() {

@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.ComponentMap;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
@@ -23,31 +23,28 @@ import net.minecraft.util.Util;
 public class CopyComponentsLootFunction extends ConditionalLootFunction {
 	public static final MapCodec<CopyComponentsLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
-				.<CopyComponentsLootFunction.Source, Optional<List<DataComponentType<?>>>, Optional<List<DataComponentType<?>>>>and(
+				.<CopyComponentsLootFunction.Source, Optional<List<ComponentType<?>>>, Optional<List<ComponentType<?>>>>and(
 					instance.group(
 						CopyComponentsLootFunction.Source.CODEC.fieldOf("source").forGetter(function -> function.source),
-						DataComponentType.CODEC.listOf().optionalFieldOf("include").forGetter(function -> function.include),
-						DataComponentType.CODEC.listOf().optionalFieldOf("exclude").forGetter(function -> function.exclude)
+						ComponentType.CODEC.listOf().optionalFieldOf("include").forGetter(function -> function.include),
+						ComponentType.CODEC.listOf().optionalFieldOf("exclude").forGetter(function -> function.exclude)
 					)
 				)
 				.apply(instance, CopyComponentsLootFunction::new)
 	);
 	private final CopyComponentsLootFunction.Source source;
-	private final Optional<List<DataComponentType<?>>> include;
-	private final Optional<List<DataComponentType<?>>> exclude;
-	private final Predicate<DataComponentType<?>> filter;
+	private final Optional<List<ComponentType<?>>> include;
+	private final Optional<List<ComponentType<?>>> exclude;
+	private final Predicate<ComponentType<?>> filter;
 
 	CopyComponentsLootFunction(
-		List<LootCondition> conditions,
-		CopyComponentsLootFunction.Source source,
-		Optional<List<DataComponentType<?>>> include,
-		Optional<List<DataComponentType<?>>> exclude
+		List<LootCondition> conditions, CopyComponentsLootFunction.Source source, Optional<List<ComponentType<?>>> include, Optional<List<ComponentType<?>>> exclude
 	) {
 		super(conditions);
 		this.source = source;
 		this.include = include.map(List::copyOf);
 		this.exclude = exclude.map(List::copyOf);
-		List<Predicate<DataComponentType<?>>> list = new ArrayList(2);
+		List<Predicate<ComponentType<?>>> list = new ArrayList(2);
 		exclude.ifPresent(excludedTypes -> list.add((Predicate)type -> !excludedTypes.contains(type)));
 		include.ifPresent(includedTypes -> list.add(includedTypes::contains));
 		this.filter = Util.allOf(list);
@@ -76,14 +73,14 @@ public class CopyComponentsLootFunction extends ConditionalLootFunction {
 
 	public static class Builder extends ConditionalLootFunction.Builder<CopyComponentsLootFunction.Builder> {
 		private final CopyComponentsLootFunction.Source source;
-		private Optional<ImmutableList.Builder<DataComponentType<?>>> include = Optional.empty();
-		private Optional<ImmutableList.Builder<DataComponentType<?>>> exclude = Optional.empty();
+		private Optional<ImmutableList.Builder<ComponentType<?>>> include = Optional.empty();
+		private Optional<ImmutableList.Builder<ComponentType<?>>> exclude = Optional.empty();
 
 		Builder(CopyComponentsLootFunction.Source source) {
 			this.source = source;
 		}
 
-		public CopyComponentsLootFunction.Builder include(DataComponentType<?> type) {
+		public CopyComponentsLootFunction.Builder include(ComponentType<?> type) {
 			if (this.include.isEmpty()) {
 				this.include = Optional.of(ImmutableList.builder());
 			}
@@ -92,7 +89,7 @@ public class CopyComponentsLootFunction extends ConditionalLootFunction {
 			return this;
 		}
 
-		public CopyComponentsLootFunction.Builder exclude(DataComponentType<?> type) {
+		public CopyComponentsLootFunction.Builder exclude(ComponentType<?> type) {
 			if (this.exclude.isEmpty()) {
 				this.exclude = Optional.of(ImmutableList.builder());
 			}

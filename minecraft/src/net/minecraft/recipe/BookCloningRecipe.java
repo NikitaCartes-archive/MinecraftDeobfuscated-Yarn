@@ -2,11 +2,11 @@ package net.minecraft.recipe;
 
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.WrittenBookContentComponent;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
@@ -16,12 +16,12 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		super(craftingRecipeCategory);
 	}
 
-	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
+	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
 		int i = 0;
 		ItemStack itemStack = ItemStack.EMPTY;
 
-		for (int j = 0; j < recipeInputInventory.size(); j++) {
-			ItemStack itemStack2 = recipeInputInventory.getStack(j);
+		for (int j = 0; j < craftingRecipeInput.getSize(); j++) {
+			ItemStack itemStack2 = craftingRecipeInput.getStackInSlot(j);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.isOf(Items.WRITTEN_BOOK)) {
 					if (!itemStack.isEmpty()) {
@@ -42,12 +42,12 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		return !itemStack.isEmpty() && i > 0;
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
+	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
 		int i = 0;
 		ItemStack itemStack = ItemStack.EMPTY;
 
-		for (int j = 0; j < recipeInputInventory.size(); j++) {
-			ItemStack itemStack2 = recipeInputInventory.getStack(j);
+		for (int j = 0; j < craftingRecipeInput.getSize(); j++) {
+			ItemStack itemStack2 = craftingRecipeInput.getStackInSlot(j);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.isOf(Items.WRITTEN_BOOK)) {
 					if (!itemStack.isEmpty()) {
@@ -80,11 +80,11 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		}
 	}
 
-	public DefaultedList<ItemStack> getRemainder(RecipeInputInventory recipeInputInventory) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(recipeInputInventory.size(), ItemStack.EMPTY);
+	public DefaultedList<ItemStack> getRemainder(CraftingRecipeInput craftingRecipeInput) {
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingRecipeInput.getSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
-			ItemStack itemStack = recipeInputInventory.getStack(i);
+			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
 			if (itemStack.getItem().hasRecipeRemainder()) {
 				defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));
 			} else if (itemStack.getItem() instanceof WrittenBookItem) {

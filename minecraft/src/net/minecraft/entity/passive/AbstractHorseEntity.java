@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
@@ -556,7 +557,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		if (this.items != null) {
 			for (int i = 0; i < this.items.size(); i++) {
 				ItemStack itemStack = this.items.getStack(i);
-				if (!itemStack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemStack)) {
+				if (!itemStack.isEmpty() && !EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)) {
 					this.dropStack(itemStack);
 				}
 			}

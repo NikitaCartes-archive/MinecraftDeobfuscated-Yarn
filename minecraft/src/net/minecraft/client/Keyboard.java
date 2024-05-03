@@ -13,11 +13,12 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.navigation.GuiNavigationType;
+import net.minecraft.client.gui.screen.AccessibilityOnboardingScreen;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.option.ChatOptionsScreen;
 import net.minecraft.client.gui.screen.option.KeybindsScreen;
-import net.minecraft.client.gui.screen.option.SimpleOptionsScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -392,8 +393,12 @@ public class Keyboard {
 						boolean bl3 = this.client.options.getNarrator().getValue() == NarratorMode.OFF;
 						this.client.options.getNarrator().setValue(NarratorMode.byId(this.client.options.getNarrator().getValue().getId() + 1));
 						this.client.options.write();
-						if (screen instanceof SimpleOptionsScreen) {
-							((SimpleOptionsScreen)screen).updateNarratorButtonText();
+						if (screen instanceof AccessibilityOnboardingScreen accessibilityOnboardingScreen) {
+							accessibilityOnboardingScreen.method_60323();
+						}
+
+						if (screen instanceof ChatOptionsScreen chatOptionsScreen) {
+							chatOptionsScreen.method_60326();
 						}
 
 						if (bl3 && screen != null) {
@@ -423,17 +428,17 @@ public class Keyboard {
 			InputUtil.Key key2;
 			boolean bl3x;
 			boolean var10000;
-			label187: {
+			label191: {
 				key2 = InputUtil.fromKeyCode(key, scancode);
 				bl3x = this.client.currentScreen == null;
-				label147:
+				label151:
 				if (!bl3x) {
 					if (this.client.currentScreen instanceof GameMenuScreen gameMenuScreen && !gameMenuScreen.shouldShowMenu()) {
-						break label147;
+						break label151;
 					}
 
 					var10000 = false;
-					break label187;
+					break label191;
 				}
 
 				var10000 = true;

@@ -3,10 +3,10 @@ package net.minecraft.recipe;
 import com.google.common.collect.Lists;
 import java.util.List;
 import net.minecraft.component.type.DyedColorComponent;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.world.World;
@@ -16,12 +16,12 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 		super(craftingRecipeCategory);
 	}
 
-	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
+	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
-		for (int i = 0; i < recipeInputInventory.size(); i++) {
-			ItemStack itemStack2 = recipeInputInventory.getStack(i);
+		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+			ItemStack itemStack2 = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.isIn(ItemTags.DYEABLE)) {
 					if (!itemStack.isEmpty()) {
@@ -42,12 +42,12 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 		return !itemStack.isEmpty() && !list.isEmpty();
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
+	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
 		List<DyeItem> list = Lists.<DyeItem>newArrayList();
 		ItemStack itemStack = ItemStack.EMPTY;
 
-		for (int i = 0; i < recipeInputInventory.size(); i++) {
-			ItemStack itemStack2 = recipeInputInventory.getStack(i);
+		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+			ItemStack itemStack2 = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.isIn(ItemTags.DYEABLE)) {
 					if (!itemStack.isEmpty()) {

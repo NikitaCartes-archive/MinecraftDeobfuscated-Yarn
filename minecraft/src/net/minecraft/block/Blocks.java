@@ -20,7 +20,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
@@ -4025,7 +4024,6 @@ public class Blocks {
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.PALE_PURPLE)
 				.slipperiness(0.98F)
-				.ticksRandomly()
 				.strength(0.5F)
 				.sounds(BlockSoundGroup.GLASS)
 				.nonOpaque()
@@ -5693,23 +5691,17 @@ public class Blocks {
 				.strength(1.5F, 6.0F)
 		)
 	);
-	public static final Block TUFF_SLAB = register("tuff_slab", new SlabBlock(AbstractBlock.Settings.copyShallow(TUFF).requires(FeatureFlags.UPDATE_1_21)));
-	public static final Block TUFF_STAIRS = register(
-		"tuff_stairs", new StairsBlock(TUFF.getDefaultState(), AbstractBlock.Settings.copyShallow(TUFF).requires(FeatureFlags.UPDATE_1_21))
-	);
-	public static final Block TUFF_WALL = register("tuff_wall", new WallBlock(AbstractBlock.Settings.copyShallow(TUFF).solid().requires(FeatureFlags.UPDATE_1_21)));
-	public static final Block POLISHED_TUFF = register(
-		"polished_tuff", new Block(AbstractBlock.Settings.copyShallow(TUFF).sounds(BlockSoundGroup.POLISHED_TUFF).requires(FeatureFlags.UPDATE_1_21))
-	);
+	public static final Block TUFF_SLAB = register("tuff_slab", new SlabBlock(AbstractBlock.Settings.copyShallow(TUFF)));
+	public static final Block TUFF_STAIRS = register("tuff_stairs", new StairsBlock(TUFF.getDefaultState(), AbstractBlock.Settings.copyShallow(TUFF)));
+	public static final Block TUFF_WALL = register("tuff_wall", new WallBlock(AbstractBlock.Settings.copyShallow(TUFF).solid()));
+	public static final Block POLISHED_TUFF = register("polished_tuff", new Block(AbstractBlock.Settings.copyShallow(TUFF).sounds(BlockSoundGroup.POLISHED_TUFF)));
 	public static final Block POLISHED_TUFF_SLAB = register("polished_tuff_slab", new SlabBlock(AbstractBlock.Settings.copyShallow(POLISHED_TUFF)));
 	public static final Block POLISHED_TUFF_STAIRS = register(
 		"polished_tuff_stairs", new StairsBlock(POLISHED_TUFF.getDefaultState(), AbstractBlock.Settings.copyShallow(POLISHED_TUFF))
 	);
 	public static final Block POLISHED_TUFF_WALL = register("polished_tuff_wall", new WallBlock(AbstractBlock.Settings.copyShallow(POLISHED_TUFF).solid()));
-	public static final Block CHISELED_TUFF = register("chiseled_tuff", new Block(AbstractBlock.Settings.copyShallow(TUFF).requires(FeatureFlags.UPDATE_1_21)));
-	public static final Block TUFF_BRICKS = register(
-		"tuff_bricks", new Block(AbstractBlock.Settings.copyShallow(TUFF).sounds(BlockSoundGroup.TUFF_BRICKS).requires(FeatureFlags.UPDATE_1_21))
-	);
+	public static final Block CHISELED_TUFF = register("chiseled_tuff", new Block(AbstractBlock.Settings.copyShallow(TUFF)));
+	public static final Block TUFF_BRICKS = register("tuff_bricks", new Block(AbstractBlock.Settings.copyShallow(TUFF).sounds(BlockSoundGroup.TUFF_BRICKS)));
 	public static final Block TUFF_BRICK_SLAB = register("tuff_brick_slab", new SlabBlock(AbstractBlock.Settings.copyShallow(TUFF_BRICKS)));
 	public static final Block TUFF_BRICK_STAIRS = register(
 		"tuff_brick_stairs", new StairsBlock(TUFF_BRICKS.getDefaultState(), AbstractBlock.Settings.copyShallow(TUFF_BRICKS))
@@ -5823,19 +5815,16 @@ public class Blocks {
 		"cut_copper", new OxidizableBlock(Oxidizable.OxidationLevel.UNAFFECTED, AbstractBlock.Settings.copy(COPPER_BLOCK))
 	);
 	public static final Block OXIDIZED_CHISELED_COPPER = register(
-		"oxidized_chiseled_copper",
-		new OxidizableBlock(Oxidizable.OxidationLevel.OXIDIZED, AbstractBlock.Settings.copy(OXIDIZED_COPPER).requires(FeatureFlags.UPDATE_1_21))
+		"oxidized_chiseled_copper", new OxidizableBlock(Oxidizable.OxidationLevel.OXIDIZED, AbstractBlock.Settings.copy(OXIDIZED_COPPER))
 	);
 	public static final Block WEATHERED_CHISELED_COPPER = register(
-		"weathered_chiseled_copper",
-		new OxidizableBlock(Oxidizable.OxidationLevel.WEATHERED, AbstractBlock.Settings.copy(WEATHERED_COPPER).requires(FeatureFlags.UPDATE_1_21))
+		"weathered_chiseled_copper", new OxidizableBlock(Oxidizable.OxidationLevel.WEATHERED, AbstractBlock.Settings.copy(WEATHERED_COPPER))
 	);
 	public static final Block EXPOSED_CHISELED_COPPER = register(
-		"exposed_chiseled_copper",
-		new OxidizableBlock(Oxidizable.OxidationLevel.EXPOSED, AbstractBlock.Settings.copy(EXPOSED_COPPER).requires(FeatureFlags.UPDATE_1_21))
+		"exposed_chiseled_copper", new OxidizableBlock(Oxidizable.OxidationLevel.EXPOSED, AbstractBlock.Settings.copy(EXPOSED_COPPER))
 	);
 	public static final Block CHISELED_COPPER = register(
-		"chiseled_copper", new OxidizableBlock(Oxidizable.OxidationLevel.UNAFFECTED, AbstractBlock.Settings.copy(COPPER_BLOCK).requires(FeatureFlags.UPDATE_1_21))
+		"chiseled_copper", new OxidizableBlock(Oxidizable.OxidationLevel.UNAFFECTED, AbstractBlock.Settings.copy(COPPER_BLOCK))
 	);
 	public static final Block WAXED_OXIDIZED_CHISELED_COPPER = register(
 		"waxed_oxidized_chiseled_copper", new Block(AbstractBlock.Settings.copy(OXIDIZED_CHISELED_COPPER))
@@ -5909,7 +5898,6 @@ public class Blocks {
 				.nonOpaque()
 				.requiresTool()
 				.pistonBehavior(PistonBehavior.DESTROY)
-				.requires(FeatureFlags.UPDATE_1_21)
 		)
 	);
 	public static final Block EXPOSED_COPPER_DOOR = register(
@@ -5945,13 +5933,7 @@ public class Blocks {
 		new OxidizableTrapdoorBlock(
 			BlockSetType.COPPER,
 			Oxidizable.OxidationLevel.UNAFFECTED,
-			AbstractBlock.Settings.create()
-				.mapColor(COPPER_BLOCK.getDefaultMapColor())
-				.strength(3.0F, 6.0F)
-				.requiresTool()
-				.nonOpaque()
-				.allowsSpawning(Blocks::never)
-				.requires(FeatureFlags.UPDATE_1_21)
+			AbstractBlock.Settings.create().mapColor(COPPER_BLOCK.getDefaultMapColor()).strength(3.0F, 6.0F).requiresTool().nonOpaque().allowsSpawning(Blocks::never)
 		)
 	);
 	public static final Block EXPOSED_COPPER_TRAPDOOR = register(
@@ -5998,7 +5980,6 @@ public class Blocks {
 				.solidBlock(Blocks::never)
 				.suffocates(Blocks::never)
 				.blockVision(Blocks::never)
-				.requires(FeatureFlags.UPDATE_1_21)
 		)
 	);
 	public static final Block EXPOSED_COPPER_GRATE = register(
@@ -6033,7 +6014,6 @@ public class Blocks {
 				.requiresTool()
 				.solidBlock(Blocks::never)
 				.luminance(createLightLevelFromLitBlockState(15))
-				.requires(FeatureFlags.UPDATE_1_21)
 		)
 	);
 	public static final Block EXPOSED_COPPER_BULB = register(
@@ -6331,9 +6311,7 @@ public class Blocks {
 			AbstractBlock.Settings.create().mapColor(MapColor.TERRACOTTA_RED).strength(0.0F, 0.0F).pistonBehavior(PistonBehavior.DESTROY).nonOpaque()
 		)
 	);
-	public static final Block CRAFTER = register(
-		"crafter", new CrafterBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).strength(1.5F, 3.5F).requires(FeatureFlags.UPDATE_1_21))
-	);
+	public static final Block CRAFTER = register("crafter", new CrafterBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).strength(1.5F, 3.5F)));
 	public static final Block TRIAL_SPAWNER = register(
 		"trial_spawner",
 		new TrialSpawnerBlock(
@@ -6346,7 +6324,6 @@ public class Blocks {
 				.sounds(BlockSoundGroup.TRIAL_SPAWNER)
 				.blockVision(Blocks::never)
 				.nonOpaque()
-				.requires(FeatureFlags.UPDATE_1_21)
 		)
 	);
 	public static final Block VAULT = register(
@@ -6361,7 +6338,6 @@ public class Blocks {
 				.luminance(state -> ((VaultState)state.get(VaultBlock.VAULT_STATE)).getLuminance())
 				.strength(50.0F)
 				.blockVision(Blocks::never)
-				.requires(FeatureFlags.UPDATE_1_21)
 		)
 	);
 	public static final Block HEAVY_CORE = register(
@@ -6374,7 +6350,6 @@ public class Blocks {
 				.strength(10.0F)
 				.pistonBehavior(PistonBehavior.NORMAL)
 				.resistance(1200.0F)
-				.requires(FeatureFlags.UPDATE_1_21)
 		)
 	);
 

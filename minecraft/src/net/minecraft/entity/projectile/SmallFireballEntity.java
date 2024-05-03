@@ -1,11 +1,13 @@
 package net.minecraft.entity.projectile;
 
 import net.minecraft.block.AbstractFireBlock;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -29,15 +31,16 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 	@Override
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		super.onEntityHit(entityHitResult);
-		if (!this.getWorld().isClient) {
-			Entity entity = entityHitResult.getEntity();
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			Entity var7 = entityHitResult.getEntity();
 			Entity entity2 = this.getOwner();
-			int i = entity.getFireTicks();
-			entity.setOnFireFor(5);
-			if (!entity.damage(this.getDamageSources().fireball(this, entity2), 5.0F)) {
-				entity.setFireTicks(i);
-			} else if (entity2 instanceof LivingEntity) {
-				this.applyDamageEffects((LivingEntity)entity2, entity);
+			int i = var7.getFireTicks();
+			var7.setOnFireFor(5.0F);
+			DamageSource damageSource = this.getDamageSources().fireball(this, entity2);
+			if (!var7.damage(damageSource, 5.0F)) {
+				var7.setFireTicks(i);
+			} else {
+				EnchantmentHelper.onTargetDamaged(serverWorld, var7, damageSource);
 			}
 		}
 	}

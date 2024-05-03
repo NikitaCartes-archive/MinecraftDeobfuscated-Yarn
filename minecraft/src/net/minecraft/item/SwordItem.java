@@ -51,7 +51,11 @@ public class SwordItem extends ToolItem {
 
 	@Override
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-		stack.damage(1, attacker, EquipmentSlot.MAINHAND);
 		return true;
+	}
+
+	@Override
+	public void postDamageEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+		stack.damage(1, attacker, EquipmentSlot.MAINHAND);
 	}
 }

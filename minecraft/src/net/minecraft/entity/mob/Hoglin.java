@@ -1,7 +1,10 @@
 package net.minecraft.entity.mob;
 
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
 public interface Hoglin {
@@ -9,20 +12,24 @@ public interface Hoglin {
 
 	int getMovementCooldownTicks();
 
-	static boolean tryAttack(LivingEntity attacker, LivingEntity target) {
-		float f = (float)attacker.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+	static boolean tryAttack(LivingEntity livingEntity, LivingEntity livingEntity2) {
+		float f = (float)livingEntity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 		float g;
-		if (!attacker.isBaby() && (int)f > 0) {
-			g = f / 2.0F + (float)attacker.getWorld().random.nextInt((int)f);
+		if (!livingEntity.isBaby() && (int)f > 0) {
+			g = f / 2.0F + (float)livingEntity.getWorld().random.nextInt((int)f);
 		} else {
 			g = f;
 		}
 
-		boolean bl = target.damage(attacker.getDamageSources().mobAttack(attacker), g);
+		DamageSource damageSource = livingEntity.getDamageSources().mobAttack(livingEntity);
+		boolean bl = livingEntity2.damage(damageSource, g);
 		if (bl) {
-			attacker.applyDamageEffects(attacker, target);
-			if (!attacker.isBaby()) {
-				knockback(attacker, target);
+			if (livingEntity.getWorld() instanceof ServerWorld serverWorld) {
+				EnchantmentHelper.onTargetDamaged(serverWorld, livingEntity2, damageSource);
+			}
+
+			if (!livingEntity.isBaby()) {
+				knockback(livingEntity, livingEntity2);
 			}
 		}
 

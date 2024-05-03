@@ -1,5 +1,6 @@
 package net.minecraft.entity.projectile;
 
+import it.unimi.dsi.fastutil.doubles.DoubleDoubleImmutablePair;
 import java.util.List;
 import java.util.OptionalInt;
 import javax.annotation.Nullable;
@@ -12,6 +13,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -302,5 +304,12 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 	private static ItemStack getDefaultStack() {
 		return new ItemStack(Items.FIREWORK_ROCKET);
+	}
+
+	@Override
+	public DoubleDoubleImmutablePair method_59959(LivingEntity livingEntity, DamageSource damageSource) {
+		double d = livingEntity.getPos().x - this.getPos().x;
+		double e = livingEntity.getPos().z - this.getPos().z;
+		return DoubleDoubleImmutablePair.of(d, e);
 	}
 }

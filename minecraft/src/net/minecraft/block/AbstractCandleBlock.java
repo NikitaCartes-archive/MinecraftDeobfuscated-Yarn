@@ -100,7 +100,7 @@ public abstract class AbstractCandleBlock extends Block {
 
 	@Override
 	protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
-		if (explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK && !world.isClient() && (Boolean)state.get(LIT)) {
+		if (explosion.canTriggerBlocks() && (Boolean)state.get(LIT)) {
 			extinguish(null, state, world, pos);
 		}
 

@@ -6,9 +6,9 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
@@ -58,6 +58,8 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -164,7 +166,9 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
 		super.initDataTracker(builder);
-		builder.add(VARIANT, this.getRegistryManager().get(RegistryKeys.WOLF_VARIANT).entryOf(WolfVariants.PALE));
+		DynamicRegistryManager dynamicRegistryManager = this.getRegistryManager();
+		Registry<WolfVariant> registry = dynamicRegistryManager.get(RegistryKeys.WOLF_VARIANT);
+		builder.add(VARIANT, (RegistryEntry<WolfVariant>)registry.getEntry(WolfVariants.field_51588).or(registry::getDefaultEntry).orElseThrow());
 		builder.add(BEGGING, false);
 		builder.add(COLLAR_COLOR, DyeColor.RED.getId());
 		builder.add(ANGER_TIME, 0);
@@ -179,7 +183,7 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putByte("CollarColor", (byte)this.getCollarColor().getId());
-		nbt.putString("variant", ((RegistryKey)this.getVariant().getKey().orElse(WolfVariants.PALE)).getValue().toString());
+		this.getVariant().getKey().ifPresent(registryKey -> nbt.putString("variant", registryKey.getValue().toString()));
 		this.writeAngerToNbt(nbt);
 	}
 
@@ -405,16 +409,6 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
-		boolean bl = target.damage(this.getDamageSources().mobAttack(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
-		if (bl) {
-			this.applyDamageEffects(this, target);
-		}
-
-		return bl;
-	}
-
-	@Override
 	protected void updateAttributesForTamed() {
 		if (this.isTamed()) {
 			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(40.0);
@@ -460,7 +454,7 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 					} else if (itemStack.isOf(Items.SHEARS)
 						&& this.isOwner(player)
 						&& this.hasArmor()
-						&& (!EnchantmentHelper.hasBindingCurse(this.getBodyArmor()) || player.isCreative())) {
+						&& (!EnchantmentHelper.hasAnyEnchantmentsWith(this.getBodyArmor(), EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE) || player.isCreative())) {
 						itemStack.damage(1, player, getSlotForHand(hand));
 						this.playSoundIfNotSilent(SoundEvents.ITEM_ARMOR_UNEQUIP_WOLF);
 						ItemStack itemStack2 = this.getBodyArmor();

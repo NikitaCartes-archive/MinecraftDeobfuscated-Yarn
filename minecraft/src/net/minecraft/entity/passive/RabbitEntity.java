@@ -1,13 +1,13 @@
 package net.minecraft.entity.passive;
 
 import com.mojang.serialization.Codec;
+import java.util.UUID;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CarrotsBlock;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
@@ -29,6 +29,7 @@ import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -74,8 +75,10 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 	public static final double MELEE_ATTACK_SPEED = 1.4;
 	private static final TrackedData<Integer> RABBIT_TYPE = DataTracker.registerData(RabbitEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final Identifier KILLER_BUNNY = new Identifier("killer_bunny");
-	public static final int field_30368 = 8;
-	public static final int field_30369 = 8;
+	private static final int field_51585 = 3;
+	private static final int field_51586 = 5;
+	private static final UUID field_51587 = UUID.fromString("6555be74-63b3-41f1-a245-77833b3c2562");
+	private static final int field_30369 = 8;
 	private static final int field_30370 = 40;
 	private int jumpTicks;
 	private int jumpDuration;
@@ -264,7 +267,10 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 	}
 
 	public static DefaultAttributeContainer.Builder createRabbitAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 3.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F);
+		return MobEntity.createMobAttributes()
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 3.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0);
 	}
 
 	@Override
@@ -301,12 +307,9 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
+	public void method_59928() {
 		if (this.getVariant() == RabbitEntity.RabbitType.EVIL) {
 			this.playSound(SoundEvents.ENTITY_RABBIT_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-			return target.damage(this.getDamageSources().mobAttack(this), 8.0F);
-		} else {
-			return target.damage(this.getDamageSources().mobAttack(this), 3.0F);
 		}
 	}
 
@@ -353,9 +356,13 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 			this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
 			this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
 			this.targetSelector.add(2, new ActiveTargetGoal(this, WolfEntity.class, true));
+			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)
+				.addPersistentModifier(new EntityAttributeModifier(field_51587, "Evil rabbit strength", 5.0, EntityAttributeModifier.Operation.ADD_VALUE));
 			if (!this.hasCustomName()) {
 				this.setCustomName(Text.translatable(Util.createTranslationKey("entity", KILLER_BUNNY)));
 			}
+		} else {
+			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).removeModifier(field_51587);
 		}
 
 		this.dataTracker.set(RABBIT_TYPE, rabbitType.id);

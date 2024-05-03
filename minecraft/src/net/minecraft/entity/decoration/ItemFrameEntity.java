@@ -1,6 +1,5 @@
 package net.minecraft.entity.decoration;
 
-import com.mojang.logging.LogUtils;
 import javax.annotation.Nullable;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
@@ -39,13 +38,14 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.apache.commons.lang3.Validate;
-import org.slf4j.Logger;
 
 public class ItemFrameEntity extends AbstractDecorationEntity {
-	private static final Logger ITEM_FRAME_LOGGER = LogUtils.getLogger();
 	private static final TrackedData<ItemStack> ITEM_STACK = DataTracker.registerData(ItemFrameEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private static final TrackedData<Integer> ROTATION = DataTracker.registerData(ItemFrameEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	public static final int field_30454 = 8;
+	private static final float field_51592 = 0.0625F;
+	private static final float field_51593 = 0.75F;
+	private static final float field_51594 = 0.75F;
 	private float itemDropChance = 1.0F;
 	private boolean fixed;
 
@@ -86,33 +86,14 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	protected void updateAttachmentPosition() {
-		if (this.facing != null) {
-			double d = 0.46875;
-			double e = (double)this.attachmentPos.getX() + 0.5 - (double)this.facing.getOffsetX() * 0.46875;
-			double f = (double)this.attachmentPos.getY() + 0.5 - (double)this.facing.getOffsetY() * 0.46875;
-			double g = (double)this.attachmentPos.getZ() + 0.5 - (double)this.facing.getOffsetZ() * 0.46875;
-			this.setPos(e, f, g);
-			double h = (double)this.getWidthPixels();
-			double i = (double)this.getHeightPixels();
-			double j = (double)this.getWidthPixels();
-			Direction.Axis axis = this.facing.getAxis();
-			switch (axis) {
-				case X:
-					h = 1.0;
-					break;
-				case Y:
-					i = 1.0;
-					break;
-				case Z:
-					j = 1.0;
-			}
-
-			h /= 32.0;
-			i /= 32.0;
-			j /= 32.0;
-			this.setBoundingBox(new Box(e - h, f - i, g - j, e + h, f + i, g + j));
-		}
+	protected Box calculateBoundingBox(BlockPos pos, Direction side) {
+		float f = 0.46875F;
+		Vec3d vec3d = Vec3d.ofCenter(pos).offset(side, -0.46875);
+		Direction.Axis axis = side.getAxis();
+		double d = axis == Direction.Axis.X ? 0.0625 : 0.75;
+		double e = axis == Direction.Axis.Y ? 0.0625 : 0.75;
+		double g = axis == Direction.Axis.Z ? 0.0625 : 0.75;
+		return Box.of(vec3d, d, e, g);
 	}
 
 	@Override
@@ -122,7 +103,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		} else if (!this.getWorld().isSpaceEmpty(this)) {
 			return false;
 		} else {
-			BlockState blockState = this.getWorld().getBlockState(this.attachmentPos.offset(this.facing.getOpposite()));
+			BlockState blockState = this.getWorld().getBlockState(this.attachedBlockPos.offset(this.facing.getOpposite()));
 			return blockState.isSolid() || this.facing.getAxis().isHorizontal() && AbstractRedstoneGateBlock.isRedstoneGate(blockState)
 				? this.getWorld().getOtherEntities(this, this.getBoundingBox(), PREDICATE).isEmpty()
 				: false;
@@ -173,16 +154,6 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public int getWidthPixels() {
-		return 12;
-	}
-
-	@Override
-	public int getHeightPixels() {
-		return 12;
-	}
-
-	@Override
 	public boolean shouldRender(double distance) {
 		double d = 16.0;
 		d *= 64.0 * getRenderDistanceMultiplier();
@@ -190,10 +161,10 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void onBreak(@Nullable Entity entity) {
+	public void onBreak(@Nullable Entity breaker) {
 		this.playSound(this.getBreakSound(), 1.0F, 1.0F);
-		this.dropHeldStack(entity, true);
-		this.emitGameEvent(GameEvent.BLOCK_CHANGE, entity);
+		this.dropHeldStack(breaker, true);
+		this.emitGameEvent(GameEvent.BLOCK_CHANGE, breaker);
 	}
 
 	public SoundEvent getBreakSound() {
@@ -243,7 +214,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		if (mapIdComponent != null) {
 			MapState mapState = FilledMapItem.getMapState(mapIdComponent, this.getWorld());
 			if (mapState != null) {
-				mapState.removeFrame(this.attachmentPos, this.getId());
+				mapState.removeFrame(this.attachedBlockPos, this.getId());
 				mapState.setDirty(true);
 			}
 		}
@@ -279,8 +250,8 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			this.playSound(this.getAddItemSound(), 1.0F, 1.0F);
 		}
 
-		if (update && this.attachmentPos != null) {
-			this.getWorld().updateComparators(this.attachmentPos, Blocks.AIR);
+		if (update && this.attachedBlockPos != null) {
+			this.getWorld().updateComparators(this.attachedBlockPos, Blocks.AIR);
 		}
 	}
 
@@ -318,8 +289,8 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	private void setRotation(int value, boolean updateComparators) {
 		this.getDataTracker().set(ROTATION, value % 8);
-		if (updateComparators && this.attachmentPos != null) {
-			this.getWorld().updateComparators(this.attachmentPos, Blocks.AIR);
+		if (updateComparators && this.attachedBlockPos != null) {
+			this.getWorld().updateComparators(this.attachedBlockPos, Blocks.AIR);
 		}
 	}
 
@@ -409,7 +380,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	@Override
 	public Packet<ClientPlayPacketListener> createSpawnPacket() {
-		return new EntitySpawnS2CPacket(this, this.facing.getId(), this.getDecorationBlockPos());
+		return new EntitySpawnS2CPacket(this, this.facing.getId(), this.getAttachedBlockPos());
 	}
 
 	@Override

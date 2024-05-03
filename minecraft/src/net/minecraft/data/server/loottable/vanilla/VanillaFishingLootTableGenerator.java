@@ -29,11 +29,11 @@ import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 
-public class VanillaFishingLootTableGenerator implements LootTableGenerator {
+public record VanillaFishingLootTableGenerator(RegistryWrapper.WrapperLookup registries) implements LootTableGenerator {
 	@Override
-	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<RegistryKey<LootTable>, LootTable.Builder> consumer) {
-		RegistryWrapper.Impl<Biome> impl = registryLookup.getWrapperOrThrow(RegistryKeys.BIOME);
-		consumer.accept(
+	public void accept(BiConsumer<RegistryKey<LootTable>, LootTable.Builder> lootTableBiConsumer) {
+		RegistryWrapper.Impl<Biome> impl = this.registries.getWrapperOrThrow(RegistryKeys.BIOME);
+		lootTableBiConsumer.accept(
 			LootTables.FISHING_GAMEPLAY,
 			LootTable.builder()
 				.pool(
@@ -51,8 +51,8 @@ public class VanillaFishingLootTableGenerator implements LootTableGenerator {
 						.with(LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY).weight(85).quality(-1))
 				)
 		);
-		consumer.accept(LootTables.FISHING_FISH_GAMEPLAY, createFishTableBuilder());
-		consumer.accept(
+		lootTableBiConsumer.accept(LootTables.FISHING_FISH_GAMEPLAY, createFishTableBuilder());
+		lootTableBiConsumer.accept(
 			LootTables.FISHING_JUNK_GAMEPLAY,
 			LootTable.builder()
 				.pool(
@@ -81,7 +81,7 @@ public class VanillaFishingLootTableGenerator implements LootTableGenerator {
 						)
 				)
 		);
-		consumer.accept(
+		lootTableBiConsumer.accept(
 			LootTables.FISHING_TREASURE_GAMEPLAY,
 			LootTable.builder()
 				.pool(
@@ -91,14 +91,14 @@ public class VanillaFishingLootTableGenerator implements LootTableGenerator {
 						.with(
 							ItemEntry.builder(Items.BOW)
 								.apply(SetDamageLootFunction.builder(UniformLootNumberProvider.create(0.0F, 0.25F)))
-								.apply(EnchantWithLevelsLootFunction.builder(ConstantLootNumberProvider.create(30.0F)).allowTreasureEnchantments())
+								.apply(EnchantWithLevelsLootFunction.builder(this.registries, ConstantLootNumberProvider.create(30.0F)))
 						)
 						.with(
 							ItemEntry.builder(Items.FISHING_ROD)
 								.apply(SetDamageLootFunction.builder(UniformLootNumberProvider.create(0.0F, 0.25F)))
-								.apply(EnchantWithLevelsLootFunction.builder(ConstantLootNumberProvider.create(30.0F)).allowTreasureEnchantments())
+								.apply(EnchantWithLevelsLootFunction.builder(this.registries, ConstantLootNumberProvider.create(30.0F)))
 						)
-						.with(ItemEntry.builder(Items.BOOK).apply(EnchantWithLevelsLootFunction.builder(ConstantLootNumberProvider.create(30.0F)).allowTreasureEnchantments()))
+						.with(ItemEntry.builder(Items.BOOK).apply(EnchantWithLevelsLootFunction.builder(this.registries, ConstantLootNumberProvider.create(30.0F))))
 						.with(ItemEntry.builder(Items.NAUTILUS_SHELL))
 				)
 		);

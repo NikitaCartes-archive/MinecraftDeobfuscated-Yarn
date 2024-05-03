@@ -212,7 +212,7 @@ public class TestContext {
 		BlockPos blockPos = this.getAbsolutePos(pos);
 		BlockState blockState = this.getWorld().getBlockState(blockPos);
 		ButtonBlock buttonBlock = (ButtonBlock)blockState.getBlock();
-		buttonBlock.powerOn(blockState, this.getWorld(), blockPos);
+		buttonBlock.powerOn(blockState, this.getWorld(), blockPos, null);
 	}
 
 	public void useBlock(BlockPos pos) {
@@ -300,7 +300,7 @@ public class TestContext {
 		BlockPos blockPos = this.getAbsolutePos(pos);
 		BlockState blockState = this.getWorld().getBlockState(blockPos);
 		LeverBlock leverBlock = (LeverBlock)blockState.getBlock();
-		leverBlock.togglePower(blockState, this.getWorld(), blockPos);
+		leverBlock.togglePower(blockState, this.getWorld(), blockPos, null);
 	}
 
 	public void putAndRemoveRedstoneBlock(BlockPos pos, long delay) {

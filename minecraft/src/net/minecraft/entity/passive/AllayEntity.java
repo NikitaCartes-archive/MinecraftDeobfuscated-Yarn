@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -445,7 +446,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		super.dropInventory();
 		this.inventory.clearToList().forEach(this::dropStack);
 		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.MAINHAND);
-		if (!itemStack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemStack)) {
+		if (!itemStack.isEmpty() && !EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)) {
 			this.dropStack(itemStack);
 			this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 		}

@@ -6,12 +6,12 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Map;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FireworkExplosionComponent;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Util;
 import net.minecraft.world.World;
@@ -51,15 +51,15 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		super(craftingRecipeCategory);
 	}
 
-	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
+	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
 		boolean bl = false;
 		boolean bl2 = false;
 		boolean bl3 = false;
 		boolean bl4 = false;
 		boolean bl5 = false;
 
-		for (int i = 0; i < recipeInputInventory.size(); i++) {
-			ItemStack itemStack = recipeInputInventory.getStack(i);
+		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack.isEmpty()) {
 				if (TYPE_MODIFIER.test(itemStack)) {
 					if (bl3) {
@@ -98,14 +98,14 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		return bl && bl2;
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
+	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
 		FireworkExplosionComponent.Type type = FireworkExplosionComponent.Type.SMALL_BALL;
 		boolean bl = false;
 		boolean bl2 = false;
 		IntList intList = new IntArrayList();
 
-		for (int i = 0; i < recipeInputInventory.size(); i++) {
-			ItemStack itemStack = recipeInputInventory.getStack(i);
+		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack.isEmpty()) {
 				if (TYPE_MODIFIER.test(itemStack)) {
 					type = (FireworkExplosionComponent.Type)TYPE_MODIFIER_MAP.get(itemStack.getItem());

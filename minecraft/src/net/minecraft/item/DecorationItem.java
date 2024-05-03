@@ -12,12 +12,13 @@ import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -86,27 +87,17 @@ public class DecorationItem extends Item {
 	@Override
 	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 		super.appendTooltip(stack, context, tooltip, type);
-		if (this.entityType == EntityType.PAINTING) {
+		RegistryWrapper.WrapperLookup wrapperLookup = context.getRegistryLookup();
+		if (wrapperLookup != null && this.entityType == EntityType.PAINTING) {
 			NbtComponent nbtComponent = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
 			if (!nbtComponent.isEmpty()) {
-				nbtComponent.get(PaintingEntity.VARIANT_MAP_CODEC)
-					.result()
-					.ifPresentOrElse(
-						variant -> {
-							variant.getKey().ifPresent(key -> {
-								tooltip.add(Text.translatable(key.getValue().toTranslationKey("painting", "title")).formatted(Formatting.YELLOW));
-								tooltip.add(Text.translatable(key.getValue().toTranslationKey("painting", "author")).formatted(Formatting.GRAY));
-							});
-							tooltip.add(
-								Text.translatable(
-									"painting.dimensions",
-									MathHelper.ceilDiv(((PaintingVariant)variant.value()).getWidth(), 16),
-									MathHelper.ceilDiv(((PaintingVariant)variant.value()).getHeight(), 16)
-								)
-							);
-						},
-						() -> tooltip.add(RANDOM_TEXT)
-					);
+				nbtComponent.get(wrapperLookup.getOps(NbtOps.INSTANCE), PaintingEntity.VARIANT_MAP_CODEC).result().ifPresentOrElse(variant -> {
+					variant.getKey().ifPresent(key -> {
+						tooltip.add(Text.translatable(key.getValue().toTranslationKey("painting", "title")).formatted(Formatting.YELLOW));
+						tooltip.add(Text.translatable(key.getValue().toTranslationKey("painting", "author")).formatted(Formatting.GRAY));
+					});
+					tooltip.add(Text.translatable("painting.dimensions", ((PaintingVariant)variant.value()).width(), ((PaintingVariant)variant.value()).height()));
+				}, () -> tooltip.add(RANDOM_TEXT));
 			} else if (type.isCreative()) {
 				tooltip.add(RANDOM_TEXT);
 			}

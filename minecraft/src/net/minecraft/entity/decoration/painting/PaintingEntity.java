@@ -21,13 +21,13 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.PaintingVariantTags;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
@@ -37,13 +37,9 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 	private static final TrackedData<RegistryEntry<PaintingVariant>> VARIANT = DataTracker.registerData(
 		PaintingEntity.class, TrackedDataHandlerRegistry.PAINTING_VARIANT
 	);
-	private static final RegistryKey<PaintingVariant> DEFAULT_VARIANT = PaintingVariants.KEBAB;
-	public static final MapCodec<RegistryEntry<PaintingVariant>> VARIANT_MAP_CODEC = Registries.PAINTING_VARIANT.getEntryCodec().fieldOf("variant");
+	public static final MapCodec<RegistryEntry<PaintingVariant>> VARIANT_MAP_CODEC = PaintingVariant.ENTRY_CODEC.fieldOf("variant");
 	public static final Codec<RegistryEntry<PaintingVariant>> VARIANT_ENTRY_CODEC = VARIANT_MAP_CODEC.codec();
-
-	private static RegistryEntry<PaintingVariant> getDefaultVariant() {
-		return Registries.PAINTING_VARIANT.entryOf(DEFAULT_VARIANT);
-	}
+	public static final float field_51595 = 0.0625F;
 
 	public PaintingEntity(EntityType<? extends PaintingEntity> entityType, World world) {
 		super(entityType, world);
@@ -51,7 +47,7 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 
 	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
-		builder.add(VARIANT, getDefaultVariant());
+		builder.add(VARIANT, (RegistryEntry<PaintingVariant>)this.getRegistryManager().get(RegistryKeys.PAINTING_VARIANT).getDefaultEntry().orElseThrow());
 	}
 
 	@Override
@@ -72,7 +68,7 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 	public static Optional<PaintingEntity> placePainting(World world, BlockPos pos, Direction facing) {
 		PaintingEntity paintingEntity = new PaintingEntity(world, pos);
 		List<RegistryEntry<PaintingVariant>> list = new ArrayList();
-		Registries.PAINTING_VARIANT.iterateEntries(PaintingVariantTags.PLACEABLE).forEach(list::add);
+		world.getRegistryManager().get(RegistryKeys.PAINTING_VARIANT).iterateEntries(PaintingVariantTags.PLACEABLE).forEach(list::add);
 		if (list.isEmpty()) {
 			return Optional.empty();
 		} else {
@@ -99,7 +95,7 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 	}
 
 	private static int getSize(RegistryEntry<PaintingVariant> variant) {
-		return variant.value().getWidth() * variant.value().getHeight();
+		return variant.value().getArea();
 	}
 
 	private PaintingEntity(World world, BlockPos pos) {
@@ -114,41 +110,45 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
-		writeVariantToNbt(nbt, this.getVariant());
+		VARIANT_ENTRY_CODEC.encodeStart(this.getRegistryManager().getOps(NbtOps.INSTANCE), this.getVariant())
+			.ifSuccess(nbtElement -> nbt.copyFrom((NbtCompound)nbtElement));
 		nbt.putByte("facing", (byte)this.facing.getHorizontal());
 		super.writeCustomDataToNbt(nbt);
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
-		RegistryEntry<PaintingVariant> registryEntry = (RegistryEntry<PaintingVariant>)VARIANT_ENTRY_CODEC.parse(NbtOps.INSTANCE, nbt)
-			.result()
-			.orElseGet(PaintingEntity::getDefaultVariant);
-		this.setVariant(registryEntry);
+		VARIANT_ENTRY_CODEC.parse(this.getRegistryManager().getOps(NbtOps.INSTANCE), nbt).ifSuccess(this::setVariant);
 		this.facing = Direction.fromHorizontal(nbt.getByte("facing"));
 		super.readCustomDataFromNbt(nbt);
 		this.setFacing(this.facing);
 	}
 
-	public static void writeVariantToNbt(NbtCompound nbt, RegistryEntry<PaintingVariant> variant) {
-		VARIANT_ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, variant).ifSuccess(nbtElement -> nbt.copyFrom((NbtCompound)nbtElement));
+	@Override
+	protected Box calculateBoundingBox(BlockPos pos, Direction side) {
+		float f = 0.46875F;
+		Vec3d vec3d = Vec3d.ofCenter(pos).offset(side, -0.46875);
+		PaintingVariant paintingVariant = this.getVariant().value();
+		double d = this.getOffset(paintingVariant.width());
+		double e = this.getOffset(paintingVariant.height());
+		Direction direction = side.rotateYCounterclockwise();
+		Vec3d vec3d2 = vec3d.offset(direction, d).offset(Direction.UP, e);
+		Direction.Axis axis = side.getAxis();
+		double g = axis == Direction.Axis.X ? 0.0625 : (double)paintingVariant.width();
+		double h = (double)paintingVariant.height();
+		double i = axis == Direction.Axis.Z ? 0.0625 : (double)paintingVariant.width();
+		return Box.of(vec3d2, g, h, i);
+	}
+
+	private double getOffset(int length) {
+		return length % 2 == 0 ? 0.5 : 0.0;
 	}
 
 	@Override
-	public int getWidthPixels() {
-		return this.getVariant().value().getWidth();
-	}
-
-	@Override
-	public int getHeightPixels() {
-		return this.getVariant().value().getHeight();
-	}
-
-	@Override
-	public void onBreak(@Nullable Entity entity) {
+	public void onBreak(@Nullable Entity breaker) {
 		if (this.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 			this.playSound(SoundEvents.ENTITY_PAINTING_BREAK, 1.0F, 1.0F);
-			if (entity instanceof PlayerEntity playerEntity && playerEntity.isInCreativeMode()) {
+			if (breaker instanceof PlayerEntity playerEntity && playerEntity.isInCreativeMode()) {
 				return;
 			}
 
@@ -173,12 +173,12 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 
 	@Override
 	public Vec3d getSyncedPos() {
-		return Vec3d.of(this.attachmentPos);
+		return Vec3d.of(this.attachedBlockPos);
 	}
 
 	@Override
 	public Packet<ClientPlayPacketListener> createSpawnPacket() {
-		return new EntitySpawnS2CPacket(this, this.facing.getId(), this.getDecorationBlockPos());
+		return new EntitySpawnS2CPacket(this, this.facing.getId(), this.getAttachedBlockPos());
 	}
 
 	@Override

@@ -251,6 +251,8 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 		return Optional.ofNullable(this.get(key));
 	}
 
+	Optional<RegistryEntry.Reference<T>> getDefaultEntry();
+
 	/**
 	 * {@return the value that is assigned {@code key}}
 	 * 

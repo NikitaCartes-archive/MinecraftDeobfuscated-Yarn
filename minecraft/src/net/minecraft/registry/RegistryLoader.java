@@ -21,7 +21,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.provider.EnchantmentProvider;
 import net.minecraft.entity.damage.DamageType;
+import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.passive.WolfVariant;
 import net.minecraft.item.trim.ArmorTrimMaterial;
 import net.minecraft.item.trim.ArmorTrimPattern;
@@ -80,10 +83,13 @@ public class RegistryLoader {
 		new RegistryLoader.Entry<>(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, FlatLevelGeneratorPreset.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.TRIM_PATTERN, ArmorTrimPattern.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterial.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.WOLF_VARIANT, WolfVariant.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.WOLF_VARIANT, WolfVariant.CODEC, true),
+		new RegistryLoader.Entry<>(RegistryKeys.PAINTING_VARIANT, PaintingVariant.CODEC, true),
 		new RegistryLoader.Entry<>(RegistryKeys.DAMAGE_TYPE, DamageType.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST, MultiNoiseBiomeSourceParameterList.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.BANNER_PATTERN, BannerPattern.CODEC)
+		new RegistryLoader.Entry<>(RegistryKeys.BANNER_PATTERN, BannerPattern.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.ENCHANTMENT, Enchantment.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.ENCHANTMENT_PROVIDER, EnchantmentProvider.CODEC)
 	);
 	public static final List<RegistryLoader.Entry<?>> DIMENSION_REGISTRIES = List.of(new RegistryLoader.Entry<>(RegistryKeys.DIMENSION, DimensionOptions.CODEC));
 	public static final List<RegistryLoader.Entry<?>> SYNCED_REGISTRIES = List.of(
@@ -91,10 +97,12 @@ public class RegistryLoader {
 		new RegistryLoader.Entry<>(RegistryKeys.MESSAGE_TYPE, MessageType.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.TRIM_PATTERN, ArmorTrimPattern.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterial.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.WOLF_VARIANT, WolfVariant.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.WOLF_VARIANT, WolfVariant.CODEC, true),
+		new RegistryLoader.Entry<>(RegistryKeys.PAINTING_VARIANT, PaintingVariant.CODEC, true),
 		new RegistryLoader.Entry<>(RegistryKeys.DIMENSION_TYPE, DimensionType.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.DAMAGE_TYPE, DamageType.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.BANNER_PATTERN, BannerPattern.CODEC)
+		new RegistryLoader.Entry<>(RegistryKeys.BANNER_PATTERN, BannerPattern.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.ENCHANTMENT, Enchantment.CODEC)
 	);
 
 	public static DynamicRegistryManager.Immutable loadFromResource(
@@ -112,7 +120,7 @@ public class RegistryLoader {
 		return load((loader, infoGetter) -> loader.loadFromNetwork(data, factory, infoGetter), registryManager, entries);
 	}
 
-	public static DynamicRegistryManager.Immutable load(
+	private static DynamicRegistryManager.Immutable load(
 		RegistryLoader.RegistryLoadable loadable, DynamicRegistryManager baseRegistryManager, List<RegistryLoader.Entry<?>> entries
 	) {
 		Map<RegistryKey<?>, Exception> map = new HashMap();
@@ -128,6 +136,10 @@ public class RegistryLoader {
 				registry.freeze();
 			} catch (Exception var4x) {
 				map.put(registry.getKey(), var4x);
+			}
+
+			if (loader.data.requiredNonEmpty && registry.size() == 0) {
+				map.put(registry.getKey(), new IllegalStateException("Registry must be non-empty"));
 			}
 		});
 		if (!map.isEmpty()) {
@@ -275,7 +287,11 @@ public class RegistryLoader {
 		}
 	}
 
-	public static record Entry<T>(RegistryKey<? extends Registry<T>> key, Codec<T> elementCodec) {
+	public static record Entry<T>(RegistryKey<? extends Registry<T>> key, Codec<T> elementCodec, boolean requiredNonEmpty) {
+
+		Entry(RegistryKey<? extends Registry<T>> registryKey, Codec<T> codec) {
+			this(registryKey, codec, false);
+		}
 
 		RegistryLoader.Loader<T> getLoader(Lifecycle lifecycle, Map<RegistryKey<?>, Exception> errors) {
 			MutableRegistry<T> mutableRegistry = new SimpleRegistry<>(this.key, lifecycle);

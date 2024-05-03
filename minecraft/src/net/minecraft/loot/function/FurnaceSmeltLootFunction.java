@@ -5,13 +5,13 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Optional;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SmeltingRecipe;
+import net.minecraft.recipe.input.SingleStackRecipeInput;
 import org.slf4j.Logger;
 
 public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
@@ -36,7 +36,7 @@ public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 		} else {
 			Optional<RecipeEntry<SmeltingRecipe>> optional = context.getWorld()
 				.getRecipeManager()
-				.getFirstMatch(RecipeType.SMELTING, new SimpleInventory(stack), context.getWorld());
+				.getFirstMatch(RecipeType.SMELTING, new SingleStackRecipeInput(stack), context.getWorld());
 			if (optional.isPresent()) {
 				ItemStack itemStack = ((SmeltingRecipe)((RecipeEntry)optional.get()).value()).getResult(context.getWorld().getRegistryManager());
 				if (!itemStack.isEmpty()) {

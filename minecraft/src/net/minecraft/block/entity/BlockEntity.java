@@ -9,7 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.ComponentMapImpl;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
@@ -448,19 +448,19 @@ public abstract class BlockEntity {
 	}
 
 	public final void readComponents(ComponentMap defaultComponents, ComponentChanges components) {
-		final Set<DataComponentType<?>> set = new HashSet();
+		final Set<ComponentType<?>> set = new HashSet();
 		set.add(DataComponentTypes.BLOCK_ENTITY_DATA);
 		final ComponentMap componentMap = ComponentMapImpl.create(defaultComponents, components);
 		this.readComponents(new BlockEntity.ComponentsAccess() {
 			@Nullable
 			@Override
-			public <T> T get(DataComponentType<T> type) {
+			public <T> T get(ComponentType<T> type) {
 				set.add(type);
 				return componentMap.get(type);
 			}
 
 			@Override
-			public <T> T getOrDefault(DataComponentType<? extends T> type, T fallback) {
+			public <T> T getOrDefault(ComponentType<? extends T> type, T fallback) {
 				set.add(type);
 				return componentMap.getOrDefault(type, fallback);
 			}
@@ -510,8 +510,8 @@ public abstract class BlockEntity {
 
 	protected interface ComponentsAccess {
 		@Nullable
-		<T> T get(DataComponentType<T> type);
+		<T> T get(ComponentType<T> type);
 
-		<T> T getOrDefault(DataComponentType<? extends T> type, T fallback);
+		<T> T getOrDefault(ComponentType<? extends T> type, T fallback);
 	}
 }

@@ -7,14 +7,14 @@ import java.util.Map.Entry;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 
-public record Component<T>(DataComponentType<T> type, T value) {
+public record Component<T>(ComponentType<T> type, T value) {
 	public static final PacketCodec<RegistryByteBuf, Component<?>> PACKET_CODEC = new PacketCodec<RegistryByteBuf, Component<?>>() {
 		public Component<?> decode(RegistryByteBuf registryByteBuf) {
-			DataComponentType<?> dataComponentType = DataComponentType.PACKET_CODEC.decode(registryByteBuf);
-			return read(registryByteBuf, (DataComponentType<T>)dataComponentType);
+			ComponentType<?> componentType = ComponentType.PACKET_CODEC.decode(registryByteBuf);
+			return read(registryByteBuf, (ComponentType<T>)componentType);
 		}
 
-		private static <T> Component<T> read(RegistryByteBuf buf, DataComponentType<T> type) {
+		private static <T> Component<T> read(RegistryByteBuf buf, ComponentType<T> type) {
 			return new Component<>(type, type.getPacketCodec().decode(buf));
 		}
 
@@ -23,16 +23,16 @@ public record Component<T>(DataComponentType<T> type, T value) {
 		}
 
 		private static <T> void write(RegistryByteBuf buf, Component<T> component) {
-			DataComponentType.PACKET_CODEC.encode(buf, component.type());
+			ComponentType.PACKET_CODEC.encode(buf, component.type());
 			component.type().getPacketCodec().encode(buf, component.value());
 		}
 	};
 
-	static Component<?> of(Entry<DataComponentType<?>, Object> entry) {
-		return of((DataComponentType<T>)entry.getKey(), entry.getValue());
+	static Component<?> of(Entry<ComponentType<?>, Object> entry) {
+		return of((ComponentType<T>)entry.getKey(), entry.getValue());
 	}
 
-	static <T> Component<T> of(DataComponentType<T> type, Object value) {
+	public static <T> Component<T> of(ComponentType<T> type, Object value) {
 		return new Component<>(type, (T)value);
 	}
 

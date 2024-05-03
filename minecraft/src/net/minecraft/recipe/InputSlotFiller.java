@@ -1,39 +1,36 @@
 package net.minecraft.recipe;
 
 import com.google.common.collect.Lists;
-import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
+import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.slf4j.Logger;
 
-public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<Integer> {
-	private static final Logger LOGGER = LogUtils.getLogger();
+public class InputSlotFiller<I extends RecipeInput, R extends Recipe<I>> implements RecipeGridAligner<Integer> {
+	private static final int field_51523 = -1;
 	protected final RecipeMatcher matcher = new RecipeMatcher();
 	protected PlayerInventory inventory;
-	protected AbstractRecipeScreenHandler<C> handler;
+	protected AbstractRecipeScreenHandler<I, R> handler;
 
-	public InputSlotFiller(AbstractRecipeScreenHandler<C> handler) {
+	public InputSlotFiller(AbstractRecipeScreenHandler<I, R> handler) {
 		this.handler = handler;
 	}
 
-	public void fillInputSlots(ServerPlayerEntity entity, @Nullable RecipeEntry<? extends Recipe<C>> recipe, boolean craftAll) {
+	public void fillInputSlots(ServerPlayerEntity entity, @Nullable RecipeEntry<R> recipe, boolean craftAll) {
 		if (recipe != null && entity.getRecipeBook().contains(recipe)) {
 			this.inventory = entity.getInventory();
 			if (this.canReturnInputs() || entity.isCreative()) {
 				this.matcher.clear();
 				entity.getInventory().populateRecipeFinder(this.matcher);
 				this.handler.populateRecipeFinder(this.matcher);
-				if (this.matcher.match((Recipe<?>)recipe.value(), null)) {
+				if (this.matcher.match(recipe.value(), null)) {
 					this.fillInputSlots(recipe, craftAll);
 				} else {
 					this.returnInputs();
@@ -57,7 +54,7 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 		this.handler.clearCraftingSlots();
 	}
 
-	protected void fillInputSlots(RecipeEntry<? extends Recipe<C>> recipe, boolean craftAll) {
+	protected void fillInputSlots(RecipeEntry<R> recipe, boolean craftAll) {
 		boolean bl = this.handler.matches(recipe);
 		int i = this.matcher.countCrafts(recipe, null);
 		if (bl) {
@@ -73,7 +70,7 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 
 		int jx = this.getAmountToFill(craftAll, i, bl);
 		IntList intList = new IntArrayList();
-		if (this.matcher.match((Recipe<?>)recipe.value(), intList, jx)) {
+		if (this.matcher.match(recipe.value(), intList, jx)) {
 			int k = jx;
 
 			for (int l : intList) {
@@ -86,7 +83,7 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 				}
 			}
 
-			if (this.matcher.match((Recipe<?>)recipe.value(), intList, k)) {
+			if (this.matcher.match(recipe.value(), intList, k)) {
 				this.returnInputs();
 				this.alignRecipeToGrid(
 					this.handler.getCraftingWidth(), this.handler.getCraftingHeight(), this.handler.getCraftingResultSlotIndex(), recipe, intList.iterator(), k
@@ -95,13 +92,17 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 		}
 	}
 
-	@Override
-	public void acceptAlignedInput(Iterator<Integer> inputs, int slot, int amount, int gridX, int gridY) {
-		Slot slot2 = this.handler.getSlot(slot);
-		ItemStack itemStack = RecipeMatcher.getStackFromId((Integer)inputs.next());
+	public void acceptAlignedInput(Integer integer, int i, int j, int k, int l) {
+		Slot slot = this.handler.getSlot(i);
+		ItemStack itemStack = RecipeMatcher.getStackFromId(integer);
 		if (!itemStack.isEmpty()) {
-			for (int i = 0; i < amount; i++) {
-				this.fillInputSlot(slot2, itemStack);
+			int m = j;
+
+			while (m > 0) {
+				m = this.fillInputSlot(slot, itemStack, m);
+				if (m == -1) {
+					return;
+				}
 			}
 		}
 	}
@@ -130,23 +131,28 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 		return i;
 	}
 
-	protected void fillInputSlot(Slot slot, ItemStack stack) {
-		int i = this.inventory.indexOf(stack);
-		if (i != -1) {
-			ItemStack itemStack = this.inventory.getStack(i);
-			if (!itemStack.isEmpty()) {
-				if (itemStack.getCount() > 1) {
-					this.inventory.removeStack(i, 1);
-				} else {
-					this.inventory.removeStack(i);
-				}
-
-				if (slot.getStack().isEmpty()) {
-					slot.setStackNoCallbacks(itemStack.copyWithCount(1));
-				} else {
-					slot.getStack().increment(1);
-				}
+	protected int fillInputSlot(Slot slot, ItemStack stack, int i) {
+		int j = this.inventory.indexOf(stack);
+		if (j == -1) {
+			return -1;
+		} else {
+			ItemStack itemStack = this.inventory.getStack(j);
+			int k;
+			if (i < itemStack.getCount()) {
+				this.inventory.removeStack(j, i);
+				k = i;
+			} else {
+				this.inventory.removeStack(j);
+				k = itemStack.getCount();
 			}
+
+			if (slot.getStack().isEmpty()) {
+				slot.setStackNoCallbacks(itemStack.copyWithCount(k));
+			} else {
+				slot.getStack().increment(k);
+			}
+
+			return i - k;
 		}
 	}
 

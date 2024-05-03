@@ -28,15 +28,13 @@ import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentHolder;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.ComponentMapImpl;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.enchantment.UnbreakingEnchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -66,6 +64,7 @@ import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.HoverEvent;
@@ -85,7 +84,6 @@ import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.dynamic.NullOps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.slf4j.Logger;
@@ -566,19 +564,10 @@ public final class ItemStack implements ComponentHolder {
 	 * @param player the player that damaged the stack, or {@code null} if no player is involved
 	 * @param breakCallback a callback run when the item "breaks"
 	 */
-	public void damage(int amount, Random random, @Nullable ServerPlayerEntity player, Runnable breakCallback) {
+	public void damage(int amount, ServerWorld serverWorld, @Nullable ServerPlayerEntity player, Runnable breakCallback) {
 		if (this.isDamageable()) {
 			if (amount > 0) {
-				int i = EnchantmentHelper.getLevel(Enchantments.UNBREAKING, this);
-				int j = 0;
-
-				for (int k = 0; i > 0 && k < amount; k++) {
-					if (UnbreakingEnchantment.shouldPreventDamage(this, i, random)) {
-						j++;
-					}
-				}
-
-				amount -= j;
+				amount = EnchantmentHelper.getItemDamage(serverWorld, this, amount);
 				if (amount <= 0) {
 					return;
 				}
@@ -615,22 +604,24 @@ public final class ItemStack implements ComponentHolder {
 	 * @param slot the slot in which the stack is held
 	 */
 	public void damage(int amount, LivingEntity entity, EquipmentSlot slot) {
-		if (!entity.getWorld().isClient) {
-			if (entity instanceof PlayerEntity playerEntity && playerEntity.isInCreativeMode()) {
-				return;
+		if (!(entity.getWorld() instanceof ServerWorld serverWorld)) {
+			return;
+		}
+
+		if (entity instanceof PlayerEntity playerEntity && playerEntity.isInCreativeMode()) {
+			return;
+		}
+
+		this.damage(amount, serverWorld, entity instanceof ServerPlayerEntity serverPlayerEntity ? serverPlayerEntity : null, () -> {
+			entity.sendEquipmentBreakStatus(slot);
+			Item item = this.getItem();
+			this.decrement(1);
+			if (entity instanceof PlayerEntity) {
+				((PlayerEntity)entity).incrementStat(Stats.BROKEN.getOrCreateStat(item));
 			}
 
-			this.damage(amount, entity.getRandom(), entity instanceof ServerPlayerEntity serverPlayerEntity ? serverPlayerEntity : null, () -> {
-				entity.sendEquipmentBreakStatus(slot);
-				Item item = this.getItem();
-				this.decrement(1);
-				if (entity instanceof PlayerEntity) {
-					((PlayerEntity)entity).incrementStat(Stats.BROKEN.getOrCreateStat(item));
-				}
-
-				this.setDamage(0);
-			});
-		}
+			this.setDamage(0);
+		});
 	}
 
 	public boolean isItemBarVisible() {
@@ -659,13 +650,18 @@ public final class ItemStack implements ComponentHolder {
 		return this.getItem().onClicked(this, stack, slot, clickType, player, cursorStackReference);
 	}
 
-	public void postHit(LivingEntity target, PlayerEntity player) {
+	public boolean postHit(LivingEntity target, PlayerEntity player) {
 		Item item = this.getItem();
-		ItemEnchantmentsComponent itemEnchantmentsComponent = this.getEnchantments();
 		if (item.postHit(this, target, player)) {
 			player.incrementStat(Stats.USED.getOrCreateStat(item));
-			EnchantmentHelper.onAttack(player, target, itemEnchantmentsComponent);
+			return true;
+		} else {
+			return false;
 		}
+	}
+
+	public void postDamageEntity(LivingEntity target, PlayerEntity player) {
+		this.getItem().postDamageEntity(this, target, player);
 	}
 
 	public void postMine(World world, BlockState state, BlockPos pos, PlayerEntity miner) {
@@ -867,8 +863,8 @@ public final class ItemStack implements ComponentHolder {
 		this.getItem().onCraft(this, world);
 	}
 
-	public int getMaxUseTime() {
-		return this.getItem().getMaxUseTime(this);
+	public int getMaxUseTime(LivingEntity livingEntity) {
+		return this.getItem().getMaxUseTime(this, livingEntity);
 	}
 
 	public UseAction getUseAction() {
@@ -895,7 +891,7 @@ public final class ItemStack implements ComponentHolder {
 	 * @see #apply(DataComponentType, Object, Object, BiFunction)
 	 */
 	@Nullable
-	public <T> T set(DataComponentType<? super T> type, @Nullable T value) {
+	public <T> T set(ComponentType<? super T> type, @Nullable T value) {
 		return this.components.set(type, value);
 	}
 
@@ -918,7 +914,7 @@ public final class ItemStack implements ComponentHolder {
 	 * @see #set
 	 */
 	@Nullable
-	public <T, U> T apply(DataComponentType<T> type, T defaultValue, U change, BiFunction<T, U, T> applier) {
+	public <T, U> T apply(ComponentType<T> type, T defaultValue, U change, BiFunction<T, U, T> applier) {
 		return this.set(type, (T)applier.apply(this.getOrDefault(type, defaultValue), change));
 	}
 
@@ -934,7 +930,7 @@ public final class ItemStack implements ComponentHolder {
 	 * @see #apply(DataComponentType, Object, Object, BiFunction)
 	 */
 	@Nullable
-	public <T> T apply(DataComponentType<T> type, T defaultValue, UnaryOperator<T> applier) {
+	public <T> T apply(ComponentType<T> type, T defaultValue, UnaryOperator<T> applier) {
 		T object = this.getOrDefault(type, defaultValue);
 		return this.set(type, (T)applier.apply(object));
 	}
@@ -947,7 +943,7 @@ public final class ItemStack implements ComponentHolder {
 	 * @return the previous value set
 	 */
 	@Nullable
-	public <T> T remove(DataComponentType<? extends T> type) {
+	public <T> T remove(ComponentType<? extends T> type) {
 		return this.components.remove(type);
 	}
 
@@ -987,7 +983,7 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	private <T extends TooltipAppender> void appendTooltip(
-		DataComponentType<T> componentType, Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type
+		ComponentType<T> componentType, Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type
 	) {
 		T tooltipAppender = (T)this.get(componentType);
 		if (tooltipAppender != null) {
@@ -1085,7 +1081,6 @@ public final class ItemStack implements ComponentHolder {
 		if (player != null) {
 			if (modifier.uuid() == Item.ATTACK_DAMAGE_MODIFIER_ID) {
 				d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-				d += (double)EnchantmentHelper.getAttackDamage(this, null);
 				bl = true;
 			} else if (modifier.uuid() == Item.ATTACK_SPEED_MODIFIER_ID) {
 				d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED);
@@ -1177,8 +1172,8 @@ public final class ItemStack implements ComponentHolder {
 	 * 
 	 * @see net.minecraft.enchantment.EnchantmentHelper
 	 */
-	public void addEnchantment(Enchantment enchantment, int level) {
-		EnchantmentHelper.apply(this, builder -> builder.add(enchantment, level));
+	public void addEnchantment(RegistryEntry<Enchantment> registryEntry, int level) {
+		EnchantmentHelper.apply(this, builder -> builder.add(registryEntry, level));
 	}
 
 	/**
@@ -1256,6 +1251,8 @@ public final class ItemStack implements ComponentHolder {
 		} else {
 			this.getItem().getAttributeModifiers().applyModifiers(slot, attributeModifierConsumer);
 		}
+
+		EnchantmentHelper.applyAttributeModifiers(this, slot, attributeModifierConsumer);
 	}
 
 	/**

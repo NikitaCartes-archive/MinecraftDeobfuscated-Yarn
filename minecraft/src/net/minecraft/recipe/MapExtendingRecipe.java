@@ -3,12 +3,12 @@ package net.minecraft.recipe;
 import java.util.Map;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.MapPostProcessingComponent;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
@@ -23,11 +23,11 @@ public class MapExtendingRecipe extends ShapedRecipe {
 	}
 
 	@Override
-	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
-		if (!super.matches(recipeInputInventory, world)) {
+	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
+		if (!super.matches(craftingRecipeInput, world)) {
 			return false;
 		} else {
-			ItemStack itemStack = findFilledMap(recipeInputInventory);
+			ItemStack itemStack = findFilledMap(craftingRecipeInput);
 			if (itemStack.isEmpty()) {
 				return false;
 			} else {
@@ -42,15 +42,15 @@ public class MapExtendingRecipe extends ShapedRecipe {
 	}
 
 	@Override
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
-		ItemStack itemStack = findFilledMap(recipeInputInventory).copyWithCount(1);
+	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
+		ItemStack itemStack = findFilledMap(craftingRecipeInput).copyWithCount(1);
 		itemStack.set(DataComponentTypes.MAP_POST_PROCESSING, MapPostProcessingComponent.SCALE);
 		return itemStack;
 	}
 
-	private static ItemStack findFilledMap(RecipeInputInventory inventory) {
-		for (int i = 0; i < inventory.size(); i++) {
-			ItemStack itemStack = inventory.getStack(i);
+	private static ItemStack findFilledMap(CraftingRecipeInput craftingRecipeInput) {
+		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
 			if (itemStack.isOf(Items.FILLED_MAP)) {
 				return itemStack;
 			}

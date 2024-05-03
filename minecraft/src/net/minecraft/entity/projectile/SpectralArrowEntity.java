@@ -1,5 +1,6 @@
 package net.minecraft.entity.projectile;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -17,12 +18,12 @@ public class SpectralArrowEntity extends PersistentProjectileEntity {
 		super(entityType, world);
 	}
 
-	public SpectralArrowEntity(World world, LivingEntity owner, ItemStack stack) {
-		super(EntityType.SPECTRAL_ARROW, owner, world, stack);
+	public SpectralArrowEntity(World world, LivingEntity owner, ItemStack stack, @Nullable ItemStack itemStack) {
+		super(EntityType.SPECTRAL_ARROW, owner, world, stack, itemStack);
 	}
 
-	public SpectralArrowEntity(World world, double x, double y, double z, ItemStack stack) {
-		super(EntityType.SPECTRAL_ARROW, x, y, z, world, stack);
+	public SpectralArrowEntity(World world, double x, double y, double z, ItemStack stack, @Nullable ItemStack itemStack) {
+		super(EntityType.SPECTRAL_ARROW, x, y, z, world, stack, itemStack);
 	}
 
 	@Override

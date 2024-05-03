@@ -135,7 +135,7 @@ public class ParticleTypes {
 	public static final SimpleParticleType TRIAL_SPAWNER_DETECTION_OMINOUS = register("trial_spawner_detection_ominous", true);
 	public static final SimpleParticleType VAULT_CONNECTION = register("vault_connection", true);
 	public static final ParticleType<BlockStateParticleEffect> DUST_PILLAR = register(
-		"dust_pillar", true, BlockStateParticleEffect::createCodec, BlockStateParticleEffect::createPacketCodec
+		"dust_pillar", false, BlockStateParticleEffect::createCodec, BlockStateParticleEffect::createPacketCodec
 	);
 	public static final SimpleParticleType OMINOUS_SPAWNING = register("ominous_spawning", true);
 	public static final SimpleParticleType RAID_OMEN = register("raid_omen", false);

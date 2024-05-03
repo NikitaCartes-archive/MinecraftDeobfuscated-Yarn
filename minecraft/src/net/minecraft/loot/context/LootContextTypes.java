@@ -36,8 +36,8 @@ public class LootContextTypes {
 		builder -> builder.require(LootContextParameters.THIS_ENTITY)
 				.require(LootContextParameters.ORIGIN)
 				.require(LootContextParameters.DAMAGE_SOURCE)
-				.allow(LootContextParameters.KILLER_ENTITY)
-				.allow(LootContextParameters.DIRECT_KILLER_ENTITY)
+				.allow(LootContextParameters.ATTACKING_ENTITY)
+				.allow(LootContextParameters.DIRECT_ATTACKING_ENTITY)
 				.allow(LootContextParameters.LAST_DAMAGE_PLAYER)
 	);
 	public static final LootContextType EQUIPMENT = register(
@@ -74,8 +74,8 @@ public class LootContextTypes {
 		builder -> builder.require(LootContextParameters.THIS_ENTITY)
 				.require(LootContextParameters.LAST_DAMAGE_PLAYER)
 				.require(LootContextParameters.DAMAGE_SOURCE)
-				.require(LootContextParameters.KILLER_ENTITY)
-				.require(LootContextParameters.DIRECT_KILLER_ENTITY)
+				.require(LootContextParameters.ATTACKING_ENTITY)
+				.require(LootContextParameters.DIRECT_ATTACKING_ENTITY)
 				.require(LootContextParameters.ORIGIN)
 				.require(LootContextParameters.BLOCK_STATE)
 				.require(LootContextParameters.BLOCK_ENTITY)
@@ -93,6 +93,29 @@ public class LootContextTypes {
 	);
 	public static final LootContextType SHEARING = register(
 		"shearing", builder -> builder.require(LootContextParameters.ORIGIN).allow(LootContextParameters.THIS_ENTITY)
+	);
+	public static final LootContextType ENCHANTED_DAMAGE = register(
+		"enchanted_damage",
+		builder -> builder.require(LootContextParameters.THIS_ENTITY)
+				.require(LootContextParameters.ENCHANTMENT_LEVEL)
+				.require(LootContextParameters.ORIGIN)
+				.require(LootContextParameters.DAMAGE_SOURCE)
+				.allow(LootContextParameters.DIRECT_ATTACKING_ENTITY)
+				.allow(LootContextParameters.ATTACKING_ENTITY)
+	);
+	public static final LootContextType ENCHANTED_ITEM = register(
+		"enchanted_item", builder -> builder.require(LootContextParameters.TOOL).require(LootContextParameters.ENCHANTMENT_LEVEL)
+	);
+	public static final LootContextType ENCHANTED_LOCATION = register(
+		"enchanted_location",
+		builder -> builder.require(LootContextParameters.THIS_ENTITY)
+				.require(LootContextParameters.ENCHANTMENT_LEVEL)
+				.require(LootContextParameters.ORIGIN)
+				.require(LootContextParameters.ENCHANTMENT_ACTIVE)
+	);
+	public static final LootContextType ENCHANTED_ENTITY = register(
+		"enchanted_entity",
+		builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.ENCHANTMENT_LEVEL).require(LootContextParameters.ORIGIN)
 	);
 
 	private static LootContextType register(String name, Consumer<LootContextType.Builder> type) {

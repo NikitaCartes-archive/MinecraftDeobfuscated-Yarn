@@ -3,7 +3,9 @@ package net.minecraft.entity.mob;
 import java.util.EnumSet;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.enchantment.Enchantments;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.provider.EnchantmentProvider;
+import net.minecraft.enchantment.provider.EnchantmentProviders;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -29,6 +31,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -160,14 +163,12 @@ public class VindicatorEntity extends IllagerEntity {
 	public void addBonusForWave(int wave, boolean unused) {
 		ItemStack itemStack = new ItemStack(Items.IRON_AXE);
 		Raid raid = this.getRaid();
-		int i = 1;
-		if (wave > raid.getMaxWaves(Difficulty.NORMAL)) {
-			i = 2;
-		}
-
 		boolean bl = this.random.nextFloat() <= raid.getEnchantmentChance();
 		if (bl) {
-			itemStack.addEnchantment(Enchantments.SHARPNESS, i);
+			RegistryKey<EnchantmentProvider> registryKey = wave > raid.getMaxWaves(Difficulty.NORMAL)
+				? EnchantmentProviders.VINDICATOR_POST_WAVE_5_RAID
+				: EnchantmentProviders.VINDICATOR_RAID;
+			EnchantmentHelper.applyEnchantmentProvider(itemStack, registryKey, this.getWorld(), this.getBlockPos(), this.random);
 		}
 
 		this.equipStack(EquipmentSlot.MAINHAND, itemStack);

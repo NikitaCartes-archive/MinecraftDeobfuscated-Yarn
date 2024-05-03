@@ -1,5 +1,6 @@
 package net.minecraft.screen;
 
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -7,6 +8,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.screen.slot.ArmorSlot;
 import net.minecraft.screen.slot.Slot;
 
 public class HorseScreenHandler extends ScreenHandler {
@@ -35,7 +37,7 @@ public class HorseScreenHandler extends ScreenHandler {
 				return entity.canBeSaddled();
 			}
 		});
-		this.addSlot(new Slot(this.horseArmorInventory, 0, 8, 36) {
+		this.addSlot(new ArmorSlot(this.horseArmorInventory, entity, EquipmentSlot.BODY, 0, 8, 36, null) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
 				return entity.isHorseArmor(stack);
@@ -44,11 +46,6 @@ public class HorseScreenHandler extends ScreenHandler {
 			@Override
 			public boolean isEnabled() {
 				return entity.hasArmorSlot();
-			}
-
-			@Override
-			public int getMaxItemCount() {
-				return 1;
 			}
 		});
 		if (this.hasChest(entity)) {

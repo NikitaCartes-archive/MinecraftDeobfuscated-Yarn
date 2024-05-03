@@ -281,26 +281,26 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.FLINT_AND_STEEL, new FallibleItemDispenserBehavior() {
 			@Override
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				World world = pointer.world();
+				ServerWorld serverWorld = pointer.world();
 				this.setSuccess(true);
 				Direction direction = pointer.state().get(DispenserBlock.FACING);
 				BlockPos blockPos = pointer.pos().offset(direction);
-				BlockState blockState = world.getBlockState(blockPos);
-				if (AbstractFireBlock.canPlaceAt(world, blockPos, direction)) {
-					world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
-					world.emitGameEvent(null, GameEvent.BLOCK_PLACE, blockPos);
+				BlockState blockState = serverWorld.getBlockState(blockPos);
+				if (AbstractFireBlock.canPlaceAt(serverWorld, blockPos, direction)) {
+					serverWorld.setBlockState(blockPos, AbstractFireBlock.getState(serverWorld, blockPos));
+					serverWorld.emitGameEvent(null, GameEvent.BLOCK_PLACE, blockPos);
 				} else if (CampfireBlock.canBeLit(blockState) || CandleBlock.canBeLit(blockState) || CandleCakeBlock.canBeLit(blockState)) {
-					world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)));
-					world.emitGameEvent(null, GameEvent.BLOCK_CHANGE, blockPos);
+					serverWorld.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)));
+					serverWorld.emitGameEvent(null, GameEvent.BLOCK_CHANGE, blockPos);
 				} else if (blockState.getBlock() instanceof TntBlock) {
-					TntBlock.primeTnt(world, blockPos);
-					world.removeBlock(blockPos, false);
+					TntBlock.primeTnt(serverWorld, blockPos);
+					serverWorld.removeBlock(blockPos, false);
 				} else {
 					this.setSuccess(false);
 				}
 
 				if (this.isSuccess()) {
-					stack.damage(1, world.getRandom(), null, () -> stack.setCount(0));
+					stack.damage(1, serverWorld, null, () -> stack.setCount(0));
 				}
 
 				return stack;
@@ -478,7 +478,7 @@ public interface DispenserBehavior {
 				} else {
 					for (ArmadilloEntity armadilloEntity : list) {
 						if (armadilloEntity.brushScute()) {
-							stack.damage(16, serverWorld.getRandom(), null, () -> {
+							stack.damage(16, serverWorld, null, () -> {
 								stack.decrement(1);
 								stack.setDamage(0);
 							});

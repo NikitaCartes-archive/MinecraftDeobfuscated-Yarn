@@ -21,8 +21,8 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.JsonDataLoader;
@@ -95,23 +95,28 @@ public class RecipeManager extends JsonDataLoader {
 	 * but this method will return the same result unless the recipes in this
 	 * manager are updated.
 	 * 
-	 * @param world the input world
 	 * @param type the desired recipe type
-	 * @param inventory the input inventory
+	 * @param world the input world
 	 */
-	public <C extends Inventory, T extends Recipe<C>> Optional<RecipeEntry<T>> getFirstMatch(RecipeType<T> type, C inventory, World world) {
-		return this.getAllOfType(type).stream().filter(recipe -> recipe.value().matches(inventory, world)).findFirst();
+	public <I extends RecipeInput, T extends Recipe<I>> Optional<RecipeEntry<T>> getFirstMatch(RecipeType<T> type, I input, World world) {
+		return this.getFirstMatch(type, input, world, (RecipeEntry<T>)null);
 	}
 
-	public <C extends Inventory, T extends Recipe<C>> Optional<RecipeEntry<T>> getFirstMatch(RecipeType<T> type, C inventory, World world, @Nullable Identifier id) {
-		if (id != null) {
-			RecipeEntry<T> recipeEntry = this.get(type, id);
-			if (recipeEntry != null && recipeEntry.value().matches(inventory, world)) {
-				return Optional.of(recipeEntry);
-			}
-		}
+	public <I extends RecipeInput, T extends Recipe<I>> Optional<RecipeEntry<T>> getFirstMatch(RecipeType<T> type, I input, World world, @Nullable Identifier id) {
+		RecipeEntry<T> recipeEntry = id != null ? this.get(type, id) : null;
+		return this.getFirstMatch(type, input, world, recipeEntry);
+	}
 
-		return this.getAllOfType(type).stream().filter(entry -> entry.value().matches(inventory, world)).findFirst();
+	public <I extends RecipeInput, T extends Recipe<I>> Optional<RecipeEntry<T>> getFirstMatch(
+		RecipeType<T> type, I input, World world, @Nullable RecipeEntry<T> recipe
+	) {
+		if (input.isEmpty()) {
+			return Optional.empty();
+		} else {
+			return recipe != null && recipe.value().matches(input, world)
+				? Optional.of(recipe)
+				: this.getAllOfType(type).stream().filter(recipex -> recipex.value().matches(input, world)).findFirst();
+		}
 	}
 
 	/**
@@ -125,7 +130,7 @@ public class RecipeManager extends JsonDataLoader {
 	 * 
 	 * @param type the desired recipe type
 	 */
-	public <C extends Inventory, T extends Recipe<C>> List<RecipeEntry<T>> listAllOfType(RecipeType<T> type) {
+	public <I extends RecipeInput, T extends Recipe<I>> List<RecipeEntry<T>> listAllOfType(RecipeType<T> type) {
 		return List.copyOf(this.getAllOfType(type));
 	}
 
@@ -140,18 +145,17 @@ public class RecipeManager extends JsonDataLoader {
 	 * @return the created list of matching recipes
 	 * 
 	 * @param world the input world
-	 * @param inventory the input inventory
 	 * @param type the desired recipe type
 	 */
-	public <C extends Inventory, T extends Recipe<C>> List<RecipeEntry<T>> getAllMatches(RecipeType<T> type, C inventory, World world) {
+	public <I extends RecipeInput, T extends Recipe<I>> List<RecipeEntry<T>> getAllMatches(RecipeType<T> type, I input, World world) {
 		return (List<RecipeEntry<T>>)this.getAllOfType(type)
 			.stream()
-			.filter(recipe -> recipe.value().matches(inventory, world))
+			.filter(recipe -> recipe.value().matches(input, world))
 			.sorted(Comparator.comparing(entry -> entry.value().getResult(world.getRegistryManager()).getTranslationKey()))
 			.collect(Collectors.toList());
 	}
 
-	private <C extends Inventory, T extends Recipe<C>> Collection<RecipeEntry<T>> getAllOfType(RecipeType<T> type) {
+	private <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeEntry<T>> getAllOfType(RecipeType<T> type) {
 		return (Collection<RecipeEntry<T>>)this.recipesByType.get(type);
 	}
 
@@ -166,19 +170,18 @@ public class RecipeManager extends JsonDataLoader {
 	 * 
 	 * @see Recipe#getRemainder(Inventory)
 	 * 
-	 * @param world the input world
-	 * @param inventory the input inventory
 	 * @param type the desired recipe type
+	 * @param world the input world
 	 */
-	public <C extends Inventory, T extends Recipe<C>> DefaultedList<ItemStack> getRemainingStacks(RecipeType<T> type, C inventory, World world) {
-		Optional<RecipeEntry<T>> optional = this.getFirstMatch(type, inventory, world);
+	public <I extends RecipeInput, T extends Recipe<I>> DefaultedList<ItemStack> getRemainingStacks(RecipeType<T> type, I input, World world) {
+		Optional<RecipeEntry<T>> optional = this.getFirstMatch(type, input, world);
 		if (optional.isPresent()) {
-			return ((RecipeEntry)optional.get()).value().getRemainder(inventory);
+			return ((RecipeEntry)optional.get()).value().getRemainder(input);
 		} else {
-			DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
+			DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(input.getSize(), ItemStack.EMPTY);
 
 			for (int i = 0; i < defaultedList.size(); i++) {
-				defaultedList.set(i, inventory.getStack(i));
+				defaultedList.set(i, input.getStackInSlot(i));
 			}
 
 			return defaultedList;
@@ -277,15 +280,15 @@ public class RecipeManager extends JsonDataLoader {
 	 * Creates a cached match getter. This is optimized for getting matches of the same
 	 * recipe repeatedly, such as furnaces.
 	 */
-	public static <C extends Inventory, T extends Recipe<C>> RecipeManager.MatchGetter<C, T> createCachedMatchGetter(RecipeType<T> type) {
-		return new RecipeManager.MatchGetter<C, T>() {
+	public static <I extends RecipeInput, T extends Recipe<I>> RecipeManager.MatchGetter<I, T> createCachedMatchGetter(RecipeType<T> type) {
+		return new RecipeManager.MatchGetter<I, T>() {
 			@Nullable
 			private Identifier id;
 
 			@Override
-			public Optional<RecipeEntry<T>> getFirstMatch(C inventory, World world) {
+			public Optional<RecipeEntry<T>> getFirstMatch(I input, World world) {
 				RecipeManager recipeManager = world.getRecipeManager();
-				Optional<RecipeEntry<T>> optional = recipeManager.getFirstMatch(type, inventory, world, this.id);
+				Optional<RecipeEntry<T>> optional = recipeManager.getFirstMatch(type, input, world, this.id);
 				if (optional.isPresent()) {
 					RecipeEntry<T> recipeEntry = (RecipeEntry<T>)optional.get();
 					this.id = recipeEntry.id();
@@ -297,7 +300,7 @@ public class RecipeManager extends JsonDataLoader {
 		};
 	}
 
-	public interface MatchGetter<C extends Inventory, T extends Recipe<C>> {
-		Optional<RecipeEntry<T>> getFirstMatch(C inventory, World world);
+	public interface MatchGetter<I extends RecipeInput, T extends Recipe<I>> {
+		Optional<RecipeEntry<T>> getFirstMatch(I input, World world);
 	}
 }

@@ -57,7 +57,13 @@ public interface ParentElement extends Element {
 
 	@Override
 	default boolean mouseReleased(double mouseX, double mouseY, int button) {
-		this.setDragging(false);
+		if (button == 0 && this.isDragging()) {
+			this.setDragging(false);
+			if (this.getFocused() != null) {
+				return this.getFocused().mouseReleased(mouseX, mouseY, button);
+			}
+		}
+
 		return this.hoveredElement(mouseX, mouseY).filter(element -> element.mouseReleased(mouseX, mouseY, button)).isPresent();
 	}
 

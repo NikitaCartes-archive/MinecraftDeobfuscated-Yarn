@@ -1,7 +1,6 @@
 package net.minecraft.client.realms.task;
 
 import com.mojang.logging.LogUtils;
-import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -13,15 +12,16 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.MessageScreen;
+import net.minecraft.client.gui.screen.PopupScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsServerAddress;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.exception.RetryCallException;
+import net.minecraft.client.realms.gui.RealmsPopups;
 import net.minecraft.client.realms.gui.screen.RealmsBrokenWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsGenericErrorScreen;
-import net.minecraft.client.realms.gui.screen.RealmsLongConfirmationScreen;
 import net.minecraft.client.realms.gui.screen.RealmsLongRunningMcoTaskScreen;
 import net.minecraft.client.realms.gui.screen.RealmsLongRunningTickableTaskScreen;
 import net.minecraft.client.realms.gui.screen.RealmsTermsScreen;
@@ -58,7 +58,7 @@ public class RealmsPrepareConnectionTask extends LongRunningTask {
 					boolean bl = MinecraftClient.getInstance().uuidEquals(this.server.ownerUUID);
 					setScreen(
 						(Screen)(bl
-							? new RealmsBrokenWorldScreen(this.lastScreen, this.server.id, this.server.worldType == RealmsServer.WorldType.MINIGAME)
+							? new RealmsBrokenWorldScreen(this.lastScreen, this.server.id, this.server.method_60315())
 							: new RealmsGenericErrorScreen(Text.translatable("mco.brokenworld.nonowner.title"), Text.translatable("mco.brokenworld.nonowner.error"), this.lastScreen))
 					);
 					return;
@@ -116,29 +116,17 @@ public class RealmsPrepareConnectionTask extends LongRunningTask {
 		return new RealmsLongRunningTickableTaskScreen(this.lastScreen, new RealmsConnectTask(this.lastScreen, this.server, address));
 	}
 
-	private RealmsLongConfirmationScreen createResourcePackConfirmationScreen(
-		RealmsServerAddress address, UUID id, Function<RealmsServerAddress, Screen> connectingScreenCreator
-	) {
-		BooleanConsumer booleanConsumer = confirmed -> {
-			if (!confirmed) {
-				setScreen(this.lastScreen);
-			} else {
-				setScreen(new MessageScreen(APPLYING_PACK_TEXT));
-				this.downloadResourcePack(address, id).thenRun(() -> setScreen((Screen)connectingScreenCreator.apply(address))).exceptionally(throwable -> {
-					MinecraftClient.getInstance().getServerResourcePackProvider().clear();
-					LOGGER.error("Failed to download resource pack from {}", address, throwable);
-					setScreen(new RealmsGenericErrorScreen(Text.translatable("mco.download.resourcePack.fail"), this.lastScreen));
-					return null;
-				});
-			}
-		};
-		return new RealmsLongConfirmationScreen(
-			booleanConsumer,
-			RealmsLongConfirmationScreen.Type.INFO,
-			Text.translatable("mco.configure.world.resourcepack.question.line1"),
-			Text.translatable("mco.configure.world.resourcepack.question.line2"),
-			true
-		);
+	private PopupScreen createResourcePackConfirmationScreen(RealmsServerAddress address, UUID id, Function<RealmsServerAddress, Screen> connectingScreenCreator) {
+		Text text = Text.translatable("mco.configure.world.resourcepack.question");
+		return RealmsPopups.createInfoPopup(this.lastScreen, text, popupScreen -> {
+			setScreen(new MessageScreen(APPLYING_PACK_TEXT));
+			this.downloadResourcePack(address, id).thenRun(() -> setScreen((Screen)connectingScreenCreator.apply(address))).exceptionally(throwable -> {
+				MinecraftClient.getInstance().getServerResourcePackProvider().clear();
+				LOGGER.error("Failed to download resource pack from {}", address, throwable);
+				setScreen(new RealmsGenericErrorScreen(Text.translatable("mco.download.resourcePack.fail"), this.lastScreen));
+				return null;
+			});
+		});
 	}
 
 	private CompletableFuture<?> downloadResourcePack(RealmsServerAddress address, UUID id) {

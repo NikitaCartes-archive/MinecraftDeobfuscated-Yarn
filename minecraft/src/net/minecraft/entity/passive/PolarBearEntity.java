@@ -3,7 +3,6 @@ package net.minecraft.entity.passive;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -211,16 +210,6 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 		} else {
 			return super.getBaseDimensions(pose);
 		}
-	}
-
-	@Override
-	public boolean tryAttack(Entity target) {
-		boolean bl = target.damage(this.getDamageSources().mobAttack(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
-		if (bl) {
-			this.applyDamageEffects(this, target);
-		}
-
-		return bl;
 	}
 
 	public boolean isWarning() {

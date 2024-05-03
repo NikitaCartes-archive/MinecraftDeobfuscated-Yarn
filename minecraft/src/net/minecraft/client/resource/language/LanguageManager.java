@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -26,9 +27,11 @@ public class LanguageManager implements SynchronousResourceReloader {
 	private static final LanguageDefinition ENGLISH_US = new LanguageDefinition("US", "English", false);
 	private Map<String, LanguageDefinition> languageDefs = ImmutableMap.of("en_us", ENGLISH_US);
 	private String currentLanguageCode;
+	private final Consumer<TranslationStorage> field_51830;
 
-	public LanguageManager(String languageCode) {
+	public LanguageManager(String languageCode, Consumer<TranslationStorage> consumer) {
 		this.currentLanguageCode = languageCode;
+		this.field_51830 = consumer;
 	}
 
 	private static Map<String, LanguageDefinition> loadAvailableLanguages(Stream<ResourcePack> packs) {
@@ -63,6 +66,7 @@ public class LanguageManager implements SynchronousResourceReloader {
 		TranslationStorage translationStorage = TranslationStorage.load(manager, list, bl);
 		I18n.setLanguage(translationStorage);
 		Language.setInstance(translationStorage);
+		this.field_51830.accept(translationStorage);
 	}
 
 	public void setLanguage(String languageCode) {

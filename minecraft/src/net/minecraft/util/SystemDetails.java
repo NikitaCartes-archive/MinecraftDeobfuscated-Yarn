@@ -2,6 +2,10 @@ package net.minecraft.util;
 
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
+import java.nio.file.FileStore;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -90,6 +94,7 @@ public class SystemDetails {
 		this.tryAddGroup("processor", () -> this.addProcessorGroup(hardwareAbstractionLayer.getProcessor()));
 		this.tryAddGroup("graphics", () -> this.addGraphicsCardGroup(hardwareAbstractionLayer.getGraphicsCards()));
 		this.tryAddGroup("memory", () -> this.addGlobalMemoryGroup(hardwareAbstractionLayer.getMemory()));
+		this.tryAddGroup("storage", this::method_59897);
 	}
 
 	private void tryAddGroup(String name, Runnable adder) {
@@ -100,22 +105,26 @@ public class SystemDetails {
 		}
 	}
 
+	public static float method_59895(long l) {
+		return (float)l / 1048576.0F;
+	}
+
 	private void addPhysicalMemoryGroup(List<PhysicalMemory> memories) {
 		int i = 0;
 
 		for (PhysicalMemory physicalMemory : memories) {
 			String string = String.format(Locale.ROOT, "Memory slot #%d ", i++);
-			this.addSection(string + "capacity (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)physicalMemory.getCapacity() / 1048576.0F)));
+			this.addSection(string + "capacity (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", method_59895(physicalMemory.getCapacity()))));
 			this.addSection(string + "clockSpeed (GHz)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)physicalMemory.getClockSpeed() / 1.0E9F)));
 			this.addSection(string + "type", physicalMemory::getMemoryType);
 		}
 	}
 
 	private void addVirtualMemoryGroup(VirtualMemory virtualMemory) {
-		this.addSection("Virtual memory max (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)virtualMemory.getVirtualMax() / 1048576.0F)));
-		this.addSection("Virtual memory used (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)virtualMemory.getVirtualInUse() / 1048576.0F)));
-		this.addSection("Swap memory total (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)virtualMemory.getSwapTotal() / 1048576.0F)));
-		this.addSection("Swap memory used (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)virtualMemory.getSwapUsed() / 1048576.0F)));
+		this.addSection("Virtual memory max (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", method_59895(virtualMemory.getVirtualMax()))));
+		this.addSection("Virtual memory used (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", method_59895(virtualMemory.getVirtualInUse()))));
+		this.addSection("Swap memory total (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", method_59895(virtualMemory.getSwapTotal()))));
+		this.addSection("Swap memory used (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", method_59895(virtualMemory.getSwapUsed()))));
 	}
 
 	private void addGlobalMemoryGroup(GlobalMemory globalMemory) {
@@ -130,7 +139,7 @@ public class SystemDetails {
 			String string = String.format(Locale.ROOT, "Graphics card #%d ", i++);
 			this.addSection(string + "name", graphicsCard::getName);
 			this.addSection(string + "vendor", graphicsCard::getVendor);
-			this.addSection(string + "VRAM (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)graphicsCard.getVRam() / 1048576.0F)));
+			this.addSection(string + "VRAM (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", method_59895(graphicsCard.getVRam()))));
 			this.addSection(string + "deviceId", graphicsCard::getDeviceId);
 			this.addSection(string + "versionInfo", graphicsCard::getVersionInfo);
 		}
@@ -146,6 +155,41 @@ public class SystemDetails {
 		this.addSection("Number of physical packages", (Supplier<String>)(() -> String.valueOf(centralProcessor.getPhysicalPackageCount())));
 		this.addSection("Number of physical CPUs", (Supplier<String>)(() -> String.valueOf(centralProcessor.getPhysicalProcessorCount())));
 		this.addSection("Number of logical CPUs", (Supplier<String>)(() -> String.valueOf(centralProcessor.getLogicalProcessorCount())));
+	}
+
+	private void method_59897() {
+		this.method_59896("jna.tmpdir");
+		this.method_59896("org.lwjgl.system.SharedLibraryExtractPath");
+		this.method_59896("io.netty.native.workdir");
+		this.method_59896("java.io.tmpdir");
+		this.method_59899("workdir", () -> "");
+	}
+
+	private void method_59896(String string) {
+		this.method_59899(string, () -> System.getProperty(string));
+	}
+
+	private void method_59899(String string, Supplier<String> supplier) {
+		String string2 = "Space in storage for " + string + " (MiB)";
+
+		try {
+			String string3 = (String)supplier.get();
+			if (string3 == null) {
+				this.addSection(string2, "<path not set>");
+				return;
+			}
+
+			FileStore fileStore = Files.getFileStore(Path.of(string3));
+			this.addSection(
+				string2, String.format(Locale.ROOT, "available: %.2f, total: %.2f", method_59895(fileStore.getUsableSpace()), method_59895(fileStore.getTotalSpace()))
+			);
+		} catch (InvalidPathException var6) {
+			LOGGER.warn("{} is not a path", string, var6);
+			this.addSection(string2, "<invalid path>");
+		} catch (Exception var7) {
+			LOGGER.warn("Failed retrieving storage space for {}", string, var7);
+			this.addSection(string2, "ERR");
+		}
 	}
 
 	/**

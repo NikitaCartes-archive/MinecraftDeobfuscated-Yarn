@@ -15,6 +15,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
@@ -95,10 +96,10 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 				ItemEnchantmentsComponent itemEnchantmentsComponent = EnchantmentHelper.getEnchantments(stack);
 
 				for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
-					Enchantment enchantment = (Enchantment)((RegistryEntry)entry.getKey()).value();
+					RegistryEntry<Enchantment> registryEntry = (RegistryEntry<Enchantment>)entry.getKey();
 					int j = entry.getIntValue();
-					if (!enchantment.isCursed()) {
-						i += enchantment.getMinPower(j);
+					if (!registryEntry.isIn(EnchantmentTags.CURSE)) {
+						i += registryEntry.value().getMinPower(j);
 					}
 				}
 
@@ -180,9 +181,9 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 			ItemEnchantmentsComponent itemEnchantmentsComponent = EnchantmentHelper.getEnchantments(source);
 
 			for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
-				Enchantment enchantment = (Enchantment)((RegistryEntry)entry.getKey()).value();
-				if (!enchantment.isCursed() || components.getLevel(enchantment) == 0) {
-					components.add(enchantment, entry.getIntValue());
+				RegistryEntry<Enchantment> registryEntry = (RegistryEntry<Enchantment>)entry.getKey();
+				if (!registryEntry.isIn(EnchantmentTags.CURSE) || components.getLevel(registryEntry) == 0) {
+					components.add(registryEntry, entry.getIntValue());
 				}
 			}
 		});
@@ -190,7 +191,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 
 	private ItemStack grind(ItemStack item) {
 		ItemEnchantmentsComponent itemEnchantmentsComponent = EnchantmentHelper.apply(
-			item, components -> components.remove(enchantment -> !((Enchantment)enchantment.value()).isCursed())
+			item, components -> components.remove(enchantment -> !enchantment.isIn(EnchantmentTags.CURSE))
 		);
 		if (item.isOf(Items.ENCHANTED_BOOK) && itemEnchantmentsComponent.isEmpty()) {
 			item = item.copyComponentsToNewStack(Items.BOOK, item.getCount());

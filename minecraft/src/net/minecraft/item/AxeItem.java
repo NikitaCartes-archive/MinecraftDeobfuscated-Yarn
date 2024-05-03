@@ -18,6 +18,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -58,23 +59,32 @@ public class AxeItem extends MiningToolItem {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
 		PlayerEntity playerEntity = context.getPlayer();
-		Optional<BlockState> optional = this.tryStrip(world, blockPos, playerEntity, world.getBlockState(blockPos));
-		if (optional.isEmpty()) {
+		if (shouldCancelStripAttempt(context)) {
 			return ActionResult.PASS;
 		} else {
-			ItemStack itemStack = context.getStack();
-			if (playerEntity instanceof ServerPlayerEntity) {
-				Criteria.ITEM_USED_ON_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
-			}
+			Optional<BlockState> optional = this.tryStrip(world, blockPos, playerEntity, world.getBlockState(blockPos));
+			if (optional.isEmpty()) {
+				return ActionResult.PASS;
+			} else {
+				ItemStack itemStack = context.getStack();
+				if (playerEntity instanceof ServerPlayerEntity) {
+					Criteria.ITEM_USED_ON_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
+				}
 
-			world.setBlockState(blockPos, (BlockState)optional.get(), Block.NOTIFY_ALL_AND_REDRAW);
-			world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(playerEntity, (BlockState)optional.get()));
-			if (playerEntity != null) {
-				itemStack.damage(1, playerEntity, LivingEntity.getSlotForHand(context.getHand()));
-			}
+				world.setBlockState(blockPos, (BlockState)optional.get(), Block.NOTIFY_ALL_AND_REDRAW);
+				world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(playerEntity, (BlockState)optional.get()));
+				if (playerEntity != null) {
+					itemStack.damage(1, playerEntity, LivingEntity.getSlotForHand(context.getHand()));
+				}
 
-			return ActionResult.success(world.isClient);
+				return ActionResult.success(world.isClient);
+			}
 		}
+	}
+
+	private static boolean shouldCancelStripAttempt(ItemUsageContext context) {
+		PlayerEntity playerEntity = context.getPlayer();
+		return context.getHand().equals(Hand.MAIN_HAND) && playerEntity.getOffHandStack().isOf(Items.SHIELD) && !playerEntity.shouldCancelInteraction();
 	}
 
 	private Optional<BlockState> tryStrip(World world, BlockPos pos, @Nullable PlayerEntity player, BlockState state) {

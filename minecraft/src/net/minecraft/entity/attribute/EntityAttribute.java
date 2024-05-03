@@ -1,5 +1,9 @@
 package net.minecraft.entity.attribute;
 
+import com.mojang.serialization.Codec;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+
 /**
  * Represents a type of double-valued attribute that a living entity may have.
  * 
@@ -7,7 +11,7 @@ package net.minecraft.entity.attribute;
  * An attribute has a default value on which attribute modifiers operate.
  */
 public class EntityAttribute {
-	public static final int field_30097 = 64;
+	public static final Codec<RegistryEntry<EntityAttribute>> CODEC = Registries.ATTRIBUTE.getEntryCodec();
 	private final double fallback;
 	private boolean tracked;
 	private final String translationKey;

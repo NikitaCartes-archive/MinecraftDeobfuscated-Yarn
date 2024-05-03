@@ -2,11 +2,11 @@ package net.minecraft.loot;
 
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.item.ItemStack;
 
 public interface ContainerComponentModifier<T> {
-	DataComponentType<T> getComponentType();
+	ComponentType<T> getComponentType();
 
 	T getDefault();
 
@@ -27,7 +27,15 @@ public interface ContainerComponentModifier<T> {
 	default void apply(ItemStack stack, UnaryOperator<ItemStack> contentsOperator) {
 		T object = stack.get(this.getComponentType());
 		if (object != null) {
-			UnaryOperator<ItemStack> unaryOperator = contentStack -> contentStack.isEmpty() ? contentStack : (ItemStack)contentsOperator.apply(contentStack);
+			UnaryOperator<ItemStack> unaryOperator = contentStack -> {
+				if (contentStack.isEmpty()) {
+					return contentStack;
+				} else {
+					ItemStack itemStack = (ItemStack)contentsOperator.apply(contentStack);
+					itemStack.capCount(itemStack.getMaxCount());
+					return itemStack;
+				}
+			};
 			this.apply(stack, this.stream(object).map(unaryOperator));
 		}
 	}

@@ -96,7 +96,7 @@ public class ModelPredicateProviderRegistry {
 			if (entity == null) {
 				return 0.0F;
 			} else {
-				return entity.getActiveItem() != stack ? 0.0F : (float)(stack.getMaxUseTime() - entity.getItemUseTimeLeft()) / 20.0F;
+				return entity.getActiveItem() != stack ? 0.0F : (float)(stack.getMaxUseTime(entity) - entity.getItemUseTimeLeft()) / 20.0F;
 			}
 		});
 		register(
@@ -165,13 +165,19 @@ public class ModelPredicateProviderRegistry {
 				(world, stack, entity) -> entity instanceof PlayerEntity playerEntity ? (GlobalPos)playerEntity.getLastDeathPos().orElse(null) : null
 			)
 		);
-		register(Items.CROSSBOW, new Identifier("pull"), (stack, world, entity, seed) -> {
-			if (entity == null) {
-				return 0.0F;
-			} else {
-				return CrossbowItem.isCharged(stack) ? 0.0F : (float)(stack.getMaxUseTime() - entity.getItemUseTimeLeft()) / (float)CrossbowItem.getPullTime(stack);
+		register(
+			Items.CROSSBOW,
+			new Identifier("pull"),
+			(stack, world, entity, seed) -> {
+				if (entity == null) {
+					return 0.0F;
+				} else {
+					return CrossbowItem.isCharged(stack)
+						? 0.0F
+						: (float)(stack.getMaxUseTime(entity) - entity.getItemUseTimeLeft()) / (float)CrossbowItem.getPullTime(stack, entity);
+				}
 			}
-		});
+		);
 		register(
 			Items.CROSSBOW,
 			new Identifier("pulling"),

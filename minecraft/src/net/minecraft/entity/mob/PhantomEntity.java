@@ -140,7 +140,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	@Override
 	public void tickMovement() {
 		if (this.isAlive() && this.isAffectedByDaylight()) {
-			this.setOnFireFor(8);
+			this.setOnFireFor(8.0F);
 		}
 
 		super.tickMovement();

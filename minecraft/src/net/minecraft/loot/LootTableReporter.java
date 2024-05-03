@@ -55,4 +55,8 @@ public class LootTableReporter {
 	public LootTableReporter withContextType(LootContextType contextType) {
 		return new LootTableReporter(this.errorReporter, contextType, this.dataLookup, this.referenceStack);
 	}
+
+	public ErrorReporter getErrorReporter() {
+		return this.errorReporter;
+	}
 }

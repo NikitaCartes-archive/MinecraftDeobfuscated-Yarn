@@ -106,26 +106,26 @@ public class ButtonBlock extends WallMountedBlock {
 		if ((Boolean)state.get(POWERED)) {
 			return ActionResult.CONSUME;
 		} else {
-			this.powerOn(state, world, pos);
-			this.playClickSound(player, world, pos, true);
-			world.emitGameEvent(player, GameEvent.BLOCK_ACTIVATE, pos);
+			this.powerOn(state, world, pos, player);
 			return ActionResult.success(world.isClient);
 		}
 	}
 
 	@Override
 	protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
-		if (explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK && !world.isClient() && !(Boolean)state.get(POWERED)) {
-			this.powerOn(state, world, pos);
+		if (explosion.canTriggerBlocks() && !(Boolean)state.get(POWERED)) {
+			this.powerOn(state, world, pos, null);
 		}
 
 		super.onExploded(state, world, pos, explosion, stackMerger);
 	}
 
-	public void powerOn(BlockState state, World world, BlockPos pos) {
+	public void powerOn(BlockState state, World world, BlockPos pos, @Nullable PlayerEntity player) {
 		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), Block.NOTIFY_ALL);
 		this.updateNeighbors(state, world, pos);
 		world.scheduleBlockTick(pos, this, this.pressTicks);
+		this.playClickSound(player, world, pos, false);
+		world.emitGameEvent(player, GameEvent.BLOCK_ACTIVATE, pos);
 	}
 
 	protected void playClickSound(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos, boolean powered) {

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
@@ -70,7 +71,7 @@ public class GoatHornItem extends Item {
 	}
 
 	@Override
-	public int getMaxUseTime(ItemStack stack) {
+	public int getMaxUseTime(ItemStack stack, LivingEntity user) {
 		Optional<RegistryEntry<Instrument>> optional = this.getInstrument(stack);
 		return (Integer)optional.map(instrument -> ((Instrument)instrument.value()).useDuration()).orElse(0);
 	}

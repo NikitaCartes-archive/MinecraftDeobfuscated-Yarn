@@ -2622,6 +2622,8 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerSmithingTemplateCopyingRecipe(exporter, Items.SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE, Items.TERRACOTTA);
 		offerSmithingTemplateCopyingRecipe(exporter, Items.RAISER_ARMOR_TRIM_SMITHING_TEMPLATE, Items.TERRACOTTA);
 		offerSmithingTemplateCopyingRecipe(exporter, Items.HOST_ARMOR_TRIM_SMITHING_TEMPLATE, Items.TERRACOTTA);
+		offerSmithingTemplateCopyingRecipe(exporter, Items.FLOW_ARMOR_TRIM_SMITHING_TEMPLATE, Items.BREEZE_ROD);
+		offerSmithingTemplateCopyingRecipe(exporter, Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, Items.COPPER_BLOCK);
 		offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.BAMBOO_BLOCK, Items.BAMBOO);
 		offerPlanksRecipe(exporter, Blocks.BAMBOO_PLANKS, ItemTags.BAMBOO_BLOCKS, 2);
 		offerMosaicRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.BAMBOO_MOSAIC, Blocks.BAMBOO_SLAB);
@@ -2671,13 +2673,108 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion("has_brick", conditionsFromTag(ItemTags.DECORATED_POT_INGREDIENTS))
 			.offerTo(exporter, "decorated_pot_simple");
 		ComplexRecipeJsonBuilder.create(CraftingDecoratedPotRecipe::new).offerTo(exporter, "decorated_pot");
+		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Blocks.CRAFTER)
+			.input('#', Items.IRON_INGOT)
+			.input('C', Items.CRAFTING_TABLE)
+			.input('R', Items.REDSTONE)
+			.input('D', Items.DROPPER)
+			.pattern("###")
+			.pattern("#C#")
+			.pattern("RDR")
+			.criterion("has_dropper", conditionsFromItem(Items.DROPPER))
+			.offerTo(exporter);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.TUFF_SLAB, Blocks.TUFF, 2);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.TUFF_STAIRS, Blocks.TUFF);
+		offerStonecuttingRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.TUFF_WALL, Blocks.TUFF);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CHISELED_TUFF, Blocks.TUFF);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.POLISHED_TUFF, Blocks.TUFF);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.POLISHED_TUFF_SLAB, Blocks.TUFF, 2);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.POLISHED_TUFF_STAIRS, Blocks.TUFF);
+		offerStonecuttingRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.POLISHED_TUFF_WALL, Blocks.TUFF);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.TUFF_BRICKS, Blocks.TUFF);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.TUFF_BRICK_SLAB, Blocks.TUFF, 2);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.TUFF_BRICK_STAIRS, Blocks.TUFF);
+		offerStonecuttingRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.TUFF_BRICK_WALL, Blocks.TUFF);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CHISELED_TUFF_BRICKS, Blocks.TUFF);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.POLISHED_TUFF_SLAB, Blocks.POLISHED_TUFF, 2);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.POLISHED_TUFF_STAIRS, Blocks.POLISHED_TUFF);
+		offerStonecuttingRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.POLISHED_TUFF_WALL, Blocks.POLISHED_TUFF);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.TUFF_BRICKS, Blocks.POLISHED_TUFF);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.TUFF_BRICK_SLAB, Blocks.POLISHED_TUFF, 2);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.TUFF_BRICK_STAIRS, Blocks.POLISHED_TUFF);
+		offerStonecuttingRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.TUFF_BRICK_WALL, Blocks.POLISHED_TUFF);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CHISELED_TUFF_BRICKS, Blocks.POLISHED_TUFF);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.TUFF_BRICK_SLAB, Blocks.TUFF_BRICKS, 2);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.TUFF_BRICK_STAIRS, Blocks.TUFF_BRICKS);
+		offerStonecuttingRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.TUFF_BRICK_WALL, Blocks.TUFF_BRICKS);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CHISELED_TUFF_BRICKS, Blocks.TUFF_BRICKS);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CHISELED_COPPER, Blocks.COPPER_BLOCK, 4);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.EXPOSED_CHISELED_COPPER, Blocks.EXPOSED_COPPER, 4);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WEATHERED_CHISELED_COPPER, Blocks.WEATHERED_COPPER, 4);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.OXIDIZED_CHISELED_COPPER, Blocks.OXIDIZED_COPPER, 4);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WAXED_CHISELED_COPPER, Blocks.WAXED_COPPER_BLOCK, 4);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WAXED_EXPOSED_CHISELED_COPPER, Blocks.WAXED_EXPOSED_COPPER, 4);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WAXED_WEATHERED_CHISELED_COPPER, Blocks.WAXED_WEATHERED_COPPER, 4);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WAXED_OXIDIZED_CHISELED_COPPER, Blocks.WAXED_OXIDIZED_COPPER, 4);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CHISELED_COPPER, Blocks.CUT_COPPER, 1);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.EXPOSED_CHISELED_COPPER, Blocks.EXPOSED_CUT_COPPER, 1);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WEATHERED_CHISELED_COPPER, Blocks.WEATHERED_CUT_COPPER, 1);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.OXIDIZED_CHISELED_COPPER, Blocks.OXIDIZED_CUT_COPPER, 1);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WAXED_CHISELED_COPPER, Blocks.WAXED_CUT_COPPER, 1);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WAXED_EXPOSED_CHISELED_COPPER, Blocks.WAXED_EXPOSED_CUT_COPPER, 1);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WAXED_WEATHERED_CHISELED_COPPER, Blocks.WAXED_WEATHERED_CUT_COPPER, 1);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WAXED_OXIDIZED_CHISELED_COPPER, Blocks.WAXED_OXIDIZED_CUT_COPPER, 1);
+		offerGrateRecipe(exporter, Blocks.COPPER_GRATE, Blocks.COPPER_BLOCK);
+		offerGrateRecipe(exporter, Blocks.EXPOSED_COPPER_GRATE, Blocks.EXPOSED_COPPER);
+		offerGrateRecipe(exporter, Blocks.WEATHERED_COPPER_GRATE, Blocks.WEATHERED_COPPER);
+		offerGrateRecipe(exporter, Blocks.OXIDIZED_COPPER_GRATE, Blocks.OXIDIZED_COPPER);
+		offerGrateRecipe(exporter, Blocks.WAXED_COPPER_GRATE, Blocks.WAXED_COPPER_BLOCK);
+		offerGrateRecipe(exporter, Blocks.WAXED_EXPOSED_COPPER_GRATE, Blocks.WAXED_EXPOSED_COPPER);
+		offerGrateRecipe(exporter, Blocks.WAXED_WEATHERED_COPPER_GRATE, Blocks.WAXED_WEATHERED_COPPER);
+		offerGrateRecipe(exporter, Blocks.WAXED_OXIDIZED_COPPER_GRATE, Blocks.WAXED_OXIDIZED_COPPER);
+		offerBulbRecipe(exporter, Blocks.COPPER_BULB, Blocks.COPPER_BLOCK);
+		offerBulbRecipe(exporter, Blocks.EXPOSED_COPPER_BULB, Blocks.EXPOSED_COPPER);
+		offerBulbRecipe(exporter, Blocks.WEATHERED_COPPER_BULB, Blocks.WEATHERED_COPPER);
+		offerBulbRecipe(exporter, Blocks.OXIDIZED_COPPER_BULB, Blocks.OXIDIZED_COPPER);
+		offerBulbRecipe(exporter, Blocks.WAXED_COPPER_BULB, Blocks.WAXED_COPPER_BLOCK);
+		offerBulbRecipe(exporter, Blocks.WAXED_EXPOSED_COPPER_BULB, Blocks.WAXED_EXPOSED_COPPER);
+		offerBulbRecipe(exporter, Blocks.WAXED_WEATHERED_COPPER_BULB, Blocks.WAXED_WEATHERED_COPPER);
+		offerBulbRecipe(exporter, Blocks.WAXED_OXIDIZED_COPPER_BULB, Blocks.WAXED_OXIDIZED_COPPER);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.COPPER_GRATE, Blocks.COPPER_BLOCK, 4);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.EXPOSED_COPPER_GRATE, Blocks.EXPOSED_COPPER, 4);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WEATHERED_COPPER_GRATE, Blocks.WEATHERED_COPPER, 4);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.OXIDIZED_COPPER_GRATE, Blocks.OXIDIZED_COPPER, 4);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WAXED_COPPER_GRATE, Blocks.WAXED_COPPER_BLOCK, 4);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WAXED_EXPOSED_COPPER_GRATE, Blocks.WAXED_EXPOSED_COPPER, 4);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WAXED_WEATHERED_COPPER_GRATE, Blocks.WAXED_WEATHERED_COPPER, 4);
+		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.WAXED_OXIDIZED_COPPER_GRATE, Blocks.WAXED_OXIDIZED_COPPER, 4);
+		ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.WIND_CHARGE, 4)
+			.input(Items.BREEZE_ROD)
+			.criterion("has_breeze_rod", conditionsFromItem(Items.BREEZE_ROD))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.MACE, 1)
+			.input('I', Items.BREEZE_ROD)
+			.input('#', Blocks.HEAVY_CORE)
+			.pattern(" # ")
+			.pattern(" I ")
+			.criterion("has_breeze_rod", conditionsFromItem(Items.BREEZE_ROD))
+			.criterion("has_heavy_core", conditionsFromItem(Blocks.HEAVY_CORE))
+			.offerTo(exporter);
+		createDoorRecipe(Blocks.COPPER_DOOR, Ingredient.ofItems(Items.COPPER_INGOT))
+			.criterion(hasItem(Items.COPPER_INGOT), conditionsFromItem(Items.COPPER_INGOT))
+			.offerTo(exporter);
+		createTrapdoorRecipe(Blocks.COPPER_TRAPDOOR, Ingredient.ofItems(Items.COPPER_INGOT))
+			.criterion(hasItem(Items.COPPER_INGOT), conditionsFromItem(Items.COPPER_INGOT))
+			.offerTo(exporter);
 	}
 
 	public static Stream<VanillaRecipeProvider.SmithingTemplate> streamSmithingTemplates() {
 		return Stream.of(
+				Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE,
 				Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE,
 				Items.DUNE_ARMOR_TRIM_SMITHING_TEMPLATE,
 				Items.EYE_ARMOR_TRIM_SMITHING_TEMPLATE,
+				Items.FLOW_ARMOR_TRIM_SMITHING_TEMPLATE,
 				Items.HOST_ARMOR_TRIM_SMITHING_TEMPLATE,
 				Items.RAISER_ARMOR_TRIM_SMITHING_TEMPLATE,
 				Items.RIB_ARMOR_TRIM_SMITHING_TEMPLATE,

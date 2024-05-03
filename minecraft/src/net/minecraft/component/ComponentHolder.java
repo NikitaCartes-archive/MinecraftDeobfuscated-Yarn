@@ -24,7 +24,7 @@ public interface ComponentHolder {
 	 * <p>The returned value should never be mutated.
 	 */
 	@Nullable
-	default <T> T get(DataComponentType<? extends T> type) {
+	default <T> T get(ComponentType<? extends T> type) {
 		return this.getComponents().get(type);
 	}
 
@@ -35,7 +35,7 @@ public interface ComponentHolder {
 	 * <p>This method does not initialize the components with {@code fallback}.
 	 * The returned value should never be mutated.
 	 */
-	default <T> T getOrDefault(DataComponentType<? extends T> type, T fallback) {
+	default <T> T getOrDefault(ComponentType<? extends T> type, T fallback) {
 		return this.getComponents().getOrDefault(type, fallback);
 	}
 
@@ -44,7 +44,7 @@ public interface ComponentHolder {
 	 * 
 	 * @implNote This is implemented as {@code get(type) != null}.
 	 */
-	default boolean contains(DataComponentType<?> type) {
+	default boolean contains(ComponentType<?> type) {
 		return this.getComponents().contains(type);
 	}
 }

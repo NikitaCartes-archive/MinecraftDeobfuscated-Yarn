@@ -3,7 +3,7 @@ package net.minecraft.predicate.item;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FireworkExplosionComponent;
 import net.minecraft.item.ItemStack;
@@ -13,7 +13,7 @@ public record FireworkExplosionPredicate(FireworkExplosionPredicate.Predicate pr
 		.xmap(FireworkExplosionPredicate::new, FireworkExplosionPredicate::predicate);
 
 	@Override
-	public DataComponentType<FireworkExplosionComponent> getComponentType() {
+	public ComponentType<FireworkExplosionComponent> getComponentType() {
 		return DataComponentTypes.FIREWORK_EXPLOSION;
 	}
 

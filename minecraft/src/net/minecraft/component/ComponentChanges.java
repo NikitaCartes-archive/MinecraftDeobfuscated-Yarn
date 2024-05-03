@@ -23,7 +23,7 @@ public final class ComponentChanges {
 		if (changes.isEmpty()) {
 			return EMPTY;
 		} else {
-			Reference2ObjectMap<DataComponentType<?>, Optional<?>> reference2ObjectMap = new Reference2ObjectArrayMap<>(changes.size());
+			Reference2ObjectMap<ComponentType<?>, Optional<?>> reference2ObjectMap = new Reference2ObjectArrayMap<>(changes.size());
 
 			for (Entry<ComponentChanges.Type, ?> entry : changes.entrySet()) {
 				ComponentChanges.Type type = (ComponentChanges.Type)entry.getKey();
@@ -39,14 +39,14 @@ public final class ComponentChanges {
 	}, changes -> {
 		Reference2ObjectMap<ComponentChanges.Type, Object> reference2ObjectMap = new Reference2ObjectArrayMap<>(changes.changedComponents.size());
 
-		for (Entry<DataComponentType<?>, Optional<?>> entry : Reference2ObjectMaps.fastIterable(changes.changedComponents)) {
-			DataComponentType<?> dataComponentType = (DataComponentType<?>)entry.getKey();
-			if (!dataComponentType.shouldSkipSerialization()) {
+		for (Entry<ComponentType<?>, Optional<?>> entry : Reference2ObjectMaps.fastIterable(changes.changedComponents)) {
+			ComponentType<?> componentType = (ComponentType<?>)entry.getKey();
+			if (!componentType.shouldSkipSerialization()) {
 				Optional<?> optional = (Optional<?>)entry.getValue();
 				if (optional.isPresent()) {
-					reference2ObjectMap.put(new ComponentChanges.Type(dataComponentType, false), optional.get());
+					reference2ObjectMap.put(new ComponentChanges.Type(componentType, false), optional.get());
 				} else {
-					reference2ObjectMap.put(new ComponentChanges.Type(dataComponentType, true), Unit.INSTANCE);
+					reference2ObjectMap.put(new ComponentChanges.Type(componentType, true), Unit.INSTANCE);
 				}
 			}
 		}
@@ -60,17 +60,17 @@ public final class ComponentChanges {
 			if (i == 0 && j == 0) {
 				return ComponentChanges.EMPTY;
 			} else {
-				Reference2ObjectMap<DataComponentType<?>, Optional<?>> reference2ObjectMap = new Reference2ObjectArrayMap<>(i + j);
+				Reference2ObjectMap<ComponentType<?>, Optional<?>> reference2ObjectMap = new Reference2ObjectArrayMap<>(i + j);
 
 				for (int k = 0; k < i; k++) {
-					DataComponentType<?> dataComponentType = DataComponentType.PACKET_CODEC.decode(registryByteBuf);
-					Object object = dataComponentType.getPacketCodec().decode(registryByteBuf);
-					reference2ObjectMap.put(dataComponentType, Optional.of(object));
+					ComponentType<?> componentType = ComponentType.PACKET_CODEC.decode(registryByteBuf);
+					Object object = componentType.getPacketCodec().decode(registryByteBuf);
+					reference2ObjectMap.put(componentType, Optional.of(object));
 				}
 
 				for (int k = 0; k < j; k++) {
-					DataComponentType<?> dataComponentType = DataComponentType.PACKET_CODEC.decode(registryByteBuf);
-					reference2ObjectMap.put(dataComponentType, Optional.empty());
+					ComponentType<?> componentType = ComponentType.PACKET_CODEC.decode(registryByteBuf);
+					reference2ObjectMap.put(componentType, Optional.empty());
 				}
 
 				return new ComponentChanges(reference2ObjectMap);
@@ -85,7 +85,7 @@ public final class ComponentChanges {
 				int i = 0;
 				int j = 0;
 
-				for (it.unimi.dsi.fastutil.objects.Reference2ObjectMap.Entry<DataComponentType<?>, Optional<?>> entry : Reference2ObjectMaps.fastIterable(
+				for (it.unimi.dsi.fastutil.objects.Reference2ObjectMap.Entry<ComponentType<?>, Optional<?>> entry : Reference2ObjectMaps.fastIterable(
 					componentChanges.changedComponents
 				)) {
 					if (((Optional)entry.getValue()).isPresent()) {
@@ -98,36 +98,36 @@ public final class ComponentChanges {
 				registryByteBuf.writeVarInt(i);
 				registryByteBuf.writeVarInt(j);
 
-				for (it.unimi.dsi.fastutil.objects.Reference2ObjectMap.Entry<DataComponentType<?>, Optional<?>> entryx : Reference2ObjectMaps.fastIterable(
+				for (it.unimi.dsi.fastutil.objects.Reference2ObjectMap.Entry<ComponentType<?>, Optional<?>> entryx : Reference2ObjectMaps.fastIterable(
 					componentChanges.changedComponents
 				)) {
 					Optional<?> optional = (Optional<?>)entryx.getValue();
 					if (optional.isPresent()) {
-						DataComponentType<?> dataComponentType = (DataComponentType<?>)entryx.getKey();
-						DataComponentType.PACKET_CODEC.encode(registryByteBuf, dataComponentType);
-						encode(registryByteBuf, dataComponentType, optional.get());
+						ComponentType<?> componentType = (ComponentType<?>)entryx.getKey();
+						ComponentType.PACKET_CODEC.encode(registryByteBuf, componentType);
+						encode(registryByteBuf, componentType, optional.get());
 					}
 				}
 
-				for (it.unimi.dsi.fastutil.objects.Reference2ObjectMap.Entry<DataComponentType<?>, Optional<?>> entryxx : Reference2ObjectMaps.fastIterable(
+				for (it.unimi.dsi.fastutil.objects.Reference2ObjectMap.Entry<ComponentType<?>, Optional<?>> entryxx : Reference2ObjectMaps.fastIterable(
 					componentChanges.changedComponents
 				)) {
 					if (((Optional)entryxx.getValue()).isEmpty()) {
-						DataComponentType<?> dataComponentType2 = (DataComponentType<?>)entryxx.getKey();
-						DataComponentType.PACKET_CODEC.encode(registryByteBuf, dataComponentType2);
+						ComponentType<?> componentType2 = (ComponentType<?>)entryxx.getKey();
+						ComponentType.PACKET_CODEC.encode(registryByteBuf, componentType2);
 					}
 				}
 			}
 		}
 
-		private static <T> void encode(RegistryByteBuf buf, DataComponentType<T> type, Object value) {
+		private static <T> void encode(RegistryByteBuf buf, ComponentType<T> type, Object value) {
 			type.getPacketCodec().encode(buf, (T)value);
 		}
 	};
 	private static final String REMOVE_PREFIX = "!";
-	final Reference2ObjectMap<DataComponentType<?>, Optional<?>> changedComponents;
+	final Reference2ObjectMap<ComponentType<?>, Optional<?>> changedComponents;
 
-	ComponentChanges(Reference2ObjectMap<DataComponentType<?>, Optional<?>> changedComponents) {
+	ComponentChanges(Reference2ObjectMap<ComponentType<?>, Optional<?>> changedComponents) {
 		this.changedComponents = changedComponents;
 	}
 
@@ -136,11 +136,11 @@ public final class ComponentChanges {
 	}
 
 	@Nullable
-	public <T> Optional<? extends T> get(DataComponentType<? extends T> type) {
+	public <T> Optional<? extends T> get(ComponentType<? extends T> type) {
 		return (Optional<? extends T>)this.changedComponents.get(type);
 	}
 
-	public Set<Entry<DataComponentType<?>, Optional<?>>> entrySet() {
+	public Set<Entry<ComponentType<?>, Optional<?>>> entrySet() {
 		return this.changedComponents.entrySet();
 	}
 
@@ -148,11 +148,11 @@ public final class ComponentChanges {
 		return this.changedComponents.size();
 	}
 
-	public ComponentChanges withRemovedIf(Predicate<DataComponentType<?>> removedTypePredicate) {
+	public ComponentChanges withRemovedIf(Predicate<ComponentType<?>> removedTypePredicate) {
 		if (this.isEmpty()) {
 			return EMPTY;
 		} else {
-			Reference2ObjectMap<DataComponentType<?>, Optional<?>> reference2ObjectMap = new Reference2ObjectArrayMap<>(this.changedComponents);
+			Reference2ObjectMap<ComponentType<?>, Optional<?>> reference2ObjectMap = new Reference2ObjectArrayMap<>(this.changedComponents);
 			reference2ObjectMap.keySet().removeIf(removedTypePredicate);
 			return reference2ObjectMap.isEmpty() ? EMPTY : new ComponentChanges(reference2ObjectMap);
 		}
@@ -167,7 +167,7 @@ public final class ComponentChanges {
 			return ComponentChanges.AddedRemovedPair.EMPTY;
 		} else {
 			ComponentMap.Builder builder = ComponentMap.builder();
-			Set<DataComponentType<?>> set = Sets.newIdentityHashSet();
+			Set<ComponentType<?>> set = Sets.newIdentityHashSet();
 			this.changedComponents.forEach((type, value) -> {
 				if (value.isPresent()) {
 					builder.put(type, value.get());
@@ -199,12 +199,12 @@ public final class ComponentChanges {
 		return toString(this.changedComponents);
 	}
 
-	static String toString(Reference2ObjectMap<DataComponentType<?>, Optional<?>> changes) {
+	static String toString(Reference2ObjectMap<ComponentType<?>, Optional<?>> changes) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append('{');
 		boolean bl = true;
 
-		for (Entry<DataComponentType<?>, Optional<?>> entry : Reference2ObjectMaps.fastIterable(changes)) {
+		for (Entry<ComponentType<?>, Optional<?>> entry : Reference2ObjectMaps.fastIterable(changes)) {
 			if (bl) {
 				bl = false;
 			} else {
@@ -226,22 +226,22 @@ public final class ComponentChanges {
 		return stringBuilder.toString();
 	}
 
-	public static record AddedRemovedPair(ComponentMap added, Set<DataComponentType<?>> removed) {
+	public static record AddedRemovedPair(ComponentMap added, Set<ComponentType<?>> removed) {
 		public static final ComponentChanges.AddedRemovedPair EMPTY = new ComponentChanges.AddedRemovedPair(ComponentMap.EMPTY, Set.of());
 	}
 
 	public static class Builder {
-		private final Reference2ObjectMap<DataComponentType<?>, Optional<?>> changes = new Reference2ObjectArrayMap<>();
+		private final Reference2ObjectMap<ComponentType<?>, Optional<?>> changes = new Reference2ObjectArrayMap<>();
 
 		Builder() {
 		}
 
-		public <T> ComponentChanges.Builder add(DataComponentType<T> type, T value) {
+		public <T> ComponentChanges.Builder add(ComponentType<T> type, T value) {
 			this.changes.put(type, Optional.of(value));
 			return this;
 		}
 
-		public <T> ComponentChanges.Builder remove(DataComponentType<T> type) {
+		public <T> ComponentChanges.Builder remove(ComponentType<T> type) {
 			this.changes.put(type, Optional.empty());
 			return this;
 		}
@@ -255,7 +255,7 @@ public final class ComponentChanges {
 		}
 	}
 
-	static record Type(DataComponentType<?> type, boolean removed) {
+	static record Type(ComponentType<?> type, boolean removed) {
 		public static final Codec<ComponentChanges.Type> CODEC = Codec.STRING
 			.flatXmap(
 				id -> {
@@ -265,20 +265,20 @@ public final class ComponentChanges {
 					}
 
 					Identifier identifier = Identifier.tryParse(id);
-					DataComponentType<?> dataComponentType = Registries.DATA_COMPONENT_TYPE.get(identifier);
-					if (dataComponentType == null) {
+					ComponentType<?> componentType = Registries.DATA_COMPONENT_TYPE.get(identifier);
+					if (componentType == null) {
 						return DataResult.error(() -> "No component with type: '" + identifier + "'");
 					} else {
-						return dataComponentType.shouldSkipSerialization()
+						return componentType.shouldSkipSerialization()
 							? DataResult.error(() -> "'" + identifier + "' is not a persistent component")
-							: DataResult.success(new ComponentChanges.Type(dataComponentType, bl));
+							: DataResult.success(new ComponentChanges.Type(componentType, bl));
 					}
 				},
 				type -> {
-					DataComponentType<?> dataComponentType = type.type();
-					Identifier identifier = Registries.DATA_COMPONENT_TYPE.getId(dataComponentType);
+					ComponentType<?> componentType = type.type();
+					Identifier identifier = Registries.DATA_COMPONENT_TYPE.getId(componentType);
 					return identifier == null
-						? DataResult.error(() -> "Unregistered component: " + dataComponentType)
+						? DataResult.error(() -> "Unregistered component: " + componentType)
 						: DataResult.success(type.removed() ? "!" + identifier : identifier.toString());
 				}
 			);

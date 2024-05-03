@@ -1,6 +1,7 @@
 package net.minecraft.world.gen;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registerable;
@@ -48,12 +49,17 @@ public class WorldPresets {
 
 	public static Optional<RegistryKey<WorldPreset>> getWorldPreset(DimensionOptionsRegistryHolder registry) {
 		return registry.getOrEmpty(DimensionOptions.OVERWORLD).flatMap(overworld -> {
-			ChunkGenerator chunkGenerator = overworld.chunkGenerator();
-			if (chunkGenerator instanceof FlatChunkGenerator) {
-				return Optional.of(FLAT);
-			} else {
-				return chunkGenerator instanceof DebugChunkGenerator ? Optional.of(DEBUG_ALL_BLOCK_STATES) : Optional.empty();
-			}
+			Object var10000;
+			Objects.requireNonNull(var10000);
+			ChunkGenerator chunkGenerator = (ChunkGenerator)var10000;
+
+			overworld.chunkGenerator();
+			return switch (chunkGenerator) {
+				case FlatChunkGenerator flatChunkGenerator -> Optional.of(FLAT);
+				case DebugChunkGenerator debugChunkGenerator -> Optional.of(DEBUG_ALL_BLOCK_STATES);
+				case NoiseChunkGenerator noiseChunkGenerator -> Optional.of(DEFAULT);
+				default -> Optional.empty();
+			};
 		});
 	}
 

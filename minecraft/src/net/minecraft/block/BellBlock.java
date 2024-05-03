@@ -219,7 +219,7 @@ public class BellBlock extends BlockWithEntity {
 
 	@Override
 	protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
-		if (explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK && !world.isClient()) {
+		if (explosion.canTriggerBlocks()) {
 			this.ring(world, pos, null);
 		}
 

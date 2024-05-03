@@ -6,8 +6,9 @@ import com.mojang.serialization.DynamicOps;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.minecraft.component.ComponentMap;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.Component;
+import net.minecraft.component.ComponentChanges;
+import net.minecraft.component.ComponentType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
@@ -24,11 +25,11 @@ public class ItemStackArgument {
 		(item, maxCount) -> Text.stringifiedTranslatable("arguments.item.overstacked", item, maxCount)
 	);
 	private final RegistryEntry<Item> item;
-	private final ComponentMap components;
+	private final ComponentChanges components;
 
-	public ItemStackArgument(RegistryEntry<Item> item, ComponentMap components) {
+	public ItemStackArgument(RegistryEntry<Item> item, ComponentChanges componentChanges) {
 		this.item = item;
-		this.components = components;
+		this.components = componentChanges;
 	}
 
 	public Item getItem() {
@@ -37,7 +38,7 @@ public class ItemStackArgument {
 
 	public ItemStack createStack(int amount, boolean checkOverstack) throws CommandSyntaxException {
 		ItemStack itemStack = new ItemStack(this.item, amount);
-		itemStack.applyComponentsFrom(this.components);
+		itemStack.applyUnvalidatedChanges(this.components);
 		if (checkOverstack && amount > itemStack.getMaxCount()) {
 			throw OVERSTACKED_EXCEPTION.create(this.getIdString(), itemStack.getMaxCount());
 		} else {
@@ -59,11 +60,20 @@ public class ItemStackArgument {
 
 	private String componentsAsString(RegistryWrapper.WrapperLookup registries) {
 		DynamicOps<NbtElement> dynamicOps = registries.getOps(NbtOps.INSTANCE);
-		return (String)this.components.stream().flatMap(component -> {
-			DataComponentType<?> dataComponentType = component.type();
-			Identifier identifier = Registries.DATA_COMPONENT_TYPE.getId(dataComponentType);
-			Optional<NbtElement> optional = component.encode(dynamicOps).result();
-			return identifier != null && !optional.isEmpty() ? Stream.of(identifier.toString() + "=" + optional.get()) : Stream.empty();
+		return (String)this.components.entrySet().stream().flatMap(entry -> {
+			ComponentType<?> componentType = (ComponentType<?>)entry.getKey();
+			Identifier identifier = Registries.DATA_COMPONENT_TYPE.getId(componentType);
+			if (identifier == null) {
+				return Stream.empty();
+			} else {
+				Optional<?> optional = (Optional<?>)entry.getValue();
+				if (optional.isPresent()) {
+					Component<?> component = Component.of(componentType, optional.get());
+					return component.encode(dynamicOps).result().stream().map(nbtElement -> identifier.toString() + "=" + nbtElement);
+				} else {
+					return Stream.of("!" + identifier.toString());
+				}
+			}
 		}).collect(Collectors.joining(String.valueOf(',')));
 	}
 

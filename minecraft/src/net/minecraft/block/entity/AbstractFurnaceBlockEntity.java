@@ -15,7 +15,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -29,6 +28,7 @@ import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.RecipeUnlocker;
+import net.minecraft.recipe.input.SingleStackRecipeInput;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
@@ -108,7 +108,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 	};
 	private final Object2IntOpenHashMap<Identifier> recipesUsed = new Object2IntOpenHashMap<>();
-	private final RecipeManager.MatchGetter<Inventory, ? extends AbstractCookingRecipe> matchGetter;
+	private final RecipeManager.MatchGetter<SingleStackRecipeInput, ? extends AbstractCookingRecipe> matchGetter;
 
 	protected AbstractFurnaceBlockEntity(
 		BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, RecipeType<? extends AbstractCookingRecipe> recipeType
@@ -262,12 +262,13 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 
 		ItemStack itemStack = blockEntity.inventory.get(1);
-		boolean bl3 = !blockEntity.inventory.get(0).isEmpty();
+		ItemStack itemStack2 = blockEntity.inventory.get(0);
+		boolean bl3 = !itemStack2.isEmpty();
 		boolean bl4 = !itemStack.isEmpty();
 		if (blockEntity.isBurning() || bl4 && bl3) {
 			RecipeEntry<?> recipeEntry;
 			if (bl3) {
-				recipeEntry = (RecipeEntry<?>)blockEntity.matchGetter.getFirstMatch(blockEntity, world).orElse(null);
+				recipeEntry = (RecipeEntry<?>)blockEntity.matchGetter.getFirstMatch(new SingleStackRecipeInput(itemStack2), world).orElse(null);
 			} else {
 				recipeEntry = null;
 			}
@@ -372,7 +373,11 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	private static int getCookTime(World world, AbstractFurnaceBlockEntity furnace) {
-		return (Integer)furnace.matchGetter.getFirstMatch(furnace, world).map(recipe -> ((AbstractCookingRecipe)recipe.value()).getCookingTime()).orElse(200);
+		SingleStackRecipeInput singleStackRecipeInput = new SingleStackRecipeInput(furnace.getStack(0));
+		return (Integer)furnace.matchGetter
+			.getFirstMatch(singleStackRecipeInput, world)
+			.map(recipe -> ((AbstractCookingRecipe)recipe.value()).getCookingTime())
+			.orElse(200);
 	}
 
 	public static boolean canUseAsFuel(ItemStack stack) {

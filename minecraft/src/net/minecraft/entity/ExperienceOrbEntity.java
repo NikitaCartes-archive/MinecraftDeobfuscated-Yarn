@@ -1,9 +1,10 @@
 package net.minecraft.entity;
 
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Optional;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
+import net.minecraft.enchantment.EnchantmentEffectContext;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,6 +14,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.ExperienceOrbSpawnS2CPacket;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.TypeFilter;
@@ -224,11 +226,11 @@ public class ExperienceOrbEntity extends Entity {
 
 	@Override
 	public void onPlayerCollision(PlayerEntity player) {
-		if (!this.getWorld().isClient) {
+		if (player instanceof ServerPlayerEntity serverPlayerEntity) {
 			if (player.experiencePickUpDelay == 0) {
 				player.experiencePickUpDelay = 2;
 				player.sendPickup(this, 1);
-				int i = this.repairPlayerGears(player, this.amount);
+				int i = this.repairPlayerGears(serverPlayerEntity, this.amount);
 				if (i > 0) {
 					player.addExperience(i);
 				}
@@ -247,25 +249,26 @@ public class ExperienceOrbEntity extends Entity {
 	 * 
 	 * @return the amount of leftover experience
 	 */
-	private int repairPlayerGears(PlayerEntity player, int amount) {
-		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.chooseEquipmentWith(Enchantments.MENDING, player, ItemStack::isDamaged);
-		if (entry != null) {
-			ItemStack itemStack = (ItemStack)entry.getValue();
-			int i = Math.min(this.getMendingRepairAmount(amount), itemStack.getDamage());
-			itemStack.setDamage(itemStack.getDamage() - i);
-			int j = amount - this.getMendingRepairCost(i);
-			return j > 0 ? this.repairPlayerGears(player, j) : 0;
+	private int repairPlayerGears(ServerPlayerEntity player, int amount) {
+		Optional<EnchantmentEffectContext> optional = EnchantmentHelper.chooseEquipmentWith(
+			EnchantmentEffectComponentTypes.REPAIR_WITH_XP, player, ItemStack::isDamaged
+		);
+		if (optional.isPresent()) {
+			ItemStack itemStack = ((EnchantmentEffectContext)optional.get()).stack();
+			int i = EnchantmentHelper.getRepairWithXp(player.getServerWorld(), itemStack, amount);
+			int j = Math.min(i, itemStack.getDamage());
+			itemStack.setDamage(itemStack.getDamage() - j);
+			if (j > 0) {
+				int k = amount - j * amount / i;
+				if (k > 0) {
+					return this.repairPlayerGears(player, k);
+				}
+			}
+
+			return 0;
 		} else {
 			return amount;
 		}
-	}
-
-	private int getMendingRepairCost(int repairAmount) {
-		return repairAmount / 2;
-	}
-
-	private int getMendingRepairAmount(int experienceAmount) {
-		return experienceAmount * 2;
 	}
 
 	public int getExperienceAmount() {

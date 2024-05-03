@@ -6,15 +6,15 @@ import net.minecraft.block.BlockState;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.ToolComponent;
-import net.minecraft.enchantment.DensityEnchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -28,13 +28,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
 public class MaceItem extends Item {
-	private static final int ATTACK_DAMAGE_MODIFIER_VALUE = 6;
-	private static final float ATTACK_SPEED_MODIFIER_VALUE = -2.4F;
-	private static final float MINING_SPEED_MULTIPLIER = 1.5F;
+	private static final int ATTACK_DAMAGE_MODIFIER_VALUE = 5;
+	private static final float ATTACK_SPEED_MODIFIER_VALUE = -3.5F;
+	public static final float MINING_SPEED_MULTIPLIER = 1.5F;
 	private static final float field_50141 = 5.0F;
 	public static final float KNOCKBACK_RANGE = 3.5F;
 	private static final float KNOCKBACK_POWER = 0.7F;
-	private static final float FALL_DISTANCE_MULTIPLIER = 3.0F;
 
 	public MaceItem(Item.Settings settings) {
 		super(settings);
@@ -44,12 +43,12 @@ public class MaceItem extends Item {
 		return AttributeModifiersComponent.builder()
 			.add(
 				EntityAttributes.GENERIC_ATTACK_DAMAGE,
-				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Weapon modifier", 6.0, EntityAttributeModifier.Operation.ADD_VALUE),
+				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Weapon modifier", 5.0, EntityAttributeModifier.Operation.ADD_VALUE),
 				AttributeModifierSlot.MAINHAND
 			)
 			.add(
 				EntityAttributes.GENERIC_ATTACK_SPEED,
-				new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Weapon modifier", -2.4F, EntityAttributeModifier.Operation.ADD_VALUE),
+				new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Weapon modifier", -3.5, EntityAttributeModifier.Operation.ADD_VALUE),
 				AttributeModifierSlot.MAINHAND
 			)
 			.build();
@@ -71,7 +70,6 @@ public class MaceItem extends Item {
 
 	@Override
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-		stack.damage(1, attacker, EquipmentSlot.MAINHAND);
 		if (attacker instanceof ServerPlayerEntity serverPlayerEntity && shouldDealAdditionalDamage(serverPlayerEntity)) {
 			ServerWorld serverWorld = (ServerWorld)attacker.getWorld();
 			serverPlayerEntity.currentExplosionImpactPos = serverPlayerEntity.getPos();
@@ -105,15 +103,40 @@ public class MaceItem extends Item {
 	}
 
 	@Override
+	public void postDamageEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+		stack.damage(1, attacker, EquipmentSlot.MAINHAND);
+	}
+
+	@Override
 	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
 		return ingredient.isOf(Items.BREEZE_ROD);
 	}
 
 	@Override
-	public float getBonusAttackDamage(PlayerEntity player, float baseAttackDamage) {
-		int i = EnchantmentHelper.getEquipmentLevel(Enchantments.DENSITY, player);
-		float f = DensityEnchantment.getDamage(i, player.fallDistance);
-		return shouldDealAdditionalDamage(player) ? 3.0F * player.fallDistance + f : 0.0F;
+	public float getBonusAttackDamage(Entity target, float baseAttackDamage, DamageSource damageSource) {
+		if (damageSource.getSource() instanceof LivingEntity livingEntity) {
+			if (!shouldDealAdditionalDamage(livingEntity)) {
+				return 0.0F;
+			} else {
+				float f = 3.0F;
+				float g = 8.0F;
+				float h = livingEntity.fallDistance;
+				float i;
+				if (h <= 3.0F) {
+					i = 4.0F * h;
+				} else if (h <= 8.0F) {
+					i = 12.0F + 2.0F * (h - 3.0F);
+				} else {
+					i = 22.0F + h - 8.0F;
+				}
+
+				return livingEntity.getWorld() instanceof ServerWorld serverWorld
+					? i + EnchantmentHelper.getSmashDamagePerFallenBlock(serverWorld, livingEntity.getMainHandStack(), target, damageSource, 0.0F) * h
+					: i;
+			}
+		} else {
+			return 0.0F;
+		}
 	}
 
 	private static void knockbackNearbyEntities(World world, PlayerEntity player, Entity attacked) {
@@ -134,21 +157,32 @@ public class MaceItem extends Item {
 			boolean bl2;
 			boolean bl3;
 			boolean var10000;
-			label44: {
+			label62: {
 				bl = !entity.isSpectator();
 				bl2 = entity != player && entity != attacked;
 				bl3 = !player.isTeammate(entity);
+				if (entity instanceof TameableEntity tameableEntity && tameableEntity.isTamed() && player.getUuid().equals(tameableEntity.getOwnerUuid())) {
+					var10000 = true;
+					break label62;
+				}
+
+				var10000 = false;
+			}
+
+			boolean bl4;
+			label55: {
+				bl4 = !var10000;
 				if (entity instanceof ArmorStandEntity armorStandEntity && armorStandEntity.isMarker()) {
 					var10000 = false;
-					break label44;
+					break label55;
 				}
 
 				var10000 = true;
 			}
 
-			boolean bl4 = var10000;
-			boolean bl5 = attacked.squaredDistanceTo(entity) <= Math.pow(3.5, 2.0);
-			return bl && bl2 && bl3 && bl4 && bl5;
+			boolean bl5 = var10000;
+			boolean bl6 = attacked.squaredDistanceTo(entity) <= Math.pow(3.5, 2.0);
+			return bl && bl2 && bl3 && bl4 && bl5 && bl6;
 		};
 	}
 
@@ -159,7 +193,7 @@ public class MaceItem extends Item {
 			* (1.0 - attacked.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
 	}
 
-	public static boolean shouldDealAdditionalDamage(PlayerEntity attacker) {
-		return attacker.fallDistance > 1.5F && !attacker.isFallFlying();
+	public static boolean shouldDealAdditionalDamage(LivingEntity livingEntity) {
+		return livingEntity.fallDistance > 1.5F && !livingEntity.isFallFlying();
 	}
 }

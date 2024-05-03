@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
@@ -33,7 +34,8 @@ public interface Equipment {
 			return TypedActionResult.pass(itemStack);
 		} else {
 			ItemStack itemStack2 = user.getEquippedStack(equipmentSlot);
-			if ((!EnchantmentHelper.hasBindingCurse(itemStack2) || user.isCreative()) && !ItemStack.areEqual(itemStack, itemStack2)) {
+			if ((!EnchantmentHelper.hasAnyEnchantmentsWith(itemStack2, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE) || user.isCreative())
+				&& !ItemStack.areEqual(itemStack, itemStack2)) {
 				if (!world.isClient()) {
 					user.incrementStat(Stats.USED.getOrCreateStat(item));
 				}

@@ -1,7 +1,9 @@
 package net.minecraft.entity.mob;
 
 import javax.annotation.Nullable;
-import net.minecraft.enchantment.Enchantments;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.provider.EnchantmentProvider;
+import net.minecraft.enchantment.provider.EnchantmentProviders;
 import net.minecraft.entity.CrossbowUser;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -33,6 +35,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -156,8 +159,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 		if (random.nextInt(300) == 0) {
 			ItemStack itemStack = this.getMainHandStack();
 			if (itemStack.isOf(Items.CROSSBOW)) {
-				itemStack.addEnchantment(Enchantments.PIERCING, 1);
-				this.equipStack(EquipmentSlot.MAINHAND, itemStack);
+				EnchantmentHelper.applyEnchantmentProvider(itemStack, EnchantmentProviders.PILLAGER_SPAWN_CROSSBOW, this.getWorld(), this.getBlockPos(), random);
 			}
 		}
 	}
@@ -219,14 +221,19 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 		boolean bl = this.random.nextFloat() <= raid.getEnchantmentChance();
 		if (bl) {
 			ItemStack itemStack = new ItemStack(Items.CROSSBOW);
+			RegistryKey<EnchantmentProvider> registryKey;
 			if (wave > raid.getMaxWaves(Difficulty.NORMAL)) {
-				itemStack.addEnchantment(Enchantments.QUICK_CHARGE, 2);
+				registryKey = EnchantmentProviders.PILLAGER_POST_WAVE_5_RAID;
 			} else if (wave > raid.getMaxWaves(Difficulty.EASY)) {
-				itemStack.addEnchantment(Enchantments.QUICK_CHARGE, 1);
+				registryKey = EnchantmentProviders.PILLAGER_POST_WAVE_3_RAID;
+			} else {
+				registryKey = null;
 			}
 
-			itemStack.addEnchantment(Enchantments.MULTISHOT, 1);
-			this.equipStack(EquipmentSlot.MAINHAND, itemStack);
+			if (registryKey != null) {
+				EnchantmentHelper.applyEnchantmentProvider(itemStack, registryKey, this.getWorld(), this.getBlockPos(), this.getRandom());
+				this.equipStack(EquipmentSlot.MAINHAND, itemStack);
+			}
 		}
 	}
 

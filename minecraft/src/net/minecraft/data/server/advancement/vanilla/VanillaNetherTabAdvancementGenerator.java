@@ -288,6 +288,10 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 						.addEffect(StatusEffects.POISON)
 						.addEffect(StatusEffects.SLOW_FALLING)
 						.addEffect(StatusEffects.RESISTANCE)
+						.addEffect(StatusEffects.OOZING)
+						.addEffect(StatusEffects.INFESTED)
+						.addEffect(StatusEffects.WIND_CHARGED)
+						.addEffect(StatusEffects.WEAVING)
 				)
 			)
 			.build(exporter, "nether/all_potions");
@@ -335,6 +339,12 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 						.addEffect(StatusEffects.BAD_OMEN)
 						.addEffect(StatusEffects.HERO_OF_THE_VILLAGE)
 						.addEffect(StatusEffects.DARKNESS)
+						.addEffect(StatusEffects.OOZING)
+						.addEffect(StatusEffects.INFESTED)
+						.addEffect(StatusEffects.WIND_CHARGED)
+						.addEffect(StatusEffects.WEAVING)
+						.addEffect(StatusEffects.TRIAL_OMEN)
+						.addEffect(StatusEffects.RAID_OMEN)
 				)
 			)
 			.build(exporter, "nether/all_effects");

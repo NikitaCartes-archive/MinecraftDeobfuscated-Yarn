@@ -2,7 +2,7 @@ package net.minecraft.predicate.item;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange;
@@ -17,7 +17,7 @@ public record DamagePredicate(NumberRange.IntRange durability, NumberRange.IntRa
 	);
 
 	@Override
-	public DataComponentType<Integer> getComponentType() {
+	public ComponentType<Integer> getComponentType() {
 		return DataComponentTypes.DAMAGE;
 	}
 

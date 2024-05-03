@@ -76,9 +76,11 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 
 	@Override
 	public void setFocused(@Nullable Element focused) {
-		super.setFocused(focused);
-		if (focused == null) {
-			this.setSelected(null);
+		if (this.getFocused() != focused) {
+			super.setFocused(focused);
+			if (focused == null) {
+				this.setSelected(null);
+			}
 		}
 	}
 

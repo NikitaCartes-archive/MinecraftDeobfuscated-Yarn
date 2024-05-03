@@ -1,5 +1,6 @@
 package net.minecraft.entity.mob;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -52,8 +53,8 @@ public class StrayEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected PersistentProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier) {
-		PersistentProjectileEntity persistentProjectileEntity = super.createArrowProjectile(arrow, damageModifier);
+	protected PersistentProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier, @Nullable ItemStack shotFrom) {
+		PersistentProjectileEntity persistentProjectileEntity = super.createArrowProjectile(arrow, damageModifier, shotFrom);
 		if (persistentProjectileEntity instanceof ArrowEntity) {
 			((ArrowEntity)persistentProjectileEntity).addEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 600));
 		}

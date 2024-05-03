@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
-public class IdentifierSearchProvider<T> implements ReloadableSearchProvider<T> {
+public class IdentifierSearchProvider<T> implements SearchProvider<T> {
 	protected final Comparator<T> lastIndexComparator;
 	protected final IdentifierSearcher<T> idSearcher;
 

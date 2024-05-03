@@ -51,6 +51,8 @@ public class ArmorTrimPatterns {
 		register(registry, Items.SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE, SILENCE);
 		register(registry, Items.RAISER_ARMOR_TRIM_SMITHING_TEMPLATE, RAISER);
 		register(registry, Items.HOST_ARMOR_TRIM_SMITHING_TEMPLATE, HOST);
+		register(registry, Items.FLOW_ARMOR_TRIM_SMITHING_TEMPLATE, FLOW);
+		register(registry, Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, BOLT);
 	}
 
 	public static Optional<RegistryEntry.Reference<ArmorTrimPattern>> get(RegistryWrapper.WrapperLookup registriesLookup, ItemStack stack) {

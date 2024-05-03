@@ -1,5 +1,6 @@
 package net.minecraft.enchantment;
 
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.collection.Weighted;
 
 /**
@@ -14,11 +15,11 @@ import net.minecraft.util.collection.Weighted;
  * <p>This class is immutable. It does not override hashCode or equals.
  */
 public class EnchantmentLevelEntry extends Weighted.Absent {
-	public final Enchantment enchantment;
+	public final RegistryEntry<Enchantment> enchantment;
 	public final int level;
 
-	public EnchantmentLevelEntry(Enchantment enchantment, int level) {
-		super(enchantment.getWeight());
+	public EnchantmentLevelEntry(RegistryEntry<Enchantment> enchantment, int level) {
+		super(enchantment.value().getWeight());
 		this.enchantment = enchantment;
 		this.level = level;
 	}

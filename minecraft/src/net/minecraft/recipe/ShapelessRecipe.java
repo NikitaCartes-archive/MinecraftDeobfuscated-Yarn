@@ -4,11 +4,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
@@ -51,22 +51,17 @@ public class ShapelessRecipe implements CraftingRecipe {
 		return this.ingredients;
 	}
 
-	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
-		RecipeMatcher recipeMatcher = new RecipeMatcher();
-		int i = 0;
-
-		for (int j = 0; j < recipeInputInventory.size(); j++) {
-			ItemStack itemStack = recipeInputInventory.getStack(j);
-			if (!itemStack.isEmpty()) {
-				i++;
-				recipeMatcher.addInput(itemStack, 1);
-			}
+	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
+		if (craftingRecipeInput.getStackCount() != this.ingredients.size()) {
+			return false;
+		} else {
+			return craftingRecipeInput.getSize() == 1 && this.ingredients.size() == 1
+				? ((Ingredient)this.ingredients.getFirst()).test(craftingRecipeInput.getStackInSlot(0))
+				: craftingRecipeInput.getRecipeMatcher().match(this, null);
 		}
-
-		return i == this.ingredients.size() && recipeMatcher.match(this, null);
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
+	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
 		return this.result.copy();
 	}
 

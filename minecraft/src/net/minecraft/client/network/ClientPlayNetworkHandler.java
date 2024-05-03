@@ -92,6 +92,7 @@ import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
@@ -348,6 +349,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private boolean displayedUnsecureChatWarning = false;
 	private volatile boolean worldCleared;
 	private final Scoreboard scoreboard = new Scoreboard();
+	private final SearchManager field_51825 = new SearchManager();
 
 	public ClientPlayNetworkHandler(MinecraftClient client, ClientConnection clientConnection, ClientConnectionState clientConnectionState) {
 		super(client, clientConnection, clientConnectionState);
@@ -1476,7 +1478,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.recipeManager.setRecipes(packet.getRecipes());
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
 		clientRecipeBook.reload(this.recipeManager.sortedValues(), this.client.world.getRegistryManager());
-		this.client.reloadSearchProvider(SearchManager.RECIPE_OUTPUT, clientRecipeBook.getOrderedResults());
+		this.field_51825.method_60352(clientRecipeBook, this.combinedDynamicRegistries);
 	}
 
 	@Override
@@ -1573,6 +1575,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		ClientTagLoader clientTagLoader = new ClientTagLoader();
 		packet.getGroups().forEach(clientTagLoader::put);
 		clientTagLoader.load(this.combinedDynamicRegistries, this.connection.isLocal());
+		List<ItemStack> list = List.copyOf(ItemGroups.getSearchGroup().getDisplayStacks());
+		this.field_51825.method_60355(list);
 	}
 
 	@Override
@@ -2450,5 +2454,13 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 	public BrewingRecipeRegistry getBrewingRecipeRegistry() {
 		return this.brewingRecipeRegistry;
+	}
+
+	public void method_60346() {
+		this.field_51825.method_60348();
+	}
+
+	public SearchManager method_60347() {
+		return this.field_51825;
 	}
 }

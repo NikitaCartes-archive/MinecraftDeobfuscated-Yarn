@@ -1,10 +1,13 @@
 package net.minecraft.entity.projectile;
 
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.GameRules;
@@ -35,13 +38,12 @@ public class FireballEntity extends AbstractFireballEntity {
 	@Override
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		super.onEntityHit(entityHitResult);
-		if (!this.getWorld().isClient) {
-			Entity entity = entityHitResult.getEntity();
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			Entity var6 = entityHitResult.getEntity();
 			Entity entity2 = this.getOwner();
-			entity.damage(this.getDamageSources().fireball(this, entity2), 6.0F);
-			if (entity2 instanceof LivingEntity) {
-				this.applyDamageEffects((LivingEntity)entity2, entity);
-			}
+			DamageSource damageSource = this.getDamageSources().fireball(this, entity2);
+			var6.damage(damageSource, 6.0F);
+			EnchantmentHelper.onTargetDamaged(serverWorld, var6, damageSource);
 		}
 	}
 

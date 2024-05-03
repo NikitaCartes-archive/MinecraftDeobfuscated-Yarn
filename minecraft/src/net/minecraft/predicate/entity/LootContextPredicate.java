@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.Util;
 
@@ -14,7 +13,7 @@ import net.minecraft.util.Util;
  * unified conditions to {@linkplain #test match}. Mainly used by advancements.
  */
 public class LootContextPredicate {
-	public static final Codec<LootContextPredicate> CODEC = LootConditionTypes.CODEC
+	public static final Codec<LootContextPredicate> CODEC = LootCondition.CODEC
 		.listOf()
 		.xmap(LootContextPredicate::new, lootContextPredicate -> lootContextPredicate.conditions);
 	private final List<LootCondition> conditions;

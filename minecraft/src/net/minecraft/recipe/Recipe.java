@@ -2,12 +2,12 @@ package net.minecraft.recipe;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.block.Blocks;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
@@ -27,7 +27,7 @@ import net.minecraft.world.World;
  * or recipe books. Users can have stub implementations if they do not use
  * those functionalities.
  */
-public interface Recipe<C extends Inventory> {
+public interface Recipe<T extends RecipeInput> {
 	Codec<Recipe<?>> CODEC = Registries.RECIPE_SERIALIZER.getCodec().dispatch(Recipe::getSerializer, RecipeSerializer::codec);
 	PacketCodec<RegistryByteBuf, Recipe<?>> PACKET_CODEC = PacketCodecs.registryValue(RegistryKeys.RECIPE_SERIALIZER)
 		.dispatch(Recipe::getSerializer, RecipeSerializer::packetCodec);
@@ -39,10 +39,9 @@ public interface Recipe<C extends Inventory> {
 	 * <p>The {@code world} currently is only used by the map cloning recipe to
 	 * prevent duplication of explorer maps.
 	 * 
-	 * @param inventory the input inventory
 	 * @param world the input world
 	 */
-	boolean matches(C inventory, World world);
+	boolean matches(T input, World world);
 
 	/**
 	 * Crafts this recipe.
@@ -52,10 +51,8 @@ public interface Recipe<C extends Inventory> {
 	 * <p>This method should return a new item stack on each call.
 	 * 
 	 * @return the resulting item stack
-	 * 
-	 * @param inventory the input inventory
 	 */
-	ItemStack craft(C inventory, RegistryWrapper.WrapperLookup lookup);
+	ItemStack craft(T input, RegistryWrapper.WrapperLookup lookup);
 
 	/**
 	 * {@return whether this recipe will fit into the given grid size}
@@ -84,14 +81,12 @@ public interface Recipe<C extends Inventory> {
 	 * At each index, the list contains the {@linkplain net.minecraft.item.Item#getRecipeRemainder()
 	 * remainder} of the item stack at the same index in the {@code inventory}, or is {@linkplain
 	 * ItemStack#EMPTY empty} if the stack has no remainder.
-	 * 
-	 * @param inventory the input inventory
 	 */
-	default DefaultedList<ItemStack> getRemainder(C inventory) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
+	default DefaultedList<ItemStack> getRemainder(T input) {
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(input.getSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
-			Item item = inventory.getStack(i).getItem();
+			Item item = input.getStackInSlot(i).getItem();
 			if (item.hasRecipeRemainder()) {
 				defaultedList.set(i, new ItemStack(item.getRecipeRemainder()));
 			}

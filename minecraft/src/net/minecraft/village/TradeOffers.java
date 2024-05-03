@@ -21,7 +21,8 @@ import net.minecraft.component.type.SuspiciousStewEffectsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
-import net.minecraft.enchantment.Enchantments;
+import net.minecraft.enchantment.provider.EnchantmentProvider;
+import net.minecraft.enchantment.provider.TradeRebalanceEnchantmentProviders;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
@@ -37,12 +38,16 @@ import net.minecraft.item.map.MapDecorationTypes;
 import net.minecraft.item.map.MapState;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.StructureTags;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
@@ -291,21 +296,23 @@ public class TradeOffers {
 							1,
 							new TradeOffers.Factory[]{
 								new TradeOffers.BuyItemFactory(Items.PAPER, 24, 16, 2),
-								new TradeOffers.EnchantBookFactory(1),
+								new TradeOffers.EnchantBookFactory(1, EnchantmentTags.TRADEABLE),
 								new TradeOffers.SellItemFactory(Blocks.BOOKSHELF, 9, 1, 12, 1)
 							}
 						)
 						.put(
 							2,
 							new TradeOffers.Factory[]{
-								new TradeOffers.BuyItemFactory(Items.BOOK, 4, 12, 10), new TradeOffers.EnchantBookFactory(5), new TradeOffers.SellItemFactory(Items.LANTERN, 1, 1, 5)
+								new TradeOffers.BuyItemFactory(Items.BOOK, 4, 12, 10),
+								new TradeOffers.EnchantBookFactory(5, EnchantmentTags.TRADEABLE),
+								new TradeOffers.SellItemFactory(Items.LANTERN, 1, 1, 5)
 							}
 						)
 						.put(
 							3,
 							new TradeOffers.Factory[]{
 								new TradeOffers.BuyItemFactory(Items.INK_SAC, 5, 12, 20),
-								new TradeOffers.EnchantBookFactory(10),
+								new TradeOffers.EnchantBookFactory(10, EnchantmentTags.TRADEABLE),
 								new TradeOffers.SellItemFactory(Items.GLASS, 1, 4, 10)
 							}
 						)
@@ -313,7 +320,7 @@ public class TradeOffers {
 							4,
 							new TradeOffers.Factory[]{
 								new TradeOffers.BuyItemFactory(Items.WRITABLE_BOOK, 2, 12, 30),
-								new TradeOffers.EnchantBookFactory(15),
+								new TradeOffers.EnchantBookFactory(15, EnchantmentTags.TRADEABLE),
 								new TradeOffers.SellItemFactory(Items.CLOCK, 5, 1, 15),
 								new TradeOffers.SellItemFactory(Items.COMPASS, 4, 1, 15)
 							}
@@ -802,70 +809,84 @@ public class TradeOffers {
 					4,
 					new TradeOffers.Factory[]{
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_BOOTS, Enchantments.THORNS, 1), 8, 1, 3, 15, 0.05F), VillagerType.DESERT
+							new TradeOffers.SellItemFactory(Items.IRON_BOOTS, 8, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.DESERT_ARMORER_BOOTS_4), VillagerType.DESERT
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_HELMET, Enchantments.THORNS, 1), 9, 1, 3, 15, 0.05F), VillagerType.DESERT
+							new TradeOffers.SellItemFactory(Items.IRON_HELMET, 9, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.DESERT_ARMORER_HELMET_4), VillagerType.DESERT
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_LEGGINGS, Enchantments.THORNS, 1), 11, 1, 3, 15, 0.05F), VillagerType.DESERT
+							new TradeOffers.SellItemFactory(Items.IRON_LEGGINGS, 11, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.DESERT_ARMORER_LEGGINGS_4),
+							VillagerType.DESERT
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_CHESTPLATE, Enchantments.THORNS, 1), 13, 1, 3, 15, 0.05F), VillagerType.DESERT
+							new TradeOffers.SellItemFactory(Items.IRON_CHESTPLATE, 13, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.DESERT_ARMORER_CHESTPLATE_4),
+							VillagerType.DESERT
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_BOOTS, Enchantments.PROTECTION, 1), 8, 1, 3, 15, 0.05F), VillagerType.PLAINS
+							new TradeOffers.SellItemFactory(Items.IRON_BOOTS, 8, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.PLAINS_ARMORER_BOOTS_4), VillagerType.PLAINS
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_HELMET, Enchantments.PROTECTION, 1), 9, 1, 3, 15, 0.05F), VillagerType.PLAINS
+							new TradeOffers.SellItemFactory(Items.IRON_HELMET, 9, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.PLAINS_ARMORER_HELMET_4), VillagerType.PLAINS
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_LEGGINGS, Enchantments.PROTECTION, 1), 11, 1, 3, 15, 0.05F), VillagerType.PLAINS
+							new TradeOffers.SellItemFactory(Items.IRON_LEGGINGS, 11, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.PLAINS_ARMORER_LEGGINGS_4),
+							VillagerType.PLAINS
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_CHESTPLATE, Enchantments.PROTECTION, 1), 13, 1, 3, 15, 0.05F), VillagerType.PLAINS
+							new TradeOffers.SellItemFactory(Items.IRON_CHESTPLATE, 13, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.PLAINS_ARMORER_CHESTPLATE_4),
+							VillagerType.PLAINS
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_BOOTS, Enchantments.BINDING_CURSE, 1), 2, 1, 3, 15, 0.05F), VillagerType.SAVANNA
+							new TradeOffers.SellItemFactory(Items.IRON_BOOTS, 2, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.SAVANNA_ARMORER_BOOTS_4), VillagerType.SAVANNA
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_HELMET, Enchantments.BINDING_CURSE, 1), 3, 1, 3, 15, 0.05F), VillagerType.SAVANNA
+							new TradeOffers.SellItemFactory(Items.IRON_HELMET, 3, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.SAVANNA_ARMORER_HELMET_4),
+							VillagerType.SAVANNA
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_LEGGINGS, Enchantments.BINDING_CURSE, 1), 5, 1, 3, 15, 0.05F), VillagerType.SAVANNA
+							new TradeOffers.SellItemFactory(Items.IRON_LEGGINGS, 5, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.SAVANNA_ARMORER_LEGGINGS_4),
+							VillagerType.SAVANNA
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_CHESTPLATE, Enchantments.BINDING_CURSE, 1), 7, 1, 3, 15, 0.05F), VillagerType.SAVANNA
+							new TradeOffers.SellItemFactory(Items.IRON_CHESTPLATE, 7, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.SAVANNA_ARMORER_CHESTPLATE_4),
+							VillagerType.SAVANNA
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_BOOTS, Enchantments.FROST_WALKER, 1), 8, 1, 3, 15, 0.05F), VillagerType.SNOW
+							new TradeOffers.SellItemFactory(Items.IRON_BOOTS, 8, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.SNOW_ARMORER_BOOTS_4), VillagerType.SNOW
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.IRON_HELMET, Enchantments.AQUA_AFFINITY, 1), 9, 1, 3, 15, 0.05F), VillagerType.SNOW
+							new TradeOffers.SellItemFactory(Items.IRON_HELMET, 9, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.SNOW_ARMORER_HELMET_4), VillagerType.SNOW
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.CHAINMAIL_BOOTS, Enchantments.UNBREAKING, 1), 8, 1, 3, 15, 0.05F), VillagerType.JUNGLE
+							new TradeOffers.SellItemFactory(Items.CHAINMAIL_BOOTS, 8, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.JUNGLE_ARMORER_BOOTS_4),
+							VillagerType.JUNGLE
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.CHAINMAIL_HELMET, Enchantments.UNBREAKING, 1), 9, 1, 3, 15, 0.05F), VillagerType.JUNGLE
+							new TradeOffers.SellItemFactory(Items.CHAINMAIL_HELMET, 9, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.JUNGLE_ARMORER_HELMET_4),
+							VillagerType.JUNGLE
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.CHAINMAIL_LEGGINGS, Enchantments.UNBREAKING, 1), 11, 1, 3, 15, 0.05F), VillagerType.JUNGLE
+							new TradeOffers.SellItemFactory(Items.CHAINMAIL_LEGGINGS, 11, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.JUNGLE_ARMORER_LEGGINGS_4),
+							VillagerType.JUNGLE
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.CHAINMAIL_CHESTPLATE, Enchantments.UNBREAKING, 1), 13, 1, 3, 15, 0.05F), VillagerType.JUNGLE
+							new TradeOffers.SellItemFactory(Items.CHAINMAIL_CHESTPLATE, 13, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.JUNGLE_ARMORER_CHESTPLATE_4),
+							VillagerType.JUNGLE
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.CHAINMAIL_BOOTS, Enchantments.MENDING, 1), 8, 1, 3, 15, 0.05F), VillagerType.SWAMP
+							new TradeOffers.SellItemFactory(Items.CHAINMAIL_BOOTS, 8, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.SWAMP_ARMORER_BOOTS_4), VillagerType.SWAMP
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.CHAINMAIL_HELMET, Enchantments.MENDING, 1), 9, 1, 3, 15, 0.05F), VillagerType.SWAMP
+							new TradeOffers.SellItemFactory(Items.CHAINMAIL_HELMET, 9, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.SWAMP_ARMORER_HELMET_4),
+							VillagerType.SWAMP
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.CHAINMAIL_LEGGINGS, Enchantments.MENDING, 1), 11, 1, 3, 15, 0.05F), VillagerType.SWAMP
+							new TradeOffers.SellItemFactory(Items.CHAINMAIL_LEGGINGS, 11, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.SWAMP_ARMORER_LEGGINGS_4),
+							VillagerType.SWAMP
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.CHAINMAIL_CHESTPLATE, Enchantments.MENDING, 1), 13, 1, 3, 15, 0.05F), VillagerType.SWAMP
+							new TradeOffers.SellItemFactory(Items.CHAINMAIL_CHESTPLATE, 13, 1, 3, 15, 0.05F, TradeRebalanceEnchantmentProviders.SWAMP_ARMORER_CHESTPLATE_4),
+							VillagerType.SWAMP
 						),
 						TradeOffers.TypedWrapperFactory.of(
 							new TradeOffers.ProcessItemFactory(Items.DIAMOND_BOOTS, 1, 4, Items.DIAMOND_LEGGINGS, 1, 3, 15, 0.05F), VillagerType.TAIGA
@@ -885,52 +906,72 @@ public class TradeOffers {
 					5,
 					new TradeOffers.Factory[]{
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 4, 16, enchant(Items.DIAMOND_CHESTPLATE, Enchantments.THORNS, 1), 1, 3, 30, 0.05F),
+							new TradeOffers.ProcessItemFactory(
+								Items.DIAMOND, 4, 16, Items.DIAMOND_CHESTPLATE, 1, 3, 30, 0.05F, TradeRebalanceEnchantmentProviders.DESERT_ARMORER_CHESTPLATE_5
+							),
 							VillagerType.DESERT
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 3, 16, enchant(Items.DIAMOND_LEGGINGS, Enchantments.THORNS, 1), 1, 3, 30, 0.05F), VillagerType.DESERT
+							new TradeOffers.ProcessItemFactory(
+								Items.DIAMOND, 3, 16, Items.DIAMOND_LEGGINGS, 1, 3, 30, 0.05F, TradeRebalanceEnchantmentProviders.DESERT_ARMORER_LEGGINGS_5
+							),
+							VillagerType.DESERT
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 3, 16, enchant(Items.DIAMOND_LEGGINGS, Enchantments.PROTECTION, 1), 1, 3, 30, 0.05F),
+							new TradeOffers.ProcessItemFactory(
+								Items.DIAMOND, 3, 16, Items.DIAMOND_LEGGINGS, 1, 3, 30, 0.05F, TradeRebalanceEnchantmentProviders.PLAINS_ARMORER_LEGGINGS_5
+							),
 							VillagerType.PLAINS
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 2, 12, enchant(Items.DIAMOND_BOOTS, Enchantments.PROTECTION, 1), 1, 3, 30, 0.05F), VillagerType.PLAINS
+							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 2, 12, Items.DIAMOND_BOOTS, 1, 3, 30, 0.05F, TradeRebalanceEnchantmentProviders.PLAINS_ARMORER_BOOTS_5),
+							VillagerType.PLAINS
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 2, 6, enchant(Items.DIAMOND_HELMET, Enchantments.BINDING_CURSE, 1), 1, 3, 30, 0.05F),
+							new TradeOffers.ProcessItemFactory(
+								Items.DIAMOND, 2, 6, Items.DIAMOND_HELMET, 1, 3, 30, 0.05F, TradeRebalanceEnchantmentProviders.SAVANNA_ARMORER_HELMET_5
+							),
 							VillagerType.SAVANNA
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 3, 8, enchant(Items.DIAMOND_CHESTPLATE, Enchantments.BINDING_CURSE, 1), 1, 3, 30, 0.05F),
+							new TradeOffers.ProcessItemFactory(
+								Items.DIAMOND, 3, 8, Items.DIAMOND_CHESTPLATE, 1, 3, 30, 0.05F, TradeRebalanceEnchantmentProviders.SAVANNA_ARMORER_CHESTPLATE_5
+							),
 							VillagerType.SAVANNA
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 2, 12, enchant(Items.DIAMOND_BOOTS, Enchantments.FROST_WALKER, 1), 1, 3, 30, 0.05F), VillagerType.SNOW
-						),
-						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 3, 12, enchant(Items.DIAMOND_HELMET, Enchantments.AQUA_AFFINITY, 1), 1, 3, 30, 0.05F),
+							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 2, 12, Items.DIAMOND_BOOTS, 1, 3, 30, 0.05F, TradeRebalanceEnchantmentProviders.SNOW_ARMORER_BOOTS_5),
 							VillagerType.SNOW
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.CHAINMAIL_HELMET, Enchantments.PROJECTILE_PROTECTION, 1), 9, 1, 3, 30, 0.05F), VillagerType.JUNGLE
+							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 3, 12, Items.DIAMOND_HELMET, 1, 3, 30, 0.05F, TradeRebalanceEnchantmentProviders.SNOW_ARMORER_HELMET_5),
+							VillagerType.SNOW
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.CHAINMAIL_BOOTS, Enchantments.FEATHER_FALLING, 1), 8, 1, 3, 30, 0.05F), VillagerType.JUNGLE
+							new TradeOffers.SellItemFactory(Items.CHAINMAIL_HELMET, 9, 1, 3, 30, 0.05F, TradeRebalanceEnchantmentProviders.JUNGLE_ARMORER_HELMET_5),
+							VillagerType.JUNGLE
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.CHAINMAIL_HELMET, Enchantments.RESPIRATION, 1), 9, 1, 3, 30, 0.05F), VillagerType.SWAMP
+							new TradeOffers.SellItemFactory(Items.CHAINMAIL_BOOTS, 8, 1, 3, 30, 0.05F, TradeRebalanceEnchantmentProviders.JUNGLE_ARMORER_BOOTS_5),
+							VillagerType.JUNGLE
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.SellItemFactory(enchant(Items.CHAINMAIL_BOOTS, Enchantments.DEPTH_STRIDER, 1), 8, 1, 3, 30, 0.05F), VillagerType.SWAMP
+							new TradeOffers.SellItemFactory(Items.CHAINMAIL_HELMET, 9, 1, 3, 30, 0.05F, TradeRebalanceEnchantmentProviders.SWAMP_ARMORER_HELMET_5),
+							VillagerType.SWAMP
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 4, 18, enchant(Items.DIAMOND_CHESTPLATE, Enchantments.BLAST_PROTECTION, 1), 1, 3, 30, 0.05F),
+							new TradeOffers.SellItemFactory(Items.CHAINMAIL_BOOTS, 8, 1, 3, 30, 0.05F, TradeRebalanceEnchantmentProviders.SWAMP_ARMORER_BOOTS_5), VillagerType.SWAMP
+						),
+						TradeOffers.TypedWrapperFactory.of(
+							new TradeOffers.ProcessItemFactory(
+								Items.DIAMOND, 4, 18, Items.DIAMOND_CHESTPLATE, 1, 3, 30, 0.05F, TradeRebalanceEnchantmentProviders.TAIGA_ARMORER_CHESTPLATE_5
+							),
 							VillagerType.TAIGA
 						),
 						TradeOffers.TypedWrapperFactory.of(
-							new TradeOffers.ProcessItemFactory(Items.DIAMOND, 3, 18, enchant(Items.DIAMOND_LEGGINGS, Enchantments.BLAST_PROTECTION, 1), 1, 3, 30, 0.05F),
+							new TradeOffers.ProcessItemFactory(
+								Items.DIAMOND, 3, 18, Items.DIAMOND_LEGGINGS, 1, 3, 30, 0.05F, TradeRebalanceEnchantmentProviders.TAIGA_ARMORER_LEGGINGS_5
+							),
 							VillagerType.TAIGA
 						),
 						TradeOffers.TypedWrapperFactory.of(new TradeOffers.BuyItemFactory(Items.DIAMOND_BLOCK, 1, 12, 30, 42), VillagerType.TAIGA),
@@ -1135,15 +1176,13 @@ public class TradeOffers {
 	private static TradeOffers.Factory createLibrarianTradeFactory(int experience) {
 		return new TradeOffers.TypedWrapperFactory(
 			ImmutableMap.<VillagerType, TradeOffers.Factory>builder()
-				.put(VillagerType.DESERT, new TradeOffers.EnchantBookFactory(experience, Enchantments.FIRE_PROTECTION, Enchantments.THORNS, Enchantments.INFINITY))
-				.put(
-					VillagerType.JUNGLE, new TradeOffers.EnchantBookFactory(experience, Enchantments.FEATHER_FALLING, Enchantments.PROJECTILE_PROTECTION, Enchantments.POWER)
-				)
-				.put(VillagerType.PLAINS, new TradeOffers.EnchantBookFactory(experience, Enchantments.PUNCH, Enchantments.SMITE, Enchantments.BANE_OF_ARTHROPODS))
-				.put(VillagerType.SAVANNA, new TradeOffers.EnchantBookFactory(experience, Enchantments.KNOCKBACK, Enchantments.BINDING_CURSE, Enchantments.SWEEPING_EDGE))
-				.put(VillagerType.SNOW, new TradeOffers.EnchantBookFactory(experience, Enchantments.AQUA_AFFINITY, Enchantments.LOOTING, Enchantments.FROST_WALKER))
-				.put(VillagerType.SWAMP, new TradeOffers.EnchantBookFactory(experience, Enchantments.DEPTH_STRIDER, Enchantments.RESPIRATION, Enchantments.VANISHING_CURSE))
-				.put(VillagerType.TAIGA, new TradeOffers.EnchantBookFactory(experience, Enchantments.BLAST_PROTECTION, Enchantments.FIRE_ASPECT, Enchantments.FLAME))
+				.put(VillagerType.DESERT, new TradeOffers.EnchantBookFactory(experience, EnchantmentTags.DESERT_COMMON_TRADE))
+				.put(VillagerType.JUNGLE, new TradeOffers.EnchantBookFactory(experience, EnchantmentTags.JUNGLE_COMMON_TRADE))
+				.put(VillagerType.PLAINS, new TradeOffers.EnchantBookFactory(experience, EnchantmentTags.PLAINS_COMMON_TRADE))
+				.put(VillagerType.SAVANNA, new TradeOffers.EnchantBookFactory(experience, EnchantmentTags.SAVANNA_COMMON_TRADE))
+				.put(VillagerType.SNOW, new TradeOffers.EnchantBookFactory(experience, EnchantmentTags.SNOW_COMMON_TRADE))
+				.put(VillagerType.SWAMP, new TradeOffers.EnchantBookFactory(experience, EnchantmentTags.SWAMP_COMMON_TRADE))
+				.put(VillagerType.TAIGA, new TradeOffers.EnchantBookFactory(experience, EnchantmentTags.TAIGA_COMMON_TRADE))
 				.build()
 		);
 	}
@@ -1151,13 +1190,13 @@ public class TradeOffers {
 	private static TradeOffers.Factory createMasterLibrarianTradeFactory() {
 		return new TradeOffers.TypedWrapperFactory(
 			ImmutableMap.<VillagerType, TradeOffers.Factory>builder()
-				.put(VillagerType.DESERT, new TradeOffers.EnchantBookFactory(30, 3, 3, Enchantments.EFFICIENCY))
-				.put(VillagerType.JUNGLE, new TradeOffers.EnchantBookFactory(30, 2, 2, Enchantments.UNBREAKING))
-				.put(VillagerType.PLAINS, new TradeOffers.EnchantBookFactory(30, 3, 3, Enchantments.PROTECTION))
-				.put(VillagerType.SAVANNA, new TradeOffers.EnchantBookFactory(30, 3, 3, Enchantments.SHARPNESS))
-				.put(VillagerType.SNOW, new TradeOffers.EnchantBookFactory(30, Enchantments.SILK_TOUCH))
-				.put(VillagerType.SWAMP, new TradeOffers.EnchantBookFactory(30, Enchantments.MENDING))
-				.put(VillagerType.TAIGA, new TradeOffers.EnchantBookFactory(30, 2, 2, Enchantments.FORTUNE))
+				.put(VillagerType.DESERT, new TradeOffers.EnchantBookFactory(30, 3, 3, EnchantmentTags.DESERT_SPECIAL_TRADE))
+				.put(VillagerType.JUNGLE, new TradeOffers.EnchantBookFactory(30, 2, 2, EnchantmentTags.JUNGLE_SPECIAL_TRADE))
+				.put(VillagerType.PLAINS, new TradeOffers.EnchantBookFactory(30, 3, 3, EnchantmentTags.PLAINS_SPECIAL_TRADE))
+				.put(VillagerType.SAVANNA, new TradeOffers.EnchantBookFactory(30, 3, 3, EnchantmentTags.SAVANNA_SPECIAL_TRADE))
+				.put(VillagerType.SNOW, new TradeOffers.EnchantBookFactory(30, EnchantmentTags.SNOW_SPECIAL_TRADE))
+				.put(VillagerType.SWAMP, new TradeOffers.EnchantBookFactory(30, EnchantmentTags.SWAMP_SPECIAL_TRADE))
+				.put(VillagerType.TAIGA, new TradeOffers.EnchantBookFactory(30, 2, 2, EnchantmentTags.TAIGA_SPECIAL_TRADE))
 				.build()
 		);
 	}
@@ -1172,12 +1211,6 @@ public class TradeOffers {
 
 	private static ItemStack createPotionStack(RegistryEntry<Potion> potion) {
 		return PotionContentsComponent.createStack(Items.POTION, potion);
-	}
-
-	private static ItemStack enchant(Item item, Enchantment enchantment, int level) {
-		ItemStack itemStack = new ItemStack(item);
-		itemStack.addEnchantment(enchantment, level);
-		return itemStack;
 	}
 
 	static class BuyItemFactory implements TradeOffers.Factory {
@@ -1218,44 +1251,47 @@ public class TradeOffers {
 
 	static class EnchantBookFactory implements TradeOffers.Factory {
 		private final int experience;
-		private final List<Enchantment> possibleEnchantments;
+		private final TagKey<Enchantment> possibleEnchantments;
 		private final int minLevel;
 		private final int maxLevel;
 
-		public EnchantBookFactory(int experience) {
-			this(experience, (Enchantment[])Registries.ENCHANTMENT.stream().filter(Enchantment::isAvailableForEnchantedBookOffer).toArray(Enchantment[]::new));
+		public EnchantBookFactory(int experience, TagKey<Enchantment> tagKey) {
+			this(experience, 0, Integer.MAX_VALUE, tagKey);
 		}
 
-		public EnchantBookFactory(int experience, Enchantment... possibleEnchantments) {
-			this(experience, 0, Integer.MAX_VALUE, possibleEnchantments);
-		}
-
-		public EnchantBookFactory(int experience, int minLevel, int maxLevel, Enchantment... possibleEnchantments) {
+		public EnchantBookFactory(int experience, int minLevel, int maxLevel, TagKey<Enchantment> tagKey) {
 			this.minLevel = minLevel;
 			this.maxLevel = maxLevel;
 			this.experience = experience;
-			this.possibleEnchantments = Arrays.asList(possibleEnchantments);
-		}
-
-		private Enchantment chooseEnchantment(Random random, FeatureSet enabledFeatures) {
-			List<Enchantment> list = this.possibleEnchantments.stream().filter(enchantment -> enchantment.isEnabled(enabledFeatures)).toList();
-			return (Enchantment)list.get(random.nextInt(list.size()));
+			this.possibleEnchantments = tagKey;
 		}
 
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
-			Enchantment enchantment = this.chooseEnchantment(random, entity.getWorld().getEnabledFeatures());
-			int i = Math.max(enchantment.getMinLevel(), this.minLevel);
-			int j = Math.min(enchantment.getMaxLevel(), this.maxLevel);
-			int k = MathHelper.nextInt(random, i, j);
-			ItemStack itemStack = EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, k));
-			int l = 2 + random.nextInt(5 + k * 10) + 3 * k;
-			if (enchantment.isTreasure()) {
-				l *= 2;
-			}
+			Optional<RegistryEntry<Enchantment>> optional = entity.getWorld()
+				.getRegistryManager()
+				.get(RegistryKeys.ENCHANTMENT)
+				.getRandomEntry(this.possibleEnchantments, random);
+			int l;
+			ItemStack itemStack;
+			if (!optional.isEmpty()) {
+				RegistryEntry<Enchantment> registryEntry = (RegistryEntry<Enchantment>)optional.get();
+				Enchantment enchantment = registryEntry.value();
+				int i = Math.max(enchantment.getMinLevel(), this.minLevel);
+				int j = Math.min(enchantment.getMaxLevel(), this.maxLevel);
+				int k = MathHelper.nextInt(random, i, j);
+				itemStack = EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(registryEntry, k));
+				l = 2 + random.nextInt(5 + k * 10) + 3 * k;
+				if (registryEntry.isIn(EnchantmentTags.DOUBLE_TRADE_PRICE)) {
+					l *= 2;
+				}
 
-			if (l > 64) {
-				l = 64;
+				if (l > 64) {
+					l = 64;
+				}
+			} else {
+				l = 1;
+				itemStack = new ItemStack(Items.BOOK);
 			}
 
 			return new TradeOffer(new TradedItem(Items.EMERALD, l), Optional.of(new TradedItem(Items.BOOK)), itemStack, 12, this.experience, 0.2F);
@@ -1282,29 +1318,48 @@ public class TradeOffers {
 		private final int maxUses;
 		private final int experience;
 		private final float multiplier;
+		private final Optional<RegistryKey<EnchantmentProvider>> field_51618;
 
 		public ProcessItemFactory(ItemConvertible item, int count, int price, Item processed, int processedCount, int maxUses, int experience, float multiplier) {
 			this(item, count, price, new ItemStack(processed), processedCount, maxUses, experience, multiplier);
 		}
 
-		ProcessItemFactory(ItemConvertible item, int count, int price, ItemStack processed, int processedCount, int maxUses, int experience, float multiplier) {
-			this(new TradedItem(item, count), price, processed.copyWithCount(processedCount), maxUses, experience, multiplier);
+		private ProcessItemFactory(ItemConvertible item, int count, int price, ItemStack processed, int processedCount, int maxUses, int experience, float multiplier) {
+			this(new TradedItem(item, count), price, processed.copyWithCount(processedCount), maxUses, experience, multiplier, Optional.empty());
 		}
 
-		public ProcessItemFactory(TradedItem toBeProcessed, int count, ItemStack processed, int maxUses, int processedCount, float multiplier) {
+		ProcessItemFactory(
+			ItemConvertible itemConvertible, int i, int j, ItemConvertible itemConvertible2, int k, int l, int m, float f, RegistryKey<EnchantmentProvider> registryKey
+		) {
+			this(new TradedItem(itemConvertible, i), j, new ItemStack(itemConvertible2, k), l, m, f, Optional.of(registryKey));
+		}
+
+		public ProcessItemFactory(
+			TradedItem toBeProcessed,
+			int count,
+			ItemStack processed,
+			int maxUses,
+			int processedCount,
+			float multiplier,
+			Optional<RegistryKey<EnchantmentProvider>> optional
+		) {
 			this.toBeProcessed = toBeProcessed;
 			this.price = count;
 			this.processed = processed;
 			this.maxUses = maxUses;
 			this.experience = processedCount;
 			this.multiplier = multiplier;
+			this.field_51618 = optional;
 		}
 
 		@Nullable
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
+			ItemStack itemStack = this.processed.copy();
+			this.field_51618
+				.ifPresent(registryKey -> EnchantmentHelper.applyEnchantmentProvider(itemStack, registryKey, entity.getWorld(), entity.getBlockPos(), random));
 			return new TradeOffer(
-				new TradedItem(Items.EMERALD, this.price), Optional.of(this.toBeProcessed), this.processed.copy(), 0, this.maxUses, this.experience, this.multiplier, 0
+				new TradedItem(Items.EMERALD, this.price), Optional.of(this.toBeProcessed), itemStack, 0, this.maxUses, this.experience, this.multiplier
 			);
 		}
 	}
@@ -1374,7 +1429,10 @@ public class TradeOffers {
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
 			int i = 5 + random.nextInt(15);
-			ItemStack itemStack = EnchantmentHelper.enchant(entity.getWorld().getEnabledFeatures(), random, new ItemStack(this.tool.getItem()), i, false);
+			DynamicRegistryManager dynamicRegistryManager = entity.getWorld().getRegistryManager();
+			Optional<RegistryEntryList.Named<Enchantment>> optional = dynamicRegistryManager.get(RegistryKeys.ENCHANTMENT)
+				.getEntryList(EnchantmentTags.ON_TRADED_EQUIPMENT);
+			ItemStack itemStack = EnchantmentHelper.enchant(random, new ItemStack(this.tool.getItem()), i, dynamicRegistryManager, optional);
 			int j = Math.min(this.basePrice + i, 64);
 			TradedItem tradedItem = new TradedItem(Items.EMERALD, j);
 			return new TradeOffer(tradedItem, itemStack, this.maxUses, this.experience, this.multiplier);
@@ -1387,6 +1445,7 @@ public class TradeOffers {
 		private final int maxUses;
 		private final int experience;
 		private final float multiplier;
+		private final Optional<RegistryKey<EnchantmentProvider>> field_51619;
 
 		public SellItemFactory(Block block, int price, int count, int maxUses, int experience) {
 			this(new ItemStack(block), price, count, maxUses, experience);
@@ -1408,18 +1467,32 @@ public class TradeOffers {
 			this(new ItemStack(item), price, count, maxUses, experience, multiplier);
 		}
 
-		public SellItemFactory(ItemStack sell, int price, int count, int maxUses, int experience, float multiplier) {
+		public SellItemFactory(Item item, int i, int j, int k, int l, float f, RegistryKey<EnchantmentProvider> registryKey) {
+			this(new ItemStack(item), i, j, k, l, f, Optional.of(registryKey));
+		}
+
+		public SellItemFactory(ItemStack itemStack, int i, int j, int k, int l, float f) {
+			this(itemStack, i, j, k, l, f, Optional.empty());
+		}
+
+		public SellItemFactory(
+			ItemStack sell, int price, int count, int maxUses, int experience, float multiplier, Optional<RegistryKey<EnchantmentProvider>> optional
+		) {
 			this.sell = sell;
 			this.price = price;
 			this.sell.setCount(count);
 			this.maxUses = maxUses;
 			this.experience = experience;
 			this.multiplier = multiplier;
+			this.field_51619 = optional;
 		}
 
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
-			return new TradeOffer(new TradedItem(Items.EMERALD, this.price), this.sell.copy(), this.maxUses, this.experience, this.multiplier);
+			ItemStack itemStack = this.sell.copy();
+			this.field_51619
+				.ifPresent(registryKey -> EnchantmentHelper.applyEnchantmentProvider(itemStack, registryKey, entity.getWorld(), entity.getBlockPos(), random));
+			return new TradeOffer(new TradedItem(Items.EMERALD, this.price), itemStack, this.maxUses, this.experience, this.multiplier);
 		}
 	}
 

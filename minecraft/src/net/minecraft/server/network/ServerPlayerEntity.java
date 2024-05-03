@@ -25,6 +25,7 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SculkShriekerWarningManager;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
@@ -628,7 +629,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	public void tickFallStartPos() {
 		if (this.fallDistance > 0.0F && this.fallStartPos == null) {
 			this.fallStartPos = this.getPos();
-			if (this.currentExplosionImpactPos != null) {
+			if (this.currentExplosionImpactPos != null && this.currentExplosionImpactPos.y <= this.fallStartPos.y) {
 				Criteria.FALL_AFTER_EXPLOSION.trigger(this, this.currentExplosionImpactPos, this.explodedBy);
 			}
 		}
@@ -1010,9 +1011,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	protected void applyMovementEffects(BlockPos pos) {
+	protected void applyMovementEffects(ServerWorld world, BlockPos pos) {
 		if (!this.isSpectator()) {
-			super.applyMovementEffects(pos);
+			super.applyMovementEffects(world, pos);
 		}
 	}
 
@@ -1441,6 +1442,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	public boolean changeGameMode(GameMode gameMode) {
+		boolean bl = this.isSpectator();
 		if (!this.interactionManager.changeGameMode(gameMode)) {
 			return false;
 		} else {
@@ -1448,8 +1450,12 @@ public class ServerPlayerEntity extends PlayerEntity {
 			if (gameMode == GameMode.SPECTATOR) {
 				this.dropShoulderEntities();
 				this.stopRiding();
+				EnchantmentHelper.removeLocationBasedEffects(this);
 			} else {
 				this.setCameraEntity(this);
+				if (bl) {
+					EnchantmentHelper.applyLocationBasedEffects(this.getServerWorld(), this);
+				}
 			}
 
 			this.sendAbilitiesUpdate();
@@ -1938,5 +1944,16 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Nullable
 	public BlockPos getStartRaidPos() {
 		return this.startRaidPos;
+	}
+
+	@Override
+	public void setOnGround(boolean onGround, Vec3d movement) {
+		super.setOnGround(onGround, movement);
+		this.setVelocity(movement);
+	}
+
+	@Override
+	protected float getDamageAgainst(Entity target, float baseDamage, DamageSource damageSource) {
+		return EnchantmentHelper.getDamage(this.getServerWorld(), this.getMainHandStack(), target, damageSource, baseDamage);
 	}
 }

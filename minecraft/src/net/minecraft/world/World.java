@@ -43,6 +43,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -712,7 +713,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			? this.getDestructionType(GameRules.MOB_EXPLOSION_DROP_DECAY)
 			: Explosion.DestructionType.KEEP;
 			case TNT -> this.getDestructionType(GameRules.TNT_EXPLOSION_DROP_DECAY);
-			case BLOW -> Explosion.DestructionType.TRIGGER_BLOCK;
+			case TRIGGER -> Explosion.DestructionType.TRIGGER_BLOCK;
 		};
 		Explosion explosion = new Explosion(this, entity, damageSource, behavior, x, y, z, power, createFire, destructionType, particle, emitterParticle, soundEvent);
 		explosion.collectBlocksAndDamageEntities();
@@ -1188,11 +1189,23 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	public abstract BrewingRecipeRegistry getBrewingRecipeRegistry();
 
-	public static enum ExplosionSourceType {
-		NONE,
-		BLOCK,
-		MOB,
-		TNT,
-		BLOW;
+	public static enum ExplosionSourceType implements StringIdentifiable {
+		NONE("none"),
+		BLOCK("block"),
+		MOB("mob"),
+		TNT("tnt"),
+		TRIGGER("trigger");
+
+		public static final Codec<World.ExplosionSourceType> CODEC = StringIdentifiable.createCodec(World.ExplosionSourceType::values);
+		private final String id;
+
+		private ExplosionSourceType(String id) {
+			this.id = id;
+		}
+
+		@Override
+		public String asString() {
+			return this.id;
+		}
 	}
 }

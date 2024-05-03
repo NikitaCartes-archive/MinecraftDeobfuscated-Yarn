@@ -28,7 +28,9 @@ public class LootFunctionTypes {
 	public static final LootFunctionType<SetCustomDataLootFunction> SET_CUSTOM_DATA = register("set_custom_data", SetCustomDataLootFunction.CODEC);
 	public static final LootFunctionType<SetComponentsLootFunction> SET_COMPONENTS = register("set_components", SetComponentsLootFunction.CODEC);
 	public static final LootFunctionType<FurnaceSmeltLootFunction> FURNACE_SMELT = register("furnace_smelt", FurnaceSmeltLootFunction.CODEC);
-	public static final LootFunctionType<LootingEnchantLootFunction> LOOTING_ENCHANT = register("looting_enchant", LootingEnchantLootFunction.CODEC);
+	public static final LootFunctionType<EnchantedCountIncreaseLootFunction> ENCHANTED_COUNT_INCREASE = register(
+		"enchanted_count_increase", EnchantedCountIncreaseLootFunction.CODEC
+	);
 	public static final LootFunctionType<SetDamageLootFunction> SET_DAMAGE = register("set_damage", SetDamageLootFunction.CODEC);
 	public static final LootFunctionType<SetAttributesLootFunction> SET_ATTRIBUTES = register("set_attributes", SetAttributesLootFunction.CODEC);
 	public static final LootFunctionType<SetNameLootFunction> SET_NAME = register("set_name", SetNameLootFunction.CODEC);

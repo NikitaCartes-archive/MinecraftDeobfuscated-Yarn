@@ -169,17 +169,17 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 
 					for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
 						RegistryEntry<Enchantment> registryEntry = (RegistryEntry<Enchantment>)entry.getKey();
-						Enchantment enchantment = registryEntry.value();
-						int q = builder.getLevel(enchantment);
+						int q = builder.getLevel(registryEntry);
 						int r = entry.getIntValue();
 						r = q == r ? r + 1 : Math.max(r, q);
+						Enchantment enchantment = registryEntry.value();
 						boolean bl4 = enchantment.isAcceptableItem(itemStack);
 						if (this.player.getAbilities().creativeMode || itemStack.isOf(Items.ENCHANTED_BOOK)) {
 							bl4 = true;
 						}
 
 						for (RegistryEntry<Enchantment> registryEntry2 : builder.getEnchantments()) {
-							if (!registryEntry2.equals(registryEntry) && !enchantment.canCombine(registryEntry2.value())) {
+							if (!registryEntry2.equals(registryEntry) && !Enchantment.canBeCombined(registryEntry, registryEntry2)) {
 								bl4 = false;
 								i++;
 							}
@@ -193,7 +193,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 								r = enchantment.getMaxLevel();
 							}
 
-							builder.set(enchantment, r);
+							builder.set(registryEntry, r);
 							int s = enchantment.getAnvilCost();
 							if (bl) {
 								s = Math.max(1, s / 2);

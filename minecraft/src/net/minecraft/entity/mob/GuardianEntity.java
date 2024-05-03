@@ -423,9 +423,7 @@ public class GuardianEntity extends HostileEntity {
 						}
 
 						livingEntity.damage(this.guardian.getDamageSources().indirectMagic(this.guardian, this.guardian), f);
-						livingEntity.damage(
-							this.guardian.getDamageSources().mobAttack(this.guardian), (float)this.guardian.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)
-						);
+						this.guardian.tryAttack(livingEntity);
 						this.guardian.setTarget(null);
 					}
 

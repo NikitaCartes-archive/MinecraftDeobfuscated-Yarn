@@ -10,11 +10,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.OminousItemSpawnerEntity;
 import net.minecraft.entity.ProjectileDeflection;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -24,6 +24,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
@@ -33,6 +34,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -54,7 +56,6 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	private static final TrackedData<Byte> PIERCE_LEVEL = DataTracker.registerData(PersistentProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final int CRITICAL_FLAG = 1;
 	private static final int NO_CLIP_FLAG = 2;
-	private static final int SHOT_FROM_CROSSBOW_FLAG = 4;
 	@Nullable
 	private BlockState inBlockState;
 	protected boolean inGround;
@@ -63,19 +64,20 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	public int shake;
 	private int life;
 	private double damage = 2.0;
-	private int punch;
 	private SoundEvent sound = this.getHitSound();
 	@Nullable
 	private IntOpenHashSet piercedEntities;
 	@Nullable
 	private List<Entity> piercingKilledEntities;
 	private ItemStack stack = this.getDefaultItemStack();
+	@Nullable
+	private ItemStack shotFrom = null;
 
 	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
-	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, World world, ItemStack stack) {
+	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, World world, ItemStack stack, @Nullable ItemStack shotFrom) {
 		this(type, world);
 		this.stack = stack.copy();
 		this.setCustomName(stack.get(DataComponentTypes.CUSTOM_NAME));
@@ -83,15 +85,29 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		if (unit != null) {
 			this.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
 		}
+
+		if (shotFrom != null && world instanceof ServerWorld serverWorld) {
+			this.shotFrom = shotFrom.copy();
+			int i = EnchantmentHelper.getProjectilePiercing(serverWorld, shotFrom, this.stack);
+			if (i > 0) {
+				this.setPierceLevel((byte)i);
+			}
+
+			EnchantmentHelper.onProjectileSpawned(serverWorld, shotFrom, this, () -> this.shotFrom = null);
+		}
 	}
 
-	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, double x, double y, double z, World world, ItemStack stack) {
-		this(type, world, stack);
+	protected PersistentProjectileEntity(
+		EntityType<? extends PersistentProjectileEntity> type, double x, double y, double z, World world, ItemStack stack, @Nullable ItemStack shotFrom
+	) {
+		this(type, world, stack, shotFrom);
 		this.setPosition(x, y, z);
 	}
 
-	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, LivingEntity owner, World world, ItemStack stack) {
-		this(type, owner.getX(), owner.getEyeY() - 0.1F, owner.getZ(), world, stack);
+	protected PersistentProjectileEntity(
+		EntityType<? extends PersistentProjectileEntity> type, LivingEntity owner, World world, ItemStack stack, @Nullable ItemStack shotFrom
+	) {
+		this(type, owner.getX(), owner.getEyeY() - 0.1F, owner.getZ(), world, stack, shotFrom);
 		this.setOwner(owner);
 	}
 
@@ -311,7 +327,14 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		super.onEntityHit(entityHitResult);
 		Entity entity = entityHitResult.getEntity();
 		float f = (float)this.getVelocity().length();
-		int i = MathHelper.ceil(MathHelper.clamp((double)f * this.damage, 0.0, 2.147483647E9));
+		double d = this.damage;
+		Entity entity2 = this.getOwner();
+		DamageSource damageSource = this.getDamageSources().arrow(this, (Entity)(entity2 != null ? entity2 : this));
+		if (this.shotFrom != null && this.getWorld() instanceof ServerWorld serverWorld) {
+			d = (double)EnchantmentHelper.getDamage(serverWorld, this.shotFrom, entity, damageSource, (float)d);
+		}
+
+		int i = MathHelper.ceil(MathHelper.clamp((double)f * d, 0.0, 2.147483647E9));
 		if (this.getPierceLevel() > 0) {
 			if (this.piercedEntities == null) {
 				this.piercedEntities = new IntOpenHashSet(5);
@@ -334,21 +357,14 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			i = (int)Math.min(l + (long)i, 2147483647L);
 		}
 
-		Entity entity2 = this.getOwner();
-		DamageSource damageSource;
-		if (entity2 == null) {
-			damageSource = this.getDamageSources().arrow(this, this);
-		} else {
-			damageSource = this.getDamageSources().arrow(this, entity2);
-			if (entity2 instanceof LivingEntity) {
-				((LivingEntity)entity2).onAttacking(entity);
-			}
+		if (entity2 instanceof LivingEntity livingEntity) {
+			livingEntity.onAttacking(entity);
 		}
 
 		boolean bl = entity.getType() == EntityType.ENDERMAN;
 		int j = entity.getFireTicks();
 		if (this.isOnFire() && !bl) {
-			entity.setOnFireFor(5);
+			entity.setOnFireFor(5.0F);
 		}
 
 		if (entity.damage(damageSource, (float)i)) {
@@ -356,33 +372,25 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				return;
 			}
 
-			if (entity instanceof LivingEntity livingEntity) {
+			if (entity instanceof LivingEntity livingEntity2) {
 				if (!this.getWorld().isClient && this.getPierceLevel() <= 0) {
-					livingEntity.setStuckArrowCount(livingEntity.getStuckArrowCount() + 1);
+					livingEntity2.setStuckArrowCount(livingEntity2.getStuckArrowCount() + 1);
 				}
 
-				if (this.punch > 0) {
-					double d = Math.max(0.0, 1.0 - livingEntity.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
-					Vec3d vec3d = this.getVelocity().multiply(1.0, 0.0, 1.0).normalize().multiply((double)this.punch * 0.6 * d);
-					if (vec3d.lengthSquared() > 0.0) {
-						livingEntity.addVelocity(vec3d.x, 0.1, vec3d.z);
-					}
+				this.method_59957(livingEntity2, damageSource);
+				if (this.getWorld() instanceof ServerWorld serverWorld2) {
+					EnchantmentHelper.onTargetDamaged(serverWorld2, livingEntity2, damageSource);
 				}
 
-				if (!this.getWorld().isClient && entity2 instanceof LivingEntity) {
-					EnchantmentHelper.onUserDamaged(livingEntity, entity2);
-					EnchantmentHelper.onTargetDamaged((LivingEntity)entity2, livingEntity);
-				}
-
-				this.onHit(livingEntity);
-				if (entity2 != null && livingEntity != entity2 && livingEntity instanceof PlayerEntity && entity2 instanceof ServerPlayerEntity && !this.isSilent()) {
+				this.onHit(livingEntity2);
+				if (livingEntity2 != entity2 && livingEntity2 instanceof PlayerEntity && entity2 instanceof ServerPlayerEntity && !this.isSilent()) {
 					((ServerPlayerEntity)entity2)
 						.networkHandler
 						.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.PROJECTILE_HIT_PLAYER, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
 				}
 
 				if (!entity.isAlive() && this.piercingKilledEntities != null) {
-					this.piercingKilledEntities.add(livingEntity);
+					this.piercingKilledEntities.add(livingEntity2);
 				}
 
 				if (!this.getWorld().isClient && entity2 instanceof ServerPlayerEntity serverPlayerEntity) {
@@ -412,12 +420,32 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		}
 	}
 
+	protected void method_59957(LivingEntity livingEntity, DamageSource damageSource) {
+		double d = (double)(
+			this.shotFrom != null && this.getWorld() instanceof ServerWorld serverWorld
+				? EnchantmentHelper.modifyKnockback(serverWorld, this.shotFrom, livingEntity, damageSource, 0.0F)
+				: 0.0F
+		);
+		if (d > 0.0) {
+			double e = Math.max(0.0, 1.0 - livingEntity.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
+			Vec3d vec3d = this.getVelocity().multiply(1.0, 0.0, 1.0).normalize().multiply(d * 0.6 * e);
+			if (vec3d.lengthSquared() > 0.0) {
+				livingEntity.addVelocity(vec3d.x, 0.1, vec3d.z);
+			}
+		}
+	}
+
 	@Override
 	protected void onBlockHit(BlockHitResult blockHitResult) {
 		this.inBlockState = this.getWorld().getBlockState(blockHitResult.getBlockPos());
 		super.onBlockHit(blockHitResult);
 		Vec3d vec3d = blockHitResult.getPos().subtract(this.getX(), this.getY(), this.getZ());
 		this.setVelocity(vec3d);
+		ItemStack itemStack = this.getShotFromStack();
+		if (this.getWorld() instanceof ServerWorld serverWorld && itemStack != null) {
+			this.onBlockHitEnchantmentEffects(serverWorld, blockHitResult, itemStack);
+		}
+
 		Vec3d vec3d2 = vec3d.normalize().multiply(0.05F);
 		this.setPos(this.getX() - vec3d2.x, this.getY() - vec3d2.y, this.getZ() - vec3d2.z);
 		this.playSound(this.getSound(), 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
@@ -426,8 +454,20 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		this.setCritical(false);
 		this.setPierceLevel((byte)0);
 		this.setSound(SoundEvents.ENTITY_ARROW_HIT);
-		this.setShotFromCrossbow(false);
+		this.shotFrom = null;
 		this.clearPiercingStatus();
+	}
+
+	protected void onBlockHitEnchantmentEffects(ServerWorld world, BlockHitResult blockHitResult, ItemStack shotFromStack) {
+		EnchantmentHelper.onHitBlock(
+			world, shotFromStack, this.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null, this, null, blockHitResult.getPos(), () -> {
+			}
+		);
+	}
+
+	@Nullable
+	protected ItemStack getShotFromStack() {
+		return this.shotFrom;
 	}
 
 	protected SoundEvent getHitSound() {
@@ -468,8 +508,10 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		nbt.putBoolean("crit", this.isCritical());
 		nbt.putByte("PierceLevel", this.getPierceLevel());
 		nbt.putString("SoundEvent", Registries.SOUND_EVENT.getId(this.sound).toString());
-		nbt.putBoolean("ShotFromCrossbow", this.isShotFromCrossbow());
 		nbt.put("item", this.stack.encode(this.getRegistryManager()));
+		if (this.shotFrom != null) {
+			nbt.put("weapon", this.shotFrom.encode(this.getRegistryManager(), new NbtCompound()));
+		}
 	}
 
 	@Override
@@ -493,20 +535,28 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			this.sound = (SoundEvent)Registries.SOUND_EVENT.getOrEmpty(new Identifier(nbt.getString("SoundEvent"))).orElse(this.getHitSound());
 		}
 
-		this.setShotFromCrossbow(nbt.getBoolean("ShotFromCrossbow"));
 		if (nbt.contains("item", NbtElement.COMPOUND_TYPE)) {
 			this.setStack((ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("item")).orElse(this.getDefaultItemStack()));
 		} else {
 			this.setStack(this.getDefaultItemStack());
+		}
+
+		if (nbt.contains("weapon", NbtElement.COMPOUND_TYPE)) {
+			this.shotFrom = (ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("weapon")).orElse(null);
+		} else {
+			this.shotFrom = null;
 		}
 	}
 
 	@Override
 	public void setOwner(@Nullable Entity entity) {
 		super.setOwner(entity);
-		if (entity instanceof PlayerEntity && this.pickupType == PersistentProjectileEntity.PickupPermission.DISALLOWED) {
-			this.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
-		}
+
+		this.pickupType = switch (entity) {
+			case null, default -> this.pickupType;
+			case PlayerEntity playerEntity when this.pickupType == PersistentProjectileEntity.PickupPermission.DISALLOWED -> PersistentProjectileEntity.PickupPermission.ALLOWED;
+			case OminousItemSpawnerEntity ominousItemSpawnerEntity -> PersistentProjectileEntity.PickupPermission.DISALLOWED;
+		};
 	}
 
 	@Override
@@ -557,14 +607,6 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		return this.damage;
 	}
 
-	public void setPunch(int punch) {
-		this.punch = punch;
-	}
-
-	public int getPunch() {
-		return this.punch;
-	}
-
 	@Override
 	public boolean isAttackable() {
 		return this.getType().isIn(EntityTypeTags.REDIRECTABLE_PROJECTILE);
@@ -574,7 +616,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		this.setProjectileFlag(CRITICAL_FLAG, critical);
 	}
 
-	public void setPierceLevel(byte level) {
+	private void setPierceLevel(byte level) {
 		this.dataTracker.set(PIERCE_LEVEL, level);
 	}
 
@@ -601,29 +643,15 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	public boolean isShotFromCrossbow() {
-		byte b = this.dataTracker.get(PROJECTILE_FLAGS);
-		return (b & 4) != 0;
+		return this.shotFrom != null && this.shotFrom.isOf(Items.CROSSBOW);
 	}
 
 	public byte getPierceLevel() {
 		return this.dataTracker.get(PIERCE_LEVEL);
 	}
 
-	public void applyEnchantmentEffects(LivingEntity entity, float damageModifier) {
-		int i = EnchantmentHelper.getEquipmentLevel(Enchantments.POWER, entity);
-		int j = EnchantmentHelper.getEquipmentLevel(Enchantments.PUNCH, entity);
+	public void applyDamageModifier(float damageModifier) {
 		this.setDamage((double)(damageModifier * 2.0F) + this.random.nextTriangular((double)this.getWorld().getDifficulty().getId() * 0.11, 0.57425));
-		if (i > 0) {
-			this.setDamage(this.getDamage() + (double)i * 0.5 + 0.5);
-		}
-
-		if (j > 0) {
-			this.setPunch(j);
-		}
-
-		if (EnchantmentHelper.getEquipmentLevel(Enchantments.FLAME, entity) > 0) {
-			this.setOnFireFor(100);
-		}
 	}
 
 	protected float getDragInWater() {
@@ -637,10 +665,6 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	public boolean isNoClip() {
 		return !this.getWorld().isClient ? this.noClip : (this.dataTracker.get(PROJECTILE_FLAGS) & 2) != 0;
-	}
-
-	public void setShotFromCrossbow(boolean shotFromCrossbow) {
-		this.setProjectileFlag(SHOT_FROM_CROSSBOW_FLAG, shotFromCrossbow);
 	}
 
 	@Override

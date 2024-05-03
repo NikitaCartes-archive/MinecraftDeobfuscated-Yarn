@@ -14,7 +14,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
-public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
+public class AccessibilityOptionsScreen extends GameOptionsScreen {
 	public static final Text TITLE_TEXT = Text.translatable("options.accessibility.title");
 
 	private static SimpleOption<?>[] getOptions(GameOptions gameOptions) {
@@ -47,17 +47,22 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 	}
 
 	public AccessibilityOptionsScreen(Screen parent, GameOptions gameOptions) {
-		super(parent, gameOptions, TITLE_TEXT, getOptions(gameOptions));
+		super(parent, gameOptions, TITLE_TEXT);
 	}
 
 	@Override
 	protected void init() {
 		super.init();
-		ClickableWidget clickableWidget = this.buttonList.getWidgetFor(this.gameOptions.getHighContrast());
+		ClickableWidget clickableWidget = this.field_51824.getWidgetFor(this.gameOptions.getHighContrast());
 		if (clickableWidget != null && !this.client.getResourcePackManager().getIds().contains("high_contrast")) {
 			clickableWidget.active = false;
 			clickableWidget.setTooltip(Tooltip.of(Text.translatable("options.accessibility.high_contrast.error.tooltip")));
 		}
+	}
+
+	@Override
+	protected void method_60325() {
+		this.field_51824.addAll(getOptions(this.gameOptions));
 	}
 
 	@Override

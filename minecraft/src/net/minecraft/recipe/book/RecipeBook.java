@@ -71,7 +71,7 @@ public class RecipeBook {
 		this.options.setGuiOpen(category, open);
 	}
 
-	public boolean isFilteringCraftable(AbstractRecipeScreenHandler<?> handler) {
+	public boolean isFilteringCraftable(AbstractRecipeScreenHandler<?, ?> handler) {
 		return this.isFilteringCraftable(handler.getCategory());
 	}
 

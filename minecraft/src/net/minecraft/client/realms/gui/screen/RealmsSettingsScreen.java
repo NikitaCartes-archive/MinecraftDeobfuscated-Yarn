@@ -6,6 +6,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.realms.dto.RealmsServer;
+import net.minecraft.client.realms.gui.RealmsPopups;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -31,21 +32,19 @@ public class RealmsSettingsScreen extends RealmsScreen {
 	public void init() {
 		int i = this.width / 2 - 106;
 		String string = this.serverData.state == RealmsServer.State.OPEN ? "mco.configure.world.buttons.close" : "mco.configure.world.buttons.open";
-		ButtonWidget buttonWidget = ButtonWidget.builder(Text.translatable(string), button -> {
-			if (this.serverData.state == RealmsServer.State.OPEN) {
-				Text text = Text.translatable("mco.configure.world.close.question.line1");
-				Text text2 = Text.translatable("mco.configure.world.close.question.line2");
-				this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> {
-					if (confirmed) {
-						this.parent.closeTheWorld(this);
+		ButtonWidget buttonWidget = ButtonWidget.builder(
+				Text.translatable(string),
+				button -> {
+					if (this.serverData.state == RealmsServer.State.OPEN) {
+						this.client
+							.setScreen(RealmsPopups.createInfoPopup(this, Text.translatable("mco.configure.world.close.question.line1"), popupScreen -> this.parent.closeTheWorld()));
 					} else {
-						this.client.setScreen(this);
+						this.parent.openTheWorld(false);
 					}
-				}, RealmsLongConfirmationScreen.Type.INFO, text, text2, true));
-			} else {
-				this.parent.openTheWorld(false, this);
-			}
-		}).dimensions(this.width / 2 - 53, row(0), 106, 20).build();
+				}
+			)
+			.dimensions(this.width / 2 - 53, row(0), 106, 20)
+			.build();
 		this.addDrawableChild(buttonWidget);
 		this.nameEdit = new TextFieldWidget(this.client.textRenderer, i, row(4), 212, 20, Text.translatable("mco.configure.world.name"));
 		this.nameEdit.setMaxLength(32);

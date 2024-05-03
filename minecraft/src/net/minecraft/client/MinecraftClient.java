@@ -45,7 +45,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -90,7 +89,6 @@ import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsScreen;
 import net.minecraft.client.gui.screen.world.LevelLoadingScreen;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -139,10 +137,6 @@ import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.resource.server.ServerResourcePackLoader;
-import net.minecraft.client.search.IdentifierSearchProvider;
-import net.minecraft.client.search.SearchManager;
-import net.minecraft.client.search.SearchProvider;
-import net.minecraft.client.search.TextSearchProvider;
 import net.minecraft.client.session.Bans;
 import net.minecraft.client.session.ProfileKeys;
 import net.minecraft.client.session.Session;
@@ -181,7 +175,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.ClientConnection;
@@ -193,7 +186,6 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BiomeTags;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.DefaultResourcePack;
 import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
@@ -337,7 +329,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final EntityRenderDispatcher entityRenderDispatcher;
 	private final ItemRenderer itemRenderer;
 	public final ParticleManager particleManager;
-	private final SearchManager searchManager = new SearchManager();
 	private final Session session;
 	public final TextRenderer textRenderer;
 	public final TextRenderer advanceValidatingTextRenderer;
@@ -580,7 +571,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceManager = new ReloadableResourceManagerImpl(ResourceType.CLIENT_RESOURCES);
 		this.resourcePackManager.scanPacks();
 		this.options.addResourcePackProfilesToManager(this.resourcePackManager);
-		this.languageManager = new LanguageManager(this.options.language);
+		this.languageManager = new LanguageManager(this.options.language, translationStorage -> {
+			if (this.player != null) {
+				this.player.networkHandler.method_60346();
+			}
+		});
 		this.resourceManager.registerReloader(this.languageManager);
 		this.textureManager = new TextureManager(this.resourceManager);
 		this.resourceManager.registerReloader(this.textureManager);
@@ -653,8 +648,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceManager.registerReloader(this.gameRenderer.createProgramReloader());
 		this.worldRenderer = new WorldRenderer(this, this.entityRenderDispatcher, this.blockEntityRenderDispatcher, this.bufferBuilders);
 		this.resourceManager.registerReloader(this.worldRenderer);
-		this.initializeSearchProviders();
-		this.resourceManager.registerReloader(this.searchManager);
 		this.videoWarningManager = new VideoWarningManager();
 		this.resourceManager.registerReloader(this.videoWarningManager);
 		this.resourceManager.registerReloader(this.regionalComplianciesManager);
@@ -912,46 +905,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public void onFontOptionsChanged() {
 		this.fontManager.setActiveFilters(this.options);
-	}
-
-	private void initializeSearchProviders() {
-		this.searchManager
-			.put(
-				SearchManager.ITEM_TOOLTIP,
-				stacks -> new TextSearchProvider(
-						stack -> stack.getTooltip(Item.TooltipContext.DEFAULT, null, TooltipType.Default.BASIC.withCreative())
-								.stream()
-								.map(tooltip -> Formatting.strip(tooltip.getString()).trim())
-								.filter(string -> !string.isEmpty()),
-						stack -> Stream.of(Registries.ITEM.getId(stack.getItem())),
-						stacks
-					)
-			);
-		this.searchManager.put(SearchManager.ITEM_TAG, stacks -> new IdentifierSearchProvider(stack -> stack.streamTags().map(TagKey::id), stacks));
-		this.searchManager
-			.put(
-				SearchManager.RECIPE_OUTPUT,
-				stacks -> new TextSearchProvider(
-						recipeResults -> {
-							Item.TooltipContext tooltipContext = Item.TooltipContext.create(recipeResults.getRegistryManager());
-							return recipeResults.getAllRecipes()
-								.stream()
-								.flatMap(
-									recipeEntry -> recipeEntry.value().getResult(recipeResults.getRegistryManager()).getTooltip(tooltipContext, null, TooltipType.Default.BASIC).stream()
-								)
-								.map(text -> Formatting.strip(text.getString()).trim())
-								.filter(string -> !string.isEmpty());
-						},
-						recipeResultCollection -> recipeResultCollection.getAllRecipes()
-								.stream()
-								.map(recipeEntry -> Registries.ITEM.getId(recipeEntry.value().getResult(recipeResultCollection.getRegistryManager()).getItem())),
-						stacks
-					)
-			);
-		ItemGroups.getSearchGroup().setSearchProviderReloader(stacks -> {
-			this.reloadSearchProvider(SearchManager.ITEM_TOOLTIP, stacks);
-			this.reloadSearchProvider(SearchManager.ITEM_TAG, stacks);
-		});
 	}
 
 	private void handleGlErrorByDisableVsync(int error, long description) {
@@ -2780,14 +2733,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public ItemRenderer getItemRenderer() {
 		return this.itemRenderer;
-	}
-
-	public <T> SearchProvider<T> getSearchProvider(SearchManager.Key<T> key) {
-		return this.searchManager.get(key);
-	}
-
-	public <T> void reloadSearchProvider(SearchManager.Key<T> key, List<T> values) {
-		this.searchManager.reload(key, values);
 	}
 
 	public DataFixer getDataFixer() {

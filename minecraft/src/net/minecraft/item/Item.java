@@ -15,7 +15,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.ComponentMap;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.FoodComponent;
@@ -25,6 +25,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.map.MapState;
@@ -345,7 +346,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		return false;
 	}
 
-	public float getBonusAttackDamage(PlayerEntity player, float baseAttackDamage) {
+	public float getBonusAttackDamage(Entity target, float baseAttackDamage, DamageSource damageSource) {
 		return 0.0F;
 	}
 
@@ -359,6 +360,9 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 */
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 		return false;
+	}
+
+	public void postDamageEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 	}
 
 	/**
@@ -503,7 +507,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * {@return the maximum use (right-click) time of this item, in ticks}
 	 * Once a player has used an item for said number of ticks, they stop using it, and {@link Item#finishUsing} is called.
 	 */
-	public int getMaxUseTime(ItemStack stack) {
+	public int getMaxUseTime(ItemStack stack, LivingEntity user) {
 		FoodComponent foodComponent = stack.get(DataComponentTypes.FOOD);
 		return foodComponent != null ? foodComponent.getEatTicks() : 0;
 	}
@@ -733,7 +737,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 			return this;
 		}
 
-		public <T> Item.Settings component(DataComponentType<T> type, T value) {
+		public <T> Item.Settings component(ComponentType<T> type, T value) {
 			if (this.components == null) {
 				this.components = ComponentMap.builder().addAll(DataComponentTypes.DEFAULT_ITEM_COMPONENTS);
 			}

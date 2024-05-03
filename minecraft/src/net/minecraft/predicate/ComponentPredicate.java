@@ -12,13 +12,13 @@ import net.minecraft.component.Component;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentHolder;
 import net.minecraft.component.ComponentMap;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 
 public final class ComponentPredicate implements Predicate<ComponentMap> {
-	public static final Codec<ComponentPredicate> CODEC = DataComponentType.TYPE_TO_VALUE_MAP_CODEC
+	public static final Codec<ComponentPredicate> CODEC = ComponentType.TYPE_TO_VALUE_MAP_CODEC
 		.xmap(
 			map -> new ComponentPredicate((List<Component<?>>)map.entrySet().stream().map(Component::of).collect(Collectors.toList())),
 			predicate -> (Map)predicate.components
@@ -95,7 +95,7 @@ public final class ComponentPredicate implements Predicate<ComponentMap> {
 		Builder() {
 		}
 
-		public <T> ComponentPredicate.Builder add(DataComponentType<? super T> type, T value) {
+		public <T> ComponentPredicate.Builder add(ComponentType<? super T> type, T value) {
 			for (Component<?> component : this.components) {
 				if (component.type() == type) {
 					throw new IllegalArgumentException("Predicate already has component of type: '" + type + "'");

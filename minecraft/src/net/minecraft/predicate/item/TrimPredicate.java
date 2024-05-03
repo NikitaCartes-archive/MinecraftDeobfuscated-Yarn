@@ -3,7 +3,7 @@ package net.minecraft.predicate.item;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.trim.ArmorTrim;
@@ -24,7 +24,7 @@ public record TrimPredicate(Optional<RegistryEntryList<ArmorTrimMaterial>> mater
 	);
 
 	@Override
-	public DataComponentType<ArmorTrim> getComponentType() {
+	public ComponentType<ArmorTrim> getComponentType() {
 		return DataComponentTypes.TRIM;
 	}
 

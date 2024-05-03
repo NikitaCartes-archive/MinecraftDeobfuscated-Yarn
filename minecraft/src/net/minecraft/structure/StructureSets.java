@@ -162,5 +162,9 @@ public interface StructureSets {
 			StructureSetKeys.TRAIL_RUINS,
 			new StructureSet(registryEntryLookup.getOrThrow(StructureKeys.TRAIL_RUINS), new RandomSpreadStructurePlacement(34, 8, SpreadType.LINEAR, 83469867))
 		);
+		structureSetRegisterable.register(
+			StructureSetKeys.TRIAL_CHAMBERS,
+			new StructureSet(registryEntryLookup.getOrThrow(StructureKeys.TRIAL_CHAMBERS), new RandomSpreadStructurePlacement(34, 12, SpreadType.LINEAR, 94251327))
+		);
 	}
 }

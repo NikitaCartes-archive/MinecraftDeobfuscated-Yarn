@@ -1,10 +1,10 @@
 package net.minecraft.recipe;
 
 import net.minecraft.block.Blocks;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.input.SmithingRecipeInput;
 
-public interface SmithingRecipe extends Recipe<Inventory> {
+public interface SmithingRecipe extends Recipe<SmithingRecipeInput> {
 	@Override
 	default RecipeType<?> getType() {
 		return RecipeType.SMITHING;

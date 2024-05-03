@@ -322,12 +322,16 @@ public class PandaEntity extends AnimalEntity {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		this.playSound(SoundEvents.ENTITY_PANDA_BITE, 1.0F, 1.0F);
 		if (!this.isAttacking()) {
 			this.shouldAttack = true;
 		}
 
 		return super.tryAttack(target);
+	}
+
+	@Override
+	public void method_59928() {
+		this.playSound(SoundEvents.ENTITY_PANDA_BITE, 1.0F, 1.0F);
 	}
 
 	@Override

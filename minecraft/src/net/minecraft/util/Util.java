@@ -412,6 +412,27 @@ public class Util {
 		};
 	}
 
+	public static <T> boolean isSymmetrical(int width, int height, List<T> list) {
+		if (width == 1) {
+			return true;
+		} else {
+			int i = width / 2;
+
+			for (int j = 0; j < height; j++) {
+				for (int k = 0; k < i; k++) {
+					int l = width - 1 - k;
+					T object = (T)list.get(k + j * width);
+					T object2 = (T)list.get(l + j * width);
+					if (!object.equals(object2)) {
+						return false;
+					}
+				}
+			}
+
+			return true;
+		}
+	}
+
 	/**
 	 * {@return the operating system instance for the current platform}
 	 * 

@@ -1,5 +1,6 @@
 package net.minecraft.entity.attribute;
 
+import com.google.common.collect.Multimap;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -72,6 +73,25 @@ public class AttributeContainer {
 	public double getModifierValue(RegistryEntry<EntityAttribute> attribute, UUID uuid) {
 		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
 		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(uuid).value() : this.fallback.getModifierValue(attribute, uuid);
+	}
+
+	public void addTemporaryModifiers(Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiersMap) {
+		modifiersMap.forEach((attribute, modifier) -> {
+			EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(attribute);
+			if (entityAttributeInstance != null) {
+				entityAttributeInstance.removeModifier(modifier.uuid());
+				entityAttributeInstance.addTemporaryModifier(modifier);
+			}
+		});
+	}
+
+	public void removeModifiers(Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiersMap) {
+		modifiersMap.asMap().forEach((attribute, modifiers) -> {
+			EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
+			if (entityAttributeInstance != null) {
+				modifiers.forEach(modifier -> entityAttributeInstance.removeModifier(modifier.uuid()));
+			}
+		});
 	}
 
 	public void setFrom(AttributeContainer other) {

@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.function.Predicate;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.item.ItemStack;
@@ -23,7 +23,7 @@ public record WritableBookContentPredicate(Optional<CollectionPredicate<RawFilte
 	);
 
 	@Override
-	public DataComponentType<WritableBookContentComponent> getComponentType() {
+	public ComponentType<WritableBookContentComponent> getComponentType() {
 		return DataComponentTypes.WRITABLE_BOOK_CONTENT;
 	}
 

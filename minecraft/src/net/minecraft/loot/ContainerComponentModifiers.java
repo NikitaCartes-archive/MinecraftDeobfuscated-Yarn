@@ -5,7 +5,7 @@ import com.mojang.serialization.DataResult;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.component.type.ChargedProjectilesComponent;
@@ -16,7 +16,7 @@ import net.minecraft.registry.Registries;
 public interface ContainerComponentModifiers {
 	ContainerComponentModifier<ContainerComponent> CONTAINER = new ContainerComponentModifier<ContainerComponent>() {
 		@Override
-		public DataComponentType<ContainerComponent> getComponentType() {
+		public ComponentType<ContainerComponent> getComponentType() {
 			return DataComponentTypes.CONTAINER;
 		}
 
@@ -34,7 +34,7 @@ public interface ContainerComponentModifiers {
 	};
 	ContainerComponentModifier<BundleContentsComponent> BUNDLE_CONTENTS = new ContainerComponentModifier<BundleContentsComponent>() {
 		@Override
-		public DataComponentType<BundleContentsComponent> getComponentType() {
+		public ComponentType<BundleContentsComponent> getComponentType() {
 			return DataComponentTypes.BUNDLE_CONTENTS;
 		}
 
@@ -54,7 +54,7 @@ public interface ContainerComponentModifiers {
 	};
 	ContainerComponentModifier<ChargedProjectilesComponent> CHARGED_PROJECTILES = new ContainerComponentModifier<ChargedProjectilesComponent>() {
 		@Override
-		public DataComponentType<ChargedProjectilesComponent> getComponentType() {
+		public ComponentType<ChargedProjectilesComponent> getComponentType() {
 			return DataComponentTypes.CHARGED_PROJECTILES;
 		}
 
@@ -70,7 +70,7 @@ public interface ContainerComponentModifiers {
 			return ChargedProjectilesComponent.of(stream.toList());
 		}
 	};
-	Map<DataComponentType<?>, ContainerComponentModifier<?>> TYPE_TO_MODIFIER = (Map<DataComponentType<?>, ContainerComponentModifier<?>>)Stream.of(
+	Map<ComponentType<?>, ContainerComponentModifier<?>> TYPE_TO_MODIFIER = (Map<ComponentType<?>, ContainerComponentModifier<?>>)Stream.of(
 			CONTAINER, BUNDLE_CONTENTS, CHARGED_PROJECTILES
 		)
 		.collect(Collectors.toMap(ContainerComponentModifier::getComponentType, containerComponentModifier -> containerComponentModifier));

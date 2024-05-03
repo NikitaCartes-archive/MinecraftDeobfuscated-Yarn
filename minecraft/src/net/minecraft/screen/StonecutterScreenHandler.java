@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.StonecuttingRecipe;
+import net.minecraft.recipe.input.SingleStackRecipeInput;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -141,19 +142,23 @@ public class StonecutterScreenHandler extends ScreenHandler {
 		}
 	}
 
+	private static SingleStackRecipeInput createRecipeInput(Inventory inventory) {
+		return new SingleStackRecipeInput(inventory.getStack(0));
+	}
+
 	private void updateInput(Inventory input, ItemStack stack) {
 		this.availableRecipes.clear();
 		this.selectedRecipe.set(-1);
 		this.outputSlot.setStackNoCallbacks(ItemStack.EMPTY);
 		if (!stack.isEmpty()) {
-			this.availableRecipes = this.world.getRecipeManager().getAllMatches(RecipeType.STONECUTTING, input, this.world);
+			this.availableRecipes = this.world.getRecipeManager().getAllMatches(RecipeType.STONECUTTING, createRecipeInput(input), this.world);
 		}
 	}
 
 	void populateResult() {
 		if (!this.availableRecipes.isEmpty() && this.isInBounds(this.selectedRecipe.get())) {
 			RecipeEntry<StonecuttingRecipe> recipeEntry = (RecipeEntry<StonecuttingRecipe>)this.availableRecipes.get(this.selectedRecipe.get());
-			ItemStack itemStack = recipeEntry.value().craft(this.input, this.world.getRegistryManager());
+			ItemStack itemStack = recipeEntry.value().craft(createRecipeInput(this.input), this.world.getRegistryManager());
 			if (itemStack.isItemEnabled(this.world.getEnabledFeatures())) {
 				this.output.setLastRecipe(recipeEntry);
 				this.outputSlot.setStackNoCallbacks(itemStack);
@@ -200,7 +205,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 				if (!this.insertItem(itemStack2, 2, 38, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (this.world.getRecipeManager().getFirstMatch(RecipeType.STONECUTTING, new SimpleInventory(itemStack2), this.world).isPresent()) {
+			} else if (this.world.getRecipeManager().getFirstMatch(RecipeType.STONECUTTING, new SingleStackRecipeInput(itemStack2), this.world).isPresent()) {
 				if (!this.insertItem(itemStack2, 0, 1, false)) {
 					return ItemStack.EMPTY;
 				}

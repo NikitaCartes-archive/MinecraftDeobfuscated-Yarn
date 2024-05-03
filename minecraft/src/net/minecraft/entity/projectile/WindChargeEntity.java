@@ -1,14 +1,21 @@
 package net.minecraft.entity.projectile;
 
-import net.minecraft.entity.Entity;
+import java.util.Optional;
+import java.util.function.Function;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.AdvancedExplosionBehavior;
+import net.minecraft.world.explosion.ExplosionBehavior;
 
 public class WindChargeEntity extends AbstractWindChargeEntity {
-	private static final WindChargeEntity.WindChargeExplosionBehavior EXPLOSION_BEHAVIOR = new WindChargeEntity.WindChargeExplosionBehavior();
+	private static final ExplosionBehavior EXPLOSION_BEHAVIOR = new AdvancedExplosionBehavior(
+		true, false, Optional.of(1.1F), Registries.BLOCK.getEntryList(BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS).map(Function.identity())
+	);
 	private static final float EXPLOSION_POWER = 1.2F;
 
 	public WindChargeEntity(EntityType<? extends AbstractWindChargeEntity> entityType, World world) {
@@ -35,17 +42,10 @@ public class WindChargeEntity extends AbstractWindChargeEntity {
 				this.getZ(),
 				1.2F,
 				false,
-				World.ExplosionSourceType.BLOW,
+				World.ExplosionSourceType.TRIGGER,
 				ParticleTypes.GUST_EMITTER_SMALL,
 				ParticleTypes.GUST_EMITTER_LARGE,
 				SoundEvents.ENTITY_WIND_CHARGE_WIND_BURST
 			);
-	}
-
-	public static final class WindChargeExplosionBehavior extends AbstractWindChargeEntity.WindChargeExplosionBehavior {
-		@Override
-		public float getKnockbackModifier(Entity entity) {
-			return 1.1F;
-		}
 	}
 }

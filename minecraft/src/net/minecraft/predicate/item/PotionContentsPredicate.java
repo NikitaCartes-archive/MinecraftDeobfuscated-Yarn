@@ -2,7 +2,7 @@ package net.minecraft.predicate.item;
 
 import com.mojang.serialization.Codec;
 import java.util.Optional;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.item.ItemStack;
@@ -17,7 +17,7 @@ public record PotionContentsPredicate(RegistryEntryList<Potion> potions) impleme
 		.xmap(PotionContentsPredicate::new, PotionContentsPredicate::potions);
 
 	@Override
-	public DataComponentType<PotionContentsComponent> getComponentType() {
+	public ComponentType<PotionContentsComponent> getComponentType() {
 		return DataComponentTypes.POTION_CONTENTS;
 	}
 

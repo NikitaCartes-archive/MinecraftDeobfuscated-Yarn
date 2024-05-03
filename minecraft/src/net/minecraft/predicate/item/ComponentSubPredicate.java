@@ -1,6 +1,6 @@
 package net.minecraft.predicate.item;
 
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.item.ItemStack;
 
 public interface ComponentSubPredicate<T> extends ItemSubPredicate {
@@ -10,7 +10,7 @@ public interface ComponentSubPredicate<T> extends ItemSubPredicate {
 		return object != null && this.test(stack, object);
 	}
 
-	DataComponentType<T> getComponentType();
+	ComponentType<T> getComponentType();
 
 	boolean test(ItemStack stack, T component);
 }

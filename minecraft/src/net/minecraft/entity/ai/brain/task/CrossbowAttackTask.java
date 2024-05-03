@@ -64,7 +64,7 @@ public class CrossbowAttackTask<E extends MobEntity & CrossbowUser, T extends Li
 
 			int i = entity.getItemUseTime();
 			ItemStack itemStack = entity.getActiveItem();
-			if (i >= CrossbowItem.getPullTime(itemStack)) {
+			if (i >= CrossbowItem.getPullTime(itemStack, entity)) {
 				entity.stopUsingItem();
 				this.state = CrossbowAttackTask.CrossbowState.CHARGED;
 				this.chargingCooldown = 20 + entity.getRandom().nextInt(20);

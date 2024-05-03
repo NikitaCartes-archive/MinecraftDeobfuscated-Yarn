@@ -29,7 +29,7 @@ public abstract class WaterCreatureEntity extends PathAwareEntity {
 	}
 
 	@Override
-	public int getXpToDrop() {
+	protected int getXpToDrop() {
 		return 1 + this.getWorld().random.nextInt(3);
 	}
 

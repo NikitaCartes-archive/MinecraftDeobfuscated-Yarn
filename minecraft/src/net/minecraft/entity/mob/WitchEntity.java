@@ -146,7 +146,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 
 				if (registryEntry != null) {
 					this.equipStack(EquipmentSlot.MAINHAND, PotionContentsComponent.createStack(Items.POTION, registryEntry));
-					this.drinkTimeLeft = this.getMainHandStack().getMaxUseTime();
+					this.drinkTimeLeft = this.getMainHandStack().getMaxUseTime(this);
 					this.setDrinking(true);
 					if (!this.isSilent()) {
 						this.getWorld()

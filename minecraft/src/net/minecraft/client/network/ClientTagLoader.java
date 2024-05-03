@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -20,10 +19,6 @@ public class ClientTagLoader {
 
 	public void put(RegistryKey<? extends Registry<?>> registryRef, TagPacketSerializer.Serialized serialized) {
 		this.tagsByRegistry.put(registryRef, serialized);
-	}
-
-	private static void onDynamicTagsLoaded() {
-		ItemGroups.getSearchGroup().reloadSearchProvider();
 	}
 
 	private static void onStaticTagsLoaded() {
@@ -49,7 +44,5 @@ public class ClientTagLoader {
 			this.load(registryManager, registryRef -> true);
 			onStaticTagsLoaded();
 		}
-
-		onDynamicTagsLoaded();
 	}
 }

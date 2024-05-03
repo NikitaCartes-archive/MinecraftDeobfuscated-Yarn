@@ -11,32 +11,23 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class TextSearchProvider<T> extends IdentifierSearchProvider<T> {
-	private final List<T> values;
-	private final Function<T, Stream<String>> textsGetter;
-	private TextSearcher<T> textSearcher = TextSearcher.of();
+	private final SearchProvider<T> textSearcher;
 
 	public TextSearchProvider(Function<T, Stream<String>> textsGetter, Function<T, Stream<Identifier>> identifiersGetter, List<T> values) {
 		super(identifiersGetter, values);
-		this.values = values;
-		this.textsGetter = textsGetter;
-	}
-
-	@Override
-	public void reload() {
-		super.reload();
-		this.textSearcher = TextSearcher.of(this.values, this.textsGetter);
+		this.textSearcher = SearchProvider.plainText(values, textsGetter);
 	}
 
 	@Override
 	protected List<T> search(String text) {
-		return this.textSearcher.search(text);
+		return this.textSearcher.findAll(text);
 	}
 
 	@Override
 	protected List<T> search(String namespace, String path) {
 		List<T> list = this.idSearcher.searchNamespace(namespace);
 		List<T> list2 = this.idSearcher.searchPath(path);
-		List<T> list3 = this.textSearcher.search(path);
+		List<T> list3 = this.textSearcher.findAll(path);
 		Iterator<T> iterator = new TextSearchableIterator<>(list2.iterator(), list3.iterator(), this.lastIndexComparator);
 		return ImmutableList.copyOf(new IdentifierSearchableIterator<>(list.iterator(), iterator, this.lastIndexComparator));
 	}

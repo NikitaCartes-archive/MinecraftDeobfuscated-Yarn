@@ -5,6 +5,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.floats.FloatArraySet;
+import it.unimi.dsi.fastutil.floats.FloatArrays;
+import it.unimi.dsi.fastutil.floats.FloatSet;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import java.util.Arrays;
@@ -31,7 +34,6 @@ import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.data.DataTracked;
@@ -781,7 +783,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 */
 	public void setOnFireFromLava() {
 		if (!this.isFireImmune()) {
-			this.setOnFireFor(15);
+			this.setOnFireFor(15.0F);
 			if (this.damage(this.getDamageSources().lava(), 4.0F)) {
 				this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 			}
@@ -797,8 +799,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * 
 	 * @see net.minecraft.enchantment.ProtectionEnchantment#transformFireDuration
 	 */
-	public final void setOnFireFor(int seconds) {
-		this.setOnFireForTicks(seconds * 20);
+	public final void setOnFireFor(float f) {
+		this.setOnFireForTicks(MathHelper.floor(f * 20.0F));
 	}
 
 	public void setOnFireForTicks(int ticks) {
@@ -1213,41 +1215,71 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		boolean bl = movement.x != vec3d.x;
 		boolean bl2 = movement.y != vec3d.y;
 		boolean bl3 = movement.z != vec3d.z;
-		boolean bl4 = this.isOnGround() || bl2 && movement.y < 0.0;
-		if (this.getStepHeight() > 0.0F && bl4 && (bl || bl3)) {
-			Vec3d vec3d2 = adjustMovementForCollisions(this, new Vec3d(movement.x, (double)this.getStepHeight(), movement.z), box, this.getWorld(), list);
-			Vec3d vec3d3 = adjustMovementForCollisions(
-				this, new Vec3d(0.0, (double)this.getStepHeight(), 0.0), box.stretch(movement.x, 0.0, movement.z), this.getWorld(), list
-			);
-			if (vec3d3.y < (double)this.getStepHeight()) {
-				Vec3d vec3d4 = adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.getWorld(), list).add(vec3d3);
-				if (vec3d4.horizontalLengthSquared() > vec3d2.horizontalLengthSquared()) {
-					vec3d2 = vec3d4;
-				}
+		boolean bl4 = bl2 && movement.y < 0.0;
+		if (this.getStepHeight() > 0.0F && (bl4 || this.isOnGround()) && (bl || bl3)) {
+			Box box2 = bl4 ? box.offset(0.0, vec3d.y, 0.0) : box;
+			Box box3 = box2.stretch(movement.x, (double)this.getStepHeight(), movement.z);
+			if (!bl4) {
+				box3 = box3.stretch(0.0, -1.0E-5F, 0.0);
 			}
 
-			if (vec3d2.horizontalLengthSquared() > vec3d.horizontalLengthSquared()) {
-				return vec3d2.add(adjustMovementForCollisions(this, new Vec3d(0.0, -vec3d2.y + movement.y, 0.0), box.offset(vec3d2), this.getWorld(), list));
+			List<VoxelShape> list2 = findCollisionsForMovement(this, this.world, list, box3);
+			float f = (float)vec3d.y;
+			float[] fs = method_59921(box2, list2, f, this.getStepHeight());
+
+			for (float g : fs) {
+				Vec3d vec3d2 = adjustMovementForCollisions(new Vec3d(movement.x, (double)g, movement.z), box2, list2);
+				if (vec3d2.horizontalLengthSquared() > vec3d.horizontalLengthSquared()) {
+					return vec3d2;
+				}
 			}
 		}
 
 		return vec3d;
 	}
 
+	private static float[] method_59921(Box box, List<VoxelShape> list, float f, float g) {
+		FloatSet floatSet = new FloatArraySet(4);
+
+		for (VoxelShape voxelShape : list) {
+			for (double d : voxelShape.getPointPositions(Direction.Axis.Y)) {
+				float h = (float)(d - box.minY);
+				if (!(h <= f)) {
+					if (h > g) {
+						break;
+					}
+
+					floatSet.add(h);
+				}
+			}
+		}
+
+		float[] fs = floatSet.toFloatArray();
+		FloatArrays.unstableSort(fs);
+		return fs;
+	}
+
 	public static Vec3d adjustMovementForCollisions(@Nullable Entity entity, Vec3d movement, Box entityBoundingBox, World world, List<VoxelShape> collisions) {
-		Builder<VoxelShape> builder = ImmutableList.builderWithExpectedSize(collisions.size() + 1);
-		if (!collisions.isEmpty()) {
-			builder.addAll(collisions);
+		List<VoxelShape> list = findCollisionsForMovement(entity, world, collisions, entityBoundingBox.stretch(movement));
+		return adjustMovementForCollisions(movement, entityBoundingBox, list);
+	}
+
+	private static List<VoxelShape> findCollisionsForMovement(
+		@Nullable Entity entity, World world, List<VoxelShape> regularCollisions, Box movingEntityBoundingBox
+	) {
+		Builder<VoxelShape> builder = ImmutableList.builderWithExpectedSize(regularCollisions.size() + 1);
+		if (!regularCollisions.isEmpty()) {
+			builder.addAll(regularCollisions);
 		}
 
 		WorldBorder worldBorder = world.getWorldBorder();
-		boolean bl = entity != null && worldBorder.canCollide(entity, entityBoundingBox.stretch(movement));
+		boolean bl = entity != null && worldBorder.canCollide(entity, movingEntityBoundingBox);
 		if (bl) {
 			builder.add(worldBorder.asVoxelShape());
 		}
 
-		builder.addAll(world.getBlockCollisions(entity, entityBoundingBox.stretch(movement)));
-		return adjustMovementForCollisions(movement, entityBoundingBox, builder.build());
+		builder.addAll(world.getBlockCollisions(entity, movingEntityBoundingBox));
+		return builder.build();
 	}
 
 	private static Vec3d adjustMovementForCollisions(Vec3d movement, Box entityBoundingBox, List<VoxelShape> collisions) {
@@ -3443,7 +3475,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
 		this.setFireTicks(this.fireTicks + 1);
 		if (this.fireTicks == 0) {
-			this.setOnFireFor(8);
+			this.setOnFireFor(8.0F);
 		}
 
 		this.damage(this.getDamageSources().lightningBolt(), 5.0F);
@@ -4377,29 +4409,6 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 */
 	public boolean isImmuneToExplosion(Explosion explosion) {
 		return false;
-	}
-
-	/**
-	 * Applies damage effects to {@code attacker} or {@code target}.
-	 * 
-	 * <p>Called when {@code attacker} damages {@code target}.
-	 * 
-	 * <p>Used to apply damage effects based on enchantments, such
-	 * as Thorns attacker damage or slowness from Bane of Arthropods.
-	 * 
-	 * @implNote Although this method is non-static, {@code this} keyword is
-	 * not used anywhere in this method.
-	 * 
-	 * @param attacker the attacker; usually this entity, but may be a {@linkplain
-	 * net.minecraft.entity.projectile.ProjectileEntity#getOwner() projectile's
-	 * owner entity}
-	 */
-	public void applyDamageEffects(LivingEntity attacker, Entity target) {
-		if (target instanceof LivingEntity) {
-			EnchantmentHelper.onUserDamaged((LivingEntity)target, attacker);
-		}
-
-		EnchantmentHelper.onTargetDamaged(attacker, target);
 	}
 
 	/**
@@ -5362,6 +5371,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		float i = (float)MathHelper.lerp(d, (double)this.getPitch(), pitch);
 		this.setPosition(e, f, g);
 		this.setRotation(h, i);
+	}
+
+	public Random getRandom() {
+		return this.random;
 	}
 
 	/**

@@ -15,17 +15,14 @@ import org.joml.Vector3f;
  */
 @Environment(EnvType.CLIENT)
 public abstract class BillboardParticle extends Particle {
-	protected float scale;
-	private final Quaternionf rotation = new Quaternionf();
+	protected float scale = 0.1F * (this.random.nextFloat() * 0.5F + 0.5F) * 2.0F;
 
 	protected BillboardParticle(ClientWorld clientWorld, double d, double e, double f) {
 		super(clientWorld, d, e, f);
-		this.scale = 0.1F * (this.random.nextFloat() * 0.5F + 0.5F) * 2.0F;
 	}
 
 	protected BillboardParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 		super(clientWorld, d, e, f, g, h, i);
-		this.scale = 0.1F * (this.random.nextFloat() * 0.5F + 0.5F) * 2.0F;
 	}
 
 	public BillboardParticle.Rotator getRotator() {
@@ -34,51 +31,44 @@ public abstract class BillboardParticle extends Particle {
 
 	@Override
 	public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
-		Vec3d vec3d = camera.getPos();
-		float f = (float)(MathHelper.lerp((double)tickDelta, this.prevPosX, this.x) - vec3d.getX());
-		float g = (float)(MathHelper.lerp((double)tickDelta, this.prevPosY, this.y) - vec3d.getY());
-		float h = (float)(MathHelper.lerp((double)tickDelta, this.prevPosZ, this.z) - vec3d.getZ());
-		this.getRotator().setRotation(this.rotation, camera, tickDelta);
+		Quaternionf quaternionf = new Quaternionf();
+		this.getRotator().setRotation(quaternionf, camera, tickDelta);
 		if (this.angle != 0.0F) {
-			this.rotation.rotateZ(MathHelper.lerp(tickDelta, this.prevAngle, this.angle));
+			quaternionf.rotateZ(MathHelper.lerp(tickDelta, this.prevAngle, this.angle));
 		}
 
-		Vector3f[] vector3fs = new Vector3f[]{
-			new Vector3f(-1.0F, -1.0F, 0.0F), new Vector3f(-1.0F, 1.0F, 0.0F), new Vector3f(1.0F, 1.0F, 0.0F), new Vector3f(1.0F, -1.0F, 0.0F)
-		};
-		float i = this.getSize(tickDelta);
+		this.method_60373(vertexConsumer, camera, quaternionf, tickDelta);
+	}
 
-		for (int j = 0; j < 4; j++) {
-			Vector3f vector3f = vector3fs[j];
-			vector3f.rotate(this.rotation);
-			vector3f.mul(i);
-			vector3f.add(f, g, h);
-		}
+	protected void method_60373(VertexConsumer vertexConsumer, Camera camera, Quaternionf quaternionf, float f) {
+		Vec3d vec3d = camera.getPos();
+		float g = (float)(MathHelper.lerp((double)f, this.prevPosX, this.x) - vec3d.getX());
+		float h = (float)(MathHelper.lerp((double)f, this.prevPosY, this.y) - vec3d.getY());
+		float i = (float)(MathHelper.lerp((double)f, this.prevPosZ, this.z) - vec3d.getZ());
+		this.method_60374(vertexConsumer, quaternionf, g, h, i, f);
+	}
 
+	protected void method_60374(VertexConsumer vertexConsumer, Quaternionf quaternionf, float f, float g, float h, float i) {
+		float j = this.getSize(i);
 		float k = this.getMinU();
 		float l = this.getMaxU();
 		float m = this.getMinV();
 		float n = this.getMaxV();
-		int o = this.getBrightness(tickDelta);
-		vertexConsumer.vertex((double)vector3fs[0].x(), (double)vector3fs[0].y(), (double)vector3fs[0].z())
-			.texture(l, n)
-			.color(this.red, this.green, this.blue, this.alpha)
-			.light(o)
-			.next();
-		vertexConsumer.vertex((double)vector3fs[1].x(), (double)vector3fs[1].y(), (double)vector3fs[1].z())
+		int o = this.getBrightness(i);
+		this.method_60375(vertexConsumer, quaternionf, f, g, h, -1.0F, -1.0F, j, l, n, o);
+		this.method_60375(vertexConsumer, quaternionf, f, g, h, -1.0F, 1.0F, j, l, m, o);
+		this.method_60375(vertexConsumer, quaternionf, f, g, h, 1.0F, 1.0F, j, k, m, o);
+		this.method_60375(vertexConsumer, quaternionf, f, g, h, 1.0F, -1.0F, j, k, n, o);
+	}
+
+	private void method_60375(
+		VertexConsumer vertexConsumer, Quaternionf quaternionf, float f, float g, float h, float i, float j, float k, float l, float m, int n
+	) {
+		Vector3f vector3f = new Vector3f(i, j, 0.0F).rotate(quaternionf).mul(k).add(f, g, h);
+		vertexConsumer.vertex((double)vector3f.x(), (double)vector3f.y(), (double)vector3f.z())
 			.texture(l, m)
 			.color(this.red, this.green, this.blue, this.alpha)
-			.light(o)
-			.next();
-		vertexConsumer.vertex((double)vector3fs[2].x(), (double)vector3fs[2].y(), (double)vector3fs[2].z())
-			.texture(k, m)
-			.color(this.red, this.green, this.blue, this.alpha)
-			.light(o)
-			.next();
-		vertexConsumer.vertex((double)vector3fs[3].x(), (double)vector3fs[3].y(), (double)vector3fs[3].z())
-			.texture(k, n)
-			.color(this.red, this.green, this.blue, this.alpha)
-			.light(o)
+			.light(n)
 			.next();
 	}
 

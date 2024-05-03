@@ -15,7 +15,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipType;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -749,11 +748,9 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	 * @param tool the tool used to break the block, or {@link ItemStack#EMPTY} for explosions
 	 */
 	protected void dropExperienceWhenMined(ServerWorld world, BlockPos pos, ItemStack tool, IntProvider experience) {
-		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, tool) == 0) {
-			int i = experience.get(world.random);
-			if (i > 0) {
-				this.dropExperience(world, pos, i);
-			}
+		int i = EnchantmentHelper.getBlockExperience(world, tool, experience.get(world.getRandom()));
+		if (i > 0) {
+			this.dropExperience(world, pos, i);
 		}
 	}
 

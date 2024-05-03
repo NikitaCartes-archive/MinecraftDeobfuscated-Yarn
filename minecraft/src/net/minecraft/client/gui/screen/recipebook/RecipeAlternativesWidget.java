@@ -3,7 +3,6 @@ package net.minecraft.client.gui.screen.recipebook;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -59,7 +58,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 			this.furnace = true;
 		}
 
-		boolean bl = client.player.getRecipeBook().isFilteringCraftable((AbstractRecipeScreenHandler<?>)client.player.currentScreenHandler);
+		boolean bl = client.player.getRecipeBook().isFilteringCraftable((AbstractRecipeScreenHandler<?, ?>)client.player.currentScreenHandler);
 		List<RecipeEntry<?>> list = results.getRecipes(true);
 		List<RecipeEntry<?>> list2 = bl ? Collections.emptyList() : results.getRecipes(false);
 		int i = list.size();
@@ -197,11 +196,10 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 			this.appendDefaultNarrations(builder);
 		}
 
-		@Override
-		public void acceptAlignedInput(Iterator<Ingredient> inputs, int slot, int amount, int gridX, int gridY) {
-			ItemStack[] itemStacks = ((Ingredient)inputs.next()).getMatchingStacks();
+		public void acceptAlignedInput(Ingredient ingredient, int i, int j, int k, int l) {
+			ItemStack[] itemStacks = ingredient.getMatchingStacks();
 			if (itemStacks.length != 0) {
-				this.slots.add(new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(3 + gridY * 7, 3 + gridX * 7, itemStacks));
+				this.slots.add(new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(3 + k * 7, 3 + l * 7, itemStacks));
 			}
 		}
 

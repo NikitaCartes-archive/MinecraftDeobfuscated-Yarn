@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screen.option.AccessibilityOptionsScreen;
 import net.minecraft.client.gui.screen.option.LanguageOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.NarratedMultilineTextWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
@@ -123,6 +124,12 @@ public class AccessibilityOnboardingScreen extends Screen {
 				Narrator.getNarrator().say(NARRATOR_PROMPT.getString(), true);
 				this.narratorPrompted = true;
 			}
+		}
+	}
+
+	public void method_60323() {
+		if (this.narratorWidget instanceof CyclingButtonWidget) {
+			((CyclingButtonWidget)this.narratorWidget).setValue(this.gameOptions.getNarrator().getValue());
 		}
 	}
 }

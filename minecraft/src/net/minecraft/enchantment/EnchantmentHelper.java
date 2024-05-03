@@ -1,56 +1,71 @@
 package net.minecraft.enchantment;
 
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
+import net.minecraft.enchantment.effect.EnchantmentEffectTarget;
+import net.minecraft.enchantment.effect.EnchantmentValueEffectType;
+import net.minecraft.enchantment.provider.EnchantmentProvider;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Weighting;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.apache.commons.lang3.mutable.MutableInt;
+import org.apache.commons.lang3.mutable.MutableObject;
 
 public class EnchantmentHelper {
-	private static final float field_38222 = 0.15F;
-
 	/**
 	 * Gets the level of an enchantment on an item stack.
 	 */
-	public static int getLevel(Enchantment enchantment, ItemStack stack) {
+	public static int getLevel(RegistryEntry<Enchantment> enchantment, ItemStack stack) {
 		ItemEnchantmentsComponent itemEnchantmentsComponent = stack.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
 		return itemEnchantmentsComponent.getLevel(enchantment);
 	}
 
 	public static ItemEnchantmentsComponent apply(ItemStack stack, java.util.function.Consumer<ItemEnchantmentsComponent.Builder> applier) {
-		DataComponentType<ItemEnchantmentsComponent> dataComponentType = getEnchantmentsComponentType(stack);
-		ItemEnchantmentsComponent itemEnchantmentsComponent = stack.get(dataComponentType);
+		ComponentType<ItemEnchantmentsComponent> componentType = getEnchantmentsComponentType(stack);
+		ItemEnchantmentsComponent itemEnchantmentsComponent = stack.get(componentType);
 		if (itemEnchantmentsComponent == null) {
 			return ItemEnchantmentsComponent.DEFAULT;
 		} else {
 			ItemEnchantmentsComponent.Builder builder = new ItemEnchantmentsComponent.Builder(itemEnchantmentsComponent);
 			applier.accept(builder);
 			ItemEnchantmentsComponent itemEnchantmentsComponent2 = builder.build();
-			stack.set(dataComponentType, itemEnchantmentsComponent2);
+			stack.set(componentType, itemEnchantmentsComponent2);
 			return itemEnchantmentsComponent2;
 		}
 	}
@@ -67,7 +82,7 @@ public class EnchantmentHelper {
 		return stack.getOrDefault(getEnchantmentsComponentType(stack), ItemEnchantmentsComponent.DEFAULT);
 	}
 
-	private static DataComponentType<ItemEnchantmentsComponent> getEnchantmentsComponentType(ItemStack stack) {
+	private static ComponentType<ItemEnchantmentsComponent> getEnchantmentsComponentType(ItemStack stack) {
 		return stack.isOf(Items.ENCHANTED_BOOK) ? DataComponentTypes.STORED_ENCHANTMENTS : DataComponentTypes.ENCHANTMENTS;
 	}
 
@@ -76,78 +91,147 @@ public class EnchantmentHelper {
 			|| !stack.getOrDefault(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT).isEmpty();
 	}
 
-	public static float getSweepingMultiplier(int level) {
-		return 1.0F - 1.0F / (float)(level + 1);
+	public static int getItemDamage(ServerWorld world, ItemStack stack, int baseItemDamage) {
+		MutableFloat mutableFloat = new MutableFloat((float)baseItemDamage);
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().modifyItemDamage(world, level, stack, mutableFloat));
+		return mutableFloat.intValue();
 	}
 
-	private static void forEachEnchantment(EnchantmentHelper.Consumer consumer, ItemStack stack) {
+	public static int getAmmoUse(ServerWorld world, ItemStack rangedWeaponStack, ItemStack projectileStack, int baseAmmoUse) {
+		MutableFloat mutableFloat = new MutableFloat((float)baseAmmoUse);
+		forEachEnchantment(rangedWeaponStack, (enchantment, level) -> enchantment.value().modifyAmmoUse(world, level, projectileStack, mutableFloat));
+		return mutableFloat.intValue();
+	}
+
+	public static int getBlockExperience(ServerWorld world, ItemStack stack, int baseBlockExperience) {
+		MutableFloat mutableFloat = new MutableFloat((float)baseBlockExperience);
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().modifyBlockExperience(world, level, stack, mutableFloat));
+		return mutableFloat.intValue();
+	}
+
+	public static int getMobExperience(ServerWorld world, @Nullable Entity attacker, Entity mob, int baseMobExperience) {
+		if (attacker instanceof LivingEntity livingEntity) {
+			MutableFloat mutableFloat = new MutableFloat((float)baseMobExperience);
+			forEachEnchantment(livingEntity, (enchantment, level, context) -> enchantment.value().modifyMobExperience(world, level, context.stack(), mob, mutableFloat));
+			return mutableFloat.intValue();
+		} else {
+			return baseMobExperience;
+		}
+	}
+
+	private static void forEachEnchantment(ItemStack stack, EnchantmentHelper.Consumer consumer) {
 		ItemEnchantmentsComponent itemEnchantmentsComponent = stack.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
 
 		for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
-			consumer.accept((Enchantment)((RegistryEntry)entry.getKey()).value(), entry.getIntValue());
+			consumer.accept((RegistryEntry<Enchantment>)entry.getKey(), entry.getIntValue());
 		}
 	}
 
-	private static void forEachEnchantment(EnchantmentHelper.Consumer consumer, Iterable<ItemStack> stacks) {
-		for (ItemStack itemStack : stacks) {
-			forEachEnchantment(consumer, itemStack);
+	private static void forEachEnchantment(ItemStack stack, EquipmentSlot slot, LivingEntity entity, EnchantmentHelper.ContextAwareConsumer contextAwareConsumer) {
+		if (!stack.isEmpty()) {
+			ItemEnchantmentsComponent itemEnchantmentsComponent = stack.get(DataComponentTypes.ENCHANTMENTS);
+			if (itemEnchantmentsComponent != null && !itemEnchantmentsComponent.isEmpty()) {
+				EnchantmentEffectContext enchantmentEffectContext = new EnchantmentEffectContext(stack, slot, entity);
+
+				for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
+					RegistryEntry<Enchantment> registryEntry = (RegistryEntry<Enchantment>)entry.getKey();
+					if (registryEntry.value().slotMatches(slot)) {
+						contextAwareConsumer.accept(registryEntry, entry.getIntValue(), enchantmentEffectContext);
+					}
+				}
+			}
 		}
 	}
 
-	public static int getProtectionAmount(Iterable<ItemStack> equipment, DamageSource source) {
-		MutableInt mutableInt = new MutableInt();
-		forEachEnchantment((enchantment, level) -> mutableInt.add(enchantment.getProtectionAmount(level, source)), equipment);
-		return mutableInt.intValue();
+	private static void forEachEnchantment(LivingEntity entity, EnchantmentHelper.ContextAwareConsumer contextAwareConsumer) {
+		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+			forEachEnchantment(entity.getEquippedStack(equipmentSlot), equipmentSlot, entity, contextAwareConsumer);
+		}
 	}
 
-	public static float getAttackDamage(ItemStack stack, @Nullable EntityType<?> entityType) {
-		MutableFloat mutableFloat = new MutableFloat();
-		forEachEnchantment((enchantment, level) -> mutableFloat.add(enchantment.getAttackDamage(level, entityType)), stack);
+	public static boolean isInvulnerableTo(ServerWorld world, LivingEntity user, DamageSource damageSource) {
+		MutableBoolean mutableBoolean = new MutableBoolean();
+		forEachEnchantment(
+			user,
+			(enchantment, level, context) -> mutableBoolean.setValue(
+					mutableBoolean.isTrue() || enchantment.value().hasDamageImmunityTo(world, level, user, damageSource)
+				)
+		);
+		return mutableBoolean.isTrue();
+	}
+
+	public static float getProtectionAmount(ServerWorld world, LivingEntity user, DamageSource damageSource) {
+		MutableFloat mutableFloat = new MutableFloat(0.0F);
+		forEachEnchantment(
+			user, (enchantment, level, context) -> enchantment.value().modifyDamageProtection(world, level, context.stack(), user, damageSource, mutableFloat)
+		);
 		return mutableFloat.floatValue();
 	}
 
-	public static float getSweepingMultiplier(LivingEntity entity) {
-		int i = getEquipmentLevel(Enchantments.SWEEPING_EDGE, entity);
-		return i > 0 ? getSweepingMultiplier(i) : 0.0F;
+	public static float getDamage(ServerWorld world, ItemStack stack, Entity target, DamageSource damageSource, float baseDamage) {
+		MutableFloat mutableFloat = new MutableFloat(baseDamage);
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().modifyDamage(world, level, stack, target, damageSource, mutableFloat));
+		return mutableFloat.floatValue();
 	}
 
-	public static float getBreachFactor(@Nullable Entity entity, float f) {
-		if (entity instanceof LivingEntity livingEntity) {
-			int i = getEquipmentLevel(Enchantments.BREACH, livingEntity);
-			if (i > 0) {
-				return BreachEnchantment.getFactor((float)i, f);
-			}
-		}
-
-		return f;
+	public static float getSmashDamagePerFallenBlock(
+		ServerWorld world, ItemStack stack, Entity target, DamageSource damageSource, float baseSmashDamagePerFallenBlock
+	) {
+		MutableFloat mutableFloat = new MutableFloat(baseSmashDamagePerFallenBlock);
+		forEachEnchantment(
+			stack, (enchantment, level) -> enchantment.value().modifySmashDamagePerFallenBlock(world, level, stack, target, damageSource, mutableFloat)
+		);
+		return mutableFloat.floatValue();
 	}
 
-	public static void onUserDamaged(LivingEntity user, Entity attacker) {
-		EnchantmentHelper.Consumer consumer = (enchantment, level) -> enchantment.onUserDamaged(user, attacker, level);
-		if (user != null) {
-			forEachEnchantment(consumer, user.getEquippedItems());
+	public static float getArmorEffectiveness(ServerWorld world, ItemStack stack, Entity user, DamageSource damageSource, float baseArmorEffectiveness) {
+		MutableFloat mutableFloat = new MutableFloat(baseArmorEffectiveness);
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().modifyArmorEffectiveness(world, level, stack, user, damageSource, mutableFloat));
+		return mutableFloat.floatValue();
+	}
+
+	public static float modifyKnockback(ServerWorld world, ItemStack stack, Entity target, DamageSource damageSource, float baseKnockback) {
+		MutableFloat mutableFloat = new MutableFloat(baseKnockback);
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().modifyKnockback(world, level, stack, target, damageSource, mutableFloat));
+		return mutableFloat.floatValue();
+	}
+
+	public static void onTargetDamaged(ServerWorld world, Entity target, DamageSource damageSource) {
+		if (target instanceof LivingEntity livingEntity) {
+			forEachEnchantment(
+				livingEntity,
+				(enchantment, level, context) -> enchantment.value().onTargetDamaged(world, level, context, EnchantmentEffectTarget.VICTIM, target, damageSource)
+			);
 		}
 
-		if (attacker instanceof PlayerEntity) {
-			forEachEnchantment(consumer, user.getMainHandStack());
+		if (damageSource.getAttacker() instanceof LivingEntity livingEntity) {
+			forEachEnchantment(
+				livingEntity.getMainHandStack(),
+				EquipmentSlot.MAINHAND,
+				livingEntity,
+				(enchantment, level, context) -> enchantment.value().onTargetDamaged(world, level, context, EnchantmentEffectTarget.ATTACKER, target, damageSource)
+			);
 		}
 	}
 
-	public static void onTargetDamaged(LivingEntity user, Entity target) {
-		EnchantmentHelper.Consumer consumer = (enchantment, level) -> enchantment.onTargetDamaged(user, target, level);
-		if (user != null) {
-			forEachEnchantment(consumer, user.getEquippedItems());
-		}
-
-		if (user instanceof PlayerEntity) {
-			forEachEnchantment(consumer, user.getMainHandStack());
-		}
+	public static void applyLocationBasedEffects(ServerWorld world, LivingEntity user) {
+		forEachEnchantment(user, (enchantment, level, context) -> enchantment.value().applyLocationBasedEffects(world, level, context, user));
 	}
 
-	public static void onAttack(LivingEntity attacker, Entity target, ItemEnchantmentsComponent enchantments) {
-		for (Entry<RegistryEntry<Enchantment>> entry : enchantments.getEnchantmentsMap()) {
-			((Enchantment)((RegistryEntry)entry.getKey()).value()).onAttack(attacker, target, entry.getIntValue());
-		}
+	public static void applyLocationBasedEffects(ServerWorld world, ItemStack stack, LivingEntity user, EquipmentSlot slot) {
+		forEachEnchantment(stack, slot, user, (enchantment, level, context) -> enchantment.value().applyLocationBasedEffects(world, level, context, user));
+	}
+
+	public static void removeLocationBasedEffects(LivingEntity user) {
+		forEachEnchantment(user, (enchantment, level, context) -> enchantment.value().removeLocationBasedEffects(level, context, user));
+	}
+
+	public static void removeLocationBasedEffects(ItemStack stack, LivingEntity user, EquipmentSlot slot) {
+		forEachEnchantment(stack, slot, user, (enchantment, level, context) -> enchantment.value().removeLocationBasedEffects(level, context, user));
+	}
+
+	public static void onTick(ServerWorld world, LivingEntity user) {
+		forEachEnchantment(user, (enchantment, level, context) -> enchantment.value().onTick(world, level, context, user));
 	}
 
 	/**
@@ -155,96 +239,169 @@ public class EnchantmentHelper {
 	 * applicable equipment slots' item stacks}
 	 * 
 	 * @param entity the entity whose equipment slots are checked
-	 * @param enchantment the enchantment
 	 */
-	public static int getEquipmentLevel(Enchantment enchantment, LivingEntity entity) {
-		Iterable<ItemStack> iterable = enchantment.getEquipment(entity).values();
-		if (iterable == null) {
-			return 0;
-		} else {
-			int i = 0;
+	public static int getEquipmentLevel(RegistryEntry<Enchantment> enchantment, LivingEntity entity) {
+		Iterable<ItemStack> iterable = enchantment.value().getEquipment(entity).values();
+		int i = 0;
 
-			for (ItemStack itemStack : iterable) {
-				int j = getLevel(enchantment, itemStack);
-				if (j > i) {
-					i = j;
-				}
+		for (ItemStack itemStack : iterable) {
+			int j = getLevel(enchantment, itemStack);
+			if (j > i) {
+				i = j;
 			}
+		}
 
-			return i;
+		return i;
+	}
+
+	public static int getProjectileCount(ServerWorld world, ItemStack stack, Entity user, int baseProjectileCount) {
+		MutableFloat mutableFloat = new MutableFloat((float)baseProjectileCount);
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().modifyProjectileCount(world, level, stack, user, mutableFloat));
+		return Math.max(0, mutableFloat.intValue());
+	}
+
+	public static float getProjectileSpread(ServerWorld world, ItemStack stack, Entity user, float baseProjectileSpread) {
+		MutableFloat mutableFloat = new MutableFloat(baseProjectileSpread);
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().modifyProjectileSpread(world, level, stack, user, mutableFloat));
+		return Math.max(0.0F, mutableFloat.floatValue());
+	}
+
+	public static int getProjectilePiercing(ServerWorld world, ItemStack shotFromStack, ItemStack projectileStack) {
+		MutableFloat mutableFloat = new MutableFloat(0.0F);
+		forEachEnchantment(shotFromStack, (enchantment, level) -> enchantment.value().modifyProjectilePiercing(world, level, projectileStack, mutableFloat));
+		return Math.max(0, mutableFloat.intValue());
+	}
+
+	public static void onProjectileSpawned(ServerWorld world, ItemStack shotFromStack, PersistentProjectileEntity projectileEntity, Runnable onShotFromBreak) {
+		LivingEntity livingEntity2 = projectileEntity.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null;
+		EnchantmentEffectContext enchantmentEffectContext = new EnchantmentEffectContext(shotFromStack, null, livingEntity2, onShotFromBreak);
+		forEachEnchantment(shotFromStack, (enchantment, level) -> enchantment.value().onProjectileSpawned(world, level, enchantmentEffectContext, projectileEntity));
+	}
+
+	public static void onHitBlock(
+		ServerWorld world, ItemStack stack, @Nullable LivingEntity user, Entity enchantedEntity, @Nullable EquipmentSlot slot, Vec3d pos, Runnable onBreak
+	) {
+		EnchantmentEffectContext enchantmentEffectContext = new EnchantmentEffectContext(stack, slot, user, onBreak);
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().onHitBlock(world, level, enchantmentEffectContext, enchantedEntity, pos));
+	}
+
+	public static int getRepairWithXp(ServerWorld world, ItemStack stack, int baseRepairWithXp) {
+		MutableFloat mutableFloat = new MutableFloat((float)baseRepairWithXp);
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().modifyRepairWithXp(world, level, stack, mutableFloat));
+		return Math.max(0, mutableFloat.intValue());
+	}
+
+	public static float getEquipmentDropChance(ServerWorld world, LivingEntity attacker, DamageSource damageSource, float baseEquipmentDropChance) {
+		MutableFloat mutableFloat = new MutableFloat(baseEquipmentDropChance);
+		Random random = attacker.getRandom();
+		forEachEnchantment(attacker, (enchantment, level, context) -> {
+			LootContext lootContext = Enchantment.createEnchantedDamageLootContext(world, level, attacker, damageSource);
+			enchantment.value().getEffect(EnchantmentEffectComponentTypes.EQUIPMENT_DROPS).forEach(effect -> {
+				if (effect.enchanted() == EnchantmentEffectTarget.VICTIM && effect.affected() == EnchantmentEffectTarget.VICTIM && effect.test(lootContext)) {
+					mutableFloat.setValue(((EnchantmentValueEffectType)effect.effect()).apply(context.stack(), level, random, mutableFloat.floatValue()));
+				}
+			});
+		});
+		if (damageSource.getAttacker() instanceof LivingEntity livingEntity) {
+			forEachEnchantment(livingEntity, (enchantment, level, context) -> {
+				LootContext lootContext = Enchantment.createEnchantedDamageLootContext(world, level, attacker, damageSource);
+				enchantment.value().getEffect(EnchantmentEffectComponentTypes.EQUIPMENT_DROPS).forEach(effect -> {
+					if (effect.enchanted() == EnchantmentEffectTarget.ATTACKER && effect.affected() == EnchantmentEffectTarget.VICTIM && effect.test(lootContext)) {
+						mutableFloat.setValue(((EnchantmentValueEffectType)effect.effect()).apply(context.stack(), level, random, mutableFloat.floatValue()));
+					}
+				});
+			});
+		}
+
+		return mutableFloat.floatValue();
+	}
+
+	public static void applyAttributeModifiers(
+		ItemStack stack, EquipmentSlot slot, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeBiConsumer
+	) {
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().getEffect(EnchantmentEffectComponentTypes.ATTRIBUTES).forEach(effect -> {
+				if (((Enchantment)enchantment.value()).slotMatches(slot)) {
+					attributeBiConsumer.accept(effect.attribute(), effect.createAttributeModifier(level));
+				}
+			}));
+	}
+
+	public static int getFishingLuckBonus(ServerWorld world, ItemStack stack, Entity user) {
+		MutableFloat mutableFloat = new MutableFloat(0.0F);
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().modifyFishingLuckBonus(world, level, stack, user, mutableFloat));
+		return Math.max(0, mutableFloat.intValue());
+	}
+
+	public static float getFishingTimeReduction(ServerWorld world, ItemStack stack, Entity user) {
+		MutableFloat mutableFloat = new MutableFloat(0.0F);
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().modifyFishingTimeReduction(world, level, stack, user, mutableFloat));
+		return Math.max(0.0F, mutableFloat.floatValue());
+	}
+
+	public static int getTridentReturnAcceleration(ServerWorld world, ItemStack stack, Entity user) {
+		MutableFloat mutableFloat = new MutableFloat(0.0F);
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().modifyTridentReturnAcceleration(world, level, stack, user, mutableFloat));
+		return Math.max(0, mutableFloat.intValue());
+	}
+
+	public static float getCrossbowChargeTime(ServerWorld world, ItemStack stack, Entity user, float baseCrossbowChargeTime) {
+		MutableFloat mutableFloat = new MutableFloat(baseCrossbowChargeTime);
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().modifyCrossbowChargeTime(world, level, stack, mutableFloat));
+		return Math.max(0.0F, mutableFloat.floatValue());
+	}
+
+	public static float getTridentSpinAttackStrength(ServerWorld world, ItemStack stack, LivingEntity user) {
+		MutableFloat mutableFloat = new MutableFloat(0.0F);
+		forEachEnchantment(user, (enchantment, level, context) -> enchantment.value().modifyTridentSpinAttackStrength(world, level, stack, user, mutableFloat));
+		return mutableFloat.floatValue();
+	}
+
+	public static boolean hasAnyEnchantmentsIn(ItemStack stack, TagKey<Enchantment> tag) {
+		ItemEnchantmentsComponent itemEnchantmentsComponent = stack.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
+
+		for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
+			RegistryEntry<Enchantment> registryEntry = (RegistryEntry<Enchantment>)entry.getKey();
+			if (registryEntry.isIn(tag)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public static boolean hasAnyEnchantmentsWith(ItemStack stack, ComponentType<?> componentType) {
+		MutableBoolean mutableBoolean = new MutableBoolean(false);
+		forEachEnchantment(stack, (enchantment, level) -> {
+			if (enchantment.value().effects().contains(componentType)) {
+				mutableBoolean.setTrue();
+			}
+		});
+		return mutableBoolean.booleanValue();
+	}
+
+	public static <T> Optional<T> getEffect(ItemStack stack, ComponentType<List<T>> componentType) {
+		Pair<List<T>, Integer> pair = getEffectListAndLevel(stack, componentType);
+		if (pair != null) {
+			List<T> list = pair.getFirst();
+			int i = pair.getSecond();
+			return Optional.of(list.get(Math.min(i, list.size()) - 1));
+		} else {
+			return Optional.empty();
 		}
 	}
 
-	public static float getSwiftSneakSpeedBoost(LivingEntity entity) {
-		return (float)getEquipmentLevel(Enchantments.SWIFT_SNEAK, entity) * 0.15F;
-	}
-
-	public static int getKnockback(LivingEntity entity) {
-		return getEquipmentLevel(Enchantments.KNOCKBACK, entity);
-	}
-
-	public static int getFireAspect(LivingEntity entity) {
-		return getEquipmentLevel(Enchantments.FIRE_ASPECT, entity);
-	}
-
-	public static int getRespiration(LivingEntity entity) {
-		return getEquipmentLevel(Enchantments.RESPIRATION, entity);
-	}
-
-	public static int getDepthStrider(LivingEntity entity) {
-		return getEquipmentLevel(Enchantments.DEPTH_STRIDER, entity);
-	}
-
-	public static int getEfficiency(LivingEntity entity) {
-		return getEquipmentLevel(Enchantments.EFFICIENCY, entity);
-	}
-
-	public static int getLuckOfTheSea(ItemStack stack) {
-		return getLevel(Enchantments.LUCK_OF_THE_SEA, stack);
-	}
-
-	public static int getLure(ItemStack stack) {
-		return getLevel(Enchantments.LURE, stack);
-	}
-
-	public static int getLooting(LivingEntity entity) {
-		return getEquipmentLevel(Enchantments.LOOTING, entity);
-	}
-
-	public static boolean hasAquaAffinity(LivingEntity entity) {
-		return getEquipmentLevel(Enchantments.AQUA_AFFINITY, entity) > 0;
-	}
-
-	public static boolean hasFrostWalker(LivingEntity entity) {
-		return getEquipmentLevel(Enchantments.FROST_WALKER, entity) > 0;
-	}
-
-	public static boolean hasSoulSpeed(LivingEntity entity) {
-		return getEquipmentLevel(Enchantments.SOUL_SPEED, entity) > 0;
-	}
-
-	public static boolean hasBindingCurse(ItemStack stack) {
-		return getLevel(Enchantments.BINDING_CURSE, stack) > 0;
-	}
-
-	public static boolean hasVanishingCurse(ItemStack stack) {
-		return getLevel(Enchantments.VANISHING_CURSE, stack) > 0;
-	}
-
-	public static boolean hasSilkTouch(ItemStack stack) {
-		return getLevel(Enchantments.SILK_TOUCH, stack) > 0;
-	}
-
-	public static int getLoyalty(ItemStack stack) {
-		return getLevel(Enchantments.LOYALTY, stack);
-	}
-
-	public static int getRiptide(ItemStack stack) {
-		return getLevel(Enchantments.RIPTIDE, stack);
-	}
-
-	public static boolean hasChanneling(ItemStack stack) {
-		return getLevel(Enchantments.CHANNELING, stack) > 0;
+	@Nullable
+	public static <T> Pair<T, Integer> getEffectListAndLevel(ItemStack stack, ComponentType<T> componentType) {
+		MutableObject<Pair<T, Integer>> mutableObject = new MutableObject<>();
+		forEachEnchantment(stack, (enchantment, level) -> {
+			if (mutableObject.getValue() == null || mutableObject.getValue().getSecond() < level) {
+				T object = enchantment.value().effects().get(componentType);
+				if (object != null) {
+					mutableObject.setValue(Pair.of(object, level));
+				}
+			}
+		});
+		return mutableObject.getValue();
 	}
 
 	/**
@@ -253,44 +410,25 @@ public class EnchantmentHelper {
 	 * 
 	 * <p>If multiple equipment slots' item stacks are valid, a random pair is
 	 * returned.
-	 * 
-	 * @param enchantment the enchantment the equipped item stack must have
-	 * @param entity the entity to choose equipments from
 	 */
-	@Nullable
-	public static java.util.Map.Entry<EquipmentSlot, ItemStack> chooseEquipmentWith(Enchantment enchantment, LivingEntity entity) {
-		return chooseEquipmentWith(enchantment, entity, stack -> true);
-	}
+	public static Optional<EnchantmentEffectContext> chooseEquipmentWith(ComponentType<?> componentType, LivingEntity entity, Predicate<ItemStack> stackPredicate) {
+		List<EnchantmentEffectContext> list = new ArrayList();
 
-	/**
-	 * {@return a pair of an equipment slot and the item stack in the supplied
-	 * entity's slot} It indicates the item stack has the enchantment supplied
-	 * and fulfills the extra condition.
-	 * 
-	 * <p>If multiple equipment slots' item stacks are valid, a random pair is
-	 * returned.
-	 * 
-	 * @param condition extra conditions for the item stack to pass for selection
-	 * @param enchantment the enchantment the equipped item stack must have
-	 * @param entity the entity to choose equipments from
-	 */
-	@Nullable
-	public static java.util.Map.Entry<EquipmentSlot, ItemStack> chooseEquipmentWith(Enchantment enchantment, LivingEntity entity, Predicate<ItemStack> condition) {
-		Map<EquipmentSlot, ItemStack> map = enchantment.getEquipment(entity);
-		if (map.isEmpty()) {
-			return null;
-		} else {
-			List<java.util.Map.Entry<EquipmentSlot, ItemStack>> list = Lists.<java.util.Map.Entry<EquipmentSlot, ItemStack>>newArrayList();
+		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+			ItemStack itemStack = entity.getEquippedStack(equipmentSlot);
+			if (stackPredicate.test(itemStack)) {
+				ItemEnchantmentsComponent itemEnchantmentsComponent = itemStack.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
 
-			for (java.util.Map.Entry<EquipmentSlot, ItemStack> entry : map.entrySet()) {
-				ItemStack itemStack = (ItemStack)entry.getValue();
-				if (!itemStack.isEmpty() && getLevel(enchantment, itemStack) > 0 && condition.test(itemStack)) {
-					list.add(entry);
+				for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
+					RegistryEntry<Enchantment> registryEntry = (RegistryEntry<Enchantment>)entry.getKey();
+					if (registryEntry.value().effects().contains(componentType) && registryEntry.value().slotMatches(equipmentSlot)) {
+						list.add(new EnchantmentEffectContext(itemStack, equipmentSlot, entity));
+					}
 				}
 			}
-
-			return list.isEmpty() ? null : (java.util.Map.Entry)list.get(entity.getRandom().nextInt(list.size()));
 		}
+
+		return Util.getRandomOrEmpty(list, entity.getRandom());
 	}
 
 	/**
@@ -321,11 +459,23 @@ public class EnchantmentHelper {
 		}
 	}
 
+	public static ItemStack enchant(
+		Random random, ItemStack stack, int level, DynamicRegistryManager dynamicRegistryManager, Optional<? extends RegistryEntryList<Enchantment>> enchantments
+	) {
+		return enchant(
+			random,
+			stack,
+			level,
+			(Stream<RegistryEntry<Enchantment>>)enchantments.map(RegistryEntryList::stream)
+				.orElseGet(() -> dynamicRegistryManager.get(RegistryKeys.ENCHANTMENT).streamEntries().map(reference -> reference))
+		);
+	}
+
 	/**
 	 * Enchants the {@code target} item stack and returns it.
 	 */
-	public static ItemStack enchant(FeatureSet enabledFeatures, Random random, ItemStack stack, int level, boolean treasureAllowed) {
-		List<EnchantmentLevelEntry> list = generateEnchantments(enabledFeatures, random, stack, level, treasureAllowed);
+	public static ItemStack enchant(Random random, ItemStack stack, int level, Stream<RegistryEntry<Enchantment>> possibleEnchantments) {
+		List<EnchantmentLevelEntry> list = generateEnchantments(random, stack, level, possibleEnchantments);
 		if (stack.isOf(Items.BOOK)) {
 			stack = new ItemStack(Items.ENCHANTED_BOOK);
 		}
@@ -340,7 +490,9 @@ public class EnchantmentHelper {
 	/**
 	 * Generate the enchantments for enchanting the {@code stack}.
 	 */
-	public static List<EnchantmentLevelEntry> generateEnchantments(FeatureSet enabledFeatures, Random random, ItemStack stack, int level, boolean treasureAllowed) {
+	public static List<EnchantmentLevelEntry> generateEnchantments(
+		Random random, ItemStack stack, int level, Stream<RegistryEntry<Enchantment>> possibleEnchantments
+	) {
 		List<EnchantmentLevelEntry> list = Lists.<EnchantmentLevelEntry>newArrayList();
 		Item item = stack.getItem();
 		int i = item.getEnchantability();
@@ -350,7 +502,7 @@ public class EnchantmentHelper {
 			level += 1 + random.nextInt(i / 4 + 1) + random.nextInt(i / 4 + 1);
 			float f = (random.nextFloat() + random.nextFloat() - 1.0F) * 0.15F;
 			level = MathHelper.clamp(Math.round((float)level + (float)level * f), 1, Integer.MAX_VALUE);
-			List<EnchantmentLevelEntry> list2 = getPossibleEntries(enabledFeatures, level, stack, treasureAllowed);
+			List<EnchantmentLevelEntry> list2 = getPossibleEntries(level, stack, possibleEnchantments);
 			if (!list2.isEmpty()) {
 				Weighting.getRandom(random, list2).ifPresent(list::add);
 
@@ -380,22 +532,16 @@ public class EnchantmentHelper {
 	 * @param pickedEntry the picked entry
 	 */
 	public static void removeConflicts(List<EnchantmentLevelEntry> possibleEntries, EnchantmentLevelEntry pickedEntry) {
-		Iterator<EnchantmentLevelEntry> iterator = possibleEntries.iterator();
-
-		while (iterator.hasNext()) {
-			if (!pickedEntry.enchantment.canCombine(((EnchantmentLevelEntry)iterator.next()).enchantment)) {
-				iterator.remove();
-			}
-		}
+		possibleEntries.removeIf(entry -> !Enchantment.canBeCombined(pickedEntry.enchantment, entry.enchantment));
 	}
 
 	/**
 	 * {@return whether the {@code candidate} enchantment is compatible with the
 	 * {@code existing} enchantments}
 	 */
-	public static boolean isCompatible(Collection<RegistryEntry<Enchantment>> existing, Enchantment candidate) {
+	public static boolean isCompatible(Collection<RegistryEntry<Enchantment>> existing, RegistryEntry<Enchantment> candidate) {
 		for (RegistryEntry<Enchantment> registryEntry : existing) {
-			if (!registryEntry.value().canCombine(candidate)) {
+			if (!Enchantment.canBeCombined(registryEntry, candidate)) {
 				return false;
 			}
 		}
@@ -407,29 +553,36 @@ public class EnchantmentHelper {
 	 * Gets all the possible entries for enchanting the {@code stack} at the
 	 * given {@code power}.
 	 */
-	public static List<EnchantmentLevelEntry> getPossibleEntries(FeatureSet enabledFeatures, int level, ItemStack stack, boolean treasureAllowed) {
+	public static List<EnchantmentLevelEntry> getPossibleEntries(int level, ItemStack stack, Stream<RegistryEntry<Enchantment>> possibleEnchantments) {
 		List<EnchantmentLevelEntry> list = Lists.<EnchantmentLevelEntry>newArrayList();
 		boolean bl = stack.isOf(Items.BOOK);
+		possibleEnchantments.filter(enchantment -> ((Enchantment)enchantment.value()).isPrimaryItem(stack) || bl).forEach(enchantmentx -> {
+			Enchantment enchantment = (Enchantment)enchantmentx.value();
 
-		for (Enchantment enchantment : Registries.ENCHANTMENT) {
-			if (enchantment.isEnabled(enabledFeatures)
-				&& (!enchantment.isTreasure() || treasureAllowed)
-				&& enchantment.isAvailableForRandomSelection()
-				&& (bl || enchantment.isAcceptableItem(stack) && enchantment.isPrimaryItem(stack))) {
-				for (int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; i--) {
-					if (level >= enchantment.getMinPower(i) && level <= enchantment.getMaxPower(i)) {
-						list.add(new EnchantmentLevelEntry(enchantment, i));
-						break;
-					}
+			for (int j = enchantment.getMaxLevel(); j >= enchantment.getMinLevel(); j--) {
+				if (level >= enchantment.getMinPower(j) && level <= enchantment.getMaxPower(j)) {
+					list.add(new EnchantmentLevelEntry(enchantmentx, j));
+					break;
 				}
 			}
-		}
-
+		});
 		return list;
+	}
+
+	public static void applyEnchantmentProvider(ItemStack stack, RegistryKey<EnchantmentProvider> providerKey, World world, BlockPos pos, Random random) {
+		EnchantmentProvider enchantmentProvider = world.getRegistryManager().get(RegistryKeys.ENCHANTMENT_PROVIDER).get(providerKey);
+		if (enchantmentProvider != null) {
+			apply(stack, componentBuilder -> enchantmentProvider.provideEnchantments(stack, componentBuilder, random, world, pos));
+		}
 	}
 
 	@FunctionalInterface
 	interface Consumer {
-		void accept(Enchantment enchantment, int level);
+		void accept(RegistryEntry<Enchantment> enchantment, int level);
+	}
+
+	@FunctionalInterface
+	interface ContextAwareConsumer {
+		void accept(RegistryEntry<Enchantment> enchantment, int level, EnchantmentEffectContext context);
 	}
 }

@@ -18,6 +18,7 @@ import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
 import net.minecraft.client.realms.dto.WorldDownload;
 import net.minecraft.client.realms.exception.RealmsServiceException;
+import net.minecraft.client.realms.gui.RealmsPopups;
 import net.minecraft.client.realms.gui.RealmsWorldSlotButton;
 import net.minecraft.client.realms.task.OpenServerTask;
 import net.minecraft.client.realms.task.SwitchSlotTask;
@@ -69,7 +70,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	private void addButtons() {
 		for (Entry<Integer, RealmsWorldOptions> entry : this.serverData.slots.entrySet()) {
 			int i = (Integer)entry.getKey();
-			boolean bl = i != this.serverData.activeSlot || this.serverData.worldType == RealmsServer.WorldType.MINIGAME;
+			boolean bl = i != this.serverData.activeSlot || this.serverData.method_60315();
 			ButtonWidget buttonWidget;
 			if (bl) {
 				buttonWidget = ButtonWidget.builder(
@@ -80,17 +81,15 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 					.build();
 				buttonWidget.active = !((RealmsWorldOptions)this.serverData.slots.get(i)).empty;
 			} else {
-				buttonWidget = ButtonWidget.builder(Text.translatable("mco.brokenworld.download"), button -> {
-					Text text = Text.translatable("mco.configure.world.restore.download.question.line1");
-					Text text2 = Text.translatable("mco.configure.world.restore.download.question.line2");
-					this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> {
-						if (confirmed) {
-							this.downloadWorld(i);
-						} else {
-							this.client.setScreen(this);
-						}
-					}, RealmsLongConfirmationScreen.Type.INFO, text, text2, true));
-				}).dimensions(this.getFramePositionX(i), row(8), 80, 20).build();
+				buttonWidget = ButtonWidget.builder(
+						Text.translatable("mco.brokenworld.download"),
+						button -> this.client
+								.setScreen(
+									RealmsPopups.createInfoPopup(this, Text.translatable("mco.configure.world.restore.download.question.line1"), popupScreen -> this.downloadWorld(i))
+								)
+					)
+					.dimensions(this.getFramePositionX(i), row(8), 80, 20)
+					.build();
 			}
 
 			if (this.slotsThatHasBeenDownloaded.contains(i)) {
@@ -215,7 +214,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	}
 
 	private boolean isMinigame() {
-		return this.serverData != null && this.serverData.worldType == RealmsServer.WorldType.MINIGAME;
+		return this.serverData != null && this.serverData.method_60315();
 	}
 
 	private void drawSlotFrame(

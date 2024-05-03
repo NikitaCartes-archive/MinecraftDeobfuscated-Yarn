@@ -5,7 +5,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.util.Identifier;
 
 public class Potions {
@@ -103,17 +102,11 @@ public class Potions {
 		"long_slow_falling", new Potion("slow_falling", new StatusEffectInstance(StatusEffects.SLOW_FALLING, 4800))
 	);
 	public static final RegistryEntry<Potion> WIND_CHARGED = register(
-		"wind_charged", new Potion("wind_charged", new StatusEffectInstance(StatusEffects.WIND_CHARGED, 3600)).requires(FeatureFlags.UPDATE_1_21)
+		"wind_charged", new Potion("wind_charged", new StatusEffectInstance(StatusEffects.WIND_CHARGED, 3600))
 	);
-	public static final RegistryEntry<Potion> WEAVING = register(
-		"weaving", new Potion("weaving", new StatusEffectInstance(StatusEffects.WEAVING, 3600)).requires(FeatureFlags.UPDATE_1_21)
-	);
-	public static final RegistryEntry<Potion> OOZING = register(
-		"oozing", new Potion("oozing", new StatusEffectInstance(StatusEffects.OOZING, 3600)).requires(FeatureFlags.UPDATE_1_21)
-	);
-	public static final RegistryEntry<Potion> INFESTED = register(
-		"infested", new Potion("infested", new StatusEffectInstance(StatusEffects.INFESTED, 3600)).requires(FeatureFlags.UPDATE_1_21)
-	);
+	public static final RegistryEntry<Potion> WEAVING = register("weaving", new Potion("weaving", new StatusEffectInstance(StatusEffects.WEAVING, 3600)));
+	public static final RegistryEntry<Potion> OOZING = register("oozing", new Potion("oozing", new StatusEffectInstance(StatusEffects.OOZING, 3600)));
+	public static final RegistryEntry<Potion> INFESTED = register("infested", new Potion("infested", new StatusEffectInstance(StatusEffects.INFESTED, 3600)));
 
 	private static RegistryEntry<Potion> register(String name, Potion potion) {
 		return Registry.registerReference(Registries.POTION, new Identifier(name), potion);

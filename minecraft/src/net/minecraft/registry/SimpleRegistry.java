@@ -201,6 +201,11 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 	}
 
 	@Override
+	public Optional<RegistryEntry.Reference<T>> getDefaultEntry() {
+		return this.rawIdToEntry.isEmpty() ? Optional.empty() : Optional.of((RegistryEntry.Reference)this.rawIdToEntry.getFirst());
+	}
+
+	@Override
 	public RegistryEntry<T> getEntry(T value) {
 		RegistryEntry.Reference<T> reference = (RegistryEntry.Reference<T>)this.valueToEntry.get(value);
 		return (RegistryEntry<T>)(reference != null ? reference : RegistryEntry.of(value));

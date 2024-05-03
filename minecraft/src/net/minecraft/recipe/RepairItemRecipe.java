@@ -4,14 +4,13 @@ import com.mojang.datafixers.util.Pair;
 import javax.annotation.Nullable;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.world.World;
 
 public class RepairItemRecipe extends SpecialCraftingRecipe {
@@ -20,12 +19,12 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Nullable
-	private Pair<ItemStack, ItemStack> findPair(RecipeInputInventory inventory) {
+	private Pair<ItemStack, ItemStack> findPair(CraftingRecipeInput craftingRecipeInput) {
 		ItemStack itemStack = null;
 		ItemStack itemStack2 = null;
 
-		for (int i = 0; i < inventory.size(); i++) {
-			ItemStack itemStack3 = inventory.getStack(i);
+		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+			ItemStack itemStack3 = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack3.isEmpty()) {
 				if (itemStack == null) {
 					itemStack = itemStack3;
@@ -52,12 +51,12 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 			&& second.contains(DataComponentTypes.DAMAGE);
 	}
 
-	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
-		return this.findPair(recipeInputInventory) != null;
+	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
+		return this.findPair(craftingRecipeInput) != null;
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
-		Pair<ItemStack, ItemStack> pair = this.findPair(recipeInputInventory);
+	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
+		Pair<ItemStack, ItemStack> pair = this.findPair(craftingRecipeInput);
 		if (pair == null) {
 			return ItemStack.EMPTY;
 		} else {
@@ -76,12 +75,11 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 				itemStack3,
 				builder -> wrapperLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT)
 						.streamEntries()
-						.map(RegistryEntry::value)
-						.filter(Enchantment::isCursed)
-						.forEach(enchantment -> {
-							int ix = Math.max(itemEnchantmentsComponent.getLevel(enchantment), itemEnchantmentsComponent2.getLevel(enchantment));
+						.filter(reference -> reference.isIn(EnchantmentTags.CURSE))
+						.forEach(reference -> {
+							int ix = Math.max(itemEnchantmentsComponent.getLevel(reference), itemEnchantmentsComponent2.getLevel(reference));
 							if (ix > 0) {
-								builder.add(enchantment, ix);
+								builder.add(reference, ix);
 							}
 						})
 			);

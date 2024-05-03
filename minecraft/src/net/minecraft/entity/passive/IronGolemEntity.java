@@ -3,6 +3,7 @@ package net.minecraft.entity.passive;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
@@ -190,12 +191,15 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 		this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 		float f = this.getAttackDamage();
 		float g = (int)f > 0 ? f / 2.0F + (float)this.random.nextInt((int)f) : f;
-		boolean bl = target.damage(this.getDamageSources().mobAttack(this), g);
+		DamageSource damageSource = this.getDamageSources().mobAttack(this);
+		boolean bl = target.damage(damageSource, g);
 		if (bl) {
 			double d = target instanceof LivingEntity livingEntity ? livingEntity.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE) : 0.0;
 			double e = Math.max(0.0, 1.0 - d);
 			target.setVelocity(target.getVelocity().add(0.0, 0.4F * e, 0.0));
-			this.applyDamageEffects(this, target);
+			if (this.getWorld() instanceof ServerWorld serverWorld) {
+				EnchantmentHelper.onTargetDamaged(serverWorld, target, damageSource);
+			}
 		}
 
 		this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0F, 1.0F);

@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.packrat.ArgumentParser;
 import net.minecraft.command.argument.packrat.PackratParsing;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
@@ -46,19 +46,19 @@ import net.minecraft.util.Util;
 public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgumentType.ItemStackPredicateArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "#stick", "#stick{foo:'bar'}");
 	static final DynamicCommandExceptionType INVALID_ITEM_ID_EXCEPTION = new DynamicCommandExceptionType(
-		object -> Text.stringifiedTranslatable("argument.item.id.invalid", object)
+		id -> Text.stringifiedTranslatable("argument.item.id.invalid", id)
 	);
 	static final DynamicCommandExceptionType UNKNOWN_ITEM_TAG_EXCEPTION = new DynamicCommandExceptionType(
-		object -> Text.stringifiedTranslatable("arguments.item.tag.unknown", object)
+		tag -> Text.stringifiedTranslatable("arguments.item.tag.unknown", tag)
 	);
 	static final DynamicCommandExceptionType UNKNOWN_ITEM_COMPONENT_EXCEPTION = new DynamicCommandExceptionType(
-		object -> Text.stringifiedTranslatable("arguments.item.component.unknown", object)
+		component -> Text.stringifiedTranslatable("arguments.item.component.unknown", component)
 	);
 	static final Dynamic2CommandExceptionType MALFORMED_ITEM_COMPONENT_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> Text.stringifiedTranslatable("arguments.item.component.malformed", object, object2)
 	);
 	static final DynamicCommandExceptionType UNKNOWN_ITEM_PREDICATE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> Text.stringifiedTranslatable("arguments.item.predicate.unknown", object)
+		predicate -> Text.stringifiedTranslatable("arguments.item.predicate.unknown", predicate)
 	);
 	static final Dynamic2CommandExceptionType MALFORMED_ITEM_PREDICATE_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> Text.stringifiedTranslatable("arguments.item.predicate.malformed", object, object2)
@@ -75,8 +75,8 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 	private final ArgumentParser<List<Predicate<ItemStack>>> parser;
 
 	public ItemPredicateArgumentType(CommandRegistryAccess commandRegistryAccess) {
-		ItemPredicateArgumentType.class_9445 lv = new ItemPredicateArgumentType.class_9445(commandRegistryAccess);
-		this.parser = PackratParsing.createParser(lv);
+		ItemPredicateArgumentType.Context context = new ItemPredicateArgumentType.Context(commandRegistryAccess);
+		this.parser = PackratParsing.createParser(context);
 	}
 
 	public static ItemPredicateArgumentType itemPredicate(CommandRegistryAccess commandRegistryAccess) {
@@ -103,7 +103,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 
 	static record ComponentCheck(Identifier id, Predicate<ItemStack> presenceChecker, Decoder<? extends Predicate<ItemStack>> valueChecker) {
 
-		public static <T> ItemPredicateArgumentType.ComponentCheck read(ImmutableStringReader reader, Identifier id, DataComponentType<T> type) throws CommandSyntaxException {
+		public static <T> ItemPredicateArgumentType.ComponentCheck read(ImmutableStringReader reader, Identifier id, ComponentType<T> type) throws CommandSyntaxException {
 			Codec<T> codec = type.getCodec();
 			if (codec == null) {
 				throw ItemPredicateArgumentType.UNKNOWN_ITEM_COMPONENT_EXCEPTION.createWithContext(reader, id);
@@ -123,30 +123,14 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		}
 	}
 
-	public interface ItemStackPredicateArgument extends Predicate<ItemStack> {
-	}
-
-	static record SubPredicateCheck(Identifier id, Decoder<? extends Predicate<ItemStack>> type) {
-		public SubPredicateCheck(RegistryEntry.Reference<ItemSubPredicate.Type<?>> type) {
-			this(type.registryKey().getValue(), type.value().codec().map(predicate -> predicate::test));
-		}
-
-		public Predicate<ItemStack> createPredicate(ImmutableStringReader reader, RegistryOps<NbtElement> ops, NbtElement nbt) throws CommandSyntaxException {
-			DataResult<? extends Predicate<ItemStack>> dataResult = this.type.parse(ops, nbt);
-			return (Predicate<ItemStack>)dataResult.getOrThrow(
-				error -> ItemPredicateArgumentType.MALFORMED_ITEM_PREDICATE_EXCEPTION.createWithContext(reader, this.id.toString(), error)
-			);
-		}
-	}
-
-	static class class_9445
+	static class Context
 		implements PackratParsing.Callbacks<Predicate<ItemStack>, ItemPredicateArgumentType.ComponentCheck, ItemPredicateArgumentType.SubPredicateCheck> {
 		private final RegistryWrapper.Impl<Item> itemRegistryWrapper;
-		private final RegistryWrapper.Impl<DataComponentType<?>> dataComponentTypeRegistryWrapper;
+		private final RegistryWrapper.Impl<ComponentType<?>> dataComponentTypeRegistryWrapper;
 		private final RegistryWrapper.Impl<ItemSubPredicate.Type<?>> itemSubPredicateTypeRegistryWrapper;
 		private final RegistryOps<NbtElement> nbtOps;
 
-		class_9445(RegistryWrapper.WrapperLookup registryLookup) {
+		Context(RegistryWrapper.WrapperLookup registryLookup) {
 			this.itemRegistryWrapper = registryLookup.getWrapperOrThrow(RegistryKeys.ITEM);
 			this.dataComponentTypeRegistryWrapper = registryLookup.getWrapperOrThrow(RegistryKeys.DATA_COMPONENT_TYPE);
 			this.itemSubPredicateTypeRegistryWrapper = registryLookup.getWrapperOrThrow(RegistryKeys.ITEM_SUB_PREDICATE_TYPE);
@@ -173,11 +157,11 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 			if (componentCheck != null) {
 				return componentCheck;
 			} else {
-				DataComponentType<?> dataComponentType = (DataComponentType<?>)this.dataComponentTypeRegistryWrapper
+				ComponentType<?> componentType = (ComponentType<?>)this.dataComponentTypeRegistryWrapper
 					.getOptional(RegistryKey.of(RegistryKeys.DATA_COMPONENT_TYPE, identifier))
 					.map(RegistryEntry::value)
 					.orElseThrow(() -> ItemPredicateArgumentType.UNKNOWN_ITEM_COMPONENT_EXCEPTION.createWithContext(immutableStringReader, identifier));
-				return ItemPredicateArgumentType.ComponentCheck.read(immutableStringReader, identifier, dataComponentType);
+				return ItemPredicateArgumentType.ComponentCheck.read(immutableStringReader, identifier, componentType);
 			}
 		}
 
@@ -224,7 +208,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 				ItemPredicateArgumentType.SPECIAL_COMPONENT_CHECKS.keySet().stream(),
 				this.dataComponentTypeRegistryWrapper
 					.streamEntries()
-					.filter(entry -> !((DataComponentType)entry.value()).shouldSkipSerialization())
+					.filter(entry -> !((ComponentType)entry.value()).shouldSkipSerialization())
 					.map(entry -> entry.registryKey().getValue())
 			);
 		}
@@ -242,6 +226,22 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 
 		public Predicate<ItemStack> anyOf(List<Predicate<ItemStack>> list) {
 			return Util.anyOf(list);
+		}
+	}
+
+	public interface ItemStackPredicateArgument extends Predicate<ItemStack> {
+	}
+
+	static record SubPredicateCheck(Identifier id, Decoder<? extends Predicate<ItemStack>> type) {
+		public SubPredicateCheck(RegistryEntry.Reference<ItemSubPredicate.Type<?>> type) {
+			this(type.registryKey().getValue(), type.value().codec().map(predicate -> predicate::test));
+		}
+
+		public Predicate<ItemStack> createPredicate(ImmutableStringReader reader, RegistryOps<NbtElement> ops, NbtElement nbt) throws CommandSyntaxException {
+			DataResult<? extends Predicate<ItemStack>> dataResult = this.type.parse(ops, nbt);
+			return (Predicate<ItemStack>)dataResult.getOrThrow(
+				error -> ItemPredicateArgumentType.MALFORMED_ITEM_PREDICATE_EXCEPTION.createWithContext(reader, this.id.toString(), error)
+			);
 		}
 	}
 }

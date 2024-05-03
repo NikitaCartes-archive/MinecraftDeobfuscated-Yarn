@@ -1,12 +1,16 @@
 package net.minecraft.entity.projectile;
 
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -60,7 +64,11 @@ public class LlamaSpitEntity extends ProjectileEntity {
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		super.onEntityHit(entityHitResult);
 		if (this.getOwner() instanceof LivingEntity livingEntity) {
-			entityHitResult.getEntity().damage(this.getDamageSources().spit(this, livingEntity), 1.0F);
+			Entity entity = entityHitResult.getEntity();
+			DamageSource damageSource = this.getDamageSources().spit(this, livingEntity);
+			if (entity.damage(damageSource, 1.0F) && this.getWorld() instanceof ServerWorld serverWorld) {
+				EnchantmentHelper.onTargetDamaged(serverWorld, entity, damageSource);
+			}
 		}
 	}
 

@@ -5,6 +5,7 @@ import com.mojang.logging.LogUtils;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -307,17 +308,21 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 				this.movePart(this.body, (double)(w * 0.5F), 0.0, (double)(-x * 0.5F));
 				this.movePart(this.rightWing, (double)(x * 4.5F), 2.0, (double)(w * 4.5F));
 				this.movePart(this.leftWing, (double)(x * -4.5F), 2.0, (double)(w * -4.5F));
-				if (!this.getWorld().isClient && this.hurtTime == 0) {
+				if (this.getWorld() instanceof ServerWorld serverWorld2 && this.hurtTime == 0) {
 					this.launchLivingEntities(
-						this.getWorld()
-							.getOtherEntities(this, this.rightWing.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)
+						serverWorld2,
+						serverWorld2.getOtherEntities(
+							this, this.rightWing.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR
+						)
 					);
 					this.launchLivingEntities(
-						this.getWorld()
-							.getOtherEntities(this, this.leftWing.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)
+						serverWorld2,
+						serverWorld2.getOtherEntities(
+							this, this.leftWing.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR
+						)
 					);
-					this.damageLivingEntities(this.getWorld().getOtherEntities(this, this.head.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
-					this.damageLivingEntities(this.getWorld().getOtherEntities(this, this.neck.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
+					this.damageLivingEntities(serverWorld2.getOtherEntities(this, this.head.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
+					this.damageLivingEntities(serverWorld2.getOtherEntities(this, this.neck.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
 				}
 
 				float y = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0) - this.yawAcceleration * 0.01F);
@@ -418,19 +423,21 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		}
 	}
 
-	private void launchLivingEntities(List<Entity> entities) {
+	private void launchLivingEntities(ServerWorld serverWorld, List<Entity> list) {
 		double d = (this.body.getBoundingBox().minX + this.body.getBoundingBox().maxX) / 2.0;
 		double e = (this.body.getBoundingBox().minZ + this.body.getBoundingBox().maxZ) / 2.0;
 
-		for (Entity entity : entities) {
+		for (Entity entity : list) {
 			if (entity instanceof LivingEntity) {
+				LivingEntity livingEntity = (LivingEntity)entity;
 				double f = entity.getX() - d;
 				double g = entity.getZ() - e;
 				double h = Math.max(f * f + g * g, 0.1);
 				entity.addVelocity(f / h * 4.0, 0.2F, g / h * 4.0);
-				if (!this.phaseManager.getCurrent().isSittingOrHovering() && ((LivingEntity)entity).getLastAttackedTime() < entity.age - 2) {
-					entity.damage(this.getDamageSources().mobAttack(this), 5.0F);
-					this.applyDamageEffects(this, entity);
+				if (!this.phaseManager.getCurrent().isSittingOrHovering() && livingEntity.getLastAttackedTime() < entity.age - 2) {
+					DamageSource damageSource = this.getDamageSources().mobAttack(this);
+					entity.damage(damageSource, 5.0F);
+					EnchantmentHelper.onTargetDamaged(serverWorld, entity, damageSource);
 				}
 			}
 		}
@@ -439,8 +446,11 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	private void damageLivingEntities(List<Entity> entities) {
 		for (Entity entity : entities) {
 			if (entity instanceof LivingEntity) {
-				entity.damage(this.getDamageSources().mobAttack(this), 10.0F);
-				this.applyDamageEffects(this, entity);
+				DamageSource damageSource = this.getDamageSources().mobAttack(this);
+				entity.damage(damageSource, 10.0F);
+				if (this.getWorld() instanceof ServerWorld serverWorld) {
+					EnchantmentHelper.onTargetDamaged(serverWorld, entity, damageSource);
+				}
 			}
 		}
 	}

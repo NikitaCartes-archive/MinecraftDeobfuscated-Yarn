@@ -2,6 +2,7 @@ package net.minecraft.entity;
 
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 
 public class DamageUtil {
@@ -11,13 +12,22 @@ public class DamageUtil {
 	public static final float field_29965 = 0.2F;
 	private static final int field_29966 = 4;
 
-	public static float getDamageLeft(float damage, DamageSource source, float armor, float armorToughnesss) {
-		float f = 2.0F + armorToughnesss / 4.0F;
-		float g = MathHelper.clamp(armor - damage / f, armor * 0.2F, 20.0F);
-		float h = g / 25.0F;
-		float i = EnchantmentHelper.getBreachFactor(source.getAttacker(), h);
+	public static float getDamageLeft(LivingEntity armorWearer, float damageAmount, DamageSource damageSource, float armor, float armorToughness) {
+		float i;
+		label12: {
+			float f = 2.0F + armorToughness / 4.0F;
+			float g = MathHelper.clamp(armor - damageAmount / f, armor * 0.2F, 20.0F);
+			float h = g / 25.0F;
+			if (damageSource.getSource() instanceof LivingEntity livingEntity && livingEntity.getWorld() instanceof ServerWorld serverWorld) {
+				i = MathHelper.clamp(EnchantmentHelper.getArmorEffectiveness(serverWorld, livingEntity.getMainHandStack(), armorWearer, damageSource, h), 0.0F, 1.0F);
+				break label12;
+			}
+
+			i = h;
+		}
+
 		float j = 1.0F - i;
-		return damage * j;
+		return damageAmount * j;
 	}
 
 	public static float getInflictedDamage(float damageDealt, float protection) {

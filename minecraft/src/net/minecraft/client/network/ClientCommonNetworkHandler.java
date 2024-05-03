@@ -92,6 +92,7 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	@Override
 	public void onPacketException(Packet packet, Exception exception) {
 		LOGGER.error("Failed to handle packet {}", packet, exception);
+		ClientCommonPacketListener.super.onPacketException(packet, exception);
 		if (this.strictErrorHandling) {
 			this.connection.disconnect(Text.translatable("disconnect.packetError"));
 		}

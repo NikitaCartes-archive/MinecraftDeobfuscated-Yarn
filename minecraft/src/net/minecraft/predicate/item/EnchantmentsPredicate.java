@@ -3,7 +3,7 @@ package net.minecraft.predicate.item;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.function.Function;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.item.ItemStack;
@@ -49,7 +49,7 @@ public abstract class EnchantmentsPredicate implements ComponentSubPredicate<Ite
 		}
 
 		@Override
-		public DataComponentType<ItemEnchantmentsComponent> getComponentType() {
+		public ComponentType<ItemEnchantmentsComponent> getComponentType() {
 			return DataComponentTypes.ENCHANTMENTS;
 		}
 	}
@@ -62,7 +62,7 @@ public abstract class EnchantmentsPredicate implements ComponentSubPredicate<Ite
 		}
 
 		@Override
-		public DataComponentType<ItemEnchantmentsComponent> getComponentType() {
+		public ComponentType<ItemEnchantmentsComponent> getComponentType() {
 			return DataComponentTypes.STORED_ENCHANTMENTS;
 		}
 	}

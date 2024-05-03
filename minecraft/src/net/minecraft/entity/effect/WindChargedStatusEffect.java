@@ -29,7 +29,7 @@ class WindChargedStatusEffect extends StatusEffect {
 				f,
 				g,
 				false,
-				World.ExplosionSourceType.BLOW,
+				World.ExplosionSourceType.TRIGGER,
 				ParticleTypes.GUST_EMITTER_SMALL,
 				ParticleTypes.GUST_EMITTER_LARGE,
 				SoundEvents.ENTITY_BREEZE_WIND_BURST

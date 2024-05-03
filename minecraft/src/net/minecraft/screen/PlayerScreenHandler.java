@@ -1,7 +1,7 @@
 package net.minecraft.screen;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.enchantment.EnchantmentHelper;
+import java.util.Map;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,15 +11,17 @@ import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBookCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
+import net.minecraft.screen.slot.ArmorSlot;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 
-public class PlayerScreenHandler extends AbstractRecipeScreenHandler<RecipeInputInventory> {
+public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingRecipeInput, CraftingRecipe> {
 	public static final int field_30802 = 0;
 	public static final int CRAFTING_RESULT_ID = 0;
 	public static final int CRAFTING_INPUT_START = 1;
@@ -39,9 +41,16 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<RecipeInput
 	public static final Identifier EMPTY_LEGGINGS_SLOT_TEXTURE = new Identifier("item/empty_armor_slot_leggings");
 	public static final Identifier EMPTY_BOOTS_SLOT_TEXTURE = new Identifier("item/empty_armor_slot_boots");
 	public static final Identifier EMPTY_OFFHAND_ARMOR_SLOT = new Identifier("item/empty_armor_slot_shield");
-	static final Identifier[] EMPTY_ARMOR_SLOT_TEXTURES = new Identifier[]{
-		EMPTY_BOOTS_SLOT_TEXTURE, EMPTY_LEGGINGS_SLOT_TEXTURE, EMPTY_CHESTPLATE_SLOT_TEXTURE, EMPTY_HELMET_SLOT_TEXTURE
-	};
+	private static final Map<EquipmentSlot, Identifier> EMPTY_ARMOR_SLOT_TEXTURES = Map.of(
+		EquipmentSlot.FEET,
+		EMPTY_BOOTS_SLOT_TEXTURE,
+		EquipmentSlot.LEGS,
+		EMPTY_LEGGINGS_SLOT_TEXTURE,
+		EquipmentSlot.CHEST,
+		EMPTY_CHESTPLATE_SLOT_TEXTURE,
+		EquipmentSlot.HEAD,
+		EMPTY_HELMET_SLOT_TEXTURE
+	);
 	private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{
 		EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
 	};
@@ -63,35 +72,9 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<RecipeInput
 		}
 
 		for (int i = 0; i < 4; i++) {
-			final EquipmentSlot equipmentSlot = EQUIPMENT_SLOT_ORDER[i];
-			this.addSlot(new Slot(inventory, 39 - i, 8, 8 + i * 18) {
-				@Override
-				public void setStack(ItemStack stack, ItemStack previousStack) {
-					PlayerScreenHandler.onEquipStack(owner, equipmentSlot, stack, previousStack);
-					super.setStack(stack, previousStack);
-				}
-
-				@Override
-				public int getMaxItemCount() {
-					return 1;
-				}
-
-				@Override
-				public boolean canInsert(ItemStack stack) {
-					return equipmentSlot == MobEntity.getPreferredEquipmentSlot(stack);
-				}
-
-				@Override
-				public boolean canTakeItems(PlayerEntity playerEntity) {
-					ItemStack itemStack = this.getStack();
-					return !itemStack.isEmpty() && !playerEntity.isCreative() && EnchantmentHelper.hasBindingCurse(itemStack) ? false : super.canTakeItems(playerEntity);
-				}
-
-				@Override
-				public Pair<Identifier, Identifier> getBackgroundSprite() {
-					return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_ARMOR_SLOT_TEXTURES[equipmentSlot.getEntitySlotId()]);
-				}
-			});
+			EquipmentSlot equipmentSlot = EQUIPMENT_SLOT_ORDER[i];
+			Identifier identifier = (Identifier)EMPTY_ARMOR_SLOT_TEXTURES.get(equipmentSlot);
+			this.addSlot(new ArmorSlot(inventory, owner, equipmentSlot, 39 - i, 8, 8 + i * 18, identifier));
 		}
 
 		for (int i = 0; i < 3; i++) {
@@ -107,7 +90,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<RecipeInput
 		this.addSlot(new Slot(inventory, 40, 77, 62) {
 			@Override
 			public void setStack(ItemStack stack, ItemStack previousStack) {
-				PlayerScreenHandler.onEquipStack(owner, EquipmentSlot.OFFHAND, stack, previousStack);
+				owner.onEquipStack(EquipmentSlot.OFFHAND, previousStack, stack);
 				super.setStack(stack, previousStack);
 			}
 
@@ -116,10 +99,6 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<RecipeInput
 				return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT);
 			}
 		});
-	}
-
-	static void onEquipStack(PlayerEntity player, EquipmentSlot slot, ItemStack newStack, ItemStack currentStack) {
-		player.onEquipStack(slot, currentStack, newStack);
 	}
 
 	public static boolean isInHotbar(int slot) {
@@ -138,13 +117,13 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<RecipeInput
 	}
 
 	@Override
-	public boolean matches(RecipeEntry<? extends Recipe<RecipeInputInventory>> recipe) {
-		return recipe.value().matches(this.craftingInput, this.owner.getWorld());
+	public boolean matches(RecipeEntry<CraftingRecipe> recipe) {
+		return recipe.value().matches(this.craftingInput.createRecipeInput(), this.owner.getWorld());
 	}
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		CraftingScreenHandler.updateResult(this, this.owner.getWorld(), this.owner, this.craftingInput, this.craftingResult);
+		CraftingScreenHandler.updateResult(this, this.owner.getWorld(), this.owner, this.craftingInput, this.craftingResult, null);
 	}
 
 	@Override

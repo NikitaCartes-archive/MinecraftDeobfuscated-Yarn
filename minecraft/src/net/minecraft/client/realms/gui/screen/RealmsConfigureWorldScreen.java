@@ -8,13 +8,13 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
 import net.minecraft.client.realms.dto.WorldTemplate;
 import net.minecraft.client.realms.exception.RealmsServiceException;
+import net.minecraft.client.realms.gui.RealmsPopups;
 import net.minecraft.client.realms.gui.RealmsWorldSlotButton;
 import net.minecraft.client.realms.task.CloseServerTask;
 import net.minecraft.client.realms.task.OpenServerTask;
@@ -275,9 +275,9 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 
 	private void joinRealm(RealmsServer serverData) {
 		if (this.server.state == RealmsServer.State.OPEN) {
-			RealmsMainScreen.play(serverData, new RealmsConfigureWorldScreen(this.parent, this.serverId));
+			RealmsMainScreen.play(serverData, this);
 		} else {
-			this.openTheWorld(true, new RealmsConfigureWorldScreen(this.parent, this.serverId));
+			this.openTheWorld(true);
 		}
 	}
 
@@ -290,53 +290,37 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	}
 
 	private void switchToFullSlot(int selectedSlot, RealmsServer serverData) {
-		Text text = Text.translatable("mco.configure.world.slot.switch.question.line1");
-		Text text2 = Text.translatable("mco.configure.world.slot.switch.question.line2");
 		this.client
 			.setScreen(
-				new RealmsLongConfirmationScreen(
-					confirmed -> {
-						if (confirmed) {
-							this.stateChanged();
-							this.client
-								.setScreen(
-									new RealmsLongRunningMcoTaskScreen(
-										this.parent, new SwitchSlotTask(serverData.id, selectedSlot, () -> this.client.execute(() -> this.client.setScreen(this.getNewScreen())))
-									)
-								);
-						} else {
-							this.client.setScreen(this);
-						}
-					},
-					RealmsLongConfirmationScreen.Type.INFO,
-					text,
-					text2,
-					true
+				RealmsPopups.createInfoPopup(
+					this,
+					Text.translatable("mco.configure.world.slot.switch.question.line1"),
+					popupScreen -> {
+						this.stateChanged();
+						this.client
+							.setScreen(
+								new RealmsLongRunningMcoTaskScreen(
+									this.parent, new SwitchSlotTask(serverData.id, selectedSlot, () -> this.client.execute(() -> this.client.setScreen(this.getNewScreen())))
+								)
+							);
+					}
 				)
 			);
 	}
 
 	private void switchToEmptySlot(int selectedSlot, RealmsServer serverData) {
-		Text text = Text.translatable("mco.configure.world.slot.switch.question.line1");
-		Text text2 = Text.translatable("mco.configure.world.slot.switch.question.line2");
 		this.client
 			.setScreen(
-				new RealmsLongConfirmationScreen(
-					confirmed -> {
-						if (confirmed) {
-							this.stateChanged();
-							RealmsCreateWorldScreen realmsCreateWorldScreen = RealmsCreateWorldScreen.newWorld(
-								this, selectedSlot, serverData, () -> this.client.execute(() -> this.client.setScreen(this.getNewScreen()))
-							);
-							this.client.setScreen(realmsCreateWorldScreen);
-						} else {
-							this.client.setScreen(this);
-						}
-					},
-					RealmsLongConfirmationScreen.Type.INFO,
-					text,
-					text2,
-					true
+				RealmsPopups.createInfoPopup(
+					this,
+					Text.translatable("mco.configure.world.slot.switch.question.line1"),
+					popupScreen -> {
+						this.stateChanged();
+						RealmsCreateWorldScreen realmsCreateWorldScreen = RealmsCreateWorldScreen.newWorld(
+							this, selectedSlot, serverData, () -> this.client.execute(() -> this.client.setScreen(this.getNewScreen()))
+						);
+						this.client.setScreen(realmsCreateWorldScreen);
+					}
 				)
 			);
 	}
@@ -369,7 +353,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	}
 
 	private boolean isMinigame() {
-		return this.server != null && this.server.worldType == RealmsServer.WorldType.MINIGAME;
+		return this.server != null && this.server.method_60315();
 	}
 
 	private void hideRegularButtons() {
@@ -426,12 +410,15 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 		this.client.setScreen(this);
 	}
 
-	public void openTheWorld(boolean join, Screen screen) {
-		this.client.setScreen(new RealmsLongRunningMcoTaskScreen(screen, new OpenServerTask(this.server, this, join, this.client)));
+	public void openTheWorld(boolean join) {
+		RealmsConfigureWorldScreen realmsConfigureWorldScreen = this.getNewScreen();
+		this.client
+			.setScreen(new RealmsLongRunningMcoTaskScreen(realmsConfigureWorldScreen, new OpenServerTask(this.server, realmsConfigureWorldScreen, join, this.client)));
 	}
 
-	public void closeTheWorld(Screen screen) {
-		this.client.setScreen(new RealmsLongRunningMcoTaskScreen(screen, new CloseServerTask(this.server, this)));
+	public void closeTheWorld() {
+		RealmsConfigureWorldScreen realmsConfigureWorldScreen = this.getNewScreen();
+		this.client.setScreen(new RealmsLongRunningMcoTaskScreen(realmsConfigureWorldScreen, new CloseServerTask(this.server, realmsConfigureWorldScreen)));
 	}
 
 	public void stateChanged() {

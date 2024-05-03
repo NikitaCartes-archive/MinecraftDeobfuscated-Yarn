@@ -3,6 +3,7 @@ package net.minecraft.util.math;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.util.hit.BlockHitResult;
+import org.joml.Vector3f;
 
 /**
  * An immutable box with double-valued coordinates. The box is axis-aligned
@@ -312,6 +313,10 @@ public class Box {
 	 */
 	public Box offset(Vec3d vec) {
 		return this.offset(vec.x, vec.y, vec.z);
+	}
+
+	public Box offset(Vector3f offset) {
+		return this.offset((double)offset.x, (double)offset.y, (double)offset.z);
 	}
 
 	/**

@@ -10,6 +10,7 @@ import com.mojang.serialization.Dynamic;
 import java.util.Map;
 import java.util.function.Function;
 import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class RenameEnchantmentFix extends DataFix {
 	final String name;
@@ -42,7 +43,7 @@ public class RenameEnchantmentFix extends DataFix {
 								dynamicx -> dynamicx.update(
 										"id",
 										dynamic2 -> dynamic2.asString()
-												.map(oldId -> dynamicx.createString((String)this.oldToNewIds.getOrDefault(oldId, oldId)))
+												.map(oldId -> dynamicx.createString((String)this.oldToNewIds.getOrDefault(IdentifierNormalizingSchema.normalize(oldId), oldId)))
 												.mapOrElse(Function.identity(), error -> dynamic2)
 									)
 							)

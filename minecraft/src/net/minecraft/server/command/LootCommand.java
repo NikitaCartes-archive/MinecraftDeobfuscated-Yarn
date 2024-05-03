@@ -447,8 +447,8 @@ public class LootCommand {
 			}
 
 			builder.add(LootContextParameters.DAMAGE_SOURCE, entity.getDamageSources().magic());
-			builder.addOptional(LootContextParameters.DIRECT_KILLER_ENTITY, entity2);
-			builder.addOptional(LootContextParameters.KILLER_ENTITY, entity2);
+			builder.addOptional(LootContextParameters.DIRECT_ATTACKING_ENTITY, entity2);
+			builder.addOptional(LootContextParameters.ATTACKING_ENTITY, entity2);
 			builder.add(LootContextParameters.THIS_ENTITY, entity);
 			builder.add(LootContextParameters.ORIGIN, serverCommandSource.getPosition());
 			LootContextParameterSet lootContextParameterSet = builder.build(LootContextTypes.ENTITY);

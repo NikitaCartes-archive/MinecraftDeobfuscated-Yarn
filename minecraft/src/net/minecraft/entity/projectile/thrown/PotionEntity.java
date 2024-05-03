@@ -1,5 +1,6 @@
 package net.minecraft.entity.projectile.thrown;
 
+import it.unimi.dsi.fastutil.doubles.DoubleDoubleImmutablePair;
 import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
@@ -13,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.AxolotlEntity;
@@ -192,5 +194,12 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 			CampfireBlock.extinguish(this.getOwner(), this.getWorld(), pos, blockState);
 			this.getWorld().setBlockState(pos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(false)));
 		}
+	}
+
+	@Override
+	public DoubleDoubleImmutablePair method_59959(LivingEntity livingEntity, DamageSource damageSource) {
+		double d = livingEntity.getPos().x - this.getPos().x;
+		double e = livingEntity.getPos().z - this.getPos().z;
+		return DoubleDoubleImmutablePair.of(d, e);
 	}
 }

@@ -35,7 +35,7 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 		if (client.player.currentScreenHandler instanceof AbstractRecipeScreenHandler) {
 			for (RecipeResultCollection recipeResultCollection : list) {
 				for (RecipeEntry<?> recipeEntry : recipeResultCollection.getResults(
-					clientRecipeBook.isFilteringCraftable((AbstractRecipeScreenHandler<?>)client.player.currentScreenHandler)
+					clientRecipeBook.isFilteringCraftable((AbstractRecipeScreenHandler<?, ?>)client.player.currentScreenHandler)
 				)) {
 					if (clientRecipeBook.shouldDisplay(recipeEntry)) {
 						this.bounce = 15.0F;

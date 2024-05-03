@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SmithingRecipe;
+import net.minecraft.recipe.input.SmithingRecipeInput;
 import net.minecraft.screen.slot.ForgingSlotsManager;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.world.World;
@@ -58,7 +59,7 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 
 	@Override
 	protected boolean canTakeOutput(PlayerEntity player, boolean present) {
-		return this.currentRecipe != null && this.currentRecipe.value().matches(this.input, this.world);
+		return this.currentRecipe != null && this.currentRecipe.value().matches(this.createRecipeInput(), this.world);
 	}
 
 	@Override
@@ -75,6 +76,10 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 		return List.of(this.input.getStack(0), this.input.getStack(1), this.input.getStack(2));
 	}
 
+	private SmithingRecipeInput createRecipeInput() {
+		return new SmithingRecipeInput(this.input.getStack(0), this.input.getStack(1), this.input.getStack(2));
+	}
+
 	private void decrementStack(int slot) {
 		ItemStack itemStack = this.input.getStack(slot);
 		if (!itemStack.isEmpty()) {
@@ -85,12 +90,13 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 
 	@Override
 	public void updateResult() {
-		List<RecipeEntry<SmithingRecipe>> list = this.world.getRecipeManager().getAllMatches(RecipeType.SMITHING, this.input, this.world);
+		SmithingRecipeInput smithingRecipeInput = this.createRecipeInput();
+		List<RecipeEntry<SmithingRecipe>> list = this.world.getRecipeManager().getAllMatches(RecipeType.SMITHING, smithingRecipeInput, this.world);
 		if (list.isEmpty()) {
 			this.output.setStack(0, ItemStack.EMPTY);
 		} else {
 			RecipeEntry<SmithingRecipe> recipeEntry = (RecipeEntry<SmithingRecipe>)list.get(0);
-			ItemStack itemStack = recipeEntry.value().craft(this.input, this.world.getRegistryManager());
+			ItemStack itemStack = recipeEntry.value().craft(smithingRecipeInput, this.world.getRegistryManager());
 			if (itemStack.isItemEnabled(this.world.getEnabledFeatures())) {
 				this.currentRecipe = recipeEntry;
 				this.output.setLastRecipe(recipeEntry);

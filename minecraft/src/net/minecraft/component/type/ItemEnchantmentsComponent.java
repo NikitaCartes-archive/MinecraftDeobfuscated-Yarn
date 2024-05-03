@@ -18,7 +18,6 @@ import net.minecraft.item.TooltipAppender;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -34,7 +33,7 @@ public class ItemEnchantmentsComponent implements TooltipAppender {
 	public static final int MAX_ENCHANTMENT_LEVEL = 255;
 	private static final Codec<Integer> ENCHANTMENT_LEVEL_CODEC = Codec.intRange(0, 255);
 	private static final Codec<Object2IntOpenHashMap<RegistryEntry<Enchantment>>> INLINE_CODEC = Codec.unboundedMap(
-			Registries.ENCHANTMENT.getEntryCodec(), ENCHANTMENT_LEVEL_CODEC
+			Enchantment.ENTRY_CODEC, ENCHANTMENT_LEVEL_CODEC
 		)
 		.xmap(Object2IntOpenHashMap::new, Function.identity());
 	private static final Codec<ItemEnchantmentsComponent> BASE_CODEC = RecordCodecBuilder.create(
@@ -67,8 +66,8 @@ public class ItemEnchantmentsComponent implements TooltipAppender {
 		}
 	}
 
-	public int getLevel(Enchantment enchantment) {
-		return this.enchantments.getInt(enchantment.getRegistryEntry());
+	public int getLevel(RegistryEntry<Enchantment> enchantment) {
+		return this.enchantments.getInt(enchantment);
 	}
 
 	@Override
@@ -80,14 +79,14 @@ public class ItemEnchantmentsComponent implements TooltipAppender {
 			for (RegistryEntry<Enchantment> registryEntry : registryEntryList) {
 				int i = this.enchantments.getInt(registryEntry);
 				if (i > 0) {
-					tooltip.accept(registryEntry.value().getName(i));
+					tooltip.accept(Enchantment.getName(registryEntry, i));
 				}
 			}
 
 			for (Entry<RegistryEntry<Enchantment>> entry : this.enchantments.object2IntEntrySet()) {
 				RegistryEntry<Enchantment> registryEntry2 = (RegistryEntry<Enchantment>)entry.getKey();
 				if (!registryEntryList.contains(registryEntry2)) {
-					tooltip.accept(registryEntry2.value().getName(entry.getIntValue()));
+					tooltip.accept(Enchantment.getName((RegistryEntry<Enchantment>)entry.getKey(), entry.getIntValue()));
 				}
 			}
 		}
@@ -154,17 +153,17 @@ public class ItemEnchantmentsComponent implements TooltipAppender {
 			this.showInTooltip = enchantmentsComponent.showInTooltip;
 		}
 
-		public void set(Enchantment enchantment, int level) {
+		public void set(RegistryEntry<Enchantment> enchantment, int level) {
 			if (level <= 0) {
-				this.enchantments.removeInt(enchantment.getRegistryEntry());
+				this.enchantments.removeInt(enchantment);
 			} else {
-				this.enchantments.put(enchantment.getRegistryEntry(), Math.min(level, 255));
+				this.enchantments.put(enchantment, Math.min(level, 255));
 			}
 		}
 
-		public void add(Enchantment enchantment, int level) {
+		public void add(RegistryEntry<Enchantment> enchantment, int level) {
 			if (level > 0) {
-				this.enchantments.merge(enchantment.getRegistryEntry(), Math.min(level, 255), Integer::max);
+				this.enchantments.merge(enchantment, Math.min(level, 255), Integer::max);
 			}
 		}
 
@@ -172,8 +171,8 @@ public class ItemEnchantmentsComponent implements TooltipAppender {
 			this.enchantments.keySet().removeIf(predicate);
 		}
 
-		public int getLevel(Enchantment enchantment) {
-			return this.enchantments.getOrDefault(enchantment.getRegistryEntry(), 0);
+		public int getLevel(RegistryEntry<Enchantment> enchantment) {
+			return this.enchantments.getOrDefault(enchantment, 0);
 		}
 
 		public Set<RegistryEntry<Enchantment>> getEnchantments() {

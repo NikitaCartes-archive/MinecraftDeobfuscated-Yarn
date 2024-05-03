@@ -29,20 +29,23 @@ public class KeybindsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	protected void init() {
-		this.controlsList = this.addDrawableChild(new ControlsListWidget(this, this.client));
-		this.resetAllButton = ButtonWidget.builder(Text.translatable("controls.resetAll"), button -> {
+	protected void method_60329() {
+		this.controlsList = this.layout.addBody(this.addDrawableChild(new ControlsListWidget(this, this.client)));
+	}
+
+	@Override
+	protected void method_60325() {
+	}
+
+	@Override
+	protected void initFooter() {
+		this.resetAllButton = ButtonWidget.builder(Text.translatable("controls.resetAll"), buttonWidget -> {
 			for (KeyBinding keyBinding : this.gameOptions.allKeys) {
 				keyBinding.setBoundKey(keyBinding.getDefaultKey());
 			}
 
 			this.controlsList.update();
 		}).build();
-		super.init();
-	}
-
-	@Override
-	protected void initFooter() {
 		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
 		directionalLayoutWidget.add(this.resetAllButton);
 		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.DONE, buttonWidget -> this.close()).build());

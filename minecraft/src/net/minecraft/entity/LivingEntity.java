@@ -10,12 +10,16 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
+import it.unimi.dsi.fastutil.doubles.DoubleDoubleImmutablePair;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
@@ -31,10 +35,9 @@ import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.enchantment.FrostWalkerEnchantment;
-import net.minecraft.enchantment.ProtectionEnchantment;
+import net.minecraft.enchantment.effect.EnchantmentLocationBasedEffectType;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -60,6 +63,7 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.StackReference;
@@ -120,7 +124,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
@@ -135,7 +138,6 @@ import org.slf4j.Logger;
 public abstract class LivingEntity extends Entity implements Attackable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String ACTIVE_EFFECTS_NBT_KEY = "active_effects";
-	private static final UUID SOUL_SPEED_BOOST_ID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
 	private static final UUID POWDER_SNOW_SLOW_ID = UUID.fromString("1eaf83ff-7207-4596-b37a-d7a07b3ec4ce");
 	private static final EntityAttributeModifier SPRINTING_SPEED_BOOST = new EntityAttributeModifier(
 		UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D"), "Sprinting speed boost", 0.3F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
@@ -227,6 +229,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	@Nullable
 	private LivingEntity attacker;
 	private int lastAttackedTime;
+	@Nullable
 	private LivingEntity attacking;
 	private int lastAttackTime;
 	private float movementSpeed;
@@ -241,10 +244,14 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	private DamageSource lastDamageSource;
 	private long lastDamageTime;
 	protected int riptideTicks;
+	protected float riptideAttackDamage;
+	@Nullable
+	protected ItemStack riptideStack;
 	private float leaningPitch;
 	private float lastLeaningPitch;
 	protected Brain<?> brain;
 	private boolean experienceDroppingDisabled;
+	private final Reference2ObjectMap<Enchantment, Set<EnchantmentLocationBasedEffectType>> locationBasedEnchantmentEffects = new Reference2ObjectArrayMap<>();
 	protected float prevScale = 1.0F;
 
 	protected LivingEntity(EntityType<? extends LivingEntity> entityType, World world) {
@@ -306,7 +313,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			.add(EntityAttributes.GENERIC_GRAVITY)
 			.add(EntityAttributes.GENERIC_SAFE_FALL_DISTANCE)
 			.add(EntityAttributes.GENERIC_FALL_DAMAGE_MULTIPLIER)
-			.add(EntityAttributes.GENERIC_JUMP_STRENGTH);
+			.add(EntityAttributes.GENERIC_JUMP_STRENGTH)
+			.add(EntityAttributes.GENERIC_OXYGEN_BONUS)
+			.add(EntityAttributes.GENERIC_BURNING_TIME)
+			.add(EntityAttributes.GENERIC_EXPLOSION_KNOCKBACK_RESISTANCE)
+			.add(EntityAttributes.GENERIC_WATER_MOVEMENT_EFFICIENCY)
+			.add(EntityAttributes.GENERIC_MOVEMENT_EFFICIENCY)
+			.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
 	}
 
 	@Override
@@ -315,9 +328,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			this.checkWaterState();
 		}
 
-		if (!this.getWorld().isClient && onGround && this.fallDistance > 0.0F) {
-			this.removeSoulSpeedBoost();
-			this.addSoulSpeedBoostIfNeeded();
+		if (this.getWorld() instanceof ServerWorld serverWorld && onGround && this.fallDistance > 0.0F) {
+			this.applyMovementEffects(serverWorld, landedPosition);
 			double d = this.getAttributeValue(EntityAttributes.GENERIC_SAFE_FALL_DISTANCE);
 			if ((double)this.fallDistance > d && !state.isAir()) {
 				double e = this.getX();
@@ -353,6 +365,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return MathHelper.lerp(tickDelta, this.lastLeaningPitch, this.leaningPitch);
 	}
 
+	public boolean method_59925() {
+		return this.getVelocity().getY() < 1.0E-5F && this.isInFluid();
+	}
+
 	@Override
 	public void baseTick() {
 		this.lastHandSwingProgress = this.handSwingProgress;
@@ -360,8 +376,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			this.getSleepingPosition().ifPresent(this::setPositionInBed);
 		}
 
-		if (this.shouldDisplaySoulSpeedEffects()) {
-			this.displaySoulSpeedEffects();
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			EnchantmentHelper.onTick(serverWorld, this);
 		}
 
 		super.baseTick();
@@ -413,11 +429,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				this.setAir(this.getNextAirOnLand(this.getAir()));
 			}
 
-			if (!this.getWorld().isClient) {
+			if (this.getWorld() instanceof ServerWorld serverWorld2) {
 				BlockPos blockPos = this.getBlockPos();
 				if (!Objects.equal(this.lastBlockPos, blockPos)) {
 					this.lastBlockPos = blockPos;
-					this.applyMovementEffects(blockPos);
+					this.applyMovementEffects(serverWorld2, blockPos);
 				}
 			}
 		}
@@ -465,73 +481,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.getWorld().getProfiler().pop();
 	}
 
-	public boolean shouldDisplaySoulSpeedEffects() {
-		return this.age % 5 == 0
-			&& this.getVelocity().x != 0.0
-			&& this.getVelocity().z != 0.0
-			&& !this.isSpectator()
-			&& EnchantmentHelper.hasSoulSpeed(this)
-			&& this.isOnSoulSpeedBlock();
-	}
-
-	protected void displaySoulSpeedEffects() {
-		Vec3d vec3d = this.getVelocity();
-		this.getWorld()
-			.addParticle(
-				ParticleTypes.SOUL,
-				this.getX() + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
-				this.getY() + 0.1,
-				this.getZ() + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
-				vec3d.x * -0.2,
-				0.1,
-				vec3d.z * -0.2
-			);
-		float f = this.random.nextFloat() * 0.4F + this.random.nextFloat() > 0.9F ? 0.6F : 0.0F;
-		this.playSound(SoundEvents.PARTICLE_SOUL_ESCAPE, f, 0.6F + this.random.nextFloat() * 0.4F);
-	}
-
-	protected boolean isOnSoulSpeedBlock() {
-		return this.getWorld().getBlockState(this.getVelocityAffectingPos()).isIn(BlockTags.SOUL_SPEED_BLOCKS);
-	}
-
 	@Override
 	protected float getVelocityMultiplier() {
-		return this.isOnSoulSpeedBlock() && EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, this) > 0 ? 1.0F : super.getVelocityMultiplier();
-	}
-
-	protected boolean shouldRemoveSoulSpeedBoost(BlockState landingState) {
-		return !landingState.isAir() || this.isFallFlying();
-	}
-
-	protected void removeSoulSpeedBoost() {
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-		if (entityAttributeInstance != null) {
-			if (entityAttributeInstance.getModifier(SOUL_SPEED_BOOST_ID) != null) {
-				entityAttributeInstance.removeModifier(SOUL_SPEED_BOOST_ID);
-			}
-		}
-	}
-
-	protected void addSoulSpeedBoostIfNeeded() {
-		if (!this.getLandingBlockState().isAir()) {
-			int i = EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, this);
-			if (i > 0 && this.isOnSoulSpeedBlock()) {
-				EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-				if (entityAttributeInstance == null) {
-					return;
-				}
-
-				entityAttributeInstance.addTemporaryModifier(
-					new EntityAttributeModifier(
-						SOUL_SPEED_BOOST_ID, "Soul speed boost", (double)(0.03F * (1.0F + (float)i * 0.35F)), EntityAttributeModifier.Operation.ADD_VALUE
-					)
-				);
-				if (this.getRandom().nextFloat() < 0.04F) {
-					ItemStack itemStack = this.getEquippedStack(EquipmentSlot.FEET);
-					itemStack.damage(1, this, EquipmentSlot.FEET);
-				}
-			}
-		}
+		return MathHelper.lerp((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_EFFICIENCY), super.getVelocityMultiplier(), 1.0F);
 	}
 
 	protected void removePowderSnowSlow() {
@@ -560,17 +512,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
-	protected void applyMovementEffects(BlockPos pos) {
-		int i = EnchantmentHelper.getEquipmentLevel(Enchantments.FROST_WALKER, this);
-		if (i > 0) {
-			FrostWalkerEnchantment.freezeWater(this, this.getWorld(), pos, i);
-		}
-
-		if (this.shouldRemoveSoulSpeedBoost(this.getLandingBlockState())) {
-			this.removeSoulSpeedBoost();
-		}
-
-		this.addSoulSpeedBoostIfNeeded();
+	protected void applyMovementEffects(ServerWorld world, BlockPos pos) {
+		EnchantmentHelper.applyLocationBasedEffects(world, this);
 	}
 
 	public boolean isBaby() {
@@ -623,12 +566,23 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	protected int getNextAirUnderwater(int air) {
-		int i = EnchantmentHelper.getRespiration(this);
-		return i > 0 && this.random.nextInt(i + 1) > 0 ? air : air - 1;
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_OXYGEN_BONUS);
+		double d;
+		if (entityAttributeInstance != null) {
+			d = entityAttributeInstance.getValue();
+		} else {
+			d = 0.0;
+		}
+
+		return d > 0.0 && this.random.nextDouble() >= 1.0 / (d + 1.0) ? air : air - 1;
 	}
 
 	protected int getNextAirOnLand(int air) {
 		return Math.min(air + 4, this.getMaxAir());
+	}
+
+	public final int getXpToDrop(ServerWorld world, @Nullable Entity attacker) {
+		return EnchantmentHelper.getMobExperience(world, attacker, this, this.getXpToDrop());
 	}
 
 	/**
@@ -639,7 +593,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 * @see #shouldAlwaysDropXp()
 	 * @see #shouldDropXp()
 	 */
-	public int getXpToDrop() {
+	protected int getXpToDrop() {
 		return 0;
 	}
 
@@ -652,10 +606,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 */
 	protected boolean shouldAlwaysDropXp() {
 		return false;
-	}
-
-	public Random getRandom() {
-		return this.random;
 	}
 
 	@Nullable
@@ -1295,12 +1245,16 @@ public abstract class LivingEntity extends Entity implements Attackable {
 					this.scheduleVelocityUpdate();
 				}
 
-				if (entity2 != null && !source.isIn(DamageTypeTags.NO_KNOCKBACK)) {
-					double d = entity2.getX() - this.getX();
-
-					double e;
-					for (e = entity2.getZ() - this.getZ(); d * d + e * e < 1.0E-4; e = (Math.random() - Math.random()) * 0.01) {
-						d = (Math.random() - Math.random()) * 0.01;
+				if (!source.isIn(DamageTypeTags.NO_KNOCKBACK)) {
+					double d = 0.0;
+					double e = 0.0;
+					if (source.getSource() instanceof ProjectileEntity projectileEntity) {
+						DoubleDoubleImmutablePair doubleDoubleImmutablePair = projectileEntity.method_59959(this, source);
+						d = -doubleDoubleImmutablePair.leftDouble();
+						e = -doubleDoubleImmutablePair.rightDouble();
+					} else if (entity2 != null) {
+						d = entity2.getX() - this.getX();
+						e = entity2.getZ() - this.getZ();
 					}
 
 					this.takeKnockback(0.4F, d, e);
@@ -1501,23 +1455,15 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
-	protected void drop(DamageSource source) {
-		Entity entity = source.getAttacker();
-		int i;
-		if (entity instanceof PlayerEntity) {
-			i = EnchantmentHelper.getLooting((LivingEntity)entity);
-		} else {
-			i = 0;
-		}
-
+	protected void drop(DamageSource damageSource) {
 		boolean bl = this.playerHitTimer > 0;
 		if (this.shouldDropLoot() && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-			this.dropLoot(source, bl);
-			this.dropEquipment(source, i, bl);
+			this.dropLoot(damageSource, bl);
+			this.dropEquipment(damageSource, bl);
 		}
 
 		this.dropInventory();
-		this.dropXp();
+		this.dropXp(damageSource.getAttacker());
 	}
 
 	protected void dropInventory() {
@@ -1530,15 +1476,15 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 * {@link #shouldAlwaysDropXp()}, {@link #shouldDropXp()}, and
 	 * {@link #getXpToDrop()}.
 	 */
-	protected void dropXp() {
-		if (this.getWorld() instanceof ServerWorld
+	protected void dropXp(@Nullable Entity attacker) {
+		if (this.getWorld() instanceof ServerWorld serverWorld
 			&& !this.isExperienceDroppingDisabled()
 			&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.shouldDropXp() && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
-			ExperienceOrbEntity.spawn((ServerWorld)this.getWorld(), this.getPos(), this.getXpToDrop());
+			ExperienceOrbEntity.spawn(serverWorld, this.getPos(), this.getXpToDrop(serverWorld, attacker));
 		}
 	}
 
-	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
+	protected void dropEquipment(DamageSource source, boolean causedByPlayer) {
 	}
 
 	public RegistryKey<LootTable> getLootTable() {
@@ -1549,6 +1495,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return 0L;
 	}
 
+	protected float getKnockbackAgainst(Entity target, DamageSource damageSource) {
+		float f = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
+		return this.getWorld() instanceof ServerWorld serverWorld
+			? EnchantmentHelper.modifyKnockback(serverWorld, this.getMainHandStack(), target, damageSource, f)
+			: f;
+	}
+
 	protected void dropLoot(DamageSource damageSource, boolean causedByPlayer) {
 		RegistryKey<LootTable> registryKey = this.getLootTable();
 		LootTable lootTable = this.getWorld().getServer().getReloadableRegistries().getLootTable(registryKey);
@@ -1556,8 +1509,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			.add(LootContextParameters.THIS_ENTITY, this)
 			.add(LootContextParameters.ORIGIN, this.getPos())
 			.add(LootContextParameters.DAMAGE_SOURCE, damageSource)
-			.addOptional(LootContextParameters.KILLER_ENTITY, damageSource.getAttacker())
-			.addOptional(LootContextParameters.DIRECT_KILLER_ENTITY, damageSource.getSource());
+			.addOptional(LootContextParameters.ATTACKING_ENTITY, damageSource.getAttacker())
+			.addOptional(LootContextParameters.DIRECT_ATTACKING_ENTITY, damageSource.getSource());
 		if (causedByPlayer && this.attackingPlayer != null) {
 			builder = builder.add(LootContextParameters.LAST_DAMAGE_PLAYER, this.attackingPlayer).luck(this.attackingPlayer.getLuck());
 		}
@@ -1571,6 +1524,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		if (!(strength <= 0.0)) {
 			this.velocityDirty = true;
 			Vec3d vec3d = this.getVelocity();
+
+			while (x * x + z * z < 1.0E-5F) {
+				x = (Math.random() - Math.random()) * 0.01;
+				z = (Math.random() - Math.random()) * 0.01;
+			}
+
 			Vec3d vec3d2 = new Vec3d(x, 0.0, z).normalize().multiply(strength);
 			this.setVelocity(vec3d.x / 2.0 - vec3d2.x, this.isOnGround() ? Math.min(0.4, vec3d.y / 2.0 + strength) : vec3d.y, vec3d.z / 2.0 - vec3d2.z);
 		}
@@ -1619,6 +1578,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		} else {
 			return box;
 		}
+	}
+
+	public Map<Enchantment, Set<EnchantmentLocationBasedEffectType>> getLocationBasedEnchantmentEffects() {
+		return this.locationBasedEnchantmentEffects;
 	}
 
 	public LivingEntity.FallSounds getFallSounds() {
@@ -1752,7 +1715,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	protected float applyArmorToDamage(DamageSource source, float amount) {
 		if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
 			this.damageArmor(source, amount);
-			amount = DamageUtil.getDamageLeft(amount, source, (float)this.getArmor(), (float)this.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
+			amount = DamageUtil.getDamageLeft(this, amount, source, (float)this.getArmor(), (float)this.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
 		}
 
 		return amount;
@@ -1793,9 +1756,15 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			} else if (source.isIn(DamageTypeTags.BYPASSES_ENCHANTMENTS)) {
 				return amount;
 			} else {
-				int i = EnchantmentHelper.getProtectionAmount(this.getAllArmorItems(), source);
-				if (i > 0) {
-					amount = DamageUtil.getInflictedDamage(amount, (float)i);
+				float k;
+				if (this.getWorld() instanceof ServerWorld serverWorld) {
+					k = EnchantmentHelper.getProtectionAmount(serverWorld, this, source);
+				} else {
+					k = 0.0F;
+				}
+
+				if (k > 0.0F) {
+					amount = DamageUtil.getInflictedDamage(amount, k);
 				}
 
 				return amount;
@@ -2240,18 +2209,14 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				double e = this.getY();
 				float f = this.isSprinting() ? 0.9F : this.getBaseMovementSpeedMultiplier();
 				float g = 0.02F;
-				float h = (float)EnchantmentHelper.getDepthStrider(this);
-				if (h > 3.0F) {
-					h = 3.0F;
-				}
-
+				float h = (float)this.getAttributeValue(EntityAttributes.GENERIC_WATER_MOVEMENT_EFFICIENCY);
 				if (!this.isOnGround()) {
 					h *= 0.5F;
 				}
 
 				if (h > 0.0F) {
-					f += (0.54600006F - f) * h / 3.0F;
-					g += (this.getMovementSpeed() - g) * h / 3.0F;
+					f += (0.54600006F - f) * h;
+					g += (this.getMovementSpeed() - g) * h;
 				}
 
 				if (this.hasStatusEffect(StatusEffects.DOLPHINS_GRACE)) {
@@ -2623,20 +2588,26 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				map.put(equipmentSlot, itemStack2);
 				AttributeContainer attributeContainer = this.getAttributes();
 				if (!itemStack.isEmpty()) {
-					itemStack.applyAttributeModifiers(equipmentSlot, (attribute, modifier) -> {
-						EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(attribute);
+					itemStack.applyAttributeModifiers(equipmentSlot, (registryEntry, entityAttributeModifier) -> {
+						EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(registryEntry);
 						if (entityAttributeInstance != null) {
-							entityAttributeInstance.removeModifier(modifier);
+							entityAttributeInstance.removeModifier(entityAttributeModifier);
 						}
+
+						EnchantmentHelper.removeLocationBasedEffects(itemStack, this, equipmentSlot);
 					});
 				}
 
 				if (!itemStack2.isEmpty()) {
-					itemStack2.applyAttributeModifiers(equipmentSlot, (attribute, modifier) -> {
-						EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(attribute);
+					itemStack2.applyAttributeModifiers(equipmentSlot, (registryEntry, entityAttributeModifier) -> {
+						EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(registryEntry);
 						if (entityAttributeInstance != null) {
-							entityAttributeInstance.removeModifier(modifier.uuid());
-							entityAttributeInstance.addTemporaryModifier(modifier);
+							entityAttributeInstance.removeModifier(entityAttributeModifier.uuid());
+							entityAttributeInstance.addTemporaryModifier(entityAttributeModifier);
+						}
+
+						if (this.getWorld() instanceof ServerWorld serverWorld) {
+							EnchantmentHelper.applyLocationBasedEffects(serverWorld, itemStack2, this, equipmentSlot);
 						}
 					});
 				}
@@ -2943,6 +2914,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 		if (!this.getWorld().isClient && this.riptideTicks <= 0) {
 			this.setLivingFlag(USING_RIPTIDE_FLAG, false);
+			this.riptideAttackDamage = 0.0F;
+			this.riptideStack = null;
 		}
 	}
 
@@ -3154,8 +3127,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	private boolean shouldSpawnConsumptionEffects() {
-		int i = this.activeItemStack.getMaxUseTime() - this.getItemUseTimeLeft();
-		int j = (int)((float)this.activeItemStack.getMaxUseTime() * 0.21875F);
+		int i = this.activeItemStack.getMaxUseTime(this) - this.getItemUseTimeLeft();
+		int j = (int)((float)this.activeItemStack.getMaxUseTime(this) * 0.21875F);
 		boolean bl = i > j;
 		return bl && this.getItemUseTimeLeft() % 4 == 0;
 	}
@@ -3184,7 +3157,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		ItemStack itemStack = this.getStackInHand(hand);
 		if (!itemStack.isEmpty() && !this.isUsingItem()) {
 			this.activeItemStack = itemStack;
-			this.itemUseTimeLeft = itemStack.getMaxUseTime();
+			this.itemUseTimeLeft = itemStack.getMaxUseTime(this);
 			if (!this.getWorld().isClient) {
 				this.setLivingFlag(USING_ITEM_FLAG, true);
 				this.setLivingFlag(OFF_HAND_ACTIVE_FLAG, hand == Hand.OFF_HAND);
@@ -3204,7 +3177,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			if (this.isUsingItem() && this.activeItemStack.isEmpty()) {
 				this.activeItemStack = this.getStackInHand(this.getActiveHand());
 				if (!this.activeItemStack.isEmpty()) {
-					this.itemUseTimeLeft = this.activeItemStack.getMaxUseTime();
+					this.itemUseTimeLeft = this.activeItemStack.getMaxUseTime(this);
 				}
 			} else if (!this.isUsingItem() && !this.activeItemStack.isEmpty()) {
 				this.activeItemStack = ItemStack.EMPTY;
@@ -3276,7 +3249,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	public int getItemUseTime() {
-		return this.isUsingItem() ? this.activeItemStack.getMaxUseTime() - this.getItemUseTimeLeft() : 0;
+		return this.isUsingItem() ? this.activeItemStack.getMaxUseTime(this) - this.getItemUseTimeLeft() : 0;
 	}
 
 	public void stopUsingItem() {
@@ -3306,7 +3279,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	public boolean isBlocking() {
 		if (this.isUsingItem() && !this.activeItemStack.isEmpty()) {
 			Item item = this.activeItemStack.getItem();
-			return item.getUseAction(this.activeItemStack) != UseAction.BLOCK ? false : item.getMaxUseTime(this.activeItemStack) - this.itemUseTimeLeft >= 5;
+			return item.getUseAction(this.activeItemStack) != UseAction.BLOCK ? false : item.getMaxUseTime(this.activeItemStack, this) - this.itemUseTimeLeft >= 5;
 		} else {
 			return false;
 		}
@@ -3673,11 +3646,24 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	@Override
 	public void setOnFireForTicks(int ticks) {
-		super.setOnFireForTicks(ProtectionEnchantment.transformFireDuration(this, ticks));
+		super.setOnFireForTicks(MathHelper.ceil((double)ticks * this.getAttributeValue(EntityAttributes.GENERIC_BURNING_TIME)));
 	}
 
 	public boolean isInCreativeMode() {
 		return false;
+	}
+
+	@Override
+	public boolean isInvulnerableTo(DamageSource damageSource) {
+		if (super.isInvulnerableTo(damageSource)) {
+			return true;
+		} else {
+			if (this.getWorld() instanceof ServerWorld serverWorld && EnchantmentHelper.isInvulnerableTo(serverWorld, this, damageSource)) {
+				return true;
+			}
+
+			return false;
+		}
 	}
 
 	public static record FallSounds(SoundEvent small, SoundEvent big) {

@@ -109,10 +109,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 
 	@Override
 	protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
-		if (explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK
-			&& !world.isClient()
-			&& this.blockSetType.canOpenByWindCharge()
-			&& !(Boolean)state.get(POWERED)) {
+		if (explosion.canTriggerBlocks() && this.blockSetType.canOpenByWindCharge() && !(Boolean)state.get(POWERED)) {
 			this.flip(state, world, pos, null);
 		}
 

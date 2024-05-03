@@ -60,6 +60,7 @@ public class PopupScreen extends Screen {
 
 	@Override
 	protected void init() {
+		this.backgroundScreen.init(this.client, this.width, this.height);
 		this.layout.spacing(12).getMainPositioner().alignHorizontalCenter();
 		this.layout.add(new MultilineTextWidget(this.title.copy().formatted(Formatting.BOLD), this.textRenderer).setMaxWidth(this.innerWidth).setCentered(true));
 		if (this.image != null) {

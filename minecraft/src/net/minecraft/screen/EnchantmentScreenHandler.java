@@ -2,9 +2,11 @@ package net.minecraft.screen;
 
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.EnchantingTableBlock;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,8 +15,11 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
-import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -22,6 +27,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 
@@ -94,6 +100,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 			ItemStack itemStack = inventory.getStack(0);
 			if (!itemStack.isEmpty() && itemStack.isEnchantable()) {
 				this.context.run((world, pos) -> {
+					IndexedIterable<RegistryEntry<Enchantment>> indexedIterable = world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).getIndexedEntries();
 					int ix = 0;
 
 					for (BlockPos blockPos : EnchantingTableBlock.POWER_PROVIDER_OFFSETS) {
@@ -115,10 +122,10 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 
 					for (int jx = 0; jx < 3; jx++) {
 						if (this.enchantmentPower[jx] > 0) {
-							List<EnchantmentLevelEntry> list = this.generateEnchantments(world.getEnabledFeatures(), itemStack, jx, this.enchantmentPower[jx]);
+							List<EnchantmentLevelEntry> list = this.generateEnchantments(world.getRegistryManager(), itemStack, jx, this.enchantmentPower[jx]);
 							if (list != null && !list.isEmpty()) {
 								EnchantmentLevelEntry enchantmentLevelEntry = (EnchantmentLevelEntry)list.get(this.random.nextInt(list.size()));
-								this.enchantmentId[jx] = Registries.ENCHANTMENT.getRawId(enchantmentLevelEntry.enchantment);
+								this.enchantmentId[jx] = indexedIterable.getRawId(enchantmentLevelEntry.enchantment);
 								this.enchantmentLevel[jx] = enchantmentLevelEntry.level;
 							}
 						}
@@ -151,7 +158,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 			} else {
 				this.context.run((world, pos) -> {
 					ItemStack itemStack3 = itemStack;
-					List<EnchantmentLevelEntry> list = this.generateEnchantments(world.getEnabledFeatures(), itemStack, id, this.enchantmentPower[id]);
+					List<EnchantmentLevelEntry> list = this.generateEnchantments(world.getRegistryManager(), itemStack, id, this.enchantmentPower[id]);
 					if (!list.isEmpty()) {
 						player.applyEnchantmentCosts(itemStack, i);
 						if (itemStack.isOf(Items.BOOK)) {
@@ -189,14 +196,20 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 		}
 	}
 
-	private List<EnchantmentLevelEntry> generateEnchantments(FeatureSet enabledFeatures, ItemStack stack, int slot, int level) {
+	private List<EnchantmentLevelEntry> generateEnchantments(DynamicRegistryManager dynamicRegistryManager, ItemStack stack, int slot, int level) {
 		this.random.setSeed((long)(this.seed.get() + slot));
-		List<EnchantmentLevelEntry> list = EnchantmentHelper.generateEnchantments(enabledFeatures, this.random, stack, level, false);
-		if (stack.isOf(Items.BOOK) && list.size() > 1) {
-			list.remove(this.random.nextInt(list.size()));
-		}
+		Optional<RegistryEntryList.Named<Enchantment>> optional = dynamicRegistryManager.get(RegistryKeys.ENCHANTMENT)
+			.getEntryList(EnchantmentTags.IN_ENCHANTING_TABLE);
+		if (optional.isEmpty()) {
+			return List.of();
+		} else {
+			List<EnchantmentLevelEntry> list = EnchantmentHelper.generateEnchantments(this.random, stack, level, ((RegistryEntryList.Named)optional.get()).stream());
+			if (stack.isOf(Items.BOOK) && list.size() > 1) {
+				list.remove(this.random.nextInt(list.size()));
+			}
 
-		return list;
+			return list;
+		}
 	}
 
 	public int getLapisCount() {

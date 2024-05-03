@@ -3,11 +3,11 @@ package net.minecraft.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
@@ -53,7 +53,7 @@ public class ShapedRecipe implements CraftingRecipe {
 
 	@Override
 	public DefaultedList<Ingredient> getIngredients() {
-		return this.raw.ingredients();
+		return this.raw.getIngredients();
 	}
 
 	@Override
@@ -63,23 +63,23 @@ public class ShapedRecipe implements CraftingRecipe {
 
 	@Override
 	public boolean fits(int width, int height) {
-		return width >= this.raw.width() && height >= this.raw.height();
+		return width >= this.raw.getWidth() && height >= this.raw.getHeight();
 	}
 
-	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
-		return this.raw.matches(recipeInputInventory);
+	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
+		return this.raw.matches(craftingRecipeInput);
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
+	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
 		return this.getResult(wrapperLookup).copy();
 	}
 
 	public int getWidth() {
-		return this.raw.width();
+		return this.raw.getWidth();
 	}
 
 	public int getHeight() {
-		return this.raw.height();
+		return this.raw.getHeight();
 	}
 
 	@Override

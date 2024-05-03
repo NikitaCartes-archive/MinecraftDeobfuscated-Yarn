@@ -187,7 +187,7 @@ public class StructureTemplate {
 			entity.saveNbt(nbtCompound);
 			BlockPos blockPos;
 			if (entity instanceof PaintingEntity) {
-				blockPos = ((PaintingEntity)entity).getDecorationBlockPos().subtract(firstCorner);
+				blockPos = ((PaintingEntity)entity).getAttachedBlockPos().subtract(firstCorner);
 			} else {
 				blockPos = BlockPos.ofFloored(vec3d);
 			}

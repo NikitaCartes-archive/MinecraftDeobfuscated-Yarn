@@ -3,7 +3,7 @@ package net.minecraft.predicate.item;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.item.ItemStack;
@@ -16,7 +16,7 @@ public record BundleContentsPredicate(Optional<CollectionPredicate<ItemStack, It
 	);
 
 	@Override
-	public DataComponentType<BundleContentsComponent> getComponentType() {
+	public ComponentType<BundleContentsComponent> getComponentType() {
 		return DataComponentTypes.BUNDLE_CONTENTS;
 	}
 

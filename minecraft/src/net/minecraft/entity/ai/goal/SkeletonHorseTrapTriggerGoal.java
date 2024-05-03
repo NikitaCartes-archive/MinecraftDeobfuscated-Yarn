@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.provider.EnchantmentProviders;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
@@ -13,7 +14,6 @@ import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.LocalDifficulty;
 
@@ -90,34 +90,19 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 				skeletonEntity.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
 			}
 
-			FeatureSet featureSet = vehicle.getWorld().getEnabledFeatures();
-			skeletonEntity.equipStack(
-				EquipmentSlot.MAINHAND,
-				EnchantmentHelper.enchant(
-					featureSet,
-					skeletonEntity.getRandom(),
-					this.removeEnchantments(skeletonEntity.getMainHandStack()),
-					(int)(5.0F + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRandom().nextInt(18)),
-					false
-				)
-			);
-			skeletonEntity.equipStack(
-				EquipmentSlot.HEAD,
-				EnchantmentHelper.enchant(
-					featureSet,
-					skeletonEntity.getRandom(),
-					this.removeEnchantments(skeletonEntity.getEquippedStack(EquipmentSlot.HEAD)),
-					(int)(5.0F + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRandom().nextInt(18)),
-					false
-				)
-			);
+			this.method_59939(skeletonEntity, EquipmentSlot.MAINHAND);
+			this.method_59939(skeletonEntity, EquipmentSlot.HEAD);
 		}
 
 		return skeletonEntity;
 	}
 
-	private ItemStack removeEnchantments(ItemStack stack) {
-		stack.set(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
-		return stack;
+	private void method_59939(SkeletonEntity skeletonEntity, EquipmentSlot equipmentSlot) {
+		ItemStack itemStack = skeletonEntity.getEquippedStack(equipmentSlot);
+		itemStack.set(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
+		EnchantmentHelper.applyEnchantmentProvider(
+			itemStack, EnchantmentProviders.MOB_SPAWN_EQUIPMENT, skeletonEntity.getWorld(), skeletonEntity.getBlockPos(), skeletonEntity.getRandom()
+		);
+		skeletonEntity.equipStack(equipmentSlot, itemStack);
 	}
 }

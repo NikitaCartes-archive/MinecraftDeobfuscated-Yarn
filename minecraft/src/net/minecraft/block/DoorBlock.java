@@ -106,11 +106,7 @@ public class DoorBlock extends Block {
 
 	@Override
 	protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
-		if (explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK
-			&& state.get(HALF) == DoubleBlockHalf.LOWER
-			&& !world.isClient()
-			&& this.blockSetType.canOpenByWindCharge()
-			&& !(Boolean)state.get(POWERED)) {
+		if (explosion.canTriggerBlocks() && state.get(HALF) == DoubleBlockHalf.LOWER && this.blockSetType.canOpenByWindCharge() && !(Boolean)state.get(POWERED)) {
 			this.setOpen(null, world, state, pos, !this.isOpen(state));
 		}
 

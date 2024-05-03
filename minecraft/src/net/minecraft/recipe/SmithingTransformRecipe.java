@@ -3,10 +3,10 @@ package net.minecraft.recipe;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.stream.Stream;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.recipe.input.SmithingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
@@ -23,14 +23,12 @@ public class SmithingTransformRecipe implements SmithingRecipe {
 		this.result = result;
 	}
 
-	@Override
-	public boolean matches(Inventory inventory, World world) {
-		return this.template.test(inventory.getStack(0)) && this.base.test(inventory.getStack(1)) && this.addition.test(inventory.getStack(2));
+	public boolean matches(SmithingRecipeInput smithingRecipeInput, World world) {
+		return this.template.test(smithingRecipeInput.template()) && this.base.test(smithingRecipeInput.base()) && this.addition.test(smithingRecipeInput.addition());
 	}
 
-	@Override
-	public ItemStack craft(Inventory inventory, RegistryWrapper.WrapperLookup lookup) {
-		ItemStack itemStack = inventory.getStack(1).copyComponentsToNewStack(this.result.getItem(), this.result.getCount());
+	public ItemStack craft(SmithingRecipeInput smithingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
+		ItemStack itemStack = smithingRecipeInput.base().copyComponentsToNewStack(this.result.getItem(), this.result.getCount());
 		itemStack.applyUnvalidatedChanges(this.result.getComponentChanges());
 		return itemStack;
 	}

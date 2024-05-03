@@ -228,20 +228,10 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<BoggedEntity> BOGGED = register(
 		"bogged",
-		EntityType.Builder.create(BoggedEntity::new, SpawnGroup.MONSTER)
-			.dimensions(0.6F, 1.99F)
-			.eyeHeight(1.74F)
-			.vehicleAttachment(-0.7F)
-			.maxTrackingRange(8)
-			.requires(FeatureFlags.UPDATE_1_21)
+		EntityType.Builder.create(BoggedEntity::new, SpawnGroup.MONSTER).dimensions(0.6F, 1.99F).eyeHeight(1.74F).vehicleAttachment(-0.7F).maxTrackingRange(8)
 	);
 	public static final EntityType<BreezeEntity> BREEZE = register(
-		"breeze",
-		EntityType.Builder.create(BreezeEntity::new, SpawnGroup.MONSTER)
-			.dimensions(0.6F, 1.77F)
-			.eyeHeight(1.3452F)
-			.maxTrackingRange(10)
-			.requires(FeatureFlags.UPDATE_1_21)
+		"breeze", EntityType.Builder.create(BreezeEntity::new, SpawnGroup.MONSTER).dimensions(0.6F, 1.77F).eyeHeight(1.3452F).maxTrackingRange(10)
 	);
 	public static final EntityType<BreezeWindChargeEntity> BREEZE_WIND_CHARGE = register(
 		"breeze_wind_charge",
@@ -250,7 +240,6 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.eyeHeight(0.0F)
 			.maxTrackingRange(4)
 			.trackingTickInterval(10)
-			.requires(FeatureFlags.UPDATE_1_21)
 	);
 	public static final EntityType<CamelEntity> CAMEL = register(
 		"camel", EntityType.Builder.create(CamelEntity::new, SpawnGroup.CREATURE).dimensions(1.7F, 2.375F).eyeHeight(2.275F).maxTrackingRange(10)
@@ -526,8 +515,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.trackingTickInterval(Integer.MAX_VALUE)
 	);
 	public static final EntityType<OminousItemSpawnerEntity> OMINOUS_ITEM_SPAWNER = register(
-		"ominous_item_spawner",
-		EntityType.Builder.create(OminousItemSpawnerEntity::new, SpawnGroup.MISC).dimensions(0.25F, 0.25F).maxTrackingRange(8).requires(FeatureFlags.UPDATE_1_21)
+		"ominous_item_spawner", EntityType.Builder.create(OminousItemSpawnerEntity::new, SpawnGroup.MISC).dimensions(0.25F, 0.25F).maxTrackingRange(8)
 	);
 	public static final EntityType<FireballEntity> FIREBALL = register(
 		"fireball",
@@ -867,7 +855,6 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.eyeHeight(0.0F)
 			.maxTrackingRange(4)
 			.trackingTickInterval(10)
-			.requires(FeatureFlags.UPDATE_1_21)
 	);
 	public static final EntityType<WitchEntity> WITCH = register(
 		"witch",

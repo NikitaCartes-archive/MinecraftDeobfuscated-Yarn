@@ -1,6 +1,6 @@
 package net.minecraft.entity.decoration.painting;
 
-import net.minecraft.registry.Registry;
+import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
@@ -36,38 +36,82 @@ public class PaintingVariants {
 	public static final RegistryKey<PaintingVariant> WIND = of("wind");
 	public static final RegistryKey<PaintingVariant> WATER = of("water");
 	public static final RegistryKey<PaintingVariant> FIRE = of("fire");
+	public static final RegistryKey<PaintingVariant> BAROQUE = of("baroque");
+	public static final RegistryKey<PaintingVariant> HUMBLE = of("humble");
+	public static final RegistryKey<PaintingVariant> MEDITATIVE = of("meditative");
+	public static final RegistryKey<PaintingVariant> PRAIRIE_RIDE = of("prairie_ride");
+	public static final RegistryKey<PaintingVariant> UNPACKED = of("unpacked");
+	public static final RegistryKey<PaintingVariant> BACKYARD = of("backyard");
+	public static final RegistryKey<PaintingVariant> BOUQUET = of("bouquet");
+	public static final RegistryKey<PaintingVariant> CAVEBIRD = of("cavebird");
+	public static final RegistryKey<PaintingVariant> CHANGING = of("changing");
+	public static final RegistryKey<PaintingVariant> COTAN = of("cotan");
+	public static final RegistryKey<PaintingVariant> ENDBOSS = of("endboss");
+	public static final RegistryKey<PaintingVariant> FERN = of("fern");
+	public static final RegistryKey<PaintingVariant> FINDING = of("finding");
+	public static final RegistryKey<PaintingVariant> LOWMIST = of("lowmist");
+	public static final RegistryKey<PaintingVariant> ORB = of("orb");
+	public static final RegistryKey<PaintingVariant> OWLEMONS = of("owlemons");
+	public static final RegistryKey<PaintingVariant> PASSAGE = of("passage");
+	public static final RegistryKey<PaintingVariant> POND = of("pond");
+	public static final RegistryKey<PaintingVariant> SUNFLOWERS = of("sunflowers");
+	public static final RegistryKey<PaintingVariant> TIDES = of("tides");
 
-	public static PaintingVariant registerAndGetDefault(Registry<PaintingVariant> registry) {
-		Registry.register(registry, KEBAB, new PaintingVariant(16, 16));
-		Registry.register(registry, AZTEC, new PaintingVariant(16, 16));
-		Registry.register(registry, ALBAN, new PaintingVariant(16, 16));
-		Registry.register(registry, AZTEC2, new PaintingVariant(16, 16));
-		Registry.register(registry, BOMB, new PaintingVariant(16, 16));
-		Registry.register(registry, PLANT, new PaintingVariant(16, 16));
-		Registry.register(registry, WASTELAND, new PaintingVariant(16, 16));
-		Registry.register(registry, POOL, new PaintingVariant(32, 16));
-		Registry.register(registry, COURBET, new PaintingVariant(32, 16));
-		Registry.register(registry, SEA, new PaintingVariant(32, 16));
-		Registry.register(registry, SUNSET, new PaintingVariant(32, 16));
-		Registry.register(registry, CREEBET, new PaintingVariant(32, 16));
-		Registry.register(registry, WANDERER, new PaintingVariant(16, 32));
-		Registry.register(registry, GRAHAM, new PaintingVariant(16, 32));
-		Registry.register(registry, MATCH, new PaintingVariant(32, 32));
-		Registry.register(registry, BUST, new PaintingVariant(32, 32));
-		Registry.register(registry, STAGE, new PaintingVariant(32, 32));
-		Registry.register(registry, VOID, new PaintingVariant(32, 32));
-		Registry.register(registry, SKULL_AND_ROSES, new PaintingVariant(32, 32));
-		Registry.register(registry, WITHER, new PaintingVariant(32, 32));
-		Registry.register(registry, FIGHTERS, new PaintingVariant(64, 32));
-		Registry.register(registry, POINTER, new PaintingVariant(64, 64));
-		Registry.register(registry, PIGSCENE, new PaintingVariant(64, 64));
-		Registry.register(registry, BURNING_SKULL, new PaintingVariant(64, 64));
-		Registry.register(registry, SKELETON, new PaintingVariant(64, 48));
-		Registry.register(registry, EARTH, new PaintingVariant(32, 32));
-		Registry.register(registry, WIND, new PaintingVariant(32, 32));
-		Registry.register(registry, WATER, new PaintingVariant(32, 32));
-		Registry.register(registry, FIRE, new PaintingVariant(32, 32));
-		return Registry.register(registry, DONKEY_KONG, new PaintingVariant(64, 48));
+	public static void bootstrap(Registerable<PaintingVariant> registry) {
+		register(registry, KEBAB, 1, 1);
+		register(registry, AZTEC, 1, 1);
+		register(registry, ALBAN, 1, 1);
+		register(registry, AZTEC2, 1, 1);
+		register(registry, BOMB, 1, 1);
+		register(registry, PLANT, 1, 1);
+		register(registry, WASTELAND, 1, 1);
+		register(registry, POOL, 2, 1);
+		register(registry, COURBET, 2, 1);
+		register(registry, SEA, 2, 1);
+		register(registry, SUNSET, 2, 1);
+		register(registry, CREEBET, 2, 1);
+		register(registry, WANDERER, 1, 2);
+		register(registry, GRAHAM, 1, 2);
+		register(registry, MATCH, 2, 2);
+		register(registry, BUST, 2, 2);
+		register(registry, STAGE, 2, 2);
+		register(registry, VOID, 2, 2);
+		register(registry, SKULL_AND_ROSES, 2, 2);
+		register(registry, WITHER, 2, 2);
+		register(registry, FIGHTERS, 4, 2);
+		register(registry, POINTER, 4, 4);
+		register(registry, PIGSCENE, 4, 4);
+		register(registry, BURNING_SKULL, 4, 4);
+		register(registry, SKELETON, 4, 3);
+		register(registry, EARTH, 2, 2);
+		register(registry, WIND, 2, 2);
+		register(registry, WATER, 2, 2);
+		register(registry, FIRE, 2, 2);
+		register(registry, DONKEY_KONG, 4, 3);
+		register(registry, BAROQUE, 2, 2);
+		register(registry, HUMBLE, 2, 2);
+		register(registry, MEDITATIVE, 1, 1);
+		register(registry, PRAIRIE_RIDE, 1, 2);
+		register(registry, UNPACKED, 4, 4);
+		register(registry, BACKYARD, 3, 4);
+		register(registry, BOUQUET, 3, 3);
+		register(registry, CAVEBIRD, 3, 3);
+		register(registry, CHANGING, 4, 2);
+		register(registry, COTAN, 3, 3);
+		register(registry, ENDBOSS, 3, 3);
+		register(registry, FERN, 3, 3);
+		register(registry, FINDING, 4, 2);
+		register(registry, LOWMIST, 4, 2);
+		register(registry, ORB, 4, 4);
+		register(registry, OWLEMONS, 3, 3);
+		register(registry, PASSAGE, 4, 2);
+		register(registry, POND, 3, 4);
+		register(registry, SUNFLOWERS, 3, 3);
+		register(registry, TIDES, 3, 3);
+	}
+
+	private static void register(Registerable<PaintingVariant> registry, RegistryKey<PaintingVariant> key, int width, int height) {
+		registry.register(key, new PaintingVariant(width, height, key.getValue()));
 	}
 
 	private static RegistryKey<PaintingVariant> of(String id) {

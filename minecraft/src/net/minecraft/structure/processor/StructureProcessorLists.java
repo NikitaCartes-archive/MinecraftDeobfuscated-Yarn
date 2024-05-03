@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.BulbBlock;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.PaneBlock;
 import net.minecraft.loot.LootTable;
@@ -65,6 +66,7 @@ public class StructureProcessorLists {
 	public static final RegistryKey<StructureProcessorList> TRAIL_RUINS_HOUSES_ARCHAEOLOGY = of("trail_ruins_houses_archaeology");
 	public static final RegistryKey<StructureProcessorList> TRAIL_RUINS_ROADS_ARCHAEOLOGY = of("trail_ruins_roads_archaeology");
 	public static final RegistryKey<StructureProcessorList> TRAIL_RUINS_TOWER_TOP_ARCHAEOLOGY = of("trail_ruins_tower_top_archaeology");
+	public static final RegistryKey<StructureProcessorList> TRIAL_CHAMBERS_COPPER_BULB_DEGRADATION = of("trial_chambers_copper_bulb_degradation");
 
 	private static RegistryKey<StructureProcessorList> of(String id) {
 		return RegistryKey.of(RegistryKeys.PROCESSOR_LIST, new Identifier(id));
@@ -746,6 +748,32 @@ public class StructureProcessorLists {
 		);
 		register(
 			processorListRegisterable, TRAIL_RUINS_TOWER_TOP_ARCHAEOLOGY, List.of(createTrailRuinsTowerTopProcessor(LootTables.TRAIL_RUINS_COMMON_ARCHAEOLOGY, 2))
+		);
+		register(
+			processorListRegisterable,
+			TRIAL_CHAMBERS_COPPER_BULB_DEGRADATION,
+			List.of(
+				new RuleStructureProcessor(
+					List.of(
+						new StructureProcessorRule(
+							new RandomBlockMatchRuleTest(Blocks.WAXED_COPPER_BULB, 0.1F),
+							AlwaysTrueRuleTest.INSTANCE,
+							Blocks.WAXED_OXIDIZED_COPPER_BULB.getDefaultState().with(BulbBlock.LIT, Boolean.valueOf(true))
+						),
+						new StructureProcessorRule(
+							new RandomBlockMatchRuleTest(Blocks.WAXED_COPPER_BULB, 0.33333334F),
+							AlwaysTrueRuleTest.INSTANCE,
+							Blocks.WAXED_WEATHERED_COPPER_BULB.getDefaultState().with(BulbBlock.LIT, Boolean.valueOf(true))
+						),
+						new StructureProcessorRule(
+							new RandomBlockMatchRuleTest(Blocks.WAXED_COPPER_BULB, 0.5F),
+							AlwaysTrueRuleTest.INSTANCE,
+							Blocks.WAXED_EXPOSED_COPPER_BULB.getDefaultState().with(BulbBlock.LIT, Boolean.valueOf(true))
+						)
+					)
+				),
+				new ProtectedBlocksStructureProcessor(BlockTags.FEATURES_CANNOT_REPLACE)
+			)
 		);
 	}
 

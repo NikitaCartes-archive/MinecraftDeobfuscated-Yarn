@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.DyedColorComponent;
@@ -22,7 +22,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.registry.Registries;
 
 public class ToggleTooltipsLootFunction extends ConditionalLootFunction {
-	private static final Map<DataComponentType<?>, ToggleTooltipsLootFunction.Toggle<?>> TOGGLES = (Map<DataComponentType<?>, ToggleTooltipsLootFunction.Toggle<?>>)Stream.of(
+	private static final Map<ComponentType<?>, ToggleTooltipsLootFunction.Toggle<?>> TOGGLES = (Map<ComponentType<?>, ToggleTooltipsLootFunction.Toggle<?>>)Stream.of(
 			new ToggleTooltipsLootFunction.Toggle<>(DataComponentTypes.TRIM, ArmorTrim::withShowInTooltip),
 			new ToggleTooltipsLootFunction.Toggle<>(DataComponentTypes.DYED_COLOR, DyedColorComponent::withShowInTooltip),
 			new ToggleTooltipsLootFunction.Toggle<>(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent::withShowInTooltip),
@@ -67,7 +67,7 @@ public class ToggleTooltipsLootFunction extends ConditionalLootFunction {
 		return LootFunctionTypes.TOGGLE_TOOLTIPS;
 	}
 
-	static record Toggle<T>(DataComponentType<T> type, ToggleTooltipsLootFunction.TooltipSetter<T> setter) {
+	static record Toggle<T>(ComponentType<T> type, ToggleTooltipsLootFunction.TooltipSetter<T> setter) {
 		public void apply(ItemStack stack, boolean showInTooltip) {
 			T object = stack.get(this.type);
 			if (object != null) {

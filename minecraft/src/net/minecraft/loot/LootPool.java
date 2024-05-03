@@ -11,7 +11,6 @@ import java.util.function.Predicate;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionConsumingBuilder;
-import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.loot.entry.LootPoolEntryTypes;
@@ -30,7 +29,7 @@ public class LootPool {
 	public static final Codec<LootPool> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					LootPoolEntryTypes.CODEC.listOf().fieldOf("entries").forGetter(pool -> pool.entries),
-					LootConditionTypes.CODEC.listOf().optionalFieldOf("conditions", List.of()).forGetter(pool -> pool.conditions),
+					LootCondition.CODEC.listOf().optionalFieldOf("conditions", List.of()).forGetter(pool -> pool.conditions),
 					LootFunctionTypes.CODEC.listOf().optionalFieldOf("functions", List.of()).forGetter(pool -> pool.functions),
 					LootNumberProviderTypes.CODEC.fieldOf("rolls").forGetter(pool -> pool.rolls),
 					LootNumberProviderTypes.CODEC.fieldOf("bonus_rolls").orElse(ConstantLootNumberProvider.create(0.0F)).forGetter(pool -> pool.bonusRolls)

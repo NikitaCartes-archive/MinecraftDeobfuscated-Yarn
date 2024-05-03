@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen.ingame;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
+import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
@@ -14,6 +15,8 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.EnchantmentScreenHandler;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
@@ -170,38 +173,44 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 
 		for (int j = 0; j < 3; j++) {
 			int k = this.handler.enchantmentPower[j];
-			Enchantment enchantment = Enchantment.byRawId(this.handler.enchantmentId[j]);
-			int l = this.handler.enchantmentLevel[j];
-			int m = j + 1;
-			if (this.isPointWithinBounds(60, 14 + 19 * j, 108, 17, (double)mouseX, (double)mouseY) && k > 0 && l >= 0 && enchantment != null) {
-				List<Text> list = Lists.<Text>newArrayList();
-				list.add(Text.translatable("container.enchant.clue", enchantment.getName(l)).formatted(Formatting.WHITE));
-				if (!bl) {
-					list.add(ScreenTexts.EMPTY);
-					if (this.client.player.experienceLevel < k) {
-						list.add(Text.translatable("container.enchant.level.requirement", this.handler.enchantmentPower[j]).formatted(Formatting.RED));
-					} else {
-						MutableText mutableText;
-						if (m == 1) {
-							mutableText = Text.translatable("container.enchant.lapis.one");
+			Optional<RegistryEntry.Reference<Enchantment>> optional = this.client
+				.world
+				.getRegistryManager()
+				.get(RegistryKeys.ENCHANTMENT)
+				.getEntry(this.handler.enchantmentId[j]);
+			if (!optional.isEmpty()) {
+				int l = this.handler.enchantmentLevel[j];
+				int m = j + 1;
+				if (this.isPointWithinBounds(60, 14 + 19 * j, 108, 17, (double)mouseX, (double)mouseY) && k > 0 && l >= 0 && optional != null) {
+					List<Text> list = Lists.<Text>newArrayList();
+					list.add(Text.translatable("container.enchant.clue", Enchantment.getName((RegistryEntry<Enchantment>)optional.get(), l)).formatted(Formatting.WHITE));
+					if (!bl) {
+						list.add(ScreenTexts.EMPTY);
+						if (this.client.player.experienceLevel < k) {
+							list.add(Text.translatable("container.enchant.level.requirement", this.handler.enchantmentPower[j]).formatted(Formatting.RED));
 						} else {
-							mutableText = Text.translatable("container.enchant.lapis.many", m);
-						}
+							MutableText mutableText;
+							if (m == 1) {
+								mutableText = Text.translatable("container.enchant.lapis.one");
+							} else {
+								mutableText = Text.translatable("container.enchant.lapis.many", m);
+							}
 
-						list.add(mutableText.formatted(i >= m ? Formatting.GRAY : Formatting.RED));
-						MutableText mutableText2;
-						if (m == 1) {
-							mutableText2 = Text.translatable("container.enchant.level.one");
-						} else {
-							mutableText2 = Text.translatable("container.enchant.level.many", m);
-						}
+							list.add(mutableText.formatted(i >= m ? Formatting.GRAY : Formatting.RED));
+							MutableText mutableText2;
+							if (m == 1) {
+								mutableText2 = Text.translatable("container.enchant.level.one");
+							} else {
+								mutableText2 = Text.translatable("container.enchant.level.many", m);
+							}
 
-						list.add(mutableText2.formatted(Formatting.GRAY));
+							list.add(mutableText2.formatted(Formatting.GRAY));
+						}
 					}
-				}
 
-				context.drawTooltip(this.textRenderer, list, mouseX, mouseY);
-				break;
+					context.drawTooltip(this.textRenderer, list, mouseX, mouseY);
+					break;
+				}
 			}
 		}
 	}

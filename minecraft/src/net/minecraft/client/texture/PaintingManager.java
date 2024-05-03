@@ -3,7 +3,6 @@ package net.minecraft.client.texture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -15,7 +14,7 @@ public class PaintingManager extends SpriteAtlasHolder {
 	}
 
 	public Sprite getPaintingSprite(PaintingVariant variant) {
-		return this.getSprite(Registries.PAINTING_VARIANT.getId(variant));
+		return this.getSprite(variant.assetId());
 	}
 
 	public Sprite getBackSprite() {

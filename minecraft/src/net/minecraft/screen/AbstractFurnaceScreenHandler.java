@@ -7,19 +7,19 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.AbstractCookingRecipe;
-import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.book.RecipeBookCategory;
+import net.minecraft.recipe.input.SingleStackRecipeInput;
 import net.minecraft.screen.slot.FurnaceFuelSlot;
 import net.minecraft.screen.slot.FurnaceOutputSlot;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenHandler<Inventory> {
+public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenHandler<SingleStackRecipeInput, AbstractCookingRecipe> {
 	public static final int field_30738 = 0;
 	public static final int field_30739 = 1;
 	public static final int field_30740 = 2;
@@ -89,8 +89,8 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 	}
 
 	@Override
-	public boolean matches(RecipeEntry<? extends Recipe<Inventory>> recipe) {
-		return recipe.value().matches(this.inventory, this.world);
+	public boolean matches(RecipeEntry<AbstractCookingRecipe> recipe) {
+		return recipe.value().matches(new SingleStackRecipeInput(this.inventory.getStack(0)), this.world);
 	}
 
 	@Override
@@ -168,7 +168,7 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 	}
 
 	protected boolean isSmeltable(ItemStack itemStack) {
-		return this.world.getRecipeManager().getFirstMatch(this.recipeType, new SimpleInventory(itemStack), this.world).isPresent();
+		return this.world.getRecipeManager().getFirstMatch(this.recipeType, new SingleStackRecipeInput(itemStack), this.world).isPresent();
 	}
 
 	public boolean isFuel(ItemStack itemStack) {

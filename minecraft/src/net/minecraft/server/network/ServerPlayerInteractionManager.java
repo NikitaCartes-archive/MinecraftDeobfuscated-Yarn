@@ -8,6 +8,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.OperatorBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
@@ -22,6 +24,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
@@ -160,6 +163,15 @@ public class ServerPlayerInteractionManager {
 				float f = 1.0F;
 				BlockState blockState = this.world.getBlockState(pos);
 				if (!blockState.isAir()) {
+					EnchantmentHelper.onHitBlock(
+						this.world,
+						this.player.getMainHandStack(),
+						this.player,
+						this.player,
+						EquipmentSlot.MAINHAND,
+						Vec3d.ofCenter(pos),
+						() -> this.player.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND)
+					);
 					blockState.onBlockBreakStart(this.world, pos, this.player);
 					f = blockState.calcBlockBreakingDelta(this.player, this.player.getWorld(), pos);
 				}
@@ -271,9 +283,9 @@ public class ServerPlayerInteractionManager {
 			int j = stack.getDamage();
 			TypedActionResult<ItemStack> typedActionResult = stack.use(world, player, hand);
 			ItemStack itemStack = typedActionResult.getValue();
-			if (itemStack == stack && itemStack.getCount() == i && itemStack.getMaxUseTime() <= 0 && itemStack.getDamage() == j) {
+			if (itemStack == stack && itemStack.getCount() == i && itemStack.getMaxUseTime(player) <= 0 && itemStack.getDamage() == j) {
 				return typedActionResult.getResult();
-			} else if (typedActionResult.getResult() == ActionResult.FAIL && itemStack.getMaxUseTime() > 0 && !player.isUsingItem()) {
+			} else if (typedActionResult.getResult() == ActionResult.FAIL && itemStack.getMaxUseTime(player) > 0 && !player.isUsingItem()) {
 				return typedActionResult.getResult();
 			} else {
 				if (stack != itemStack) {

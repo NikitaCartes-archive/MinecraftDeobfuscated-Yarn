@@ -5,10 +5,10 @@ import java.util.List;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FireworkExplosionComponent;
 import net.minecraft.component.type.FireworksComponent;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
@@ -21,12 +21,12 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 		super(craftingRecipeCategory);
 	}
 
-	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
+	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
 		boolean bl = false;
 		int i = 0;
 
-		for (int j = 0; j < recipeInputInventory.size(); j++) {
-			ItemStack itemStack = recipeInputInventory.getStack(j);
+		for (int j = 0; j < craftingRecipeInput.getSize(); j++) {
+			ItemStack itemStack = craftingRecipeInput.getStackInSlot(j);
 			if (!itemStack.isEmpty()) {
 				if (PAPER.test(itemStack)) {
 					if (bl) {
@@ -47,12 +47,12 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 		return bl && i >= 1;
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
+	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
 		List<FireworkExplosionComponent> list = new ArrayList();
 		int i = 0;
 
-		for (int j = 0; j < recipeInputInventory.size(); j++) {
-			ItemStack itemStack = recipeInputInventory.getStack(j);
+		for (int j = 0; j < craftingRecipeInput.getSize(); j++) {
+			ItemStack itemStack = craftingRecipeInput.getStackInSlot(j);
 			if (!itemStack.isEmpty()) {
 				if (DURATION_MODIFIER.test(itemStack)) {
 					i++;

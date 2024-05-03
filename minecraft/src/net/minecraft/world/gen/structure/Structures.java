@@ -22,6 +22,7 @@ import net.minecraft.structure.SavannaVillageData;
 import net.minecraft.structure.SnowyVillageData;
 import net.minecraft.structure.TaigaVillageData;
 import net.minecraft.structure.TrailRuinsGenerator;
+import net.minecraft.structure.TrialChamberData;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.Pool;
@@ -354,6 +355,26 @@ public class Structures {
 				ConstantHeightProvider.create(YOffset.fixed(-15)),
 				false,
 				Heightmap.Type.WORLD_SURFACE_WG
+			)
+		);
+		structureRegisterable.register(
+			StructureKeys.TRIAL_CHAMBERS,
+			new JigsawStructure(
+				createConfig(
+					registryEntryLookup.getOrThrow(BiomeTags.TRIAL_CHAMBERS_HAS_STRUCTURE),
+					(Map<SpawnGroup, StructureSpawns>)Arrays.stream(SpawnGroup.values())
+						.collect(Collectors.toMap(spawnGroup -> spawnGroup, spawnGroup -> new StructureSpawns(StructureSpawns.BoundingBox.PIECE, Pool.empty()))),
+					GenerationStep.Feature.UNDERGROUND_STRUCTURES,
+					StructureTerrainAdaptation.ENCAPSULATE
+				),
+				registryEntryLookup2.getOrThrow(TrialChamberData.CHAMBER_END_POOL_KEY),
+				Optional.empty(),
+				20,
+				UniformHeightProvider.create(YOffset.fixed(-40), YOffset.fixed(-20)),
+				false,
+				Optional.empty(),
+				116,
+				TrialChamberData.ALIAS_BINDINGS
 			)
 		);
 	}

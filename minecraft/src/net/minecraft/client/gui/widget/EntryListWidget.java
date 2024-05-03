@@ -146,6 +146,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	public void position(int width, int height, int y) {
 		this.setDimensions(width, height);
 		this.setPosition(0, y);
+		this.method_60322();
 	}
 
 	protected int getMaxPosition() {
@@ -259,8 +260,16 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return this.scrollAmount;
 	}
 
+	public void method_60321(double d) {
+		this.scrollAmount = MathHelper.clamp(d, 0.0, (double)this.getMaxScroll());
+	}
+
 	public void setScrollAmount(double amount) {
-		this.scrollAmount = MathHelper.clamp(amount, 0.0, (double)this.getMaxScroll());
+		this.method_60321(amount);
+	}
+
+	public void method_60322() {
+		this.method_60321(this.getScrollAmount());
 	}
 
 	public int getMaxScroll() {
@@ -321,11 +330,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		if (this.getFocused() != null) {
-			this.getFocused().mouseReleased(mouseX, mouseY, button);
-		}
-
-		return false;
+		return this.getFocused() != null ? this.getFocused().mouseReleased(mouseX, mouseY, button) : false;
 	}
 
 	@Override

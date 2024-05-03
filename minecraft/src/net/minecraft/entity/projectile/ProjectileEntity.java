@@ -1,13 +1,16 @@
 package net.minecraft.entity.projectile;
 
 import com.google.common.base.MoreObjects;
+import it.unimi.dsi.fastutil.doubles.DoubleDoubleImmutablePair;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Ownable;
 import net.minecraft.entity.ProjectileDeflection;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -32,6 +35,8 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	private Entity owner;
 	private boolean leftOwner;
 	private boolean shot;
+	@Nullable
+	private Entity field_51621;
 
 	public ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
 		super(entityType, world);
@@ -193,9 +198,14 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	protected ProjectileDeflection hitOrDeflect(HitResult hitResult) {
 		if (hitResult.getType() == HitResult.Type.ENTITY) {
 			EntityHitResult entityHitResult = (EntityHitResult)hitResult;
-			ProjectileDeflection projectileDeflection = entityHitResult.getEntity().getProjectileDeflection(this);
+			Entity entity = entityHitResult.getEntity();
+			ProjectileDeflection projectileDeflection = entity.getProjectileDeflection(this);
 			if (projectileDeflection != ProjectileDeflection.NONE) {
-				this.deflect(projectileDeflection, entityHitResult.getEntity(), this.getOwner(), false);
+				if (entity != this.field_51621) {
+					this.field_51621 = entity;
+					this.deflect(projectileDeflection, entity, this.getOwner(), false);
+				}
+
 				return projectileDeflection;
 			}
 		}
@@ -316,5 +326,11 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	@Override
 	public float getTargetingMargin() {
 		return this.canHit() ? 1.0F : 0.0F;
+	}
+
+	public DoubleDoubleImmutablePair method_59959(LivingEntity livingEntity, DamageSource damageSource) {
+		double d = this.getVelocity().x;
+		double e = this.getVelocity().z;
+		return DoubleDoubleImmutablePair.of(d, e);
 	}
 }

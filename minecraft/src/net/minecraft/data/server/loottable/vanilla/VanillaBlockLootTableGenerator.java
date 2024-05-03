@@ -26,6 +26,7 @@ import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.data.server.loottable.BlockLootTableGenerator;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -53,6 +54,8 @@ import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 
@@ -90,12 +93,13 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		.map(ItemConvertible::asItem)
 		.collect(Collectors.toSet());
 
-	public VanillaBlockLootTableGenerator() {
-		super(EXPLOSION_IMMUNE, FeatureFlags.FEATURE_MANAGER.getFeatureSet());
+	public VanillaBlockLootTableGenerator(RegistryWrapper.WrapperLookup registryLookup) {
+		super(EXPLOSION_IMMUNE, FeatureFlags.FEATURE_MANAGER.getFeatureSet(), registryLookup);
 	}
 
 	@Override
 	protected void generate() {
+		RegistryWrapper.Impl<Enchantment> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		this.addDrop(Blocks.GRANITE);
 		this.addDrop(Blocks.POLISHED_GRANITE);
 		this.addDrop(Blocks.DIORITE);
@@ -283,14 +287,14 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.MANGROVE_TRAPDOOR);
 		this.addDrop(Blocks.CHERRY_TRAPDOOR);
 		this.addDrop(Blocks.BAMBOO_TRAPDOOR);
-		this.addDrop(Blocks.COPPER_TRAPDOOR, dropsNothing());
-		this.addDrop(Blocks.EXPOSED_COPPER_TRAPDOOR, dropsNothing());
-		this.addDrop(Blocks.WEATHERED_COPPER_TRAPDOOR, dropsNothing());
-		this.addDrop(Blocks.OXIDIZED_COPPER_TRAPDOOR, dropsNothing());
-		this.addDrop(Blocks.WAXED_COPPER_TRAPDOOR, dropsNothing());
-		this.addDrop(Blocks.WAXED_EXPOSED_COPPER_TRAPDOOR, dropsNothing());
-		this.addDrop(Blocks.WAXED_WEATHERED_COPPER_TRAPDOOR, dropsNothing());
-		this.addDrop(Blocks.WAXED_OXIDIZED_COPPER_TRAPDOOR, dropsNothing());
+		this.addDrop(Blocks.COPPER_TRAPDOOR);
+		this.addDrop(Blocks.EXPOSED_COPPER_TRAPDOOR);
+		this.addDrop(Blocks.WEATHERED_COPPER_TRAPDOOR);
+		this.addDrop(Blocks.OXIDIZED_COPPER_TRAPDOOR);
+		this.addDrop(Blocks.WAXED_COPPER_TRAPDOOR);
+		this.addDrop(Blocks.WAXED_EXPOSED_COPPER_TRAPDOOR);
+		this.addDrop(Blocks.WAXED_WEATHERED_COPPER_TRAPDOOR);
+		this.addDrop(Blocks.WAXED_OXIDIZED_COPPER_TRAPDOOR);
 		this.addDrop(Blocks.STONE_BRICKS);
 		this.addDrop(Blocks.MOSSY_STONE_BRICKS);
 		this.addDrop(Blocks.CRACKED_STONE_BRICKS);
@@ -569,7 +573,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDropWithSilkTouch(Blocks.CALIBRATED_SCULK_SENSOR);
 		this.addDropWithSilkTouch(Blocks.SCULK);
 		this.addDropWithSilkTouch(Blocks.SCULK_CATALYST);
-		this.addDrop(Blocks.SCULK_VEIN, block -> this.multifaceGrowthDrops(block, WITH_SILK_TOUCH));
+		this.addDrop(Blocks.SCULK_VEIN, block -> this.multifaceGrowthDrops(block, this.createSilkTouchCondition()));
 		this.addDropWithSilkTouch(Blocks.SCULK_SHRIEKER);
 		this.addDropWithSilkTouch(Blocks.CHISELED_BOOKSHELF);
 		this.addDrop(Blocks.COPPER_BLOCK);
@@ -632,45 +636,45 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.MANGROVE_LOG);
 		this.addDrop(Blocks.MUD);
 		this.addDrop(Blocks.PACKED_MUD);
-		this.addDrop(Blocks.CRAFTER, dropsNothing());
-		this.addDrop(Blocks.CHISELED_TUFF, dropsNothing());
-		this.addDrop(Blocks.TUFF_STAIRS, dropsNothing());
-		this.addDrop(Blocks.TUFF_WALL, dropsNothing());
-		this.addDrop(Blocks.POLISHED_TUFF, dropsNothing());
-		this.addDrop(Blocks.POLISHED_TUFF_STAIRS, dropsNothing());
-		this.addDrop(Blocks.POLISHED_TUFF_WALL, dropsNothing());
-		this.addDrop(Blocks.TUFF_BRICKS, dropsNothing());
-		this.addDrop(Blocks.TUFF_BRICK_STAIRS, dropsNothing());
-		this.addDrop(Blocks.TUFF_BRICK_WALL, dropsNothing());
-		this.addDrop(Blocks.CHISELED_TUFF_BRICKS, dropsNothing());
-		this.addDrop(Blocks.TUFF_SLAB, dropsNothing());
-		this.addDrop(Blocks.TUFF_BRICK_SLAB, dropsNothing());
-		this.addDrop(Blocks.POLISHED_TUFF_SLAB, dropsNothing());
-		this.addDrop(Blocks.CHISELED_COPPER, dropsNothing());
-		this.addDrop(Blocks.EXPOSED_CHISELED_COPPER, dropsNothing());
-		this.addDrop(Blocks.WEATHERED_CHISELED_COPPER, dropsNothing());
-		this.addDrop(Blocks.OXIDIZED_CHISELED_COPPER, dropsNothing());
-		this.addDrop(Blocks.WAXED_CHISELED_COPPER, dropsNothing());
-		this.addDrop(Blocks.WAXED_EXPOSED_CHISELED_COPPER, dropsNothing());
-		this.addDrop(Blocks.WAXED_WEATHERED_CHISELED_COPPER, dropsNothing());
-		this.addDrop(Blocks.WAXED_OXIDIZED_CHISELED_COPPER, dropsNothing());
-		this.addDrop(Blocks.COPPER_GRATE, dropsNothing());
-		this.addDrop(Blocks.EXPOSED_COPPER_GRATE, dropsNothing());
-		this.addDrop(Blocks.WEATHERED_COPPER_GRATE, dropsNothing());
-		this.addDrop(Blocks.OXIDIZED_COPPER_GRATE, dropsNothing());
-		this.addDrop(Blocks.WAXED_COPPER_GRATE, dropsNothing());
-		this.addDrop(Blocks.WAXED_EXPOSED_COPPER_GRATE, dropsNothing());
-		this.addDrop(Blocks.WAXED_WEATHERED_COPPER_GRATE, dropsNothing());
-		this.addDrop(Blocks.WAXED_OXIDIZED_COPPER_GRATE, dropsNothing());
-		this.addDrop(Blocks.COPPER_BULB, dropsNothing());
-		this.addDrop(Blocks.EXPOSED_COPPER_BULB, dropsNothing());
-		this.addDrop(Blocks.WEATHERED_COPPER_BULB, dropsNothing());
-		this.addDrop(Blocks.OXIDIZED_COPPER_BULB, dropsNothing());
-		this.addDrop(Blocks.WAXED_COPPER_BULB, dropsNothing());
-		this.addDrop(Blocks.WAXED_EXPOSED_COPPER_BULB, dropsNothing());
-		this.addDrop(Blocks.WAXED_WEATHERED_COPPER_BULB, dropsNothing());
-		this.addDrop(Blocks.WAXED_OXIDIZED_COPPER_BULB, dropsNothing());
-		this.addDrop(Blocks.HEAVY_CORE, dropsNothing());
+		this.addDrop(Blocks.CRAFTER);
+		this.addDrop(Blocks.CHISELED_TUFF);
+		this.addDrop(Blocks.TUFF_STAIRS);
+		this.addDrop(Blocks.TUFF_WALL);
+		this.addDrop(Blocks.POLISHED_TUFF);
+		this.addDrop(Blocks.POLISHED_TUFF_STAIRS);
+		this.addDrop(Blocks.POLISHED_TUFF_WALL);
+		this.addDrop(Blocks.TUFF_BRICKS);
+		this.addDrop(Blocks.TUFF_BRICK_STAIRS);
+		this.addDrop(Blocks.TUFF_BRICK_WALL);
+		this.addDrop(Blocks.CHISELED_TUFF_BRICKS);
+		this.addDrop(Blocks.TUFF_SLAB, block -> this.slabDrops(block));
+		this.addDrop(Blocks.TUFF_BRICK_SLAB, block -> this.slabDrops(block));
+		this.addDrop(Blocks.POLISHED_TUFF_SLAB, block -> this.slabDrops(block));
+		this.addDrop(Blocks.CHISELED_COPPER);
+		this.addDrop(Blocks.EXPOSED_CHISELED_COPPER);
+		this.addDrop(Blocks.WEATHERED_CHISELED_COPPER);
+		this.addDrop(Blocks.OXIDIZED_CHISELED_COPPER);
+		this.addDrop(Blocks.WAXED_CHISELED_COPPER);
+		this.addDrop(Blocks.WAXED_EXPOSED_CHISELED_COPPER);
+		this.addDrop(Blocks.WAXED_WEATHERED_CHISELED_COPPER);
+		this.addDrop(Blocks.WAXED_OXIDIZED_CHISELED_COPPER);
+		this.addDrop(Blocks.COPPER_GRATE);
+		this.addDrop(Blocks.EXPOSED_COPPER_GRATE);
+		this.addDrop(Blocks.WEATHERED_COPPER_GRATE);
+		this.addDrop(Blocks.OXIDIZED_COPPER_GRATE);
+		this.addDrop(Blocks.WAXED_COPPER_GRATE);
+		this.addDrop(Blocks.WAXED_EXPOSED_COPPER_GRATE);
+		this.addDrop(Blocks.WAXED_WEATHERED_COPPER_GRATE);
+		this.addDrop(Blocks.WAXED_OXIDIZED_COPPER_GRATE);
+		this.addDrop(Blocks.COPPER_BULB);
+		this.addDrop(Blocks.EXPOSED_COPPER_BULB);
+		this.addDrop(Blocks.WEATHERED_COPPER_BULB);
+		this.addDrop(Blocks.OXIDIZED_COPPER_BULB);
+		this.addDrop(Blocks.WAXED_COPPER_BULB);
+		this.addDrop(Blocks.WAXED_EXPOSED_COPPER_BULB);
+		this.addDrop(Blocks.WAXED_WEATHERED_COPPER_BULB);
+		this.addDrop(Blocks.WAXED_OXIDIZED_COPPER_BULB);
+		this.addDrop(Blocks.HEAVY_CORE);
 		this.addDrop(Blocks.FARMLAND, Blocks.DIRT);
 		this.addDrop(Blocks.TRIPWIRE, Items.STRING);
 		this.addDrop(Blocks.DIRT_PATH, Blocks.DIRT);
@@ -800,14 +804,14 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.WARPED_DOOR, block -> this.doorDrops(block));
 		this.addDrop(Blocks.CRIMSON_DOOR, block -> this.doorDrops(block));
 		this.addDrop(Blocks.IRON_DOOR, block -> this.doorDrops(block));
-		this.addDrop(Blocks.COPPER_DOOR, dropsNothing());
-		this.addDrop(Blocks.EXPOSED_COPPER_DOOR, dropsNothing());
-		this.addDrop(Blocks.WEATHERED_COPPER_DOOR, dropsNothing());
-		this.addDrop(Blocks.OXIDIZED_COPPER_DOOR, dropsNothing());
-		this.addDrop(Blocks.WAXED_COPPER_DOOR, dropsNothing());
-		this.addDrop(Blocks.WAXED_EXPOSED_COPPER_DOOR, dropsNothing());
-		this.addDrop(Blocks.WAXED_WEATHERED_COPPER_DOOR, dropsNothing());
-		this.addDrop(Blocks.WAXED_OXIDIZED_COPPER_DOOR, dropsNothing());
+		this.addDrop(Blocks.COPPER_DOOR, block -> this.doorDrops(block));
+		this.addDrop(Blocks.EXPOSED_COPPER_DOOR, block -> this.doorDrops(block));
+		this.addDrop(Blocks.WEATHERED_COPPER_DOOR, block -> this.doorDrops(block));
+		this.addDrop(Blocks.OXIDIZED_COPPER_DOOR, block -> this.doorDrops(block));
+		this.addDrop(Blocks.WAXED_COPPER_DOOR, block -> this.doorDrops(block));
+		this.addDrop(Blocks.WAXED_EXPOSED_COPPER_DOOR, block -> this.doorDrops(block));
+		this.addDrop(Blocks.WAXED_WEATHERED_COPPER_DOOR, block -> this.doorDrops(block));
+		this.addDrop(Blocks.WAXED_OXIDIZED_COPPER_DOOR, block -> this.doorDrops(block));
 		this.addDrop(Blocks.BLACK_BED, block -> this.dropsWithProperty(block, BedBlock.PART, BedPart.HEAD));
 		this.addDrop(Blocks.BLUE_BED, block -> this.dropsWithProperty(block, BedBlock.PART, BedPart.HEAD));
 		this.addDrop(Blocks.BROWN_BED, block -> this.dropsWithProperty(block, BedBlock.PART, BedPart.HEAD));
@@ -892,8 +896,8 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 							.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ComposterBlock.LEVEL, 8)))
 					)
 		);
-		this.addDrop(Blocks.CAVE_VINES, block -> BlockLootTableGenerator.glowBerryDrops(block));
-		this.addDrop(Blocks.CAVE_VINES_PLANT, block -> BlockLootTableGenerator.glowBerryDrops(block));
+		this.addDrop(Blocks.CAVE_VINES, block -> this.glowBerryDrops(block));
+		this.addDrop(Blocks.CAVE_VINES_PLANT, block -> this.glowBerryDrops(block));
 		this.addDrop(Blocks.CANDLE, block -> this.candleDrops(block));
 		this.addDrop(Blocks.WHITE_CANDLE, block -> this.candleDrops(block));
 		this.addDrop(Blocks.ORANGE_CANDLE, block -> this.candleDrops(block));
@@ -985,8 +989,8 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 						)
 					)
 		);
-		this.addDrop(Blocks.BEE_NEST, block -> beeNestDrops(block));
-		this.addDrop(Blocks.BEEHIVE, block -> beehiveDrops(block));
+		this.addDrop(Blocks.BEE_NEST, block -> this.beeNestDrops(block));
+		this.addDrop(Blocks.BEEHIVE, block -> this.beehiveDrops(block));
 		this.addDrop(Blocks.OAK_LEAVES, block -> this.oakLeavesDrops(block, Blocks.OAK_SAPLING, SAPLING_DROP_CHANCE));
 		this.addDrop(Blocks.SPRUCE_LEAVES, block -> this.leavesDrops(block, Blocks.SPRUCE_SAPLING, SAPLING_DROP_CHANCE));
 		this.addDrop(Blocks.BIRCH_LEAVES, block -> this.leavesDrops(block, Blocks.BIRCH_SAPLING, SAPLING_DROP_CHANCE));
@@ -1045,7 +1049,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 					.pool(
 						LootPool.builder()
 							.conditionally(builder3)
-							.with(ItemEntry.builder(Items.CARROT).apply(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286F, 3)))
+							.with(ItemEntry.builder(Items.CARROT).apply(ApplyBonusLootFunction.binomialWithBonusCount(impl.getOrThrow(Enchantments.FORTUNE), 0.5714286F, 3)))
 					)
 			)
 		);
@@ -1060,7 +1064,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 					.pool(
 						LootPool.builder()
 							.conditionally(builder5)
-							.with(ItemEntry.builder(Items.POTATO).apply(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286F, 3)))
+							.with(ItemEntry.builder(Items.POTATO).apply(ApplyBonusLootFunction.binomialWithBonusCount(impl.getOrThrow(Enchantments.FORTUNE), 0.5714286F, 3)))
 					)
 					.pool(LootPool.builder().conditionally(builder5).with(ItemEntry.builder(Items.POISONOUS_POTATO).conditionally(RandomChanceLootCondition.builder(0.02F))))
 			)
@@ -1077,7 +1081,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 								)
 								.with(ItemEntry.builder(Items.SWEET_BERRIES))
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 3.0F)))
-								.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
+								.apply(ApplyBonusLootFunction.uniformBonusCount(impl.getOrThrow(Enchantments.FORTUNE)))
 						)
 						.pool(
 							LootPool.builder()
@@ -1086,7 +1090,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 								)
 								.with(ItemEntry.builder(Items.SWEET_BERRIES))
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F)))
-								.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
+								.apply(ApplyBonusLootFunction.uniformBonusCount(impl.getOrThrow(Enchantments.FORTUNE)))
 						)
 				)
 		);
@@ -1107,13 +1111,13 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.DEEPSLATE_GOLD_ORE, block -> this.oreDrops(block, Items.RAW_GOLD));
 		this.addDrop(
 			Blocks.NETHER_GOLD_ORE,
-			block -> dropsWithSilkTouch(
+			block -> this.dropsWithSilkTouch(
 					block,
 					(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
 						block,
 						ItemEntry.builder(Items.GOLD_NUGGET)
 							.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 6.0F)))
-							.apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
+							.apply(ApplyBonusLootFunction.oreDrops(impl.getOrThrow(Enchantments.FORTUNE)))
 					)
 				)
 		);
@@ -1121,11 +1125,11 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.DEEPSLATE_LAPIS_ORE, block -> this.lapisOreDrops(block));
 		this.addDrop(
 			Blocks.COBWEB,
-			block -> dropsWithSilkTouchOrShears(block, (LootPoolEntry.Builder<?>)this.addSurvivesExplosionCondition(block, ItemEntry.builder(Items.STRING)))
+			block -> this.dropsWithSilkTouchOrShears(block, (LootPoolEntry.Builder<?>)this.addSurvivesExplosionCondition(block, ItemEntry.builder(Items.STRING)))
 		);
 		this.addDrop(
 			Blocks.DEAD_BUSH,
-			block -> dropsWithShears(
+			block -> this.dropsWithShears(
 					block,
 					(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
 						block, ItemEntry.builder(Items.STICK).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 2.0F)))
@@ -1139,7 +1143,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.HANGING_ROOTS, block -> BlockLootTableGenerator.dropsWithShears(block));
 		this.addDrop(Blocks.SMALL_DRIPLEAF, block -> BlockLootTableGenerator.dropsWithShears(block));
 		this.addDrop(Blocks.MANGROVE_LEAVES, block -> this.mangroveLeavesDrops(block));
-		this.addDrop(Blocks.TALL_SEAGRASS, seagrassDrops(Blocks.SEAGRASS));
+		this.addDrop(Blocks.TALL_SEAGRASS, this.seagrassDrops(Blocks.SEAGRASS));
 		this.addDrop(Blocks.LARGE_FERN, block -> this.tallPlantDrops(block, Blocks.FERN));
 		this.addDrop(Blocks.TALL_GRASS, block -> this.tallPlantDrops(block, Blocks.SHORT_GRASS));
 		this.addDrop(Blocks.MELON_STEM, block -> this.cropStemDrops(block, Items.MELON_SEEDS));
@@ -1162,26 +1166,26 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.SHORT_GRASS, block -> this.shortPlantDrops(block));
 		this.addDrop(
 			Blocks.GLOWSTONE,
-			block -> dropsWithSilkTouch(
+			block -> this.dropsWithSilkTouch(
 					block,
 					(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
 						block,
 						ItemEntry.builder(Items.GLOWSTONE_DUST)
 							.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 4.0F)))
-							.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
+							.apply(ApplyBonusLootFunction.uniformBonusCount(impl.getOrThrow(Enchantments.FORTUNE)))
 							.apply(LimitCountLootFunction.builder(BoundedIntUnaryOperator.create(1, 4)))
 					)
 				)
 		);
 		this.addDrop(
 			Blocks.MELON,
-			block -> dropsWithSilkTouch(
+			block -> this.dropsWithSilkTouch(
 					block,
 					(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
 						block,
 						ItemEntry.builder(Items.MELON_SLICE)
 							.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(3.0F, 7.0F)))
-							.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
+							.apply(ApplyBonusLootFunction.uniformBonusCount(impl.getOrThrow(Enchantments.FORTUNE)))
 							.apply(LimitCountLootFunction.builder(BoundedIntUnaryOperator.createMax(9)))
 					)
 				)
@@ -1190,13 +1194,13 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.DEEPSLATE_REDSTONE_ORE, block -> this.redstoneOreDrops(block));
 		this.addDrop(
 			Blocks.SEA_LANTERN,
-			block -> dropsWithSilkTouch(
+			block -> this.dropsWithSilkTouch(
 					block,
 					(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
 						block,
 						ItemEntry.builder(Items.PRISMARINE_CRYSTALS)
 							.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 3.0F)))
-							.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
+							.apply(ApplyBonusLootFunction.uniformBonusCount(impl.getOrThrow(Enchantments.FORTUNE)))
 							.apply(LimitCountLootFunction.builder(BoundedIntUnaryOperator.create(1, 5)))
 					)
 				)
@@ -1216,7 +1220,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 												.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(NetherWartBlock.AGE, 3)))
 										)
 										.apply(
-											ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE)
+											ApplyBonusLootFunction.uniformBonusCount(impl.getOrThrow(Enchantments.FORTUNE))
 												.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(NetherWartBlock.AGE, 3)))
 										)
 								)
@@ -1237,7 +1241,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 													.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, integer)))
 													.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create((float)integer.intValue())))
 										)
-										.conditionally(WITHOUT_SILK_TOUCH),
+										.conditionally(this.createWithoutSilkTouchCondition()),
 									AlternativeEntry.builder(
 										SnowBlock.LAYERS.getValues(),
 										integer -> integer == 8
@@ -1252,19 +1256,19 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		);
 		this.addDrop(
 			Blocks.GRAVEL,
-			block -> dropsWithSilkTouch(
+			block -> this.dropsWithSilkTouch(
 					block,
 					this.addSurvivesExplosionCondition(
 						block,
 						ItemEntry.builder(Items.FLINT)
-							.conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.1F, 0.14285715F, 0.25F, 1.0F))
+							.conditionally(TableBonusLootCondition.builder(impl.getOrThrow(Enchantments.FORTUNE), 0.1F, 0.14285715F, 0.25F, 1.0F))
 							.alternatively(ItemEntry.builder(block))
 					)
 				)
 		);
 		this.addDrop(
 			Blocks.CAMPFIRE,
-			block -> dropsWithSilkTouch(
+			block -> this.dropsWithSilkTouch(
 					block,
 					(LootPoolEntry.Builder<?>)this.addSurvivesExplosionCondition(
 						block, ItemEntry.builder(Items.CHARCOAL).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F)))
@@ -1273,20 +1277,20 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		);
 		this.addDrop(
 			Blocks.GILDED_BLACKSTONE,
-			block -> dropsWithSilkTouch(
+			block -> this.dropsWithSilkTouch(
 					block,
 					this.addSurvivesExplosionCondition(
 						block,
 						ItemEntry.builder(Items.GOLD_NUGGET)
 							.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 5.0F)))
-							.conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.1F, 0.14285715F, 0.25F, 1.0F))
+							.conditionally(TableBonusLootCondition.builder(impl.getOrThrow(Enchantments.FORTUNE), 0.1F, 0.14285715F, 0.25F, 1.0F))
 							.alternatively(ItemEntry.builder(block))
 					)
 				)
 		);
 		this.addDrop(
 			Blocks.SOUL_CAMPFIRE,
-			block -> dropsWithSilkTouch(
+			block -> this.dropsWithSilkTouch(
 					block,
 					(LootPoolEntry.Builder<?>)this.addSurvivesExplosionCondition(
 						block, ItemEntry.builder(Items.SOUL_SOIL).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
@@ -1295,11 +1299,11 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		);
 		this.addDrop(
 			Blocks.AMETHYST_CLUSTER,
-			block -> dropsWithSilkTouch(
+			block -> this.dropsWithSilkTouch(
 					block,
 					ItemEntry.builder(Items.AMETHYST_SHARD)
 						.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0F)))
-						.apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
+						.apply(ApplyBonusLootFunction.oreDrops(impl.getOrThrow(Enchantments.FORTUNE)))
 						.conditionally(MatchToolLootCondition.builder(ItemPredicate.Builder.create().tag(ItemTags.CLUSTER_MAX_HARVESTABLES)))
 						.alternatively(
 							(LootPoolEntry.Builder<?>)this.applyExplosionDecay(

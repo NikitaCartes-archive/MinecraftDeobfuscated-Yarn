@@ -48,7 +48,7 @@ public class BrushItem extends Item {
 	}
 
 	@Override
-	public int getMaxUseTime(ItemStack stack) {
+	public int getMaxUseTime(ItemStack stack, LivingEntity user) {
 		return 200;
 	}
 
@@ -57,7 +57,7 @@ public class BrushItem extends Item {
 		if (remainingUseTicks >= 0 && user instanceof PlayerEntity playerEntity) {
 			HitResult hitResult = this.getHitResult(playerEntity);
 			if (hitResult instanceof BlockHitResult blockHitResult && hitResult.getType() == HitResult.Type.BLOCK) {
-				int i = this.getMaxUseTime(stack) - remainingUseTicks + 1;
+				int i = this.getMaxUseTime(stack, user) - remainingUseTicks + 1;
 				boolean bl = i % 10 == 5;
 				if (bl) {
 					BlockPos blockPos = blockHitResult.getBlockPos();

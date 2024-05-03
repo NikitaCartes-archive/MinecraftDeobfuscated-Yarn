@@ -56,6 +56,11 @@ public class SimpleDefaultedRegistry<T> extends SimpleRegistry<T> implements Def
 		return Optional.ofNullable(super.get(id));
 	}
 
+	@Override
+	public Optional<RegistryEntry.Reference<T>> getDefaultEntry() {
+		return Optional.ofNullable(this.defaultEntry);
+	}
+
 	@Nonnull
 	@Override
 	public T get(int index) {

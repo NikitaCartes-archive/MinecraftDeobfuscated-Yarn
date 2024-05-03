@@ -223,7 +223,9 @@ public class TrialSpawnerData {
 
 	@Nullable
 	public Entity setDisplayEntity(TrialSpawnerLogic logic, World world, TrialSpawnerState state) {
-		if (logic.canActivate(world) && state.doesDisplayRotate()) {
+		if (!state.doesDisplayRotate()) {
+			return null;
+		} else {
 			if (this.displayEntity == null) {
 				NbtCompound nbtCompound = this.getSpawnData(logic, world.getRandom()).getNbt();
 				if (nbtCompound.contains("id", NbtElement.STRING_TYPE)) {
@@ -232,8 +234,6 @@ public class TrialSpawnerData {
 			}
 
 			return this.displayEntity;
-		} else {
-			return null;
 		}
 	}
 

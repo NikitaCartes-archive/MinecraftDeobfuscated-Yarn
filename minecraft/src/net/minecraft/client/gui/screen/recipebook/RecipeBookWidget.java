@@ -3,7 +3,6 @@ package net.minecraft.client.gui.screen.recipebook;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import javax.annotation.Nullable;
@@ -20,11 +19,11 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.recipebook.RecipeBookGroup;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
-import net.minecraft.client.search.SearchManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.recipe.Ingredient;
@@ -63,7 +62,7 @@ public class RecipeBookWidget implements RecipeGridAligner<Ingredient>, Drawable
 	@Nullable
 	private RecipeGroupButtonWidget currentTab;
 	protected ToggleButtonWidget toggleCraftableButton;
-	protected AbstractRecipeScreenHandler<?> craftingScreenHandler;
+	protected AbstractRecipeScreenHandler<?, ?> craftingScreenHandler;
 	protected MinecraftClient client;
 	@Nullable
 	private TextFieldWidget searchField;
@@ -76,7 +75,7 @@ public class RecipeBookWidget implements RecipeGridAligner<Ingredient>, Drawable
 	private boolean open;
 	private boolean narrow;
 
-	public void initialize(int parentWidth, int parentHeight, MinecraftClient client, boolean narrow, AbstractRecipeScreenHandler<?> craftingScreenHandler) {
+	public void initialize(int parentWidth, int parentHeight, MinecraftClient client, boolean narrow, AbstractRecipeScreenHandler<?, ?> craftingScreenHandler) {
 		this.client = client;
 		this.parentWidth = parentWidth;
 		this.parentHeight = parentHeight;
@@ -200,10 +199,13 @@ public class RecipeBookWidget implements RecipeGridAligner<Ingredient>, Drawable
 		list2.removeIf(resultCollection -> !resultCollection.hasFittingRecipes());
 		String string = this.searchField.getText();
 		if (!string.isEmpty()) {
-			ObjectSet<RecipeResultCollection> objectSet = new ObjectLinkedOpenHashSet<>(
-				this.client.getSearchProvider(SearchManager.RECIPE_OUTPUT).findAll(string.toLowerCase(Locale.ROOT))
-			);
-			list2.removeIf(resultCollection -> !objectSet.contains(resultCollection));
+			ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
+			if (clientPlayNetworkHandler != null) {
+				ObjectSet<RecipeResultCollection> objectSet = new ObjectLinkedOpenHashSet<>(
+					clientPlayNetworkHandler.method_60347().method_60364().findAll(string.toLowerCase(Locale.ROOT))
+				);
+				list2.removeIf(resultCollection -> !objectSet.contains(resultCollection));
+			}
 		}
 
 		if (this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)) {
@@ -490,12 +492,10 @@ public class RecipeBookWidget implements RecipeGridAligner<Ingredient>, Drawable
 		);
 	}
 
-	@Override
-	public void acceptAlignedInput(Iterator<Ingredient> inputs, int slot, int amount, int gridX, int gridY) {
-		Ingredient ingredient = (Ingredient)inputs.next();
+	public void acceptAlignedInput(Ingredient ingredient, int i, int j, int k, int l) {
 		if (!ingredient.isEmpty()) {
-			Slot slot2 = this.craftingScreenHandler.slots.get(slot);
-			this.ghostSlots.addSlot(ingredient, slot2.x, slot2.y);
+			Slot slot = this.craftingScreenHandler.slots.get(i);
+			this.ghostSlots.addSlot(ingredient, slot.x, slot.y);
 		}
 	}
 

@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import com.google.common.collect.Maps;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -30,8 +31,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -41,10 +40,9 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -347,11 +345,11 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	private DyeColor getChildColor(AnimalEntity firstParent, AnimalEntity secondParent) {
 		DyeColor dyeColor = ((SheepEntity)firstParent).getColor();
 		DyeColor dyeColor2 = ((SheepEntity)secondParent).getColor();
-		RecipeInputInventory recipeInputInventory = createDyeMixingCraftingInventory(dyeColor, dyeColor2);
+		CraftingRecipeInput craftingRecipeInput = createChildColorRecipeInput(dyeColor, dyeColor2);
 		return (DyeColor)this.getWorld()
 			.getRecipeManager()
-			.getFirstMatch(RecipeType.CRAFTING, recipeInputInventory, this.getWorld())
-			.map(recipe -> ((CraftingRecipe)recipe.value()).craft(recipeInputInventory, this.getWorld().getRegistryManager()))
+			.getFirstMatch(RecipeType.CRAFTING, craftingRecipeInput, this.getWorld())
+			.map(recipe -> ((CraftingRecipe)recipe.value()).craft(craftingRecipeInput, this.getWorld().getRegistryManager()))
 			.map(ItemStack::getItem)
 			.filter(DyeItem.class::isInstance)
 			.map(DyeItem.class::cast)
@@ -359,20 +357,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 			.orElseGet(() -> this.getWorld().random.nextBoolean() ? dyeColor : dyeColor2);
 	}
 
-	private static RecipeInputInventory createDyeMixingCraftingInventory(DyeColor firstColor, DyeColor secondColor) {
-		RecipeInputInventory recipeInputInventory = new CraftingInventory(new ScreenHandler(null, -1) {
-			@Override
-			public ItemStack quickMove(PlayerEntity player, int slot) {
-				return ItemStack.EMPTY;
-			}
-
-			@Override
-			public boolean canUse(PlayerEntity player) {
-				return false;
-			}
-		}, 2, 1);
-		recipeInputInventory.setStack(0, new ItemStack(DyeItem.byColor(firstColor)));
-		recipeInputInventory.setStack(1, new ItemStack(DyeItem.byColor(secondColor)));
-		return recipeInputInventory;
+	private static CraftingRecipeInput createChildColorRecipeInput(DyeColor firstColor, DyeColor secondColor) {
+		return CraftingRecipeInput.create(2, 1, List.of(new ItemStack(DyeItem.byColor(firstColor)), new ItemStack(DyeItem.byColor(secondColor))));
 	}
 }

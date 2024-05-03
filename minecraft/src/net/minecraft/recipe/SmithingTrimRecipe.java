@@ -5,7 +5,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.trim.ArmorTrim;
@@ -15,6 +14,7 @@ import net.minecraft.item.trim.ArmorTrimPattern;
 import net.minecraft.item.trim.ArmorTrimPatterns;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.recipe.input.SmithingRecipeInput;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -31,17 +31,15 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 		this.addition = addition;
 	}
 
-	@Override
-	public boolean matches(Inventory inventory, World world) {
-		return this.template.test(inventory.getStack(0)) && this.base.test(inventory.getStack(1)) && this.addition.test(inventory.getStack(2));
+	public boolean matches(SmithingRecipeInput smithingRecipeInput, World world) {
+		return this.template.test(smithingRecipeInput.template()) && this.base.test(smithingRecipeInput.base()) && this.addition.test(smithingRecipeInput.addition());
 	}
 
-	@Override
-	public ItemStack craft(Inventory inventory, RegistryWrapper.WrapperLookup lookup) {
-		ItemStack itemStack = inventory.getStack(1);
+	public ItemStack craft(SmithingRecipeInput smithingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
+		ItemStack itemStack = smithingRecipeInput.base();
 		if (this.base.test(itemStack)) {
-			Optional<RegistryEntry.Reference<ArmorTrimMaterial>> optional = ArmorTrimMaterials.get(lookup, inventory.getStack(2));
-			Optional<RegistryEntry.Reference<ArmorTrimPattern>> optional2 = ArmorTrimPatterns.get(lookup, inventory.getStack(0));
+			Optional<RegistryEntry.Reference<ArmorTrimMaterial>> optional = ArmorTrimMaterials.get(wrapperLookup, smithingRecipeInput.addition());
+			Optional<RegistryEntry.Reference<ArmorTrimPattern>> optional2 = ArmorTrimPatterns.get(wrapperLookup, smithingRecipeInput.template());
 			if (optional.isPresent() && optional2.isPresent()) {
 				ArmorTrim armorTrim = itemStack.get(DataComponentTypes.TRIM);
 				if (armorTrim != null && armorTrim.equals((RegistryEntry<ArmorTrimPattern>)optional2.get(), (RegistryEntry<ArmorTrimMaterial>)optional.get())) {

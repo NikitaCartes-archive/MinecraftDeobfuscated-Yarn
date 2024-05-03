@@ -35,7 +35,6 @@ public class OminousBottleItem extends Item {
 			serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 		}
 
-		stack.decrementUnlessCreative(1, user);
 		if (!world.isClient) {
 			world.playSound(null, user.getBlockPos(), SoundEvents.ITEM_OMINOUS_BOTTLE_DISPOSE, user.getSoundCategory(), 1.0F, 1.0F);
 			Integer integer = stack.getOrDefault(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER, Integer.valueOf(0));
@@ -43,11 +42,12 @@ public class OminousBottleItem extends Item {
 			user.addStatusEffect(new StatusEffectInstance(StatusEffects.BAD_OMEN, 120000, integer, false, false, true));
 		}
 
+		stack.decrementUnlessCreative(1, user);
 		return stack;
 	}
 
 	@Override
-	public int getMaxUseTime(ItemStack stack) {
+	public int getMaxUseTime(ItemStack stack, LivingEntity user) {
 		return 32;
 	}
 

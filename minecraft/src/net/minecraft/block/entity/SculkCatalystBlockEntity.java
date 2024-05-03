@@ -15,6 +15,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Nullables;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -84,7 +85,8 @@ public class SculkCatalystBlockEntity extends BlockEntity implements GameEventLi
 		public boolean listen(ServerWorld world, RegistryEntry<GameEvent> event, GameEvent.Emitter emitter, Vec3d emitterPos) {
 			if (event.matches(GameEvent.ENTITY_DIE) && emitter.sourceEntity() instanceof LivingEntity livingEntity) {
 				if (!livingEntity.isExperienceDroppingDisabled()) {
-					int i = livingEntity.getXpToDrop();
+					DamageSource damageSource = livingEntity.getRecentDamageSource();
+					int i = livingEntity.getXpToDrop(world, Nullables.map(damageSource, DamageSource::getAttacker));
 					if (livingEntity.shouldDropXp() && i > 0) {
 						this.spreadManager.spread(BlockPos.ofFloored(emitterPos.offset(Direction.UP, 0.5)), i);
 						this.triggerCriteria(world, livingEntity);

@@ -10,6 +10,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Language;
 
 @Environment(EnvType.CLIENT)
 public class Tooltip implements Narratable {
@@ -17,6 +18,8 @@ public class Tooltip implements Narratable {
 	private final Text content;
 	@Nullable
 	private List<OrderedText> lines;
+	@Nullable
+	private Language field_51822;
 	@Nullable
 	private final Text narration;
 
@@ -41,8 +44,10 @@ public class Tooltip implements Narratable {
 	}
 
 	public List<OrderedText> getLines(MinecraftClient client) {
-		if (this.lines == null) {
+		Language language = Language.getInstance();
+		if (this.lines == null || language != this.field_51822) {
 			this.lines = wrapLines(client, this.content);
+			this.field_51822 = language;
 		}
 
 		return this.lines;

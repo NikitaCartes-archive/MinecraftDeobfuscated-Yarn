@@ -936,7 +936,7 @@ public class ServerPlayNetworkHandler
 									this.player.onLanding();
 								}
 
-								if (packet.isOnGround() || this.player.isInFluid() || this.player.isClimbing() || this.player.isSpectator() || bl || bl5) {
+								if (packet.isOnGround() || this.player.method_59925() || this.player.isClimbing() || this.player.isSpectator() || bl || bl5) {
 									this.player.clearCurrentExplosion();
 								}
 

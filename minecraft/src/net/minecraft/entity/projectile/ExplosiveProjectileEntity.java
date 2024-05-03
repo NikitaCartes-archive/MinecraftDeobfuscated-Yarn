@@ -77,7 +77,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		if (this.getWorld().isClient || (entity == null || !entity.isRemoved()) && this.getWorld().isChunkLoaded(this.getBlockPos())) {
 			super.tick();
 			if (this.isBurning()) {
-				this.setOnFireFor(1);
+				this.setOnFireFor(1.0F);
 			}
 
 			HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit, this.getRaycastShapeType());

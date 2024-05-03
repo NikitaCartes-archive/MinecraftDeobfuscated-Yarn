@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.component.ComponentChanges;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
@@ -33,7 +33,7 @@ public class SetComponentsLootFunction extends ConditionalLootFunction {
 		return stack;
 	}
 
-	public static <T> ConditionalLootFunction.Builder<?> builder(DataComponentType<T> componentType, T value) {
+	public static <T> ConditionalLootFunction.Builder<?> builder(ComponentType<T> componentType, T value) {
 		return builder(conditions -> new SetComponentsLootFunction(conditions, ComponentChanges.builder().add(componentType, value).build()));
 	}
 }

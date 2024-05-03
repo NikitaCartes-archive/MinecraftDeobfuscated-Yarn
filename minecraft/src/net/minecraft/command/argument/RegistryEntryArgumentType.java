@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.nbt.NbtElement;
@@ -115,7 +114,7 @@ public class RegistryEntryArgumentType<T> implements ArgumentType<RegistryEntry<
 
 	public static class LootConditionArgumentType extends RegistryEntryArgumentType<LootCondition> {
 		protected LootConditionArgumentType(CommandRegistryAccess registryAccess) {
-			super(registryAccess, RegistryKeys.PREDICATE, LootConditionTypes.ENTRY_CODEC);
+			super(registryAccess, RegistryKeys.PREDICATE, LootCondition.ENTRY_CODEC);
 		}
 	}
 

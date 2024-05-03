@@ -2,11 +2,13 @@ package net.minecraft.entity.mob;
 
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Ownable;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
@@ -122,7 +124,10 @@ public class EvokerFangsEntity extends Entity implements Ownable {
 					return;
 				}
 
-				target.damage(this.getDamageSources().indirectMagic(this, livingEntity), 6.0F);
+				DamageSource damageSource = this.getDamageSources().indirectMagic(this, livingEntity);
+				if (target.damage(damageSource, 6.0F) && this.getWorld() instanceof ServerWorld serverWorld) {
+					EnchantmentHelper.onTargetDamaged(serverWorld, target, damageSource);
+				}
 			}
 		}
 	}

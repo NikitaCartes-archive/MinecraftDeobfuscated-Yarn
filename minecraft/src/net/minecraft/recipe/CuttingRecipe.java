@@ -3,11 +3,11 @@ package net.minecraft.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.recipe.input.SingleStackRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -15,7 +15,7 @@ import net.minecraft.util.collection.DefaultedList;
  * A recipe that has only one input ingredient. It can be used by any type
  * of recipe as long as its subclass implements the proper interface.
  */
-public abstract class CuttingRecipe implements Recipe<Inventory> {
+public abstract class CuttingRecipe implements Recipe<SingleStackRecipeInput> {
 	protected final Ingredient ingredient;
 	protected final ItemStack result;
 	private final RecipeType<?> type;
@@ -62,8 +62,7 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 		return true;
 	}
 
-	@Override
-	public ItemStack craft(Inventory inventory, RegistryWrapper.WrapperLookup lookup) {
+	public ItemStack craft(SingleStackRecipeInput singleStackRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
 		return this.result.copy();
 	}
 

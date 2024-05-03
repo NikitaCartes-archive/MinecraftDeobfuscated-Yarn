@@ -75,7 +75,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
-import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPreset;
@@ -420,10 +419,7 @@ public class CreateWorldScreen extends Screen {
 				this.client
 			)
 			.thenApplyAsync(generatorOptionsHolder -> {
-				for (DimensionOptions dimensionOptions : generatorOptionsHolder.dimensionOptionsRegistry()) {
-					dimensionOptions.chunkGenerator().initializeIndexedFeaturesList();
-				}
-
+				generatorOptionsHolder.method_60345();
 				return generatorOptionsHolder;
 			})
 			.thenAcceptAsync(this.worldCreator::setGeneratorOptionsHolder, this.client)

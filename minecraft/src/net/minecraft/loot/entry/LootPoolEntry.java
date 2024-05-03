@@ -9,7 +9,6 @@ import java.util.function.Predicate;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionConsumingBuilder;
-import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.Util;
 
@@ -23,7 +22,7 @@ public abstract class LootPoolEntry implements EntryCombiner {
 	}
 
 	protected static <T extends LootPoolEntry> P1<Mu<T>, List<LootCondition>> addConditionsField(Instance<T> instance) {
-		return instance.group(LootConditionTypes.CODEC.listOf().optionalFieldOf("conditions", List.of()).forGetter(entry -> entry.conditions));
+		return instance.group(LootCondition.CODEC.listOf().optionalFieldOf("conditions", List.of()).forGetter(entry -> entry.conditions));
 	}
 
 	public void validate(LootTableReporter reporter) {

@@ -49,7 +49,7 @@ public class BreezeEntity extends HostileEntity {
 	private int longJumpingParticleAddCount = 0;
 	private int ticksUntilWhirlSound = 0;
 	private static final ProjectileDeflection PROJECTILE_DEFLECTOR = (projectile, hitEntity, random) -> {
-		hitEntity.getWorld().playSoundFromEntity(hitEntity, SoundEvents.ENTITY_BREEZE_DEFLECT, hitEntity.getSoundCategory(), 1.0F, 1.0F);
+		hitEntity.getWorld().playSoundFromEntity(null, hitEntity, SoundEvents.ENTITY_BREEZE_DEFLECT, hitEntity.getSoundCategory(), 1.0F, 1.0F);
 		ProjectileDeflection.SIMPLE.deflect(projectile, hitEntity, random);
 	};
 

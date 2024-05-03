@@ -667,14 +667,14 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	@Override
-	protected void drop(DamageSource source) {
+	protected void drop(DamageSource damageSource) {
 		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.MAINHAND);
 		if (!itemStack.isEmpty()) {
 			this.dropStack(itemStack);
 			this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 		}
 
-		super.drop(source);
+		super.drop(damageSource);
 	}
 
 	public static boolean canJumpChase(FoxEntity fox, LivingEntity chasedEntity) {

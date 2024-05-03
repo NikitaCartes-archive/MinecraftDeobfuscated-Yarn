@@ -7,6 +7,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.CrossbowUser;
 import net.minecraft.entity.Entity;
@@ -148,8 +149,8 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
-		super.dropEquipment(source, lootingMultiplier, allowDrops);
+	protected void dropEquipment(DamageSource source, boolean causedByPlayer) {
+		super.dropEquipment(source, causedByPlayer);
 		if (source.getAttacker() instanceof CreeperEntity creeperEntity && creeperEntity.shouldDropHead()) {
 			ItemStack itemStack = new ItemStack(Items.PIGLIN_HEAD);
 			creeperEntity.onHeadDropped();
@@ -307,7 +308,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	}
 
 	@Override
-	public int getXpToDrop() {
+	protected int getXpToDrop() {
 		return this.experiencePoints;
 	}
 
@@ -412,7 +413,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 
 	@Override
 	protected boolean prefersNewEquipment(ItemStack newStack, ItemStack oldStack) {
-		if (EnchantmentHelper.hasBindingCurse(oldStack)) {
+		if (EnchantmentHelper.hasAnyEnchantmentsWith(oldStack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)) {
 			return false;
 		} else {
 			boolean bl = PiglinBrain.isGoldenItem(newStack) || newStack.isOf(Items.CROSSBOW);

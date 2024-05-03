@@ -22,24 +22,14 @@ import net.minecraft.data.report.CommandSyntaxProvider;
 import net.minecraft.data.report.ItemListProvider;
 import net.minecraft.data.report.RegistryDumpProvider;
 import net.minecraft.data.server.DynamicRegistriesProvider;
-import net.minecraft.data.server.advancement.onetwentyone.OneTwentyOneAdvancementProviders;
 import net.minecraft.data.server.advancement.vanilla.VanillaAdvancementProviders;
-import net.minecraft.data.server.loottable.onetwentyone.OneTwentyOneLootTableProviders;
 import net.minecraft.data.server.loottable.rebalance.TradeRebalanceLootTableProviders;
 import net.minecraft.data.server.loottable.vanilla.VanillaLootTableProviders;
 import net.minecraft.data.server.recipe.BundleRecipeProvider;
-import net.minecraft.data.server.recipe.OneTwentyOneRecipeProvider;
 import net.minecraft.data.server.recipe.VanillaRecipeProvider;
 import net.minecraft.data.server.tag.TagProvider;
-import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneBannerPatternTagProvider;
-import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneBiomeTagProvider;
-import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneBlockTagProvider;
-import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneDamageTypeTagProvider;
-import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneEnchantmentTagProvider;
-import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneEntityTypeTagProvider;
-import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneItemTagProvider;
-import net.minecraft.data.server.tag.onetwentyone.OneTwentyOneStructureTagProvider;
-import net.minecraft.data.server.tag.rebalance.RebalanceStructureTagProvider;
+import net.minecraft.data.server.tag.rebalance.TradeRebalanceEnchantmentTagProvider;
+import net.minecraft.data.server.tag.rebalance.TradeRebalanceStructureTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaBannerPatternTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaBiomeTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaBlockTagProvider;
@@ -60,9 +50,9 @@ import net.minecraft.data.validate.StructureValidatorProvider;
 import net.minecraft.item.Item;
 import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.registry.BuiltinRegistries;
-import net.minecraft.registry.OneTwentyOneBuiltinRegistries;
 import net.minecraft.registry.RegistryBuilder;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.TradeRebalanceBuiltinRegistries;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.text.Text;
@@ -168,32 +158,16 @@ public class Main {
 		pack3 = dataGenerator.createVanillaSubPack(includeServer, "bundle");
 		pack3.addProvider(toFactory(BundleRecipeProvider::new, completableFuture));
 		pack3.addProvider(outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.bundle.description"), FeatureSet.of(FeatureFlags.BUNDLE)));
-		pack3 = dataGenerator.createVanillaSubPack(includeServer, "trade_rebalance");
-		pack3.addProvider(
+		CompletableFuture<RegistryBuilder.FullPatchesRegistriesPair> completableFuture2 = TradeRebalanceBuiltinRegistries.validate(completableFuture);
+		CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture3 = completableFuture2.thenApply(RegistryBuilder.FullPatchesRegistriesPair::patches);
+		DataGenerator.Pack pack4 = dataGenerator.createVanillaSubPack(includeServer, "trade_rebalance");
+		pack4.addProvider(toFactory(DynamicRegistriesProvider::new, completableFuture3));
+		pack4.addProvider(
 			outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.trade_rebalance.description"), FeatureSet.of(FeatureFlags.TRADE_REBALANCE))
 		);
-		pack3.addProvider(toFactory(TradeRebalanceLootTableProviders::createTradeRebalanceProvider, completableFuture));
-		pack3.addProvider(toFactory(RebalanceStructureTagProvider::new, completableFuture));
-		CompletableFuture<RegistryBuilder.FullPatchesRegistriesPair> completableFuture2 = OneTwentyOneBuiltinRegistries.createWrapperLookup(completableFuture);
-		CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture3 = completableFuture2.thenApply(RegistryBuilder.FullPatchesRegistriesPair::full);
-		DataGenerator.Pack pack4 = dataGenerator.createVanillaSubPack(includeServer, "update_1_21");
-		pack4.addProvider(toFactory(DynamicRegistriesProvider::new, completableFuture2.thenApply(RegistryBuilder.FullPatchesRegistriesPair::patches)));
-		pack4.addProvider(toFactory(OneTwentyOneRecipeProvider::new, completableFuture3));
-		TagProvider<Block> tagProvider6 = pack4.addProvider(
-			outputx -> new OneTwentyOneBlockTagProvider(outputx, completableFuture3, tagProvider.getTagLookupFuture())
-		);
-		pack4.addProvider(
-			outputx -> new OneTwentyOneItemTagProvider(outputx, completableFuture3, tagProvider2.getTagLookupFuture(), tagProvider6.getTagLookupFuture())
-		);
-		pack4.addProvider(outputx -> new OneTwentyOneBiomeTagProvider(outputx, completableFuture3, tagProvider3.getTagLookupFuture()));
-		pack4.addProvider(toFactory(OneTwentyOneLootTableProviders::createOneTwentyOneProvider, completableFuture3));
-		pack4.addProvider(outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.update_1_21.description"), FeatureSet.of(FeatureFlags.UPDATE_1_21)));
-		pack4.addProvider(toFactory(OneTwentyOneEntityTypeTagProvider::new, completableFuture3));
-		pack4.addProvider(toFactory(OneTwentyOneDamageTypeTagProvider::new, completableFuture3));
-		pack4.addProvider(toFactory(OneTwentyOneAdvancementProviders::createOneTwentyOneProvider, completableFuture3));
-		pack4.addProvider(outputx -> new OneTwentyOneBannerPatternTagProvider(outputx, completableFuture3, tagProvider4.getTagLookupFuture()));
-		pack4.addProvider(outputx -> new OneTwentyOneStructureTagProvider(outputx, completableFuture3, tagProvider5.getTagLookupFuture()));
-		pack4.addProvider(toFactory(OneTwentyOneEnchantmentTagProvider::new, completableFuture3));
+		pack4.addProvider(toFactory(TradeRebalanceLootTableProviders::createTradeRebalanceProvider, completableFuture));
+		pack4.addProvider(toFactory(TradeRebalanceStructureTagProvider::new, completableFuture));
+		pack4.addProvider(toFactory(TradeRebalanceEnchantmentTagProvider::new, completableFuture));
 		return dataGenerator;
 	}
 }

@@ -166,7 +166,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public int getXpToDrop() {
+	protected int getXpToDrop() {
 		if (this.isBaby()) {
 			this.experiencePoints = (int)((double)this.experiencePoints * 2.5);
 		}
@@ -241,7 +241,7 @@ public class ZombieEntity extends HostileEntity {
 				}
 
 				if (bl) {
-					this.setOnFireFor(8);
+					this.setOnFireFor(8.0F);
 				}
 			}
 		}
@@ -331,7 +331,7 @@ public class ZombieEntity extends HostileEntity {
 		if (bl) {
 			float f = this.getWorld().getLocalDifficulty(this.getBlockPos()).getLocalDifficulty();
 			if (this.getMainHandStack().isEmpty() && this.isOnFire() && this.random.nextFloat() < f * 0.3F) {
-				target.setOnFireFor(2 * (int)f);
+				target.setOnFireFor((float)(2 * (int)f));
 			}
 		}
 
@@ -524,8 +524,8 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
-		super.dropEquipment(source, lootingMultiplier, allowDrops);
+	protected void dropEquipment(DamageSource source, boolean causedByPlayer) {
+		super.dropEquipment(source, causedByPlayer);
 		if (source.getAttacker() instanceof CreeperEntity creeperEntity && creeperEntity.shouldDropHead()) {
 			ItemStack itemStack = this.getSkull();
 			if (!itemStack.isEmpty()) {

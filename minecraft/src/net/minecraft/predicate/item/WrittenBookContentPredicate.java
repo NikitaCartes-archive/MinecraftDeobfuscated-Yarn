@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.function.Predicate;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.WrittenBookContentComponent;
 import net.minecraft.item.ItemStack;
@@ -33,7 +33,7 @@ public record WrittenBookContentPredicate(
 	);
 
 	@Override
-	public DataComponentType<WrittenBookContentComponent> getComponentType() {
+	public ComponentType<WrittenBookContentComponent> getComponentType() {
 		return DataComponentTypes.WRITTEN_BOOK_CONTENT;
 	}
 

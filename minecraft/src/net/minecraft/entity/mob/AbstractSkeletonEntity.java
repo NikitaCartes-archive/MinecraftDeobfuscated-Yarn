@@ -108,7 +108,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 			}
 
 			if (bl) {
-				this.setOnFireFor(8);
+				this.setOnFireFor(8.0F);
 			}
 		}
 
@@ -180,8 +180,9 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 
 	@Override
 	public void shootAt(LivingEntity target, float pullProgress) {
-		ItemStack itemStack = this.getProjectileType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
-		PersistentProjectileEntity persistentProjectileEntity = this.createArrowProjectile(itemStack, pullProgress);
+		ItemStack itemStack = this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW));
+		ItemStack itemStack2 = this.getProjectileType(itemStack);
+		PersistentProjectileEntity persistentProjectileEntity = this.createArrowProjectile(itemStack2, pullProgress, itemStack);
 		double d = target.getX() - this.getX();
 		double e = target.getBodyY(0.3333333333333333) - persistentProjectileEntity.getY();
 		double f = target.getZ() - this.getZ();
@@ -191,8 +192,8 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		this.getWorld().spawnEntity(persistentProjectileEntity);
 	}
 
-	protected PersistentProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier) {
-		return ProjectileUtil.createArrowProjectile(this, arrow, damageModifier);
+	protected PersistentProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier, @Nullable ItemStack shotFrom) {
+		return ProjectileUtil.createArrowProjectile(this, arrow, damageModifier, shotFrom);
 	}
 
 	@Override

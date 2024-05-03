@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screen.pack.PackScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.AxisGridWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.GridWidget;
@@ -68,7 +69,7 @@ public class OptionsScreen extends Screen {
 		GridWidget.Adder adder = gridWidget.createAdder(2);
 		adder.add(this.createButton(SKIN_CUSTOMIZATION_TEXT, () -> new SkinOptionsScreen(this, this.settings)));
 		adder.add(this.createButton(SOUNDS_TEXT, () -> new SoundOptionsScreen(this, this.settings)));
-		adder.add(this.createButton(VIDEO_TEXT, () -> new VideoOptionsScreen(this, this.settings)));
+		adder.add(this.createButton(VIDEO_TEXT, () -> new VideoOptionsScreen(this, this.client, this.settings)));
 		adder.add(this.createButton(CONTROL_TEXT, () -> new ControlsOptionsScreen(this, this.settings)));
 		adder.add(this.createButton(LANGUAGE_TEXT, () -> new LanguageOptionsScreen(this, this.settings, this.client.getLanguageManager())));
 		adder.add(this.createButton(CHAT_TEXT, () -> new ChatOptionsScreen(this, this.settings)));
@@ -90,7 +91,9 @@ public class OptionsScreen extends Screen {
 		adder.add(this.createButton(CREDITS_AND_ATTRIBUTION_TEXT, () -> new CreditsAndAttributionScreen(this)));
 		this.layout.addBody(gridWidget);
 		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).width(200).build());
-		this.layout.forEachChild(this::addDrawableChild);
+		this.layout.forEachChild(element -> {
+			ClickableWidget var10000 = this.addDrawableChild(element);
+		});
 		this.initTabNavigation();
 	}
 
@@ -138,9 +141,7 @@ public class OptionsScreen extends Screen {
 				return this.difficultyButton;
 			}
 		} else {
-			return ButtonWidget.builder(
-					Text.translatable("options.online"), button -> this.client.setScreen(OnlineOptionsScreen.create(this.client, this, this.settings))
-				)
+			return ButtonWidget.builder(Text.translatable("options.online"), button -> this.client.setScreen(new OnlineOptionsScreen(this, this.settings)))
 				.dimensions(this.width / 2 + 5, this.height / 6 - 12 + 24, 150, 20)
 				.build();
 		}

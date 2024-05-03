@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -13,6 +14,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.registry.tag.BlockTags;
@@ -75,7 +77,11 @@ public class RamImpactTask extends MultiTickTask<GoatEntity> {
 		Brain<?> brain = goatEntity.getBrain();
 		if (!list.isEmpty()) {
 			LivingEntity livingEntity = (LivingEntity)list.get(0);
-			livingEntity.damage(serverWorld.getDamageSources().mobAttackNoAggro(goatEntity), (float)goatEntity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+			DamageSource damageSource = serverWorld.getDamageSources().mobAttackNoAggro(goatEntity);
+			if (livingEntity.damage(damageSource, (float)goatEntity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE))) {
+				EnchantmentHelper.onTargetDamaged(serverWorld, livingEntity, damageSource);
+			}
+
 			int i = goatEntity.hasStatusEffect(StatusEffects.SPEED) ? goatEntity.getStatusEffect(StatusEffects.SPEED).getAmplifier() + 1 : 0;
 			int j = goatEntity.hasStatusEffect(StatusEffects.SLOWNESS) ? goatEntity.getStatusEffect(StatusEffects.SLOWNESS).getAmplifier() + 1 : 0;
 			float f = 0.25F * (float)(i - j);

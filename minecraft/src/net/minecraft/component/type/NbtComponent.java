@@ -3,6 +3,7 @@ package net.minecraft.component.type;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapDecoder;
 import com.mojang.serialization.MapEncoder;
 import com.mojang.serialization.MapLike;
@@ -11,7 +12,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -24,7 +25,7 @@ import net.minecraft.registry.RegistryWrapper;
 import org.slf4j.Logger;
 
 public final class NbtComponent {
-	private static final Logger field_51522 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final NbtComponent DEFAULT = new NbtComponent(new NbtCompound());
 	public static final Codec<NbtComponent> CODEC = NbtCompound.CODEC.xmap(NbtComponent::new, component -> component.nbt);
 	public static final Codec<NbtComponent> CODEC_WITH_ID = CODEC.validate(
@@ -44,7 +45,7 @@ public final class NbtComponent {
 		return new NbtComponent(nbt.copy());
 	}
 
-	public static Predicate<ItemStack> createPredicate(DataComponentType<NbtComponent> type, NbtCompound nbt) {
+	public static Predicate<ItemStack> createPredicate(ComponentType<NbtComponent> type, NbtCompound nbt) {
 		return stack -> {
 			NbtComponent nbtComponent = stack.getOrDefault(type, DEFAULT);
 			return nbtComponent.matches(nbt);
@@ -55,7 +56,7 @@ public final class NbtComponent {
 		return NbtHelper.matches(nbt, this.nbt, true);
 	}
 
-	public static void set(DataComponentType<NbtComponent> type, ItemStack stack, Consumer<NbtCompound> nbtSetter) {
+	public static void set(ComponentType<NbtComponent> type, ItemStack stack, Consumer<NbtCompound> nbtSetter) {
 		NbtComponent nbtComponent = stack.getOrDefault(type, DEFAULT).apply(nbtSetter);
 		if (nbtComponent.nbt.isEmpty()) {
 			stack.remove(type);
@@ -64,7 +65,7 @@ public final class NbtComponent {
 		}
 	}
 
-	public static void set(DataComponentType<NbtComponent> type, ItemStack stack, NbtCompound nbt) {
+	public static void set(ComponentType<NbtComponent> type, ItemStack stack, NbtCompound nbt) {
 		if (!nbt.isEmpty()) {
 			stack.set(type, of(nbt));
 		} else {
@@ -96,28 +97,30 @@ public final class NbtComponent {
 				blockEntity.markDirty();
 				return true;
 			} catch (Exception var8) {
-				field_51522.warn("Failed to apply custom data to block entity at {}", blockEntity.getPos(), var8);
+				LOGGER.warn("Failed to apply custom data to block entity at {}", blockEntity.getPos(), var8);
 
 				try {
 					blockEntity.readComponentlessNbt(nbtCompound2, registryLookup);
 				} catch (Exception var7) {
-					field_51522.warn("Failed to rollback block entity at {} after failure", blockEntity.getPos(), var7);
+					LOGGER.warn("Failed to rollback block entity at {} after failure", blockEntity.getPos(), var7);
 				}
-
-				return false;
 			}
-		} else {
-			return false;
 		}
+
+		return false;
 	}
 
-	public <T> DataResult<NbtComponent> with(MapEncoder<T> encoder, T value) {
-		return encoder.encode(value, NbtOps.INSTANCE, NbtOps.INSTANCE.mapBuilder()).build(this.nbt).map(nbt -> new NbtComponent((NbtCompound)nbt));
+	public <T> DataResult<NbtComponent> with(DynamicOps<NbtElement> ops, MapEncoder<T> encoder, T value) {
+		return encoder.encode(value, ops, ops.mapBuilder()).build(this.nbt).map(nbt -> new NbtComponent((NbtCompound)nbt));
 	}
 
 	public <T> DataResult<T> get(MapDecoder<T> decoder) {
-		MapLike<NbtElement> mapLike = NbtOps.INSTANCE.getMap((NbtElement)this.nbt).getOrThrow();
-		return decoder.decode(NbtOps.INSTANCE, mapLike);
+		return this.get(NbtOps.INSTANCE, decoder);
+	}
+
+	public <T> DataResult<T> get(DynamicOps<NbtElement> ops, MapDecoder<T> decoder) {
+		MapLike<NbtElement> mapLike = ops.getMap(this.nbt).getOrThrow();
+		return decoder.decode(ops, mapLike);
 	}
 
 	public int getSize() {

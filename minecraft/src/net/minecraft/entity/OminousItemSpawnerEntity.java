@@ -74,6 +74,7 @@ public class OminousItemSpawnerEntity extends Entity {
 			if (itemStack.getItem() instanceof ProjectileItem projectileItem) {
 				Direction direction = Direction.DOWN;
 				ProjectileEntity projectileEntity = projectileItem.createEntity(world, this.getPos(), itemStack, direction);
+				projectileEntity.setOwner(this);
 				ProjectileItem.Settings settings = projectileItem.getProjectileSettings();
 				projectileItem.initializeProjectile(
 					projectileEntity, (double)direction.getOffsetX(), (double)direction.getOffsetY(), (double)direction.getOffsetZ(), settings.power(), settings.uncertainty()

@@ -27,6 +27,7 @@ import net.minecraft.datafixer.fix.AdvancementRenameFix;
 import net.minecraft.datafixer.fix.AdvancementsFix;
 import net.minecraft.datafixer.fix.AreaEffectCloudPotionFix;
 import net.minecraft.datafixer.fix.ArrowPickupFix;
+import net.minecraft.datafixer.fix.ArrowStoredWeaponFix;
 import net.minecraft.datafixer.fix.BannerCustomNameToItemNameFix;
 import net.minecraft.datafixer.fix.BannerPatternFormatFix;
 import net.minecraft.datafixer.fix.BedBlockEntityFix;
@@ -294,6 +295,7 @@ import net.minecraft.datafixer.schema.Schema3818_3;
 import net.minecraft.datafixer.schema.Schema3818_4;
 import net.minecraft.datafixer.schema.Schema3818_5;
 import net.minecraft.datafixer.schema.Schema3825;
+import net.minecraft.datafixer.schema.Schema3938;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -1288,6 +1290,10 @@ public class Schemas {
 		builder.addFixer(new EmptyItemInVillagerTradeFix(schema221));
 		Schema schema222 = builder.addSchema(3833, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new RemoveEmptyItemInSuspiciousBlockFix(schema222));
+		Schema schema223 = builder.addSchema(3938, Schema3938::new);
+		builder.addFixer(new ArrowStoredWeaponFix(schema223));
+		Schema schema224 = builder.addSchema(3939, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new RemoveFeatureTogglesFix(schema224, "Remove 1.21 feature toggle", Set.of("minecraft:update_1_21")));
 	}
 
 	private static UnaryOperator<String> replacingRaw(Map<String, String> replacements) {

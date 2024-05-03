@@ -2,6 +2,7 @@ package net.minecraft.data.server.loottable.vanilla;
 
 import java.util.function.BiConsumer;
 import net.minecraft.data.server.loottable.LootTableGenerator;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
@@ -15,19 +16,21 @@ import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 
-public class VanillaBarterLootTableGenerator implements LootTableGenerator {
+public record VanillaBarterLootTableGenerator(RegistryWrapper.WrapperLookup registries) implements LootTableGenerator {
 	@Override
-	public void accept(RegistryWrapper.WrapperLookup registryLookup, BiConsumer<RegistryKey<LootTable>, LootTable.Builder> consumer) {
-		consumer.accept(
+	public void accept(BiConsumer<RegistryKey<LootTable>, LootTable.Builder> lootTableBiConsumer) {
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		lootTableBiConsumer.accept(
 			LootTables.PIGLIN_BARTERING_GAMEPLAY,
 			LootTable.builder()
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(ItemEntry.builder(Items.BOOK).weight(5).apply(new EnchantRandomlyLootFunction.Builder().add(Enchantments.SOUL_SPEED)))
-						.with(ItemEntry.builder(Items.IRON_BOOTS).weight(8).apply(new EnchantRandomlyLootFunction.Builder().add(Enchantments.SOUL_SPEED)))
+						.with(ItemEntry.builder(Items.BOOK).weight(5).apply(new EnchantRandomlyLootFunction.Builder().option(impl.getOrThrow(Enchantments.SOUL_SPEED))))
+						.with(ItemEntry.builder(Items.IRON_BOOTS).weight(8).apply(new EnchantRandomlyLootFunction.Builder().option(impl.getOrThrow(Enchantments.SOUL_SPEED))))
 						.with(ItemEntry.builder(Items.POTION).weight(8).apply(SetPotionLootFunction.builder(Potions.FIRE_RESISTANCE)))
 						.with(ItemEntry.builder(Items.SPLASH_POTION).weight(8).apply(SetPotionLootFunction.builder(Potions.FIRE_RESISTANCE)))
 						.with(ItemEntry.builder(Items.POTION).weight(10).apply(SetPotionLootFunction.builder(Potions.WATER)))

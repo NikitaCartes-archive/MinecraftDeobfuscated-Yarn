@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
@@ -61,7 +61,7 @@ public class LootTableProvider implements DataProvider {
 		MutableRegistry<LootTable> mutableRegistry = new SimpleRegistry<>(RegistryKeys.LOOT_TABLE, Lifecycle.experimental());
 		Map<RandomSeed.XoroshiroSeed, Identifier> map = new Object2ObjectOpenHashMap<>();
 		this.lootTypeGenerators
-			.forEach(lootTypeGenerator -> ((LootTableGenerator)lootTypeGenerator.provider().get()).accept(registryLookup, (lootTable, builder) -> {
+			.forEach(lootTypeGenerator -> ((LootTableGenerator)lootTypeGenerator.provider().apply(registryLookup)).accept((lootTable, builder) -> {
 					Identifier identifier = getId(lootTable);
 					Identifier identifier2 = (Identifier)map.put(RandomSequence.createSeed(identifier), identifier);
 					if (identifier2 != null) {
@@ -111,6 +111,6 @@ public class LootTableProvider implements DataProvider {
 		return "Loot Tables";
 	}
 
-	public static record LootTypeGenerator(Supplier<LootTableGenerator> provider, LootContextType paramSet) {
+	public static record LootTypeGenerator(Function<RegistryWrapper.WrapperLookup, LootTableGenerator> provider, LootContextType paramSet) {
 	}
 }

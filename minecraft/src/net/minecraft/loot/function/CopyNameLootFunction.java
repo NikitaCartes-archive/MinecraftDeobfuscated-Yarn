@@ -53,8 +53,8 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 
 	public static enum Source implements StringIdentifiable {
 		THIS("this", LootContextParameters.THIS_ENTITY),
-		KILLER("killer", LootContextParameters.KILLER_ENTITY),
-		KILLER_PLAYER("killer_player", LootContextParameters.LAST_DAMAGE_PLAYER),
+		ATTACKING_ENTITY("attacking_entity", LootContextParameters.ATTACKING_ENTITY),
+		LAST_DAMAGE_PLAYER("last_damage_player", LootContextParameters.LAST_DAMAGE_PLAYER),
 		BLOCK_ENTITY("block_entity", LootContextParameters.BLOCK_ENTITY);
 
 		public static final Codec<CopyNameLootFunction.Source> CODEC = StringIdentifiable.createCodec(CopyNameLootFunction.Source::values);

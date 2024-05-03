@@ -1,10 +1,11 @@
 package net.minecraft.loot.function;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
@@ -12,26 +13,32 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryCodecs;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.util.math.random.Random;
 
 public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 	public static final MapCodec<EnchantWithLevelsLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
-				.<LootNumberProvider, boolean>and(
+				.<LootNumberProvider, Optional<RegistryEntryList<Enchantment>>>and(
 					instance.group(
-						LootNumberProviderTypes.CODEC.fieldOf("levels").forGetter(function -> function.range),
-						Codec.BOOL.fieldOf("treasure").orElse(false).forGetter(function -> function.treasureEnchantmentsAllowed)
+						LootNumberProviderTypes.CODEC.fieldOf("levels").forGetter(function -> function.levels),
+						RegistryCodecs.entryList(RegistryKeys.ENCHANTMENT).optionalFieldOf("options").forGetter(function -> function.options)
 					)
 				)
 				.apply(instance, EnchantWithLevelsLootFunction::new)
 	);
-	private final LootNumberProvider range;
-	private final boolean treasureEnchantmentsAllowed;
+	private final LootNumberProvider levels;
+	private final Optional<RegistryEntryList<Enchantment>> options;
 
-	EnchantWithLevelsLootFunction(List<LootCondition> conditions, LootNumberProvider range, boolean treasureEnchantmentsAllowed) {
+	EnchantWithLevelsLootFunction(List<LootCondition> conditions, LootNumberProvider levels, Optional<RegistryEntryList<Enchantment>> options) {
 		super(conditions);
-		this.range = range;
-		this.treasureEnchantmentsAllowed = treasureEnchantmentsAllowed;
+		this.levels = levels;
+		this.options = options;
 	}
 
 	@Override
@@ -41,39 +48,41 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.range.getRequiredParameters();
+		return this.levels.getRequiredParameters();
 	}
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		Random random = context.getRandom();
-		return EnchantmentHelper.enchant(context.getWorld().getEnabledFeatures(), random, stack, this.range.nextInt(context), this.treasureEnchantmentsAllowed);
+		DynamicRegistryManager dynamicRegistryManager = context.getWorld().getRegistryManager();
+		return EnchantmentHelper.enchant(random, stack, this.levels.nextInt(context), dynamicRegistryManager, this.options);
 	}
 
-	public static EnchantWithLevelsLootFunction.Builder builder(LootNumberProvider range) {
-		return new EnchantWithLevelsLootFunction.Builder(range);
+	public static EnchantWithLevelsLootFunction.Builder builder(RegistryWrapper.WrapperLookup registryLookup, LootNumberProvider levels) {
+		return new EnchantWithLevelsLootFunction.Builder(levels)
+			.options(registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(EnchantmentTags.ON_RANDOM_LOOT));
 	}
 
 	public static class Builder extends ConditionalLootFunction.Builder<EnchantWithLevelsLootFunction.Builder> {
-		private final LootNumberProvider range;
-		private boolean treasureEnchantmentsAllowed;
+		private final LootNumberProvider levels;
+		private Optional<RegistryEntryList<Enchantment>> options = Optional.empty();
 
-		public Builder(LootNumberProvider range) {
-			this.range = range;
+		public Builder(LootNumberProvider levels) {
+			this.levels = levels;
 		}
 
 		protected EnchantWithLevelsLootFunction.Builder getThisBuilder() {
 			return this;
 		}
 
-		public EnchantWithLevelsLootFunction.Builder allowTreasureEnchantments() {
-			this.treasureEnchantmentsAllowed = true;
+		public EnchantWithLevelsLootFunction.Builder options(RegistryEntryList<Enchantment> options) {
+			this.options = Optional.of(options);
 			return this;
 		}
 
 		@Override
 		public LootFunction build() {
-			return new EnchantWithLevelsLootFunction(this.getConditions(), this.range, this.treasureEnchantmentsAllowed);
+			return new EnchantWithLevelsLootFunction(this.getConditions(), this.levels, this.options);
 		}
 	}
 }

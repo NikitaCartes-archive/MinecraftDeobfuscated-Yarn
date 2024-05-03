@@ -29,19 +29,16 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 	public LanguageOptionsScreen(Screen parent, GameOptions options, LanguageManager languageManager) {
 		super(parent, options, Text.translatable("options.language.title"));
 		this.languageManager = languageManager;
-	}
-
-	@Override
-	protected void init() {
-		this.languageSelectionList = this.addDrawableChild(new LanguageOptionsScreen.LanguageSelectionListWidget(this.client));
 		this.layout.setFooterHeight(53);
-		super.init();
 	}
 
 	@Override
-	protected void initTabNavigation() {
-		super.initTabNavigation();
-		this.languageSelectionList.position(this.width, this.layout);
+	protected void method_60329() {
+		this.languageSelectionList = this.layout.addBody(new LanguageOptionsScreen.LanguageSelectionListWidget(this.client));
+	}
+
+	@Override
+	protected void method_60325() {
 	}
 
 	@Override
@@ -54,6 +51,12 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			ButtonWidget.builder(Text.translatable("options.font"), button -> this.client.setScreen(new FontOptionsScreen(this, this.gameOptions))).build()
 		);
 		directionalLayoutWidget2.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.onDone()).build());
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		super.initTabNavigation();
+		this.languageSelectionList.position(this.width, this.layout);
 	}
 
 	void onDone() {

@@ -21,12 +21,12 @@ public abstract class AlternativeLootCondition implements LootCondition {
 
 	protected static <T extends AlternativeLootCondition> MapCodec<T> createCodec(Function<List<LootCondition>, T> termsToCondition) {
 		return RecordCodecBuilder.mapCodec(
-			instance -> instance.group(LootConditionTypes.CODEC.listOf().fieldOf("terms").forGetter(condition -> condition.terms)).apply(instance, termsToCondition)
+			instance -> instance.group(LootCondition.CODEC.listOf().fieldOf("terms").forGetter(condition -> condition.terms)).apply(instance, termsToCondition)
 		);
 	}
 
 	protected static <T extends AlternativeLootCondition> Codec<T> createInlineCodec(Function<List<LootCondition>, T> termsToCondition) {
-		return LootConditionTypes.CODEC.listOf().xmap(termsToCondition, condition -> condition.terms);
+		return LootCondition.CODEC.listOf().xmap(termsToCondition, condition -> condition.terms);
 	}
 
 	public final boolean test(LootContext lootContext) {

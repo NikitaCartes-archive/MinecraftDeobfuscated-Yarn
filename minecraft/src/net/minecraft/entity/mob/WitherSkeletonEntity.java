@@ -56,8 +56,8 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
-		super.dropEquipment(source, lootingMultiplier, allowDrops);
+	protected void dropEquipment(DamageSource source, boolean causedByPlayer) {
+		super.dropEquipment(source, causedByPlayer);
 		if (source.getAttacker() instanceof CreeperEntity creeperEntity && creeperEntity.shouldDropHead()) {
 			creeperEntity.onHeadDropped();
 			this.dropItem(Items.WITHER_SKELETON_SKULL);
@@ -96,9 +96,9 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected PersistentProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier) {
-		PersistentProjectileEntity persistentProjectileEntity = super.createArrowProjectile(arrow, damageModifier);
-		persistentProjectileEntity.setOnFireFor(100);
+	protected PersistentProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier, @Nullable ItemStack shotFrom) {
+		PersistentProjectileEntity persistentProjectileEntity = super.createArrowProjectile(arrow, damageModifier, shotFrom);
+		persistentProjectileEntity.setOnFireFor(100.0F);
 		return persistentProjectileEntity;
 	}
 

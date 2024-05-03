@@ -21,11 +21,14 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.potion.Potion;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.InstrumentTags;
@@ -54,8 +57,7 @@ public class ItemGroups {
 	private static final RegistryKey<ItemGroup> OPERATOR = register("op_blocks");
 	private static final RegistryKey<ItemGroup> INVENTORY = register("inventory");
 	private static final Comparator<RegistryEntry<PaintingVariant>> PAINTING_VARIANT_COMPARATOR = Comparator.comparing(
-		RegistryEntry::value,
-		Comparator.comparingInt(paintingVariant -> paintingVariant.getHeight() * paintingVariant.getWidth()).thenComparing(PaintingVariant::getWidth)
+		RegistryEntry::value, Comparator.comparingInt(PaintingVariant::getArea).thenComparing(PaintingVariant::width)
 	);
 	@Nullable
 	private static ItemGroup.DisplayContext displayContext;
@@ -996,8 +998,12 @@ public class ItemGroups {
 						displayContext.lookup()
 							.getOptionalWrapper(RegistryKeys.PAINTING_VARIANT)
 							.ifPresent(
-								wrapper -> addPaintings(
-										entries, wrapper, registryEntry -> registryEntry.isIn(PaintingVariantTags.PLACEABLE), ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS
+								impl -> addPaintings(
+										entries,
+										displayContext.lookup(),
+										impl,
+										registryEntry -> registryEntry.isIn(PaintingVariantTags.PLACEABLE),
+										ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS
 									)
 							);
 						entries.add(Items.BOOKSHELF);
@@ -1339,7 +1345,10 @@ public class ItemGroups {
 						entries.add(Items.MUSIC_DISC_STRAD);
 						entries.add(Items.MUSIC_DISC_WARD);
 						entries.add(Items.MUSIC_DISC_11);
+						entries.add(Items.MUSIC_DISC_CREATOR_MUSIC_BOX);
 						entries.add(Items.MUSIC_DISC_WAIT);
+						entries.add(Items.MUSIC_DISC_CREATOR);
+						entries.add(Items.MUSIC_DISC_PRECIPICE);
 						entries.add(Items.MUSIC_DISC_OTHERSIDE);
 						entries.add(Items.MUSIC_DISC_RELIC);
 						entries.add(Items.MUSIC_DISC_5);
@@ -1650,9 +1659,9 @@ public class ItemGroups {
 							ItemTags.CROSSBOW_ENCHANTABLE,
 							ItemTags.VANISHING_ENCHANTABLE
 						);
-						displayContext.lookup().getOptionalWrapper(RegistryKeys.ENCHANTMENT).ifPresent(registryWrapper -> {
-							addMaxLevelEnchantedBooks(entries, registryWrapper, set, ItemGroup.StackVisibility.PARENT_TAB_ONLY, displayContext.enabledFeatures());
-							addAllLevelEnchantedBooks(entries, registryWrapper, set, ItemGroup.StackVisibility.SEARCH_TAB_ONLY, displayContext.enabledFeatures());
+						displayContext.lookup().getOptionalWrapper(RegistryKeys.ENCHANTMENT).ifPresent(impl -> {
+							addMaxLevelEnchantedBooks(entries, impl, set, ItemGroup.StackVisibility.PARENT_TAB_ONLY);
+							addAllLevelEnchantedBooks(entries, impl, set, ItemGroup.StackVisibility.SEARCH_TAB_ONLY);
 						});
 					}
 				)
@@ -1775,8 +1784,12 @@ public class ItemGroups {
 							displayContext.lookup()
 								.getOptionalWrapper(RegistryKeys.PAINTING_VARIANT)
 								.ifPresent(
-									wrapper -> addPaintings(
-											entries, wrapper, registryEntry -> !registryEntry.isIn(PaintingVariantTags.PLACEABLE), ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS
+									impl -> addPaintings(
+											entries,
+											displayContext.lookup(),
+											impl,
+											registryEntry -> !registryEntry.isIn(PaintingVariantTags.PLACEABLE),
+											ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS
 										)
 								);
 						}
@@ -1826,34 +1839,22 @@ public class ItemGroups {
 	}
 
 	private static void addMaxLevelEnchantedBooks(
-		ItemGroup.Entries entries,
-		RegistryWrapper<Enchantment> registryWrapper,
-		Set<TagKey<Item>> tags,
-		ItemGroup.StackVisibility visibility,
-		FeatureSet enabledFeatures
+		ItemGroup.Entries entries, RegistryWrapper<Enchantment> registryWrapper, Set<TagKey<Item>> tags, ItemGroup.StackVisibility visibility
 	) {
 		registryWrapper.streamEntries()
-			.map(RegistryEntry::value)
-			.filter(enchantment -> enchantment.isEnabled(enabledFeatures))
-			.filter(enchantment -> tags.contains(enchantment.getApplicableItems()))
-			.map(enchantment -> EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, enchantment.getMaxLevel())))
+			.filter(reference -> ((Enchantment)reference.value()).getApplicableItems().getTagKey().filter(tags::contains).isPresent())
+			.map(reference -> EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(reference, ((Enchantment)reference.value()).getMaxLevel())))
 			.forEach(stack -> entries.add(stack, visibility));
 	}
 
 	private static void addAllLevelEnchantedBooks(
-		ItemGroup.Entries entries,
-		RegistryWrapper<Enchantment> registryWrapper,
-		Set<TagKey<Item>> tags,
-		ItemGroup.StackVisibility visibility,
-		FeatureSet enabledFeatures
+		ItemGroup.Entries entries, RegistryWrapper<Enchantment> registryWrapper, Set<TagKey<Item>> tags, ItemGroup.StackVisibility visibility
 	) {
 		registryWrapper.streamEntries()
-			.map(RegistryEntry::value)
-			.filter(enchantment -> enchantment.isEnabled(enabledFeatures))
-			.filter(enchantment -> tags.contains(enchantment.getApplicableItems()))
+			.filter(reference -> ((Enchantment)reference.value()).getApplicableItems().getTagKey().filter(tags::contains).isPresent())
 			.flatMap(
-				enchantment -> IntStream.rangeClosed(enchantment.getMinLevel(), enchantment.getMaxLevel())
-						.mapToObj(level -> EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, level)))
+				reference -> IntStream.rangeClosed(((Enchantment)reference.value()).getMinLevel(), ((Enchantment)reference.value()).getMaxLevel())
+						.mapToObj(i -> EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(reference, i)))
 			)
 			.forEach(stack -> entries.add(stack, visibility));
 	}
@@ -1898,22 +1899,24 @@ public class ItemGroups {
 
 	private static void addPaintings(
 		ItemGroup.Entries entries,
-		RegistryWrapper.Impl<PaintingVariant> registryWrapper,
+		RegistryWrapper.WrapperLookup wrapperLookup,
+		RegistryWrapper.Impl<PaintingVariant> impl,
 		Predicate<RegistryEntry<PaintingVariant>> predicate,
-		ItemGroup.StackVisibility visibility
+		ItemGroup.StackVisibility stackVisibility
 	) {
-		registryWrapper.streamEntries()
+		RegistryOps<NbtElement> registryOps = wrapperLookup.getOps(NbtOps.INSTANCE);
+		impl.streamEntries()
 			.filter(predicate)
 			.sorted(PAINTING_VARIANT_COMPARATOR)
 			.forEach(
-				variant -> {
+				reference -> {
 					NbtComponent nbtComponent = NbtComponent.DEFAULT
-						.with(PaintingEntity.VARIANT_MAP_CODEC, variant)
+						.with(registryOps, PaintingEntity.VARIANT_MAP_CODEC, reference)
 						.getOrThrow()
 						.apply(nbt -> nbt.putString("id", "minecraft:painting"));
 					ItemStack itemStack = new ItemStack(Items.PAINTING);
 					itemStack.set(DataComponentTypes.ENTITY_DATA, nbtComponent);
-					entries.add(itemStack, visibility);
+					entries.add(itemStack, stackVisibility);
 				}
 			);
 	}

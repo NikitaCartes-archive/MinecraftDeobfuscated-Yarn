@@ -29,7 +29,7 @@ public class AnimatedResultButton extends ClickableWidget {
 	private static final int field_32415 = 25;
 	public static final int field_32413 = 30;
 	private static final Text MORE_RECIPES_TEXT = Text.translatable("gui.recipebook.moreRecipes");
-	private AbstractRecipeScreenHandler<?> craftingScreenHandler;
+	private AbstractRecipeScreenHandler<?, ?> craftingScreenHandler;
 	private RecipeBook recipeBook;
 	private RecipeResultCollection resultCollection;
 	private float time;
@@ -42,7 +42,7 @@ public class AnimatedResultButton extends ClickableWidget {
 
 	public void showResultCollection(RecipeResultCollection resultCollection, RecipeBookResults results) {
 		this.resultCollection = resultCollection;
-		this.craftingScreenHandler = (AbstractRecipeScreenHandler<?>)results.getClient().player.currentScreenHandler;
+		this.craftingScreenHandler = (AbstractRecipeScreenHandler<?, ?>)results.getClient().player.currentScreenHandler;
 		this.recipeBook = results.getRecipeBook();
 		List<RecipeEntry<?>> list = resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler));
 

@@ -1,10 +1,10 @@
 package net.minecraft.recipe;
 
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
@@ -13,16 +13,16 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 		super(craftingRecipeCategory);
 	}
 
-	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
-		if (recipeInputInventory.getWidth() == 3 && recipeInputInventory.getHeight() == 3) {
-			for (int i = 0; i < recipeInputInventory.getWidth(); i++) {
-				for (int j = 0; j < recipeInputInventory.getHeight(); j++) {
-					ItemStack itemStack = recipeInputInventory.getStack(i + j * recipeInputInventory.getWidth());
+	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
+		if (craftingRecipeInput.getWidth() == 3 && craftingRecipeInput.getHeight() == 3) {
+			for (int i = 0; i < craftingRecipeInput.getHeight(); i++) {
+				for (int j = 0; j < craftingRecipeInput.getWidth(); j++) {
+					ItemStack itemStack = craftingRecipeInput.getStackInSlot(j, i);
 					if (itemStack.isEmpty()) {
 						return false;
 					}
 
-					if (i == 1 && j == 1) {
+					if (j == 1 && i == 1) {
 						if (!itemStack.isOf(Items.LINGERING_POTION)) {
 							return false;
 						}
@@ -38,8 +38,8 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 		}
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
-		ItemStack itemStack = recipeInputInventory.getStack(1 + recipeInputInventory.getWidth());
+	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
+		ItemStack itemStack = craftingRecipeInput.getStackInSlot(1, 1);
 		if (!itemStack.isOf(Items.LINGERING_POTION)) {
 			return ItemStack.EMPTY;
 		} else {
@@ -51,7 +51,7 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 
 	@Override
 	public boolean fits(int width, int height) {
-		return width >= 2 && height >= 2;
+		return width >= 3 && height >= 3;
 	}
 
 	@Override

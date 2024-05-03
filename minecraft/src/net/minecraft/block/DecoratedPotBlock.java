@@ -23,6 +23,7 @@ import net.minecraft.item.Items;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenTexts;
@@ -188,7 +189,7 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		ItemStack itemStack = player.getMainHandStack();
 		BlockState blockState = state;
-		if (itemStack.isIn(ItemTags.BREAKS_DECORATED_POTS) && !EnchantmentHelper.hasSilkTouch(itemStack)) {
+		if (itemStack.isIn(ItemTags.BREAKS_DECORATED_POTS) && !EnchantmentHelper.hasAnyEnchantmentsIn(itemStack, EnchantmentTags.PREVENTS_DECORATED_POT_SHATTERING)) {
 			blockState = state.with(CRACKED, Boolean.valueOf(true));
 			world.setBlockState(pos, blockState, Block.NO_REDRAW);
 		}

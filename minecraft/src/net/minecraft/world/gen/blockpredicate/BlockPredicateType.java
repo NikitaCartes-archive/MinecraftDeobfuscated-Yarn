@@ -17,6 +17,7 @@ public interface BlockPredicateType<P extends BlockPredicate> {
 	BlockPredicateType<AllOfBlockPredicate> ALL_OF = register("all_of", AllOfBlockPredicate.CODEC);
 	BlockPredicateType<NotBlockPredicate> NOT = register("not", NotBlockPredicate.CODEC);
 	BlockPredicateType<AlwaysTrueBlockPredicate> TRUE = register("true", AlwaysTrueBlockPredicate.CODEC);
+	BlockPredicateType<UnobstructedBlockPredicate> UNOBSTRUCTED = register("unobstructed", UnobstructedBlockPredicate.CODEC);
 
 	MapCodec<P> codec();
 

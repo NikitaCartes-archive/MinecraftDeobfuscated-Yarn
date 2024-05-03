@@ -4,7 +4,6 @@ import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.OptionListWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.sound.SoundCategory;
@@ -13,7 +12,6 @@ import net.minecraft.text.Text;
 @Environment(EnvType.CLIENT)
 public class SoundOptionsScreen extends GameOptionsScreen {
 	private static final Text TITLE_TEXT = Text.translatable("options.sounds.title");
-	private OptionListWidget optionButtons;
 
 	private static SimpleOption<?>[] getOptions(GameOptions gameOptions) {
 		return new SimpleOption[]{gameOptions.getShowSubtitles(), gameOptions.getDirectionalAudio()};
@@ -24,19 +22,11 @@ public class SoundOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	protected void init() {
-		this.optionButtons = this.addDrawableChild(new OptionListWidget(this.client, this.width, this.height, this));
-		this.optionButtons.addSingleOptionEntry(this.gameOptions.getSoundVolumeOption(SoundCategory.MASTER));
-		this.optionButtons.addAll(this.getVolumeOptions());
-		this.optionButtons.addSingleOptionEntry(this.gameOptions.getSoundDevice());
-		this.optionButtons.addAll(getOptions(this.gameOptions));
-		super.init();
-	}
-
-	@Override
-	protected void initTabNavigation() {
-		super.initTabNavigation();
-		this.optionButtons.position(this.width, this.layout);
+	protected void method_60325() {
+		this.field_51824.addSingleOptionEntry(this.gameOptions.getSoundVolumeOption(SoundCategory.MASTER));
+		this.field_51824.addAll(this.getVolumeOptions());
+		this.field_51824.addSingleOptionEntry(this.gameOptions.getSoundDevice());
+		this.field_51824.addAll(getOptions(this.gameOptions));
 	}
 
 	private SimpleOption<?>[] getVolumeOptions() {

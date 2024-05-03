@@ -12,6 +12,7 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.IntStream;
+import net.minecraft.util.SystemDetails;
 import net.minecraft.util.thread.ExecutorSampling;
 import org.slf4j.Logger;
 import oshi.SystemInfo;
@@ -42,7 +43,7 @@ public class ServerSamplerSource implements SamplerSource {
 		}
 
 		builder.add(
-			Sampler.create("heap MiB", SampleType.JVM, () -> (double)((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576.0F))
+			Sampler.create("heap MiB", SampleType.JVM, () -> (double)SystemDetails.method_59895(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()))
 		);
 		builder.addAll(ExecutorSampling.INSTANCE.createSamplers());
 		return builder.build();

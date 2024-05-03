@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.Contract;
 
 /**
  * An enum holding formattings.
@@ -133,6 +134,7 @@ public enum Formatting implements StringIdentifiable {
 	 * @see StringHelper#stripTextFormat
 	 */
 	@Nullable
+	@Contract("!null->!null;_->_")
 	public static String strip(@Nullable String string) {
 		return string == null ? null : FORMATTING_CODE_PATTERN.matcher(string).replaceAll("");
 	}

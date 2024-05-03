@@ -11,20 +11,45 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import net.minecraft.inventory.RecipeInputInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.recipe.input.CraftingRecipeInput;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 
-public record RawShapedRecipe(int width, int height, DefaultedList<Ingredient> ingredients, Optional<RawShapedRecipe.Data> data) {
+public final class RawShapedRecipe {
 	private static final int MAX_WIDTH_AND_HEIGHT = 3;
 	public static final MapCodec<RawShapedRecipe> CODEC = RawShapedRecipe.Data.CODEC
 		.flatXmap(
 			RawShapedRecipe::fromData,
-			recipe -> (DataResult)recipe.data().map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Cannot encode unpacked recipe"))
+			recipe -> (DataResult)recipe.data.map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Cannot encode unpacked recipe"))
 		);
 	public static final PacketCodec<RegistryByteBuf, RawShapedRecipe> PACKET_CODEC = PacketCodec.of(RawShapedRecipe::writeToBuf, RawShapedRecipe::readFromBuf);
+	private final int width;
+	private final int height;
+	private final DefaultedList<Ingredient> ingredients;
+	private final Optional<RawShapedRecipe.Data> data;
+	private final int ingredientCount;
+	private final boolean symmetrical;
+
+	public RawShapedRecipe(int width, int height, DefaultedList<Ingredient> ingredients, Optional<RawShapedRecipe.Data> data) {
+		this.width = width;
+		this.height = height;
+		this.ingredients = ingredients;
+		this.data = data;
+		int i = 0;
+
+		for (Ingredient ingredient : ingredients) {
+			if (!ingredient.isEmpty()) {
+				i++;
+			}
+		}
+
+		this.ingredientCount = i;
+		this.symmetrical = Util.isSymmetrical(width, height, ingredients);
+	}
 
 	public static RawShapedRecipe create(Map<Character, Ingredient> key, String... pattern) {
 		return create(key, List.of(pattern));
@@ -139,37 +164,36 @@ public record RawShapedRecipe(int width, int height, DefaultedList<Ingredient> i
 		return i;
 	}
 
-	public boolean matches(RecipeInputInventory inventory) {
-		for (int i = 0; i <= inventory.getWidth() - this.width; i++) {
-			for (int j = 0; j <= inventory.getHeight() - this.height; j++) {
-				if (this.matches(inventory, i, j, true)) {
+	public boolean matches(CraftingRecipeInput input) {
+		if (input.getStackCount() != this.ingredientCount) {
+			return false;
+		} else {
+			if (input.getWidth() == this.width && input.getHeight() == this.height) {
+				if (!this.symmetrical && this.matches(input, true)) {
 					return true;
 				}
 
-				if (this.matches(inventory, i, j, false)) {
+				if (this.matches(input, false)) {
 					return true;
 				}
 			}
-		}
 
-		return false;
+			return false;
+		}
 	}
 
-	private boolean matches(RecipeInputInventory inventory, int offsetX, int offsetY, boolean flipped) {
-		for (int i = 0; i < inventory.getWidth(); i++) {
-			for (int j = 0; j < inventory.getHeight(); j++) {
-				int k = i - offsetX;
-				int l = j - offsetY;
-				Ingredient ingredient = Ingredient.EMPTY;
-				if (k >= 0 && l >= 0 && k < this.width && l < this.height) {
-					if (flipped) {
-						ingredient = this.ingredients.get(this.width - k - 1 + l * this.width);
-					} else {
-						ingredient = this.ingredients.get(k + l * this.width);
-					}
+	private boolean matches(CraftingRecipeInput input, boolean mirrored) {
+		for (int i = 0; i < this.height; i++) {
+			for (int j = 0; j < this.width; j++) {
+				Ingredient ingredient;
+				if (mirrored) {
+					ingredient = this.ingredients.get(this.width - j - 1 + i * this.width);
+				} else {
+					ingredient = this.ingredients.get(j + i * this.width);
 				}
 
-				if (!ingredient.test(inventory.getStack(i + j * inventory.getWidth()))) {
+				ItemStack itemStack = input.getStackInSlot(j, i);
+				if (!ingredient.test(itemStack)) {
 					return false;
 				}
 			}
@@ -195,6 +219,18 @@ public record RawShapedRecipe(int width, int height, DefaultedList<Ingredient> i
 		return new RawShapedRecipe(i, j, defaultedList, Optional.empty());
 	}
 
+	public int getWidth() {
+		return this.width;
+	}
+
+	public int getHeight() {
+		return this.height;
+	}
+
+	public DefaultedList<Ingredient> getIngredients() {
+		return this.ingredients;
+	}
+
 	public static record Data(Map<Character, Ingredient> key, List<String> pattern) {
 		private static final Codec<List<String>> PATTERN_CODEC = Codec.STRING.listOf().comapFlatMap(pattern -> {
 			if (pattern.size() > 3) {
@@ -202,7 +238,7 @@ public record RawShapedRecipe(int width, int height, DefaultedList<Ingredient> i
 			} else if (pattern.isEmpty()) {
 				return DataResult.error(() -> "Invalid pattern: empty pattern not allowed");
 			} else {
-				int i = ((String)pattern.get(0)).length();
+				int i = ((String)pattern.getFirst()).length();
 
 				for (String string : pattern) {
 					if (string.length() > 3) {

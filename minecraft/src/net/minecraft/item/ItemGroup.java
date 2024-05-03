@@ -1,10 +1,7 @@
 package net.minecraft.item;
 
-import com.google.common.collect.Lists;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.registry.Registries;
@@ -29,8 +26,6 @@ public class ItemGroup {
 	private ItemStack icon;
 	private Collection<ItemStack> displayStacks = ItemStackSet.create();
 	private Set<ItemStack> searchTabStacks = ItemStackSet.create();
-	@Nullable
-	private Consumer<List<ItemStack>> searchProviderReloader;
 	private final Supplier<ItemStack> iconSupplier;
 	private final ItemGroup.EntryCollector entryCollector;
 
@@ -108,7 +103,6 @@ public class ItemGroup {
 		this.entryCollector.accept(displayContext, entriesImpl);
 		this.displayStacks = entriesImpl.parentTabStacks;
 		this.searchTabStacks = entriesImpl.searchTabStacks;
-		this.reloadSearchProvider();
 	}
 
 	public Collection<ItemStack> getDisplayStacks() {
@@ -121,16 +115,6 @@ public class ItemGroup {
 
 	public boolean contains(ItemStack stack) {
 		return this.searchTabStacks.contains(stack);
-	}
-
-	public void setSearchProviderReloader(Consumer<List<ItemStack>> searchProviderReloader) {
-		this.searchProviderReloader = searchProviderReloader;
-	}
-
-	public void reloadSearchProvider() {
-		if (this.searchProviderReloader != null) {
-			this.searchProviderReloader.accept(Lists.newArrayList(this.searchTabStacks));
-		}
 	}
 
 	public static class Builder {

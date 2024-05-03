@@ -41,7 +41,7 @@ public interface RecipeGridAligner<T> {
 				}
 
 				if (bl2) {
-					this.acceptAlignedInput(inputs, k, amount, l, n);
+					this.acceptAlignedInput((T)inputs.next(), k, amount, n, l);
 				} else if (o == n) {
 					k += gridWidth - n;
 					break;
@@ -52,5 +52,5 @@ public interface RecipeGridAligner<T> {
 		}
 	}
 
-	void acceptAlignedInput(Iterator<T> inputs, int slot, int amount, int gridX, int gridY);
+	void acceptAlignedInput(T input, int slot, int amount, int gridX, int gridY);
 }

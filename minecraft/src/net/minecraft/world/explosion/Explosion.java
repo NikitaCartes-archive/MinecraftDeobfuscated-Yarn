@@ -13,11 +13,12 @@ import javax.annotation.Nullable;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -36,6 +37,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -270,7 +272,7 @@ public class Explosion {
 						double aa = (1.0 - v) * (double)getExposure(vec3d, entity) * (double)this.behavior.getKnockbackModifier(entity);
 						double ab;
 						if (entity instanceof LivingEntity livingEntity) {
-							ab = ProtectionEnchantment.transformExplosionKnockback(livingEntity, aa);
+							ab = aa * (1.0 - livingEntity.getAttributeValue(EntityAttributes.GENERIC_EXPLOSION_KNOCKBACK_RESISTANCE));
 						} else {
 							ab = aa;
 						}
@@ -426,6 +428,16 @@ public class Explosion {
 
 	public RegistryEntry<SoundEvent> getSoundEvent() {
 		return this.soundEvent;
+	}
+
+	public boolean canTriggerBlocks() {
+		if (this.destructionType == Explosion.DestructionType.TRIGGER_BLOCK && !this.world.isClient()) {
+			return this.entity != null && this.entity.getType() == EntityType.BREEZE_WIND_CHARGE
+				? this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
+				: true;
+		} else {
+			return false;
+		}
 	}
 
 	public static enum DestructionType {

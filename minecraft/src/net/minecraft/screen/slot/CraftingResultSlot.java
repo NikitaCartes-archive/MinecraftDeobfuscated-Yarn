@@ -60,7 +60,9 @@ public class CraftingResultSlot extends Slot {
 	@Override
 	public void onTakeItem(PlayerEntity player, ItemStack stack) {
 		this.onCrafted(stack);
-		DefaultedList<ItemStack> defaultedList = player.getWorld().getRecipeManager().getRemainingStacks(RecipeType.CRAFTING, this.input, player.getWorld());
+		DefaultedList<ItemStack> defaultedList = player.getWorld()
+			.getRecipeManager()
+			.getRemainingStacks(RecipeType.CRAFTING, this.input.createRecipeInput(), player.getWorld());
 
 		for (int i = 0; i < defaultedList.size(); i++) {
 			ItemStack itemStack = this.input.getStack(i);

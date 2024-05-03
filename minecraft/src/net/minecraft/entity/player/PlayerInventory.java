@@ -140,9 +140,9 @@ public class PlayerInventory implements Inventory, Nameable {
 	public int indexOf(ItemStack stack) {
 		for (int i = 0; i < this.main.size(); i++) {
 			ItemStack itemStack = this.main.get(i);
-			if (!this.main.get(i).isEmpty()
-				&& ItemStack.areItemsAndComponentsEqual(stack, this.main.get(i))
-				&& !this.main.get(i).isDamaged()
+			if (!itemStack.isEmpty()
+				&& ItemStack.areItemsAndComponentsEqual(stack, itemStack)
+				&& !itemStack.isDamaged()
 				&& !itemStack.hasEnchantments()
 				&& !itemStack.contains(DataComponentTypes.CUSTOM_NAME)) {
 				return i;

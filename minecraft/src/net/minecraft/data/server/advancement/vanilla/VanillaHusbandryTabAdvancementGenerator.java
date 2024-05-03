@@ -26,6 +26,7 @@ import net.minecraft.advancement.criterion.ThrownItemPickedUpByEntityCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.data.server.advancement.AdvancementTabGenerator;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.WolfVariant;
@@ -129,6 +130,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 
 	@Override
 	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<AdvancementEntry> exporter) {
+		RegistryWrapper.Impl<Enchantment> impl = lookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		AdvancementEntry advancementEntry = Advancement.Builder.create()
 			.display(
 				Blocks.HAY_BLOCK,
@@ -421,7 +423,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 					ItemPredicate.Builder.create()
 						.subPredicate(
 							ItemSubPredicateTypes.ENCHANTMENTS,
-							EnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(Enchantments.SILK_TOUCH, NumberRange.IntRange.atLeast(1))))
+							EnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(impl.getOrThrow(Enchantments.SILK_TOUCH), NumberRange.IntRange.atLeast(1))))
 						),
 					NumberRange.IntRange.exactly(3)
 				)

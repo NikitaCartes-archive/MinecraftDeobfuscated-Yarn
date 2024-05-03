@@ -152,7 +152,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 		public State(RealmsServer server, int slot) {
 			this.minigame = slot == 4;
 			if (this.minigame) {
-				this.isCurrentlyActiveSlot = server.worldType == RealmsServer.WorldType.MINIGAME;
+				this.isCurrentlyActiveSlot = server.method_60315();
 				this.slotName = RealmsWorldSlotButton.MINIGAME_SLOT_NAME.getString();
 				this.imageId = (long)server.minigameId;
 				this.image = server.minigameImage;
@@ -161,7 +161,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 				this.compatibility = RealmsServer.Compatibility.UNVERIFIABLE;
 			} else {
 				RealmsWorldOptions realmsWorldOptions = (RealmsWorldOptions)server.slots.get(slot);
-				this.isCurrentlyActiveSlot = server.activeSlot == slot && server.worldType != RealmsServer.WorldType.MINIGAME;
+				this.isCurrentlyActiveSlot = server.activeSlot == slot && !server.method_60315();
 				this.slotName = realmsWorldOptions.getSlotName(slot);
 				this.imageId = realmsWorldOptions.templateId;
 				this.image = realmsWorldOptions.templateImage;

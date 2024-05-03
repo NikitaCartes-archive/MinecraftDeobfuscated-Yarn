@@ -2,11 +2,11 @@ package net.minecraft.recipe;
 
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BannerPatternsComponent;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
@@ -15,12 +15,12 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 		super(craftingRecipeCategory);
 	}
 
-	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
+	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		ItemStack itemStack2 = ItemStack.EMPTY;
 
-		for (int i = 0; i < recipeInputInventory.size(); i++) {
-			ItemStack itemStack3 = recipeInputInventory.getStack(i);
+		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+			ItemStack itemStack3 = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack3.isEmpty()) {
 				if (itemStack3.getItem() instanceof BannerItem) {
 					if (!itemStack2.isEmpty()) {
@@ -50,12 +50,12 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 		return !itemStack.isEmpty() && !itemStack2.isEmpty();
 	}
 
-	public ItemStack craft(RecipeInputInventory recipeInputInventory, RegistryWrapper.WrapperLookup wrapperLookup) {
+	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		ItemStack itemStack2 = ItemStack.EMPTY;
 
-		for (int i = 0; i < recipeInputInventory.size(); i++) {
-			ItemStack itemStack3 = recipeInputInventory.getStack(i);
+		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+			ItemStack itemStack3 = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack3.isEmpty()) {
 				if (itemStack3.getItem() instanceof BannerItem) {
 					itemStack = itemStack3;

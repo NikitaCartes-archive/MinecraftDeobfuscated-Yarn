@@ -16,10 +16,15 @@ import net.minecraft.block.DecoratedPotPatterns;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
+import net.minecraft.enchantment.EnchantmentLevelBasedValueType;
+import net.minecraft.enchantment.effect.EnchantmentEntityEffectType;
+import net.minecraft.enchantment.effect.EnchantmentLocationBasedEffectType;
+import net.minecraft.enchantment.effect.EnchantmentValueEffectType;
+import net.minecraft.enchantment.provider.EnchantmentProvider;
+import net.minecraft.enchantment.provider.EnchantmentProviderType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -27,8 +32,6 @@ import net.minecraft.entity.ai.brain.Schedule;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.decoration.painting.PaintingVariant;
-import net.minecraft.entity.decoration.painting.PaintingVariants;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.CatVariant;
@@ -126,15 +129,11 @@ public class Registries {
 	public static final DefaultedRegistry<Fluid> FLUID = createIntrusive(RegistryKeys.FLUID, "empty", registry -> Fluids.EMPTY);
 	public static final Registry<StatusEffect> STATUS_EFFECT = create(RegistryKeys.STATUS_EFFECT, StatusEffects::registerAndGetDefault);
 	public static final DefaultedRegistry<Block> BLOCK = createIntrusive(RegistryKeys.BLOCK, "air", registry -> Blocks.AIR);
-	public static final Registry<Enchantment> ENCHANTMENT = createIntrusive(RegistryKeys.ENCHANTMENT, registry -> Enchantments.FORTUNE);
 	public static final DefaultedRegistry<EntityType<?>> ENTITY_TYPE = createIntrusive(RegistryKeys.ENTITY_TYPE, "pig", registry -> EntityType.PIG);
 	public static final DefaultedRegistry<Item> ITEM = createIntrusive(RegistryKeys.ITEM, "air", registry -> Items.AIR);
 	public static final Registry<Potion> POTION = create(RegistryKeys.POTION, Potions::registerAndGetDefault);
 	public static final Registry<ParticleType<?>> PARTICLE_TYPE = create(RegistryKeys.PARTICLE_TYPE, registry -> ParticleTypes.BLOCK);
 	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = createIntrusive(RegistryKeys.BLOCK_ENTITY_TYPE, registry -> BlockEntityType.FURNACE);
-	public static final DefaultedRegistry<PaintingVariant> PAINTING_VARIANT = create(
-		RegistryKeys.PAINTING_VARIANT, "kebab", PaintingVariants::registerAndGetDefault
-	);
 	public static final Registry<Identifier> CUSTOM_STAT = create(RegistryKeys.CUSTOM_STAT, registry -> Stats.JUMP);
 	public static final DefaultedRegistry<ChunkStatus> CHUNK_STATUS = create(RegistryKeys.CHUNK_STATUS, "empty", registry -> ChunkStatus.EMPTY);
 	public static final Registry<RuleTestType<?>> RULE_TEST = create(RegistryKeys.RULE_TEST, registry -> RuleTestType.ALWAYS_TRUE);
@@ -229,7 +228,7 @@ public class Registries {
 	public static final Registry<Criterion<?>> CRITERION = create(RegistryKeys.CRITERION, Criteria::getDefault);
 	public static final Registry<NumberFormatType<?>> NUMBER_FORMAT_TYPE = create(RegistryKeys.NUMBER_FORMAT_TYPE, NumberFormatTypes::registerAndGetDefault);
 	public static final Registry<ArmorMaterial> ARMOR_MATERIAL = create(RegistryKeys.ARMOR_MATERIAL, ArmorMaterials::getDefault);
-	public static final Registry<DataComponentType<?>> DATA_COMPONENT_TYPE = create(RegistryKeys.DATA_COMPONENT_TYPE, DataComponentTypes::getDefault);
+	public static final Registry<ComponentType<?>> DATA_COMPONENT_TYPE = create(RegistryKeys.DATA_COMPONENT_TYPE, DataComponentTypes::getDefault);
 	public static final Registry<MapCodec<? extends EntitySubPredicate>> ENTITY_SUB_PREDICATE_TYPE = create(
 		RegistryKeys.ENTITY_SUB_PREDICATE_TYPE, EntitySubPredicateTypes::getDefault
 	);
@@ -237,6 +236,24 @@ public class Registries {
 		RegistryKeys.ITEM_SUB_PREDICATE_TYPE, ItemSubPredicateTypes::getDefault
 	);
 	public static final Registry<MapDecorationType> MAP_DECORATION_TYPE = create(RegistryKeys.MAP_DECORATION_TYPE, MapDecorationTypes::getDefault);
+	public static final Registry<ComponentType<?>> ENCHANTMENT_EFFECT_COMPONENT_TYPE = create(
+		RegistryKeys.ENCHANTMENT_EFFECT_COMPONENT_TYPE, EnchantmentEffectComponentTypes::getDefault
+	);
+	public static final Registry<MapCodec<? extends EnchantmentLevelBasedValueType>> ENCHANTMENT_LEVEL_BASED_VALUE_TYPE = create(
+		RegistryKeys.ENCHANTMENT_LEVEL_BASED_VALUE_TYPE, EnchantmentLevelBasedValueType::registerAndGetDefault
+	);
+	public static final Registry<MapCodec<? extends EnchantmentEntityEffectType>> ENCHANTMENT_ENTITY_EFFECT_TYPE = create(
+		RegistryKeys.ENCHANTMENT_ENTITY_EFFECT_TYPE, EnchantmentEntityEffectType::registerAndGetDefault
+	);
+	public static final Registry<MapCodec<? extends EnchantmentLocationBasedEffectType>> ENCHANTMENT_LOCATION_BASED_EFFECT_TYPE = create(
+		RegistryKeys.ENCHANTMENT_LOCATION_BASED_EFFECT_TYPE, EnchantmentLocationBasedEffectType::registerAndGetDefault
+	);
+	public static final Registry<MapCodec<? extends EnchantmentValueEffectType>> ENCHANTMENT_VALUE_EFFECT_TYPE = create(
+		RegistryKeys.ENCHANTMENT_VALUE_EFFECT_TYPE, EnchantmentValueEffectType::registerAndGetDefault
+	);
+	public static final Registry<MapCodec<? extends EnchantmentProvider>> ENCHANTMENT_PROVIDER_TYPE = create(
+		RegistryKeys.ENCHANTMENT_PROVIDER_TYPE, EnchantmentProviderType::registerAndGetDefault
+	);
 	public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
 
 	private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Registries.Initializer<T> initializer) {

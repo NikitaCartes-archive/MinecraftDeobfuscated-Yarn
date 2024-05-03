@@ -263,23 +263,19 @@ public final class TrialSpawnerLogic {
 	}
 
 	public void tickClient(World world, BlockPos pos, boolean ominous) {
-		if (!this.canActivate(world)) {
+		TrialSpawnerState trialSpawnerState = this.getSpawnerState();
+		trialSpawnerState.emitParticles(world, pos, ominous);
+		if (trialSpawnerState.doesDisplayRotate()) {
+			double d = (double)Math.max(0L, this.data.nextMobSpawnsAt - world.getTime());
 			this.data.lastDisplayEntityRotation = this.data.displayEntityRotation;
-		} else {
-			TrialSpawnerState trialSpawnerState = this.getSpawnerState();
-			trialSpawnerState.emitParticles(world, pos, ominous);
-			if (trialSpawnerState.doesDisplayRotate()) {
-				double d = (double)Math.max(0L, this.data.nextMobSpawnsAt - world.getTime());
-				this.data.lastDisplayEntityRotation = this.data.displayEntityRotation;
-				this.data.displayEntityRotation = (this.data.displayEntityRotation + trialSpawnerState.getDisplayRotationSpeed() / (d + 200.0)) % 360.0;
-			}
+			this.data.displayEntityRotation = (this.data.displayEntityRotation + trialSpawnerState.getDisplayRotationSpeed() / (d + 200.0)) % 360.0;
+		}
 
-			if (trialSpawnerState.playsSound()) {
-				Random random = world.getRandom();
-				if (random.nextFloat() <= 0.02F) {
-					SoundEvent soundEvent = ominous ? SoundEvents.BLOCK_TRIAL_SPAWNER_AMBIENT_CHARGED : SoundEvents.BLOCK_TRIAL_SPAWNER_AMBIENT;
-					world.playSoundAtBlockCenter(pos, soundEvent, SoundCategory.BLOCKS, random.nextFloat() * 0.25F + 0.75F, random.nextFloat() + 0.5F, false);
-				}
+		if (trialSpawnerState.playsSound()) {
+			Random random = world.getRandom();
+			if (random.nextFloat() <= 0.02F) {
+				SoundEvent soundEvent = ominous ? SoundEvents.BLOCK_TRIAL_SPAWNER_AMBIENT_OMINOUS : SoundEvents.BLOCK_TRIAL_SPAWNER_AMBIENT;
+				world.playSoundAtBlockCenter(pos, soundEvent, SoundCategory.BLOCKS, random.nextFloat() * 0.25F + 0.75F, random.nextFloat() + 0.5F, false);
 			}
 		}
 	}
@@ -287,20 +283,13 @@ public final class TrialSpawnerLogic {
 	public void tickServer(ServerWorld world, BlockPos pos, boolean ominous) {
 		this.ominous = ominous;
 		TrialSpawnerState trialSpawnerState = this.getSpawnerState();
-		if (!this.canActivate(world)) {
-			if (trialSpawnerState.playsSound()) {
-				this.data.reset();
-				this.setSpawnerState(world, TrialSpawnerState.INACTIVE);
-			}
-		} else {
-			if (this.data.spawnedMobsAlive.removeIf(uuid -> shouldRemoveMobFromData(world, pos, uuid))) {
-				this.data.nextMobSpawnsAt = world.getTime() + (long)this.getConfig().ticksBetweenSpawn();
-			}
+		if (this.data.spawnedMobsAlive.removeIf(uuid -> shouldRemoveMobFromData(world, pos, uuid))) {
+			this.data.nextMobSpawnsAt = world.getTime() + (long)this.getConfig().ticksBetweenSpawn();
+		}
 
-			TrialSpawnerState trialSpawnerState2 = trialSpawnerState.tick(pos, this, world);
-			if (trialSpawnerState2 != trialSpawnerState) {
-				this.setSpawnerState(world, trialSpawnerState2);
-			}
+		TrialSpawnerState trialSpawnerState2 = trialSpawnerState.tick(pos, this, world);
+		if (trialSpawnerState2 != trialSpawnerState) {
+			this.setSpawnerState(world, trialSpawnerState2);
 		}
 	}
 

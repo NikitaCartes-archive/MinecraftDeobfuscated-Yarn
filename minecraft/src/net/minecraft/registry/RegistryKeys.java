@@ -6,8 +6,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentLevelBasedValueType;
+import net.minecraft.enchantment.effect.EnchantmentEntityEffectType;
+import net.minecraft.enchantment.effect.EnchantmentLocationBasedEffectType;
+import net.minecraft.enchantment.effect.EnchantmentValueEffectType;
+import net.minecraft.enchantment.provider.EnchantmentProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -119,7 +124,17 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<Identifier>> CUSTOM_STAT = of("custom_stat");
 	public static final RegistryKey<Registry<DamageType>> DAMAGE_TYPE = of("damage_type");
 	public static final RegistryKey<Registry<MapCodec<? extends DensityFunction>>> DENSITY_FUNCTION_TYPE = of("worldgen/density_function_type");
-	public static final RegistryKey<Registry<Enchantment>> ENCHANTMENT = of("enchantment");
+	public static final RegistryKey<Registry<MapCodec<? extends EnchantmentEntityEffectType>>> ENCHANTMENT_ENTITY_EFFECT_TYPE = of(
+		"enchantment_entity_effect_type"
+	);
+	public static final RegistryKey<Registry<MapCodec<? extends EnchantmentLevelBasedValueType>>> ENCHANTMENT_LEVEL_BASED_VALUE_TYPE = of(
+		"enchantment_level_based_value_type"
+	);
+	public static final RegistryKey<Registry<MapCodec<? extends EnchantmentLocationBasedEffectType>>> ENCHANTMENT_LOCATION_BASED_EFFECT_TYPE = of(
+		"enchantment_location_based_effect_type"
+	);
+	public static final RegistryKey<Registry<MapCodec<? extends EnchantmentProvider>>> ENCHANTMENT_PROVIDER_TYPE = of("enchantment_provider_type");
+	public static final RegistryKey<Registry<MapCodec<? extends EnchantmentValueEffectType>>> ENCHANTMENT_VALUE_EFFECT_TYPE = of("enchantment_value_effect_type");
 	public static final RegistryKey<Registry<EntityType<?>>> ENTITY_TYPE = of("entity_type");
 	public static final RegistryKey<Registry<Feature<?>>> FEATURE = of("worldgen/feature");
 	public static final RegistryKey<Registry<FeatureSizeType<?>>> FEATURE_SIZE_TYPE = of("worldgen/feature_size_type");
@@ -172,16 +187,19 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<String>> DECORATED_POT_PATTERN = of("decorated_pot_patterns");
 	public static final RegistryKey<Registry<NumberFormatType<?>>> NUMBER_FORMAT_TYPE = of("number_format_type");
 	public static final RegistryKey<Registry<ArmorMaterial>> ARMOR_MATERIAL = of("armor_material");
-	public static final RegistryKey<Registry<DataComponentType<?>>> DATA_COMPONENT_TYPE = of("data_component_type");
+	public static final RegistryKey<Registry<ComponentType<?>>> DATA_COMPONENT_TYPE = of("data_component_type");
 	public static final RegistryKey<Registry<MapCodec<? extends EntitySubPredicate>>> ENTITY_SUB_PREDICATE_TYPE = of("entity_sub_predicate_type");
 	public static final RegistryKey<Registry<ItemSubPredicate.Type<?>>> ITEM_SUB_PREDICATE_TYPE = of("item_sub_predicate_type");
 	public static final RegistryKey<Registry<MapDecorationType>> MAP_DECORATION_TYPE = of("map_decoration_type");
+	public static final RegistryKey<Registry<ComponentType<?>>> ENCHANTMENT_EFFECT_COMPONENT_TYPE = of("enchantment_effect_component_type");
 	public static final RegistryKey<Registry<Biome>> BIOME = of("worldgen/biome");
 	public static final RegistryKey<Registry<MessageType>> MESSAGE_TYPE = of("chat_type");
 	public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER = of("worldgen/configured_carver");
 	public static final RegistryKey<Registry<ConfiguredFeature<?, ?>>> CONFIGURED_FEATURE = of("worldgen/configured_feature");
 	public static final RegistryKey<Registry<DensityFunction>> DENSITY_FUNCTION = of("worldgen/density_function");
 	public static final RegistryKey<Registry<DimensionType>> DIMENSION_TYPE = of("dimension_type");
+	public static final RegistryKey<Registry<Enchantment>> ENCHANTMENT = of("enchantment");
+	public static final RegistryKey<Registry<EnchantmentProvider>> ENCHANTMENT_PROVIDER = of("enchantment_provider");
 	public static final RegistryKey<Registry<FlatLevelGeneratorPreset>> FLAT_LEVEL_GENERATOR_PRESET = of("worldgen/flat_level_generator_preset");
 	public static final RegistryKey<Registry<ChunkGeneratorSettings>> CHUNK_GENERATOR_SETTINGS = of("worldgen/noise_settings");
 	public static final RegistryKey<Registry<DoublePerlinNoiseSampler.NoiseParameters>> NOISE_PARAMETERS = of("worldgen/noise");

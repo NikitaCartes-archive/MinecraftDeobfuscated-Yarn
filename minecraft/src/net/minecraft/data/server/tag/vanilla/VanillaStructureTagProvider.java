@@ -40,5 +40,6 @@ public class VanillaStructureTagProvider extends TagProvider<Structure> {
 		this.getOrCreateTagBuilder(StructureTags.ON_WOODLAND_EXPLORER_MAPS).add(StructureKeys.MANSION);
 		this.getOrCreateTagBuilder(StructureTags.ON_OCEAN_EXPLORER_MAPS).add(StructureKeys.MONUMENT);
 		this.getOrCreateTagBuilder(StructureTags.ON_TREASURE_MAPS).add(StructureKeys.BURIED_TREASURE);
+		this.getOrCreateTagBuilder(StructureTags.ON_TRIAL_CHAMBERS_MAPS).add(StructureKeys.TRIAL_CHAMBERS);
 	}
 }

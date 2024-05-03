@@ -10,7 +10,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DialogScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
-import net.minecraft.client.gui.widget.OptionListWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.option.SimpleOption;
@@ -30,7 +29,6 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	private static final Text GRAPHICS_WARNING_TITLE_TEXT = Text.translatable("options.graphics.warning.title").formatted(Formatting.RED);
 	private static final Text GRAPHICS_WARNING_ACCEPT_TEXT = Text.translatable("options.graphics.warning.accept");
 	private static final Text GRAPHICS_WARNING_CANCEL_TEXT = Text.translatable("options.graphics.warning.cancel");
-	private OptionListWidget list;
 	private final VideoWarningManager warningManager;
 	private final int mipmapLevels;
 
@@ -62,20 +60,19 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		};
 	}
 
-	public VideoOptionsScreen(Screen parent, GameOptions options) {
-		super(parent, options, TITLE_TEXT);
-		this.warningManager = parent.client.getVideoWarningManager();
+	public VideoOptionsScreen(Screen screen, MinecraftClient minecraftClient, GameOptions gameOptions) {
+		super(screen, gameOptions, TITLE_TEXT);
+		this.warningManager = minecraftClient.getVideoWarningManager();
 		this.warningManager.reset();
-		if (options.getGraphicsMode().getValue() == GraphicsMode.FABULOUS) {
+		if (gameOptions.getGraphicsMode().getValue() == GraphicsMode.FABULOUS) {
 			this.warningManager.acceptAfterWarnings();
 		}
 
-		this.mipmapLevels = options.getMipmapLevels().getValue();
+		this.mipmapLevels = gameOptions.getMipmapLevels().getValue();
 	}
 
 	@Override
-	protected void init() {
-		this.list = this.addDrawableChild(new OptionListWidget(this.client, this.width, this.height, this));
+	protected void method_60325() {
 		int i = -1;
 		Window window = this.client.getWindow();
 		Monitor monitor = window.getMonitor();
@@ -90,15 +87,15 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		SimpleOption<Integer> simpleOption = new SimpleOption<>(
 			"options.fullscreen.resolution",
 			SimpleOption.emptyTooltip(),
-			(prefix, value) -> {
+			(text, integer) -> {
 				if (monitor == null) {
 					return Text.translatable("options.fullscreen.unavailable");
-				} else if (value == -1) {
-					return GameOptions.getGenericValueText(prefix, Text.translatable("options.fullscreen.current"));
+				} else if (integer == -1) {
+					return GameOptions.getGenericValueText(text, Text.translatable("options.fullscreen.current"));
 				} else {
-					VideoMode videoMode = monitor.getVideoMode(value);
+					VideoMode videoMode = monitor.getVideoMode(integer);
 					return GameOptions.getGenericValueText(
-						prefix,
+						text,
 						Text.translatable(
 							"options.fullscreen.entry",
 							videoMode.getWidth(),
@@ -111,28 +108,21 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 			},
 			new SimpleOption.ValidatingIntSliderCallbacks(-1, monitor != null ? monitor.getVideoModeCount() - 1 : -1),
 			j,
-			value -> {
+			integer -> {
 				if (monitor != null) {
-					window.setVideoMode(value == -1 ? Optional.empty() : Optional.of(monitor.getVideoMode(value)));
+					window.setVideoMode(integer == -1 ? Optional.empty() : Optional.of(monitor.getVideoMode(integer)));
 				}
 			}
 		);
-		this.list.addSingleOptionEntry(simpleOption);
-		this.list.addSingleOptionEntry(this.gameOptions.getBiomeBlendRadius());
-		this.list.addAll(getOptions(this.gameOptions));
-		super.init();
+		this.field_51824.addSingleOptionEntry(simpleOption);
+		this.field_51824.addSingleOptionEntry(this.gameOptions.getBiomeBlendRadius());
+		this.field_51824.addAll(getOptions(this.gameOptions));
 	}
 
 	@Override
 	public void close() {
 		this.client.getWindow().applyVideoMode();
 		super.close();
-	}
-
-	@Override
-	protected void initTabNavigation() {
-		super.initTabNavigation();
-		this.list.position(this.width, this.layout);
 	}
 
 	@Override
@@ -195,11 +185,11 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 				int j = i == 0 ? maxSuppliableIntCallbacks.maxInclusive() + 1 : i;
 				int k = j + (int)Math.signum(verticalAmount);
 				if (k != 0 && k <= maxSuppliableIntCallbacks.maxInclusive() && k >= maxSuppliableIntCallbacks.minInclusive()) {
-					CyclingButtonWidget<Integer> cyclingButtonWidget = (CyclingButtonWidget<Integer>)this.list.getWidgetFor(simpleOption);
+					CyclingButtonWidget<Integer> cyclingButtonWidget = (CyclingButtonWidget<Integer>)this.field_51824.getWidgetFor(simpleOption);
 					if (cyclingButtonWidget != null) {
 						simpleOption.setValue(k);
 						cyclingButtonWidget.setValue(k);
-						this.list.setScrollAmount(0.0);
+						this.field_51824.setScrollAmount(0.0);
 						return true;
 					}
 				}

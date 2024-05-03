@@ -29,7 +29,7 @@ public class BreezeWindChargeEntity extends AbstractWindChargeEntity {
 				this.getZ(),
 				3.0F,
 				false,
-				World.ExplosionSourceType.BLOW,
+				World.ExplosionSourceType.TRIGGER,
 				ParticleTypes.GUST_EMITTER_SMALL,
 				ParticleTypes.GUST_EMITTER_LARGE,
 				SoundEvents.ENTITY_BREEZE_WIND_BURST

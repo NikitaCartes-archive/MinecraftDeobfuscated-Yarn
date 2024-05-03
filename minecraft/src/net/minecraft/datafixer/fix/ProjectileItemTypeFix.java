@@ -10,6 +10,7 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.serialization.Dynamic;
 import java.util.function.Function;
+import net.minecraft.datafixer.FixUtil;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.Util;
 
@@ -28,23 +29,12 @@ public class ProjectileItemTypeFix extends DataFix {
 			"Fix AbstractArrow item type",
 			type,
 			type2,
-			this.applyFixers(
+			FixUtil.method_59907(
 				this.createFixApplier("minecraft:trident", ProjectileItemTypeFix::fixTrident),
 				this.createFixApplier("minecraft:arrow", ProjectileItemTypeFix::fixArrow),
 				this.createFixApplier("minecraft:spectral_arrow", ProjectileItemTypeFix::fixSpectralArrow)
 			)
 		);
-	}
-
-	@SafeVarargs
-	private <T> Function<Typed<?>, Typed<?>> applyFixers(Function<Typed<?>, Typed<?>>... fixAppliers) {
-		return typed -> {
-			for (Function<Typed<?>, Typed<?>> function : fixAppliers) {
-				typed = (Typed)function.apply(typed);
-			}
-
-			return typed;
-		};
 	}
 
 	private Function<Typed<?>, Typed<?>> createFixApplier(String id, ProjectileItemTypeFix.Fixer<?> fixer) {

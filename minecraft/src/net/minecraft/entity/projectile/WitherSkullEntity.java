@@ -1,6 +1,7 @@
 package net.minecraft.entity.projectile;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -13,6 +14,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -50,23 +52,24 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 	@Override
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		super.onEntityHit(entityHitResult);
-		if (!this.getWorld().isClient) {
-			Entity entity = entityHitResult.getEntity();
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			Entity var8 = entityHitResult.getEntity();
 			boolean bl;
 			if (this.getOwner() instanceof LivingEntity livingEntity) {
-				bl = entity.damage(this.getDamageSources().witherSkull(this, livingEntity), 8.0F);
+				DamageSource damageSource = this.getDamageSources().witherSkull(this, livingEntity);
+				bl = var8.damage(damageSource, 8.0F);
 				if (bl) {
-					if (entity.isAlive()) {
-						this.applyDamageEffects(livingEntity, entity);
+					if (var8.isAlive()) {
+						EnchantmentHelper.onTargetDamaged(serverWorld, var8, damageSource);
 					} else {
 						livingEntity.heal(5.0F);
 					}
 				}
 			} else {
-				bl = entity.damage(this.getDamageSources().magic(), 5.0F);
+				bl = var8.damage(this.getDamageSources().magic(), 5.0F);
 			}
 
-			if (bl && entity instanceof LivingEntity livingEntityx) {
+			if (bl && var8 instanceof LivingEntity livingEntityx) {
 				int i = 0;
 				if (this.getWorld().getDifficulty() == Difficulty.NORMAL) {
 					i = 10;

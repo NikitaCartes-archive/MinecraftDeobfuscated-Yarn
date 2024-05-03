@@ -7,6 +7,7 @@ import net.minecraft.util.Identifier;
 
 public interface DamageTypes {
 	RegistryKey<DamageType> IN_FIRE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("in_fire"));
+	RegistryKey<DamageType> CAMPFIRE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("campfire"));
 	RegistryKey<DamageType> LIGHTNING_BOLT = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("lightning_bolt"));
 	RegistryKey<DamageType> ON_FIRE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("on_fire"));
 	RegistryKey<DamageType> LAVA = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("lava"));
@@ -55,6 +56,7 @@ public interface DamageTypes {
 
 	static void bootstrap(Registerable<DamageType> damageTypeRegisterable) {
 		damageTypeRegisterable.register(IN_FIRE, new DamageType("inFire", 0.1F, DamageEffects.BURNING));
+		damageTypeRegisterable.register(CAMPFIRE, new DamageType("inFire", 0.1F, DamageEffects.BURNING));
 		damageTypeRegisterable.register(LIGHTNING_BOLT, new DamageType("lightningBolt", 0.1F));
 		damageTypeRegisterable.register(ON_FIRE, new DamageType("onFire", 0.0F, DamageEffects.BURNING));
 		damageTypeRegisterable.register(LAVA, new DamageType("lava", 0.1F, DamageEffects.BURNING));
@@ -103,5 +105,6 @@ public interface DamageTypes {
 		);
 		damageTypeRegisterable.register(OUTSIDE_BORDER, new DamageType("outsideBorder", 0.0F));
 		damageTypeRegisterable.register(GENERIC_KILL, new DamageType("genericKill", 0.0F));
+		damageTypeRegisterable.register(WIND_CHARGE, new DamageType("mob", 0.1F));
 	}
 }

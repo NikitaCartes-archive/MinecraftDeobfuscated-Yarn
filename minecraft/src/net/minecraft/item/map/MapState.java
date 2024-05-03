@@ -265,7 +265,7 @@ public class MapState extends PersistentState {
 
 		if (stack.isInFrame() && this.showDecorations) {
 			ItemFrameEntity itemFrameEntity = stack.getFrame();
-			BlockPos blockPos = itemFrameEntity.getDecorationBlockPos();
+			BlockPos blockPos = itemFrameEntity.getAttachedBlockPos();
 			MapFrameMarker mapFrameMarker = (MapFrameMarker)this.frames.get(MapFrameMarker.getKey(blockPos));
 			if (mapFrameMarker != null && itemFrameEntity.getId() != mapFrameMarker.getEntityId() && this.frames.containsKey(mapFrameMarker.getKey())) {
 				this.removeDecoration("frame-" + mapFrameMarker.getEntityId());

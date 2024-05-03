@@ -17,6 +17,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.item.TooltipType;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.HotbarStorage;
 import net.minecraft.client.option.HotbarStorageEntry;
@@ -114,21 +115,27 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	private final Set<TagKey<Item>> searchResultTags = new HashSet();
 	private final boolean operatorTabEnabled;
 
-	public CreativeInventoryScreen(PlayerEntity player, FeatureSet enabledFeatures, boolean operatorTabEnabled) {
-		super(new CreativeInventoryScreen.CreativeScreenHandler(player), player.getInventory(), ScreenTexts.EMPTY);
-		player.currentScreenHandler = this.handler;
+	public CreativeInventoryScreen(ClientPlayerEntity clientPlayerEntity, FeatureSet featureSet, boolean operatorTabEnabled) {
+		super(new CreativeInventoryScreen.CreativeScreenHandler(clientPlayerEntity), clientPlayerEntity.getInventory(), ScreenTexts.EMPTY);
+		clientPlayerEntity.currentScreenHandler = this.handler;
 		this.backgroundHeight = 136;
 		this.backgroundWidth = 195;
 		this.operatorTabEnabled = operatorTabEnabled;
-		ItemGroups.updateDisplayContext(enabledFeatures, this.shouldShowOperatorTab(player), player.getWorld().getRegistryManager());
+		this.method_60324(
+			clientPlayerEntity.networkHandler.method_60347(),
+			featureSet,
+			this.shouldShowOperatorTab(clientPlayerEntity),
+			clientPlayerEntity.getWorld().getRegistryManager()
+		);
 	}
 
 	private boolean shouldShowOperatorTab(PlayerEntity player) {
 		return player.isCreativeLevelTwoOp() && this.operatorTabEnabled;
 	}
 
-	private void updateDisplayParameters(FeatureSet enabledFeatures, boolean showOperatorTab, RegistryWrapper.WrapperLookup lookup) {
-		if (ItemGroups.updateDisplayContext(enabledFeatures, showOperatorTab, lookup)) {
+	private void updateDisplayParameters(FeatureSet featureSet, boolean showOperatorTab, RegistryWrapper.WrapperLookup lookup) {
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
+		if (this.method_60324(clientPlayNetworkHandler != null ? clientPlayNetworkHandler.method_60347() : null, featureSet, showOperatorTab, lookup)) {
 			for (ItemGroup itemGroup : ItemGroups.getGroups()) {
 				Collection<ItemStack> collection = itemGroup.getDisplayStacks();
 				if (itemGroup == selectedTab) {
@@ -139,6 +146,20 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 					}
 				}
 			}
+		}
+	}
+
+	private boolean method_60324(@Nullable SearchManager searchManager, FeatureSet featureSet, boolean bl, RegistryWrapper.WrapperLookup wrapperLookup) {
+		if (!ItemGroups.updateDisplayContext(featureSet, bl, wrapperLookup)) {
+			return false;
+		} else {
+			if (searchManager != null) {
+				List<ItemStack> list = List.copyOf(ItemGroups.getSearchGroup().getDisplayStacks());
+				searchManager.method_60357(wrapperLookup, list);
+				searchManager.method_60355(list);
+			}
+
+			return true;
 		}
 	}
 
@@ -412,16 +433,20 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		if (string.isEmpty()) {
 			this.handler.itemList.addAll(selectedTab.getDisplayStacks());
 		} else {
-			SearchProvider<ItemStack> searchProvider;
-			if (string.startsWith("#")) {
-				string = string.substring(1);
-				searchProvider = this.client.getSearchProvider(SearchManager.ITEM_TAG);
-				this.searchForTags(string);
-			} else {
-				searchProvider = this.client.getSearchProvider(SearchManager.ITEM_TOOLTIP);
-			}
+			ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
+			if (clientPlayNetworkHandler != null) {
+				SearchManager searchManager = clientPlayNetworkHandler.method_60347();
+				SearchProvider<ItemStack> searchProvider;
+				if (string.startsWith("#")) {
+					string = string.substring(1);
+					searchProvider = searchManager.method_60370();
+					this.searchForTags(string);
+				} else {
+					searchProvider = searchManager.method_60372();
+				}
 
-			this.handler.itemList.addAll(searchProvider.findAll(string.toLowerCase(Locale.ROOT)));
+				this.handler.itemList.addAll(searchProvider.findAll(string.toLowerCase(Locale.ROOT)));
+			}
 		}
 
 		this.scrollPosition = 0.0F;

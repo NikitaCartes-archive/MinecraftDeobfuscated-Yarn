@@ -470,8 +470,8 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
-		super.dropEquipment(source, lootingMultiplier, allowDrops);
+	protected void dropEquipment(DamageSource source, boolean causedByPlayer) {
+		super.dropEquipment(source, causedByPlayer);
 		ItemEntity itemEntity = this.dropItem(Items.NETHER_STAR);
 		if (itemEntity != null) {
 			itemEntity.setCovetedItem();

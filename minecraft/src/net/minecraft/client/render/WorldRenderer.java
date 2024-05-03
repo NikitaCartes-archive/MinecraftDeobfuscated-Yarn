@@ -2586,9 +2586,6 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			case 1002:
 				this.world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_DISPENSER_LAUNCH, SoundCategory.BLOCKS, 1.0F, 1.2F, false);
 				break;
-			case 1003:
-				this.world.playSoundAtBlockCenter(pos, SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 1.0F, 1.2F, false);
-				break;
 			case 1004:
 				this.world.playSoundAtBlockCenter(pos, SoundEvents.ENTITY_FIREWORK_ROCKET_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.2F, false);
 				break;
@@ -2746,6 +2743,14 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				break;
 			case 1050:
 				this.world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_CRAFTER_FAIL, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
+				break;
+			case 1051:
+				this.world
+					.playSoundAtBlockCenter(
+						pos, SoundEvents.ENTITY_WIND_CHARGE_THROW, SoundCategory.BLOCKS, 0.5F, 0.4F / (this.world.getRandom().nextFloat() * 0.4F + 0.8F), false
+					);
+			case 2010:
+				this.shootParticles(data, pos, random, ParticleTypes.WHITE_SMOKE);
 				break;
 			case 1500:
 				ComposterBlock.playEffects(this.world, pos, data > 0);
@@ -2905,9 +2910,6 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 							ParticleTypes.CLOUD, (double)pos.getX() + random.nextDouble(), (double)pos.getY() + 1.2, (double)pos.getZ() + random.nextDouble(), 0.0, 0.0, 0.0
 						);
 				}
-				break;
-			case 2010:
-				this.shootParticles(data, pos, random, ParticleTypes.WHITE_SMOKE);
 				break;
 			case 2011:
 				ParticleUtil.spawnParticlesAround(this.world, pos, data, ParticleTypes.HAPPY_VILLAGER);
@@ -3114,7 +3116,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				this.world
 					.playSoundAtBlockCenter(
 						pos,
-						SoundEvents.BLOCK_TRIAL_SPAWNER_CHARGE_ACTIVATE,
+						SoundEvents.BLOCK_TRIAL_SPAWNER_OMINOUS_ACTIVATE,
 						SoundCategory.BLOCKS,
 						data == 0 ? 0.3F : 1.0F,
 						(random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F,

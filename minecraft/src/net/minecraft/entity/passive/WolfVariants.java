@@ -23,6 +23,7 @@ public class WolfVariants {
 	public static final RegistryKey<WolfVariant> WOODS = of("woods");
 	public static final RegistryKey<WolfVariant> CHESTNUT = of("chestnut");
 	public static final RegistryKey<WolfVariant> STRIPED = of("striped");
+	public static final RegistryKey<WolfVariant> field_51588 = PALE;
 
 	private static RegistryKey<WolfVariant> of(String id) {
 		return RegistryKey.of(RegistryKeys.WOLF_VARIANT, new Identifier(id));
@@ -48,7 +49,9 @@ public class WolfVariants {
 		return (RegistryEntry<WolfVariant>)registry.streamEntries()
 			.filter(entry -> ((WolfVariant)entry.value()).getBiomes().contains(biome))
 			.findFirst()
-			.orElse(registry.entryOf(PALE));
+			.or(() -> registry.getEntry(field_51588))
+			.or(registry::getDefaultEntry)
+			.orElseThrow();
 	}
 
 	public static void bootstrap(Registerable<WolfVariant> registry) {

@@ -96,6 +96,8 @@ public class BannerPatterns {
 		register(registry, FLOWER);
 		register(registry, MOJANG);
 		register(registry, PIGLIN);
+		register(registry, FLOW);
+		register(registry, GUSTER);
 	}
 
 	public static void register(Registerable<BannerPattern> registry, RegistryKey<BannerPattern> key) {

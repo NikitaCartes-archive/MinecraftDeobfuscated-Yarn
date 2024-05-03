@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -18,21 +18,21 @@ public class RecipeCache {
 		this.cache = new RecipeCache.CachedRecipe[size];
 	}
 
-	public Optional<RecipeEntry<CraftingRecipe>> getRecipe(World world, RecipeInputInventory inputInventory) {
-		if (inputInventory.isEmpty()) {
+	public Optional<RecipeEntry<CraftingRecipe>> getRecipe(World world, CraftingRecipeInput craftingRecipeInput) {
+		if (craftingRecipeInput.isEmpty()) {
 			return Optional.empty();
 		} else {
 			this.validateRecipeManager(world);
 
 			for (int i = 0; i < this.cache.length; i++) {
 				RecipeCache.CachedRecipe cachedRecipe = this.cache[i];
-				if (cachedRecipe != null && cachedRecipe.matches(inputInventory.getHeldStacks())) {
+				if (cachedRecipe != null && cachedRecipe.matches(craftingRecipeInput.getStacks())) {
 					this.sendToFront(i);
 					return Optional.ofNullable(cachedRecipe.value());
 				}
 			}
 
-			return this.getAndCacheRecipe(inputInventory, world);
+			return this.getAndCacheRecipe(craftingRecipeInput, world);
 		}
 	}
 
@@ -44,9 +44,9 @@ public class RecipeCache {
 		}
 	}
 
-	private Optional<RecipeEntry<CraftingRecipe>> getAndCacheRecipe(RecipeInputInventory inputInventory, World world) {
-		Optional<RecipeEntry<CraftingRecipe>> optional = world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, inputInventory, world);
-		this.cache(inputInventory.getHeldStacks(), (RecipeEntry<CraftingRecipe>)optional.orElse(null));
+	private Optional<RecipeEntry<CraftingRecipe>> getAndCacheRecipe(CraftingRecipeInput craftingRecipeInput, World world) {
+		Optional<RecipeEntry<CraftingRecipe>> optional = world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingRecipeInput, world);
+		this.cache(craftingRecipeInput.getStacks(), (RecipeEntry<CraftingRecipe>)optional.orElse(null));
 		return optional;
 	}
 

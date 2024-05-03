@@ -17,6 +17,7 @@ import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.Subscription;
 import net.minecraft.client.realms.exception.RealmsServiceException;
+import net.minecraft.client.realms.gui.RealmsPopups;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -62,20 +63,27 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 				.build()
 		);
 		if (this.serverData.expired) {
-			this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.configure.world.delete.button"), button -> {
-				Text text = Text.translatable("mco.configure.world.delete.question.line1");
-				Text text2 = Text.translatable("mco.configure.world.delete.question.line2");
-				this.client.setScreen(new RealmsLongConfirmationScreen(this::onDeletionConfirmed, RealmsLongConfirmationScreen.Type.WARNING, text, text2, true));
-			}).dimensions(this.width / 2 - 100, row(10), 200, 20).build());
+			this.addDrawableChild(
+				ButtonWidget.builder(
+						Text.translatable("mco.configure.world.delete.button"),
+						button -> this.client
+								.setScreen(
+									RealmsPopups.createContinuableWarningPopup(
+										this, Text.translatable("mco.configure.world.delete.question.line1"), popupScreen -> this.onDeletionConfirmed()
+									)
+								)
+					)
+					.dimensions(this.width / 2 - 100, row(10), 200, 20)
+					.build()
+			);
 		} else if (RealmsMainScreen.isSnapshotRealmsEligible() && this.serverData.parentWorldName != null) {
 			this.addDrawableChild(
 				new ScrollableTextWidget(
-						this.width / 2 - 100, row(8), 200, 46, Text.translatable("mco.snapshot.subscription.info", this.serverData.parentWorldName), this.textRenderer
-					)
-					.textColor(-6250336)
+					this.width / 2 - 100, row(8), 200, 46, Text.translatable("mco.snapshot.subscription.info", this.serverData.parentWorldName), this.textRenderer
+				)
 			);
 		} else {
-			this.addDrawableChild(new ScrollableTextWidget(this.width / 2 - 100, row(8), 200, 46, RECURRING_INFO_TEXT, this.textRenderer).textColor(-6250336));
+			this.addDrawableChild(new ScrollableTextWidget(this.width / 2 - 100, row(8), 200, 46, RECURRING_INFO_TEXT, this.textRenderer));
 		}
 
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).dimensions(this.width / 2 - 100, row(12), 200, 20).build());
@@ -86,22 +94,19 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 		return ScreenTexts.joinLines(SUBSCRIPTION_TITLE, SUBSCRIPTION_START_LABEL_TEXT, this.startDate, TIME_LEFT_LABEL_TEXT, this.daysLeft);
 	}
 
-	private void onDeletionConfirmed(boolean delete) {
-		if (delete) {
-			(new Thread("Realms-delete-realm") {
-				public void run() {
-					try {
-						RealmsClient realmsClient = RealmsClient.create();
-						realmsClient.deleteWorld(RealmsSubscriptionInfoScreen.this.serverData.id);
-					} catch (RealmsServiceException var2) {
-						RealmsSubscriptionInfoScreen.LOGGER.error("Couldn't delete world", (Throwable)var2);
-					}
-
-					RealmsSubscriptionInfoScreen.this.client.execute(() -> RealmsSubscriptionInfoScreen.this.client.setScreen(RealmsSubscriptionInfoScreen.this.mainScreen));
+	private void onDeletionConfirmed() {
+		(new Thread("Realms-delete-realm") {
+			public void run() {
+				try {
+					RealmsClient realmsClient = RealmsClient.create();
+					realmsClient.deleteWorld(RealmsSubscriptionInfoScreen.this.serverData.id);
+				} catch (RealmsServiceException var2) {
+					RealmsSubscriptionInfoScreen.LOGGER.error("Couldn't delete world", (Throwable)var2);
 				}
-			}).start();
-		}
 
+				RealmsSubscriptionInfoScreen.this.client.execute(() -> RealmsSubscriptionInfoScreen.this.client.setScreen(RealmsSubscriptionInfoScreen.this.mainScreen));
+			}
+		}).start();
 		this.client.setScreen(this);
 	}
 

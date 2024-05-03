@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
@@ -32,7 +32,7 @@ public record AttributeModifiersPredicate(
 	);
 
 	@Override
-	public DataComponentType<AttributeModifiersComponent> getComponentType() {
+	public ComponentType<AttributeModifiersComponent> getComponentType() {
 		return DataComponentTypes.ATTRIBUTE_MODIFIERS;
 	}
 

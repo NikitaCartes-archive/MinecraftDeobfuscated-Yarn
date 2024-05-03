@@ -3,6 +3,7 @@ package net.minecraft.entity.mob;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.EnumSet;
 import javax.annotation.Nullable;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -25,6 +26,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -238,14 +240,17 @@ public class SlimeEntity extends MobEntity implements Monster {
 		}
 	}
 
-	protected void damage(LivingEntity target) {
+	protected void damage(LivingEntity livingEntity) {
 		if (this.isAlive()) {
 			int i = this.getSize();
-			if (this.squaredDistanceTo(target) < 0.6 * (double)i * 0.6 * (double)i
-				&& this.canSee(target)
-				&& target.damage(this.getDamageSources().mobAttack(this), this.getDamageAmount())) {
-				this.playSound(SoundEvents.ENTITY_SLIME_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-				this.applyDamageEffects(this, target);
+			if (this.squaredDistanceTo(livingEntity) < 0.6 * (double)i * 0.6 * (double)i && this.canSee(livingEntity)) {
+				DamageSource damageSource = this.getDamageSources().mobAttack(this);
+				if (livingEntity.damage(damageSource, this.getDamageAmount())) {
+					this.playSound(SoundEvents.ENTITY_SLIME_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+					if (this.getWorld() instanceof ServerWorld serverWorld) {
+						EnchantmentHelper.onTargetDamaged(serverWorld, livingEntity, damageSource);
+					}
+				}
 			}
 		}
 	}

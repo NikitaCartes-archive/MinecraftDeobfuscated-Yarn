@@ -359,7 +359,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 			}
 		} else {
 			this.waitCountdown = MathHelper.nextInt(this.random, 100, 600);
-			this.waitCountdown = this.waitCountdown - this.lureLevel * 20 * 5;
+			this.waitCountdown = this.waitCountdown - this.lureLevel;
 		}
 	}
 

@@ -1,5 +1,6 @@
 package net.minecraft.entity.projectile;
 
+import javax.annotation.Nullable;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.Entity;
@@ -27,13 +28,13 @@ public class ArrowEntity extends PersistentProjectileEntity {
 		super(entityType, world);
 	}
 
-	public ArrowEntity(World world, double x, double y, double z, ItemStack stack) {
-		super(EntityType.ARROW, x, y, z, world, stack);
+	public ArrowEntity(World world, double x, double y, double z, ItemStack stack, @Nullable ItemStack shotFrom) {
+		super(EntityType.ARROW, x, y, z, world, stack, shotFrom);
 		this.initColor();
 	}
 
-	public ArrowEntity(World world, LivingEntity owner, ItemStack stack) {
-		super(EntityType.ARROW, owner, world, stack);
+	public ArrowEntity(World world, LivingEntity owner, ItemStack stack, @Nullable ItemStack shotFrom) {
+		super(EntityType.ARROW, owner, world, stack, shotFrom);
 		this.initColor();
 	}
 

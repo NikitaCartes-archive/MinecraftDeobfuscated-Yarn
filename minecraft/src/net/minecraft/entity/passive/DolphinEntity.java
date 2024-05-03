@@ -172,14 +172,8 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
-		boolean bl = target.damage(this.getDamageSources().mobAttack(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
-		if (bl) {
-			this.applyDamageEffects(this, target);
-			this.playSound(SoundEvents.ENTITY_DOLPHIN_ATTACK, 1.0F, 1.0F);
-		}
-
-		return bl;
+	public void method_59928() {
+		this.playSound(SoundEvents.ENTITY_DOLPHIN_ATTACK, 1.0F, 1.0F);
 	}
 
 	@Override

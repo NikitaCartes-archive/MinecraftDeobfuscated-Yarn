@@ -4,7 +4,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
@@ -156,15 +155,6 @@ public class OcelotEntity extends AnimalEntity {
 	@Override
 	protected SoundEvent getDeathSound() {
 		return SoundEvents.ENTITY_OCELOT_DEATH;
-	}
-
-	private float getAttackDamage() {
-		return (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-	}
-
-	@Override
-	public boolean tryAttack(Entity target) {
-		return target.damage(this.getDamageSources().mobAttack(this), this.getAttackDamage());
 	}
 
 	@Override

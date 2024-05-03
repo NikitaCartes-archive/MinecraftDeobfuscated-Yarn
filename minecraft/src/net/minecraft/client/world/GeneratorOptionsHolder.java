@@ -83,6 +83,12 @@ public record GeneratorOptionsHolder(
 		return this.combinedDynamicRegistries.getCombinedRegistryManager();
 	}
 
+	public void method_60345() {
+		for (DimensionOptions dimensionOptions : this.dimensionOptionsRegistry()) {
+			dimensionOptions.chunkGenerator().initializeIndexedFeaturesList();
+		}
+	}
+
 	@Environment(EnvType.CLIENT)
 	public interface Modifier extends UnaryOperator<GeneratorOptions> {
 	}
