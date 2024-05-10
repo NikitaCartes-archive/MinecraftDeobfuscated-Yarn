@@ -31,6 +31,7 @@ import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.enchantment.Enchantment;
@@ -139,7 +140,7 @@ public final class ItemStack implements ComponentHolder {
 		() -> RecordCodecBuilder.create(
 				instance -> instance.group(
 							ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry),
-							Codecs.POSITIVE_INT.fieldOf("count").orElse(1).forGetter(ItemStack::getCount),
+							Codecs.rangedInt(1, 99).fieldOf("count").orElse(1).forGetter(ItemStack::getCount),
 							ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.EMPTY).forGetter(stack -> stack.components.getChanges())
 						)
 						.apply(instance, ItemStack::new)
@@ -310,9 +311,21 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	public static DataResult<Unit> validateComponents(ComponentMap components) {
-		return components.contains(DataComponentTypes.MAX_DAMAGE) && components.getOrDefault(DataComponentTypes.MAX_STACK_SIZE, 1) > 1
-			? DataResult.error(() -> "Item cannot be both damageable and stackable")
-			: DataResult.success(Unit.INSTANCE);
+		if (components.contains(DataComponentTypes.MAX_DAMAGE) && components.getOrDefault(DataComponentTypes.MAX_STACK_SIZE, 1) > 1) {
+			return DataResult.error(() -> "Item cannot be both damageable and stackable");
+		} else {
+			ContainerComponent containerComponent = components.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT);
+
+			for (ItemStack itemStack : containerComponent.iterateNonEmpty()) {
+				int i = itemStack.getCount();
+				int j = itemStack.getMaxCount();
+				if (i > j) {
+					return DataResult.error(() -> "Item stack with count of " + i + " was larger than maximum: " + j);
+				}
+			}
+
+			return DataResult.success(Unit.INSTANCE);
+		}
 	}
 
 	public static Optional<ItemStack> fromNbt(RegistryWrapper.WrapperLookup registries, NbtElement nbt) {
@@ -564,10 +577,10 @@ public final class ItemStack implements ComponentHolder {
 	 * @param player the player that damaged the stack, or {@code null} if no player is involved
 	 * @param breakCallback a callback run when the item "breaks"
 	 */
-	public void damage(int amount, ServerWorld serverWorld, @Nullable ServerPlayerEntity player, Runnable breakCallback) {
+	public void damage(int amount, ServerWorld world, @Nullable ServerPlayerEntity player, Runnable breakCallback) {
 		if (this.isDamageable()) {
 			if (amount > 0) {
-				amount = EnchantmentHelper.getItemDamage(serverWorld, this, amount);
+				amount = EnchantmentHelper.getItemDamage(world, this, amount);
 				if (amount <= 0) {
 					return;
 				}
@@ -726,6 +739,10 @@ public final class ItemStack implements ComponentHolder {
 		}
 	}
 
+	public ItemStack method_60503(ItemConvertible itemConvertible) {
+		return this.copyComponentsToNewStack(itemConvertible, this.getCount());
+	}
+
 	/**
 	 * {@return a new item stack with the components copied from this item stack}
 	 * 
@@ -863,8 +880,8 @@ public final class ItemStack implements ComponentHolder {
 		this.getItem().onCraft(this, world);
 	}
 
-	public int getMaxUseTime(LivingEntity livingEntity) {
-		return this.getItem().getMaxUseTime(this, livingEntity);
+	public int getMaxUseTime(LivingEntity user) {
+		return this.getItem().getMaxUseTime(this, user);
 	}
 
 	public UseAction getUseAction() {
@@ -1117,7 +1134,7 @@ public final class ItemStack implements ComponentHolder {
 						AttributeModifiersComponent.DECIMAL_FORMAT.format(e),
 						Text.translatable(attribute.value().getTranslationKey())
 					)
-					.formatted(Formatting.BLUE)
+					.formatted(attribute.value().method_60494(true))
 			);
 		} else if (d < 0.0) {
 			textConsumer.accept(
@@ -1126,7 +1143,7 @@ public final class ItemStack implements ComponentHolder {
 						AttributeModifiersComponent.DECIMAL_FORMAT.format(-e),
 						Text.translatable(attribute.value().getTranslationKey())
 					)
-					.formatted(Formatting.RED)
+					.formatted(attribute.value().method_60494(false))
 			);
 		}
 	}
@@ -1172,8 +1189,8 @@ public final class ItemStack implements ComponentHolder {
 	 * 
 	 * @see net.minecraft.enchantment.EnchantmentHelper
 	 */
-	public void addEnchantment(RegistryEntry<Enchantment> registryEntry, int level) {
-		EnchantmentHelper.apply(this, builder -> builder.add(registryEntry, level));
+	public void addEnchantment(RegistryEntry<Enchantment> enchantment, int level) {
+		EnchantmentHelper.apply(this, builder -> builder.add(enchantment, level));
 	}
 
 	/**
@@ -1343,6 +1360,12 @@ public final class ItemStack implements ComponentHolder {
 		if (entity == null || !entity.isInCreativeMode()) {
 			this.decrement(amount);
 		}
+	}
+
+	public ItemStack method_60504(int i, @Nullable LivingEntity livingEntity) {
+		ItemStack itemStack = this.copyWithCount(i);
+		this.decrementUnlessCreative(i, livingEntity);
+		return itemStack;
 	}
 
 	public void usageTick(World world, LivingEntity user, int remainingUseTicks) {

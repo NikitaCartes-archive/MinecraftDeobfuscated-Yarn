@@ -1197,18 +1197,18 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	}
 
 	protected void enchantMainHandItem(Random random, float power) {
-		this.method_59927(EquipmentSlot.MAINHAND, random, 0.25F, power);
+		this.enchantEquipment(EquipmentSlot.MAINHAND, random, 0.25F, power);
 	}
 
 	protected void enchantEquipment(Random random, float power, EquipmentSlot slot) {
-		this.method_59927(slot, random, 0.5F, power);
+		this.enchantEquipment(slot, random, 0.5F, power);
 	}
 
-	private void method_59927(EquipmentSlot equipmentSlot, Random random, float f, float g) {
-		ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-		if (!itemStack.isEmpty() && random.nextFloat() < f * g) {
+	private void enchantEquipment(EquipmentSlot slot, Random random, float chancePerPower, float power) {
+		ItemStack itemStack = this.getEquippedStack(slot);
+		if (!itemStack.isEmpty() && random.nextFloat() < chancePerPower * power) {
 			EnchantmentHelper.applyEnchantmentProvider(itemStack, EnchantmentProviders.MOB_SPAWN_EQUIPMENT, this.getWorld(), this.getBlockPos(), random);
-			this.equipStack(equipmentSlot, itemStack);
+			this.equipStack(slot, itemStack);
 		}
 	}
 
@@ -1594,13 +1594,13 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 			}
 
 			this.onAttacking(target);
-			this.method_59928();
+			this.playAttackSound();
 		}
 
 		return bl;
 	}
 
-	protected void method_59928() {
+	protected void playAttackSound() {
 	}
 
 	protected boolean isAffectedByDaylight() {

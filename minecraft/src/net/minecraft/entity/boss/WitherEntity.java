@@ -421,7 +421,8 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 		double g = targetX - d;
 		double h = targetY - e;
 		double i = targetZ - f;
-		WitherSkullEntity witherSkullEntity = new WitherSkullEntity(this.getWorld(), this, g, h, i);
+		Vec3d vec3d = new Vec3d(g, h, i);
+		WitherSkullEntity witherSkullEntity = new WitherSkullEntity(this.getWorld(), this, vec3d.normalize());
 		witherSkullEntity.setOwner(this);
 		if (charged) {
 			witherSkullEntity.setCharged(true);

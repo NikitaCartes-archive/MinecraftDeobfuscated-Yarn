@@ -194,7 +194,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 			item, components -> components.remove(enchantment -> !enchantment.isIn(EnchantmentTags.CURSE))
 		);
 		if (item.isOf(Items.ENCHANTED_BOOK) && itemEnchantmentsComponent.isEmpty()) {
-			item = item.copyComponentsToNewStack(Items.BOOK, item.getCount());
+			item = item.method_60503(Items.BOOK);
 		}
 
 		int i = 0;

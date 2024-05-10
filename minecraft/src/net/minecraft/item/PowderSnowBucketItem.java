@@ -7,7 +7,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -25,9 +24,8 @@ public class PowderSnowBucketItem extends BlockItem implements FluidModification
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		ActionResult actionResult = super.useOnBlock(context);
 		PlayerEntity playerEntity = context.getPlayer();
-		if (actionResult.isAccepted() && playerEntity != null && !playerEntity.isCreative()) {
-			Hand hand = context.getHand();
-			playerEntity.setStackInHand(hand, Items.BUCKET.getDefaultStack());
+		if (actionResult.isAccepted() && playerEntity != null) {
+			playerEntity.setStackInHand(context.getHand(), BucketItem.getEmptiedStack(context.getStack(), playerEntity));
 		}
 
 		return actionResult;

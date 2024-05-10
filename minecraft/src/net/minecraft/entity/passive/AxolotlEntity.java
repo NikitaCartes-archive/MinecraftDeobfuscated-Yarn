@@ -41,6 +41,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.BlockTags;
@@ -333,7 +334,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	}
 
 	@Override
-	public void method_59928() {
+	public void playAttackSound() {
 		this.playSound(SoundEvents.ENTITY_AXOLOTL_ATTACK, 1.0F, 1.0F);
 	}
 
@@ -505,7 +506,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	@Override
 	protected void eat(PlayerEntity player, Hand hand, ItemStack stack) {
 		if (stack.isOf(Items.TROPICAL_FISH_BUCKET)) {
-			player.setStackInHand(hand, new ItemStack(Items.WATER_BUCKET));
+			player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.WATER_BUCKET)));
 		} else {
 			super.eat(player, hand, stack);
 		}

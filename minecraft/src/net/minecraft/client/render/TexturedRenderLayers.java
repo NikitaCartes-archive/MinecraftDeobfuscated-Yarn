@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.DecoratedPotPatterns;
+import net.minecraft.class_9766;
 import net.minecraft.block.WoodType;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BlockEntity;
@@ -63,10 +63,11 @@ public class TexturedRenderLayers {
 	public static final SpriteIdentifier SHIELD_BASE = new SpriteIdentifier(SHIELD_PATTERNS_ATLAS_TEXTURE, new Identifier("entity/shield/base"));
 	private static final Map<Identifier, SpriteIdentifier> BANNER_PATTERN_TEXTURES = new HashMap();
 	private static final Map<Identifier, SpriteIdentifier> SHIELD_PATTERN_TEXTURES = new HashMap();
-	public static final Map<RegistryKey<String>, SpriteIdentifier> DECORATED_POT_PATTERN_TEXTURES = (Map<RegistryKey<String>, SpriteIdentifier>)Registries.DECORATED_POT_PATTERN
-		.getKeys()
-		.stream()
-		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createDecoratedPotPatternTextureId));
+	public static final Map<RegistryKey<class_9766>, SpriteIdentifier> DECORATED_POT_PATTERN_TEXTURES = (Map<RegistryKey<class_9766>, SpriteIdentifier>)Registries.DECORATED_POT_PATTERN
+		.streamEntries()
+		.collect(Collectors.toMap(RegistryEntry.Reference::registryKey, reference -> createDecoratedPotPatternTextureId(((class_9766)reference.value()).assetId())));
+	public static final SpriteIdentifier field_51914 = createDecoratedPotPatternTextureId(new Identifier("decorated_pot_base"));
+	public static final SpriteIdentifier field_51915 = createDecoratedPotPatternTextureId(new Identifier("decorated_pot_side"));
 	public static final SpriteIdentifier[] BED_TEXTURES = (SpriteIdentifier[])Arrays.stream(DyeColor.values())
 		.sorted(Comparator.comparingInt(DyeColor::getId))
 		.map(color -> new SpriteIdentifier(BEDS_ATLAS_TEXTURE, new Identifier("entity/bed/" + color.getName())))
@@ -164,12 +165,12 @@ public class TexturedRenderLayers {
 		return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier("entity/chest/" + variant));
 	}
 
-	private static SpriteIdentifier createDecoratedPotPatternTextureId(RegistryKey<String> potPatternKey) {
-		return new SpriteIdentifier(DECORATED_POT_ATLAS_TEXTURE, DecoratedPotPatterns.getTextureId(potPatternKey));
+	private static SpriteIdentifier createDecoratedPotPatternTextureId(Identifier identifier) {
+		return new SpriteIdentifier(DECORATED_POT_ATLAS_TEXTURE, identifier.withPrefixedPath("entity/decorated_pot/"));
 	}
 
 	@Nullable
-	public static SpriteIdentifier getDecoratedPotPatternTextureId(@Nullable RegistryKey<String> potPatternKey) {
+	public static SpriteIdentifier getDecoratedPotPatternTextureId(@Nullable RegistryKey<class_9766> potPatternKey) {
 		return potPatternKey == null ? null : (SpriteIdentifier)DECORATED_POT_PATTERN_TEXTURES.get(potPatternKey);
 	}
 

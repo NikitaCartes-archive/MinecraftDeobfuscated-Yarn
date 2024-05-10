@@ -26,7 +26,9 @@ public record PlaySoundEnchantmentEffectType(RegistryEntry<SoundEvent> soundEven
 	@Override
 	public void apply(ServerWorld world, int level, EnchantmentEffectContext context, Entity user, Vec3d pos) {
 		Random random = user.getRandom();
-		user.playSound(this.soundEvent.value(), this.volume.get(random), this.pitch.get(random));
+		if (!user.isSilent()) {
+			world.method_60511(null, pos.getX(), pos.getY(), pos.getZ(), this.soundEvent, user.getSoundCategory(), this.volume.get(random), this.pitch.get(random));
+		}
 	}
 
 	@Override

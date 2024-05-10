@@ -8,6 +8,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -158,10 +159,10 @@ public class LecternBlock extends BlockWithEntity {
 		return new LecternBlockEntity(pos, state);
 	}
 
-	public static boolean putBookIfAbsent(@Nullable Entity user, World world, BlockPos pos, BlockState state, ItemStack stack) {
+	public static boolean putBookIfAbsent(@Nullable LivingEntity livingEntity, World world, BlockPos pos, BlockState state, ItemStack stack) {
 		if (!(Boolean)state.get(HAS_BOOK)) {
 			if (!world.isClient) {
-				putBook(user, world, pos, state, stack);
+				putBook(livingEntity, world, pos, state, stack);
 			}
 
 			return true;
@@ -170,10 +171,10 @@ public class LecternBlock extends BlockWithEntity {
 		}
 	}
 
-	private static void putBook(@Nullable Entity user, World world, BlockPos pos, BlockState state, ItemStack stack) {
+	private static void putBook(@Nullable LivingEntity livingEntity, World world, BlockPos pos, BlockState state, ItemStack stack) {
 		if (world.getBlockEntity(pos) instanceof LecternBlockEntity lecternBlockEntity) {
-			lecternBlockEntity.setBook(stack.split(1));
-			setHasBook(user, world, pos, state, true);
+			lecternBlockEntity.setBook(stack.method_60504(1, livingEntity));
+			setHasBook(livingEntity, world, pos, state, true);
 			world.playSound(null, pos, SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 	}

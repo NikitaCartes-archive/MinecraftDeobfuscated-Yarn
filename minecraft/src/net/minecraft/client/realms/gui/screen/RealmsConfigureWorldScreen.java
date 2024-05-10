@@ -353,7 +353,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	}
 
 	private boolean isMinigame() {
-		return this.server != null && this.server.method_60315();
+		return this.server != null && this.server.isMinigame();
 	}
 
 	private void hideRegularButtons() {

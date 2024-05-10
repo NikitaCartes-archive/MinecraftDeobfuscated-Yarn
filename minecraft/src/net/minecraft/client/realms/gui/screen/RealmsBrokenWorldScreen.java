@@ -70,7 +70,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	private void addButtons() {
 		for (Entry<Integer, RealmsWorldOptions> entry : this.serverData.slots.entrySet()) {
 			int i = (Integer)entry.getKey();
-			boolean bl = i != this.serverData.activeSlot || this.serverData.method_60315();
+			boolean bl = i != this.serverData.activeSlot || this.serverData.isMinigame();
 			ButtonWidget buttonWidget;
 			if (bl) {
 				buttonWidget = ButtonWidget.builder(
@@ -214,7 +214,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	}
 
 	private boolean isMinigame() {
-		return this.serverData != null && this.serverData.method_60315();
+		return this.serverData != null && this.serverData.isMinigame();
 	}
 
 	private void drawSlotFrame(

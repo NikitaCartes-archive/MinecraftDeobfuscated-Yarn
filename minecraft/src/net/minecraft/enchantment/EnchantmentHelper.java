@@ -294,23 +294,41 @@ public class EnchantmentHelper {
 	public static float getEquipmentDropChance(ServerWorld world, LivingEntity attacker, DamageSource damageSource, float baseEquipmentDropChance) {
 		MutableFloat mutableFloat = new MutableFloat(baseEquipmentDropChance);
 		Random random = attacker.getRandom();
-		forEachEnchantment(attacker, (enchantment, level, context) -> {
-			LootContext lootContext = Enchantment.createEnchantedDamageLootContext(world, level, attacker, damageSource);
-			enchantment.value().getEffect(EnchantmentEffectComponentTypes.EQUIPMENT_DROPS).forEach(effect -> {
-				if (effect.enchanted() == EnchantmentEffectTarget.VICTIM && effect.affected() == EnchantmentEffectTarget.VICTIM && effect.test(lootContext)) {
-					mutableFloat.setValue(((EnchantmentValueEffectType)effect.effect()).apply(context.stack(), level, random, mutableFloat.floatValue()));
-				}
-			});
-		});
-		if (damageSource.getAttacker() instanceof LivingEntity livingEntity) {
-			forEachEnchantment(livingEntity, (enchantment, level, context) -> {
+		forEachEnchantment(
+			attacker,
+			(enchantment, level, context) -> {
 				LootContext lootContext = Enchantment.createEnchantedDamageLootContext(world, level, attacker, damageSource);
-				enchantment.value().getEffect(EnchantmentEffectComponentTypes.EQUIPMENT_DROPS).forEach(effect -> {
-					if (effect.enchanted() == EnchantmentEffectTarget.ATTACKER && effect.affected() == EnchantmentEffectTarget.VICTIM && effect.test(lootContext)) {
-						mutableFloat.setValue(((EnchantmentValueEffectType)effect.effect()).apply(context.stack(), level, random, mutableFloat.floatValue()));
-					}
-				});
-			});
+				enchantment.value()
+					.getEffect(EnchantmentEffectComponentTypes.EQUIPMENT_DROPS)
+					.forEach(
+						targetedEnchantmentEffectType -> {
+							if (targetedEnchantmentEffectType.enchanted() == EnchantmentEffectTarget.VICTIM
+								&& targetedEnchantmentEffectType.affected() == EnchantmentEffectTarget.VICTIM
+								&& targetedEnchantmentEffectType.test(lootContext)) {
+								mutableFloat.setValue(((EnchantmentValueEffectType)targetedEnchantmentEffectType.effect()).apply(level, random, mutableFloat.floatValue()));
+							}
+						}
+					);
+			}
+		);
+		if (damageSource.getAttacker() instanceof LivingEntity livingEntity) {
+			forEachEnchantment(
+				livingEntity,
+				(enchantment, level, context) -> {
+					LootContext lootContext = Enchantment.createEnchantedDamageLootContext(world, level, attacker, damageSource);
+					enchantment.value()
+						.getEffect(EnchantmentEffectComponentTypes.EQUIPMENT_DROPS)
+						.forEach(
+							targetedEnchantmentEffectType -> {
+								if (targetedEnchantmentEffectType.enchanted() == EnchantmentEffectTarget.ATTACKER
+									&& targetedEnchantmentEffectType.affected() == EnchantmentEffectTarget.VICTIM
+									&& targetedEnchantmentEffectType.test(lootContext)) {
+									mutableFloat.setValue(((EnchantmentValueEffectType)targetedEnchantmentEffectType.effect()).apply(level, random, mutableFloat.floatValue()));
+								}
+							}
+						);
+				}
+			);
 		}
 
 		return mutableFloat.floatValue();
@@ -344,15 +362,20 @@ public class EnchantmentHelper {
 		return Math.max(0, mutableFloat.intValue());
 	}
 
-	public static float getCrossbowChargeTime(ServerWorld world, ItemStack stack, Entity user, float baseCrossbowChargeTime) {
-		MutableFloat mutableFloat = new MutableFloat(baseCrossbowChargeTime);
-		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().modifyCrossbowChargeTime(world, level, stack, mutableFloat));
+	public static float getCrossbowChargeTime(LivingEntity livingEntity, float f) {
+		MutableFloat mutableFloat = new MutableFloat(f);
+		forEachEnchantment(
+			livingEntity, (registryEntry, i, enchantmentEffectContext) -> registryEntry.value().modifyCrossbowChargeTime(livingEntity.getRandom(), i, mutableFloat)
+		);
 		return Math.max(0.0F, mutableFloat.floatValue());
 	}
 
-	public static float getTridentSpinAttackStrength(ServerWorld world, ItemStack stack, LivingEntity user) {
+	public static float getTridentSpinAttackStrength(LivingEntity livingEntity) {
 		MutableFloat mutableFloat = new MutableFloat(0.0F);
-		forEachEnchantment(user, (enchantment, level, context) -> enchantment.value().modifyTridentSpinAttackStrength(world, level, stack, user, mutableFloat));
+		forEachEnchantment(
+			livingEntity,
+			(registryEntry, i, enchantmentEffectContext) -> registryEntry.value().modifyTridentSpinAttackStrength(livingEntity.getRandom(), i, mutableFloat)
+		);
 		return mutableFloat.floatValue();
 	}
 

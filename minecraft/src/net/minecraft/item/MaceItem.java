@@ -147,6 +147,9 @@ public class MaceItem extends Item {
 			Vec3d vec3d2 = vec3d.normalize().multiply(d);
 			if (d > 0.0) {
 				entity.addVelocity(vec3d2.x, 0.7F, vec3d2.z);
+				if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
+					serverPlayerEntity.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(serverPlayerEntity));
+				}
 			}
 		});
 	}
@@ -193,7 +196,7 @@ public class MaceItem extends Item {
 			* (1.0 - attacked.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
 	}
 
-	public static boolean shouldDealAdditionalDamage(LivingEntity livingEntity) {
-		return livingEntity.fallDistance > 1.5F && !livingEntity.isFallFlying();
+	public static boolean shouldDealAdditionalDamage(LivingEntity attacker) {
+		return attacker.fallDistance > 1.5F && !attacker.isFallFlying();
 	}
 }

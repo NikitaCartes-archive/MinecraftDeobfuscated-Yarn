@@ -8,7 +8,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -20,11 +19,9 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
-	public static final double field_51507 = 0.1;
-	public static final double field_51508 = 0.05;
-	public double powerX;
-	public double powerY;
-	public double powerZ;
+	public static final double field_51891 = 0.1;
+	public static final double field_51892 = 0.5;
+	public double field_51893 = 0.1;
 
 	protected ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> entityType, World world) {
 		super(entityType, world);
@@ -35,19 +32,15 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		this.setPosition(x, y, z);
 	}
 
-	public ExplosiveProjectileEntity(
-		EntityType<? extends ExplosiveProjectileEntity> type, double x, double y, double z, double directionX, double directionY, double directionZ, World world
-	) {
+	public ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> type, double x, double y, double z, Vec3d vec3d, World world) {
 		this(type, world);
 		this.refreshPositionAndAngles(x, y, z, this.getYaw(), this.getPitch());
 		this.refreshPosition();
-		this.setPower(directionX, directionY, directionZ);
+		this.method_60499(vec3d, this.field_51893);
 	}
 
-	public ExplosiveProjectileEntity(
-		EntityType<? extends ExplosiveProjectileEntity> type, LivingEntity owner, double directionX, double directionY, double directionZ, World world
-	) {
-		this(type, owner.getX(), owner.getY(), owner.getZ(), directionX, directionY, directionZ, world);
+	public ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> type, LivingEntity owner, Vec3d vec3d, World world) {
+		this(type, owner.getX(), owner.getY(), owner.getZ(), vec3d, world);
 		this.setOwner(owner);
 		this.setRotation(owner.getYaw(), owner.getPitch());
 	}
@@ -103,7 +96,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 				h = this.getDrag();
 			}
 
-			this.setVelocity(vec3d.add(this.powerX, this.powerY, this.powerZ).multiply((double)h));
+			this.setVelocity(vec3d.add(vec3d.normalize().multiply(this.field_51893)).multiply((double)h));
 			ParticleEffect particleEffect = this.getParticleType();
 			if (particleEffect != null) {
 				this.getWorld().addParticle(particleEffect, d, e + 0.5, f, 0.0, 0.0, 0.0);
@@ -145,19 +138,14 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.put("power", this.toNbtList(new double[]{this.powerX, this.powerY, this.powerZ}));
+		nbt.putDouble("acceleration_power", this.field_51893);
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		if (nbt.contains("power", NbtElement.LIST_TYPE)) {
-			NbtList nbtList = nbt.getList("power", NbtElement.DOUBLE_TYPE);
-			if (nbtList.size() == 3) {
-				this.powerX = nbtList.getDouble(0);
-				this.powerY = nbtList.getDouble(1);
-				this.powerZ = nbtList.getDouble(2);
-			}
+		if (nbt.contains("acceleration_power", NbtElement.DOUBLE_TYPE)) {
+			this.field_51893 = nbt.getDouble("acceleration_power");
 		}
 	}
 
@@ -171,49 +159,29 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		Entity entity = this.getOwner();
 		int i = entity == null ? 0 : entity.getId();
 		return new EntitySpawnS2CPacket(
-			this.getId(),
-			this.getUuid(),
-			this.getX(),
-			this.getY(),
-			this.getZ(),
-			this.getPitch(),
-			this.getYaw(),
-			this.getType(),
-			i,
-			new Vec3d(this.powerX, this.powerY, this.powerZ),
-			0.0
+			this.getId(), this.getUuid(), this.getX(), this.getY(), this.getZ(), this.getPitch(), this.getYaw(), this.getType(), i, this.getVelocity(), 0.0
 		);
 	}
 
 	@Override
 	public void onSpawnPacket(EntitySpawnS2CPacket packet) {
 		super.onSpawnPacket(packet);
-		double d = packet.getVelocityX();
-		double e = packet.getVelocityY();
-		double f = packet.getVelocityZ();
-		this.setPower(d, e, f);
+		Vec3d vec3d = new Vec3d(packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ());
+		this.setVelocity(vec3d);
 	}
 
-	private void setPower(double velocityX, double velocityY, double velocityZ) {
-		double d = Math.sqrt(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
-		if (d != 0.0) {
-			this.powerX = velocityX / d * 0.1;
-			this.powerY = velocityY / d * 0.1;
-			this.powerZ = velocityZ / d * 0.1;
-		}
+	private void method_60499(Vec3d vec3d, double d) {
+		this.setVelocity(vec3d.normalize().multiply(d));
+		this.velocityDirty = true;
 	}
 
 	@Override
 	protected void onDeflected(@Nullable Entity deflector, boolean fromAttack) {
 		super.onDeflected(deflector, fromAttack);
 		if (fromAttack) {
-			this.powerX = this.getVelocity().x * 0.1;
-			this.powerY = this.getVelocity().y * 0.1;
-			this.powerZ = this.getVelocity().z * 0.1;
+			this.field_51893 = 0.1;
 		} else {
-			this.powerX = this.getVelocity().x * 0.05;
-			this.powerY = this.getVelocity().y * 0.05;
-			this.powerZ = this.getVelocity().z * 0.05;
+			this.field_51893 *= 0.5;
 		}
 	}
 }

@@ -307,9 +307,9 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	}
 
 	@Override
-	public DoubleDoubleImmutablePair method_59959(LivingEntity livingEntity, DamageSource damageSource) {
-		double d = livingEntity.getPos().x - this.getPos().x;
-		double e = livingEntity.getPos().z - this.getPos().z;
+	public DoubleDoubleImmutablePair getKnockback(LivingEntity target, DamageSource source) {
+		double d = target.getPos().x - this.getPos().x;
+		double e = target.getPos().z - this.getPos().z;
 		return DoubleDoubleImmutablePair.of(d, e);
 	}
 }

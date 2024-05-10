@@ -4,7 +4,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.enchantment.EnchantmentLevelBasedValueType;
 import net.minecraft.enchantment.effect.EnchantmentValueEffectType;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.random.Random;
 
 public record SetEnchantmentEffectType(EnchantmentLevelBasedValueType value) implements EnchantmentValueEffectType {
@@ -14,8 +13,8 @@ public record SetEnchantmentEffectType(EnchantmentLevelBasedValueType value) imp
 	);
 
 	@Override
-	public float apply(ItemStack stack, int level, Random random, float inputValue) {
-		return this.value.getValue(level);
+	public float apply(int i, Random random, float f) {
+		return this.value.getValue(i);
 	}
 
 	@Override

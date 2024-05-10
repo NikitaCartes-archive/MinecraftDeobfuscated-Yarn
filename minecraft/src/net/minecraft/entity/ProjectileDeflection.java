@@ -14,20 +14,20 @@ public interface ProjectileDeflection {
 		projectile.setVelocity(projectile.getVelocity().multiply(-0.5));
 		projectile.setYaw(projectile.getYaw() + f);
 		projectile.prevYaw += f;
-		projectile.velocityModified = true;
+		projectile.velocityDirty = true;
 	};
 	ProjectileDeflection REDIRECTED = (projectile, hitEntity, random) -> {
 		if (hitEntity != null) {
 			Vec3d vec3d = hitEntity.getRotationVector().normalize();
 			projectile.setVelocity(vec3d);
-			projectile.velocityModified = true;
+			projectile.velocityDirty = true;
 		}
 	};
 	ProjectileDeflection TRANSFER_VELOCITY_DIRECTION = (projectile, hitEntity, random) -> {
 		if (hitEntity != null) {
 			Vec3d vec3d = hitEntity.getVelocity().normalize();
 			projectile.setVelocity(vec3d);
-			projectile.velocityModified = true;
+			projectile.velocityDirty = true;
 		}
 	};
 

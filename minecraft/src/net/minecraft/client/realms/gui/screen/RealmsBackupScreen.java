@@ -39,7 +39,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 	static final Text RESTORE_TEXT = Text.translatable("mco.backup.button.restore");
 	static final Text CHANGES_TOOLTIP = Text.translatable("mco.backup.changes.tooltip");
 	private static final Text NO_BACKUPS_TEXT = Text.translatable("mco.backup.nobackups");
-	private static final Text field_51818 = Text.translatable("mco.backup.button.download");
+	private static final Text DOWNLOAD_TEXT = Text.translatable("mco.backup.button.download");
 	private static final String UPLOADED = "uploaded";
 	private static final int field_49447 = 8;
 	final RealmsConfigureWorldScreen parent;
@@ -65,7 +65,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 		this.layout.addHeader(BACKUPS_TEXT, this.textRenderer);
 		this.selectionList = this.layout.addBody(new RealmsBackupScreen.BackupObjectSelectionList());
 		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
-		this.downloadButton = directionalLayoutWidget.add(ButtonWidget.builder(field_51818, button -> this.downloadClicked()).build());
+		this.downloadButton = directionalLayoutWidget.add(ButtonWidget.builder(DOWNLOAD_TEXT, button -> this.downloadClicked()).build());
 		this.downloadButton.active = false;
 		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).build());
 		this.layout.forEachChild(element -> {
@@ -191,31 +191,34 @@ public class RealmsBackupScreen extends RealmsScreen {
 		private static final int field_44525 = 2;
 		private final Backup mBackup;
 		@Nullable
-		private ButtonWidget field_49452;
+		private ButtonWidget restoreButton;
 		@Nullable
-		private ButtonWidget field_49451;
+		private ButtonWidget changesButton;
 		private final List<ClickableWidget> buttons = new ArrayList();
 
 		public BackupObjectSelectionListEntry(final Backup backup) {
 			this.mBackup = backup;
 			this.updateChangeList(backup);
 			if (!backup.changeList.isEmpty()) {
-				this.field_49451 = ButtonWidget.builder(
-						RealmsBackupScreen.CHANGES_TOOLTIP,
-						buttonWidget -> RealmsBackupScreen.this.client.setScreen(new RealmsBackupInfoScreen(RealmsBackupScreen.this, this.mBackup))
+				this.changesButton = ButtonWidget.builder(
+						RealmsBackupScreen.CHANGES_TOOLTIP, button -> RealmsBackupScreen.this.client.setScreen(new RealmsBackupInfoScreen(RealmsBackupScreen.this, this.mBackup))
 					)
 					.width(8 + RealmsBackupScreen.this.textRenderer.getWidth(RealmsBackupScreen.CHANGES_TOOLTIP))
-					.narrationSupplier(supplier -> ScreenTexts.joinSentences(Text.translatable("mco.backup.narration", this.method_57672()), (Text)supplier.get()))
+					.narrationSupplier(
+						textSupplier -> ScreenTexts.joinSentences(Text.translatable("mco.backup.narration", this.getLastModifiedDate()), (Text)textSupplier.get())
+					)
 					.build();
-				this.buttons.add(this.field_49451);
+				this.buttons.add(this.changesButton);
 			}
 
 			if (!RealmsBackupScreen.this.serverData.expired) {
-				this.field_49452 = ButtonWidget.builder(RealmsBackupScreen.RESTORE_TEXT, buttonWidget -> this.method_57674())
+				this.restoreButton = ButtonWidget.builder(RealmsBackupScreen.RESTORE_TEXT, button -> this.restore())
 					.width(8 + RealmsBackupScreen.this.textRenderer.getWidth(RealmsBackupScreen.CHANGES_TOOLTIP))
-					.narrationSupplier(supplier -> ScreenTexts.joinSentences(Text.translatable("mco.backup.narration", this.method_57672()), (Text)supplier.get()))
+					.narrationSupplier(
+						textSupplier -> ScreenTexts.joinSentences(Text.translatable("mco.backup.narration", this.getLastModifiedDate()), (Text)textSupplier.get())
+					)
 					.build();
-				this.buttons.add(this.field_49452);
+				this.buttons.add(this.restoreButton);
 			}
 		}
 
@@ -246,19 +249,19 @@ public class RealmsBackupScreen extends RealmsScreen {
 			}
 		}
 
-		private String method_57672() {
+		private String getLastModifiedDate() {
 			return DateFormat.getDateTimeInstance(3, 3).format(this.mBackup.lastModifiedDate);
 		}
 
-		private void method_57674() {
+		private void restore() {
 			Text text = RealmsUtil.convertToAgePresentation(this.mBackup.lastModifiedDate);
-			Text text2 = Text.translatable("mco.configure.world.restore.question.line1", this.method_57672(), text);
+			Text text2 = Text.translatable("mco.configure.world.restore.question.line1", this.getLastModifiedDate(), text);
 			RealmsBackupScreen.this.client
 				.setScreen(
 					RealmsPopups.createContinuableWarningPopup(
 						RealmsBackupScreen.this,
 						text2,
-						popupScreen -> RealmsBackupScreen.this.client
+						popup -> RealmsBackupScreen.this.client
 								.setScreen(
 									new RealmsLongRunningMcoTaskScreen(
 										RealmsBackupScreen.this.parent.getNewScreen(), new RestoreTask(this.mBackup, RealmsBackupScreen.this.serverData.id, RealmsBackupScreen.this.parent)
@@ -295,18 +298,18 @@ public class RealmsBackupScreen extends RealmsScreen {
 			context.drawText(RealmsBackupScreen.this.textRenderer, this.getMediumDatePresentation(this.mBackup.lastModifiedDate), x, k, 5000268, false);
 			int m = 0;
 			int n = y + entryHeight / 2 - 10;
-			if (this.field_49452 != null) {
-				m += this.field_49452.getWidth() + 8;
-				this.field_49452.setX(x + entryWidth - m);
-				this.field_49452.setY(n);
-				this.field_49452.render(context, mouseX, mouseY, tickDelta);
+			if (this.restoreButton != null) {
+				m += this.restoreButton.getWidth() + 8;
+				this.restoreButton.setX(x + entryWidth - m);
+				this.restoreButton.setY(n);
+				this.restoreButton.render(context, mouseX, mouseY, tickDelta);
 			}
 
-			if (this.field_49451 != null) {
-				m += this.field_49451.getWidth() + 8;
-				this.field_49451.setX(x + entryWidth - m);
-				this.field_49451.setY(n);
-				this.field_49451.render(context, mouseX, mouseY, tickDelta);
+			if (this.changesButton != null) {
+				m += this.changesButton.getWidth() + 8;
+				this.changesButton.setX(x + entryWidth - m);
+				this.changesButton.setY(n);
+				this.changesButton.render(context, mouseX, mouseY, tickDelta);
 			}
 		}
 

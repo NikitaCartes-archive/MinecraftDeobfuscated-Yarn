@@ -6,6 +6,7 @@ import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.RecipeUnlocker;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.util.collection.DefaultedList;
 
 public class CraftingResultSlot extends Slot {
@@ -60,26 +61,31 @@ public class CraftingResultSlot extends Slot {
 	@Override
 	public void onTakeItem(PlayerEntity player, ItemStack stack) {
 		this.onCrafted(stack);
-		DefaultedList<ItemStack> defaultedList = player.getWorld()
-			.getRecipeManager()
-			.getRemainingStacks(RecipeType.CRAFTING, this.input.createRecipeInput(), player.getWorld());
+		CraftingRecipeInput.class_9765 lv = this.input.method_60501();
+		CraftingRecipeInput craftingRecipeInput = lv.input();
+		int i = lv.left();
+		int j = lv.top();
+		DefaultedList<ItemStack> defaultedList = player.getWorld().getRecipeManager().getRemainingStacks(RecipeType.CRAFTING, craftingRecipeInput, player.getWorld());
 
-		for (int i = 0; i < defaultedList.size(); i++) {
-			ItemStack itemStack = this.input.getStack(i);
-			ItemStack itemStack2 = defaultedList.get(i);
-			if (!itemStack.isEmpty()) {
-				this.input.removeStack(i, 1);
-				itemStack = this.input.getStack(i);
-			}
+		for (int k = 0; k < craftingRecipeInput.getHeight(); k++) {
+			for (int l = 0; l < craftingRecipeInput.getWidth(); l++) {
+				int m = l + i + (k + j) * this.input.getWidth();
+				ItemStack itemStack = this.input.getStack(m);
+				ItemStack itemStack2 = defaultedList.get(l + k * craftingRecipeInput.getWidth());
+				if (!itemStack.isEmpty()) {
+					this.input.removeStack(m, 1);
+					itemStack = this.input.getStack(m);
+				}
 
-			if (!itemStack2.isEmpty()) {
-				if (itemStack.isEmpty()) {
-					this.input.setStack(i, itemStack2);
-				} else if (ItemStack.areItemsAndComponentsEqual(itemStack, itemStack2)) {
-					itemStack2.increment(itemStack.getCount());
-					this.input.setStack(i, itemStack2);
-				} else if (!this.player.getInventory().insertStack(itemStack2)) {
-					this.player.dropItem(itemStack2, false);
+				if (!itemStack2.isEmpty()) {
+					if (itemStack.isEmpty()) {
+						this.input.setStack(m, itemStack2);
+					} else if (ItemStack.areItemsAndComponentsEqual(itemStack, itemStack2)) {
+						itemStack2.increment(itemStack.getCount());
+						this.input.setStack(m, itemStack2);
+					} else if (!this.player.getInventory().insertStack(itemStack2)) {
+						this.player.dropItem(itemStack2, false);
+					}
 				}
 			}
 		}

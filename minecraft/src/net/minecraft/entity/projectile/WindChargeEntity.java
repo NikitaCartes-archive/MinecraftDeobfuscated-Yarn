@@ -8,6 +8,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.AdvancedExplosionBehavior;
 import net.minecraft.world.explosion.ExplosionBehavior;
@@ -26,8 +27,8 @@ public class WindChargeEntity extends AbstractWindChargeEntity {
 		super(EntityType.WIND_CHARGE, world, player, x, y, z);
 	}
 
-	public WindChargeEntity(World world, double x, double y, double z, double directionX, double directionY, double directionZ) {
-		super(EntityType.WIND_CHARGE, x, y, z, directionX, directionY, directionZ, world);
+	public WindChargeEntity(World world, double x, double y, double z, Vec3d vec3d) {
+		super(EntityType.WIND_CHARGE, x, y, z, vec3d, world);
 	}
 
 	@Override

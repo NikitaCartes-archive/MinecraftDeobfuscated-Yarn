@@ -107,11 +107,11 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 			boolean bl3 = blockEntity.brewTime == 0;
 			if (bl3 && bl) {
 				craft(world, pos, blockEntity.inventory);
-				markDirty(world, pos, state);
 			} else if (!bl || !itemStack2.isOf(blockEntity.itemBrewing)) {
 				blockEntity.brewTime = 0;
-				markDirty(world, pos, state);
 			}
+
+			markDirty(world, pos, state);
 		} else if (bl && blockEntity.fuel > 0) {
 			blockEntity.fuel--;
 			blockEntity.brewTime = 400;
@@ -193,6 +193,10 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		Inventories.readNbt(nbt, this.inventory, registryLookup);
 		this.brewTime = nbt.getShort("BrewTime");
+		if (this.brewTime > 0) {
+			this.itemBrewing = this.inventory.get(3).getItem();
+		}
+
 		this.fuel = nbt.getByte("Fuel");
 	}
 

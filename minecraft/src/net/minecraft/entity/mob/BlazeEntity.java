@@ -241,9 +241,8 @@ public class BlazeEntity extends HostileEntity {
 							}
 
 							for (int i = 0; i < 1; i++) {
-								SmallFireballEntity smallFireballEntity = new SmallFireballEntity(
-									this.blaze.getWorld(), this.blaze, this.blaze.getRandom().nextTriangular(e, 2.297 * h), f, this.blaze.getRandom().nextTriangular(g, 2.297 * h)
-								);
+								Vec3d vec3d = new Vec3d(this.blaze.getRandom().nextTriangular(e, 2.297 * h), f, this.blaze.getRandom().nextTriangular(g, 2.297 * h));
+								SmallFireballEntity smallFireballEntity = new SmallFireballEntity(this.blaze.getWorld(), this.blaze, vec3d.normalize());
 								smallFireballEntity.setPosition(smallFireballEntity.getX(), this.blaze.getBodyY(0.5) + 0.5, smallFireballEntity.getZ());
 								this.blaze.getWorld().spawnEntity(smallFireballEntity);
 							}

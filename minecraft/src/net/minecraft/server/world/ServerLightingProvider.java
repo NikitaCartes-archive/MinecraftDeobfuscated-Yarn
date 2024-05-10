@@ -178,7 +178,6 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		}), (Supplier<String>)(() -> "lightChunk " + chunkPos + " " + excludeBlocks)));
 		return CompletableFuture.supplyAsync(() -> {
 			chunk.setLightOn(true);
-			this.chunkStorage.releaseLightTicket(chunkPos);
 			return chunk;
 		}, task -> this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.POST_UPDATE, task));
 	}

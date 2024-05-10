@@ -419,7 +419,7 @@ public class CreateWorldScreen extends Screen {
 				this.client
 			)
 			.thenApplyAsync(generatorOptionsHolder -> {
-				generatorOptionsHolder.method_60345();
+				generatorOptionsHolder.initializeIndexedFeaturesLists();
 				return generatorOptionsHolder;
 			})
 			.thenAcceptAsync(this.worldCreator::setGeneratorOptionsHolder, this.client)

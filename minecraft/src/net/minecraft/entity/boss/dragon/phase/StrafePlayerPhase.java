@@ -73,11 +73,12 @@ public class StrafePlayerPhase extends AbstractPhase {
 						double o = this.target.getX() - l;
 						double p = this.target.getBodyY(0.5) - m;
 						double q = this.target.getZ() - n;
+						Vec3d vec3d4 = new Vec3d(o, p, q);
 						if (!this.dragon.isSilent()) {
 							this.dragon.getWorld().syncWorldEvent(null, WorldEvents.ENDER_DRAGON_SHOOTS, this.dragon.getBlockPos(), 0);
 						}
 
-						DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(this.dragon.getWorld(), this.dragon, o, p, q);
+						DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(this.dragon.getWorld(), this.dragon, vec3d4.normalize());
 						dragonFireballEntity.refreshPositionAndAngles(l, m, n, 0.0F, 0.0F);
 						this.dragon.getWorld().spawnEntity(dragonFireballEntity);
 						this.seenTargetTimes = 0;

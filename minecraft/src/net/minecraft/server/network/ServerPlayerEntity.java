@@ -233,6 +233,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private SculkShriekerWarningManager sculkShriekerWarningManager = new SculkShriekerWarningManager(0, 0, 0);
 	@Nullable
 	private BlockPos startRaidPos;
+	private Vec3d field_51875 = Vec3d.ZERO;
 	private final ScreenHandlerSyncHandler screenHandlerSyncHandler = new ScreenHandlerSyncHandler() {
 		@Override
 		public void updateState(ScreenHandler handler, DefaultedList<ItemStack> stacks, ItemStack cursorStack, int[] properties) {
@@ -1038,7 +1039,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		super.onExplodedBy(entity);
 		this.currentExplosionImpactPos = this.getPos();
 		this.explodedBy = entity;
-		this.ignoreFallDamageFromCurrentExplosion = entity != null && entity.getType() == EntityType.WIND_CHARGE;
+		this.ignoreFallDamageFromCurrentExplosion = this.ignoreFallDamageFromCurrentExplosion || entity != null && entity.getType() == EntityType.WIND_CHARGE;
 	}
 
 	@Override
@@ -1949,7 +1950,12 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public void setOnGround(boolean onGround, Vec3d movement) {
 		super.setOnGround(onGround, movement);
-		this.setVelocity(movement);
+		this.field_51875 = movement;
+	}
+
+	@Override
+	public Vec3d method_60478() {
+		return this.field_51875;
 	}
 
 	@Override

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.function.Function;
 import net.minecraft.enchantment.EnchantmentEffectContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -53,9 +52,9 @@ public interface AllOfEnchantmentEffectTypes {
 		);
 
 		@Override
-		public void apply(ServerWorld world, int level, EnchantmentEffectContext context, Entity user, Vec3d pos, boolean bl) {
+		public void apply(ServerWorld world, int level, EnchantmentEffectContext context, Entity user, Vec3d pos, boolean newlyApplied) {
 			for (EnchantmentLocationBasedEffectType enchantmentLocationBasedEffectType : this.effects) {
-				enchantmentLocationBasedEffectType.apply(world, level, context, user, pos, bl);
+				enchantmentLocationBasedEffectType.apply(world, level, context, user, pos, newlyApplied);
 			}
 		}
 
@@ -78,12 +77,12 @@ public interface AllOfEnchantmentEffectTypes {
 		);
 
 		@Override
-		public float apply(ItemStack stack, int level, Random random, float inputValue) {
+		public float apply(int i, Random random, float f) {
 			for (EnchantmentValueEffectType enchantmentValueEffectType : this.effects) {
-				inputValue = enchantmentValueEffectType.apply(stack, level, random, inputValue);
+				f = enchantmentValueEffectType.apply(i, random, f);
 			}
 
-			return inputValue;
+			return f;
 		}
 
 		@Override

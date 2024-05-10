@@ -94,10 +94,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 			ItemStack itemStack = player.getStackInHand(hand);
 			Optional<RecipeEntry<CampfireCookingRecipe>> optional = campfireBlockEntity.getRecipeFor(itemStack);
 			if (optional.isPresent()) {
-				if (!world.isClient
-					&& campfireBlockEntity.addItem(
-						player, player.isInCreativeMode() ? itemStack.copy() : itemStack, ((CampfireCookingRecipe)((RecipeEntry)optional.get()).value()).getCookingTime()
-					)) {
+				if (!world.isClient && campfireBlockEntity.addItem(player, itemStack, ((CampfireCookingRecipe)((RecipeEntry)optional.get()).value()).getCookingTime())) {
 					player.incrementStat(Stats.INTERACT_WITH_CAMPFIRE);
 					return ItemActionResult.SUCCESS;
 				}

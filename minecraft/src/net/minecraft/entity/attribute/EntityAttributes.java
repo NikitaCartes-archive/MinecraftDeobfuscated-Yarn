@@ -28,7 +28,8 @@ public class EntityAttributes {
 		"player.block_interaction_range", new ClampedEntityAttribute("attribute.name.player.block_interaction_range", 4.5, 0.0, 64.0).setTracked(true)
 	);
 	public static final RegistryEntry<EntityAttribute> GENERIC_BURNING_TIME = register(
-		"generic.burning_time", new ClampedEntityAttribute("attribute.name.generic.burning_time", 1.0, 0.0, 1024.0).setTracked(true)
+		"generic.burning_time",
+		new ClampedEntityAttribute("attribute.name.generic.burning_time", 1.0, 0.0, 1024.0).setTracked(true).method_60493(EntityAttribute.class_9764.NEGATIVE)
 	);
 	public static final RegistryEntry<EntityAttribute> GENERIC_EXPLOSION_KNOCKBACK_RESISTANCE = register(
 		"generic.explosion_knockback_resistance", new ClampedEntityAttribute("attribute.name.generic.explosion_knockback_resistance", 0.0, 0.0, 1.0).setTracked(true)
@@ -37,7 +38,10 @@ public class EntityAttributes {
 		"player.entity_interaction_range", new ClampedEntityAttribute("attribute.name.player.entity_interaction_range", 3.0, 0.0, 64.0).setTracked(true)
 	);
 	public static final RegistryEntry<EntityAttribute> GENERIC_FALL_DAMAGE_MULTIPLIER = register(
-		"generic.fall_damage_multiplier", new ClampedEntityAttribute("attribute.name.generic.fall_damage_multiplier", 1.0, 0.0, 100.0).setTracked(true)
+		"generic.fall_damage_multiplier",
+		new ClampedEntityAttribute("attribute.name.generic.fall_damage_multiplier", 1.0, 0.0, 100.0)
+			.setTracked(true)
+			.method_60493(EntityAttribute.class_9764.NEGATIVE)
 	);
 	public static final RegistryEntry<EntityAttribute> GENERIC_FLYING_SPEED = register(
 		"generic.flying_speed", new ClampedEntityAttribute("attribute.name.generic.flying_speed", 0.4, 0.0, 1024.0).setTracked(true)
@@ -46,7 +50,8 @@ public class EntityAttributes {
 		"generic.follow_range", new ClampedEntityAttribute("attribute.name.generic.follow_range", 32.0, 0.0, 2048.0)
 	);
 	public static final RegistryEntry<EntityAttribute> GENERIC_GRAVITY = register(
-		"generic.gravity", new ClampedEntityAttribute("attribute.name.generic.gravity", 0.08, -1.0, 1.0).setTracked(true)
+		"generic.gravity",
+		new ClampedEntityAttribute("attribute.name.generic.gravity", 0.08, -1.0, 1.0).setTracked(true).method_60493(EntityAttribute.class_9764.NEUTRAL)
 	);
 	public static final RegistryEntry<EntityAttribute> GENERIC_JUMP_STRENGTH = register(
 		"generic.jump_strength", new ClampedEntityAttribute("attribute.name.generic.jump_strength", 0.42F, 0.0, 32.0).setTracked(true)
@@ -79,7 +84,8 @@ public class EntityAttributes {
 		"generic.safe_fall_distance", new ClampedEntityAttribute("attribute.name.generic.safe_fall_distance", 3.0, -1024.0, 1024.0).setTracked(true)
 	);
 	public static final RegistryEntry<EntityAttribute> GENERIC_SCALE = register(
-		"generic.scale", new ClampedEntityAttribute("attribute.name.generic.scale", 1.0, 0.0625, 16.0).setTracked(true)
+		"generic.scale",
+		new ClampedEntityAttribute("attribute.name.generic.scale", 1.0, 0.0625, 16.0).setTracked(true).method_60493(EntityAttribute.class_9764.NEUTRAL)
 	);
 	public static final RegistryEntry<EntityAttribute> PLAYER_SNEAKING_SPEED = register(
 		"player.sneaking_speed", new ClampedEntityAttribute("attribute.name.player.sneaking_speed", 0.3, 0.0, 1.0).setTracked(true)

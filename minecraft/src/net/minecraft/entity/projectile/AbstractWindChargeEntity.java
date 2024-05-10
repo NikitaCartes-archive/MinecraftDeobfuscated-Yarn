@@ -15,6 +15,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.AdvancedExplosionBehavior;
 import net.minecraft.world.explosion.ExplosionBehavior;
@@ -26,15 +27,18 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 
 	public AbstractWindChargeEntity(EntityType<? extends AbstractWindChargeEntity> entityType, World world) {
 		super(entityType, world);
+		this.field_51893 = 0.0;
 	}
 
 	public AbstractWindChargeEntity(EntityType<? extends AbstractWindChargeEntity> type, World world, Entity owner, double x, double y, double z) {
 		super(type, x, y, z, world);
 		this.setOwner(owner);
+		this.field_51893 = 0.0;
 	}
 
-	AbstractWindChargeEntity(EntityType<? extends AbstractWindChargeEntity> entityType, double d, double e, double f, double g, double h, double i, World world) {
-		super(entityType, d, e, f, g, h, i, world);
+	AbstractWindChargeEntity(EntityType<? extends AbstractWindChargeEntity> entityType, double d, double e, double f, Vec3d vec3d, World world) {
+		super(entityType, d, e, f, vec3d, world);
+		this.field_51893 = 0.0;
 	}
 
 	@Override

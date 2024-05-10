@@ -30,50 +30,54 @@ public class CraftingRecipeInput implements RecipeInput {
 	}
 
 	public static CraftingRecipeInput create(int width, int height, List<ItemStack> stacks) {
-		if (width != 0 && height != 0) {
-			int i = width - 1;
-			int j = 0;
-			int k = height - 1;
-			int l = 0;
+		return method_60505(width, height, stacks).input();
+	}
 
-			for (int m = 0; m < height; m++) {
+	public static CraftingRecipeInput.class_9765 method_60505(int i, int j, List<ItemStack> list) {
+		if (i != 0 && j != 0) {
+			int k = i - 1;
+			int l = 0;
+			int m = j - 1;
+			int n = 0;
+
+			for (int o = 0; o < j; o++) {
 				boolean bl = true;
 
-				for (int n = 0; n < width; n++) {
-					ItemStack itemStack = (ItemStack)stacks.get(n + m * width);
+				for (int p = 0; p < i; p++) {
+					ItemStack itemStack = (ItemStack)list.get(p + o * i);
 					if (!itemStack.isEmpty()) {
-						i = Math.min(i, n);
-						j = Math.max(j, n);
+						k = Math.min(k, p);
+						l = Math.max(l, p);
 						bl = false;
 					}
 				}
 
 				if (!bl) {
-					k = Math.min(k, m);
-					l = Math.max(l, m);
+					m = Math.min(m, o);
+					n = Math.max(n, o);
 				}
 			}
 
-			int m = j - i + 1;
 			int o = l - k + 1;
-			if (m <= 0 || o <= 0) {
-				return EMPTY;
-			} else if (m == width && o == height) {
-				return new CraftingRecipeInput(width, height, stacks);
+			int q = n - m + 1;
+			if (o <= 0 || q <= 0) {
+				return CraftingRecipeInput.class_9765.field_51896;
+			} else if (o == i && q == j) {
+				return new CraftingRecipeInput.class_9765(new CraftingRecipeInput(i, j, list), k, m);
 			} else {
-				List<ItemStack> list = new ArrayList(m * o);
+				List<ItemStack> list2 = new ArrayList(o * q);
 
-				for (int p = 0; p < o; p++) {
-					for (int q = 0; q < m; q++) {
-						int r = q + i + (p + k) * width;
-						list.add((ItemStack)stacks.get(r));
+				for (int r = 0; r < q; r++) {
+					for (int s = 0; s < o; s++) {
+						int t = s + k + (r + m) * i;
+						list2.add((ItemStack)list.get(t));
 					}
 				}
 
-				return new CraftingRecipeInput(m, o, list);
+				return new CraftingRecipeInput.class_9765(new CraftingRecipeInput(o, q, list2), k, m);
 			}
 		} else {
-			return EMPTY;
+			return CraftingRecipeInput.class_9765.field_51896;
 		}
 	}
 
@@ -133,5 +137,9 @@ public class CraftingRecipeInput implements RecipeInput {
 		int i = ItemStack.listHashCode(this.stacks);
 		i = 31 * i + this.width;
 		return 31 * i + this.height;
+	}
+
+	public static record class_9765(CraftingRecipeInput input, int left, int top) {
+		public static final CraftingRecipeInput.class_9765 field_51896 = new CraftingRecipeInput.class_9765(CraftingRecipeInput.EMPTY, 0, 0);
 	}
 }

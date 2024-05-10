@@ -9,27 +9,27 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.util.ErrorReporter;
 
-public record EnchantmentEffectConditions<T>(T effect, Optional<LootCondition> requirements) {
+public record EnchantmentEffectEntry<T>(T effect, Optional<LootCondition> requirements) {
 	public static Codec<LootCondition> createRequirementsCodec(LootContextType lootContextType) {
 		return LootCondition.CODEC
 			.validate(
-				lootCondition -> {
+				condition -> {
 					ErrorReporter.Impl impl = new ErrorReporter.Impl();
-					lootContextType.validate(impl, lootCondition);
+					lootContextType.validate(impl, condition);
 					return (DataResult)impl.getErrorsAsString()
 						.map(errors -> DataResult.error(() -> "Validation error in enchantment effect condition: " + errors))
-						.orElseGet(() -> DataResult.success(lootCondition));
+						.orElseGet(() -> DataResult.success(condition));
 				}
 			);
 	}
 
-	public static <T> Codec<EnchantmentEffectConditions<T>> createCodec(Codec<T> effectCodec, LootContextType lootContextType) {
+	public static <T> Codec<EnchantmentEffectEntry<T>> createCodec(Codec<T> effectCodec, LootContextType lootContextType) {
 		return RecordCodecBuilder.create(
 			instance -> instance.group(
-						effectCodec.fieldOf("effect").forGetter(EnchantmentEffectConditions::effect),
-						createRequirementsCodec(lootContextType).optionalFieldOf("requirements").forGetter(EnchantmentEffectConditions::requirements)
+						effectCodec.fieldOf("effect").forGetter(EnchantmentEffectEntry::effect),
+						createRequirementsCodec(lootContextType).optionalFieldOf("requirements").forGetter(EnchantmentEffectEntry::requirements)
 					)
-					.apply(instance, EnchantmentEffectConditions::new)
+					.apply(instance, EnchantmentEffectEntry::new)
 		);
 	}
 

@@ -281,7 +281,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, LightSour
 		BelowZeroRetrogen belowZeroRetrogen = this.getBelowZeroRetrogen();
 		if (belowZeroRetrogen != null) {
 			ChunkStatus chunkStatus2 = belowZeroRetrogen.getTargetStatus();
-			return chunkStatus2.isAtLeast(chunkStatus) ? chunkStatus2 : chunkStatus;
+			return ChunkStatus.method_60545(chunkStatus2, chunkStatus);
 		} else {
 			return chunkStatus;
 		}

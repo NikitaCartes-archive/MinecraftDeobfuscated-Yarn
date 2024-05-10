@@ -55,7 +55,8 @@ public class StructurePoolBasedGenerator {
 		boolean useExpansionHack,
 		Optional<Heightmap.Type> projectStartToHeightmap,
 		int maxDistanceFromCenter,
-		StructurePoolAliasLookup aliasLookup
+		StructurePoolAliasLookup aliasLookup,
+		int i
 	) {
 		DynamicRegistryManager dynamicRegistryManager = context.dynamicRegistryManager();
 		ChunkGenerator chunkGenerator = context.chunkGenerator();
@@ -98,32 +99,32 @@ public class StructurePoolBasedGenerator {
 				structurePoolElement.getBoundingBox(structureTemplateManager, blockPos2, blockRotation)
 			);
 			BlockBox blockBox = poolStructurePiece.getBoundingBox();
-			int i = (blockBox.getMaxX() + blockBox.getMinX()) / 2;
-			int j = (blockBox.getMaxZ() + blockBox.getMinZ()) / 2;
-			int k;
+			int j = (blockBox.getMaxX() + blockBox.getMinX()) / 2;
+			int k = (blockBox.getMaxZ() + blockBox.getMinZ()) / 2;
+			int l;
 			if (projectStartToHeightmap.isPresent()) {
-				k = pos.getY() + chunkGenerator.getHeightOnGround(i, j, (Heightmap.Type)projectStartToHeightmap.get(), heightLimitView, context.noiseConfig());
+				l = pos.getY() + chunkGenerator.getHeightOnGround(j, k, (Heightmap.Type)projectStartToHeightmap.get(), heightLimitView, context.noiseConfig());
 			} else {
-				k = blockPos2.getY();
+				l = blockPos2.getY();
 			}
 
-			int l = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
-			poolStructurePiece.translate(0, k - l, 0);
-			int m = k + vec3i.getY();
+			int m = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
+			poolStructurePiece.translate(0, l - m, 0);
+			int n = l + vec3i.getY();
 			return Optional.of(
 				new Structure.StructurePosition(
-					new BlockPos(i, m, j),
-					collector -> {
+					new BlockPos(j, n, k),
+					structurePiecesCollector -> {
 						List<PoolStructurePiece> list = Lists.<PoolStructurePiece>newArrayList();
 						list.add(poolStructurePiece);
 						if (size > 0) {
 							Box box = new Box(
-								(double)(i - maxDistanceFromCenter),
-								(double)(m - maxDistanceFromCenter),
 								(double)(j - maxDistanceFromCenter),
-								(double)(i + maxDistanceFromCenter + 1),
-								(double)(m + maxDistanceFromCenter + 1),
-								(double)(j + maxDistanceFromCenter + 1)
+								(double)Math.max(n - maxDistanceFromCenter, heightLimitView.getBottomY() + i),
+								(double)(k - maxDistanceFromCenter),
+								(double)(j + maxDistanceFromCenter + 1),
+								(double)Math.min(n + maxDistanceFromCenter + 1, heightLimitView.getTopY() - i),
+								(double)(k + maxDistanceFromCenter + 1)
 							);
 							VoxelShape voxelShape = VoxelShapes.combineAndSimplify(VoxelShapes.cuboid(box), VoxelShapes.cuboid(Box.from(blockBox)), BooleanBiFunction.ONLY_FIRST);
 							generate(
@@ -140,7 +141,7 @@ public class StructurePoolBasedGenerator {
 								voxelShape,
 								aliasLookup
 							);
-							list.forEach(collector::addPiece);
+							list.forEach(structurePiecesCollector::addPiece);
 						}
 					}
 				)
@@ -217,7 +218,7 @@ public class StructurePoolBasedGenerator {
 			biome -> true
 		);
 		Optional<Structure.StructurePosition> optional = generate(
-			context, structurePool, Optional.of(id), size, pos, false, Optional.empty(), 128, StructurePoolAliasLookup.EMPTY
+			context, structurePool, Optional.of(id), size, pos, false, Optional.empty(), 128, StructurePoolAliasLookup.EMPTY, 0
 		);
 		if (optional.isPresent()) {
 			StructurePiecesCollector structurePiecesCollector = ((Structure.StructurePosition)optional.get()).generate();

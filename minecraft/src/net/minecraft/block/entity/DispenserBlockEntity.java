@@ -44,15 +44,29 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 		return i;
 	}
 
-	public int addToFirstFreeSlot(ItemStack stack) {
-		for (int i = 0; i < this.inventory.size(); i++) {
-			if (this.inventory.get(i).isEmpty()) {
-				this.setStack(i, stack);
-				return i;
+	public ItemStack addToFirstFreeSlot(ItemStack stack) {
+		int i = this.getMaxCount(stack);
+
+		for (int j = 0; j < this.inventory.size(); j++) {
+			ItemStack itemStack = this.inventory.get(j);
+			if (itemStack.isEmpty() || ItemStack.areItemsAndComponentsEqual(stack, itemStack)) {
+				int k = Math.min(stack.getCount(), i - itemStack.getCount());
+				if (k > 0) {
+					if (itemStack.isEmpty()) {
+						this.setStack(j, stack.split(k));
+					} else {
+						stack.decrement(k);
+						itemStack.increment(k);
+					}
+				}
+
+				if (stack.isEmpty()) {
+					break;
+				}
 			}
 		}
 
-		return -1;
+		return stack;
 	}
 
 	@Override

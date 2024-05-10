@@ -18,21 +18,21 @@ public class RecipeCache {
 		this.cache = new RecipeCache.CachedRecipe[size];
 	}
 
-	public Optional<RecipeEntry<CraftingRecipe>> getRecipe(World world, CraftingRecipeInput craftingRecipeInput) {
-		if (craftingRecipeInput.isEmpty()) {
+	public Optional<RecipeEntry<CraftingRecipe>> getRecipe(World world, CraftingRecipeInput input) {
+		if (input.isEmpty()) {
 			return Optional.empty();
 		} else {
 			this.validateRecipeManager(world);
 
 			for (int i = 0; i < this.cache.length; i++) {
 				RecipeCache.CachedRecipe cachedRecipe = this.cache[i];
-				if (cachedRecipe != null && cachedRecipe.matches(craftingRecipeInput.getStacks())) {
+				if (cachedRecipe != null && cachedRecipe.matches(input.getStacks())) {
 					this.sendToFront(i);
 					return Optional.ofNullable(cachedRecipe.value());
 				}
 			}
 
-			return this.getAndCacheRecipe(craftingRecipeInput, world);
+			return this.getAndCacheRecipe(input, world);
 		}
 	}
 
@@ -44,9 +44,9 @@ public class RecipeCache {
 		}
 	}
 
-	private Optional<RecipeEntry<CraftingRecipe>> getAndCacheRecipe(CraftingRecipeInput craftingRecipeInput, World world) {
-		Optional<RecipeEntry<CraftingRecipe>> optional = world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingRecipeInput, world);
-		this.cache(craftingRecipeInput.getStacks(), (RecipeEntry<CraftingRecipe>)optional.orElse(null));
+	private Optional<RecipeEntry<CraftingRecipe>> getAndCacheRecipe(CraftingRecipeInput input, World world) {
+		Optional<RecipeEntry<CraftingRecipe>> optional = world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, input, world);
+		this.cache(input.getStacks(), (RecipeEntry<CraftingRecipe>)optional.orElse(null));
 		return optional;
 	}
 

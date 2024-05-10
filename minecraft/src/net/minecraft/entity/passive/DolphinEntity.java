@@ -172,7 +172,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void method_59928() {
+	public void playAttackSound() {
 		this.playSound(SoundEvents.ENTITY_DOLPHIN_ATTACK, 1.0F, 1.0F);
 	}
 

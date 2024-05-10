@@ -109,7 +109,8 @@ public class VanillaDamageTypeTagProvider extends TagProvider<DamageType> {
 				DamageTypes.FREEZE,
 				DamageTypes.STALAGMITE,
 				DamageTypes.OUTSIDE_BORDER,
-				DamageTypes.GENERIC_KILL
+				DamageTypes.GENERIC_KILL,
+				DamageTypes.CAMPFIRE
 			);
 		this.getOrCreateTagBuilder(DamageTypeTags.ALWAYS_KILLS_ARMOR_STANDS)
 			.add(DamageTypes.ARROW, DamageTypes.TRIDENT, DamageTypes.FIREBALL, DamageTypes.WITHER_SKULL, DamageTypes.WIND_CHARGE);

@@ -1,9 +1,7 @@
 package net.minecraft.client.render.block.entity;
 
 import java.util.EnumSet;
-import java.util.Objects;
 import java.util.Optional;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.DecoratedPotPatterns;
@@ -25,7 +23,6 @@ import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
-import net.minecraft.item.Items;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
@@ -46,9 +43,6 @@ public class DecoratedPotBlockEntityRenderer implements BlockEntityRenderer<Deco
 	private final ModelPart right;
 	private final ModelPart top;
 	private final ModelPart bottom;
-	private final SpriteIdentifier baseTexture = (SpriteIdentifier)Objects.requireNonNull(
-		TexturedRenderLayers.getDecoratedPotPatternTextureId(DecoratedPotPatterns.DECORATED_POT_BASE_KEY)
-	);
 	private static final float field_46728 = 0.125F;
 
 	public DecoratedPotBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
@@ -90,7 +84,6 @@ public class DecoratedPotBlockEntityRenderer implements BlockEntityRenderer<Deco
 		return TexturedModelData.of(modelData, 16, 16);
 	}
 
-	@Nullable
 	private static SpriteIdentifier getTextureIdFromSherd(Optional<Item> optional) {
 		if (optional.isPresent()) {
 			SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getDecoratedPotPatternTextureId(DecoratedPotPatterns.fromSherd((Item)optional.get()));
@@ -99,7 +92,7 @@ public class DecoratedPotBlockEntityRenderer implements BlockEntityRenderer<Deco
 			}
 		}
 
-		return TexturedRenderLayers.getDecoratedPotPatternTextureId(DecoratedPotPatterns.fromSherd(Items.BRICK));
+		return TexturedRenderLayers.field_51915;
 	}
 
 	public void render(
@@ -129,7 +122,7 @@ public class DecoratedPotBlockEntityRenderer implements BlockEntityRenderer<Deco
 			}
 		}
 
-		VertexConsumer vertexConsumer = this.baseTexture.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
+		VertexConsumer vertexConsumer = TexturedRenderLayers.field_51914.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
 		this.neck.render(matrixStack, vertexConsumer, i, j);
 		this.top.render(matrixStack, vertexConsumer, i, j);
 		this.bottom.render(matrixStack, vertexConsumer, i, j);
@@ -142,14 +135,8 @@ public class DecoratedPotBlockEntityRenderer implements BlockEntityRenderer<Deco
 	}
 
 	private void renderDecoratedSide(
-		ModelPart part, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, @Nullable SpriteIdentifier textureId
+		ModelPart part, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, SpriteIdentifier textureId
 	) {
-		if (textureId == null) {
-			textureId = getTextureIdFromSherd(Optional.empty());
-		}
-
-		if (textureId != null) {
-			part.render(matrices, textureId.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid), light, overlay);
-		}
+		part.render(matrices, textureId.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid), light, overlay);
 	}
 }

@@ -75,20 +75,20 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		return stack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> binomialWithBonusCount(RegistryEntry<Enchantment> registryEntry, float probability, int extra) {
-		return builder(conditions -> new ApplyBonusLootFunction(conditions, registryEntry, new ApplyBonusLootFunction.BinomialWithBonusCount(extra, probability)));
+	public static ConditionalLootFunction.Builder<?> binomialWithBonusCount(RegistryEntry<Enchantment> enchantment, float probability, int extra) {
+		return builder(conditions -> new ApplyBonusLootFunction(conditions, enchantment, new ApplyBonusLootFunction.BinomialWithBonusCount(extra, probability)));
 	}
 
-	public static ConditionalLootFunction.Builder<?> oreDrops(RegistryEntry<Enchantment> registryEntry) {
-		return builder(conditions -> new ApplyBonusLootFunction(conditions, registryEntry, new ApplyBonusLootFunction.OreDrops()));
+	public static ConditionalLootFunction.Builder<?> oreDrops(RegistryEntry<Enchantment> enchantment) {
+		return builder(conditions -> new ApplyBonusLootFunction(conditions, enchantment, new ApplyBonusLootFunction.OreDrops()));
 	}
 
-	public static ConditionalLootFunction.Builder<?> uniformBonusCount(RegistryEntry<Enchantment> registryEntry) {
-		return builder(conditions -> new ApplyBonusLootFunction(conditions, registryEntry, new ApplyBonusLootFunction.UniformBonusCount(1)));
+	public static ConditionalLootFunction.Builder<?> uniformBonusCount(RegistryEntry<Enchantment> enchantment) {
+		return builder(conditions -> new ApplyBonusLootFunction(conditions, enchantment, new ApplyBonusLootFunction.UniformBonusCount(1)));
 	}
 
-	public static ConditionalLootFunction.Builder<?> uniformBonusCount(RegistryEntry<Enchantment> registryEntry, int bonusMultiplier) {
-		return builder(conditions -> new ApplyBonusLootFunction(conditions, registryEntry, new ApplyBonusLootFunction.UniformBonusCount(bonusMultiplier)));
+	public static ConditionalLootFunction.Builder<?> uniformBonusCount(RegistryEntry<Enchantment> enchantment, int bonusMultiplier) {
+		return builder(conditions -> new ApplyBonusLootFunction(conditions, enchantment, new ApplyBonusLootFunction.UniformBonusCount(bonusMultiplier)));
 	}
 
 	static record BinomialWithBonusCount(int extra, float probability) implements ApplyBonusLootFunction.Formula {

@@ -2,8 +2,10 @@ package net.minecraft.client.gui.hud;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -62,7 +64,8 @@ public class SubtitlesHud implements SoundInstanceListener {
 
 				while (iterator.hasNext()) {
 					SubtitlesHud.SubtitleEntry subtitleEntry2 = (SubtitlesHud.SubtitleEntry)iterator.next();
-					if ((double)subtitleEntry2.getTime() + 3000.0 * d <= (double)Util.getMeasuringTimeMs()) {
+					subtitleEntry2.method_60570(3000.0 * d);
+					if (!subtitleEntry2.method_60574()) {
 						iterator.remove();
 					} else {
 						j = Math.max(j, this.client.textRenderer.getWidth(subtitleEntry2.getText()));
@@ -77,36 +80,39 @@ public class SubtitlesHud implements SoundInstanceListener {
 				for (SubtitlesHud.SubtitleEntry subtitleEntry2 : this.audibleEntries) {
 					int k = 255;
 					Text text = subtitleEntry2.getText();
-					Vec3d vec3d4 = subtitleEntry2.getPosition().subtract(vec3d).normalize();
-					double e = vec3d3.dotProduct(vec3d4);
-					double f = vec3d2.dotProduct(vec3d4);
-					boolean bl = f > 0.5;
-					int l = j / 2;
-					int m = 9;
-					int n = m / 2;
-					float g = 1.0F;
-					int o = this.client.textRenderer.getWidth(text);
-					int p = MathHelper.floor(MathHelper.clampedLerp(255.0F, 75.0F, (float)(Util.getMeasuringTimeMs() - subtitleEntry2.getTime()) / (float)(3000.0 * d)));
-					int q = p << 16 | p << 8 | p;
-					context.getMatrices().push();
-					context.getMatrices()
-						.translate(
-							(float)context.getScaledWindowWidth() - (float)l * 1.0F - 2.0F, (float)(context.getScaledWindowHeight() - 35) - (float)(i * (m + 1)) * 1.0F, 0.0F
-						);
-					context.getMatrices().scale(1.0F, 1.0F, 1.0F);
-					context.fill(-l - 1, -n - 1, l + 1, n + 1, this.client.options.getTextBackgroundColor(0.8F));
-					int r = q + Colors.BLACK;
-					if (!bl) {
-						if (e > 0.0) {
-							context.drawTextWithShadow(this.client.textRenderer, ">", l - this.client.textRenderer.getWidth(">"), -n, r);
-						} else if (e < 0.0) {
-							context.drawTextWithShadow(this.client.textRenderer, "<", -l, -n, r);
+					SubtitlesHud.class_9772 lv = subtitleEntry2.method_60572(vec3d);
+					if (lv != null) {
+						Vec3d vec3d4 = lv.location.subtract(vec3d).normalize();
+						double e = vec3d3.dotProduct(vec3d4);
+						double f = vec3d2.dotProduct(vec3d4);
+						boolean bl = f > 0.5;
+						int l = j / 2;
+						int m = 9;
+						int n = m / 2;
+						float g = 1.0F;
+						int o = this.client.textRenderer.getWidth(text);
+						int p = MathHelper.floor(MathHelper.clampedLerp(255.0F, 75.0F, (float)(Util.getMeasuringTimeMs() - lv.time) / (float)(3000.0 * d)));
+						int q = p << 16 | p << 8 | p;
+						context.getMatrices().push();
+						context.getMatrices()
+							.translate(
+								(float)context.getScaledWindowWidth() - (float)l * 1.0F - 2.0F, (float)(context.getScaledWindowHeight() - 35) - (float)(i * (m + 1)) * 1.0F, 0.0F
+							);
+						context.getMatrices().scale(1.0F, 1.0F, 1.0F);
+						context.fill(-l - 1, -n - 1, l + 1, n + 1, this.client.options.getTextBackgroundColor(0.8F));
+						int r = q + Colors.BLACK;
+						if (!bl) {
+							if (e > 0.0) {
+								context.drawTextWithShadow(this.client.textRenderer, ">", l - this.client.textRenderer.getWidth(">"), -n, r);
+							} else if (e < 0.0) {
+								context.drawTextWithShadow(this.client.textRenderer, "<", -l, -n, r);
+							}
 						}
-					}
 
-					context.drawTextWithShadow(this.client.textRenderer, text, -o / 2, -n, r);
-					context.getMatrices().pop();
-					i++;
+						context.drawTextWithShadow(this.client.textRenderer, text, -o / 2, -n, r);
+						context.getMatrices().pop();
+						i++;
+					}
 				}
 			}
 		}
@@ -130,38 +136,59 @@ public class SubtitlesHud implements SoundInstanceListener {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class SubtitleEntry {
+	static class SubtitleEntry {
 		private final Text text;
 		private final float range;
-		private long time;
-		private Vec3d pos;
+		private final List<SubtitlesHud.class_9772> field_51913 = new ArrayList();
 
 		public SubtitleEntry(Text text, float range, Vec3d pos) {
 			this.text = text;
 			this.range = range;
-			this.pos = pos;
-			this.time = Util.getMeasuringTimeMs();
+			this.field_51913.add(new SubtitlesHud.class_9772(pos, Util.getMeasuringTimeMs()));
 		}
 
 		public Text getText() {
 			return this.text;
 		}
 
-		public long getTime() {
-			return this.time;
-		}
-
-		public Vec3d getPosition() {
-			return this.pos;
+		@Nullable
+		public SubtitlesHud.class_9772 method_60572(Vec3d vec3d) {
+			if (this.field_51913.isEmpty()) {
+				return null;
+			} else {
+				return this.field_51913.size() == 1
+					? (SubtitlesHud.class_9772)this.field_51913.getFirst()
+					: (SubtitlesHud.class_9772)this.field_51913.stream().min(Comparator.comparingDouble(arg -> arg.location().distanceTo(vec3d))).orElse(null);
+			}
 		}
 
 		public void reset(Vec3d pos) {
-			this.pos = pos;
-			this.time = Util.getMeasuringTimeMs();
+			this.field_51913.removeIf(arg -> pos.equals(arg.location()));
+			this.field_51913.add(new SubtitlesHud.class_9772(pos, Util.getMeasuringTimeMs()));
 		}
 
 		public boolean canHearFrom(Vec3d pos) {
-			return Float.isInfinite(this.range) || pos.isInRange(this.pos, (double)this.range);
+			if (Float.isInfinite(this.range)) {
+				return true;
+			} else if (this.field_51913.isEmpty()) {
+				return false;
+			} else {
+				SubtitlesHud.class_9772 lv = this.method_60572(pos);
+				return lv == null ? false : pos.isInRange(lv.location, (double)this.range);
+			}
 		}
+
+		public void method_60570(double d) {
+			long l = Util.getMeasuringTimeMs();
+			this.field_51913.removeIf(arg -> (double)(l - arg.time()) > d);
+		}
+
+		public boolean method_60574() {
+			return !this.field_51913.isEmpty();
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	static record class_9772(Vec3d location, long time) {
 	}
 }

@@ -179,7 +179,19 @@ public class EntityTrackerEntry {
 					double d = vec3d2.squaredDistanceTo(this.velocity);
 					if (d > 1.0E-7 || d > 0.0 && vec3d2.lengthSquared() == 0.0) {
 						this.velocity = vec3d2;
-						this.receiver.accept(new EntityVelocityUpdateS2CPacket(this.entity.getId(), this.velocity));
+						if (this.entity instanceof ExplosiveProjectileEntity explosiveProjectileEntity) {
+							this.receiver
+								.accept(
+									new BundleS2CPacket(
+										List.of(
+											new EntityVelocityUpdateS2CPacket(this.entity.getId(), this.velocity),
+											new ProjectilePowerS2CPacket(explosiveProjectileEntity.getId(), explosiveProjectileEntity.field_51893)
+										)
+									)
+								);
+						} else {
+							this.receiver.accept(new EntityVelocityUpdateS2CPacket(this.entity.getId(), this.velocity));
+						}
 					}
 				}
 
@@ -211,16 +223,8 @@ public class EntityTrackerEntry {
 
 		this.trackingTick++;
 		if (this.entity.velocityModified) {
-			this.sendSyncPacket(new EntityVelocityUpdateS2CPacket(this.entity));
-			if (this.entity instanceof ExplosiveProjectileEntity explosiveProjectileEntity) {
-				this.sendSyncPacket(
-					new ProjectilePowerS2CPacket(
-						explosiveProjectileEntity.getId(), explosiveProjectileEntity.powerX, explosiveProjectileEntity.powerY, explosiveProjectileEntity.powerZ
-					)
-				);
-			}
-
 			this.entity.velocityModified = false;
+			this.sendSyncPacket(new EntityVelocityUpdateS2CPacket(this.entity));
 		}
 	}
 
@@ -309,7 +313,7 @@ public class EntityTrackerEntry {
 		}
 
 		if (this.entity instanceof LivingEntity) {
-			Set<EntityAttributeInstance> set = ((LivingEntity)this.entity).getAttributes().getTracked();
+			Set<EntityAttributeInstance> set = ((LivingEntity)this.entity).getAttributes().method_60497();
 			if (!set.isEmpty()) {
 				this.sendSyncPacket(new EntityAttributesS2CPacket(this.entity.getId(), set));
 			}

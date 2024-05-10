@@ -18,7 +18,7 @@ import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.enchantment.effect.AttributeEnchantmentEffectType;
 import net.minecraft.enchantment.effect.DamageImmunityEnchantmentEffectType;
-import net.minecraft.enchantment.effect.EnchantmentEffectConditions;
+import net.minecraft.enchantment.effect.EnchantmentEffectEntry;
 import net.minecraft.enchantment.effect.EnchantmentEffectTarget;
 import net.minecraft.enchantment.effect.EnchantmentEntityEffectType;
 import net.minecraft.enchantment.effect.EnchantmentLocationBasedEffectType;
@@ -54,6 +54,7 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.mutable.MutableFloat;
 
 public record Enchantment(Text description, Enchantment.Definition definition, RegistryEntryList<Enchantment> exclusiveSet, ComponentMap effects) {
@@ -190,10 +191,8 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 	public boolean hasDamageImmunityTo(ServerWorld world, int level, Entity user, DamageSource damageSource) {
 		LootContext lootContext = createEnchantedDamageLootContext(world, level, user, damageSource);
 
-		for (EnchantmentEffectConditions<DamageImmunityEnchantmentEffectType> enchantmentEffectConditions : this.getEffect(
-			EnchantmentEffectComponentTypes.DAMAGE_IMMUNITY
-		)) {
-			if (enchantmentEffectConditions.test(lootContext)) {
+		for (EnchantmentEffectEntry<DamageImmunityEnchantmentEffectType> enchantmentEffectEntry : this.getEffect(EnchantmentEffectComponentTypes.DAMAGE_IMMUNITY)) {
+			if (enchantmentEffectEntry.test(lootContext)) {
 				return true;
 			}
 		}
@@ -204,9 +203,9 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 	public void modifyDamageProtection(ServerWorld world, int level, ItemStack stack, Entity user, DamageSource damageSource, MutableFloat damageProtection) {
 		LootContext lootContext = createEnchantedDamageLootContext(world, level, user, damageSource);
 
-		for (EnchantmentEffectConditions<EnchantmentValueEffectType> enchantmentEffectConditions : this.getEffect(EnchantmentEffectComponentTypes.DAMAGE_PROTECTION)) {
-			if (enchantmentEffectConditions.test(lootContext)) {
-				damageProtection.setValue(enchantmentEffectConditions.effect().apply(stack, level, user.getRandom(), damageProtection.floatValue()));
+		for (EnchantmentEffectEntry<EnchantmentValueEffectType> enchantmentEffectEntry : this.getEffect(EnchantmentEffectComponentTypes.DAMAGE_PROTECTION)) {
+			if (enchantmentEffectEntry.test(lootContext)) {
+				damageProtection.setValue(enchantmentEffectEntry.effect().apply(level, user.getRandom(), damageProtection.floatValue()));
 			}
 		}
 	}
@@ -239,8 +238,8 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 		this.modifyValue(EnchantmentEffectComponentTypes.TRIDENT_RETURN_ACCELERATION, world, level, stack, user, tridentReturnAcceleration);
 	}
 
-	public void modifyTridentSpinAttackStrength(ServerWorld world, int level, ItemStack stack, Entity user, MutableFloat tridentSpinAttackStrength) {
-		this.modifyValue(EnchantmentEffectComponentTypes.TRIDENT_SPIN_ATTACK_STRENGTH, world, level, stack, user, tridentSpinAttackStrength);
+	public void modifyTridentSpinAttackStrength(Random random, int level, MutableFloat mutableFloat) {
+		this.method_60506(EnchantmentEffectComponentTypes.TRIDENT_SPIN_ATTACK_STRENGTH, random, level, mutableFloat);
 	}
 
 	public void modifyFishingTimeReduction(ServerWorld world, int level, ItemStack stack, Entity user, MutableFloat fishingTimeReduction) {
@@ -307,8 +306,15 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 		this.modifyValue(EnchantmentEffectComponentTypes.PROJECTILE_SPREAD, world, level, stack, user, projectileSpread);
 	}
 
-	public void modifyCrossbowChargeTime(ServerWorld world, int level, ItemStack stack, MutableFloat crossbowChargeTime) {
-		this.modifyValue(EnchantmentEffectComponentTypes.CROSSBOW_CHARGE_TIME, world, level, stack, crossbowChargeTime);
+	public void modifyCrossbowChargeTime(Random random, int level, MutableFloat mutableFloat) {
+		this.method_60506(EnchantmentEffectComponentTypes.CROSSBOW_CHARGE_TIME, random, level, mutableFloat);
+	}
+
+	public void method_60506(ComponentType<EnchantmentValueEffectType> componentType, Random random, int i, MutableFloat mutableFloat) {
+		EnchantmentValueEffectType enchantmentValueEffectType = this.effects.get(componentType);
+		if (enchantmentValueEffectType != null) {
+			mutableFloat.setValue(enchantmentValueEffectType.apply(i, random, mutableFloat.floatValue()));
+		}
 	}
 
 	public void onTick(ServerWorld world, int level, EnchantmentEffectContext context, Entity user) {
@@ -336,32 +342,27 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 	}
 
 	private void modifyValue(
-		ComponentType<List<EnchantmentEffectConditions<EnchantmentValueEffectType>>> type, ServerWorld world, int level, ItemStack stack, MutableFloat value
+		ComponentType<List<EnchantmentEffectEntry<EnchantmentValueEffectType>>> type, ServerWorld world, int level, ItemStack stack, MutableFloat value
 	) {
 		applyEffects(
 			this.getEffect(type),
 			createEnchantedItemLootContext(world, level, stack),
-			effect -> value.setValue(effect.apply(stack, level, world.getRandom(), value.getValue()))
+			enchantmentValueEffectType -> value.setValue(enchantmentValueEffectType.apply(level, world.getRandom(), value.getValue()))
 		);
 	}
 
 	private void modifyValue(
-		ComponentType<List<EnchantmentEffectConditions<EnchantmentValueEffectType>>> type,
-		ServerWorld world,
-		int level,
-		ItemStack stack,
-		Entity user,
-		MutableFloat value
+		ComponentType<List<EnchantmentEffectEntry<EnchantmentValueEffectType>>> type, ServerWorld world, int level, ItemStack stack, Entity user, MutableFloat value
 	) {
 		applyEffects(
 			this.getEffect(type),
 			createEnchantedEntityLootContext(world, level, user, user.getPos()),
-			effect -> value.setValue(effect.apply(stack, level, user.getRandom(), value.floatValue()))
+			enchantmentValueEffectType -> value.setValue(enchantmentValueEffectType.apply(level, user.getRandom(), value.floatValue()))
 		);
 	}
 
 	private void modifyValue(
-		ComponentType<List<EnchantmentEffectConditions<EnchantmentValueEffectType>>> type,
+		ComponentType<List<EnchantmentEffectEntry<EnchantmentValueEffectType>>> type,
 		ServerWorld world,
 		int level,
 		ItemStack stack,
@@ -372,7 +373,7 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 		applyEffects(
 			this.getEffect(type),
 			createEnchantedDamageLootContext(world, level, user, damageSource),
-			effect -> value.setValue(effect.apply(stack, level, user.getRandom(), value.floatValue()))
+			enchantmentValueEffectType -> value.setValue(enchantmentValueEffectType.apply(level, user.getRandom(), value.floatValue()))
 		);
 	}
 
@@ -415,10 +416,10 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 		return new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
 	}
 
-	private static <T> void applyEffects(List<EnchantmentEffectConditions<T>> conditions, LootContext lootContext, Consumer<T> effectConsumer) {
-		for (EnchantmentEffectConditions<T> enchantmentEffectConditions : conditions) {
-			if (enchantmentEffectConditions.test(lootContext)) {
-				effectConsumer.accept(enchantmentEffectConditions.effect());
+	private static <T> void applyEffects(List<EnchantmentEffectEntry<T>> conditions, LootContext lootContext, Consumer<T> effectConsumer) {
+		for (EnchantmentEffectEntry<T> enchantmentEffectEntry : conditions) {
+			if (enchantmentEffectEntry.test(lootContext)) {
+				effectConsumer.accept(enchantmentEffectEntry.effect());
 			}
 		}
 	}
@@ -432,12 +433,10 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 		} else {
 			Set<EnchantmentLocationBasedEffectType> set = (Set<EnchantmentLocationBasedEffectType>)user.getLocationBasedEnchantmentEffects().get(this);
 
-			for (EnchantmentEffectConditions<EnchantmentLocationBasedEffectType> enchantmentEffectConditions : this.getEffect(
-				EnchantmentEffectComponentTypes.LOCATION_CHANGED
-			)) {
-				EnchantmentLocationBasedEffectType enchantmentLocationBasedEffectType = enchantmentEffectConditions.effect();
+			for (EnchantmentEffectEntry<EnchantmentLocationBasedEffectType> enchantmentEffectEntry : this.getEffect(EnchantmentEffectComponentTypes.LOCATION_CHANGED)) {
+				EnchantmentLocationBasedEffectType enchantmentLocationBasedEffectType = enchantmentEffectEntry.effect();
 				boolean bl = set != null && set.contains(enchantmentLocationBasedEffectType);
-				if (enchantmentEffectConditions.test(createEnchantedLocationLootContext(world, level, user, bl))) {
+				if (enchantmentEffectEntry.test(createEnchantedLocationLootContext(world, level, user, bl))) {
 					if (!bl) {
 						if (set == null) {
 							set = new ObjectArraySet<>();
@@ -487,13 +486,13 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 			return this;
 		}
 
-		public <E> Enchantment.Builder addEffect(ComponentType<List<EnchantmentEffectConditions<E>>> effectType, E effect, LootCondition.Builder requirements) {
-			this.getEffectsList(effectType).add(new EnchantmentEffectConditions<>(effect, Optional.of(requirements.build())));
+		public <E> Enchantment.Builder addEffect(ComponentType<List<EnchantmentEffectEntry<E>>> effectType, E effect, LootCondition.Builder requirements) {
+			this.getEffectsList(effectType).add(new EnchantmentEffectEntry<>(effect, Optional.of(requirements.build())));
 			return this;
 		}
 
-		public <E> Enchantment.Builder addEffect(ComponentType<List<EnchantmentEffectConditions<E>>> effectType, E effect) {
-			this.getEffectsList(effectType).add(new EnchantmentEffectConditions<>(effect, Optional.empty()));
+		public <E> Enchantment.Builder addEffect(ComponentType<List<EnchantmentEffectEntry<E>>> effectType, E effect) {
+			this.getEffectsList(effectType).add(new EnchantmentEffectEntry<>(effect, Optional.empty()));
 			return this;
 		}
 
@@ -531,7 +530,7 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 		}
 
 		private <E> List<E> getEffectsList(ComponentType<List<E>> effectType) {
-			return (List<E>)this.effectLists.computeIfAbsent(effectType, componentType2 -> {
+			return (List<E>)this.effectLists.computeIfAbsent(effectType, type -> {
 				ArrayList<E> arrayList = new ArrayList();
 				this.effectMap.add(effectType, arrayList);
 				return arrayList;

@@ -44,7 +44,7 @@ public record ApplyMobEffectEnchantmentEffectType(
 			Optional<RegistryEntry<StatusEffect>> optional = this.toApply.getRandom(random);
 			if (optional.isPresent()) {
 				int i = Math.round(MathHelper.nextBetween(random, this.minDuration.getValue(level), this.maxDuration.getValue(level)) * 20.0F);
-				int j = Math.min(0, Math.round(MathHelper.nextBetween(random, this.minAmplifier.getValue(level), this.maxAmplifier.getValue(level))));
+				int j = Math.max(0, Math.round(MathHelper.nextBetween(random, this.minAmplifier.getValue(level), this.maxAmplifier.getValue(level))));
 				livingEntity.addStatusEffect(new StatusEffectInstance((RegistryEntry<StatusEffect>)optional.get(), i, j));
 			}
 		}

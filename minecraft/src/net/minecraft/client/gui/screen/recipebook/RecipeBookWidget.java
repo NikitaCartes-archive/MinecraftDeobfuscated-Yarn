@@ -202,7 +202,7 @@ public class RecipeBookWidget implements RecipeGridAligner<Ingredient>, Drawable
 			ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
 			if (clientPlayNetworkHandler != null) {
 				ObjectSet<RecipeResultCollection> objectSet = new ObjectLinkedOpenHashSet<>(
-					clientPlayNetworkHandler.method_60347().method_60364().findAll(string.toLowerCase(Locale.ROOT))
+					clientPlayNetworkHandler.getSearchManager().getRecipeOutputReloadFuture().findAll(string.toLowerCase(Locale.ROOT))
 				);
 				list2.removeIf(resultCollection -> !objectSet.contains(resultCollection));
 			}

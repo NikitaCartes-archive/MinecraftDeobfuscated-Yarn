@@ -12,24 +12,24 @@ public interface Hoglin {
 
 	int getMovementCooldownTicks();
 
-	static boolean tryAttack(LivingEntity livingEntity, LivingEntity livingEntity2) {
-		float f = (float)livingEntity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+	static boolean tryAttack(LivingEntity attacker, LivingEntity target) {
+		float f = (float)attacker.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 		float g;
-		if (!livingEntity.isBaby() && (int)f > 0) {
-			g = f / 2.0F + (float)livingEntity.getWorld().random.nextInt((int)f);
+		if (!attacker.isBaby() && (int)f > 0) {
+			g = f / 2.0F + (float)attacker.getWorld().random.nextInt((int)f);
 		} else {
 			g = f;
 		}
 
-		DamageSource damageSource = livingEntity.getDamageSources().mobAttack(livingEntity);
-		boolean bl = livingEntity2.damage(damageSource, g);
+		DamageSource damageSource = attacker.getDamageSources().mobAttack(attacker);
+		boolean bl = target.damage(damageSource, g);
 		if (bl) {
-			if (livingEntity.getWorld() instanceof ServerWorld serverWorld) {
-				EnchantmentHelper.onTargetDamaged(serverWorld, livingEntity2, damageSource);
+			if (attacker.getWorld() instanceof ServerWorld serverWorld) {
+				EnchantmentHelper.onTargetDamaged(serverWorld, target, damageSource);
 			}
 
-			if (!livingEntity.isBaby()) {
-				knockback(livingEntity, livingEntity2);
+			if (!attacker.isBaby()) {
+				knockback(attacker, target);
 			}
 		}
 

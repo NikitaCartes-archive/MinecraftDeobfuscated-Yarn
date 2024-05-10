@@ -8,6 +8,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
+import net.minecraft.class_9761;
+import net.minecraft.class_9762;
+import net.minecraft.class_9770;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -21,7 +24,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
@@ -40,7 +42,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.biome.Biome;
@@ -59,9 +60,8 @@ import org.slf4j.Logger;
 
 public class ChunkRegion implements StructureWorldAccess {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final List<Chunk> chunks;
+	private final class_9762<class_9761> chunks;
 	private final Chunk centerPos;
-	private final int width;
 	private final ServerWorld world;
 	private final long seed;
 	private final WorldProperties levelProperties;
@@ -70,43 +70,22 @@ public class ChunkRegion implements StructureWorldAccess {
 	private final MultiTickScheduler<Block> blockTickScheduler = new MultiTickScheduler<>(pos -> this.getChunk(pos).getBlockTickScheduler());
 	private final MultiTickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<>(pos -> this.getChunk(pos).getFluidTickScheduler());
 	private final BiomeAccess biomeAccess;
-	private final ChunkPos lowerCorner;
-	private final ChunkPos upperCorner;
-	private final ChunkStatus status;
-	/**
-	 * The number of neighboring chunks which can be accessed for block
-	 * placement.
-	 * 
-	 * <p>A value of {@code 0} means that only this chunk is accessible. A
-	 * positive value means that the given amount of neighbors are accessible
-	 * in each direction. A negative value means that this region shouldn't be
-	 * used for block placement.
-	 */
-	private final int placementRadius;
+	private final class_9770 field_51876;
 	@Nullable
 	private Supplier<String> currentlyGeneratingStructureName;
 	private final AtomicLong tickOrder = new AtomicLong();
 	private static final Identifier WORLDGEN_REGION_RANDOM_ID = new Identifier("worldgen_region_random");
 
-	public ChunkRegion(ServerWorld world, List<Chunk> chunks, ChunkStatus status, int placementRadius) {
-		this.status = status;
-		this.placementRadius = placementRadius;
-		int i = MathHelper.floor(Math.sqrt((double)chunks.size()));
-		if (i * i != chunks.size()) {
-			throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Cache size is not a square."));
-		} else {
-			this.chunks = chunks;
-			this.centerPos = (Chunk)chunks.get(chunks.size() / 2);
-			this.width = i;
-			this.world = world;
-			this.seed = world.getSeed();
-			this.levelProperties = world.getLevelProperties();
-			this.random = world.getChunkManager().getNoiseConfig().getOrCreateRandomDeriver(WORLDGEN_REGION_RANDOM_ID).split(this.centerPos.getPos().getStartPos());
-			this.dimension = world.getDimension();
-			this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed));
-			this.lowerCorner = ((Chunk)chunks.get(0)).getPos();
-			this.upperCorner = ((Chunk)chunks.get(chunks.size() - 1)).getPos();
-		}
+	public ChunkRegion(ServerWorld world, class_9762<class_9761> arg, class_9770 arg2, Chunk chunk) {
+		this.field_51876 = arg2;
+		this.chunks = arg;
+		this.centerPos = chunk;
+		this.world = world;
+		this.seed = world.getSeed();
+		this.levelProperties = world.getLevelProperties();
+		this.random = world.getChunkManager().getNoiseConfig().getOrCreateRandomDeriver(WORLDGEN_REGION_RANDOM_ID).split(this.centerPos.getPos().getStartPos());
+		this.dimension = world.getDimension();
+		this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed));
 	}
 
 	public boolean needsBlending(ChunkPos chunkPos, int checkRadius) {
@@ -130,16 +109,19 @@ public class ChunkRegion implements StructureWorldAccess {
 	@Nullable
 	@Override
 	public Chunk getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
-		Chunk chunk;
-		if (this.isChunkLoaded(chunkX, chunkZ)) {
-			int i = chunkX - this.lowerCorner.x;
-			int j = chunkZ - this.lowerCorner.z;
-			chunk = (Chunk)this.chunks.get(i + j * this.width);
-			if (chunk.getStatus().isAtLeast(leastStatus)) {
-				return chunk;
+		int i = this.centerPos.getPos().method_60510(chunkX, chunkZ);
+		ChunkStatus chunkStatus = i >= this.field_51876.directDependencies().method_60516() ? null : this.field_51876.directDependencies().method_60514(i);
+		class_9761 lv;
+		if (chunkStatus != null) {
+			lv = this.chunks.method_60482(chunkX, chunkZ);
+			if (leastStatus.method_60548(chunkStatus)) {
+				Chunk chunk = lv.method_60457(chunkStatus);
+				if (chunk != null) {
+					return chunk;
+				}
 			}
 		} else {
-			chunk = null;
+			lv = null;
 		}
 
 		CrashReport crashReport = CrashReport.create(
@@ -147,20 +129,20 @@ public class ChunkRegion implements StructureWorldAccess {
 		);
 		CrashReportSection crashReportSection = crashReport.addElement("Chunk request details");
 		crashReportSection.add("Requested chunk", String.format(Locale.ROOT, "%d, %d", chunkX, chunkZ));
-		crashReportSection.add("Requested status", (CrashCallable<String>)(() -> Registries.CHUNK_STATUS.getId(leastStatus).toString()));
-		crashReportSection.add(
-			"Actual status", (CrashCallable<String>)(() -> chunk == null ? "[out of region bounds]" : Registries.CHUNK_STATUS.getId(chunk.getStatus()).toString())
-		);
-		crashReportSection.add("loadOrGenerate", create);
-		crashReportSection.add("Generating chunk", (CrashCallable<String>)(() -> this.centerPos.getPos().toString()));
-		crashReportSection.add("Region start", this.lowerCorner);
-		crashReportSection.add("Region end", this.upperCorner);
+		crashReportSection.add("Generating status", (CrashCallable<String>)(() -> this.field_51876.targetStatus().method_60550()));
+		crashReportSection.add("Requested status", leastStatus::method_60550);
+		crashReportSection.add("Actual status", (CrashCallable<String>)(() -> lv == null ? "[out of cache bounds]" : lv.method_60472().method_60550()));
+		crashReportSection.add("Maximum allowed status", (CrashCallable<String>)(() -> chunkStatus == null ? "null" : chunkStatus.method_60550()));
+		crashReportSection.add("Dependencies", this.field_51876.directDependencies()::toString);
+		crashReportSection.add("Requested distance", i);
+		crashReportSection.add("Generating chunk", this.centerPos.getPos()::toString);
 		throw new CrashException(crashReport);
 	}
 
 	@Override
 	public boolean isChunkLoaded(int chunkX, int chunkZ) {
-		return chunkX >= this.lowerCorner.x && chunkX <= this.upperCorner.x && chunkZ >= this.lowerCorner.z && chunkZ <= this.upperCorner.z;
+		int i = this.centerPos.getPos().method_60510(chunkX, chunkZ);
+		return i < this.field_51876.directDependencies().method_60516();
 	}
 
 	@Override
@@ -261,7 +243,7 @@ public class ChunkRegion implements StructureWorldAccess {
 		ChunkPos chunkPos = this.getCenterPos();
 		int k = Math.abs(chunkPos.x - i);
 		int l = Math.abs(chunkPos.z - j);
-		if (k <= this.placementRadius && l <= this.placementRadius) {
+		if (k <= this.field_51876.blockStateWriteRadius() && l <= this.field_51876.blockStateWriteRadius()) {
 			if (this.centerPos.hasBelowZeroRetrogen()) {
 				HeightLimitView heightLimitView = this.centerPos.getHeightLimitView();
 				if (pos.getY() < heightLimitView.getBottomY() || pos.getY() >= heightLimitView.getTopY()) {
@@ -279,7 +261,7 @@ public class ChunkRegion implements StructureWorldAccess {
 					+ "], pos: "
 					+ pos
 					+ ", status: "
-					+ this.status
+					+ this.field_51876.targetStatus()
 					+ (this.currentlyGeneratingStructureName == null ? "" : ", currently generating: " + (String)this.currentlyGeneratingStructureName.get())
 			);
 			return false;

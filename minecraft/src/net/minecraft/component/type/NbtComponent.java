@@ -19,6 +19,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryWrapper;
@@ -27,7 +28,8 @@ import org.slf4j.Logger;
 public final class NbtComponent {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final NbtComponent DEFAULT = new NbtComponent(new NbtCompound());
-	public static final Codec<NbtComponent> CODEC = NbtCompound.CODEC.xmap(NbtComponent::new, component -> component.nbt);
+	public static final Codec<NbtComponent> CODEC = Codec.withAlternative(NbtCompound.CODEC, StringNbtReader.STRINGIFIED_CODEC)
+		.xmap(NbtComponent::new, component -> component.nbt);
 	public static final Codec<NbtComponent> CODEC_WITH_ID = CODEC.validate(
 		component -> component.getNbt().contains("id", NbtElement.STRING_TYPE)
 				? DataResult.success(component)

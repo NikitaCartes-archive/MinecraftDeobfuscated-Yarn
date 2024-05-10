@@ -35,7 +35,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		instance -> addConditionsField(instance)
 				.<List<SetAttributesLootFunction.Attribute>, boolean>and(
 					instance.group(
-						Codecs.nonEmptyList(SetAttributesLootFunction.Attribute.CODEC.listOf()).fieldOf("modifiers").forGetter(function -> function.attributes),
+						SetAttributesLootFunction.Attribute.CODEC.listOf().fieldOf("modifiers").forGetter(function -> function.attributes),
 						Codec.BOOL.optionalFieldOf("replace", Boolean.valueOf(true)).forGetter(setAttributesLootFunction -> setAttributesLootFunction.replace)
 					)
 				)

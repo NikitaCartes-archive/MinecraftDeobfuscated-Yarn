@@ -101,12 +101,16 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 
 	@Override
 	public TradeOfferList getOffers() {
-		if (this.offers == null) {
-			this.offers = new TradeOfferList();
-			this.fillRecipes();
-		}
+		if (this.getWorld().isClient) {
+			throw new IllegalStateException("Cannot load Villager offers on the client");
+		} else {
+			if (this.offers == null) {
+				this.offers = new TradeOfferList();
+				this.fillRecipes();
+			}
 
-		return this.offers;
+			return this.offers;
+		}
 	}
 
 	@Override

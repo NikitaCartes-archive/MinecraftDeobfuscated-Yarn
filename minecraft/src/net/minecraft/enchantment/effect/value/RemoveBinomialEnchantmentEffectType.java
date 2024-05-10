@@ -4,7 +4,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.enchantment.EnchantmentLevelBasedValueType;
 import net.minecraft.enchantment.effect.EnchantmentValueEffectType;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.random.Random;
 
 public record RemoveBinomialEnchantmentEffectType(EnchantmentLevelBasedValueType chance) implements EnchantmentValueEffectType {
@@ -14,17 +13,17 @@ public record RemoveBinomialEnchantmentEffectType(EnchantmentLevelBasedValueType
 	);
 
 	@Override
-	public float apply(ItemStack stack, int level, Random random, float inputValue) {
-		float f = this.chance.getValue(level);
-		int i = 0;
+	public float apply(int i, Random random, float f) {
+		float g = this.chance.getValue(i);
+		int j = 0;
 
-		for (int j = 0; (float)j < inputValue; j++) {
-			if (random.nextFloat() < f) {
-				i++;
+		for (int k = 0; (float)k < f; k++) {
+			if (random.nextFloat() < g) {
+				j++;
 			}
 		}
 
-		return inputValue - (float)i;
+		return f - (float)j;
 	}
 
 	@Override

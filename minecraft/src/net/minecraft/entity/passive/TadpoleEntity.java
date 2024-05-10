@@ -38,8 +38,8 @@ import net.minecraft.world.World;
 public class TadpoleEntity extends FishEntity {
 	@VisibleForTesting
 	public static int MAX_TADPOLE_AGE = Math.abs(-24000);
-	public static float WIDTH = 0.4F;
-	public static float HEIGHT = 0.3F;
+	public static final float WIDTH = 0.4F;
+	public static final float HEIGHT = 0.3F;
 	private int tadpoleAge;
 	protected static final ImmutableList<SensorType<? extends Sensor<? super TadpoleEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HURT_BY, SensorType.FROG_TEMPTATIONS
@@ -234,6 +234,7 @@ public class TadpoleEntity extends FishEntity {
 				}
 
 				frogEntity.setPersistent();
+				frogEntity.method_60490(this.getDimensions(this.getPose()));
 				this.playSound(SoundEvents.ENTITY_TADPOLE_GROW_UP, 0.15F, 1.0F);
 				serverWorld.spawnEntityAndPassengers(frogEntity);
 				this.discard();

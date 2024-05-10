@@ -513,7 +513,7 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 			this.increaseAngerAt(entity, Angriness.ANGRY.getThreshold() + 20, false);
 			if (this.brain.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()
 				&& entity instanceof LivingEntity livingEntity
-				&& (!source.isIndirect() || this.isInRange(livingEntity, 5.0))) {
+				&& (source.method_60489() || this.isInRange(livingEntity, 5.0))) {
 				this.updateAttackTarget(livingEntity);
 			}
 		}

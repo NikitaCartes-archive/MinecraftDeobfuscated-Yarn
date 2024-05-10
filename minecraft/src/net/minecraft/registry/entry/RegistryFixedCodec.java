@@ -56,7 +56,7 @@ public final class RegistryFixedCodec<E> implements Codec<RegistryEntry<E>> {
 									.getOptional(RegistryKey.of(this.registry, identifier))
 									.map(DataResult::success)
 									.orElseGet(() -> DataResult.error(() -> "Failed to get element " + identifier)))
-								.map(reference -> Pair.of(reference, pair.getSecond()))
+								.map(value -> Pair.of(value, pair.getSecond()))
 								.setLifecycle(Lifecycle.stable());
 						}
 					);

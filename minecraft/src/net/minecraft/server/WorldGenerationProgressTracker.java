@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import javax.annotation.Nullable;
+import net.minecraft.server.world.ChunkLevels;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 
@@ -28,7 +29,7 @@ public class WorldGenerationProgressTracker implements WorldGenerationProgressLi
 	public static WorldGenerationProgressTracker forSpawnChunks(int spawnChunkRadius) {
 		WorldGenerationProgressLogger worldGenerationProgressLogger = WorldGenerationProgressLogger.forSpawnChunks(spawnChunkRadius);
 		int i = WorldGenerationProgressListener.getStartRegionSize(spawnChunkRadius);
-		int j = spawnChunkRadius + ChunkStatus.getMaxDistanceFromFull();
+		int j = spawnChunkRadius + ChunkLevels.field_51859;
 		int k = WorldGenerationProgressListener.getStartRegionSize(j);
 		return new WorldGenerationProgressTracker(worldGenerationProgressLogger, i, j, k);
 	}

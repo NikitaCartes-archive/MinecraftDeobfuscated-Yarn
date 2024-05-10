@@ -110,6 +110,10 @@ public class LootTable {
 		this.generateUnprocessedLoot(context, processStacks(context.getWorld(), lootConsumer));
 	}
 
+	public ObjectArrayList<ItemStack> method_60569(LootContextParameterSet lootContextParameterSet, Random random) {
+		return this.generateLoot(new LootContext.Builder(lootContextParameterSet).method_60568(random).build(this.randomSequenceId));
+	}
+
 	public ObjectArrayList<ItemStack> generateLoot(LootContextParameterSet parameters, long seed) {
 		return this.generateLoot(new LootContext.Builder(parameters).random(seed).build(this.randomSequenceId));
 	}

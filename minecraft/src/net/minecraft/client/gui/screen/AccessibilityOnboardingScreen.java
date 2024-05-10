@@ -127,7 +127,7 @@ public class AccessibilityOnboardingScreen extends Screen {
 		}
 	}
 
-	public void method_60323() {
+	public void refreshNarratorOption() {
 		if (this.narratorWidget instanceof CyclingButtonWidget) {
 			((CyclingButtonWidget)this.narratorWidget).setValue(this.gameOptions.getNarrator().getValue());
 		}

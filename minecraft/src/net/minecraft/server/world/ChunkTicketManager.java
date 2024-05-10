@@ -115,7 +115,7 @@ public abstract class ChunkTicketManager {
 	 * <li>Special updates of chunks with PLAYER tickets added recently.</li>
 	 * </ul>
 	 */
-	public boolean update(ThreadedAnvilChunkStorage chunkStorage) {
+	public boolean update(ThreadedAnvilChunkStorage threadedAnvilChunkStorage) {
 		this.distanceFromNearestPlayerTracker.updateLevels();
 		this.simulationDistanceTracker.updateLevels();
 		this.nearbyChunkTicketUpdater.updateLevels();
@@ -125,7 +125,8 @@ public abstract class ChunkTicketManager {
 		}
 
 		if (!this.chunkHoldersWithPendingUpdates.isEmpty()) {
-			this.chunkHoldersWithPendingUpdates.forEach(holder -> holder.updateFutures(chunkStorage, this.mainThreadExecutor));
+			this.chunkHoldersWithPendingUpdates.forEach(chunkHolderx -> chunkHolderx.method_60454(threadedAnvilChunkStorage));
+			this.chunkHoldersWithPendingUpdates.forEach(holder -> holder.updateFutures(threadedAnvilChunkStorage, this.mainThreadExecutor));
 			this.chunkHoldersWithPendingUpdates.clear();
 			return true;
 		} else {
@@ -135,7 +136,7 @@ public abstract class ChunkTicketManager {
 				while (longIterator.hasNext()) {
 					long l = longIterator.nextLong();
 					if (this.getTicketSet(l).stream().anyMatch(ticket -> ticket.getType() == ChunkTicketType.PLAYER)) {
-						ChunkHolder chunkHolder = chunkStorage.getCurrentChunkHolder(l);
+						ChunkHolder chunkHolder = threadedAnvilChunkStorage.getCurrentChunkHolder(l);
 						if (chunkHolder == null) {
 							throw new IllegalStateException();
 						}
@@ -319,7 +320,7 @@ public abstract class ChunkTicketManager {
 	}
 
 	public void removePersistentTickets() {
-		ImmutableSet<ChunkTicketType<?>> immutableSet = ImmutableSet.of(ChunkTicketType.UNKNOWN, ChunkTicketType.POST_TELEPORT, ChunkTicketType.LIGHT);
+		ImmutableSet<ChunkTicketType<?>> immutableSet = ImmutableSet.of(ChunkTicketType.UNKNOWN, ChunkTicketType.POST_TELEPORT);
 		ObjectIterator<Entry<SortedArraySet<ChunkTicket<?>>>> objectIterator = this.ticketsByPosition.long2ObjectEntrySet().fastIterator();
 
 		while (objectIterator.hasNext()) {

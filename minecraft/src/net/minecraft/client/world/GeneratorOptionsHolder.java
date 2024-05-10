@@ -83,7 +83,7 @@ public record GeneratorOptionsHolder(
 		return this.combinedDynamicRegistries.getCombinedRegistryManager();
 	}
 
-	public void method_60345() {
+	public void initializeIndexedFeaturesLists() {
 		for (DimensionOptions dimensionOptions : this.dimensionOptionsRegistry()) {
 			dimensionOptions.chunkGenerator().initializeIndexedFeaturesList();
 		}

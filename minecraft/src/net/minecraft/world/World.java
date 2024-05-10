@@ -469,6 +469,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		this.playSound(source, x, y, z, sound, category, volume, pitch, this.threadSafeRandom.nextLong());
 	}
 
+	public void method_60511(
+		@Nullable PlayerEntity playerEntity, double d, double e, double f, RegistryEntry<SoundEvent> registryEntry, SoundCategory soundCategory, float g, float h
+	) {
+		this.playSound(playerEntity, d, e, f, registryEntry, soundCategory, g, h, this.threadSafeRandom.nextLong());
+	}
+
 	/**
 	 * @param source the player that caused the sound and therefore plays the sound directly in
 	 * the client, or {@code null}

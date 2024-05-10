@@ -587,9 +587,13 @@ public class BoatEntity extends VehicleEntity implements VariantHolder<BoatEntit
 		this.velocityDecay = 0.05F;
 		if (this.lastLocation == BoatEntity.Location.IN_AIR && this.location != BoatEntity.Location.IN_AIR && this.location != BoatEntity.Location.ON_LAND) {
 			this.waterLevel = this.getBodyY(1.0);
-			this.setPosition(this.getX(), (double)(this.getWaterHeightBelow() - this.getHeight()) + 0.101, this.getZ());
-			this.setVelocity(this.getVelocity().multiply(1.0, 0.0, 1.0));
-			this.fallVelocity = 0.0;
+			double f = (double)(this.getWaterHeightBelow() - this.getHeight()) + 0.101;
+			if (this.getWorld().isSpaceEmpty(this, this.getBoundingBox().offset(0.0, f - this.getY(), 0.0))) {
+				this.setPosition(this.getX(), f, this.getZ());
+				this.setVelocity(this.getVelocity().multiply(1.0, 0.0, 1.0));
+				this.fallVelocity = 0.0;
+			}
+
 			this.location = BoatEntity.Location.IN_WATER;
 		} else {
 			if (this.location == BoatEntity.Location.IN_WATER) {

@@ -315,6 +315,8 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 				: this.duration == statusEffectInstance.duration
 					&& this.amplifier == statusEffectInstance.amplifier
 					&& this.ambient == statusEffectInstance.ambient
+					&& this.showParticles == statusEffectInstance.showParticles
+					&& this.showIcon == statusEffectInstance.showIcon
 					&& this.type.equals(statusEffectInstance.type);
 		}
 	}
@@ -323,7 +325,9 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		int i = this.type.hashCode();
 		i = 31 * i + this.duration;
 		i = 31 * i + this.amplifier;
-		return 31 * i + (this.ambient ? 1 : 0);
+		i = 31 * i + (this.ambient ? 1 : 0);
+		i = 31 * i + (this.showParticles ? 1 : 0);
+		return 31 * i + (this.showIcon ? 1 : 0);
 	}
 
 	public NbtElement writeNbt() {

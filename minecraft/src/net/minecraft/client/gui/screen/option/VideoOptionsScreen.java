@@ -60,9 +60,9 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		};
 	}
 
-	public VideoOptionsScreen(Screen screen, MinecraftClient minecraftClient, GameOptions gameOptions) {
-		super(screen, gameOptions, TITLE_TEXT);
-		this.warningManager = minecraftClient.getVideoWarningManager();
+	public VideoOptionsScreen(Screen parent, MinecraftClient client, GameOptions gameOptions) {
+		super(parent, gameOptions, TITLE_TEXT);
+		this.warningManager = client.getVideoWarningManager();
 		this.warningManager.reset();
 		if (gameOptions.getGraphicsMode().getValue() == GraphicsMode.FABULOUS) {
 			this.warningManager.acceptAfterWarnings();
@@ -72,7 +72,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	protected void method_60325() {
+	protected void addOptions() {
 		int i = -1;
 		Window window = this.client.getWindow();
 		Monitor monitor = window.getMonitor();
@@ -87,15 +87,15 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		SimpleOption<Integer> simpleOption = new SimpleOption<>(
 			"options.fullscreen.resolution",
 			SimpleOption.emptyTooltip(),
-			(text, integer) -> {
+			(optionText, value) -> {
 				if (monitor == null) {
 					return Text.translatable("options.fullscreen.unavailable");
-				} else if (integer == -1) {
-					return GameOptions.getGenericValueText(text, Text.translatable("options.fullscreen.current"));
+				} else if (value == -1) {
+					return GameOptions.getGenericValueText(optionText, Text.translatable("options.fullscreen.current"));
 				} else {
-					VideoMode videoMode = monitor.getVideoMode(integer);
+					VideoMode videoMode = monitor.getVideoMode(value);
 					return GameOptions.getGenericValueText(
-						text,
+						optionText,
 						Text.translatable(
 							"options.fullscreen.entry",
 							videoMode.getWidth(),
@@ -108,15 +108,15 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 			},
 			new SimpleOption.ValidatingIntSliderCallbacks(-1, monitor != null ? monitor.getVideoModeCount() - 1 : -1),
 			j,
-			integer -> {
+			value -> {
 				if (monitor != null) {
-					window.setVideoMode(integer == -1 ? Optional.empty() : Optional.of(monitor.getVideoMode(integer)));
+					window.setVideoMode(value == -1 ? Optional.empty() : Optional.of(monitor.getVideoMode(value)));
 				}
 			}
 		);
-		this.field_51824.addSingleOptionEntry(simpleOption);
-		this.field_51824.addSingleOptionEntry(this.gameOptions.getBiomeBlendRadius());
-		this.field_51824.addAll(getOptions(this.gameOptions));
+		this.body.addSingleOptionEntry(simpleOption);
+		this.body.addSingleOptionEntry(this.gameOptions.getBiomeBlendRadius());
+		this.body.addAll(getOptions(this.gameOptions));
 	}
 
 	@Override
@@ -185,11 +185,11 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 				int j = i == 0 ? maxSuppliableIntCallbacks.maxInclusive() + 1 : i;
 				int k = j + (int)Math.signum(verticalAmount);
 				if (k != 0 && k <= maxSuppliableIntCallbacks.maxInclusive() && k >= maxSuppliableIntCallbacks.minInclusive()) {
-					CyclingButtonWidget<Integer> cyclingButtonWidget = (CyclingButtonWidget<Integer>)this.field_51824.getWidgetFor(simpleOption);
+					CyclingButtonWidget<Integer> cyclingButtonWidget = (CyclingButtonWidget<Integer>)this.body.getWidgetFor(simpleOption);
 					if (cyclingButtonWidget != null) {
 						simpleOption.setValue(k);
 						cyclingButtonWidget.setValue(k);
-						this.field_51824.setScrollAmount(0.0);
+						this.body.setScrollAmount(0.0);
 						return true;
 					}
 				}

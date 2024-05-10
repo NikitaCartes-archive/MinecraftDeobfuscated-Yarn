@@ -76,7 +76,8 @@ public class BannerPatternFormatFix extends ChoiceFix {
 					dynamicx.asString().map(string -> (String)OLD_TO_NEW_PATTERNS.getOrDefault(string, string)).map(dynamicx::createString).result(), dynamicx
 				)
 		);
-		return dynamic.renameAndFixField("Color", "color", dynamicx -> dynamicx.createString(getColorFromInt(dynamicx.asInt(0))));
+		dynamic = dynamic.set("color", dynamic.createString(getColorFromInt(dynamic.get("Color").asInt(0))));
+		return dynamic.remove("Color");
 	}
 
 	public static String getColorFromInt(int color) {

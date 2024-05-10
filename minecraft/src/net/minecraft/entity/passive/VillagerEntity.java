@@ -325,24 +325,24 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			this.sayNo();
 			return ActionResult.success(this.getWorld().isClient);
 		} else {
-			boolean bl = this.getOffers().isEmpty();
-			if (hand == Hand.MAIN_HAND) {
-				if (bl && !this.getWorld().isClient) {
-					this.sayNo();
+			if (!this.getWorld().isClient) {
+				boolean bl = this.getOffers().isEmpty();
+				if (hand == Hand.MAIN_HAND) {
+					if (bl) {
+						this.sayNo();
+					}
+
+					player.incrementStat(Stats.TALKED_TO_VILLAGER);
 				}
 
-				player.incrementStat(Stats.TALKED_TO_VILLAGER);
-			}
-
-			if (bl) {
-				return ActionResult.success(this.getWorld().isClient);
-			} else {
-				if (!this.getWorld().isClient && !this.offers.isEmpty()) {
-					this.beginTradeWith(player);
+				if (bl) {
+					return ActionResult.CONSUME;
 				}
 
-				return ActionResult.success(this.getWorld().isClient);
+				this.beginTradeWith(player);
 			}
+
+			return ActionResult.success(this.getWorld().isClient);
 		}
 	}
 

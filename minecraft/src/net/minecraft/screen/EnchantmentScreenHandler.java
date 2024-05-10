@@ -162,7 +162,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 					if (!list.isEmpty()) {
 						player.applyEnchantmentCosts(itemStack, i);
 						if (itemStack.isOf(Items.BOOK)) {
-							itemStack3 = itemStack.copyComponentsToNewStack(Items.ENCHANTED_BOOK, 1);
+							itemStack3 = itemStack.method_60503(Items.ENCHANTED_BOOK);
 							this.inventory.setStack(0, itemStack3);
 						}
 
@@ -170,11 +170,9 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 							itemStack3.addEnchantment(enchantmentLevelEntry.enchantment, enchantmentLevelEntry.level);
 						}
 
-						if (!player.isInCreativeMode()) {
-							itemStack2.decrement(i);
-							if (itemStack2.isEmpty()) {
-								this.inventory.setStack(1, ItemStack.EMPTY);
-							}
+						itemStack2.decrementUnlessCreative(i, player);
+						if (itemStack2.isEmpty()) {
+							this.inventory.setStack(1, ItemStack.EMPTY);
 						}
 
 						player.incrementStat(Stats.ENCHANT_ITEM);
@@ -196,10 +194,9 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 		}
 	}
 
-	private List<EnchantmentLevelEntry> generateEnchantments(DynamicRegistryManager dynamicRegistryManager, ItemStack stack, int slot, int level) {
+	private List<EnchantmentLevelEntry> generateEnchantments(DynamicRegistryManager registryManager, ItemStack stack, int slot, int level) {
 		this.random.setSeed((long)(this.seed.get() + slot));
-		Optional<RegistryEntryList.Named<Enchantment>> optional = dynamicRegistryManager.get(RegistryKeys.ENCHANTMENT)
-			.getEntryList(EnchantmentTags.IN_ENCHANTING_TABLE);
+		Optional<RegistryEntryList.Named<Enchantment>> optional = registryManager.get(RegistryKeys.ENCHANTMENT).getEntryList(EnchantmentTags.IN_ENCHANTING_TABLE);
 		if (optional.isEmpty()) {
 			return List.of();
 		} else {

@@ -8,7 +8,7 @@ import net.minecraft.block.CampfireBlock;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ContainerComponent;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -165,14 +165,14 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 			: this.matchGetter.getFirstMatch(new SingleStackRecipeInput(stack), this.world);
 	}
 
-	public boolean addItem(@Nullable Entity user, ItemStack stack, int cookTime) {
+	public boolean addItem(@Nullable LivingEntity livingEntity, ItemStack stack, int cookTime) {
 		for (int i = 0; i < this.itemsBeingCooked.size(); i++) {
 			ItemStack itemStack = this.itemsBeingCooked.get(i);
 			if (itemStack.isEmpty()) {
 				this.cookingTotalTimes[i] = cookTime;
 				this.cookingTimes[i] = 0;
-				this.itemsBeingCooked.set(i, stack.split(1));
-				this.world.emitGameEvent(GameEvent.BLOCK_CHANGE, this.getPos(), GameEvent.Emitter.of(user, this.getCachedState()));
+				this.itemsBeingCooked.set(i, stack.method_60504(1, livingEntity));
+				this.world.emitGameEvent(GameEvent.BLOCK_CHANGE, this.getPos(), GameEvent.Emitter.of(livingEntity, this.getCachedState()));
 				this.updateListeners();
 				return true;
 			}

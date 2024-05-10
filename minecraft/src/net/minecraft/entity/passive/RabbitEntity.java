@@ -77,7 +77,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 	private static final Identifier KILLER_BUNNY = new Identifier("killer_bunny");
 	private static final int field_51585 = 3;
 	private static final int field_51586 = 5;
-	private static final UUID field_51587 = UUID.fromString("6555be74-63b3-41f1-a245-77833b3c2562");
+	private static final UUID KILLER_BUNNY_ATTACK_DAMAGE_MODIFIER = UUID.fromString("6555be74-63b3-41f1-a245-77833b3c2562");
 	private static final int field_30369 = 8;
 	private static final int field_30370 = 40;
 	private int jumpTicks;
@@ -307,7 +307,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 	}
 
 	@Override
-	public void method_59928() {
+	public void playAttackSound() {
 		if (this.getVariant() == RabbitEntity.RabbitType.EVIL) {
 			this.playSound(SoundEvents.ENTITY_RABBIT_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 		}
@@ -357,12 +357,14 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 			this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
 			this.targetSelector.add(2, new ActiveTargetGoal(this, WolfEntity.class, true));
 			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)
-				.addPersistentModifier(new EntityAttributeModifier(field_51587, "Evil rabbit strength", 5.0, EntityAttributeModifier.Operation.ADD_VALUE));
+				.addPersistentModifier(
+					new EntityAttributeModifier(KILLER_BUNNY_ATTACK_DAMAGE_MODIFIER, "Evil rabbit strength", 5.0, EntityAttributeModifier.Operation.ADD_VALUE)
+				);
 			if (!this.hasCustomName()) {
 				this.setCustomName(Text.translatable(Util.createTranslationKey("entity", KILLER_BUNNY)));
 			}
 		} else {
-			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).removeModifier(field_51587);
+			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).removeModifier(KILLER_BUNNY_ATTACK_DAMAGE_MODIFIER);
 		}
 
 		this.dataTracker.set(RABBIT_TYPE, rabbitType.id);

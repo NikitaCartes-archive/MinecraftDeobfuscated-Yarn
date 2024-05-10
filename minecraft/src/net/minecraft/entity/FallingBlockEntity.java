@@ -219,6 +219,7 @@ public class FallingBlockEntity extends Entity {
 			}
 
 			this.setVelocity(this.getVelocity().multiply(0.98));
+			this.tickPortal();
 		}
 	}
 

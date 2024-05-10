@@ -60,7 +60,7 @@ public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		if (stack.isOf(Items.BOOK)) {
-			stack = stack.copyComponentsToNewStack(Items.ENCHANTED_BOOK, stack.getCount());
+			stack = stack.method_60503(Items.ENCHANTED_BOOK);
 			stack.set(DataComponentTypes.STORED_ENCHANTMENTS, stack.remove(DataComponentTypes.ENCHANTMENTS));
 		}
 
@@ -69,14 +69,9 @@ public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
 			builder -> {
 				if (this.add) {
 					this.enchantments
-						.forEach(
-							(registryEntry, lootNumberProvider) -> builder.set(
-									registryEntry, MathHelper.clamp(builder.getLevel(registryEntry) + lootNumberProvider.nextInt(context), 0, 255)
-								)
-						);
+						.forEach((enchantment, level) -> builder.set(enchantment, MathHelper.clamp(builder.getLevel(enchantment) + level.nextInt(context), 0, 255)));
 				} else {
-					this.enchantments
-						.forEach((registryEntry, lootNumberProvider) -> builder.set(registryEntry, MathHelper.clamp(lootNumberProvider.nextInt(context), 0, 255)));
+					this.enchantments.forEach((enchantment, level) -> builder.set(enchantment, MathHelper.clamp(level.nextInt(context), 0, 255)));
 				}
 			}
 		);
@@ -99,8 +94,8 @@ public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
 			return this;
 		}
 
-		public SetEnchantmentsLootFunction.Builder enchantment(RegistryEntry<Enchantment> registryEntry, LootNumberProvider level) {
-			this.enchantments.put(registryEntry, level);
+		public SetEnchantmentsLootFunction.Builder enchantment(RegistryEntry<Enchantment> enchantment, LootNumberProvider level) {
+			this.enchantments.put(enchantment, level);
 			return this;
 		}
 

@@ -573,7 +573,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.options.addResourcePackProfilesToManager(this.resourcePackManager);
 		this.languageManager = new LanguageManager(this.options.language, translationStorage -> {
 			if (this.player != null) {
-				this.player.networkHandler.method_60346();
+				this.player.networkHandler.refreshSearchManager();
 			}
 		});
 		this.resourceManager.registerReloader(this.languageManager);

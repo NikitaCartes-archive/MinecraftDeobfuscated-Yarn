@@ -42,13 +42,13 @@ public record TableBonusLootCondition(RegistryEntry<Enchantment> enchantment, Li
 		return lootContext.getRandom().nextFloat() < f;
 	}
 
-	public static LootCondition.Builder builder(RegistryEntry<Enchantment> registryEntry, float... chances) {
+	public static LootCondition.Builder builder(RegistryEntry<Enchantment> enchantment, float... chances) {
 		List<Float> list = new ArrayList(chances.length);
 
 		for (float f : chances) {
 			list.add(f);
 		}
 
-		return () -> new TableBonusLootCondition(registryEntry, list);
+		return () -> new TableBonusLootCondition(enchantment, list);
 	}
 }

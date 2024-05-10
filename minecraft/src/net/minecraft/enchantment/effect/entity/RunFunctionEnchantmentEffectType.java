@@ -29,7 +29,13 @@ public record RunFunctionEnchantmentEffectType(Identifier function) implements E
 		CommandFunctionManager commandFunctionManager = minecraftServer.getCommandFunctionManager();
 		Optional<CommandFunction<ServerCommandSource>> optional = commandFunctionManager.getFunction(this.function);
 		if (optional.isPresent()) {
-			ServerCommandSource serverCommandSource = minecraftServer.getCommandSource().withLevel(2).withSilent().withEntity(user).withPosition(pos);
+			ServerCommandSource serverCommandSource = minecraftServer.getCommandSource()
+				.withLevel(2)
+				.withSilent()
+				.withEntity(user)
+				.withWorld(world)
+				.withPosition(pos)
+				.withRotation(user.getRotationClient());
 			commandFunctionManager.execute((CommandFunction<ServerCommandSource>)optional.get(), serverCommandSource);
 		} else {
 			LOGGER.error("Enchantment run_function effect failed for non-existent function {}", this.function);

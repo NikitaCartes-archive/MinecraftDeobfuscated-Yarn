@@ -63,7 +63,7 @@ public record ExplodeEnchantmentEffectType(
 			new AdvancedExplosionBehavior(
 				this.blockInteraction != World.ExplosionSourceType.NONE,
 				this.damageType.isPresent(),
-				this.knockbackMultiplier.map(enchantmentLevelBasedValueType -> enchantmentLevelBasedValueType.getValue(level)),
+				this.knockbackMultiplier.map(knockbackMultiplier -> knockbackMultiplier.getValue(level)),
 				this.immuneBlocks
 			),
 			vec3d.getX(),

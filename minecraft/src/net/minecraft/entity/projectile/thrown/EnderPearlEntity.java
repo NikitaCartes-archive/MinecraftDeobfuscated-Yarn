@@ -51,7 +51,11 @@ public class EnderPearlEntity extends ThrownItemEntity {
 		if (!this.getWorld().isClient && !this.isRemoved()) {
 			Entity entity = this.getOwner();
 			if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
-				if (serverPlayerEntity.networkHandler.isConnectionOpen() && serverPlayerEntity.getWorld() == this.getWorld() && !serverPlayerEntity.isSleeping()) {
+				if (serverPlayerEntity.networkHandler.isConnectionOpen()
+					&& serverPlayerEntity.getWorld() == this.getWorld()
+					&& !serverPlayerEntity.isSleeping()
+					&& !serverPlayerEntity.isSpectator()
+					&& serverPlayerEntity.isAlive()) {
 					if (this.random.nextFloat() < 0.05F && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
 						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.getWorld());
 						if (endermiteEntity != null) {

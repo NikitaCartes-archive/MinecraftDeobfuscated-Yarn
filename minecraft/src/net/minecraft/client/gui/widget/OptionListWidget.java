@@ -23,10 +23,10 @@ public class OptionListWidget extends ElementListWidget<OptionListWidget.WidgetE
 	private static final int field_49482 = 25;
 	private final GameOptionsScreen optionsScreen;
 
-	public OptionListWidget(MinecraftClient client, int width, GameOptionsScreen gameOptionsScreen) {
-		super(client, width, gameOptionsScreen.layout.getContentHeight(), gameOptionsScreen.layout.getHeaderHeight(), 25);
+	public OptionListWidget(MinecraftClient client, int width, GameOptionsScreen optionsScreen) {
+		super(client, width, optionsScreen.layout.getContentHeight(), optionsScreen.layout.getHeaderHeight(), 25);
 		this.centerListVertically = false;
-		this.optionsScreen = gameOptionsScreen;
+		this.optionsScreen = optionsScreen;
 	}
 
 	public void addSingleOptionEntry(SimpleOption<?> option) {

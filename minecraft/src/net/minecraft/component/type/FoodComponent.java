@@ -4,8 +4,11 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.HungerConstants;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -14,7 +17,9 @@ import net.minecraft.util.dynamic.Codecs;
 /**
  * Represents the components that make up the properties of a food item.
  */
-public record FoodComponent(int nutrition, float saturation, boolean canAlwaysEat, float eatSeconds, List<FoodComponent.StatusEffectEntry> effects) {
+public record FoodComponent(
+	int nutrition, float saturation, boolean canAlwaysEat, float eatSeconds, Optional<ItemStack> usingConvertsTo, List<FoodComponent.StatusEffectEntry> effects
+) {
 	private static final float DEFAULT_EAT_SECONDS = 1.6F;
 	public static final Codec<FoodComponent> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
@@ -22,6 +27,7 @@ public record FoodComponent(int nutrition, float saturation, boolean canAlwaysEa
 					Codec.FLOAT.fieldOf("saturation").forGetter(FoodComponent::saturation),
 					Codec.BOOL.optionalFieldOf("can_always_eat", Boolean.valueOf(false)).forGetter(FoodComponent::canAlwaysEat),
 					Codecs.POSITIVE_FLOAT.optionalFieldOf("eat_seconds", 1.6F).forGetter(FoodComponent::eatSeconds),
+					ItemStack.UNCOUNTED_CODEC.optionalFieldOf("using_converts_to").forGetter(FoodComponent::usingConvertsTo),
 					FoodComponent.StatusEffectEntry.CODEC.listOf().optionalFieldOf("effects", List.of()).forGetter(FoodComponent::effects)
 				)
 				.apply(instance, FoodComponent::new)
@@ -35,6 +41,8 @@ public record FoodComponent(int nutrition, float saturation, boolean canAlwaysEa
 		FoodComponent::canAlwaysEat,
 		PacketCodecs.FLOAT,
 		FoodComponent::eatSeconds,
+		ItemStack.PACKET_CODEC.collect(PacketCodecs::optional),
+		FoodComponent::usingConvertsTo,
 		FoodComponent.StatusEffectEntry.PACKET_CODEC.collect(PacketCodecs.toList()),
 		FoodComponent::effects,
 		FoodComponent::new
@@ -49,6 +57,7 @@ public record FoodComponent(int nutrition, float saturation, boolean canAlwaysEa
 		private float saturationModifier;
 		private boolean canAlwaysEat;
 		private float eatSeconds = 1.6F;
+		private Optional<ItemStack> field_51895 = Optional.empty();
 		private final ImmutableList.Builder<FoodComponent.StatusEffectEntry> effects = ImmutableList.builder();
 
 		/**
@@ -103,9 +112,14 @@ public record FoodComponent(int nutrition, float saturation, boolean canAlwaysEa
 			return this;
 		}
 
+		public FoodComponent.Builder method_60500(ItemConvertible itemConvertible) {
+			this.field_51895 = Optional.of(new ItemStack(itemConvertible));
+			return this;
+		}
+
 		public FoodComponent build() {
 			float f = HungerConstants.calculateSaturation(this.nutrition, this.saturationModifier);
-			return new FoodComponent(this.nutrition, f, this.canAlwaysEat, this.eatSeconds, this.effects.build());
+			return new FoodComponent(this.nutrition, f, this.canAlwaysEat, this.eatSeconds, this.field_51895, this.effects.build());
 		}
 	}
 

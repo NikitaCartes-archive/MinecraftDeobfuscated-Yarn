@@ -105,8 +105,8 @@ public class RealmsMainScreen extends RealmsScreen {
 	private static final Text NO_REALMS_TEXT = Text.translatable("mco.selectServer.noRealms");
 	private static final Text NO_PENDING_TOOLTIP = Text.translatable("mco.invites.nopending");
 	private static final Text PENDING_TOOLTIP = Text.translatable("mco.invites.pending");
-	private static final Text field_51815 = Text.translatable("mco.compatibility.incompatible.popup.title");
-	private static final Text field_51816 = Text.translatable("mco.compatibility.incompatible.releaseType.popup.message");
+	private static final Text INCOMPATIBLE_POPUP_TITLE = Text.translatable("mco.compatibility.incompatible.popup.title");
+	private static final Text INCOMPATIBLE_RELEASE_TYPE_MESSAGE = Text.translatable("mco.compatibility.incompatible.releaseType.popup.message");
 	private static final int field_42862 = 100;
 	private static final int field_45209 = 3;
 	private static final int field_45210 = 4;
@@ -540,7 +540,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	private void leaveClicked(@Nullable RealmsServer selectedServer) {
 		if (selectedServer != null && !this.client.uuidEquals(selectedServer.ownerUUID)) {
 			Text text = Text.translatable("mco.configure.world.leave.question.line1");
-			this.client.setScreen(RealmsPopups.createInfoPopup(this, text, popupScreen -> this.leaveServer(selectedServer)));
+			this.client.setScreen(RealmsPopups.createInfoPopup(this, text, popup -> this.leaveServer(selectedServer)));
 		}
 	}
 
@@ -551,12 +551,12 @@ public class RealmsMainScreen extends RealmsScreen {
 			: null;
 	}
 
-	private void leaveServer(RealmsServer realmsServer) {
+	private void leaveServer(RealmsServer server) {
 		(new Thread("Realms-leave-server") {
 			public void run() {
 				try {
 					RealmsClient realmsClient = RealmsClient.create();
-					realmsClient.uninviteMyselfFrom(realmsServer.id);
+					realmsClient.uninviteMyselfFrom(server.id);
 					RealmsMainScreen.this.client.execute(RealmsMainScreen::resetServerList);
 				} catch (RealmsServiceException var2) {
 					RealmsMainScreen.LOGGER.error("Couldn't configure world", (Throwable)var2);
@@ -621,7 +621,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 	public static void play(@Nullable RealmsServer serverData, Screen parent, boolean needsPreparation) {
 		if (serverData != null) {
-			if (!isSnapshotRealmsEligible() || needsPreparation || serverData.method_60315()) {
+			if (!isSnapshotRealmsEligible() || needsPreparation || serverData.isMinigame()) {
 				MinecraftClient.getInstance().setScreen(new RealmsLongRunningMcoTaskScreen(parent, new RealmsPrepareConnectionTask(parent, serverData)));
 				return;
 			}
@@ -668,7 +668,7 @@ public class RealmsMainScreen extends RealmsScreen {
 				case INCOMPATIBLE:
 					MinecraftClient.getInstance()
 						.setScreen(
-							new PopupScreen.Builder(parent, field_51815)
+							new PopupScreen.Builder(parent, INCOMPATIBLE_POPUP_TITLE)
 								.message(
 									Text.translatable(
 										"mco.compatibility.incompatible.series.popup.message",
@@ -682,7 +682,12 @@ public class RealmsMainScreen extends RealmsScreen {
 					break;
 				case RELEASE_TYPE_INCOMPATIBLE:
 					MinecraftClient.getInstance()
-						.setScreen(new PopupScreen.Builder(parent, field_51815).message(field_51816).button(ScreenTexts.BACK, PopupScreen::close).build());
+						.setScreen(
+							new PopupScreen.Builder(parent, INCOMPATIBLE_POPUP_TITLE)
+								.message(INCOMPATIBLE_RELEASE_TYPE_MESSAGE)
+								.button(ScreenTexts.BACK, PopupScreen::close)
+								.build()
+						);
 			}
 		}
 	}
@@ -982,7 +987,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			Text text = RealmsMainScreen.getVersionText(this.server.activeVersion, this.server.isCompatible());
 			int k = this.getVersionRight(x, width, text);
 			this.drawTrimmedText(context, this.server.getName(), i, j, k, -1);
-			if (text != ScreenTexts.EMPTY && !this.server.method_60315()) {
+			if (text != ScreenTexts.EMPTY && !this.server.isMinigame()) {
 				context.drawText(RealmsMainScreen.this.textRenderer, text, k, j, Colors.GRAY, false);
 			}
 		}
@@ -992,7 +997,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			int j = this.getNameY(y);
 			int k = this.getDescriptionY(j);
 			String string = this.server.getMinigameName();
-			if (this.server.method_60315() && string != null) {
+			if (this.server.isMinigame() && string != null) {
 				Text text = Text.literal(string).formatted(Formatting.GRAY);
 				context.drawText(
 					RealmsMainScreen.this.textRenderer, Text.translatable("mco.selectServer.minigameName", text).withColor(Colors.LIGHT_YELLOW), i, k, Colors.WHITE, false

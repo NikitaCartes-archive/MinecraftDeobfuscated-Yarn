@@ -1255,15 +1255,15 @@ public class TradeOffers {
 		private final int minLevel;
 		private final int maxLevel;
 
-		public EnchantBookFactory(int experience, TagKey<Enchantment> tagKey) {
-			this(experience, 0, Integer.MAX_VALUE, tagKey);
+		public EnchantBookFactory(int experience, TagKey<Enchantment> possibleEnchantments) {
+			this(experience, 0, Integer.MAX_VALUE, possibleEnchantments);
 		}
 
-		public EnchantBookFactory(int experience, int minLevel, int maxLevel, TagKey<Enchantment> tagKey) {
+		public EnchantBookFactory(int experience, int minLevel, int maxLevel, TagKey<Enchantment> possibleEnchantments) {
 			this.minLevel = minLevel;
 			this.maxLevel = maxLevel;
 			this.experience = experience;
-			this.possibleEnchantments = tagKey;
+			this.possibleEnchantments = possibleEnchantments;
 		}
 
 		@Override
@@ -1318,7 +1318,7 @@ public class TradeOffers {
 		private final int maxUses;
 		private final int experience;
 		private final float multiplier;
-		private final Optional<RegistryKey<EnchantmentProvider>> field_51618;
+		private final Optional<RegistryKey<EnchantmentProvider>> enchantmentProviderKey;
 
 		public ProcessItemFactory(ItemConvertible item, int count, int price, Item processed, int processedCount, int maxUses, int experience, float multiplier) {
 			this(item, count, price, new ItemStack(processed), processedCount, maxUses, experience, multiplier);
@@ -1329,9 +1329,17 @@ public class TradeOffers {
 		}
 
 		ProcessItemFactory(
-			ItemConvertible itemConvertible, int i, int j, ItemConvertible itemConvertible2, int k, int l, int m, float f, RegistryKey<EnchantmentProvider> registryKey
+			ItemConvertible item,
+			int count,
+			int price,
+			ItemConvertible processed,
+			int processedCount,
+			int maxUses,
+			int experience,
+			float multiplier,
+			RegistryKey<EnchantmentProvider> enchantmentProviderKey
 		) {
-			this(new TradedItem(itemConvertible, i), j, new ItemStack(itemConvertible2, k), l, m, f, Optional.of(registryKey));
+			this(new TradedItem(item, count), price, new ItemStack(processed, processedCount), maxUses, experience, multiplier, Optional.of(enchantmentProviderKey));
 		}
 
 		public ProcessItemFactory(
@@ -1341,7 +1349,7 @@ public class TradeOffers {
 			int maxUses,
 			int processedCount,
 			float multiplier,
-			Optional<RegistryKey<EnchantmentProvider>> optional
+			Optional<RegistryKey<EnchantmentProvider>> enchantmentProviderKey
 		) {
 			this.toBeProcessed = toBeProcessed;
 			this.price = count;
@@ -1349,15 +1357,14 @@ public class TradeOffers {
 			this.maxUses = maxUses;
 			this.experience = processedCount;
 			this.multiplier = multiplier;
-			this.field_51618 = optional;
+			this.enchantmentProviderKey = enchantmentProviderKey;
 		}
 
 		@Nullable
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
 			ItemStack itemStack = this.processed.copy();
-			this.field_51618
-				.ifPresent(registryKey -> EnchantmentHelper.applyEnchantmentProvider(itemStack, registryKey, entity.getWorld(), entity.getBlockPos(), random));
+			this.enchantmentProviderKey.ifPresent(key -> EnchantmentHelper.applyEnchantmentProvider(itemStack, key, entity.getWorld(), entity.getBlockPos(), random));
 			return new TradeOffer(
 				new TradedItem(Items.EMERALD, this.price), Optional.of(this.toBeProcessed), itemStack, 0, this.maxUses, this.experience, this.multiplier
 			);
@@ -1445,7 +1452,7 @@ public class TradeOffers {
 		private final int maxUses;
 		private final int experience;
 		private final float multiplier;
-		private final Optional<RegistryKey<EnchantmentProvider>> field_51619;
+		private final Optional<RegistryKey<EnchantmentProvider>> enchantmentProviderKey;
 
 		public SellItemFactory(Block block, int price, int count, int maxUses, int experience) {
 			this(new ItemStack(block), price, count, maxUses, experience);
@@ -1467,16 +1474,18 @@ public class TradeOffers {
 			this(new ItemStack(item), price, count, maxUses, experience, multiplier);
 		}
 
-		public SellItemFactory(Item item, int i, int j, int k, int l, float f, RegistryKey<EnchantmentProvider> registryKey) {
-			this(new ItemStack(item), i, j, k, l, f, Optional.of(registryKey));
+		public SellItemFactory(
+			Item item, int price, int count, int maxUses, int experience, float multiplier, RegistryKey<EnchantmentProvider> enchantmentProviderKey
+		) {
+			this(new ItemStack(item), price, count, maxUses, experience, multiplier, Optional.of(enchantmentProviderKey));
 		}
 
-		public SellItemFactory(ItemStack itemStack, int i, int j, int k, int l, float f) {
-			this(itemStack, i, j, k, l, f, Optional.empty());
+		public SellItemFactory(ItemStack stack, int price, int count, int maxUses, int experience, float multiplier) {
+			this(stack, price, count, maxUses, experience, multiplier, Optional.empty());
 		}
 
 		public SellItemFactory(
-			ItemStack sell, int price, int count, int maxUses, int experience, float multiplier, Optional<RegistryKey<EnchantmentProvider>> optional
+			ItemStack sell, int price, int count, int maxUses, int experience, float multiplier, Optional<RegistryKey<EnchantmentProvider>> enchantmentProviderKey
 		) {
 			this.sell = sell;
 			this.price = price;
@@ -1484,14 +1493,13 @@ public class TradeOffers {
 			this.maxUses = maxUses;
 			this.experience = experience;
 			this.multiplier = multiplier;
-			this.field_51619 = optional;
+			this.enchantmentProviderKey = enchantmentProviderKey;
 		}
 
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
 			ItemStack itemStack = this.sell.copy();
-			this.field_51619
-				.ifPresent(registryKey -> EnchantmentHelper.applyEnchantmentProvider(itemStack, registryKey, entity.getWorld(), entity.getBlockPos(), random));
+			this.enchantmentProviderKey.ifPresent(key -> EnchantmentHelper.applyEnchantmentProvider(itemStack, key, entity.getWorld(), entity.getBlockPos(), random));
 			return new TradeOffer(new TradedItem(Items.EMERALD, this.price), itemStack, this.maxUses, this.experience, this.multiplier);
 		}
 	}

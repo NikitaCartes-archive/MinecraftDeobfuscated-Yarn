@@ -12,6 +12,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
@@ -22,8 +23,8 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 		super(entityType, world);
 	}
 
-	public DragonFireballEntity(World world, LivingEntity owner, double directionX, double directionY, double directionZ) {
-		super(EntityType.DRAGON_FIREBALL, owner, directionX, directionY, directionZ, world);
+	public DragonFireballEntity(World world, LivingEntity owner, Vec3d vec3d) {
+		super(EntityType.DRAGON_FIREBALL, owner, vec3d, world);
 	}
 
 	@Override

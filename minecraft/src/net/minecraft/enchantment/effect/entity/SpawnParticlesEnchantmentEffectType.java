@@ -56,7 +56,7 @@ public record SpawnParticlesEnchantmentEffectType(
 	@Override
 	public void apply(ServerWorld world, int level, EnchantmentEffectContext context, Entity user, Vec3d pos) {
 		Random random = user.getRandom();
-		Vec3d vec3d = user.getVelocity();
+		Vec3d vec3d = user.method_60478();
 		float f = user.getWidth();
 		float g = user.getHeight();
 		world.spawnParticles(
@@ -87,9 +87,9 @@ public record SpawnParticlesEnchantmentEffectType(
 						.apply(instance, SpawnParticlesEnchantmentEffectType.PositionSource::new)
 			)
 			.validate(
-				positionSource -> positionSource.type() == SpawnParticlesEnchantmentEffectType.PositionSourceType.ENTITY_POSITION && positionSource.scale() != 1.0F
+				source -> source.type() == SpawnParticlesEnchantmentEffectType.PositionSourceType.ENTITY_POSITION && source.scale() != 1.0F
 						? DataResult.error(() -> "Cannot scale an entity position coordinate source")
-						: DataResult.success(positionSource)
+						: DataResult.success(source)
 			);
 
 		public double getPosition(double entityPosition, float boundingBoxSize, Random random) {

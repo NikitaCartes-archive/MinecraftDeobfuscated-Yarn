@@ -144,7 +144,7 @@ public class SkullBlockEntity extends BlockEntity {
 		}
 
 		if (nbt.contains("custom_name", NbtElement.STRING_TYPE)) {
-			this.customName = Text.Serialization.fromJson(nbt.getString("custom_name"), registryLookup);
+			this.customName = tryParseCustomName(nbt.getString("custom_name"), registryLookup);
 		} else {
 			this.customName = null;
 		}

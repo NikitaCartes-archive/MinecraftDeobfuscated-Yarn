@@ -25,7 +25,6 @@ import net.minecraft.nbt.NbtLong;
 import net.minecraft.nbt.NbtLongArray;
 import net.minecraft.nbt.NbtShort;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -39,14 +38,13 @@ public class NbtTextFormatter implements NbtElementVisitor {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_33271 = 8;
 	private static final int field_51497 = 64;
+	private static final int field_51921 = 128;
 	private static final ByteCollection SINGLE_LINE_ELEMENT_TYPES = new ByteOpenHashSet(Arrays.asList((byte)1, (byte)2, (byte)3, (byte)4, (byte)5, (byte)6));
 	private static final Formatting NAME_COLOR = Formatting.AQUA;
 	private static final Formatting STRING_COLOR = Formatting.GREEN;
 	private static final Formatting NUMBER_COLOR = Formatting.GOLD;
 	private static final Formatting TYPE_SUFFIX_COLOR = Formatting.RED;
 	private static final Pattern SIMPLE_NAME = Pattern.compile("[A-Za-z0-9._+-]+");
-	private static final String KEY_VALUE_SEPARATOR = String.valueOf(':');
-	private static final String ENTRY_SEPARATOR = String.valueOf(',');
 	private static final String SQUARE_OPEN_BRACKET = "[";
 	private static final String SQUARE_CLOSE_BRACKET = "]";
 	private static final String SEMICOLON = ";";
@@ -54,20 +52,25 @@ public class NbtTextFormatter implements NbtElementVisitor {
 	private static final String CURLY_OPEN_BRACKET = "{";
 	private static final String CURLY_CLOSE_BRACKET = "}";
 	private static final String NEW_LINE = "\n";
-	private static final Text ELLIPSIS = Text.literal("<...>").formatted(Formatting.GRAY);
+	private static final String field_51922 = ": ";
+	private static final String ENTRY_SEPARATOR = String.valueOf(',');
+	private static final String field_51923 = ENTRY_SEPARATOR + "\n";
+	private static final String field_51924 = ENTRY_SEPARATOR + " ";
+	private static final Text field_51925 = Text.literal("<...>").formatted(Formatting.GRAY);
+	private static final Text field_51926 = Text.literal("b").formatted(TYPE_SUFFIX_COLOR);
+	private static final Text field_51927 = Text.literal("s").formatted(TYPE_SUFFIX_COLOR);
+	private static final Text field_51928 = Text.literal("I").formatted(TYPE_SUFFIX_COLOR);
+	private static final Text field_51929 = Text.literal("L").formatted(TYPE_SUFFIX_COLOR);
+	private static final Text field_51918 = Text.literal("f").formatted(TYPE_SUFFIX_COLOR);
+	private static final Text field_51919 = Text.literal("d").formatted(TYPE_SUFFIX_COLOR);
+	private static final Text field_51920 = Text.literal("B").formatted(TYPE_SUFFIX_COLOR);
 	private final String prefix;
-	private final int indentationLevel;
-	private final int depth;
-	private Text result = ScreenTexts.EMPTY;
+	private int indentationLevel;
+	private int depth;
+	private final MutableText result = Text.empty();
 
 	public NbtTextFormatter(String prefix) {
-		this(prefix, 0, 0);
-	}
-
-	private NbtTextFormatter(String prefix, int indentationLevel, int depth) {
 		this.prefix = prefix;
-		this.indentationLevel = indentationLevel;
-		this.depth = depth;
 	}
 
 	/**
@@ -83,152 +86,152 @@ public class NbtTextFormatter implements NbtElementVisitor {
 		String string = NbtString.escape(element.asString());
 		String string2 = string.substring(0, 1);
 		Text text = Text.literal(string.substring(1, string.length() - 1)).formatted(STRING_COLOR);
-		this.result = Text.literal(string2).append(text).append(string2);
+		this.result.append(string2).append(text).append(string2);
 	}
 
 	@Override
 	public void visitByte(NbtByte element) {
-		Text text = Text.literal("b").formatted(TYPE_SUFFIX_COLOR);
-		this.result = Text.literal(String.valueOf(element.numberValue())).append(text).formatted(NUMBER_COLOR);
+		this.result.append(Text.literal(String.valueOf(element.numberValue())).formatted(NUMBER_COLOR)).append(field_51926);
 	}
 
 	@Override
 	public void visitShort(NbtShort element) {
-		Text text = Text.literal("s").formatted(TYPE_SUFFIX_COLOR);
-		this.result = Text.literal(String.valueOf(element.numberValue())).append(text).formatted(NUMBER_COLOR);
+		this.result.append(Text.literal(String.valueOf(element.numberValue())).formatted(NUMBER_COLOR)).append(field_51927);
 	}
 
 	@Override
 	public void visitInt(NbtInt element) {
-		this.result = Text.literal(String.valueOf(element.numberValue())).formatted(NUMBER_COLOR);
+		this.result.append(Text.literal(String.valueOf(element.numberValue())).formatted(NUMBER_COLOR));
 	}
 
 	@Override
 	public void visitLong(NbtLong element) {
-		Text text = Text.literal("L").formatted(TYPE_SUFFIX_COLOR);
-		this.result = Text.literal(String.valueOf(element.numberValue())).append(text).formatted(NUMBER_COLOR);
+		this.result.append(Text.literal(String.valueOf(element.numberValue())).formatted(NUMBER_COLOR)).append(field_51929);
 	}
 
 	@Override
 	public void visitFloat(NbtFloat element) {
-		Text text = Text.literal("f").formatted(TYPE_SUFFIX_COLOR);
-		this.result = Text.literal(String.valueOf(element.floatValue())).append(text).formatted(NUMBER_COLOR);
+		this.result.append(Text.literal(String.valueOf(element.floatValue())).formatted(NUMBER_COLOR)).append(field_51918);
 	}
 
 	@Override
 	public void visitDouble(NbtDouble element) {
-		Text text = Text.literal("d").formatted(TYPE_SUFFIX_COLOR);
-		this.result = Text.literal(String.valueOf(element.doubleValue())).append(text).formatted(NUMBER_COLOR);
+		this.result.append(Text.literal(String.valueOf(element.doubleValue())).formatted(NUMBER_COLOR)).append(field_51919);
 	}
 
 	@Override
 	public void visitByteArray(NbtByteArray element) {
-		Text text = Text.literal("B").formatted(TYPE_SUFFIX_COLOR);
-		MutableText mutableText = Text.literal("[").append(text).append(";");
+		this.result.append("[").append(field_51920).append(";");
 		byte[] bs = element.getByteArray();
 
-		for (int i = 0; i < bs.length; i++) {
-			MutableText mutableText2 = Text.literal(String.valueOf(bs[i])).formatted(NUMBER_COLOR);
-			mutableText.append(" ").append(mutableText2).append(text);
+		for (int i = 0; i < bs.length && i < 128; i++) {
+			MutableText mutableText = Text.literal(String.valueOf(bs[i])).formatted(NUMBER_COLOR);
+			this.result.append(" ").append(mutableText).append(field_51920);
 			if (i != bs.length - 1) {
-				mutableText.append(ENTRY_SEPARATOR);
+				this.result.append(ENTRY_SEPARATOR);
 			}
 		}
 
-		mutableText.append("]");
-		this.result = mutableText;
+		if (bs.length > 128) {
+			this.result.append(field_51925);
+		}
+
+		this.result.append("]");
 	}
 
 	@Override
 	public void visitIntArray(NbtIntArray element) {
-		Text text = Text.literal("I").formatted(TYPE_SUFFIX_COLOR);
-		MutableText mutableText = Text.literal("[").append(text).append(";");
+		this.result.append("[").append(field_51928).append(";");
 		int[] is = element.getIntArray();
 
-		for (int i = 0; i < is.length; i++) {
-			mutableText.append(" ").append(Text.literal(String.valueOf(is[i])).formatted(NUMBER_COLOR));
+		for (int i = 0; i < is.length && i < 128; i++) {
+			this.result.append(" ").append(Text.literal(String.valueOf(is[i])).formatted(NUMBER_COLOR));
 			if (i != is.length - 1) {
-				mutableText.append(ENTRY_SEPARATOR);
+				this.result.append(ENTRY_SEPARATOR);
 			}
 		}
 
-		mutableText.append("]");
-		this.result = mutableText;
+		if (is.length > 128) {
+			this.result.append(field_51925);
+		}
+
+		this.result.append("]");
 	}
 
 	@Override
 	public void visitLongArray(NbtLongArray element) {
-		Text text = Text.literal("L").formatted(TYPE_SUFFIX_COLOR);
-		MutableText mutableText = Text.literal("[").append(text).append(";");
+		this.result.append("[").append(field_51929).append(";");
 		long[] ls = element.getLongArray();
 
-		for (int i = 0; i < ls.length; i++) {
-			Text text2 = Text.literal(String.valueOf(ls[i])).formatted(NUMBER_COLOR);
-			mutableText.append(" ").append(text2).append(text);
+		for (int i = 0; i < ls.length && i < 128; i++) {
+			Text text = Text.literal(String.valueOf(ls[i])).formatted(NUMBER_COLOR);
+			this.result.append(" ").append(text).append(field_51929);
 			if (i != ls.length - 1) {
-				mutableText.append(ENTRY_SEPARATOR);
+				this.result.append(ENTRY_SEPARATOR);
 			}
 		}
 
-		mutableText.append("]");
-		this.result = mutableText;
+		if (ls.length > 128) {
+			this.result.append(field_51925);
+		}
+
+		this.result.append("]");
 	}
 
 	@Override
 	public void visitList(NbtList element) {
 		if (element.isEmpty()) {
-			this.result = Text.literal("[]");
+			this.result.append("[]");
 		} else if (this.depth >= 64) {
-			this.result = Text.literal("[").append(ELLIPSIS).append("]");
+			this.result.append("[" + field_51925 + "]");
 		} else if (SINGLE_LINE_ELEMENT_TYPES.contains(element.getHeldType()) && element.size() <= 8) {
-			String string = ENTRY_SEPARATOR + " ";
-			MutableText mutableText = Text.literal("[");
+			this.result.append("[");
 
 			for (int i = 0; i < element.size(); i++) {
 				if (i != 0) {
-					mutableText.append(string);
+					this.result.append(field_51924);
 				}
 
-				mutableText.append(this.createSubElementText(element.get(i), false));
+				this.method_60585(element.get(i), false);
 			}
 
-			mutableText.append("]");
-			this.result = mutableText;
+			this.result.append("]");
 		} else {
-			MutableText mutableText2 = Text.literal("[");
+			this.result.append("[");
 			if (!this.prefix.isEmpty()) {
-				mutableText2.append("\n");
+				this.result.append("\n");
 			}
 
-			String string2 = Strings.repeat(this.prefix, this.indentationLevel + 1);
+			String string = Strings.repeat(this.prefix, this.indentationLevel + 1);
 
-			for (int i = 0; i < element.size(); i++) {
-				MutableText mutableText3 = Text.literal(string2);
-				mutableText3.append(this.createSubElementText(element.get(i), true));
-				if (i != element.size() - 1) {
-					mutableText3.append(ENTRY_SEPARATOR).append(this.prefix.isEmpty() ? " " : "\n");
+			for (int j = 0; j < element.size() && j < 128; j++) {
+				this.result.append(string);
+				this.method_60585(element.get(j), true);
+				if (j != element.size() - 1) {
+					this.result.append(this.prefix.isEmpty() ? field_51924 : field_51923);
 				}
+			}
 
-				mutableText2.append(mutableText3);
+			if (element.size() > 128) {
+				this.result.append(string + field_51925);
 			}
 
 			if (!this.prefix.isEmpty()) {
-				mutableText2.append("\n").append(Strings.repeat(this.prefix, this.indentationLevel));
+				this.result.append("\n" + Strings.repeat(this.prefix, this.indentationLevel));
 			}
 
-			mutableText2.append("]");
-			this.result = mutableText2;
+			this.result.append("]");
 		}
 	}
 
 	@Override
 	public void visitCompound(NbtCompound compound) {
 		if (compound.isEmpty()) {
-			this.result = Text.literal("{}");
+			this.result.append("{}");
 		} else if (this.depth >= 64) {
-			this.result = Text.literal("{").append(ELLIPSIS).append("}");
+			this.result.append("{" + field_51925 + "}");
 		} else {
-			MutableText mutableText = Text.literal("{");
+			this.result.append("{");
 			Collection<String> collection = compound.getKeys();
 			if (LOGGER.isDebugEnabled()) {
 				List<String> list = Lists.<String>newArrayList(compound.getKeys());
@@ -237,7 +240,7 @@ public class NbtTextFormatter implements NbtElementVisitor {
 			}
 
 			if (!this.prefix.isEmpty()) {
-				mutableText.append("\n");
+				this.result.append("\n");
 			}
 
 			String string = Strings.repeat(this.prefix, this.indentationLevel + 1);
@@ -245,29 +248,37 @@ public class NbtTextFormatter implements NbtElementVisitor {
 
 			while (iterator.hasNext()) {
 				String string2 = (String)iterator.next();
-				MutableText mutableText2 = Text.literal(string)
-					.append(escapeName(string2))
-					.append(KEY_VALUE_SEPARATOR)
-					.append(" ")
-					.append(this.createSubElementText(compound.get(string2), true));
+				this.result.append(string).append(escapeName(string2)).append(": ");
+				this.method_60585(compound.get(string2), true);
 				if (iterator.hasNext()) {
-					mutableText2.append(ENTRY_SEPARATOR).append(this.prefix.isEmpty() ? " " : "\n");
+					this.result.append(this.prefix.isEmpty() ? field_51924 : field_51923);
 				}
-
-				mutableText.append(mutableText2);
 			}
 
 			if (!this.prefix.isEmpty()) {
-				mutableText.append("\n").append(Strings.repeat(this.prefix, this.indentationLevel));
+				this.result.append("\n" + Strings.repeat(this.prefix, this.indentationLevel));
 			}
 
-			mutableText.append("}");
-			this.result = mutableText;
+			this.result.append("}");
 		}
 	}
 
-	private Text createSubElementText(NbtElement element, boolean indent) {
-		return new NbtTextFormatter(this.prefix, indent ? this.indentationLevel + 1 : this.indentationLevel, this.depth + 1).apply(element);
+	private void method_60585(NbtElement nbtElement, boolean bl) {
+		if (bl) {
+			this.indentationLevel++;
+		}
+
+		this.depth++;
+
+		try {
+			nbtElement.accept(this);
+		} finally {
+			if (bl) {
+				this.indentationLevel--;
+			}
+
+			this.depth--;
+		}
 	}
 
 	protected static Text escapeName(String name) {
@@ -283,6 +294,5 @@ public class NbtTextFormatter implements NbtElementVisitor {
 
 	@Override
 	public void visitEnd(NbtEnd element) {
-		this.result = ScreenTexts.EMPTY;
 	}
 }

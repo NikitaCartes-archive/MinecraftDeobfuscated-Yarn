@@ -22,11 +22,11 @@ public class SoundOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	protected void method_60325() {
-		this.field_51824.addSingleOptionEntry(this.gameOptions.getSoundVolumeOption(SoundCategory.MASTER));
-		this.field_51824.addAll(this.getVolumeOptions());
-		this.field_51824.addSingleOptionEntry(this.gameOptions.getSoundDevice());
-		this.field_51824.addAll(getOptions(this.gameOptions));
+	protected void addOptions() {
+		this.body.addSingleOptionEntry(this.gameOptions.getSoundVolumeOption(SoundCategory.MASTER));
+		this.body.addAll(this.getVolumeOptions());
+		this.body.addSingleOptionEntry(this.gameOptions.getSoundDevice());
+		this.body.addAll(getOptions(this.gameOptions));
 	}
 
 	private SimpleOption<?>[] getVolumeOptions() {

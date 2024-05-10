@@ -60,15 +60,16 @@ public final class ComponentChanges {
 			if (i == 0 && j == 0) {
 				return ComponentChanges.EMPTY;
 			} else {
-				Reference2ObjectMap<ComponentType<?>, Optional<?>> reference2ObjectMap = new Reference2ObjectArrayMap<>(i + j);
+				int k = i + j;
+				Reference2ObjectMap<ComponentType<?>, Optional<?>> reference2ObjectMap = new Reference2ObjectArrayMap<>(Math.min(k, 65536));
 
-				for (int k = 0; k < i; k++) {
+				for (int l = 0; l < i; l++) {
 					ComponentType<?> componentType = ComponentType.PACKET_CODEC.decode(registryByteBuf);
 					Object object = componentType.getPacketCodec().decode(registryByteBuf);
 					reference2ObjectMap.put(componentType, Optional.of(object));
 				}
 
-				for (int k = 0; k < j; k++) {
+				for (int l = 0; l < j; l++) {
 					ComponentType<?> componentType = ComponentType.PACKET_CODEC.decode(registryByteBuf);
 					reference2ObjectMap.put(componentType, Optional.empty());
 				}

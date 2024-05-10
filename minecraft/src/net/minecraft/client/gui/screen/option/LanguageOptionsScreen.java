@@ -33,12 +33,12 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	protected void method_60329() {
+	protected void initBody() {
 		this.languageSelectionList = this.layout.addBody(new LanguageOptionsScreen.LanguageSelectionListWidget(this.client));
 	}
 
 	@Override
-	protected void method_60325() {
+	protected void addOptions() {
 	}
 
 	@Override

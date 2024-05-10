@@ -168,7 +168,7 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 		super.initDataTracker(builder);
 		DynamicRegistryManager dynamicRegistryManager = this.getRegistryManager();
 		Registry<WolfVariant> registry = dynamicRegistryManager.get(RegistryKeys.WOLF_VARIANT);
-		builder.add(VARIANT, (RegistryEntry<WolfVariant>)registry.getEntry(WolfVariants.field_51588).or(registry::getDefaultEntry).orElseThrow());
+		builder.add(VARIANT, (RegistryEntry<WolfVariant>)registry.getEntry(WolfVariants.DEFAULT).or(registry::getDefaultEntry).orElseThrow());
 		builder.add(BEGGING, false);
 		builder.add(COLLAR_COLOR, DyeColor.RED.getId());
 		builder.add(ANGER_TIME, 0);

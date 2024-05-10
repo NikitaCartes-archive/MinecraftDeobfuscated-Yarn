@@ -1,36 +1,33 @@
 package net.minecraft;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.datafixers.DSL.TypeReference;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.ResourceLeakDetector.Level;
 import java.time.Duration;
-import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.command.TranslatableBuiltInExceptions;
-import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.util.math.ChunkPos;
 
 public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3940;
+	public static final int WORLD_VERSION = 3941;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "24w18a";
+	public static final String VERSION_NAME = "24w19a";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 767;
 	@Deprecated
-	public static final int field_29736 = 193;
+	public static final int field_29736 = 194;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 3937;
 	private static final int field_29708 = 30;
 	public static final boolean CRASH_ON_UNCAUGHT_THREAD_EXCEPTION = true;
 	@Deprecated
 	public static final int RESOURCE_PACK_VERSION = 33;
 	@Deprecated
-	public static final int DATA_PACK_VERSION = 42;
+	public static final int DATA_PACK_VERSION = 43;
 	@Deprecated
 	public static final int field_39963 = 1;
 	public static final int field_39964 = 1;
@@ -113,7 +110,6 @@ public class SharedConstants {
 	public static final boolean field_29724 = false;
 	public static final boolean field_29725 = false;
 	public static final boolean field_29726 = false;
-	public static final boolean field_29727 = false;
 	public static final boolean field_35652 = false;
 	public static final boolean field_39961 = false;
 	public static final boolean field_41533 = false;
@@ -127,7 +123,6 @@ public class SharedConstants {
 	 */
 	public static boolean useChoiceTypeRegistrations = true;
 	public static boolean isDevelopment;
-	public static Set<TypeReference> requiredDataFixTypes = Set.of();
 	public static final int CHUNK_WIDTH = 16;
 	public static final int DEFAULT_WORLD_HEIGHT = 256;
 	public static final int COMMAND_MAX_LENGTH = 32500;
@@ -170,17 +165,13 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073742017;
+		return 1073742018;
 	}
 
 	public static boolean isOutsideGenerationArea(ChunkPos pos) {
 		int i = pos.getStartX();
 		int j = pos.getStartZ();
 		return !DEBUG_BIOME_SOURCE ? false : i > 8192 || i < 0 || j > 1024 || j < 0;
-	}
-
-	public static void enableDataFixerOptimization() {
-		requiredDataFixTypes = DataFixTypes.REQUIRED_TYPES;
 	}
 
 	static {

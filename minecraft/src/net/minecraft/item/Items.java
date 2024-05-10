@@ -909,6 +909,7 @@ public class Items {
 		new AnimalArmorItem(ArmorMaterials.ARMADILLO, AnimalArmorItem.Type.CANINE, true, new Item.Settings().maxDamage(ArmorItem.Type.BODY.getMaxDamage(4)))
 	);
 	public static final Item FLINT_AND_STEEL = register("flint_and_steel", new FlintAndSteelItem(new Item.Settings().maxDamage(64)));
+	public static final Item BOWL = register("bowl", new Item(new Item.Settings()));
 	public static final Item APPLE = register("apple", new Item(new Item.Settings().food(FoodComponents.APPLE)));
 	public static final Item BOW = register("bow", new BowItem(new Item.Settings().maxDamage(384)));
 	public static final Item ARROW = register("arrow", new ArrowItem(new Item.Settings()));
@@ -1046,8 +1047,7 @@ public class Items {
 		)
 	);
 	public static final Item STICK = register("stick", new Item(new Item.Settings()));
-	public static final Item BOWL = register("bowl", new Item(new Item.Settings()));
-	public static final Item MUSHROOM_STEW = register("mushroom_stew", new StewItem(new Item.Settings().maxCount(1).food(FoodComponents.MUSHROOM_STEW)));
+	public static final Item MUSHROOM_STEW = register("mushroom_stew", new Item(new Item.Settings().maxCount(1).food(FoodComponents.MUSHROOM_STEW)));
 	public static final Item STRING = register("string", new AliasedBlockItem(Blocks.TRIPWIRE, new Item.Settings()));
 	public static final Item FEATHER = register("feather", new Item(new Item.Settings()));
 	public static final Item GUNPOWDER = register("gunpowder", new Item(new Item.Settings()));
@@ -1547,7 +1547,7 @@ public class Items {
 	public static final Item PRISMARINE_CRYSTALS = register("prismarine_crystals", new Item(new Item.Settings()));
 	public static final Item RABBIT = register("rabbit", new Item(new Item.Settings().food(FoodComponents.RABBIT)));
 	public static final Item COOKED_RABBIT = register("cooked_rabbit", new Item(new Item.Settings().food(FoodComponents.COOKED_RABBIT)));
-	public static final Item RABBIT_STEW = register("rabbit_stew", new StewItem(new Item.Settings().maxCount(1).food(FoodComponents.RABBIT_STEW)));
+	public static final Item RABBIT_STEW = register("rabbit_stew", new Item(new Item.Settings().maxCount(1).food(FoodComponents.RABBIT_STEW)));
 	public static final Item RABBIT_FOOT = register("rabbit_foot", new Item(new Item.Settings()));
 	public static final Item RABBIT_HIDE = register("rabbit_hide", new Item(new Item.Settings()));
 	public static final Item ARMOR_STAND = register("armor_stand", new ArmorStandItem(new Item.Settings().maxCount(16)));
@@ -1695,7 +1695,7 @@ public class Items {
 	public static final Item PITCHER_POD = register("pitcher_pod", new AliasedBlockItem(Blocks.PITCHER_CROP, new Item.Settings()));
 	public static final Item BEETROOT = register("beetroot", new Item(new Item.Settings().food(FoodComponents.BEETROOT)));
 	public static final Item BEETROOT_SEEDS = register("beetroot_seeds", new AliasedBlockItem(Blocks.BEETROOTS, new Item.Settings()));
-	public static final Item BEETROOT_SOUP = register("beetroot_soup", new StewItem(new Item.Settings().maxCount(1).food(FoodComponents.BEETROOT_SOUP)));
+	public static final Item BEETROOT_SOUP = register("beetroot_soup", new Item(new Item.Settings().maxCount(1).food(FoodComponents.BEETROOT_SOUP)));
 	public static final Item DRAGON_BREATH = register("dragon_breath", new Item(new Item.Settings().recipeRemainder(GLASS_BOTTLE).rarity(Rarity.UNCOMMON)));
 	public static final Item SPLASH_POTION = register(
 		"splash_potion", new SplashPotionItem(new Item.Settings().maxCount(1).component(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT))

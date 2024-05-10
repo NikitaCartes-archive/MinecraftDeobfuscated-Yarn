@@ -12,6 +12,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
@@ -20,12 +21,12 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 		super(entityType, world);
 	}
 
-	public SmallFireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ) {
-		super(EntityType.SMALL_FIREBALL, owner, velocityX, velocityY, velocityZ, world);
+	public SmallFireballEntity(World world, LivingEntity owner, Vec3d vec3d) {
+		super(EntityType.SMALL_FIREBALL, owner, vec3d, world);
 	}
 
-	public SmallFireballEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		super(EntityType.SMALL_FIREBALL, x, y, z, velocityX, velocityY, velocityZ, world);
+	public SmallFireballEntity(World world, double x, double y, double z, Vec3d vec3d) {
+		super(EntityType.SMALL_FIREBALL, x, y, z, vec3d, world);
 	}
 
 	@Override

@@ -17,9 +17,7 @@ public record TargetedEnchantmentEffectType<T>(
 						EnchantmentEffectTarget.CODEC.fieldOf("enchanted").forGetter(TargetedEnchantmentEffectType::enchanted),
 						EnchantmentEffectTarget.CODEC.fieldOf("affected").forGetter(TargetedEnchantmentEffectType::affected),
 						effectCodec.fieldOf("effect").forGetter(TargetedEnchantmentEffectType::effect),
-						EnchantmentEffectConditions.createRequirementsCodec(lootContextType)
-							.optionalFieldOf("requirements")
-							.forGetter(TargetedEnchantmentEffectType::requirements)
+						EnchantmentEffectEntry.createRequirementsCodec(lootContextType).optionalFieldOf("requirements").forGetter(TargetedEnchantmentEffectType::requirements)
 					)
 					.apply(instance, TargetedEnchantmentEffectType::new)
 		);
@@ -37,9 +35,7 @@ public record TargetedEnchantmentEffectType<T>(
 							.fieldOf("enchanted")
 							.forGetter(TargetedEnchantmentEffectType::enchanted),
 						effectCodec.fieldOf("effect").forGetter(TargetedEnchantmentEffectType::effect),
-						EnchantmentEffectConditions.createRequirementsCodec(lootContextType)
-							.optionalFieldOf("requirements")
-							.forGetter(TargetedEnchantmentEffectType::requirements)
+						EnchantmentEffectEntry.createRequirementsCodec(lootContextType).optionalFieldOf("requirements").forGetter(TargetedEnchantmentEffectType::requirements)
 					)
 					.apply(
 						instance, (enchantedx, effect, requirements) -> new TargetedEnchantmentEffectType<>(enchantedx, EnchantmentEffectTarget.VICTIM, effect, requirements)

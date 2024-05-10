@@ -146,7 +146,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	public void position(int width, int height, int y) {
 		this.setDimensions(width, height);
 		this.setPosition(0, y);
-		this.method_60322();
+		this.refreshScroll();
 	}
 
 	protected int getMaxPosition() {
@@ -260,16 +260,20 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return this.scrollAmount;
 	}
 
-	public void method_60321(double d) {
-		this.scrollAmount = MathHelper.clamp(d, 0.0, (double)this.getMaxScroll());
+	/**
+	 * Sets the scroll amount to {@code amount}. Unlike {@link #setScrollAmount},
+	 * this has no side effects (like loading more entries).
+	 */
+	public void setScrollAmountOnly(double amount) {
+		this.scrollAmount = MathHelper.clamp(amount, 0.0, (double)this.getMaxScroll());
 	}
 
 	public void setScrollAmount(double amount) {
-		this.method_60321(amount);
+		this.setScrollAmountOnly(amount);
 	}
 
-	public void method_60322() {
-		this.method_60321(this.getScrollAmount());
+	public void refreshScroll() {
+		this.setScrollAmountOnly(this.getScrollAmount());
 	}
 
 	public int getMaxScroll() {

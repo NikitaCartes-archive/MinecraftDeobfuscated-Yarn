@@ -30,19 +30,19 @@ public class WorldPreset {
 		this.dimensions = dimensions;
 	}
 
-	private ImmutableMap<RegistryKey<DimensionOptions>, DimensionOptions> method_57016() {
+	private ImmutableMap<RegistryKey<DimensionOptions>, DimensionOptions> collectDimensions() {
 		Builder<RegistryKey<DimensionOptions>, DimensionOptions> builder = ImmutableMap.builder();
-		DimensionOptionsRegistryHolder.streamAll(this.dimensions.keySet().stream()).forEach(registryKey -> {
-			DimensionOptions dimensionOptions = (DimensionOptions)this.dimensions.get(registryKey);
+		DimensionOptionsRegistryHolder.streamAll(this.dimensions.keySet().stream()).forEach(dimensionKey -> {
+			DimensionOptions dimensionOptions = (DimensionOptions)this.dimensions.get(dimensionKey);
 			if (dimensionOptions != null) {
-				builder.put(registryKey, dimensionOptions);
+				builder.put(dimensionKey, dimensionOptions);
 			}
 		});
 		return builder.build();
 	}
 
 	public DimensionOptionsRegistryHolder createDimensionsRegistryHolder() {
-		return new DimensionOptionsRegistryHolder(this.method_57016());
+		return new DimensionOptionsRegistryHolder(this.collectDimensions());
 	}
 
 	public Optional<DimensionOptions> getOverworld() {

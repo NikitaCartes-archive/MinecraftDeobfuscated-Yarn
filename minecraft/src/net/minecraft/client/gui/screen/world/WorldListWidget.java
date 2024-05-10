@@ -215,7 +215,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	}
 
 	private void narrateScreenIfNarrationEnabled() {
-		this.method_60322();
+		this.refreshScroll();
 		this.parent.narrateScreenIfNarrationEnabled(true);
 	}
 
@@ -536,7 +536,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				LevelInfo levelInfo = pair.getFirst();
 				GeneratorOptionsHolder generatorOptionsHolder = pair.getSecond();
 				Path path = CreateWorldScreen.copyDataPack(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
-				generatorOptionsHolder.method_60345();
+				generatorOptionsHolder.initializeIndexedFeaturesLists();
 				if (generatorOptionsHolder.generatorOptions().isLegacyCustomizedType()) {
 					this.client
 						.setScreen(

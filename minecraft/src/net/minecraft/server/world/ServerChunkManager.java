@@ -13,8 +13,10 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
+import net.minecraft.class_9761;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.structure.StructureTemplateManager;
@@ -183,20 +185,15 @@ public class ServerChunkManager extends ChunkManager {
 			if (chunkHolder == null) {
 				return null;
 			} else {
-				OptionalChunk<Chunk> optionalChunk = (OptionalChunk<Chunk>)chunkHolder.getValidFutureFor(ChunkStatus.FULL).getNow(null);
-				if (optionalChunk == null) {
-					return null;
-				} else {
-					Chunk chunk2 = optionalChunk.orElse(null);
-					if (chunk2 != null) {
-						this.putInCache(l, chunk2, ChunkStatus.FULL);
-						if (chunk2 instanceof WorldChunk) {
-							return (WorldChunk)chunk2;
-						}
+				Chunk chunk = chunkHolder.method_60463(ChunkStatus.FULL);
+				if (chunk != null) {
+					this.putInCache(l, chunk, ChunkStatus.FULL);
+					if (chunk instanceof WorldChunk) {
+						return (WorldChunk)chunk;
 					}
-
-					return null;
 				}
+
+				return null;
 			}
 		}
 	}
@@ -240,7 +237,7 @@ public class ServerChunkManager extends ChunkManager {
 			}
 		}
 
-		return this.isMissingForLevel(chunkHolder, i) ? ChunkHolder.UNLOADED_CHUNK_FUTURE : chunkHolder.getChunkAt(leastStatus, this.threadedAnvilChunkStorage);
+		return this.isMissingForLevel(chunkHolder, i) ? class_9761.field_51867 : chunkHolder.method_60458(leastStatus, this.threadedAnvilChunkStorage);
 	}
 
 	private boolean isMissingForLevel(@Nullable ChunkHolder holder, int maxLevel) {
@@ -259,25 +256,7 @@ public class ServerChunkManager extends ChunkManager {
 	public LightSourceView getChunk(int chunkX, int chunkZ) {
 		long l = ChunkPos.toLong(chunkX, chunkZ);
 		ChunkHolder chunkHolder = this.getChunkHolder(l);
-		if (chunkHolder == null) {
-			return null;
-		} else {
-			int i = CHUNK_STATUSES.size() - 1;
-
-			while (true) {
-				ChunkStatus chunkStatus = (ChunkStatus)CHUNK_STATUSES.get(i);
-				Chunk chunk = (Chunk)((OptionalChunk)chunkHolder.getFutureFor(chunkStatus).getNow(ChunkHolder.UNLOADED_CHUNK)).orElse(null);
-				if (chunk != null) {
-					return chunk;
-				}
-
-				if (chunkStatus == ChunkStatus.INITIALIZE_LIGHT.getPrevious()) {
-					return null;
-				}
-
-				i--;
-			}
-		}
+		return chunkHolder == null ? null : chunkHolder.method_60457(ChunkStatus.INITIALIZE_LIGHT);
 	}
 
 	public World getWorld() {
@@ -294,6 +273,7 @@ public class ServerChunkManager extends ChunkManager {
 	boolean updateChunks() {
 		boolean bl = this.ticketManager.update(this.threadedAnvilChunkStorage);
 		boolean bl2 = this.threadedAnvilChunkStorage.updateHolderMap();
+		this.threadedAnvilChunkStorage.method_60450();
 		if (!bl && !bl2) {
 			return false;
 		} else {
@@ -554,6 +534,11 @@ public class ServerChunkManager extends ChunkManager {
 	final class MainThreadExecutor extends ThreadExecutor<Runnable> {
 		MainThreadExecutor(final World world) {
 			super("Chunk source main thread executor for " + world.getRegistryKey().getValue());
+		}
+
+		@Override
+		public void runTasks(BooleanSupplier stopCondition) {
+			super.runTasks(() -> MinecraftServer.method_60584() && stopCondition.getAsBoolean());
 		}
 
 		@Override

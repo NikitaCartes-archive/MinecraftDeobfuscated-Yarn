@@ -35,8 +35,8 @@ public record AttributeEnchantmentEffectType(
 	}
 
 	@Override
-	public void apply(ServerWorld world, int level, EnchantmentEffectContext context, Entity user, Vec3d pos, boolean bl) {
-		if (bl && user instanceof LivingEntity livingEntity) {
+	public void apply(ServerWorld world, int level, EnchantmentEffectContext context, Entity user, Vec3d pos, boolean newlyApplied) {
+		if (newlyApplied && user instanceof LivingEntity livingEntity) {
 			livingEntity.getAttributes().addTemporaryModifiers(this.getModifiers(level));
 		}
 	}

@@ -1,5 +1,6 @@
 package net.minecraft.entity.projectile.thrown;
 
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -13,6 +14,8 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
 public class EggEntity extends ThrownItemEntity {
+	private static final EntityDimensions field_51894 = EntityDimensions.fixed(0.0F, 0.0F);
+
 	public EggEntity(EntityType<? extends EggEntity> entityType, World world) {
 		super(entityType, world);
 	}
@@ -66,6 +69,10 @@ public class EggEntity extends ThrownItemEntity {
 					if (chickenEntity != null) {
 						chickenEntity.setBreedingAge(-24000);
 						chickenEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
+						if (!chickenEntity.method_60490(field_51894)) {
+							break;
+						}
+
 						this.getWorld().spawnEntity(chickenEntity);
 					}
 				}

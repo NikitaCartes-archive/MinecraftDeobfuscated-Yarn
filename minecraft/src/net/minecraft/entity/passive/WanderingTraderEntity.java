@@ -116,16 +116,16 @@ public class WanderingTraderEntity extends MerchantEntity {
 				player.incrementStat(Stats.TALKED_TO_VILLAGER);
 			}
 
-			if (this.getOffers().isEmpty()) {
-				return ActionResult.success(this.getWorld().isClient);
-			} else {
-				if (!this.getWorld().isClient) {
-					this.setCustomer(player);
-					this.sendOffers(player, this.getDisplayName(), 1);
+			if (!this.getWorld().isClient) {
+				if (this.getOffers().isEmpty()) {
+					return ActionResult.CONSUME;
 				}
 
-				return ActionResult.success(this.getWorld().isClient);
+				this.setCustomer(player);
+				this.sendOffers(player, this.getDisplayName(), 1);
 			}
+
+			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			return super.interactMob(player, hand);
 		}

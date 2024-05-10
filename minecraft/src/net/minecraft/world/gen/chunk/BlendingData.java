@@ -103,7 +103,7 @@ public class BlendingData {
 	public static BlendingData getBlendingData(ChunkRegion chunkRegion, int chunkX, int chunkZ) {
 		Chunk chunk = chunkRegion.getChunk(chunkX, chunkZ);
 		BlendingData blendingData = chunk.getBlendingData();
-		if (blendingData != null && chunk.method_51526().isAtLeast(ChunkStatus.BIOMES)) {
+		if (blendingData != null && !chunk.method_51526().method_60549(ChunkStatus.BIOMES)) {
 			blendingData.initChunkBlendingData(chunk, getAdjacentChunksWithNoise(chunkRegion, chunkX, chunkZ, false));
 			return blendingData;
 		} else {

@@ -52,7 +52,7 @@ public record RandomChanceWithEnchantedBonusLootCondition(EnchantmentLevelBasedV
 	public static LootCondition.Builder builder(RegistryWrapper.WrapperLookup registryLookup, float base, float perLevelAboveFirst) {
 		RegistryWrapper.Impl<Enchantment> impl = registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		return () -> new RandomChanceWithEnchantedBonusLootCondition(
-				new EnchantmentLevelBasedValueType.Linear(base, perLevelAboveFirst), impl.getOrThrow(Enchantments.LOOTING)
+				new EnchantmentLevelBasedValueType.Linear(base + perLevelAboveFirst, perLevelAboveFirst), impl.getOrThrow(Enchantments.LOOTING)
 			);
 	}
 }

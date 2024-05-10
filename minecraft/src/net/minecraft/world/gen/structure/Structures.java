@@ -338,7 +338,8 @@ public class Structures {
 				false,
 				Optional.empty(),
 				116,
-				List.of()
+				List.of(),
+				0
 			)
 		);
 		structureRegisterable.register(
@@ -374,7 +375,8 @@ public class Structures {
 				false,
 				Optional.empty(),
 				116,
-				TrialChamberData.ALIAS_BINDINGS
+				TrialChamberData.ALIAS_BINDINGS,
+				10
 			)
 		);
 	}

@@ -763,11 +763,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		"strider", EntityType.Builder.create(StriderEntity::new, SpawnGroup.CREATURE).makeFireImmune().dimensions(0.9F, 1.7F).maxTrackingRange(10)
 	);
 	public static final EntityType<TadpoleEntity> TADPOLE = register(
-		"tadpole",
-		EntityType.Builder.create(TadpoleEntity::new, SpawnGroup.CREATURE)
-			.dimensions(TadpoleEntity.WIDTH, TadpoleEntity.HEIGHT)
-			.eyeHeight(TadpoleEntity.HEIGHT * 0.65F)
-			.maxTrackingRange(10)
+		"tadpole", EntityType.Builder.create(TadpoleEntity::new, SpawnGroup.CREATURE).dimensions(0.4F, 0.3F).eyeHeight(0.19500001F).maxTrackingRange(10)
 	);
 	public static final EntityType<DisplayEntity.TextDisplayEntity> TEXT_DISPLAY = register(
 		"text_display",

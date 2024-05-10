@@ -128,7 +128,7 @@ public class LeashKnotEntity extends BlockAttachedEntity {
 		return leashKnotEntity2;
 	}
 
-	public void method_59944() {
+	public void onPlace() {
 		this.playSound(SoundEvents.ENTITY_LEASH_KNOT_PLACE, 1.0F, 1.0F);
 	}
 

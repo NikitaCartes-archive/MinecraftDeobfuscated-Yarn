@@ -133,7 +133,8 @@ public interface CauldronBehavior {
 			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		} else {
 			if (!world.isClient) {
-				player.setStackInHand(hand, stack.copyComponentsToNewStack(Blocks.SHULKER_BOX, 1));
+				ItemStack itemStack = stack.copyComponentsToNewStack(Blocks.SHULKER_BOX, 1);
+				player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, itemStack, false));
 				player.incrementStat(Stats.CLEAN_SHULKER_BOX);
 				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
 			}
@@ -152,15 +153,7 @@ public interface CauldronBehavior {
 			if (!world.isClient) {
 				ItemStack itemStack = stack.copyWithCount(1);
 				itemStack.set(DataComponentTypes.BANNER_PATTERNS, bannerPatternsComponent.withoutTopLayer());
-				stack.decrementUnlessCreative(1, player);
-				if (stack.isEmpty()) {
-					player.setStackInHand(hand, itemStack);
-				} else if (player.getInventory().insertStack(itemStack)) {
-					player.playerScreenHandler.syncState();
-				} else {
-					player.dropItem(itemStack, false);
-				}
-
+				player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, itemStack, false));
 				player.incrementStat(Stats.CLEAN_BANNER);
 				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
 			}

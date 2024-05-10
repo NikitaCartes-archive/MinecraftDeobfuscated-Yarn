@@ -129,7 +129,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 
 	@Environment(EnvType.CLIENT)
 	public class KeyBindingEntry extends ControlsListWidget.Entry {
-		private static final Text field_49534 = Text.translatable("controls.reset");
+		private static final Text RESET_TEXT = Text.translatable("controls.reset");
 		private static final int field_49535 = 10;
 		private final KeyBinding binding;
 		private final Text bindingName;
@@ -151,7 +151,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 							: Text.translatable("narrator.controls.bound", bindingName, textSupplier.get())
 				)
 				.build();
-			this.resetButton = ButtonWidget.builder(field_49534, button -> {
+			this.resetButton = ButtonWidget.builder(RESET_TEXT, button -> {
 				ControlsListWidget.this.client.options.setKeyCode(binding, binding.getDefaultKey());
 				ControlsListWidget.this.update();
 			}).dimensions(0, 0, 50, 20).narrationSupplier(textSupplier -> Text.translatable("narrator.controls.reset", bindingName)).build();

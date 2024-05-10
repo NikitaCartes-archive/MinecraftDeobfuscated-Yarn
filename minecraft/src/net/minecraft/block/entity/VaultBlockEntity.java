@@ -275,10 +275,7 @@ public class VaultBlockEntity extends BlockEntity {
 					List<ItemStack> list = generateLoot(world, config, pos, player);
 					if (!list.isEmpty()) {
 						player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
-						if (!player.isCreative()) {
-							stack.decrement(config.keyItem().getCount());
-						}
-
+						stack.decrementUnlessCreative(config.keyItem().getCount(), player);
 						unlock(world, state, pos, config, serverData, sharedData, list);
 						serverData.markPlayerAsRewarded(player);
 						sharedData.updateConnectedPlayers(world, pos, serverData, config, config.deactivationRange());
@@ -308,7 +305,7 @@ public class VaultBlockEntity extends BlockEntity {
 			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world)
 				.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
 				.build(LootContextTypes.VAULT);
-			List<ItemStack> list = lootTable2.generateLoot(lootContextParameterSet);
+			List<ItemStack> list = lootTable2.method_60569(lootContextParameterSet, world.getRandom());
 			return list.isEmpty() ? ItemStack.EMPTY : Util.getRandom(list, world.getRandom());
 		}
 

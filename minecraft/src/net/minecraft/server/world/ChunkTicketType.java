@@ -20,7 +20,6 @@ public class ChunkTicketType<T> {
 	 * Used to force load chunks.
 	 */
 	public static final ChunkTicketType<ChunkPos> FORCED = create("forced", Comparator.comparingLong(ChunkPos::toLong));
-	public static final ChunkTicketType<ChunkPos> LIGHT = create("light", Comparator.comparingLong(ChunkPos::toLong));
 	/**
 	 * Used by a nether portal to load chunks in the other dimension.
 	 */

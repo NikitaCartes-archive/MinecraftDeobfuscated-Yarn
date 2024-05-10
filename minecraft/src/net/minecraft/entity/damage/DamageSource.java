@@ -29,8 +29,8 @@ public class DamageSource {
 		return this.getType().exhaustion();
 	}
 
-	public boolean isIndirect() {
-		return this.attacker != this.source;
+	public boolean method_60489() {
+		return this.attacker == this.source;
 	}
 
 	private DamageSource(RegistryEntry<DamageType> type, @Nullable Entity source, @Nullable Entity attacker, @Nullable Vec3d position) {

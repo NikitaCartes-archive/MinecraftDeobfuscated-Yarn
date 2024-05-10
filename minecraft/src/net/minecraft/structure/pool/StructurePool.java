@@ -97,7 +97,7 @@ public class StructurePool {
 	}
 
 	public StructurePoolElement getRandomElement(Random random) {
-		return this.elements.get(random.nextInt(this.elements.size()));
+		return (StructurePoolElement)(this.elements.isEmpty() ? EmptyPoolElement.INSTANCE : this.elements.get(random.nextInt(this.elements.size())));
 	}
 
 	public List<StructurePoolElement> getElementIndicesInRandomOrder(Random random) {

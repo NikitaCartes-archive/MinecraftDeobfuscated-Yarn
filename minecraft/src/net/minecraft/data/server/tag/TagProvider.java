@@ -1,7 +1,6 @@
 package net.minecraft.data.server.tag;
 
 import com.google.common.collect.Maps;
-import com.mojang.logging.LogUtils;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
@@ -25,10 +24,8 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.registry.tag.TagManagerLoader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import org.slf4j.Logger;
 
 public abstract class TagProvider<T> implements DataProvider {
-	private static final Logger LOGGER = LogUtils.getLogger();
 	protected final DataOutput.PathResolver pathResolver;
 	private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
 	private final CompletableFuture<Void> registryLoadFuture = new CompletableFuture();

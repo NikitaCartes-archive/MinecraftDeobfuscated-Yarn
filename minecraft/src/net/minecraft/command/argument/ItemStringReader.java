@@ -56,14 +56,14 @@ public class ItemStringReader {
 	public static final char CLOSED_SQUARE_BRACKET = ']';
 	public static final char COMMA = ',';
 	public static final char EQUAL_SIGN = '=';
-	public static final char field_51831 = '!';
+	public static final char EXCLAMATION_MARK = '!';
 	static final Function<SuggestionsBuilder, CompletableFuture<Suggestions>> SUGGEST_DEFAULT = SuggestionsBuilder::buildFuture;
 	final RegistryWrapper.Impl<Item> itemRegistry;
 	final DynamicOps<NbtElement> nbtOps;
 
-	public ItemStringReader(RegistryWrapper.WrapperLookup registriesLookup) {
-		this.itemRegistry = registriesLookup.getWrapperOrThrow(RegistryKeys.ITEM);
-		this.nbtOps = registriesLookup.getOps(NbtOps.INSTANCE);
+	public ItemStringReader(RegistryWrapper.WrapperLookup registryLookup) {
+		this.itemRegistry = registryLookup.getWrapperOrThrow(RegistryKeys.ITEM);
+		this.nbtOps = registryLookup.getOps(NbtOps.INSTANCE);
 	}
 
 	public ItemStringReader.ItemResult consume(StringReader reader) throws CommandSyntaxException {
@@ -76,13 +76,13 @@ public class ItemStringReader {
 			}
 
 			@Override
-			public <T> void onComponent(ComponentType<T> type, T value) {
+			public <T> void onComponentAdded(ComponentType<T> type, T value) {
 				builder.add(type, value);
 			}
 
 			@Override
-			public <T> void method_60379(ComponentType<T> componentType) {
-				builder.remove(componentType);
+			public <T> void onComponentRemoved(ComponentType<T> type) {
+				builder.remove(type);
 			}
 		});
 		RegistryEntry<Item> registryEntry = (RegistryEntry<Item>)Objects.requireNonNull(mutableObject.getValue(), "Parser gave no item");
@@ -91,8 +91,8 @@ public class ItemStringReader {
 		return new ItemStringReader.ItemResult(registryEntry, componentChanges);
 	}
 
-	private static void validate(StringReader reader, RegistryEntry<Item> item, ComponentChanges componentChanges) throws CommandSyntaxException {
-		ComponentMap componentMap = ComponentMapImpl.create(item.value().getComponents(), componentChanges);
+	private static void validate(StringReader reader, RegistryEntry<Item> item, ComponentChanges components) throws CommandSyntaxException {
+		ComponentMap componentMap = ComponentMapImpl.create(item.value().getComponents(), components);
 		DataResult<Unit> dataResult = ItemStack.validateComponents(componentMap);
 		dataResult.getOrThrow(error -> MALFORMED_ITEM_EXCEPTION.createWithContext(reader, error));
 	}
@@ -126,10 +126,10 @@ public class ItemStringReader {
 		default void onItem(RegistryEntry<Item> item) {
 		}
 
-		default <T> void onComponent(ComponentType<T> type, T value) {
+		default <T> void onComponentAdded(ComponentType<T> type, T value) {
 		}
 
-		default <T> void method_60379(ComponentType<T> componentType) {
+		default <T> void onComponentRemoved(ComponentType<T> type) {
 		}
 
 		default void setSuggestor(Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestor) {
@@ -169,20 +169,20 @@ public class ItemStringReader {
 
 		private void readComponents() throws CommandSyntaxException {
 			this.reader.expect('[');
-			this.callbacks.setSuggestor(this::method_60383);
+			this.callbacks.setSuggestor(this::suggestComponents);
 			Set<ComponentType<?>> set = new ReferenceArraySet<>();
 
 			while (this.reader.canRead() && this.reader.peek() != ']') {
 				this.reader.skipWhitespace();
 				if (this.reader.canRead() && this.reader.peek() == '!') {
 					this.reader.skip();
-					this.callbacks.setSuggestor(this::method_60384);
+					this.callbacks.setSuggestor(this::suggestComponentsToRemove);
 					ComponentType<?> componentType = readComponentType(this.reader);
 					if (!set.add(componentType)) {
 						throw ItemStringReader.REPEATED_COMPONENT_EXCEPTION.create(componentType);
 					}
 
-					this.callbacks.method_60379(componentType);
+					this.callbacks.onComponentRemoved(componentType);
 					this.callbacks.setSuggestor(ItemStringReader.SUGGEST_DEFAULT);
 					this.reader.skipWhitespace();
 				} else {
@@ -207,7 +207,7 @@ public class ItemStringReader {
 
 				this.reader.skip();
 				this.reader.skipWhitespace();
-				this.callbacks.setSuggestor(this::method_60383);
+				this.callbacks.setSuggestor(this::suggestComponents);
 				if (!this.reader.canRead()) {
 					throw ItemStringReader.COMPONENT_EXPECTED_EXCEPTION.createWithContext(this.reader);
 				}
@@ -237,7 +237,7 @@ public class ItemStringReader {
 			int i = this.reader.getCursor();
 			NbtElement nbtElement = new StringNbtReader(this.reader).parseElement();
 			DataResult<T> dataResult = type.getCodecOrThrow().parse(ItemStringReader.this.nbtOps, nbtElement);
-			this.callbacks.onComponent(type, dataResult.getOrThrow(error -> {
+			this.callbacks.onComponentAdded(type, dataResult.getOrThrow(error -> {
 				this.reader.setCursor(i);
 				return ItemStringReader.MALFORMED_COMPONENT_EXCEPTION.createWithContext(this.reader, type.toString(), error);
 			}));
@@ -272,25 +272,25 @@ public class ItemStringReader {
 			return CommandSource.suggestIdentifiers(ItemStringReader.this.itemRegistry.streamKeys().map(RegistryKey::getValue), builder);
 		}
 
-		private CompletableFuture<Suggestions> method_60383(SuggestionsBuilder suggestionsBuilder) {
-			suggestionsBuilder.suggest(String.valueOf('!'));
-			return this.method_60380(suggestionsBuilder, String.valueOf('='));
+		private CompletableFuture<Suggestions> suggestComponents(SuggestionsBuilder builder) {
+			builder.suggest(String.valueOf('!'));
+			return this.suggestComponents(builder, String.valueOf('='));
 		}
 
-		private CompletableFuture<Suggestions> method_60384(SuggestionsBuilder suggestionsBuilder) {
-			return this.method_60380(suggestionsBuilder, "");
+		private CompletableFuture<Suggestions> suggestComponentsToRemove(SuggestionsBuilder builder) {
+			return this.suggestComponents(builder, "");
 		}
 
-		private CompletableFuture<Suggestions> method_60380(SuggestionsBuilder suggestionsBuilder, String string) {
-			String string2 = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
-			CommandSource.forEachMatching(Registries.DATA_COMPONENT_TYPE.getEntrySet(), string2, entry -> ((RegistryKey)entry.getKey()).getValue(), entry -> {
+		private CompletableFuture<Suggestions> suggestComponents(SuggestionsBuilder builder, String suffix) {
+			String string = builder.getRemaining().toLowerCase(Locale.ROOT);
+			CommandSource.forEachMatching(Registries.DATA_COMPONENT_TYPE.getEntrySet(), string, entry -> ((RegistryKey)entry.getKey()).getValue(), entry -> {
 				ComponentType<?> componentType = (ComponentType<?>)entry.getValue();
 				if (componentType.getCodec() != null) {
 					Identifier identifier = ((RegistryKey)entry.getKey()).getValue();
-					suggestionsBuilder.suggest(identifier + string);
+					builder.suggest(identifier + suffix);
 				}
 			});
-			return suggestionsBuilder.buildFuture();
+			return builder.buildFuture();
 		}
 	}
 

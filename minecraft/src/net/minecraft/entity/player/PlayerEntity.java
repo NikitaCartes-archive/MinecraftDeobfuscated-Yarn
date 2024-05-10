@@ -26,6 +26,7 @@ import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAttachmentType;
@@ -1169,7 +1170,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				float f = this.isUsingRiptide() ? this.riptideAttackDamage : (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 				ItemStack itemStack = this.getWeaponStack();
 				DamageSource damageSource = this.getDamageSources().playerAttack(this);
-				float g = f - this.getDamageAgainst(target, f, damageSource);
+				float g = this.getDamageAgainst(target, f, damageSource) - f;
 				float h = this.getAttackCooldownProgress(0.5F);
 				f *= 0.2F + h * h * 0.8F;
 				g *= h;
@@ -2122,8 +2123,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public ItemStack eatFood(World world, ItemStack stack) {
-		this.getHungerManager().eat(stack);
+	public ItemStack eatFood(World world, ItemStack stack, FoodComponent foodComponent) {
+		this.getHungerManager().eat(foodComponent);
 		this.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
 		world.playSound(
 			null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F
@@ -2132,7 +2133,17 @@ public abstract class PlayerEntity extends LivingEntity {
 			Criteria.CONSUME_ITEM.trigger((ServerPlayerEntity)this, stack);
 		}
 
-		return super.eatFood(world, stack);
+		ItemStack itemStack = super.eatFood(world, stack, foodComponent);
+		Optional<ItemStack> optional = foodComponent.usingConvertsTo();
+		if (optional.isPresent() && !this.isInCreativeMode()) {
+			if (itemStack.isEmpty()) {
+				return ((ItemStack)optional.get()).copy();
+			}
+
+			this.getInventory().insertStack(((ItemStack)optional.get()).copy());
+		}
+
+		return itemStack;
 	}
 
 	@Override

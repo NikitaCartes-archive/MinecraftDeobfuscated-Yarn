@@ -27,9 +27,9 @@ public class ItemStackArgument {
 	private final RegistryEntry<Item> item;
 	private final ComponentChanges components;
 
-	public ItemStackArgument(RegistryEntry<Item> item, ComponentChanges componentChanges) {
+	public ItemStackArgument(RegistryEntry<Item> item, ComponentChanges components) {
 		this.item = item;
-		this.components = componentChanges;
+		this.components = components;
 	}
 
 	public Item getItem() {
@@ -69,7 +69,7 @@ public class ItemStackArgument {
 				Optional<?> optional = (Optional<?>)entry.getValue();
 				if (optional.isPresent()) {
 					Component<?> component = Component.of(componentType, optional.get());
-					return component.encode(dynamicOps).result().stream().map(nbtElement -> identifier.toString() + "=" + nbtElement);
+					return component.encode(dynamicOps).result().stream().map(value -> identifier.toString() + "=" + value);
 				} else {
 					return Stream.of("!" + identifier.toString());
 				}

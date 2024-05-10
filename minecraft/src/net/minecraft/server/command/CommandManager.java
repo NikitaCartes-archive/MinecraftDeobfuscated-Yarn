@@ -146,7 +146,6 @@ public class CommandManager {
 
 		if (SharedConstants.isDevelopment) {
 			TestCommand.register(this.dispatcher);
-			ResetChunksCommand.register(this.dispatcher);
 			RaidCommand.register(this.dispatcher, commandRegistryAccess);
 			DebugPathCommand.register(this.dispatcher);
 			DebugMobSpawningCommand.register(this.dispatcher);

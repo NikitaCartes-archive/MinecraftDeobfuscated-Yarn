@@ -29,14 +29,14 @@ public class MouseOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	protected void method_60325() {
+	protected void addOptions() {
 		if (InputUtil.isRawMouseMotionSupported()) {
-			this.field_51824
+			this.body
 				.addAll(
 					(SimpleOption<?>[])Stream.concat(Arrays.stream(getOptions(this.gameOptions)), Stream.of(this.gameOptions.getRawMouseInput())).toArray(SimpleOption[]::new)
 				);
 		} else {
-			this.field_51824.addAll(getOptions(this.gameOptions));
+			this.body.addAll(getOptions(this.gameOptions));
 		}
 	}
 }

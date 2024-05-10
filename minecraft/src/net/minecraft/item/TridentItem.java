@@ -17,7 +17,6 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -80,7 +79,7 @@ public class TridentItem extends Item implements ProjectileItem {
 		if (user instanceof PlayerEntity playerEntity) {
 			int i = this.getMaxUseTime(stack, user) - remainingUseTicks;
 			if (i >= 10) {
-				float f = world instanceof ServerWorld serverWorld ? EnchantmentHelper.getTridentSpinAttackStrength(serverWorld, stack, playerEntity) : 0.0F;
+				float f = EnchantmentHelper.getTridentSpinAttackStrength(playerEntity);
 				if (!(f > 0.0F) || playerEntity.isTouchingWaterOrRain()) {
 					RegistryEntry<SoundEvent> registryEntry = (RegistryEntry<SoundEvent>)EnchantmentHelper.getEffect(stack, EnchantmentEffectComponentTypes.TRIDENT_SOUND)
 						.orElse(SoundEvents.ITEM_TRIDENT_THROW);
@@ -131,13 +130,9 @@ public class TridentItem extends Item implements ProjectileItem {
 		ItemStack itemStack = user.getStackInHand(hand);
 		if (itemStack.getDamage() >= itemStack.getMaxDamage() - 1) {
 			return TypedActionResult.fail(itemStack);
+		} else if (EnchantmentHelper.getTridentSpinAttackStrength(user) > 0.0F && !user.isTouchingWaterOrRain()) {
+			return TypedActionResult.fail(itemStack);
 		} else {
-			if (world instanceof ServerWorld serverWorld
-				&& EnchantmentHelper.getTridentSpinAttackStrength(serverWorld, itemStack, user) > 0.0F
-				&& !user.isTouchingWaterOrRain()) {
-				return TypedActionResult.fail(itemStack);
-			}
-
 			user.setCurrentHand(hand);
 			return TypedActionResult.consume(itemStack);
 		}

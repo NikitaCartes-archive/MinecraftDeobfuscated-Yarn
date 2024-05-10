@@ -70,10 +70,7 @@ public abstract class StructurePiece {
 		this(
 			type,
 			nbt.getInt("GD"),
-			(BlockBox)BlockBox.CODEC
-				.parse(NbtOps.INSTANCE, nbt.get("BB"))
-				.resultOrPartial(LOGGER::error)
-				.orElseThrow(() -> new IllegalArgumentException("Invalid boundingbox"))
+			BlockBox.CODEC.parse(NbtOps.INSTANCE, nbt.get("BB")).getOrThrow(string -> new IllegalArgumentException("Invalid boundingbox: " + string))
 		);
 		int i = nbt.getInt("O");
 		this.setOrientation(i == -1 ? null : Direction.fromHorizontal(i));

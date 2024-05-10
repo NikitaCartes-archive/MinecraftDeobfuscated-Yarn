@@ -18,7 +18,7 @@ public class FontOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	protected void method_60325() {
-		this.field_51824.addAll(getOptions(this.gameOptions));
+	protected void addOptions() {
+		this.body.addAll(getOptions(this.gameOptions));
 	}
 }

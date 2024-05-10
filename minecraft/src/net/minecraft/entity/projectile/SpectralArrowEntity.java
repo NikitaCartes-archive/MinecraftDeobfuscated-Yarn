@@ -18,12 +18,12 @@ public class SpectralArrowEntity extends PersistentProjectileEntity {
 		super(entityType, world);
 	}
 
-	public SpectralArrowEntity(World world, LivingEntity owner, ItemStack stack, @Nullable ItemStack itemStack) {
-		super(EntityType.SPECTRAL_ARROW, owner, world, stack, itemStack);
+	public SpectralArrowEntity(World world, LivingEntity owner, ItemStack stack, @Nullable ItemStack shotFrom) {
+		super(EntityType.SPECTRAL_ARROW, owner, world, stack, shotFrom);
 	}
 
-	public SpectralArrowEntity(World world, double x, double y, double z, ItemStack stack, @Nullable ItemStack itemStack) {
-		super(EntityType.SPECTRAL_ARROW, x, y, z, world, stack, itemStack);
+	public SpectralArrowEntity(World world, double x, double y, double z, ItemStack stack, @Nullable ItemStack shotFrom) {
+		super(EntityType.SPECTRAL_ARROW, x, y, z, world, stack, shotFrom);
 	}
 
 	@Override

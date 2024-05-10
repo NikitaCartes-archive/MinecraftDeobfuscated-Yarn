@@ -128,7 +128,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		}
 	}
 
-	private void applySplashPotion(Iterable<StatusEffectInstance> iterable, @Nullable Entity entity) {
+	private void applySplashPotion(Iterable<StatusEffectInstance> effects, @Nullable Entity entity) {
 		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
 		List<LivingEntity> list = this.getWorld().getNonSpectatingEntities(LivingEntity.class, box);
 		if (!list.isEmpty()) {
@@ -145,12 +145,12 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 							e = 1.0 - Math.sqrt(d) / 4.0;
 						}
 
-						for (StatusEffectInstance statusEffectInstance : iterable) {
+						for (StatusEffectInstance statusEffectInstance : effects) {
 							RegistryEntry<StatusEffect> registryEntry = statusEffectInstance.getEffectType();
 							if (registryEntry.value().isInstant()) {
 								registryEntry.value().applyInstantEffect(this, this.getOwner(), livingEntity, statusEffectInstance.getAmplifier(), e);
 							} else {
-								int i = statusEffectInstance.mapDuration(ix -> (int)(e * (double)ix + 0.5));
+								int i = statusEffectInstance.mapDuration(duration -> (int)(e * (double)duration + 0.5));
 								StatusEffectInstance statusEffectInstance2 = new StatusEffectInstance(
 									registryEntry, i, statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()
 								);
@@ -165,7 +165,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		}
 	}
 
-	private void applyLingeringPotion(PotionContentsComponent potionContentsComponent) {
+	private void applyLingeringPotion(PotionContentsComponent potion) {
 		AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.getWorld(), this.getX(), this.getY(), this.getZ());
 		if (this.getOwner() instanceof LivingEntity livingEntity) {
 			areaEffectCloudEntity.setOwner(livingEntity);
@@ -175,7 +175,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		areaEffectCloudEntity.setRadiusOnUse(-0.5F);
 		areaEffectCloudEntity.setWaitTime(10);
 		areaEffectCloudEntity.setRadiusGrowth(-areaEffectCloudEntity.getRadius() / (float)areaEffectCloudEntity.getDuration());
-		areaEffectCloudEntity.setPotionContents(potionContentsComponent);
+		areaEffectCloudEntity.setPotionContents(potion);
 		this.getWorld().spawnEntity(areaEffectCloudEntity);
 	}
 
@@ -197,9 +197,9 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 	}
 
 	@Override
-	public DoubleDoubleImmutablePair method_59959(LivingEntity livingEntity, DamageSource damageSource) {
-		double d = livingEntity.getPos().x - this.getPos().x;
-		double e = livingEntity.getPos().z - this.getPos().z;
+	public DoubleDoubleImmutablePair getKnockback(LivingEntity target, DamageSource source) {
+		double d = target.getPos().x - this.getPos().x;
+		double e = target.getPos().z - this.getPos().z;
 		return DoubleDoubleImmutablePair.of(d, e);
 	}
 }

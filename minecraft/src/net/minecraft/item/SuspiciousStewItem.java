@@ -45,7 +45,6 @@ public class SuspiciousStewItem extends Item {
 			user.addStatusEffect(stewEffect.createStatusEffectInstance());
 		}
 
-		super.finishUsing(stack, world, user);
-		return user.isInCreativeMode() ? stack : new ItemStack(Items.BOWL);
+		return super.finishUsing(stack, world, user);
 	}
 }

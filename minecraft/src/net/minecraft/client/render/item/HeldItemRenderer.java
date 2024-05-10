@@ -267,9 +267,9 @@ public class HeldItemRenderer {
 		}
 	}
 
-	private void applyEatOrDrinkTransformation(MatrixStack matrices, float tickDelta, Arm arm, ItemStack stack, PlayerEntity playerEntity) {
-		float f = (float)playerEntity.getItemUseTimeLeft() - tickDelta + 1.0F;
-		float g = f / (float)stack.getMaxUseTime(playerEntity);
+	private void applyEatOrDrinkTransformation(MatrixStack matrices, float tickDelta, Arm arm, ItemStack stack, PlayerEntity player) {
+		float f = (float)player.getItemUseTimeLeft() - tickDelta + 1.0F;
+		float g = f / (float)stack.getMaxUseTime(player);
 		if (g < 0.8F) {
 			float h = MathHelper.abs(MathHelper.cos(f / 4.0F * (float) Math.PI) * 0.1F);
 			matrices.translate(0.0F, h, 0.0F);
@@ -283,29 +283,29 @@ public class HeldItemRenderer {
 		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float)i * h * 30.0F));
 	}
 
-	private void applyBrushTransformation(MatrixStack matrices, float tickDelta, Arm arm, ItemStack stack, PlayerEntity playerEntity, float f) {
-		this.applyEquipOffset(matrices, arm, f);
-		float g = (float)(playerEntity.getItemUseTimeLeft() % 10);
-		float h = g - tickDelta + 1.0F;
-		float i = 1.0F - h / 10.0F;
-		float j = -90.0F;
-		float k = 60.0F;
-		float l = 150.0F;
-		float m = -15.0F;
-		int n = 2;
-		float o = -15.0F + 75.0F * MathHelper.cos(i * 2.0F * (float) Math.PI);
+	private void applyBrushTransformation(MatrixStack matrices, float tickDelta, Arm arm, ItemStack stack, PlayerEntity player, float equipProgress) {
+		this.applyEquipOffset(matrices, arm, equipProgress);
+		float f = (float)(player.getItemUseTimeLeft() % 10);
+		float g = f - tickDelta + 1.0F;
+		float h = 1.0F - g / 10.0F;
+		float i = -90.0F;
+		float j = 60.0F;
+		float k = 150.0F;
+		float l = -15.0F;
+		int m = 2;
+		float n = -15.0F + 75.0F * MathHelper.cos(h * 2.0F * (float) Math.PI);
 		if (arm != Arm.RIGHT) {
 			matrices.translate(0.1, 0.83, 0.35);
 			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80.0F));
 			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
-			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(o));
+			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(n));
 			matrices.translate(-0.3, 0.22, 0.35);
 		} else {
 			matrices.translate(-0.25, 0.22, 0.35);
 			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80.0F));
 			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F));
 			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(0.0F));
-			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(o));
+			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(n));
 		}
 	}
 
@@ -416,7 +416,7 @@ public class HeldItemRenderer {
 					matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float)i * 65.3F));
 					matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float)i * -9.785F));
 					float f = (float)item.getMaxUseTime(player) - ((float)player.getItemUseTimeLeft() - tickDelta + 1.0F);
-					float g = f / (float)CrossbowItem.getPullTime(item, player);
+					float g = f / (float)CrossbowItem.getPullTime(player);
 					if (g > 1.0F) {
 						g = 1.0F;
 					}

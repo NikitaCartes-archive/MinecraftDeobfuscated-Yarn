@@ -110,7 +110,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 
 				int i = this.actor.getItemUseTime();
 				ItemStack itemStack = this.actor.getActiveItem();
-				if (i >= CrossbowItem.getPullTime(itemStack, this.actor)) {
+				if (i >= CrossbowItem.getPullTime(this.actor)) {
 					this.actor.stopUsingItem();
 					this.stage = CrossbowAttackGoal.Stage.CHARGED;
 					this.chargedTicksLeft = 20 + this.actor.getRandom().nextInt(20);

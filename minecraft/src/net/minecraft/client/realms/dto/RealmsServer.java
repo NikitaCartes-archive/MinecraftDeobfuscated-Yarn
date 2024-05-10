@@ -326,7 +326,7 @@ public class RealmsServer extends ValueObject {
 		return this.parentWorldId != -1L;
 	}
 
-	public boolean method_60315() {
+	public boolean isMinigame() {
 		return this.worldType == RealmsServer.WorldType.MINIGAME;
 	}
 

@@ -26,45 +26,43 @@ public class SearchManager {
 	private static final SearchManager.Key RECIPE_OUTPUT = new SearchManager.Key();
 	private static final SearchManager.Key ITEM_TOOLTIP = new SearchManager.Key();
 	private static final SearchManager.Key ITEM_TAG = new SearchManager.Key();
-	private CompletableFuture<SearchProvider<ItemStack>> field_51826 = CompletableFuture.completedFuture(SearchProvider.empty());
-	private CompletableFuture<SearchProvider<ItemStack>> field_51827 = CompletableFuture.completedFuture(SearchProvider.empty());
-	private CompletableFuture<SearchProvider<RecipeResultCollection>> field_51828 = CompletableFuture.completedFuture(SearchProvider.empty());
-	private final Map<SearchManager.Key, Runnable> field_51829 = new IdentityHashMap();
+	private CompletableFuture<SearchProvider<ItemStack>> itemTooltipReloadFuture = CompletableFuture.completedFuture(SearchProvider.empty());
+	private CompletableFuture<SearchProvider<ItemStack>> itemTagReloadFuture = CompletableFuture.completedFuture(SearchProvider.empty());
+	private CompletableFuture<SearchProvider<RecipeResultCollection>> recipeOutputReloadFuture = CompletableFuture.completedFuture(SearchProvider.empty());
+	private final Map<SearchManager.Key, Runnable> reloaders = new IdentityHashMap();
 
-	private void method_60353(SearchManager.Key key, Runnable runnable) {
-		runnable.run();
-		this.field_51829.put(key, runnable);
+	private void addReloader(SearchManager.Key key, Runnable reloader) {
+		reloader.run();
+		this.reloaders.put(key, reloader);
 	}
 
-	public void method_60348() {
-		for (Runnable runnable : this.field_51829.values()) {
+	public void refresh() {
+		for (Runnable runnable : this.reloaders.values()) {
 			runnable.run();
 		}
 	}
 
-	private static Stream<String> method_60356(Stream<ItemStack> stream, Item.TooltipContext tooltipContext, TooltipType tooltipType) {
-		return stream.flatMap(itemStack -> itemStack.getTooltip(tooltipContext, null, tooltipType).stream())
-			.map(text -> Formatting.strip(text.getString()).trim())
+	private static Stream<String> collectItemTooltips(Stream<ItemStack> stacks, Item.TooltipContext context, TooltipType type) {
+		return stacks.flatMap(stack -> stack.getTooltip(context, null, type).stream())
+			.map(tooltip -> Formatting.strip(tooltip.getString()).trim())
 			.filter(string -> !string.isEmpty());
 	}
 
-	public void method_60352(ClientRecipeBook clientRecipeBook, DynamicRegistryManager.Immutable immutable) {
-		this.method_60353(
+	public void addRecipeOutputReloader(ClientRecipeBook recipeBook, DynamicRegistryManager.Immutable registryManager) {
+		this.addReloader(
 			RECIPE_OUTPUT,
 			() -> {
-				List<RecipeResultCollection> list = clientRecipeBook.getOrderedResults();
-				Registry<Item> registry = immutable.get(RegistryKeys.ITEM);
-				Item.TooltipContext tooltipContext = Item.TooltipContext.create(immutable);
+				List<RecipeResultCollection> list = recipeBook.getOrderedResults();
+				Registry<Item> registry = registryManager.get(RegistryKeys.ITEM);
+				Item.TooltipContext tooltipContext = Item.TooltipContext.create(registryManager);
 				TooltipType tooltipType = TooltipType.Default.BASIC;
-				CompletableFuture<?> completableFuture = this.field_51828;
-				this.field_51828 = CompletableFuture.supplyAsync(
+				CompletableFuture<?> completableFuture = this.recipeOutputReloadFuture;
+				this.recipeOutputReloadFuture = CompletableFuture.supplyAsync(
 					() -> new TextSearchProvider(
-							recipeResultCollection -> method_60356(
-									recipeResultCollection.getAllRecipes().stream().map(recipeEntry -> recipeEntry.value().getResult(immutable)), tooltipContext, tooltipType
+							resultCollection -> collectItemTooltips(
+									resultCollection.getAllRecipes().stream().map(recipe -> recipe.value().getResult(registryManager)), tooltipContext, tooltipType
 								),
-							recipeResultCollection -> recipeResultCollection.getAllRecipes()
-									.stream()
-									.map(recipeEntry -> registry.getId(recipeEntry.value().getResult(immutable).getItem())),
+							resultCollection -> resultCollection.getAllRecipes().stream().map(recipe -> registry.getId(recipe.value().getResult(registryManager).getItem())),
 							list
 						),
 					Util.getMainWorkerExecutor()
@@ -74,39 +72,39 @@ public class SearchManager {
 		);
 	}
 
-	public SearchProvider<RecipeResultCollection> method_60364() {
-		return (SearchProvider<RecipeResultCollection>)this.field_51828.join();
+	public SearchProvider<RecipeResultCollection> getRecipeOutputReloadFuture() {
+		return (SearchProvider<RecipeResultCollection>)this.recipeOutputReloadFuture.join();
 	}
 
-	public void method_60355(List<ItemStack> list) {
-		this.method_60353(
+	public void addItemTagReloader(List<ItemStack> stacks) {
+		this.addReloader(
 			ITEM_TAG,
 			() -> {
-				CompletableFuture<?> completableFuture = this.field_51827;
-				this.field_51827 = CompletableFuture.supplyAsync(
-					() -> new IdentifierSearchProvider(itemStack -> itemStack.streamTags().map(TagKey::id), list), Util.getMainWorkerExecutor()
+				CompletableFuture<?> completableFuture = this.itemTagReloadFuture;
+				this.itemTagReloadFuture = CompletableFuture.supplyAsync(
+					() -> new IdentifierSearchProvider(stack -> stack.streamTags().map(TagKey::id), stacks), Util.getMainWorkerExecutor()
 				);
 				completableFuture.cancel(true);
 			}
 		);
 	}
 
-	public SearchProvider<ItemStack> method_60370() {
-		return (SearchProvider<ItemStack>)this.field_51827.join();
+	public SearchProvider<ItemStack> getItemTagReloadFuture() {
+		return (SearchProvider<ItemStack>)this.itemTagReloadFuture.join();
 	}
 
-	public void method_60357(RegistryWrapper.WrapperLookup wrapperLookup, List<ItemStack> list) {
-		this.method_60353(
+	public void addItemTooltipReloader(RegistryWrapper.WrapperLookup registryLookup, List<ItemStack> stacks) {
+		this.addReloader(
 			ITEM_TOOLTIP,
 			() -> {
-				Item.TooltipContext tooltipContext = Item.TooltipContext.create(wrapperLookup);
+				Item.TooltipContext tooltipContext = Item.TooltipContext.create(registryLookup);
 				TooltipType tooltipType = TooltipType.Default.BASIC.withCreative();
-				CompletableFuture<?> completableFuture = this.field_51826;
-				this.field_51826 = CompletableFuture.supplyAsync(
+				CompletableFuture<?> completableFuture = this.itemTooltipReloadFuture;
+				this.itemTooltipReloadFuture = CompletableFuture.supplyAsync(
 					() -> new TextSearchProvider(
-							itemStack -> method_60356(Stream.of(itemStack), tooltipContext, tooltipType),
-							itemStack -> itemStack.getRegistryEntry().getKey().map(RegistryKey::getValue).stream(),
-							list
+							stack -> collectItemTooltips(Stream.of(stack), tooltipContext, tooltipType),
+							stack -> stack.getRegistryEntry().getKey().map(RegistryKey::getValue).stream(),
+							stacks
 						),
 					Util.getMainWorkerExecutor()
 				);
@@ -115,8 +113,8 @@ public class SearchManager {
 		);
 	}
 
-	public SearchProvider<ItemStack> method_60372() {
-		return (SearchProvider<ItemStack>)this.field_51826.join();
+	public SearchProvider<ItemStack> getItemTooltipReloadFuture() {
+		return (SearchProvider<ItemStack>)this.itemTooltipReloadFuture.join();
 	}
 
 	@Environment(EnvType.CLIENT)

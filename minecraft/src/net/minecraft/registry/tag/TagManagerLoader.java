@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
@@ -17,18 +16,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
 public class TagManagerLoader implements ResourceReloader {
-	private static final Map<RegistryKey<? extends Registry<?>>, String> DIRECTORIES = Map.of(
-		RegistryKeys.BLOCK,
-		"tags/blocks",
-		RegistryKeys.ENTITY_TYPE,
-		"tags/entity_types",
-		RegistryKeys.FLUID,
-		"tags/fluids",
-		RegistryKeys.GAME_EVENT,
-		"tags/game_events",
-		RegistryKeys.ITEM,
-		"tags/items"
-	);
 	private final DynamicRegistryManager registryManager;
 	private List<TagManagerLoader.RegistryTags<?>> registryTags = List.of();
 
@@ -41,8 +28,7 @@ public class TagManagerLoader implements ResourceReloader {
 	}
 
 	public static String getPath(RegistryKey<? extends Registry<?>> registry) {
-		String string = (String)DIRECTORIES.get(registry);
-		return string != null ? string : "tags/" + registry.getValue().getPath();
+		return "tags/" + registry.getValue().getPath();
 	}
 
 	@Override

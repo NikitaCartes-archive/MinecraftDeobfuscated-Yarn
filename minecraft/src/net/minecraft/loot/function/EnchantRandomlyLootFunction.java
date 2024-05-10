@@ -39,9 +39,9 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 	private final Optional<RegistryEntryList<Enchantment>> options;
 	private final boolean onlyCompatible;
 
-	EnchantRandomlyLootFunction(List<LootCondition> conditions, Optional<RegistryEntryList<Enchantment>> enchantments, boolean onlyCompatible) {
+	EnchantRandomlyLootFunction(List<LootCondition> conditions, Optional<RegistryEntryList<Enchantment>> options, boolean onlyCompatible) {
 		super(conditions);
-		this.options = enchantments;
+		this.options = options;
 		this.onlyCompatible = onlyCompatible;
 	}
 
@@ -58,7 +58,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 		Stream<RegistryEntry<Enchantment>> stream = ((Stream)this.options
 				.map(RegistryEntryList::stream)
 				.orElseGet(() -> context.getWorld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).streamEntries().map(Function.identity())))
-			.filter(registryEntry -> !bl2 || ((Enchantment)registryEntry.value()).isAcceptableItem(stack));
+			.filter(entry -> !bl2 || ((Enchantment)entry.value()).isAcceptableItem(stack));
 		List<RegistryEntry<Enchantment>> list = stream.toList();
 		Optional<RegistryEntry<Enchantment>> optional = Util.getRandomOrEmpty(list, random);
 		if (optional.isEmpty()) {

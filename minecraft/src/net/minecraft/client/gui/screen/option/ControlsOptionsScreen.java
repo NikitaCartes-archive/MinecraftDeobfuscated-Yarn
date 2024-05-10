@@ -21,13 +21,13 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	protected void method_60325() {
-		this.field_51824
+	protected void addOptions() {
+		this.body
 			.addWidgetEntry(
 				ButtonWidget.builder(Text.translatable("options.mouse_settings"), buttonWidget -> this.client.setScreen(new MouseOptionsScreen(this, this.gameOptions)))
 					.build(),
 				ButtonWidget.builder(Text.translatable("controls.keybinds"), buttonWidget -> this.client.setScreen(new KeybindsScreen(this, this.gameOptions))).build()
 			);
-		this.field_51824.addAll(getOptions(this.gameOptions));
+		this.body.addAll(getOptions(this.gameOptions));
 	}
 }

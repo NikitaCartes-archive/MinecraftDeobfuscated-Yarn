@@ -43,7 +43,7 @@ public class ServerSamplerSource implements SamplerSource {
 		}
 
 		builder.add(
-			Sampler.create("heap MiB", SampleType.JVM, () -> (double)SystemDetails.method_59895(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()))
+			Sampler.create("heap MiB", SampleType.JVM, () -> (double)SystemDetails.toMebibytes(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()))
 		);
 		builder.addAll(ExecutorSampling.INSTANCE.createSamplers());
 		return builder.build();

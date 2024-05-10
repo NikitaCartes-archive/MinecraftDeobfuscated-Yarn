@@ -30,21 +30,21 @@ public class OnlineOptionsScreen extends GameOptionsScreen {
 	protected void init() {
 		super.init();
 		if (this.difficulty != null) {
-			ClickableWidget clickableWidget = this.field_51824.getWidgetFor(this.difficulty);
+			ClickableWidget clickableWidget = this.body.getWidgetFor(this.difficulty);
 			if (clickableWidget != null) {
 				clickableWidget.active = false;
 			}
 		}
 	}
 
-	private SimpleOption<?>[] method_60333(GameOptions gameOptions, MinecraftClient minecraftClient) {
+	private SimpleOption<?>[] collectOptions(GameOptions gameOptions, MinecraftClient client) {
 		List<SimpleOption<?>> list = new ArrayList();
 		list.add(gameOptions.getRealmsNotifications());
 		list.add(gameOptions.getAllowServerListing());
 		SimpleOption<Unit> simpleOption = Nullables.map(
-			minecraftClient.world,
-			clientWorld -> {
-				Difficulty difficulty = clientWorld.getDifficulty();
+			client.world,
+			world -> {
+				Difficulty difficulty = world.getDifficulty();
 				return new SimpleOption<>(
 					"options.difficulty.online",
 					SimpleOption.emptyTooltip(),
@@ -65,7 +65,7 @@ public class OnlineOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	protected void method_60325() {
-		this.field_51824.addAll(this.method_60333(this.gameOptions, this.client));
+	protected void addOptions() {
+		this.body.addAll(this.collectOptions(this.gameOptions, this.client));
 	}
 }

@@ -185,8 +185,8 @@ public class CrafterBlock extends BlockWithEntity {
 		}
 	}
 
-	public static Optional<RecipeEntry<CraftingRecipe>> getCraftingRecipe(World world, CraftingRecipeInput craftingRecipeInput) {
-		return recipeCache.getRecipe(world, craftingRecipeInput);
+	public static Optional<RecipeEntry<CraftingRecipe>> getCraftingRecipe(World world, CraftingRecipeInput input) {
+		return recipeCache.getRecipe(world, input);
 	}
 
 	private void transferOrSpawnStack(

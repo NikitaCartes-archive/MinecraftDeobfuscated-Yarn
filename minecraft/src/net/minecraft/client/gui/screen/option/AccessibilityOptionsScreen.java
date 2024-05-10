@@ -53,7 +53,7 @@ public class AccessibilityOptionsScreen extends GameOptionsScreen {
 	@Override
 	protected void init() {
 		super.init();
-		ClickableWidget clickableWidget = this.field_51824.getWidgetFor(this.gameOptions.getHighContrast());
+		ClickableWidget clickableWidget = this.body.getWidgetFor(this.gameOptions.getHighContrast());
 		if (clickableWidget != null && !this.client.getResourcePackManager().getIds().contains("high_contrast")) {
 			clickableWidget.active = false;
 			clickableWidget.setTooltip(Tooltip.of(Text.translatable("options.accessibility.high_contrast.error.tooltip")));
@@ -61,8 +61,8 @@ public class AccessibilityOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	protected void method_60325() {
-		this.field_51824.addAll(getOptions(this.gameOptions));
+	protected void addOptions() {
+		this.body.addAll(getOptions(this.gameOptions));
 	}
 
 	@Override

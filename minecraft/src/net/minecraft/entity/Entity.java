@@ -799,8 +799,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * 
 	 * @see net.minecraft.enchantment.ProtectionEnchantment#transformFireDuration
 	 */
-	public final void setOnFireFor(float f) {
-		this.setOnFireForTicks(MathHelper.floor(f * 20.0F));
+	public final void setOnFireFor(float seconds) {
+		this.setOnFireForTicks(MathHelper.floor(seconds * 20.0F));
 	}
 
 	public void setOnFireForTicks(int ticks) {
@@ -1225,7 +1225,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 
 			List<VoxelShape> list2 = findCollisionsForMovement(this, this.world, list, box3);
 			float f = (float)vec3d.y;
-			float[] fs = method_59921(box2, list2, f, this.getStepHeight());
+			float[] fs = collectStepHeights(box2, list2, f, this.getStepHeight());
 
 			for (float g : fs) {
 				Vec3d vec3d2 = adjustMovementForCollisions(new Vec3d(movement.x, (double)g, movement.z), box2, list2);
@@ -1238,18 +1238,18 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return vec3d;
 	}
 
-	private static float[] method_59921(Box box, List<VoxelShape> list, float f, float g) {
+	private static float[] collectStepHeights(Box collisionBox, List<VoxelShape> collisions, float f, float stepHeight) {
 		FloatSet floatSet = new FloatArraySet(4);
 
-		for (VoxelShape voxelShape : list) {
+		for (VoxelShape voxelShape : collisions) {
 			for (double d : voxelShape.getPointPositions(Direction.Axis.Y)) {
-				float h = (float)(d - box.minY);
-				if (!(h <= f)) {
-					if (h > g) {
+				float g = (float)(d - collisionBox.minY);
+				if (!(g <= f)) {
+					if (g > stepHeight) {
 						break;
 					}
 
-					floatSet.add(h);
+					floatSet.add(g);
 				}
 			}
 		}
@@ -2032,6 +2032,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 				}
 			}
 		}
+	}
+
+	public void method_60491(Vec3d vec3d) {
+		this.addVelocity(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	public void addVelocity(double deltaX, double deltaY, double deltaZ) {
@@ -4271,19 +4275,39 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		this.standingEyeHeight = entityDimensions2.eyeHeight();
 		this.refreshPosition();
 		boolean bl = (double)entityDimensions2.width() <= 4.0 && (double)entityDimensions2.height() <= 4.0;
-		if (!this.getWorld().isClient
+		if (!this.world.isClient
 			&& !this.firstUpdate
 			&& !this.noClip
 			&& bl
 			&& (entityDimensions2.width() > entityDimensions.width() || entityDimensions2.height() > entityDimensions.height())
 			&& !(this instanceof PlayerEntity)) {
-			Vec3d vec3d = this.getPos().add(0.0, (double)entityDimensions.height() / 2.0, 0.0);
-			double d = (double)Math.max(0.0F, entityDimensions2.width() - entityDimensions.width()) + 1.0E-6;
-			double e = (double)Math.max(0.0F, entityDimensions2.height() - entityDimensions.height()) + 1.0E-6;
-			VoxelShape voxelShape = VoxelShapes.cuboid(Box.of(vec3d, d, e, d));
-			this.getWorld()
-				.findClosestCollision(this, voxelShape, vec3d, (double)entityDimensions2.width(), (double)entityDimensions2.height(), (double)entityDimensions2.width())
-				.ifPresent(pos -> this.setPosition(pos.add(0.0, (double)(-entityDimensions2.height()) / 2.0, 0.0)));
+			this.method_60490(entityDimensions);
+		}
+	}
+
+	public boolean method_60490(EntityDimensions entityDimensions) {
+		EntityDimensions entityDimensions2 = this.getDimensions(this.getPose());
+		Vec3d vec3d = this.getPos().add(0.0, (double)entityDimensions.height() / 2.0, 0.0);
+		double d = (double)Math.max(0.0F, entityDimensions2.width() - entityDimensions.width()) + 1.0E-6;
+		double e = (double)Math.max(0.0F, entityDimensions2.height() - entityDimensions.height()) + 1.0E-6;
+		VoxelShape voxelShape = VoxelShapes.cuboid(Box.of(vec3d, d, e, d));
+		Optional<Vec3d> optional = this.world
+			.findClosestCollision(this, voxelShape, vec3d, (double)entityDimensions2.width(), (double)entityDimensions2.height(), (double)entityDimensions2.width());
+		if (optional.isPresent()) {
+			this.setPosition(((Vec3d)optional.get()).add(0.0, (double)(-entityDimensions2.height()) / 2.0, 0.0));
+			return true;
+		} else {
+			if (entityDimensions2.width() > entityDimensions.width() && entityDimensions2.height() > entityDimensions.height()) {
+				VoxelShape voxelShape2 = VoxelShapes.cuboid(Box.of(vec3d, d, 1.0E-6, d));
+				Optional<Vec3d> optional2 = this.world
+					.findClosestCollision(this, voxelShape2, vec3d, (double)entityDimensions2.width(), (double)entityDimensions.height(), (double)entityDimensions2.width());
+				if (optional2.isPresent()) {
+					this.setPosition(((Vec3d)optional2.get()).add(0.0, (double)(-entityDimensions.height()) / 2.0 + 1.0E-6, 0.0));
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 
@@ -5375,6 +5399,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 
 	public Random getRandom() {
 		return this.random;
+	}
+
+	public Vec3d method_60478() {
+		return this.getVelocity();
 	}
 
 	/**

@@ -15,6 +15,7 @@ import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.minecraft.class_9761;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
@@ -51,12 +52,12 @@ public class ChunkTaskPrioritySystem implements ChunkHolder.LevelUpdateListener,
 			}, pos, lastLevelUpdatedToProvider);
 	}
 
-	public static ChunkTaskPrioritySystem.Task<Runnable> createMessage(ChunkHolder holder, Runnable task) {
-		return createMessage(task, holder.getPos().toLong(), holder::getCompletedLevel);
+	public static ChunkTaskPrioritySystem.Task<Runnable> createMessage(class_9761 holder, Runnable task) {
+		return createMessage(task, holder.method_60473().toLong(), holder::getCompletedLevel);
 	}
 
-	public static <T> ChunkTaskPrioritySystem.Task<T> createTask(ChunkHolder holder, Function<MessageListener<Unit>, T> taskFunction) {
-		return createTask(taskFunction, holder.getPos().toLong(), holder::getCompletedLevel);
+	public static <T> ChunkTaskPrioritySystem.Task<T> createTask(class_9761 holder, Function<MessageListener<Unit>, T> taskFunction) {
+		return createTask(taskFunction, holder.method_60473().toLong(), holder::getCompletedLevel);
 	}
 
 	public static ChunkTaskPrioritySystem.UnblockingMessage createUnblockingMessage(Runnable task, long pos, boolean removeTask) {

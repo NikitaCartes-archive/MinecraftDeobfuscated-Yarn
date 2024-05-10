@@ -265,7 +265,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * @return the new item stack after using the item
 	 */
 	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-		return stack.contains(DataComponentTypes.FOOD) ? user.eatFood(world, stack) : stack;
+		FoodComponent foodComponent = stack.get(DataComponentTypes.FOOD);
+		return foodComponent != null ? user.eatFood(world, stack, foodComponent) : stack;
 	}
 
 	/**

@@ -187,6 +187,7 @@ public final class BlockTags {
 	public static final TagKey<Block> MAINTAINS_FARMLAND = of("maintains_farmland");
 	public static final TagKey<Block> BLOCKS_WIND_CHARGE_EXPLOSIONS = of("blocks_wind_charge_explosions");
 	public static final TagKey<Block> DOES_NOT_BLOCK_HOPPERS = of("does_not_block_hoppers");
+	public static final TagKey<Block> FIRE_ASPECT_LIGHTABLE = of("fire_aspect_lightable");
 
 	private BlockTags() {
 	}

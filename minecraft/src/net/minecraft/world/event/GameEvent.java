@@ -1,11 +1,14 @@
 package net.minecraft.world.event;
 
+import com.mojang.serialization.Codec;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryFixedCodec;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.listener.GameEventListener;
@@ -72,6 +75,7 @@ public record GameEvent(int notificationRadius) {
 	public static final RegistryEntry.Reference<GameEvent> RESONATE_14 = register("resonate_14");
 	public static final RegistryEntry.Reference<GameEvent> RESONATE_15 = register("resonate_15");
 	public static final int DEFAULT_RANGE = 16;
+	public static final Codec<RegistryEntry<GameEvent>> field_51910 = RegistryFixedCodec.of(RegistryKeys.GAME_EVENT);
 
 	public static RegistryEntry<GameEvent> registerAndGetDefault(Registry<GameEvent> registry) {
 		return BLOCK_ACTIVATE;

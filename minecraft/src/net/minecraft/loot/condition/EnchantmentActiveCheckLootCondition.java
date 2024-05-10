@@ -15,7 +15,7 @@ public record EnchantmentActiveCheckLootCondition(boolean active) implements Loo
 	);
 
 	public boolean test(LootContext lootContext) {
-		return lootContext.requireParameter(LootContextParameters.ENCHANTMENT_ACTIVE) != this.active;
+		return lootContext.requireParameter(LootContextParameters.ENCHANTMENT_ACTIVE) == this.active;
 	}
 
 	@Override

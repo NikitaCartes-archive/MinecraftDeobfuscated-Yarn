@@ -186,7 +186,10 @@ public class ProfileKeysImpl implements ProfileKeys {
 	 */
 	private static PlayerPublicKey.PublicKeyData decodeKeyPairResponse(KeyPairResponse keyPairResponse) throws NetworkEncryptionException {
 		KeyPair keyPair = keyPairResponse.keyPair();
-		if (!Strings.isNullOrEmpty(keyPair.publicKey()) && keyPairResponse.publicKeySignature() != null && keyPairResponse.publicKeySignature().array().length != 0) {
+		if (keyPair != null
+			&& !Strings.isNullOrEmpty(keyPair.publicKey())
+			&& keyPairResponse.publicKeySignature() != null
+			&& keyPairResponse.publicKeySignature().array().length != 0) {
 			try {
 				Instant instant = Instant.parse(keyPairResponse.expiresAt());
 				PublicKey publicKey = NetworkEncryptionUtils.decodeRsaPublicKeyPem(keyPair.publicKey());

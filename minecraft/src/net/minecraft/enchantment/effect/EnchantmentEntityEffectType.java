@@ -46,7 +46,7 @@ public interface EnchantmentEntityEffectType extends EnchantmentLocationBasedEff
 	void apply(ServerWorld world, int level, EnchantmentEffectContext context, Entity user, Vec3d pos);
 
 	@Override
-	default void apply(ServerWorld world, int level, EnchantmentEffectContext context, Entity user, Vec3d pos, boolean bl) {
+	default void apply(ServerWorld world, int level, EnchantmentEffectContext context, Entity user, Vec3d pos, boolean newlyApplied) {
 		this.apply(world, level, context, user, pos);
 	}
 

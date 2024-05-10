@@ -38,7 +38,8 @@ public class Schema3818_3 extends IdentifierNormalizingSchema {
 					Pair.of("minecraft:charged_projectiles", DSL.list(TypeReferences.ITEM_STACK.in(schema))),
 					Pair.of("minecraft:container", DSL.list(DSL.optionalFields("item", TypeReferences.ITEM_STACK.in(schema)))),
 					Pair.of("minecraft:entity_data", TypeReferences.ENTITY_TREE.in(schema)),
-					Pair.of("minecraft:pot_decorations", DSL.list(TypeReferences.ITEM_NAME.in(schema)))
+					Pair.of("minecraft:pot_decorations", DSL.list(TypeReferences.ITEM_NAME.in(schema))),
+					Pair.of("minecraft:food", DSL.optionalFields("using_converts_to", TypeReferences.ITEM_STACK.in(schema)))
 				)
 		);
 	}

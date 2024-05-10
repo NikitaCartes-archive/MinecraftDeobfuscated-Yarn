@@ -19,12 +19,12 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Nullable
-	private Pair<ItemStack, ItemStack> findPair(CraftingRecipeInput craftingRecipeInput) {
+	private Pair<ItemStack, ItemStack> findPair(CraftingRecipeInput input) {
 		ItemStack itemStack = null;
 		ItemStack itemStack2 = null;
 
-		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
-			ItemStack itemStack3 = craftingRecipeInput.getStackInSlot(i);
+		for (int i = 0; i < input.getSize(); i++) {
+			ItemStack itemStack3 = input.getStackInSlot(i);
 			if (!itemStack3.isEmpty()) {
 				if (itemStack == null) {
 					itemStack = itemStack3;
@@ -75,11 +75,11 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 				itemStack3,
 				builder -> wrapperLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT)
 						.streamEntries()
-						.filter(reference -> reference.isIn(EnchantmentTags.CURSE))
-						.forEach(reference -> {
-							int ix = Math.max(itemEnchantmentsComponent.getLevel(reference), itemEnchantmentsComponent2.getLevel(reference));
+						.filter(enchantment -> enchantment.isIn(EnchantmentTags.CURSE))
+						.forEach(enchantment -> {
+							int ix = Math.max(itemEnchantmentsComponent.getLevel(enchantment), itemEnchantmentsComponent2.getLevel(enchantment));
 							if (ix > 0) {
-								builder.add(reference, ix);
+								builder.add(enchantment, ix);
 							}
 						})
 			);

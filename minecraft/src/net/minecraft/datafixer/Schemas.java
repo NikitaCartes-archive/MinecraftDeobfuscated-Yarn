@@ -7,11 +7,13 @@ import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.DataFixerBuilder;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.DSL.TypeReference;
+import com.mojang.datafixers.DataFixerBuilder.Result;
 import com.mojang.datafixers.schemas.Schema;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.BiFunction;
@@ -310,24 +312,28 @@ import net.minecraft.util.Util;
 public class Schemas {
 	private static final BiFunction<Integer, Schema, Schema> EMPTY = Schema::new;
 	private static final BiFunction<Integer, Schema, Schema> EMPTY_IDENTIFIER_NORMALIZE = IdentifierNormalizingSchema::new;
-	private static final DataFixer FIXER = create(SharedConstants.requiredDataFixTypes);
+	private static final Result FIXER = create();
 	public static final int field_38844 = 3441;
 
 	private Schemas() {
 	}
 
 	public static DataFixer getFixer() {
-		return FIXER;
+		return FIXER.fixer();
 	}
 
-	private static synchronized DataFixer create(Set<TypeReference> requiredTypes) {
+	private static Result create() {
 		DataFixerBuilder dataFixerBuilder = new DataFixerBuilder(SharedConstants.getGameVersion().getSaveVersion().getId());
 		build(dataFixerBuilder);
-		if (requiredTypes.isEmpty()) {
-			return dataFixerBuilder.buildUnoptimized();
+		return dataFixerBuilder.build();
+	}
+
+	public static CompletableFuture<?> method_60487(Set<TypeReference> set) {
+		if (set.isEmpty()) {
+			return CompletableFuture.completedFuture(null);
 		} else {
 			Executor executor = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("Datafixer Bootstrap").setDaemon(true).setPriority(1).build());
-			return dataFixerBuilder.buildOptimized(requiredTypes, executor);
+			return FIXER.optimize(set, executor);
 		}
 	}
 

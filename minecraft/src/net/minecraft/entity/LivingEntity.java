@@ -365,7 +365,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return MathHelper.lerp(tickDelta, this.lastLeaningPitch, this.leaningPitch);
 	}
 
-	public boolean method_59925() {
+	public boolean hasLandedInFluid() {
 		return this.getVelocity().getY() < 1.0E-5F && this.isInFluid();
 	}
 
@@ -1111,9 +1111,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	private void updateAttributes() {
-		for (EntityAttributeInstance entityAttributeInstance : this.getAttributes().getTracked()) {
+		Set<EntityAttributeInstance> set = this.getAttributes().method_60498();
+
+		for (EntityAttributeInstance entityAttributeInstance : set) {
 			this.updateAttribute(entityAttributeInstance.getAttribute());
 		}
+
+		set.clear();
 	}
 
 	private void updateAttribute(RegistryEntry<EntityAttribute> attribute) {
@@ -1249,7 +1253,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 					double d = 0.0;
 					double e = 0.0;
 					if (source.getSource() instanceof ProjectileEntity projectileEntity) {
-						DoubleDoubleImmutablePair doubleDoubleImmutablePair = projectileEntity.method_59959(this, source);
+						DoubleDoubleImmutablePair doubleDoubleImmutablePair = projectileEntity.getKnockback(this, source);
 						d = -doubleDoubleImmutablePair.leftDouble();
 						e = -doubleDoubleImmutablePair.rightDouble();
 					} else if (entity2 != null) {
@@ -2588,10 +2592,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				map.put(equipmentSlot, itemStack2);
 				AttributeContainer attributeContainer = this.getAttributes();
 				if (!itemStack.isEmpty()) {
-					itemStack.applyAttributeModifiers(equipmentSlot, (registryEntry, entityAttributeModifier) -> {
-						EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(registryEntry);
+					itemStack.applyAttributeModifiers(equipmentSlot, (attribute, modifier) -> {
+						EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(attribute);
 						if (entityAttributeInstance != null) {
-							entityAttributeInstance.removeModifier(entityAttributeModifier);
+							entityAttributeInstance.removeModifier(modifier);
 						}
 
 						EnchantmentHelper.removeLocationBasedEffects(itemStack, this, equipmentSlot);
@@ -2599,11 +2603,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				}
 
 				if (!itemStack2.isEmpty()) {
-					itemStack2.applyAttributeModifiers(equipmentSlot, (registryEntry, entityAttributeModifier) -> {
-						EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(registryEntry);
+					itemStack2.applyAttributeModifiers(equipmentSlot, (attribute, modifier) -> {
+						EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(attribute);
 						if (entityAttributeInstance != null) {
-							entityAttributeInstance.removeModifier(entityAttributeModifier.uuid());
-							entityAttributeInstance.addTemporaryModifier(entityAttributeModifier);
+							entityAttributeInstance.removeModifier(modifier.uuid());
+							entityAttributeInstance.addTemporaryModifier(modifier);
 						}
 
 						if (this.getWorld() instanceof ServerWorld serverWorld) {
@@ -3486,24 +3490,25 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return ItemStack.EMPTY;
 	}
 
-	public ItemStack eatFood(World world, ItemStack stack) {
-		FoodComponent foodComponent = stack.get(DataComponentTypes.FOOD);
-		if (foodComponent != null) {
-			world.playSound(
-				null,
-				this.getX(),
-				this.getY(),
-				this.getZ(),
-				this.getEatSound(stack),
-				SoundCategory.NEUTRAL,
-				1.0F,
-				1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F
-			);
-			this.applyFoodEffects(foodComponent);
-			stack.decrementUnlessCreative(1, this);
-			this.emitGameEvent(GameEvent.EAT);
-		}
+	public final ItemStack method_60492(World world, ItemStack itemStack) {
+		FoodComponent foodComponent = itemStack.get(DataComponentTypes.FOOD);
+		return foodComponent != null ? this.eatFood(world, itemStack, foodComponent) : itemStack;
+	}
 
+	public ItemStack eatFood(World world, ItemStack stack, FoodComponent foodComponent) {
+		world.playSound(
+			null,
+			this.getX(),
+			this.getY(),
+			this.getZ(),
+			this.getEatSound(stack),
+			SoundCategory.NEUTRAL,
+			1.0F,
+			1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F
+		);
+		this.applyFoodEffects(foodComponent);
+		stack.decrementUnlessCreative(1, this);
+		this.emitGameEvent(GameEvent.EAT);
 		return stack;
 	}
 

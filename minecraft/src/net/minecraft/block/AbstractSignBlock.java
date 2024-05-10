@@ -86,10 +86,7 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 						signBlockEntity.runCommandClickEvent(player, world, pos, bl2);
 						player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
 						world.emitGameEvent(GameEvent.BLOCK_CHANGE, signBlockEntity.getPos(), GameEvent.Emitter.of(player, signBlockEntity.getCachedState()));
-						if (!player.isCreative()) {
-							stack.decrement(1);
-						}
-
+						stack.decrementUnlessCreative(1, player);
 						return ItemActionResult.SUCCESS;
 					} else {
 						return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;

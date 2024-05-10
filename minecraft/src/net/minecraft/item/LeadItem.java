@@ -46,7 +46,7 @@ public class LeadItem extends Item {
 		for (MobEntity mobEntity : list) {
 			if (leashKnotEntity == null) {
 				leashKnotEntity = LeashKnotEntity.getOrCreate(world, pos);
-				leashKnotEntity.method_59944();
+				leashKnotEntity.onPlace();
 			}
 
 			mobEntity.attachLeash(leashKnotEntity, true);

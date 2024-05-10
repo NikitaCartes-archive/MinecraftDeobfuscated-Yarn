@@ -96,12 +96,10 @@ public class TntBlock extends Block {
 			primeTnt(world, pos, player);
 			world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL_AND_REDRAW);
 			Item item = stack.getItem();
-			if (!player.isCreative()) {
-				if (stack.isOf(Items.FLINT_AND_STEEL)) {
-					stack.damage(1, player, LivingEntity.getSlotForHand(hand));
-				} else {
-					stack.decrement(1);
-				}
+			if (stack.isOf(Items.FLINT_AND_STEEL)) {
+				stack.damage(1, player, LivingEntity.getSlotForHand(hand));
+			} else {
+				stack.decrementUnlessCreative(1, player);
 			}
 
 			player.incrementStat(Stats.USED.getOrCreateStat(item));

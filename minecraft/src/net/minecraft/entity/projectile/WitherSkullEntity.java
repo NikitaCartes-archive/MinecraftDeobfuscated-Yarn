@@ -18,6 +18,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
@@ -30,8 +31,8 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 		super(entityType, world);
 	}
 
-	public WitherSkullEntity(World world, LivingEntity owner, double directionX, double directionY, double directionZ) {
-		super(EntityType.WITHER_SKULL, owner, directionX, directionY, directionZ, world);
+	public WitherSkullEntity(World world, LivingEntity owner, Vec3d vec3d) {
+		super(EntityType.WITHER_SKULL, owner, vec3d, world);
 	}
 
 	@Override

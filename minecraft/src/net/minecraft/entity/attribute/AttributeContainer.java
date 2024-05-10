@@ -21,21 +21,27 @@ import org.slf4j.Logger;
 public class AttributeContainer {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Map<RegistryEntry<EntityAttribute>, EntityAttributeInstance> custom = new Object2ObjectOpenHashMap<>();
-	private final Set<EntityAttributeInstance> tracked = new ObjectOpenHashSet<>();
+	private final Set<EntityAttributeInstance> field_51889 = new ObjectOpenHashSet<>();
+	private final Set<EntityAttributeInstance> field_51890 = new ObjectOpenHashSet<>();
 	private final DefaultAttributeContainer fallback;
 
-	public AttributeContainer(DefaultAttributeContainer defaultAttributes) {
-		this.fallback = defaultAttributes;
+	public AttributeContainer(DefaultAttributeContainer defaultAttributeContainer) {
+		this.fallback = defaultAttributeContainer;
 	}
 
-	private void updateTrackedStatus(EntityAttributeInstance instance) {
-		if (instance.getAttribute().value().isTracked()) {
-			this.tracked.add(instance);
+	private void updateTrackedStatus(EntityAttributeInstance entityAttributeInstance) {
+		this.field_51890.add(entityAttributeInstance);
+		if (entityAttributeInstance.getAttribute().value().isTracked()) {
+			this.field_51889.add(entityAttributeInstance);
 		}
 	}
 
-	public Set<EntityAttributeInstance> getTracked() {
-		return this.tracked;
+	public Set<EntityAttributeInstance> method_60497() {
+		return this.field_51889;
+	}
+
+	public Set<EntityAttributeInstance> method_60498() {
+		return this.field_51890;
 	}
 
 	public Collection<EntityAttributeInstance> getAttributesToSend() {

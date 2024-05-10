@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity implements FlyingItemEntity {
@@ -20,12 +21,12 @@ public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity i
 		super(entityType, world);
 	}
 
-	public AbstractFireballEntity(EntityType<? extends AbstractFireballEntity> entityType, double d, double e, double f, double g, double h, double i, World world) {
-		super(entityType, d, e, f, g, h, i, world);
+	public AbstractFireballEntity(EntityType<? extends AbstractFireballEntity> entityType, double d, double e, double f, Vec3d vec3d, World world) {
+		super(entityType, d, e, f, vec3d, world);
 	}
 
-	public AbstractFireballEntity(EntityType<? extends AbstractFireballEntity> entityType, LivingEntity livingEntity, double d, double e, double f, World world) {
-		super(entityType, livingEntity, d, e, f, world);
+	public AbstractFireballEntity(EntityType<? extends AbstractFireballEntity> entityType, LivingEntity livingEntity, Vec3d vec3d, World world) {
+		super(entityType, livingEntity, vec3d, world);
 	}
 
 	public void setItem(ItemStack itemStack) {

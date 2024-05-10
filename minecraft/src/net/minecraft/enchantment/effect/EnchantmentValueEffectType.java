@@ -7,7 +7,6 @@ import net.minecraft.enchantment.effect.value.AddEnchantmentEffectType;
 import net.minecraft.enchantment.effect.value.MultiplyEnchantmentEffectType;
 import net.minecraft.enchantment.effect.value.RemoveBinomialEnchantmentEffectType;
 import net.minecraft.enchantment.effect.value.SetEnchantmentEffectType;
-import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.math.random.Random;
@@ -25,7 +24,7 @@ public interface EnchantmentValueEffectType {
 		return Registry.register(registry, "set", SetEnchantmentEffectType.CODEC);
 	}
 
-	float apply(ItemStack stack, int level, Random random, float inputValue);
+	float apply(int i, Random random, float f);
 
 	MapCodec<? extends EnchantmentValueEffectType> getCodec();
 }

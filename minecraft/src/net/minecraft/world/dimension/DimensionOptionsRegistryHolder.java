@@ -56,9 +56,9 @@ public record DimensionOptionsRegistryHolder(Map<RegistryKey<DimensionOptions>, 
 		}
 	}
 
-	public DimensionOptionsRegistryHolder(Registry<DimensionOptions> registry) {
+	public DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensionOptionsRegistry) {
 		this(
-			(Map<RegistryKey<DimensionOptions>, DimensionOptions>)registry.streamEntries()
+			(Map<RegistryKey<DimensionOptions>, DimensionOptions>)dimensionOptionsRegistry.streamEntries()
 				.collect(Collectors.toMap(RegistryEntry.Reference::registryKey, RegistryEntry.Reference::value))
 		);
 	}
@@ -74,21 +74,21 @@ public record DimensionOptionsRegistryHolder(Map<RegistryKey<DimensionOptions>, 
 	}
 
 	public static Map<RegistryKey<DimensionOptions>, DimensionOptions> createRegistry(
-		Registry<DimensionType> dynamicRegistry, Map<RegistryKey<DimensionOptions>, DimensionOptions> map, ChunkGenerator chunkGenerator
+		Registry<DimensionType> dynamicRegistry, Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensionOptions, ChunkGenerator chunkGenerator
 	) {
-		DimensionOptions dimensionOptions = (DimensionOptions)map.get(DimensionOptions.OVERWORLD);
-		RegistryEntry<DimensionType> registryEntry = (RegistryEntry<DimensionType>)(dimensionOptions == null
+		DimensionOptions dimensionOptions2 = (DimensionOptions)dimensionOptions.get(DimensionOptions.OVERWORLD);
+		RegistryEntry<DimensionType> registryEntry = (RegistryEntry<DimensionType>)(dimensionOptions2 == null
 			? dynamicRegistry.entryOf(DimensionTypes.OVERWORLD)
-			: dimensionOptions.dimensionTypeEntry());
-		return createRegistry(map, registryEntry, chunkGenerator);
+			: dimensionOptions2.dimensionTypeEntry());
+		return createRegistry(dimensionOptions, registryEntry, chunkGenerator);
 	}
 
 	public static Map<RegistryKey<DimensionOptions>, DimensionOptions> createRegistry(
-		Map<RegistryKey<DimensionOptions>, DimensionOptions> map, RegistryEntry<DimensionType> registryEntry, ChunkGenerator chunkGenerator
+		Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensionOptions, RegistryEntry<DimensionType> overworld, ChunkGenerator chunkGenerator
 	) {
 		Builder<RegistryKey<DimensionOptions>, DimensionOptions> builder = ImmutableMap.builder();
-		builder.putAll(map);
-		builder.put(DimensionOptions.OVERWORLD, new DimensionOptions(registryEntry, chunkGenerator));
+		builder.putAll(dimensionOptions);
+		builder.put(DimensionOptions.OVERWORLD, new DimensionOptions(overworld, chunkGenerator));
 		return builder.buildKeepingLast();
 	}
 
@@ -172,7 +172,7 @@ public record DimensionOptionsRegistryHolder(Map<RegistryKey<DimensionOptions>, 
 
 		record Entry(RegistryKey<DimensionOptions> key, DimensionOptions value) {
 
-			RegistryEntryInfo method_57014() {
+			RegistryEntryInfo toEntryInfo() {
 				return new RegistryEntryInfo(Optional.empty(), DimensionOptionsRegistryHolder.getLifecycle(this.key, this.value));
 			}
 		}
@@ -186,7 +186,7 @@ public record DimensionOptionsRegistryHolder(Map<RegistryKey<DimensionOptions>, 
 			);
 		Lifecycle lifecycle = list.size() == VANILLA_KEY_COUNT ? Lifecycle.stable() : Lifecycle.experimental();
 		MutableRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<>(RegistryKeys.DIMENSION, lifecycle);
-		list.forEach(entry -> mutableRegistry.add(entry.key, entry.value, entry.method_57014()));
+		list.forEach(entry -> mutableRegistry.add(entry.key, entry.value, entry.toEntryInfo()));
 		Registry<DimensionOptions> registry = mutableRegistry.freeze();
 		LevelProperties.SpecialProperty specialProperty = getSpecialProperty(registry);
 		return new DimensionOptionsRegistryHolder.DimensionsConfig(registry.freeze(), specialProperty);

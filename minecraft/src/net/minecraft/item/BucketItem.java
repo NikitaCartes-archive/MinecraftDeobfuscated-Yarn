@@ -80,7 +80,8 @@ public class BucketItem extends Item implements FluidModificationItem {
 					}
 
 					user.incrementStat(Stats.USED.getOrCreateStat(this));
-					return TypedActionResult.success(getEmptiedStack(itemStack, user), world.isClient());
+					ItemStack itemStack2 = ItemUsage.exchangeStack(itemStack, user, getEmptiedStack(itemStack, user));
+					return TypedActionResult.success(itemStack2, world.isClient());
 				} else {
 					return TypedActionResult.fail(itemStack);
 				}

@@ -10,6 +10,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
@@ -20,9 +21,9 @@ public class FireballEntity extends AbstractFireballEntity {
 		super(entityType, world);
 	}
 
-	public FireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ, int explosionPower) {
-		super(EntityType.FIREBALL, owner, velocityX, velocityY, velocityZ, world);
-		this.explosionPower = explosionPower;
+	public FireballEntity(World world, LivingEntity owner, Vec3d vec3d, int i) {
+		super(EntityType.FIREBALL, owner, vec3d, world);
+		this.explosionPower = i;
 	}
 
 	@Override

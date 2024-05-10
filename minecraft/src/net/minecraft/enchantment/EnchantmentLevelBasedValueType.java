@@ -12,13 +12,11 @@ import net.minecraft.util.math.MathHelper;
 public interface EnchantmentLevelBasedValueType {
 	Codec<EnchantmentLevelBasedValueType> BASE_CODEC = Registries.ENCHANTMENT_LEVEL_BASED_VALUE_TYPE
 		.getCodec()
-		.dispatch(EnchantmentLevelBasedValueType::getCodec, mapCodec -> mapCodec);
+		.dispatch(EnchantmentLevelBasedValueType::getCodec, codec -> codec);
 	Codec<EnchantmentLevelBasedValueType> CODEC = Codec.either(EnchantmentLevelBasedValueType.Constant.CODEC, BASE_CODEC)
 		.xmap(
-			either -> either.map(constant -> constant, enchantmentLevelBasedValueType -> enchantmentLevelBasedValueType),
-			enchantmentLevelBasedValueType -> enchantmentLevelBasedValueType instanceof EnchantmentLevelBasedValueType.Constant constant
-					? Either.left(constant)
-					: Either.right(enchantmentLevelBasedValueType)
+			either -> either.map(type -> type, type -> type),
+			type -> type instanceof EnchantmentLevelBasedValueType.Constant constant ? Either.left(constant) : Either.right(type)
 		);
 
 	static MapCodec<? extends EnchantmentLevelBasedValueType> registerAndGetDefault(Registry<MapCodec<? extends EnchantmentLevelBasedValueType>> registry) {
@@ -54,9 +52,7 @@ public interface EnchantmentLevelBasedValueType {
 						.apply(instance, EnchantmentLevelBasedValueType.Clamped::new)
 			)
 			.validate(
-				clamped -> clamped.max <= clamped.min
-						? DataResult.error(() -> "Max must be larger than min, min: " + clamped.min + ", max: " + clamped.max)
-						: DataResult.success(clamped)
+				type -> type.max <= type.min ? DataResult.error(() -> "Max must be larger than min, min: " + type.min + ", max: " + type.max) : DataResult.success(type)
 			);
 
 		@Override

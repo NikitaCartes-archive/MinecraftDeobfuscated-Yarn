@@ -349,7 +349,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private boolean displayedUnsecureChatWarning = false;
 	private volatile boolean worldCleared;
 	private final Scoreboard scoreboard = new Scoreboard();
-	private final SearchManager field_51825 = new SearchManager();
+	private final SearchManager searchManager = new SearchManager();
 
 	public ClientPlayNetworkHandler(MinecraftClient client, ClientConnection clientConnection, ClientConnectionState clientConnectionState) {
 		super(client, clientConnection, clientConnectionState);
@@ -520,7 +520,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = this.world.getEntityById(packet.getId());
 		if (entity != null) {
-			entity.setVelocityClient((double)packet.getVelocityX() / 8000.0, (double)packet.getVelocityY() / 8000.0, (double)packet.getVelocityZ() / 8000.0);
+			entity.setVelocityClient(packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ());
 		}
 	}
 
@@ -1478,7 +1478,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.recipeManager.setRecipes(packet.getRecipes());
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
 		clientRecipeBook.reload(this.recipeManager.sortedValues(), this.client.world.getRegistryManager());
-		this.field_51825.method_60352(clientRecipeBook, this.combinedDynamicRegistries);
+		this.searchManager.addRecipeOutputReloader(clientRecipeBook, this.combinedDynamicRegistries);
 	}
 
 	@Override
@@ -1576,7 +1576,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		packet.getGroups().forEach(clientTagLoader::put);
 		clientTagLoader.load(this.combinedDynamicRegistries, this.connection.isLocal());
 		List<ItemStack> list = List.copyOf(ItemGroups.getSearchGroup().getDisplayStacks());
-		this.field_51825.method_60355(list);
+		this.searchManager.addItemTagReloader(list);
 	}
 
 	@Override
@@ -2241,9 +2241,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	public void onProjectilePower(ProjectilePowerS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		if (this.world.getEntityById(packet.getEntityId()) instanceof ExplosiveProjectileEntity explosiveProjectileEntity) {
-			explosiveProjectileEntity.powerX = packet.getPowerX();
-			explosiveProjectileEntity.powerY = packet.getPowerY();
-			explosiveProjectileEntity.powerZ = packet.getPowerZ();
+			explosiveProjectileEntity.field_51893 = packet.method_60423();
 		}
 	}
 
@@ -2456,11 +2454,11 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		return this.brewingRecipeRegistry;
 	}
 
-	public void method_60346() {
-		this.field_51825.method_60348();
+	public void refreshSearchManager() {
+		this.searchManager.refresh();
 	}
 
-	public SearchManager method_60347() {
-		return this.field_51825;
+	public SearchManager getSearchManager() {
+		return this.searchManager;
 	}
 }

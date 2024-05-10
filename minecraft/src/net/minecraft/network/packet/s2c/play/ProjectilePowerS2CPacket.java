@@ -12,29 +12,21 @@ public class ProjectilePowerS2CPacket implements Packet<ClientPlayPacketListener
 		ProjectilePowerS2CPacket::write, ProjectilePowerS2CPacket::new
 	);
 	private final int entityId;
-	private final double powerX;
-	private final double powerY;
-	private final double powerZ;
+	private final double field_51849;
 
-	public ProjectilePowerS2CPacket(int entityId, double powerX, double powerY, double powerZ) {
+	public ProjectilePowerS2CPacket(int entityId, double powerX) {
 		this.entityId = entityId;
-		this.powerX = powerX;
-		this.powerY = powerY;
-		this.powerZ = powerZ;
+		this.field_51849 = powerX;
 	}
 
 	private ProjectilePowerS2CPacket(PacketByteBuf buf) {
 		this.entityId = buf.readVarInt();
-		this.powerX = buf.readDouble();
-		this.powerY = buf.readDouble();
-		this.powerZ = buf.readDouble();
+		this.field_51849 = buf.readDouble();
 	}
 
 	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
-		buf.writeDouble(this.powerX);
-		buf.writeDouble(this.powerY);
-		buf.writeDouble(this.powerZ);
+		buf.writeDouble(this.field_51849);
 	}
 
 	@Override
@@ -50,15 +42,7 @@ public class ProjectilePowerS2CPacket implements Packet<ClientPlayPacketListener
 		return this.entityId;
 	}
 
-	public double getPowerX() {
-		return this.powerX;
-	}
-
-	public double getPowerY() {
-		return this.powerY;
-	}
-
-	public double getPowerZ() {
-		return this.powerZ;
+	public double method_60423() {
+		return this.field_51849;
 	}
 }

@@ -275,6 +275,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	protected final SaveProperties saveProperties;
 	private final BrewingRecipeRegistry brewingRecipeRegistry;
 	private volatile boolean saving;
+	private static final AtomicReference<RuntimeException> field_51917 = new AtomicReference();
 
 	public static <S extends MinecraftServer> S startServer(Function<Thread, S> serverFactory) {
 		AtomicReference<S> atomicReference = new AtomicReference();
@@ -830,6 +831,24 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	private boolean shouldKeepTicking() {
 		return this.hasRunningTasks() || Util.getMeasuringTimeNano() < (this.waitingForNextTick ? this.tickEndTimeNanos : this.tickStartTimeNanos);
+	}
+
+	public static boolean method_60584() {
+		RuntimeException runtimeException = (RuntimeException)field_51917.get();
+		if (runtimeException != null) {
+			throw runtimeException;
+		} else {
+			return true;
+		}
+	}
+
+	public static void method_60582(RuntimeException runtimeException) {
+		field_51917.compareAndSet(null, runtimeException);
+	}
+
+	@Override
+	public void runTasks(BooleanSupplier stopCondition) {
+		super.runTasks(() -> method_60584() && stopCondition.getAsBoolean());
 	}
 
 	protected void runTasksTillTickEnd() {

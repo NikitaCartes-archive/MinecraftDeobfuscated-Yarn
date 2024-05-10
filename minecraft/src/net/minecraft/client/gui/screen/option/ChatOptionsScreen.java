@@ -14,9 +14,9 @@ import net.minecraft.text.Text;
 public class ChatOptionsScreen extends GameOptionsScreen {
 	private static final Text TITLE_TEXT = Text.translatable("options.chat.title");
 	@Nullable
-	private ClickableWidget field_51823;
+	private ClickableWidget narratorButton;
 
-	private static SimpleOption<?>[] method_60327(GameOptions gameOptions) {
+	private static SimpleOption<?>[] getOptions(GameOptions gameOptions) {
 		return new SimpleOption[]{
 			gameOptions.getChatVisibility(),
 			gameOptions.getChatColors(),
@@ -45,20 +45,20 @@ public class ChatOptionsScreen extends GameOptionsScreen {
 	@Override
 	public void init() {
 		super.init();
-		this.field_51823 = this.field_51824.getWidgetFor(this.gameOptions.getNarrator());
-		if (this.field_51823 != null) {
-			this.field_51823.active = this.client.getNarratorManager().isActive();
+		this.narratorButton = this.body.getWidgetFor(this.gameOptions.getNarrator());
+		if (this.narratorButton != null) {
+			this.narratorButton.active = this.client.getNarratorManager().isActive();
 		}
 	}
 
 	@Override
-	protected void method_60325() {
-		this.field_51824.addAll(method_60327(this.gameOptions));
+	protected void addOptions() {
+		this.body.addAll(getOptions(this.gameOptions));
 	}
 
-	public void method_60326() {
-		if (this.field_51823 instanceof CyclingButtonWidget) {
-			((CyclingButtonWidget)this.field_51823).setValue(this.gameOptions.getNarrator().getValue());
+	public void refreshNarratorOption() {
+		if (this.narratorButton instanceof CyclingButtonWidget) {
+			((CyclingButtonWidget)this.narratorButton).setValue(this.gameOptions.getNarrator().getValue());
 		}
 	}
 }

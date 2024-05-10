@@ -20,7 +20,7 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	protected void method_60325() {
+	protected void addOptions() {
 		List<ClickableWidget> list = new ArrayList();
 
 		for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
@@ -31,6 +31,6 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 		}
 
 		list.add(this.gameOptions.getMainArm().createWidget(this.gameOptions));
-		this.field_51824.addAll(list);
+		this.body.addAll(list);
 	}
 }

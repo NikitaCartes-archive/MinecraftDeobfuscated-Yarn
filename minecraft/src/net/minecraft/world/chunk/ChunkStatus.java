@@ -1,119 +1,41 @@
 package net.minecraft.world.chunk;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
-import net.minecraft.util.profiling.jfr.Finishable;
-import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.world.Heightmap;
+import org.jetbrains.annotations.VisibleForTesting;
 
 public class ChunkStatus {
 	public static final int field_35470 = 8;
-	private static final EnumSet<Heightmap.Type> PRE_CARVER_HEIGHTMAPS = EnumSet.of(Heightmap.Type.OCEAN_FLOOR_WG, Heightmap.Type.WORLD_SURFACE_WG);
-	public static final EnumSet<Heightmap.Type> POST_CARVER_HEIGHTMAPS = EnumSet.of(
+	private static final EnumSet<Heightmap.Type> field_51904 = EnumSet.of(Heightmap.Type.OCEAN_FLOOR_WG, Heightmap.Type.WORLD_SURFACE_WG);
+	public static final EnumSet<Heightmap.Type> field_51903 = EnumSet.of(
 		Heightmap.Type.OCEAN_FLOOR, Heightmap.Type.WORLD_SURFACE, Heightmap.Type.MOTION_BLOCKING, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES
 	);
-	public static final ChunkStatus EMPTY = register(
-		"empty", null, -1, false, PRE_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, ChunkGenerating::noop, ChunkGenerating::noop
-	);
-	public static final ChunkStatus STRUCTURE_STARTS = register(
-		"structure_starts", EMPTY, 0, false, PRE_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, ChunkGenerating::generateStructures, ChunkGenerating::loadStructures
-	);
-	public static final ChunkStatus STRUCTURE_REFERENCES = register(
-		"structure_references",
-		STRUCTURE_STARTS,
-		8,
-		false,
-		PRE_CARVER_HEIGHTMAPS,
-		ChunkType.PROTOCHUNK,
-		ChunkGenerating::generateStructureReferences,
-		ChunkGenerating::noop
-	);
-	public static final ChunkStatus BIOMES = register(
-		"biomes", STRUCTURE_REFERENCES, 8, false, PRE_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, ChunkGenerating::populateBiomes, ChunkGenerating::noop
-	);
-	public static final ChunkStatus NOISE = register(
-		"noise", BIOMES, 8, false, PRE_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, ChunkGenerating::populateNoise, ChunkGenerating::noop
-	);
-	public static final ChunkStatus SURFACE = register(
-		"surface", NOISE, 8, false, PRE_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, ChunkGenerating::buildSurface, ChunkGenerating::noop
-	);
-	public static final ChunkStatus CARVERS = register(
-		"carvers", SURFACE, 8, false, POST_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, ChunkGenerating::carve, ChunkGenerating::noop
-	);
-	public static final ChunkStatus FEATURES = register(
-		"features", CARVERS, 8, false, POST_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, ChunkGenerating::generateFeatures, ChunkGenerating::noop
-	);
-	public static final ChunkStatus INITIALIZE_LIGHT = register(
-		"initialize_light", FEATURES, 0, false, POST_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, ChunkGenerating::initializeLight, ChunkGenerating::initializeLight
-	);
-	public static final ChunkStatus LIGHT = register(
-		"light", INITIALIZE_LIGHT, 1, true, POST_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, ChunkGenerating::light, ChunkGenerating::light
-	);
-	public static final ChunkStatus SPAWN = register(
-		"spawn", LIGHT, 1, false, POST_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, ChunkGenerating::generateEntities, ChunkGenerating::noop
-	);
-	public static final ChunkStatus FULL = register(
-		"full", SPAWN, 0, false, POST_CARVER_HEIGHTMAPS, ChunkType.LEVELCHUNK, ChunkGenerating::convertToFull, ChunkGenerating::convertToFull
-	);
-	private static final List<ChunkStatus> DISTANCE_TO_STATUS = ImmutableList.of(
-		FULL,
-		INITIALIZE_LIGHT,
-		CARVERS,
-		BIOMES,
-		STRUCTURE_STARTS,
-		STRUCTURE_STARTS,
-		STRUCTURE_STARTS,
-		STRUCTURE_STARTS,
-		STRUCTURE_STARTS,
-		STRUCTURE_STARTS,
-		STRUCTURE_STARTS,
-		STRUCTURE_STARTS
-	);
-	private static final IntList STATUS_TO_DISTANCE = Util.make(new IntArrayList(createOrderedList().size()), statusToDistance -> {
-		int i = 0;
-
-		for (int j = createOrderedList().size() - 1; j >= 0; j--) {
-			while (i + 1 < DISTANCE_TO_STATUS.size() && j <= ((ChunkStatus)DISTANCE_TO_STATUS.get(i + 1)).getIndex()) {
-				i++;
-			}
-
-			statusToDistance.add(0, i);
-		}
-	});
+	public static final ChunkStatus EMPTY = method_60546("empty", null, field_51904, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus STRUCTURE_STARTS = method_60546("structure_starts", EMPTY, field_51904, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus STRUCTURE_REFERENCES = method_60546("structure_references", STRUCTURE_STARTS, field_51904, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus BIOMES = method_60546("biomes", STRUCTURE_REFERENCES, field_51904, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus NOISE = method_60546("noise", BIOMES, field_51904, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus SURFACE = method_60546("surface", NOISE, field_51904, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus CARVERS = method_60546("carvers", SURFACE, field_51903, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus FEATURES = method_60546("features", CARVERS, field_51903, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus INITIALIZE_LIGHT = method_60546("initialize_light", FEATURES, field_51903, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus LIGHT = method_60546("light", INITIALIZE_LIGHT, field_51903, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus SPAWN = method_60546("spawn", LIGHT, field_51903, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus FULL = method_60546("full", SPAWN, field_51903, ChunkType.LEVELCHUNK);
 	private final int index;
 	private final ChunkStatus previous;
-	private final ChunkStatus.GenerationTask generationTask;
-	private final ChunkStatus.LoadTask loadTask;
-	private final int taskMargin;
-	private final boolean shouldAlwaysUpgrade;
 	private final ChunkType chunkType;
 	private final EnumSet<Heightmap.Type> heightMapTypes;
 
-	private static ChunkStatus register(
-		String id,
-		@Nullable ChunkStatus previous,
-		int taskMargin,
-		boolean shouldAlwaysUpgrade,
-		EnumSet<Heightmap.Type> heightMapTypes,
-		ChunkType chunkType,
-		ChunkStatus.GenerationTask generationTask,
-		ChunkStatus.LoadTask loadTask
-	) {
-		return Registry.register(
-			Registries.CHUNK_STATUS, id, new ChunkStatus(previous, taskMargin, shouldAlwaysUpgrade, heightMapTypes, chunkType, generationTask, loadTask)
-		);
+	private static ChunkStatus method_60546(String string, @Nullable ChunkStatus chunkStatus, EnumSet<Heightmap.Type> enumSet, ChunkType chunkType) {
+		return Registry.register(Registries.CHUNK_STATUS, string, new ChunkStatus(chunkStatus, enumSet, chunkType));
 	}
 
 	public static List<ChunkStatus> createOrderedList() {
@@ -129,38 +51,11 @@ public class ChunkStatus {
 		return list;
 	}
 
-	public static ChunkStatus byDistanceFromFull(int level) {
-		if (level >= DISTANCE_TO_STATUS.size()) {
-			return EMPTY;
-		} else {
-			return level < 0 ? FULL : (ChunkStatus)DISTANCE_TO_STATUS.get(level);
-		}
-	}
-
-	public static int getMaxDistanceFromFull() {
-		return DISTANCE_TO_STATUS.size();
-	}
-
-	public static int getDistanceFromFull(ChunkStatus status) {
-		return STATUS_TO_DISTANCE.getInt(status.getIndex());
-	}
-
-	ChunkStatus(
-		@Nullable ChunkStatus previous,
-		int taskMargin,
-		boolean shouldAlwaysUpgrade,
-		EnumSet<Heightmap.Type> heightMapTypes,
-		ChunkType chunkType,
-		ChunkStatus.GenerationTask generationTask,
-		ChunkStatus.LoadTask loadTask
-	) {
+	@VisibleForTesting
+	protected ChunkStatus(@Nullable ChunkStatus previous, EnumSet<Heightmap.Type> enumSet, ChunkType chunkType) {
 		this.previous = previous == null ? this : previous;
-		this.generationTask = generationTask;
-		this.loadTask = loadTask;
-		this.taskMargin = taskMargin;
-		this.shouldAlwaysUpgrade = shouldAlwaysUpgrade;
 		this.chunkType = chunkType;
-		this.heightMapTypes = heightMapTypes;
+		this.heightMapTypes = enumSet;
 		this.index = previous == null ? 0 : previous.getIndex() + 1;
 	}
 
@@ -170,34 +65,6 @@ public class ChunkStatus {
 
 	public ChunkStatus getPrevious() {
 		return this.previous;
-	}
-
-	public CompletableFuture<Chunk> runGenerationTask(ChunkGenerationContext context, Executor executor, FullChunkConverter fullChunkConverter, List<Chunk> chunks) {
-		Chunk chunk = (Chunk)chunks.get(chunks.size() / 2);
-		Finishable finishable = FlightProfiler.INSTANCE.startChunkGenerationProfiling(chunk.getPos(), context.world().getRegistryKey(), this.toString());
-		return this.generationTask.doWork(context, this, executor, fullChunkConverter, chunks, chunk).thenApply(chunkx -> {
-			if (chunkx instanceof ProtoChunk protoChunk && !protoChunk.getStatus().isAtLeast(this)) {
-				protoChunk.setStatus(this);
-			}
-
-			if (finishable != null) {
-				finishable.finish();
-			}
-
-			return chunkx;
-		});
-	}
-
-	public CompletableFuture<Chunk> runLoadTask(ChunkGenerationContext context, FullChunkConverter fullChunkConverter, Chunk chunk) {
-		return this.loadTask.doWork(context, this, fullChunkConverter, chunk);
-	}
-
-	public int getTaskMargin() {
-		return this.taskMargin;
-	}
-
-	public boolean shouldAlwaysUpgrade() {
-		return this.shouldAlwaysUpgrade;
 	}
 
 	public ChunkType getChunkType() {
@@ -216,25 +83,27 @@ public class ChunkStatus {
 		return this.getIndex() >= chunkStatus.getIndex();
 	}
 
+	public boolean method_60547(ChunkStatus chunkStatus) {
+		return this.getIndex() > chunkStatus.getIndex();
+	}
+
+	public boolean method_60548(ChunkStatus chunkStatus) {
+		return this.getIndex() <= chunkStatus.getIndex();
+	}
+
+	public boolean method_60549(ChunkStatus chunkStatus) {
+		return this.getIndex() < chunkStatus.getIndex();
+	}
+
+	public static ChunkStatus method_60545(ChunkStatus chunkStatus, ChunkStatus chunkStatus2) {
+		return chunkStatus.method_60547(chunkStatus2) ? chunkStatus : chunkStatus2;
+	}
+
 	public String toString() {
+		return this.method_60550();
+	}
+
+	public String method_60550() {
 		return Registries.CHUNK_STATUS.getId(this).toString();
-	}
-
-	/**
-	 * A task called when a chunk needs to be generated.
-	 */
-	@FunctionalInterface
-	protected interface GenerationTask {
-		CompletableFuture<Chunk> doWork(
-			ChunkGenerationContext context, ChunkStatus status, Executor executor, FullChunkConverter fullChunkConverter, List<Chunk> chunks, Chunk chunk
-		);
-	}
-
-	/**
-	 * A task called when a chunk is loaded but does not need to be generated.
-	 */
-	@FunctionalInterface
-	protected interface LoadTask {
-		CompletableFuture<Chunk> doWork(ChunkGenerationContext context, ChunkStatus status, FullChunkConverter fullChunkConverter, Chunk chunk);
 	}
 }

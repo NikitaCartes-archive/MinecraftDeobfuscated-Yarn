@@ -19,7 +19,7 @@ public class Tooltip implements Narratable {
 	@Nullable
 	private List<OrderedText> lines;
 	@Nullable
-	private Language field_51822;
+	private Language language;
 	@Nullable
 	private final Text narration;
 
@@ -45,9 +45,9 @@ public class Tooltip implements Narratable {
 
 	public List<OrderedText> getLines(MinecraftClient client) {
 		Language language = Language.getInstance();
-		if (this.lines == null || language != this.field_51822) {
+		if (this.lines == null || language != this.language) {
 			this.lines = wrapLines(client, this.content);
-			this.field_51822 = language;
+			this.language = language;
 		}
 
 		return this.lines;

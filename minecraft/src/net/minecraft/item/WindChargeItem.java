@@ -59,7 +59,10 @@ public class WindChargeItem extends Item implements ProjectileItem {
 		double d = random.nextTriangular((double)direction.getOffsetX(), 0.11485000000000001);
 		double e = random.nextTriangular((double)direction.getOffsetY(), 0.11485000000000001);
 		double f = random.nextTriangular((double)direction.getOffsetZ(), 0.11485000000000001);
-		return new WindChargeEntity(world, pos.getX(), pos.getY(), pos.getZ(), d, e, f);
+		Vec3d vec3d = new Vec3d(d, e, f);
+		WindChargeEntity windChargeEntity = new WindChargeEntity(world, pos.getX(), pos.getY(), pos.getZ(), vec3d);
+		windChargeEntity.setVelocity(vec3d);
+		return windChargeEntity;
 	}
 
 	@Override

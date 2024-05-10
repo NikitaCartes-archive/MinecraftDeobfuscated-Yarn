@@ -232,7 +232,7 @@ public interface DispenserBehavior {
 				World world = pointer.world();
 				if (fluidModificationItem.placeFluid(null, world, blockPos, null)) {
 					fluidModificationItem.onEmptied(null, world, stack, blockPos);
-					return new ItemStack(Items.BUCKET);
+					return this.method_60577(pointer, stack, new ItemStack(Items.BUCKET));
 				} else {
 					return this.fallbackBehavior.dispense(pointer, stack);
 				}
@@ -248,8 +248,6 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.AXOLOTL_BUCKET, dispenserBehavior);
 		DispenserBlock.registerBehavior(Items.TADPOLE_BUCKET, dispenserBehavior);
 		DispenserBlock.registerBehavior(Items.BUCKET, new ItemDispenserBehavior() {
-			private final ItemDispenserBehavior fallbackBehavior = new ItemDispenserBehavior();
-
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				WorldAccess worldAccess = pointer.world();
@@ -262,16 +260,7 @@ public interface DispenserBehavior {
 					} else {
 						worldAccess.emitGameEvent(null, GameEvent.FLUID_PICKUP, blockPos);
 						Item item = itemStack.getItem();
-						stack.decrement(1);
-						if (stack.isEmpty()) {
-							return new ItemStack(item);
-						} else {
-							if (pointer.blockEntity().addToFirstFreeSlot(new ItemStack(item)) < 0) {
-								this.fallbackBehavior.dispense(pointer, new ItemStack(item));
-							}
-
-							return stack;
-						}
+						return this.method_60577(pointer, stack, new ItemStack(item));
 					}
 				} else {
 					return super.dispenseSilently(pointer, stack);
@@ -407,20 +396,9 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(
 			Items.GLASS_BOTTLE.asItem(),
 			new FallibleItemDispenserBehavior() {
-				private final ItemDispenserBehavior fallbackBehavior = new ItemDispenserBehavior();
-
-				private ItemStack replace(BlockPointer pointer, ItemStack oldStack, ItemStack newStack) {
-					oldStack.decrement(1);
-					if (oldStack.isEmpty()) {
-						pointer.world().emitGameEvent(null, GameEvent.FLUID_PICKUP, pointer.pos());
-						return newStack.copy();
-					} else {
-						if (pointer.blockEntity().addToFirstFreeSlot(newStack.copy()) < 0) {
-							this.fallbackBehavior.dispense(pointer, newStack.copy());
-						}
-
-						return oldStack;
-					}
+				private ItemStack replace(BlockPointer pointer, ItemStack oldStack, ItemStack itemStack) {
+					pointer.world().emitGameEvent(null, GameEvent.FLUID_PICKUP, pointer.pos());
+					return this.method_60577(pointer, oldStack, itemStack);
 				}
 
 				@Override
@@ -545,7 +523,7 @@ public interface DispenserBehavior {
 							serverWorld.playSound(null, blockPos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 							serverWorld.emitGameEvent(null, GameEvent.FLUID_PLACE, blockPos);
 							serverWorld.setBlockState(blockPos2, Blocks.MUD.getDefaultState());
-							return new ItemStack(Items.GLASS_BOTTLE);
+							return this.method_60577(pointer, stack, new ItemStack(Items.GLASS_BOTTLE));
 						}
 					}
 				}

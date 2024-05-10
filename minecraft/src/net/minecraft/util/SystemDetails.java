@@ -94,7 +94,7 @@ public class SystemDetails {
 		this.tryAddGroup("processor", () -> this.addProcessorGroup(hardwareAbstractionLayer.getProcessor()));
 		this.tryAddGroup("graphics", () -> this.addGraphicsCardGroup(hardwareAbstractionLayer.getGraphicsCards()));
 		this.tryAddGroup("memory", () -> this.addGlobalMemoryGroup(hardwareAbstractionLayer.getMemory()));
-		this.tryAddGroup("storage", this::method_59897);
+		this.tryAddGroup("storage", this::addStorageGroup);
 	}
 
 	private void tryAddGroup(String name, Runnable adder) {
@@ -105,8 +105,8 @@ public class SystemDetails {
 		}
 	}
 
-	public static float method_59895(long l) {
-		return (float)l / 1048576.0F;
+	public static float toMebibytes(long bytes) {
+		return (float)bytes / 1048576.0F;
 	}
 
 	private void addPhysicalMemoryGroup(List<PhysicalMemory> memories) {
@@ -114,17 +114,17 @@ public class SystemDetails {
 
 		for (PhysicalMemory physicalMemory : memories) {
 			String string = String.format(Locale.ROOT, "Memory slot #%d ", i++);
-			this.addSection(string + "capacity (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", method_59895(physicalMemory.getCapacity()))));
+			this.addSection(string + "capacity (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", toMebibytes(physicalMemory.getCapacity()))));
 			this.addSection(string + "clockSpeed (GHz)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)physicalMemory.getClockSpeed() / 1.0E9F)));
 			this.addSection(string + "type", physicalMemory::getMemoryType);
 		}
 	}
 
 	private void addVirtualMemoryGroup(VirtualMemory virtualMemory) {
-		this.addSection("Virtual memory max (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", method_59895(virtualMemory.getVirtualMax()))));
-		this.addSection("Virtual memory used (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", method_59895(virtualMemory.getVirtualInUse()))));
-		this.addSection("Swap memory total (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", method_59895(virtualMemory.getSwapTotal()))));
-		this.addSection("Swap memory used (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", method_59895(virtualMemory.getSwapUsed()))));
+		this.addSection("Virtual memory max (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", toMebibytes(virtualMemory.getVirtualMax()))));
+		this.addSection("Virtual memory used (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", toMebibytes(virtualMemory.getVirtualInUse()))));
+		this.addSection("Swap memory total (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", toMebibytes(virtualMemory.getSwapTotal()))));
+		this.addSection("Swap memory used (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", toMebibytes(virtualMemory.getSwapUsed()))));
 	}
 
 	private void addGlobalMemoryGroup(GlobalMemory globalMemory) {
@@ -139,7 +139,7 @@ public class SystemDetails {
 			String string = String.format(Locale.ROOT, "Graphics card #%d ", i++);
 			this.addSection(string + "name", graphicsCard::getName);
 			this.addSection(string + "vendor", graphicsCard::getVendor);
-			this.addSection(string + "VRAM (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", method_59895(graphicsCard.getVRam()))));
+			this.addSection(string + "VRAM (MiB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", toMebibytes(graphicsCard.getVRam()))));
 			this.addSection(string + "deviceId", graphicsCard::getDeviceId);
 			this.addSection(string + "versionInfo", graphicsCard::getVersionInfo);
 		}
@@ -157,38 +157,38 @@ public class SystemDetails {
 		this.addSection("Number of logical CPUs", (Supplier<String>)(() -> String.valueOf(centralProcessor.getLogicalProcessorCount())));
 	}
 
-	private void method_59897() {
-		this.method_59896("jna.tmpdir");
-		this.method_59896("org.lwjgl.system.SharedLibraryExtractPath");
-		this.method_59896("io.netty.native.workdir");
-		this.method_59896("java.io.tmpdir");
-		this.method_59899("workdir", () -> "");
+	private void addStorageGroup() {
+		this.addStorageSection("jna.tmpdir");
+		this.addStorageSection("org.lwjgl.system.SharedLibraryExtractPath");
+		this.addStorageSection("io.netty.native.workdir");
+		this.addStorageSection("java.io.tmpdir");
+		this.addStorageSection("workdir", () -> "");
 	}
 
-	private void method_59896(String string) {
-		this.method_59899(string, () -> System.getProperty(string));
+	private void addStorageSection(String property) {
+		this.addStorageSection(property, () -> System.getProperty(property));
 	}
 
-	private void method_59899(String string, Supplier<String> supplier) {
-		String string2 = "Space in storage for " + string + " (MiB)";
+	private void addStorageSection(String name, Supplier<String> pathSupplier) {
+		String string = "Space in storage for " + name + " (MiB)";
 
 		try {
-			String string3 = (String)supplier.get();
-			if (string3 == null) {
-				this.addSection(string2, "<path not set>");
+			String string2 = (String)pathSupplier.get();
+			if (string2 == null) {
+				this.addSection(string, "<path not set>");
 				return;
 			}
 
-			FileStore fileStore = Files.getFileStore(Path.of(string3));
+			FileStore fileStore = Files.getFileStore(Path.of(string2));
 			this.addSection(
-				string2, String.format(Locale.ROOT, "available: %.2f, total: %.2f", method_59895(fileStore.getUsableSpace()), method_59895(fileStore.getTotalSpace()))
+				string, String.format(Locale.ROOT, "available: %.2f, total: %.2f", toMebibytes(fileStore.getUsableSpace()), toMebibytes(fileStore.getTotalSpace()))
 			);
 		} catch (InvalidPathException var6) {
-			LOGGER.warn("{} is not a path", string, var6);
-			this.addSection(string2, "<invalid path>");
+			LOGGER.warn("{} is not a path", name, var6);
+			this.addSection(string, "<invalid path>");
 		} catch (Exception var7) {
-			LOGGER.warn("Failed retrieving storage space for {}", string, var7);
-			this.addSection(string2, "ERR");
+			LOGGER.warn("Failed retrieving storage space for {}", name, var7);
+			this.addSection(string, "ERR");
 		}
 	}
 

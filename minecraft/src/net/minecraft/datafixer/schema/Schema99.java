@@ -360,9 +360,13 @@ public class Schema99 extends Schema {
 
 				return blockEntityTag;
 			}).update("EntityTag", entityTag -> {
-				String string = IdentifierNormalizingSchema.normalize(stack.get("id").asString(""));
-				String string2 = (String)map.get(string);
-				return string2 != null ? entityTag.set("id", stack.createString(string2)) : entityTag;
+				if (entityTag.get("id").result().isPresent()) {
+					return entityTag;
+				} else {
+					String string = IdentifierNormalizingSchema.normalize(stack.get("id").asString(""));
+					String string2 = (String)map.get(string);
+					return string2 != null ? entityTag.set("id", stack.createString(string2)) : entityTag;
+				}
 			})).getValue();
 	}
 }

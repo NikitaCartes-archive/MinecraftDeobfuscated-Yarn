@@ -330,7 +330,7 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void method_59928() {
+	public void playAttackSound() {
 		this.playSound(SoundEvents.ENTITY_PANDA_BITE, 1.0F, 1.0F);
 	}
 

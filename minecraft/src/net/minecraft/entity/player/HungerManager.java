@@ -1,10 +1,9 @@
 package net.minecraft.entity.player;
 
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 
@@ -20,19 +19,16 @@ public class HungerManager {
 	}
 
 	private void addInternal(int nutrition, float saturation) {
-		this.foodLevel = Math.min(nutrition + this.foodLevel, 20);
-		this.saturationLevel = Math.min(saturation + this.saturationLevel, (float)this.foodLevel);
+		this.foodLevel = MathHelper.clamp(nutrition + this.foodLevel, 0, 20);
+		this.saturationLevel = MathHelper.clamp(saturation + this.saturationLevel, 0.0F, (float)this.foodLevel);
 	}
 
 	public void add(int food, float saturationModifier) {
 		this.addInternal(food, HungerConstants.calculateSaturation(food, saturationModifier));
 	}
 
-	public void eat(ItemStack stack) {
-		FoodComponent foodComponent = stack.get(DataComponentTypes.FOOD);
-		if (foodComponent != null) {
-			this.addInternal(foodComponent.nutrition(), foodComponent.saturation());
-		}
+	public void eat(FoodComponent foodComponent) {
+		this.addInternal(foodComponent.nutrition(), foodComponent.saturation());
 	}
 
 	public void update(PlayerEntity player) {

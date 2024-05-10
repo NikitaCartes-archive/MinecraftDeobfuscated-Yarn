@@ -124,7 +124,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 			}
 
 			if (entity instanceof LivingEntity livingEntity) {
-				this.method_59957(livingEntity, damageSource);
+				this.knockback(livingEntity, damageSource);
 				this.onHit(livingEntity);
 			}
 		}

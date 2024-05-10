@@ -27,11 +27,11 @@ public class LanguageManager implements SynchronousResourceReloader {
 	private static final LanguageDefinition ENGLISH_US = new LanguageDefinition("US", "English", false);
 	private Map<String, LanguageDefinition> languageDefs = ImmutableMap.of("en_us", ENGLISH_US);
 	private String currentLanguageCode;
-	private final Consumer<TranslationStorage> field_51830;
+	private final Consumer<TranslationStorage> reloadCallback;
 
-	public LanguageManager(String languageCode, Consumer<TranslationStorage> consumer) {
+	public LanguageManager(String languageCode, Consumer<TranslationStorage> reloadCallback) {
 		this.currentLanguageCode = languageCode;
-		this.field_51830 = consumer;
+		this.reloadCallback = reloadCallback;
 	}
 
 	private static Map<String, LanguageDefinition> loadAvailableLanguages(Stream<ResourcePack> packs) {
@@ -66,7 +66,7 @@ public class LanguageManager implements SynchronousResourceReloader {
 		TranslationStorage translationStorage = TranslationStorage.load(manager, list, bl);
 		I18n.setLanguage(translationStorage);
 		Language.setInstance(translationStorage);
-		this.field_51830.accept(translationStorage);
+		this.reloadCallback.accept(translationStorage);
 	}
 
 	public void setLanguage(String languageCode) {

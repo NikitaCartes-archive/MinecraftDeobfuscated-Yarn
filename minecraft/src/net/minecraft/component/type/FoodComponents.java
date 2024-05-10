@@ -2,6 +2,7 @@ package net.minecraft.component.type;
 
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.Items;
 
 /**
  * Contains all the default food components used in vanilla food items.
@@ -86,6 +87,6 @@ public class FoodComponents {
 	public static final FoodComponent OMINOUS_BOTTLE = new FoodComponent.Builder().nutrition(1).saturationModifier(0.1F).build();
 
 	private static FoodComponent.Builder createStew(int hunger) {
-		return new FoodComponent.Builder().nutrition(hunger).saturationModifier(0.6F);
+		return new FoodComponent.Builder().nutrition(hunger).saturationModifier(0.6F).method_60500(Items.BOWL);
 	}
 }

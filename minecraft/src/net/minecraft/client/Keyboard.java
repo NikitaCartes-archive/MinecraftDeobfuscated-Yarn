@@ -394,11 +394,11 @@ public class Keyboard {
 						this.client.options.getNarrator().setValue(NarratorMode.byId(this.client.options.getNarrator().getValue().getId() + 1));
 						this.client.options.write();
 						if (screen instanceof AccessibilityOnboardingScreen accessibilityOnboardingScreen) {
-							accessibilityOnboardingScreen.method_60323();
+							accessibilityOnboardingScreen.refreshNarratorOption();
 						}
 
 						if (screen instanceof ChatOptionsScreen chatOptionsScreen) {
-							chatOptionsScreen.method_60326();
+							chatOptionsScreen.refreshNarratorOption();
 						}
 
 						if (bl3 && screen != null) {

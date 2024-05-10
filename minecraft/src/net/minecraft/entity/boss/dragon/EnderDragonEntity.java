@@ -423,11 +423,11 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		}
 	}
 
-	private void launchLivingEntities(ServerWorld serverWorld, List<Entity> list) {
+	private void launchLivingEntities(ServerWorld world, List<Entity> entities) {
 		double d = (this.body.getBoundingBox().minX + this.body.getBoundingBox().maxX) / 2.0;
 		double e = (this.body.getBoundingBox().minZ + this.body.getBoundingBox().maxZ) / 2.0;
 
-		for (Entity entity : list) {
+		for (Entity entity : entities) {
 			if (entity instanceof LivingEntity) {
 				LivingEntity livingEntity = (LivingEntity)entity;
 				double f = entity.getX() - d;
@@ -437,7 +437,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 				if (!this.phaseManager.getCurrent().isSittingOrHovering() && livingEntity.getLastAttackedTime() < entity.age - 2) {
 					DamageSource damageSource = this.getDamageSources().mobAttack(this);
 					entity.damage(damageSource, 5.0F);
-					EnchantmentHelper.onTargetDamaged(serverWorld, entity, damageSource);
+					EnchantmentHelper.onTargetDamaged(world, entity, damageSource);
 				}
 			}
 		}

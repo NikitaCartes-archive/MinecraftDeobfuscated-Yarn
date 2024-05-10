@@ -115,27 +115,24 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	private final Set<TagKey<Item>> searchResultTags = new HashSet();
 	private final boolean operatorTabEnabled;
 
-	public CreativeInventoryScreen(ClientPlayerEntity clientPlayerEntity, FeatureSet featureSet, boolean operatorTabEnabled) {
-		super(new CreativeInventoryScreen.CreativeScreenHandler(clientPlayerEntity), clientPlayerEntity.getInventory(), ScreenTexts.EMPTY);
-		clientPlayerEntity.currentScreenHandler = this.handler;
+	public CreativeInventoryScreen(ClientPlayerEntity player, FeatureSet enabledFeatures, boolean operatorTabEnabled) {
+		super(new CreativeInventoryScreen.CreativeScreenHandler(player), player.getInventory(), ScreenTexts.EMPTY);
+		player.currentScreenHandler = this.handler;
 		this.backgroundHeight = 136;
 		this.backgroundWidth = 195;
 		this.operatorTabEnabled = operatorTabEnabled;
-		this.method_60324(
-			clientPlayerEntity.networkHandler.method_60347(),
-			featureSet,
-			this.shouldShowOperatorTab(clientPlayerEntity),
-			clientPlayerEntity.getWorld().getRegistryManager()
-		);
+		this.populateDisplay(player.networkHandler.getSearchManager(), enabledFeatures, this.shouldShowOperatorTab(player), player.getWorld().getRegistryManager());
 	}
 
 	private boolean shouldShowOperatorTab(PlayerEntity player) {
 		return player.isCreativeLevelTwoOp() && this.operatorTabEnabled;
 	}
 
-	private void updateDisplayParameters(FeatureSet featureSet, boolean showOperatorTab, RegistryWrapper.WrapperLookup lookup) {
+	private void updateDisplayParameters(FeatureSet enabledFeatures, boolean showOperatorTab, RegistryWrapper.WrapperLookup registryLookup) {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
-		if (this.method_60324(clientPlayNetworkHandler != null ? clientPlayNetworkHandler.method_60347() : null, featureSet, showOperatorTab, lookup)) {
+		if (this.populateDisplay(
+			clientPlayNetworkHandler != null ? clientPlayNetworkHandler.getSearchManager() : null, enabledFeatures, showOperatorTab, registryLookup
+		)) {
 			for (ItemGroup itemGroup : ItemGroups.getGroups()) {
 				Collection<ItemStack> collection = itemGroup.getDisplayStacks();
 				if (itemGroup == selectedTab) {
@@ -149,14 +146,16 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		}
 	}
 
-	private boolean method_60324(@Nullable SearchManager searchManager, FeatureSet featureSet, boolean bl, RegistryWrapper.WrapperLookup wrapperLookup) {
-		if (!ItemGroups.updateDisplayContext(featureSet, bl, wrapperLookup)) {
+	private boolean populateDisplay(
+		@Nullable SearchManager searchManager, FeatureSet enabledFeatures, boolean showOperatorTab, RegistryWrapper.WrapperLookup registryLookup
+	) {
+		if (!ItemGroups.updateDisplayContext(enabledFeatures, showOperatorTab, registryLookup)) {
 			return false;
 		} else {
 			if (searchManager != null) {
 				List<ItemStack> list = List.copyOf(ItemGroups.getSearchGroup().getDisplayStacks());
-				searchManager.method_60357(wrapperLookup, list);
-				searchManager.method_60355(list);
+				searchManager.addItemTooltipReloader(registryLookup, list);
+				searchManager.addItemTagReloader(list);
 			}
 
 			return true;
@@ -435,14 +434,14 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		} else {
 			ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
 			if (clientPlayNetworkHandler != null) {
-				SearchManager searchManager = clientPlayNetworkHandler.method_60347();
+				SearchManager searchManager = clientPlayNetworkHandler.getSearchManager();
 				SearchProvider<ItemStack> searchProvider;
 				if (string.startsWith("#")) {
 					string = string.substring(1);
-					searchProvider = searchManager.method_60370();
+					searchProvider = searchManager.getItemTagReloadFuture();
 					this.searchForTags(string);
 				} else {
-					searchProvider = searchManager.method_60372();
+					searchProvider = searchManager.getItemTooltipReloadFuture();
 				}
 
 				this.handler.itemList.addAll(searchProvider.findAll(string.toLowerCase(Locale.ROOT)));

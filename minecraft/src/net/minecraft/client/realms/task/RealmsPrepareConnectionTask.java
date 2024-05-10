@@ -58,7 +58,7 @@ public class RealmsPrepareConnectionTask extends LongRunningTask {
 					boolean bl = MinecraftClient.getInstance().uuidEquals(this.server.ownerUUID);
 					setScreen(
 						(Screen)(bl
-							? new RealmsBrokenWorldScreen(this.lastScreen, this.server.id, this.server.method_60315())
+							? new RealmsBrokenWorldScreen(this.lastScreen, this.server.id, this.server.isMinigame())
 							: new RealmsGenericErrorScreen(Text.translatable("mco.brokenworld.nonowner.title"), Text.translatable("mco.brokenworld.nonowner.error"), this.lastScreen))
 					);
 					return;
@@ -118,7 +118,7 @@ public class RealmsPrepareConnectionTask extends LongRunningTask {
 
 	private PopupScreen createResourcePackConfirmationScreen(RealmsServerAddress address, UUID id, Function<RealmsServerAddress, Screen> connectingScreenCreator) {
 		Text text = Text.translatable("mco.configure.world.resourcepack.question");
-		return RealmsPopups.createInfoPopup(this.lastScreen, text, popupScreen -> {
+		return RealmsPopups.createInfoPopup(this.lastScreen, text, popup -> {
 			setScreen(new MessageScreen(APPLYING_PACK_TEXT));
 			this.downloadResourcePack(address, id).thenRun(() -> setScreen((Screen)connectingScreenCreator.apply(address))).exceptionally(throwable -> {
 				MinecraftClient.getInstance().getServerResourcePackProvider().clear();

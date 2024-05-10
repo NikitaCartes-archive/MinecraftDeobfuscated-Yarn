@@ -31,6 +31,6 @@ public class SetItemLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		return stack.copyComponentsToNewStack(this.item.value(), stack.getCount());
+		return stack.method_60503(this.item.value());
 	}
 }

@@ -44,7 +44,7 @@ public interface EnchantmentLocationBasedEffectType {
 		return Registry.register(registry, "summon_entity", SummonEntityEnchantmentEffectType.CODEC);
 	}
 
-	void apply(ServerWorld world, int level, EnchantmentEffectContext context, Entity user, Vec3d pos, boolean bl);
+	void apply(ServerWorld world, int level, EnchantmentEffectContext context, Entity user, Vec3d pos, boolean newlyApplied);
 
 	default void remove(EnchantmentEffectContext context, Entity user, Vec3d pos, int level) {
 	}

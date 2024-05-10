@@ -59,7 +59,7 @@ public class RealmsConnection {
 							RealmsConnection.this.connection, minecraftClient, server.createServerInfo(string), RealmsConnection.this.onlineScreen, false, null, status -> {
 							}, null
 						);
-						if (server.method_60315()) {
+						if (server.isMinigame()) {
 							clientLoginNetworkHandler.setMinigameName(server.minigameName);
 						}
 

@@ -58,11 +58,9 @@ public class MutableText implements Text {
 
 	/**
 	 * Appends a literal text with content {@code text} to this text's siblings.
-	 * 
-	 * @param text the literal text content
 	 */
-	public MutableText append(String text) {
-		return this.append(Text.literal(text));
+	public MutableText append(String string) {
+		return string.isEmpty() ? this : this.append(Text.literal(string));
 	}
 
 	/**

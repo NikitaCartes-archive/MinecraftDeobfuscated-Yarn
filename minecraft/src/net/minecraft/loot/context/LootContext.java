@@ -104,6 +104,11 @@ public class LootContext {
 			return this;
 		}
 
+		public LootContext.Builder method_60568(Random random) {
+			this.random = random;
+			return this;
+		}
+
 		public ServerWorld getWorld() {
 			return this.parameters.getWorld();
 		}

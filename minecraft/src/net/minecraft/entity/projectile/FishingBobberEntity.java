@@ -63,22 +63,22 @@ public class FishingBobberEntity extends ProjectileEntity {
 	@Nullable
 	private Entity hookedEntity;
 	private FishingBobberEntity.State state = FishingBobberEntity.State.FLYING;
-	private final int luckOfTheSeaLevel;
-	private final int lureLevel;
+	private final int luckBonus;
+	private final int waitTimeReductionTicks;
 
-	private FishingBobberEntity(EntityType<? extends FishingBobberEntity> type, World world, int luckOfTheSeaLevel, int lureLevel) {
+	private FishingBobberEntity(EntityType<? extends FishingBobberEntity> type, World world, int luckBonus, int waitTimeReductionTicks) {
 		super(type, world);
 		this.ignoreCameraFrustum = true;
-		this.luckOfTheSeaLevel = Math.max(0, luckOfTheSeaLevel);
-		this.lureLevel = Math.max(0, lureLevel);
+		this.luckBonus = Math.max(0, luckBonus);
+		this.waitTimeReductionTicks = Math.max(0, waitTimeReductionTicks);
 	}
 
 	public FishingBobberEntity(EntityType<? extends FishingBobberEntity> entityType, World world) {
 		this(entityType, world, 0, 0);
 	}
 
-	public FishingBobberEntity(PlayerEntity thrower, World world, int luckOfTheSeaLevel, int lureLevel) {
-		this(EntityType.FISHING_BOBBER, world, luckOfTheSeaLevel, lureLevel);
+	public FishingBobberEntity(PlayerEntity thrower, World world, int luckBonus, int waitTimeReductionTicks) {
+		this(EntityType.FISHING_BOBBER, world, luckBonus, waitTimeReductionTicks);
 		this.setOwner(thrower);
 		float f = thrower.getPitch();
 		float g = thrower.getYaw();
@@ -359,7 +359,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 			}
 		} else {
 			this.waitCountdown = MathHelper.nextInt(this.random, 100, 600);
-			this.waitCountdown = this.waitCountdown - this.lureLevel;
+			this.waitCountdown = this.waitCountdown - this.waitTimeReductionTicks;
 		}
 	}
 
@@ -434,7 +434,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 					.add(LootContextParameters.ORIGIN, this.getPos())
 					.add(LootContextParameters.TOOL, usedItem)
 					.add(LootContextParameters.THIS_ENTITY, this)
-					.luck((float)this.luckOfTheSeaLevel + playerEntity.getLuck())
+					.luck((float)this.luckBonus + playerEntity.getLuck())
 					.build(LootContextTypes.FISHING);
 				LootTable lootTable = this.getWorld().getServer().getReloadableRegistries().getLootTable(LootTables.FISHING_GAMEPLAY);
 				List<ItemStack> list = lootTable.generateLoot(lootContextParameterSet);

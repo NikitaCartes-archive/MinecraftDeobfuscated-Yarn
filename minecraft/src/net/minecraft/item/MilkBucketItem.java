@@ -24,12 +24,16 @@ public class MilkBucketItem extends Item {
 			serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 		}
 
-		stack.decrementUnlessCreative(1, user);
 		if (!world.isClient) {
 			user.clearStatusEffects();
 		}
 
-		return stack.isEmpty() ? new ItemStack(Items.BUCKET) : stack;
+		if (user instanceof PlayerEntity playerEntity) {
+			return ItemUsage.exchangeStack(stack, playerEntity, new ItemStack(Items.BUCKET), false);
+		} else {
+			stack.decrementUnlessCreative(1, user);
+			return stack;
+		}
 	}
 
 	@Override

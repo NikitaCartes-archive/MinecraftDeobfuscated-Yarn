@@ -36,7 +36,7 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	private boolean leftOwner;
 	private boolean shot;
 	@Nullable
-	private Entity field_51621;
+	private Entity lastDeflectedEntity;
 
 	public ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
 		super(entityType, world);
@@ -166,6 +166,7 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	public void setVelocity(double x, double y, double z, float power, float uncertainty) {
 		Vec3d vec3d = this.calculateVelocity(x, y, z, power, uncertainty);
 		this.setVelocity(vec3d);
+		this.velocityDirty = true;
 		double d = vec3d.horizontalLength();
 		this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
 		this.setPitch((float)(MathHelper.atan2(vec3d.y, d) * 180.0F / (float)Math.PI));
@@ -201,8 +202,8 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 			Entity entity = entityHitResult.getEntity();
 			ProjectileDeflection projectileDeflection = entity.getProjectileDeflection(this);
 			if (projectileDeflection != ProjectileDeflection.NONE) {
-				if (entity != this.field_51621) {
-					this.field_51621 = entity;
+				if (entity != this.lastDeflectedEntity) {
+					this.lastDeflectedEntity = entity;
 					this.deflect(projectileDeflection, entity, this.getOwner(), false);
 				}
 
@@ -328,7 +329,7 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 		return this.canHit() ? 1.0F : 0.0F;
 	}
 
-	public DoubleDoubleImmutablePair method_59959(LivingEntity livingEntity, DamageSource damageSource) {
+	public DoubleDoubleImmutablePair getKnockback(LivingEntity target, DamageSource source) {
 		double d = this.getVelocity().x;
 		double e = this.getVelocity().z;
 		return DoubleDoubleImmutablePair.of(d, e);

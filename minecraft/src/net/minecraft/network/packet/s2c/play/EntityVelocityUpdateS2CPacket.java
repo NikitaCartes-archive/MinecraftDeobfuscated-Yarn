@@ -68,15 +68,15 @@ public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketLis
 		return this.id;
 	}
 
-	public int getVelocityX() {
-		return this.velocityX;
+	public double getVelocityX() {
+		return (double)this.velocityX / 8000.0;
 	}
 
-	public int getVelocityY() {
-		return this.velocityY;
+	public double getVelocityY() {
+		return (double)this.velocityY / 8000.0;
 	}
 
-	public int getVelocityZ() {
-		return this.velocityZ;
+	public double getVelocityZ() {
+		return (double)this.velocityZ / 8000.0;
 	}
 }

@@ -77,31 +77,27 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		super(entityType, world);
 	}
 
-	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, World world, ItemStack stack, @Nullable ItemStack shotFrom) {
+	protected PersistentProjectileEntity(
+		EntityType<? extends PersistentProjectileEntity> type, double x, double y, double z, World world, ItemStack itemStack, @Nullable ItemStack itemStack2
+	) {
 		this(type, world);
-		this.stack = stack.copy();
-		this.setCustomName(stack.get(DataComponentTypes.CUSTOM_NAME));
-		Unit unit = stack.remove(DataComponentTypes.INTANGIBLE_PROJECTILE);
+		this.stack = itemStack.copy();
+		this.setCustomName(itemStack.get(DataComponentTypes.CUSTOM_NAME));
+		Unit unit = itemStack.remove(DataComponentTypes.INTANGIBLE_PROJECTILE);
 		if (unit != null) {
 			this.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
 		}
 
-		if (shotFrom != null && world instanceof ServerWorld serverWorld) {
-			this.shotFrom = shotFrom.copy();
-			int i = EnchantmentHelper.getProjectilePiercing(serverWorld, shotFrom, this.stack);
+		this.setPosition(x, y, z);
+		if (itemStack2 != null && world instanceof ServerWorld serverWorld) {
+			this.shotFrom = itemStack2.copy();
+			int i = EnchantmentHelper.getProjectilePiercing(serverWorld, itemStack2, this.stack);
 			if (i > 0) {
 				this.setPierceLevel((byte)i);
 			}
 
-			EnchantmentHelper.onProjectileSpawned(serverWorld, shotFrom, this, () -> this.shotFrom = null);
+			EnchantmentHelper.onProjectileSpawned(serverWorld, itemStack2, this, () -> this.shotFrom = null);
 		}
-	}
-
-	protected PersistentProjectileEntity(
-		EntityType<? extends PersistentProjectileEntity> type, double x, double y, double z, World world, ItemStack stack, @Nullable ItemStack shotFrom
-	) {
-		this(type, world, stack, shotFrom);
-		this.setPosition(x, y, z);
 	}
 
 	protected PersistentProjectileEntity(
@@ -377,7 +373,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 					livingEntity2.setStuckArrowCount(livingEntity2.getStuckArrowCount() + 1);
 				}
 
-				this.method_59957(livingEntity2, damageSource);
+				this.knockback(livingEntity2, damageSource);
 				if (this.getWorld() instanceof ServerWorld serverWorld2) {
 					EnchantmentHelper.onTargetDamaged(serverWorld2, livingEntity2, damageSource);
 				}
@@ -420,17 +416,17 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		}
 	}
 
-	protected void method_59957(LivingEntity livingEntity, DamageSource damageSource) {
+	protected void knockback(LivingEntity target, DamageSource source) {
 		double d = (double)(
 			this.shotFrom != null && this.getWorld() instanceof ServerWorld serverWorld
-				? EnchantmentHelper.modifyKnockback(serverWorld, this.shotFrom, livingEntity, damageSource, 0.0F)
+				? EnchantmentHelper.modifyKnockback(serverWorld, this.shotFrom, target, source, 0.0F)
 				: 0.0F
 		);
 		if (d > 0.0) {
-			double e = Math.max(0.0, 1.0 - livingEntity.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
+			double e = Math.max(0.0, 1.0 - target.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
 			Vec3d vec3d = this.getVelocity().multiply(1.0, 0.0, 1.0).normalize().multiply(d * 0.6 * e);
 			if (vec3d.lengthSquared() > 0.0) {
-				livingEntity.addVelocity(vec3d.x, 0.1, vec3d.z);
+				target.addVelocity(vec3d.x, 0.1, vec3d.z);
 			}
 		}
 	}
@@ -454,7 +450,6 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		this.setCritical(false);
 		this.setPierceLevel((byte)0);
 		this.setSound(SoundEvents.ENTITY_ARROW_HIT);
-		this.shotFrom = null;
 		this.clearPiercingStatus();
 	}
 

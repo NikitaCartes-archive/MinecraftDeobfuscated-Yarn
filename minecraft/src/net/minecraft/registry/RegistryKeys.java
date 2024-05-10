@@ -1,6 +1,7 @@
 package net.minecraft.registry;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.class_9766;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BannerPattern;
@@ -184,7 +185,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<TrunkPlacerType<?>>> TRUNK_PLACER_TYPE = of("worldgen/trunk_placer_type");
 	public static final RegistryKey<Registry<VillagerProfession>> VILLAGER_PROFESSION = of("villager_profession");
 	public static final RegistryKey<Registry<VillagerType>> VILLAGER_TYPE = of("villager_type");
-	public static final RegistryKey<Registry<String>> DECORATED_POT_PATTERN = of("decorated_pot_patterns");
+	public static final RegistryKey<Registry<class_9766>> DECORATED_POT_PATTERN = of("decorated_pot_pattern");
 	public static final RegistryKey<Registry<NumberFormatType<?>>> NUMBER_FORMAT_TYPE = of("number_format_type");
 	public static final RegistryKey<Registry<ArmorMaterial>> ARMOR_MATERIAL = of("armor_material");
 	public static final RegistryKey<Registry<ComponentType<?>>> DATA_COMPONENT_TYPE = of("data_component_type");

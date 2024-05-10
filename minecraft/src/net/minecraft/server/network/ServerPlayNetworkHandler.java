@@ -779,7 +779,7 @@ public class ServerPlayNetworkHandler
 	private void addBook(FilteredMessage title, List<FilteredMessage> pages, int slotId) {
 		ItemStack itemStack = this.player.getInventory().getStack(slotId);
 		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
-			ItemStack itemStack2 = itemStack.copyComponentsToNewStack(Items.WRITTEN_BOOK, 1);
+			ItemStack itemStack2 = itemStack.method_60503(Items.WRITTEN_BOOK);
 			itemStack2.remove(DataComponentTypes.WRITABLE_BOOK_CONTENT);
 			List<RawFilteredPair<Text>> list = pages.stream().map(page -> this.toRawFilteredPair(page).map(Text::literal)).toList();
 			itemStack2.set(
@@ -936,7 +936,7 @@ public class ServerPlayNetworkHandler
 									this.player.onLanding();
 								}
 
-								if (packet.isOnGround() || this.player.method_59925() || this.player.isClimbing() || this.player.isSpectator() || bl || bl5) {
+								if (packet.isOnGround() || this.player.hasLandedInFluid() || this.player.isClimbing() || this.player.isSpectator() || bl || bl5) {
 									this.player.clearCurrentExplosion();
 								}
 
@@ -1363,7 +1363,9 @@ public class ServerPlayNetworkHandler
 
 	private void checkForSpam() {
 		this.messageCooldown += 20;
-		if (this.messageCooldown > 200 && !this.server.getPlayerManager().isOperator(this.player.getGameProfile())) {
+		if (this.messageCooldown > 200
+			&& !this.server.getPlayerManager().isOperator(this.player.getGameProfile())
+			&& !this.server.isHost(this.player.getGameProfile())) {
 			this.disconnect(Text.translatable("disconnect.spam"));
 		}
 	}

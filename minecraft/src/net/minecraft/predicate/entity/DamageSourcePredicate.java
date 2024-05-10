@@ -13,12 +13,15 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
-public record DamageSourcePredicate(List<TagPredicate<DamageType>> tags, Optional<EntityPredicate> directEntity, Optional<EntityPredicate> sourceEntity) {
+public record DamageSourcePredicate(
+	List<TagPredicate<DamageType>> tags, Optional<EntityPredicate> directEntity, Optional<EntityPredicate> sourceEntity, Optional<Boolean> isDirect
+) {
 	public static final Codec<DamageSourcePredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					TagPredicate.createCodec(RegistryKeys.DAMAGE_TYPE).listOf().optionalFieldOf("tags", List.of()).forGetter(DamageSourcePredicate::tags),
 					EntityPredicate.CODEC.optionalFieldOf("direct_entity").forGetter(DamageSourcePredicate::directEntity),
-					EntityPredicate.CODEC.optionalFieldOf("source_entity").forGetter(DamageSourcePredicate::sourceEntity)
+					EntityPredicate.CODEC.optionalFieldOf("source_entity").forGetter(DamageSourcePredicate::sourceEntity),
+					Codec.BOOL.optionalFieldOf("is_direct").forGetter(DamageSourcePredicate::isDirect)
 				)
 				.apply(instance, DamageSourcePredicate::new)
 	);
@@ -34,15 +37,20 @@ public record DamageSourcePredicate(List<TagPredicate<DamageType>> tags, Optiona
 			}
 		}
 
-		return this.directEntity.isPresent() && !((EntityPredicate)this.directEntity.get()).test(world, pos, damageSource.getSource())
-			? false
-			: !this.sourceEntity.isPresent() || ((EntityPredicate)this.sourceEntity.get()).test(world, pos, damageSource.getAttacker());
+		if (this.directEntity.isPresent() && !((EntityPredicate)this.directEntity.get()).test(world, pos, damageSource.getSource())) {
+			return false;
+		} else {
+			return this.sourceEntity.isPresent() && !((EntityPredicate)this.sourceEntity.get()).test(world, pos, damageSource.getAttacker())
+				? false
+				: !this.isDirect.isPresent() || (Boolean)this.isDirect.get() == damageSource.method_60489();
+		}
 	}
 
 	public static class Builder {
 		private final ImmutableList.Builder<TagPredicate<DamageType>> tagPredicates = ImmutableList.builder();
 		private Optional<EntityPredicate> directEntity = Optional.empty();
 		private Optional<EntityPredicate> sourceEntity = Optional.empty();
+		private Optional<Boolean> field_51883 = Optional.empty();
 
 		public static DamageSourcePredicate.Builder create() {
 			return new DamageSourcePredicate.Builder();
@@ -63,8 +71,13 @@ public record DamageSourcePredicate(List<TagPredicate<DamageType>> tags, Optiona
 			return this;
 		}
 
+		public DamageSourcePredicate.Builder method_60488(boolean bl) {
+			this.field_51883 = Optional.of(bl);
+			return this;
+		}
+
 		public DamageSourcePredicate build() {
-			return new DamageSourcePredicate(this.tagPredicates.build(), this.directEntity, this.sourceEntity);
+			return new DamageSourcePredicate(this.tagPredicates.build(), this.directEntity, this.sourceEntity, this.field_51883);
 		}
 	}
 }
