@@ -109,7 +109,7 @@ public class Main {
 			GameLoadTimeEvent.INSTANCE.addTimer(TelemetryEventProperty.LOAD_TIME_TOTAL_TIME_MS, stopwatch);
 			GameLoadTimeEvent.INSTANCE.addTimer(TelemetryEventProperty.LOAD_TIME_PRE_WINDOW_MS, stopwatch2);
 			SharedConstants.createGameVersion();
-			CompletableFuture<?> completableFuture = Schemas.method_60487(DataFixTypes.REQUIRED_TYPES);
+			CompletableFuture<?> completableFuture = Schemas.optimize(DataFixTypes.REQUIRED_TYPES);
 			CrashReport.initCrashReport();
 			logger = LogUtils.getLogger();
 			string2 = "Bootstrap";

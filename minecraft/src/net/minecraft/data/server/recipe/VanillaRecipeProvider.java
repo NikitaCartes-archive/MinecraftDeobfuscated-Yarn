@@ -2373,10 +2373,10 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.STONE_BRICKS, Blocks.STONE);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.STONE_BRICK_SLAB, Blocks.STONE, 2);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.STONE_BRICK_STAIRS, Blocks.STONE);
-		SingleItemRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.STONE), RecipeCategory.BUILDING_BLOCKS, Blocks.CHISELED_STONE_BRICKS)
+		StonecuttingRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.STONE), RecipeCategory.BUILDING_BLOCKS, Blocks.CHISELED_STONE_BRICKS)
 			.criterion("has_stone", conditionsFromItem(Blocks.STONE))
 			.offerTo(exporter, "chiseled_stone_bricks_stone_from_stonecutting");
-		SingleItemRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.STONE), RecipeCategory.DECORATIONS, Blocks.STONE_BRICK_WALL)
+		StonecuttingRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.STONE), RecipeCategory.DECORATIONS, Blocks.STONE_BRICK_WALL)
 			.criterion("has_stone", conditionsFromItem(Blocks.STONE))
 			.offerTo(exporter, "stone_brick_walls_from_stone_stonecutting");
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CUT_SANDSTONE, Blocks.SANDSTONE);
@@ -2393,7 +2393,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.RED_SANDSTONE_STAIRS, Blocks.RED_SANDSTONE);
 		offerStonecuttingRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.RED_SANDSTONE_WALL, Blocks.RED_SANDSTONE);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CHISELED_RED_SANDSTONE, Blocks.RED_SANDSTONE);
-		SingleItemRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.QUARTZ_BLOCK), RecipeCategory.BUILDING_BLOCKS, Blocks.QUARTZ_SLAB, 2)
+		StonecuttingRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.QUARTZ_BLOCK), RecipeCategory.BUILDING_BLOCKS, Blocks.QUARTZ_SLAB, 2)
 			.criterion("has_quartz_block", conditionsFromItem(Blocks.QUARTZ_BLOCK))
 			.offerTo(exporter, "quartz_slab_from_stonecutting");
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.QUARTZ_STAIRS, Blocks.QUARTZ_BLOCK);
@@ -2405,7 +2405,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerStonecuttingRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.COBBLESTONE_WALL, Blocks.COBBLESTONE);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.STONE_BRICK_SLAB, Blocks.STONE_BRICKS, 2);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.STONE_BRICK_STAIRS, Blocks.STONE_BRICKS);
-		SingleItemRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.STONE_BRICKS), RecipeCategory.DECORATIONS, Blocks.STONE_BRICK_WALL)
+		StonecuttingRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.STONE_BRICKS), RecipeCategory.DECORATIONS, Blocks.STONE_BRICK_WALL)
 			.criterion("has_stone_bricks", conditionsFromItem(Blocks.STONE_BRICKS))
 			.offerTo(exporter, "stone_brick_wall_from_stone_bricks_stonecutting");
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CHISELED_STONE_BRICKS, Blocks.STONE_BRICKS);
@@ -2428,10 +2428,12 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.PRISMARINE_SLAB, Blocks.PRISMARINE, 2);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.PRISMARINE_STAIRS, Blocks.PRISMARINE);
 		offerStonecuttingRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.PRISMARINE_WALL, Blocks.PRISMARINE);
-		SingleItemRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.PRISMARINE_BRICKS), RecipeCategory.BUILDING_BLOCKS, Blocks.PRISMARINE_BRICK_SLAB, 2)
+		StonecuttingRecipeJsonBuilder.createStonecutting(
+				Ingredient.ofItems(Blocks.PRISMARINE_BRICKS), RecipeCategory.BUILDING_BLOCKS, Blocks.PRISMARINE_BRICK_SLAB, 2
+			)
 			.criterion("has_prismarine_brick", conditionsFromItem(Blocks.PRISMARINE_BRICKS))
 			.offerTo(exporter, "prismarine_brick_slab_from_prismarine_stonecutting");
-		SingleItemRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.PRISMARINE_BRICKS), RecipeCategory.BUILDING_BLOCKS, Blocks.PRISMARINE_BRICK_STAIRS)
+		StonecuttingRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.PRISMARINE_BRICKS), RecipeCategory.BUILDING_BLOCKS, Blocks.PRISMARINE_BRICK_STAIRS)
 			.criterion("has_prismarine_brick", conditionsFromItem(Blocks.PRISMARINE_BRICKS))
 			.offerTo(exporter, "prismarine_brick_stairs_from_prismarine_stonecutting");
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.DARK_PRISMARINE_SLAB, Blocks.DARK_PRISMARINE, 2);
@@ -2461,15 +2463,17 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.POLISHED_DIORITE_STAIRS, Blocks.DIORITE);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.POLISHED_DIORITE_SLAB, Blocks.POLISHED_DIORITE, 2);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.POLISHED_DIORITE_STAIRS, Blocks.POLISHED_DIORITE);
-		SingleItemRecipeJsonBuilder.createStonecutting(
+		StonecuttingRecipeJsonBuilder.createStonecutting(
 				Ingredient.ofItems(Blocks.MOSSY_STONE_BRICKS), RecipeCategory.BUILDING_BLOCKS, Blocks.MOSSY_STONE_BRICK_SLAB, 2
 			)
 			.criterion("has_mossy_stone_bricks", conditionsFromItem(Blocks.MOSSY_STONE_BRICKS))
 			.offerTo(exporter, "mossy_stone_brick_slab_from_mossy_stone_brick_stonecutting");
-		SingleItemRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.MOSSY_STONE_BRICKS), RecipeCategory.BUILDING_BLOCKS, Blocks.MOSSY_STONE_BRICK_STAIRS)
+		StonecuttingRecipeJsonBuilder.createStonecutting(
+				Ingredient.ofItems(Blocks.MOSSY_STONE_BRICKS), RecipeCategory.BUILDING_BLOCKS, Blocks.MOSSY_STONE_BRICK_STAIRS
+			)
 			.criterion("has_mossy_stone_bricks", conditionsFromItem(Blocks.MOSSY_STONE_BRICKS))
 			.offerTo(exporter, "mossy_stone_brick_stairs_from_mossy_stone_brick_stonecutting");
-		SingleItemRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.MOSSY_STONE_BRICKS), RecipeCategory.DECORATIONS, Blocks.MOSSY_STONE_BRICK_WALL)
+		StonecuttingRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.MOSSY_STONE_BRICKS), RecipeCategory.DECORATIONS, Blocks.MOSSY_STONE_BRICK_WALL)
 			.criterion("has_mossy_stone_bricks", conditionsFromItem(Blocks.MOSSY_STONE_BRICKS))
 			.offerTo(exporter, "mossy_stone_brick_wall_from_mossy_stone_brick_stonecutting");
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.MOSSY_COBBLESTONE_SLAB, Blocks.MOSSY_COBBLESTONE, 2);
@@ -2481,13 +2485,13 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.SMOOTH_RED_SANDSTONE_STAIRS, Blocks.SMOOTH_RED_SANDSTONE);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.SMOOTH_QUARTZ_SLAB, Blocks.SMOOTH_QUARTZ, 2);
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.SMOOTH_QUARTZ_STAIRS, Blocks.SMOOTH_QUARTZ);
-		SingleItemRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.END_STONE_BRICKS), RecipeCategory.BUILDING_BLOCKS, Blocks.END_STONE_BRICK_SLAB, 2)
+		StonecuttingRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.END_STONE_BRICKS), RecipeCategory.BUILDING_BLOCKS, Blocks.END_STONE_BRICK_SLAB, 2)
 			.criterion("has_end_stone_brick", conditionsFromItem(Blocks.END_STONE_BRICKS))
 			.offerTo(exporter, "end_stone_brick_slab_from_end_stone_brick_stonecutting");
-		SingleItemRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.END_STONE_BRICKS), RecipeCategory.BUILDING_BLOCKS, Blocks.END_STONE_BRICK_STAIRS)
+		StonecuttingRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.END_STONE_BRICKS), RecipeCategory.BUILDING_BLOCKS, Blocks.END_STONE_BRICK_STAIRS)
 			.criterion("has_end_stone_brick", conditionsFromItem(Blocks.END_STONE_BRICKS))
 			.offerTo(exporter, "end_stone_brick_stairs_from_end_stone_brick_stonecutting");
-		SingleItemRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.END_STONE_BRICKS), RecipeCategory.DECORATIONS, Blocks.END_STONE_BRICK_WALL)
+		StonecuttingRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(Blocks.END_STONE_BRICKS), RecipeCategory.DECORATIONS, Blocks.END_STONE_BRICK_WALL)
 			.criterion("has_end_stone_brick", conditionsFromItem(Blocks.END_STONE_BRICKS))
 			.offerTo(exporter, "end_stone_brick_wall_from_end_stone_brick_stonecutting");
 		offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.END_STONE_BRICKS, Blocks.END_STONE);

@@ -27,8 +27,8 @@ public class WindChargeEntity extends AbstractWindChargeEntity {
 		super(EntityType.WIND_CHARGE, world, player, x, y, z);
 	}
 
-	public WindChargeEntity(World world, double x, double y, double z, Vec3d vec3d) {
-		super(EntityType.WIND_CHARGE, x, y, z, vec3d, world);
+	public WindChargeEntity(World world, double x, double y, double z, Vec3d velocity) {
+		super(EntityType.WIND_CHARGE, x, y, z, velocity, world);
 	}
 
 	@Override

@@ -27,18 +27,18 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 
 	public AbstractWindChargeEntity(EntityType<? extends AbstractWindChargeEntity> entityType, World world) {
 		super(entityType, world);
-		this.field_51893 = 0.0;
+		this.accelerationPower = 0.0;
 	}
 
 	public AbstractWindChargeEntity(EntityType<? extends AbstractWindChargeEntity> type, World world, Entity owner, double x, double y, double z) {
 		super(type, x, y, z, world);
 		this.setOwner(owner);
-		this.field_51893 = 0.0;
+		this.accelerationPower = 0.0;
 	}
 
 	AbstractWindChargeEntity(EntityType<? extends AbstractWindChargeEntity> entityType, double d, double e, double f, Vec3d vec3d, World world) {
 		super(entityType, d, e, f, vec3d, world);
-		this.field_51893 = 0.0;
+		this.accelerationPower = 0.0;
 	}
 
 	@Override

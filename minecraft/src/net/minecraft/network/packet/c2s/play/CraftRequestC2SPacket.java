@@ -12,24 +12,24 @@ import net.minecraft.util.Identifier;
 public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
 	public static final PacketCodec<PacketByteBuf, CraftRequestC2SPacket> CODEC = Packet.createCodec(CraftRequestC2SPacket::write, CraftRequestC2SPacket::new);
 	private final int syncId;
-	private final Identifier recipe;
+	private final Identifier recipeId;
 	private final boolean craftAll;
 
 	public CraftRequestC2SPacket(int syncId, RecipeEntry<?> recipe, boolean craftAll) {
 		this.syncId = syncId;
-		this.recipe = recipe.id();
+		this.recipeId = recipe.id();
 		this.craftAll = craftAll;
 	}
 
 	private CraftRequestC2SPacket(PacketByteBuf buf) {
 		this.syncId = buf.readByte();
-		this.recipe = buf.readIdentifier();
+		this.recipeId = buf.readIdentifier();
 		this.craftAll = buf.readBoolean();
 	}
 
 	private void write(PacketByteBuf buf) {
 		buf.writeByte(this.syncId);
-		buf.writeIdentifier(this.recipe);
+		buf.writeIdentifier(this.recipeId);
 		buf.writeBoolean(this.craftAll);
 	}
 
@@ -46,8 +46,8 @@ public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
 		return this.syncId;
 	}
 
-	public Identifier getRecipe() {
-		return this.recipe;
+	public Identifier getRecipeId() {
+		return this.recipeId;
 	}
 
 	public boolean shouldCraftAll() {

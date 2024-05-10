@@ -111,7 +111,7 @@ public interface DispenserBehavior {
 				Direction direction = pointer.state().get(DispenserBlock.FACING);
 				BlockPos blockPos = pointer.pos().offset(direction);
 				ServerWorld serverWorld = pointer.world();
-				Consumer<ArmorStandEntity> consumer = EntityType.copier(armorStandEntityx -> armorStandEntityx.setYaw(direction.asRotation()), serverWorld, stack, null);
+				Consumer<ArmorStandEntity> consumer = EntityType.copier(armorStand -> armorStand.setYaw(direction.asRotation()), serverWorld, stack, null);
 				ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.spawn(serverWorld, consumer, blockPos, SpawnReason.DISPENSER, false, false);
 				if (armorStandEntity != null) {
 					stack.decrement(1);
@@ -149,9 +149,7 @@ public interface DispenserBehavior {
 				BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 
 				for (AbstractHorseEntity abstractHorseEntity : pointer.world()
-					.getEntitiesByClass(
-						AbstractHorseEntity.class, new Box(blockPos), abstractHorseEntityx -> abstractHorseEntityx.isAlive() && abstractHorseEntityx.hasArmorSlot()
-					)) {
+					.getEntitiesByClass(AbstractHorseEntity.class, new Box(blockPos), horse -> horse.isAlive() && horse.hasArmorSlot())) {
 					if (abstractHorseEntity.isHorseArmor(stack) && !abstractHorseEntity.isWearingBodyArmor() && abstractHorseEntity.isTame()) {
 						abstractHorseEntity.equipBodyArmor(stack.split(1));
 						this.setSuccess(true);
@@ -190,9 +188,7 @@ public interface DispenserBehavior {
 					BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 
 					for (AbstractDonkeyEntity abstractDonkeyEntity : pointer.world()
-						.getEntitiesByClass(
-							AbstractDonkeyEntity.class, new Box(blockPos), abstractDonkeyEntityx -> abstractDonkeyEntityx.isAlive() && !abstractDonkeyEntityx.hasChest()
-						)) {
+						.getEntitiesByClass(AbstractDonkeyEntity.class, new Box(blockPos), donkey -> donkey.isAlive() && !donkey.hasChest())) {
 						if (abstractDonkeyEntity.isTame() && abstractDonkeyEntity.getStackReference(499).set(stack)) {
 							stack.decrement(1);
 							this.setSuccess(true);
@@ -232,7 +228,7 @@ public interface DispenserBehavior {
 				World world = pointer.world();
 				if (fluidModificationItem.placeFluid(null, world, blockPos, null)) {
 					fluidModificationItem.onEmptied(null, world, stack, blockPos);
-					return this.method_60577(pointer, stack, new ItemStack(Items.BUCKET));
+					return this.decrementStackWithRemainder(pointer, stack, new ItemStack(Items.BUCKET));
 				} else {
 					return this.fallbackBehavior.dispense(pointer, stack);
 				}
@@ -260,7 +256,7 @@ public interface DispenserBehavior {
 					} else {
 						worldAccess.emitGameEvent(null, GameEvent.FLUID_PICKUP, blockPos);
 						Item item = itemStack.getItem();
-						return this.method_60577(pointer, stack, new ItemStack(item));
+						return this.decrementStackWithRemainder(pointer, stack, new ItemStack(item));
 					}
 				} else {
 					return super.dispenseSilently(pointer, stack);
@@ -396,9 +392,9 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(
 			Items.GLASS_BOTTLE.asItem(),
 			new FallibleItemDispenserBehavior() {
-				private ItemStack replace(BlockPointer pointer, ItemStack oldStack, ItemStack itemStack) {
+				private ItemStack replace(BlockPointer pointer, ItemStack oldStack, ItemStack newStack) {
 					pointer.world().emitGameEvent(null, GameEvent.FLUID_PICKUP, pointer.pos());
-					return this.method_60577(pointer, oldStack, itemStack);
+					return this.decrementStackWithRemainder(pointer, oldStack, newStack);
 				}
 
 				@Override
@@ -523,7 +519,7 @@ public interface DispenserBehavior {
 							serverWorld.playSound(null, blockPos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 							serverWorld.emitGameEvent(null, GameEvent.FLUID_PLACE, blockPos);
 							serverWorld.setBlockState(blockPos2, Blocks.MUD.getDefaultState());
-							return this.method_60577(pointer, stack, new ItemStack(Items.GLASS_BOTTLE));
+							return this.decrementStackWithRemainder(pointer, stack, new ItemStack(Items.GLASS_BOTTLE));
 						}
 					}
 				}

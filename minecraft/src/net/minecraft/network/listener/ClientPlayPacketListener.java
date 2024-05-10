@@ -8,6 +8,7 @@ import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChangeUnlockedRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkBiomeDataS2CPacket;
@@ -98,7 +99,6 @@ import net.minecraft.network.packet.s2c.play.TickStepS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
-import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateTickRateS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
@@ -135,7 +135,7 @@ public interface ClientPlayPacketListener extends ClientPingResultPacketListener
 
 	void onStatistics(StatisticsS2CPacket packet);
 
-	void onUnlockRecipes(UnlockRecipesS2CPacket packet);
+	void onUnlockRecipes(ChangeUnlockedRecipesS2CPacket packet);
 
 	void onBlockBreakingProgress(BlockBreakingProgressS2CPacket packet);
 

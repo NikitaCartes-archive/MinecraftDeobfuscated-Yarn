@@ -14,7 +14,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
 public class EggEntity extends ThrownItemEntity {
-	private static final EntityDimensions field_51894 = EntityDimensions.fixed(0.0F, 0.0F);
+	private static final EntityDimensions EMPTY_DIMENSIONS = EntityDimensions.fixed(0.0F, 0.0F);
 
 	public EggEntity(EntityType<? extends EggEntity> entityType, World world) {
 		super(entityType, world);
@@ -69,7 +69,7 @@ public class EggEntity extends ThrownItemEntity {
 					if (chickenEntity != null) {
 						chickenEntity.setBreedingAge(-24000);
 						chickenEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
-						if (!chickenEntity.method_60490(field_51894)) {
+						if (!chickenEntity.recalculateDimensions(EMPTY_DIMENSIONS)) {
 							break;
 						}
 

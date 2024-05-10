@@ -177,11 +177,11 @@ public class ChunkPos {
 	}
 
 	public int getChebyshevDistance(ChunkPos pos) {
-		return this.method_60510(pos.x, pos.z);
+		return this.getChebyshevDistance(pos.x, pos.z);
 	}
 
-	public int method_60510(int i, int j) {
-		return Math.max(Math.abs(this.x - i), Math.abs(this.z - j));
+	public int getChebyshevDistance(int x, int z) {
+		return Math.max(Math.abs(this.x - x), Math.abs(this.z - z));
 	}
 
 	public int getSquaredDistance(ChunkPos pos) {

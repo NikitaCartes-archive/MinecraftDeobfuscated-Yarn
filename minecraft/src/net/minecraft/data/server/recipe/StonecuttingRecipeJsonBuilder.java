@@ -18,7 +18,7 @@ import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.util.Identifier;
 
-public class SingleItemRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
+public class StonecuttingRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	private final RecipeCategory category;
 	private final Item output;
 	private final Ingredient input;
@@ -28,7 +28,9 @@ public class SingleItemRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	private String group;
 	private final CuttingRecipe.RecipeFactory<?> recipeFactory;
 
-	public SingleItemRecipeJsonBuilder(RecipeCategory category, CuttingRecipe.RecipeFactory<?> recipeFactory, Ingredient input, ItemConvertible output, int count) {
+	public StonecuttingRecipeJsonBuilder(
+		RecipeCategory category, CuttingRecipe.RecipeFactory<?> recipeFactory, Ingredient input, ItemConvertible output, int count
+	) {
 		this.category = category;
 		this.recipeFactory = recipeFactory;
 		this.output = output.asItem();
@@ -36,20 +38,20 @@ public class SingleItemRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 		this.count = count;
 	}
 
-	public static SingleItemRecipeJsonBuilder createStonecutting(Ingredient input, RecipeCategory category, ItemConvertible output) {
-		return new SingleItemRecipeJsonBuilder(category, StonecuttingRecipe::new, input, output, 1);
+	public static StonecuttingRecipeJsonBuilder createStonecutting(Ingredient input, RecipeCategory category, ItemConvertible output) {
+		return new StonecuttingRecipeJsonBuilder(category, StonecuttingRecipe::new, input, output, 1);
 	}
 
-	public static SingleItemRecipeJsonBuilder createStonecutting(Ingredient input, RecipeCategory category, ItemConvertible output, int count) {
-		return new SingleItemRecipeJsonBuilder(category, StonecuttingRecipe::new, input, output, count);
+	public static StonecuttingRecipeJsonBuilder createStonecutting(Ingredient input, RecipeCategory category, ItemConvertible output, int count) {
+		return new StonecuttingRecipeJsonBuilder(category, StonecuttingRecipe::new, input, output, count);
 	}
 
-	public SingleItemRecipeJsonBuilder criterion(String string, AdvancementCriterion<?> advancementCriterion) {
+	public StonecuttingRecipeJsonBuilder criterion(String string, AdvancementCriterion<?> advancementCriterion) {
 		this.criteria.put(string, advancementCriterion);
 		return this;
 	}
 
-	public SingleItemRecipeJsonBuilder group(@Nullable String string) {
+	public StonecuttingRecipeJsonBuilder group(@Nullable String string) {
 		this.group = string;
 		return this;
 	}

@@ -378,8 +378,10 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	 * Resets the special price of all the trade offers of this villager.
 	 */
 	private void clearSpecialPrices() {
-		for (TradeOffer tradeOffer : this.getOffers()) {
-			tradeOffer.clearSpecialPrice();
+		if (!this.getWorld().isClient()) {
+			for (TradeOffer tradeOffer : this.getOffers()) {
+				tradeOffer.clearSpecialPrice();
+			}
 		}
 	}
 

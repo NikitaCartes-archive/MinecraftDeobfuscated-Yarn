@@ -649,7 +649,7 @@ public class Enchantments {
 					EntityPropertiesLootCondition.builder(
 							LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().type(EntityTypePredicate.create(EntityTypeTags.SENSITIVE_TO_BANE_OF_ARTHROPODS))
 						)
-						.and(DamageSourcePropertiesLootCondition.builder(DamageSourcePredicate.Builder.create().method_60488(true)))
+						.and(DamageSourcePropertiesLootCondition.builder(DamageSourcePredicate.Builder.create().isDirect(true)))
 				)
 		);
 		register(
@@ -688,7 +688,7 @@ public class Enchantments {
 					EnchantmentEffectTarget.ATTACKER,
 					EnchantmentEffectTarget.VICTIM,
 					new IgniteEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(4.0F)),
-					DamageSourcePropertiesLootCondition.builder(DamageSourcePredicate.Builder.create().method_60488(true))
+					DamageSourcePropertiesLootCondition.builder(DamageSourcePredicate.Builder.create().isDirect(true))
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.HIT_BLOCK,

@@ -224,7 +224,7 @@ public class ProtoChunk extends Chunk {
 
 	@Override
 	public RegistryEntry<Biome> getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-		if (this.method_51526().isAtLeast(ChunkStatus.BIOMES)) {
+		if (this.getMaxStatus().isAtLeast(ChunkStatus.BIOMES)) {
 			return super.getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
 		} else {
 			throw new IllegalStateException("Asking for biomes before we have biomes");

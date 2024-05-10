@@ -33,7 +33,7 @@ public record ReplaceDiscEnchantmentEffectType(
 					Vec3i.CODEC.optionalFieldOf("offset", Vec3i.ZERO).forGetter(ReplaceDiscEnchantmentEffectType::offset),
 					BlockPredicate.BASE_CODEC.optionalFieldOf("predicate").forGetter(ReplaceDiscEnchantmentEffectType::predicate),
 					BlockStateProvider.TYPE_CODEC.fieldOf("block_state").forGetter(ReplaceDiscEnchantmentEffectType::blockState),
-					GameEvent.field_51910.optionalFieldOf("trigger_game_event").forGetter(ReplaceDiscEnchantmentEffectType::triggerGameEvent)
+					GameEvent.CODEC.optionalFieldOf("trigger_game_event").forGetter(ReplaceDiscEnchantmentEffectType::triggerGameEvent)
 				)
 				.apply(instance, ReplaceDiscEnchantmentEffectType::new)
 	);
@@ -49,7 +49,7 @@ public record ReplaceDiscEnchantmentEffectType(
 			if (blockPos2.getSquaredDistanceFromCenter(pos.getX(), (double)blockPos2.getY() + 0.5, pos.getZ()) < (double)MathHelper.square(i)
 				&& (Boolean)this.predicate.map(predicate -> predicate.test(world, blockPos2)).orElse(true)
 				&& world.setBlockState(blockPos2, this.blockState.get(random, blockPos2))) {
-				this.triggerGameEvent.ifPresent(registryEntry -> world.emitGameEvent(user, registryEntry, blockPos2));
+				this.triggerGameEvent.ifPresent(gameEvent -> world.emitGameEvent(user, gameEvent, blockPos2));
 			}
 		}
 	}

@@ -24,7 +24,7 @@ public interface EnchantmentValueEffectType {
 		return Registry.register(registry, "set", SetEnchantmentEffectType.CODEC);
 	}
 
-	float apply(int i, Random random, float f);
+	float apply(int level, Random random, float inputValue);
 
 	MapCodec<? extends EnchantmentValueEffectType> getCodec();
 }

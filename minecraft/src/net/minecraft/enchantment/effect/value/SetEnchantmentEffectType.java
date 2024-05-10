@@ -13,8 +13,8 @@ public record SetEnchantmentEffectType(EnchantmentLevelBasedValueType value) imp
 	);
 
 	@Override
-	public float apply(int i, Random random, float f) {
-		return this.value.getValue(i);
+	public float apply(int level, Random random, float inputValue) {
+		return this.value.getValue(level);
 	}
 
 	@Override

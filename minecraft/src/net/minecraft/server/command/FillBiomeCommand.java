@@ -137,7 +137,7 @@ public class FillBiomeCommand {
 				chunk.setNeedsSaving(true);
 			}
 
-			world.getChunkManager().threadedAnvilChunkStorage.sendChunkBiomePackets(list);
+			world.getChunkManager().chunkLoadingManager.sendChunkBiomePackets(list);
 			feedbackConsumer.accept(
 				(Supplier)() -> Text.translatable(
 						"commands.fillbiome.success.count",

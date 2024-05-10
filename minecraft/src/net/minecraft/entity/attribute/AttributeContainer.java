@@ -21,27 +21,27 @@ import org.slf4j.Logger;
 public class AttributeContainer {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Map<RegistryEntry<EntityAttribute>, EntityAttributeInstance> custom = new Object2ObjectOpenHashMap<>();
-	private final Set<EntityAttributeInstance> field_51889 = new ObjectOpenHashSet<>();
-	private final Set<EntityAttributeInstance> field_51890 = new ObjectOpenHashSet<>();
+	private final Set<EntityAttributeInstance> tracked = new ObjectOpenHashSet<>();
+	private final Set<EntityAttributeInstance> pendingUpdate = new ObjectOpenHashSet<>();
 	private final DefaultAttributeContainer fallback;
 
-	public AttributeContainer(DefaultAttributeContainer defaultAttributeContainer) {
-		this.fallback = defaultAttributeContainer;
+	public AttributeContainer(DefaultAttributeContainer defaultAttributes) {
+		this.fallback = defaultAttributes;
 	}
 
-	private void updateTrackedStatus(EntityAttributeInstance entityAttributeInstance) {
-		this.field_51890.add(entityAttributeInstance);
-		if (entityAttributeInstance.getAttribute().value().isTracked()) {
-			this.field_51889.add(entityAttributeInstance);
+	private void updateTrackedStatus(EntityAttributeInstance instance) {
+		this.pendingUpdate.add(instance);
+		if (instance.getAttribute().value().isTracked()) {
+			this.tracked.add(instance);
 		}
 	}
 
-	public Set<EntityAttributeInstance> method_60497() {
-		return this.field_51889;
+	public Set<EntityAttributeInstance> getTracked() {
+		return this.tracked;
 	}
 
-	public Set<EntityAttributeInstance> method_60498() {
-		return this.field_51890;
+	public Set<EntityAttributeInstance> getPendingUpdate() {
+		return this.pendingUpdate;
 	}
 
 	public Collection<EntityAttributeInstance> getAttributesToSend() {

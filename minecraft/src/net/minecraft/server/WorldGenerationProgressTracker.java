@@ -29,7 +29,7 @@ public class WorldGenerationProgressTracker implements WorldGenerationProgressLi
 	public static WorldGenerationProgressTracker forSpawnChunks(int spawnChunkRadius) {
 		WorldGenerationProgressLogger worldGenerationProgressLogger = WorldGenerationProgressLogger.forSpawnChunks(spawnChunkRadius);
 		int i = WorldGenerationProgressListener.getStartRegionSize(spawnChunkRadius);
-		int j = spawnChunkRadius + ChunkLevels.field_51859;
+		int j = spawnChunkRadius + ChunkLevels.FULL_GENERATION_REQUIRED_LEVEL;
 		int k = WorldGenerationProgressListener.getStartRegionSize(j);
 		return new WorldGenerationProgressTracker(worldGenerationProgressLogger, i, j, k);
 	}

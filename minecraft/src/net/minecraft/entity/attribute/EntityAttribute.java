@@ -16,7 +16,7 @@ public class EntityAttribute {
 	private final double fallback;
 	private boolean tracked;
 	private final String translationKey;
-	private EntityAttribute.class_9764 field_51884 = EntityAttribute.class_9764.POSITIVE;
+	private EntityAttribute.Category category = EntityAttribute.Category.POSITIVE;
 
 	protected EntityAttribute(String translationKey, double fallback) {
 		this.fallback = fallback;
@@ -42,8 +42,8 @@ public class EntityAttribute {
 		return this;
 	}
 
-	public EntityAttribute method_60493(EntityAttribute.class_9764 arg) {
-		this.field_51884 = arg;
+	public EntityAttribute setCategory(EntityAttribute.Category category) {
+		this.category = category;
 		return this;
 	}
 
@@ -55,20 +55,20 @@ public class EntityAttribute {
 		return this.translationKey;
 	}
 
-	public Formatting method_60494(boolean bl) {
-		return this.field_51884.method_60496(bl);
+	public Formatting getFormatting(boolean addition) {
+		return this.category.getFormatting(addition);
 	}
 
-	public static enum class_9764 {
+	public static enum Category {
 		POSITIVE,
 		NEUTRAL,
 		NEGATIVE;
 
-		public Formatting method_60496(boolean bl) {
+		public Formatting getFormatting(boolean addition) {
 			return switch (this) {
-				case POSITIVE -> bl ? Formatting.BLUE : Formatting.RED;
+				case POSITIVE -> addition ? Formatting.BLUE : Formatting.RED;
 				case NEUTRAL -> Formatting.GRAY;
-				case NEGATIVE -> bl ? Formatting.RED : Formatting.BLUE;
+				case NEGATIVE -> addition ? Formatting.RED : Formatting.BLUE;
 			};
 		}
 	}

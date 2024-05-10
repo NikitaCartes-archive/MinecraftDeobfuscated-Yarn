@@ -32,7 +32,7 @@ public class GameTestDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private void renderMarker(MatrixStack matrices, VertexConsumerProvider vertexConsumers, BlockPos pos, GameTestDebugRenderer.Marker marker) {
-		DebugRenderer.drawBox(matrices, vertexConsumers, pos, 0.02F, marker.getBlue(), marker.getGreen(), marker.getAlpha(), marker.getRed() * 0.75F);
+		DebugRenderer.drawBox(matrices, vertexConsumers, pos, 0.02F, marker.getRed(), marker.getBlue(), marker.getGreen(), marker.getAlpha() * 0.75F);
 		if (!marker.message.isEmpty()) {
 			double d = (double)pos.getX() + 0.5;
 			double e = (double)pos.getY() + 1.2;
@@ -53,19 +53,19 @@ public class GameTestDebugRenderer implements DebugRenderer.Renderer {
 			this.removalTime = removalTime;
 		}
 
-		public float getBlue() {
+		public float getRed() {
 			return (float)(this.color >> 16 & 0xFF) / 255.0F;
 		}
 
-		public float getGreen() {
+		public float getBlue() {
 			return (float)(this.color >> 8 & 0xFF) / 255.0F;
 		}
 
-		public float getAlpha() {
+		public float getGreen() {
 			return (float)(this.color & 0xFF) / 255.0F;
 		}
 
-		public float getRed() {
+		public float getAlpha() {
 			return (float)(this.color >> 24 & 0xFF) / 255.0F;
 		}
 	}

@@ -234,7 +234,7 @@ public class TadpoleEntity extends FishEntity {
 				}
 
 				frogEntity.setPersistent();
-				frogEntity.method_60490(this.getDimensions(this.getPose()));
+				frogEntity.recalculateDimensions(this.getDimensions(this.getPose()));
 				this.playSound(SoundEvents.ENTITY_TADPOLE_GROW_UP, 0.15F, 1.0F);
 				serverWorld.spawnEntityAndPassengers(frogEntity);
 				this.discard();

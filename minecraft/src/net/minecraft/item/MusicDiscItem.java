@@ -43,7 +43,7 @@ public class MusicDiscItem extends Item {
 			ItemStack itemStack = context.getStack();
 			if (!world.isClient) {
 				PlayerEntity playerEntity = context.getPlayer();
-				ItemStack itemStack2 = itemStack.method_60504(1, playerEntity);
+				ItemStack itemStack2 = itemStack.splitUnlessCreative(1, playerEntity);
 				if (world.getBlockEntity(blockPos) instanceof JukeboxBlockEntity jukeboxBlockEntity) {
 					jukeboxBlockEntity.setStack(itemStack2);
 					world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(playerEntity, blockState));

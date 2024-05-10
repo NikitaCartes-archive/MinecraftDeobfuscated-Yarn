@@ -32,6 +32,7 @@ import net.minecraft.network.packet.PacketType;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
+import net.minecraft.util.function.Finishable;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.profiling.jfr.event.ChunkGenerationEvent;
 import net.minecraft.util.profiling.jfr.event.ChunkRegionReadEvent;

@@ -467,7 +467,7 @@ public abstract class RecipeProvider implements DataProvider {
 	}
 
 	protected static void offerStonecuttingRecipe(RecipeExporter exporter, RecipeCategory category, ItemConvertible output, ItemConvertible input, int count) {
-		SingleItemRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(input), category, output, count)
+		StonecuttingRecipeJsonBuilder.createStonecutting(Ingredient.ofItems(input), category, output, count)
 			.criterion(hasItem(input), conditionsFromItem(input))
 			.offerTo(exporter, convertBetween(output, input) + "_stonecutting");
 	}

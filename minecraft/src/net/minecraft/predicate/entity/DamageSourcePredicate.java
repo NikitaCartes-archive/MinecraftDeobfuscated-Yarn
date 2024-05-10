@@ -42,7 +42,7 @@ public record DamageSourcePredicate(
 		} else {
 			return this.sourceEntity.isPresent() && !((EntityPredicate)this.sourceEntity.get()).test(world, pos, damageSource.getAttacker())
 				? false
-				: !this.isDirect.isPresent() || (Boolean)this.isDirect.get() == damageSource.method_60489();
+				: !this.isDirect.isPresent() || (Boolean)this.isDirect.get() == damageSource.isDirect();
 		}
 	}
 
@@ -50,7 +50,7 @@ public record DamageSourcePredicate(
 		private final ImmutableList.Builder<TagPredicate<DamageType>> tagPredicates = ImmutableList.builder();
 		private Optional<EntityPredicate> directEntity = Optional.empty();
 		private Optional<EntityPredicate> sourceEntity = Optional.empty();
-		private Optional<Boolean> field_51883 = Optional.empty();
+		private Optional<Boolean> isDirect = Optional.empty();
 
 		public static DamageSourcePredicate.Builder create() {
 			return new DamageSourcePredicate.Builder();
@@ -71,13 +71,13 @@ public record DamageSourcePredicate(
 			return this;
 		}
 
-		public DamageSourcePredicate.Builder method_60488(boolean bl) {
-			this.field_51883 = Optional.of(bl);
+		public DamageSourcePredicate.Builder isDirect(boolean direct) {
+			this.isDirect = Optional.of(direct);
 			return this;
 		}
 
 		public DamageSourcePredicate build() {
-			return new DamageSourcePredicate(this.tagPredicates.build(), this.directEntity, this.sourceEntity, this.field_51883);
+			return new DamageSourcePredicate(this.tagPredicates.build(), this.directEntity, this.sourceEntity, this.isDirect);
 		}
 	}
 }

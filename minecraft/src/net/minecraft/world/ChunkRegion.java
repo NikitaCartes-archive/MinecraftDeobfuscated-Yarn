@@ -8,9 +8,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.class_9761;
-import net.minecraft.class_9762;
-import net.minecraft.class_9770;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -33,6 +30,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.Util;
+import net.minecraft.util.collection.BoundedRegionArray;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -47,7 +45,9 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.chunk.AbstractChunkHolder;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkGenerationStep;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.ChunkType;
@@ -60,7 +60,7 @@ import org.slf4j.Logger;
 
 public class ChunkRegion implements StructureWorldAccess {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final class_9762<class_9761> chunks;
+	private final BoundedRegionArray<AbstractChunkHolder> chunks;
 	private final Chunk centerPos;
 	private final ServerWorld world;
 	private final long seed;
@@ -70,16 +70,16 @@ public class ChunkRegion implements StructureWorldAccess {
 	private final MultiTickScheduler<Block> blockTickScheduler = new MultiTickScheduler<>(pos -> this.getChunk(pos).getBlockTickScheduler());
 	private final MultiTickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<>(pos -> this.getChunk(pos).getFluidTickScheduler());
 	private final BiomeAccess biomeAccess;
-	private final class_9770 field_51876;
+	private final ChunkGenerationStep generationStep;
 	@Nullable
 	private Supplier<String> currentlyGeneratingStructureName;
 	private final AtomicLong tickOrder = new AtomicLong();
 	private static final Identifier WORLDGEN_REGION_RANDOM_ID = new Identifier("worldgen_region_random");
 
-	public ChunkRegion(ServerWorld world, class_9762<class_9761> arg, class_9770 arg2, Chunk chunk) {
-		this.field_51876 = arg2;
-		this.chunks = arg;
-		this.centerPos = chunk;
+	public ChunkRegion(ServerWorld world, BoundedRegionArray<AbstractChunkHolder> chunks, ChunkGenerationStep generationStep, Chunk centerPos) {
+		this.generationStep = generationStep;
+		this.chunks = chunks;
+		this.centerPos = centerPos;
 		this.world = world;
 		this.seed = world.getSeed();
 		this.levelProperties = world.getLevelProperties();
@@ -89,7 +89,7 @@ public class ChunkRegion implements StructureWorldAccess {
 	}
 
 	public boolean needsBlending(ChunkPos chunkPos, int checkRadius) {
-		return this.world.getChunkManager().threadedAnvilChunkStorage.needsBlending(chunkPos, checkRadius);
+		return this.world.getChunkManager().chunkLoadingManager.needsBlending(chunkPos, checkRadius);
 	}
 
 	public ChunkPos getCenterPos() {
@@ -109,19 +109,19 @@ public class ChunkRegion implements StructureWorldAccess {
 	@Nullable
 	@Override
 	public Chunk getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
-		int i = this.centerPos.getPos().method_60510(chunkX, chunkZ);
-		ChunkStatus chunkStatus = i >= this.field_51876.directDependencies().method_60516() ? null : this.field_51876.directDependencies().method_60514(i);
-		class_9761 lv;
+		int i = this.centerPos.getPos().getChebyshevDistance(chunkX, chunkZ);
+		ChunkStatus chunkStatus = i >= this.generationStep.directDependencies().size() ? null : this.generationStep.directDependencies().get(i);
+		AbstractChunkHolder abstractChunkHolder;
 		if (chunkStatus != null) {
-			lv = this.chunks.method_60482(chunkX, chunkZ);
-			if (leastStatus.method_60548(chunkStatus)) {
-				Chunk chunk = lv.method_60457(chunkStatus);
+			abstractChunkHolder = this.chunks.get(chunkX, chunkZ);
+			if (leastStatus.isAtMost(chunkStatus)) {
+				Chunk chunk = abstractChunkHolder.getUncheckedOrNull(chunkStatus);
 				if (chunk != null) {
 					return chunk;
 				}
 			}
 		} else {
-			lv = null;
+			abstractChunkHolder = null;
 		}
 
 		CrashReport crashReport = CrashReport.create(
@@ -129,11 +129,13 @@ public class ChunkRegion implements StructureWorldAccess {
 		);
 		CrashReportSection crashReportSection = crashReport.addElement("Chunk request details");
 		crashReportSection.add("Requested chunk", String.format(Locale.ROOT, "%d, %d", chunkX, chunkZ));
-		crashReportSection.add("Generating status", (CrashCallable<String>)(() -> this.field_51876.targetStatus().method_60550()));
-		crashReportSection.add("Requested status", leastStatus::method_60550);
-		crashReportSection.add("Actual status", (CrashCallable<String>)(() -> lv == null ? "[out of cache bounds]" : lv.method_60472().method_60550()));
-		crashReportSection.add("Maximum allowed status", (CrashCallable<String>)(() -> chunkStatus == null ? "null" : chunkStatus.method_60550()));
-		crashReportSection.add("Dependencies", this.field_51876.directDependencies()::toString);
+		crashReportSection.add("Generating status", (CrashCallable<String>)(() -> this.generationStep.targetStatus().getId()));
+		crashReportSection.add("Requested status", leastStatus::getId);
+		crashReportSection.add(
+			"Actual status", (CrashCallable<String>)(() -> abstractChunkHolder == null ? "[out of cache bounds]" : abstractChunkHolder.getActualStatus().getId())
+		);
+		crashReportSection.add("Maximum allowed status", (CrashCallable<String>)(() -> chunkStatus == null ? "null" : chunkStatus.getId()));
+		crashReportSection.add("Dependencies", this.generationStep.directDependencies()::toString);
 		crashReportSection.add("Requested distance", i);
 		crashReportSection.add("Generating chunk", this.centerPos.getPos()::toString);
 		throw new CrashException(crashReport);
@@ -141,8 +143,8 @@ public class ChunkRegion implements StructureWorldAccess {
 
 	@Override
 	public boolean isChunkLoaded(int chunkX, int chunkZ) {
-		int i = this.centerPos.getPos().method_60510(chunkX, chunkZ);
-		return i < this.field_51876.directDependencies().method_60516();
+		int i = this.centerPos.getPos().getChebyshevDistance(chunkX, chunkZ);
+		return i < this.generationStep.directDependencies().size();
 	}
 
 	@Override
@@ -243,7 +245,7 @@ public class ChunkRegion implements StructureWorldAccess {
 		ChunkPos chunkPos = this.getCenterPos();
 		int k = Math.abs(chunkPos.x - i);
 		int l = Math.abs(chunkPos.z - j);
-		if (k <= this.field_51876.blockStateWriteRadius() && l <= this.field_51876.blockStateWriteRadius()) {
+		if (k <= this.generationStep.blockStateWriteRadius() && l <= this.generationStep.blockStateWriteRadius()) {
 			if (this.centerPos.hasBelowZeroRetrogen()) {
 				HeightLimitView heightLimitView = this.centerPos.getHeightLimitView();
 				if (pos.getY() < heightLimitView.getBottomY() || pos.getY() >= heightLimitView.getTopY()) {
@@ -261,7 +263,7 @@ public class ChunkRegion implements StructureWorldAccess {
 					+ "], pos: "
 					+ pos
 					+ ", status: "
-					+ this.field_51876.targetStatus()
+					+ this.generationStep.targetStatus()
 					+ (this.currentlyGeneratingStructureName == null ? "" : ", currently generating: " + (String)this.currentlyGeneratingStructureName.get())
 			);
 			return false;

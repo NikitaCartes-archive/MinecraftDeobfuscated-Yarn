@@ -416,7 +416,7 @@ public class EnderDragonFight {
 			FeatureConfig.DEFAULT, this.world, this.world.getChunkManager().getChunkGenerator(), Random.create(), this.exitPortalLocation
 		)) {
 			int i = MathHelper.ceilDiv(4, 16);
-			this.world.getChunkManager().threadedAnvilChunkStorage.forceLighting(new ChunkPos(this.exitPortalLocation), i);
+			this.world.getChunkManager().chunkLoadingManager.forceLighting(new ChunkPos(this.exitPortalLocation), i);
 		}
 	}
 

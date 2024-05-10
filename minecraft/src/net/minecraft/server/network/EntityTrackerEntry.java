@@ -185,7 +185,7 @@ public class EntityTrackerEntry {
 									new BundleS2CPacket(
 										List.of(
 											new EntityVelocityUpdateS2CPacket(this.entity.getId(), this.velocity),
-											new ProjectilePowerS2CPacket(explosiveProjectileEntity.getId(), explosiveProjectileEntity.field_51893)
+											new ProjectilePowerS2CPacket(explosiveProjectileEntity.getId(), explosiveProjectileEntity.accelerationPower)
 										)
 									)
 								);
@@ -313,7 +313,7 @@ public class EntityTrackerEntry {
 		}
 
 		if (this.entity instanceof LivingEntity) {
-			Set<EntityAttributeInstance> set = ((LivingEntity)this.entity).getAttributes().method_60497();
+			Set<EntityAttributeInstance> set = ((LivingEntity)this.entity).getAttributes().getTracked();
 			if (!set.isEmpty()) {
 				this.sendSyncPacket(new EntityAttributesS2CPacket(this.entity.getId(), set));
 			}

@@ -49,38 +49,38 @@ public class ItemDispenserBehavior implements DispenserBehavior {
 	}
 
 	protected void playSound(BlockPointer pointer) {
-		method_60578(pointer);
+		syncDispensesEvent(pointer);
 	}
 
 	protected void spawnParticles(BlockPointer pointer, Direction side) {
-		method_60580(pointer, side);
+		syncActivatesEvent(pointer, side);
 	}
 
-	private static void method_60578(BlockPointer blockPointer) {
-		blockPointer.world().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, blockPointer.pos(), 0);
+	private static void syncDispensesEvent(BlockPointer pointer) {
+		pointer.world().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.pos(), 0);
 	}
 
-	private static void method_60580(BlockPointer blockPointer, Direction direction) {
-		blockPointer.world().syncWorldEvent(WorldEvents.DISPENSER_ACTIVATED, blockPointer.pos(), direction.getId());
+	private static void syncActivatesEvent(BlockPointer pointer, Direction side) {
+		pointer.world().syncWorldEvent(WorldEvents.DISPENSER_ACTIVATED, pointer.pos(), side.getId());
 	}
 
-	protected ItemStack method_60577(BlockPointer blockPointer, ItemStack itemStack, ItemStack itemStack2) {
-		itemStack.decrement(1);
-		if (itemStack.isEmpty()) {
-			return itemStack2;
+	protected ItemStack decrementStackWithRemainder(BlockPointer pointer, ItemStack stack, ItemStack remainder) {
+		stack.decrement(1);
+		if (stack.isEmpty()) {
+			return remainder;
 		} else {
-			this.method_60579(blockPointer, itemStack2);
-			return itemStack;
+			this.addStackOrSpawn(pointer, remainder);
+			return stack;
 		}
 	}
 
-	private void method_60579(BlockPointer blockPointer, ItemStack itemStack) {
-		ItemStack itemStack2 = blockPointer.blockEntity().addToFirstFreeSlot(itemStack);
-		if (!itemStack2.isEmpty()) {
-			Direction direction = blockPointer.state().get(DispenserBlock.FACING);
-			spawnItem(blockPointer.world(), itemStack2, 6, direction, DispenserBlock.getOutputLocation(blockPointer));
-			method_60578(blockPointer);
-			method_60580(blockPointer, direction);
+	private void addStackOrSpawn(BlockPointer pointer, ItemStack stack) {
+		ItemStack itemStack = pointer.blockEntity().addToFirstFreeSlot(stack);
+		if (!itemStack.isEmpty()) {
+			Direction direction = pointer.state().get(DispenserBlock.FACING);
+			spawnItem(pointer.world(), itemStack, 6, direction, DispenserBlock.getOutputLocation(pointer));
+			syncDispensesEvent(pointer);
+			syncActivatesEvent(pointer, direction);
 		}
 	}
 }

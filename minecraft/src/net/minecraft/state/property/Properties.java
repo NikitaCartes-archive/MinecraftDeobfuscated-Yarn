@@ -10,7 +10,7 @@ import net.minecraft.block.enums.ChestType;
 import net.minecraft.block.enums.ComparatorMode;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.enums.Orientation;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.block.enums.RailShape;
@@ -445,7 +445,7 @@ public class Properties {
 	/**
 	 * A property that specifies what instrument a note block will play.
 	 */
-	public static final EnumProperty<Instrument> INSTRUMENT = EnumProperty.of("instrument", Instrument.class);
+	public static final EnumProperty<NoteBlockInstrument> INSTRUMENT = EnumProperty.of("instrument", NoteBlockInstrument.class);
 	/**
 	 * A property that specifies the type of a piston.
 	 */

@@ -233,7 +233,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private SculkShriekerWarningManager sculkShriekerWarningManager = new SculkShriekerWarningManager(0, 0, 0);
 	@Nullable
 	private BlockPos startRaidPos;
-	private Vec3d field_51875 = Vec3d.ZERO;
+	private Vec3d particleVelocity = Vec3d.ZERO;
 	private final ScreenHandlerSyncHandler screenHandlerSyncHandler = new ScreenHandlerSyncHandler() {
 		@Override
 		public void updateState(ScreenHandler handler, DefaultedList<ItemStack> stacks, ItemStack cursorStack, int[] properties) {
@@ -1950,12 +1950,12 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public void setOnGround(boolean onGround, Vec3d movement) {
 		super.setOnGround(onGround, movement);
-		this.field_51875 = movement;
+		this.particleVelocity = movement;
 	}
 
 	@Override
-	public Vec3d method_60478() {
-		return this.field_51875;
+	public Vec3d getParticleVelocity() {
+		return this.particleVelocity;
 	}
 
 	@Override

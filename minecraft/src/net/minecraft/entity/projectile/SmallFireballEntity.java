@@ -21,12 +21,12 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 		super(entityType, world);
 	}
 
-	public SmallFireballEntity(World world, LivingEntity owner, Vec3d vec3d) {
-		super(EntityType.SMALL_FIREBALL, owner, vec3d, world);
+	public SmallFireballEntity(World world, LivingEntity owner, Vec3d velocity) {
+		super(EntityType.SMALL_FIREBALL, owner, velocity, world);
 	}
 
-	public SmallFireballEntity(World world, double x, double y, double z, Vec3d vec3d) {
-		super(EntityType.SMALL_FIREBALL, x, y, z, vec3d, world);
+	public SmallFireballEntity(World world, double x, double y, double z, Vec3d velocity) {
+		super(EntityType.SMALL_FIREBALL, x, y, z, velocity, world);
 	}
 
 	@Override

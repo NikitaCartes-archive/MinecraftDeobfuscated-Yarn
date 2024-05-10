@@ -7,12 +7,12 @@ import com.mojang.serialization.MapCodec;
 import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.Bootstrap;
-import net.minecraft.class_9766;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockTypes;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.DecoratedPotPattern;
 import net.minecraft.block.DecoratedPotPatterns;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.command.argument.ArgumentTypes;
@@ -224,7 +224,9 @@ public class Registries {
 	public static final Registry<CatVariant> CAT_VARIANT = create(RegistryKeys.CAT_VARIANT, CatVariant::registerAndGetDefault);
 	public static final Registry<FrogVariant> FROG_VARIANT = create(RegistryKeys.FROG_VARIANT, FrogVariant::registerAndGetDefault);
 	public static final Registry<Instrument> INSTRUMENT = create(RegistryKeys.INSTRUMENT, Instruments::registerAndGetDefault);
-	public static final Registry<class_9766> DECORATED_POT_PATTERN = create(RegistryKeys.DECORATED_POT_PATTERN, DecoratedPotPatterns::registerAndGetDefault);
+	public static final Registry<DecoratedPotPattern> DECORATED_POT_PATTERN = create(
+		RegistryKeys.DECORATED_POT_PATTERN, DecoratedPotPatterns::registerAndGetDefault
+	);
 	public static final Registry<ItemGroup> ITEM_GROUP = create(RegistryKeys.ITEM_GROUP, ItemGroups::registerAndGetDefault);
 	public static final Registry<Criterion<?>> CRITERION = create(RegistryKeys.CRITERION, Criteria::getDefault);
 	public static final Registry<NumberFormatType<?>> NUMBER_FORMAT_TYPE = create(RegistryKeys.NUMBER_FORMAT_TYPE, NumberFormatTypes::registerAndGetDefault);

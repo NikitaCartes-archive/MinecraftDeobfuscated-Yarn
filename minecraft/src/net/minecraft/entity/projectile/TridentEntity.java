@@ -141,7 +141,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 	}
 
 	@Override
-	protected ItemStack getShotFromStack() {
+	protected ItemStack getWeaponStack() {
 		return this.getItemStack();
 	}
 

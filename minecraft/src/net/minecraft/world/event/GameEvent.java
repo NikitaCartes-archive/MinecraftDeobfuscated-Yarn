@@ -75,7 +75,7 @@ public record GameEvent(int notificationRadius) {
 	public static final RegistryEntry.Reference<GameEvent> RESONATE_14 = register("resonate_14");
 	public static final RegistryEntry.Reference<GameEvent> RESONATE_15 = register("resonate_15");
 	public static final int DEFAULT_RANGE = 16;
-	public static final Codec<RegistryEntry<GameEvent>> field_51910 = RegistryFixedCodec.of(RegistryKeys.GAME_EVENT);
+	public static final Codec<RegistryEntry<GameEvent>> CODEC = RegistryFixedCodec.of(RegistryKeys.GAME_EVENT);
 
 	public static RegistryEntry<GameEvent> registerAndGetDefault(Registry<GameEvent> registry) {
 		return BLOCK_ACTIVATE;

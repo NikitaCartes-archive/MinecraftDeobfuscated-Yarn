@@ -739,8 +739,8 @@ public final class ItemStack implements ComponentHolder {
 		}
 	}
 
-	public ItemStack method_60503(ItemConvertible itemConvertible) {
-		return this.copyComponentsToNewStack(itemConvertible, this.getCount());
+	public ItemStack withItem(ItemConvertible item) {
+		return this.copyComponentsToNewStack(item, this.getCount());
 	}
 
 	/**
@@ -1134,7 +1134,7 @@ public final class ItemStack implements ComponentHolder {
 						AttributeModifiersComponent.DECIMAL_FORMAT.format(e),
 						Text.translatable(attribute.value().getTranslationKey())
 					)
-					.formatted(attribute.value().method_60494(true))
+					.formatted(attribute.value().getFormatting(true))
 			);
 		} else if (d < 0.0) {
 			textConsumer.accept(
@@ -1143,7 +1143,7 @@ public final class ItemStack implements ComponentHolder {
 						AttributeModifiersComponent.DECIMAL_FORMAT.format(-e),
 						Text.translatable(attribute.value().getTranslationKey())
 					)
-					.formatted(attribute.value().method_60494(false))
+					.formatted(attribute.value().getFormatting(false))
 			);
 		}
 	}
@@ -1362,9 +1362,9 @@ public final class ItemStack implements ComponentHolder {
 		}
 	}
 
-	public ItemStack method_60504(int i, @Nullable LivingEntity livingEntity) {
-		ItemStack itemStack = this.copyWithCount(i);
-		this.decrementUnlessCreative(i, livingEntity);
+	public ItemStack splitUnlessCreative(int amount, @Nullable LivingEntity entity) {
+		ItemStack itemStack = this.copyWithCount(amount);
+		this.decrementUnlessCreative(amount, entity);
 		return itemStack;
 	}
 

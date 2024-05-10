@@ -105,7 +105,7 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 				if (!stack.isEmpty() && (itemStack.isEmpty() || ItemStack.areItemsAndComponentsEqual(itemStack, stack) && itemStack.getCount() < itemStack.getMaxCount())) {
 					decoratedPotBlockEntity.wobble(DecoratedPotBlockEntity.WobbleType.POSITIVE);
 					player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
-					ItemStack itemStack2 = stack.method_60504(1, player);
+					ItemStack itemStack2 = stack.splitUnlessCreative(1, player);
 					float f;
 					if (decoratedPotBlockEntity.isEmpty()) {
 						decoratedPotBlockEntity.setStack(itemStack2);

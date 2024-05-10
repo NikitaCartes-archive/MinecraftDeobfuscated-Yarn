@@ -165,14 +165,14 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 			: this.matchGetter.getFirstMatch(new SingleStackRecipeInput(stack), this.world);
 	}
 
-	public boolean addItem(@Nullable LivingEntity livingEntity, ItemStack stack, int cookTime) {
+	public boolean addItem(@Nullable LivingEntity user, ItemStack stack, int cookTime) {
 		for (int i = 0; i < this.itemsBeingCooked.size(); i++) {
 			ItemStack itemStack = this.itemsBeingCooked.get(i);
 			if (itemStack.isEmpty()) {
 				this.cookingTotalTimes[i] = cookTime;
 				this.cookingTimes[i] = 0;
-				this.itemsBeingCooked.set(i, stack.method_60504(1, livingEntity));
-				this.world.emitGameEvent(GameEvent.BLOCK_CHANGE, this.getPos(), GameEvent.Emitter.of(livingEntity, this.getCachedState()));
+				this.itemsBeingCooked.set(i, stack.splitUnlessCreative(1, user));
+				this.world.emitGameEvent(GameEvent.BLOCK_CHANGE, this.getPos(), GameEvent.Emitter.of(user, this.getCachedState()));
 				this.updateListeners();
 				return true;
 			}

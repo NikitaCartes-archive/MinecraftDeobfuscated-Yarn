@@ -115,7 +115,7 @@ public abstract class ChunkTicketManager {
 	 * <li>Special updates of chunks with PLAYER tickets added recently.</li>
 	 * </ul>
 	 */
-	public boolean update(ThreadedAnvilChunkStorage threadedAnvilChunkStorage) {
+	public boolean update(ServerChunkLoadingManager chunkLoadingManager) {
 		this.distanceFromNearestPlayerTracker.updateLevels();
 		this.simulationDistanceTracker.updateLevels();
 		this.nearbyChunkTicketUpdater.updateLevels();
@@ -125,8 +125,8 @@ public abstract class ChunkTicketManager {
 		}
 
 		if (!this.chunkHoldersWithPendingUpdates.isEmpty()) {
-			this.chunkHoldersWithPendingUpdates.forEach(chunkHolderx -> chunkHolderx.method_60454(threadedAnvilChunkStorage));
-			this.chunkHoldersWithPendingUpdates.forEach(holder -> holder.updateFutures(threadedAnvilChunkStorage, this.mainThreadExecutor));
+			this.chunkHoldersWithPendingUpdates.forEach(holder -> holder.updateStatus(chunkLoadingManager));
+			this.chunkHoldersWithPendingUpdates.forEach(holder -> holder.updateFutures(chunkLoadingManager, this.mainThreadExecutor));
 			this.chunkHoldersWithPendingUpdates.clear();
 			return true;
 		} else {
@@ -136,7 +136,7 @@ public abstract class ChunkTicketManager {
 				while (longIterator.hasNext()) {
 					long l = longIterator.nextLong();
 					if (this.getTicketSet(l).stream().anyMatch(ticket -> ticket.getType() == ChunkTicketType.PLAYER)) {
-						ChunkHolder chunkHolder = threadedAnvilChunkStorage.getCurrentChunkHolder(l);
+						ChunkHolder chunkHolder = chunkLoadingManager.getCurrentChunkHolder(l);
 						if (chunkHolder == null) {
 							throw new IllegalStateException();
 						}
@@ -207,7 +207,7 @@ public abstract class ChunkTicketManager {
 	}
 
 	protected void setChunkForced(ChunkPos pos, boolean forced) {
-		ChunkTicket<ChunkPos> chunkTicket = new ChunkTicket<>(ChunkTicketType.FORCED, ThreadedAnvilChunkStorage.field_29670, pos);
+		ChunkTicket<ChunkPos> chunkTicket = new ChunkTicket<>(ChunkTicketType.FORCED, ServerChunkLoadingManager.field_29670, pos);
 		long l = pos.toLong();
 		if (forced) {
 			this.addTicket(l, chunkTicket);

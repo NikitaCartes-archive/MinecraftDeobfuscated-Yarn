@@ -64,8 +64,8 @@ public class SubtitlesHud implements SoundInstanceListener {
 
 				while (iterator.hasNext()) {
 					SubtitlesHud.SubtitleEntry subtitleEntry2 = (SubtitlesHud.SubtitleEntry)iterator.next();
-					subtitleEntry2.method_60570(3000.0 * d);
-					if (!subtitleEntry2.method_60574()) {
+					subtitleEntry2.removeExpired(3000.0 * d);
+					if (!subtitleEntry2.hasSounds()) {
 						iterator.remove();
 					} else {
 						j = Math.max(j, this.client.textRenderer.getWidth(subtitleEntry2.getText()));
@@ -80,9 +80,9 @@ public class SubtitlesHud implements SoundInstanceListener {
 				for (SubtitlesHud.SubtitleEntry subtitleEntry2 : this.audibleEntries) {
 					int k = 255;
 					Text text = subtitleEntry2.getText();
-					SubtitlesHud.class_9772 lv = subtitleEntry2.method_60572(vec3d);
-					if (lv != null) {
-						Vec3d vec3d4 = lv.location.subtract(vec3d).normalize();
+					SubtitlesHud.SoundEntry soundEntry = subtitleEntry2.getNearestSound(vec3d);
+					if (soundEntry != null) {
+						Vec3d vec3d4 = soundEntry.location.subtract(vec3d).normalize();
 						double e = vec3d3.dotProduct(vec3d4);
 						double f = vec3d2.dotProduct(vec3d4);
 						boolean bl = f > 0.5;
@@ -91,7 +91,7 @@ public class SubtitlesHud implements SoundInstanceListener {
 						int n = m / 2;
 						float g = 1.0F;
 						int o = this.client.textRenderer.getWidth(text);
-						int p = MathHelper.floor(MathHelper.clampedLerp(255.0F, 75.0F, (float)(Util.getMeasuringTimeMs() - lv.time) / (float)(3000.0 * d)));
+						int p = MathHelper.floor(MathHelper.clampedLerp(255.0F, 75.0F, (float)(Util.getMeasuringTimeMs() - soundEntry.time) / (float)(3000.0 * d)));
 						int q = p << 16 | p << 8 | p;
 						context.getMatrices().push();
 						context.getMatrices()
@@ -136,15 +136,19 @@ public class SubtitlesHud implements SoundInstanceListener {
 	}
 
 	@Environment(EnvType.CLIENT)
+	static record SoundEntry(Vec3d location, long time) {
+	}
+
+	@Environment(EnvType.CLIENT)
 	static class SubtitleEntry {
 		private final Text text;
 		private final float range;
-		private final List<SubtitlesHud.class_9772> field_51913 = new ArrayList();
+		private final List<SubtitlesHud.SoundEntry> sounds = new ArrayList();
 
 		public SubtitleEntry(Text text, float range, Vec3d pos) {
 			this.text = text;
 			this.range = range;
-			this.field_51913.add(new SubtitlesHud.class_9772(pos, Util.getMeasuringTimeMs()));
+			this.sounds.add(new SubtitlesHud.SoundEntry(pos, Util.getMeasuringTimeMs()));
 		}
 
 		public Text getText() {
@@ -152,43 +156,39 @@ public class SubtitlesHud implements SoundInstanceListener {
 		}
 
 		@Nullable
-		public SubtitlesHud.class_9772 method_60572(Vec3d vec3d) {
-			if (this.field_51913.isEmpty()) {
+		public SubtitlesHud.SoundEntry getNearestSound(Vec3d pos) {
+			if (this.sounds.isEmpty()) {
 				return null;
 			} else {
-				return this.field_51913.size() == 1
-					? (SubtitlesHud.class_9772)this.field_51913.getFirst()
-					: (SubtitlesHud.class_9772)this.field_51913.stream().min(Comparator.comparingDouble(arg -> arg.location().distanceTo(vec3d))).orElse(null);
+				return this.sounds.size() == 1
+					? (SubtitlesHud.SoundEntry)this.sounds.getFirst()
+					: (SubtitlesHud.SoundEntry)this.sounds.stream().min(Comparator.comparingDouble(soundPos -> soundPos.location().distanceTo(pos))).orElse(null);
 			}
 		}
 
 		public void reset(Vec3d pos) {
-			this.field_51913.removeIf(arg -> pos.equals(arg.location()));
-			this.field_51913.add(new SubtitlesHud.class_9772(pos, Util.getMeasuringTimeMs()));
+			this.sounds.removeIf(sound -> pos.equals(sound.location()));
+			this.sounds.add(new SubtitlesHud.SoundEntry(pos, Util.getMeasuringTimeMs()));
 		}
 
 		public boolean canHearFrom(Vec3d pos) {
 			if (Float.isInfinite(this.range)) {
 				return true;
-			} else if (this.field_51913.isEmpty()) {
+			} else if (this.sounds.isEmpty()) {
 				return false;
 			} else {
-				SubtitlesHud.class_9772 lv = this.method_60572(pos);
-				return lv == null ? false : pos.isInRange(lv.location, (double)this.range);
+				SubtitlesHud.SoundEntry soundEntry = this.getNearestSound(pos);
+				return soundEntry == null ? false : pos.isInRange(soundEntry.location, (double)this.range);
 			}
 		}
 
-		public void method_60570(double d) {
+		public void removeExpired(double expiry) {
 			long l = Util.getMeasuringTimeMs();
-			this.field_51913.removeIf(arg -> (double)(l - arg.time()) > d);
+			this.sounds.removeIf(sound -> (double)(l - sound.time()) > expiry);
 		}
 
-		public boolean method_60574() {
-			return !this.field_51913.isEmpty();
+		public boolean hasSounds() {
+			return !this.sounds.isEmpty();
 		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static record class_9772(Vec3d location, long time) {
 	}
 }

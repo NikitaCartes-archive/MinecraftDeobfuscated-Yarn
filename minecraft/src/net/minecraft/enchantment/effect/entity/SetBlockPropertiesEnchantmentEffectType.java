@@ -22,7 +22,7 @@ public record SetBlockPropertiesEnchantmentEffectType(BlockStateComponent proper
 		instance -> instance.group(
 					BlockStateComponent.CODEC.fieldOf("properties").forGetter(SetBlockPropertiesEnchantmentEffectType::properties),
 					Vec3i.CODEC.optionalFieldOf("offset", Vec3i.ZERO).forGetter(SetBlockPropertiesEnchantmentEffectType::offset),
-					GameEvent.field_51910.optionalFieldOf("trigger_game_event").forGetter(SetBlockPropertiesEnchantmentEffectType::triggerGameEvent)
+					GameEvent.CODEC.optionalFieldOf("trigger_game_event").forGetter(SetBlockPropertiesEnchantmentEffectType::triggerGameEvent)
 				)
 				.apply(instance, SetBlockPropertiesEnchantmentEffectType::new)
 	);
@@ -37,7 +37,7 @@ public record SetBlockPropertiesEnchantmentEffectType(BlockStateComponent proper
 		BlockState blockState = user.getWorld().getBlockState(blockPos);
 		BlockState blockState2 = this.properties.applyToState(blockState);
 		if (!blockState.equals(blockState2) && user.getWorld().setBlockState(blockPos, blockState2, Block.NOTIFY_ALL)) {
-			this.triggerGameEvent.ifPresent(registryEntry -> world.emitGameEvent(user, registryEntry, blockPos));
+			this.triggerGameEvent.ifPresent(gameEvent -> world.emitGameEvent(user, gameEvent, blockPos));
 		}
 	}
 

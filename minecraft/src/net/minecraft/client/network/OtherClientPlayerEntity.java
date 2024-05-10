@@ -58,7 +58,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (this.velocityLerpDivisor > 0) {
-			this.addVelocity(
+			this.addVelocityInternal(
 				new Vec3d(
 					(this.clientVelocity.x - this.getVelocity().x) / (double)this.velocityLerpDivisor,
 					(this.clientVelocity.y - this.getVelocity().y) / (double)this.velocityLerpDivisor,

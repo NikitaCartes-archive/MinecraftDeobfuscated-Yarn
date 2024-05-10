@@ -77,12 +77,12 @@ public interface AllOfEnchantmentEffectTypes {
 		);
 
 		@Override
-		public float apply(int i, Random random, float f) {
+		public float apply(int level, Random random, float inputValue) {
 			for (EnchantmentValueEffectType enchantmentValueEffectType : this.effects) {
-				f = enchantmentValueEffectType.apply(i, random, f);
+				inputValue = enchantmentValueEffectType.apply(level, random, inputValue);
 			}
 
-			return f;
+			return inputValue;
 		}
 
 		@Override

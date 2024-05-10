@@ -29,7 +29,7 @@ public class DamageSource {
 		return this.getType().exhaustion();
 	}
 
-	public boolean method_60489() {
+	public boolean isDirect() {
 		return this.attacker == this.source;
 	}
 

@@ -54,7 +54,7 @@ public class PoolStructurePiece extends StructurePiece {
 		DynamicOps<NbtElement> dynamicOps = context.registryManager().getOps(NbtOps.INSTANCE);
 		this.poolElement = StructurePoolElement.CODEC
 			.parse(dynamicOps, nbt.getCompound("pool_element"))
-			.getPartialOrThrow(string -> new IllegalStateException("Invalid pool element found: " + string));
+			.getPartialOrThrow(error -> new IllegalStateException("Invalid pool element found: " + error));
 		this.rotation = BlockRotation.valueOf(nbt.getString("rotation"));
 		this.boundingBox = this.poolElement.getBoundingBox(this.structureTemplateManager, this.pos, this.rotation);
 		NbtList nbtList = nbt.getList("junctions", NbtElement.COMPOUND_TYPE);

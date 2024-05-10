@@ -60,7 +60,7 @@ public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		if (stack.isOf(Items.BOOK)) {
-			stack = stack.method_60503(Items.ENCHANTED_BOOK);
+			stack = stack.withItem(Items.ENCHANTED_BOOK);
 			stack.set(DataComponentTypes.STORED_ENCHANTMENTS, stack.remove(DataComponentTypes.ENCHANTMENTS));
 		}
 

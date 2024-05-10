@@ -13,7 +13,7 @@ import net.minecraft.network.codec.PacketCodec;
  */
 public class SimpleParticleType extends ParticleType<SimpleParticleType> implements ParticleEffect {
 	private final MapCodec<SimpleParticleType> codec = MapCodec.unit(this::getType);
-	private final PacketCodec<RegistryByteBuf, SimpleParticleType> PACKET_CODEC = PacketCodec.unit(this);
+	private final PacketCodec<RegistryByteBuf, SimpleParticleType> packetCodec = PacketCodec.unit(this);
 
 	protected SimpleParticleType(boolean alwaysShow) {
 		super(alwaysShow);
@@ -30,6 +30,6 @@ public class SimpleParticleType extends ParticleType<SimpleParticleType> impleme
 
 	@Override
 	public PacketCodec<RegistryByteBuf, SimpleParticleType> getPacketCodec() {
-		return this.PACKET_CODEC;
+		return this.packetCodec;
 	}
 }

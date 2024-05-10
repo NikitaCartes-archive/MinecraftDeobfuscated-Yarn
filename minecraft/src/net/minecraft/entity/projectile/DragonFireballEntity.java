@@ -23,8 +23,8 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 		super(entityType, world);
 	}
 
-	public DragonFireballEntity(World world, LivingEntity owner, Vec3d vec3d) {
-		super(EntityType.DRAGON_FIREBALL, owner, vec3d, world);
+	public DragonFireballEntity(World world, LivingEntity owner, Vec3d velocity) {
+		super(EntityType.DRAGON_FIREBALL, owner, velocity, world);
 	}
 
 	@Override

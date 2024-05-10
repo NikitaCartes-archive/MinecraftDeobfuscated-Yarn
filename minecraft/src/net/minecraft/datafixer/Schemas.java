@@ -328,12 +328,12 @@ public class Schemas {
 		return dataFixerBuilder.build();
 	}
 
-	public static CompletableFuture<?> method_60487(Set<TypeReference> set) {
-		if (set.isEmpty()) {
+	public static CompletableFuture<?> optimize(Set<TypeReference> requiredTypes) {
+		if (requiredTypes.isEmpty()) {
 			return CompletableFuture.completedFuture(null);
 		} else {
 			Executor executor = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("Datafixer Bootstrap").setDaemon(true).setPriority(1).build());
-			return FIXER.optimize(set, executor);
+			return FIXER.optimize(requiredTypes, executor);
 		}
 	}
 

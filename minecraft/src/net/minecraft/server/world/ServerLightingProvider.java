@@ -29,20 +29,20 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final TaskExecutor<Runnable> processor;
 	private final ObjectList<Pair<ServerLightingProvider.Stage, Runnable>> pendingTasks = new ObjectArrayList<>();
-	private final ThreadedAnvilChunkStorage chunkStorage;
+	private final ServerChunkLoadingManager chunkLoadingManager;
 	private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> executor;
 	private final int taskBatchSize = 1000;
 	private final AtomicBoolean ticking = new AtomicBoolean();
 
 	public ServerLightingProvider(
 		ChunkProvider chunkProvider,
-		ThreadedAnvilChunkStorage chunkStorage,
+		ServerChunkLoadingManager chunkLoadingManager,
 		boolean hasBlockLight,
 		TaskExecutor<Runnable> processor,
 		MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> executor
 	) {
 		super(chunkProvider, true, hasBlockLight);
-		this.chunkStorage = chunkStorage;
+		this.chunkLoadingManager = chunkLoadingManager;
 		this.executor = executor;
 		this.processor = processor;
 	}
@@ -125,7 +125,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	private void enqueue(int x, int z, ServerLightingProvider.Stage stage, Runnable task) {
-		this.enqueue(x, z, this.chunkStorage.getCompletedLevelSupplier(ChunkPos.toLong(x, z)), stage, task);
+		this.enqueue(x, z, this.chunkLoadingManager.getCompletedLevelSupplier(ChunkPos.toLong(x, z)), stage, task);
 	}
 
 	private void enqueue(int x, int z, IntSupplier completedLevelSupplier, ServerLightingProvider.Stage stage, Runnable task) {

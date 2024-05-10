@@ -87,6 +87,6 @@ public class FoodComponents {
 	public static final FoodComponent OMINOUS_BOTTLE = new FoodComponent.Builder().nutrition(1).saturationModifier(0.1F).build();
 
 	private static FoodComponent.Builder createStew(int hunger) {
-		return new FoodComponent.Builder().nutrition(hunger).saturationModifier(0.6F).method_60500(Items.BOWL);
+		return new FoodComponent.Builder().nutrition(hunger).saturationModifier(0.6F).usingConvertsTo(Items.BOWL);
 	}
 }

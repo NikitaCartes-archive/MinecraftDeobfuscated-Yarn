@@ -154,6 +154,7 @@ import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChangeUnlockedRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkBiomeDataS2CPacket;
@@ -248,7 +249,6 @@ import net.minecraft.network.packet.s2c.play.TickStepS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
-import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateTickRateS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
@@ -1514,11 +1514,11 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	}
 
 	@Override
-	public void onUnlockRecipes(UnlockRecipesS2CPacket packet) {
+	public void onUnlockRecipes(ChangeUnlockedRecipesS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
 		clientRecipeBook.setOptions(packet.getOptions());
-		UnlockRecipesS2CPacket.Action action = packet.getAction();
+		ChangeUnlockedRecipesS2CPacket.Action action = packet.getAction();
 		switch (action) {
 			case REMOVE:
 				for (Identifier identifier : packet.getRecipeIdsToChange()) {
@@ -2241,7 +2241,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	public void onProjectilePower(ProjectilePowerS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		if (this.world.getEntityById(packet.getEntityId()) instanceof ExplosiveProjectileEntity explosiveProjectileEntity) {
-			explosiveProjectileEntity.field_51893 = packet.method_60423();
+			explosiveProjectileEntity.accelerationPower = packet.getAccelerationPower();
 		}
 	}
 

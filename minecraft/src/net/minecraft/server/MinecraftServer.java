@@ -113,6 +113,7 @@ import net.minecraft.util.WinNativeModuleUtil;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.function.Finishable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -132,7 +133,6 @@ import net.minecraft.util.profiler.ServerSamplerSource;
 import net.minecraft.util.profiler.ServerTickType;
 import net.minecraft.util.profiler.log.DebugSampleLog;
 import net.minecraft.util.profiler.log.DebugSampleType;
-import net.minecraft.util.profiling.jfr.Finishable;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.village.ZombieSiegeManager;
@@ -275,7 +275,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	protected final SaveProperties saveProperties;
 	private final BrewingRecipeRegistry brewingRecipeRegistry;
 	private volatile boolean saving;
-	private static final AtomicReference<RuntimeException> field_51917 = new AtomicReference();
+	private static final AtomicReference<RuntimeException> WORLD_GEN_EXCEPTION = new AtomicReference();
 
 	public static <S extends MinecraftServer> S startServer(Function<Thread, S> serverFactory) {
 		AtomicReference<S> atomicReference = new AtomicReference();
@@ -588,7 +588,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.session.backupLevelDataFile(this.getRegistryManager(), this.saveProperties, this.getPlayerManager().getUserData());
 		if (flush) {
 			for (ServerWorld serverWorld3 : this.getWorlds()) {
-				LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", serverWorld3.getChunkManager().threadedAnvilChunkStorage.getSaveDir());
+				LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", serverWorld3.getChunkManager().chunkLoadingManager.getSaveDir());
 			}
 
 			LOGGER.info("ThreadedAnvilChunkStorage: All dimensions are saved");
@@ -637,7 +637,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 		}
 
-		while (this.worlds.values().stream().anyMatch(world -> world.getChunkManager().threadedAnvilChunkStorage.shouldDelayShutdown())) {
+		while (this.worlds.values().stream().anyMatch(world -> world.getChunkManager().chunkLoadingManager.shouldDelayShutdown())) {
 			this.tickStartTimeNanos = Util.getMeasuringTimeNano() + TimeHelper.MILLI_IN_NANOS;
 
 			for (ServerWorld serverWorldx : this.getWorlds()) {
@@ -833,8 +833,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.hasRunningTasks() || Util.getMeasuringTimeNano() < (this.waitingForNextTick ? this.tickEndTimeNanos : this.tickStartTimeNanos);
 	}
 
-	public static boolean method_60584() {
-		RuntimeException runtimeException = (RuntimeException)field_51917.get();
+	public static boolean checkWorldGenException() {
+		RuntimeException runtimeException = (RuntimeException)WORLD_GEN_EXCEPTION.get();
 		if (runtimeException != null) {
 			throw runtimeException;
 		} else {
@@ -842,13 +842,13 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	public static void method_60582(RuntimeException runtimeException) {
-		field_51917.compareAndSet(null, runtimeException);
+	public static void setWorldGenException(RuntimeException exception) {
+		WORLD_GEN_EXCEPTION.compareAndSet(null, exception);
 	}
 
 	@Override
 	public void runTasks(BooleanSupplier stopCondition) {
-		super.runTasks(() -> method_60584() && stopCondition.getAsBoolean());
+		super.runTasks(() -> checkWorldGenException() && stopCondition.getAsBoolean());
 	}
 
 	protected void runTasksTillTickEnd() {

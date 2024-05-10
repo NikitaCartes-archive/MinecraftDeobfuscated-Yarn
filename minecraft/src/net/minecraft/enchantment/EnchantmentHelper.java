@@ -266,16 +266,16 @@ public class EnchantmentHelper {
 		return Math.max(0.0F, mutableFloat.floatValue());
 	}
 
-	public static int getProjectilePiercing(ServerWorld world, ItemStack shotFromStack, ItemStack projectileStack) {
+	public static int getProjectilePiercing(ServerWorld world, ItemStack weaponStack, ItemStack projectileStack) {
 		MutableFloat mutableFloat = new MutableFloat(0.0F);
-		forEachEnchantment(shotFromStack, (enchantment, level) -> enchantment.value().modifyProjectilePiercing(world, level, projectileStack, mutableFloat));
+		forEachEnchantment(weaponStack, (enchantment, level) -> enchantment.value().modifyProjectilePiercing(world, level, projectileStack, mutableFloat));
 		return Math.max(0, mutableFloat.intValue());
 	}
 
-	public static void onProjectileSpawned(ServerWorld world, ItemStack shotFromStack, PersistentProjectileEntity projectileEntity, Runnable onShotFromBreak) {
+	public static void onProjectileSpawned(ServerWorld world, ItemStack weaponStack, PersistentProjectileEntity projectileEntity, Runnable onShotFromBreak) {
 		LivingEntity livingEntity2 = projectileEntity.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null;
-		EnchantmentEffectContext enchantmentEffectContext = new EnchantmentEffectContext(shotFromStack, null, livingEntity2, onShotFromBreak);
-		forEachEnchantment(shotFromStack, (enchantment, level) -> enchantment.value().onProjectileSpawned(world, level, enchantmentEffectContext, projectileEntity));
+		EnchantmentEffectContext enchantmentEffectContext = new EnchantmentEffectContext(weaponStack, null, livingEntity2, onShotFromBreak);
+		forEachEnchantment(weaponStack, (enchantment, level) -> enchantment.value().onProjectileSpawned(world, level, enchantmentEffectContext, projectileEntity));
 	}
 
 	public static void onHitBlock(
@@ -294,23 +294,14 @@ public class EnchantmentHelper {
 	public static float getEquipmentDropChance(ServerWorld world, LivingEntity attacker, DamageSource damageSource, float baseEquipmentDropChance) {
 		MutableFloat mutableFloat = new MutableFloat(baseEquipmentDropChance);
 		Random random = attacker.getRandom();
-		forEachEnchantment(
-			attacker,
-			(enchantment, level, context) -> {
-				LootContext lootContext = Enchantment.createEnchantedDamageLootContext(world, level, attacker, damageSource);
-				enchantment.value()
-					.getEffect(EnchantmentEffectComponentTypes.EQUIPMENT_DROPS)
-					.forEach(
-						targetedEnchantmentEffectType -> {
-							if (targetedEnchantmentEffectType.enchanted() == EnchantmentEffectTarget.VICTIM
-								&& targetedEnchantmentEffectType.affected() == EnchantmentEffectTarget.VICTIM
-								&& targetedEnchantmentEffectType.test(lootContext)) {
-								mutableFloat.setValue(((EnchantmentValueEffectType)targetedEnchantmentEffectType.effect()).apply(level, random, mutableFloat.floatValue()));
-							}
-						}
-					);
-			}
-		);
+		forEachEnchantment(attacker, (enchantment, level, context) -> {
+			LootContext lootContext = Enchantment.createEnchantedDamageLootContext(world, level, attacker, damageSource);
+			enchantment.value().getEffect(EnchantmentEffectComponentTypes.EQUIPMENT_DROPS).forEach(effect -> {
+				if (effect.enchanted() == EnchantmentEffectTarget.VICTIM && effect.affected() == EnchantmentEffectTarget.VICTIM && effect.test(lootContext)) {
+					mutableFloat.setValue(((EnchantmentValueEffectType)effect.effect()).apply(level, random, mutableFloat.floatValue()));
+				}
+			});
+		});
 		if (damageSource.getAttacker() instanceof LivingEntity livingEntity) {
 			forEachEnchantment(
 				livingEntity,
@@ -362,20 +353,15 @@ public class EnchantmentHelper {
 		return Math.max(0, mutableFloat.intValue());
 	}
 
-	public static float getCrossbowChargeTime(LivingEntity livingEntity, float f) {
-		MutableFloat mutableFloat = new MutableFloat(f);
-		forEachEnchantment(
-			livingEntity, (registryEntry, i, enchantmentEffectContext) -> registryEntry.value().modifyCrossbowChargeTime(livingEntity.getRandom(), i, mutableFloat)
-		);
+	public static float getCrossbowChargeTime(LivingEntity user, float baseCrossbowChargeTime) {
+		MutableFloat mutableFloat = new MutableFloat(baseCrossbowChargeTime);
+		forEachEnchantment(user, (enchantment, level, context) -> enchantment.value().modifyCrossbowChargeTime(user.getRandom(), level, mutableFloat));
 		return Math.max(0.0F, mutableFloat.floatValue());
 	}
 
-	public static float getTridentSpinAttackStrength(LivingEntity livingEntity) {
+	public static float getTridentSpinAttackStrength(LivingEntity user) {
 		MutableFloat mutableFloat = new MutableFloat(0.0F);
-		forEachEnchantment(
-			livingEntity,
-			(registryEntry, i, enchantmentEffectContext) -> registryEntry.value().modifyTridentSpinAttackStrength(livingEntity.getRandom(), i, mutableFloat)
-		);
+		forEachEnchantment(user, (enchantment, level, context) -> enchantment.value().modifyTridentSpinAttackStrength(user.getRandom(), level, mutableFloat));
 		return mutableFloat.floatValue();
 	}
 

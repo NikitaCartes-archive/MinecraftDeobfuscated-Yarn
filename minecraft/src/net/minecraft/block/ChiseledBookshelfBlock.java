@@ -152,7 +152,7 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 			SoundEvent soundEvent = stack.isOf(Items.ENCHANTED_BOOK)
 				? SoundEvents.BLOCK_CHISELED_BOOKSHELF_INSERT_ENCHANTED
 				: SoundEvents.BLOCK_CHISELED_BOOKSHELF_INSERT;
-			blockEntity.setStack(slot, stack.method_60504(1, player));
+			blockEntity.setStack(slot, stack.splitUnlessCreative(1, player));
 			world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 	}

@@ -305,7 +305,7 @@ public class VaultBlockEntity extends BlockEntity {
 			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world)
 				.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
 				.build(LootContextTypes.VAULT);
-			List<ItemStack> list = lootTable2.method_60569(lootContextParameterSet, world.getRandom());
+			List<ItemStack> list = lootTable2.generateLoot(lootContextParameterSet, world.getRandom());
 			return list.isEmpty() ? ItemStack.EMPTY : Util.getRandom(list, world.getRandom());
 		}
 

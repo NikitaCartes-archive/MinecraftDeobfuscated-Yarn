@@ -13,29 +13,29 @@ import org.jetbrains.annotations.VisibleForTesting;
 
 public class ChunkStatus {
 	public static final int field_35470 = 8;
-	private static final EnumSet<Heightmap.Type> field_51904 = EnumSet.of(Heightmap.Type.OCEAN_FLOOR_WG, Heightmap.Type.WORLD_SURFACE_WG);
-	public static final EnumSet<Heightmap.Type> field_51903 = EnumSet.of(
+	private static final EnumSet<Heightmap.Type> WORLD_GEN_HEIGHTMAP_TYPES = EnumSet.of(Heightmap.Type.OCEAN_FLOOR_WG, Heightmap.Type.WORLD_SURFACE_WG);
+	public static final EnumSet<Heightmap.Type> NORMAL_HEIGHTMAP_TYPES = EnumSet.of(
 		Heightmap.Type.OCEAN_FLOOR, Heightmap.Type.WORLD_SURFACE, Heightmap.Type.MOTION_BLOCKING, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES
 	);
-	public static final ChunkStatus EMPTY = method_60546("empty", null, field_51904, ChunkType.PROTOCHUNK);
-	public static final ChunkStatus STRUCTURE_STARTS = method_60546("structure_starts", EMPTY, field_51904, ChunkType.PROTOCHUNK);
-	public static final ChunkStatus STRUCTURE_REFERENCES = method_60546("structure_references", STRUCTURE_STARTS, field_51904, ChunkType.PROTOCHUNK);
-	public static final ChunkStatus BIOMES = method_60546("biomes", STRUCTURE_REFERENCES, field_51904, ChunkType.PROTOCHUNK);
-	public static final ChunkStatus NOISE = method_60546("noise", BIOMES, field_51904, ChunkType.PROTOCHUNK);
-	public static final ChunkStatus SURFACE = method_60546("surface", NOISE, field_51904, ChunkType.PROTOCHUNK);
-	public static final ChunkStatus CARVERS = method_60546("carvers", SURFACE, field_51903, ChunkType.PROTOCHUNK);
-	public static final ChunkStatus FEATURES = method_60546("features", CARVERS, field_51903, ChunkType.PROTOCHUNK);
-	public static final ChunkStatus INITIALIZE_LIGHT = method_60546("initialize_light", FEATURES, field_51903, ChunkType.PROTOCHUNK);
-	public static final ChunkStatus LIGHT = method_60546("light", INITIALIZE_LIGHT, field_51903, ChunkType.PROTOCHUNK);
-	public static final ChunkStatus SPAWN = method_60546("spawn", LIGHT, field_51903, ChunkType.PROTOCHUNK);
-	public static final ChunkStatus FULL = method_60546("full", SPAWN, field_51903, ChunkType.LEVELCHUNK);
+	public static final ChunkStatus EMPTY = register("empty", null, WORLD_GEN_HEIGHTMAP_TYPES, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus STRUCTURE_STARTS = register("structure_starts", EMPTY, WORLD_GEN_HEIGHTMAP_TYPES, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus STRUCTURE_REFERENCES = register("structure_references", STRUCTURE_STARTS, WORLD_GEN_HEIGHTMAP_TYPES, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus BIOMES = register("biomes", STRUCTURE_REFERENCES, WORLD_GEN_HEIGHTMAP_TYPES, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus NOISE = register("noise", BIOMES, WORLD_GEN_HEIGHTMAP_TYPES, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus SURFACE = register("surface", NOISE, WORLD_GEN_HEIGHTMAP_TYPES, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus CARVERS = register("carvers", SURFACE, NORMAL_HEIGHTMAP_TYPES, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus FEATURES = register("features", CARVERS, NORMAL_HEIGHTMAP_TYPES, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus INITIALIZE_LIGHT = register("initialize_light", FEATURES, NORMAL_HEIGHTMAP_TYPES, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus LIGHT = register("light", INITIALIZE_LIGHT, NORMAL_HEIGHTMAP_TYPES, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus SPAWN = register("spawn", LIGHT, NORMAL_HEIGHTMAP_TYPES, ChunkType.PROTOCHUNK);
+	public static final ChunkStatus FULL = register("full", SPAWN, NORMAL_HEIGHTMAP_TYPES, ChunkType.LEVELCHUNK);
 	private final int index;
 	private final ChunkStatus previous;
 	private final ChunkType chunkType;
 	private final EnumSet<Heightmap.Type> heightMapTypes;
 
-	private static ChunkStatus method_60546(String string, @Nullable ChunkStatus chunkStatus, EnumSet<Heightmap.Type> enumSet, ChunkType chunkType) {
-		return Registry.register(Registries.CHUNK_STATUS, string, new ChunkStatus(chunkStatus, enumSet, chunkType));
+	private static ChunkStatus register(String id, @Nullable ChunkStatus previous, EnumSet<Heightmap.Type> heightMapTypes, ChunkType chunkType) {
+		return Registry.register(Registries.CHUNK_STATUS, id, new ChunkStatus(previous, heightMapTypes, chunkType));
 	}
 
 	public static List<ChunkStatus> createOrderedList() {
@@ -52,10 +52,10 @@ public class ChunkStatus {
 	}
 
 	@VisibleForTesting
-	protected ChunkStatus(@Nullable ChunkStatus previous, EnumSet<Heightmap.Type> enumSet, ChunkType chunkType) {
+	protected ChunkStatus(@Nullable ChunkStatus previous, EnumSet<Heightmap.Type> heightMapTypes, ChunkType chunkType) {
 		this.previous = previous == null ? this : previous;
 		this.chunkType = chunkType;
-		this.heightMapTypes = enumSet;
+		this.heightMapTypes = heightMapTypes;
 		this.index = previous == null ? 0 : previous.getIndex() + 1;
 	}
 
@@ -79,31 +79,31 @@ public class ChunkStatus {
 		return this.heightMapTypes;
 	}
 
-	public boolean isAtLeast(ChunkStatus chunkStatus) {
-		return this.getIndex() >= chunkStatus.getIndex();
+	public boolean isAtLeast(ChunkStatus other) {
+		return this.getIndex() >= other.getIndex();
 	}
 
-	public boolean method_60547(ChunkStatus chunkStatus) {
-		return this.getIndex() > chunkStatus.getIndex();
+	public boolean isLaterThan(ChunkStatus other) {
+		return this.getIndex() > other.getIndex();
 	}
 
-	public boolean method_60548(ChunkStatus chunkStatus) {
-		return this.getIndex() <= chunkStatus.getIndex();
+	public boolean isAtMost(ChunkStatus other) {
+		return this.getIndex() <= other.getIndex();
 	}
 
-	public boolean method_60549(ChunkStatus chunkStatus) {
-		return this.getIndex() < chunkStatus.getIndex();
+	public boolean isEarlierThan(ChunkStatus other) {
+		return this.getIndex() < other.getIndex();
 	}
 
-	public static ChunkStatus method_60545(ChunkStatus chunkStatus, ChunkStatus chunkStatus2) {
-		return chunkStatus.method_60547(chunkStatus2) ? chunkStatus : chunkStatus2;
+	public static ChunkStatus max(ChunkStatus a, ChunkStatus b) {
+		return a.isLaterThan(b) ? a : b;
 	}
 
 	public String toString() {
-		return this.method_60550();
+		return this.getId();
 	}
 
-	public String method_60550() {
+	public String getId() {
 		return Registries.CHUNK_STATUS.getId(this).toString();
 	}
 }

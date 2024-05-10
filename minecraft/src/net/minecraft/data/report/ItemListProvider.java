@@ -40,7 +40,7 @@ public class ItemListProvider implements DataProvider {
 									"components",
 									ComponentMap.CODEC
 										.encodeStart(registryOps, ((Item)entry.value()).getComponents())
-										.getOrThrow(string -> new IllegalStateException("Failed to encode components: " + string))
+										.getOrThrow(components -> new IllegalStateException("Failed to encode components: " + components))
 								);
 								jsonObject.add(entry.getIdAsString(), jsonObject2);
 							}

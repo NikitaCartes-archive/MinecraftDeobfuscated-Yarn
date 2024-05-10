@@ -166,7 +166,7 @@ public class FallingBlockEntity extends Entity {
 								if (this.getWorld().setBlockState(blockPos, this.block, Block.NOTIFY_ALL)) {
 									((ServerWorld)this.getWorld())
 										.getChunkManager()
-										.threadedAnvilChunkStorage
+										.chunkLoadingManager
 										.sendToOtherNearbyPlayers(this, new BlockUpdateS2CPacket(blockPos, this.getWorld().getBlockState(blockPos)));
 									this.discard();
 									if (block instanceof LandingBlock) {

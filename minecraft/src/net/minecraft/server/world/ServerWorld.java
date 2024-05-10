@@ -418,7 +418,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 						profiler.push("checkDespawn");
 						entity.checkDespawn();
 						profiler.pop();
-						if (this.chunkManager.threadedAnvilChunkStorage.getTicketManager().shouldTickEntities(entity.getChunkPos().toLong())) {
+						if (this.chunkManager.chunkLoadingManager.getTicketManager().shouldTickEntities(entity.getChunkPos().toLong())) {
 							Entity entity2 = entity.getVehicle();
 							if (entity2 != null) {
 								if (!entity2.isRemoved() && entity2.hasPassenger(entity)) {
@@ -446,7 +446,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	@Override
 	public boolean shouldTickBlocksInChunk(long chunkPos) {
-		return this.chunkManager.threadedAnvilChunkStorage.getTicketManager().shouldTickBlocks(chunkPos);
+		return this.chunkManager.chunkLoadingManager.getTicketManager().shouldTickBlocks(chunkPos);
 	}
 
 	protected void tickTime() {
@@ -1595,11 +1595,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public void dump(Path path) throws IOException {
-		ThreadedAnvilChunkStorage threadedAnvilChunkStorage = this.getChunkManager().threadedAnvilChunkStorage;
+		ServerChunkLoadingManager serverChunkLoadingManager = this.getChunkManager().chunkLoadingManager;
 		Writer writer = Files.newBufferedWriter(path.resolve("stats.txt"));
 
 		try {
-			writer.write(String.format(Locale.ROOT, "spawning_chunks: %d\n", threadedAnvilChunkStorage.getTicketManager().getTickedChunkCount()));
+			writer.write(String.format(Locale.ROOT, "spawning_chunks: %d\n", serverChunkLoadingManager.getTicketManager().getTickedChunkCount()));
 			SpawnHelper.Info info = this.getChunkManager().getSpawnInfo();
 			if (info != null) {
 				for (Entry<SpawnGroup> entry : info.getGroupToCount().object2IntEntrySet()) {
@@ -1611,7 +1611,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			writer.write(String.format(Locale.ROOT, "block_entity_tickers: %d\n", this.blockEntityTickers.size()));
 			writer.write(String.format(Locale.ROOT, "block_ticks: %d\n", this.getBlockTickScheduler().getTickCount()));
 			writer.write(String.format(Locale.ROOT, "fluid_ticks: %d\n", this.getFluidTickScheduler().getTickCount()));
-			writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().toDumpString() + "\n");
+			writer.write("distance_manager: " + serverChunkLoadingManager.getTicketManager().toDumpString() + "\n");
 			writer.write(String.format(Locale.ROOT, "pending_tasks: %d\n", this.getChunkManager().getPendingTasks()));
 		} catch (Throwable var22) {
 			if (writer != null) {
@@ -1655,7 +1655,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		Writer writer3 = Files.newBufferedWriter(path2);
 
 		try {
-			threadedAnvilChunkStorage.dump(writer3);
+			serverChunkLoadingManager.dump(writer3);
 		} catch (Throwable var20) {
 			if (writer3 != null) {
 				try {
@@ -1920,7 +1920,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * {@return whether to tick entities at {@code pos}}
 	 */
 	public boolean shouldTickEntity(BlockPos pos) {
-		return this.entityManager.shouldTick(pos) && this.chunkManager.threadedAnvilChunkStorage.getTicketManager().shouldTickEntities(ChunkPos.toLong(pos));
+		return this.entityManager.shouldTick(pos) && this.chunkManager.chunkLoadingManager.getTicketManager().shouldTickEntities(ChunkPos.toLong(pos));
 	}
 
 	public boolean shouldTick(BlockPos pos) {

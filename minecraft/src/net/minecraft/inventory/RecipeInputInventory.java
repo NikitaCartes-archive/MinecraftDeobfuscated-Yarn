@@ -26,10 +26,10 @@ public interface RecipeInputInventory extends Inventory, RecipeInputProvider {
 	List<ItemStack> getHeldStacks();
 
 	default CraftingRecipeInput createRecipeInput() {
-		return this.method_60501().input();
+		return this.createPositionedRecipeInput().input();
 	}
 
-	default CraftingRecipeInput.class_9765 method_60501() {
-		return CraftingRecipeInput.method_60505(this.getWidth(), this.getHeight(), this.getHeldStacks());
+	default CraftingRecipeInput.Positioned createPositionedRecipeInput() {
+		return CraftingRecipeInput.createPositioned(this.getWidth(), this.getHeight(), this.getHeldStacks());
 	}
 }

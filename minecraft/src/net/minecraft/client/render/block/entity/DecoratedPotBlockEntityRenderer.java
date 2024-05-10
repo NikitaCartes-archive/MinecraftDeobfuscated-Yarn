@@ -84,15 +84,15 @@ public class DecoratedPotBlockEntityRenderer implements BlockEntityRenderer<Deco
 		return TexturedModelData.of(modelData, 16, 16);
 	}
 
-	private static SpriteIdentifier getTextureIdFromSherd(Optional<Item> optional) {
-		if (optional.isPresent()) {
-			SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getDecoratedPotPatternTextureId(DecoratedPotPatterns.fromSherd((Item)optional.get()));
+	private static SpriteIdentifier getTextureIdFromSherd(Optional<Item> sherd) {
+		if (sherd.isPresent()) {
+			SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getDecoratedPotPatternTextureId(DecoratedPotPatterns.fromSherd((Item)sherd.get()));
 			if (spriteIdentifier != null) {
 				return spriteIdentifier;
 			}
 		}
 
-		return TexturedRenderLayers.field_51915;
+		return TexturedRenderLayers.DECORATED_POT_SIDE;
 	}
 
 	public void render(
@@ -122,7 +122,7 @@ public class DecoratedPotBlockEntityRenderer implements BlockEntityRenderer<Deco
 			}
 		}
 
-		VertexConsumer vertexConsumer = TexturedRenderLayers.field_51914.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
+		VertexConsumer vertexConsumer = TexturedRenderLayers.DECORATED_POT_BASE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
 		this.neck.render(matrixStack, vertexConsumer, i, j);
 		this.top.render(matrixStack, vertexConsumer, i, j);
 		this.bottom.render(matrixStack, vertexConsumer, i, j);

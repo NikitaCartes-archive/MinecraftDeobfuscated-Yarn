@@ -33,7 +33,7 @@ public final class JigsawStructure extends Structure {
 						Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
 						Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter),
 						Codec.list(StructurePoolAliasBinding.CODEC).optionalFieldOf("pool_aliases", List.of()).forGetter(structure -> structure.poolAliasBindings),
-						Codec.intRange(0, Integer.MAX_VALUE).lenientOptionalFieldOf("dimension_padding", 0).forGetter(jigsawStructure -> jigsawStructure.field_51912)
+						Codec.intRange(0, Integer.MAX_VALUE).lenientOptionalFieldOf("dimension_padding", 0).forGetter(structure -> structure.dimensionPadding)
 					)
 					.apply(instance, JigsawStructure::new)
 		)
@@ -47,7 +47,7 @@ public final class JigsawStructure extends Structure {
 	private final Optional<Heightmap.Type> projectStartToHeightmap;
 	private final int maxDistanceFromCenter;
 	private final List<StructurePoolAliasBinding> poolAliasBindings;
-	private final int field_51912;
+	private final int dimensionPadding;
 
 	private static DataResult<JigsawStructure> validate(JigsawStructure structure) {
 		int i = switch (structure.getTerrainAdaptation()) {
@@ -69,7 +69,7 @@ public final class JigsawStructure extends Structure {
 		Optional<Heightmap.Type> projectStartToHeightmap,
 		int maxDistanceFromCenter,
 		List<StructurePoolAliasBinding> poolAliasBindings,
-		int i
+		int dimensionPadding
 	) {
 		super(config);
 		this.startPool = startPool;
@@ -80,7 +80,7 @@ public final class JigsawStructure extends Structure {
 		this.projectStartToHeightmap = projectStartToHeightmap;
 		this.maxDistanceFromCenter = maxDistanceFromCenter;
 		this.poolAliasBindings = poolAliasBindings;
-		this.field_51912 = i;
+		this.dimensionPadding = dimensionPadding;
 	}
 
 	public JigsawStructure(
@@ -113,7 +113,7 @@ public final class JigsawStructure extends Structure {
 			this.projectStartToHeightmap,
 			this.maxDistanceFromCenter,
 			StructurePoolAliasLookup.create(this.poolAliasBindings, blockPos, context.seed()),
-			this.field_51912
+			this.dimensionPadding
 		);
 	}
 

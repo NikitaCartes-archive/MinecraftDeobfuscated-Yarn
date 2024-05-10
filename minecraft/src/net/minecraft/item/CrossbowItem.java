@@ -178,13 +178,11 @@ public class CrossbowItem extends RangedWeaponItem {
 		return projectile.isOf(Items.FIREWORK_ROCKET) ? 3 : 1;
 	}
 
-	public void shootAll(World world, LivingEntity shooter, Hand hand, ItemStack stack, float speed, float divergence, @Nullable LivingEntity livingEntity) {
+	public void shootAll(World world, LivingEntity shooter, Hand hand, ItemStack stack, float speed, float divergence, @Nullable LivingEntity target) {
 		if (world instanceof ServerWorld serverWorld) {
 			ChargedProjectilesComponent chargedProjectilesComponent = stack.set(DataComponentTypes.CHARGED_PROJECTILES, ChargedProjectilesComponent.DEFAULT);
 			if (chargedProjectilesComponent != null && !chargedProjectilesComponent.isEmpty()) {
-				this.shootAll(
-					serverWorld, shooter, hand, stack, chargedProjectilesComponent.getProjectiles(), speed, divergence, shooter instanceof PlayerEntity, livingEntity
-				);
+				this.shootAll(serverWorld, shooter, hand, stack, chargedProjectilesComponent.getProjectiles(), speed, divergence, shooter instanceof PlayerEntity, target);
 				if (shooter instanceof ServerPlayerEntity serverPlayerEntity) {
 					Criteria.SHOT_CROSSBOW.trigger(serverPlayerEntity, stack);
 					serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
@@ -231,8 +229,8 @@ public class CrossbowItem extends RangedWeaponItem {
 		return getPullTime(user) + 3;
 	}
 
-	public static int getPullTime(LivingEntity livingEntity) {
-		float f = EnchantmentHelper.getCrossbowChargeTime(livingEntity, 1.25F);
+	public static int getPullTime(LivingEntity user) {
+		float f = EnchantmentHelper.getCrossbowChargeTime(user, 1.25F);
 		return MathHelper.floor(f * 20.0F);
 	}
 

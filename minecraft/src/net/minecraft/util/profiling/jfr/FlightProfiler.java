@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.network.NetworkPhase;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.util.function.Finishable;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.ChunkCompressionFormat;

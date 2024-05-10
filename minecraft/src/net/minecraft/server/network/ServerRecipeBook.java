@@ -12,7 +12,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChangeUnlockedRecipesS2CPacket;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.book.RecipeBook;
@@ -41,7 +41,7 @@ public class ServerRecipeBook extends RecipeBook {
 		}
 
 		if (list.size() > 0) {
-			this.sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action.ADD, player, list);
+			this.sendUnlockRecipesPacket(ChangeUnlockedRecipesS2CPacket.Action.ADD, player, list);
 		}
 
 		return i;
@@ -60,12 +60,12 @@ public class ServerRecipeBook extends RecipeBook {
 			}
 		}
 
-		this.sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action.REMOVE, player, list);
+		this.sendUnlockRecipesPacket(ChangeUnlockedRecipesS2CPacket.Action.REMOVE, player, list);
 		return i;
 	}
 
-	private void sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action action, ServerPlayerEntity player, List<Identifier> recipeIds) {
-		player.networkHandler.sendPacket(new UnlockRecipesS2CPacket(action, recipeIds, Collections.emptyList(), this.getOptions()));
+	private void sendUnlockRecipesPacket(ChangeUnlockedRecipesS2CPacket.Action action, ServerPlayerEntity player, List<Identifier> recipeIds) {
+		player.networkHandler.sendPacket(new ChangeUnlockedRecipesS2CPacket(action, recipeIds, Collections.emptyList(), this.getOptions()));
 	}
 
 	public NbtCompound toNbt() {
@@ -115,6 +115,7 @@ public class ServerRecipeBook extends RecipeBook {
 	}
 
 	public void sendInitRecipesPacket(ServerPlayerEntity player) {
-		player.networkHandler.sendPacket(new UnlockRecipesS2CPacket(UnlockRecipesS2CPacket.Action.INIT, this.recipes, this.toBeDisplayed, this.getOptions()));
+		player.networkHandler
+			.sendPacket(new ChangeUnlockedRecipesS2CPacket(ChangeUnlockedRecipesS2CPacket.Action.INIT, this.recipes, this.toBeDisplayed, this.getOptions()));
 	}
 }

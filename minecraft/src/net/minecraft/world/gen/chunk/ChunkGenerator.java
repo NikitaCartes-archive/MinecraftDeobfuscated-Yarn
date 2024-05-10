@@ -348,8 +348,8 @@ public abstract class ChunkGenerator {
 			ChunkRandom chunkRandom = new ChunkRandom(new Xoroshiro128PlusPlusRandom(RandomSeed.getSeed()));
 			long l = chunkRandom.setPopulationSeed(world.getSeed(), blockPos.getX(), blockPos.getZ());
 			Set<RegistryEntry<Biome>> set = new ObjectArraySet<>();
-			ChunkPos.stream(chunkSectionPos.toChunkPos(), 1).forEach(chunkPosx -> {
-				Chunk chunkx = world.getChunk(chunkPosx.x, chunkPosx.z);
+			ChunkPos.stream(chunkSectionPos.toChunkPos(), 1).forEach(pos -> {
+				Chunk chunkx = world.getChunk(pos.x, pos.z);
 
 				for (ChunkSection chunkSection : chunkx.getSectionArray()) {
 					chunkSection.getBiomeContainer().forEachValue(set::add);
@@ -391,7 +391,7 @@ public abstract class ChunkGenerator {
 							if (k < list3.size()) {
 								RegistryEntryList<PlacedFeature> registryEntryList = (RegistryEntryList<PlacedFeature>)list3.get(k);
 								PlacedFeatureIndexer.IndexedFeatures indexedFeatures = (PlacedFeatureIndexer.IndexedFeatures)list.get(k);
-								registryEntryList.stream().map(RegistryEntry::value).forEach(placedFeaturex -> intSet.add(indexedFeatures.indexMapping().applyAsInt(placedFeaturex)));
+								registryEntryList.stream().map(RegistryEntry::value).forEach(feature -> intSet.add(indexedFeatures.indexMapping().applyAsInt(feature)));
 							}
 						}
 

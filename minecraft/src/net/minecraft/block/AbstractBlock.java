@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -1167,7 +1167,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		private final AbstractBlock.ContextPredicate emissiveLightingPredicate;
 		private final Optional<AbstractBlock.Offsetter> offsetter;
 		private final boolean blockBreakParticles;
-		private final Instrument instrument;
+		private final NoteBlockInstrument instrument;
 		private final boolean replaceable;
 		@Nullable
 		protected AbstractBlock.AbstractBlockState.ShapeCache shapeCache;
@@ -1620,7 +1620,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return this.blockBreakParticles;
 		}
 
-		public Instrument getInstrument() {
+		public NoteBlockInstrument getInstrument() {
 			return this.instrument;
 		}
 
@@ -1723,7 +1723,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		boolean forceSolid;
 		PistonBehavior pistonBehavior = PistonBehavior.NORMAL;
 		boolean blockBreakParticles = true;
-		Instrument instrument = Instrument.HARP;
+		NoteBlockInstrument instrument = NoteBlockInstrument.HARP;
 		boolean replaceable;
 		AbstractBlock.TypedContextPredicate<EntityType<?>> allowsSpawningPredicate = (state, world, pos, type) -> state.isSideSolidFullSquare(
 					world, pos, Direction.UP
@@ -2023,7 +2023,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return this;
 		}
 
-		public AbstractBlock.Settings instrument(Instrument instrument) {
+		public AbstractBlock.Settings instrument(NoteBlockInstrument instrument) {
 			this.instrument = instrument;
 			return this;
 		}

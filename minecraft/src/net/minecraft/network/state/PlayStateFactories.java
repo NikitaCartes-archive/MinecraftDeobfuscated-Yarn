@@ -83,6 +83,7 @@ import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.BundleDelimiterS2CPacket;
 import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChangeUnlockedRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkBiomeDataS2CPacket;
@@ -173,7 +174,6 @@ import net.minecraft.network.packet.s2c.play.TickStepS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
-import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateTickRateS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
@@ -316,7 +316,7 @@ public class PlayStateFactories {
 				.add(PlayPackets.PLAYER_INFO_UPDATE, PlayerListS2CPacket.CODEC)
 				.add(PlayPackets.PLAYER_LOOK_AT, LookAtS2CPacket.CODEC)
 				.add(PlayPackets.PLAYER_POSITION, PlayerPositionLookS2CPacket.CODEC)
-				.add(PlayPackets.RECIPE, UnlockRecipesS2CPacket.CODEC)
+				.add(PlayPackets.RECIPE, ChangeUnlockedRecipesS2CPacket.CODEC)
 				.add(PlayPackets.REMOVE_ENTITIES, EntitiesDestroyS2CPacket.CODEC)
 				.add(PlayPackets.REMOVE_MOB_EFFECT, RemoveEntityStatusEffectS2CPacket.CODEC)
 				.add(PlayPackets.RESET_SCORE, ScoreboardScoreResetS2CPacket.CODEC)

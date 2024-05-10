@@ -104,7 +104,7 @@ public class LootContext {
 			return this;
 		}
 
-		public LootContext.Builder method_60568(Random random) {
+		public LootContext.Builder random(Random random) {
 			this.random = random;
 			return this;
 		}

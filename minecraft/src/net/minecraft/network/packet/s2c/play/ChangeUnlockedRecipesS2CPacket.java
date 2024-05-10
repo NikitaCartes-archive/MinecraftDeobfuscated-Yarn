@@ -12,15 +12,17 @@ import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.recipe.book.RecipeBookOptions;
 import net.minecraft.util.Identifier;
 
-public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> {
-	public static final PacketCodec<PacketByteBuf, UnlockRecipesS2CPacket> CODEC = Packet.createCodec(UnlockRecipesS2CPacket::write, UnlockRecipesS2CPacket::new);
-	private final UnlockRecipesS2CPacket.Action action;
+public class ChangeUnlockedRecipesS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, ChangeUnlockedRecipesS2CPacket> CODEC = Packet.createCodec(
+		ChangeUnlockedRecipesS2CPacket::write, ChangeUnlockedRecipesS2CPacket::new
+	);
+	private final ChangeUnlockedRecipesS2CPacket.Action action;
 	private final List<Identifier> recipeIdsToChange;
 	private final List<Identifier> recipeIdsToInit;
 	private final RecipeBookOptions options;
 
-	public UnlockRecipesS2CPacket(
-		UnlockRecipesS2CPacket.Action action, Collection<Identifier> recipeIdsToChange, Collection<Identifier> recipeIdsToInit, RecipeBookOptions options
+	public ChangeUnlockedRecipesS2CPacket(
+		ChangeUnlockedRecipesS2CPacket.Action action, Collection<Identifier> recipeIdsToChange, Collection<Identifier> recipeIdsToInit, RecipeBookOptions options
 	) {
 		this.action = action;
 		this.recipeIdsToChange = ImmutableList.copyOf(recipeIdsToChange);
@@ -28,11 +30,11 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 		this.options = options;
 	}
 
-	private UnlockRecipesS2CPacket(PacketByteBuf buf) {
-		this.action = buf.readEnumConstant(UnlockRecipesS2CPacket.Action.class);
+	private ChangeUnlockedRecipesS2CPacket(PacketByteBuf buf) {
+		this.action = buf.readEnumConstant(ChangeUnlockedRecipesS2CPacket.Action.class);
 		this.options = RecipeBookOptions.fromPacket(buf);
 		this.recipeIdsToChange = buf.readList(PacketByteBuf::readIdentifier);
-		if (this.action == UnlockRecipesS2CPacket.Action.INIT) {
+		if (this.action == ChangeUnlockedRecipesS2CPacket.Action.INIT) {
 			this.recipeIdsToInit = buf.readList(PacketByteBuf::readIdentifier);
 		} else {
 			this.recipeIdsToInit = ImmutableList.of();
@@ -43,13 +45,13 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 		buf.writeEnumConstant(this.action);
 		this.options.toPacket(buf);
 		buf.writeCollection(this.recipeIdsToChange, PacketByteBuf::writeIdentifier);
-		if (this.action == UnlockRecipesS2CPacket.Action.INIT) {
+		if (this.action == ChangeUnlockedRecipesS2CPacket.Action.INIT) {
 			buf.writeCollection(this.recipeIdsToInit, PacketByteBuf::writeIdentifier);
 		}
 	}
 
 	@Override
-	public PacketType<UnlockRecipesS2CPacket> getPacketId() {
+	public PacketType<ChangeUnlockedRecipesS2CPacket> getPacketId() {
 		return PlayPackets.RECIPE;
 	}
 
@@ -69,7 +71,7 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 		return this.options;
 	}
 
-	public UnlockRecipesS2CPacket.Action getAction() {
+	public ChangeUnlockedRecipesS2CPacket.Action getAction() {
 		return this.action;
 	}
 

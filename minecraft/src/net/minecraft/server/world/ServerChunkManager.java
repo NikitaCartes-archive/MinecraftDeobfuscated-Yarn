@@ -13,7 +13,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.class_9761;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.server.MinecraftServer;
@@ -33,6 +32,7 @@ import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.SpawnDensityCapper;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.AbstractChunkHolder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -53,7 +53,7 @@ public class ServerChunkManager extends ChunkManager {
 	final Thread serverThread;
 	final ServerLightingProvider lightingProvider;
 	private final ServerChunkManager.MainThreadExecutor mainThreadExecutor;
-	public final ThreadedAnvilChunkStorage threadedAnvilChunkStorage;
+	public final ServerChunkLoadingManager chunkLoadingManager;
 	private final PersistentStateManager persistentStateManager;
 	private long lastMobSpawningTime;
 	private boolean spawnMonsters = true;
@@ -86,7 +86,7 @@ public class ServerChunkManager extends ChunkManager {
 		File file = session.getWorldDirectory(world.getRegistryKey()).resolve("data").toFile();
 		file.mkdirs();
 		this.persistentStateManager = new PersistentStateManager(file, dataFixer, world.getRegistryManager());
-		this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(
+		this.chunkLoadingManager = new ServerChunkLoadingManager(
 			world,
 			session,
 			dataFixer,
@@ -101,8 +101,8 @@ public class ServerChunkManager extends ChunkManager {
 			viewDistance,
 			dsync
 		);
-		this.lightingProvider = this.threadedAnvilChunkStorage.getLightingProvider();
-		this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();
+		this.lightingProvider = this.chunkLoadingManager.getLightingProvider();
+		this.ticketManager = this.chunkLoadingManager.getTicketManager();
 		this.ticketManager.setSimulationDistance(simulationDistance);
 		this.initChunkCaches();
 	}
@@ -113,11 +113,11 @@ public class ServerChunkManager extends ChunkManager {
 
 	@Nullable
 	private ChunkHolder getChunkHolder(long pos) {
-		return this.threadedAnvilChunkStorage.getChunkHolder(pos);
+		return this.chunkLoadingManager.getChunkHolder(pos);
 	}
 
 	public int getTotalChunksLoadedCount() {
-		return this.threadedAnvilChunkStorage.getTotalChunksLoadedCount();
+		return this.chunkLoadingManager.getTotalChunksLoadedCount();
 	}
 
 	private void putInCache(long pos, @Nullable Chunk chunk, ChunkStatus status) {
@@ -185,7 +185,7 @@ public class ServerChunkManager extends ChunkManager {
 			if (chunkHolder == null) {
 				return null;
 			} else {
-				Chunk chunk = chunkHolder.method_60463(ChunkStatus.FULL);
+				Chunk chunk = chunkHolder.getOrNull(ChunkStatus.FULL);
 				if (chunk != null) {
 					this.putInCache(l, chunk, ChunkStatus.FULL);
 					if (chunk instanceof WorldChunk) {
@@ -212,7 +212,7 @@ public class ServerChunkManager extends ChunkManager {
 			this.mainThreadExecutor.runTasks(completableFuture::isDone);
 		} else {
 			completableFuture = CompletableFuture.supplyAsync(() -> this.getChunkFuture(chunkX, chunkZ, leastStatus, create), this.mainThreadExecutor)
-				.thenCompose(completableFuturex -> completableFuturex);
+				.thenCompose(future -> future);
 		}
 
 		return completableFuture;
@@ -237,7 +237,7 @@ public class ServerChunkManager extends ChunkManager {
 			}
 		}
 
-		return this.isMissingForLevel(chunkHolder, i) ? class_9761.field_51867 : chunkHolder.method_60458(leastStatus, this.threadedAnvilChunkStorage);
+		return this.isMissingForLevel(chunkHolder, i) ? AbstractChunkHolder.UNLOADED_FUTURE : chunkHolder.load(leastStatus, this.chunkLoadingManager);
 	}
 
 	private boolean isMissingForLevel(@Nullable ChunkHolder holder, int maxLevel) {
@@ -256,7 +256,7 @@ public class ServerChunkManager extends ChunkManager {
 	public LightSourceView getChunk(int chunkX, int chunkZ) {
 		long l = ChunkPos.toLong(chunkX, chunkZ);
 		ChunkHolder chunkHolder = this.getChunkHolder(l);
-		return chunkHolder == null ? null : chunkHolder.method_60457(ChunkStatus.INITIALIZE_LIGHT);
+		return chunkHolder == null ? null : chunkHolder.getUncheckedOrNull(ChunkStatus.INITIALIZE_LIGHT);
 	}
 
 	public World getWorld() {
@@ -271,9 +271,9 @@ public class ServerChunkManager extends ChunkManager {
 	 * Update expected chunk loading states by updating {@code PLAYER} tickets and {@code Future}s.
 	 */
 	boolean updateChunks() {
-		boolean bl = this.ticketManager.update(this.threadedAnvilChunkStorage);
-		boolean bl2 = this.threadedAnvilChunkStorage.updateHolderMap();
-		this.threadedAnvilChunkStorage.method_60450();
+		boolean bl = this.ticketManager.update(this.chunkLoadingManager);
+		boolean bl2 = this.chunkLoadingManager.updateHolderMap();
+		this.chunkLoadingManager.updateChunks();
 		if (!bl && !bl2) {
 			return false;
 		} else {
@@ -295,14 +295,14 @@ public class ServerChunkManager extends ChunkManager {
 
 	public void save(boolean flush) {
 		this.updateChunks();
-		this.threadedAnvilChunkStorage.save(flush);
+		this.chunkLoadingManager.save(flush);
 	}
 
 	@Override
 	public void close() throws IOException {
 		this.save(true);
 		this.lightingProvider.close();
-		this.threadedAnvilChunkStorage.close();
+		this.chunkLoadingManager.close();
 	}
 
 	@Override
@@ -316,11 +316,11 @@ public class ServerChunkManager extends ChunkManager {
 		this.world.getProfiler().swap("chunks");
 		if (tickChunks) {
 			this.tickChunks();
-			this.threadedAnvilChunkStorage.tickEntityMovement();
+			this.chunkLoadingManager.tickEntityMovement();
 		}
 
 		this.world.getProfiler().swap("unload");
-		this.threadedAnvilChunkStorage.tick(shouldKeepTicking);
+		this.chunkLoadingManager.tick(shouldKeepTicking);
 		this.world.getProfiler().pop();
 		this.initChunkCaches();
 	}
@@ -334,10 +334,10 @@ public class ServerChunkManager extends ChunkManager {
 			profiler.push("pollingChunks");
 			profiler.push("filteringLoadedChunks");
 			List<ServerChunkManager.ChunkWithHolder> list = Lists.<ServerChunkManager.ChunkWithHolder>newArrayListWithCapacity(
-				this.threadedAnvilChunkStorage.getLoadedChunkCount()
+				this.chunkLoadingManager.getLoadedChunkCount()
 			);
 
-			for (ChunkHolder chunkHolder : this.threadedAnvilChunkStorage.entryIterator()) {
+			for (ChunkHolder chunkHolder : this.chunkLoadingManager.entryIterator()) {
 				WorldChunk worldChunk = chunkHolder.getWorldChunk();
 				if (worldChunk != null) {
 					list.add(new ServerChunkManager.ChunkWithHolder(worldChunk, chunkHolder));
@@ -347,7 +347,7 @@ public class ServerChunkManager extends ChunkManager {
 			if (this.world.getTickManager().shouldTick()) {
 				profiler.swap("naturalSpawnCount");
 				int i = this.ticketManager.getTickedChunkCount();
-				SpawnHelper.Info info = SpawnHelper.setupSpawn(i, this.world.iterateEntities(), this::ifChunkLoaded, new SpawnDensityCapper(this.threadedAnvilChunkStorage));
+				SpawnHelper.Info info = SpawnHelper.setupSpawn(i, this.world.iterateEntities(), this::ifChunkLoaded, new SpawnDensityCapper(this.chunkLoadingManager));
 				this.spawnInfo = info;
 				profiler.swap("spawnAndTick");
 				boolean bl = this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING);
@@ -358,7 +358,7 @@ public class ServerChunkManager extends ChunkManager {
 				for (ServerChunkManager.ChunkWithHolder chunkWithHolder : list) {
 					WorldChunk worldChunk2 = chunkWithHolder.chunk;
 					ChunkPos chunkPos = worldChunk2.getPos();
-					if (this.world.shouldTick(chunkPos) && this.threadedAnvilChunkStorage.shouldTick(chunkPos)) {
+					if (this.world.shouldTick(chunkPos) && this.chunkLoadingManager.shouldTick(chunkPos)) {
 						worldChunk2.increaseInhabitedTime(m);
 						if (bl && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(chunkPos)) {
 							SpawnHelper.spawn(this.world, worldChunk2, info, this.spawnAnimals, this.spawnMonsters, bl2);
@@ -401,20 +401,20 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	public ChunkGenerator getChunkGenerator() {
-		return this.threadedAnvilChunkStorage.getChunkGenerator();
+		return this.chunkLoadingManager.getChunkGenerator();
 	}
 
 	public StructurePlacementCalculator getStructurePlacementCalculator() {
-		return this.threadedAnvilChunkStorage.getStructurePlacementCalculator();
+		return this.chunkLoadingManager.getStructurePlacementCalculator();
 	}
 
 	public NoiseConfig getNoiseConfig() {
-		return this.threadedAnvilChunkStorage.getNoiseConfig();
+		return this.chunkLoadingManager.getNoiseConfig();
 	}
 
 	@Override
 	public int getLoadedChunkCount() {
-		return this.threadedAnvilChunkStorage.getLoadedChunkCount();
+		return this.chunkLoadingManager.getLoadedChunkCount();
 	}
 
 	public void markForUpdate(BlockPos pos) {
@@ -468,28 +468,28 @@ public class ServerChunkManager extends ChunkManager {
 	 */
 	public void updatePosition(ServerPlayerEntity player) {
 		if (!player.isRemoved()) {
-			this.threadedAnvilChunkStorage.updatePosition(player);
+			this.chunkLoadingManager.updatePosition(player);
 		}
 	}
 
 	public void unloadEntity(Entity entity) {
-		this.threadedAnvilChunkStorage.unloadEntity(entity);
+		this.chunkLoadingManager.unloadEntity(entity);
 	}
 
 	public void loadEntity(Entity entity) {
-		this.threadedAnvilChunkStorage.loadEntity(entity);
+		this.chunkLoadingManager.loadEntity(entity);
 	}
 
 	public void sendToNearbyPlayers(Entity entity, Packet<?> packet) {
-		this.threadedAnvilChunkStorage.sendToNearbyPlayers(entity, packet);
+		this.chunkLoadingManager.sendToNearbyPlayers(entity, packet);
 	}
 
 	public void sendToOtherNearbyPlayers(Entity entity, Packet<?> packet) {
-		this.threadedAnvilChunkStorage.sendToOtherNearbyPlayers(entity, packet);
+		this.chunkLoadingManager.sendToOtherNearbyPlayers(entity, packet);
 	}
 
 	public void applyViewDistance(int watchDistance) {
-		this.threadedAnvilChunkStorage.setViewDistance(watchDistance);
+		this.chunkLoadingManager.setViewDistance(watchDistance);
 	}
 
 	public void applySimulationDistance(int simulationDistance) {
@@ -503,7 +503,7 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	public String getChunkLoadingDebugInfo(ChunkPos pos) {
-		return this.threadedAnvilChunkStorage.getChunkLoadingDebugInfo(pos);
+		return this.chunkLoadingManager.getChunkLoadingDebugInfo(pos);
 	}
 
 	public PersistentStateManager getPersistentStateManager() {
@@ -511,11 +511,11 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	public PointOfInterestStorage getPointOfInterestStorage() {
-		return this.threadedAnvilChunkStorage.getPointOfInterestStorage();
+		return this.chunkLoadingManager.getPointOfInterestStorage();
 	}
 
 	public NbtScannable getChunkIoWorker() {
-		return this.threadedAnvilChunkStorage.getWorker();
+		return this.chunkLoadingManager.getWorker();
 	}
 
 	@Nullable
@@ -538,7 +538,7 @@ public class ServerChunkManager extends ChunkManager {
 
 		@Override
 		public void runTasks(BooleanSupplier stopCondition) {
-			super.runTasks(() -> MinecraftServer.method_60584() && stopCondition.getAsBoolean());
+			super.runTasks(() -> MinecraftServer.checkWorldGenException() && stopCondition.getAsBoolean());
 		}
 
 		@Override

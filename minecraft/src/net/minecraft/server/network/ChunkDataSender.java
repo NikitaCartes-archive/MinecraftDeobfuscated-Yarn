@@ -11,8 +11,8 @@ import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkSentS2CPacket;
 import net.minecraft.network.packet.s2c.play.StartChunkSendS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
+import net.minecraft.server.world.ServerChunkLoadingManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.WorldChunk;
@@ -52,8 +52,8 @@ public class ChunkDataSender {
 			if (!(this.pending < 1.0F)) {
 				if (!this.chunks.isEmpty()) {
 					ServerWorld serverWorld = player.getServerWorld();
-					ThreadedAnvilChunkStorage threadedAnvilChunkStorage = serverWorld.getChunkManager().threadedAnvilChunkStorage;
-					List<WorldChunk> list = this.makeBatch(threadedAnvilChunkStorage, player.getChunkPos());
+					ServerChunkLoadingManager serverChunkLoadingManager = serverWorld.getChunkManager().chunkLoadingManager;
+					List<WorldChunk> list = this.makeBatch(serverChunkLoadingManager, player.getChunkPos());
 					if (!list.isEmpty()) {
 						ServerPlayNetworkHandler serverPlayNetworkHandler = player.networkHandler;
 						this.unacknowledgedBatches++;
@@ -77,20 +77,20 @@ public class ChunkDataSender {
 		DebugInfoSender.sendChunkWatchingChange(world, chunkPos);
 	}
 
-	private List<WorldChunk> makeBatch(ThreadedAnvilChunkStorage chunkStorage, ChunkPos playerPos) {
+	private List<WorldChunk> makeBatch(ServerChunkLoadingManager chunkLoadingManager, ChunkPos playerPos) {
 		int i = MathHelper.floor(this.pending);
 		List<WorldChunk> list;
 		if (!this.local && this.chunks.size() > i) {
 			list = ((List)this.chunks.stream().collect(Comparators.least(i, Comparator.comparingInt(playerPos::getSquaredDistance))))
 				.stream()
 				.mapToLong(Long::longValue)
-				.mapToObj(chunkStorage::getPostProcessedChunk)
+				.mapToObj(chunkLoadingManager::getPostProcessedChunk)
 				.filter(Objects::nonNull)
 				.toList();
 		} else {
 			list = this.chunks
 				.longStream()
-				.mapToObj(chunkStorage::getPostProcessedChunk)
+				.mapToObj(chunkLoadingManager::getPostProcessedChunk)
 				.filter(Objects::nonNull)
 				.sorted(Comparator.comparingInt(chunk -> playerPos.getSquaredDistance(chunk.getPos())))
 				.toList();

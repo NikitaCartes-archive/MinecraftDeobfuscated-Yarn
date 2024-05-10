@@ -535,7 +535,7 @@ public class PiglinBrain {
 	public static ActionResult playerInteract(PiglinEntity piglin, PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (isWillingToTrade(piglin, itemStack)) {
-			ItemStack itemStack2 = itemStack.method_60504(1, player);
+			ItemStack itemStack2 = itemStack.splitUnlessCreative(1, player);
 			swapItemWithOffHand(piglin, itemStack2);
 			setAdmiringItem(piglin);
 			stopWalking(piglin);

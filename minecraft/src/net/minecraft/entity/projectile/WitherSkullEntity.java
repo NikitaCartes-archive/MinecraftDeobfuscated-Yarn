@@ -31,8 +31,8 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 		super(entityType, world);
 	}
 
-	public WitherSkullEntity(World world, LivingEntity owner, Vec3d vec3d) {
-		super(EntityType.WITHER_SKULL, owner, vec3d, world);
+	public WitherSkullEntity(World world, LivingEntity owner, Vec3d velocity) {
+		super(EntityType.WITHER_SKULL, owner, velocity, world);
 	}
 
 	@Override

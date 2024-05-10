@@ -23,7 +23,7 @@ public record ReplaceBlockEnchantmentEffectType(
 					Vec3i.CODEC.optionalFieldOf("offset", Vec3i.ZERO).forGetter(ReplaceBlockEnchantmentEffectType::offset),
 					BlockPredicate.BASE_CODEC.optionalFieldOf("predicate").forGetter(ReplaceBlockEnchantmentEffectType::predicate),
 					BlockStateProvider.TYPE_CODEC.fieldOf("block_state").forGetter(ReplaceBlockEnchantmentEffectType::blockState),
-					GameEvent.field_51910.optionalFieldOf("trigger_game_event").forGetter(ReplaceBlockEnchantmentEffectType::triggerGameEvent)
+					GameEvent.CODEC.optionalFieldOf("trigger_game_event").forGetter(ReplaceBlockEnchantmentEffectType::triggerGameEvent)
 				)
 				.apply(instance, ReplaceBlockEnchantmentEffectType::new)
 	);
@@ -33,7 +33,7 @@ public record ReplaceBlockEnchantmentEffectType(
 		BlockPos blockPos = BlockPos.ofFloored(pos).add(this.offset);
 		if ((Boolean)this.predicate.map(predicate -> predicate.test(world, blockPos)).orElse(true)
 			&& world.setBlockState(blockPos, this.blockState.get(user.getRandom(), blockPos))) {
-			this.triggerGameEvent.ifPresent(registryEntry -> world.emitGameEvent(user, registryEntry, blockPos));
+			this.triggerGameEvent.ifPresent(gameEvent -> world.emitGameEvent(user, gameEvent, blockPos));
 		}
 	}
 

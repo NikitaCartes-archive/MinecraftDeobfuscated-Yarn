@@ -779,7 +779,7 @@ public class ServerPlayNetworkHandler
 	private void addBook(FilteredMessage title, List<FilteredMessage> pages, int slotId) {
 		ItemStack itemStack = this.player.getInventory().getStack(slotId);
 		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
-			ItemStack itemStack2 = itemStack.method_60503(Items.WRITTEN_BOOK);
+			ItemStack itemStack2 = itemStack.withItem(Items.WRITTEN_BOOK);
 			itemStack2.remove(DataComponentTypes.WRITABLE_BOOK_CONTENT);
 			List<RawFilteredPair<Text>> list = pages.stream().map(page -> this.toRawFilteredPair(page).map(Text::literal)).toList();
 			itemStack2.set(
@@ -1636,7 +1636,7 @@ public class ServerPlayNetworkHandler
 			} else {
 				this.server
 					.getRecipeManager()
-					.get(packet.getRecipe())
+					.get(packet.getRecipeId())
 					.ifPresent(recipe -> ((AbstractRecipeScreenHandler)this.player.currentScreenHandler).fillInputSlots(packet.shouldCraftAll(), recipe, this.player));
 			}
 		}

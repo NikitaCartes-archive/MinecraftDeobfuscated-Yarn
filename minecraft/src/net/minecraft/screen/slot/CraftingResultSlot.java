@@ -61,10 +61,10 @@ public class CraftingResultSlot extends Slot {
 	@Override
 	public void onTakeItem(PlayerEntity player, ItemStack stack) {
 		this.onCrafted(stack);
-		CraftingRecipeInput.class_9765 lv = this.input.method_60501();
-		CraftingRecipeInput craftingRecipeInput = lv.input();
-		int i = lv.left();
-		int j = lv.top();
+		CraftingRecipeInput.Positioned positioned = this.input.createPositionedRecipeInput();
+		CraftingRecipeInput craftingRecipeInput = positioned.input();
+		int i = positioned.left();
+		int j = positioned.top();
 		DefaultedList<ItemStack> defaultedList = player.getWorld().getRecipeManager().getRemainingStacks(RecipeType.CRAFTING, craftingRecipeInput, player.getWorld());
 
 		for (int k = 0; k < craftingRecipeInput.getHeight(); k++) {

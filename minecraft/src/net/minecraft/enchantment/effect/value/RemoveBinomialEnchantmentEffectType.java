@@ -13,17 +13,17 @@ public record RemoveBinomialEnchantmentEffectType(EnchantmentLevelBasedValueType
 	);
 
 	@Override
-	public float apply(int i, Random random, float f) {
-		float g = this.chance.getValue(i);
-		int j = 0;
+	public float apply(int level, Random random, float inputValue) {
+		float f = this.chance.getValue(level);
+		int i = 0;
 
-		for (int k = 0; (float)k < f; k++) {
-			if (random.nextFloat() < g) {
-				j++;
+		for (int j = 0; (float)j < inputValue; j++) {
+			if (random.nextFloat() < f) {
+				i++;
 			}
 		}
 
-		return f - (float)j;
+		return inputValue - (float)i;
 	}
 
 	@Override

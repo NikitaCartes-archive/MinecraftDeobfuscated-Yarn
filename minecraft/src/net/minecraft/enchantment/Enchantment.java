@@ -238,8 +238,8 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 		this.modifyValue(EnchantmentEffectComponentTypes.TRIDENT_RETURN_ACCELERATION, world, level, stack, user, tridentReturnAcceleration);
 	}
 
-	public void modifyTridentSpinAttackStrength(Random random, int level, MutableFloat mutableFloat) {
-		this.method_60506(EnchantmentEffectComponentTypes.TRIDENT_SPIN_ATTACK_STRENGTH, random, level, mutableFloat);
+	public void modifyTridentSpinAttackStrength(Random random, int level, MutableFloat tridentSpinAttackStrength) {
+		this.modifyValue(EnchantmentEffectComponentTypes.TRIDENT_SPIN_ATTACK_STRENGTH, random, level, tridentSpinAttackStrength);
 	}
 
 	public void modifyFishingTimeReduction(ServerWorld world, int level, ItemStack stack, Entity user, MutableFloat fishingTimeReduction) {
@@ -306,14 +306,14 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 		this.modifyValue(EnchantmentEffectComponentTypes.PROJECTILE_SPREAD, world, level, stack, user, projectileSpread);
 	}
 
-	public void modifyCrossbowChargeTime(Random random, int level, MutableFloat mutableFloat) {
-		this.method_60506(EnchantmentEffectComponentTypes.CROSSBOW_CHARGE_TIME, random, level, mutableFloat);
+	public void modifyCrossbowChargeTime(Random random, int level, MutableFloat crossbowChargeTime) {
+		this.modifyValue(EnchantmentEffectComponentTypes.CROSSBOW_CHARGE_TIME, random, level, crossbowChargeTime);
 	}
 
-	public void method_60506(ComponentType<EnchantmentValueEffectType> componentType, Random random, int i, MutableFloat mutableFloat) {
-		EnchantmentValueEffectType enchantmentValueEffectType = this.effects.get(componentType);
+	public void modifyValue(ComponentType<EnchantmentValueEffectType> type, Random random, int level, MutableFloat value) {
+		EnchantmentValueEffectType enchantmentValueEffectType = this.effects.get(type);
 		if (enchantmentValueEffectType != null) {
-			mutableFloat.setValue(enchantmentValueEffectType.apply(i, random, mutableFloat.floatValue()));
+			value.setValue(enchantmentValueEffectType.apply(level, random, value.floatValue()));
 		}
 	}
 
@@ -347,7 +347,7 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 		applyEffects(
 			this.getEffect(type),
 			createEnchantedItemLootContext(world, level, stack),
-			enchantmentValueEffectType -> value.setValue(enchantmentValueEffectType.apply(level, world.getRandom(), value.getValue()))
+			effect -> value.setValue(effect.apply(level, world.getRandom(), value.getValue()))
 		);
 	}
 
@@ -357,7 +357,7 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 		applyEffects(
 			this.getEffect(type),
 			createEnchantedEntityLootContext(world, level, user, user.getPos()),
-			enchantmentValueEffectType -> value.setValue(enchantmentValueEffectType.apply(level, user.getRandom(), value.floatValue()))
+			effect -> value.setValue(effect.apply(level, user.getRandom(), value.floatValue()))
 		);
 	}
 
@@ -373,7 +373,7 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 		applyEffects(
 			this.getEffect(type),
 			createEnchantedDamageLootContext(world, level, user, damageSource),
-			enchantmentValueEffectType -> value.setValue(enchantmentValueEffectType.apply(level, user.getRandom(), value.floatValue()))
+			effect -> value.setValue(effect.apply(level, user.getRandom(), value.floatValue()))
 		);
 	}
 

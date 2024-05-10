@@ -2034,8 +2034,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		}
 	}
 
-	public void method_60491(Vec3d vec3d) {
-		this.addVelocity(vec3d.x, vec3d.y, vec3d.z);
+	public void addVelocity(Vec3d velocity) {
+		this.addVelocity(velocity.x, velocity.y, velocity.z);
 	}
 
 	public void addVelocity(double deltaX, double deltaY, double deltaZ) {
@@ -4281,28 +4281,28 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			&& bl
 			&& (entityDimensions2.width() > entityDimensions.width() || entityDimensions2.height() > entityDimensions.height())
 			&& !(this instanceof PlayerEntity)) {
-			this.method_60490(entityDimensions);
+			this.recalculateDimensions(entityDimensions);
 		}
 	}
 
-	public boolean method_60490(EntityDimensions entityDimensions) {
-		EntityDimensions entityDimensions2 = this.getDimensions(this.getPose());
-		Vec3d vec3d = this.getPos().add(0.0, (double)entityDimensions.height() / 2.0, 0.0);
-		double d = (double)Math.max(0.0F, entityDimensions2.width() - entityDimensions.width()) + 1.0E-6;
-		double e = (double)Math.max(0.0F, entityDimensions2.height() - entityDimensions.height()) + 1.0E-6;
+	public boolean recalculateDimensions(EntityDimensions previous) {
+		EntityDimensions entityDimensions = this.getDimensions(this.getPose());
+		Vec3d vec3d = this.getPos().add(0.0, (double)previous.height() / 2.0, 0.0);
+		double d = (double)Math.max(0.0F, entityDimensions.width() - previous.width()) + 1.0E-6;
+		double e = (double)Math.max(0.0F, entityDimensions.height() - previous.height()) + 1.0E-6;
 		VoxelShape voxelShape = VoxelShapes.cuboid(Box.of(vec3d, d, e, d));
 		Optional<Vec3d> optional = this.world
-			.findClosestCollision(this, voxelShape, vec3d, (double)entityDimensions2.width(), (double)entityDimensions2.height(), (double)entityDimensions2.width());
+			.findClosestCollision(this, voxelShape, vec3d, (double)entityDimensions.width(), (double)entityDimensions.height(), (double)entityDimensions.width());
 		if (optional.isPresent()) {
-			this.setPosition(((Vec3d)optional.get()).add(0.0, (double)(-entityDimensions2.height()) / 2.0, 0.0));
+			this.setPosition(((Vec3d)optional.get()).add(0.0, (double)(-entityDimensions.height()) / 2.0, 0.0));
 			return true;
 		} else {
-			if (entityDimensions2.width() > entityDimensions.width() && entityDimensions2.height() > entityDimensions.height()) {
+			if (entityDimensions.width() > previous.width() && entityDimensions.height() > previous.height()) {
 				VoxelShape voxelShape2 = VoxelShapes.cuboid(Box.of(vec3d, d, 1.0E-6, d));
 				Optional<Vec3d> optional2 = this.world
-					.findClosestCollision(this, voxelShape2, vec3d, (double)entityDimensions2.width(), (double)entityDimensions.height(), (double)entityDimensions2.width());
+					.findClosestCollision(this, voxelShape2, vec3d, (double)entityDimensions.width(), (double)previous.height(), (double)entityDimensions.width());
 				if (optional2.isPresent()) {
-					this.setPosition(((Vec3d)optional2.get()).add(0.0, (double)(-entityDimensions.height()) / 2.0 + 1.0E-6, 0.0));
+					this.setPosition(((Vec3d)optional2.get()).add(0.0, (double)(-previous.height()) / 2.0 + 1.0E-6, 0.0));
 					return true;
 				}
 			}
@@ -5076,7 +5076,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		this.velocity = velocity;
 	}
 
-	public void addVelocity(Vec3d velocity) {
+	public void addVelocityInternal(Vec3d velocity) {
 		this.setVelocity(this.getVelocity().add(velocity));
 	}
 
@@ -5401,7 +5401,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return this.random;
 	}
 
-	public Vec3d method_60478() {
+	public Vec3d getParticleVelocity() {
 		return this.getVelocity();
 	}
 

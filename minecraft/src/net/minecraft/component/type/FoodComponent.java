@@ -57,7 +57,7 @@ public record FoodComponent(
 		private float saturationModifier;
 		private boolean canAlwaysEat;
 		private float eatSeconds = 1.6F;
-		private Optional<ItemStack> field_51895 = Optional.empty();
+		private Optional<ItemStack> usingConvertsTo = Optional.empty();
 		private final ImmutableList.Builder<FoodComponent.StatusEffectEntry> effects = ImmutableList.builder();
 
 		/**
@@ -112,14 +112,14 @@ public record FoodComponent(
 			return this;
 		}
 
-		public FoodComponent.Builder method_60500(ItemConvertible itemConvertible) {
-			this.field_51895 = Optional.of(new ItemStack(itemConvertible));
+		public FoodComponent.Builder usingConvertsTo(ItemConvertible item) {
+			this.usingConvertsTo = Optional.of(new ItemStack(item));
 			return this;
 		}
 
 		public FoodComponent build() {
 			float f = HungerConstants.calculateSaturation(this.nutrition, this.saturationModifier);
-			return new FoodComponent(this.nutrition, f, this.canAlwaysEat, this.eatSeconds, this.field_51895, this.effects.build());
+			return new FoodComponent(this.nutrition, f, this.canAlwaysEat, this.eatSeconds, this.usingConvertsTo, this.effects.build());
 		}
 	}
 

@@ -56,7 +56,7 @@ public record SpawnParticlesEnchantmentEffectType(
 	@Override
 	public void apply(ServerWorld world, int level, EnchantmentEffectContext context, Entity user, Vec3d pos) {
 		Random random = user.getRandom();
-		Vec3d vec3d = user.method_60478();
+		Vec3d vec3d = user.getParticleVelocity();
 		float f = user.getWidth();
 		float g = user.getHeight();
 		world.spawnParticles(

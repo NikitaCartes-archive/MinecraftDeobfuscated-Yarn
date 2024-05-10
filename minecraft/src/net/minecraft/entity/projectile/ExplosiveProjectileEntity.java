@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	public static final double field_51891 = 0.1;
 	public static final double field_51892 = 0.5;
-	public double field_51893 = 0.1;
+	public double accelerationPower = 0.1;
 
 	protected ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> entityType, World world) {
 		super(entityType, world);
@@ -32,15 +32,15 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		this.setPosition(x, y, z);
 	}
 
-	public ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> type, double x, double y, double z, Vec3d vec3d, World world) {
+	public ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> type, double x, double y, double z, Vec3d velocity, World world) {
 		this(type, world);
 		this.refreshPositionAndAngles(x, y, z, this.getYaw(), this.getPitch());
 		this.refreshPosition();
-		this.method_60499(vec3d, this.field_51893);
+		this.setVelocityWithAcceleration(velocity, this.accelerationPower);
 	}
 
-	public ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> type, LivingEntity owner, Vec3d vec3d, World world) {
-		this(type, owner.getX(), owner.getY(), owner.getZ(), vec3d, world);
+	public ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> type, LivingEntity owner, Vec3d velocity, World world) {
+		this(type, owner.getX(), owner.getY(), owner.getZ(), velocity, world);
 		this.setOwner(owner);
 		this.setRotation(owner.getYaw(), owner.getPitch());
 	}
@@ -96,7 +96,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 				h = this.getDrag();
 			}
 
-			this.setVelocity(vec3d.add(vec3d.normalize().multiply(this.field_51893)).multiply((double)h));
+			this.setVelocity(vec3d.add(vec3d.normalize().multiply(this.accelerationPower)).multiply((double)h));
 			ParticleEffect particleEffect = this.getParticleType();
 			if (particleEffect != null) {
 				this.getWorld().addParticle(particleEffect, d, e + 0.5, f, 0.0, 0.0, 0.0);
@@ -138,14 +138,14 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putDouble("acceleration_power", this.field_51893);
+		nbt.putDouble("acceleration_power", this.accelerationPower);
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 		if (nbt.contains("acceleration_power", NbtElement.DOUBLE_TYPE)) {
-			this.field_51893 = nbt.getDouble("acceleration_power");
+			this.accelerationPower = nbt.getDouble("acceleration_power");
 		}
 	}
 
@@ -170,8 +170,8 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		this.setVelocity(vec3d);
 	}
 
-	private void method_60499(Vec3d vec3d, double d) {
-		this.setVelocity(vec3d.normalize().multiply(d));
+	private void setVelocityWithAcceleration(Vec3d velocity, double accelerationPower) {
+		this.setVelocity(velocity.normalize().multiply(accelerationPower));
 		this.velocityDirty = true;
 	}
 
@@ -179,9 +179,9 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	protected void onDeflected(@Nullable Entity deflector, boolean fromAttack) {
 		super.onDeflected(deflector, fromAttack);
 		if (fromAttack) {
-			this.field_51893 = 0.1;
+			this.accelerationPower = 0.1;
 		} else {
-			this.field_51893 *= 0.5;
+			this.accelerationPower *= 0.5;
 		}
 	}
 }

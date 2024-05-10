@@ -1111,7 +1111,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	private void updateAttributes() {
-		Set<EntityAttributeInstance> set = this.getAttributes().method_60498();
+		Set<EntityAttributeInstance> set = this.getAttributes().getPendingUpdate();
 
 		for (EntityAttributeInstance entityAttributeInstance : set) {
 			this.updateAttribute(entityAttributeInstance.getAttribute());
@@ -2163,7 +2163,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			this.setVelocity(vec3d.x, (double)f, vec3d.z);
 			if (this.isSprinting()) {
 				float g = this.getYaw() * (float) (Math.PI / 180.0);
-				this.addVelocity(new Vec3d((double)(-MathHelper.sin(g)) * 0.2, 0.0, (double)MathHelper.cos(g) * 0.2));
+				this.addVelocityInternal(new Vec3d((double)(-MathHelper.sin(g)) * 0.2, 0.0, (double)MathHelper.cos(g) * 0.2));
 			}
 
 			this.velocityDirty = true;
@@ -3490,9 +3490,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return ItemStack.EMPTY;
 	}
 
-	public final ItemStack method_60492(World world, ItemStack itemStack) {
-		FoodComponent foodComponent = itemStack.get(DataComponentTypes.FOOD);
-		return foodComponent != null ? this.eatFood(world, itemStack, foodComponent) : itemStack;
+	public final ItemStack tryEatFood(World world, ItemStack stack) {
+		FoodComponent foodComponent = stack.get(DataComponentTypes.FOOD);
+		return foodComponent != null ? this.eatFood(world, stack, foodComponent) : stack;
 	}
 
 	public ItemStack eatFood(World world, ItemStack stack, FoodComponent foodComponent) {

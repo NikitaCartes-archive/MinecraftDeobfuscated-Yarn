@@ -3,7 +3,7 @@ package net.minecraft.block;
 import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -32,7 +32,7 @@ import net.minecraft.world.event.GameEvent;
 
 public class NoteBlock extends Block {
 	public static final MapCodec<NoteBlock> CODEC = createCodec(NoteBlock::new);
-	public static final EnumProperty<Instrument> INSTRUMENT = Properties.INSTRUMENT;
+	public static final EnumProperty<NoteBlockInstrument> INSTRUMENT = Properties.INSTRUMENT;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final IntProperty NOTE = Properties.NOTE;
 	public static final int field_41678 = 3;
@@ -45,18 +45,18 @@ public class NoteBlock extends Block {
 	public NoteBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateManager.getDefaultState().with(INSTRUMENT, Instrument.HARP).with(NOTE, Integer.valueOf(0)).with(POWERED, Boolean.valueOf(false))
+			this.stateManager.getDefaultState().with(INSTRUMENT, NoteBlockInstrument.HARP).with(NOTE, Integer.valueOf(0)).with(POWERED, Boolean.valueOf(false))
 		);
 	}
 
 	private BlockState getStateWithInstrument(WorldAccess world, BlockPos pos, BlockState state) {
-		Instrument instrument = world.getBlockState(pos.up()).getInstrument();
-		if (instrument.isNotBaseBlock()) {
-			return state.with(INSTRUMENT, instrument);
+		NoteBlockInstrument noteBlockInstrument = world.getBlockState(pos.up()).getInstrument();
+		if (noteBlockInstrument.isNotBaseBlock()) {
+			return state.with(INSTRUMENT, noteBlockInstrument);
 		} else {
-			Instrument instrument2 = world.getBlockState(pos.down()).getInstrument();
-			Instrument instrument3 = instrument2.isNotBaseBlock() ? Instrument.HARP : instrument2;
-			return state.with(INSTRUMENT, instrument3);
+			NoteBlockInstrument noteBlockInstrument2 = world.getBlockState(pos.down()).getInstrument();
+			NoteBlockInstrument noteBlockInstrument3 = noteBlockInstrument2.isNotBaseBlock() ? NoteBlockInstrument.HARP : noteBlockInstrument2;
+			return state.with(INSTRUMENT, noteBlockInstrument3);
 		}
 	}
 
@@ -86,7 +86,7 @@ public class NoteBlock extends Block {
 	}
 
 	private void playNote(@Nullable Entity entity, BlockState state, World world, BlockPos pos) {
-		if (((Instrument)state.get(INSTRUMENT)).isNotBaseBlock() || world.getBlockState(pos.up()).isAir()) {
+		if (((NoteBlockInstrument)state.get(INSTRUMENT)).isNotBaseBlock() || world.getBlockState(pos.up()).isAir()) {
 			world.addSyncedBlockEvent(pos, this, 0, 0);
 			world.emitGameEvent(entity, GameEvent.NOTE_BLOCK_PLAY, pos);
 		}
@@ -126,9 +126,9 @@ public class NoteBlock extends Block {
 
 	@Override
 	protected boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
-		Instrument instrument = state.get(INSTRUMENT);
+		NoteBlockInstrument noteBlockInstrument = state.get(INSTRUMENT);
 		float f;
-		if (instrument.shouldSpawnNoteParticles()) {
+		if (noteBlockInstrument.canBePitched()) {
 			int i = (Integer)state.get(NOTE);
 			f = getNotePitch(i);
 			world.addParticle(ParticleTypes.NOTE, (double)pos.getX() + 0.5, (double)pos.getY() + 1.2, (double)pos.getZ() + 0.5, (double)i / 24.0, 0.0, 0.0);
@@ -137,7 +137,7 @@ public class NoteBlock extends Block {
 		}
 
 		RegistryEntry<SoundEvent> registryEntry;
-		if (instrument.hasCustomSound()) {
+		if (noteBlockInstrument.hasCustomSound()) {
 			Identifier identifier = this.getCustomSound(world, pos);
 			if (identifier == null) {
 				return false;
@@ -145,7 +145,7 @@ public class NoteBlock extends Block {
 
 			registryEntry = RegistryEntry.of(SoundEvent.of(identifier));
 		} else {
-			registryEntry = instrument.getSound();
+			registryEntry = noteBlockInstrument.getSound();
 		}
 
 		world.playSound(

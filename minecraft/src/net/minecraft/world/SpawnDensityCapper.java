@@ -10,22 +10,22 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ThreadedAnvilChunkStorage;
+import net.minecraft.server.world.ServerChunkLoadingManager;
 import net.minecraft.util.math.ChunkPos;
 
 public class SpawnDensityCapper {
 	private final Long2ObjectMap<List<ServerPlayerEntity>> chunkPosToMobSpawnablePlayers = new Long2ObjectOpenHashMap<>();
 	private final Map<ServerPlayerEntity, SpawnDensityCapper.DensityCap> playersToDensityCap = Maps.<ServerPlayerEntity, SpawnDensityCapper.DensityCap>newHashMap();
-	private final ThreadedAnvilChunkStorage threadedAnvilChunkStorage;
+	private final ServerChunkLoadingManager chunkLoadingManager;
 
-	public SpawnDensityCapper(ThreadedAnvilChunkStorage threadedAnvilChunkStorage) {
-		this.threadedAnvilChunkStorage = threadedAnvilChunkStorage;
+	public SpawnDensityCapper(ServerChunkLoadingManager chunkLoadingManager) {
+		this.chunkLoadingManager = chunkLoadingManager;
 	}
 
 	private List<ServerPlayerEntity> getMobSpawnablePlayers(ChunkPos chunkPos) {
 		return this.chunkPosToMobSpawnablePlayers
 			.computeIfAbsent(
-				chunkPos.toLong(), (Long2ObjectFunction<? extends List<ServerPlayerEntity>>)(pos -> this.threadedAnvilChunkStorage.getPlayersWatchingChunk(chunkPos))
+				chunkPos.toLong(), (Long2ObjectFunction<? extends List<ServerPlayerEntity>>)(pos -> this.chunkLoadingManager.getPlayersWatchingChunk(chunkPos))
 			);
 	}
 

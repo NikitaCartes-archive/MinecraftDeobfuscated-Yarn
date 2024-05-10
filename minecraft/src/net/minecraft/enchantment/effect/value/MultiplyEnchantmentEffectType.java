@@ -13,8 +13,8 @@ public record MultiplyEnchantmentEffectType(EnchantmentLevelBasedValueType facto
 	);
 
 	@Override
-	public float apply(int i, Random random, float f) {
-		return f * this.factor.getValue(i);
+	public float apply(int level, Random random, float inputValue) {
+		return inputValue * this.factor.getValue(level);
 	}
 
 	@Override

@@ -52,18 +52,18 @@ public class NbtTextFormatter implements NbtElementVisitor {
 	private static final String CURLY_OPEN_BRACKET = "{";
 	private static final String CURLY_CLOSE_BRACKET = "}";
 	private static final String NEW_LINE = "\n";
-	private static final String field_51922 = ": ";
+	private static final String COLON_WITH_SPACE = ": ";
 	private static final String ENTRY_SEPARATOR = String.valueOf(',');
-	private static final String field_51923 = ENTRY_SEPARATOR + "\n";
-	private static final String field_51924 = ENTRY_SEPARATOR + " ";
-	private static final Text field_51925 = Text.literal("<...>").formatted(Formatting.GRAY);
-	private static final Text field_51926 = Text.literal("b").formatted(TYPE_SUFFIX_COLOR);
-	private static final Text field_51927 = Text.literal("s").formatted(TYPE_SUFFIX_COLOR);
-	private static final Text field_51928 = Text.literal("I").formatted(TYPE_SUFFIX_COLOR);
-	private static final Text field_51929 = Text.literal("L").formatted(TYPE_SUFFIX_COLOR);
-	private static final Text field_51918 = Text.literal("f").formatted(TYPE_SUFFIX_COLOR);
-	private static final Text field_51919 = Text.literal("d").formatted(TYPE_SUFFIX_COLOR);
-	private static final Text field_51920 = Text.literal("B").formatted(TYPE_SUFFIX_COLOR);
+	private static final String ENTRY_SEPARATOR_WITH_NEW_LINE = ENTRY_SEPARATOR + "\n";
+	private static final String ENTRY_SEPARATOR_WITH_SPACE = ENTRY_SEPARATOR + " ";
+	private static final Text ELLIPSIS = Text.literal("<...>").formatted(Formatting.GRAY);
+	private static final Text BYTE_TYPE_SUFFIX = Text.literal("b").formatted(TYPE_SUFFIX_COLOR);
+	private static final Text SHORT_TYPE_SUFFIX = Text.literal("s").formatted(TYPE_SUFFIX_COLOR);
+	private static final Text INT_TYPE_SUFFIX = Text.literal("I").formatted(TYPE_SUFFIX_COLOR);
+	private static final Text LONG_TYPE_SUFFIX = Text.literal("L").formatted(TYPE_SUFFIX_COLOR);
+	private static final Text FLOAT_TYPE_SUFFIX = Text.literal("f").formatted(TYPE_SUFFIX_COLOR);
+	private static final Text DOUBLE_TYPE_SUFFIX = Text.literal("d").formatted(TYPE_SUFFIX_COLOR);
+	private static final Text ARRAY_BYTE_TYPE_SUFFIX = Text.literal("B").formatted(TYPE_SUFFIX_COLOR);
 	private final String prefix;
 	private int indentationLevel;
 	private int depth;
@@ -91,12 +91,12 @@ public class NbtTextFormatter implements NbtElementVisitor {
 
 	@Override
 	public void visitByte(NbtByte element) {
-		this.result.append(Text.literal(String.valueOf(element.numberValue())).formatted(NUMBER_COLOR)).append(field_51926);
+		this.result.append(Text.literal(String.valueOf(element.numberValue())).formatted(NUMBER_COLOR)).append(BYTE_TYPE_SUFFIX);
 	}
 
 	@Override
 	public void visitShort(NbtShort element) {
-		this.result.append(Text.literal(String.valueOf(element.numberValue())).formatted(NUMBER_COLOR)).append(field_51927);
+		this.result.append(Text.literal(String.valueOf(element.numberValue())).formatted(NUMBER_COLOR)).append(SHORT_TYPE_SUFFIX);
 	}
 
 	@Override
@@ -106,34 +106,34 @@ public class NbtTextFormatter implements NbtElementVisitor {
 
 	@Override
 	public void visitLong(NbtLong element) {
-		this.result.append(Text.literal(String.valueOf(element.numberValue())).formatted(NUMBER_COLOR)).append(field_51929);
+		this.result.append(Text.literal(String.valueOf(element.numberValue())).formatted(NUMBER_COLOR)).append(LONG_TYPE_SUFFIX);
 	}
 
 	@Override
 	public void visitFloat(NbtFloat element) {
-		this.result.append(Text.literal(String.valueOf(element.floatValue())).formatted(NUMBER_COLOR)).append(field_51918);
+		this.result.append(Text.literal(String.valueOf(element.floatValue())).formatted(NUMBER_COLOR)).append(FLOAT_TYPE_SUFFIX);
 	}
 
 	@Override
 	public void visitDouble(NbtDouble element) {
-		this.result.append(Text.literal(String.valueOf(element.doubleValue())).formatted(NUMBER_COLOR)).append(field_51919);
+		this.result.append(Text.literal(String.valueOf(element.doubleValue())).formatted(NUMBER_COLOR)).append(DOUBLE_TYPE_SUFFIX);
 	}
 
 	@Override
 	public void visitByteArray(NbtByteArray element) {
-		this.result.append("[").append(field_51920).append(";");
+		this.result.append("[").append(ARRAY_BYTE_TYPE_SUFFIX).append(";");
 		byte[] bs = element.getByteArray();
 
 		for (int i = 0; i < bs.length && i < 128; i++) {
 			MutableText mutableText = Text.literal(String.valueOf(bs[i])).formatted(NUMBER_COLOR);
-			this.result.append(" ").append(mutableText).append(field_51920);
+			this.result.append(" ").append(mutableText).append(ARRAY_BYTE_TYPE_SUFFIX);
 			if (i != bs.length - 1) {
 				this.result.append(ENTRY_SEPARATOR);
 			}
 		}
 
 		if (bs.length > 128) {
-			this.result.append(field_51925);
+			this.result.append(ELLIPSIS);
 		}
 
 		this.result.append("]");
@@ -141,7 +141,7 @@ public class NbtTextFormatter implements NbtElementVisitor {
 
 	@Override
 	public void visitIntArray(NbtIntArray element) {
-		this.result.append("[").append(field_51928).append(";");
+		this.result.append("[").append(INT_TYPE_SUFFIX).append(";");
 		int[] is = element.getIntArray();
 
 		for (int i = 0; i < is.length && i < 128; i++) {
@@ -152,7 +152,7 @@ public class NbtTextFormatter implements NbtElementVisitor {
 		}
 
 		if (is.length > 128) {
-			this.result.append(field_51925);
+			this.result.append(ELLIPSIS);
 		}
 
 		this.result.append("]");
@@ -160,19 +160,19 @@ public class NbtTextFormatter implements NbtElementVisitor {
 
 	@Override
 	public void visitLongArray(NbtLongArray element) {
-		this.result.append("[").append(field_51929).append(";");
+		this.result.append("[").append(LONG_TYPE_SUFFIX).append(";");
 		long[] ls = element.getLongArray();
 
 		for (int i = 0; i < ls.length && i < 128; i++) {
 			Text text = Text.literal(String.valueOf(ls[i])).formatted(NUMBER_COLOR);
-			this.result.append(" ").append(text).append(field_51929);
+			this.result.append(" ").append(text).append(LONG_TYPE_SUFFIX);
 			if (i != ls.length - 1) {
 				this.result.append(ENTRY_SEPARATOR);
 			}
 		}
 
 		if (ls.length > 128) {
-			this.result.append(field_51925);
+			this.result.append(ELLIPSIS);
 		}
 
 		this.result.append("]");
@@ -183,16 +183,16 @@ public class NbtTextFormatter implements NbtElementVisitor {
 		if (element.isEmpty()) {
 			this.result.append("[]");
 		} else if (this.depth >= 64) {
-			this.result.append("[" + field_51925 + "]");
+			this.result.append("[" + ELLIPSIS + "]");
 		} else if (SINGLE_LINE_ELEMENT_TYPES.contains(element.getHeldType()) && element.size() <= 8) {
 			this.result.append("[");
 
 			for (int i = 0; i < element.size(); i++) {
 				if (i != 0) {
-					this.result.append(field_51924);
+					this.result.append(ENTRY_SEPARATOR_WITH_SPACE);
 				}
 
-				this.method_60585(element.get(i), false);
+				this.formatSubElement(element.get(i), false);
 			}
 
 			this.result.append("]");
@@ -206,14 +206,14 @@ public class NbtTextFormatter implements NbtElementVisitor {
 
 			for (int j = 0; j < element.size() && j < 128; j++) {
 				this.result.append(string);
-				this.method_60585(element.get(j), true);
+				this.formatSubElement(element.get(j), true);
 				if (j != element.size() - 1) {
-					this.result.append(this.prefix.isEmpty() ? field_51924 : field_51923);
+					this.result.append(this.prefix.isEmpty() ? ENTRY_SEPARATOR_WITH_SPACE : ENTRY_SEPARATOR_WITH_NEW_LINE);
 				}
 			}
 
 			if (element.size() > 128) {
-				this.result.append(string + field_51925);
+				this.result.append(string + ELLIPSIS);
 			}
 
 			if (!this.prefix.isEmpty()) {
@@ -229,7 +229,7 @@ public class NbtTextFormatter implements NbtElementVisitor {
 		if (compound.isEmpty()) {
 			this.result.append("{}");
 		} else if (this.depth >= 64) {
-			this.result.append("{" + field_51925 + "}");
+			this.result.append("{" + ELLIPSIS + "}");
 		} else {
 			this.result.append("{");
 			Collection<String> collection = compound.getKeys();
@@ -249,9 +249,9 @@ public class NbtTextFormatter implements NbtElementVisitor {
 			while (iterator.hasNext()) {
 				String string2 = (String)iterator.next();
 				this.result.append(string).append(escapeName(string2)).append(": ");
-				this.method_60585(compound.get(string2), true);
+				this.formatSubElement(compound.get(string2), true);
 				if (iterator.hasNext()) {
-					this.result.append(this.prefix.isEmpty() ? field_51924 : field_51923);
+					this.result.append(this.prefix.isEmpty() ? ENTRY_SEPARATOR_WITH_SPACE : ENTRY_SEPARATOR_WITH_NEW_LINE);
 				}
 			}
 
@@ -263,17 +263,17 @@ public class NbtTextFormatter implements NbtElementVisitor {
 		}
 	}
 
-	private void method_60585(NbtElement nbtElement, boolean bl) {
-		if (bl) {
+	private void formatSubElement(NbtElement element, boolean indent) {
+		if (indent) {
 			this.indentationLevel++;
 		}
 
 		this.depth++;
 
 		try {
-			nbtElement.accept(this);
+			element.accept(this);
 		} finally {
-			if (bl) {
+			if (indent) {
 				this.indentationLevel--;
 			}
 

@@ -469,10 +469,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		this.playSound(source, x, y, z, sound, category, volume, pitch, this.threadSafeRandom.nextLong());
 	}
 
-	public void method_60511(
-		@Nullable PlayerEntity playerEntity, double d, double e, double f, RegistryEntry<SoundEvent> registryEntry, SoundCategory soundCategory, float g, float h
+	public void playSound(
+		@Nullable PlayerEntity source, double x, double y, double z, RegistryEntry<SoundEvent> sound, SoundCategory category, float volume, float pitch
 	) {
-		this.playSound(playerEntity, d, e, f, registryEntry, soundCategory, g, h, this.threadSafeRandom.nextLong());
+		this.playSound(source, x, y, z, sound, category, volume, pitch, this.threadSafeRandom.nextLong());
 	}
 
 	/**
