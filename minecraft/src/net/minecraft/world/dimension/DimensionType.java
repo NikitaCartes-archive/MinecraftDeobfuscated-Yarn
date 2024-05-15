@@ -9,6 +9,9 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.OptionalLong;
 import net.minecraft.block.Block;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryElementCodec;
@@ -67,6 +70,7 @@ public record DimensionType(
 					.apply(instance, DimensionType::new)
 		)
 	);
+	public static final PacketCodec<RegistryByteBuf, RegistryEntry<DimensionType>> PACKET_CODEC = PacketCodecs.registryEntry(RegistryKeys.DIMENSION_TYPE);
 	private static final int field_31440 = 8;
 	public static final float[] MOON_SIZES = new float[]{1.0F, 0.75F, 0.5F, 0.25F, 0.0F, 0.25F, 0.5F, 0.75F};
 	public static final Codec<RegistryEntry<DimensionType>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.DIMENSION_TYPE, CODEC);

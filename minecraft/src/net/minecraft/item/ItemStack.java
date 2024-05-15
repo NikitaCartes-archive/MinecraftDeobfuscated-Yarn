@@ -30,6 +30,7 @@ import net.minecraft.component.ComponentMap;
 import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
@@ -572,12 +573,11 @@ public final class ItemStack implements ComponentHolder {
 	 * 
 	 * <p>When the item "breaks", that is, the stack's damage is equal to or above
 	 * {@linkplain #getMaxDamage the maximum damage}, {@code breakCallback} is run.
-	 * Callers should decrement the stack size inside the callback.
+	 * Note that this method automatically decrements the stack size.
 	 * 
 	 * @param player the player that damaged the stack, or {@code null} if no player is involved
-	 * @param breakCallback a callback run when the item "breaks"
 	 */
-	public void damage(int amount, ServerWorld world, @Nullable ServerPlayerEntity player, Runnable breakCallback) {
+	public void damage(int amount, ServerWorld world, @Nullable ServerPlayerEntity player, Consumer<Item> breakCallback) {
 		if (this.isDamageable()) {
 			if (amount > 0) {
 				amount = EnchantmentHelper.getItemDamage(world, this, amount);
@@ -593,7 +593,9 @@ public final class ItemStack implements ComponentHolder {
 			int i = this.getDamage() + amount;
 			this.setDamage(i);
 			if (i >= this.getMaxDamage()) {
-				breakCallback.run();
+				Item item = this.getItem();
+				this.decrement(1);
+				breakCallback.accept(item);
 			}
 		}
 	}
@@ -617,24 +619,14 @@ public final class ItemStack implements ComponentHolder {
 	 * @param slot the slot in which the stack is held
 	 */
 	public void damage(int amount, LivingEntity entity, EquipmentSlot slot) {
-		if (!(entity.getWorld() instanceof ServerWorld serverWorld)) {
-			return;
+		if (entity.getWorld() instanceof ServerWorld serverWorld && !entity.isInCreativeMode()) {
+			this.damage(
+				amount,
+				serverWorld,
+				entity instanceof ServerPlayerEntity serverPlayerEntity ? serverPlayerEntity : null,
+				item -> entity.sendEquipmentBreakStatus(item, slot)
+			);
 		}
-
-		if (entity instanceof PlayerEntity playerEntity && playerEntity.isInCreativeMode()) {
-			return;
-		}
-
-		this.damage(amount, serverWorld, entity instanceof ServerPlayerEntity serverPlayerEntity ? serverPlayerEntity : null, () -> {
-			entity.sendEquipmentBreakStatus(slot);
-			Item item = this.getItem();
-			this.decrement(1);
-			if (entity instanceof PlayerEntity) {
-				((PlayerEntity)entity).incrementStat(Stats.BROKEN.getOrCreateStat(item));
-			}
-
-			this.setDamage(0);
-		});
 	}
 
 	public boolean isItemBarVisible() {
@@ -1075,12 +1067,12 @@ public final class ItemStack implements ComponentHolder {
 	private void appendAttributeModifiersTooltip(Consumer<Text> textConsumer, @Nullable PlayerEntity player) {
 		AttributeModifiersComponent attributeModifiersComponent = this.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
 		if (attributeModifiersComponent.showInTooltip()) {
-			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+			for (AttributeModifierSlot attributeModifierSlot : AttributeModifierSlot.values()) {
 				MutableBoolean mutableBoolean = new MutableBoolean(true);
-				this.applyAttributeModifiers(equipmentSlot, (attribute, modifier) -> {
+				this.applyAttributeModifier(attributeModifierSlot, (attribute, modifier) -> {
 					if (mutableBoolean.isTrue()) {
 						textConsumer.accept(ScreenTexts.EMPTY);
-						textConsumer.accept(Text.translatable("item.modifiers." + equipmentSlot.getName()).formatted(Formatting.GRAY));
+						textConsumer.accept(Text.translatable("item.modifiers." + attributeModifierSlot.asString()).formatted(Formatting.GRAY));
 						mutableBoolean.setFalse();
 					}
 
@@ -1259,6 +1251,17 @@ public final class ItemStack implements ComponentHolder {
 	@Nullable
 	public Entity getHolder() {
 		return !this.isEmpty() ? this.holder : null;
+	}
+
+	public void applyAttributeModifier(AttributeModifierSlot slot, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeModifierConsumer) {
+		AttributeModifiersComponent attributeModifiersComponent = this.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
+		if (!attributeModifiersComponent.modifiers().isEmpty()) {
+			attributeModifiersComponent.applyModifiers(slot, attributeModifierConsumer);
+		} else {
+			this.getItem().getAttributeModifiers().applyModifiers(slot, attributeModifierConsumer);
+		}
+
+		EnchantmentHelper.applyAttributeModifiers(this, slot, attributeModifierConsumer);
 	}
 
 	public void applyAttributeModifiers(EquipmentSlot slot, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeModifierConsumer) {

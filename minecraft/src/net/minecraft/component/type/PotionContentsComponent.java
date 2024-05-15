@@ -21,8 +21,6 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.potion.Potion;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
@@ -34,19 +32,18 @@ import net.minecraft.util.math.ColorHelper;
 public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Optional<Integer> customColor, List<StatusEffectInstance> customEffects) {
 	public static final PotionContentsComponent DEFAULT = new PotionContentsComponent(Optional.empty(), Optional.empty(), List.of());
 	private static final Text NONE_TEXT = Text.translatable("effect.none").formatted(Formatting.GRAY);
-	private static final int UNCRAFTABLE_COLOR = -524040;
 	private static final int EFFECTLESS_COLOR = -13083194;
 	private static final Codec<PotionContentsComponent> BASE_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registries.POTION.getEntryCodec().optionalFieldOf("potion").forGetter(PotionContentsComponent::potion),
+					Potion.CODEC.optionalFieldOf("potion").forGetter(PotionContentsComponent::potion),
 					Codec.INT.optionalFieldOf("custom_color").forGetter(PotionContentsComponent::customColor),
 					StatusEffectInstance.CODEC.listOf().optionalFieldOf("custom_effects", List.of()).forGetter(PotionContentsComponent::customEffects)
 				)
 				.apply(instance, PotionContentsComponent::new)
 	);
-	public static final Codec<PotionContentsComponent> CODEC = Codec.withAlternative(BASE_CODEC, Registries.POTION.getEntryCodec(), PotionContentsComponent::new);
+	public static final Codec<PotionContentsComponent> CODEC = Codec.withAlternative(BASE_CODEC, Potion.CODEC, PotionContentsComponent::new);
 	public static final PacketCodec<RegistryByteBuf, PotionContentsComponent> PACKET_CODEC = PacketCodec.tuple(
-		PacketCodecs.registryEntry(RegistryKeys.POTION).collect(PacketCodecs::optional),
+		Potion.PACKET_CODEC.collect(PacketCodecs::optional),
 		PotionContentsComponent::potion,
 		PacketCodecs.INTEGER.collect(PacketCodecs::optional),
 		PotionContentsComponent::customColor,

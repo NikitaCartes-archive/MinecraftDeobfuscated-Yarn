@@ -18,16 +18,10 @@ public class WindowFramebuffer extends Framebuffer {
 
 	public WindowFramebuffer(int width, int height) {
 		super(true);
-		RenderSystem.assertOnRenderThreadOrInit();
-		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(() -> this.init(width, height));
-		} else {
-			this.init(width, height);
-		}
+		this.init(width, height);
 	}
 
 	private void init(int width, int height) {
-		RenderSystem.assertOnRenderThreadOrInit();
 		WindowFramebuffer.Size size = this.findSuitableSize(width, height);
 		this.fbo = GlStateManager.glGenFramebuffers();
 		GlStateManager._glBindFramebuffer(GlConst.GL_FRAMEBUFFER, this.fbo);

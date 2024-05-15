@@ -19,6 +19,8 @@ public interface RandomSplitter {
 
 	Random split(String seed);
 
+	Random split(long seed);
+
 	Random split(int x, int y, int z);
 
 	@VisibleForTesting

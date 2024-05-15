@@ -56,7 +56,7 @@ public class ArmorItem extends Item implements Equipment {
 			return false;
 		} else {
 			LivingEntity livingEntity = (LivingEntity)list.get(0);
-			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(armor);
+			EquipmentSlot equipmentSlot = livingEntity.getPreferredEquipmentSlot(armor);
 			ItemStack itemStack = armor.split(1);
 			livingEntity.equipStack(equipmentSlot, itemStack);
 			if (livingEntity instanceof MobEntity) {

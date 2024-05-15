@@ -1,7 +1,6 @@
 package net.minecraft.client.util;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -26,7 +25,6 @@ public final class Monitor {
 	}
 
 	public void populateVideoModes() {
-		RenderSystem.assertInInitPhase();
 		this.videoModes.clear();
 		Buffer buffer = GLFW.glfwGetVideoModes(this.handle);
 
@@ -48,7 +46,6 @@ public final class Monitor {
 	}
 
 	public VideoMode findClosestVideoMode(Optional<VideoMode> videoMode) {
-		RenderSystem.assertInInitPhase();
 		if (videoMode.isPresent()) {
 			VideoMode videoMode2 = (VideoMode)videoMode.get();
 
@@ -63,7 +60,6 @@ public final class Monitor {
 	}
 
 	public int findClosestVideoModeIndex(VideoMode videoMode) {
-		RenderSystem.assertInInitPhase();
 		return this.videoModes.indexOf(videoMode);
 	}
 

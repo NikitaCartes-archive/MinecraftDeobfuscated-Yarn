@@ -41,7 +41,7 @@ public class OverlayTexture implements AutoCloseable {
 	}
 
 	public void setupOverlayColor() {
-		RenderSystem.setupOverlayColor(this.texture::getGlId, 16);
+		RenderSystem.setupOverlayColor(this.texture.getGlId(), 16);
 	}
 
 	public static int getU(float whiteOverlayProgress) {

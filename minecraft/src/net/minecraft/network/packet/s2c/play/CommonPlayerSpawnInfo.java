@@ -4,8 +4,6 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -25,13 +23,9 @@ public record CommonPlayerSpawnInfo(
 	Optional<GlobalPos> lastDeathLocation,
 	int portalCooldown
 ) {
-	private static final PacketCodec<RegistryByteBuf, RegistryEntry<DimensionType>> DIMENSION_TYPE_PACKET_CODEC = PacketCodecs.registryEntry(
-		RegistryKeys.DIMENSION_TYPE
-	);
-
 	public CommonPlayerSpawnInfo(RegistryByteBuf buf) {
 		this(
-			DIMENSION_TYPE_PACKET_CODEC.decode(buf),
+			DimensionType.PACKET_CODEC.decode(buf),
 			buf.readRegistryKey(RegistryKeys.WORLD),
 			buf.readLong(),
 			GameMode.byId(buf.readByte()),
@@ -44,7 +38,7 @@ public record CommonPlayerSpawnInfo(
 	}
 
 	public void write(RegistryByteBuf buf) {
-		DIMENSION_TYPE_PACKET_CODEC.encode(buf, this.dimensionType);
+		DimensionType.PACKET_CODEC.encode(buf, this.dimensionType);
 		buf.writeRegistryKey(this.dimension);
 		buf.writeLong(this.seed);
 		buf.writeByte(this.gameMode.getId());

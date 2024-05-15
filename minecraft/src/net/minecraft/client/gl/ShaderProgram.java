@@ -406,7 +406,6 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 	}
 
 	public Uniform getUniformOrDefault(String name) {
-		RenderSystem.assertOnGameThread();
 		GlUniform glUniform = this.getUniform(name);
 		return (Uniform)(glUniform == null ? DEFAULT_UNIFORM : glUniform);
 	}

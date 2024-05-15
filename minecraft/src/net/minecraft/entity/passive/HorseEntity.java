@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -209,7 +210,7 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 	}
 
 	@Override
-	public boolean hasArmorSlot() {
+	public boolean canUseSlot(EquipmentSlot slot) {
 		return true;
 	}
 

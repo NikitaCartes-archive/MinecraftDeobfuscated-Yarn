@@ -149,8 +149,8 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource source, boolean causedByPlayer) {
-		super.dropEquipment(source, causedByPlayer);
+	protected void dropEquipment(ServerWorld world, DamageSource source, boolean causedByPlayer) {
+		super.dropEquipment(world, source, causedByPlayer);
 		if (source.getAttacker() instanceof CreeperEntity creeperEntity && creeperEntity.shouldDropHead()) {
 			ItemStack itemStack = new ItemStack(Items.PIGLIN_HEAD);
 			creeperEntity.onHeadDropped();
@@ -209,7 +209,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 
 		PiglinBrain.setHuntedRecently(this, world.getRandom());
 		this.initEquipment(random, difficulty);
-		this.updateEnchantments(random, difficulty);
+		this.updateEnchantments(world, random, difficulty);
 		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
@@ -406,7 +406,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	 * Returns whether this piglin can equip into or replace current equipment slot.
 	 */
 	protected boolean canEquipStack(ItemStack stack) {
-		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
+		EquipmentSlot equipmentSlot = this.getPreferredEquipmentSlot(stack);
 		ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 		return this.prefersNewEquipment(stack, itemStack);
 	}

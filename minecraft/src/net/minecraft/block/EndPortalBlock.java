@@ -8,6 +8,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
@@ -56,7 +57,12 @@ public class EndPortalBlock extends BlockWithEntity {
 				return;
 			}
 
-			entity.moveToWorld(serverWorld);
+			if (world.getRegistryKey() == World.END && entity instanceof ServerPlayerEntity serverPlayerEntity && !serverPlayerEntity.seenCredits) {
+				serverPlayerEntity.detachForDimensionChange();
+				return;
+			}
+
+			entity.moveToWorld(() -> entity.getTeleportTarget(serverWorld));
 		}
 	}
 

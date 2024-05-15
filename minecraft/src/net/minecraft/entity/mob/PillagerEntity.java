@@ -36,6 +36,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -144,7 +145,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		Random random = world.getRandom();
 		this.initEquipment(random, difficulty);
-		this.updateEnchantments(random, difficulty);
+		this.updateEnchantments(world, random, difficulty);
 		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
@@ -154,12 +155,12 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 	}
 
 	@Override
-	protected void enchantMainHandItem(Random random, float power) {
-		super.enchantMainHandItem(random, power);
+	protected void enchantMainHandItem(ServerWorldAccess world, Random random, LocalDifficulty localDifficulty) {
+		super.enchantMainHandItem(world, random, localDifficulty);
 		if (random.nextInt(300) == 0) {
 			ItemStack itemStack = this.getMainHandStack();
 			if (itemStack.isOf(Items.CROSSBOW)) {
-				EnchantmentHelper.applyEnchantmentProvider(itemStack, EnchantmentProviders.PILLAGER_SPAWN_CROSSBOW, this.getWorld(), this.getBlockPos(), random);
+				EnchantmentHelper.applyEnchantmentProvider(itemStack, world.getRegistryManager(), EnchantmentProviders.PILLAGER_SPAWN_CROSSBOW, localDifficulty, random);
 			}
 		}
 	}
@@ -216,7 +217,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 	}
 
 	@Override
-	public void addBonusForWave(int wave, boolean unused) {
+	public void addBonusForWave(ServerWorld world, int wave, boolean unused) {
 		Raid raid = this.getRaid();
 		boolean bl = this.random.nextFloat() <= raid.getEnchantmentChance();
 		if (bl) {
@@ -231,7 +232,9 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 			}
 
 			if (registryKey != null) {
-				EnchantmentHelper.applyEnchantmentProvider(itemStack, registryKey, this.getWorld(), this.getBlockPos(), this.getRandom());
+				EnchantmentHelper.applyEnchantmentProvider(
+					itemStack, world.getRegistryManager(), registryKey, world.getLocalDifficulty(this.getBlockPos()), this.getRandom()
+				);
 				this.equipStack(EquipmentSlot.MAINHAND, itemStack);
 			}
 		}

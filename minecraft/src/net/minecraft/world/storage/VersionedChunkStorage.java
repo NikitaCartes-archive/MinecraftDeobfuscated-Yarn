@@ -45,29 +45,29 @@ public class VersionedChunkStorage implements AutoCloseable {
 		Optional<RegistryKey<MapCodec<? extends ChunkGenerator>>> generatorCodecKey
 	) {
 		int i = getDataVersion(nbt);
-
-		try {
-			if (i < 1493) {
-				nbt = DataFixTypes.CHUNK.update(this.dataFixer, nbt, i, 1493);
-				if (nbt.getCompound("Level").getBoolean("hasLegacyStructureData")) {
-					FeatureUpdater featureUpdater = this.getFeatureUpdater(worldKey, persistentStateManagerFactory);
-					nbt = featureUpdater.getUpdatedReferences(nbt);
-				}
-			}
-
-			saveContextToNbt(nbt, worldKey, generatorCodecKey);
-			nbt = DataFixTypes.CHUNK.update(this.dataFixer, nbt, Math.max(1493, i));
-			if (i < SharedConstants.getGameVersion().getSaveVersion().getId()) {
-				NbtHelper.putDataVersion(nbt);
-			}
-
-			nbt.remove("__context");
+		if (i == SharedConstants.getGameVersion().getSaveVersion().getId()) {
 			return nbt;
-		} catch (Exception var9) {
-			CrashReport crashReport = CrashReport.create(var9, "Updated chunk");
-			CrashReportSection crashReportSection = crashReport.addElement("Updated chunk details");
-			crashReportSection.add("Data version", i);
-			throw new CrashException(crashReport);
+		} else {
+			try {
+				if (i < 1493) {
+					nbt = DataFixTypes.CHUNK.update(this.dataFixer, nbt, i, 1493);
+					if (nbt.getCompound("Level").getBoolean("hasLegacyStructureData")) {
+						FeatureUpdater featureUpdater = this.getFeatureUpdater(worldKey, persistentStateManagerFactory);
+						nbt = featureUpdater.getUpdatedReferences(nbt);
+					}
+				}
+
+				saveContextToNbt(nbt, worldKey, generatorCodecKey);
+				nbt = DataFixTypes.CHUNK.update(this.dataFixer, nbt, Math.max(1493, i));
+				removeContext(nbt);
+				NbtHelper.putDataVersion(nbt);
+				return nbt;
+			} catch (Exception var9) {
+				CrashReport crashReport = CrashReport.create(var9, "Updated chunk");
+				CrashReportSection crashReportSection = crashReport.addElement("Updated chunk details");
+				crashReportSection.add("Data version", i);
+				throw new CrashException(crashReport);
+			}
 		}
 	}
 
@@ -90,6 +90,10 @@ public class VersionedChunkStorage implements AutoCloseable {
 		nbtCompound.putString("dimension", worldKey.getValue().toString());
 		generatorCodecKey.ifPresent(key -> nbtCompound.putString("generator", key.getValue().toString()));
 		nbt.put("__context", nbtCompound);
+	}
+
+	private static void removeContext(NbtCompound nbt) {
+		nbt.remove("__context");
 	}
 
 	public static int getDataVersion(NbtCompound nbt) {

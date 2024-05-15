@@ -284,7 +284,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	}
 
 	@Override
-	public boolean hasArmorSlot() {
+	public boolean canUseSlot(EquipmentSlot slot) {
 		return true;
 	}
 

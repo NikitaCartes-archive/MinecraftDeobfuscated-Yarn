@@ -1,11 +1,16 @@
 package net.minecraft.entity.passive;
 
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
 public record FrogVariant(Identifier texture) {
+	public static final PacketCodec<RegistryByteBuf, RegistryEntry<FrogVariant>> PACKET_CODEC = PacketCodecs.registryEntry(RegistryKeys.FROG_VARIANT);
 	public static final RegistryKey<FrogVariant> TEMPERATE = of("temperate");
 	public static final RegistryKey<FrogVariant> WARM = of("warm");
 	public static final RegistryKey<FrogVariant> COLD = of("cold");

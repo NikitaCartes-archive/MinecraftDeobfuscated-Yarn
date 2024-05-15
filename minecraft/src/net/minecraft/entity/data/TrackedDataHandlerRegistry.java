@@ -23,7 +23,6 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.encoding.VarInts;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
@@ -110,16 +109,10 @@ public class TrackedDataHandlerRegistry {
 	};
 	public static final TrackedDataHandler<OptionalInt> OPTIONAL_INT = TrackedDataHandler.create(OPTIONAL_INT_CODEC);
 	public static final TrackedDataHandler<EntityPose> ENTITY_POSE = TrackedDataHandler.create(EntityPose.PACKET_CODEC);
-	public static final TrackedDataHandler<RegistryEntry<CatVariant>> CAT_VARIANT = TrackedDataHandler.create(PacketCodecs.registryEntry(RegistryKeys.CAT_VARIANT));
-	public static final TrackedDataHandler<RegistryEntry<WolfVariant>> WOLF_VARIANT = TrackedDataHandler.create(
-		PacketCodecs.registryEntry(RegistryKeys.WOLF_VARIANT)
-	);
-	public static final TrackedDataHandler<RegistryEntry<FrogVariant>> FROG_VARIANT = TrackedDataHandler.create(
-		PacketCodecs.registryEntry(RegistryKeys.FROG_VARIANT)
-	);
-	public static final TrackedDataHandler<RegistryEntry<PaintingVariant>> PAINTING_VARIANT = TrackedDataHandler.create(
-		PacketCodecs.registryEntry(RegistryKeys.PAINTING_VARIANT)
-	);
+	public static final TrackedDataHandler<RegistryEntry<CatVariant>> CAT_VARIANT = TrackedDataHandler.create(CatVariant.PACKET_CODEC);
+	public static final TrackedDataHandler<RegistryEntry<WolfVariant>> WOLF_VARIANT = TrackedDataHandler.create(WolfVariant.ENTRY_PACKET_CODEC);
+	public static final TrackedDataHandler<RegistryEntry<FrogVariant>> FROG_VARIANT = TrackedDataHandler.create(FrogVariant.PACKET_CODEC);
+	public static final TrackedDataHandler<RegistryEntry<PaintingVariant>> PAINTING_VARIANT = TrackedDataHandler.create(PaintingVariant.ENTRY_PACKET_CODEC);
 	public static final TrackedDataHandler<ArmadilloEntity.State> ARMADILLO_STATE = TrackedDataHandler.create(ArmadilloEntity.State.PACKET_CODEC);
 	public static final TrackedDataHandler<SnifferEntity.State> SNIFFER_STATE = TrackedDataHandler.create(SnifferEntity.State.PACKET_CODEC);
 	public static final TrackedDataHandler<Vector3f> VECTOR3F = TrackedDataHandler.create(PacketCodecs.VECTOR3F);

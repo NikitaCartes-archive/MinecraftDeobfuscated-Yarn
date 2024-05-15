@@ -1,21 +1,22 @@
 package net.minecraft.world;
 
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
 /**
  * Represents the position that an entity takes after being
  * {@linkplain net.minecraft.entity.Entity#moveToWorld moved between worlds}.
  */
-public class TeleportTarget {
-	public final Vec3d position;
-	public final Vec3d velocity;
-	public final float yaw;
-	public final float pitch;
+public record TeleportTarget(ServerWorld newDimension, Vec3d pos, Vec3d velocity, float yaw, float pitch, boolean missingRespawnBlock) {
+	public TeleportTarget(ServerWorld world, Vec3d pos, Vec3d velocity, float yaw, float pitch) {
+		this(world, pos, velocity, yaw, pitch, false);
+	}
 
-	public TeleportTarget(Vec3d position, Vec3d velocity, float yaw, float pitch) {
-		this.position = position;
-		this.velocity = velocity;
-		this.yaw = yaw;
-		this.pitch = pitch;
+	public TeleportTarget(ServerWorld world) {
+		this(world, world.getSpawnPos().toCenterPos(), Vec3d.ZERO, 0.0F, 0.0F, false);
+	}
+
+	public static TeleportTarget missingSpawnBlock(ServerWorld world) {
+		return new TeleportTarget(world, world.getSpawnPos().toCenterPos(), Vec3d.ZERO, 0.0F, 0.0F, true);
 	}
 }

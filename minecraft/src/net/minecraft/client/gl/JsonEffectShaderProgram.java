@@ -272,7 +272,6 @@ public class JsonEffectShaderProgram implements EffectShaderProgram, AutoCloseab
 	}
 
 	public void enable() {
-		RenderSystem.assertOnGameThread();
 		this.uniformStateDirty = false;
 		activeProgram = this;
 		this.blendState.enable();
@@ -311,7 +310,6 @@ public class JsonEffectShaderProgram implements EffectShaderProgram, AutoCloseab
 	}
 
 	public Uniform getUniformByNameOrDummy(String name) {
-		RenderSystem.assertOnGameThread();
 		GlUniform glUniform = this.getUniformByName(name);
 		return (Uniform)(glUniform == null ? DEFAULT_UNIFORM : glUniform);
 	}

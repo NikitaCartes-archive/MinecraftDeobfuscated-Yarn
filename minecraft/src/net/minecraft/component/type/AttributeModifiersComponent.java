@@ -14,8 +14,6 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Util;
 
@@ -63,6 +61,14 @@ public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry
 		return new AttributeModifiersComponent(builder.build(), this.showInTooltip);
 	}
 
+	public void applyModifiers(AttributeModifierSlot slot, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeConsumer) {
+		for (AttributeModifiersComponent.Entry entry : this.modifiers) {
+			if (entry.slot.equals(slot)) {
+				attributeConsumer.accept(entry.attribute, entry.modifier);
+			}
+		}
+	}
+
 	public void applyModifiers(EquipmentSlot slot, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeConsumer) {
 		for (AttributeModifiersComponent.Entry entry : this.modifiers) {
 			if (entry.slot.matches(slot)) {
@@ -108,14 +114,14 @@ public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry
 	public static record Entry(RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier modifier, AttributeModifierSlot slot) {
 		public static final Codec<AttributeModifiersComponent.Entry> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Registries.ATTRIBUTE.getEntryCodec().fieldOf("type").forGetter(AttributeModifiersComponent.Entry::attribute),
+						EntityAttribute.CODEC.fieldOf("type").forGetter(AttributeModifiersComponent.Entry::attribute),
 						EntityAttributeModifier.MAP_CODEC.forGetter(AttributeModifiersComponent.Entry::modifier),
 						AttributeModifierSlot.CODEC.optionalFieldOf("slot", AttributeModifierSlot.ANY).forGetter(AttributeModifiersComponent.Entry::slot)
 					)
 					.apply(instance, AttributeModifiersComponent.Entry::new)
 		);
 		public static final PacketCodec<RegistryByteBuf, AttributeModifiersComponent.Entry> PACKET_CODEC = PacketCodec.tuple(
-			PacketCodecs.registryEntry(RegistryKeys.ATTRIBUTE),
+			EntityAttribute.PACKET_CODEC,
 			AttributeModifiersComponent.Entry::attribute,
 			EntityAttributeModifier.PACKET_CODEC,
 			AttributeModifiersComponent.Entry::modifier,

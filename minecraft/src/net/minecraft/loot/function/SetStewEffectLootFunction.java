@@ -19,7 +19,6 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Util;
 
@@ -105,7 +104,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 	static record StewEffect(RegistryEntry<StatusEffect> effect, LootNumberProvider duration) {
 		public static final Codec<SetStewEffectLootFunction.StewEffect> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Registries.STATUS_EFFECT.getEntryCodec().fieldOf("type").forGetter(SetStewEffectLootFunction.StewEffect::effect),
+						StatusEffect.ENTRY_CODEC.fieldOf("type").forGetter(SetStewEffectLootFunction.StewEffect::effect),
 						LootNumberProviderTypes.CODEC.fieldOf("duration").forGetter(SetStewEffectLootFunction.StewEffect::duration)
 					)
 					.apply(instance, SetStewEffectLootFunction.StewEffect::new)

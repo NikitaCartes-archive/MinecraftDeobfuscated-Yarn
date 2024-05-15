@@ -931,7 +931,9 @@ public class ServerPlayNetworkHandler
 									&& this.isEntityOnAir(this.player);
 								this.player.getServerWorld().getChunkManager().updatePosition(this.player);
 								this.player.handleFall(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k, packet.isOnGround());
-								this.player.setOnGround(packet.isOnGround(), new Vec3d(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k));
+								Vec3d vec3d = new Vec3d(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k);
+								this.player.setOnGround(packet.isOnGround(), vec3d);
+								this.player.setOnGround(vec3d);
 								if (bl2) {
 									this.player.onLanding();
 								}
@@ -1101,6 +1103,12 @@ public class ServerPlayNetworkHandler
 		ItemStack itemStack = this.player.getStackInHand(hand);
 		this.player.updateLastActionTime();
 		if (!itemStack.isEmpty() && itemStack.isItemEnabled(serverWorld.getEnabledFeatures())) {
+			float f = MathHelper.wrapDegrees(packet.getYaw());
+			float g = MathHelper.wrapDegrees(packet.getPitch());
+			if (g != this.player.getPitch() || f != this.player.getYaw()) {
+				this.player.setAngles(f, g);
+			}
+
 			ActionResult actionResult = this.player.interactionManager.interactItem(this.player, serverWorld, itemStack, hand);
 			if (actionResult.shouldSwingHand()) {
 				this.player.swingHand(hand, true);
@@ -1565,14 +1573,14 @@ public class ServerPlayNetworkHandler
 			case PERFORM_RESPAWN:
 				if (this.player.notInAnyWorld) {
 					this.player.notInAnyWorld = false;
-					this.player = this.server.getPlayerManager().respawnPlayer(this.player, true);
+					this.player = this.server.getPlayerManager().respawnPlayer(this.player, true, Entity.RemovalReason.CHANGED_DIMENSION);
 					Criteria.CHANGED_DIMENSION.trigger(this.player, World.END, World.OVERWORLD);
 				} else {
 					if (this.player.getHealth() > 0.0F) {
 						return;
 					}
 
-					this.player = this.server.getPlayerManager().respawnPlayer(this.player, false);
+					this.player = this.server.getPlayerManager().respawnPlayer(this.player, false, Entity.RemovalReason.KILLED);
 					if (this.server.isHardcore()) {
 						this.player.changeGameMode(GameMode.SPECTATOR);
 						this.player.getWorld().getGameRules().get(GameRules.SPECTATORS_GENERATE_CHUNKS).set(false, this.server);

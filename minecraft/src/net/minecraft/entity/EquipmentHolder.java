@@ -36,7 +36,7 @@ public interface EquipmentHolder {
 				for (ItemStack itemStack : list) {
 					EquipmentSlot equipmentSlot = this.getSlotForStack(itemStack, list2);
 					if (equipmentSlot != null) {
-						ItemStack itemStack2 = equipmentSlot.isArmorSlot() ? itemStack.copyWithCount(1) : itemStack;
+						ItemStack itemStack2 = equipmentSlot.split(itemStack);
 						this.equipStack(equipmentSlot, itemStack2);
 						Float float_ = (Float)slotDropChances.get(equipmentSlot);
 						if (float_ != null) {

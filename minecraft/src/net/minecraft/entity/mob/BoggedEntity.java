@@ -28,7 +28,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -136,7 +135,7 @@ public class BoggedEntity extends AbstractSkeletonEntity implements Shearable {
 	}
 
 	private void dropShearedItems() {
-		if (this.getWorld() instanceof ServerWorld serverWorld && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
 			LootTable lootTable = serverWorld.getServer().getReloadableRegistries().getLootTable(LootTables.BOGGED_SHEARING);
 			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
 				.add(LootContextParameters.ORIGIN, this.getPos())
@@ -144,7 +143,7 @@ public class BoggedEntity extends AbstractSkeletonEntity implements Shearable {
 				.build(LootContextTypes.SHEARING);
 
 			for (ItemStack itemStack : lootTable.generateLoot(lootContextParameterSet)) {
-				this.dropStack(itemStack);
+				this.dropStack(itemStack, this.getHeight());
 			}
 		}
 	}

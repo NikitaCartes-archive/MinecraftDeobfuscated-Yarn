@@ -327,7 +327,7 @@ public class TitleScreen extends Screen {
 
 	@Override
 	protected void renderPanoramaBackground(DrawContext context, float delta) {
-		ROTATING_PANORAMA_RENDERER.render(context, this.width, this.height, this.backgroundAlpha, this.getPanoramaTickDelta());
+		ROTATING_PANORAMA_RENDERER.render(context, this.width, this.height, this.backgroundAlpha, delta);
 	}
 
 	@Override

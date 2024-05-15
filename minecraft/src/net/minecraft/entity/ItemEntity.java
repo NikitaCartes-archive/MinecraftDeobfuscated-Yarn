@@ -192,7 +192,7 @@ public class ItemEntity extends Entity implements Ownable {
 	}
 
 	@Override
-	protected BlockPos getVelocityAffectingPos() {
+	public BlockPos getVelocityAffectingPos() {
 		return this.getPosWithYOffset(0.999999F);
 	}
 
@@ -369,8 +369,8 @@ public class ItemEntity extends Entity implements Ownable {
 
 	@Nullable
 	@Override
-	public Entity moveToWorld(ServerWorld destination) {
-		Entity entity = super.moveToWorld(destination);
+	public Entity moveToWorld(Entity.TeleportTargetSupplier teleportTargetSupplier) {
+		Entity entity = super.moveToWorld(teleportTargetSupplier);
 		if (!this.getWorld().isClient && entity instanceof ItemEntity) {
 			((ItemEntity)entity).tryMerge();
 		}

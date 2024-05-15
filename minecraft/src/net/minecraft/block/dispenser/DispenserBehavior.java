@@ -26,6 +26,7 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SpawnReason;
@@ -149,7 +150,7 @@ public interface DispenserBehavior {
 				BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 
 				for (AbstractHorseEntity abstractHorseEntity : pointer.world()
-					.getEntitiesByClass(AbstractHorseEntity.class, new Box(blockPos), horse -> horse.isAlive() && horse.hasArmorSlot())) {
+					.getEntitiesByClass(AbstractHorseEntity.class, new Box(blockPos), horse -> horse.isAlive() && horse.canUseSlot(EquipmentSlot.BODY))) {
 					if (abstractHorseEntity.isHorseArmor(stack) && !abstractHorseEntity.isWearingBodyArmor() && abstractHorseEntity.isTame()) {
 						abstractHorseEntity.equipBodyArmor(stack.split(1));
 						this.setSuccess(true);
@@ -285,7 +286,8 @@ public interface DispenserBehavior {
 				}
 
 				if (this.isSuccess()) {
-					stack.damage(1, serverWorld, null, () -> stack.setCount(0));
+					stack.damage(1, serverWorld, null, item -> {
+					});
 				}
 
 				return stack;
@@ -452,9 +454,7 @@ public interface DispenserBehavior {
 				} else {
 					for (ArmadilloEntity armadilloEntity : list) {
 						if (armadilloEntity.brushScute()) {
-							stack.damage(16, serverWorld, null, () -> {
-								stack.decrement(1);
-								stack.setDamage(0);
+							stack.damage(16, serverWorld, null, item -> {
 							});
 							return stack;
 						}

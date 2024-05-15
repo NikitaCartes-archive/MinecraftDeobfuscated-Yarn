@@ -109,6 +109,15 @@ public class AttributeContainer {
 		});
 	}
 
+	public void setBaseFrom(AttributeContainer other) {
+		other.custom.values().forEach(attributeInstance -> {
+			EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(attributeInstance.getAttribute());
+			if (entityAttributeInstance != null) {
+				entityAttributeInstance.setBaseValue(attributeInstance.getBaseValue());
+			}
+		});
+	}
+
 	public NbtList toNbt() {
 		NbtList nbtList = new NbtList();
 

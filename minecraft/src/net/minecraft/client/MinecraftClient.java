@@ -323,7 +323,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final DataFixer dataFixer;
 	private final WindowProvider windowProvider;
 	private final Window window;
-	private final RenderTickCounter renderTickCounter = new RenderTickCounter(20.0F, 0L, this::getTargetMillisPerTick);
+	private final RenderTickCounter.Dynamic renderTickCounter = new RenderTickCounter.Dynamic(20.0F, 0L, this::getTargetMillisPerTick);
 	private final BufferBuilderStorage bufferBuilders;
 	public final WorldRenderer worldRenderer;
 	private final EntityRenderDispatcher entityRenderDispatcher;
@@ -425,7 +425,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private int itemUseCooldown;
 	protected int attackCooldown;
 	private volatile boolean paused;
-	private float pausedTickDelta;
 	private long lastMetricsSampleTime = Util.getMeasuringTimeNano();
 	private long nextDebugInfoUpdateTime;
 	private int fpsCounter;
@@ -1208,7 +1207,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	private void render(boolean tick) {
 		this.window.setPhase("Pre render");
-		long l = Util.getMeasuringTimeNano();
 		if (this.window.shouldClose()) {
 			this.scheduleStop();
 		}
@@ -1224,8 +1222,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			runnable.run();
 		}
 
+		int i = this.renderTickCounter.beginRenderTick(Util.getMeasuringTimeMs(), tick);
 		if (tick) {
-			int i = this.renderTickCounter.beginRenderTick(Util.getMeasuringTimeMs());
 			this.profiler.push("scheduledExecutables");
 			this.runTasks();
 			this.profiler.pop();
@@ -1244,7 +1242,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.soundManager.updateListenerPosition(this.gameRenderer.getCamera());
 		this.profiler.pop();
 		this.profiler.push("render");
-		long m = Util.getMeasuringTimeNano();
+		long l = Util.getMeasuringTimeNano();
 		boolean bl;
 		if (!this.getDebugHud().shouldShowDebugHud() && !this.recorder.isActive()) {
 			bl = false;
@@ -1266,7 +1264,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.profiler.pop();
 		if (!this.skipGameRender) {
 			this.profiler.swap("gameRenderer");
-			this.gameRenderer.render(this.paused ? this.pausedTickDelta : this.renderTickCounter.tickDelta, l, tick);
+			this.gameRenderer.render(this.renderTickCounter, tick);
 			this.profiler.pop();
 		}
 
@@ -1281,7 +1279,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.profiler.push("blit");
 		this.framebuffer.endWrite();
 		this.framebuffer.draw(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
-		this.renderTime = Util.getMeasuringTimeNano() - m;
+		this.renderTime = Util.getMeasuringTimeNano() - l;
 		if (bl) {
 			GlTimer.getInstance().ifPresent(glTimer -> this.currentGlTimerQuery = glTimer.endProfile());
 		}
@@ -1298,27 +1296,19 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.profiler.pop();
 		this.window.setPhase("Post render");
 		this.fpsCounter++;
-		boolean bl2 = this.isIntegratedServerRunning()
+		this.paused = this.isIntegratedServerRunning()
 			&& (this.currentScreen != null && this.currentScreen.shouldPause() || this.overlay != null && this.overlay.pausesGame())
 			&& !this.server.isRemote();
-		if (this.paused != bl2) {
-			if (bl2) {
-				this.pausedTickDelta = this.renderTickCounter.tickDelta;
-			} else {
-				this.renderTickCounter.tickDelta = this.pausedTickDelta;
-			}
-
-			this.paused = bl2;
-		}
-
-		long n = Util.getMeasuringTimeNano();
-		long o = n - this.lastMetricsSampleTime;
+		this.renderTickCounter.tick(this.paused);
+		this.renderTickCounter.setTickFrozen(!this.shouldTick());
+		long m = Util.getMeasuringTimeNano();
+		long n = m - this.lastMetricsSampleTime;
 		if (bl) {
-			this.metricsSampleDuration = o;
+			this.metricsSampleDuration = n;
 		}
 
-		this.getDebugHud().pushToFrameLog(o);
-		this.lastMetricsSampleTime = n;
+		this.getDebugHud().pushToFrameLog(n);
+		this.lastMetricsSampleTime = m;
 		this.profiler.push("fpsUpdate");
 		if (this.currentGlTimerQuery != null && this.currentGlTimerQuery.isResultAvailable()) {
 			this.gpuUtilizationPercentage = (double)this.currentGlTimerQuery.queryResult() * 100.0 / (double)this.metricsSampleDuration;
@@ -1890,8 +1880,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		this.profiler.swap("textures");
-		boolean bl = this.world == null || this.world.getTickManager().shouldTick();
-		if (bl) {
+		if (this.shouldTick()) {
 			this.textureManager.tick();
 		}
 
@@ -1964,8 +1953,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 				try {
 					this.world.tick(() -> true);
-				} catch (Throwable var5) {
-					CrashReport crashReport = CrashReport.create(var5, "Exception in world tick");
+				} catch (Throwable var4) {
+					CrashReport crashReport = CrashReport.create(var4, "Exception in world tick");
 					if (this.world == null) {
 						CrashReportSection crashReportSection = crashReport.addElement("Affected level");
 						crashReportSection.add("Problem", "Level is null!");
@@ -1978,12 +1967,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 
 			this.profiler.swap("animateTick");
-			if (!this.paused && bl) {
+			if (!this.paused && this.shouldTick()) {
 				this.world.doRandomBlockDisplayTicks(this.player.getBlockX(), this.player.getBlockY(), this.player.getBlockZ());
 			}
 
 			this.profiler.swap("particles");
-			if (!this.paused && bl) {
+			if (!this.paused && this.shouldTick()) {
 				this.particleManager.tick();
 			}
 		} else if (this.integratedServerConnection != null) {
@@ -1994,6 +1983,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.profiler.swap("keyboard");
 		this.keyboard.pollDebugCrash();
 		this.profiler.pop();
+	}
+
+	private boolean shouldTick() {
+		return this.world == null || this.world.getTickManager().shouldTick();
 	}
 
 	private boolean isConnectedToServer() {
@@ -2739,12 +2732,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.dataFixer;
 	}
 
-	public float getTickDelta() {
-		return this.renderTickCounter.tickDelta;
-	}
-
-	public float getLastFrameDuration() {
-		return this.renderTickCounter.lastFrameDuration;
+	public RenderTickCounter getRenderTickCounter() {
+		return this.renderTickCounter;
 	}
 
 	public BlockColors getBlockColors() {
@@ -2850,7 +2839,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				this.player.prevYaw = this.player.getYaw();
 				this.player.prevPitch = this.player.getPitch();
 				framebuffer.beginWrite(true);
-				this.gameRenderer.renderWorld(1.0F, 0L);
+				this.gameRenderer.renderWorld(RenderTickCounter.ONE);
 
 				try {
 					Thread.sleep(10L);
@@ -2952,10 +2941,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public SocialInteractionsManager getSocialInteractionsManager() {
 		return this.socialInteractionsManager;
-	}
-
-	public boolean shouldRenderAsync() {
-		return false;
 	}
 
 	public Window getWindow() {

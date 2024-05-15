@@ -322,14 +322,7 @@ public class PostEffectProcessor implements AutoCloseable {
 	}
 
 	public void render(float tickDelta) {
-		if (tickDelta < this.lastTickDelta) {
-			this.time = this.time + (1.0F - this.lastTickDelta);
-			this.time += tickDelta;
-		} else {
-			this.time = this.time + (tickDelta - this.lastTickDelta);
-		}
-
-		this.lastTickDelta = tickDelta;
+		this.time += tickDelta;
 
 		while (this.time > 20.0F) {
 			this.time -= 20.0F;

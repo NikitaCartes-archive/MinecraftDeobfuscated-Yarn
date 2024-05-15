@@ -85,7 +85,7 @@ import org.slf4j.Logger;
 public class GameRenderer implements AutoCloseable {
 	private static final Identifier NAUSEA_OVERLAY = new Identifier("textures/misc/nausea.png");
 	private static final Identifier BLUR_PROCESSOR = new Identifier("shaders/post/blur.json");
-	private static final float field_49904 = 10.0F;
+	public static final int field_49904 = 10;
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final boolean field_32688 = false;
 	/**
@@ -353,10 +353,9 @@ public class GameRenderer implements AutoCloseable {
 
 	public void renderBlur(float delta) {
 		float f = (float)this.client.options.getMenuBackgroundBlurrinessValue();
-		float g = f * 10.0F;
-		if (this.blurPostProcessor != null && g >= 1.0F) {
+		if (this.blurPostProcessor != null && f >= 1.0F) {
 			RenderSystem.enableBlend();
-			this.blurPostProcessor.setUniforms("Radius", g);
+			this.blurPostProcessor.setUniforms("Radius", f);
 			this.blurPostProcessor.render(delta);
 			RenderSystem.disableBlend();
 		}
@@ -880,7 +879,7 @@ public class GameRenderer implements AutoCloseable {
 		this.zoomY = zoomY;
 		this.setBlockOutlineEnabled(false);
 		this.setRenderHand(false);
-		this.renderWorld(1.0F, 0L);
+		this.renderWorld(RenderTickCounter.ZERO);
 		this.zoom = 1.0F;
 	}
 
@@ -954,7 +953,7 @@ public class GameRenderer implements AutoCloseable {
 			: 0.7F + MathHelper.sin(((float)statusEffectInstance.getDuration() - tickDelta) * (float) Math.PI * 0.2F) * 0.3F;
 	}
 
-	public void render(float tickDelta, long startTime, boolean tick) {
+	public void render(RenderTickCounter tickCounter, boolean tick) {
 		if (!this.client.isWindowFocused()
 			&& this.client.options.pauseOnLostFocus
 			&& (!this.client.options.getTouchscreen().getValue() || !this.client.mouse.wasRightButtonClicked())) {
@@ -966,21 +965,20 @@ public class GameRenderer implements AutoCloseable {
 		}
 
 		if (!this.client.skipGameRender) {
-			float f = this.client.world != null && this.client.world.getTickManager().shouldTick() ? tickDelta : 1.0F;
 			boolean bl = this.client.isFinishedLoading();
 			int i = (int)(this.client.mouse.getX() * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth());
 			int j = (int)(this.client.mouse.getY() * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight());
 			RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
 			if (bl && tick && this.client.world != null) {
 				this.client.getProfiler().push("level");
-				this.renderWorld(tickDelta, startTime);
+				this.renderWorld(tickCounter);
 				this.updateWorldIcon();
 				this.client.worldRenderer.drawEntityOutlinesFramebuffer();
 				if (this.postProcessor != null && this.postProcessorEnabled) {
 					RenderSystem.disableBlend();
 					RenderSystem.disableDepthTest();
 					RenderSystem.resetTextureMatrix();
-					this.postProcessor.render(f);
+					this.postProcessor.render(tickCounter.getLastFrameDuration());
 				}
 
 				this.client.getFramebuffer().beginWrite(true);
@@ -1007,36 +1005,36 @@ public class GameRenderer implements AutoCloseable {
 			if (bl && tick && this.client.world != null) {
 				this.client.getProfiler().swap("gui");
 				if (this.client.player != null) {
-					float g = MathHelper.lerp(f, this.client.player.prevNauseaIntensity, this.client.player.nauseaIntensity);
-					float h = this.client.options.getDistortionEffectScale().getValue().floatValue();
-					if (g > 0.0F && this.client.player.hasStatusEffect(StatusEffects.NAUSEA) && h < 1.0F) {
-						this.renderNausea(drawContext, g * (1.0F - h));
+					float f = MathHelper.lerp(tickCounter.getTickDelta(false), this.client.player.prevNauseaIntensity, this.client.player.nauseaIntensity);
+					float g = this.client.options.getDistortionEffectScale().getValue().floatValue();
+					if (f > 0.0F && this.client.player.hasStatusEffect(StatusEffects.NAUSEA) && g < 1.0F) {
+						this.renderNausea(drawContext, f * (1.0F - g));
 					}
 				}
 
 				if (!this.client.options.hudHidden) {
-					this.renderFloatingItem(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight(), f);
+					this.renderFloatingItem(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight(), tickCounter.getTickDelta(false));
 				}
 
-				this.client.inGameHud.render(drawContext, f);
+				this.client.inGameHud.render(drawContext, tickCounter);
 				RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
 				this.client.getProfiler().pop();
 			}
 
 			if (this.client.getOverlay() != null) {
 				try {
-					this.client.getOverlay().render(drawContext, i, j, this.client.getLastFrameDuration());
-				} catch (Throwable var18) {
-					CrashReport crashReport = CrashReport.create(var18, "Rendering overlay");
+					this.client.getOverlay().render(drawContext, i, j, tickCounter.getLastDuration());
+				} catch (Throwable var15) {
+					CrashReport crashReport = CrashReport.create(var15, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
 					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.getOverlay().getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
 				}
 			} else if (bl && this.client.currentScreen != null) {
 				try {
-					this.client.currentScreen.renderWithTooltip(drawContext, i, j, this.client.getLastFrameDuration());
-				} catch (Throwable var17) {
-					CrashReport crashReport = CrashReport.create(var17, "Rendering screen");
+					this.client.currentScreen.renderWithTooltip(drawContext, i, j, tickCounter.getLastDuration());
+				} catch (Throwable var14) {
+					CrashReport crashReport = CrashReport.create(var14, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					crashReportSection.add(
@@ -1062,8 +1060,8 @@ public class GameRenderer implements AutoCloseable {
 					if (this.client.currentScreen != null) {
 						this.client.currentScreen.updateNarrator();
 					}
-				} catch (Throwable var16) {
-					CrashReport crashReport = CrashReport.create(var16, "Narrating screen");
+				} catch (Throwable var13) {
+					CrashReport crashReport = CrashReport.create(var13, "Narrating screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
@@ -1071,7 +1069,7 @@ public class GameRenderer implements AutoCloseable {
 			}
 
 			if (bl && tick && this.client.world != null) {
-				this.client.inGameHud.renderAutosaveIndicator(drawContext, f);
+				this.client.inGameHud.renderAutosaveIndicator(drawContext, tickCounter);
 			}
 
 			if (bl) {
@@ -1159,27 +1157,23 @@ public class GameRenderer implements AutoCloseable {
 		}
 	}
 
-	public void renderWorld(float tickDelta, long limitTime) {
-		this.lightmapTextureManager.update(tickDelta);
+	public void renderWorld(RenderTickCounter tickCounter) {
+		float f = tickCounter.getTickDelta(true);
+		this.lightmapTextureManager.update(f);
 		if (this.client.getCameraEntity() == null) {
 			this.client.setCameraEntity(this.client.player);
 		}
 
-		this.updateCrosshairTarget(tickDelta);
+		this.updateCrosshairTarget(f);
 		this.client.getProfiler().push("center");
 		boolean bl = this.shouldRenderBlockOutline();
 		this.client.getProfiler().swap("camera");
 		Camera camera = this.camera;
 		Entity entity = (Entity)(this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity());
-		camera.update(
-			this.client.world,
-			entity,
-			!this.client.options.getPerspective().isFirstPerson(),
-			this.client.options.getPerspective().isFrontView(),
-			this.client.world.getTickManager().shouldSkipTick(entity) ? 1.0F : tickDelta
-		);
+		float g = this.client.world.getTickManager().shouldSkipTick(entity) ? 1.0F : f;
+		camera.update(this.client.world, entity, !this.client.options.getPerspective().isFirstPerson(), this.client.options.getPerspective().isFrontView(), g);
 		this.viewDistance = (float)(this.client.options.getClampedViewDistance() * 16);
-		double d = this.getFov(camera, tickDelta, true);
+		double d = this.getFov(camera, f, true);
 		Matrix4f matrix4f = this.getBasicProjectionMatrix(d);
 		MatrixStack matrixStack = new MatrixStack();
 		this.tiltViewWhenHurt(matrixStack, camera.getLastTickDelta());
@@ -1188,17 +1182,17 @@ public class GameRenderer implements AutoCloseable {
 		}
 
 		matrix4f.mul(matrixStack.peek().getPositionMatrix());
-		float f = this.client.options.getDistortionEffectScale().getValue().floatValue();
-		float g = MathHelper.lerp(tickDelta, this.client.player.prevNauseaIntensity, this.client.player.nauseaIntensity) * f * f;
-		if (g > 0.0F) {
-			int i = this.client.player.hasStatusEffect(StatusEffects.NAUSEA) ? 7 : 20;
-			float h = 5.0F / (g * g + 5.0F) - g * 0.04F;
-			h *= h;
+		float h = this.client.options.getDistortionEffectScale().getValue().floatValue();
+		float i = MathHelper.lerp(f, this.client.player.prevNauseaIntensity, this.client.player.nauseaIntensity) * h * h;
+		if (i > 0.0F) {
+			int j = this.client.player.hasStatusEffect(StatusEffects.NAUSEA) ? 7 : 20;
+			float k = 5.0F / (i * i + 5.0F) - i * 0.04F;
+			k *= k;
 			Vector3f vector3f = new Vector3f(0.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F);
-			float j = ((float)this.ticks + tickDelta) * (float)i * (float) (Math.PI / 180.0);
-			matrix4f.rotate(j, vector3f);
-			matrix4f.scale(1.0F / h, 1.0F, 1.0F);
-			matrix4f.rotate(-j, vector3f);
+			float l = ((float)this.ticks + f) * (float)j * (float) (Math.PI / 180.0);
+			matrix4f.rotate(l, vector3f);
+			matrix4f.scale(1.0F / k, 1.0F, 1.0F);
+			matrix4f.rotate(-l, vector3f);
 		}
 
 		this.loadProjectionMatrix(matrix4f);
@@ -1207,11 +1201,11 @@ public class GameRenderer implements AutoCloseable {
 		this.client
 			.worldRenderer
 			.setupFrustum(camera.getPos(), matrix4f2, this.getBasicProjectionMatrix(Math.max(d, (double)this.client.options.getFov().getValue().intValue())));
-		this.client.worldRenderer.render(tickDelta, limitTime, bl, camera, this, this.lightmapTextureManager, matrix4f2, matrix4f);
+		this.client.worldRenderer.render(tickCounter, bl, camera, this, this.lightmapTextureManager, matrix4f2, matrix4f);
 		this.client.getProfiler().swap("hand");
 		if (this.renderHand) {
 			RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
-			this.renderHand(camera, tickDelta, matrix4f2);
+			this.renderHand(camera, f, matrix4f2);
 		}
 
 		this.client.getProfiler().pop();

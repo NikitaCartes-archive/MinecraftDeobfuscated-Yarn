@@ -17,6 +17,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.RideableInventory;
@@ -691,7 +692,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 					return actionResult;
 				}
 
-				if (this.hasArmorSlot() && this.isHorseArmor(itemStack) && !this.isWearingBodyArmor()) {
+				if (this.canUseSlot(EquipmentSlot.BODY) && this.isHorseArmor(itemStack) && !this.isWearingBodyArmor()) {
 					this.equipHorseArmor(player, itemStack);
 					return ActionResult.success(this.getWorld().isClient);
 				}

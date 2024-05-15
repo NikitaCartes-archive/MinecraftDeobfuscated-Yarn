@@ -2,7 +2,6 @@ package net.minecraft.recipe;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
@@ -26,7 +25,7 @@ public class RecipeCache {
 
 			for (int i = 0; i < this.cache.length; i++) {
 				RecipeCache.CachedRecipe cachedRecipe = this.cache[i];
-				if (cachedRecipe != null && cachedRecipe.matches(input.getStacks())) {
+				if (cachedRecipe != null && cachedRecipe.matches(input)) {
 					this.sendToFront(i);
 					return Optional.ofNullable(cachedRecipe.value());
 				}
@@ -46,7 +45,7 @@ public class RecipeCache {
 
 	private Optional<RecipeEntry<CraftingRecipe>> getAndCacheRecipe(CraftingRecipeInput input, World world) {
 		Optional<RecipeEntry<CraftingRecipe>> optional = world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, input, world);
-		this.cache(input.getStacks(), (RecipeEntry<CraftingRecipe>)optional.orElse(null));
+		this.cache(input, (RecipeEntry<CraftingRecipe>)optional.orElse(null));
 		return optional;
 	}
 
@@ -58,29 +57,29 @@ public class RecipeCache {
 		}
 	}
 
-	private void cache(List<ItemStack> inputStacks, @Nullable RecipeEntry<CraftingRecipe> recipe) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inputStacks.size(), ItemStack.EMPTY);
+	private void cache(CraftingRecipeInput input, @Nullable RecipeEntry<CraftingRecipe> recipe) {
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(input.getSize(), ItemStack.EMPTY);
 
-		for (int i = 0; i < inputStacks.size(); i++) {
-			defaultedList.set(i, ((ItemStack)inputStacks.get(i)).copyWithCount(1));
+		for (int i = 0; i < input.getSize(); i++) {
+			defaultedList.set(i, input.getStackInSlot(i).copyWithCount(1));
 		}
 
 		System.arraycopy(this.cache, 0, this.cache, 1, this.cache.length - 1);
-		this.cache[0] = new RecipeCache.CachedRecipe(defaultedList, recipe);
+		this.cache[0] = new RecipeCache.CachedRecipe(defaultedList, input.getWidth(), input.getHeight(), recipe);
 	}
 
-	static record CachedRecipe(DefaultedList<ItemStack> key, @Nullable RecipeEntry<CraftingRecipe> value) {
-		public boolean matches(List<ItemStack> inputs) {
-			if (this.key.size() != inputs.size()) {
-				return false;
-			} else {
+	static record CachedRecipe(DefaultedList<ItemStack> key, int width, int height, @Nullable RecipeEntry<CraftingRecipe> value) {
+		public boolean matches(CraftingRecipeInput input) {
+			if (this.width == input.getWidth() && this.height == input.getHeight()) {
 				for (int i = 0; i < this.key.size(); i++) {
-					if (!ItemStack.areItemsAndComponentsEqual(this.key.get(i), (ItemStack)inputs.get(i))) {
+					if (!ItemStack.areItemsAndComponentsEqual(this.key.get(i), input.getStackInSlot(i))) {
 						return false;
 					}
 				}
 
 				return true;
+			} else {
+				return false;
 			}
 		}
 	}

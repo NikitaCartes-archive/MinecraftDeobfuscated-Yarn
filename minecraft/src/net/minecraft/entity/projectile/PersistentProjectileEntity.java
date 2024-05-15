@@ -96,7 +96,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				this.setPierceLevel((byte)i);
 			}
 
-			EnchantmentHelper.onProjectileSpawned(serverWorld, weapon, this, () -> this.weapon = null);
+			EnchantmentHelper.onProjectileSpawned(serverWorld, weapon, this, item -> this.weapon = null);
 		}
 	}
 
@@ -326,8 +326,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		double d = this.damage;
 		Entity entity2 = this.getOwner();
 		DamageSource damageSource = this.getDamageSources().arrow(this, (Entity)(entity2 != null ? entity2 : this));
-		if (this.weapon != null && this.getWorld() instanceof ServerWorld serverWorld) {
-			d = (double)EnchantmentHelper.getDamage(serverWorld, this.weapon, entity, damageSource, (float)d);
+		if (this.getWeaponStack() != null && this.getWorld() instanceof ServerWorld serverWorld) {
+			d = (double)EnchantmentHelper.getDamage(serverWorld, this.getWeaponStack(), entity, damageSource, (float)d);
 		}
 
 		int i = MathHelper.ceil(MathHelper.clamp((double)f * d, 0.0, 2.147483647E9));
@@ -375,7 +375,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 				this.knockback(livingEntity2, damageSource);
 				if (this.getWorld() instanceof ServerWorld serverWorld2) {
-					EnchantmentHelper.onTargetDamaged(serverWorld2, livingEntity2, damageSource);
+					EnchantmentHelper.onTargetDamaged(serverWorld2, livingEntity2, damageSource, this.getWeaponStack());
 				}
 
 				this.onHit(livingEntity2);
@@ -455,8 +455,13 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	protected void onBlockHitEnchantmentEffects(ServerWorld world, BlockHitResult blockHitResult, ItemStack shotFromStack) {
 		EnchantmentHelper.onHitBlock(
-			world, shotFromStack, this.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null, this, null, blockHitResult.getPos(), () -> {
-			}
+			world,
+			shotFromStack,
+			this.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null,
+			this,
+			null,
+			blockHitResult.getPos(),
+			item -> this.weapon = null
 		);
 	}
 

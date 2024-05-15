@@ -642,7 +642,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	}
 
 	public ItemStack tryEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = getPreferredEquipmentSlot(stack);
+		EquipmentSlot equipmentSlot = this.getPreferredEquipmentSlot(stack);
 		ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 		boolean bl = this.prefersNewEquipment(stack, itemStack);
 		if (equipmentSlot.isArmorSlot() && !bl) {
@@ -657,14 +657,9 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 				this.dropStack(itemStack);
 			}
 
-			if (equipmentSlot.isArmorSlot() && stack.getCount() > 1) {
-				ItemStack itemStack2 = stack.copyWithCount(1);
-				this.equipLootStack(equipmentSlot, itemStack2);
-				return itemStack2;
-			} else {
-				this.equipLootStack(equipmentSlot, stack);
-				return stack;
-			}
+			ItemStack itemStack2 = equipmentSlot.split(stack);
+			this.equipLootStack(equipmentSlot, itemStack2);
+			return itemStack2;
 		} else {
 			return ItemStack.EMPTY;
 		}
@@ -681,10 +676,10 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 			case HAND:
 				this.handDropChances[slot.getEntitySlotId()] = 2.0F;
 				break;
-			case ARMOR:
+			case HUMANOID_ARMOR:
 				this.armorDropChances[slot.getEntitySlotId()] = 2.0F;
 				break;
-			case BODY:
+			case ANIMAL_ARMOR:
 				this.bodyArmorDropChance = 2.0F;
 		}
 	}
@@ -983,13 +978,9 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		return this.bodyArmor;
 	}
 
-	public boolean hasArmorSlot() {
-		return false;
-	}
-
 	@Override
 	public boolean canUseSlot(EquipmentSlot slot) {
-		return true;
+		return slot != EquipmentSlot.BODY;
 	}
 
 	public boolean isWearingBodyArmor() {
@@ -1013,8 +1004,8 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	public ItemStack getEquippedStack(EquipmentSlot slot) {
 		return switch (slot.getType()) {
 			case HAND -> (ItemStack)this.handItems.get(slot.getEntitySlotId());
-			case ARMOR -> (ItemStack)this.armorItems.get(slot.getEntitySlotId());
-			case BODY -> this.bodyArmor;
+			case HUMANOID_ARMOR -> (ItemStack)this.armorItems.get(slot.getEntitySlotId());
+			case ANIMAL_ARMOR -> this.bodyArmor;
 		};
 	}
 
@@ -1025,10 +1016,10 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 			case HAND:
 				this.onEquipStack(slot, this.handItems.set(slot.getEntitySlotId(), stack), stack);
 				break;
-			case ARMOR:
+			case HUMANOID_ARMOR:
 				this.onEquipStack(slot, this.armorItems.set(slot.getEntitySlotId(), stack), stack);
 				break;
-			case BODY:
+			case ANIMAL_ARMOR:
 				ItemStack itemStack = this.bodyArmor;
 				this.bodyArmor = stack;
 				this.onEquipStack(slot, itemStack, stack);
@@ -1036,17 +1027,17 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource source, boolean causedByPlayer) {
-		super.dropEquipment(source, causedByPlayer);
+	protected void dropEquipment(ServerWorld world, DamageSource source, boolean causedByPlayer) {
+		super.dropEquipment(world, source, causedByPlayer);
 
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 			ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 			float f = this.getDropChance(equipmentSlot);
 			if (f != 0.0F) {
 				boolean bl = f > 1.0F;
-				Entity var12 = source.getAttacker();
-				if (var12 instanceof LivingEntity) {
-					LivingEntity livingEntity = (LivingEntity)var12;
+				Entity var13 = source.getAttacker();
+				if (var13 instanceof LivingEntity) {
+					LivingEntity livingEntity = (LivingEntity)var13;
 					if (this.getWorld() instanceof ServerWorld serverWorld) {
 						f = EnchantmentHelper.getEquipmentDropChance(serverWorld, livingEntity, source, f);
 					}
@@ -1070,8 +1061,8 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	protected float getDropChance(EquipmentSlot slot) {
 		return switch (slot.getType()) {
 			case HAND -> this.handDropChances[slot.getEntitySlotId()];
-			case ARMOR -> this.armorDropChances[slot.getEntitySlotId()];
-			case BODY -> this.bodyArmorDropChance;
+			case HUMANOID_ARMOR -> this.armorDropChances[slot.getEntitySlotId()];
+			case ANIMAL_ARMOR -> this.bodyArmorDropChance;
 		};
 	}
 
@@ -1111,7 +1102,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 			boolean bl = true;
 
 			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-				if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR) {
+				if (equipmentSlot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
 					ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 					if (!bl && random.nextFloat() < f) {
 						break;
@@ -1185,29 +1176,28 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		}
 	}
 
-	protected void updateEnchantments(Random random, LocalDifficulty localDifficulty) {
-		float f = localDifficulty.getClampedLocalDifficulty();
-		this.enchantMainHandItem(random, f);
+	protected void updateEnchantments(ServerWorldAccess world, Random random, LocalDifficulty localDifficulty) {
+		this.enchantMainHandItem(world, random, localDifficulty);
 
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-			if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR) {
-				this.enchantEquipment(random, f, equipmentSlot);
+			if (equipmentSlot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
+				this.enchantEquipment(world, random, equipmentSlot, localDifficulty);
 			}
 		}
 	}
 
-	protected void enchantMainHandItem(Random random, float power) {
-		this.enchantEquipment(EquipmentSlot.MAINHAND, random, 0.25F, power);
+	protected void enchantMainHandItem(ServerWorldAccess world, Random random, LocalDifficulty localDifficulty) {
+		this.enchantEquipment(world, EquipmentSlot.MAINHAND, random, 0.25F, localDifficulty);
 	}
 
-	protected void enchantEquipment(Random random, float power, EquipmentSlot slot) {
-		this.enchantEquipment(slot, random, 0.5F, power);
+	protected void enchantEquipment(ServerWorldAccess world, Random random, EquipmentSlot slot, LocalDifficulty localDifficulty) {
+		this.enchantEquipment(world, slot, random, 0.5F, localDifficulty);
 	}
 
-	private void enchantEquipment(EquipmentSlot slot, Random random, float chancePerPower, float power) {
+	private void enchantEquipment(ServerWorldAccess world, EquipmentSlot slot, Random random, float power, LocalDifficulty localDifficulty) {
 		ItemStack itemStack = this.getEquippedStack(slot);
-		if (!itemStack.isEmpty() && random.nextFloat() < chancePerPower * power) {
-			EnchantmentHelper.applyEnchantmentProvider(itemStack, EnchantmentProviders.MOB_SPAWN_EQUIPMENT, this.getWorld(), this.getBlockPos(), random);
+		if (!itemStack.isEmpty() && random.nextFloat() < power * localDifficulty.getClampedLocalDifficulty()) {
+			EnchantmentHelper.applyEnchantmentProvider(itemStack, world.getRegistryManager(), EnchantmentProviders.MOB_SPAWN_EQUIPMENT, localDifficulty, random);
 			this.equipStack(slot, itemStack);
 		}
 	}
@@ -1233,10 +1223,10 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 			case HAND:
 				this.handDropChances[slot.getEntitySlotId()] = dropChance;
 				break;
-			case ARMOR:
+			case HUMANOID_ARMOR:
 				this.armorDropChances[slot.getEntitySlotId()] = dropChance;
 				break;
-			case BODY:
+			case ANIMAL_ARMOR:
 				this.bodyArmorDropChance = dropChance;
 		}
 	}
@@ -1251,7 +1241,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 
 	@Override
 	public boolean canEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = getPreferredEquipmentSlot(stack);
+		EquipmentSlot equipmentSlot = this.getPreferredEquipmentSlot(stack);
 		return this.getEquippedStack(equipmentSlot).isEmpty() && this.canPickUpLoot();
 	}
 

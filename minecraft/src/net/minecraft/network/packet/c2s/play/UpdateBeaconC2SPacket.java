@@ -9,15 +9,14 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public record UpdateBeaconC2SPacket(Optional<RegistryEntry<StatusEffect>> primary, Optional<RegistryEntry<StatusEffect>> secondary)
 	implements Packet<ServerPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, UpdateBeaconC2SPacket> CODEC = PacketCodec.tuple(
-		PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT).collect(PacketCodecs::optional),
+		StatusEffect.ENTRY_PACKET_CODEC.collect(PacketCodecs::optional),
 		UpdateBeaconC2SPacket::primary,
-		PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT).collect(PacketCodecs::optional),
+		StatusEffect.ENTRY_PACKET_CODEC.collect(PacketCodecs::optional),
 		UpdateBeaconC2SPacket::secondary,
 		UpdateBeaconC2SPacket::new
 	);

@@ -165,7 +165,6 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		delta = this.client.getTickDelta();
 		super.render(context, mouseX, mouseY, delta);
 		this.drawMouseoverTooltip(context, mouseX, mouseY);
 		boolean bl = this.client.player.getAbilities().creativeMode;

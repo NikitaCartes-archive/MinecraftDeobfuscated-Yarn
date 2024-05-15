@@ -75,6 +75,11 @@ public class CheckedRandom implements BaseRandom {
 			return new CheckedRandom((long)i ^ this.seed);
 		}
 
+		@Override
+		public Random split(long seed) {
+			return new CheckedRandom(seed);
+		}
+
 		@VisibleForTesting
 		@Override
 		public void addDebugInfo(StringBuilder info) {

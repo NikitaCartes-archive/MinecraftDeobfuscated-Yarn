@@ -1116,7 +1116,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return this.getPosWithYOffset(0.2F);
 	}
 
-	protected BlockPos getVelocityAffectingPos() {
+	public BlockPos getVelocityAffectingPos() {
 		return this.getPosWithYOffset(0.500001F);
 	}
 
@@ -1225,7 +1225,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 
 			List<VoxelShape> list2 = findCollisionsForMovement(this, this.world, list, box3);
 			float f = (float)vec3d.y;
-			float[] fs = collectStepHeights(box2, list2, f, this.getStepHeight());
+			float[] fs = collectStepHeights(box2, list2, this.getStepHeight(), f);
 
 			for (float g : fs) {
 				Vec3d vec3d2 = adjustMovementForCollisions(new Vec3d(movement.x, (double)g, movement.z), box2, list2);
@@ -1244,8 +1244,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		for (VoxelShape voxelShape : collisions) {
 			for (double d : voxelShape.getPointPositions(Direction.Axis.Y)) {
 				float g = (float)(d - collisionBox.minY);
-				if (!(g <= f)) {
-					if (g > stepHeight) {
+				if (!(g < 0.0F) && !MathHelper.approximatelyEquals(g, stepHeight)) {
+					if (g > f) {
 						break;
 					}
 
@@ -1892,6 +1892,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 
 	public void updatePositionAndAngles(double x, double y, double z, float yaw, float pitch) {
 		this.updatePosition(x, y, z);
+		this.setAngles(yaw, pitch);
+	}
+
+	public void setAngles(float yaw, float pitch) {
 		this.setYaw(yaw % 360.0F);
 		this.setPitch(MathHelper.clamp(pitch, -90.0F, 90.0F) % 360.0F);
 		this.prevYaw = this.getYaw();
@@ -2927,7 +2931,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 					this.getWorld().getProfiler().push("portal");
 					this.netherPortalTime = i;
 					this.resetPortalCooldown();
-					this.moveToWorld(serverWorld2);
+					this.moveToWorld(() -> this.getTeleportTarget(serverWorld2));
 					this.getWorld().getProfiler().pop();
 				}
 
@@ -3816,31 +3820,32 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * @return the entity in the other world
 	 */
 	@Nullable
-	public Entity moveToWorld(ServerWorld destination) {
+	public Entity moveToWorld(Entity.TeleportTargetSupplier teleportTargetSupplier) {
 		if (this.getWorld() instanceof ServerWorld && !this.isRemoved()) {
-			this.getWorld().getProfiler().push("changeDimension");
-			this.detach();
-			this.getWorld().getProfiler().push("reposition");
-			TeleportTarget teleportTarget = this.getTeleportTarget(destination);
+			TeleportTarget teleportTarget = teleportTargetSupplier.get();
 			if (teleportTarget == null) {
 				return null;
 			} else {
+				ServerWorld serverWorld = teleportTarget.newDimension();
+				this.getWorld().getProfiler().push("changeDimension");
+				this.detach();
+				this.getWorld().getProfiler().push("reposition");
 				this.getWorld().getProfiler().swap("reloading");
-				Entity entity = this.getType().create(destination);
+				Entity entity = this.getType().create(serverWorld);
 				if (entity != null) {
 					entity.copyFrom(this);
-					entity.refreshPositionAndAngles(teleportTarget.position.x, teleportTarget.position.y, teleportTarget.position.z, teleportTarget.yaw, entity.getPitch());
-					entity.setVelocity(teleportTarget.velocity);
-					destination.onDimensionChanged(entity);
-					if (destination.getRegistryKey() == World.END) {
-						ServerWorld.createEndSpawnPlatform(destination);
+					entity.refreshPositionAndAngles(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z, teleportTarget.yaw(), entity.getPitch());
+					entity.setVelocity(teleportTarget.velocity());
+					serverWorld.onDimensionChanged(entity);
+					if (serverWorld.getRegistryKey() == World.END) {
+						ServerWorld.createEndSpawnPlatform(serverWorld);
 					}
 				}
 
 				this.removeFromDimension();
 				this.getWorld().getProfiler().pop();
 				((ServerWorld)this.getWorld()).resetIdleTimeout();
-				destination.resetIdleTimeout();
+				serverWorld.resetIdleTimeout();
 				this.getWorld().getProfiler().pop();
 				return entity;
 			}
@@ -3867,7 +3872,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * destination worlds, plus any nether portals that may be present}
 	 */
 	@Nullable
-	protected TeleportTarget getTeleportTarget(ServerWorld destination) {
+	public TeleportTarget getTeleportTarget(ServerWorld destination) {
 		boolean bl = this.getWorld().getRegistryKey() == World.END && destination.getRegistryKey() == World.OVERWORLD;
 		boolean bl2 = destination.getRegistryKey() == World.END;
 		if (!bl && !bl2) {
@@ -3911,7 +3916,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			}
 
 			return new TeleportTarget(
-				new Vec3d((double)blockPos.getX() + 0.5, (double)i, (double)blockPos.getZ() + 0.5), this.getVelocity(), this.getYaw(), this.getPitch()
+				destination, new Vec3d((double)blockPos.getX() + 0.5, (double)i, (double)blockPos.getZ() + 0.5), this.getVelocity(), this.getYaw(), this.getPitch()
 			);
 		}
 	}
@@ -5401,7 +5406,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return this.random;
 	}
 
-	public Vec3d getParticleVelocity() {
+	public Vec3d getMovement() {
 		return this.getVelocity();
 	}
 
@@ -5506,5 +5511,11 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		public boolean shouldSave() {
 			return this.save;
 		}
+	}
+
+	@FunctionalInterface
+	public interface TeleportTargetSupplier {
+		@Nullable
+		TeleportTarget get();
 	}
 }

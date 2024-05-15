@@ -1,7 +1,11 @@
 package net.minecraft.entity.attribute;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Formatting;
 
@@ -13,6 +17,7 @@ import net.minecraft.util.Formatting;
  */
 public class EntityAttribute {
 	public static final Codec<RegistryEntry<EntityAttribute>> CODEC = Registries.ATTRIBUTE.getEntryCodec();
+	public static final PacketCodec<RegistryByteBuf, RegistryEntry<EntityAttribute>> PACKET_CODEC = PacketCodecs.registryEntry(RegistryKeys.ATTRIBUTE);
 	private final double fallback;
 	private boolean tracked;
 	private final String translationKey;

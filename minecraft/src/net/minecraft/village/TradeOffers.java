@@ -55,6 +55,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.Structure;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -1364,7 +1365,11 @@ public class TradeOffers {
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
 			ItemStack itemStack = this.processed.copy();
-			this.enchantmentProviderKey.ifPresent(key -> EnchantmentHelper.applyEnchantmentProvider(itemStack, key, entity.getWorld(), entity.getBlockPos(), random));
+			World world = entity.getWorld();
+			this.enchantmentProviderKey
+				.ifPresent(
+					key -> EnchantmentHelper.applyEnchantmentProvider(itemStack, world.getRegistryManager(), key, world.getLocalDifficulty(entity.getBlockPos()), random)
+				);
 			return new TradeOffer(
 				new TradedItem(Items.EMERALD, this.price), Optional.of(this.toBeProcessed), itemStack, 0, this.maxUses, this.experience, this.multiplier
 			);
@@ -1499,7 +1504,11 @@ public class TradeOffers {
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
 			ItemStack itemStack = this.sell.copy();
-			this.enchantmentProviderKey.ifPresent(key -> EnchantmentHelper.applyEnchantmentProvider(itemStack, key, entity.getWorld(), entity.getBlockPos(), random));
+			World world = entity.getWorld();
+			this.enchantmentProviderKey
+				.ifPresent(
+					key -> EnchantmentHelper.applyEnchantmentProvider(itemStack, world.getRegistryManager(), key, world.getLocalDifficulty(entity.getBlockPos()), random)
+				);
 			return new TradeOffer(new TradedItem(Items.EMERALD, this.price), itemStack, this.maxUses, this.experience, this.multiplier);
 		}
 	}

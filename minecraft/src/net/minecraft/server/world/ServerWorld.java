@@ -961,30 +961,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * @see #onPlayerChangeDimension
 	 */
 	public void onDimensionChanged(Entity entity) {
-		this.addEntity(entity);
-	}
-
-	/**
-	 * Called on the destination world when a player changed the dimension
-	 * by teleportation.
-	 * 
-	 * @see ServerPlayerEntity#moveToWorld
-	 * @see #onDimensionChanged
-	 * @see #onPlayerChangeDimension
-	 */
-	public void onPlayerTeleport(ServerPlayerEntity player) {
-		this.addPlayer(player);
-	}
-
-	/**
-	 * Called on the destination world when a player changed the dimension using portals.
-	 * 
-	 * @see ServerPlayerEntity#moveToWorld
-	 * @see #onDimensionChanged
-	 * @see #onPlayerTeleport
-	 */
-	public void onPlayerChangeDimension(ServerPlayerEntity player) {
-		this.addPlayer(player);
+		if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
+			this.addPlayer(serverPlayerEntity);
+		} else {
+			this.addEntity(entity);
+		}
 	}
 
 	/**

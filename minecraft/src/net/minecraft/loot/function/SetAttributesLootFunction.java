@@ -23,7 +23,6 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
@@ -122,7 +121,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		public static final Codec<SetAttributesLootFunction.Attribute> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.STRING.fieldOf("name").forGetter(SetAttributesLootFunction.Attribute::name),
-						Registries.ATTRIBUTE.getEntryCodec().fieldOf("attribute").forGetter(SetAttributesLootFunction.Attribute::attribute),
+						EntityAttribute.CODEC.fieldOf("attribute").forGetter(SetAttributesLootFunction.Attribute::attribute),
 						EntityAttributeModifier.Operation.CODEC.fieldOf("operation").forGetter(SetAttributesLootFunction.Attribute::operation),
 						LootNumberProviderTypes.CODEC.fieldOf("amount").forGetter(SetAttributesLootFunction.Attribute::amount),
 						EQUIPMENT_SLOT_LIST_CODEC.fieldOf("slot").forGetter(SetAttributesLootFunction.Attribute::slots),

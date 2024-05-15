@@ -125,7 +125,7 @@ public class VindicatorEntity extends IllagerEntity {
 		((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
 		Random random = world.getRandom();
 		this.initEquipment(random, difficulty);
-		this.updateEnchantments(random, difficulty);
+		this.updateEnchantments(world, random, difficulty);
 		return entityData2;
 	}
 
@@ -160,7 +160,7 @@ public class VindicatorEntity extends IllagerEntity {
 	}
 
 	@Override
-	public void addBonusForWave(int wave, boolean unused) {
+	public void addBonusForWave(ServerWorld world, int wave, boolean unused) {
 		ItemStack itemStack = new ItemStack(Items.IRON_AXE);
 		Raid raid = this.getRaid();
 		boolean bl = this.random.nextFloat() <= raid.getEnchantmentChance();
@@ -168,7 +168,7 @@ public class VindicatorEntity extends IllagerEntity {
 			RegistryKey<EnchantmentProvider> registryKey = wave > raid.getMaxWaves(Difficulty.NORMAL)
 				? EnchantmentProviders.VINDICATOR_POST_WAVE_5_RAID
 				: EnchantmentProviders.VINDICATOR_RAID;
-			EnchantmentHelper.applyEnchantmentProvider(itemStack, registryKey, this.getWorld(), this.getBlockPos(), this.random);
+			EnchantmentHelper.applyEnchantmentProvider(itemStack, world.getRegistryManager(), registryKey, world.getLocalDifficulty(this.getBlockPos()), this.random);
 		}
 
 		this.equipStack(EquipmentSlot.MAINHAND, itemStack);

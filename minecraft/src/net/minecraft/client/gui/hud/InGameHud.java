@@ -21,6 +21,7 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.util.Window;
@@ -114,7 +115,6 @@ public class InGameHud {
 		.thenComparing(ScoreboardEntry::owner, String.CASE_INSENSITIVE_ORDER);
 	private static final Text DEMO_EXPIRED_MESSAGE = Text.translatable("demo.demoExpired");
 	private static final Text SAVING_LEVEL_TEXT = Text.translatable("menu.savingLevel");
-	private static final int WHITE = 16777215;
 	private static final float field_32168 = 5.0F;
 	private static final int field_32169 = 10;
 	private static final int field_32170 = 10;
@@ -172,10 +172,10 @@ public class InGameHud {
 			.addLayer(this::renderMainHud)
 			.addLayer(this::renderExperienceLevel)
 			.addLayer(this::renderStatusEffectOverlay)
-			.addLayer((context, tickDelta) -> this.bossBarHud.render(context));
+			.addLayer((context, tickCounter) -> this.bossBarHud.render(context));
 		LayeredDrawer layeredDrawer2 = new LayeredDrawer()
 			.addLayer(this::renderDemoTimer)
-			.addLayer((context, tickDelta) -> {
+			.addLayer((context, tickCounter) -> {
 				if (this.debugHud.shouldShowDebugHud()) {
 					this.debugHud.render(context);
 				}
@@ -185,7 +185,7 @@ public class InGameHud {
 			.addLayer(this::renderTitleAndSubtitle)
 			.addLayer(this::renderChat)
 			.addLayer(this::renderPlayerList)
-			.addLayer((context, tickDelta) -> this.subtitlesHud.render(context));
+			.addLayer((context, tickCounter) -> this.subtitlesHud.render(context));
 		this.layeredDrawer
 			.addSubDrawer(layeredDrawer, () -> !client.options.hudHidden)
 			.addLayer(this::renderSleepOverlay)
@@ -198,18 +198,18 @@ public class InGameHud {
 		this.titleFadeOutTicks = 20;
 	}
 
-	public void render(DrawContext context, float tickDelta) {
+	public void render(DrawContext context, RenderTickCounter tickCounter) {
 		RenderSystem.enableDepthTest();
-		this.layeredDrawer.render(context, tickDelta);
+		this.layeredDrawer.render(context, tickCounter);
 		RenderSystem.disableDepthTest();
 	}
 
-	private void renderMiscOverlays(DrawContext context, float tickDelta) {
+	private void renderMiscOverlays(DrawContext context, RenderTickCounter tickCounter) {
 		if (MinecraftClient.isFancyGraphicsOrBetter()) {
 			this.renderVignetteOverlay(context, this.client.getCameraEntity());
 		}
 
-		float f = this.client.getLastFrameDuration();
+		float f = tickCounter.getLastFrameDuration();
 		this.spyglassScale = MathHelper.lerp(0.5F * f, this.spyglassScale, 1.125F);
 		if (this.client.options.getPerspective().isFirstPerson()) {
 			if (this.client.player.isUsingSpyglass()) {
@@ -227,13 +227,13 @@ public class InGameHud {
 			this.renderOverlay(context, POWDER_SNOW_OUTLINE, this.client.player.getFreezingScale());
 		}
 
-		float g = MathHelper.lerp(tickDelta, this.client.player.prevNauseaIntensity, this.client.player.nauseaIntensity);
+		float g = MathHelper.lerp(tickCounter.getTickDelta(false), this.client.player.prevNauseaIntensity, this.client.player.nauseaIntensity);
 		if (g > 0.0F && !this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
 			this.renderPortalOverlay(context, g);
 		}
 	}
 
-	private void renderSleepOverlay(DrawContext context, float tickDelta) {
+	private void renderSleepOverlay(DrawContext context, RenderTickCounter tickCounter) {
 		if (this.client.player.getSleepTimer() > 0) {
 			this.client.getProfiler().push("sleep");
 			float f = (float)this.client.player.getSleepTimer();
@@ -248,11 +248,11 @@ public class InGameHud {
 		}
 	}
 
-	private void renderOverlayMessage(DrawContext context, float tickDelta) {
+	private void renderOverlayMessage(DrawContext context, RenderTickCounter tickCounter) {
 		TextRenderer textRenderer = this.getTextRenderer();
 		if (this.overlayMessage != null && this.overlayRemaining > 0) {
 			this.client.getProfiler().push("overlayMessage");
-			float f = (float)this.overlayRemaining - tickDelta;
+			float f = (float)this.overlayRemaining - tickCounter.getTickDelta(false);
 			int i = (int)(f * 255.0F / 20.0F);
 			if (i > 255) {
 				i = 255;
@@ -261,15 +261,15 @@ public class InGameHud {
 			if (i > 8) {
 				context.getMatrices().push();
 				context.getMatrices().translate((float)(context.getScaledWindowWidth() / 2), (float)(context.getScaledWindowHeight() - 68), 0.0F);
-				int j = 16777215;
+				int j;
 				if (this.overlayTinted) {
-					j = MathHelper.hsvToRgb(f / 50.0F, 0.7F, 0.6F) & 16777215;
+					j = MathHelper.hsvToArgb(f / 50.0F, 0.7F, 0.6F, i);
+				} else {
+					j = ColorHelper.Argb.withAlpha(i, -1);
 				}
 
-				int k = i << 24 & 0xFF000000;
-				int l = textRenderer.getWidth(this.overlayMessage);
-				this.drawTextBackground(context, textRenderer, -4, l, 16777215 | k);
-				context.drawTextWithShadow(textRenderer, this.overlayMessage, -l / 2, -4, j | k);
+				int k = textRenderer.getWidth(this.overlayMessage);
+				context.drawTextWithBackground(textRenderer, this.overlayMessage, -k / 2, -4, k, j);
 				context.getMatrices().pop();
 			}
 
@@ -277,11 +277,11 @@ public class InGameHud {
 		}
 	}
 
-	private void renderTitleAndSubtitle(DrawContext context, float tickDelta) {
+	private void renderTitleAndSubtitle(DrawContext context, RenderTickCounter tickCounter) {
 		if (this.title != null && this.titleRemainTicks > 0) {
 			TextRenderer textRenderer = this.getTextRenderer();
 			this.client.getProfiler().push("titleAndSubtitle");
-			float f = (float)this.titleRemainTicks - tickDelta;
+			float f = (float)this.titleRemainTicks - tickCounter.getTickDelta(false);
 			int i = 255;
 			if (this.titleRemainTicks > this.titleFadeOutTicks + this.titleStayTicks) {
 				float g = (float)(this.titleFadeInTicks + this.titleStayTicks + this.titleFadeOutTicks) - f;
@@ -298,17 +298,15 @@ public class InGameHud {
 				context.getMatrices().translate((float)(context.getScaledWindowWidth() / 2), (float)(context.getScaledWindowHeight() / 2), 0.0F);
 				context.getMatrices().push();
 				context.getMatrices().scale(4.0F, 4.0F, 4.0F);
-				int j = i << 24 & 0xFF000000;
-				int k = textRenderer.getWidth(this.title);
-				this.drawTextBackground(context, textRenderer, -10, k, 16777215 | j);
-				context.drawTextWithShadow(textRenderer, this.title, -k / 2, -10, 16777215 | j);
+				int j = textRenderer.getWidth(this.title);
+				int k = ColorHelper.Argb.withAlpha(i, -1);
+				context.drawTextWithBackground(textRenderer, this.title, -j / 2, -10, j, k);
 				context.getMatrices().pop();
 				if (this.subtitle != null) {
 					context.getMatrices().push();
 					context.getMatrices().scale(2.0F, 2.0F, 2.0F);
 					int l = textRenderer.getWidth(this.subtitle);
-					this.drawTextBackground(context, textRenderer, 5, l, 16777215 | j);
-					context.drawTextWithShadow(textRenderer, this.subtitle, -l / 2, 5, 16777215 | j);
+					context.drawTextWithBackground(textRenderer, this.subtitle, -l / 2, 5, l, k);
 					context.getMatrices().pop();
 				}
 
@@ -319,7 +317,7 @@ public class InGameHud {
 		}
 	}
 
-	private void renderChat(DrawContext context, float tickDelta) {
+	private void renderChat(DrawContext context, RenderTickCounter tickCounter) {
 		if (!this.chatHud.isChatFocused()) {
 			Window window = this.client.getWindow();
 			int i = MathHelper.floor(this.client.mouse.getX() * (double)window.getScaledWidth() / (double)window.getWidth());
@@ -328,7 +326,7 @@ public class InGameHud {
 		}
 	}
 
-	private void renderScoreboardSidebar(DrawContext context, float tickDelta) {
+	private void renderScoreboardSidebar(DrawContext context, RenderTickCounter tickCounter) {
 		Scoreboard scoreboard = this.client.world.getScoreboard();
 		ScoreboardObjective scoreboardObjective = null;
 		Team team = scoreboard.getScoreHolderTeam(this.client.player.getNameForScoreboard());
@@ -345,7 +343,7 @@ public class InGameHud {
 		}
 	}
 
-	private void renderPlayerList(DrawContext context, float tickDelta) {
+	private void renderPlayerList(DrawContext context, RenderTickCounter tickCounter) {
 		Scoreboard scoreboard = this.client.world.getScoreboard();
 		ScoreboardObjective scoreboardObjective = scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.LIST);
 		if (!this.client.options.playerListKey.isPressed()
@@ -357,15 +355,7 @@ public class InGameHud {
 		}
 	}
 
-	private void drawTextBackground(DrawContext context, TextRenderer textRenderer, int yOffset, int width, int color) {
-		int i = this.client.options.getTextBackgroundColor(0.0F);
-		if (i != 0) {
-			int j = -width / 2;
-			context.fill(j - 2, yOffset - 2, j + width + 2, yOffset + 9 + 2, ColorHelper.Argb.mixColor(i, color));
-		}
-	}
-
-	private void renderCrosshair(DrawContext context, float tickDelta) {
+	private void renderCrosshair(DrawContext context, RenderTickCounter tickCounter) {
 		GameOptions gameOptions = this.client.options;
 		if (gameOptions.getPerspective().isFirstPerson()) {
 			if (this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR || this.shouldRenderSpectatorCrosshair(this.client.crosshairTarget)) {
@@ -430,7 +420,7 @@ public class InGameHud {
 		}
 	}
 
-	private void renderStatusEffectOverlay(DrawContext context, float tickDelta) {
+	private void renderStatusEffectOverlay(DrawContext context, RenderTickCounter tickCounter) {
 		Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
 		if (!collection.isEmpty()) {
 			if (this.client.currentScreen instanceof AbstractInventoryScreen abstractInventoryScreen && abstractInventoryScreen.hideStatusEffectHud()) {
@@ -491,11 +481,11 @@ public class InGameHud {
 		}
 	}
 
-	private void renderMainHud(DrawContext context, float tickDelta) {
+	private void renderMainHud(DrawContext context, RenderTickCounter tickCounter) {
 		if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
 			this.spectatorHud.renderSpectatorMenu(context);
 		} else {
-			this.renderHotbar(context, tickDelta);
+			this.renderHotbar(context, tickCounter);
 		}
 
 		int i = context.getScaledWindowWidth() / 2 - 91;
@@ -518,7 +508,7 @@ public class InGameHud {
 		}
 	}
 
-	private void renderHotbar(DrawContext context, float tickDelta) {
+	private void renderHotbar(DrawContext context, RenderTickCounter tickCounter) {
 		PlayerEntity playerEntity = this.getCameraPlayer();
 		if (playerEntity != null) {
 			ItemStack itemStack = playerEntity.getOffHandStack();
@@ -548,15 +538,15 @@ public class InGameHud {
 			for (int m = 0; m < 9; m++) {
 				int n = i - 90 + m * 20 + 2;
 				int o = context.getScaledWindowHeight() - 16 - 3;
-				this.renderHotbarItem(context, n, o, tickDelta, playerEntity, playerEntity.getInventory().main.get(m), l++);
+				this.renderHotbarItem(context, n, o, tickCounter, playerEntity, playerEntity.getInventory().main.get(m), l++);
 			}
 
 			if (!itemStack.isEmpty()) {
 				int m = context.getScaledWindowHeight() - 16 - 3;
 				if (arm == Arm.LEFT) {
-					this.renderHotbarItem(context, i - 91 - 26, m, tickDelta, playerEntity, itemStack, l++);
+					this.renderHotbarItem(context, i - 91 - 26, m, tickCounter, playerEntity, itemStack, l++);
 				} else {
-					this.renderHotbarItem(context, i + 91 + 10, m, tickDelta, playerEntity, itemStack, l++);
+					this.renderHotbarItem(context, i + 91 + 10, m, tickCounter, playerEntity, itemStack, l++);
 				}
 			}
 
@@ -617,7 +607,7 @@ public class InGameHud {
 		this.client.getProfiler().pop();
 	}
 
-	private void renderExperienceLevel(DrawContext context, float x) {
+	private void renderExperienceLevel(DrawContext context, RenderTickCounter tickCounter) {
 		int i = this.client.player.experienceLevel;
 		if (this.shouldRenderExperience() && i > 0) {
 			this.client.getProfiler().push("expLevel");
@@ -658,15 +648,14 @@ public class InGameHud {
 			}
 
 			if (l > 0) {
-				context.fill(j - 2, k - 2, j + i + 2, k + 9 + 2, this.client.options.getTextBackgroundColor(0));
-				context.drawTextWithShadow(this.getTextRenderer(), mutableText, j, k, 16777215 + (l << 24));
+				context.drawTextWithBackground(this.getTextRenderer(), mutableText, j, k, i, ColorHelper.Argb.withAlpha(l, -1));
 			}
 		}
 
 		this.client.getProfiler().pop();
 	}
 
-	private void renderDemoTimer(DrawContext context, float tickDelta) {
+	private void renderDemoTimer(DrawContext context, RenderTickCounter tickCounter) {
 		if (this.client.isDemo()) {
 			this.client.getProfiler().push("demo");
 			Text text;
@@ -679,7 +668,9 @@ public class InGameHud {
 			}
 
 			int i = this.getTextRenderer().getWidth(text);
-			context.drawTextWithShadow(this.getTextRenderer(), text, context.getScaledWindowWidth() - i - 10, 5, 16777215);
+			int j = context.getScaledWindowWidth() - i - 10;
+			int k = 5;
+			context.drawTextWithBackground(this.getTextRenderer(), text, j, 5, i, -1);
 			this.client.getProfiler().pop();
 		}
 	}
@@ -1132,9 +1123,9 @@ public class InGameHud {
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	private void renderHotbarItem(DrawContext context, int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed) {
+	private void renderHotbarItem(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed) {
 		if (!stack.isEmpty()) {
-			float f = (float)stack.getBobbingAnimationTime() - tickDelta;
+			float f = (float)stack.getBobbingAnimationTime() - tickCounter.getTickDelta(false);
 			if (f > 0.0F) {
 				float g = 1.0F + f / 5.0F;
 				context.getMatrices().push();
@@ -1295,16 +1286,18 @@ public class InGameHud {
 		this.debugHud.resetChunk();
 	}
 
-	public void renderAutosaveIndicator(DrawContext context, float tickDelta) {
+	public void renderAutosaveIndicator(DrawContext context, RenderTickCounter tickCounter) {
 		if (this.client.options.getShowAutosaveIndicator().getValue() && (this.autosaveIndicatorAlpha > 0.0F || this.lastAutosaveIndicatorAlpha > 0.0F)) {
 			int i = MathHelper.floor(
-				255.0F * MathHelper.clamp(MathHelper.lerp(this.client.getTickDelta(), this.lastAutosaveIndicatorAlpha, this.autosaveIndicatorAlpha), 0.0F, 1.0F)
+				255.0F * MathHelper.clamp(MathHelper.lerp(tickCounter.getLastDuration(), this.lastAutosaveIndicatorAlpha, this.autosaveIndicatorAlpha), 0.0F, 1.0F)
 			);
 			if (i > 8) {
 				TextRenderer textRenderer = this.getTextRenderer();
 				int j = textRenderer.getWidth(SAVING_LEVEL_TEXT);
-				int k = 16777215 | i << 24 & Colors.BLACK;
-				context.drawTextWithShadow(textRenderer, SAVING_LEVEL_TEXT, context.getScaledWindowWidth() - j - 10, context.getScaledWindowHeight() - 15, k);
+				int k = ColorHelper.Argb.withAlpha(i, -1);
+				int l = context.getScaledWindowWidth() - j - 2;
+				int m = context.getScaledWindowHeight() - 35;
+				context.drawTextWithBackground(textRenderer, SAVING_LEVEL_TEXT, l, m, j, k);
 			}
 		}
 	}

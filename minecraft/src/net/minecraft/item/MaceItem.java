@@ -96,10 +96,9 @@ public class MaceItem extends Item {
 			}
 
 			knockbackNearbyEntities(serverWorld, serverPlayerEntity, target);
-			return true;
 		}
 
-		return false;
+		return true;
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen.ingame;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
@@ -39,7 +40,7 @@ public class HorseScreen extends HandledScreen<HorseScreenHandler> {
 			context.drawGuiTexture(SADDLE_SLOT_TEXTURE, i + 7, j + 35 - 18, 18, 18);
 		}
 
-		if (this.entity.hasArmorSlot()) {
+		if (this.entity.canUseSlot(EquipmentSlot.BODY)) {
 			if (this.entity instanceof LlamaEntity) {
 				context.drawGuiTexture(LLAMA_ARMOR_SLOT_TEXTURE, i + 7, j + 35, 18, 18);
 			} else {

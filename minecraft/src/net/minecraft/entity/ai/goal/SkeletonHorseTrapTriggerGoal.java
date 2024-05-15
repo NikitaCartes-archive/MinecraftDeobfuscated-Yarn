@@ -90,17 +90,19 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 				skeletonEntity.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
 			}
 
-			this.enchantEquipment(skeletonEntity, EquipmentSlot.MAINHAND);
-			this.enchantEquipment(skeletonEntity, EquipmentSlot.HEAD);
+			this.enchantEquipment(skeletonEntity, EquipmentSlot.MAINHAND, localDifficulty);
+			this.enchantEquipment(skeletonEntity, EquipmentSlot.HEAD, localDifficulty);
 		}
 
 		return skeletonEntity;
 	}
 
-	private void enchantEquipment(SkeletonEntity rider, EquipmentSlot slot) {
+	private void enchantEquipment(SkeletonEntity rider, EquipmentSlot slot, LocalDifficulty localDifficulty) {
 		ItemStack itemStack = rider.getEquippedStack(slot);
 		itemStack.set(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
-		EnchantmentHelper.applyEnchantmentProvider(itemStack, EnchantmentProviders.MOB_SPAWN_EQUIPMENT, rider.getWorld(), rider.getBlockPos(), rider.getRandom());
+		EnchantmentHelper.applyEnchantmentProvider(
+			itemStack, rider.getWorld().getRegistryManager(), EnchantmentProviders.MOB_SPAWN_EQUIPMENT, localDifficulty, rider.getRandom()
+		);
 		rider.equipStack(slot, itemStack);
 	}
 }

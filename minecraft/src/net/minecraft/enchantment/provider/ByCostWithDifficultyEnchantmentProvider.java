@@ -11,10 +11,9 @@ import net.minecraft.registry.RegistryCodecs;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.util.dynamic.Codecs;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
+import net.minecraft.world.LocalDifficulty;
 
 public record ByCostWithDifficultyEnchantmentProvider(RegistryEntryList<Enchantment> enchantments, int minCost, int maxCostSpan) implements EnchantmentProvider {
 	public static final MapCodec<ByCostWithDifficultyEnchantmentProvider> CODEC = RecordCodecBuilder.mapCodec(
@@ -27,8 +26,8 @@ public record ByCostWithDifficultyEnchantmentProvider(RegistryEntryList<Enchantm
 	);
 
 	@Override
-	public void provideEnchantments(ItemStack stack, ItemEnchantmentsComponent.Builder componentBuilder, Random random, World world, BlockPos pos) {
-		float f = world.getLocalDifficulty(pos).getClampedLocalDifficulty();
+	public void provideEnchantments(ItemStack stack, ItemEnchantmentsComponent.Builder componentBuilder, Random random, LocalDifficulty localDifficulty) {
+		float f = localDifficulty.getClampedLocalDifficulty();
 		int i = MathHelper.nextBetween(random, this.minCost, this.minCost + (int)(f * (float)this.maxCostSpan));
 
 		for (EnchantmentLevelEntry enchantmentLevelEntry : EnchantmentHelper.generateEnchantments(random, stack, i, this.enchantments.stream())) {

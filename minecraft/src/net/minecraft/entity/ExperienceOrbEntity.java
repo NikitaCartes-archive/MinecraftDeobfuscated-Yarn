@@ -120,7 +120,7 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	protected BlockPos getVelocityAffectingPos() {
+	public BlockPos getVelocityAffectingPos() {
 		return this.getPosWithYOffset(0.999999F);
 	}
 

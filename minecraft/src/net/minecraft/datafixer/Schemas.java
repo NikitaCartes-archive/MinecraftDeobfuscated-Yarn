@@ -157,6 +157,7 @@ import net.minecraft.datafixer.fix.OptionsForceVBOFix;
 import net.minecraft.datafixer.fix.OptionsKeyLwjgl3Fix;
 import net.minecraft.datafixer.fix.OptionsKeyTranslationFix;
 import net.minecraft.datafixer.fix.OptionsLowerCaseLanguageFix;
+import net.minecraft.datafixer.fix.OptionsMenuBlurrinessFix;
 import net.minecraft.datafixer.fix.OptionsProgrammerArtFix;
 import net.minecraft.datafixer.fix.ParticleUnflatteningFix;
 import net.minecraft.datafixer.fix.PersistentStateUuidFix;
@@ -1300,6 +1301,8 @@ public class Schemas {
 		builder.addFixer(new ArrowStoredWeaponFix(schema223));
 		Schema schema224 = builder.addSchema(3939, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new RemoveFeatureTogglesFix(schema224, "Remove 1.21 feature toggle", Set.of("minecraft:update_1_21")));
+		Schema schema225 = builder.addSchema(3943, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new OptionsMenuBlurrinessFix(schema225));
 	}
 
 	private static UnaryOperator<String> replacingRaw(Map<String, String> replacements) {

@@ -1,5 +1,6 @@
 package net.minecraft.entity.projectile;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -110,7 +111,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 		Entity entity2 = this.getOwner();
 		DamageSource damageSource = this.getDamageSources().trident(this, (Entity)(entity2 == null ? this : entity2));
 		if (this.getWorld() instanceof ServerWorld serverWorld) {
-			f = EnchantmentHelper.getDamage(serverWorld, this.getItemStack(), entity, damageSource, f);
+			f = EnchantmentHelper.getDamage(serverWorld, this.getWeaponStack(), entity, damageSource, f);
 		}
 
 		this.dealtDamage = true;
@@ -120,7 +121,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 			}
 
 			if (this.getWorld() instanceof ServerWorld serverWorld) {
-				EnchantmentHelper.onTargetDamaged(serverWorld, entity, damageSource);
+				EnchantmentHelper.onTargetDamaged(serverWorld, entity, damageSource, this.getWeaponStack());
 			}
 
 			if (entity instanceof LivingEntity livingEntity) {
@@ -136,10 +137,11 @@ public class TridentEntity extends PersistentProjectileEntity {
 	@Override
 	protected void onBlockHitEnchantmentEffects(ServerWorld world, BlockHitResult blockHitResult, ItemStack shotFromStack) {
 		EnchantmentHelper.onHitBlock(
-			world, shotFromStack, this.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null, this, null, blockHitResult.getPos(), this::kill
+			world, shotFromStack, this.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null, this, null, blockHitResult.getPos(), item -> this.kill()
 		);
 	}
 
+	@Nonnull
 	@Override
 	protected ItemStack getWeaponStack() {
 		return this.getItemStack();

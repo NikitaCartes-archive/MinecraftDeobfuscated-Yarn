@@ -66,7 +66,6 @@ public class SocialInteractionsScreen extends Screen {
 	@Nullable
 	private Text serverLabel;
 	private int playerCount;
-	private boolean initialized;
 
 	public SocialInteractionsScreen() {
 		this(null);
@@ -98,12 +97,7 @@ public class SocialInteractionsScreen extends Screen {
 	@Override
 	protected void init() {
 		this.layout.addHeader(TITLE, this.textRenderer);
-		if (this.initialized) {
-			this.playerList.setDimensionsAndPosition(this.width, this.getScreenHeight(), 0, 88);
-		} else {
-			this.playerList = new SocialInteractionsPlayerListWidget(this, this.client, this.width, this.getScreenHeight(), 88, 36);
-		}
-
+		this.playerList = new SocialInteractionsPlayerListWidget(this, this.client, this.width, this.getPlayerListBottom() - 88, 88, 36);
 		int i = this.playerList.getRowWidth() / 3;
 		int j = this.playerList.getRowLeft();
 		int k = this.playerList.getRowRight();
@@ -138,7 +132,6 @@ public class SocialInteractionsScreen extends Screen {
 				.dimensions(this.width / 2 - 100, 64 + this.getScreenHeight(), 200, 20)
 				.build()
 		);
-		this.initialized = true;
 		this.setCurrentTab(this.currentTab);
 		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, buttonWidget -> this.close()).width(200).build());
 		this.layout.forEachChild(element -> {
@@ -150,7 +143,7 @@ public class SocialInteractionsScreen extends Screen {
 	@Override
 	protected void initTabNavigation() {
 		this.layout.refreshPositions();
-		this.playerList.position(this.width, this.getScreenHeight(), 88);
+		this.playerList.position(this.width, this.getPlayerListBottom() - 88, 88);
 		this.searchBox.setPosition(this.getSearchBoxX() + 28, 74);
 		int i = this.playerList.getRowLeft();
 		int j = this.playerList.getRowRight();

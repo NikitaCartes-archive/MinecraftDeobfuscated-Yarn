@@ -39,6 +39,8 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.noise.NoiseConfig;
+import net.minecraft.world.gen.structure.DimensionPadding;
+import net.minecraft.world.gen.structure.JigsawStructure;
 import net.minecraft.world.gen.structure.Structure;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.slf4j.Logger;
@@ -56,7 +58,7 @@ public class StructurePoolBasedGenerator {
 		Optional<Heightmap.Type> projectStartToHeightmap,
 		int maxDistanceFromCenter,
 		StructurePoolAliasLookup aliasLookup,
-		int dimensionPadding
+		DimensionPadding dimensionPadding
 	) {
 		DynamicRegistryManager dynamicRegistryManager = context.dynamicRegistryManager();
 		ChunkGenerator chunkGenerator = context.chunkGenerator();
@@ -120,10 +122,10 @@ public class StructurePoolBasedGenerator {
 						if (size > 0) {
 							Box box = new Box(
 								(double)(i - maxDistanceFromCenter),
-								(double)Math.max(m - maxDistanceFromCenter, heightLimitView.getBottomY() + dimensionPadding),
+								(double)Math.max(m - maxDistanceFromCenter, heightLimitView.getBottomY() + dimensionPadding.bottom()),
 								(double)(j - maxDistanceFromCenter),
 								(double)(i + maxDistanceFromCenter + 1),
-								(double)Math.min(m + maxDistanceFromCenter + 1, heightLimitView.getTopY() - dimensionPadding),
+								(double)Math.min(m + maxDistanceFromCenter + 1, heightLimitView.getTopY() - dimensionPadding.top()),
 								(double)(j + maxDistanceFromCenter + 1)
 							);
 							VoxelShape voxelShape = VoxelShapes.combineAndSimplify(VoxelShapes.cuboid(box), VoxelShapes.cuboid(Box.from(blockBox)), BooleanBiFunction.ONLY_FIRST);
@@ -218,7 +220,7 @@ public class StructurePoolBasedGenerator {
 			biome -> true
 		);
 		Optional<Structure.StructurePosition> optional = generate(
-			context, structurePool, Optional.of(id), size, pos, false, Optional.empty(), 128, StructurePoolAliasLookup.EMPTY, 0
+			context, structurePool, Optional.of(id), size, pos, false, Optional.empty(), 128, StructurePoolAliasLookup.EMPTY, JigsawStructure.DEFAULT_DIMENSION_PADDING
 		);
 		if (optional.isPresent()) {
 			StructurePiecesCollector structurePiecesCollector = ((Structure.StructurePosition)optional.get()).generate();

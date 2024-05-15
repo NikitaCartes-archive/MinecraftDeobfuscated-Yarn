@@ -1,11 +1,16 @@
 package net.minecraft.entity.passive;
 
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
 public record CatVariant(Identifier texture) {
+	public static final PacketCodec<RegistryByteBuf, RegistryEntry<CatVariant>> PACKET_CODEC = PacketCodecs.registryEntry(RegistryKeys.CAT_VARIANT);
 	public static final RegistryKey<CatVariant> TABBY = of("tabby");
 	public static final RegistryKey<CatVariant> BLACK = of("black");
 	public static final RegistryKey<CatVariant> RED = of("red");

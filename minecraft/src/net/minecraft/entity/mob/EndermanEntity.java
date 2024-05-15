@@ -332,12 +332,14 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource source, boolean causedByPlayer) {
-		super.dropEquipment(source, causedByPlayer);
+	protected void dropEquipment(ServerWorld world, DamageSource source, boolean causedByPlayer) {
+		super.dropEquipment(world, source, causedByPlayer);
 		BlockState blockState = this.getCarriedBlock();
 		if (blockState != null) {
 			ItemStack itemStack = new ItemStack(Items.DIAMOND_AXE);
-			EnchantmentHelper.applyEnchantmentProvider(itemStack, EnchantmentProviders.ENDERMAN_LOOT_DROP, this.getWorld(), this.getBlockPos(), this.getRandom());
+			EnchantmentHelper.applyEnchantmentProvider(
+				itemStack, world.getRegistryManager(), EnchantmentProviders.ENDERMAN_LOOT_DROP, world.getLocalDifficulty(this.getBlockPos()), this.getRandom()
+			);
 			LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)this.getWorld())
 				.add(LootContextParameters.ORIGIN, this.getPos())
 				.add(LootContextParameters.TOOL, itemStack)

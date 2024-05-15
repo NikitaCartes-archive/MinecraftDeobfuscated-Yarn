@@ -101,7 +101,10 @@ public abstract class RangedWeaponItem extends Item {
 			ItemStack itemStack = projectileStack.copy();
 
 			for (int j = 0; j < i; j++) {
-				list.add(getProjectile(stack, j == 0 ? projectileStack : itemStack, shooter, j > 0));
+				ItemStack itemStack2 = getProjectile(stack, j == 0 ? projectileStack : itemStack, shooter, j > 0);
+				if (!itemStack2.isEmpty()) {
+					list.add(itemStack2);
+				}
 			}
 
 			return list;

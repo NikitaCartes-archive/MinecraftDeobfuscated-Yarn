@@ -45,7 +45,7 @@ public class HorseScreenHandler extends ScreenHandler {
 
 			@Override
 			public boolean isEnabled() {
-				return entity.hasArmorSlot();
+				return entity.canUseSlot(EquipmentSlot.BODY);
 			}
 		});
 		if (this.hasChest(entity)) {

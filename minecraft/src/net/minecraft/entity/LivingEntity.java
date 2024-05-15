@@ -58,7 +58,6 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -694,6 +693,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
 				statusEffectInstance.onEntityRemoval(this, reason);
 			}
+
+			this.activeStatusEffects.clear();
 		}
 
 		super.remove(reason);
@@ -1256,9 +1257,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 						DoubleDoubleImmutablePair doubleDoubleImmutablePair = projectileEntity.getKnockback(this, source);
 						d = -doubleDoubleImmutablePair.leftDouble();
 						e = -doubleDoubleImmutablePair.rightDouble();
-					} else if (entity2 != null) {
-						d = entity2.getX() - this.getX();
-						e = entity2.getZ() - this.getZ();
+					} else if (source.getPosition() != null) {
+						d = source.getPosition().getX() - this.getX();
+						e = source.getPosition().getZ() - this.getZ();
 					}
 
 					this.takeKnockback(0.4F, d, e);
@@ -1420,7 +1421,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			if (this.getWorld() instanceof ServerWorld serverWorld) {
 				if (entity == null || entity.onKilledOther(serverWorld, this)) {
 					this.emitGameEvent(GameEvent.ENTITY_DIE);
-					this.drop(damageSource);
+					this.drop(serverWorld, damageSource);
 					this.onKilledBy(livingEntity);
 				}
 
@@ -1459,11 +1460,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
-	protected void drop(DamageSource damageSource) {
+	protected void drop(ServerWorld world, DamageSource damageSource) {
 		boolean bl = this.playerHitTimer > 0;
-		if (this.shouldDropLoot() && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+		if (this.shouldDropLoot() && world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 			this.dropLoot(damageSource, bl);
-			this.dropEquipment(damageSource, bl);
+			this.dropEquipment(world, damageSource, bl);
 		}
 
 		this.dropInventory();
@@ -1488,7 +1489,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
-	protected void dropEquipment(DamageSource source, boolean causedByPlayer) {
+	protected void dropEquipment(ServerWorld world, DamageSource source, boolean causedByPlayer) {
 	}
 
 	public RegistryKey<LootTable> getLootTable() {
@@ -2580,8 +2581,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 			ItemStack itemStack = switch (equipmentSlot.getType()) {
 				case HAND -> this.getSyncedHandStack(equipmentSlot);
-				case ARMOR -> this.getSyncedArmorStack(equipmentSlot);
-				case BODY -> this.syncedBodyArmorStack;
+				case HUMANOID_ARMOR -> this.getSyncedArmorStack(equipmentSlot);
+				case ANIMAL_ARMOR -> this.syncedBodyArmorStack;
 			};
 			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 			if (this.areItemsDifferent(itemStack, itemStack2)) {
@@ -2657,10 +2658,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				case HAND:
 					this.setSyncedHandStack(slot, itemStack);
 					break;
-				case ARMOR:
+				case HUMANOID_ARMOR:
 					this.setSyncedArmorStack(slot, itemStack);
 					break;
-				case BODY:
+				case ANIMAL_ARMOR:
 					this.syncedBodyArmorStack = itemStack;
 			}
 		});
@@ -3534,7 +3535,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		};
 	}
 
-	public void sendEquipmentBreakStatus(EquipmentSlot slot) {
+	public void sendEquipmentBreakStatus(Item item, EquipmentSlot slot) {
 		this.getWorld().sendEntityStatus(this, getEquipmentBreakStatus(slot));
 	}
 
@@ -3552,14 +3553,21 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
-	public static EquipmentSlot getPreferredEquipmentSlot(ItemStack stack) {
+	public EquipmentSlot getPreferredEquipmentSlot(ItemStack stack) {
 		Equipment equipment = Equipment.fromStack(stack);
-		return equipment != null ? equipment.getSlotType() : EquipmentSlot.MAINHAND;
+		if (equipment != null) {
+			EquipmentSlot equipmentSlot = equipment.getSlotType();
+			if (this.canUseSlot(equipmentSlot)) {
+				return equipmentSlot;
+			}
+		}
+
+		return EquipmentSlot.MAINHAND;
 	}
 
 	private static StackReference getStackReference(LivingEntity entity, EquipmentSlot slot) {
 		return slot != EquipmentSlot.HEAD && slot != EquipmentSlot.MAINHAND && slot != EquipmentSlot.OFFHAND
-			? StackReference.of(entity, slot, stack -> stack.isEmpty() || MobEntity.getPreferredEquipmentSlot(stack) == slot)
+			? StackReference.of(entity, slot, stack -> stack.isEmpty() || entity.getPreferredEquipmentSlot(stack) == slot)
 			: StackReference.of(entity, slot);
 	}
 

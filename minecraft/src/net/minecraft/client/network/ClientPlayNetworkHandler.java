@@ -1139,6 +1139,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 		if (packet.hasFlag(PlayerRespawnS2CPacket.KEEP_ATTRIBUTES)) {
 			clientPlayerEntity2.getAttributes().setFrom(clientPlayerEntity.getAttributes());
+		} else {
+			clientPlayerEntity2.getAttributes().setBaseFrom(clientPlayerEntity.getAttributes());
 		}
 
 		clientPlayerEntity2.init();
@@ -1342,15 +1344,10 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		} else if (reason == GameStateChangeS2CPacket.GAME_MODE_CHANGED) {
 			this.client.interactionManager.setGameMode(GameMode.byId(i));
 		} else if (reason == GameStateChangeS2CPacket.GAME_WON) {
-			if (i == 0) {
+			this.client.setScreen(new CreditsScreen(true, () -> {
 				this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN));
-				this.client.setScreen(new DownloadingTerrainScreen(() -> false, DownloadingTerrainScreen.WorldEntryReason.END_PORTAL));
-			} else if (i == 1) {
-				this.client.setScreen(new CreditsScreen(true, () -> {
-					this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN));
-					this.client.setScreen(null);
-				}));
-			}
+				this.client.setScreen(null);
+			}));
 		} else if (reason == GameStateChangeS2CPacket.DEMO_MESSAGE_SHOWN) {
 			GameOptions gameOptions = this.client.options;
 			if (f == GameStateChangeS2CPacket.DEMO_OPEN_SCREEN) {

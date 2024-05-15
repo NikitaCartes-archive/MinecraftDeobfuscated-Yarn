@@ -461,7 +461,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 
 	@Override
 	public boolean canEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
+		EquipmentSlot equipmentSlot = this.getPreferredEquipmentSlot(stack);
 		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.MAINHAND && super.canEquip(stack);
 	}
 
@@ -667,14 +667,14 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	@Override
-	protected void drop(DamageSource damageSource) {
+	protected void drop(ServerWorld world, DamageSource damageSource) {
 		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.MAINHAND);
 		if (!itemStack.isEmpty()) {
 			this.dropStack(itemStack);
 			this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 		}
 
-		super.drop(damageSource);
+		super.drop(world, damageSource);
 	}
 
 	public static boolean canJumpChase(FoxEntity fox, LivingEntity chasedEntity) {

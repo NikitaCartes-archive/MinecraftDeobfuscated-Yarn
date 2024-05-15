@@ -24,7 +24,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Util;
@@ -162,9 +161,11 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		TradeOfferList tradeOfferList = this.getOffers();
-		if (!tradeOfferList.isEmpty()) {
-			nbt.put("Offers", TradeOfferList.CODEC.encodeStart(this.getRegistryManager().getOps(NbtOps.INSTANCE), tradeOfferList).getOrThrow());
+		if (!this.getWorld().isClient) {
+			TradeOfferList tradeOfferList = this.getOffers();
+			if (!tradeOfferList.isEmpty()) {
+				nbt.put("Offers", TradeOfferList.CODEC.encodeStart(this.getRegistryManager().getOps(NbtOps.INSTANCE), tradeOfferList).getOrThrow());
+			}
 		}
 
 		this.writeInventory(nbt, this.getRegistryManager());
@@ -185,9 +186,9 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 
 	@Nullable
 	@Override
-	public Entity moveToWorld(ServerWorld destination) {
+	public Entity moveToWorld(Entity.TeleportTargetSupplier teleportTargetSupplier) {
 		this.resetCustomer();
-		return super.moveToWorld(destination);
+		return super.moveToWorld(teleportTargetSupplier);
 	}
 
 	protected void resetCustomer() {

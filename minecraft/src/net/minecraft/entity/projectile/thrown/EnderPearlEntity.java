@@ -9,12 +9,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 
 public class EnderPearlEntity extends ThrownItemEntity {
@@ -95,12 +95,14 @@ public class EnderPearlEntity extends ThrownItemEntity {
 
 	@Nullable
 	@Override
-	public Entity moveToWorld(ServerWorld destination) {
-		Entity entity = this.getOwner();
-		if (entity != null && entity.getWorld().getRegistryKey() != destination.getRegistryKey()) {
-			this.setOwner(null);
-		}
+	public Entity moveToWorld(Entity.TeleportTargetSupplier teleportTargetSupplier) {
+		return super.moveToWorld(() -> {
+			TeleportTarget teleportTarget = teleportTargetSupplier.get();
+			if (teleportTarget != null && this.getOwner() != null && this.getOwner().getWorld().getRegistryKey() != teleportTarget.newDimension().getRegistryKey()) {
+				this.setOwner(null);
+			}
 
-		return super.moveToWorld(destination);
+			return teleportTarget;
+		});
 	}
 }

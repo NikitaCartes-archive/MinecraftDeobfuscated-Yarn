@@ -50,10 +50,10 @@ public interface CollectionCountsPredicate<T, P extends Predicate<T>> extends Pr
 			);
 		}
 
-		public boolean test(Iterable<T> collecction) {
+		public boolean test(Iterable<T> collection) {
 			int i = 0;
 
-			for (T object : collecction) {
+			for (T object : collection) {
 				if (this.test.test(object)) {
 					i++;
 				}

@@ -943,11 +943,6 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 								.apply(EnchantedCountIncreaseLootFunction.builder(this.registryLookup, UniformLootNumberProvider.create(0.0F, 1.0F)))
 						)
 						.with(
-							ItemEntry.builder(Items.REDSTONE)
-								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 2.0F)))
-								.apply(EnchantedCountIncreaseLootFunction.builder(this.registryLookup, UniformLootNumberProvider.create(0.0F, 1.0F)))
-						)
-						.with(
 							ItemEntry.builder(Items.SPIDER_EYE)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 2.0F)))
 								.apply(EnchantedCountIncreaseLootFunction.builder(this.registryLookup, UniformLootNumberProvider.create(0.0F, 1.0F)))
@@ -966,6 +961,15 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 							ItemEntry.builder(Items.STICK)
 								.weight(2)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 2.0F)))
+								.apply(EnchantedCountIncreaseLootFunction.builder(this.registryLookup, UniformLootNumberProvider.create(0.0F, 1.0F)))
+						)
+				)
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(
+							ItemEntry.builder(Items.REDSTONE)
+								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 8.0F)))
 								.apply(EnchantedCountIncreaseLootFunction.builder(this.registryLookup, UniformLootNumberProvider.create(0.0F, 1.0F)))
 						)
 				)

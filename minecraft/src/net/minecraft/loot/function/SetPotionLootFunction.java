@@ -9,14 +9,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.potion.Potion;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public class SetPotionLootFunction extends ConditionalLootFunction {
 	public static final MapCodec<SetPotionLootFunction> CODEC = RecordCodecBuilder.mapCodec(
-		instance -> addConditionsField(instance)
-				.and(Registries.POTION.getEntryCodec().fieldOf("id").forGetter(function -> function.potion))
-				.apply(instance, SetPotionLootFunction::new)
+		instance -> addConditionsField(instance).and(Potion.CODEC.fieldOf("id").forGetter(function -> function.potion)).apply(instance, SetPotionLootFunction::new)
 	);
 	private final RegistryEntry<Potion> potion;
 

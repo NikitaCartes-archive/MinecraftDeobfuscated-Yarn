@@ -14,10 +14,7 @@ import java.util.OptionalInt;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.block.BedBlock;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SculkShriekerWarningManager;
@@ -51,7 +48,6 @@ import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.passive.TameableEntity;
@@ -651,8 +647,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void onDeath(DamageSource damageSource) {
 		super.onDeath(damageSource);
 		this.refreshPosition();
-		if (!this.isSpectator()) {
-			this.drop(damageSource);
+		if (!this.isSpectator() && this.getWorld() instanceof ServerWorld serverWorld) {
+			this.drop(serverWorld, damageSource);
 		}
 
 		if (damageSource != null) {
@@ -1452,44 +1448,6 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	/**
-	 * Finds the precise respawn position from a {@link BlockPos} in a world.
-	 * Also applies respawning effects on the spawn point blocks
-	 * such as decreasing respawn anchor charges.
-	 * 
-	 * <p>If {@code forced} is {@code false}, this method will only apply to
-	 * respawn anchors and beds. If it's {@code true}, a respawn point can be anywhere
-	 * as long as the player can spawn inside the necessary blocks.
-	 * 
-	 * @param alive if {@code true}, the player is alive, otherwise respawning after a death
-	 * @param forced {@code true} if the spawn point is forced, {@code false} otherwise
-	 * @param pos the spawn point as a {@link BlockPos}
-	 * @param world the world where the spawn point is located
-	 */
-	public static Optional<Vec3d> findRespawnPosition(ServerWorld world, BlockPos pos, float angle, boolean forced, boolean alive) {
-		BlockState blockState = world.getBlockState(pos);
-		Block block = blockState.getBlock();
-		if (block instanceof RespawnAnchorBlock && (forced || (Integer)blockState.get(RespawnAnchorBlock.CHARGES) > 0) && RespawnAnchorBlock.isNether(world)) {
-			Optional<Vec3d> optional = RespawnAnchorBlock.findRespawnPosition(EntityType.PLAYER, world, pos);
-			if (!forced && !alive && optional.isPresent()) {
-				world.setBlockState(
-					pos, blockState.with(RespawnAnchorBlock.CHARGES, Integer.valueOf((Integer)blockState.get(RespawnAnchorBlock.CHARGES) - 1)), Block.NOTIFY_ALL
-				);
-			}
-
-			return optional;
-		} else if (block instanceof BedBlock && BedBlock.isBedWorking(world)) {
-			return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, blockState.get(BedBlock.FACING), angle);
-		} else if (!forced) {
-			return Optional.empty();
-		} else {
-			boolean bl = block.canMobSpawnInside(blockState);
-			BlockState blockState2 = world.getBlockState(pos.up());
-			boolean bl2 = blockState2.getBlock().canMobSpawnInside(blockState2);
-			return bl && bl2 ? Optional.of(new Vec3d((double)pos.getX() + 0.5, (double)pos.getY() + 0.1, (double)pos.getZ() + 0.5)) : Optional.empty();
-		}
-	}
-
-	/**
 	 * {@return whether this player has been sleeping long enough to count towards
 	 * resetting the time of day and weather of the server}
 	 */
@@ -1836,13 +1794,13 @@ public abstract class PlayerEntity extends LivingEntity {
 		} else if (slot == EquipmentSlot.OFFHAND) {
 			return this.inventory.offHand.get(0);
 		} else {
-			return slot.getType() == EquipmentSlot.Type.ARMOR ? this.inventory.armor.get(slot.getEntitySlotId()) : ItemStack.EMPTY;
+			return slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR ? this.inventory.armor.get(slot.getEntitySlotId()) : ItemStack.EMPTY;
 		}
 	}
 
 	@Override
 	protected boolean isArmorSlot(EquipmentSlot slot) {
-		return slot.getType() == EquipmentSlot.Type.ARMOR;
+		return slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR;
 	}
 
 	@Override
@@ -1852,7 +1810,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			this.onEquipStack(slot, this.inventory.main.set(this.inventory.selectedSlot, stack), stack);
 		} else if (slot == EquipmentSlot.OFFHAND) {
 			this.onEquipStack(slot, this.inventory.offHand.set(0, stack), stack);
-		} else if (slot.getType() == EquipmentSlot.Type.ARMOR) {
+		} else if (slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
 			this.onEquipStack(slot, this.inventory.armor.set(slot.getEntitySlotId(), stack), stack);
 		}
 	}
@@ -2084,7 +2042,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public boolean canEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
+		EquipmentSlot equipmentSlot = this.getPreferredEquipmentSlot(stack);
 		return this.getEquippedStack(equipmentSlot).isEmpty();
 	}
 

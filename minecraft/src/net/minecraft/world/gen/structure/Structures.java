@@ -339,7 +339,7 @@ public class Structures {
 				Optional.empty(),
 				116,
 				List.of(),
-				0
+				JigsawStructure.DEFAULT_DIMENSION_PADDING
 			)
 		);
 		structureRegisterable.register(
@@ -376,7 +376,7 @@ public class Structures {
 				Optional.empty(),
 				116,
 				TrialChamberData.ALIAS_BINDINGS,
-				10
+				new DimensionPadding(10)
 			)
 		);
 	}

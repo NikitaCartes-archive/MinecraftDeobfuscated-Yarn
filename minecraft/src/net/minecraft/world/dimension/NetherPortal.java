@@ -222,7 +222,7 @@ public class NetherPortal {
 		boolean bl = axis == Direction.Axis.X;
 		Vec3d vec3d2 = new Vec3d((double)blockPos.getX() + (bl ? f : h), (double)blockPos.getY() + g, (double)blockPos.getZ() + (bl ? h : f));
 		Vec3d vec3d3 = findOpenPosition(vec3d2, destination, entity, entityDimensions);
-		return new TeleportTarget(vec3d3, vec3d, yaw + (float)i, pitch);
+		return new TeleportTarget(destination, vec3d3, vec3d, yaw + (float)i, pitch);
 	}
 
 	private static Vec3d findOpenPosition(Vec3d fallback, ServerWorld world, Entity entity, EntityDimensions dimensions) {

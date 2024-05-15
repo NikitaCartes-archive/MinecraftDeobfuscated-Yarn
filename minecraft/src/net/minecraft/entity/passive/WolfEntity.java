@@ -377,6 +377,11 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	}
 
 	@Override
+	public boolean canUseSlot(EquipmentSlot slot) {
+		return true;
+	}
+
+	@Override
 	protected void applyDamage(DamageSource source, float amount) {
 		if (!this.shouldArmorAbsorbDamage(source)) {
 			super.applyDamage(source, amount);

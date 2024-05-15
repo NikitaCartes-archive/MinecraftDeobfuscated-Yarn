@@ -96,7 +96,8 @@ public interface EnchantmentLevelBasedValueType {
 
 		@Override
 		public float getValue(int level) {
-			return this.numerator.getValue(level) / this.denominator.getValue(level);
+			float f = this.denominator.getValue(level);
+			return f == 0.0F ? 0.0F : this.numerator.getValue(level) / f;
 		}
 
 		@Override

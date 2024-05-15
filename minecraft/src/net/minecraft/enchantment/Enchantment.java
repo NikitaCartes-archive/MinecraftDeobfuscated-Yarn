@@ -35,6 +35,9 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryCodecs;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -58,6 +61,7 @@ import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.mutable.MutableFloat;
 
 public record Enchantment(Text description, Enchantment.Definition definition, RegistryEntryList<Enchantment> exclusiveSet, ComponentMap effects) {
+	public static final int MAX_LEVEL = 255;
 	public static final Codec<Enchantment> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					TextCodecs.CODEC.fieldOf("description").forGetter(Enchantment::description),
@@ -68,6 +72,7 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 				.apply(instance, Enchantment::new)
 	);
 	public static final Codec<RegistryEntry<Enchantment>> ENTRY_CODEC = RegistryFixedCodec.of(RegistryKeys.ENCHANTMENT);
+	public static final PacketCodec<RegistryByteBuf, RegistryEntry<Enchantment>> ENTRY_PACKET_CODEC = PacketCodecs.registryEntry(RegistryKeys.ENCHANTMENT);
 
 	public static Enchantment.Cost constantCost(int base) {
 		return new Enchantment.Cost(base, 0);
@@ -569,8 +574,8 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 			instance -> instance.group(
 						RegistryCodecs.entryList(RegistryKeys.ITEM).fieldOf("supported_items").forGetter(Enchantment.Definition::supportedItems),
 						RegistryCodecs.entryList(RegistryKeys.ITEM).optionalFieldOf("primary_items").forGetter(Enchantment.Definition::primaryItems),
-						Codecs.POSITIVE_INT.fieldOf("weight").forGetter(Enchantment.Definition::weight),
-						Codecs.POSITIVE_INT.fieldOf("max_level").forGetter(Enchantment.Definition::maxLevel),
+						Codecs.rangedInt(1, 1024).fieldOf("weight").forGetter(Enchantment.Definition::weight),
+						Codecs.rangedInt(1, 255).fieldOf("max_level").forGetter(Enchantment.Definition::maxLevel),
 						Enchantment.Cost.CODEC.fieldOf("min_cost").forGetter(Enchantment.Definition::minCost),
 						Enchantment.Cost.CODEC.fieldOf("max_cost").forGetter(Enchantment.Definition::maxCost),
 						Codecs.NONNEGATIVE_INT.fieldOf("anvil_cost").forGetter(Enchantment.Definition::anvilCost),

@@ -2,11 +2,17 @@ package net.minecraft.text;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
 import java.util.List;
+import java.util.function.IntFunction;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.function.ValueLists;
 
 /**
  * A decoration is a pre-defined set of styling and formatting rules for messages
@@ -22,6 +28,15 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 					Style.Codecs.CODEC.optionalFieldOf("style", Style.EMPTY).forGetter(Decoration::style)
 				)
 				.apply(instance, Decoration::new)
+	);
+	public static final PacketCodec<RegistryByteBuf, Decoration> PACKET_CODEC = PacketCodec.tuple(
+		PacketCodecs.STRING,
+		Decoration::translationKey,
+		Decoration.Parameter.PACKET_CODEC.collect(PacketCodecs.toList()),
+		Decoration::parameters,
+		Style.Codecs.PACKET_CODEC,
+		Decoration::style,
+		Decoration::new
 	);
 
 	/**
@@ -98,15 +113,21 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 	 * Represents a parameter that the decoration uses.
 	 */
 	public static enum Parameter implements StringIdentifiable {
-		SENDER("sender", (content, params) -> params.name()),
-		TARGET("target", (content, params) -> (Text)params.targetName().orElse(ScreenTexts.EMPTY)),
-		CONTENT("content", (content, params) -> content);
+		SENDER(0, "sender", (content, params) -> params.name()),
+		TARGET(1, "target", (content, params) -> (Text)params.targetName().orElse(ScreenTexts.EMPTY)),
+		CONTENT(2, "content", (content, params) -> content);
 
+		private static final IntFunction<Decoration.Parameter> BY_ID = ValueLists.createIdToValueFunction(
+			parameter -> parameter.id, values(), ValueLists.OutOfBoundsHandling.ZERO
+		);
 		public static final Codec<Decoration.Parameter> CODEC = StringIdentifiable.createCodec(Decoration.Parameter::values);
+		public static final PacketCodec<ByteBuf, Decoration.Parameter> PACKET_CODEC = PacketCodecs.indexed(BY_ID, parameter -> parameter.id);
+		private final int id;
 		private final String name;
 		private final Decoration.Parameter.Selector selector;
 
-		private Parameter(final String name, final Decoration.Parameter.Selector selector) {
+		private Parameter(final int id, final String name, final Decoration.Parameter.Selector selector) {
+			this.id = id;
 			this.name = name;
 			this.selector = selector;
 		}

@@ -139,6 +139,11 @@ public class Xoroshiro128PlusPlusRandom implements Random {
 			return new Xoroshiro128PlusPlusRandom(xoroshiroSeed.split(this.seedLo, this.seedHi));
 		}
 
+		@Override
+		public Random split(long seed) {
+			return new Xoroshiro128PlusPlusRandom(seed ^ this.seedLo, seed ^ this.seedHi);
+		}
+
 		@VisibleForTesting
 		@Override
 		public void addDebugInfo(StringBuilder info) {

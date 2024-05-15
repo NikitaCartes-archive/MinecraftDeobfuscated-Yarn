@@ -277,7 +277,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, LightSour
 	public abstract ChunkStatus getStatus();
 
 	/**
-	 * {@retutn the chunk status or the target status for the retrogen, whichever is later}
+	 * {@return the chunk status or the target status for the retrogen, whichever is later}
 	 */
 	public ChunkStatus getMaxStatus() {
 		ChunkStatus chunkStatus = this.getStatus();

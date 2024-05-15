@@ -10,15 +10,14 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 
 public record RemoveEntityStatusEffectS2CPacket(int entityId, RegistryEntry<StatusEffect> effect) implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, RemoveEntityStatusEffectS2CPacket> CODEC = PacketCodec.tuple(
 		PacketCodecs.VAR_INT,
-		packet -> packet.entityId,
-		PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT),
+		RemoveEntityStatusEffectS2CPacket::entityId,
+		StatusEffect.ENTRY_PACKET_CODEC,
 		RemoveEntityStatusEffectS2CPacket::effect,
 		RemoveEntityStatusEffectS2CPacket::new
 	);

@@ -3,7 +3,6 @@ package net.minecraft.screen;
 import com.mojang.datafixers.util.Pair;
 import java.util.Map;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingInventory;
@@ -147,7 +146,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingRec
 		if (slot2.hasStack()) {
 			ItemStack itemStack2 = slot2.getStack();
 			itemStack = itemStack2.copy();
-			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
+			EquipmentSlot equipmentSlot = player.getPreferredEquipmentSlot(itemStack);
 			if (slot == 0) {
 				if (!this.insertItem(itemStack2, 9, 45, true)) {
 					return ItemStack.EMPTY;
@@ -162,7 +161,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingRec
 				if (!this.insertItem(itemStack2, 9, 45, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR && !this.slots.get(8 - equipmentSlot.getEntitySlotId()).hasStack()) {
+			} else if (equipmentSlot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR && !this.slots.get(8 - equipmentSlot.getEntitySlotId()).hasStack()) {
 				int i = 8 - equipmentSlot.getEntitySlotId();
 				if (!this.insertItem(itemStack2, i, i + 1, false)) {
 					return ItemStack.EMPTY;

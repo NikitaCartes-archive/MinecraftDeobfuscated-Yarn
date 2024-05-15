@@ -15,7 +15,6 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Uuids;
 
@@ -75,7 +74,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 			(attribute, base, modifiers) -> new EntityAttributeModifier(attribute, "Unknown synced attribute modifier", base, modifiers)
 		);
 		public static final PacketCodec<RegistryByteBuf, EntityAttributesS2CPacket.Entry> CODEC = PacketCodec.tuple(
-			PacketCodecs.registryEntry(RegistryKeys.ATTRIBUTE),
+			EntityAttribute.PACKET_CODEC,
 			EntityAttributesS2CPacket.Entry::attribute,
 			PacketCodecs.DOUBLE,
 			EntityAttributesS2CPacket.Entry::base,

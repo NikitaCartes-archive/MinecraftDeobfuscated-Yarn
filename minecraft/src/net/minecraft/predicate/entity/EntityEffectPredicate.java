@@ -12,11 +12,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public record EntityEffectPredicate(Map<RegistryEntry<StatusEffect>, EntityEffectPredicate.EffectData> effects) {
-	public static final Codec<EntityEffectPredicate> CODEC = Codec.unboundedMap(Registries.STATUS_EFFECT.getEntryCodec(), EntityEffectPredicate.EffectData.CODEC)
+	public static final Codec<EntityEffectPredicate> CODEC = Codec.unboundedMap(StatusEffect.ENTRY_CODEC, EntityEffectPredicate.EffectData.CODEC)
 		.xmap(EntityEffectPredicate::new, EntityEffectPredicate::effects);
 
 	public boolean test(Entity entity) {

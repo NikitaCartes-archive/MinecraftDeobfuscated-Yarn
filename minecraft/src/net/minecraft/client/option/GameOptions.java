@@ -237,14 +237,14 @@ public class GameOptions {
 		}
 	);
 	private static final Text MENU_BACKGROUND_BLURRINESS_TOOLTIP = Text.translatable("options.accessibility.menu_background_blurriness.tooltip");
-	private static final double DEFAULT_MENU_BACKGROUND_BLURRINESS = 0.5;
-	private final SimpleOption<Double> menuBackgroundBlurriness = new SimpleOption<>(
+	private static final int DEFAULT_MENU_BACKGROUND_BLURRINESS = 5;
+	private final SimpleOption<Integer> menuBackgroundBlurriness = new SimpleOption<>(
 		"options.accessibility.menu_background_blurriness",
 		SimpleOption.constantTooltip(MENU_BACKGROUND_BLURRINESS_TOOLTIP),
-		GameOptions::getPercentOrOffValueText,
-		SimpleOption.DoubleSliderCallbacks.INSTANCE,
-		0.5,
-		double_ -> {
+		GameOptions::getGenericValueOrOffText,
+		new SimpleOption.ValidatingIntSliderCallbacks(0, 10),
+		5,
+		value -> {
 		}
 	);
 	private final SimpleOption<Double> textBackgroundOpacity = new SimpleOption<>(
@@ -716,7 +716,7 @@ public class GameOptions {
 	private final SimpleOption<Double> distortionEffectScale = new SimpleOption<>(
 		"options.screenEffectScale",
 		SimpleOption.constantTooltip(SCREEN_EFFECT_SCALE_TOOLTIP),
-		GameOptions::getPercentOrOffValueText,
+		GameOptions::getPercentValueOrOffText,
 		SimpleOption.DoubleSliderCallbacks.INSTANCE,
 		1.0,
 		value -> {
@@ -726,7 +726,7 @@ public class GameOptions {
 	private final SimpleOption<Double> fovEffectScale = new SimpleOption<>(
 		"options.fovEffectScale",
 		SimpleOption.constantTooltip(FOV_EFFECT_SCALE_TOOLTIP),
-		GameOptions::getPercentOrOffValueText,
+		GameOptions::getPercentValueOrOffText,
 		SimpleOption.DoubleSliderCallbacks.INSTANCE.withModifier(MathHelper::square, Math::sqrt),
 		Codec.doubleRange(0.0, 1.0),
 		1.0,
@@ -737,7 +737,7 @@ public class GameOptions {
 	private final SimpleOption<Double> darknessEffectScale = new SimpleOption<>(
 		"options.darknessEffectScale",
 		SimpleOption.constantTooltip(DARKNESS_EFFECT_SCALE_TOOLTIP),
-		GameOptions::getPercentOrOffValueText,
+		GameOptions::getPercentValueOrOffText,
 		SimpleOption.DoubleSliderCallbacks.INSTANCE.withModifier(MathHelper::square, Math::sqrt),
 		1.0,
 		value -> {
@@ -747,7 +747,7 @@ public class GameOptions {
 	private final SimpleOption<Double> glintSpeed = new SimpleOption<>(
 		"options.glintSpeed",
 		SimpleOption.constantTooltip(GLINT_SPEED_TOOLTIP),
-		GameOptions::getPercentOrOffValueText,
+		GameOptions::getPercentValueOrOffText,
 		SimpleOption.DoubleSliderCallbacks.INSTANCE,
 		0.5,
 		value -> {
@@ -757,7 +757,7 @@ public class GameOptions {
 	private final SimpleOption<Double> glintStrength = new SimpleOption<>(
 		"options.glintStrength",
 		SimpleOption.constantTooltip(GLINT_STRENGTH_TOOLTIP),
-		GameOptions::getPercentOrOffValueText,
+		GameOptions::getPercentValueOrOffText,
 		SimpleOption.DoubleSliderCallbacks.INSTANCE,
 		0.75,
 		RenderSystem::setShaderGlintAlpha
@@ -766,7 +766,7 @@ public class GameOptions {
 	private final SimpleOption<Double> damageTiltStrength = new SimpleOption<>(
 		"options.damageTiltStrength",
 		SimpleOption.constantTooltip(DAMAGE_TILT_STRENGTH_TOOLTIP),
-		GameOptions::getPercentOrOffValueText,
+		GameOptions::getPercentValueOrOffText,
 		SimpleOption.DoubleSliderCallbacks.INSTANCE,
 		1.0,
 		value -> {
@@ -922,11 +922,11 @@ public class GameOptions {
 		return this.chatLineSpacing;
 	}
 
-	public SimpleOption<Double> getMenuBackgroundBlurriness() {
+	public SimpleOption<Integer> getMenuBackgroundBlurriness() {
 		return this.menuBackgroundBlurriness;
 	}
 
-	public double getMenuBackgroundBlurrinessValue() {
+	public int getMenuBackgroundBlurrinessValue() {
 		return this.getMenuBackgroundBlurriness().getValue();
 	}
 
@@ -1086,7 +1086,7 @@ public class GameOptions {
 		return new SimpleOption<>(
 			key,
 			SimpleOption.emptyTooltip(),
-			GameOptions::getPercentOrOffValueText,
+			GameOptions::getPercentValueOrOffText,
 			SimpleOption.DoubleSliderCallbacks.INSTANCE,
 			1.0,
 			value -> MinecraftClient.getInstance().getSoundManager().updateSoundVolume(category, value.floatValue())
@@ -1393,7 +1393,7 @@ public class GameOptions {
 				new GameOptions.Visitor() {
 					@Nullable
 					private String find(String key) {
-						return nbtCompound2.contains(key) ? nbtCompound2.getString(key) : null;
+						return nbtCompound2.contains(key) ? nbtCompound2.get(key).asString() : null;
 					}
 
 					@Override
@@ -1717,12 +1717,16 @@ public class GameOptions {
 		return Text.translatable("options.generic_value", prefix, value);
 	}
 
-	private static Text getPercentOrOffValueText(Text prefix, double value) {
-		return value == 0.0 ? getGenericValueText(prefix, ScreenTexts.OFF) : getPercentValueText(prefix, value);
-	}
-
 	public static Text getGenericValueText(Text prefix, int value) {
 		return getGenericValueText(prefix, Text.literal(Integer.toString(value)));
+	}
+
+	public static Text getGenericValueOrOffText(Text prefix, int value) {
+		return value == 0 ? getGenericValueText(prefix, ScreenTexts.OFF) : getGenericValueText(prefix, value);
+	}
+
+	private static Text getPercentValueOrOffText(Text prefix, double value) {
+		return value == 0.0 ? getGenericValueText(prefix, ScreenTexts.OFF) : getPercentValueText(prefix, value);
 	}
 
 	@Environment(EnvType.CLIENT)

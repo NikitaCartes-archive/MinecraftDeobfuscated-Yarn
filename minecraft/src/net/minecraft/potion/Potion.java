@@ -1,9 +1,15 @@
 package net.minecraft.potion;
 
+import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
@@ -11,6 +17,8 @@ import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.resource.featuretoggle.ToggleableFeature;
 
 public class Potion implements ToggleableFeature {
+	public static final Codec<RegistryEntry<Potion>> CODEC = Registries.POTION.getEntryCodec();
+	public static final PacketCodec<RegistryByteBuf, RegistryEntry<Potion>> PACKET_CODEC = PacketCodecs.registryEntry(RegistryKeys.POTION);
 	@Nullable
 	private final String baseName;
 	private final List<StatusEffectInstance> effects;

@@ -357,9 +357,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 			this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
 			this.targetSelector.add(2, new ActiveTargetGoal(this, WolfEntity.class, true));
 			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)
-				.addPersistentModifier(
-					new EntityAttributeModifier(KILLER_BUNNY_ATTACK_DAMAGE_MODIFIER, "Evil rabbit strength", 5.0, EntityAttributeModifier.Operation.ADD_VALUE)
-				);
+				.updateModifier(new EntityAttributeModifier(KILLER_BUNNY_ATTACK_DAMAGE_MODIFIER, "Evil rabbit strength", 5.0, EntityAttributeModifier.Operation.ADD_VALUE));
 			if (!this.hasCustomName()) {
 				this.setCustomName(Text.translatable(Util.createTranslationKey("entity", KILLER_BUNNY)));
 			}

@@ -29,6 +29,7 @@ import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
@@ -97,9 +98,10 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
 			if (!itemStack.isEmpty()) {
 				if (itemStack.isDamageable()) {
+					Item item = itemStack.getItem();
 					itemStack.setDamage(itemStack.getDamage() + this.random.nextInt(2));
 					if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
-						this.sendEquipmentBreakStatus(EquipmentSlot.HEAD);
+						this.sendEquipmentBreakStatus(item, EquipmentSlot.HEAD);
 						this.equipStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
 					}
 				}
@@ -135,7 +137,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		entityData = super.initialize(world, difficulty, spawnReason, entityData);
 		Random random = world.getRandom();
 		this.initEquipment(random, difficulty);
-		this.updateEnchantments(random, difficulty);
+		this.updateEnchantments(world, random, difficulty);
 		this.updateAttackType();
 		this.setCanPickUpLoot(random.nextFloat() < 0.55F * difficulty.getClampedLocalDifficulty());
 		if (this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {

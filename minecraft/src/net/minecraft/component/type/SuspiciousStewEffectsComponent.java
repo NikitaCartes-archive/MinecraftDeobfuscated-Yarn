@@ -8,8 +8,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Util;
 
@@ -29,13 +27,13 @@ public record SuspiciousStewEffectsComponent(List<SuspiciousStewEffectsComponent
 	public static record StewEffect(RegistryEntry<StatusEffect> effect, int duration) {
 		public static final Codec<SuspiciousStewEffectsComponent.StewEffect> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Registries.STATUS_EFFECT.getEntryCodec().fieldOf("id").forGetter(SuspiciousStewEffectsComponent.StewEffect::effect),
+						StatusEffect.ENTRY_CODEC.fieldOf("id").forGetter(SuspiciousStewEffectsComponent.StewEffect::effect),
 						Codec.INT.lenientOptionalFieldOf("duration", Integer.valueOf(160)).forGetter(SuspiciousStewEffectsComponent.StewEffect::duration)
 					)
 					.apply(instance, SuspiciousStewEffectsComponent.StewEffect::new)
 		);
 		public static final PacketCodec<RegistryByteBuf, SuspiciousStewEffectsComponent.StewEffect> PACKET_CODEC = PacketCodec.tuple(
-			PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT),
+			StatusEffect.ENTRY_PACKET_CODEC,
 			SuspiciousStewEffectsComponent.StewEffect::effect,
 			PacketCodecs.VAR_INT,
 			SuspiciousStewEffectsComponent.StewEffect::duration,

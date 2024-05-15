@@ -217,12 +217,7 @@ public abstract class Framebuffer {
 	}
 
 	public void draw(int width, int height, boolean disableBlend) {
-		RenderSystem.assertOnGameThreadOrInit();
-		if (!RenderSystem.isInInitPhase()) {
-			RenderSystem.recordRenderCall(() -> this.drawInternal(width, height, disableBlend));
-		} else {
-			this.drawInternal(width, height, disableBlend);
-		}
+		this.drawInternal(width, height, disableBlend);
 	}
 
 	private void drawInternal(int width, int height, boolean disableBlend) {

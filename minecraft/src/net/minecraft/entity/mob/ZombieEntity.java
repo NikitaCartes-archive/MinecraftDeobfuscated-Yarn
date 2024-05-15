@@ -42,6 +42,7 @@ import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -230,9 +231,10 @@ public class ZombieEntity extends HostileEntity {
 				ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
 				if (!itemStack.isEmpty()) {
 					if (itemStack.isDamageable()) {
+						Item item = itemStack.getItem();
 						itemStack.setDamage(itemStack.getDamage() + this.random.nextInt(2));
 						if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
-							this.sendEquipmentBreakStatus(EquipmentSlot.HEAD);
+							this.sendEquipmentBreakStatus(item, EquipmentSlot.HEAD);
 							this.equipStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
 						}
 					}
@@ -475,7 +477,7 @@ public class ZombieEntity extends HostileEntity {
 
 			this.setCanBreakDoors(this.shouldBreakDoors() && random.nextFloat() < f * 0.1F);
 			this.initEquipment(random, difficulty);
-			this.updateEnchantments(random, difficulty);
+			this.updateEnchantments(world, random, difficulty);
 		}
 
 		if (this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
@@ -524,8 +526,8 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource source, boolean causedByPlayer) {
-		super.dropEquipment(source, causedByPlayer);
+	protected void dropEquipment(ServerWorld world, DamageSource source, boolean causedByPlayer) {
+		super.dropEquipment(world, source, causedByPlayer);
 		if (source.getAttacker() instanceof CreeperEntity creeperEntity && creeperEntity.shouldDropHead()) {
 			ItemStack itemStack = this.getSkull();
 			if (!itemStack.isEmpty()) {

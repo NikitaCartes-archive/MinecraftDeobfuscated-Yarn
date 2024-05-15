@@ -19,6 +19,7 @@ import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
 
 public final class JigsawStructure extends Structure {
+	public static final DimensionPadding DEFAULT_DIMENSION_PADDING = DimensionPadding.NONE;
 	public static final int MAX_SIZE = 128;
 	public static final int field_49155 = 0;
 	public static final int MAX_GENERATION_DEPTH = 20;
@@ -33,12 +34,11 @@ public final class JigsawStructure extends Structure {
 						Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
 						Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter),
 						Codec.list(StructurePoolAliasBinding.CODEC).optionalFieldOf("pool_aliases", List.of()).forGetter(structure -> structure.poolAliasBindings),
-						Codec.intRange(0, Integer.MAX_VALUE).lenientOptionalFieldOf("dimension_padding", 0).forGetter(structure -> structure.dimensionPadding)
+						DimensionPadding.CODEC.optionalFieldOf("dimension_padding", DEFAULT_DIMENSION_PADDING).forGetter(structure -> structure.dimensionPadding)
 					)
 					.apply(instance, JigsawStructure::new)
 		)
 		.validate(JigsawStructure::validate);
-	public static final int field_51911 = 0;
 	private final RegistryEntry<StructurePool> startPool;
 	private final Optional<Identifier> startJigsawName;
 	private final int size;
@@ -47,7 +47,7 @@ public final class JigsawStructure extends Structure {
 	private final Optional<Heightmap.Type> projectStartToHeightmap;
 	private final int maxDistanceFromCenter;
 	private final List<StructurePoolAliasBinding> poolAliasBindings;
-	private final int dimensionPadding;
+	private final DimensionPadding dimensionPadding;
 
 	private static DataResult<JigsawStructure> validate(JigsawStructure structure) {
 		int i = switch (structure.getTerrainAdaptation()) {
@@ -69,7 +69,7 @@ public final class JigsawStructure extends Structure {
 		Optional<Heightmap.Type> projectStartToHeightmap,
 		int maxDistanceFromCenter,
 		List<StructurePoolAliasBinding> poolAliasBindings,
-		int dimensionPadding
+		DimensionPadding dimensionPadding
 	) {
 		super(config);
 		this.startPool = startPool;
@@ -91,11 +91,11 @@ public final class JigsawStructure extends Structure {
 		boolean useExpansionHack,
 		Heightmap.Type projectStartToHeightmap
 	) {
-		this(config, startPool, Optional.empty(), size, startHeight, useExpansionHack, Optional.of(projectStartToHeightmap), 80, List.of(), 0);
+		this(config, startPool, Optional.empty(), size, startHeight, useExpansionHack, Optional.of(projectStartToHeightmap), 80, List.of(), DEFAULT_DIMENSION_PADDING);
 	}
 
 	public JigsawStructure(Structure.Config config, RegistryEntry<StructurePool> startPool, int size, HeightProvider startHeight, boolean useExpansionHack) {
-		this(config, startPool, Optional.empty(), size, startHeight, useExpansionHack, Optional.empty(), 80, List.of(), 0);
+		this(config, startPool, Optional.empty(), size, startHeight, useExpansionHack, Optional.empty(), 80, List.of(), DEFAULT_DIMENSION_PADDING);
 	}
 
 	@Override

@@ -4,6 +4,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryCodecs;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryElementCodec;
@@ -22,7 +25,21 @@ public final class WolfVariant {
 				)
 				.apply(instance, WolfVariant::new)
 	);
+	public static final PacketCodec<RegistryByteBuf, WolfVariant> PACKET_CODEC = PacketCodec.tuple(
+		Identifier.PACKET_CODEC,
+		WolfVariant::getWildTextureId,
+		Identifier.PACKET_CODEC,
+		WolfVariant::getTameTextureId,
+		Identifier.PACKET_CODEC,
+		WolfVariant::getAngryTextureId,
+		PacketCodecs.registryEntryList(RegistryKeys.BIOME),
+		WolfVariant::getBiomes,
+		WolfVariant::new
+	);
 	public static final Codec<RegistryEntry<WolfVariant>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.WOLF_VARIANT, CODEC);
+	public static final PacketCodec<RegistryByteBuf, RegistryEntry<WolfVariant>> ENTRY_PACKET_CODEC = PacketCodecs.registryEntry(
+		RegistryKeys.WOLF_VARIANT, PACKET_CODEC
+	);
 	private final Identifier wildId;
 	private final Identifier tameId;
 	private final Identifier angryId;

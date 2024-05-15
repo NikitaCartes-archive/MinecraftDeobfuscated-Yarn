@@ -43,7 +43,7 @@ public class BreezeDebugRenderer {
 					Optional<DebugBreezeCustomPayload.BreezeInfo> optional = Optional.ofNullable((DebugBreezeCustomPayload.BreezeInfo)this.breezes.get(breeze.getId()));
 					optional.map(DebugBreezeCustomPayload.BreezeInfo::attackTarget)
 						.map(attackTarget -> clientPlayerEntity.getWorld().getEntityById(attackTarget))
-						.map(attackTarget -> attackTarget.getLerpedPos(this.client.getTickDelta()))
+						.map(attackTarget -> attackTarget.getLerpedPos(this.client.getRenderTickCounter().getTickDelta(true)))
 						.ifPresent(
 							targetPos -> {
 								drawLine(matrices, vertexConsumers, cameraX, cameraY, cameraZ, breeze.getPos(), targetPos, LIGHT_BLUE);

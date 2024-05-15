@@ -544,6 +544,10 @@ public class MathHelper {
 	}
 
 	public static int hsvToRgb(float hue, float saturation, float value) {
+		return hsvToArgb(hue, saturation, value, 0);
+	}
+
+	public static int hsvToArgb(float hue, float saturation, float value, int alpha) {
 		int i = (int)(hue * 6.0F) % 6;
 		float f = hue * 6.0F - (float)i;
 		float g = value * (1.0F - saturation);
@@ -587,7 +591,7 @@ public class MathHelper {
 				throw new RuntimeException("Something went wrong when converting from HSV to RGB. Input was " + hue + ", " + saturation + ", " + value);
 		}
 
-		return ColorHelper.Argb.getArgb(0, clamp((int)(k * 255.0F), 0, 255), clamp((int)(l * 255.0F), 0, 255), clamp((int)(m * 255.0F), 0, 255));
+		return ColorHelper.Argb.getArgb(alpha, clamp((int)(k * 255.0F), 0, 255), clamp((int)(l * 255.0F), 0, 255), clamp((int)(m * 255.0F), 0, 255));
 	}
 
 	public static int idealHash(int value) {

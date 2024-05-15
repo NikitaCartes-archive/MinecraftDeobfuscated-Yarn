@@ -6,7 +6,6 @@ import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -39,7 +38,7 @@ public class ArmorSlot extends Slot {
 
 	@Override
 	public boolean canInsert(ItemStack stack) {
-		return this.equipmentSlot == MobEntity.getPreferredEquipmentSlot(stack);
+		return this.equipmentSlot == this.entity.getPreferredEquipmentSlot(stack);
 	}
 
 	@Override

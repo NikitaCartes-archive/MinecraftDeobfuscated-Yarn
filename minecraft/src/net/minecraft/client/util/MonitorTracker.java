@@ -19,7 +19,6 @@ public class MonitorTracker {
 	private final MonitorFactory monitorFactory;
 
 	public MonitorTracker(MonitorFactory monitorFactory) {
-		RenderSystem.assertInInitPhase();
 		this.monitorFactory = monitorFactory;
 		GLFW.glfwSetMonitorCallback(this::handleMonitorEvent);
 		PointerBuffer pointerBuffer = GLFW.glfwGetMonitors();
@@ -44,7 +43,6 @@ public class MonitorTracker {
 
 	@Nullable
 	public Monitor getMonitor(long pointer) {
-		RenderSystem.assertInInitPhase();
 		return this.pointerToMonitorMap.get(pointer);
 	}
 

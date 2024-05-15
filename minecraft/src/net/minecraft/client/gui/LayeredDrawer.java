@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.RenderTickCounter;
 
 @Environment(EnvType.CLIENT)
 public class LayeredDrawer {
@@ -17,28 +18,28 @@ public class LayeredDrawer {
 	}
 
 	public LayeredDrawer addSubDrawer(LayeredDrawer drawer, BooleanSupplier shouldRender) {
-		return this.addLayer((context, tickDelta) -> {
+		return this.addLayer((context, tickCounter) -> {
 			if (shouldRender.getAsBoolean()) {
-				drawer.renderInternal(context, tickDelta);
+				drawer.renderInternal(context, tickCounter);
 			}
 		});
 	}
 
-	public void render(DrawContext context, float tickDelta) {
+	public void render(DrawContext context, RenderTickCounter tickCounter) {
 		context.getMatrices().push();
-		this.renderInternal(context, tickDelta);
+		this.renderInternal(context, tickCounter);
 		context.getMatrices().pop();
 	}
 
-	private void renderInternal(DrawContext context, float tickDelta) {
+	private void renderInternal(DrawContext context, RenderTickCounter tickCounter) {
 		for (LayeredDrawer.Layer layer : this.layers) {
-			layer.render(context, tickDelta);
+			layer.render(context, tickCounter);
 			context.getMatrices().translate(0.0F, 0.0F, 200.0F);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public interface Layer {
-		void render(DrawContext context, float tickDelta);
+		void render(DrawContext context, RenderTickCounter tickCounter);
 	}
 }

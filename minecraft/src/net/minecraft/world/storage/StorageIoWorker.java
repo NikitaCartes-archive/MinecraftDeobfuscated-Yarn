@@ -140,7 +140,7 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 		return this.run(() -> {
 			StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.get(pos);
 			if (result != null) {
-				return Either.left(Optional.ofNullable(result.nbt));
+				return Either.left(Optional.ofNullable(result.copyNbt()));
 			} else {
 				try {
 					NbtCompound nbtCompound = this.storage.getTagAt(pos);
@@ -252,6 +252,12 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 
 		public Result(@Nullable NbtCompound nbt) {
 			this.nbt = nbt;
+		}
+
+		@Nullable
+		NbtCompound copyNbt() {
+			NbtCompound nbtCompound = this.nbt;
+			return nbtCompound == null ? null : nbtCompound.copy();
 		}
 	}
 }

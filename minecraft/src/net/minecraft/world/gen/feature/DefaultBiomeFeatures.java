@@ -406,8 +406,12 @@ public class DefaultBiomeFeatures {
 	}
 
 	public static void addBatsAndMonsters(SpawnSettings.Builder builder) {
+		addBatsAndMonsters(builder, 100);
+	}
+
+	public static void addBatsAndMonsters(SpawnSettings.Builder builder, int skeletonWeight) {
 		addCaveMobs(builder);
-		addMonsters(builder, 95, 5, 100, false);
+		addMonsters(builder, 95, 5, skeletonWeight, false);
 	}
 
 	public static void addOceanMobs(SpawnSettings.Builder builder, int squidWeight, int squidMaxGroupSize, int codWeight) {

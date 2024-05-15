@@ -77,9 +77,13 @@ public class TestContext {
 		return this.getWorld().getBlockState(this.getAbsolutePos(pos));
 	}
 
-	@Nullable
-	public BlockEntity getBlockEntity(BlockPos pos) {
-		return this.getWorld().getBlockEntity(this.getAbsolutePos(pos));
+	public <T extends BlockEntity> T getBlockEntity(BlockPos pos) {
+		BlockEntity blockEntity = this.getWorld().getBlockEntity(this.getAbsolutePos(pos));
+		if (blockEntity == null) {
+			throw new PositionedException("Missing block entity", this.getAbsolutePos(pos), pos, this.test.getTick());
+		} else {
+			return (T)blockEntity;
+		}
 	}
 
 	public void killAllEntities() {
@@ -393,6 +397,13 @@ public class TestContext {
 	public void checkBlockState(BlockPos pos, Predicate<BlockState> predicate, Supplier<String> errorMessageSupplier) {
 		BlockState blockState = this.getBlockState(pos);
 		if (!predicate.test(blockState)) {
+			throw new PositionedException((String)errorMessageSupplier.get(), this.getAbsolutePos(pos), pos, this.test.getTick());
+		}
+	}
+
+	public <T extends BlockEntity> void checkBlockEntity(BlockPos pos, Predicate<T> predicate, Supplier<String> errorMessageSupplier) {
+		T blockEntity = this.getBlockEntity(pos);
+		if (!predicate.test(blockEntity)) {
 			throw new PositionedException((String)errorMessageSupplier.get(), this.getAbsolutePos(pos), pos, this.test.getTick());
 		}
 	}

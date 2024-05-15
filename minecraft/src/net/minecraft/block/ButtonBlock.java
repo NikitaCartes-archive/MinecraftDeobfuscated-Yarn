@@ -124,7 +124,7 @@ public class ButtonBlock extends WallMountedBlock {
 		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), Block.NOTIFY_ALL);
 		this.updateNeighbors(state, world, pos);
 		world.scheduleBlockTick(pos, this, this.pressTicks);
-		this.playClickSound(player, world, pos, false);
+		this.playClickSound(player, world, pos, true);
 		world.emitGameEvent(player, GameEvent.BLOCK_ACTIVATE, pos);
 	}
 

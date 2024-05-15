@@ -26,6 +26,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -67,7 +68,6 @@ import net.minecraft.network.state.PlayStateFactories;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.ServerDynamicRegistryType;
-import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagPacketSerializer;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardDisplaySlot;
@@ -90,9 +90,9 @@ import net.minecraft.util.PathUtil;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.WorldSaveHandler;
@@ -223,11 +223,7 @@ public abstract class PlayerManager {
 		this.sendWorldInfo(player, serverWorld2);
 		serverWorld2.onPlayerConnected(player);
 		this.server.getBossBarManager().onPlayerConnect(player);
-
-		for (StatusEffectInstance statusEffectInstance : player.getStatusEffects()) {
-			serverPlayNetworkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), statusEffectInstance, false));
-		}
-
+		this.sendStatusEffects(player);
 		if (optional.isPresent() && ((NbtCompound)optional.get()).contains("RootVehicle", NbtElement.COMPOUND_TYPE)) {
 			NbtCompound nbtCompound = ((NbtCompound)optional.get()).getCompound("RootVehicle");
 			Entity entity = EntityType.loadEntityWithPassengers(
@@ -429,90 +425,80 @@ public abstract class PlayerManager {
 		return !set.isEmpty();
 	}
 
-	public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, boolean alive) {
+	public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, boolean alive, Entity.RemovalReason removalReason) {
 		this.players.remove(player);
-		player.getServerWorld().removePlayer(player, Entity.RemovalReason.DISCARDED);
-		BlockPos blockPos = player.getSpawnPointPosition();
-		float f = player.getSpawnAngle();
-		boolean bl = player.isSpawnForced();
-		ServerWorld serverWorld = this.server.getWorld(player.getSpawnPointDimension());
-		Optional<Vec3d> optional;
-		if (serverWorld != null && blockPos != null) {
-			optional = PlayerEntity.findRespawnPosition(serverWorld, blockPos, f, bl, alive);
-		} else {
-			optional = Optional.empty();
-		}
-
-		ServerWorld serverWorld2 = serverWorld != null && optional.isPresent() ? serverWorld : this.server.getOverworld();
-		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld2, player.getGameProfile(), player.getClientOptions());
+		player.getServerWorld().removePlayer(player, removalReason);
+		TeleportTarget teleportTarget = player.getRespawnTarget(alive);
+		ServerWorld serverWorld = teleportTarget.newDimension();
+		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld, player.getGameProfile(), player.getClientOptions());
 		serverPlayerEntity.networkHandler = player.networkHandler;
 		serverPlayerEntity.copyFrom(player, alive);
 		serverPlayerEntity.setId(player.getId());
 		serverPlayerEntity.setMainArm(player.getMainArm());
+		if (!teleportTarget.missingRespawnBlock()) {
+			serverPlayerEntity.setSpawnPointFrom(player);
+		}
 
 		for (String string : player.getCommandTags()) {
 			serverPlayerEntity.addCommandTag(string);
 		}
 
-		boolean bl2 = false;
-		if (optional.isPresent()) {
-			BlockState blockState = serverWorld2.getBlockState(blockPos);
-			boolean bl3 = blockState.isOf(Blocks.RESPAWN_ANCHOR);
-			Vec3d vec3d = (Vec3d)optional.get();
-			float g;
-			if (!blockState.isIn(BlockTags.BEDS) && !bl3) {
-				g = f;
-			} else {
-				Vec3d vec3d2 = Vec3d.ofBottomCenter(blockPos).subtract(vec3d).normalize();
-				g = (float)MathHelper.wrapDegrees(MathHelper.atan2(vec3d2.z, vec3d2.x) * 180.0F / (float)Math.PI - 90.0);
-			}
-
-			serverPlayerEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, g, 0.0F);
-			serverPlayerEntity.setSpawnPoint(serverWorld2.getRegistryKey(), blockPos, f, bl, false);
-			bl2 = !alive && bl3;
-		} else if (blockPos != null) {
+		Vec3d vec3d = teleportTarget.pos();
+		serverPlayerEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, teleportTarget.yaw(), teleportTarget.pitch());
+		if (teleportTarget.missingRespawnBlock()) {
 			serverPlayerEntity.networkHandler
 				.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.NO_RESPAWN_BLOCK, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
 		}
 
-		while (!serverWorld2.isSpaceEmpty(serverPlayerEntity) && serverPlayerEntity.getY() < (double)serverWorld2.getTopY()) {
-			serverPlayerEntity.setPosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
-		}
-
 		byte b = alive ? PlayerRespawnS2CPacket.KEEP_ATTRIBUTES : 0;
-		ServerWorld serverWorld3 = serverPlayerEntity.getServerWorld();
-		WorldProperties worldProperties = serverWorld3.getLevelProperties();
-		serverPlayerEntity.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity.createCommonPlayerSpawnInfo(serverWorld3), b));
+		ServerWorld serverWorld2 = serverPlayerEntity.getServerWorld();
+		WorldProperties worldProperties = serverWorld2.getLevelProperties();
+		serverPlayerEntity.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity.createCommonPlayerSpawnInfo(serverWorld2), b));
 		serverPlayerEntity.networkHandler
 			.requestTeleport(serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.getYaw(), serverPlayerEntity.getPitch());
-		serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(serverWorld2.getSpawnPos(), serverWorld2.getSpawnAngle()));
+		serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(serverWorld.getSpawnPos(), serverWorld.getSpawnAngle()));
 		serverPlayerEntity.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 		serverPlayerEntity.networkHandler
 			.sendPacket(new ExperienceBarUpdateS2CPacket(serverPlayerEntity.experienceProgress, serverPlayerEntity.totalExperience, serverPlayerEntity.experienceLevel));
-		this.sendWorldInfo(serverPlayerEntity, serverWorld2);
+		this.sendStatusEffects(serverPlayerEntity);
+		this.sendWorldInfo(serverPlayerEntity, serverWorld);
 		this.sendCommandTree(serverPlayerEntity);
-		serverWorld2.onPlayerRespawned(serverPlayerEntity);
+		serverWorld.onPlayerRespawned(serverPlayerEntity);
 		this.players.add(serverPlayerEntity);
 		this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
 		serverPlayerEntity.onSpawn();
 		serverPlayerEntity.setHealth(serverPlayerEntity.getHealth());
-		if (bl2) {
-			serverPlayerEntity.networkHandler
-				.sendPacket(
-					new PlaySoundS2CPacket(
-						SoundEvents.BLOCK_RESPAWN_ANCHOR_DEPLETE,
-						SoundCategory.BLOCKS,
-						(double)blockPos.getX(),
-						(double)blockPos.getY(),
-						(double)blockPos.getZ(),
-						1.0F,
-						1.0F,
-						serverWorld2.getRandom().nextLong()
-					)
-				);
+		if (!alive) {
+			BlockPos blockPos = BlockPos.ofFloored(teleportTarget.pos());
+			BlockState blockState = serverWorld.getBlockState(blockPos);
+			if (blockState.isOf(Blocks.RESPAWN_ANCHOR)) {
+				serverPlayerEntity.networkHandler
+					.sendPacket(
+						new PlaySoundS2CPacket(
+							SoundEvents.BLOCK_RESPAWN_ANCHOR_DEPLETE,
+							SoundCategory.BLOCKS,
+							(double)blockPos.getX(),
+							(double)blockPos.getY(),
+							(double)blockPos.getZ(),
+							1.0F,
+							1.0F,
+							serverWorld.getRandom().nextLong()
+						)
+					);
+			}
 		}
 
 		return serverPlayerEntity;
+	}
+
+	public void sendStatusEffects(ServerPlayerEntity player) {
+		this.sendStatusEffects(player, player.networkHandler);
+	}
+
+	public void sendStatusEffects(LivingEntity entity, ServerPlayNetworkHandler networkHandler) {
+		for (StatusEffectInstance statusEffectInstance : entity.getStatusEffects()) {
+			networkHandler.sendPacket(new EntityStatusEffectS2CPacket(entity.getId(), statusEffectInstance, false));
+		}
 	}
 
 	public void sendCommandTree(ServerPlayerEntity player) {

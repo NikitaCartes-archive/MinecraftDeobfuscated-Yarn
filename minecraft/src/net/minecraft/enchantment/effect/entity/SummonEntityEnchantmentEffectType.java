@@ -37,7 +37,7 @@ public record SummonEntityEnchantmentEffectType(RegistryEntryList<EntityType<?>>
 			if (!optional.isEmpty()) {
 				Entity entity = ((EntityType)((RegistryEntry)optional.get()).value()).spawn(world, blockPos, SpawnReason.TRIGGERED);
 				if (entity != null) {
-					if (entity instanceof LightningEntity lightningEntity && user instanceof ServerPlayerEntity serverPlayerEntity) {
+					if (entity instanceof LightningEntity lightningEntity && context.owner() instanceof ServerPlayerEntity serverPlayerEntity) {
 						lightningEntity.setChanneler(serverPlayerEntity);
 					}
 

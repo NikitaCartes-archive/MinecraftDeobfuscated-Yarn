@@ -1,6 +1,5 @@
 package net.minecraft.client.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,7 +18,6 @@ public class Tessellator {
 	private static Tessellator INSTANCE;
 
 	public static void initialize() {
-		RenderSystem.assertOnGameThreadOrInit();
 		if (INSTANCE != null) {
 			throw new IllegalStateException("Tesselator has already been initialized");
 		} else {
@@ -28,7 +26,6 @@ public class Tessellator {
 	}
 
 	public static Tessellator getInstance() {
-		RenderSystem.assertOnGameThreadOrInit();
 		if (INSTANCE == null) {
 			throw new IllegalStateException("Tesselator has not been initialized");
 		} else {

@@ -30,7 +30,6 @@ import net.minecraft.text.Text;
 
 public class ItemEnchantmentsComponent implements TooltipAppender {
 	public static final ItemEnchantmentsComponent DEFAULT = new ItemEnchantmentsComponent(new Object2IntOpenHashMap<>(), true);
-	public static final int MAX_ENCHANTMENT_LEVEL = 255;
 	private static final Codec<Integer> ENCHANTMENT_LEVEL_CODEC = Codec.intRange(0, 255);
 	private static final Codec<Object2IntOpenHashMap<RegistryEntry<Enchantment>>> INLINE_CODEC = Codec.unboundedMap(
 			Enchantment.ENTRY_CODEC, ENCHANTMENT_LEVEL_CODEC
@@ -45,7 +44,7 @@ public class ItemEnchantmentsComponent implements TooltipAppender {
 	);
 	public static final Codec<ItemEnchantmentsComponent> CODEC = Codec.withAlternative(BASE_CODEC, INLINE_CODEC, map -> new ItemEnchantmentsComponent(map, true));
 	public static final PacketCodec<RegistryByteBuf, ItemEnchantmentsComponent> PACKET_CODEC = PacketCodec.tuple(
-		PacketCodecs.map(Object2IntOpenHashMap::new, PacketCodecs.registryEntry(RegistryKeys.ENCHANTMENT), PacketCodecs.VAR_INT),
+		PacketCodecs.map(Object2IntOpenHashMap::new, Enchantment.ENTRY_PACKET_CODEC, PacketCodecs.VAR_INT),
 		component -> component.enchantments,
 		PacketCodecs.BOOL,
 		component -> component.showInTooltip,

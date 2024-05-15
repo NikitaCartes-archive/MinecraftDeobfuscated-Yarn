@@ -209,7 +209,7 @@ public class VexEntity extends HostileEntity implements Ownable {
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		Random random = world.getRandom();
 		this.initEquipment(random, difficulty);
-		this.updateEnchantments(random, difficulty);
+		this.updateEnchantments(world, random, difficulty);
 		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 

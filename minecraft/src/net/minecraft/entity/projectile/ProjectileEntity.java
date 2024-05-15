@@ -192,7 +192,7 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 		float g = -MathHelper.sin((pitch + roll) * (float) (Math.PI / 180.0));
 		float h = MathHelper.cos(yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(pitch * (float) (Math.PI / 180.0));
 		this.setVelocity((double)f, (double)g, (double)h, speed, divergence);
-		Vec3d vec3d = shooter.getVelocity();
+		Vec3d vec3d = shooter.getMovement();
 		this.setVelocity(this.getVelocity().add(vec3d.x, shooter.isOnGround() ? 0.0 : vec3d.y, vec3d.z));
 	}
 

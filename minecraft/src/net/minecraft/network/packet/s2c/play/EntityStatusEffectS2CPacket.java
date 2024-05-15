@@ -4,12 +4,10 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -53,7 +51,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 
 	private EntityStatusEffectS2CPacket(RegistryByteBuf buf) {
 		this.entityId = buf.readVarInt();
-		this.effectId = PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT).decode(buf);
+		this.effectId = StatusEffect.ENTRY_PACKET_CODEC.decode(buf);
 		this.amplifier = buf.readVarInt();
 		this.duration = buf.readVarInt();
 		this.flags = buf.readByte();
@@ -61,7 +59,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 
 	private void write(RegistryByteBuf buf) {
 		buf.writeVarInt(this.entityId);
-		PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT).encode(buf, this.effectId);
+		StatusEffect.ENTRY_PACKET_CODEC.encode(buf, this.effectId);
 		buf.writeVarInt(this.amplifier);
 		buf.writeVarInt(this.duration);
 		buf.writeByte(this.flags);

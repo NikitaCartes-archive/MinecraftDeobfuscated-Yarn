@@ -19,8 +19,6 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
@@ -33,13 +31,13 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	public static final int MAX_AMPLIFIER = 255;
 	public static final Codec<StatusEffectInstance> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registries.STATUS_EFFECT.getEntryCodec().fieldOf("id").forGetter(StatusEffectInstance::getEffectType),
+					StatusEffect.ENTRY_CODEC.fieldOf("id").forGetter(StatusEffectInstance::getEffectType),
 					StatusEffectInstance.Parameters.CODEC.forGetter(StatusEffectInstance::asParameters)
 				)
 				.apply(instance, StatusEffectInstance::new)
 	);
 	public static final PacketCodec<RegistryByteBuf, StatusEffectInstance> PACKET_CODEC = PacketCodec.tuple(
-		PacketCodecs.registryEntry(RegistryKeys.STATUS_EFFECT),
+		StatusEffect.ENTRY_PACKET_CODEC,
 		StatusEffectInstance::getEffectType,
 		StatusEffectInstance.Parameters.PACKET_CODEC,
 		StatusEffectInstance::asParameters,

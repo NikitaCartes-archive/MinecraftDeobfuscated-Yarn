@@ -33,7 +33,6 @@ import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.SlotChangedStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.recipe.RecipeEntry;
@@ -341,11 +340,9 @@ public class ClientPlayerInteractionManager {
 			return ActionResult.PASS;
 		} else {
 			this.syncSelectedSlot();
-			this.networkHandler
-				.sendPacket(new PlayerMoveC2SPacket.Full(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(), player.isOnGround()));
 			MutableObject<ActionResult> mutableObject = new MutableObject<>();
 			this.sendSequencedPacket(this.client.world, sequence -> {
-				PlayerInteractItemC2SPacket playerInteractItemC2SPacket = new PlayerInteractItemC2SPacket(hand, sequence);
+				PlayerInteractItemC2SPacket playerInteractItemC2SPacket = new PlayerInteractItemC2SPacket(hand, sequence, player.getYaw(), player.getPitch());
 				ItemStack itemStack = player.getStackInHand(hand);
 				if (player.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 					mutableObject.setValue(ActionResult.PASS);

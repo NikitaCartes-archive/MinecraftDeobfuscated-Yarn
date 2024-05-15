@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
+import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.effect.EnchantmentEffectTarget;
 import net.minecraft.enchantment.effect.EnchantmentValueEffectType;
@@ -38,11 +39,10 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Weighting;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
+import net.minecraft.world.LocalDifficulty;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -197,6 +197,14 @@ public class EnchantmentHelper {
 	}
 
 	public static void onTargetDamaged(ServerWorld world, Entity target, DamageSource damageSource) {
+		if (damageSource.getAttacker() instanceof LivingEntity livingEntity) {
+			onTargetDamaged(world, target, damageSource, livingEntity.getMainHandStack());
+		} else {
+			onTargetDamaged(world, target, damageSource, null);
+		}
+	}
+
+	public static void onTargetDamaged(ServerWorld world, Entity target, DamageSource damageSource, @Nullable ItemStack weapon) {
 		if (target instanceof LivingEntity livingEntity) {
 			forEachEnchantment(
 				livingEntity,
@@ -204,9 +212,9 @@ public class EnchantmentHelper {
 			);
 		}
 
-		if (damageSource.getAttacker() instanceof LivingEntity livingEntity) {
+		if (weapon != null && damageSource.getAttacker() instanceof LivingEntity livingEntity) {
 			forEachEnchantment(
-				livingEntity.getMainHandStack(),
+				weapon,
 				EquipmentSlot.MAINHAND,
 				livingEntity,
 				(enchantment, level, context) -> enchantment.value().onTargetDamaged(world, level, context, EnchantmentEffectTarget.ATTACKER, target, damageSource)
@@ -272,14 +280,22 @@ public class EnchantmentHelper {
 		return Math.max(0, mutableFloat.intValue());
 	}
 
-	public static void onProjectileSpawned(ServerWorld world, ItemStack weaponStack, PersistentProjectileEntity projectileEntity, Runnable onShotFromBreak) {
+	public static void onProjectileSpawned(
+		ServerWorld world, ItemStack weaponStack, PersistentProjectileEntity projectileEntity, java.util.function.Consumer<Item> onBreak
+	) {
 		LivingEntity livingEntity2 = projectileEntity.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null;
-		EnchantmentEffectContext enchantmentEffectContext = new EnchantmentEffectContext(weaponStack, null, livingEntity2, onShotFromBreak);
+		EnchantmentEffectContext enchantmentEffectContext = new EnchantmentEffectContext(weaponStack, null, livingEntity2, onBreak);
 		forEachEnchantment(weaponStack, (enchantment, level) -> enchantment.value().onProjectileSpawned(world, level, enchantmentEffectContext, projectileEntity));
 	}
 
 	public static void onHitBlock(
-		ServerWorld world, ItemStack stack, @Nullable LivingEntity user, Entity enchantedEntity, @Nullable EquipmentSlot slot, Vec3d pos, Runnable onBreak
+		ServerWorld world,
+		ItemStack stack,
+		@Nullable LivingEntity user,
+		Entity enchantedEntity,
+		@Nullable EquipmentSlot slot,
+		Vec3d pos,
+		java.util.function.Consumer<Item> onBreak
 	) {
 		EnchantmentEffectContext enchantmentEffectContext = new EnchantmentEffectContext(stack, slot, user, onBreak);
 		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().onHitBlock(world, level, enchantmentEffectContext, enchantedEntity, pos));
@@ -303,34 +319,35 @@ public class EnchantmentHelper {
 			});
 		});
 		if (damageSource.getAttacker() instanceof LivingEntity livingEntity) {
-			forEachEnchantment(
-				livingEntity,
-				(enchantment, level, context) -> {
-					LootContext lootContext = Enchantment.createEnchantedDamageLootContext(world, level, attacker, damageSource);
-					enchantment.value()
-						.getEffect(EnchantmentEffectComponentTypes.EQUIPMENT_DROPS)
-						.forEach(
-							targetedEnchantmentEffectType -> {
-								if (targetedEnchantmentEffectType.enchanted() == EnchantmentEffectTarget.ATTACKER
-									&& targetedEnchantmentEffectType.affected() == EnchantmentEffectTarget.VICTIM
-									&& targetedEnchantmentEffectType.test(lootContext)) {
-									mutableFloat.setValue(((EnchantmentValueEffectType)targetedEnchantmentEffectType.effect()).apply(level, random, mutableFloat.floatValue()));
-								}
-							}
-						);
-				}
-			);
+			forEachEnchantment(livingEntity, (enchantment, level, context) -> {
+				LootContext lootContext = Enchantment.createEnchantedDamageLootContext(world, level, attacker, damageSource);
+				enchantment.value().getEffect(EnchantmentEffectComponentTypes.EQUIPMENT_DROPS).forEach(effect -> {
+					if (effect.enchanted() == EnchantmentEffectTarget.ATTACKER && effect.affected() == EnchantmentEffectTarget.VICTIM && effect.test(lootContext)) {
+						mutableFloat.setValue(((EnchantmentValueEffectType)effect.effect()).apply(level, random, mutableFloat.floatValue()));
+					}
+				});
+			});
 		}
 
 		return mutableFloat.floatValue();
 	}
 
 	public static void applyAttributeModifiers(
-		ItemStack stack, EquipmentSlot slot, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeBiConsumer
+		ItemStack stack, AttributeModifierSlot slot, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeModifierConsumer
+	) {
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().getEffect(EnchantmentEffectComponentTypes.ATTRIBUTES).forEach(effect -> {
+				if (((Enchantment)enchantment.value()).definition().slots().contains(slot)) {
+					attributeModifierConsumer.accept(effect.attribute(), effect.createAttributeModifier(level));
+				}
+			}));
+	}
+
+	public static void applyAttributeModifiers(
+		ItemStack stack, EquipmentSlot slot, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeModifierConsumer
 	) {
 		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().getEffect(EnchantmentEffectComponentTypes.ATTRIBUTES).forEach(effect -> {
 				if (((Enchantment)enchantment.value()).slotMatches(slot)) {
-					attributeBiConsumer.accept(effect.attribute(), effect.createAttributeModifier(level));
+					attributeModifierConsumer.accept(effect.attribute(), effect.createAttributeModifier(level));
 				}
 			}));
 	}
@@ -578,10 +595,12 @@ public class EnchantmentHelper {
 		return list;
 	}
 
-	public static void applyEnchantmentProvider(ItemStack stack, RegistryKey<EnchantmentProvider> providerKey, World world, BlockPos pos, Random random) {
-		EnchantmentProvider enchantmentProvider = world.getRegistryManager().get(RegistryKeys.ENCHANTMENT_PROVIDER).get(providerKey);
+	public static void applyEnchantmentProvider(
+		ItemStack stack, DynamicRegistryManager registryManager, RegistryKey<EnchantmentProvider> providerKey, LocalDifficulty localDifficulty, Random random
+	) {
+		EnchantmentProvider enchantmentProvider = registryManager.get(RegistryKeys.ENCHANTMENT_PROVIDER).get(providerKey);
 		if (enchantmentProvider != null) {
-			apply(stack, componentBuilder -> enchantmentProvider.provideEnchantments(stack, componentBuilder, random, world, pos));
+			apply(stack, componentBuilder -> enchantmentProvider.provideEnchantments(stack, componentBuilder, random, localDifficulty));
 		}
 	}
 

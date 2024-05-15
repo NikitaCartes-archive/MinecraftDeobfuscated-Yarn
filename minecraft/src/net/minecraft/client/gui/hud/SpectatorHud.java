@@ -13,6 +13,7 @@ import net.minecraft.client.gui.hud.spectator.SpectatorMenuState;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -104,8 +105,7 @@ public class SpectatorHud implements SpectatorMenuCloseCallback {
 				int j = this.client.textRenderer.getWidth(text);
 				int k = (context.getScaledWindowWidth() - j) / 2;
 				int l = context.getScaledWindowHeight() - 35;
-				context.fill(k - 2, l - 2, k + j + 2, l + 9 + 2, this.client.options.getTextBackgroundColor(0));
-				context.drawTextWithShadow(this.client.textRenderer, text, k, l, 16777215 + (i << 24));
+				context.drawTextWithBackground(this.client.textRenderer, text, k, l, j, ColorHelper.Argb.withAlpha(i, -1));
 			}
 		}
 	}

@@ -16,10 +16,13 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.BedBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.NetherPortalBlock;
+import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SculkShriekerWarningManager;
@@ -29,6 +32,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -50,6 +54,7 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.NetworkSyncedItem;
@@ -197,7 +202,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Nullable
 	private Entity cameraEntity;
 	private boolean inTeleportationState;
-	private boolean seenCredits;
+	public boolean seenCredits;
 	private final ServerRecipeBook recipeBook = new ServerRecipeBook();
 	@Nullable
 	private Vec3d levitationStartPos;
@@ -233,7 +238,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private SculkShriekerWarningManager sculkShriekerWarningManager = new SculkShriekerWarningManager(0, 0, 0);
 	@Nullable
 	private BlockPos startRaidPos;
-	private Vec3d particleVelocity = Vec3d.ZERO;
+	private Vec3d movement = Vec3d.ZERO;
 	private final ScreenHandlerSyncHandler screenHandlerSyncHandler = new ScreenHandlerSyncHandler() {
 		@Override
 		public void updateState(ScreenHandler handler, DefaultedList<ItemStack> stacks, ItemStack cursorStack, int[] properties) {
@@ -692,7 +697,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 
 		if (!this.isSpectator()) {
-			this.drop(damageSource);
+			this.drop(this.getServerWorld(), damageSource);
 		}
 
 		this.getScoreboard().forEachScore(ScoreboardCriterion.DEATH_COUNT, this, ScoreAccess::incrementScore);
@@ -786,75 +791,121 @@ public class ServerPlayerEntity extends PlayerEntity {
 		return this.server.isPvpEnabled();
 	}
 
-	@Nullable
-	@Override
-	protected TeleportTarget getTeleportTarget(ServerWorld destination) {
-		TeleportTarget teleportTarget = super.getTeleportTarget(destination);
-		if (teleportTarget != null && this.getWorld().getRegistryKey() == World.OVERWORLD && destination.getRegistryKey() == World.END) {
-			Vec3d vec3d = teleportTarget.position.add(0.0, -1.0, 0.0);
-			return new TeleportTarget(vec3d, Vec3d.ZERO, 90.0F, 0.0F);
+	public TeleportTarget getRespawnTarget(boolean alive) {
+		BlockPos blockPos = this.getSpawnPointPosition();
+		float f = this.getSpawnAngle();
+		boolean bl = this.isSpawnForced();
+		ServerWorld serverWorld = this.server.getWorld(this.getSpawnPointDimension());
+		if (serverWorld != null && blockPos != null) {
+			Optional<ServerPlayerEntity.RespawnPos> optional = findRespawnPosition(serverWorld, blockPos, f, bl, alive);
+			if (optional.isPresent()) {
+				ServerPlayerEntity.RespawnPos respawnPos = (ServerPlayerEntity.RespawnPos)optional.get();
+				return new TeleportTarget(serverWorld, respawnPos.pos(), Vec3d.ZERO, respawnPos.yaw(), 0.0F);
+			} else {
+				return TeleportTarget.missingSpawnBlock(this.server.getOverworld());
+			}
 		} else {
-			return teleportTarget;
+			return new TeleportTarget(this.server.getOverworld());
+		}
+	}
+
+	private static Optional<ServerPlayerEntity.RespawnPos> findRespawnPosition(
+		ServerWorld world, BlockPos pos, float spawnAngle, boolean spawnForced, boolean alive
+	) {
+		BlockState blockState = world.getBlockState(pos);
+		Block block = blockState.getBlock();
+		if (block instanceof RespawnAnchorBlock && (spawnForced || (Integer)blockState.get(RespawnAnchorBlock.CHARGES) > 0) && RespawnAnchorBlock.isNether(world)) {
+			Optional<Vec3d> optional = RespawnAnchorBlock.findRespawnPosition(EntityType.PLAYER, world, pos);
+			if (!spawnForced && !alive && optional.isPresent()) {
+				world.setBlockState(
+					pos, blockState.with(RespawnAnchorBlock.CHARGES, Integer.valueOf((Integer)blockState.get(RespawnAnchorBlock.CHARGES) - 1)), Block.NOTIFY_ALL
+				);
+			}
+
+			return optional.map(respawnPos -> ServerPlayerEntity.RespawnPos.fromCurrentPos(respawnPos, pos));
+		} else if (block instanceof BedBlock && BedBlock.isBedWorking(world)) {
+			return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, blockState.get(BedBlock.FACING), spawnAngle)
+				.map(respawnPos -> ServerPlayerEntity.RespawnPos.fromCurrentPos(respawnPos, pos));
+		} else if (!spawnForced) {
+			return Optional.empty();
+		} else {
+			boolean bl = block.canMobSpawnInside(blockState);
+			BlockState blockState2 = world.getBlockState(pos.up());
+			boolean bl2 = blockState2.getBlock().canMobSpawnInside(blockState2);
+			return bl && bl2
+				? Optional.of(new ServerPlayerEntity.RespawnPos(new Vec3d((double)pos.getX() + 0.5, (double)pos.getY() + 0.1, (double)pos.getZ() + 0.5), spawnAngle))
+				: Optional.empty();
 		}
 	}
 
 	@Nullable
 	@Override
-	public Entity moveToWorld(ServerWorld destination) {
-		this.inTeleportationState = true;
-		ServerWorld serverWorld = this.getServerWorld();
-		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
-		if (registryKey == World.END && destination.getRegistryKey() == World.OVERWORLD) {
-			this.detach();
-			this.getServerWorld().removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
-			if (!this.notInAnyWorld) {
-				this.notInAnyWorld = true;
-				this.networkHandler
-					.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_WON, this.seenCredits ? GameStateChangeS2CPacket.DEMO_OPEN_SCREEN : 1.0F));
-				this.seenCredits = true;
-			}
+	public TeleportTarget getTeleportTarget(ServerWorld destination) {
+		TeleportTarget teleportTarget = super.getTeleportTarget(destination);
+		if (teleportTarget != null && this.getWorld().getRegistryKey() == World.OVERWORLD && teleportTarget.newDimension().getRegistryKey() == World.END) {
+			Vec3d vec3d = teleportTarget.pos().add(0.0, -1.0, 0.0);
+			this.createEndSpawnPlatform(teleportTarget.newDimension(), BlockPos.ofFloored(vec3d));
+			return new TeleportTarget(teleportTarget.newDimension(), vec3d, Vec3d.ZERO, 90.0F, 0.0F);
+		} else {
+			return this.getWorld().getRegistryKey() == World.END && teleportTarget.newDimension().getRegistryKey() == World.OVERWORLD
+				? this.getRespawnTarget(false)
+				: teleportTarget;
+		}
+	}
 
+	public void detachForDimensionChange() {
+		this.detach();
+		this.getServerWorld().removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
+		if (!this.notInAnyWorld) {
+			this.notInAnyWorld = true;
+			this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_WON, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
+			this.seenCredits = true;
+		}
+	}
+
+	@Nullable
+	@Override
+	public Entity moveToWorld(Entity.TeleportTargetSupplier teleportTargetSupplier) {
+		TeleportTarget teleportTarget = teleportTargetSupplier.get();
+		if (teleportTarget == null) {
 			return this;
 		} else {
-			WorldProperties worldProperties = destination.getLevelProperties();
-			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.createCommonPlayerSpawnInfo(destination), PlayerRespawnS2CPacket.KEEP_ALL));
+			if (teleportTarget.missingRespawnBlock()) {
+				this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.NO_RESPAWN_BLOCK, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
+			}
+
+			ServerWorld serverWorld = teleportTarget.newDimension();
+			this.inTeleportationState = true;
+			ServerWorld serverWorld2 = this.getServerWorld();
+			RegistryKey<World> registryKey = serverWorld2.getRegistryKey();
+			WorldProperties worldProperties = serverWorld.getLevelProperties();
+			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.createCommonPlayerSpawnInfo(serverWorld), PlayerRespawnS2CPacket.KEEP_ALL));
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 			PlayerManager playerManager = this.server.getPlayerManager();
 			playerManager.sendCommandTree(this);
-			serverWorld.removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
+			serverWorld2.removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
 			this.unsetRemoved();
-			TeleportTarget teleportTarget = this.getTeleportTarget(destination);
-			if (teleportTarget != null) {
-				serverWorld.getProfiler().push("moving");
-				if (registryKey == World.OVERWORLD && destination.getRegistryKey() == World.NETHER) {
-					this.enteredNetherPos = this.getPos();
-				} else if (destination.getRegistryKey() == World.END) {
-					this.createEndSpawnPlatform(destination, BlockPos.ofFloored(teleportTarget.position));
-				}
-
-				serverWorld.getProfiler().pop();
-				serverWorld.getProfiler().push("placing");
-				this.setServerWorld(destination);
-				this.networkHandler
-					.requestTeleport(teleportTarget.position.x, teleportTarget.position.y, teleportTarget.position.z, teleportTarget.yaw, teleportTarget.pitch);
-				this.networkHandler.syncWithPlayerPosition();
-				destination.onPlayerChangeDimension(this);
-				serverWorld.getProfiler().pop();
-				this.worldChanged(serverWorld);
-				this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.getAbilities()));
-				playerManager.sendWorldInfo(this, destination);
-				playerManager.sendPlayerStatus(this);
-
-				for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
-					this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), statusEffectInstance, false));
-				}
-
-				this.networkHandler.sendPacket(new WorldEventS2CPacket(WorldEvents.TRAVEL_THROUGH_PORTAL, BlockPos.ORIGIN, 0, false));
-				this.syncedExperience = -1;
-				this.syncedHealth = -1.0F;
-				this.syncedFoodLevel = -1;
+			serverWorld2.getProfiler().push("moving");
+			if (registryKey == World.OVERWORLD && serverWorld.getRegistryKey() == World.NETHER) {
+				this.enteredNetherPos = this.getPos();
 			}
 
+			serverWorld2.getProfiler().pop();
+			serverWorld2.getProfiler().push("placing");
+			this.setServerWorld(serverWorld);
+			this.networkHandler.requestTeleport(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z, teleportTarget.yaw(), teleportTarget.pitch());
+			this.networkHandler.syncWithPlayerPosition();
+			serverWorld.onDimensionChanged(this);
+			serverWorld2.getProfiler().pop();
+			this.worldChanged(serverWorld2);
+			this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.getAbilities()));
+			playerManager.sendWorldInfo(this, serverWorld);
+			playerManager.sendPlayerStatus(this);
+			playerManager.sendStatusEffects(this);
+			this.networkHandler.sendPacket(new WorldEventS2CPacket(WorldEvents.TRAVEL_THROUGH_PORTAL, BlockPos.ORIGIN, 0, false));
+			this.syncedExperience = -1;
+			this.syncedHealth = -1.0F;
+			this.syncedFoodLevel = -1;
 			return this;
 		}
 	}
@@ -1323,10 +1374,16 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.session = oldPlayer.session;
 		this.interactionManager.setGameMode(oldPlayer.interactionManager.getGameMode(), oldPlayer.interactionManager.getPreviousGameMode());
 		this.sendAbilitiesUpdate();
+		this.getAttributes().setBaseFrom(oldPlayer.getAttributes());
 		if (alive) {
 			this.getInventory().clone(oldPlayer.getInventory());
 			this.setHealth(oldPlayer.getHealth());
 			this.hungerManager = oldPlayer.hungerManager;
+
+			for (StatusEffectInstance statusEffectInstance : oldPlayer.getStatusEffects()) {
+				this.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
+			}
+
 			this.experienceLevel = oldPlayer.experienceLevel;
 			this.totalExperience = oldPlayer.totalExperience;
 			this.experienceProgress = oldPlayer.experienceProgress;
@@ -1659,20 +1716,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (targetWorld == this.getWorld()) {
 			this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
 		} else {
-			ServerWorld serverWorld = this.getServerWorld();
-			WorldProperties worldProperties = targetWorld.getLevelProperties();
-			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.createCommonPlayerSpawnInfo(targetWorld), PlayerRespawnS2CPacket.KEEP_ALL));
-			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
-			this.server.getPlayerManager().sendCommandTree(this);
-			serverWorld.removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
-			this.unsetRemoved();
-			this.refreshPositionAndAngles(x, y, z, yaw, pitch);
-			this.setServerWorld(targetWorld);
-			targetWorld.onPlayerTeleport(this);
-			this.worldChanged(serverWorld);
-			this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
-			this.server.getPlayerManager().sendWorldInfo(this, targetWorld);
-			this.server.getPlayerManager().sendPlayerStatus(this);
+			this.moveToWorld(() -> new TeleportTarget(targetWorld, new Vec3d(x, y, z), Vec3d.ZERO, yaw, pitch));
 		}
 	}
 
@@ -1691,6 +1735,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	public boolean isSpawnForced() {
 		return this.spawnForced;
+	}
+
+	public void setSpawnPointFrom(ServerPlayerEntity player) {
+		this.setSpawnPoint(player.getSpawnPointDimension(), player.getSpawnPointPosition(), player.getSpawnAngle(), player.isSpawnForced(), false);
 	}
 
 	/**
@@ -1894,18 +1942,16 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public boolean startRiding(Entity entity, boolean force) {
-		if (!super.startRiding(entity, force)) {
-			return false;
-		} else {
+		if (super.startRiding(entity, force)) {
 			entity.updatePassengerPosition(this);
 			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
 			if (entity instanceof LivingEntity livingEntity) {
-				for (StatusEffectInstance statusEffectInstance : livingEntity.getStatusEffects()) {
-					this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(entity.getId(), statusEffectInstance, false));
-				}
+				this.server.getPlayerManager().sendStatusEffects(livingEntity, this.networkHandler);
 			}
 
 			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -1948,18 +1994,33 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public void setOnGround(boolean onGround, Vec3d movement) {
-		super.setOnGround(onGround, movement);
-		this.particleVelocity = movement;
+	public Vec3d getMovement() {
+		return this.movement;
 	}
 
-	@Override
-	public Vec3d getParticleVelocity() {
-		return this.particleVelocity;
+	public void setOnGround(Vec3d movement) {
+		this.movement = movement;
 	}
 
 	@Override
 	protected float getDamageAgainst(Entity target, float baseDamage, DamageSource damageSource) {
 		return EnchantmentHelper.getDamage(this.getServerWorld(), this.getMainHandStack(), target, damageSource, baseDamage);
+	}
+
+	@Override
+	public void sendEquipmentBreakStatus(Item item, EquipmentSlot slot) {
+		super.sendEquipmentBreakStatus(item, slot);
+		this.incrementStat(Stats.BROKEN.getOrCreateStat(item));
+	}
+
+	static record RespawnPos(Vec3d pos, float yaw) {
+		public static ServerPlayerEntity.RespawnPos fromCurrentPos(Vec3d respawnPos, BlockPos currentPos) {
+			return new ServerPlayerEntity.RespawnPos(respawnPos, getYaw(respawnPos, currentPos));
+		}
+
+		private static float getYaw(Vec3d respawnPos, BlockPos currentPos) {
+			Vec3d vec3d = Vec3d.ofBottomCenter(currentPos).subtract(respawnPos).normalize();
+			return (float)MathHelper.wrapDegrees(MathHelper.atan2(vec3d.z, vec3d.x) * 180.0F / (float)Math.PI - 90.0);
+		}
 	}
 }

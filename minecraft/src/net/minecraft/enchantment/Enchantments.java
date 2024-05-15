@@ -442,7 +442,7 @@ public class Enchantments {
 			.periodicTick(5)
 			.flags(EntityFlagsPredicate.Builder.create().flying(false).onGround(true))
 			.movement(MovementPredicate.horizontalSpeed(NumberRange.DoubleRange.atLeast(1.0E-5F)))
-			.steppingOn(LocationPredicate.Builder.create().block(net.minecraft.predicate.BlockPredicate.Builder.create().tag(BlockTags.SOUL_SPEED_BLOCKS)));
+			.movementAffectedBy(LocationPredicate.Builder.create().block(net.minecraft.predicate.BlockPredicate.Builder.create().tag(BlockTags.SOUL_SPEED_BLOCKS)));
 		register(
 			registry,
 			SOUL_SPEED,
@@ -480,7 +480,9 @@ public class Enchantments {
 									EntityPropertiesLootCondition.builder(
 										LootContext.EntityTarget.THIS,
 										EntityPredicate.Builder.create()
-											.steppingOn(LocationPredicate.Builder.create().block(net.minecraft.predicate.BlockPredicate.Builder.create().tag(BlockTags.SOUL_SPEED_BLOCKS)))
+											.movementAffectedBy(
+												LocationPredicate.Builder.create().block(net.minecraft.predicate.BlockPredicate.Builder.create().tag(BlockTags.SOUL_SPEED_BLOCKS))
+											)
 									),
 									EntityPropertiesLootCondition.builder(
 										LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().flags(EntityFlagsPredicate.Builder.create().onGround(false)).build()
@@ -492,7 +494,9 @@ public class Enchantments {
 								EntityPropertiesLootCondition.builder(
 									LootContext.EntityTarget.THIS,
 									EntityPredicate.Builder.create()
-										.steppingOn(LocationPredicate.Builder.create().block(net.minecraft.predicate.BlockPredicate.Builder.create().tag(BlockTags.SOUL_SPEED_BLOCKS)))
+										.movementAffectedBy(
+											LocationPredicate.Builder.create().block(net.minecraft.predicate.BlockPredicate.Builder.create().tag(BlockTags.SOUL_SPEED_BLOCKS))
+										)
 										.flags(EntityFlagsPredicate.Builder.create().flying(false))
 								)
 							)
@@ -511,7 +515,7 @@ public class Enchantments {
 					EntityPropertiesLootCondition.builder(
 						LootContext.EntityTarget.THIS,
 						EntityPredicate.Builder.create()
-							.steppingOn(LocationPredicate.Builder.create().block(net.minecraft.predicate.BlockPredicate.Builder.create().tag(BlockTags.SOUL_SPEED_BLOCKS)))
+							.movementAffectedBy(LocationPredicate.Builder.create().block(net.minecraft.predicate.BlockPredicate.Builder.create().tag(BlockTags.SOUL_SPEED_BLOCKS)))
 					)
 				)
 				.addEffect(
@@ -523,7 +527,7 @@ public class Enchantments {
 							LootContext.EntityTarget.THIS,
 							EntityPredicate.Builder.create()
 								.flags(EntityFlagsPredicate.Builder.create().onGround(true))
-								.steppingOn(LocationPredicate.Builder.create().block(net.minecraft.predicate.BlockPredicate.Builder.create().tag(BlockTags.SOUL_SPEED_BLOCKS)))
+								.movementAffectedBy(LocationPredicate.Builder.create().block(net.minecraft.predicate.BlockPredicate.Builder.create().tag(BlockTags.SOUL_SPEED_BLOCKS)))
 						)
 					)
 				)

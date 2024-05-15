@@ -133,7 +133,7 @@ public class Main {
 			if (string4 != null) {
 				try {
 					proxy = new Proxy(Type.SOCKS, new InetSocketAddress(string4, getOption(optionSet, optionSpec10)));
-				} catch (Exception var80) {
+				} catch (Exception var78) {
 				}
 			}
 
@@ -181,8 +181,8 @@ public class Main {
 			);
 			Util.startTimerHack();
 			completableFuture.join();
-		} catch (Throwable var81) {
-			CrashReport crashReport = CrashReport.create(var81, string2);
+		} catch (Throwable var79) {
+			CrashReport crashReport = CrashReport.create(var79, string2);
 			CrashReportSection crashReportSection = crashReport.addElement("Initialization");
 			WinNativeModuleUtil.addDetailTo(crashReportSection);
 			MinecraftClient.addSystemDetailsToCrashReport(null, null, string, null, crashReport);
@@ -203,7 +203,7 @@ public class Main {
 		};
 		thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(logger));
 		Runtime.getRuntime().addShutdownHook(thread);
-		final MinecraftClient minecraftClient = null;
+		MinecraftClient minecraftClient = null;
 
 		try {
 			Thread.currentThread().setName("Render thread");
@@ -211,12 +211,12 @@ public class Main {
 			RenderSystem.beginInitialization();
 			minecraftClient = new MinecraftClient(runArgs);
 			RenderSystem.finishInitialization();
-		} catch (GlException var78) {
+		} catch (GlException var76) {
 			Util.shutdownExecutors();
-			logger.warn("Failed to create window: ", (Throwable)var78);
+			logger.warn("Failed to create window: ", (Throwable)var76);
 			return;
-		} catch (Throwable var79) {
-			CrashReport crashReport2 = CrashReport.create(var79, "Initializing game");
+		} catch (Throwable var77) {
+			CrashReport crashReport2 = CrashReport.create(var77, "Initializing game");
 			CrashReportSection crashReportSection2 = crashReport2.addElement("Initialization");
 			WinNativeModuleUtil.addDetailTo(crashReportSection2);
 			MinecraftClient.addSystemDetailsToCrashReport(minecraftClient, null, runArgs.game.version, null, crashReport2);
@@ -225,35 +225,13 @@ public class Main {
 		}
 
 		MinecraftClient minecraftClient2 = minecraftClient;
-		Thread thread2;
-		if (minecraftClient.shouldRenderAsync()) {
-			thread2 = new Thread("Game thread") {
-				public void run() {
-					RenderSystem.initGameThread(true);
-					minecraftClient.run();
-				}
-			};
-			thread2.start();
-
-			while (minecraftClient2.isRunning()) {
-			}
-		} else {
-			thread2 = null;
-			RenderSystem.initGameThread(false);
-			minecraftClient.run();
-		}
-
+		minecraftClient.run();
 		BufferRenderer.reset();
 
 		try {
 			minecraftClient2.scheduleStop();
-			if (thread2 != null) {
-				thread2.join();
-			}
-		} catch (InterruptedException var76) {
-			logger.error("Exception during client thread shutdown", (Throwable)var76);
 		} finally {
-			minecraftClient2.stop();
+			minecraftClient.stop();
 		}
 	}
 

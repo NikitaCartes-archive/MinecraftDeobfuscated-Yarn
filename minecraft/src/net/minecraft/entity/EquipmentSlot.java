@@ -1,5 +1,6 @@
 package net.minecraft.entity;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.StringIdentifiable;
 
 /**
@@ -20,23 +21,30 @@ import net.minecraft.util.StringIdentifiable;
 public enum EquipmentSlot implements StringIdentifiable {
 	MAINHAND(EquipmentSlot.Type.HAND, 0, 0, "mainhand"),
 	OFFHAND(EquipmentSlot.Type.HAND, 1, 5, "offhand"),
-	FEET(EquipmentSlot.Type.ARMOR, 0, 1, "feet"),
-	LEGS(EquipmentSlot.Type.ARMOR, 1, 2, "legs"),
-	CHEST(EquipmentSlot.Type.ARMOR, 2, 3, "chest"),
-	HEAD(EquipmentSlot.Type.ARMOR, 3, 4, "head"),
-	BODY(EquipmentSlot.Type.BODY, 0, 6, "body");
+	FEET(EquipmentSlot.Type.HUMANOID_ARMOR, 0, 1, 1, "feet"),
+	LEGS(EquipmentSlot.Type.HUMANOID_ARMOR, 1, 1, 2, "legs"),
+	CHEST(EquipmentSlot.Type.HUMANOID_ARMOR, 2, 1, 3, "chest"),
+	HEAD(EquipmentSlot.Type.HUMANOID_ARMOR, 3, 1, 4, "head"),
+	BODY(EquipmentSlot.Type.ANIMAL_ARMOR, 0, 1, 6, "body");
 
+	public static final int NO_MAX_COUNT = 0;
 	public static final StringIdentifiable.EnumCodec<EquipmentSlot> CODEC = StringIdentifiable.createCodec(EquipmentSlot::values);
 	private final EquipmentSlot.Type type;
 	private final int entityId;
+	private final int maxCount;
 	private final int armorStandId;
 	private final String name;
 
-	private EquipmentSlot(final EquipmentSlot.Type type, final int entityId, final int armorStandId, final String name) {
+	private EquipmentSlot(final EquipmentSlot.Type type, final int entityId, final int maxCount, final int armorStandId, final String name) {
 		this.type = type;
 		this.entityId = entityId;
+		this.maxCount = maxCount;
 		this.armorStandId = armorStandId;
 		this.name = name;
+	}
+
+	private EquipmentSlot(final EquipmentSlot.Type type, final int entityId, final int armorStandId, final String name) {
+		this(type, entityId, 0, armorStandId, name);
 	}
 
 	/**
@@ -72,6 +80,10 @@ public enum EquipmentSlot implements StringIdentifiable {
 		return offset + this.entityId;
 	}
 
+	public ItemStack split(ItemStack stack) {
+		return this.maxCount > 0 ? stack.split(this.maxCount) : stack;
+	}
+
 	/**
 	 * {@return the index of the inventory slot this slot occupies in an {@link net.minecraft.entity.decoration.ArmorStandEntity}}
 	 */
@@ -89,7 +101,7 @@ public enum EquipmentSlot implements StringIdentifiable {
 	}
 
 	public boolean isArmorSlot() {
-		return this.type == EquipmentSlot.Type.ARMOR;
+		return this.type == EquipmentSlot.Type.HUMANOID_ARMOR || this.type == EquipmentSlot.Type.ANIMAL_ARMOR;
 	}
 
 	@Override
@@ -113,27 +125,11 @@ public enum EquipmentSlot implements StringIdentifiable {
 	}
 
 	/**
-	 * {@return the equipment slot where {@linkplain #getEntitySlotId() the slot ID} is equal to {@code index} and the type of the slot is equal to {@code type}}
-	 * If no slot could be found matching the input {@code type} and {@code index}, throws {@link IllegalArgumentException}.
-	 * 
-	 * @throws IllegalArgumentException if no slot type could be found matching {@code type} and {@code index}
-	 */
-	public static EquipmentSlot fromTypeIndex(EquipmentSlot.Type type, int index) {
-		for (EquipmentSlot equipmentSlot : values()) {
-			if (equipmentSlot.getType() == type && equipmentSlot.getEntitySlotId() == index) {
-				return equipmentSlot;
-			}
-		}
-
-		throw new IllegalArgumentException("Invalid slot '" + type + "': " + index);
-	}
-
-	/**
 	 * The type of body item slot an {@link EquipmentSlot} targets.
 	 */
 	public static enum Type {
 		HAND,
-		ARMOR,
-		BODY;
+		HUMANOID_ARMOR,
+		ANIMAL_ARMOR;
 	}
 }

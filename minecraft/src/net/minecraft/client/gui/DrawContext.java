@@ -331,6 +331,16 @@ public class DrawContext {
 		}
 	}
 
+	public int drawTextWithBackground(TextRenderer textRenderer, Text text, int x, int y, int width, int color) {
+		int i = this.client.options.getTextBackgroundColor(0.0F);
+		if (i != 0) {
+			int j = 2;
+			this.fill(x - 2, y - 2, x + width + 2, y + 9 + 2, ColorHelper.Argb.mixColor(i, color));
+		}
+
+		return this.drawText(textRenderer, text, x, y, color, true);
+	}
+
 	public void drawSprite(int x, int y, int z, int width, int height, Sprite sprite) {
 		this.drawSprite(sprite, x, y, z, width, height);
 	}
@@ -625,7 +635,9 @@ public class DrawContext {
 			}
 
 			ClientPlayerEntity clientPlayerEntity = this.client.player;
-			float f = clientPlayerEntity == null ? 0.0F : clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack.getItem(), this.client.getTickDelta());
+			float f = clientPlayerEntity == null
+				? 0.0F
+				: clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack.getItem(), this.client.getRenderTickCounter().getTickDelta(true));
 			if (f > 0.0F) {
 				int k = y + MathHelper.floor(16.0F * (1.0F - f));
 				int l = k + MathHelper.ceil(16.0F * f);

@@ -910,8 +910,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	}
 
 	public void render(
-		float tickDelta,
-		long limitTime,
+		RenderTickCounter tickCounter,
 		boolean renderBlockOutline,
 		Camera camera,
 		GameRenderer gameRenderer,
@@ -920,7 +919,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		Matrix4f matrix4f2
 	) {
 		TickManager tickManager = this.client.world.getTickManager();
-		float f = tickManager.shouldTick() ? tickDelta : 1.0F;
+		float f = tickCounter.getTickDelta(false);
 		RenderSystem.setShaderGameTime(this.world.getTime(), f);
 		this.blockEntityRenderDispatcher.configure(this.world, camera, this.client.crosshairTarget);
 		this.entityRenderDispatcher.configure(this.world, camera, this.client.targetedEntity);
@@ -1029,7 +1028,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						vertexConsumerProvider = immediate;
 					}
 
-					float j = tickManager.shouldSkipTick(entity) ? f : tickDelta;
+					float j = tickCounter.getTickDelta(!tickManager.shouldSkipTick(entity));
 					this.renderEntity(entity, d, e, g, j, matrixStack, vertexConsumerProvider);
 				}
 			}
@@ -1095,7 +1094,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		immediate.draw(TexturedRenderLayers.getChest());
 		this.bufferBuilders.getOutlineVertexConsumers().draw();
 		if (bl3) {
-			this.entityOutlinePostProcessor.render(f);
+			this.entityOutlinePostProcessor.render(tickCounter.getLastFrameDuration());
 			this.client.getFramebuffer().beginWrite(false);
 		}
 
@@ -1193,7 +1192,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			this.renderWeather(lightmapTextureManager, f, d, e, g);
 			this.renderWorldBorder(camera);
 			RenderPhase.WEATHER_TARGET.endDrawing();
-			this.transparencyPostProcessor.render(f);
+			this.transparencyPostProcessor.render(tickCounter.getLastFrameDuration());
 			this.client.getFramebuffer().beginWrite(false);
 		} else {
 			RenderSystem.depthMask(false);

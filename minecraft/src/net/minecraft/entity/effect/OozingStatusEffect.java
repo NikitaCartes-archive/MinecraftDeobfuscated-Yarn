@@ -25,8 +25,8 @@ class OozingStatusEffect extends StatusEffect {
 	}
 
 	@VisibleForTesting
-	protected static int getSlimesToSpawn(int maxEntityCramming, int nearbySlimes, int potentialSlimes) {
-		return MathHelper.clamp(0, maxEntityCramming - nearbySlimes, potentialSlimes);
+	protected static int getSlimesToSpawn(int maxEntityCramming, OozingStatusEffect.SlimeCounter slimeCounter, int potentialSlimes) {
+		return maxEntityCramming < 1 ? potentialSlimes : MathHelper.clamp(0, maxEntityCramming - slimeCounter.count(maxEntityCramming), potentialSlimes);
 	}
 
 	@Override
@@ -35,9 +35,7 @@ class OozingStatusEffect extends StatusEffect {
 			int i = this.slimeCountFunction.applyAsInt(entity.getRandom());
 			World world = entity.getWorld();
 			int j = world.getGameRules().getInt(GameRules.MAX_ENTITY_CRAMMING);
-			List<SlimeEntity> list = new ArrayList();
-			world.collectEntitiesByType(EntityType.SLIME, entity.getBoundingBox().expand(2.0), entityx -> entityx != entity, list, j);
-			int k = getSlimesToSpawn(j, list.size(), i);
+			int k = getSlimesToSpawn(j, OozingStatusEffect.SlimeCounter.around(entity), i);
 
 			for (int l = 0; l < k; l++) {
 				this.spawnSlime(entity.getWorld(), entity.getX(), entity.getY() + 0.5, entity.getZ());
@@ -51,6 +49,19 @@ class OozingStatusEffect extends StatusEffect {
 			slimeEntity.setSize(2, true);
 			slimeEntity.refreshPositionAndAngles(x, y, z, world.getRandom().nextFloat() * 360.0F, 0.0F);
 			world.spawnEntity(slimeEntity);
+		}
+	}
+
+	@FunctionalInterface
+	protected interface SlimeCounter {
+		int count(int limit);
+
+		static OozingStatusEffect.SlimeCounter around(LivingEntity entity) {
+			return limit -> {
+				List<SlimeEntity> list = new ArrayList();
+				entity.getWorld().collectEntitiesByType(EntityType.SLIME, entity.getBoundingBox().expand(2.0), slime -> slime != entity, list, limit);
+				return list.size();
+			};
 		}
 	}
 }

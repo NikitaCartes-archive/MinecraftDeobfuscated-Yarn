@@ -2,6 +2,9 @@ package net.minecraft.entity.damage;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryFixedCodec;
@@ -18,6 +21,7 @@ public record DamageType(String msgId, DamageScaling scaling, float exhaustion, 
 				.apply(instance, DamageType::new)
 	);
 	public static final Codec<RegistryEntry<DamageType>> ENTRY_CODEC = RegistryFixedCodec.of(RegistryKeys.DAMAGE_TYPE);
+	public static final PacketCodec<RegistryByteBuf, RegistryEntry<DamageType>> ENTRY_PACKET_CODEC = PacketCodecs.registryEntry(RegistryKeys.DAMAGE_TYPE);
 
 	public DamageType(String msgId, DamageScaling scaling, float exhaustion) {
 		this(msgId, scaling, exhaustion, DamageEffects.HURT, DeathMessageType.DEFAULT);

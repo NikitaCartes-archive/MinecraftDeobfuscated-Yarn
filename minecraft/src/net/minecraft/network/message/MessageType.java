@@ -44,6 +44,12 @@ public record MessageType(Decoration chat, Decoration narration) {
 				)
 				.apply(instance, MessageType::new)
 	);
+	public static final PacketCodec<RegistryByteBuf, MessageType> PACKET_CODEC = PacketCodec.tuple(
+		Decoration.PACKET_CODEC, MessageType::chat, Decoration.PACKET_CODEC, MessageType::narration, MessageType::new
+	);
+	public static final PacketCodec<RegistryByteBuf, RegistryEntry<MessageType>> ENTRY_PACKET_CODEC = PacketCodecs.registryEntry(
+		RegistryKeys.MESSAGE_TYPE, PACKET_CODEC
+	);
 	public static final Decoration CHAT_TEXT_DECORATION = Decoration.ofChat("chat.type.text");
 	/**
 	 * The registry key for the message type used by {@link
@@ -142,7 +148,7 @@ public record MessageType(Decoration chat, Decoration narration) {
 	 */
 	public static record Parameters(RegistryEntry<MessageType> type, Text name, Optional<Text> targetName) {
 		public static final PacketCodec<RegistryByteBuf, MessageType.Parameters> CODEC = PacketCodec.tuple(
-			PacketCodecs.registryEntry(RegistryKeys.MESSAGE_TYPE),
+			MessageType.ENTRY_PACKET_CODEC,
 			MessageType.Parameters::type,
 			TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC,
 			MessageType.Parameters::name,

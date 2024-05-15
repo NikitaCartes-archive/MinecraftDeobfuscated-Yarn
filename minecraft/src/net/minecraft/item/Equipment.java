@@ -5,7 +5,6 @@ import net.minecraft.block.Block;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
@@ -29,7 +28,7 @@ public interface Equipment {
 
 	default TypedActionResult<ItemStack> equipAndSwap(Item item, World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
+		EquipmentSlot equipmentSlot = user.getPreferredEquipmentSlot(itemStack);
 		if (!user.canUseSlot(equipmentSlot)) {
 			return TypedActionResult.pass(itemStack);
 		} else {

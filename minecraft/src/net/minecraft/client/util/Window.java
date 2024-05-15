@@ -60,7 +60,6 @@ public final class Window implements AutoCloseable {
 	private boolean vsync;
 
 	public Window(WindowEventHandler eventHandler, MonitorTracker monitorTracker, WindowSettings settings, @Nullable String videoMode, String title) {
-		RenderSystem.assertInInitPhase();
 		this.monitorTracker = monitorTracker;
 		this.throwOnGlError();
 		this.setPhase("Pre startup");
@@ -119,8 +118,6 @@ public final class Window implements AutoCloseable {
 	}
 
 	public static void acceptError(BiConsumer<Integer, String> consumer) {
-		RenderSystem.assertInInitPhase();
-
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 			PointerBuffer pointerBuffer = memoryStack.mallocPointer(1);
 			int i = GLFW.glfwGetError(pointerBuffer);
@@ -133,7 +130,6 @@ public final class Window implements AutoCloseable {
 	}
 
 	public void setIcon(ResourcePack resourcePack, Icons icons) throws IOException {
-		RenderSystem.assertInInitPhase();
 		int i = GLFW.glfwGetPlatform();
 		switch (i) {
 			case 393217:
@@ -176,12 +172,10 @@ public final class Window implements AutoCloseable {
 	}
 
 	private void throwOnGlError() {
-		RenderSystem.assertInInitPhase();
 		GLFW.glfwSetErrorCallback(Window::throwGlError);
 	}
 
 	private static void throwGlError(int error, long description) {
-		RenderSystem.assertInInitPhase();
 		String string = "GLFW error " + error + ": " + MemoryUtil.memUTF8(description);
 		TinyFileDialogs.tinyfd_messageBox(
 			"Minecraft", string + ".\n\nPlease make sure you have up-to-date drivers (see aka.ms/mcdriver for instructions).", "ok", "error", false
@@ -238,7 +232,6 @@ public final class Window implements AutoCloseable {
 	}
 
 	private void updateFramebufferSize() {
-		RenderSystem.assertInInitPhase();
 		int[] is = new int[1];
 		int[] js = new int[1];
 		GLFW.glfwGetFramebufferSize(this.handle, is, js);
@@ -300,7 +293,6 @@ public final class Window implements AutoCloseable {
 	}
 
 	private void updateWindowRegion() {
-		RenderSystem.assertInInitPhase();
 		boolean bl = GLFW.glfwGetWindowMonitor(this.handle) != 0L;
 		if (this.fullscreen) {
 			Monitor monitor = this.monitorTracker.getMonitor(this);

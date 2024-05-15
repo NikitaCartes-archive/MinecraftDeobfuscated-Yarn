@@ -70,7 +70,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 		builder.add(CELEBRATING, false);
 	}
 
-	public abstract void addBonusForWave(int wave, boolean unused);
+	public abstract void addBonusForWave(ServerWorld world, int wave, boolean unused);
 
 	public boolean canJoinRaid() {
 		return this.ableToJoinRaid;
