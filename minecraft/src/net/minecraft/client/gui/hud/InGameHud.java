@@ -75,41 +75,41 @@ import org.joml.Matrix4fStack;
  */
 @Environment(EnvType.CLIENT)
 public class InGameHud {
-	private static final Identifier CROSSHAIR_TEXTURE = Identifier.method_60656("hud/crosshair");
-	private static final Identifier CROSSHAIR_ATTACK_INDICATOR_FULL_TEXTURE = Identifier.method_60656("hud/crosshair_attack_indicator_full");
-	private static final Identifier CROSSHAIR_ATTACK_INDICATOR_BACKGROUND_TEXTURE = Identifier.method_60656("hud/crosshair_attack_indicator_background");
-	private static final Identifier CROSSHAIR_ATTACK_INDICATOR_PROGRESS_TEXTURE = Identifier.method_60656("hud/crosshair_attack_indicator_progress");
-	private static final Identifier EFFECT_BACKGROUND_AMBIENT_TEXTURE = Identifier.method_60656("hud/effect_background_ambient");
-	private static final Identifier EFFECT_BACKGROUND_TEXTURE = Identifier.method_60656("hud/effect_background");
-	private static final Identifier HOTBAR_TEXTURE = Identifier.method_60656("hud/hotbar");
-	private static final Identifier HOTBAR_SELECTION_TEXTURE = Identifier.method_60656("hud/hotbar_selection");
-	private static final Identifier HOTBAR_OFFHAND_LEFT_TEXTURE = Identifier.method_60656("hud/hotbar_offhand_left");
-	private static final Identifier HOTBAR_OFFHAND_RIGHT_TEXTURE = Identifier.method_60656("hud/hotbar_offhand_right");
-	private static final Identifier HOTBAR_ATTACK_INDICATOR_BACKGROUND_TEXTURE = Identifier.method_60656("hud/hotbar_attack_indicator_background");
-	private static final Identifier HOTBAR_ATTACK_INDICATOR_PROGRESS_TEXTURE = Identifier.method_60656("hud/hotbar_attack_indicator_progress");
-	private static final Identifier JUMP_BAR_BACKGROUND_TEXTURE = Identifier.method_60656("hud/jump_bar_background");
-	private static final Identifier JUMP_BAR_COOLDOWN_TEXTURE = Identifier.method_60656("hud/jump_bar_cooldown");
-	private static final Identifier JUMP_BAR_PROGRESS_TEXTURE = Identifier.method_60656("hud/jump_bar_progress");
-	private static final Identifier EXPERIENCE_BAR_BACKGROUND_TEXTURE = Identifier.method_60656("hud/experience_bar_background");
-	private static final Identifier EXPERIENCE_BAR_PROGRESS_TEXTURE = Identifier.method_60656("hud/experience_bar_progress");
-	private static final Identifier ARMOR_EMPTY_TEXTURE = Identifier.method_60656("hud/armor_empty");
-	private static final Identifier ARMOR_HALF_TEXTURE = Identifier.method_60656("hud/armor_half");
-	private static final Identifier ARMOR_FULL_TEXTURE = Identifier.method_60656("hud/armor_full");
-	private static final Identifier FOOD_EMPTY_HUNGER_TEXTURE = Identifier.method_60656("hud/food_empty_hunger");
-	private static final Identifier FOOD_HALF_HUNGER_TEXTURE = Identifier.method_60656("hud/food_half_hunger");
-	private static final Identifier FOOD_FULL_HUNGER_TEXTURE = Identifier.method_60656("hud/food_full_hunger");
-	private static final Identifier FOOD_EMPTY_TEXTURE = Identifier.method_60656("hud/food_empty");
-	private static final Identifier FOOD_HALF_TEXTURE = Identifier.method_60656("hud/food_half");
-	private static final Identifier FOOD_FULL_TEXTURE = Identifier.method_60656("hud/food_full");
-	private static final Identifier AIR_TEXTURE = Identifier.method_60656("hud/air");
-	private static final Identifier AIR_BURSTING_TEXTURE = Identifier.method_60656("hud/air_bursting");
-	private static final Identifier VEHICLE_CONTAINER_HEART_TEXTURE = Identifier.method_60656("hud/heart/vehicle_container");
-	private static final Identifier VEHICLE_FULL_HEART_TEXTURE = Identifier.method_60656("hud/heart/vehicle_full");
-	private static final Identifier VEHICLE_HALF_HEART_TEXTURE = Identifier.method_60656("hud/heart/vehicle_half");
-	private static final Identifier VIGNETTE_TEXTURE = Identifier.method_60656("textures/misc/vignette.png");
-	private static final Identifier PUMPKIN_BLUR = Identifier.method_60656("textures/misc/pumpkinblur.png");
-	private static final Identifier SPYGLASS_SCOPE = Identifier.method_60656("textures/misc/spyglass_scope.png");
-	private static final Identifier POWDER_SNOW_OUTLINE = Identifier.method_60656("textures/misc/powder_snow_outline.png");
+	private static final Identifier CROSSHAIR_TEXTURE = Identifier.ofVanilla("hud/crosshair");
+	private static final Identifier CROSSHAIR_ATTACK_INDICATOR_FULL_TEXTURE = Identifier.ofVanilla("hud/crosshair_attack_indicator_full");
+	private static final Identifier CROSSHAIR_ATTACK_INDICATOR_BACKGROUND_TEXTURE = Identifier.ofVanilla("hud/crosshair_attack_indicator_background");
+	private static final Identifier CROSSHAIR_ATTACK_INDICATOR_PROGRESS_TEXTURE = Identifier.ofVanilla("hud/crosshair_attack_indicator_progress");
+	private static final Identifier EFFECT_BACKGROUND_AMBIENT_TEXTURE = Identifier.ofVanilla("hud/effect_background_ambient");
+	private static final Identifier EFFECT_BACKGROUND_TEXTURE = Identifier.ofVanilla("hud/effect_background");
+	private static final Identifier HOTBAR_TEXTURE = Identifier.ofVanilla("hud/hotbar");
+	private static final Identifier HOTBAR_SELECTION_TEXTURE = Identifier.ofVanilla("hud/hotbar_selection");
+	private static final Identifier HOTBAR_OFFHAND_LEFT_TEXTURE = Identifier.ofVanilla("hud/hotbar_offhand_left");
+	private static final Identifier HOTBAR_OFFHAND_RIGHT_TEXTURE = Identifier.ofVanilla("hud/hotbar_offhand_right");
+	private static final Identifier HOTBAR_ATTACK_INDICATOR_BACKGROUND_TEXTURE = Identifier.ofVanilla("hud/hotbar_attack_indicator_background");
+	private static final Identifier HOTBAR_ATTACK_INDICATOR_PROGRESS_TEXTURE = Identifier.ofVanilla("hud/hotbar_attack_indicator_progress");
+	private static final Identifier JUMP_BAR_BACKGROUND_TEXTURE = Identifier.ofVanilla("hud/jump_bar_background");
+	private static final Identifier JUMP_BAR_COOLDOWN_TEXTURE = Identifier.ofVanilla("hud/jump_bar_cooldown");
+	private static final Identifier JUMP_BAR_PROGRESS_TEXTURE = Identifier.ofVanilla("hud/jump_bar_progress");
+	private static final Identifier EXPERIENCE_BAR_BACKGROUND_TEXTURE = Identifier.ofVanilla("hud/experience_bar_background");
+	private static final Identifier EXPERIENCE_BAR_PROGRESS_TEXTURE = Identifier.ofVanilla("hud/experience_bar_progress");
+	private static final Identifier ARMOR_EMPTY_TEXTURE = Identifier.ofVanilla("hud/armor_empty");
+	private static final Identifier ARMOR_HALF_TEXTURE = Identifier.ofVanilla("hud/armor_half");
+	private static final Identifier ARMOR_FULL_TEXTURE = Identifier.ofVanilla("hud/armor_full");
+	private static final Identifier FOOD_EMPTY_HUNGER_TEXTURE = Identifier.ofVanilla("hud/food_empty_hunger");
+	private static final Identifier FOOD_HALF_HUNGER_TEXTURE = Identifier.ofVanilla("hud/food_half_hunger");
+	private static final Identifier FOOD_FULL_HUNGER_TEXTURE = Identifier.ofVanilla("hud/food_full_hunger");
+	private static final Identifier FOOD_EMPTY_TEXTURE = Identifier.ofVanilla("hud/food_empty");
+	private static final Identifier FOOD_HALF_TEXTURE = Identifier.ofVanilla("hud/food_half");
+	private static final Identifier FOOD_FULL_TEXTURE = Identifier.ofVanilla("hud/food_full");
+	private static final Identifier AIR_TEXTURE = Identifier.ofVanilla("hud/air");
+	private static final Identifier AIR_BURSTING_TEXTURE = Identifier.ofVanilla("hud/air_bursting");
+	private static final Identifier VEHICLE_CONTAINER_HEART_TEXTURE = Identifier.ofVanilla("hud/heart/vehicle_container");
+	private static final Identifier VEHICLE_FULL_HEART_TEXTURE = Identifier.ofVanilla("hud/heart/vehicle_full");
+	private static final Identifier VEHICLE_HALF_HEART_TEXTURE = Identifier.ofVanilla("hud/heart/vehicle_half");
+	private static final Identifier VIGNETTE_TEXTURE = Identifier.ofVanilla("textures/misc/vignette.png");
+	private static final Identifier PUMPKIN_BLUR = Identifier.ofVanilla("textures/misc/pumpkinblur.png");
+	private static final Identifier SPYGLASS_SCOPE = Identifier.ofVanilla("textures/misc/spyglass_scope.png");
+	private static final Identifier POWDER_SNOW_OUTLINE = Identifier.ofVanilla("textures/misc/powder_snow_outline.png");
 	private static final Comparator<ScoreboardEntry> SCOREBOARD_ENTRY_COMPARATOR = Comparator.comparing(ScoreboardEntry::value)
 		.reversed()
 		.thenComparing(ScoreboardEntry::owner, String.CASE_INSENSITIVE_ORDER);
@@ -1305,64 +1305,64 @@ public class InGameHud {
 	@Environment(EnvType.CLIENT)
 	static enum HeartType {
 		CONTAINER(
-			Identifier.method_60656("hud/heart/container"),
-			Identifier.method_60656("hud/heart/container_blinking"),
-			Identifier.method_60656("hud/heart/container"),
-			Identifier.method_60656("hud/heart/container_blinking"),
-			Identifier.method_60656("hud/heart/container_hardcore"),
-			Identifier.method_60656("hud/heart/container_hardcore_blinking"),
-			Identifier.method_60656("hud/heart/container_hardcore"),
-			Identifier.method_60656("hud/heart/container_hardcore_blinking")
+			Identifier.ofVanilla("hud/heart/container"),
+			Identifier.ofVanilla("hud/heart/container_blinking"),
+			Identifier.ofVanilla("hud/heart/container"),
+			Identifier.ofVanilla("hud/heart/container_blinking"),
+			Identifier.ofVanilla("hud/heart/container_hardcore"),
+			Identifier.ofVanilla("hud/heart/container_hardcore_blinking"),
+			Identifier.ofVanilla("hud/heart/container_hardcore"),
+			Identifier.ofVanilla("hud/heart/container_hardcore_blinking")
 		),
 		NORMAL(
-			Identifier.method_60656("hud/heart/full"),
-			Identifier.method_60656("hud/heart/full_blinking"),
-			Identifier.method_60656("hud/heart/half"),
-			Identifier.method_60656("hud/heart/half_blinking"),
-			Identifier.method_60656("hud/heart/hardcore_full"),
-			Identifier.method_60656("hud/heart/hardcore_full_blinking"),
-			Identifier.method_60656("hud/heart/hardcore_half"),
-			Identifier.method_60656("hud/heart/hardcore_half_blinking")
+			Identifier.ofVanilla("hud/heart/full"),
+			Identifier.ofVanilla("hud/heart/full_blinking"),
+			Identifier.ofVanilla("hud/heart/half"),
+			Identifier.ofVanilla("hud/heart/half_blinking"),
+			Identifier.ofVanilla("hud/heart/hardcore_full"),
+			Identifier.ofVanilla("hud/heart/hardcore_full_blinking"),
+			Identifier.ofVanilla("hud/heart/hardcore_half"),
+			Identifier.ofVanilla("hud/heart/hardcore_half_blinking")
 		),
 		POISONED(
-			Identifier.method_60656("hud/heart/poisoned_full"),
-			Identifier.method_60656("hud/heart/poisoned_full_blinking"),
-			Identifier.method_60656("hud/heart/poisoned_half"),
-			Identifier.method_60656("hud/heart/poisoned_half_blinking"),
-			Identifier.method_60656("hud/heart/poisoned_hardcore_full"),
-			Identifier.method_60656("hud/heart/poisoned_hardcore_full_blinking"),
-			Identifier.method_60656("hud/heart/poisoned_hardcore_half"),
-			Identifier.method_60656("hud/heart/poisoned_hardcore_half_blinking")
+			Identifier.ofVanilla("hud/heart/poisoned_full"),
+			Identifier.ofVanilla("hud/heart/poisoned_full_blinking"),
+			Identifier.ofVanilla("hud/heart/poisoned_half"),
+			Identifier.ofVanilla("hud/heart/poisoned_half_blinking"),
+			Identifier.ofVanilla("hud/heart/poisoned_hardcore_full"),
+			Identifier.ofVanilla("hud/heart/poisoned_hardcore_full_blinking"),
+			Identifier.ofVanilla("hud/heart/poisoned_hardcore_half"),
+			Identifier.ofVanilla("hud/heart/poisoned_hardcore_half_blinking")
 		),
 		WITHERED(
-			Identifier.method_60656("hud/heart/withered_full"),
-			Identifier.method_60656("hud/heart/withered_full_blinking"),
-			Identifier.method_60656("hud/heart/withered_half"),
-			Identifier.method_60656("hud/heart/withered_half_blinking"),
-			Identifier.method_60656("hud/heart/withered_hardcore_full"),
-			Identifier.method_60656("hud/heart/withered_hardcore_full_blinking"),
-			Identifier.method_60656("hud/heart/withered_hardcore_half"),
-			Identifier.method_60656("hud/heart/withered_hardcore_half_blinking")
+			Identifier.ofVanilla("hud/heart/withered_full"),
+			Identifier.ofVanilla("hud/heart/withered_full_blinking"),
+			Identifier.ofVanilla("hud/heart/withered_half"),
+			Identifier.ofVanilla("hud/heart/withered_half_blinking"),
+			Identifier.ofVanilla("hud/heart/withered_hardcore_full"),
+			Identifier.ofVanilla("hud/heart/withered_hardcore_full_blinking"),
+			Identifier.ofVanilla("hud/heart/withered_hardcore_half"),
+			Identifier.ofVanilla("hud/heart/withered_hardcore_half_blinking")
 		),
 		ABSORBING(
-			Identifier.method_60656("hud/heart/absorbing_full"),
-			Identifier.method_60656("hud/heart/absorbing_full_blinking"),
-			Identifier.method_60656("hud/heart/absorbing_half"),
-			Identifier.method_60656("hud/heart/absorbing_half_blinking"),
-			Identifier.method_60656("hud/heart/absorbing_hardcore_full"),
-			Identifier.method_60656("hud/heart/absorbing_hardcore_full_blinking"),
-			Identifier.method_60656("hud/heart/absorbing_hardcore_half"),
-			Identifier.method_60656("hud/heart/absorbing_hardcore_half_blinking")
+			Identifier.ofVanilla("hud/heart/absorbing_full"),
+			Identifier.ofVanilla("hud/heart/absorbing_full_blinking"),
+			Identifier.ofVanilla("hud/heart/absorbing_half"),
+			Identifier.ofVanilla("hud/heart/absorbing_half_blinking"),
+			Identifier.ofVanilla("hud/heart/absorbing_hardcore_full"),
+			Identifier.ofVanilla("hud/heart/absorbing_hardcore_full_blinking"),
+			Identifier.ofVanilla("hud/heart/absorbing_hardcore_half"),
+			Identifier.ofVanilla("hud/heart/absorbing_hardcore_half_blinking")
 		),
 		FROZEN(
-			Identifier.method_60656("hud/heart/frozen_full"),
-			Identifier.method_60656("hud/heart/frozen_full_blinking"),
-			Identifier.method_60656("hud/heart/frozen_half"),
-			Identifier.method_60656("hud/heart/frozen_half_blinking"),
-			Identifier.method_60656("hud/heart/frozen_hardcore_full"),
-			Identifier.method_60656("hud/heart/frozen_hardcore_full_blinking"),
-			Identifier.method_60656("hud/heart/frozen_hardcore_half"),
-			Identifier.method_60656("hud/heart/frozen_hardcore_half_blinking")
+			Identifier.ofVanilla("hud/heart/frozen_full"),
+			Identifier.ofVanilla("hud/heart/frozen_full_blinking"),
+			Identifier.ofVanilla("hud/heart/frozen_half"),
+			Identifier.ofVanilla("hud/heart/frozen_half_blinking"),
+			Identifier.ofVanilla("hud/heart/frozen_hardcore_full"),
+			Identifier.ofVanilla("hud/heart/frozen_hardcore_full_blinking"),
+			Identifier.ofVanilla("hud/heart/frozen_hardcore_half"),
+			Identifier.ofVanilla("hud/heart/frozen_hardcore_half_blinking")
 		);
 
 		private final Identifier fullTexture;

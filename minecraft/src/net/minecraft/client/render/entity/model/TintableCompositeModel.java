@@ -16,7 +16,7 @@ public abstract class TintableCompositeModel<E extends Entity> extends SinglePar
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {
-		super.render(matrices, vertices, light, overlay, ColorHelper.Argb.mixColor(i, this.field_52152));
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
+		super.render(matrices, vertices, light, overlay, ColorHelper.Argb.mixColor(color, this.field_52152));
 	}
 }

@@ -30,7 +30,7 @@ public class BookScreen extends Screen {
 	public static final int field_32329 = 36;
 	public static final int field_32330 = 30;
 	public static final BookScreen.Contents EMPTY_PROVIDER = new BookScreen.Contents(List.of());
-	public static final Identifier BOOK_TEXTURE = Identifier.method_60656("textures/gui/book.png");
+	public static final Identifier BOOK_TEXTURE = Identifier.ofVanilla("textures/gui/book.png");
 	protected static final int MAX_TEXT_WIDTH = 114;
 	protected static final int MAX_TEXT_HEIGHT = 128;
 	protected static final int WIDTH = 192;

@@ -12,6 +12,6 @@ public class GameEventTags {
 	public static final TagKey<GameEvent> ALLAY_CAN_LISTEN = of("allay_can_listen");
 
 	private static TagKey<GameEvent> of(String id) {
-		return TagKey.of(RegistryKeys.GAME_EVENT, Identifier.method_60656(id));
+		return TagKey.of(RegistryKeys.GAME_EVENT, Identifier.ofVanilla(id));
 	}
 }

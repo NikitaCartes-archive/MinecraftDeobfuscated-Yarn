@@ -73,7 +73,7 @@ public abstract class ProjectileEntityRenderer<T extends PersistentProjectileEnt
 			.color(Colors.WHITE)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.method_60803(light)
-			.method_60831(matrix, (float)normalX, (float)normalY, (float)normalZ);
+			.light(light)
+			.normal(matrix, (float)normalX, (float)normalY, (float)normalZ);
 	}
 }

@@ -14,28 +14,28 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.SmoothUtil;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Smoother;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWDropCallback;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class Mouse {
-	private static final Logger field_52126 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final MinecraftClient client;
 	private boolean leftButtonClicked;
 	private boolean middleButtonClicked;
 	private boolean rightButtonClicked;
 	private double x;
 	private double y;
-	private int controlLeftTicks;
+	private int controlLeftClicks;
 	private int activeButton = -1;
 	private boolean hasResolutionChanged = true;
 	private int field_1796;
 	private double glfwTime;
-	private final SmoothUtil cursorXSmoother = new SmoothUtil();
-	private final SmoothUtil cursorYSmoother = new SmoothUtil();
+	private final Smoother cursorXSmoother = new Smoother();
+	private final Smoother cursorYSmoother = new Smoother();
 	private double cursorDeltaX;
 	private double cursorDeltaY;
 	private double eventDeltaHorizontalWheel;
@@ -58,11 +58,11 @@ public class Mouse {
 				if (bl) {
 					if ((mods & 2) == 2) {
 						button = 1;
-						this.controlLeftTicks++;
+						this.controlLeftClicks++;
 					}
-				} else if (this.controlLeftTicks > 0) {
+				} else if (this.controlLeftClicks > 0) {
 					button = 1;
-					this.controlLeftTicks--;
+					this.controlLeftClicks--;
 				}
 			}
 
@@ -176,13 +176,13 @@ public class Mouse {
 		}
 	}
 
-	private void onFilesDropped(long window, List<Path> paths, int i) {
+	private void onFilesDropped(long window, List<Path> paths, int invalidFilesCount) {
 		if (this.client.currentScreen != null) {
 			this.client.currentScreen.filesDragged(paths);
 		}
 
-		if (i > 0) {
-			SystemToast.method_60865(this.client, i);
+		if (invalidFilesCount > 0) {
+			SystemToast.addFileDropFailure(this.client, invalidFilesCount);
 		}
 	}
 
@@ -203,7 +203,7 @@ public class Mouse {
 						list.add(Paths.get(string));
 					} catch (InvalidPathException var11) {
 						i++;
-						field_52126.error("Failed to parse path '{}'", string, var11);
+						LOGGER.error("Failed to parse path '{}'", string, var11);
 					}
 				}
 

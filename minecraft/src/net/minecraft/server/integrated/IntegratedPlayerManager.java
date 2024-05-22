@@ -11,14 +11,14 @@ import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.world.WorldSaveHandler;
+import net.minecraft.world.PlayerSaveHandler;
 
 @Environment(EnvType.CLIENT)
 public class IntegratedPlayerManager extends PlayerManager {
 	@Nullable
 	private NbtCompound userData;
 
-	public IntegratedPlayerManager(IntegratedServer server, CombinedDynamicRegistries<ServerDynamicRegistryType> registryManager, WorldSaveHandler saveHandler) {
+	public IntegratedPlayerManager(IntegratedServer server, CombinedDynamicRegistries<ServerDynamicRegistryType> registryManager, PlayerSaveHandler saveHandler) {
 		super(server, registryManager, saveHandler, 8);
 		this.setViewDistance(10);
 	}

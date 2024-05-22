@@ -14,27 +14,27 @@ public class MemoryExpiryDataFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(DSL.remainderFinder(), this::updateBrain);
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(DSL.remainderFinder(), this::updateBrain);
 	}
 
-	public Dynamic<?> updateBrain(Dynamic<?> dynamic) {
-		return dynamic.update("Brain", this::updateMemories);
+	public Dynamic<?> updateBrain(Dynamic<?> entityDynamic) {
+		return entityDynamic.update("Brain", this::updateMemories);
 	}
 
-	private Dynamic<?> updateMemories(Dynamic<?> dynamic) {
-		return dynamic.update("memories", this::updateMemoryMap);
+	private Dynamic<?> updateMemories(Dynamic<?> brainDynamic) {
+		return brainDynamic.update("memories", this::updateMemoryMap);
 	}
 
-	private Dynamic<?> updateMemoryMap(Dynamic<?> dynamic) {
-		return dynamic.updateMapValues(this::updateMemoryMapValues);
+	private Dynamic<?> updateMemoryMap(Dynamic<?> memoriesDynamic) {
+		return memoriesDynamic.updateMapValues(this::updateMemoryMapValues);
 	}
 
-	private Pair<Dynamic<?>, Dynamic<?>> updateMemoryMapValues(Pair<Dynamic<?>, Dynamic<?>> pair) {
-		return pair.mapSecond(this::updateMemoryMapValueEntry);
+	private Pair<Dynamic<?>, Dynamic<?>> updateMemoryMapValues(Pair<Dynamic<?>, Dynamic<?>> memoryKv) {
+		return memoryKv.mapSecond(this::updateMemoryMapValueEntry);
 	}
 
-	private Dynamic<?> updateMemoryMapValueEntry(Dynamic<?> dynamic) {
-		return dynamic.createMap(ImmutableMap.of(dynamic.createString("value"), dynamic));
+	private Dynamic<?> updateMemoryMapValueEntry(Dynamic<?> memoryValue) {
+		return memoryValue.createMap(ImmutableMap.of(memoryValue.createString("value"), memoryValue));
 	}
 }

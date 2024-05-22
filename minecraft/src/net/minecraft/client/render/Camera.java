@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -23,17 +24,17 @@ import org.joml.Vector3f;
 @Environment(EnvType.CLIENT)
 public class Camera {
 	private static final float BASE_CAMERA_DISTANCE = 4.0F;
-	private static final Vector3f field_52123 = new Vector3f(0.0F, 0.0F, -1.0F);
-	private static final Vector3f field_52124 = new Vector3f(0.0F, 1.0F, 0.0F);
-	private static final Vector3f field_52125 = new Vector3f(-1.0F, 0.0F, 0.0F);
+	private static final Vector3f HORIZONTAL = new Vector3f(0.0F, 0.0F, -1.0F);
+	private static final Vector3f VERTICAL = new Vector3f(0.0F, 1.0F, 0.0F);
+	private static final Vector3f DIAGONAL = new Vector3f(-1.0F, 0.0F, 0.0F);
 	private boolean ready;
 	private BlockView area;
 	private Entity focusedEntity;
 	private Vec3d pos = Vec3d.ZERO;
 	private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
-	private final Vector3f horizontalPlane = new Vector3f(field_52123);
-	private final Vector3f verticalPlane = new Vector3f(field_52124);
-	private final Vector3f diagonalPlane = new Vector3f(field_52125);
+	private final Vector3f horizontalPlane = new Vector3f(HORIZONTAL);
+	private final Vector3f verticalPlane = new Vector3f(VERTICAL);
+	private final Vector3f diagonalPlane = new Vector3f(DIAGONAL);
 	private float pitch;
 	private float yaw;
 	private final Quaternionf rotation = new Quaternionf();
@@ -107,9 +108,9 @@ public class Camera {
 		this.pitch = pitch;
 		this.yaw = yaw;
 		this.rotation.rotationYXZ((float) Math.PI - yaw * (float) (Math.PI / 180.0), -pitch * (float) (Math.PI / 180.0), 0.0F);
-		field_52123.rotate(this.rotation, this.horizontalPlane);
-		field_52124.rotate(this.rotation, this.verticalPlane);
-		field_52125.rotate(this.rotation, this.diagonalPlane);
+		HORIZONTAL.rotate(this.rotation, this.horizontalPlane);
+		VERTICAL.rotate(this.rotation, this.verticalPlane);
+		DIAGONAL.rotate(this.rotation, this.diagonalPlane);
 	}
 
 	protected void setPos(double x, double y, double z) {

@@ -125,79 +125,83 @@ public class StructuresToConfiguredStructuresFix extends DataFix {
 	protected TypeRewriteRule makeRule() {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.CHUNK);
 		Type<?> type2 = this.getInputSchema().getType(TypeReferences.CHUNK);
-		return this.writeFixAndRead("StucturesToConfiguredStructures", type, type2, this::method_41012);
+		return this.writeFixAndRead("StucturesToConfiguredStructures", type, type2, this::fixChunk);
 	}
 
-	private Dynamic<?> method_41012(Dynamic<?> dynamic) {
-		return dynamic.update(
+	private Dynamic<?> fixChunk(Dynamic<?> chunkDynamic) {
+		return chunkDynamic.update(
 			"structures",
-			dynamic2 -> dynamic2.update("starts", dynamic2x -> this.method_41015(dynamic2x, dynamic))
-					.update("References", dynamic2x -> this.method_41020(dynamic2x, dynamic))
+			structuresDynamic -> structuresDynamic.update("starts", startsDynamic -> this.fixStructureStarts(startsDynamic, chunkDynamic))
+					.update("References", referencesDynamic -> this.fixStructureReferences(referencesDynamic, chunkDynamic))
 		);
 	}
 
-	private Dynamic<?> method_41015(Dynamic<?> dynamic, Dynamic<?> dynamic2) {
-		Map<? extends Dynamic<?>, ? extends Dynamic<?>> map = (Map<? extends Dynamic<?>, ? extends Dynamic<?>>)dynamic.getMapValues().result().orElse(Map.of());
+	private Dynamic<?> fixStructureStarts(Dynamic<?> startsDynamic, Dynamic<?> chunkDynamic) {
+		Map<? extends Dynamic<?>, ? extends Dynamic<?>> map = (Map<? extends Dynamic<?>, ? extends Dynamic<?>>)startsDynamic.getMapValues().result().orElse(Map.of());
 		HashMap<Dynamic<?>, Dynamic<?>> hashMap = Maps.newHashMap();
-		map.forEach((dynamic2x, dynamic3) -> {
-			if (!dynamic3.get("id").asString("INVALID").equals("INVALID")) {
-				Dynamic<?> dynamic4 = this.method_41022(dynamic2x, dynamic2);
-				if (dynamic4 == null) {
-					LOGGER.warn("Encountered unknown structure in datafixer: " + dynamic2x.asString("<missing key>"));
+		map.forEach((structureId, startDynamic) -> {
+			if (!startDynamic.get("id").asString("INVALID").equals("INVALID")) {
+				Dynamic<?> dynamic2 = this.mapStructureToConfiguredStructure(structureId, chunkDynamic);
+				if (dynamic2 == null) {
+					LOGGER.warn("Encountered unknown structure in datafixer: " + structureId.asString("<missing key>"));
 				} else {
-					hashMap.computeIfAbsent(dynamic4, dynamic3x -> dynamic3.set("id", dynamic4));
+					hashMap.computeIfAbsent(dynamic2, configuredStructureId -> startDynamic.set("id", dynamic2));
 				}
 			}
 		});
-		return dynamic2.createMap(hashMap);
+		return chunkDynamic.createMap(hashMap);
 	}
 
-	private Dynamic<?> method_41020(Dynamic<?> dynamic, Dynamic<?> dynamic2) {
-		Map<? extends Dynamic<?>, ? extends Dynamic<?>> map = (Map<? extends Dynamic<?>, ? extends Dynamic<?>>)dynamic.getMapValues().result().orElse(Map.of());
+	private Dynamic<?> fixStructureReferences(Dynamic<?> referencesDynamic, Dynamic<?> chunkDynamic) {
+		Map<? extends Dynamic<?>, ? extends Dynamic<?>> map = (Map<? extends Dynamic<?>, ? extends Dynamic<?>>)referencesDynamic.getMapValues()
+			.result()
+			.orElse(Map.of());
 		HashMap<Dynamic<?>, Dynamic<?>> hashMap = Maps.newHashMap();
 		map.forEach(
-			(dynamic2x, dynamic3) -> {
-				if (dynamic3.asLongStream().count() != 0L) {
-					Dynamic<?> dynamic4 = this.method_41022(dynamic2x, dynamic2);
-					if (dynamic4 == null) {
-						LOGGER.warn("Encountered unknown structure in datafixer: " + dynamic2x.asString("<missing key>"));
+			(structureId, referenceDynamic) -> {
+				if (referenceDynamic.asLongStream().count() != 0L) {
+					Dynamic<?> dynamic2 = this.mapStructureToConfiguredStructure(structureId, chunkDynamic);
+					if (dynamic2 == null) {
+						LOGGER.warn("Encountered unknown structure in datafixer: " + structureId.asString("<missing key>"));
 					} else {
 						hashMap.compute(
-							dynamic4,
-							(dynamic2xx, dynamic3x) -> dynamic3x == null ? dynamic3 : dynamic3.createLongList(LongStream.concat(dynamic3x.asLongStream(), dynamic3.asLongStream()))
+							dynamic2,
+							(configuredStructureId, referenceDynamicx) -> referenceDynamicx == null
+									? referenceDynamic
+									: referenceDynamic.createLongList(LongStream.concat(referenceDynamicx.asLongStream(), referenceDynamic.asLongStream()))
 						);
 					}
 				}
 			}
 		);
-		return dynamic2.createMap(hashMap);
+		return chunkDynamic.createMap(hashMap);
 	}
 
 	@Nullable
-	private Dynamic<?> method_41022(Dynamic<?> dynamic, Dynamic<?> dynamic2) {
-		String string = dynamic.asString("UNKNOWN").toLowerCase(Locale.ROOT);
+	private Dynamic<?> mapStructureToConfiguredStructure(Dynamic<?> structureIdDynamic, Dynamic<?> chunkDynamic) {
+		String string = structureIdDynamic.asString("UNKNOWN").toLowerCase(Locale.ROOT);
 		StructuresToConfiguredStructuresFix.Mapping mapping = (StructuresToConfiguredStructuresFix.Mapping)STRUCTURE_TO_CONFIGURED_STRUCTURES_MAPPING.get(string);
 		if (mapping == null) {
 			return null;
 		} else {
 			String string2 = mapping.fallback;
 			if (!mapping.biomeMapping().isEmpty()) {
-				Optional<String> optional = this.method_41013(dynamic2, mapping);
+				Optional<String> optional = this.getBiomeRepresentativeStructure(chunkDynamic, mapping);
 				if (optional.isPresent()) {
 					string2 = (String)optional.get();
 				}
 			}
 
-			return dynamic2.createString(string2);
+			return chunkDynamic.createString(string2);
 		}
 	}
 
-	private Optional<String> method_41013(Dynamic<?> dynamic, StructuresToConfiguredStructuresFix.Mapping mapping) {
+	private Optional<String> getBiomeRepresentativeStructure(Dynamic<?> chunkDynamic, StructuresToConfiguredStructuresFix.Mapping mappingForStructure) {
 		Object2IntArrayMap<String> object2IntArrayMap = new Object2IntArrayMap<>();
-		dynamic.get("sections")
+		chunkDynamic.get("sections")
 			.asList(Function.identity())
-			.forEach(dynamicx -> dynamicx.get("biomes").get("palette").asList(Function.identity()).forEach(dynamicxx -> {
-					String string = (String)mapping.biomeMapping().get(dynamicxx.asString(""));
+			.forEach(sectionDynamic -> sectionDynamic.get("biomes").get("palette").asList(Function.identity()).forEach(biomePaletteDynamic -> {
+					String string = (String)mappingForStructure.biomeMapping().get(biomePaletteDynamic.asString(""));
 					if (string != null) {
 						object2IntArrayMap.mergeInt(string, 1, Integer::sum);
 					}
@@ -222,7 +226,7 @@ public class StructuresToConfiguredStructuresFix extends DataFix {
 			Builder<String, String> builder = ImmutableMap.builder();
 
 			for (Entry<List<String>, String> entry : biomeMapping.entrySet()) {
-				((List)entry.getKey()).forEach(string -> builder.put(string, (String)entry.getValue()));
+				((List)entry.getKey()).forEach(key -> builder.put(key, (String)entry.getValue()));
 			}
 
 			return builder.build();

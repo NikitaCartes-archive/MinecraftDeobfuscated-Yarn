@@ -109,7 +109,7 @@ public final class Window implements AutoCloseable {
 		GLFW.glfwSetCursorEnterCallback(this.handle, this::onCursorEnterChanged);
 	}
 
-	public static String method_60793() {
+	public static String getGlfwPlatform() {
 		int i = GLFW.glfwGetPlatform();
 
 		return switch (i) {

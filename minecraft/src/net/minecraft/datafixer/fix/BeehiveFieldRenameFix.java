@@ -20,7 +20,7 @@ public class BeehiveFieldRenameFix extends DataFix {
 		return dynamic.remove("Bees");
 	}
 
-	private Dynamic<?> method_57204(Dynamic<?> dynamic) {
+	private Dynamic<?> renameFields(Dynamic<?> dynamic) {
 		dynamic = dynamic.remove("EntityData");
 		dynamic = dynamic.renameField("TicksInHive", "ticks_in_hive");
 		return dynamic.renameField("MinOccupationTicks", "min_ticks_in_hive");
@@ -40,12 +40,12 @@ public class BeehiveFieldRenameFix extends DataFix {
 			"BeehiveFieldRenameFix",
 			type3,
 			type4,
-			typed -> FixUtil.method_57182(
+			typed -> FixUtil.withType(
 					type4,
 					typed.updateTyped(
 						opticFinder,
 						typedx -> typedx.update(DSL.remainderFinder(), this::removeBeesField)
-								.updateTyped(opticFinder2, typedxx -> typedxx.updateTyped(opticFinder3, typedxxx -> typedxxx.update(DSL.remainderFinder(), this::method_57204)))
+								.updateTyped(opticFinder2, typedxx -> typedxx.updateTyped(opticFinder3, typedxxx -> typedxxx.update(DSL.remainderFinder(), this::renameFields)))
 					)
 				)
 		);

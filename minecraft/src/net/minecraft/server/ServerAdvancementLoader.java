@@ -34,7 +34,7 @@ public class ServerAdvancementLoader extends JsonDataLoader {
 	private final RegistryWrapper.WrapperLookup registryLookup;
 
 	public ServerAdvancementLoader(RegistryWrapper.WrapperLookup registryLookup) {
-		super(GSON, RegistryKeys.method_60915(RegistryKeys.ADVANCEMENT));
+		super(GSON, RegistryKeys.getPath(RegistryKeys.ADVANCEMENT));
 		this.registryLookup = registryLookup;
 	}
 

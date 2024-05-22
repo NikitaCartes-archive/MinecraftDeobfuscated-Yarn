@@ -9,8 +9,8 @@ import com.mojang.datafixers.types.Type;
 import net.minecraft.datafixer.TypeReferences;
 
 public class ChunkLightRemoveFix extends DataFix {
-	public ChunkLightRemoveFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ChunkLightRemoveFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -22,7 +22,7 @@ public class ChunkLightRemoveFix extends DataFix {
 			"ChunkLightRemoveFix",
 			type,
 			this.getOutputSchema().getType(TypeReferences.CHUNK),
-			typed -> typed.updateTyped(opticFinder, typedx -> typedx.update(DSL.remainderFinder(), dynamic -> dynamic.remove("isLightOn")))
+			chunkTyped -> chunkTyped.updateTyped(opticFinder, levelTyped -> levelTyped.update(DSL.remainderFinder(), levelDynamic -> levelDynamic.remove("isLightOn")))
 		);
 	}
 }

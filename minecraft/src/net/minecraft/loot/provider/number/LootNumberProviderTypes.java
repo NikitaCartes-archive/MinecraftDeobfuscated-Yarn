@@ -29,6 +29,6 @@ public class LootNumberProviderTypes {
 	public static final LootNumberProviderType ENCHANTMENT_LEVEL = register("enchantment_level", EnchantmentLevelLootNumberProvider.CODEC);
 
 	private static LootNumberProviderType register(String id, MapCodec<? extends LootNumberProvider> codec) {
-		return Registry.register(Registries.LOOT_NUMBER_PROVIDER_TYPE, Identifier.method_60656(id), new LootNumberProviderType(codec));
+		return Registry.register(Registries.LOOT_NUMBER_PROVIDER_TYPE, Identifier.ofVanilla(id), new LootNumberProviderType(codec));
 	}
 }

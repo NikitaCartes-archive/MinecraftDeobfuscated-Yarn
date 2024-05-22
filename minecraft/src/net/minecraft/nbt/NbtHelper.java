@@ -211,7 +211,7 @@ public final class NbtHelper {
 		if (!nbt.contains("Name", NbtElement.STRING_TYPE)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
-			Identifier identifier = Identifier.method_60654(nbt.getString("Name"));
+			Identifier identifier = Identifier.of(nbt.getString("Name"));
 			Optional<? extends RegistryEntry<Block>> optional = blockLookup.getOptional(RegistryKey.of(RegistryKeys.BLOCK, identifier));
 			if (optional.isEmpty()) {
 				return Blocks.AIR.getDefaultState();

@@ -27,7 +27,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_9812;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
@@ -65,6 +64,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.DisconnectionInfo;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.PublicPlayerSession;
@@ -1142,10 +1142,10 @@ public class ServerPlayNetworkHandler
 	}
 
 	@Override
-	public void onDisconnected(class_9812 arg) {
-		LOGGER.info("{} lost connection: {}", this.player.getName().getString(), arg.reason().getString());
+	public void onDisconnected(DisconnectionInfo info) {
+		LOGGER.info("{} lost connection: {}", this.player.getName().getString(), info.reason().getString());
 		this.cleanUp();
-		super.onDisconnected(arg);
+		super.onDisconnected(info);
 	}
 
 	private void cleanUp() {

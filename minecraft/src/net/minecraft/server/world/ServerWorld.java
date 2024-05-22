@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.class_9813;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -104,6 +103,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.crash.ReportType;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.util.math.BlockBox;
@@ -130,7 +130,6 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.IdCountsState;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.PersistentStateManager;
-import net.minecraft.world.PortalForcer;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.StructureLocator;
 import net.minecraft.world.StructureWorldAccess;
@@ -142,6 +141,7 @@ import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionTypes;
+import net.minecraft.world.dimension.PortalForcer;
 import net.minecraft.world.entity.EntityHandler;
 import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
@@ -953,13 +953,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	/**
 	 * Called on the destination world when an entity changed the dimension.
 	 * 
-	 * <p>This does not get called for players changing dimensions.
-	 * Use {@link #onPlayerChangeDimension} (for portals) or
-	 * {@link #onPlayerTeleport} (for teleportation) instead.
-	 * 
-	 * @see Entity#moveToWorld
-	 * @see #onPlayerTeleport
-	 * @see #onPlayerChangeDimension
+	 * @see Entity#teleportTo
 	 */
 	public void onDimensionChanged(Entity entity) {
 		if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
@@ -1441,8 +1435,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Override
-	public MapIdComponent getNextMapId() {
-		return this.getServer().getOverworld().getPersistentStateManager().getOrCreate(IdCountsState.getPersistentStateType(), "idcounts").getNextMapId();
+	public MapIdComponent increaseAndGetMapId() {
+		return this.getServer().getOverworld().getPersistentStateManager().getOrCreate(IdCountsState.getPersistentStateType(), "idcounts").increaseAndGetMapId();
 	}
 
 	/**
@@ -1616,7 +1610,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		Writer writer2 = Files.newBufferedWriter(path.resolve("example_crash.txt"));
 
 		try {
-			writer2.write(crashReport.method_60920(class_9813.MINECRAFT_TEST_REPORT));
+			writer2.write(crashReport.asString(ReportType.MINECRAFT_TEST_REPORT));
 		} catch (Throwable var21) {
 			if (writer2 != null) {
 				try {

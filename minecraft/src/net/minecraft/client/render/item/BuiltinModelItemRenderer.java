@@ -91,7 +91,7 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 				ProfileComponent profileComponent = stack.get(DataComponentTypes.PROFILE);
 				if (profileComponent != null && !profileComponent.isCompleted()) {
 					stack.remove(DataComponentTypes.PROFILE);
-					profileComponent.getFuture().thenAcceptAsync(profileComponentx -> stack.set(DataComponentTypes.PROFILE, profileComponentx), MinecraftClient.getInstance());
+					profileComponent.getFuture().thenAcceptAsync(profile -> stack.set(DataComponentTypes.PROFILE, profile), MinecraftClient.getInstance());
 					profileComponent = null;
 				}
 
@@ -170,7 +170,7 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 				VertexConsumer vertexConsumer2 = ItemRenderer.getDirectItemGlintConsumer(
 					vertexConsumers, this.modelTrident.getLayer(TridentEntityModel.TEXTURE), false, stack.hasGlint()
 				);
-				this.modelTrident.method_60879(matrices, vertexConsumer2, light, overlay);
+				this.modelTrident.render(matrices, vertexConsumer2, light, overlay);
 				matrices.pop();
 			}
 		}

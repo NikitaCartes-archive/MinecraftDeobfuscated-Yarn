@@ -65,25 +65,23 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ModelLoader {
-	public static final SpriteIdentifier FIRE_0 = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.method_60656("block/fire_0"));
-	public static final SpriteIdentifier FIRE_1 = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.method_60656("block/fire_1"));
-	public static final SpriteIdentifier LAVA_FLOW = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.method_60656("block/lava_flow"));
-	public static final SpriteIdentifier WATER_FLOW = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.method_60656("block/water_flow"));
-	public static final SpriteIdentifier WATER_OVERLAY = new SpriteIdentifier(
-		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.method_60656("block/water_overlay")
-	);
+	public static final SpriteIdentifier FIRE_0 = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.ofVanilla("block/fire_0"));
+	public static final SpriteIdentifier FIRE_1 = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.ofVanilla("block/fire_1"));
+	public static final SpriteIdentifier LAVA_FLOW = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.ofVanilla("block/lava_flow"));
+	public static final SpriteIdentifier WATER_FLOW = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.ofVanilla("block/water_flow"));
+	public static final SpriteIdentifier WATER_OVERLAY = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.ofVanilla("block/water_overlay"));
 	public static final SpriteIdentifier BANNER_BASE = new SpriteIdentifier(
-		TexturedRenderLayers.BANNER_PATTERNS_ATLAS_TEXTURE, Identifier.method_60656("entity/banner_base")
+		TexturedRenderLayers.BANNER_PATTERNS_ATLAS_TEXTURE, Identifier.ofVanilla("entity/banner_base")
 	);
 	public static final SpriteIdentifier SHIELD_BASE = new SpriteIdentifier(
-		TexturedRenderLayers.SHIELD_PATTERNS_ATLAS_TEXTURE, Identifier.method_60656("entity/shield_base")
+		TexturedRenderLayers.SHIELD_PATTERNS_ATLAS_TEXTURE, Identifier.ofVanilla("entity/shield_base")
 	);
 	public static final SpriteIdentifier SHIELD_BASE_NO_PATTERN = new SpriteIdentifier(
-		TexturedRenderLayers.SHIELD_PATTERNS_ATLAS_TEXTURE, Identifier.method_60656("entity/shield_base_nopattern")
+		TexturedRenderLayers.SHIELD_PATTERNS_ATLAS_TEXTURE, Identifier.ofVanilla("entity/shield_base_nopattern")
 	);
 	public static final int field_32983 = 10;
 	public static final List<Identifier> BLOCK_DESTRUCTION_STAGES = (List<Identifier>)IntStream.range(0, 10)
-		.mapToObj(stage -> Identifier.method_60656("block/destroy_stage_" + stage))
+		.mapToObj(stage -> Identifier.ofVanilla("block/destroy_stage_" + stage))
 		.collect(Collectors.toList());
 	public static final List<Identifier> BLOCK_DESTRUCTION_STAGE_TEXTURES = (List<Identifier>)BLOCK_DESTRUCTION_STAGES.stream()
 		.map(id -> id.withPath((UnaryOperator<String>)(string -> "textures/" + string + ".png")))
@@ -122,7 +120,7 @@ public class ModelLoader {
 		.build(Block::getDefaultState, BlockState::new);
 	static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
 	private static final Map<Identifier, StateManager<Block, BlockState>> STATIC_DEFINITIONS = ImmutableMap.of(
-		Identifier.method_60656("item_frame"), ITEM_FRAME_STATE_FACTORY, Identifier.method_60656("glow_item_frame"), ITEM_FRAME_STATE_FACTORY
+		Identifier.ofVanilla("item_frame"), ITEM_FRAME_STATE_FACTORY, Identifier.ofVanilla("glow_item_frame"), ITEM_FRAME_STATE_FACTORY
 	);
 	private final BlockColors blockColors;
 	private final Map<Identifier, JsonUnbakedModel> jsonUnbakedModels;
@@ -276,7 +274,7 @@ public class ModelLoader {
 				this.putModel(modelIdentifier, jsonUnbakedModel);
 				this.unbakedModels.put(identifier, jsonUnbakedModel);
 			} else {
-				Identifier identifier = Identifier.method_60655(id.getNamespace(), id.getPath());
+				Identifier identifier = Identifier.of(id.getNamespace(), id.getPath());
 				StateManager<Block, BlockState> stateManager = (StateManager<Block, BlockState>)Optional.ofNullable((StateManager)STATIC_DEFINITIONS.get(identifier))
 					.orElseGet(() -> Registries.BLOCK.get(identifier).getStateManager());
 				this.variantMapDeserializationContext.setStateFactory(stateManager);

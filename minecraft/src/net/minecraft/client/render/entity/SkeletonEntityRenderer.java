@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SkeletonEntityRenderer<T extends AbstractSkeletonEntity> extends BipedEntityRenderer<T, SkeletonEntityModel<T>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/skeleton/skeleton.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/skeleton/skeleton.png");
 
 	public SkeletonEntityRenderer(EntityRendererFactory.Context context) {
 		this(context, EntityModelLayers.SKELETON, EntityModelLayers.SKELETON_INNER_ARMOR, EntityModelLayers.SKELETON_OUTER_ARMOR);

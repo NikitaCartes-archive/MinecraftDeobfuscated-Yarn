@@ -8,27 +8,27 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.math.random.Random;
 
 public class EntityZombieVillagerTypeFix extends ChoiceFix {
-	private static final int field_29883 = 6;
+	private static final int TYPE_COUNT = 6;
 
-	public EntityZombieVillagerTypeFix(Schema schema, boolean bl) {
-		super(schema, bl, "EntityZombieVillagerTypeFix", TypeReferences.ENTITY, "Zombie");
+	public EntityZombieVillagerTypeFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "EntityZombieVillagerTypeFix", TypeReferences.ENTITY, "Zombie");
 	}
 
-	public Dynamic<?> fixZombieType(Dynamic<?> dynamic) {
-		if (dynamic.get("IsVillager").asBoolean(false)) {
-			if (dynamic.get("ZombieType").result().isEmpty()) {
-				int i = this.clampType(dynamic.get("VillagerProfession").asInt(-1));
+	public Dynamic<?> fixZombieType(Dynamic<?> zombieDynamic) {
+		if (zombieDynamic.get("IsVillager").asBoolean(false)) {
+			if (zombieDynamic.get("ZombieType").result().isEmpty()) {
+				int i = this.clampType(zombieDynamic.get("VillagerProfession").asInt(-1));
 				if (i == -1) {
 					i = this.clampType(Random.create().nextInt(6));
 				}
 
-				dynamic = dynamic.set("ZombieType", dynamic.createInt(i));
+				zombieDynamic = zombieDynamic.set("ZombieType", zombieDynamic.createInt(i));
 			}
 
-			dynamic = dynamic.remove("IsVillager");
+			zombieDynamic = zombieDynamic.remove("IsVillager");
 		}
 
-		return dynamic;
+		return zombieDynamic;
 	}
 
 	private int clampType(int type) {
@@ -36,7 +36,7 @@ public class EntityZombieVillagerTypeFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(DSL.remainderFinder(), this::fixZombieType);
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(DSL.remainderFinder(), this::fixZombieType);
 	}
 }

@@ -13,8 +13,8 @@ public class PlayerHeadBlockProfileFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(DSL.remainderFinder(), this::fixProfile);
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(DSL.remainderFinder(), this::fixProfile);
 	}
 
 	private <T> Dynamic<T> fixProfile(Dynamic<T> dynamic) {

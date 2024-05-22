@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class MapDecorationsAtlasManager extends SpriteAtlasHolder {
 	public MapDecorationsAtlasManager(TextureManager manager) {
-		super(manager, Identifier.method_60656("textures/atlas/map_decorations.png"), Identifier.method_60656("map_decorations"));
+		super(manager, Identifier.ofVanilla("textures/atlas/map_decorations.png"), Identifier.ofVanilla("map_decorations"));
 	}
 
 	public Sprite getSprite(MapDecoration decoration) {

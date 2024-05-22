@@ -70,8 +70,8 @@ public abstract class RecipeProvider implements DataProvider {
 		.build();
 
 	public RecipeProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		this.recipesPathResolver = output.method_60917(RegistryKeys.RECIPE);
-		this.advancementsPathResolver = output.method_60917(RegistryKeys.ADVANCEMENT);
+		this.recipesPathResolver = output.getResolver(RegistryKeys.RECIPE);
+		this.advancementsPathResolver = output.getResolver(RegistryKeys.ADVANCEMENT);
 		this.registryLookupFuture = registryLookupFuture;
 	}
 
@@ -539,7 +539,7 @@ public abstract class RecipeProvider implements DataProvider {
 			.input(compactItem)
 			.group(reverseGroup)
 			.criterion(hasItem(compactItem), conditionsFromItem(compactItem))
-			.offerTo(exporter, Identifier.method_60654(reverseId));
+			.offerTo(exporter, Identifier.of(reverseId));
 		ShapedRecipeJsonBuilder.create(compactingCategory, compactItem)
 			.input('#', baseItem)
 			.pattern("###")
@@ -547,7 +547,7 @@ public abstract class RecipeProvider implements DataProvider {
 			.pattern("###")
 			.group(compactingGroup)
 			.criterion(hasItem(baseItem), conditionsFromItem(baseItem))
-			.offerTo(exporter, Identifier.method_60654(compactingId));
+			.offerTo(exporter, Identifier.of(compactingId));
 	}
 
 	protected static void offerSmithingTemplateCopyingRecipe(RecipeExporter exporter, ItemConvertible template, TagKey<Item> resource) {
@@ -574,16 +574,16 @@ public abstract class RecipeProvider implements DataProvider {
 			.offerTo(exporter);
 	}
 
-	protected static void method_60922(RecipeExporter recipeExporter, ItemConvertible itemConvertible, Ingredient ingredient) {
-		ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, itemConvertible, 2)
+	protected static void offerSmithingTemplateCopyingRecipe(RecipeExporter exporter, ItemConvertible template, Ingredient resource) {
+		ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, template, 2)
 			.input('#', Items.DIAMOND)
-			.input('C', ingredient)
-			.input('S', itemConvertible)
+			.input('C', resource)
+			.input('S', template)
 			.pattern("#S#")
 			.pattern("#C#")
 			.pattern("###")
-			.criterion(hasItem(itemConvertible), conditionsFromItem(itemConvertible))
-			.offerTo(recipeExporter);
+			.criterion(hasItem(template), conditionsFromItem(template))
+			.offerTo(exporter);
 	}
 
 	protected static <T extends AbstractCookingRecipe> void generateCookingRecipes(

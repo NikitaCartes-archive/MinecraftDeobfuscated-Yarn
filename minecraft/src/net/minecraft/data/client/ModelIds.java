@@ -9,11 +9,11 @@ import net.minecraft.util.Identifier;
 public class ModelIds {
 	@Deprecated
 	public static Identifier getMinecraftNamespacedBlock(String name) {
-		return Identifier.method_60656("block/" + name);
+		return Identifier.ofVanilla("block/" + name);
 	}
 
 	public static Identifier getMinecraftNamespacedItem(String name) {
-		return Identifier.method_60656("item/" + name);
+		return Identifier.ofVanilla("item/" + name);
 	}
 
 	public static Identifier getBlockSubModelId(Block block, String suffix) {

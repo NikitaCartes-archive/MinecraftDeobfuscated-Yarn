@@ -49,8 +49,8 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 
 	private static Identifier getTexture(BoatEntity.Type type, boolean chest) {
 		return chest
-			? Identifier.method_60656("textures/entity/chest_boat/" + type.getName() + ".png")
-			: Identifier.method_60656("textures/entity/boat/" + type.getName() + ".png");
+			? Identifier.ofVanilla("textures/entity/chest_boat/" + type.getName() + ".png")
+			: Identifier.ofVanilla("textures/entity/boat/" + type.getName() + ".png");
 	}
 
 	public void render(BoatEntity boatEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
@@ -80,7 +80,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F));
 		compositeEntityModel.setAngles(boatEntity, g, 0.0F, -0.1F, 0.0F, 0.0F);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(compositeEntityModel.getLayer(identifier));
-		compositeEntityModel.method_60879(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
+		compositeEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 		if (!boatEntity.isSubmergedInWater()) {
 			VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getWaterMask());
 			if (compositeEntityModel instanceof ModelWithWaterPatch modelWithWaterPatch) {

@@ -18,9 +18,9 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public abstract class ScrollableWidget extends ClickableWidget implements Drawable, Element {
 	private static final ButtonTextures TEXT_FIELD_TEXTURES = new ButtonTextures(
-		Identifier.method_60656("widget/text_field"), Identifier.method_60656("widget/text_field_highlighted")
+		Identifier.ofVanilla("widget/text_field"), Identifier.ofVanilla("widget/text_field_highlighted")
 	);
-	private static final Identifier SCROLLER_TEXTURE = Identifier.method_60656("widget/scroller");
+	private static final Identifier SCROLLER_TEXTURE = Identifier.ofVanilla("widget/scroller");
 	private static final int PADDING = 4;
 	private static final int SCROLLER_WIDTH = 8;
 	private double scrollY;

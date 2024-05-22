@@ -43,8 +43,11 @@ public class StatsRenameFix extends DataFix {
 				this.name,
 				type2,
 				type,
-				typed -> typed.updateTyped(
-						opticFinder, typedx -> typedx.updateTyped(opticFinder2, typedxx -> typedxx.update(opticFinder3, old -> (String)this.replacements.getOrDefault(old, old)))
+				objectiveTyped -> objectiveTyped.updateTyped(
+						opticFinder,
+						criteriaTypeTyped -> criteriaTypeTyped.updateTyped(
+								opticFinder2, customCriteriaTypeTyped -> customCriteriaTypeTyped.update(opticFinder3, old -> (String)this.replacements.getOrDefault(old, old))
+							)
 					)
 			);
 		}
@@ -60,8 +63,11 @@ public class StatsRenameFix extends DataFix {
 			this.name,
 			type2,
 			type,
-			typed -> typed.updateTyped(
-					opticFinder, typedx -> typedx.updateTyped(opticFinder2, typedxx -> typedxx.update(opticFinder3, old -> (String)this.replacements.getOrDefault(old, old)))
+			statsTyped -> statsTyped.updateTyped(
+					opticFinder,
+					statsInnerTyped -> statsInnerTyped.updateTyped(
+							opticFinder2, customStatTyped -> customStatTyped.update(opticFinder3, old -> (String)this.replacements.getOrDefault(old, old))
+						)
 				)
 		);
 	}

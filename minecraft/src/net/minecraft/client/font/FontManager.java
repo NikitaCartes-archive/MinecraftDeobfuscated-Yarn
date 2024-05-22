@@ -49,7 +49,7 @@ import org.slf4j.Logger;
 public class FontManager implements ResourceReloader, AutoCloseable {
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final String FONTS_JSON = "fonts.json";
-	public static final Identifier MISSING_STORAGE_ID = Identifier.method_60656("missing");
+	public static final Identifier MISSING_STORAGE_ID = Identifier.ofVanilla("missing");
 	private static final ResourceFinder FINDER = ResourceFinder.json("font");
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private final FontStorage missingStorage;

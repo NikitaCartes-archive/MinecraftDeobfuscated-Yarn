@@ -55,7 +55,7 @@ public class ConfiguredFeatures {
 	}
 
 	public static RegistryKey<ConfiguredFeature<?, ?>> of(String id) {
-		return RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, Identifier.method_60656(id));
+		return RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, Identifier.ofVanilla(id));
 	}
 
 	public static void register(

@@ -67,8 +67,8 @@ public class ItemUsageContext {
 	}
 
 	/**
-	 * {@return the {@linkplain PlayerEntity#getHorizontalFacing horizontal facing
-	 * direction} of the player}
+	 * {@return the {@linkplain net.minecraft.entity.player.PlayerEntity#getHorizontalFacing
+	 * horizontal facing direction} of the player}
 	 * 
 	 * @implSpec If the player is {@code null}, returns {@link Direction#NORTH}.
 	 */

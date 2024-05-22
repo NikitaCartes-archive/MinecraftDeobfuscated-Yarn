@@ -22,14 +22,13 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9782;
-import net.minecraft.class_9812;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.DisconnectionInfo;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ClientLoginPacketListener;
@@ -49,6 +48,7 @@ import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
 import net.minecraft.network.state.ConfigurationStates;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.server.ServerLinks;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -196,7 +196,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 						null,
 						packet.strictErrorHandling(),
 						Map.of(),
-						class_9782.field_51977
+						ServerLinks.EMPTY
 					)
 				)
 			);
@@ -207,12 +207,12 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	}
 
 	@Override
-	public void onDisconnected(class_9812 arg) {
+	public void onDisconnected(DisconnectionInfo info) {
 		Text text = this.hasCookies ? ScreenTexts.CONNECT_FAILED_TRANSFER : ScreenTexts.CONNECT_FAILED;
 		if (this.serverInfo != null && this.serverInfo.isRealm()) {
-			this.client.setScreen(new DisconnectedRealmsScreen(this.parentScreen, text, arg.reason()));
+			this.client.setScreen(new DisconnectedRealmsScreen(this.parentScreen, text, info.reason()));
 		} else {
-			this.client.setScreen(new DisconnectedScreen(this.parentScreen, text, arg));
+			this.client.setScreen(new DisconnectedScreen(this.parentScreen, text, info));
 		}
 	}
 
@@ -249,9 +249,9 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	}
 
 	@Override
-	public void addCustomCrashReportInfo(CrashReport crashReport, CrashReportSection crashReportSection) {
-		crashReportSection.add("Server type", (CrashCallable<String>)(() -> this.serverInfo != null ? this.serverInfo.getServerType().toString() : "<unknown>"));
-		crashReportSection.add("Login phase", (CrashCallable<String>)(() -> ((ClientLoginNetworkHandler.State)this.state.get()).toString()));
+	public void addCustomCrashReportInfo(CrashReport report, CrashReportSection section) {
+		section.add("Server type", (CrashCallable<String>)(() -> this.serverInfo != null ? this.serverInfo.getServerType().toString() : "<unknown>"));
+		section.add("Login phase", (CrashCallable<String>)(() -> ((ClientLoginNetworkHandler.State)this.state.get()).toString()));
 	}
 
 	@Environment(EnvType.CLIENT)

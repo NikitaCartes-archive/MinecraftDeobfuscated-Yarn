@@ -109,7 +109,7 @@ public class Potions {
 	public static final RegistryEntry<Potion> INFESTED = register("infested", new Potion("infested", new StatusEffectInstance(StatusEffects.INFESTED, 3600)));
 
 	private static RegistryEntry<Potion> register(String name, Potion potion) {
-		return Registry.registerReference(Registries.POTION, Identifier.method_60656(name), potion);
+		return Registry.registerReference(Registries.POTION, Identifier.ofVanilla(name), potion);
 	}
 
 	public static RegistryEntry<Potion> registerAndGetDefault(Registry<Potion> registry) {

@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class DolphinEntityRenderer extends MobEntityRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/dolphin.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/dolphin.png");
 
 	public DolphinEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new DolphinEntityModel<>(context.getPart(EntityModelLayers.DOLPHIN)), 0.7F);

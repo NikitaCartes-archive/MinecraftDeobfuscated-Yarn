@@ -56,7 +56,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> DANCING = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final Identifier BABY_SPEED_BOOST_ID = Identifier.method_60656("baby");
+	private static final Identifier BABY_SPEED_BOOST_ID = Identifier.ofVanilla("baby");
 	private static final EntityAttributeModifier BABY_SPEED_BOOST = new EntityAttributeModifier(
 		BABY_SPEED_BOOST_ID, 0.2F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
 	);
@@ -277,7 +277,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 		this.getDataTracker().set(BABY, baby);
 		if (!this.getWorld().isClient) {
 			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-			entityAttributeInstance.removeModifier(BABY_SPEED_BOOST.uuid());
+			entityAttributeInstance.removeModifier(BABY_SPEED_BOOST.id());
 			if (baby) {
 				entityAttributeInstance.addTemporaryModifier(BABY_SPEED_BOOST);
 			}

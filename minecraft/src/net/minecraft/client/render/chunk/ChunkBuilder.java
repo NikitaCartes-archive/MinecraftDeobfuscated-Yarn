@@ -25,18 +25,17 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9799;
-import net.minecraft.class_9801;
-import net.minecraft.class_9810;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.BufferBuilderStorage;
+import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
@@ -59,7 +58,7 @@ public class ChunkBuilder {
 	 */
 	private int processablePrioritizedTaskCount = 2;
 	private final Queue<Runnable> uploadQueue = Queues.<Runnable>newConcurrentLinkedQueue();
-	final BlockBufferBuilderStorage buffers;
+	final BlockBufferAllocatorStorage buffers;
 	private final BlockBufferBuilderPool buffersPool;
 	private volatile int queuedTaskCount;
 	private volatile boolean stopped;
@@ -68,7 +67,7 @@ public class ChunkBuilder {
 	ClientWorld world;
 	final WorldRenderer worldRenderer;
 	private Vec3d cameraPosition = Vec3d.ZERO;
-	final class_9810 field_52171;
+	final SectionBuilder field_52171;
 
 	public ChunkBuilder(
 		ClientWorld world,
@@ -85,7 +84,7 @@ public class ChunkBuilder {
 		this.executor = executor;
 		this.mailbox = TaskExecutor.create(executor, "Section Renderer");
 		this.mailbox.send(this::scheduleRunTasks);
-		this.field_52171 = new class_9810(blockRenderManager, blockEntityRenderDispatcher);
+		this.field_52171 = new SectionBuilder(blockRenderManager, blockEntityRenderDispatcher);
 	}
 
 	public void setWorld(ClientWorld world) {
@@ -96,9 +95,9 @@ public class ChunkBuilder {
 		if (!this.stopped && !this.buffersPool.hasNoAvailableBuilder()) {
 			ChunkBuilder.BuiltChunk.Task task = this.pollTask();
 			if (task != null) {
-				BlockBufferBuilderStorage blockBufferBuilderStorage = (BlockBufferBuilderStorage)Objects.requireNonNull(this.buffersPool.acquire());
+				BlockBufferAllocatorStorage blockBufferAllocatorStorage = (BlockBufferAllocatorStorage)Objects.requireNonNull(this.buffersPool.acquire());
 				this.queuedTaskCount = this.prioritizedTaskQueue.size() + this.taskQueue.size();
-				CompletableFuture.supplyAsync(Util.debugSupplier(task.getName(), () -> task.run(blockBufferBuilderStorage)), this.executor)
+				CompletableFuture.supplyAsync(Util.debugSupplier(task.getName(), () -> task.run(blockBufferAllocatorStorage)), this.executor)
 					.thenCompose(future -> future)
 					.whenComplete((result, throwable) -> {
 						if (throwable != null) {
@@ -106,12 +105,12 @@ public class ChunkBuilder {
 						} else {
 							this.mailbox.send(() -> {
 								if (result == ChunkBuilder.Result.SUCCESSFUL) {
-									blockBufferBuilderStorage.clear();
+									blockBufferAllocatorStorage.clear();
 								} else {
-									blockBufferBuilderStorage.reset();
+									blockBufferAllocatorStorage.reset();
 								}
 
-								this.buffersPool.release(blockBufferBuilderStorage);
+								this.buffersPool.release(blockBufferAllocatorStorage);
 								this.scheduleRunTasks();
 							});
 						}
@@ -196,7 +195,7 @@ public class ChunkBuilder {
 		}
 	}
 
-	public CompletableFuture<Void> scheduleUpload(class_9801 builtBuffer, VertexBuffer glBuffer) {
+	public CompletableFuture<Void> scheduleUpload(BuiltBuffer builtBuffer, VertexBuffer glBuffer) {
 		return this.stopped ? CompletableFuture.completedFuture(null) : CompletableFuture.runAsync(() -> {
 			if (glBuffer.isClosed()) {
 				builtBuffer.close();
@@ -208,13 +207,13 @@ public class ChunkBuilder {
 		}, this.uploadQueue::add);
 	}
 
-	public CompletableFuture<Void> method_60906(class_9799.class_9800 arg, VertexBuffer vertexBuffer) {
+	public CompletableFuture<Void> method_60906(BufferAllocator.CloseableBuffer closeableBuffer, VertexBuffer vertexBuffer) {
 		return this.stopped ? CompletableFuture.completedFuture(null) : CompletableFuture.runAsync(() -> {
 			if (vertexBuffer.isClosed()) {
-				arg.close();
+				closeableBuffer.close();
 			} else {
 				vertexBuffer.bind();
-				vertexBuffer.method_60829(arg);
+				vertexBuffer.uploadIndexBuffer(closeableBuffer);
 				VertexBuffer.unbind();
 			}
 		}, this.uploadQueue::add);
@@ -463,7 +462,7 @@ public class ChunkBuilder {
 			}
 
 			@Override
-			public CompletableFuture<ChunkBuilder.Result> run(BlockBufferBuilderStorage buffers) {
+			public CompletableFuture<ChunkBuilder.Result> run(BlockBufferAllocatorStorage buffers) {
 				if (this.cancelled.get()) {
 					return CompletableFuture.completedFuture(ChunkBuilder.Result.CANCELLED);
 				} else if (!BuiltChunk.this.shouldBuild()) {
@@ -479,18 +478,18 @@ public class ChunkBuilder {
 						return CompletableFuture.completedFuture(ChunkBuilder.Result.SUCCESSFUL);
 					} else {
 						ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(BuiltChunk.this.origin);
-						class_9810.class_9811 lv = ChunkBuilder.this.field_52171.method_60904(chunkSectionPos, chunkRendererRegion, BuiltChunk.this.method_60909(), buffers);
-						BuiltChunk.this.setNoCullingBlockEntities(lv.field_52166);
+						SectionBuilder.RenderData renderData = ChunkBuilder.this.field_52171.build(chunkSectionPos, chunkRendererRegion, BuiltChunk.this.method_60909(), buffers);
+						BuiltChunk.this.setNoCullingBlockEntities(renderData.noCullingBlockEntities);
 						if (this.cancelled.get()) {
-							lv.method_60905();
+							renderData.close();
 							return CompletableFuture.completedFuture(ChunkBuilder.Result.CANCELLED);
 						} else {
 							ChunkBuilder.ChunkData chunkData = new ChunkBuilder.ChunkData();
-							chunkData.occlusionGraph = lv.field_52169;
-							chunkData.blockEntities.addAll(lv.field_52167);
-							chunkData.transparentSortingData = lv.field_52170;
-							List<CompletableFuture<Void>> list = new ArrayList(lv.field_52168.size());
-							lv.field_52168.forEach((renderLayer, buffer) -> {
+							chunkData.occlusionGraph = renderData.chunkOcclusionData;
+							chunkData.blockEntities.addAll(renderData.blockEntities);
+							chunkData.transparentSortingData = renderData.translucencySortingData;
+							List<CompletableFuture<Void>> list = new ArrayList(renderData.buffers.size());
+							renderData.buffers.forEach((renderLayer, buffer) -> {
 								list.add(ChunkBuilder.this.scheduleUpload(buffer, BuiltChunk.this.getBuffer(renderLayer)));
 								chunkData.nonEmptyLayers.add(renderLayer);
 							});
@@ -535,7 +534,7 @@ public class ChunkBuilder {
 			}
 
 			@Override
-			public CompletableFuture<ChunkBuilder.Result> run(BlockBufferBuilderStorage buffers) {
+			public CompletableFuture<ChunkBuilder.Result> run(BlockBufferAllocatorStorage buffers) {
 				if (this.cancelled.get()) {
 					return CompletableFuture.completedFuture(ChunkBuilder.Result.CANCELLED);
 				} else if (!BuiltChunk.this.shouldBuild()) {
@@ -544,17 +543,19 @@ public class ChunkBuilder {
 				} else if (this.cancelled.get()) {
 					return CompletableFuture.completedFuture(ChunkBuilder.Result.CANCELLED);
 				} else {
-					class_9801.class_9802 lv = this.data.transparentSortingData;
-					if (lv != null && !this.data.isEmpty(RenderLayer.getTranslucent())) {
+					BuiltBuffer.SortState sortState = this.data.transparentSortingData;
+					if (sortState != null && !this.data.isEmpty(RenderLayer.getTranslucent())) {
 						VertexSorter vertexSorter = BuiltChunk.this.method_60909();
-						class_9799.class_9800 lv2 = lv.method_60824(buffers.get(RenderLayer.getTranslucent()), vertexSorter);
-						if (lv2 == null) {
+						BufferAllocator.CloseableBuffer closeableBuffer = sortState.sortAndStore(buffers.get(RenderLayer.getTranslucent()), vertexSorter);
+						if (closeableBuffer == null) {
 							return CompletableFuture.completedFuture(ChunkBuilder.Result.CANCELLED);
 						} else if (this.cancelled.get()) {
-							lv2.close();
+							closeableBuffer.close();
 							return CompletableFuture.completedFuture(ChunkBuilder.Result.CANCELLED);
 						} else {
-							CompletableFuture<ChunkBuilder.Result> completableFuture = ChunkBuilder.this.method_60906(lv2, BuiltChunk.this.getBuffer(RenderLayer.getTranslucent()))
+							CompletableFuture<ChunkBuilder.Result> completableFuture = ChunkBuilder.this.method_60906(
+									closeableBuffer, BuiltChunk.this.getBuffer(RenderLayer.getTranslucent())
+								)
 								.thenApply(v -> ChunkBuilder.Result.CANCELLED);
 							return completableFuture.handle((result, throwable) -> {
 								if (throwable != null && !(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
@@ -587,7 +588,7 @@ public class ChunkBuilder {
 				this.prioritized = prioritized;
 			}
 
-			public abstract CompletableFuture<ChunkBuilder.Result> run(BlockBufferBuilderStorage buffers);
+			public abstract CompletableFuture<ChunkBuilder.Result> run(BlockBufferAllocatorStorage buffers);
 
 			public abstract void cancel();
 
@@ -617,7 +618,7 @@ public class ChunkBuilder {
 		final List<BlockEntity> blockEntities = Lists.<BlockEntity>newArrayList();
 		ChunkOcclusionData occlusionGraph = new ChunkOcclusionData();
 		@Nullable
-		class_9801.class_9802 transparentSortingData;
+		BuiltBuffer.SortState transparentSortingData;
 
 		public boolean isEmpty() {
 			return this.nonEmptyLayers.isEmpty();

@@ -50,8 +50,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_9801;
-import net.minecraft.class_9813;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -112,6 +110,7 @@ import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.Tessellator;
@@ -148,7 +147,6 @@ import net.minecraft.client.session.telemetry.GameLoadTimeEvent;
 import net.minecraft.client.session.telemetry.TelemetryEventProperty;
 import net.minecraft.client.session.telemetry.TelemetryManager;
 import net.minecraft.client.sound.MusicTracker;
-import net.minecraft.client.sound.MusicType;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.texture.GuiAtlasManager;
 import net.minecraft.client.texture.MapDecorationsAtlasManager;
@@ -206,6 +204,7 @@ import net.minecraft.server.WorldGenerationProgressTracker;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.integrated.IntegratedServerLoader;
 import net.minecraft.sound.MusicSound;
+import net.minecraft.sound.MusicType;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.KeybindTranslations;
 import net.minecraft.text.MutableText;
@@ -230,6 +229,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashMemoryReserve;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.crash.ReportType;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -266,7 +266,7 @@ import org.slf4j.Logger;
  * The Minecraft client instance may be obtained using {@link MinecraftClient#getInstance()}.
  * 
  * <p>Rendering on a Minecraft client is split into several facilities.
- * The primary entrypoint for rendering is {@link net.minecraft.client.render.GameRenderer#render(float, long, boolean)}.
+ * The primary entrypoint for rendering is {@link net.minecraft.client.render.GameRenderer#render}.
  * <div class="fabric"><table border=1>
  * <caption>Rendering facilities</caption>
  * <tr>
@@ -307,10 +307,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final boolean IS_SYSTEM_MAC = Util.getOperatingSystem() == Util.OperatingSystem.OSX;
 	private static final int field_32145 = 10;
-	public static final Identifier DEFAULT_FONT_ID = Identifier.method_60656("default");
-	public static final Identifier UNICODE_FONT_ID = Identifier.method_60656("uniform");
-	public static final Identifier ALT_TEXT_RENDERER_ID = Identifier.method_60656("alt");
-	private static final Identifier REGIONAL_COMPLIANCIES_ID = Identifier.method_60656("regional_compliancies.json");
+	public static final Identifier DEFAULT_FONT_ID = Identifier.ofVanilla("default");
+	public static final Identifier UNICODE_FONT_ID = Identifier.ofVanilla("uniform");
+	public static final Identifier ALT_TEXT_RENDERER_ID = Identifier.ofVanilla("alt");
+	private static final Identifier REGIONAL_COMPLIANCIES_ID = Identifier.ofVanilla("regional_compliancies.json");
 	private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
 	private static final Text SOCIAL_INTERACTIONS_NOT_AVAILABLE = Text.translatable("multiplayer.socialInteractions.not_available");
 	/**
@@ -949,7 +949,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public static void printCrashReport(@Nullable MinecraftClient client, File runDirectory, CrashReport crashReport) {
 		Path path = runDirectory.toPath().resolve("crash-reports");
 		Path path2 = path.resolve("crash-" + Util.getFormattedCurrentTime() + "-client.txt");
-		Bootstrap.println(crashReport.method_60920(class_9813.MINECRAFT_CRASH_REPORT));
+		Bootstrap.println(crashReport.asString(ReportType.MINECRAFT_CRASH_REPORT));
 		if (client != null) {
 			client.soundManager.stopAbruptly();
 		}
@@ -957,7 +957,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		if (crashReport.getFile() != null) {
 			Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + crashReport.getFile().toAbsolutePath());
 			System.exit(-1);
-		} else if (crashReport.method_60919(path2, class_9813.MINECRAFT_CRASH_REPORT)) {
+		} else if (crashReport.writeToFIle(path2, ReportType.MINECRAFT_CRASH_REPORT)) {
 			Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + path2.toAbsolutePath());
 			System.exit(-1);
 		} else {
@@ -1604,7 +1604,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		for (ProfilerTiming profilerTiming2 : list) {
 			int l = MathHelper.floor(profilerTiming2.parentSectionUsagePercentage / 4.0) + 1;
-			BufferBuilder bufferBuilder = tessellator.method_60827(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
+			BufferBuilder bufferBuilder = tessellator.begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
 			int m = ColorHelper.Argb.fullAlpha(profilerTiming2.getColor());
 			int n = ColorHelper.Argb.mixColor(m, -8355712);
 			bufferBuilder.vertex((float)j, (float)k, 0.0F).color(m);
@@ -1616,8 +1616,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				bufferBuilder.vertex((float)j + g, (float)k - h, 0.0F).color(m);
 			}
 
-			BufferRenderer.drawWithGlobalProgram(bufferBuilder.method_60800());
-			bufferBuilder = tessellator.method_60827(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
+			BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+			bufferBuilder = tessellator.begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
 
 			for (int o = l; o >= 0; o--) {
 				float f = (float)((d + profilerTiming2.parentSectionUsagePercentage * (double)o / (double)l) * (float) (Math.PI * 2) / 100.0);
@@ -1629,9 +1629,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				}
 			}
 
-			class_9801 lv = bufferBuilder.method_60794();
-			if (lv != null) {
-				BufferRenderer.drawWithGlobalProgram(lv);
+			BuiltBuffer builtBuffer = bufferBuilder.endNullable();
+			if (builtBuffer != null) {
+				BufferRenderer.drawWithGlobalProgram(builtBuffer);
 			}
 
 			d += profilerTiming2.parentSectionUsagePercentage;
@@ -2504,7 +2504,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			"Window size",
 			(Supplier<String>)(() -> client != null ? client.window.getFramebufferWidth() + "x" + client.window.getFramebufferHeight() : "<not initialized>")
 		);
-		systemDetails.addSection("GFLW Platform", Window::method_60793);
+		systemDetails.addSection("GFLW Platform", Window::getGlfwPlatform);
 		systemDetails.addSection("GL Caps", RenderSystem::getCapsString);
 		systemDetails.addSection(
 			"GL debug messages", (Supplier<String>)(() -> GlDebug.isDebugMessageEnabled() ? String.join("\n", GlDebug.collectDebugMessages()) : "<disabled>")

@@ -40,5 +40,5 @@ public abstract class EntityTransformFix extends DataFix {
 		return new Typed<>(type, dynamicOps, (A)object);
 	}
 
-	protected abstract Pair<String, Typed<?>> transform(String choice, Typed<?> typed);
+	protected abstract Pair<String, Typed<?>> transform(String choice, Typed<?> entityTyped);
 }

@@ -11,12 +11,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
 import net.minecraft.Bootstrap;
-import net.minecraft.class_9813;
 import net.minecraft.util.TimeHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.crash.ReportType;
 import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 
@@ -73,9 +73,9 @@ public class DedicatedServerWatchdog implements Runnable {
 							.map(world -> world.getRegistryKey() + ": " + world.getDebugString())
 							.collect(Collectors.joining(",\n")))
 				);
-				Bootstrap.println("Crash report:\n" + crashReport.method_60920(class_9813.MINECRAFT_CRASH_REPORT));
+				Bootstrap.println("Crash report:\n" + crashReport.asString(ReportType.MINECRAFT_CRASH_REPORT));
 				Path path = this.server.getRunDirectory().resolve("crash-reports").resolve("crash-" + Util.getFormattedCurrentTime() + "-server.txt");
-				if (crashReport.method_60919(path, class_9813.MINECRAFT_CRASH_REPORT)) {
+				if (crashReport.writeToFIle(path, ReportType.MINECRAFT_CRASH_REPORT)) {
 					LOGGER.error("This crash report has been saved to: {}", path.toAbsolutePath());
 				} else {
 					LOGGER.error("We were unable to save this crash report to disk.");

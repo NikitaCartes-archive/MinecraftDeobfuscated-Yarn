@@ -51,8 +51,8 @@ public class ItemStackEnchantmentFix extends DataFix {
 		map.put(71, "minecraft:vanishing_curse");
 	});
 
-	public ItemStackEnchantmentFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemStackEnchantmentFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -60,30 +60,40 @@ public class ItemStackEnchantmentFix extends DataFix {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.ITEM_STACK);
 		OpticFinder<?> opticFinder = type.findField("tag");
 		return this.fixTypeEverywhereTyped(
-			"ItemStackEnchantmentFix", type, typed -> typed.updateTyped(opticFinder, typedx -> typedx.update(DSL.remainderFinder(), this::fixEnchantments))
+			"ItemStackEnchantmentFix",
+			type,
+			itemStackTyped -> itemStackTyped.updateTyped(opticFinder, tagTyped -> tagTyped.update(DSL.remainderFinder(), this::fixEnchantments))
 		);
 	}
 
-	private Dynamic<?> fixEnchantments(Dynamic<?> dynamic) {
-		Optional<? extends Dynamic<?>> optional = dynamic.get("ench")
+	private Dynamic<?> fixEnchantments(Dynamic<?> tagDynamic) {
+		Optional<? extends Dynamic<?>> optional = tagDynamic.get("ench")
 			.asStreamOpt()
-			.map(stream -> stream.map(dynamicx -> dynamicx.set("id", dynamicx.createString(ID_TO_ENCHANTMENTS_MAP.getOrDefault(dynamicx.get("id").asInt(0), "null")))))
-			.map(dynamic::createList)
+			.map(
+				enchantments -> enchantments.map(
+						enchantment -> enchantment.set("id", enchantment.createString(ID_TO_ENCHANTMENTS_MAP.getOrDefault(enchantment.get("id").asInt(0), "null")))
+					)
+			)
+			.map(tagDynamic::createList)
 			.result();
 		if (optional.isPresent()) {
-			dynamic = dynamic.remove("ench").set("Enchantments", (Dynamic<?>)optional.get());
+			tagDynamic = tagDynamic.remove("ench").set("Enchantments", (Dynamic<?>)optional.get());
 		}
 
-		return dynamic.update(
+		return tagDynamic.update(
 			"StoredEnchantments",
-			dynamicx -> DataFixUtils.orElse(
-					dynamicx.asStreamOpt()
+			storedEnchantmentsDynamic -> DataFixUtils.orElse(
+					storedEnchantmentsDynamic.asStreamOpt()
 						.map(
-							stream -> stream.map(dynamicxx -> dynamicxx.set("id", dynamicxx.createString(ID_TO_ENCHANTMENTS_MAP.getOrDefault(dynamicxx.get("id").asInt(0), "null"))))
+							storedEnchantments -> storedEnchantments.map(
+									storedEnchantment -> storedEnchantment.set(
+											"id", storedEnchantment.createString(ID_TO_ENCHANTMENTS_MAP.getOrDefault(storedEnchantment.get("id").asInt(0), "null"))
+										)
+								)
 						)
-						.map(dynamicx::createList)
+						.map(storedEnchantmentsDynamic::createList)
 						.result(),
-					dynamicx
+					storedEnchantmentsDynamic
 				)
 		);
 	}

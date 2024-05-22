@@ -37,8 +37,8 @@ public class BlockEntityIdFix extends DataFix {
 		map.put("Trap", "minecraft:dispenser");
 	});
 
-	public BlockEntityIdFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public BlockEntityIdFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class BlockEntityIdFix extends DataFix {
 				"BlockEntityIdFix",
 				taggedChoiceType,
 				taggedChoiceType2,
-				dynamicOps -> pair -> pair.mapFirst(string -> (String)RENAMED_BLOCK_ENTITIES.getOrDefault(string, string))
+				dynamicOps -> pair -> pair.mapFirst(oldName -> (String)RENAMED_BLOCK_ENTITIES.getOrDefault(oldName, oldName))
 			)
 		);
 	}

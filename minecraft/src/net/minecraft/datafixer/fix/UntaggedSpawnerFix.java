@@ -29,19 +29,19 @@ public class UntaggedSpawnerFix extends DataFix {
 			"Fix mob spawner data structure",
 			type,
 			type2,
-			typed -> typed.updateTyped(opticFinder, type3, typedx -> this.method_37974(type3, typedx))
-					.updateTyped(opticFinder2, type4, typedx -> this.fixSpawner(type4, typedx))
+			untaggedSpawnerTyped -> untaggedSpawnerTyped.updateTyped(opticFinder, type3, spawnDataTyped -> this.fixSpawnDataTyped(type3, spawnDataTyped))
+					.updateTyped(opticFinder2, type4, spawnPotentialsTyped -> this.fixSpawner(type4, spawnPotentialsTyped))
 		);
 	}
 
-	private <T> Typed<T> method_37974(Type<T> spawnDataType, Typed<?> typed) {
-		DynamicOps<?> dynamicOps = typed.getOps();
-		return new Typed<>(spawnDataType, dynamicOps, (T)Pair.<Object, Dynamic<?>>of(typed.getValue(), new Dynamic<>(dynamicOps)));
+	private <T> Typed<T> fixSpawnDataTyped(Type<T> spawnDataType, Typed<?> spawnDataTyped) {
+		DynamicOps<?> dynamicOps = spawnDataTyped.getOps();
+		return new Typed<>(spawnDataType, dynamicOps, (T)Pair.<Object, Dynamic<?>>of(spawnDataTyped.getValue(), new Dynamic<>(dynamicOps)));
 	}
 
-	private <T> Typed<T> fixSpawner(Type<T> spawnPotentialsType, Typed<?> typed) {
-		DynamicOps<?> dynamicOps = typed.getOps();
-		List<?> list = (List<?>)typed.getValue();
+	private <T> Typed<T> fixSpawner(Type<T> spawnPotentialsType, Typed<?> spawnPotentialsTyped) {
+		DynamicOps<?> dynamicOps = spawnPotentialsTyped.getOps();
+		List<?> list = (List<?>)spawnPotentialsTyped.getValue();
 		List<?> list2 = list.stream().map(object -> {
 			Pair<Object, Dynamic<?>> pair = (Pair<Object, Dynamic<?>>)object;
 			int i = ((Number)pair.getSecond().get("Weight").asNumber().result().orElse(1)).intValue();

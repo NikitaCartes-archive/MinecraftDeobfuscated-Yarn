@@ -43,6 +43,6 @@ public interface EnchantmentTags {
 	TagKey<Enchantment> TAIGA_SPECIAL_TRADE = of("trades/taiga_special");
 
 	private static TagKey<Enchantment> of(String id) {
-		return TagKey.of(RegistryKeys.ENCHANTMENT, Identifier.method_60656(id));
+		return TagKey.of(RegistryKeys.ENCHANTMENT, Identifier.ofVanilla(id));
 	}
 }

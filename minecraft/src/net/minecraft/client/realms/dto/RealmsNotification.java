@@ -112,7 +112,7 @@ public class RealmsNotification {
 		public static RealmsNotification.InfoPopup fromJson(RealmsNotification parent, JsonObject json) {
 			RealmsText realmsText = JsonUtils.get("title", json, RealmsText::fromJson);
 			RealmsText realmsText2 = JsonUtils.get("message", json, RealmsText::fromJson);
-			Identifier identifier = Identifier.method_60654(JsonUtils.getString("image", json));
+			Identifier identifier = Identifier.of(JsonUtils.getString("image", json));
 			RealmsNotification.UrlButton urlButton = JsonUtils.getNullable("urlButton", json, RealmsNotification.UrlButton::fromJson);
 			return new RealmsNotification.InfoPopup(parent, realmsText, realmsText2, identifier, urlButton);
 		}

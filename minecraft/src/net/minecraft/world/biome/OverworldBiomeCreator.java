@@ -1,12 +1,12 @@
 package net.minecraft.world.biome;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.sound.MusicType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.MusicSound;
+import net.minecraft.sound.MusicType;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.GenerationStep;
@@ -24,7 +24,7 @@ public class OverworldBiomeCreator {
 	private static final int DEFAULT_FOG_COLOR = 12638463;
 	@Nullable
 	private static final MusicSound DEFAULT_MUSIC = null;
-	public static final int field_51968 = 70;
+	public static final int SWAMP_SKELETON_WEIGHT = 70;
 
 	protected static int getSkyColor(float temperature) {
 		float f = temperature / 3.0F;

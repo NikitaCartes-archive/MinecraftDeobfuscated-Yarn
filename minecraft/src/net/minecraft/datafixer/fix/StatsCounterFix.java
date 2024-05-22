@@ -185,8 +185,8 @@ public class StatsCounterFix extends DataFix {
 		.build();
 	private static final String CUSTOM = "minecraft:custom";
 
-	public StatsCounterFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public StatsCounterFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Nullable
@@ -237,8 +237,8 @@ public class StatsCounterFix extends DataFix {
 	private TypeRewriteRule makeFirstRoundRule() {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.STATS);
 		Type<?> type2 = this.getOutputSchema().getType(TypeReferences.STATS);
-		return this.fixTypeEverywhereTyped("StatsCounterFix", type, type2, typed -> {
-			Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
+		return this.fixTypeEverywhereTyped("StatsCounterFix", type, type2, statsTyped -> {
+			Dynamic<?> dynamic = statsTyped.get(DSL.remainderFinder());
 			Map<Dynamic<?>, Dynamic<?>> map = Maps.<Dynamic<?>, Dynamic<?>>newHashMap();
 			Optional<? extends Map<? extends Dynamic<?>, ? extends Dynamic<?>>> optional = dynamic.getMapValues().result();
 			if (optional.isPresent()) {
@@ -262,16 +262,18 @@ public class StatsCounterFix extends DataFix {
 	private TypeRewriteRule makeSecondRoundRule() {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.OBJECTIVE);
 		Type<?> type2 = this.getOutputSchema().getType(TypeReferences.OBJECTIVE);
-		return this.fixTypeEverywhereTyped("ObjectiveStatFix", type, type2, typed -> {
-			Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
-			Dynamic<?> dynamic2 = dynamic.update("CriteriaName", dynamicx -> DataFixUtils.orElse(dynamicx.asString().result().map(criteriaName -> {
-					if (SKIPPED_STATS.contains(criteriaName)) {
-						return criteriaName;
-					} else {
-						StatsCounterFix.Stat stat = rename(criteriaName);
-						return stat == null ? "dummy" : Schema1451v6.toDotSeparated(stat.type) + ":" + Schema1451v6.toDotSeparated(stat.typeKey);
-					}
-				}).map(dynamicx::createString), dynamicx));
+		return this.fixTypeEverywhereTyped("ObjectiveStatFix", type, type2, objectiveTyped -> {
+			Dynamic<?> dynamic = objectiveTyped.get(DSL.remainderFinder());
+			Dynamic<?> dynamic2 = dynamic.update(
+				"CriteriaName", criteriaNameDynamic -> DataFixUtils.orElse(criteriaNameDynamic.asString().result().map(criteriaName -> {
+						if (SKIPPED_STATS.contains(criteriaName)) {
+							return criteriaName;
+						} else {
+							StatsCounterFix.Stat stat = rename(criteriaName);
+							return stat == null ? "dummy" : Schema1451v6.toDotSeparated(stat.type) + ":" + Schema1451v6.toDotSeparated(stat.typeKey);
+						}
+					}).map(criteriaNameDynamic::createString), criteriaNameDynamic)
+			);
 			return Util.readTyped(type2, dynamic2);
 		});
 	}

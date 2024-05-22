@@ -43,7 +43,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_9812;
 import net.minecraft.network.encryption.PacketDecryptor;
 import net.minecraft.network.encryption.PacketEncryptor;
 import net.minecraft.network.handler.DecoderHandler;
@@ -127,7 +126,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	@Nullable
 	private volatile PacketListener packetListener;
 	@Nullable
-	private class_9812 field_52180;
+	private DisconnectionInfo disconnectionInfo;
 	private boolean encrypted;
 	private boolean disconnected;
 	private int packetsReceivedCounter;
@@ -137,7 +136,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	private int ticks;
 	private boolean errored;
 	@Nullable
-	private volatile class_9812 pendingDisconnectionReason;
+	private volatile DisconnectionInfo pendingDisconnectionInfo;
 	@Nullable
 	PacketSizeLogger packetSizeLogger;
 
@@ -150,8 +149,8 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		super.channelActive(context);
 		this.channel = context.channel();
 		this.address = this.channel.remoteAddress();
-		if (this.pendingDisconnectionReason != null) {
-			this.method_60924(this.pendingDisconnectionReason);
+		if (this.pendingDisconnectionInfo != null) {
+			this.disconnect(this.pendingDisconnectionInfo);
 		}
 	}
 
@@ -174,26 +173,26 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 				} else {
 					Text text = Text.translatable("disconnect.genericReason", "Internal Exception: " + ex);
 					PacketListener packetListener = this.packetListener;
-					class_9812 lv;
+					DisconnectionInfo disconnectionInfo;
 					if (packetListener != null) {
-						lv = packetListener.method_60881(text, ex);
+						disconnectionInfo = packetListener.createDisconnectionInfo(text, ex);
 					} else {
-						lv = new class_9812(text);
+						disconnectionInfo = new DisconnectionInfo(text);
 					}
 
 					if (bl) {
 						LOGGER.debug("Failed to sent packet", ex);
 						if (this.getOppositeSide() == NetworkSide.CLIENTBOUND) {
 							Packet<?> packet = (Packet<?>)(this.duringLogin ? new LoginDisconnectS2CPacket(text) : new DisconnectS2CPacket(text));
-							this.send(packet, PacketCallbacks.always(() -> this.method_60924(lv)));
+							this.send(packet, PacketCallbacks.always(() -> this.disconnect(disconnectionInfo)));
 						} else {
-							this.method_60924(lv);
+							this.disconnect(disconnectionInfo);
 						}
 
 						this.tryDisableAutoRead();
 					} else {
 						LOGGER.debug("Double fault", ex);
-						this.method_60924(lv);
+						this.disconnect(disconnectionInfo);
 					}
 				}
 			}
@@ -458,17 +457,17 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	public void disconnect(Text disconnectReason) {
-		this.method_60924(new class_9812(disconnectReason));
+		this.disconnect(new DisconnectionInfo(disconnectReason));
 	}
 
-	public void method_60924(class_9812 arg) {
+	public void disconnect(DisconnectionInfo disconnectionInfo) {
 		if (this.channel == null) {
-			this.pendingDisconnectionReason = arg;
+			this.pendingDisconnectionInfo = disconnectionInfo;
 		}
 
 		if (this.isOpen()) {
 			this.channel.close().awaitUninterruptibly();
-			this.field_52180 = arg;
+			this.disconnectionInfo = disconnectionInfo;
 		}
 	}
 
@@ -610,8 +609,8 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	@Nullable
-	public class_9812 method_60926() {
-		return this.field_52180;
+	public DisconnectionInfo method_60926() {
+		return this.disconnectionInfo;
 	}
 
 	public void tryDisableAutoRead() {
@@ -666,8 +665,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 				PacketListener packetListener = this.getPacketListener();
 				PacketListener packetListener2 = packetListener != null ? packetListener : this.prePlayStateListener;
 				if (packetListener2 != null) {
-					class_9812 lv = (class_9812)Objects.requireNonNullElseGet(this.method_60926(), () -> new class_9812(Text.translatable("multiplayer.disconnect.generic")));
-					packetListener2.onDisconnected(lv);
+					DisconnectionInfo disconnectionInfo = (DisconnectionInfo)Objects.requireNonNullElseGet(
+						this.method_60926(), () -> new DisconnectionInfo(Text.translatable("multiplayer.disconnect.generic"))
+					);
+					packetListener2.onDisconnected(disconnectionInfo);
 				}
 			}
 		}

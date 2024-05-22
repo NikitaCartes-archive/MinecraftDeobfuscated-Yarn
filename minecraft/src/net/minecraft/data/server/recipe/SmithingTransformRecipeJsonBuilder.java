@@ -40,7 +40,7 @@ public class SmithingTransformRecipeJsonBuilder {
 	}
 
 	public void offerTo(RecipeExporter exporter, String recipeId) {
-		this.offerTo(exporter, Identifier.method_60654(recipeId));
+		this.offerTo(exporter, Identifier.of(recipeId));
 	}
 
 	public void offerTo(RecipeExporter exporter, Identifier recipeId) {

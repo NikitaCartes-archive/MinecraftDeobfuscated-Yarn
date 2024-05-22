@@ -129,7 +129,7 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 							dynamic.createList(Stream.of(dynamic.createMap(ImmutableMap.of(dynamic.createString("Name"), dynamic.createString("minecraft:air")))))
 						);
 						Set<String> set = Sets.<String>newHashSet();
-						MutableObject<Supplier<ProtoChunkTickListFix.class_6741>> mutableObject = new MutableObject<>(() -> null);
+						MutableObject<Supplier<ProtoChunkTickListFix.PalettedSection>> mutableObject = new MutableObject<>(() -> null);
 						level = level.updateTyped(opticFinder2, type4, sections -> {
 							IntSet intSet = new IntOpenHashSet();
 							Dynamic<?> dynamic3 = (Dynamic<?>)sections.write().result().orElseThrow(() -> new IllegalStateException("Malformed Chunk.Level.Sections"));
@@ -150,7 +150,7 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 									mutableObject.setValue(() -> {
 										List<? extends Dynamic<?>> listx = dynamic3x.get("palette").asList(Function.identity());
 										long[] ls = dynamic3x.get("data").asLongStream().toArray();
-										return new ProtoChunkTickListFix.class_6741(listx, ls);
+										return new ProtoChunkTickListFix.PalettedSection(listx, ls);
 									});
 								}
 
@@ -242,7 +242,7 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 	}
 
 	private static Dynamic<?> fixLevel(
-		Dynamic<?> level, boolean overworld, boolean heightAlreadyUpdated, boolean atNoiseStatus, Supplier<ProtoChunkTickListFix.class_6741> supplier
+		Dynamic<?> level, boolean overworld, boolean heightAlreadyUpdated, boolean atNoiseStatus, Supplier<ProtoChunkTickListFix.PalettedSection> supplier
 	) {
 		level = level.remove("Biomes");
 		if (!overworld) {
@@ -265,14 +265,14 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 					String string = dynamic.asString("");
 					if (!"empty".equals(string)) {
 						level = level.set("blending_data", level.createMap(ImmutableMap.of(level.createString("old_noise"), level.createBoolean(field_35668.contains(string)))));
-						ProtoChunkTickListFix.class_6741 lv = (ProtoChunkTickListFix.class_6741)supplier.get();
-						if (lv != null) {
+						ProtoChunkTickListFix.PalettedSection palettedSection = (ProtoChunkTickListFix.PalettedSection)supplier.get();
+						if (palettedSection != null) {
 							BitSet bitSet = new BitSet(256);
 							boolean bl = string.equals("noise");
 
 							for (int i = 0; i < 16; i++) {
 								for (int j = 0; j < 16; j++) {
-									Dynamic<?> dynamic2 = lv.method_39265(j, 0, i);
+									Dynamic<?> dynamic2 = palettedSection.get(j, 0, i);
 									boolean bl2 = dynamic2 != null && "minecraft:bedrock".equals(dynamic2.get("Name").asString(""));
 									boolean bl3 = dynamic2 != null && "minecraft:air".equals(dynamic2.get("Name").asString(""));
 									if (bl3) {

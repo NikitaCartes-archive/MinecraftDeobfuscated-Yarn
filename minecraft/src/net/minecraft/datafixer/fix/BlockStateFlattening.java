@@ -21,10 +21,13 @@ public class BlockStateFlattening {
 	);
 	static final String FILTER_ME = "%%FILTER_ME%%";
 
-	private static void putStates(int oldId, String newStateStr, String... oldStateStrings) {
+	/**
+	 * @param oldIdAndMeta {@code (id << 4) | metadata}
+	 */
+	private static void putStates(int oldIdAndMeta, String newStateStr, String... oldStateStrings) {
 		Dynamic<?> dynamic = parseState(newStateStr);
-		OLD_STATE_TO_DYNAMIC[oldId] = dynamic;
-		int i = oldId >> 4;
+		OLD_STATE_TO_DYNAMIC[oldIdAndMeta] = dynamic;
+		int i = oldIdAndMeta >> 4;
 		if (OLD_BLOCK_TO_DYNAMIC[i] == null) {
 			OLD_BLOCK_TO_DYNAMIC[i] = dynamic;
 		}
@@ -32,8 +35,8 @@ public class BlockStateFlattening {
 		for (String string : oldStateStrings) {
 			Dynamic<?> dynamic2 = parseState(string);
 			String string2 = dynamic2.get("Name").asString("");
-			OLD_BLOCK_TO_ID.putIfAbsent(string2, oldId);
-			OLD_STATE_TO_ID.put(dynamic2, oldId);
+			OLD_BLOCK_TO_ID.putIfAbsent(string2, oldIdAndMeta);
+			OLD_STATE_TO_ID.put(dynamic2, oldIdAndMeta);
 		}
 	}
 

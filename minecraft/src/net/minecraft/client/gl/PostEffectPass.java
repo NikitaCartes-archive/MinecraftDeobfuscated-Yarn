@@ -80,12 +80,12 @@ public class PostEffectPass implements AutoCloseable {
 		this.output.clear(MinecraftClient.IS_SYSTEM_MAC);
 		this.output.beginWrite(false);
 		RenderSystem.depthFunc(519);
-		BufferBuilder bufferBuilder = Tessellator.getInstance().method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
+		BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
 		bufferBuilder.vertex(0.0F, 0.0F, 500.0F);
 		bufferBuilder.vertex(f, 0.0F, 500.0F);
 		bufferBuilder.vertex(f, g, 500.0F);
 		bufferBuilder.vertex(0.0F, g, 500.0F);
-		BufferRenderer.draw(bufferBuilder.method_60800());
+		BufferRenderer.draw(bufferBuilder.end());
 		RenderSystem.depthFunc(515);
 		this.program.disable();
 		this.output.endWrite();

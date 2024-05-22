@@ -71,6 +71,6 @@ public class SensorType<U extends Sensor<?>> {
 	}
 
 	private static <U extends Sensor<?>> SensorType<U> register(String id, Supplier<U> factory) {
-		return Registry.register(Registries.SENSOR_TYPE, Identifier.method_60656(id), new SensorType<>(factory));
+		return Registry.register(Registries.SENSOR_TYPE, Identifier.ofVanilla(id), new SensorType<>(factory));
 	}
 }

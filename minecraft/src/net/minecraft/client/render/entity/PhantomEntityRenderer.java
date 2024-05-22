@@ -12,7 +12,7 @@ import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class PhantomEntityRenderer extends MobEntityRenderer<PhantomEntity, PhantomEntityModel<PhantomEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/phantom.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/phantom.png");
 
 	public PhantomEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new PhantomEntityModel<>(context.getPart(EntityModelLayers.PHANTOM)), 0.75F);

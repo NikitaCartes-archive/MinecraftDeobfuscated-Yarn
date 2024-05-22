@@ -130,8 +130,8 @@ public class OptionsKeyLwjgl3Fix extends DataFix {
 		map.put(44, "key.z");
 	});
 
-	public OptionsKeyLwjgl3Fix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public OptionsKeyLwjgl3Fix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -139,10 +139,10 @@ public class OptionsKeyLwjgl3Fix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"OptionsKeyLwjgl3Fix",
 			this.getInputSchema().getType(TypeReferences.OPTIONS),
-			typed -> typed.update(
+			optionsTyped -> optionsTyped.update(
 					DSL.remainderFinder(),
-					dynamic -> (Dynamic)dynamic.getMapValues()
-							.map(map -> dynamic.createMap((Map<? extends Dynamic<?>, ? extends Dynamic<?>>)map.entrySet().stream().map(entry -> {
+					optionsDynamic -> (Dynamic)optionsDynamic.getMapValues()
+							.map(optionsMap -> optionsDynamic.createMap((Map<? extends Dynamic<?>, ? extends Dynamic<?>>)optionsMap.entrySet().stream().map(entry -> {
 									if (((Dynamic)entry.getKey()).asString("").startsWith("key_")) {
 										int i = Integer.parseInt(((Dynamic)entry.getValue()).asString(""));
 										if (i < 0) {
@@ -168,7 +168,7 @@ public class OptionsKeyLwjgl3Fix extends DataFix {
 									}
 								}).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))))
 							.result()
-							.orElse(dynamic)
+							.orElse(optionsDynamic)
 				)
 		);
 	}

@@ -2,7 +2,7 @@ package net.minecraft.item;
 
 import java.util.List;
 import net.minecraft.block.entity.BannerPattern;
-import net.minecraft.client.item.TooltipType;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;

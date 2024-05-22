@@ -276,8 +276,8 @@ public class EntityBlockStateFix extends DataFix {
 		map.put("minecraft:structure_block", 255);
 	});
 
-	public EntityBlockStateFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public EntityBlockStateFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	public static int getNumericalBlockId(String blockId) {

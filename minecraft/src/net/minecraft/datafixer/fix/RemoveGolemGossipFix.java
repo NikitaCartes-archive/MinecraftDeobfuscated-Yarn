@@ -7,18 +7,19 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class RemoveGolemGossipFix extends ChoiceFix {
-	public RemoveGolemGossipFix(Schema schema, boolean bl) {
-		super(schema, bl, "Remove Golem Gossip Fix", TypeReferences.ENTITY, "minecraft:villager");
+	public RemoveGolemGossipFix(Schema outputSchema, boolean changesTyped) {
+		super(outputSchema, changesTyped, "Remove Golem Gossip Fix", TypeReferences.ENTITY, "minecraft:villager");
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(DSL.remainderFinder(), RemoveGolemGossipFix::updateGossipsList);
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(DSL.remainderFinder(), RemoveGolemGossipFix::updateGossipsList);
 	}
 
 	private static Dynamic<?> updateGossipsList(Dynamic<?> villagerData) {
 		return villagerData.update(
-			"Gossips", dynamic2 -> villagerData.createList(dynamic2.asStream().filter(dynamicx -> !dynamicx.get("Type").asString("").equals("golem")))
+			"Gossips",
+			gossipsDynamic -> villagerData.createList(gossipsDynamic.asStream().filter(gossipDynamic -> !gossipDynamic.get("Type").asString("").equals("golem")))
 		);
 	}
 }

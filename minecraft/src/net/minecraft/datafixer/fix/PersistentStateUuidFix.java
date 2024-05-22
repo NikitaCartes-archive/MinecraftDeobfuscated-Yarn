@@ -20,22 +20,23 @@ public class PersistentStateUuidFix extends AbstractUuidFix {
 		return this.fixTypeEverywhereTyped(
 			"SavedDataUUIDFix",
 			this.getInputSchema().getType(this.typeReference),
-			typed -> typed.update(
+			raidsDataTyped -> raidsDataTyped.update(
 					DSL.remainderFinder(),
-					dynamic -> dynamic.update(
+					raidsDataDynamic -> raidsDataDynamic.update(
 							"data",
-							dynamicx -> dynamicx.update(
+							dataDynamic -> dataDynamic.update(
 									"Raids",
-									dynamicxx -> dynamicxx.createList(
-											dynamicxx.asStream()
+									raidsDynamic -> raidsDynamic.createList(
+											raidsDynamic.asStream()
 												.map(
-													dynamicxxx -> dynamicxxx.update(
+													raidDynamic -> raidDynamic.update(
 															"HeroesOfTheVillage",
-															dynamicxxxx -> dynamicxxxx.createList(
-																	dynamicxxxx.asStream().map(dynamicxxxxx -> (Dynamic)createArrayFromMostLeastTags(dynamicxxxxx, "UUIDMost", "UUIDLeast").orElseGet(() -> {
-																			LOGGER.warn("HeroesOfTheVillage contained invalid UUIDs.");
-																			return dynamicxxxxx;
-																		}))
+															heroesOfTheVillageDynamic -> heroesOfTheVillageDynamic.createList(
+																	heroesOfTheVillageDynamic.asStream()
+																		.map(heroOfTheVillageDynamic -> (Dynamic)createArrayFromMostLeastTags(heroOfTheVillageDynamic, "UUIDMost", "UUIDLeast").orElseGet(() -> {
+																				LOGGER.warn("HeroesOfTheVillage contained invalid UUIDs.");
+																				return heroOfTheVillageDynamic;
+																			}))
 																)
 														)
 												)

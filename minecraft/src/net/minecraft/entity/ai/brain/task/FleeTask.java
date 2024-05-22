@@ -28,22 +28,22 @@ public class FleeTask<E extends PathAwareEntity> extends MultiTickTask<E> {
 	private static final int HORIZONTAL_RANGE = 5;
 	private static final int VERTICAL_RANGE = 4;
 	private final float speed;
-	private final Function<PathAwareEntity, TagKey<DamageType>> field_52010;
+	private final Function<PathAwareEntity, TagKey<DamageType>> entityToDangerousDamageTypes;
 
 	public FleeTask(float speed) {
-		this(speed, pathAwareEntity -> DamageTypeTags.PANIC_CAUSES);
+		this(speed, entity -> DamageTypeTags.PANIC_CAUSES);
 	}
 
-	public FleeTask(float speed, Function<PathAwareEntity, TagKey<DamageType>> function) {
+	public FleeTask(float speed, Function<PathAwareEntity, TagKey<DamageType>> entityToDangerousDamageTypes) {
 		super(Map.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.REGISTERED, MemoryModuleType.HURT_BY, MemoryModuleState.REGISTERED), 100, 120);
 		this.speed = speed;
-		this.field_52010 = function;
+		this.entityToDangerousDamageTypes = entityToDangerousDamageTypes;
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, E pathAwareEntity) {
 		return (Boolean)pathAwareEntity.getBrain()
 				.getOptionalRegisteredMemory(MemoryModuleType.HURT_BY)
-				.map(damageSource -> damageSource.isIn((TagKey<DamageType>)this.field_52010.apply(pathAwareEntity)))
+				.map(hurtBy -> hurtBy.isIn((TagKey<DamageType>)this.entityToDangerousDamageTypes.apply(pathAwareEntity)))
 				.orElse(false)
 			|| pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.IS_PANICKING);
 	}

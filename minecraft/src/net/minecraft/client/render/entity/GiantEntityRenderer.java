@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class GiantEntityRenderer extends MobEntityRenderer<GiantEntity, BipedEntityModel<GiantEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/zombie/zombie.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/zombie/zombie.png");
 	private final float scale;
 
 	public GiantEntityRenderer(EntityRendererFactory.Context ctx, float scale) {

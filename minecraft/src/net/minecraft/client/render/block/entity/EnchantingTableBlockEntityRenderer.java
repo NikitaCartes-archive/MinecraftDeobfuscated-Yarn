@@ -18,7 +18,7 @@ import net.minecraft.util.math.RotationAxis;
 @Environment(EnvType.CLIENT)
 public class EnchantingTableBlockEntityRenderer implements BlockEntityRenderer<EnchantingTableBlockEntity> {
 	public static final SpriteIdentifier BOOK_TEXTURE = new SpriteIdentifier(
-		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.method_60656("entity/enchanting_table_book")
+		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.ofVanilla("entity/enchanting_table_book")
 	);
 	private final BookModel book;
 

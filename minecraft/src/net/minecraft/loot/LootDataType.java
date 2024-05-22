@@ -18,9 +18,9 @@ import org.slf4j.Logger;
 
 public record LootDataType<T>(RegistryKey<Registry<T>> registryKey, Codec<T> codec, LootDataType.Validator<T> validator) {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final LootDataType<LootCondition> field_44496 = new LootDataType<>(RegistryKeys.PREDICATE, LootCondition.CODEC, simpleValidator());
-	public static final LootDataType<LootFunction> field_44497 = new LootDataType<>(RegistryKeys.ITEM_MODIFIER, LootFunctionTypes.CODEC, simpleValidator());
-	public static final LootDataType<LootTable> field_44498 = new LootDataType<>(RegistryKeys.LOOT_TABLE, LootTable.CODEC, tableValidator());
+	public static final LootDataType<LootCondition> PREDICATES = new LootDataType<>(RegistryKeys.PREDICATE, LootCondition.CODEC, simpleValidator());
+	public static final LootDataType<LootFunction> ITEM_MODIFIERS = new LootDataType<>(RegistryKeys.ITEM_MODIFIER, LootFunctionTypes.CODEC, simpleValidator());
+	public static final LootDataType<LootTable> LOOT_TABLES = new LootDataType<>(RegistryKeys.LOOT_TABLE, LootTable.CODEC, tableValidator());
 
 	public void validate(LootTableReporter reporter, RegistryKey<T> key, T value) {
 		this.validator.run(reporter, key, value);
@@ -33,7 +33,7 @@ public record LootDataType<T>(RegistryKey<Registry<T>> registryKey, Codec<T> cod
 	}
 
 	public static Stream<LootDataType<?>> stream() {
-		return Stream.of(field_44496, field_44497, field_44498);
+		return Stream.of(PREDICATES, ITEM_MODIFIERS, LOOT_TABLES);
 	}
 
 	private static <T extends LootContextAware> LootDataType.Validator<T> simpleValidator() {

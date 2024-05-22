@@ -71,7 +71,7 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public boolean method_60791(int i) {
+	public boolean isSectionEmpty(int sectionCoord) {
 		return true;
 	}
 

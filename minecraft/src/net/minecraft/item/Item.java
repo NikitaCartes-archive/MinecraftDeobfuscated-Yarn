@@ -9,18 +9,15 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_9791;
-import net.minecraft.class_9792;
-import net.minecraft.class_9793;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.item.TooltipData;
-import net.minecraft.client.item.TooltipType;
+import net.minecraft.block.jukebox.JukeboxSong;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.FoodComponent;
+import net.minecraft.component.type.JukeboxPlayableComponent;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.component.type.ToolComponent;
 import net.minecraft.entity.Entity;
@@ -31,8 +28,11 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.map.MapState;
+import net.minecraft.item.tooltip.TooltipData;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryPair;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
@@ -88,8 +88,8 @@ import org.slf4j.Logger;
 public class Item implements ToggleableFeature, ItemConvertible {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Map<Block, Item> BLOCK_ITEMS = Maps.<Block, Item>newHashMap();
-	public static final Identifier ATTACK_DAMAGE_MODIFIER_ID = Identifier.method_60656("base_attack_damage");
-	public static final Identifier ATTACK_SPEED_MODIFIER_ID = Identifier.method_60656("base_attack_speed");
+	public static final Identifier BASE_ATTACK_DAMAGE_MODIFIER_ID = Identifier.ofVanilla("base_attack_damage");
+	public static final Identifier BASE_ATTACK_SPEED_MODIFIER_ID = Identifier.ofVanilla("base_attack_speed");
 	public static final int DEFAULT_MAX_COUNT = 64;
 	public static final int MAX_MAX_COUNT = 99;
 	public static final int ITEM_BAR_STEPS = 13;
@@ -737,8 +737,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 			return this.component(DataComponentTypes.FIRE_RESISTANT, Unit.INSTANCE);
 		}
 
-		public Item.Settings method_60745(RegistryKey<class_9793> registryKey) {
-			return this.component(DataComponentTypes.JUKEBOX_PLAYABLE, new class_9792(new class_9791<>(registryKey), true));
+		public Item.Settings jukeboxPlayable(RegistryKey<JukeboxSong> songKey) {
+			return this.component(DataComponentTypes.JUKEBOX_PLAYABLE, new JukeboxPlayableComponent(new RegistryPair<>(songKey), true));
 		}
 
 		public Item.Settings requires(FeatureFlag... features) {

@@ -14,15 +14,15 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.math.MathHelper;
 
 public class VillagerXpRebuildFix extends DataFix {
-	private static final int field_29914 = 2;
+	private static final int TRADES_PER_LEVEL = 2;
 	private static final int[] LEVEL_TO_XP = new int[]{0, 10, 50, 100, 150};
 
 	public static int levelToXp(int level) {
 		return LEVEL_TO_XP[MathHelper.clamp(level - 1, 0, LEVEL_TO_XP.length - 1)];
 	}
 
-	public VillagerXpRebuildFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public VillagerXpRebuildFix(Schema outputSchema, boolean changesTyped) {
+		super(outputSchema, changesTyped);
 	}
 
 	@Override
@@ -37,41 +37,44 @@ public class VillagerXpRebuildFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"Villager level and xp rebuild",
 			this.getInputSchema().getType(TypeReferences.ENTITY),
-			typed -> typed.updateTyped(
+			entityTyped -> entityTyped.updateTyped(
 					opticFinder,
 					type,
-					typedx -> {
-						Dynamic<?> dynamic = typedx.get(DSL.remainderFinder());
+					villagerTyped -> {
+						Dynamic<?> dynamic = villagerTyped.get(DSL.remainderFinder());
 						int i = dynamic.get("VillagerData").get("level").asInt(0);
-						Typed<?> typed2 = typedx;
+						Typed<?> typed = villagerTyped;
 						if (i == 0 || i == 1) {
-							int j = (Integer)typedx.getOptionalTyped(opticFinder2)
-								.flatMap(typedxx -> typedxx.getOptionalTyped(opticFinder3))
-								.map(typedxx -> typedxx.getAllTyped(opticFinder4).size())
+							int j = (Integer)villagerTyped.getOptionalTyped(opticFinder2)
+								.flatMap(offersTyped -> offersTyped.getOptionalTyped(opticFinder3))
+								.map(recipesTyped -> recipesTyped.getAllTyped(opticFinder4).size())
 								.orElse(0);
 							i = MathHelper.clamp(j / 2, 1, 5);
 							if (i > 1) {
-								typed2 = fixLevel(typedx, i);
+								typed = fixLevel(villagerTyped, i);
 							}
 						}
 
 						Optional<Number> optional = dynamic.get("Xp").asNumber().result();
 						if (optional.isEmpty()) {
-							typed2 = fixXp(typed2, i);
+							typed = fixXp(typed, i);
 						}
 
-						return typed2;
+						return typed;
 					}
 				)
 		);
 	}
 
-	private static Typed<?> fixLevel(Typed<?> typed, int level) {
-		return typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("VillagerData", dynamicx -> dynamicx.set("level", dynamicx.createInt(level))));
+	private static Typed<?> fixLevel(Typed<?> villagerTyped, int level) {
+		return villagerTyped.update(
+			DSL.remainderFinder(),
+			villagerdynamic -> villagerdynamic.update("VillagerData", villagerDataDynamic -> villagerDataDynamic.set("level", villagerDataDynamic.createInt(level)))
+		);
 	}
 
-	private static Typed<?> fixXp(Typed<?> typed, int level) {
+	private static Typed<?> fixXp(Typed<?> villagerTyped, int level) {
 		int i = levelToXp(level);
-		return typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("Xp", dynamic.createInt(i)));
+		return villagerTyped.update(DSL.remainderFinder(), villagerDynamic -> villagerDynamic.set("Xp", villagerDynamic.createInt(i)));
 	}
 }

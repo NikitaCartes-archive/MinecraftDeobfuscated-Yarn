@@ -16,7 +16,7 @@ public class EntityBrushableBlockFieldsRenameFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(DSL.remainderFinder(), this::renameFields);
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(DSL.remainderFinder(), this::renameFields);
 	}
 }

@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.class_9789;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
@@ -40,10 +39,11 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameModeList;
 
 public record PlayerPredicate(
 	NumberRange.IntRange experienceLevel,
-	class_9789 gameMode,
+	GameModeList gameMode,
 	List<PlayerPredicate.StatMatcher<?>> stats,
 	Object2BooleanMap<Identifier> recipes,
 	Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements,
@@ -53,7 +53,7 @@ public record PlayerPredicate(
 	public static final MapCodec<PlayerPredicate> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					NumberRange.IntRange.CODEC.optionalFieldOf("level", NumberRange.IntRange.ANY).forGetter(PlayerPredicate::experienceLevel),
-					class_9789.field_52014.optionalFieldOf("gamemode", class_9789.field_52012).forGetter(PlayerPredicate::gameMode),
+					GameModeList.CODEC.optionalFieldOf("gamemode", GameModeList.ALL).forGetter(PlayerPredicate::gameMode),
 					PlayerPredicate.StatMatcher.CODEC.listOf().optionalFieldOf("stats", List.of()).forGetter(PlayerPredicate::stats),
 					Codecs.object2BooleanMap(Identifier.CODEC).optionalFieldOf("recipes", Object2BooleanMaps.emptyMap()).forGetter(PlayerPredicate::recipes),
 					Codec.unboundedMap(Identifier.CODEC, PlayerPredicate.AdvancementPredicate.CODEC)
@@ -70,7 +70,7 @@ public record PlayerPredicate(
 			return false;
 		} else if (!this.experienceLevel.test(serverPlayerEntity.experienceLevel)) {
 			return false;
-		} else if (!this.gameMode.method_60723(serverPlayerEntity.interactionManager.getGameMode())) {
+		} else if (!this.gameMode.contains(serverPlayerEntity.interactionManager.getGameMode())) {
 			return false;
 		} else {
 			StatHandler statHandler = serverPlayerEntity.getStatHandler();
@@ -160,7 +160,7 @@ public record PlayerPredicate(
 
 	public static class Builder {
 		private NumberRange.IntRange experienceLevel = NumberRange.IntRange.ANY;
-		private class_9789 gameMode = class_9789.field_52012;
+		private GameModeList gameMode = GameModeList.ALL;
 		private final ImmutableList.Builder<PlayerPredicate.StatMatcher<?>> stats = ImmutableList.builder();
 		private final Object2BooleanMap<Identifier> recipes = new Object2BooleanOpenHashMap<>();
 		private final Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements = Maps.<Identifier, PlayerPredicate.AdvancementPredicate>newHashMap();
@@ -185,8 +185,8 @@ public record PlayerPredicate(
 			return this;
 		}
 
-		public PlayerPredicate.Builder gameMode(class_9789 arg) {
-			this.gameMode = arg;
+		public PlayerPredicate.Builder gameMode(GameModeList gameMode) {
+			this.gameMode = gameMode;
 			return this;
 		}
 

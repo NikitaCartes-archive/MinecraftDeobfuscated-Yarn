@@ -18,10 +18,10 @@ import net.minecraft.util.collection.DefaultedList;
 @Environment(EnvType.CLIENT)
 public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 	private static final ButtonTextures TEXTURES = new ButtonTextures(
-		Identifier.method_60656("recipe_book/furnace_filter_enabled"),
-		Identifier.method_60656("recipe_book/furnace_filter_disabled"),
-		Identifier.method_60656("recipe_book/furnace_filter_enabled_highlighted"),
-		Identifier.method_60656("recipe_book/furnace_filter_disabled_highlighted")
+		Identifier.ofVanilla("recipe_book/furnace_filter_enabled"),
+		Identifier.ofVanilla("recipe_book/furnace_filter_disabled"),
+		Identifier.ofVanilla("recipe_book/furnace_filter_enabled_highlighted"),
+		Identifier.ofVanilla("recipe_book/furnace_filter_disabled_highlighted")
 	);
 	@Nullable
 	private Ingredient fuels;

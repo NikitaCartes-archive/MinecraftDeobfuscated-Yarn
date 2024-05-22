@@ -24,7 +24,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class AdvancementsScreen extends Screen implements ClientAdvancementManager.Listener {
-	private static final Identifier WINDOW_TEXTURE = Identifier.method_60656("textures/gui/advancements/window.png");
+	private static final Identifier WINDOW_TEXTURE = Identifier.ofVanilla("textures/gui/advancements/window.png");
 	public static final int WINDOW_WIDTH = 252;
 	public static final int WINDOW_HEIGHT = 140;
 	private static final int PAGE_OFFSET_X = 9;

@@ -37,29 +37,29 @@ public class GlyphRenderer {
 		float i = y + this.maxY;
 		float j = italic ? 1.0F - 0.25F * this.minY : 0.0F;
 		float k = italic ? 1.0F - 0.25F * this.maxY : 0.0F;
-		vertexConsumer.vertex(matrix, f + j, h, 0.0F).color(red, green, blue, alpha).texture(this.minU, this.minV).method_60803(light);
-		vertexConsumer.vertex(matrix, f + k, i, 0.0F).color(red, green, blue, alpha).texture(this.minU, this.maxV).method_60803(light);
-		vertexConsumer.vertex(matrix, g + k, i, 0.0F).color(red, green, blue, alpha).texture(this.maxU, this.maxV).method_60803(light);
-		vertexConsumer.vertex(matrix, g + j, h, 0.0F).color(red, green, blue, alpha).texture(this.maxU, this.minV).method_60803(light);
+		vertexConsumer.vertex(matrix, f + j, h, 0.0F).color(red, green, blue, alpha).texture(this.minU, this.minV).light(light);
+		vertexConsumer.vertex(matrix, f + k, i, 0.0F).color(red, green, blue, alpha).texture(this.minU, this.maxV).light(light);
+		vertexConsumer.vertex(matrix, g + k, i, 0.0F).color(red, green, blue, alpha).texture(this.maxU, this.maxV).light(light);
+		vertexConsumer.vertex(matrix, g + j, h, 0.0F).color(red, green, blue, alpha).texture(this.maxU, this.minV).light(light);
 	}
 
 	public void drawRectangle(GlyphRenderer.Rectangle rectangle, Matrix4f matrix, VertexConsumer vertexConsumer, int light) {
 		vertexConsumer.vertex(matrix, rectangle.minX, rectangle.minY, rectangle.zIndex)
 			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
 			.texture(this.minU, this.minV)
-			.method_60803(light);
+			.light(light);
 		vertexConsumer.vertex(matrix, rectangle.maxX, rectangle.minY, rectangle.zIndex)
 			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
 			.texture(this.minU, this.maxV)
-			.method_60803(light);
+			.light(light);
 		vertexConsumer.vertex(matrix, rectangle.maxX, rectangle.maxY, rectangle.zIndex)
 			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
 			.texture(this.maxU, this.maxV)
-			.method_60803(light);
+			.light(light);
 		vertexConsumer.vertex(matrix, rectangle.minX, rectangle.maxY, rectangle.zIndex)
 			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
 			.texture(this.maxU, this.minV)
-			.method_60803(light);
+			.light(light);
 	}
 
 	public RenderLayer getLayer(TextRenderer.TextLayerType layerType) {

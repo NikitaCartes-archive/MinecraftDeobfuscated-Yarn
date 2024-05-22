@@ -245,17 +245,15 @@ public class AttributeCommand {
 	}
 
 	private static int executeModifierValueGet(
-		ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, Identifier identifier, double multiplier
+		ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, Identifier id, double multiplier
 	) throws CommandSyntaxException {
 		LivingEntity livingEntity = getLivingEntityWithAttribute(target, attribute);
 		AttributeContainer attributeContainer = livingEntity.getAttributes();
-		if (!attributeContainer.hasModifierForAttribute(attribute, identifier)) {
-			throw NO_MODIFIER_EXCEPTION.create(target.getName(), getName(attribute), identifier);
+		if (!attributeContainer.hasModifierForAttribute(attribute, id)) {
+			throw NO_MODIFIER_EXCEPTION.create(target.getName(), getName(attribute), id);
 		} else {
-			double d = attributeContainer.getModifierValue(attribute, identifier);
-			source.sendFeedback(
-				() -> Text.translatable("commands.attribute.modifier.value.get.success", Text.of(identifier), getName(attribute), target.getName(), d), false
-			);
+			double d = attributeContainer.getModifierValue(attribute, id);
+			source.sendFeedback(() -> Text.translatable("commands.attribute.modifier.value.get.success", Text.of(id), getName(attribute), target.getName(), d), false);
 			return (int)(d * multiplier);
 		}
 	}
@@ -267,31 +265,26 @@ public class AttributeCommand {
 	}
 
 	private static int executeModifierAdd(
-		ServerCommandSource source,
-		Entity target,
-		RegistryEntry<EntityAttribute> attribute,
-		Identifier identifier,
-		double d,
-		EntityAttributeModifier.Operation operation
+		ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, Identifier id, double value, EntityAttributeModifier.Operation operation
 	) throws CommandSyntaxException {
 		EntityAttributeInstance entityAttributeInstance = getAttributeInstance(target, attribute);
-		EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(identifier, d, operation);
-		if (entityAttributeInstance.hasModifier(identifier)) {
-			throw MODIFIER_ALREADY_PRESENT_EXCEPTION.create(target.getName(), getName(attribute), identifier);
+		EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(id, value, operation);
+		if (entityAttributeInstance.hasModifier(id)) {
+			throw MODIFIER_ALREADY_PRESENT_EXCEPTION.create(target.getName(), getName(attribute), id);
 		} else {
 			entityAttributeInstance.addPersistentModifier(entityAttributeModifier);
-			source.sendFeedback(() -> Text.translatable("commands.attribute.modifier.add.success", Text.of(identifier), getName(attribute), target.getName()), false);
+			source.sendFeedback(() -> Text.translatable("commands.attribute.modifier.add.success", Text.of(id), getName(attribute), target.getName()), false);
 			return 1;
 		}
 	}
 
-	private static int executeModifierRemove(ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, Identifier identifier) throws CommandSyntaxException {
+	private static int executeModifierRemove(ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, Identifier id) throws CommandSyntaxException {
 		EntityAttributeInstance entityAttributeInstance = getAttributeInstance(target, attribute);
-		if (entityAttributeInstance.tryRemoveModifier(identifier)) {
-			source.sendFeedback(() -> Text.translatable("commands.attribute.modifier.remove.success", Text.of(identifier), getName(attribute), target.getName()), false);
+		if (entityAttributeInstance.tryRemoveModifier(id)) {
+			source.sendFeedback(() -> Text.translatable("commands.attribute.modifier.remove.success", Text.of(id), getName(attribute), target.getName()), false);
 			return 1;
 		} else {
-			throw NO_MODIFIER_EXCEPTION.create(target.getName(), getName(attribute), identifier);
+			throw NO_MODIFIER_EXCEPTION.create(target.getName(), getName(attribute), id);
 		}
 	}
 

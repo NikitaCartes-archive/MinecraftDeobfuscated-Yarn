@@ -66,13 +66,13 @@ public class EnderPearlEntity extends ThrownItemEntity {
 						this.detach();
 					}
 
-					entity.moveToWorld(new TeleportTarget(serverWorld, this.getPos(), entity.getVelocity(), entity.getYaw(), entity.getPitch()));
+					entity.teleportTo(new TeleportTarget(serverWorld, this.getPos(), entity.getVelocity(), entity.getYaw(), entity.getPitch()));
 					entity.onLanding();
 					entity.damage(this.getDamageSources().fall(), 5.0F);
-					this.method_60729(serverWorld, this.getPos());
+					this.playTeleportSound(serverWorld, this.getPos());
 				}
 			} else if (entity != null) {
-				entity.moveToWorld(new TeleportTarget(serverWorld, this.getPos(), entity.getVelocity(), entity.getYaw(), entity.getPitch()));
+				entity.teleportTo(new TeleportTarget(serverWorld, this.getPos(), entity.getVelocity(), entity.getYaw(), entity.getPitch()));
 				entity.onLanding();
 			}
 
@@ -92,15 +92,15 @@ public class EnderPearlEntity extends ThrownItemEntity {
 
 	@Nullable
 	@Override
-	public Entity moveToWorld(TeleportTarget teleportTarget) {
-		if (this.getWorld().getRegistryKey() != teleportTarget.newLevel().getRegistryKey()) {
-			this.method_60728();
+	public Entity teleportTo(TeleportTarget teleportTarget) {
+		if (this.getWorld().getRegistryKey() != teleportTarget.world().getRegistryKey()) {
+			this.removeOwner();
 		}
 
-		return super.moveToWorld(teleportTarget);
+		return super.teleportTo(teleportTarget);
 	}
 
-	private void method_60729(World world, Vec3d vec3d) {
-		world.playSound(null, vec3d.x, vec3d.y, vec3d.z, SoundEvents.ENTITY_PLAYER_TELEPORT, SoundCategory.PLAYERS);
+	private void playTeleportSound(World world, Vec3d pos) {
+		world.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ENTITY_PLAYER_TELEPORT, SoundCategory.PLAYERS);
 	}
 }

@@ -9,24 +9,24 @@ import net.minecraft.block.CandleBlock;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.BlockStateComponent;
-import net.minecraft.enchantment.effect.AllOfEnchantmentEffectTypes;
-import net.minecraft.enchantment.effect.AttributeEnchantmentEffectType;
-import net.minecraft.enchantment.effect.DamageImmunityEnchantmentEffectType;
+import net.minecraft.enchantment.effect.AllOfEnchantmentEffects;
+import net.minecraft.enchantment.effect.AttributeEnchantmentEffect;
+import net.minecraft.enchantment.effect.DamageImmunityEnchantmentEffect;
 import net.minecraft.enchantment.effect.EnchantmentEffectTarget;
-import net.minecraft.enchantment.effect.entity.ApplyMobEffectEnchantmentEffectType;
-import net.minecraft.enchantment.effect.entity.DamageEntityEnchantmentEffectType;
-import net.minecraft.enchantment.effect.entity.DamageItemEnchantmentEffectType;
-import net.minecraft.enchantment.effect.entity.ExplodeEnchantmentEffectType;
-import net.minecraft.enchantment.effect.entity.IgniteEnchantmentEffectType;
-import net.minecraft.enchantment.effect.entity.PlaySoundEnchantmentEffectType;
-import net.minecraft.enchantment.effect.entity.ReplaceDiscEnchantmentEffectType;
-import net.minecraft.enchantment.effect.entity.SetBlockPropertiesEnchantmentEffectType;
-import net.minecraft.enchantment.effect.entity.SpawnParticlesEnchantmentEffectType;
-import net.minecraft.enchantment.effect.entity.SummonEntityEnchantmentEffectType;
-import net.minecraft.enchantment.effect.value.AddEnchantmentEffectType;
-import net.minecraft.enchantment.effect.value.MultiplyEnchantmentEffectType;
-import net.minecraft.enchantment.effect.value.RemoveBinomialEnchantmentEffectType;
-import net.minecraft.enchantment.effect.value.SetEnchantmentEffectType;
+import net.minecraft.enchantment.effect.entity.ApplyMobEffectEnchantmentEffect;
+import net.minecraft.enchantment.effect.entity.DamageEntityEnchantmentEffect;
+import net.minecraft.enchantment.effect.entity.DamageItemEnchantmentEffect;
+import net.minecraft.enchantment.effect.entity.ExplodeEnchantmentEffect;
+import net.minecraft.enchantment.effect.entity.IgniteEnchantmentEffect;
+import net.minecraft.enchantment.effect.entity.PlaySoundEnchantmentEffect;
+import net.minecraft.enchantment.effect.entity.ReplaceDiscEnchantmentEffect;
+import net.minecraft.enchantment.effect.entity.SetBlockPropertiesEnchantmentEffect;
+import net.minecraft.enchantment.effect.entity.SpawnParticlesEnchantmentEffect;
+import net.minecraft.enchantment.effect.entity.SummonEntityEnchantmentEffect;
+import net.minecraft.enchantment.effect.value.AddEnchantmentEffect;
+import net.minecraft.enchantment.effect.value.MultiplyEnchantmentEffect;
+import net.minecraft.enchantment.effect.value.RemoveBinomialEnchantmentEffect;
+import net.minecraft.enchantment.effect.value.SetEnchantmentEffect;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -150,7 +150,7 @@ public class Enchantments {
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.ARMOR_EXCLUSIVE_SET))
 				.addEffect(
 					EnchantmentEffectComponentTypes.DAMAGE_PROTECTION,
-					new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(1.0F)),
+					new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(1.0F)),
 					DamageSourcePropertiesLootCondition.builder(DamageSourcePredicate.Builder.create().tag(TagPredicate.unexpected(DamageTypeTags.BYPASSES_INVULNERABILITY)))
 				)
 		);
@@ -171,7 +171,7 @@ public class Enchantments {
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.ARMOR_EXCLUSIVE_SET))
 				.addEffect(
 					EnchantmentEffectComponentTypes.DAMAGE_PROTECTION,
-					new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(2.0F)),
+					new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(2.0F)),
 					AllOfLootCondition.builder(
 						DamageSourcePropertiesLootCondition.builder(
 							DamageSourcePredicate.Builder.create()
@@ -182,10 +182,10 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.ATTRIBUTES,
-					new AttributeEnchantmentEffectType(
-						Identifier.method_60656("enchantment.fire_protection"),
+					new AttributeEnchantmentEffect(
+						Identifier.ofVanilla("enchantment.fire_protection"),
 						EntityAttributes.GENERIC_BURNING_TIME,
-						EnchantmentLevelBasedValueType.linear(-0.15F),
+						EnchantmentLevelBasedValue.linear(-0.15F),
 						EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
 					)
 				)
@@ -206,7 +206,7 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.DAMAGE_PROTECTION,
-					new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(3.0F)),
+					new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(3.0F)),
 					DamageSourcePropertiesLootCondition.builder(
 						DamageSourcePredicate.Builder.create()
 							.tag(TagPredicate.expected(DamageTypeTags.IS_FALL))
@@ -231,7 +231,7 @@ public class Enchantments {
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.ARMOR_EXCLUSIVE_SET))
 				.addEffect(
 					EnchantmentEffectComponentTypes.DAMAGE_PROTECTION,
-					new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(2.0F)),
+					new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(2.0F)),
 					DamageSourcePropertiesLootCondition.builder(
 						DamageSourcePredicate.Builder.create()
 							.tag(TagPredicate.expected(DamageTypeTags.IS_EXPLOSION))
@@ -240,10 +240,10 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.ATTRIBUTES,
-					new AttributeEnchantmentEffectType(
-						Identifier.method_60656("enchantment.blast_protection"),
+					new AttributeEnchantmentEffect(
+						Identifier.ofVanilla("enchantment.blast_protection"),
 						EntityAttributes.GENERIC_EXPLOSION_KNOCKBACK_RESISTANCE,
-						EnchantmentLevelBasedValueType.linear(0.15F),
+						EnchantmentLevelBasedValue.linear(0.15F),
 						EntityAttributeModifier.Operation.ADD_VALUE
 					)
 				)
@@ -265,7 +265,7 @@ public class Enchantments {
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.ARMOR_EXCLUSIVE_SET))
 				.addEffect(
 					EnchantmentEffectComponentTypes.DAMAGE_PROTECTION,
-					new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(2.0F)),
+					new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(2.0F)),
 					DamageSourcePropertiesLootCondition.builder(
 						DamageSourcePredicate.Builder.create()
 							.tag(TagPredicate.expected(DamageTypeTags.IS_PROJECTILE))
@@ -289,10 +289,10 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.ATTRIBUTES,
-					new AttributeEnchantmentEffectType(
-						Identifier.method_60656("enchantment.respiration"),
+					new AttributeEnchantmentEffect(
+						Identifier.ofVanilla("enchantment.respiration"),
 						EntityAttributes.GENERIC_OXYGEN_BONUS,
-						EnchantmentLevelBasedValueType.linear(1.0F),
+						EnchantmentLevelBasedValue.linear(1.0F),
 						EntityAttributeModifier.Operation.ADD_VALUE
 					)
 				)
@@ -313,10 +313,10 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.ATTRIBUTES,
-					new AttributeEnchantmentEffectType(
-						Identifier.method_60656("enchantment.aqua_affinity"),
+					new AttributeEnchantmentEffect(
+						Identifier.ofVanilla("enchantment.aqua_affinity"),
 						EntityAttributes.PLAYER_SUBMERGED_MINING_SPEED,
-						EnchantmentLevelBasedValueType.linear(4.0F),
+						EnchantmentLevelBasedValue.linear(4.0F),
 						EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
 					)
 				)
@@ -340,13 +340,13 @@ public class Enchantments {
 					EnchantmentEffectComponentTypes.POST_ATTACK,
 					EnchantmentEffectTarget.VICTIM,
 					EnchantmentEffectTarget.ATTACKER,
-					AllOfEnchantmentEffectTypes.allOf(
-						new DamageEntityEnchantmentEffectType(
-							EnchantmentLevelBasedValueType.constant(1.0F), EnchantmentLevelBasedValueType.constant(5.0F), registryEntryLookup.getOrThrow(DamageTypes.THORNS)
+					AllOfEnchantmentEffects.allOf(
+						new DamageEntityEnchantmentEffect(
+							EnchantmentLevelBasedValue.constant(1.0F), EnchantmentLevelBasedValue.constant(5.0F), registryEntryLookup.getOrThrow(DamageTypes.THORNS)
 						),
-						new DamageItemEnchantmentEffectType(EnchantmentLevelBasedValueType.constant(2.0F))
+						new DamageItemEnchantmentEffect(EnchantmentLevelBasedValue.constant(2.0F))
 					),
-					RandomChanceLootCondition.builder(EnchantmentLevelLootNumberProvider.create(EnchantmentLevelBasedValueType.linear(0.15F)))
+					RandomChanceLootCondition.builder(EnchantmentLevelLootNumberProvider.create(EnchantmentLevelBasedValue.linear(0.15F)))
 				)
 		);
 		register(
@@ -366,10 +366,10 @@ public class Enchantments {
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.BOOTS_EXCLUSIVE_SET))
 				.addEffect(
 					EnchantmentEffectComponentTypes.ATTRIBUTES,
-					new AttributeEnchantmentEffectType(
-						Identifier.method_60656("enchantment.depth_strider"),
+					new AttributeEnchantmentEffect(
+						Identifier.ofVanilla("enchantment.depth_strider"),
 						EntityAttributes.GENERIC_WATER_MOVEMENT_EFFICIENCY,
-						EnchantmentLevelBasedValueType.linear(0.33333334F),
+						EnchantmentLevelBasedValue.linear(0.33333334F),
 						EntityAttributeModifier.Operation.ADD_VALUE
 					)
 				)
@@ -391,7 +391,7 @@ public class Enchantments {
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.BOOTS_EXCLUSIVE_SET))
 				.addEffect(
 					EnchantmentEffectComponentTypes.DAMAGE_IMMUNITY,
-					DamageImmunityEnchantmentEffectType.INSTANCE,
+					DamageImmunityEnchantmentEffect.INSTANCE,
 					DamageSourcePropertiesLootCondition.builder(
 						DamageSourcePredicate.Builder.create()
 							.tag(TagPredicate.expected(DamageTypeTags.BURN_FROM_STEPPING))
@@ -400,9 +400,9 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.LOCATION_CHANGED,
-					new ReplaceDiscEnchantmentEffectType(
-						new EnchantmentLevelBasedValueType.Clamped(EnchantmentLevelBasedValueType.linear(3.0F, 1.0F), 0.0F, 16.0F),
-						EnchantmentLevelBasedValueType.constant(1.0F),
+					new ReplaceDiscEnchantmentEffect(
+						new EnchantmentLevelBasedValue.Clamped(EnchantmentLevelBasedValue.linear(3.0F, 1.0F), 0.0F, 16.0F),
+						EnchantmentLevelBasedValue.constant(1.0F),
 						new Vec3i(0, -1, 0),
 						Optional.of(
 							BlockPredicate.allOf(
@@ -457,10 +457,10 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.LOCATION_CHANGED,
-					new AttributeEnchantmentEffectType(
-						Identifier.method_60656("enchantment.soul_speed"),
+					new AttributeEnchantmentEffect(
+						Identifier.ofVanilla("enchantment.soul_speed"),
 						EntityAttributes.GENERIC_MOVEMENT_SPEED,
-						EnchantmentLevelBasedValueType.linear(0.0405F, 0.0105F),
+						EnchantmentLevelBasedValue.linear(0.0405F, 0.0105F),
 						EntityAttributeModifier.Operation.ADD_VALUE
 					),
 					AllOfLootCondition.builder(
@@ -469,7 +469,7 @@ public class Enchantments {
 						),
 						AnyOfLootCondition.builder(
 							AllOfLootCondition.builder(
-								EnchantmentActiveCheckLootCondition.active(),
+								EnchantmentActiveCheckLootCondition.requireActive(),
 								EntityPropertiesLootCondition.builder(
 									LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().flags(EntityFlagsPredicate.Builder.create().flying(false))
 								),
@@ -487,7 +487,7 @@ public class Enchantments {
 								)
 							),
 							AllOfLootCondition.builder(
-								EnchantmentActiveCheckLootCondition.inactive(),
+								EnchantmentActiveCheckLootCondition.requireInactive(),
 								EntityPropertiesLootCondition.builder(
 									LootContext.EntityTarget.THIS,
 									EntityPredicate.Builder.create()
@@ -502,10 +502,10 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.LOCATION_CHANGED,
-					new AttributeEnchantmentEffectType(
-						Identifier.method_60656("enchantment.soul_speed"),
+					new AttributeEnchantmentEffect(
+						Identifier.ofVanilla("enchantment.soul_speed"),
 						EntityAttributes.GENERIC_MOVEMENT_EFFICIENCY,
-						EnchantmentLevelBasedValueType.constant(1.0F),
+						EnchantmentLevelBasedValue.constant(1.0F),
 						EntityAttributeModifier.Operation.ADD_VALUE
 					),
 					EntityPropertiesLootCondition.builder(
@@ -516,9 +516,9 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.LOCATION_CHANGED,
-					new DamageItemEnchantmentEffectType(EnchantmentLevelBasedValueType.constant(1.0F)),
+					new DamageItemEnchantmentEffect(EnchantmentLevelBasedValue.constant(1.0F)),
 					AllOfLootCondition.builder(
-						RandomChanceLootCondition.builder(EnchantmentLevelLootNumberProvider.create(EnchantmentLevelBasedValueType.constant(0.04F))),
+						RandomChanceLootCondition.builder(EnchantmentLevelLootNumberProvider.create(EnchantmentLevelBasedValue.constant(0.04F))),
 						EntityPropertiesLootCondition.builder(
 							LootContext.EntityTarget.THIS,
 							EntityPredicate.Builder.create()
@@ -529,19 +529,19 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.TICK,
-					new SpawnParticlesEnchantmentEffectType(
+					new SpawnParticlesEnchantmentEffect(
 						ParticleTypes.SOUL,
-						SpawnParticlesEnchantmentEffectType.withinBoundingBox(),
-						SpawnParticlesEnchantmentEffectType.entityPosition(0.1F),
-						SpawnParticlesEnchantmentEffectType.scaledVelocity(-0.2F),
-						SpawnParticlesEnchantmentEffectType.fixedVelocity(ConstantFloatProvider.create(0.1F)),
+						SpawnParticlesEnchantmentEffect.withinBoundingBox(),
+						SpawnParticlesEnchantmentEffect.entityPosition(0.1F),
+						SpawnParticlesEnchantmentEffect.scaledVelocity(-0.2F),
+						SpawnParticlesEnchantmentEffect.fixedVelocity(ConstantFloatProvider.create(0.1F)),
 						ConstantFloatProvider.create(1.0F)
 					),
 					EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, builder)
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.TICK,
-					new PlaySoundEnchantmentEffectType(SoundEvents.PARTICLE_SOUL_ESCAPE, ConstantFloatProvider.create(0.6F), UniformFloatProvider.create(0.6F, 1.0F)),
+					new PlaySoundEnchantmentEffect(SoundEvents.PARTICLE_SOUL_ESCAPE, ConstantFloatProvider.create(0.6F), UniformFloatProvider.create(0.6F, 1.0F)),
 					AllOfLootCondition.builder(RandomChanceLootCondition.builder(0.35F), EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, builder))
 				)
 		);
@@ -561,10 +561,10 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.ATTRIBUTES,
-					new AttributeEnchantmentEffectType(
-						Identifier.method_60656("enchantment.swift_sneak"),
+					new AttributeEnchantmentEffect(
+						Identifier.ofVanilla("enchantment.swift_sneak"),
 						EntityAttributes.PLAYER_SNEAKING_SPEED,
-						EnchantmentLevelBasedValueType.linear(0.15F),
+						EnchantmentLevelBasedValue.linear(0.15F),
 						EntityAttributeModifier.Operation.ADD_VALUE
 					)
 				)
@@ -585,7 +585,7 @@ public class Enchantments {
 					)
 				)
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.DAMAGE_EXCLUSIVE_SET))
-				.addEffect(EnchantmentEffectComponentTypes.DAMAGE, new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(1.0F, 0.5F)))
+				.addEffect(EnchantmentEffectComponentTypes.DAMAGE, new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(1.0F, 0.5F)))
 		);
 		register(
 			registry,
@@ -605,7 +605,7 @@ public class Enchantments {
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.DAMAGE_EXCLUSIVE_SET))
 				.addEffect(
 					EnchantmentEffectComponentTypes.DAMAGE,
-					new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(2.5F)),
+					new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(2.5F)),
 					EntityPropertiesLootCondition.builder(
 						LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().type(EntityTypePredicate.create(EntityTypeTags.SENSITIVE_TO_SMITE))
 					)
@@ -629,7 +629,7 @@ public class Enchantments {
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.DAMAGE_EXCLUSIVE_SET))
 				.addEffect(
 					EnchantmentEffectComponentTypes.DAMAGE,
-					new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(2.5F)),
+					new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(2.5F)),
 					EntityPropertiesLootCondition.builder(
 						LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().type(EntityTypePredicate.create(EntityTypeTags.SENSITIVE_TO_BANE_OF_ARTHROPODS))
 					)
@@ -638,12 +638,12 @@ public class Enchantments {
 					EnchantmentEffectComponentTypes.POST_ATTACK,
 					EnchantmentEffectTarget.ATTACKER,
 					EnchantmentEffectTarget.VICTIM,
-					new ApplyMobEffectEnchantmentEffectType(
+					new ApplyMobEffectEnchantmentEffect(
 						RegistryEntryList.of(StatusEffects.SLOWNESS),
-						EnchantmentLevelBasedValueType.constant(1.5F),
-						EnchantmentLevelBasedValueType.linear(1.5F, 0.5F),
-						EnchantmentLevelBasedValueType.constant(3.0F),
-						EnchantmentLevelBasedValueType.constant(3.0F)
+						EnchantmentLevelBasedValue.constant(1.5F),
+						EnchantmentLevelBasedValue.linear(1.5F, 0.5F),
+						EnchantmentLevelBasedValue.constant(3.0F),
+						EnchantmentLevelBasedValue.constant(3.0F)
 					),
 					EntityPropertiesLootCondition.builder(
 							LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().type(EntityTypePredicate.create(EntityTypeTags.SENSITIVE_TO_BANE_OF_ARTHROPODS))
@@ -665,7 +665,7 @@ public class Enchantments {
 						AttributeModifierSlot.MAINHAND
 					)
 				)
-				.addEffect(EnchantmentEffectComponentTypes.KNOCKBACK, new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(1.0F)))
+				.addEffect(EnchantmentEffectComponentTypes.KNOCKBACK, new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(1.0F)))
 		);
 		register(
 			registry,
@@ -686,14 +686,14 @@ public class Enchantments {
 					EnchantmentEffectComponentTypes.POST_ATTACK,
 					EnchantmentEffectTarget.ATTACKER,
 					EnchantmentEffectTarget.VICTIM,
-					new IgniteEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(4.0F)),
+					new IgniteEnchantmentEffect(EnchantmentLevelBasedValue.linear(4.0F)),
 					DamageSourcePropertiesLootCondition.builder(DamageSourcePredicate.Builder.create().isDirect(true))
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.HIT_BLOCK,
-					AllOfEnchantmentEffectTypes.allOf(
-						new SetBlockPropertiesEnchantmentEffectType(BlockStateComponent.DEFAULT.with(CandleBlock.LIT, true), Vec3i.ZERO, Optional.of(GameEvent.BLOCK_CHANGE)),
-						new DamageItemEnchantmentEffectType(EnchantmentLevelBasedValueType.constant(1.0F))
+					AllOfEnchantmentEffects.allOf(
+						new SetBlockPropertiesEnchantmentEffect(BlockStateComponent.DEFAULT.with(CandleBlock.LIT, true), Vec3i.ZERO, Optional.of(GameEvent.BLOCK_CHANGE)),
+						new DamageItemEnchantmentEffect(EnchantmentLevelBasedValue.constant(1.0F))
 					),
 					LocationCheckLootCondition.builder(
 						LocationPredicate.Builder.create()
@@ -724,7 +724,7 @@ public class Enchantments {
 					EnchantmentEffectComponentTypes.EQUIPMENT_DROPS,
 					EnchantmentEffectTarget.ATTACKER,
 					EnchantmentEffectTarget.VICTIM,
-					new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(0.01F)),
+					new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(0.01F)),
 					EntityPropertiesLootCondition.builder(
 						LootContext.EntityTarget.ATTACKER, EntityPredicate.Builder.create().type(EntityTypePredicate.create(EntityType.PLAYER))
 					)
@@ -746,10 +746,10 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.ATTRIBUTES,
-					new AttributeEnchantmentEffectType(
-						Identifier.method_60656("enchantment.sweeping_edge"),
+					new AttributeEnchantmentEffect(
+						Identifier.ofVanilla("enchantment.sweeping_edge"),
 						EntityAttributes.PLAYER_SWEEPING_DAMAGE_RATIO,
-						new EnchantmentLevelBasedValueType.Fraction(EnchantmentLevelBasedValueType.linear(1.0F), EnchantmentLevelBasedValueType.linear(2.0F, 1.0F)),
+						new EnchantmentLevelBasedValue.Fraction(EnchantmentLevelBasedValue.linear(1.0F), EnchantmentLevelBasedValue.linear(2.0F, 1.0F)),
 						EntityAttributeModifier.Operation.ADD_VALUE
 					)
 				)
@@ -770,10 +770,10 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.ATTRIBUTES,
-					new AttributeEnchantmentEffectType(
-						Identifier.method_60656("enchantment.efficiency"),
+					new AttributeEnchantmentEffect(
+						Identifier.ofVanilla("enchantment.efficiency"),
 						EntityAttributes.PLAYER_MINING_EFFICIENCY,
-						new EnchantmentLevelBasedValueType.LevelsSquared(1.0F),
+						new EnchantmentLevelBasedValue.LevelsSquared(1.0F),
 						EntityAttributeModifier.Operation.ADD_VALUE
 					)
 				)
@@ -793,7 +793,7 @@ public class Enchantments {
 					)
 				)
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.MINING_EXCLUSIVE_SET))
-				.addEffect(EnchantmentEffectComponentTypes.BLOCK_EXPERIENCE, new SetEnchantmentEffectType(EnchantmentLevelBasedValueType.constant(0.0F)))
+				.addEffect(EnchantmentEffectComponentTypes.BLOCK_EXPERIENCE, new SetEnchantmentEffect(EnchantmentLevelBasedValue.constant(0.0F)))
 		);
 		register(
 			registry,
@@ -811,15 +811,15 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.ITEM_DAMAGE,
-					new RemoveBinomialEnchantmentEffectType(
-						new EnchantmentLevelBasedValueType.Fraction(EnchantmentLevelBasedValueType.linear(2.0F), EnchantmentLevelBasedValueType.linear(10.0F, 5.0F))
+					new RemoveBinomialEnchantmentEffect(
+						new EnchantmentLevelBasedValue.Fraction(EnchantmentLevelBasedValue.linear(2.0F), EnchantmentLevelBasedValue.linear(10.0F, 5.0F))
 					),
 					MatchToolLootCondition.builder(ItemPredicate.Builder.create().tag(ItemTags.ARMOR_ENCHANTABLE))
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.ITEM_DAMAGE,
-					new RemoveBinomialEnchantmentEffectType(
-						new EnchantmentLevelBasedValueType.Fraction(EnchantmentLevelBasedValueType.linear(1.0F), EnchantmentLevelBasedValueType.linear(2.0F, 1.0F))
+					new RemoveBinomialEnchantmentEffect(
+						new EnchantmentLevelBasedValue.Fraction(EnchantmentLevelBasedValue.linear(1.0F), EnchantmentLevelBasedValue.linear(2.0F, 1.0F))
 					),
 					InvertedLootCondition.builder(MatchToolLootCondition.builder(ItemPredicate.Builder.create().tag(ItemTags.ARMOR_ENCHANTABLE)))
 				)
@@ -856,7 +856,7 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.DAMAGE,
-					new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(0.5F)),
+					new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(0.5F)),
 					EntityPropertiesLootCondition.builder(LootContext.EntityTarget.DIRECT_ATTACKER, EntityPredicate.Builder.create().type(EntityTypeTags.ARROWS).build())
 				)
 		);
@@ -876,7 +876,7 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.KNOCKBACK,
-					new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(1.0F)),
+					new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(1.0F)),
 					EntityPropertiesLootCondition.builder(LootContext.EntityTarget.DIRECT_ATTACKER, EntityPredicate.Builder.create().type(EntityTypeTags.ARROWS).build())
 				)
 		);
@@ -894,7 +894,7 @@ public class Enchantments {
 						AttributeModifierSlot.MAINHAND
 					)
 				)
-				.addEffect(EnchantmentEffectComponentTypes.PROJECTILE_SPAWNED, new IgniteEnchantmentEffectType(EnchantmentLevelBasedValueType.constant(100.0F)))
+				.addEffect(EnchantmentEffectComponentTypes.PROJECTILE_SPAWNED, new IgniteEnchantmentEffect(EnchantmentLevelBasedValue.constant(100.0F)))
 		);
 		register(
 			registry,
@@ -913,7 +913,7 @@ public class Enchantments {
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.BOW_EXCLUSIVE_SET))
 				.addEffect(
 					EnchantmentEffectComponentTypes.AMMO_USE,
-					new SetEnchantmentEffectType(EnchantmentLevelBasedValueType.constant(0.0F)),
+					new SetEnchantmentEffect(EnchantmentLevelBasedValue.constant(0.0F)),
 					MatchToolLootCondition.builder(ItemPredicate.Builder.create().items(Items.ARROW))
 				)
 		);
@@ -931,7 +931,7 @@ public class Enchantments {
 						AttributeModifierSlot.MAINHAND
 					)
 				)
-				.addEffect(EnchantmentEffectComponentTypes.FISHING_LUCK_BONUS, new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(1.0F)))
+				.addEffect(EnchantmentEffectComponentTypes.FISHING_LUCK_BONUS, new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(1.0F)))
 		);
 		register(
 			registry,
@@ -947,7 +947,7 @@ public class Enchantments {
 						AttributeModifierSlot.MAINHAND
 					)
 				)
-				.addEffect(EnchantmentEffectComponentTypes.FISHING_TIME_REDUCTION, new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(5.0F)))
+				.addEffect(EnchantmentEffectComponentTypes.FISHING_TIME_REDUCTION, new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(5.0F)))
 		);
 		register(
 			registry,
@@ -963,7 +963,7 @@ public class Enchantments {
 						AttributeModifierSlot.MAINHAND
 					)
 				)
-				.addEffect(EnchantmentEffectComponentTypes.TRIDENT_RETURN_ACCELERATION, new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(1.0F)))
+				.addEffect(EnchantmentEffectComponentTypes.TRIDENT_RETURN_ACCELERATION, new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(1.0F)))
 		);
 		register(
 			registry,
@@ -982,7 +982,7 @@ public class Enchantments {
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.DAMAGE_EXCLUSIVE_SET))
 				.addEffect(
 					EnchantmentEffectComponentTypes.DAMAGE,
-					new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(2.5F)),
+					new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(2.5F)),
 					EntityPropertiesLootCondition.builder(
 						LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().type(EntityTypePredicate.create(EntityTypeTags.SENSITIVE_TO_IMPALING)).build()
 					)
@@ -1003,9 +1003,7 @@ public class Enchantments {
 					)
 				)
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.RIPTIDE_EXCLUSIVE_SET))
-				.addNonListEffect(
-					EnchantmentEffectComponentTypes.TRIDENT_SPIN_ATTACK_STRENGTH, new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(1.5F, 0.75F))
-				)
+				.addNonListEffect(EnchantmentEffectComponentTypes.TRIDENT_SPIN_ATTACK_STRENGTH, new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(1.5F, 0.75F)))
 				.addNonListEffect(
 					EnchantmentEffectComponentTypes.TRIDENT_SOUND,
 					List.of(SoundEvents.ITEM_TRIDENT_RIPTIDE_1, SoundEvents.ITEM_TRIDENT_RIPTIDE_2, SoundEvents.ITEM_TRIDENT_RIPTIDE_3)
@@ -1029,9 +1027,9 @@ public class Enchantments {
 					EnchantmentEffectComponentTypes.POST_ATTACK,
 					EnchantmentEffectTarget.ATTACKER,
 					EnchantmentEffectTarget.VICTIM,
-					AllOfEnchantmentEffectTypes.allOf(
-						new SummonEntityEnchantmentEffectType(RegistryEntryList.of(EntityType.LIGHTNING_BOLT.getRegistryEntry()), false),
-						new PlaySoundEnchantmentEffectType(SoundEvents.ITEM_TRIDENT_THUNDER, ConstantFloatProvider.create(5.0F), ConstantFloatProvider.create(1.0F))
+					AllOfEnchantmentEffects.allOf(
+						new SummonEntityEnchantmentEffect(RegistryEntryList.of(EntityType.LIGHTNING_BOLT.getRegistryEntry()), false),
+						new PlaySoundEnchantmentEffect(SoundEvents.ITEM_TRIDENT_THUNDER, ConstantFloatProvider.create(5.0F), ConstantFloatProvider.create(1.0F))
 					),
 					AllOfLootCondition.builder(
 						WeatherCheckLootCondition.create().thundering(true),
@@ -1043,9 +1041,9 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.HIT_BLOCK,
-					AllOfEnchantmentEffectTypes.allOf(
-						new SummonEntityEnchantmentEffectType(RegistryEntryList.of(EntityType.LIGHTNING_BOLT.getRegistryEntry()), false),
-						new PlaySoundEnchantmentEffectType(SoundEvents.ITEM_TRIDENT_THUNDER, ConstantFloatProvider.create(5.0F), ConstantFloatProvider.create(1.0F))
+					AllOfEnchantmentEffects.allOf(
+						new SummonEntityEnchantmentEffect(RegistryEntryList.of(EntityType.LIGHTNING_BOLT.getRegistryEntry()), false),
+						new PlaySoundEnchantmentEffect(SoundEvents.ITEM_TRIDENT_THUNDER, ConstantFloatProvider.create(5.0F), ConstantFloatProvider.create(1.0F))
 					),
 					AllOfLootCondition.builder(
 						WeatherCheckLootCondition.create().thundering(true),
@@ -1070,8 +1068,8 @@ public class Enchantments {
 					)
 				)
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.CROSSBOW_EXCLUSIVE_SET))
-				.addEffect(EnchantmentEffectComponentTypes.PROJECTILE_COUNT, new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(2.0F)))
-				.addEffect(EnchantmentEffectComponentTypes.PROJECTILE_SPREAD, new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(10.0F)))
+				.addEffect(EnchantmentEffectComponentTypes.PROJECTILE_COUNT, new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(2.0F)))
+				.addEffect(EnchantmentEffectComponentTypes.PROJECTILE_SPREAD, new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(10.0F)))
 		);
 		register(
 			registry,
@@ -1088,7 +1086,7 @@ public class Enchantments {
 						AttributeModifierSlot.OFFHAND
 					)
 				)
-				.addNonListEffect(EnchantmentEffectComponentTypes.CROSSBOW_CHARGE_TIME, new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(-0.25F)))
+				.addNonListEffect(EnchantmentEffectComponentTypes.CROSSBOW_CHARGE_TIME, new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(-0.25F)))
 				.addNonListEffect(
 					EnchantmentEffectComponentTypes.CROSSBOW_CHARGING_SOUNDS,
 					List.of(
@@ -1119,7 +1117,7 @@ public class Enchantments {
 					)
 				)
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.CROSSBOW_EXCLUSIVE_SET))
-				.addEffect(EnchantmentEffectComponentTypes.PROJECTILE_PIERCING, new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(1.0F)))
+				.addEffect(EnchantmentEffectComponentTypes.PROJECTILE_PIERCING, new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(1.0F)))
 		);
 		register(
 			registry,
@@ -1136,7 +1134,7 @@ public class Enchantments {
 					)
 				)
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.DAMAGE_EXCLUSIVE_SET))
-				.addEffect(EnchantmentEffectComponentTypes.SMASH_DAMAGE_PER_FALLEN_BLOCK, new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(0.5F)))
+				.addEffect(EnchantmentEffectComponentTypes.SMASH_DAMAGE_PER_FALLEN_BLOCK, new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(0.5F)))
 		);
 		register(
 			registry,
@@ -1153,7 +1151,7 @@ public class Enchantments {
 					)
 				)
 				.exclusiveSet(registryEntryLookup2.getOrThrow(EnchantmentTags.DAMAGE_EXCLUSIVE_SET))
-				.addEffect(EnchantmentEffectComponentTypes.ARMOR_EFFECTIVENESS, new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(-0.15F)))
+				.addEffect(EnchantmentEffectComponentTypes.ARMOR_EFFECTIVENESS, new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(-0.15F)))
 		);
 		register(
 			registry,
@@ -1173,13 +1171,13 @@ public class Enchantments {
 					EnchantmentEffectComponentTypes.POST_ATTACK,
 					EnchantmentEffectTarget.ATTACKER,
 					EnchantmentEffectTarget.ATTACKER,
-					new ExplodeEnchantmentEffectType(
+					new ExplodeEnchantmentEffect(
 						false,
 						Optional.empty(),
-						Optional.of(EnchantmentLevelBasedValueType.linear(0.5F, 0.25F)),
+						Optional.of(EnchantmentLevelBasedValue.linear(0.5F, 0.25F)),
 						registryEntryLookup4.getOptional(BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS).map(Function.identity()),
 						Vec3d.ZERO,
-						EnchantmentLevelBasedValueType.constant(3.5F),
+						EnchantmentLevelBasedValue.constant(3.5F),
 						false,
 						World.ExplosionSourceType.TRIGGER,
 						ParticleTypes.GUST_EMITTER_SMALL,
@@ -1208,7 +1206,7 @@ public class Enchantments {
 						AttributeModifierSlot.ANY
 					)
 				)
-				.addEffect(EnchantmentEffectComponentTypes.REPAIR_WITH_XP, new MultiplyEnchantmentEffectType(EnchantmentLevelBasedValueType.constant(2.0F)))
+				.addEffect(EnchantmentEffectComponentTypes.REPAIR_WITH_XP, new MultiplyEnchantmentEffect(EnchantmentLevelBasedValue.constant(2.0F)))
 		);
 		register(
 			registry,
@@ -1233,6 +1231,6 @@ public class Enchantments {
 	}
 
 	private static RegistryKey<Enchantment> of(String id) {
-		return RegistryKey.of(RegistryKeys.ENCHANTMENT, Identifier.method_60656(id));
+		return RegistryKey.of(RegistryKeys.ENCHANTMENT, Identifier.ofVanilla(id));
 	}
 }

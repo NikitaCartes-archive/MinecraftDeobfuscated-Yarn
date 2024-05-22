@@ -41,8 +41,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.village.raid.Raid;
 
 public class ItemGroups {
-	private static final Identifier field_52022 = ItemGroup.method_60733("inventory");
-	private static final Identifier field_52023 = ItemGroup.method_60733("item_search");
+	private static final Identifier INVENTORY_TAB_TEXTURE_ID = ItemGroup.getTabTextureId("inventory");
+	private static final Identifier ITEM_SEARCH_TAB_TEXTURE_ID = ItemGroup.getTabTextureId("item_search");
 	private static final RegistryKey<ItemGroup> BUILDING_BLOCKS = register("building_blocks");
 	private static final RegistryKey<ItemGroup> COLORED_BLOCKS = register("colored_blocks");
 	private static final RegistryKey<ItemGroup> NATURAL = register("natural_blocks");
@@ -64,7 +64,7 @@ public class ItemGroups {
 	private static ItemGroup.DisplayContext displayContext;
 
 	private static RegistryKey<ItemGroup> register(String id) {
-		return RegistryKey.of(RegistryKeys.ITEM_GROUP, Identifier.method_60656(id));
+		return RegistryKey.of(RegistryKeys.ITEM_GROUP, Identifier.ofVanilla(id));
 	}
 
 	public static ItemGroup registerAndGetDefault(Registry<ItemGroup> registry) {
@@ -999,10 +999,10 @@ public class ItemGroups {
 						displayContext.lookup()
 							.getOptionalWrapper(RegistryKeys.PAINTING_VARIANT)
 							.ifPresent(
-								impl -> addPaintings(
+								registryWrapper -> addPaintings(
 										entries,
 										displayContext.lookup(),
-										impl,
+										registryWrapper,
 										registryEntry -> registryEntry.isIn(PaintingVariantTags.PLACEABLE),
 										ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS
 									)
@@ -1231,7 +1231,7 @@ public class ItemGroups {
 
 					entries.addAll(set);
 				})
-				.texture(field_52023)
+				.texture(ITEM_SEARCH_TAB_TEXTURE_ID)
 				.special()
 				.type(ItemGroup.Type.SEARCH)
 				.build()
@@ -1424,7 +1424,11 @@ public class ItemGroups {
 						entries.add(Items.SPECTRAL_ARROW);
 						displayContext.lookup()
 							.getOptionalWrapper(RegistryKeys.POTION)
-							.ifPresent(impl -> addPotions(entries, impl, Items.TIPPED_ARROW, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS, displayContext.enabledFeatures()));
+							.ifPresent(
+								registryWrapper -> addPotions(
+										entries, registryWrapper, Items.TIPPED_ARROW, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS, displayContext.enabledFeatures()
+									)
+							);
 					}
 				)
 				.build()
@@ -1638,9 +1642,9 @@ public class ItemGroups {
 					entries.add(Items.EXPERIENCE_BOTTLE);
 					entries.add(Items.TRIAL_KEY);
 					entries.add(Items.OMINOUS_TRIAL_KEY);
-					displayContext.lookup().getOptionalWrapper(RegistryKeys.ENCHANTMENT).ifPresent(impl -> {
-						addMaxLevelEnchantedBooks(entries, impl, ItemGroup.StackVisibility.PARENT_TAB_ONLY);
-						addAllLevelEnchantedBooks(entries, impl, ItemGroup.StackVisibility.SEARCH_TAB_ONLY);
+					displayContext.lookup().getOptionalWrapper(RegistryKeys.ENCHANTMENT).ifPresent(registryWrapper -> {
+						addMaxLevelEnchantedBooks(entries, registryWrapper, ItemGroup.StackVisibility.PARENT_TAB_ONLY);
+						addAllLevelEnchantedBooks(entries, registryWrapper, ItemGroup.StackVisibility.SEARCH_TAB_ONLY);
 					});
 				})
 				.build()
@@ -1762,10 +1766,10 @@ public class ItemGroups {
 							displayContext.lookup()
 								.getOptionalWrapper(RegistryKeys.PAINTING_VARIANT)
 								.ifPresent(
-									impl -> addPaintings(
+									registryWrapper -> addPaintings(
 											entries,
 											displayContext.lookup(),
-											impl,
+											registryWrapper,
 											registryEntry -> !registryEntry.isIn(PaintingVariantTags.PLACEABLE),
 											ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS
 										)
@@ -1781,7 +1785,7 @@ public class ItemGroups {
 			ItemGroup.create(ItemGroup.Row.BOTTOM, 6)
 				.displayName(Text.translatable("itemGroup.inventory"))
 				.icon(() -> new ItemStack(Blocks.CHEST))
-				.texture(field_52022)
+				.texture(INVENTORY_TAB_TEXTURE_ID)
 				.noRenderedName()
 				.special()
 				.type(ItemGroup.Type.INVENTORY)
@@ -1820,7 +1824,9 @@ public class ItemGroups {
 		ItemGroup.Entries entries, RegistryWrapper<Enchantment> registryWrapper, ItemGroup.StackVisibility stackVisibility
 	) {
 		registryWrapper.streamEntries()
-			.map(reference -> EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(reference, ((Enchantment)reference.value()).getMaxLevel())))
+			.map(
+				enchantmentEntry -> EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantmentEntry, ((Enchantment)enchantmentEntry.value()).getMaxLevel()))
+			)
 			.forEach(stack -> entries.add(stack, stackVisibility));
 	}
 
@@ -1829,8 +1835,8 @@ public class ItemGroups {
 	) {
 		registryWrapper.streamEntries()
 			.flatMap(
-				reference -> IntStream.rangeClosed(((Enchantment)reference.value()).getMinLevel(), ((Enchantment)reference.value()).getMaxLevel())
-						.mapToObj(i -> EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(reference, i)))
+				enchantmentEntry -> IntStream.rangeClosed(((Enchantment)enchantmentEntry.value()).getMinLevel(), ((Enchantment)enchantmentEntry.value()).getMaxLevel())
+						.mapToObj(level -> EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantmentEntry, level)))
 			)
 			.forEach(stack -> entries.add(stack, stackVisibility));
 	}
@@ -1875,19 +1881,19 @@ public class ItemGroups {
 
 	private static void addPaintings(
 		ItemGroup.Entries entries,
-		RegistryWrapper.WrapperLookup wrapperLookup,
-		RegistryWrapper.Impl<PaintingVariant> impl,
-		Predicate<RegistryEntry<PaintingVariant>> predicate,
+		RegistryWrapper.WrapperLookup registryLookup,
+		RegistryWrapper.Impl<PaintingVariant> registryWrapper,
+		Predicate<RegistryEntry<PaintingVariant>> filter,
 		ItemGroup.StackVisibility stackVisibility
 	) {
-		RegistryOps<NbtElement> registryOps = wrapperLookup.getOps(NbtOps.INSTANCE);
-		impl.streamEntries()
-			.filter(predicate)
+		RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
+		registryWrapper.streamEntries()
+			.filter(filter)
 			.sorted(PAINTING_VARIANT_COMPARATOR)
 			.forEach(
-				reference -> {
+				paintingVariantEntry -> {
 					NbtComponent nbtComponent = NbtComponent.DEFAULT
-						.with(registryOps, PaintingEntity.VARIANT_MAP_CODEC, reference)
+						.with(registryOps, PaintingEntity.VARIANT_MAP_CODEC, paintingVariantEntry)
 						.getOrThrow()
 						.apply(nbt -> nbt.putString("id", "minecraft:painting"));
 					ItemStack itemStack = new ItemStack(Items.PAINTING);

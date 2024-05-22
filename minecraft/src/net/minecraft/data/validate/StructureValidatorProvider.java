@@ -13,11 +13,11 @@ import org.slf4j.Logger;
 
 public class StructureValidatorProvider implements SnbtProvider.Tweaker {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final String field_52179 = ResourceType.SERVER_DATA.getDirectory() + "/minecraft/structure/";
+	private static final String PATH_PREFIX = ResourceType.SERVER_DATA.getDirectory() + "/minecraft/structure/";
 
 	@Override
 	public NbtCompound write(String name, NbtCompound nbt) {
-		return name.startsWith(field_52179) ? update(name, nbt) : nbt;
+		return name.startsWith(PATH_PREFIX) ? update(name, nbt) : nbt;
 	}
 
 	public static NbtCompound update(String name, NbtCompound nbt) {

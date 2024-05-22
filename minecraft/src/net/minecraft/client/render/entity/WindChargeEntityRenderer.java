@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class WindChargeEntityRenderer extends EntityRenderer<AbstractWindChargeEntity> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/projectiles/wind_charge.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/projectiles/wind_charge.png");
 	private final WindChargeEntityModel model;
 
 	public WindChargeEntityRenderer(EntityRendererFactory.Context context) {
@@ -28,7 +28,7 @@ public class WindChargeEntityRenderer extends EntityRenderer<AbstractWindChargeE
 		float h = (float)abstractWindChargeEntity.age + g;
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getBreezeWind(TEXTURE, this.getXOffset(h) % 1.0F, 0.0F));
 		this.model.setAngles(abstractWindChargeEntity, 0.0F, 0.0F, h, 0.0F, 0.0F);
-		this.model.method_60879(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
+		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 		super.render(abstractWindChargeEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 

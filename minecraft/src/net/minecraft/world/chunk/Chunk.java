@@ -266,8 +266,8 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, LightSour
 		return true;
 	}
 
-	public boolean method_60791(int i) {
-		return this.getSection(this.sectionCoordToIndex(i)).isEmpty();
+	public boolean isSectionEmpty(int sectionCoord) {
+		return this.getSection(this.sectionCoordToIndex(sectionCoord)).isEmpty();
 	}
 
 	public void setNeedsSaving(boolean needsSaving) {

@@ -12,10 +12,10 @@ public class StatusPackets {
 	public static final PacketType<QueryRequestC2SPacket> STATUS_REQUEST = c2s("status_request");
 
 	private static <T extends Packet<ClientQueryPacketListener>> PacketType<T> s2c(String id) {
-		return new PacketType<>(NetworkSide.CLIENTBOUND, Identifier.method_60656(id));
+		return new PacketType<>(NetworkSide.CLIENTBOUND, Identifier.ofVanilla(id));
 	}
 
 	private static <T extends Packet<ServerQueryPacketListener>> PacketType<T> c2s(String id) {
-		return new PacketType<>(NetworkSide.SERVERBOUND, Identifier.method_60656(id));
+		return new PacketType<>(NetworkSide.SERVERBOUND, Identifier.ofVanilla(id));
 	}
 }

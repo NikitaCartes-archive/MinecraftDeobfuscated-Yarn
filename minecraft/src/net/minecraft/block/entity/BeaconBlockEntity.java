@@ -140,7 +140,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		for (int m = 0; m < 10 && blockPos.getY() <= l; m++) {
 			BlockState blockState = world.getBlockState(blockPos);
 			if (blockState.getBlock() instanceof Stainable stainable) {
-				int n = stainable.getColor().getColorComponents();
+				int n = stainable.getColor().getEntityColor();
 				if (blockEntity.field_19178.size() <= 1) {
 					beamSegment = new BeaconBlockEntity.BeamSegment(n);
 					blockEntity.field_19178.add(beamSegment);
@@ -148,7 +148,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 					if (n == beamSegment.color) {
 						beamSegment.increaseHeight();
 					} else {
-						beamSegment = new BeaconBlockEntity.BeamSegment(ColorHelper.Argb.method_60676(beamSegment.color, n));
+						beamSegment = new BeaconBlockEntity.BeamSegment(ColorHelper.Argb.averageArgb(beamSegment.color, n));
 						blockEntity.field_19178.add(beamSegment);
 					}
 				}
@@ -377,8 +377,8 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		final int color;
 		private int height;
 
-		public BeamSegment(int i) {
-			this.color = i;
+		public BeamSegment(int color) {
+			this.color = color;
 			this.height = 1;
 		}
 

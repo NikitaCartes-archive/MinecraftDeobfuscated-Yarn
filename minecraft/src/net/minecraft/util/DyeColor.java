@@ -44,16 +44,16 @@ public enum DyeColor implements StringIdentifiable {
 	private final int id;
 	private final String name;
 	private final MapColor mapColor;
-	private final int colorComponents;
+	private final int entityColor;
 	private final int fireworkColor;
 	private final int signColor;
 
-	private DyeColor(final int id, final String name, final int color, final MapColor mapColor, final int fireworkColor, final int signColor) {
+	private DyeColor(final int id, final String name, final int entityColor, final MapColor mapColor, final int fireworkColor, final int signColor) {
 		this.id = id;
 		this.name = name;
 		this.mapColor = mapColor;
 		this.signColor = signColor;
-		this.colorComponents = ColorHelper.Argb.fullAlpha(color);
+		this.entityColor = ColorHelper.Argb.fullAlpha(entityColor);
 		this.fireworkColor = fireworkColor;
 	}
 
@@ -72,12 +72,13 @@ public enum DyeColor implements StringIdentifiable {
 	}
 
 	/**
-	 * {@return the float array containing the red, green and blue components of this dye color}
+	 * {@return the color used for things like tropical fish, beacon beams, sheep,
+	 * and tamed animal collars as ARGB integer}
 	 * 
-	 * <p>Each value of the array is between {@code 0.0} and {@code 255.0} (both inclusive).
+	 * <p>The returned value is between {@code 0xFF000000} and {@code 0xFFFFFFFF}.
 	 */
-	public int getColorComponents() {
-		return this.colorComponents;
+	public int getEntityColor() {
+		return this.entityColor;
 	}
 
 	/**

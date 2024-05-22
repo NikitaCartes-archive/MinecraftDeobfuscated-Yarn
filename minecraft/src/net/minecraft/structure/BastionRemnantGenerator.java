@@ -14,7 +14,7 @@ import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
 
 public class BastionRemnantGenerator {
-	public static final RegistryKey<StructurePool> STRUCTURE_POOLS = StructurePools.of("bastion/starts");
+	public static final RegistryKey<StructurePool> STRUCTURE_POOLS = StructurePools.ofVanilla("bastion/starts");
 
 	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
 		RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST);

@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9801;
 import net.minecraft.client.gl.VertexBuffer;
 
 /**
@@ -32,7 +31,7 @@ public class BufferRenderer {
 	 * com.mojang.blaze3d.systems.RenderSystem#setShader
 	 * RenderSystem#setShader}
 	 */
-	public static void drawWithGlobalProgram(class_9801 buffer) {
+	public static void drawWithGlobalProgram(BuiltBuffer buffer) {
 		if (!RenderSystem.isOnRenderThreadOrInit()) {
 			RenderSystem.recordRenderCall(() -> drawWithGlobalProgramInternal(buffer));
 		} else {
@@ -40,7 +39,7 @@ public class BufferRenderer {
 		}
 	}
 
-	private static void drawWithGlobalProgramInternal(class_9801 buffer) {
+	private static void drawWithGlobalProgramInternal(BuiltBuffer buffer) {
 		VertexBuffer vertexBuffer = upload(buffer);
 		vertexBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
 	}
@@ -53,14 +52,14 @@ public class BufferRenderer {
 	 * RenderSystem#setShader}. The caller of this method must manually bind a
 	 * shader program before calling this method.
 	 */
-	public static void draw(class_9801 buffer) {
+	public static void draw(BuiltBuffer buffer) {
 		VertexBuffer vertexBuffer = upload(buffer);
 		vertexBuffer.draw();
 	}
 
-	private static VertexBuffer upload(class_9801 buffer) {
+	private static VertexBuffer upload(BuiltBuffer buffer) {
 		RenderSystem.assertOnRenderThread();
-		VertexBuffer vertexBuffer = bind(buffer.method_60822().format());
+		VertexBuffer vertexBuffer = bind(buffer.getDrawParameters().format());
 		vertexBuffer.upload(buffer);
 		return vertexBuffer;
 	}

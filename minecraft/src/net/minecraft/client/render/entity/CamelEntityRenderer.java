@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class CamelEntityRenderer extends MobEntityRenderer<CamelEntity, CamelEntityModel<CamelEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/camel/camel.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/camel/camel.png");
 
 	public CamelEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer) {
 		super(ctx, new CamelEntityModel<>(ctx.getPart(layer)), 0.7F);

@@ -56,51 +56,51 @@ public class CubeMapRenderer {
 
 			for (int k = 0; k < 6; k++) {
 				RenderSystem.setShaderTexture(0, this.faces[k]);
-				BufferBuilder bufferBuilder = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+				BufferBuilder bufferBuilder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
 				int l = Math.round(255.0F * alpha) / (j + 1);
 				if (k == 0) {
-					bufferBuilder.vertex(-1.0F, -1.0F, 1.0F).texture(0.0F, 0.0F).method_60832(l);
-					bufferBuilder.vertex(-1.0F, 1.0F, 1.0F).texture(0.0F, 1.0F).method_60832(l);
-					bufferBuilder.vertex(1.0F, 1.0F, 1.0F).texture(1.0F, 1.0F).method_60832(l);
-					bufferBuilder.vertex(1.0F, -1.0F, 1.0F).texture(1.0F, 0.0F).method_60832(l);
+					bufferBuilder.vertex(-1.0F, -1.0F, 1.0F).texture(0.0F, 0.0F).colorRgb(l);
+					bufferBuilder.vertex(-1.0F, 1.0F, 1.0F).texture(0.0F, 1.0F).colorRgb(l);
+					bufferBuilder.vertex(1.0F, 1.0F, 1.0F).texture(1.0F, 1.0F).colorRgb(l);
+					bufferBuilder.vertex(1.0F, -1.0F, 1.0F).texture(1.0F, 0.0F).colorRgb(l);
 				}
 
 				if (k == 1) {
-					bufferBuilder.vertex(1.0F, -1.0F, 1.0F).texture(0.0F, 0.0F).method_60832(l);
-					bufferBuilder.vertex(1.0F, 1.0F, 1.0F).texture(0.0F, 1.0F).method_60832(l);
-					bufferBuilder.vertex(1.0F, 1.0F, -1.0F).texture(1.0F, 1.0F).method_60832(l);
-					bufferBuilder.vertex(1.0F, -1.0F, -1.0F).texture(1.0F, 0.0F).method_60832(l);
+					bufferBuilder.vertex(1.0F, -1.0F, 1.0F).texture(0.0F, 0.0F).colorRgb(l);
+					bufferBuilder.vertex(1.0F, 1.0F, 1.0F).texture(0.0F, 1.0F).colorRgb(l);
+					bufferBuilder.vertex(1.0F, 1.0F, -1.0F).texture(1.0F, 1.0F).colorRgb(l);
+					bufferBuilder.vertex(1.0F, -1.0F, -1.0F).texture(1.0F, 0.0F).colorRgb(l);
 				}
 
 				if (k == 2) {
-					bufferBuilder.vertex(1.0F, -1.0F, -1.0F).texture(0.0F, 0.0F).method_60832(l);
-					bufferBuilder.vertex(1.0F, 1.0F, -1.0F).texture(0.0F, 1.0F).method_60832(l);
-					bufferBuilder.vertex(-1.0F, 1.0F, -1.0F).texture(1.0F, 1.0F).method_60832(l);
-					bufferBuilder.vertex(-1.0F, -1.0F, -1.0F).texture(1.0F, 0.0F).method_60832(l);
+					bufferBuilder.vertex(1.0F, -1.0F, -1.0F).texture(0.0F, 0.0F).colorRgb(l);
+					bufferBuilder.vertex(1.0F, 1.0F, -1.0F).texture(0.0F, 1.0F).colorRgb(l);
+					bufferBuilder.vertex(-1.0F, 1.0F, -1.0F).texture(1.0F, 1.0F).colorRgb(l);
+					bufferBuilder.vertex(-1.0F, -1.0F, -1.0F).texture(1.0F, 0.0F).colorRgb(l);
 				}
 
 				if (k == 3) {
-					bufferBuilder.vertex(-1.0F, -1.0F, -1.0F).texture(0.0F, 0.0F).method_60832(l);
-					bufferBuilder.vertex(-1.0F, 1.0F, -1.0F).texture(0.0F, 1.0F).method_60832(l);
-					bufferBuilder.vertex(-1.0F, 1.0F, 1.0F).texture(1.0F, 1.0F).method_60832(l);
-					bufferBuilder.vertex(-1.0F, -1.0F, 1.0F).texture(1.0F, 0.0F).method_60832(l);
+					bufferBuilder.vertex(-1.0F, -1.0F, -1.0F).texture(0.0F, 0.0F).colorRgb(l);
+					bufferBuilder.vertex(-1.0F, 1.0F, -1.0F).texture(0.0F, 1.0F).colorRgb(l);
+					bufferBuilder.vertex(-1.0F, 1.0F, 1.0F).texture(1.0F, 1.0F).colorRgb(l);
+					bufferBuilder.vertex(-1.0F, -1.0F, 1.0F).texture(1.0F, 0.0F).colorRgb(l);
 				}
 
 				if (k == 4) {
-					bufferBuilder.vertex(-1.0F, -1.0F, -1.0F).texture(0.0F, 0.0F).method_60832(l);
-					bufferBuilder.vertex(-1.0F, -1.0F, 1.0F).texture(0.0F, 1.0F).method_60832(l);
-					bufferBuilder.vertex(1.0F, -1.0F, 1.0F).texture(1.0F, 1.0F).method_60832(l);
-					bufferBuilder.vertex(1.0F, -1.0F, -1.0F).texture(1.0F, 0.0F).method_60832(l);
+					bufferBuilder.vertex(-1.0F, -1.0F, -1.0F).texture(0.0F, 0.0F).colorRgb(l);
+					bufferBuilder.vertex(-1.0F, -1.0F, 1.0F).texture(0.0F, 1.0F).colorRgb(l);
+					bufferBuilder.vertex(1.0F, -1.0F, 1.0F).texture(1.0F, 1.0F).colorRgb(l);
+					bufferBuilder.vertex(1.0F, -1.0F, -1.0F).texture(1.0F, 0.0F).colorRgb(l);
 				}
 
 				if (k == 5) {
-					bufferBuilder.vertex(-1.0F, 1.0F, 1.0F).texture(0.0F, 0.0F).method_60832(l);
-					bufferBuilder.vertex(-1.0F, 1.0F, -1.0F).texture(0.0F, 1.0F).method_60832(l);
-					bufferBuilder.vertex(1.0F, 1.0F, -1.0F).texture(1.0F, 1.0F).method_60832(l);
-					bufferBuilder.vertex(1.0F, 1.0F, 1.0F).texture(1.0F, 0.0F).method_60832(l);
+					bufferBuilder.vertex(-1.0F, 1.0F, 1.0F).texture(0.0F, 0.0F).colorRgb(l);
+					bufferBuilder.vertex(-1.0F, 1.0F, -1.0F).texture(0.0F, 1.0F).colorRgb(l);
+					bufferBuilder.vertex(1.0F, 1.0F, -1.0F).texture(1.0F, 1.0F).colorRgb(l);
+					bufferBuilder.vertex(1.0F, 1.0F, 1.0F).texture(1.0F, 0.0F).colorRgb(l);
 				}
 
-				BufferRenderer.drawWithGlobalProgram(bufferBuilder.method_60800());
+				BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 			}
 
 			matrix4fStack.popMatrix();

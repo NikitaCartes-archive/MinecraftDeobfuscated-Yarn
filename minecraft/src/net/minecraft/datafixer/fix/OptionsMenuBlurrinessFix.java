@@ -7,8 +7,8 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixer.TypeReferences;
 
 public class OptionsMenuBlurrinessFix extends DataFix {
-	public OptionsMenuBlurrinessFix(Schema schema) {
-		super(schema, false);
+	public OptionsMenuBlurrinessFix(Schema outputSchema) {
+		super(outputSchema, false);
 	}
 
 	@Override
@@ -16,8 +16,11 @@ public class OptionsMenuBlurrinessFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"OptionsMenuBlurrinessFix",
 			this.getInputSchema().getType(TypeReferences.OPTIONS),
-			typed -> typed.update(
-					DSL.remainderFinder(), dynamic -> dynamic.update("menuBackgroundBlurriness", dynamicx -> dynamicx.createInt(this.update(dynamicx.asString("0.5"))))
+			optionsTyped -> optionsTyped.update(
+					DSL.remainderFinder(),
+					optionsDynamic -> optionsDynamic.update(
+							"menuBackgroundBlurriness", menuBackgroundBlurriness -> menuBackgroundBlurriness.createInt(this.update(menuBackgroundBlurriness.asString("0.5")))
+						)
 				)
 		);
 	}

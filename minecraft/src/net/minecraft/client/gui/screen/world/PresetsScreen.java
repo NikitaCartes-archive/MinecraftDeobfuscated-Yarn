@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class PresetsScreen extends Screen {
-	static final Identifier SLOT_TEXTURE = Identifier.method_60656("container/slot");
+	static final Identifier SLOT_TEXTURE = Identifier.ofVanilla("container/slot");
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final int ICON_SIZE = 18;
 	private static final int BUTTON_HEIGHT = 20;
@@ -95,7 +95,7 @@ public class PresetsScreen extends Screen {
 
 		Optional<RegistryEntry.Reference<Block>> optional;
 		try {
-			optional = blockLookup.getOptional(RegistryKey.of(RegistryKeys.BLOCK, Identifier.method_60654(string)));
+			optional = blockLookup.getOptional(RegistryKey.of(RegistryKeys.BLOCK, Identifier.of(string)));
 		} catch (Exception var10) {
 			LOGGER.error("Error while parsing flat world string", (Throwable)var10);
 			return null;
@@ -298,7 +298,7 @@ public class PresetsScreen extends Screen {
 
 		@Environment(EnvType.CLIENT)
 		public class SuperflatPresetEntry extends AlwaysSelectedEntryListWidget.Entry<PresetsScreen.SuperflatPresetsListWidget.SuperflatPresetEntry> {
-			private static final Identifier STATS_ICONS_TEXTURE = Identifier.method_60656("textures/gui/container/stats_icons.png");
+			private static final Identifier STATS_ICONS_TEXTURE = Identifier.ofVanilla("textures/gui/container/stats_icons.png");
 			private final FlatLevelGeneratorPreset preset;
 			private final Text text;
 

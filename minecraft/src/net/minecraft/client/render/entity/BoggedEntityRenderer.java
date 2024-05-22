@@ -10,8 +10,8 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class BoggedEntityRenderer extends SkeletonEntityRenderer<BoggedEntity> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/skeleton/bogged.png");
-	private static final Identifier OVERLAY_TEXTURE = Identifier.method_60656("textures/entity/skeleton/bogged_overlay.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/skeleton/bogged.png");
+	private static final Identifier OVERLAY_TEXTURE = Identifier.ofVanilla("textures/entity/skeleton/bogged_overlay.png");
 
 	public BoggedEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, EntityModelLayers.BOGGED_INNER_ARMOR, EntityModelLayers.BOGGED_OUTER_ARMOR, new BoggedEntityModel(context.getPart(EntityModelLayers.BOGGED)));

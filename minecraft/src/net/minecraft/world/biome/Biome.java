@@ -10,8 +10,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
-import net.minecraft.client.color.world.FoliageColors;
-import net.minecraft.client.color.world.GrassColors;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.registry.RegistryCodecs;

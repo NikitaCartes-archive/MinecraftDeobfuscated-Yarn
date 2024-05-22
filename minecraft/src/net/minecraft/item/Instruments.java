@@ -21,7 +21,7 @@ public interface Instruments {
 	RegistryKey<Instrument> DREAM_GOAT_HORN = of("dream_goat_horn");
 
 	private static RegistryKey<Instrument> of(String id) {
-		return RegistryKey.of(RegistryKeys.INSTRUMENT, Identifier.method_60656(id));
+		return RegistryKey.of(RegistryKeys.INSTRUMENT, Identifier.ofVanilla(id));
 	}
 
 	static Instrument registerAndGetDefault(Registry<Instrument> registry) {

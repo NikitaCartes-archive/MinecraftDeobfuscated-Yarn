@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/creeper/creeper.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/creeper/creeper.png");
 
 	public CreeperEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new CreeperEntityModel<>(context.getPart(EntityModelLayers.CREEPER)), 0.5F);

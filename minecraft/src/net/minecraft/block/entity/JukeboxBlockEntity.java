@@ -2,11 +2,11 @@ package net.minecraft.block.entity;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.Optional;
-import net.minecraft.class_9793;
-import net.minecraft.class_9794;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.JukeboxBlock;
+import net.minecraft.block.jukebox.JukeboxManager;
+import net.minecraft.block.jukebox.JukeboxSong;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.inventory.Inventory;
@@ -23,27 +23,27 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class JukeboxBlockEntity extends BlockEntity implements Clearable, SingleStackInventory.SingleStackBlockEntityInventory {
-	public static final String field_52064 = "RecordItem";
-	public static final String field_52065 = "ticks_since_song_started";
+	public static final String RECORD_ITEM_NBT_KEY = "RecordItem";
+	public static final String TICKS_SINCE_SONG_STARTED_NBT_KEY = "ticks_since_song_started";
 	private ItemStack recordStack = ItemStack.EMPTY;
-	private final class_9794 field_52066 = new class_9794(this::method_60785, this.getPos());
+	private final JukeboxManager manager = new JukeboxManager(this::onManagerChange, this.getPos());
 
 	public JukeboxBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.JUKEBOX, pos, state);
 	}
 
-	public class_9794 method_60784() {
-		return this.field_52066;
+	public JukeboxManager getManager() {
+		return this.manager;
 	}
 
-	public void method_60785() {
+	public void onManagerChange() {
 		this.world.updateNeighborsAlways(this.getPos(), this.getCachedState().getBlock());
 		this.markDirty();
 	}
 
-	private void method_60782(boolean bl) {
+	private void onRecordStackChanged(boolean hasRecord) {
 		if (this.world != null && this.world.getBlockState(this.getPos()) == this.getCachedState()) {
-			this.world.setBlockState(this.getPos(), this.getCachedState().with(JukeboxBlock.HAS_RECORD, Boolean.valueOf(bl)), Block.NOTIFY_LISTENERS);
+			this.world.setBlockState(this.getPos(), this.getCachedState().with(JukeboxBlock.HAS_RECORD, Boolean.valueOf(hasRecord)), Block.NOTIFY_LISTENERS);
 			this.world.emitGameEvent(GameEvent.BLOCK_CHANGE, this.getPos(), GameEvent.Emitter.of(this.getCachedState()));
 		}
 	}
@@ -64,7 +64,7 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 	}
 
 	public static void tick(World world, BlockPos pos, BlockState state, JukeboxBlockEntity blockEntity) {
-		blockEntity.field_52066.method_60760(world, state);
+		blockEntity.manager.tick(world, state);
 	}
 
 	@Override
@@ -77,8 +77,7 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 		}
 
 		if (nbt.contains("ticks_since_song_started", NbtElement.LONG_TYPE)) {
-			class_9793.method_60753(registryLookup, this.recordStack)
-				.ifPresent(registryEntry -> this.field_52066.method_60758(registryEntry, nbt.getLong("ticks_since_song_started")));
+			JukeboxSong.getSongEntryFromStack(registryLookup, this.recordStack).ifPresent(song -> this.manager.setValues(song, nbt.getLong("ticks_since_song_started")));
 		}
 	}
 
@@ -89,8 +88,8 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 			nbt.put("RecordItem", this.getStack().encode(registryLookup));
 		}
 
-		if (this.field_52066.method_60759() != null) {
-			nbt.putLong("ticks_since_song_started", this.field_52066.method_60761());
+		if (this.manager.getSong() != null) {
+			nbt.putLong("ticks_since_song_started", this.manager.getTicksSinceSongStarted());
 		}
 	}
 
@@ -110,12 +109,12 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 	public void setStack(ItemStack stack) {
 		this.recordStack = stack;
 		boolean bl = !this.recordStack.isEmpty();
-		Optional<RegistryEntry<class_9793>> optional = class_9793.method_60753(this.world.getRegistryManager(), this.recordStack);
-		this.method_60782(bl);
+		Optional<RegistryEntry<JukeboxSong>> optional = JukeboxSong.getSongEntryFromStack(this.world.getRegistryManager(), this.recordStack);
+		this.onRecordStackChanged(bl);
 		if (bl && optional.isPresent()) {
-			this.field_52066.method_60757(this.world, (RegistryEntry<class_9793>)optional.get());
+			this.manager.startPlaying(this.world, (RegistryEntry<JukeboxSong>)optional.get());
 		} else {
-			this.field_52066.method_60755(this.world, this.getCachedState());
+			this.manager.stopPlaying(this.world, this.getCachedState());
 		}
 	}
 
@@ -142,14 +141,13 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 	@VisibleForTesting
 	public void setDisc(ItemStack stack) {
 		this.recordStack = stack;
-		class_9793.method_60753(this.world.getRegistryManager(), stack).ifPresent(registryEntry -> this.field_52066.method_60758(registryEntry, 0L));
+		JukeboxSong.getSongEntryFromStack(this.world.getRegistryManager(), stack).ifPresent(song -> this.manager.setValues(song, 0L));
 		this.world.updateNeighborsAlways(this.getPos(), this.getCachedState().getBlock());
 		this.markDirty();
 	}
 
 	@VisibleForTesting
-	public void method_60786() {
-		class_9793.method_60753(this.world.getRegistryManager(), this.getStack())
-			.ifPresent(registryEntry -> this.field_52066.method_60757(this.world, registryEntry));
+	public void reloadDisc() {
+		JukeboxSong.getSongEntryFromStack(this.world.getRegistryManager(), this.getStack()).ifPresent(song -> this.manager.startPlaying(this.world, song));
 	}
 }

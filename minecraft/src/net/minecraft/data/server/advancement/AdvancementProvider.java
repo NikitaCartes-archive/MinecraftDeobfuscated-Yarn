@@ -24,7 +24,7 @@ public class AdvancementProvider implements DataProvider {
 	public AdvancementProvider(
 		DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture, List<AdvancementTabGenerator> tabGenerators
 	) {
-		this.pathResolver = output.method_60917(RegistryKeys.ADVANCEMENT);
+		this.pathResolver = output.getResolver(RegistryKeys.ADVANCEMENT);
 		this.tabGenerators = tabGenerators;
 		this.registryLookupFuture = registryLookupFuture;
 	}

@@ -9,8 +9,8 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9797;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Portal;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.HangingSignBlockEntity;
@@ -663,7 +663,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (!(this.client.currentScreen instanceof DownloadingTerrainScreen)) {
-			this.method_60887(this.method_60886() == class_9797.class_9798.CONFUSION);
+			this.tickNausea(this.getCurrentPortalEffect() == Portal.Effect.CONFUSION);
 			this.tickPortalCooldown();
 		}
 
@@ -824,8 +824,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 	}
 
-	public class_9797.class_9798 method_60886() {
-		return this.field_51994 == null ? class_9797.class_9798.NONE : this.field_51994.method_60700();
+	public Portal.Effect getCurrentPortalEffect() {
+		return this.portalManager == null ? Portal.Effect.NONE : this.portalManager.getEffect();
 	}
 
 	@Override
@@ -836,10 +836,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 	}
 
-	private void method_60887(boolean bl) {
+	private void tickNausea(boolean fromPortalEffect) {
 		this.prevNauseaIntensity = this.nauseaIntensity;
 		float f = 0.0F;
-		if (bl && this.field_51994 != null && this.field_51994.method_60709()) {
+		if (fromPortalEffect && this.portalManager != null && this.portalManager.isInPortal()) {
 			if (this.client.currentScreen != null
 				&& !this.client.currentScreen.shouldPause()
 				&& !(this.client.currentScreen instanceof DeathScreen)
@@ -856,7 +856,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 
 			f = 0.0125F;
-			this.field_51994.method_60705(false);
+			this.portalManager.setInPortal(false);
 		} else if (this.hasStatusEffect(StatusEffects.NAUSEA) && !this.getStatusEffect(StatusEffects.NAUSEA).isDurationBelow(60)) {
 			f = 0.006666667F;
 		} else if (this.nauseaIntensity > 0.0F) {

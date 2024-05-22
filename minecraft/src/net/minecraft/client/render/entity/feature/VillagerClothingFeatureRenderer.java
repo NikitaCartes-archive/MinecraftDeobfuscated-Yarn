@@ -29,11 +29,11 @@ import net.minecraft.village.VillagerType;
 public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDataContainer, M extends EntityModel<T> & ModelWithHat>
 	extends FeatureRenderer<T, M> {
 	private static final Int2ObjectMap<Identifier> LEVEL_TO_ID = Util.make(new Int2ObjectOpenHashMap<>(), levelToId -> {
-		levelToId.put(1, Identifier.method_60656("stone"));
-		levelToId.put(2, Identifier.method_60656("iron"));
-		levelToId.put(3, Identifier.method_60656("gold"));
-		levelToId.put(4, Identifier.method_60656("emerald"));
-		levelToId.put(5, Identifier.method_60656("diamond"));
+		levelToId.put(1, Identifier.ofVanilla("stone"));
+		levelToId.put(2, Identifier.ofVanilla("iron"));
+		levelToId.put(3, Identifier.ofVanilla("gold"));
+		levelToId.put(4, Identifier.ofVanilla("emerald"));
+		levelToId.put(5, Identifier.ofVanilla("diamond"));
 	});
 	private final Object2ObjectMap<VillagerType, VillagerResourceMetadata.HatType> villagerTypeToHat = new Object2ObjectOpenHashMap<>();
 	private final Object2ObjectMap<VillagerProfession, VillagerResourceMetadata.HatType> professionToHat = new Object2ObjectOpenHashMap<>();

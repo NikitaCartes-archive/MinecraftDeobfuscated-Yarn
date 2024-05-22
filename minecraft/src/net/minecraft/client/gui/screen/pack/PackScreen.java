@@ -65,7 +65,7 @@ public class PackScreen extends Screen {
 	private static final Text DROP_INFO = Text.translatable("pack.dropInfo").formatted(Formatting.GRAY);
 	private static final Text FOLDER_INFO = Text.translatable("pack.folderInfo");
 	private static final int field_32396 = 20;
-	private static final Identifier UNKNOWN_PACK = Identifier.method_60656("textures/misc/unknown_pack.png");
+	private static final Identifier UNKNOWN_PACK = Identifier.ofVanilla("textures/misc/unknown_pack.png");
 	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 	private final ResourcePackOrganizer organizer;
 	@Nullable
@@ -303,7 +303,7 @@ public class PackScreen extends Screen {
 				}
 
 				String string = resourcePackProfile.getId();
-				Identifier identifier = Identifier.method_60656(
+				Identifier identifier = Identifier.ofVanilla(
 					"pack/" + Util.replaceInvalidChars(string, Identifier::isPathCharacterValid) + "/" + Hashing.sha1().hashUnencodedChars(string) + "/icon"
 				);
 				InputStream inputStream = inputSupplier.get();

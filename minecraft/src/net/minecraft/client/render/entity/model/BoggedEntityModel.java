@@ -17,14 +17,15 @@ public class BoggedEntityModel extends SkeletonEntityModel<BoggedEntity> {
 
 	public BoggedEntityModel(ModelPart modelPart) {
 		super(modelPart);
-		this.mushrooms = modelPart.getChild(EntityModelPartNames.HEAD).getChild("mushrooms");
+		this.mushrooms = modelPart.getChild(EntityModelPartNames.HEAD).getChild(EntityModelPartNames.MUSHROOMS);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = BipedEntityModel.getModelData(Dilation.NONE, 0.0F);
 		ModelPartData modelPartData = modelData.getRoot();
 		SkeletonEntityModel.addLimbs(modelPartData);
-		ModelPartData modelPartData2 = modelPartData.getChild(EntityModelPartNames.HEAD).addChild("mushrooms", ModelPartBuilder.create(), ModelTransform.NONE);
+		ModelPartData modelPartData2 = modelPartData.getChild(EntityModelPartNames.HEAD)
+			.addChild(EntityModelPartNames.MUSHROOMS, ModelPartBuilder.create(), ModelTransform.NONE);
 		modelPartData2.addChild(
 			"red_mushroom_1",
 			ModelPartBuilder.create().uv(50, 16).cuboid(-3.0F, -3.0F, 0.0F, 6.0F, 4.0F, 0.0F),

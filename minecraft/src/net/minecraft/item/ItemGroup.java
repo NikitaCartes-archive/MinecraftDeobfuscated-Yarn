@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
  * A group of items that the items belong to. This is used by the creative inventory.
  */
 public class ItemGroup {
-	static final Identifier ITEMS = method_60733("items");
+	static final Identifier ITEMS = getTabTextureId("items");
 	private final Text displayName;
 	Identifier texture = ITEMS;
 	boolean scrollbar = true;
@@ -40,8 +40,8 @@ public class ItemGroup {
 		this.type = type;
 	}
 
-	public static Identifier method_60733(String string) {
-		return Identifier.method_60656("textures/gui/container/creative_inventory/tab_" + string + ".png");
+	public static Identifier getTabTextureId(String name) {
+		return Identifier.ofVanilla("textures/gui/container/creative_inventory/tab_" + name + ".png");
 	}
 
 	public static ItemGroup.Builder create(ItemGroup.Row location, int column) {

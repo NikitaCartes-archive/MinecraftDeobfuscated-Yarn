@@ -22,8 +22,8 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends HandledScreen<T> {
-	private static final Identifier EFFECT_BACKGROUND_LARGE_TEXTURE = Identifier.method_60656("container/inventory/effect_background_large");
-	private static final Identifier EFFECT_BACKGROUND_SMALL_TEXTURE = Identifier.method_60656("container/inventory/effect_background_small");
+	private static final Identifier EFFECT_BACKGROUND_LARGE_TEXTURE = Identifier.ofVanilla("container/inventory/effect_background_large");
+	private static final Identifier EFFECT_BACKGROUND_SMALL_TEXTURE = Identifier.ofVanilla("container/inventory/effect_background_small");
 
 	public AbstractInventoryScreen(T screenHandler, PlayerInventory playerInventory, Text text) {
 		super(screenHandler, playerInventory, text);

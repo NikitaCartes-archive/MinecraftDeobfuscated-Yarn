@@ -49,7 +49,6 @@ import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.render.ChunkBuilderMode;
-import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
@@ -59,6 +58,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.VideoMode;
 import net.minecraft.client.util.Window;
 import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.message.ChatVisibility;
 import net.minecraft.network.packet.c2s.common.ClientOptionsC2SPacket;
@@ -422,9 +422,9 @@ public class GameOptions {
 	);
 	private final SimpleOption<Boolean> invertYMouse = SimpleOption.ofBoolean("options.invertMouse", false);
 	private final SimpleOption<Boolean> discreteMouseScroll = SimpleOption.ofBoolean("options.discrete_mouse_scroll", false);
-	private static final Text field_52127 = Text.translatable("options.realmsNotifications.tooltip");
+	private static final Text REALMS_NOTIFICATIONS_TOOLTIP = Text.translatable("options.realmsNotifications.tooltip");
 	private final SimpleOption<Boolean> realmsNotifications = SimpleOption.ofBoolean(
-		"options.realmsNotifications", SimpleOption.constantTooltip(field_52127), true
+		"options.realmsNotifications", SimpleOption.constantTooltip(REALMS_NOTIFICATIONS_TOOLTIP), true
 	);
 	private static final Text ALLOW_SERVER_LISTING_TOOLTIP = Text.translatable("options.allowServerListing.tooltip");
 	private final SimpleOption<Boolean> allowServerListing = SimpleOption.ofBoolean(

@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SpiderEntityRenderer<T extends SpiderEntity> extends MobEntityRenderer<T, SpiderEntityModel<T>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/spider/spider.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/spider/spider.png");
 
 	public SpiderEntityRenderer(EntityRendererFactory.Context context) {
 		this(context, EntityModelLayers.SPIDER);

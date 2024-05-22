@@ -24,10 +24,10 @@ import net.minecraft.util.Identifier;
 public class BuyRealmsScreen extends RealmsScreen {
 	private static final Text POPUP_TEXT = Text.translatable("mco.selectServer.popup");
 	private static final Text CLOSE_TEXT = Text.translatable("mco.selectServer.close");
-	private static final Identifier POPUP_BACKGROUND_TEXTURE = Identifier.method_60656("popup/background");
-	private static final Identifier TRIAL_AVAILABLE_TEXTURE = Identifier.method_60656("icon/trial_available");
+	private static final Identifier POPUP_BACKGROUND_TEXTURE = Identifier.ofVanilla("popup/background");
+	private static final Identifier TRIAL_AVAILABLE_TEXTURE = Identifier.ofVanilla("icon/trial_available");
 	private static final ButtonTextures CROSS_BUTTON_TEXTURES = new ButtonTextures(
-		Identifier.method_60656("widget/cross_button"), Identifier.method_60656("widget/cross_button_highlighted")
+		Identifier.ofVanilla("widget/cross_button"), Identifier.ofVanilla("widget/cross_button_highlighted")
 	);
 	private static final int field_45255 = 236;
 	private static final int field_45256 = 34;

@@ -107,7 +107,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<RegistryE
 	protected void initGoals() {
 		this.temptGoal = new CatEntity.TemptGoal(this, 0.6, stack -> stack.isIn(ItemTags.CAT_FOOD), true);
 		this.goalSelector.add(1, new SwimGoal(this));
-		this.goalSelector.add(1, new TameableEntity.class_9788(1.5));
+		this.goalSelector.add(1, new TameableEntity.TameableEscapeDangerGoal(1.5));
 		this.goalSelector.add(2, new SitGoal(this));
 		this.goalSelector.add(3, new CatEntity.SleepWithOwnerGoal(this));
 		this.goalSelector.add(4, this.temptGoal);

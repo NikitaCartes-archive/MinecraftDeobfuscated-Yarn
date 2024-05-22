@@ -15,7 +15,7 @@ public final class MissingSprite {
 	private static final int WIDTH = 16;
 	private static final int HEIGHT = 16;
 	private static final String MISSINGNO_ID = "missingno";
-	private static final Identifier MISSINGNO = Identifier.method_60656("missingno");
+	private static final Identifier MISSINGNO = Identifier.ofVanilla("missingno");
 	private static final ResourceMetadata METADATA = new ResourceMetadata.Builder()
 		.add(AnimationResourceMetadata.READER, new AnimationResourceMetadata(ImmutableList.of(new AnimationFrameResourceMetadata(0, -1)), 16, 16, 1, false))
 		.build();

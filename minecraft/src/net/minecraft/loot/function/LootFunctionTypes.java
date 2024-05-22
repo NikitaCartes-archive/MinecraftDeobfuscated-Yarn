@@ -74,7 +74,7 @@ public class LootFunctionTypes {
 	);
 
 	private static <T extends LootFunction> LootFunctionType<T> register(String id, MapCodec<T> codec) {
-		return Registry.register(Registries.LOOT_FUNCTION_TYPE, Identifier.method_60656(id), new LootFunctionType<>(codec));
+		return Registry.register(Registries.LOOT_FUNCTION_TYPE, Identifier.ofVanilla(id), new LootFunctionType<>(codec));
 	}
 
 	public static BiFunction<ItemStack, LootContext, ItemStack> join(List<? extends BiFunction<ItemStack, LootContext, ItemStack>> terms) {

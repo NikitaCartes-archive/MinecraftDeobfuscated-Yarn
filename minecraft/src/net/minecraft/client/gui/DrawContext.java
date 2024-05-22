@@ -18,7 +18,6 @@ import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.client.item.TooltipData;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -40,6 +39,7 @@ import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
@@ -461,12 +461,12 @@ public class DrawContext {
 		RenderSystem.setShaderTexture(0, texture);
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		Matrix4f matrix4f = this.matrices.peek().getPositionMatrix();
-		BufferBuilder bufferBuilder = Tessellator.getInstance().method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+		BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 		bufferBuilder.vertex(matrix4f, (float)x1, (float)y1, (float)z).texture(u1, v1);
 		bufferBuilder.vertex(matrix4f, (float)x1, (float)y2, (float)z).texture(u1, v2);
 		bufferBuilder.vertex(matrix4f, (float)x2, (float)y2, (float)z).texture(u2, v2);
 		bufferBuilder.vertex(matrix4f, (float)x2, (float)y1, (float)z).texture(u2, v1);
-		BufferRenderer.drawWithGlobalProgram(bufferBuilder.method_60800());
+		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 	}
 
 	void drawTexturedQuad(
@@ -476,12 +476,12 @@ public class DrawContext {
 		RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
 		RenderSystem.enableBlend();
 		Matrix4f matrix4f = this.matrices.peek().getPositionMatrix();
-		BufferBuilder bufferBuilder = Tessellator.getInstance().method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+		BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
 		bufferBuilder.vertex(matrix4f, (float)x1, (float)y1, (float)z).texture(u1, v1).color(red, green, blue, alpha);
 		bufferBuilder.vertex(matrix4f, (float)x1, (float)y2, (float)z).texture(u1, v2).color(red, green, blue, alpha);
 		bufferBuilder.vertex(matrix4f, (float)x2, (float)y2, (float)z).texture(u2, v2).color(red, green, blue, alpha);
 		bufferBuilder.vertex(matrix4f, (float)x2, (float)y1, (float)z).texture(u2, v1).color(red, green, blue, alpha);
-		BufferRenderer.drawWithGlobalProgram(bufferBuilder.method_60800());
+		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 		RenderSystem.disableBlend();
 	}
 

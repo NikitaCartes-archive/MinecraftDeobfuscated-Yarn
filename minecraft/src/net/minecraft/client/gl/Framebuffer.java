@@ -232,12 +232,12 @@ public abstract class Framebuffer {
 		ShaderProgram shaderProgram = (ShaderProgram)Objects.requireNonNull(minecraftClient.gameRenderer.blitScreenProgram, "Blit shader not loaded");
 		shaderProgram.addSampler("DiffuseSampler", this.colorAttachment);
 		shaderProgram.bind();
-		BufferBuilder bufferBuilder = RenderSystem.renderThreadTesselator().method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.BLIT_SCREEN);
+		BufferBuilder bufferBuilder = RenderSystem.renderThreadTesselator().begin(VertexFormat.DrawMode.QUADS, VertexFormats.BLIT_SCREEN);
 		bufferBuilder.vertex(0.0F, 0.0F, 0.0F);
 		bufferBuilder.vertex(1.0F, 0.0F, 0.0F);
 		bufferBuilder.vertex(1.0F, 1.0F, 0.0F);
 		bufferBuilder.vertex(0.0F, 1.0F, 0.0F);
-		BufferRenderer.draw(bufferBuilder.method_60800());
+		BufferRenderer.draw(bufferBuilder.end());
 		shaderProgram.unbind();
 		GlStateManager._depthMask(true);
 		GlStateManager._colorMask(true, true, true, true);

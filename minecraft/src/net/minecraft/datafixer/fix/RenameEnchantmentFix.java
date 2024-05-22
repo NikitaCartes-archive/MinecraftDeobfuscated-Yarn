@@ -26,30 +26,32 @@ public class RenameEnchantmentFix extends DataFix {
 	protected TypeRewriteRule makeRule() {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.ITEM_STACK);
 		OpticFinder<?> opticFinder = type.findField("tag");
-		return this.fixTypeEverywhereTyped(this.name, type, typed -> typed.updateTyped(opticFinder, typedx -> typedx.update(DSL.remainderFinder(), this::fixIds)));
+		return this.fixTypeEverywhereTyped(
+			this.name, type, itemStackTyped -> itemStackTyped.updateTyped(opticFinder, itemTagTyped -> itemTagTyped.update(DSL.remainderFinder(), this::fixIds))
+		);
 	}
 
-	private Dynamic<?> fixIds(Dynamic<?> data) {
-		data = this.fixIds(data, "Enchantments");
-		return this.fixIds(data, "StoredEnchantments");
+	private Dynamic<?> fixIds(Dynamic<?> itemTagDynamic) {
+		itemTagDynamic = this.fixIds(itemTagDynamic, "Enchantments");
+		return this.fixIds(itemTagDynamic, "StoredEnchantments");
 	}
 
-	private Dynamic<?> fixIds(Dynamic<?> data, String key) {
-		return data.update(
-			key,
-			dynamic -> dynamic.asStreamOpt()
+	private Dynamic<?> fixIds(Dynamic<?> itemTagDynamic, String enchantmentsKey) {
+		return itemTagDynamic.update(
+			enchantmentsKey,
+			enchantmentsDynamic -> enchantmentsDynamic.asStreamOpt()
 					.map(
-						stream -> stream.map(
-								dynamicx -> dynamicx.update(
+						enchantments -> enchantments.map(
+								enchantmentDynamic -> enchantmentDynamic.update(
 										"id",
-										dynamic2 -> dynamic2.asString()
-												.map(oldId -> dynamicx.createString((String)this.oldToNewIds.getOrDefault(IdentifierNormalizingSchema.normalize(oldId), oldId)))
-												.mapOrElse(Function.identity(), error -> dynamic2)
+										idDynamic -> idDynamic.asString()
+												.map(oldId -> enchantmentDynamic.createString((String)this.oldToNewIds.getOrDefault(IdentifierNormalizingSchema.normalize(oldId), oldId)))
+												.mapOrElse(Function.identity(), error -> idDynamic)
 									)
 							)
 					)
-					.map(dynamic::createList)
-					.mapOrElse(Function.identity(), error -> dynamic)
+					.map(enchantmentsDynamic::createList)
+					.mapOrElse(Function.identity(), error -> enchantmentsDynamic)
 		);
 	}
 }

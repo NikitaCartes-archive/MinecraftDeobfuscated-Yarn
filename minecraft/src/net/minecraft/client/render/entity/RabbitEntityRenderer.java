@@ -10,14 +10,14 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class RabbitEntityRenderer extends MobEntityRenderer<RabbitEntity, RabbitEntityModel<RabbitEntity>> {
-	private static final Identifier BROWN_TEXTURE = Identifier.method_60656("textures/entity/rabbit/brown.png");
-	private static final Identifier WHITE_TEXTURE = Identifier.method_60656("textures/entity/rabbit/white.png");
-	private static final Identifier BLACK_TEXTURE = Identifier.method_60656("textures/entity/rabbit/black.png");
-	private static final Identifier GOLD_TEXTURE = Identifier.method_60656("textures/entity/rabbit/gold.png");
-	private static final Identifier SALT_TEXTURE = Identifier.method_60656("textures/entity/rabbit/salt.png");
-	private static final Identifier WHITE_SPLOTCHED_TEXTURE = Identifier.method_60656("textures/entity/rabbit/white_splotched.png");
-	private static final Identifier TOAST_TEXTURE = Identifier.method_60656("textures/entity/rabbit/toast.png");
-	private static final Identifier CAERBANNOG_TEXTURE = Identifier.method_60656("textures/entity/rabbit/caerbannog.png");
+	private static final Identifier BROWN_TEXTURE = Identifier.ofVanilla("textures/entity/rabbit/brown.png");
+	private static final Identifier WHITE_TEXTURE = Identifier.ofVanilla("textures/entity/rabbit/white.png");
+	private static final Identifier BLACK_TEXTURE = Identifier.ofVanilla("textures/entity/rabbit/black.png");
+	private static final Identifier GOLD_TEXTURE = Identifier.ofVanilla("textures/entity/rabbit/gold.png");
+	private static final Identifier SALT_TEXTURE = Identifier.ofVanilla("textures/entity/rabbit/salt.png");
+	private static final Identifier WHITE_SPLOTCHED_TEXTURE = Identifier.ofVanilla("textures/entity/rabbit/white_splotched.png");
+	private static final Identifier TOAST_TEXTURE = Identifier.ofVanilla("textures/entity/rabbit/toast.png");
+	private static final Identifier CAERBANNOG_TEXTURE = Identifier.ofVanilla("textures/entity/rabbit/caerbannog.png");
 
 	public RabbitEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new RabbitEntityModel<>(context.getPart(EntityModelLayers.RABBIT)), 0.3F);

@@ -109,8 +109,8 @@ public class BookModel extends Model {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {
-		this.renderBook(matrices, vertices, light, overlay, i);
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
+		this.renderBook(matrices, vertices, light, overlay, color);
 	}
 
 	public void renderBook(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {

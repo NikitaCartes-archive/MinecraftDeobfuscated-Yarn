@@ -32,57 +32,64 @@ public class WorldGenSettingsHeightAndBiomeFix extends DataFix {
 			"WorldGenSettingsHeightAndBiomeFix",
 			type,
 			type2,
-			typed -> {
-				OptionalDynamic<?> optionalDynamic = typed.get(DSL.remainderFinder()).get("has_increased_height_already");
+			worldGenSettingsTyped -> {
+				OptionalDynamic<?> optionalDynamic = worldGenSettingsTyped.get(DSL.remainderFinder()).get("has_increased_height_already");
 				boolean bl = optionalDynamic.result().isEmpty();
 				boolean bl2 = optionalDynamic.asBoolean(true);
-				return typed.update(DSL.remainderFinder(), dynamic -> dynamic.remove("has_increased_height_already"))
+				return worldGenSettingsTyped.update(DSL.remainderFinder(), worldGenSettingsDynamic -> worldGenSettingsDynamic.remove("has_increased_height_already"))
 					.updateTyped(
 						opticFinder,
 						type3,
-						typedx -> Util.apply(
-								typedx,
+						dimensionsTyped -> Util.apply(
+								dimensionsTyped,
 								type3,
-								dynamic -> dynamic.update(
+								dimensionsDynamic -> dimensionsDynamic.update(
 										"minecraft:overworld",
-										dynamicx -> dynamicx.update(
+										overworldDimensionDynamic -> overworldDimensionDynamic.update(
 												"generator",
-												dynamicxx -> {
-													String string = dynamicxx.get("type").asString("");
+												overworldGeneratorDynamic -> {
+													String string = overworldGeneratorDynamic.get("type").asString("");
 													if ("minecraft:noise".equals(string)) {
 														MutableBoolean mutableBoolean = new MutableBoolean();
-														dynamicxx = dynamicxx.update(
+														overworldGeneratorDynamic = overworldGeneratorDynamic.update(
 															"biome_source",
-															dynamicxxx -> {
-																String stringx = dynamicxxx.get("type").asString("");
+															overworldBiomeSourceDynamic -> {
+																String stringx = overworldBiomeSourceDynamic.get("type").asString("");
 																if ("minecraft:vanilla_layered".equals(stringx) || bl && "minecraft:multi_noise".equals(stringx)) {
-																	if (dynamicxxx.get("large_biomes").asBoolean(false)) {
+																	if (overworldBiomeSourceDynamic.get("large_biomes").asBoolean(false)) {
 																		mutableBoolean.setTrue();
 																	}
 
-																	return dynamicxxx.createMap(
+																	return overworldBiomeSourceDynamic.createMap(
 																		ImmutableMap.of(
-																			dynamicxxx.createString("preset"),
-																			dynamicxxx.createString("minecraft:overworld"),
-																			dynamicxxx.createString("type"),
-																			dynamicxxx.createString("minecraft:multi_noise")
+																			overworldBiomeSourceDynamic.createString("preset"),
+																			overworldBiomeSourceDynamic.createString("minecraft:overworld"),
+																			overworldBiomeSourceDynamic.createString("type"),
+																			overworldBiomeSourceDynamic.createString("minecraft:multi_noise")
 																		)
 																	);
 																} else {
-																	return dynamicxxx;
+																	return overworldBiomeSourceDynamic;
 																}
 															}
 														);
 														return mutableBoolean.booleanValue()
-															? dynamicxx.update(
+															? overworldGeneratorDynamic.update(
 																"settings",
-																dynamicxxx -> "minecraft:overworld".equals(dynamicxxx.asString("")) ? dynamicxxx.createString("minecraft:large_biomes") : dynamicxxx
+																overworldGeneratorSettingsDynamic -> "minecraft:overworld".equals(overworldGeneratorSettingsDynamic.asString(""))
+																		? overworldGeneratorSettingsDynamic.createString("minecraft:large_biomes")
+																		: overworldGeneratorSettingsDynamic
 															)
-															: dynamicxx;
+															: overworldGeneratorDynamic;
 													} else if ("minecraft:flat".equals(string)) {
-														return bl2 ? dynamicxx : dynamicxx.update("settings", dynamicxxx -> dynamicxxx.update("layers", WorldGenSettingsHeightAndBiomeFix::fillWithAir));
+														return bl2
+															? overworldGeneratorDynamic
+															: overworldGeneratorDynamic.update(
+																"settings",
+																overworldGeneratorSettingsDynamic -> overworldGeneratorSettingsDynamic.update("layers", WorldGenSettingsHeightAndBiomeFix::fillWithAir)
+															);
 													} else {
-														return dynamicxx;
+														return overworldGeneratorDynamic;
 													}
 												}
 											)

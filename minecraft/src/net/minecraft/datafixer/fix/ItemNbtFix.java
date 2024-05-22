@@ -28,19 +28,19 @@ public abstract class ItemNbtFix extends DataFix {
 	@Override
 	public final TypeRewriteRule makeRule() {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.ITEM_STACK);
-		return this.fixTypeEverywhereTyped(this.name, type, method_56971(type, this.itemIdPredicate, this::fixNbt));
+		return this.fixTypeEverywhereTyped(this.name, type, fixNbt(type, this.itemIdPredicate, this::fixNbt));
 	}
 
-	public static UnaryOperator<Typed<?>> method_56971(Type<?> type, Predicate<String> predicate, UnaryOperator<Dynamic<?>> unaryOperator) {
+	public static UnaryOperator<Typed<?>> fixNbt(Type<?> itemStackType, Predicate<String> itemIdPredicate, UnaryOperator<Dynamic<?>> nbtFixer) {
 		OpticFinder<Pair<String, String>> opticFinder = DSL.fieldFinder(
 			"id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType())
 		);
-		OpticFinder<?> opticFinder2 = type.findField("tag");
-		return typed -> {
-			Optional<Pair<String, String>> optional = typed.getOptional(opticFinder);
-			return optional.isPresent() && predicate.test((String)((Pair)optional.get()).getSecond())
-				? typed.updateTyped(opticFinder2, typedx -> typedx.update(DSL.remainderFinder(), unaryOperator))
-				: typed;
+		OpticFinder<?> opticFinder2 = itemStackType.findField("tag");
+		return itemStackTyped -> {
+			Optional<Pair<String, String>> optional = itemStackTyped.getOptional(opticFinder);
+			return optional.isPresent() && itemIdPredicate.test((String)((Pair)optional.get()).getSecond())
+				? itemStackTyped.updateTyped(opticFinder2, tag -> tag.update(DSL.remainderFinder(), nbtFixer))
+				: itemStackTyped;
 		};
 	}
 

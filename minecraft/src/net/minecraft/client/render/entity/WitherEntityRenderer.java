@@ -12,8 +12,8 @@ import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class WitherEntityRenderer extends MobEntityRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
-	private static final Identifier INVULNERABLE_TEXTURE = Identifier.method_60656("textures/entity/wither/wither_invulnerable.png");
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/wither/wither.png");
+	private static final Identifier INVULNERABLE_TEXTURE = Identifier.ofVanilla("textures/entity/wither/wither_invulnerable.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/wither/wither.png");
 
 	public WitherEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new WitherEntityModel<>(context.getPart(EntityModelLayers.WITHER)), 1.0F);

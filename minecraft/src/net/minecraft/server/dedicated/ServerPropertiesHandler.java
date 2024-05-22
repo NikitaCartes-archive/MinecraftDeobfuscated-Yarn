@@ -53,7 +53,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final boolean pvp = this.parseBoolean("pvp", true);
 	public final boolean allowFlight = this.parseBoolean("allow-flight", false);
 	public final String motd = this.getString("motd", "A Minecraft Server");
-	public final String field_51987 = this.getString("bug-report-link", "");
+	public final String bugReportLink = this.getString("bug-report-link", "");
 	public final boolean forceGameMode = this.parseBoolean("force-gamemode", false);
 	public final boolean enforceWhitelist = this.parseBoolean("enforce-whitelist", false);
 	public final Difficulty difficulty = this.get("difficulty", combineParser(Difficulty::byId, Difficulty::byName), Difficulty::getName, Difficulty.EASY);

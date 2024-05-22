@@ -6,8 +6,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.client.color.world.FoliageColors;
-import net.minecraft.client.color.world.GrassColors;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.component.type.FireworkExplosionComponent;
@@ -22,6 +20,8 @@ import net.minecraft.item.SpawnEggItem;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.world.biome.FoliageColors;
+import net.minecraft.world.biome.GrassColors;
 
 @Environment(EnvType.CLIENT)
 public class ItemColors {

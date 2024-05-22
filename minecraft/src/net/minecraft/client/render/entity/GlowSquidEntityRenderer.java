@@ -10,7 +10,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class GlowSquidEntityRenderer extends SquidEntityRenderer<GlowSquidEntity> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/squid/glow_squid.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/squid/glow_squid.png");
 
 	public GlowSquidEntityRenderer(EntityRendererFactory.Context context, SquidEntityModel<GlowSquidEntity> squidEntityModel) {
 		super(context, squidEntityModel);

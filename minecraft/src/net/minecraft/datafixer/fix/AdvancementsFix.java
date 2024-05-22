@@ -63,7 +63,7 @@ public class AdvancementsFix extends AdvancementRenameFix {
 		.put("minecraft:recipes/transportation/golden_rail", "minecraft:recipes/transportation/powered_rail")
 		.build();
 
-	public AdvancementsFix(Schema schema, boolean bl) {
-		super(schema, bl, "AdvancementsFix", string -> (String)RENAMED_ADVANCEMENTS.getOrDefault(string, string));
+	public AdvancementsFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "AdvancementsFix", string -> (String)RENAMED_ADVANCEMENTS.getOrDefault(string, string));
 	}
 }

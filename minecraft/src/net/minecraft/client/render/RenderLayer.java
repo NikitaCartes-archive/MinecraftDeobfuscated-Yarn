@@ -8,7 +8,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9801;
 import net.minecraft.client.render.block.entity.EndPortalBlockEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.util.Identifier;
@@ -1096,9 +1095,9 @@ public abstract class RenderLayer extends RenderPhase {
 		return new RenderLayer.MultiPhase(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, phases);
 	}
 
-	public void method_60895(class_9801 arg) {
+	public void draw(BuiltBuffer buffer) {
 		this.startDrawing();
-		BufferRenderer.drawWithGlobalProgram(arg);
+		BufferRenderer.drawWithGlobalProgram(buffer);
 		this.endDrawing();
 	}
 
@@ -1139,7 +1138,7 @@ public abstract class RenderLayer extends RenderPhase {
 		return !this.drawMode.shareVertices;
 	}
 
-	public boolean method_60894() {
+	public boolean isTranslucent() {
 		return this.translucent;
 	}
 

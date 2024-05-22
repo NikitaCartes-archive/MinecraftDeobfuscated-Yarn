@@ -18,11 +18,6 @@ import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9782;
-import net.minecraft.class_9812;
-import net.minecraft.class_9813;
-import net.minecraft.class_9814;
-import net.minecraft.class_9815;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
@@ -35,6 +30,7 @@ import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
 import net.minecraft.client.resource.server.ServerResourcePackLoader;
 import net.minecraft.client.session.telemetry.WorldSession;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.DisconnectionInfo;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.listener.ClientCommonPacketListener;
 import net.minecraft.network.listener.ServerPacketListener;
@@ -49,13 +45,16 @@ import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.s2c.common.CommonPingS2CPacket;
 import net.minecraft.network.packet.s2c.common.CookieRequestS2CPacket;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.common.CustomReportDetailsS2CPacket;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
+import net.minecraft.network.packet.s2c.common.ServerLinksS2CPacket;
 import net.minecraft.network.packet.s2c.common.ServerTransferS2CPacket;
 import net.minecraft.network.packet.s2c.common.StoreCookieS2CPacket;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.server.ServerLinks;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -63,6 +62,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.crash.ReportType;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -85,8 +85,8 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	protected final boolean strictErrorHandling;
 	private final List<ClientCommonNetworkHandler.QueuedPacket> queuedPackets = new ArrayList();
 	protected final Map<Identifier, byte[]> serverCookies;
-	protected Map<String, String> field_52154;
-	protected class_9782 field_52155;
+	protected Map<String, String> customReportDetails;
+	protected ServerLinks serverLinks;
 
 	protected ClientCommonNetworkHandler(MinecraftClient client, ClientConnection connection, ClientConnectionState connectionState) {
 		this.client = client;
@@ -97,36 +97,36 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 		this.postDisconnectScreen = connectionState.postDisconnectScreen();
 		this.serverCookies = connectionState.serverCookies();
 		this.strictErrorHandling = connectionState.strictErrorHandling();
-		this.field_52154 = connectionState.customReportDetails();
-		this.field_52155 = connectionState.serverLinks();
+		this.customReportDetails = connectionState.customReportDetails();
+		this.serverLinks = connectionState.serverLinks();
 	}
 
 	@Override
 	public void onPacketException(Packet packet, Exception exception) {
 		LOGGER.error("Failed to handle packet {}", packet, exception);
 		ClientCommonPacketListener.super.onPacketException(packet, exception);
-		Optional<Path> optional = this.method_60882(packet, exception);
-		Optional<String> optional2 = this.field_52155.method_60658(class_9782.class_9784.BUG_REPORT).map(class_9782.class_9783::url);
+		Optional<Path> optional = this.savePacketErrorReport(packet, exception);
+		Optional<String> optional2 = this.serverLinks.getEntryFor(ServerLinks.Known.BUG_REPORT).map(ServerLinks.Entry::url);
 		if (this.strictErrorHandling) {
-			this.connection.method_60924(new class_9812(Text.translatable("disconnect.packetError"), optional, optional2));
+			this.connection.disconnect(new DisconnectionInfo(Text.translatable("disconnect.packetError"), optional, optional2));
 		}
 	}
 
 	@Override
-	public class_9812 method_60881(Text text, Throwable throwable) {
-		Optional<Path> optional = this.method_60882(null, throwable);
-		Optional<String> optional2 = this.field_52155.method_60658(class_9782.class_9784.BUG_REPORT).map(class_9782.class_9783::url);
-		return new class_9812(text, optional, optional2);
+	public DisconnectionInfo createDisconnectionInfo(Text reason, Throwable exception) {
+		Optional<Path> optional = this.savePacketErrorReport(null, exception);
+		Optional<String> optional2 = this.serverLinks.getEntryFor(ServerLinks.Known.BUG_REPORT).map(ServerLinks.Entry::url);
+		return new DisconnectionInfo(reason, optional, optional2);
 	}
 
-	private Optional<Path> method_60882(@Nullable Packet packet, Throwable throwable) {
-		CrashReport crashReport = CrashReport.create(throwable, "Packet handling error");
+	private Optional<Path> savePacketErrorReport(@Nullable Packet packet, Throwable exception) {
+		CrashReport crashReport = CrashReport.create(exception, "Packet handling error");
 		NetworkThreadUtils.fillCrashReport(crashReport, this, packet);
 		Path path = this.client.runDirectory.toPath().resolve("debug");
 		Path path2 = path.resolve("disconnect-" + Util.getFormattedCurrentTime() + "-client.txt");
-		Optional<class_9782.class_9783> optional = this.field_52155.method_60658(class_9782.class_9784.BUG_REPORT);
-		List<String> list = (List<String>)optional.map(arg -> List.of("Server bug reporting link: " + arg.url())).orElse(List.of());
-		return crashReport.writeToFile(path2, class_9813.MINECRAFT_NETWORK_PROTOCOL_ERROR_REPORT, list) ? Optional.of(path2) : Optional.empty();
+		Optional<ServerLinks.Entry> optional = this.serverLinks.getEntryFor(ServerLinks.Known.BUG_REPORT);
+		List<String> list = (List<String>)optional.map(bugReportEntry -> List.of("Server bug reporting link: " + bugReportEntry.url())).orElse(List.of());
+		return crashReport.writeToFile(path2, ReportType.MINECRAFT_NETWORK_PROTOCOL_ERROR_REPORT, list) ? Optional.of(path2) : Optional.empty();
 	}
 
 	@Override
@@ -216,15 +216,15 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	}
 
 	@Override
-	public void method_60883(class_9814 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
-		this.field_52154 = arg.details();
+	public void onCustomReportDetails(CustomReportDetailsS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.customReportDetails = packet.details();
 	}
 
 	@Override
-	public void method_60884(class_9815 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
-		this.field_52155 = arg.links();
+	public void onServerLinks(ServerLinksS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.serverLinks = packet.links();
 	}
 
 	@Override
@@ -273,27 +273,27 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	}
 
 	@Override
-	public void onDisconnected(class_9812 arg) {
+	public void onDisconnected(DisconnectionInfo info) {
 		this.worldSession.onUnload();
-		this.client.disconnect(this.createDisconnectedScreen(arg), this.transferring);
-		LOGGER.warn("Client disconnected with reason: {}", arg.reason().getString());
+		this.client.disconnect(this.createDisconnectedScreen(info), this.transferring);
+		LOGGER.warn("Client disconnected with reason: {}", info.reason().getString());
 	}
 
 	@Override
-	public void addCustomCrashReportInfo(CrashReport crashReport, CrashReportSection crashReportSection) {
-		crashReportSection.add("Server type", (CrashCallable<String>)(() -> this.serverInfo != null ? this.serverInfo.getServerType().toString() : "<none>"));
-		crashReportSection.add("Server brand", (CrashCallable<String>)(() -> this.brand));
-		if (!this.field_52154.isEmpty()) {
-			CrashReportSection crashReportSection2 = crashReport.addElement("Custom Server Details");
-			this.field_52154.forEach(crashReportSection2::add);
+	public void addCustomCrashReportInfo(CrashReport report, CrashReportSection section) {
+		section.add("Server type", (CrashCallable<String>)(() -> this.serverInfo != null ? this.serverInfo.getServerType().toString() : "<none>"));
+		section.add("Server brand", (CrashCallable<String>)(() -> this.brand));
+		if (!this.customReportDetails.isEmpty()) {
+			CrashReportSection crashReportSection = report.addElement("Custom Server Details");
+			this.customReportDetails.forEach(crashReportSection::add);
 		}
 	}
 
-	protected Screen createDisconnectedScreen(class_9812 arg) {
+	protected Screen createDisconnectedScreen(DisconnectionInfo info) {
 		Screen screen = (Screen)Objects.requireNonNullElseGet(this.postDisconnectScreen, () -> new MultiplayerScreen(new TitleScreen()));
 		return (Screen)(this.serverInfo != null && this.serverInfo.isRealm()
-			? new DisconnectedRealmsScreen(screen, LOST_CONNECTION_TEXT, arg.reason())
-			: new DisconnectedScreen(screen, LOST_CONNECTION_TEXT, arg));
+			? new DisconnectedRealmsScreen(screen, LOST_CONNECTION_TEXT, info.reason())
+			: new DisconnectedScreen(screen, LOST_CONNECTION_TEXT, info));
 	}
 
 	@Nullable

@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerBoxScreen extends HandledScreen<ShulkerBoxScreenHandler> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/shulker_box.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/gui/container/shulker_box.png");
 
 	public ShulkerBoxScreen(ShulkerBoxScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);

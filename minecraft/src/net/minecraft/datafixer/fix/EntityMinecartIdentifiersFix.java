@@ -9,16 +9,16 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.Util;
 
 public class EntityMinecartIdentifiersFix extends EntityTransformFix {
-	public EntityMinecartIdentifiersFix(Schema schema) {
-		super("EntityMinecartIdentifiersFix", schema, true);
+	public EntityMinecartIdentifiersFix(Schema outputSchema) {
+		super("EntityMinecartIdentifiersFix", outputSchema, true);
 	}
 
 	@Override
-	protected Pair<String, Typed<?>> transform(String choice, Typed<?> typed) {
+	protected Pair<String, Typed<?>> transform(String choice, Typed<?> entityTyped) {
 		if (!choice.equals("Minecart")) {
-			return Pair.of(choice, typed);
+			return Pair.of(choice, entityTyped);
 		} else {
-			int i = typed.getOrCreate(DSL.remainderFinder()).get("Type").asInt(0);
+			int i = entityTyped.getOrCreate(DSL.remainderFinder()).get("Type").asInt(0);
 
 			String string = switch (i) {
 				case 1 -> "MinecartChest";
@@ -26,7 +26,7 @@ public class EntityMinecartIdentifiersFix extends EntityTransformFix {
 				default -> "MinecartRideable";
 			};
 			Type<?> type = (Type<?>)this.getOutputSchema().findChoiceType(TypeReferences.ENTITY).types().get(string);
-			return Pair.of(string, Util.apply(typed, type, dynamic -> dynamic.remove("Type")));
+			return Pair.of(string, Util.apply(entityTyped, type, entityDynamic -> entityDynamic.remove("Type")));
 		}
 	}
 }

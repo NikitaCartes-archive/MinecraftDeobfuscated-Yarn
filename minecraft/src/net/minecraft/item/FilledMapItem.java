@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.component.type.MapPostProcessingComponent;
@@ -17,6 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.map.MapState;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -63,7 +63,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 	private static MapIdComponent allocateMapId(World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension) {
 		MapState mapState = MapState.of((double)x, (double)z, (byte)scale, showIcons, unlimitedTracking, dimension);
-		MapIdComponent mapIdComponent = world.getNextMapId();
+		MapIdComponent mapIdComponent = world.increaseAndGetMapId();
 		world.putMapState(mapIdComponent, mapState);
 		return mapIdComponent;
 	}
@@ -308,7 +308,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	private static void scale(ItemStack map, World world) {
 		MapState mapState = getMapState(map, world);
 		if (mapState != null) {
-			MapIdComponent mapIdComponent = world.getNextMapId();
+			MapIdComponent mapIdComponent = world.increaseAndGetMapId();
 			world.putMapState(mapIdComponent, mapState.zoomOut());
 			map.set(DataComponentTypes.MAP_ID, mapIdComponent);
 		}
@@ -317,7 +317,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	public static void copyMap(World world, ItemStack stack) {
 		MapState mapState = getMapState(stack, world);
 		if (mapState != null) {
-			MapIdComponent mapIdComponent = world.getNextMapId();
+			MapIdComponent mapIdComponent = world.increaseAndGetMapId();
 			MapState mapState2 = mapState.copy();
 			world.putMapState(mapIdComponent, mapState2);
 			stack.set(DataComponentTypes.MAP_ID, mapIdComponent);

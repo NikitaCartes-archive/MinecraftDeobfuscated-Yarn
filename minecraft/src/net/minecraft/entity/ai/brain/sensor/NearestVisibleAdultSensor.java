@@ -20,8 +20,8 @@ public class NearestVisibleAdultSensor extends Sensor<PassiveEntity> {
 			.ifPresent(livingTargetCache -> this.findNearestVisibleAdult(passiveEntity, livingTargetCache));
 	}
 
-	private void findNearestVisibleAdult(PassiveEntity entity, LivingTargetCache livingTargetCache) {
-		Optional<PassiveEntity> optional = livingTargetCache.findFirst(livingEntity -> livingEntity.getType() == entity.getType() && !livingEntity.isBaby())
+	private void findNearestVisibleAdult(PassiveEntity entity, LivingTargetCache livingTarget) {
+		Optional<PassiveEntity> optional = livingTarget.findFirst(livingEntity -> livingEntity.getType() == entity.getType() && !livingEntity.isBaby())
 			.map(PassiveEntity.class::cast);
 		entity.getBrain().remember(MemoryModuleType.NEAREST_VISIBLE_ADULT, optional);
 	}

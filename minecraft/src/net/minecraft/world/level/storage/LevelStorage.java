@@ -69,9 +69,9 @@ import net.minecraft.util.path.AllowedSymlinkPathMatcher;
 import net.minecraft.util.path.SymlinkEntry;
 import net.minecraft.util.path.SymlinkFinder;
 import net.minecraft.util.path.SymlinkValidationException;
+import net.minecraft.world.PlayerSaveHandler;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 import net.minecraft.world.dimension.DimensionType;
@@ -509,9 +509,9 @@ public class LevelStorage {
 			}
 		}
 
-		public WorldSaveHandler createSaveHandler() {
+		public PlayerSaveHandler createSaveHandler() {
 			this.checkValid();
-			return new WorldSaveHandler(this, LevelStorage.this.dataFixer);
+			return new PlayerSaveHandler(this, LevelStorage.this.dataFixer);
 		}
 
 		public LevelSummary getLevelSummary(Dynamic<?> dynamic) {

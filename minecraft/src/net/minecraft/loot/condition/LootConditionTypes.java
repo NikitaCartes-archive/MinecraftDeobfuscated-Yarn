@@ -29,6 +29,6 @@ public class LootConditionTypes {
 	public static final LootConditionType ENCHANTMENT_ACTIVE_CHECK = register("enchantment_active_check", EnchantmentActiveCheckLootCondition.CODEC);
 
 	private static LootConditionType register(String id, MapCodec<? extends LootCondition> codec) {
-		return Registry.register(Registries.LOOT_CONDITION_TYPE, Identifier.method_60656(id), new LootConditionType(codec));
+		return Registry.register(Registries.LOOT_CONDITION_TYPE, Identifier.ofVanilla(id), new LootConditionType(codec));
 	}
 }

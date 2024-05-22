@@ -29,7 +29,7 @@ public class ParticleTextureData {
 		} else {
 			List<Identifier> list = (List<Identifier>)Streams.stream(jsonArray)
 				.map(texture -> JsonHelper.asString(texture, "texture"))
-				.map(Identifier::method_60654)
+				.map(Identifier::of)
 				.collect(ImmutableList.toImmutableList());
 			return new ParticleTextureData(list);
 		}

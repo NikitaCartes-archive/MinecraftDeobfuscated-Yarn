@@ -24,8 +24,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_9787;
-import net.minecraft.class_9797;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -33,6 +31,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HoneyBlock;
+import net.minecraft.block.Portal;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
@@ -121,6 +120,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.NetherPortal;
+import net.minecraft.world.dimension.PortalManager;
 import net.minecraft.world.entity.EntityChangeListener;
 import net.minecraft.world.entity.EntityLike;
 import net.minecraft.world.event.GameEvent;
@@ -245,7 +245,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 */
 	public static final int DEFAULT_MIN_FREEZE_DAMAGE_TICKS = 140;
 	/**
-	 * @see LivingEntity#tickMovement
+	 * @see net.minecraft.entity.LivingEntity#tickMovement
 	 */
 	public static final int FREEZING_DAMAGE_INTERVAL = 40;
 	public static final int field_49073 = 3;
@@ -352,7 +352,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	public boolean ignoreCameraFrustum;
 	public boolean velocityDirty;
 	@Nullable
-	public class_9787 field_51994;
+	public PortalManager portalManager;
 	private int portalCooldown;
 	private boolean invulnerable;
 	protected UUID uuid = MathHelper.randomUuid(this.random);
@@ -504,7 +504,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	/**
 	 * Kills the entity.
 	 * 
-	 * <p>This drops loot when applicable, and emits the {@link GameEvent#ENTITY_DIE} game event.
+	 * <p>This drops loot when applicable, and emits the {@link
+	 * net.minecraft.world.event.GameEvent#ENTITY_DIE} game event.
 	 */
 	public void kill() {
 		this.remove(Entity.RemovalReason.KILLED);
@@ -605,7 +606,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * For living entities, {@link #refreshPositionAndAngles} should be used instead.
 	 * 
 	 * @see #refreshPositionAndAngles
-	 * @see #teleport(double, double, double)
+	 * @see #teleportTo
 	 */
 	public final void setPosition(Vec3d pos) {
 		this.setPosition(pos.getX(), pos.getY(), pos.getZ());
@@ -618,7 +619,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * For living entities, {@link #refreshPositionAndAngles} should be used instead.
 	 * 
 	 * @see #refreshPositionAndAngles
-	 * @see #teleport(double, double, double)
+	 * @see #teleportTo
 	 */
 	public void setPosition(double x, double y, double z) {
 		this.setPos(x, y, z);
@@ -655,7 +656,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * 
 	 * @implNote By default, this delegates all logics to {@link #baseTick}.
 	 * 
-	 * @see LivingEntity#tickMovement
+	 * @see net.minecraft.entity.LivingEntity#tickMovement
 	 * @see net.minecraft.entity.mob.MobEntity#mobTick
 	 */
 	public void tick() {
@@ -676,7 +677,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		this.prevHorizontalSpeed = this.horizontalSpeed;
 		this.prevPitch = this.getPitch();
 		this.prevYaw = this.getYaw();
-		this.method_60698();
+		this.tickPortalTeleportation();
 		if (this.shouldSpawnSprintingParticles()) {
 			this.spawnSprintingParticles();
 		}
@@ -781,12 +782,6 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 
 	/**
 	 * Sets the entity on fire for {@code seconds} seconds.
-	 * 
-	 * @implNote The actual duration can be reduced using the
-	 * {@linkplain net.minecraft.enchantment.ProtectionEnchantment.Type#FIRE
-	 * fire protection} enchantment.
-	 * 
-	 * @see net.minecraft.enchantment.ProtectionEnchantment#transformFireDuration
 	 */
 	public final void setOnFireFor(float seconds) {
 		this.setOnFireForTicks(MathHelper.floor(seconds * 20.0F));
@@ -1567,7 +1562,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * Called when the entity falls. Flying mobs should override this to do nothing.
 	 * 
 	 * @implNote If on ground, this calls {@link net.minecraft.block.Block#onLandedUpon}, which can add or
-	 * reduce fall damage, emits {@link GameEvent#HIT_GROUND}, then calls {@link #onLanding}.
+	 * reduce fall damage, emits {@link net.minecraft.world.event.GameEvent#HIT_GROUND}, then calls {@link #onLanding}.
 	 * Otherwise, if {@code heightDifference} is negative, it subtracts that value from
 	 * {@link #fallDistance}.
 	 */
@@ -2043,11 +2038,11 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	/**
 	 * Applies a damage to this entity. The exact implementation differs between subclasses.
 	 * 
-	 * <p>{@link LivingEntity} has health value, and damaging the entity decreases it. This
+	 * <p>{@link net.minecraft.entity.LivingEntity} has health value, and damaging the entity decreases it. This
 	 * also handles shields, extra damage to helmets for falling blocks, setting the attacker,
 	 * playing hurt sound, etc.
 	 * 
-	 * <p>Some entities like {@link ItemEntity} also have health value, which the overridden
+	 * <p>Some entities like {@link net.minecraft.entity.ItemEntity} also have health value, which the overridden
 	 * method decrements. There also exist several entities, like {@link
 	 * net.minecraft.entity.decoration.EndCrystalEntity}, where any damage discards the entity
 	 * (perhaps with an explosion).
@@ -2058,7 +2053,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * @return whether the entity was actually damaged
 	 * 
 	 * @see #isInvulnerableTo
-	 * @see LivingEntity#modifyAppliedDamage
+	 * @see net.minecraft.entity.LivingEntity#modifyAppliedDamage
 	 */
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
@@ -2896,29 +2891,29 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return Vec3d.fromPolar(this.getRotationClient());
 	}
 
-	public void method_60697(class_9797 arg, BlockPos blockPos) {
+	public void tryUsePortal(Portal portal, BlockPos pos) {
 		if (this.hasPortalCooldown()) {
 			this.resetPortalCooldown();
 		} else {
-			if (this.field_51994 != null && this.field_51994.method_60703(arg)) {
-				this.field_51994.method_60704(blockPos.toImmutable());
-				this.field_51994.method_60705(true);
+			if (this.portalManager != null && this.portalManager.portalMatches(portal)) {
+				this.portalManager.setPortalPos(pos.toImmutable());
+				this.portalManager.setInPortal(true);
 			} else {
-				this.field_51994 = new class_9787(arg, blockPos.toImmutable());
+				this.portalManager = new PortalManager(portal, pos.toImmutable());
 			}
 		}
 	}
 
-	protected void method_60698() {
+	protected void tickPortalTeleportation() {
 		if (this.getWorld() instanceof ServerWorld serverWorld) {
 			this.tickPortalCooldown();
-			if (this.field_51994 != null) {
-				if (this.field_51994.method_60702(serverWorld, this, this.canUsePortals())) {
+			if (this.portalManager != null) {
+				if (this.portalManager.tick(serverWorld, this, this.canUsePortals())) {
 					serverWorld.getProfiler().push("portal");
 					this.resetPortalCooldown();
-					TeleportTarget teleportTarget = this.field_51994.method_60701(serverWorld, this);
-					if (teleportTarget != null && serverWorld.getServer().method_60671(teleportTarget.newLevel())) {
-						Entity entity = this.moveToWorld(teleportTarget);
+					TeleportTarget teleportTarget = this.portalManager.createTeleportTarget(serverWorld, this);
+					if (teleportTarget != null && serverWorld.getServer().isWorldAllowed(teleportTarget.world())) {
+						Entity entity = this.teleportTo(teleportTarget);
 						if (entity != null && entity.getWorld() instanceof ServerWorld serverWorld2) {
 							BlockPos blockPos = BlockPos.ofFloored(entity.pos);
 							serverWorld2.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);
@@ -2926,8 +2921,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 					}
 
 					serverWorld.getProfiler().pop();
-				} else if (this.field_51994.method_60706()) {
-					this.field_51994 = null;
+				} else if (this.portalManager.hasExpired()) {
+					this.portalManager = null;
 				}
 			}
 		}
@@ -3663,7 +3658,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * {@return whether the entity can be attacked by players}
 	 * 
 	 * <p>Note that this is not called for most entities defined in vanilla as unattackable
-	 * (such as {@link ItemEntity} and {@link ExperienceOrbEntity}) as trying to attack them
+	 * (such as {@link net.minecraft.entity.ItemEntity} and {@link net.minecraft.entity.ExperienceOrbEntity}) as trying to attack them
 	 * kicks the player.
 	 * 
 	 * @see net.minecraft.server.network.ServerPlayNetworkHandler#onPlayerInteractEntity
@@ -3786,33 +3781,33 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * Copies serializable data and nether portal data from {@code original}.
 	 * 
 	 * @see #readNbt
-	 * @see #moveToWorld
+	 * @see #teleportTo
 	 */
 	public void copyFrom(Entity original) {
 		NbtCompound nbtCompound = original.writeNbt(new NbtCompound());
 		nbtCompound.remove("Dimension");
 		this.readNbt(nbtCompound);
 		this.portalCooldown = original.portalCooldown;
-		this.field_51994 = original.field_51994;
+		this.portalManager = original.portalManager;
 	}
 
 	/**
-	 * Moves this entity to another world.
+	 * Teleports this entity to another location, potentially in another world.
 	 * 
-	 * <p>Note all entities except server player entities are completely recreated at the destination.
+	 * <p>Note if teleported to a different world, entities (excluding server player entities) are completely recreated at the destination.
 	 * 
-	 * @return the entity in the other world
+	 * @return the entity after teleporting
 	 */
 	@Nullable
-	public Entity moveToWorld(TeleportTarget teleportTarget) {
+	public Entity teleportTo(TeleportTarget teleportTarget) {
 		if (this.getWorld() instanceof ServerWorld serverWorld && !this.isRemoved()) {
-			ServerWorld serverWorld2 = teleportTarget.newLevel();
+			ServerWorld serverWorld2 = teleportTarget.world();
 			List<Entity> list = this.getPassengerList();
 			this.detach();
 			List<Entity> list2 = new ArrayList();
 
 			for (Entity entity : list) {
-				list2.add(entity.moveToWorld(teleportTarget));
+				list2.add(entity.teleportTo(teleportTarget));
 			}
 
 			serverWorld.getProfiler().push("changeDimension");
@@ -3850,7 +3845,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * such as setting the stack count of {@linkplain LivingEntity#getEquippedItems equipped stacks}
 	 * to zero.
 	 * 
-	 * @see #moveToWorld
+	 * @see #teleportTo
 	 */
 	protected void removeFromDimension() {
 		this.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
@@ -4066,7 +4061,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * 
 	 * @see #requestTeleportAndDismount
 	 * @see #requestTeleport
-	 * @see #teleport(double, double, double)
+	 * @see #teleportTo
 	 * @see #refreshPositionAndAngles(double, double, double, float, float)
 	 */
 	public boolean teleport(ServerWorld world, double destX, double destY, double destZ, Set<PositionFlag> flags, float yaw, float pitch) {
@@ -4096,7 +4091,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * Requests the entity to teleport to the given position. If the entity is
 	 * a player, this also dismounts the player.
 	 * 
-	 * @see #teleport(double, double, double)
+	 * @see #teleportTo
 	 * @see #teleport(ServerWorld, double, double, double, Set, float, float)
 	 * @see #requestTeleport
 	 * @see #refreshPositionAndAngles(double, double, double, float, float)
@@ -4111,7 +4106,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * <p>For players, this sends the teleport packet. For other entities,
 	 * this just sets the position of the entity and its passengers.
 	 * 
-	 * @see #teleport(double, double, double)
+	 * @see #teleportTo
 	 * @see #teleport(ServerWorld, double, double, double, Set, float, float)
 	 * @see #requestTeleportOffset(double, double, double)
 	 * @see #requestTeleportAndDismount
@@ -4651,7 +4646,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * for the passenger. Check the implementation of the subclass for details.
 	 * 
 	 * @see #getPassengerDismountOffset
-	 * @see Dismounting
+	 * @see net.minecraft.entity.Dismounting
 	 */
 	public Vec3d updatePassengerForDismount(LivingEntity passenger) {
 		return new Vec3d(this.getX(), this.getBoundingBox().maxY, this.getZ());
@@ -4682,8 +4677,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	/**
 	 * {@return the behavior of the piston for this entity}
 	 * 
-	 * <p>This is {@link PistonBehavior#NORMAL} by default. {@link AreaEffectCloudEntity},
-	 * {@link MarkerEntity}, and marker {@link net.minecraft.entity.decoration.ArmorStandEntity}
+	 * <p>This is {@link PistonBehavior#NORMAL} by default. {@link net.minecraft.entity.AreaEffectCloudEntity},
+	 * {@link net.minecraft.entity.MarkerEntity}, and marker {@link net.minecraft.entity.decoration.ArmorStandEntity}
 	 * return {@link PistonBehavior#IGNORE}, causing the piston to not affect the entity's
 	 * position. Other piston behaviors are inapplicable to entities, and treated like
 	 * {@link PistonBehavior#NORMAL}.

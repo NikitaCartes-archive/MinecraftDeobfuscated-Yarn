@@ -39,7 +39,7 @@ public class SlimeOverlayFeatureRenderer<T extends LivingEntity> extends Feature
 			this.getContextModel().copyStateTo(this.model);
 			this.model.animateModel(livingEntity, f, g, h);
 			this.model.setAngles(livingEntity, f, g, j, k, l);
-			this.model.method_60879(matrixStack, vertexConsumer, i, LivingEntityRenderer.getOverlay(livingEntity, 0.0F));
+			this.model.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.getOverlay(livingEntity, 0.0F));
 		}
 	}
 }

@@ -3,13 +3,13 @@ package net.minecraft.client.render;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9799;
+import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 	private final VertexConsumerProvider.Immediate parent;
-	private final VertexConsumerProvider.Immediate plainDrawer = VertexConsumerProvider.immediate(new class_9799(1536));
+	private final VertexConsumerProvider.Immediate plainDrawer = VertexConsumerProvider.immediate(new BufferAllocator(1536));
 	private int red = 255;
 	private int green = 255;
 	private int blue = 255;
@@ -57,8 +57,8 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 		}
 
 		@Override
-		public VertexConsumer vertex(float f, float g, float h) {
-			this.delegate.vertex(f, g, h).color(this.color);
+		public VertexConsumer vertex(float x, float y, float z) {
+			this.delegate.vertex(x, y, z).color(this.color);
 			return this;
 		}
 
@@ -74,7 +74,7 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 		}
 
 		@Override
-		public VertexConsumer method_60796(int i, int j) {
+		public VertexConsumer overlay(int u, int v) {
 			return this;
 		}
 

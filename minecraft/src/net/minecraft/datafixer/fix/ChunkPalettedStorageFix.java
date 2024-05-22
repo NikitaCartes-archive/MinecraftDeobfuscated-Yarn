@@ -426,8 +426,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 		return dynamic.get("Name").asString("");
 	}
 
-	public static String getProperty(Dynamic<?> dynamic, String string) {
-		return dynamic.get("Properties").get(string).asString("");
+	public static String getProperty(Dynamic<?> dynamic, String propertyKey) {
+		return dynamic.get("Properties").get(propertyKey).asString("");
 	}
 
 	public static int addTo(Int2ObjectBiMap<Dynamic<?>> int2ObjectBiMap, Dynamic<?> dynamic) {
@@ -439,11 +439,11 @@ public class ChunkPalettedStorageFix extends DataFix {
 		return i;
 	}
 
-	private Dynamic<?> fixChunk(Dynamic<?> dynamic) {
-		Optional<? extends Dynamic<?>> optional = dynamic.get("Level").result();
+	private Dynamic<?> fixChunk(Dynamic<?> chunkDynamic) {
+		Optional<? extends Dynamic<?>> optional = chunkDynamic.get("Level").result();
 		return optional.isPresent() && ((Dynamic)optional.get()).get("Sections").asStreamOpt().result().isPresent()
-			? dynamic.set("Level", new ChunkPalettedStorageFix.Level((Dynamic<?>)optional.get()).transform())
-			: dynamic;
+			? chunkDynamic.set("Level", new ChunkPalettedStorageFix.Level((Dynamic<?>)optional.get()).transform())
+			: chunkDynamic;
 	}
 
 	@Override

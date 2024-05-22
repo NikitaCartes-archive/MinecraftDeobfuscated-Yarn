@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class OcelotEntityRenderer extends MobEntityRenderer<OcelotEntity, OcelotEntityModel<OcelotEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/cat/ocelot.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/cat/ocelot.png");
 
 	public OcelotEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new OcelotEntityModel<>(context.getPart(EntityModelLayers.OCELOT)), 0.4F);

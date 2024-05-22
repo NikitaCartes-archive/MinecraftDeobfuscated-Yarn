@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.block.entity.Sherds;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -20,6 +19,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.particle.ParticleTypes;
@@ -57,7 +57,7 @@ import net.minecraft.world.event.GameEvent;
 
 public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable {
 	public static final MapCodec<DecoratedPotBlock> CODEC = createCodec(DecoratedPotBlock::new);
-	public static final Identifier SHERDS_DYNAMIC_DROP_ID = Identifier.method_60656("sherds");
+	public static final Identifier SHERDS_DYNAMIC_DROP_ID = Identifier.ofVanilla("sherds");
 	private static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
 	private static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 	public static final BooleanProperty CRACKED = Properties.CRACKED;

@@ -9,19 +9,24 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class StructureReferenceFix extends DataFix {
-	public StructureReferenceFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public StructureReferenceFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
 	protected TypeRewriteRule makeRule() {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.STRUCTURE_FEATURE);
-		return this.fixTypeEverywhereTyped("Structure Reference Fix", type, typed -> typed.update(DSL.remainderFinder(), StructureReferenceFix::updateReferences));
+		return this.fixTypeEverywhereTyped(
+			"Structure Reference Fix", type, structureFeatureTyped -> structureFeatureTyped.update(DSL.remainderFinder(), StructureReferenceFix::updateReferences)
+		);
 	}
 
-	private static <T> Dynamic<T> updateReferences(Dynamic<T> dynamic) {
-		return dynamic.update(
-			"references", dynamicx -> dynamicx.createInt((Integer)dynamicx.asNumber().map(Number::intValue).result().filter(integer -> integer > 0).orElse(1))
+	private static <T> Dynamic<T> updateReferences(Dynamic<T> structureFeatureDynamic) {
+		return structureFeatureDynamic.update(
+			"references",
+			referencesDynamic -> referencesDynamic.createInt(
+					(Integer)referencesDynamic.asNumber().map(Number::intValue).result().filter(references -> references > 0).orElse(1)
+				)
 		);
 	}
 }

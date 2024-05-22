@@ -1,13 +1,13 @@
 package net.minecraft.network.listener;
 
-import net.minecraft.class_9814;
-import net.minecraft.class_9815;
 import net.minecraft.network.packet.s2c.common.CommonPingS2CPacket;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.common.CustomReportDetailsS2CPacket;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
+import net.minecraft.network.packet.s2c.common.ServerLinksS2CPacket;
 import net.minecraft.network.packet.s2c.common.ServerTransferS2CPacket;
 import net.minecraft.network.packet.s2c.common.StoreCookieS2CPacket;
 import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
@@ -31,7 +31,7 @@ public interface ClientCommonPacketListener extends ClientCookieRequestPacketLis
 
 	void onServerTransfer(ServerTransferS2CPacket packet);
 
-	void method_60883(class_9814 arg);
+	void onCustomReportDetails(CustomReportDetailsS2CPacket packet);
 
-	void method_60884(class_9815 arg);
+	void onServerLinks(ServerLinksS2CPacket packet);
 }

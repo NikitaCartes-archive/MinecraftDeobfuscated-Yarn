@@ -1,7 +1,6 @@
 package net.minecraft.predicate.item;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_9790;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
@@ -25,7 +24,7 @@ public class ItemSubPredicateTypes {
 	);
 	public static final ItemSubPredicate.Type<AttributeModifiersPredicate> ATTRIBUTE_MODIFIERS = register("attribute_modifiers", AttributeModifiersPredicate.CODEC);
 	public static final ItemSubPredicate.Type<TrimPredicate> TRIM = register("trim", TrimPredicate.CODEC);
-	public static final ItemSubPredicate.Type<class_9790> JUKEBOX_PLAYABLE = register("jukebox_playable", class_9790.field_52020);
+	public static final ItemSubPredicate.Type<JukeboxPlayablePredicate> JUKEBOX_PLAYABLE = register("jukebox_playable", JukeboxPlayablePredicate.CODEC);
 
 	private static <T extends ItemSubPredicate> ItemSubPredicate.Type<T> register(String id, Codec<T> codec) {
 		return Registry.register(Registries.ITEM_SUB_PREDICATE_TYPE, id, new ItemSubPredicate.Type<>(codec));

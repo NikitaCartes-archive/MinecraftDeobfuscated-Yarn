@@ -13,17 +13,17 @@ public class VillagerGossipFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(
 			DSL.remainderFinder(),
-			dynamic -> dynamic.update(
+			entityDynamic -> entityDynamic.update(
 					"Gossips",
-					dynamicx -> DataFixUtils.orElse(
-							dynamicx.asStreamOpt()
+					gossipsDynamic -> DataFixUtils.orElse(
+							gossipsDynamic.asStreamOpt()
 								.result()
-								.map(stream -> stream.map(dynamicxx -> (Dynamic)AbstractUuidFix.updateRegularMostLeast(dynamicxx, "Target", "Target").orElse(dynamicxx)))
-								.map(dynamicx::createList),
-							dynamicx
+								.map(gossips -> gossips.map(gossipDynamic -> (Dynamic)AbstractUuidFix.updateRegularMostLeast(gossipDynamic, "Target", "Target").orElse(gossipDynamic)))
+								.map(gossipsDynamic::createList),
+							gossipsDynamic
 						)
 				)
 		);

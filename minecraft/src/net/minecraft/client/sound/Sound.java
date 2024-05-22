@@ -21,7 +21,7 @@ public class Sound implements SoundContainer<Sound> {
 	private final int attenuation;
 
 	public Sound(
-		Identifier identifier,
+		Identifier id,
 		FloatSupplier volume,
 		FloatSupplier pitch,
 		int weight,
@@ -30,7 +30,7 @@ public class Sound implements SoundContainer<Sound> {
 		boolean preload,
 		int attenuation
 	) {
-		this.id = identifier;
+		this.id = id;
 		this.volume = volume;
 		this.pitch = pitch;
 		this.weight = weight;

@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class DeathScreen extends Screen {
-	private static final Identifier DRAFT_REPORT_ICON_TEXTURE = Identifier.method_60656("icon/draft_report");
+	private static final Identifier DRAFT_REPORT_ICON_TEXTURE = Identifier.ofVanilla("icon/draft_report");
 	private int ticksSinceDeath;
 	private final Text message;
 	private final boolean isHardcore;

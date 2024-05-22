@@ -20,7 +20,7 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends EntityRenderer<T> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/minecart.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/minecart.png");
 	protected final EntityModel<T> model;
 	private final BlockRenderManager blockRenderManager;
 
@@ -94,7 +94,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		this.model.setAngles(abstractMinecartEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.getTexture(abstractMinecartEntity)));
-		this.model.method_60879(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
+		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 		matrixStack.pop();
 	}
 

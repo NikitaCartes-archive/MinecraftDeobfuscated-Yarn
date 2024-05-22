@@ -15,8 +15,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import net.minecraft.class_9812;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.DisconnectionInfo;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
@@ -118,8 +118,8 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 	}
 
 	@Override
-	public void onDisconnected(class_9812 arg) {
-		LOGGER.info("{} lost connection: {}", this.getConnectionInfo(), arg.reason().getString());
+	public void onDisconnected(DisconnectionInfo info) {
+		LOGGER.info("{} lost connection: {}", this.getConnectionInfo(), info.reason().getString());
 	}
 
 	public String getConnectionInfo() {
@@ -256,8 +256,8 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 	}
 
 	@Override
-	public void addCustomCrashReportInfo(CrashReport crashReport, CrashReportSection crashReportSection) {
-		crashReportSection.add("Login phase", (CrashCallable<String>)(() -> this.state.toString()));
+	public void addCustomCrashReportInfo(CrashReport report, CrashReportSection section) {
+		section.add("Login phase", (CrashCallable<String>)(() -> this.state.toString()));
 	}
 
 	@Override

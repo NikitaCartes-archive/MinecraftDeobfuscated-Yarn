@@ -34,12 +34,12 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingRec
 	public static final int HOTBAR_START = 36;
 	public static final int HOTBAR_END = 45;
 	public static final int OFFHAND_ID = 45;
-	public static final Identifier BLOCK_ATLAS_TEXTURE = Identifier.method_60656("textures/atlas/blocks.png");
-	public static final Identifier EMPTY_HELMET_SLOT_TEXTURE = Identifier.method_60656("item/empty_armor_slot_helmet");
-	public static final Identifier EMPTY_CHESTPLATE_SLOT_TEXTURE = Identifier.method_60656("item/empty_armor_slot_chestplate");
-	public static final Identifier EMPTY_LEGGINGS_SLOT_TEXTURE = Identifier.method_60656("item/empty_armor_slot_leggings");
-	public static final Identifier EMPTY_BOOTS_SLOT_TEXTURE = Identifier.method_60656("item/empty_armor_slot_boots");
-	public static final Identifier EMPTY_OFFHAND_ARMOR_SLOT = Identifier.method_60656("item/empty_armor_slot_shield");
+	public static final Identifier BLOCK_ATLAS_TEXTURE = Identifier.ofVanilla("textures/atlas/blocks.png");
+	public static final Identifier EMPTY_HELMET_SLOT_TEXTURE = Identifier.ofVanilla("item/empty_armor_slot_helmet");
+	public static final Identifier EMPTY_CHESTPLATE_SLOT_TEXTURE = Identifier.ofVanilla("item/empty_armor_slot_chestplate");
+	public static final Identifier EMPTY_LEGGINGS_SLOT_TEXTURE = Identifier.ofVanilla("item/empty_armor_slot_leggings");
+	public static final Identifier EMPTY_BOOTS_SLOT_TEXTURE = Identifier.ofVanilla("item/empty_armor_slot_boots");
+	public static final Identifier EMPTY_OFFHAND_ARMOR_SLOT = Identifier.ofVanilla("item/empty_armor_slot_shield");
 	private static final Map<EquipmentSlot, Identifier> EMPTY_ARMOR_SLOT_TEXTURES = Map.of(
 		EquipmentSlot.FEET,
 		EMPTY_BOOTS_SLOT_TEXTURE,

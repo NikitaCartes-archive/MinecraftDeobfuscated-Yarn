@@ -2,12 +2,12 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
-import net.minecraft.class_9792;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.JukeboxBlockEntity;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.JukeboxPlayableComponent;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -63,7 +63,7 @@ public class JukeboxBlock extends BlockWithEntity {
 			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		} else {
 			ItemStack itemStack = player.getStackInHand(hand);
-			ItemActionResult itemActionResult = class_9792.method_60747(world, pos, itemStack, player);
+			ItemActionResult itemActionResult = JukeboxPlayableComponent.tryPlayStack(world, pos, itemStack, player);
 			return !itemActionResult.isAccepted() ? ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION : itemActionResult;
 		}
 	}
@@ -91,7 +91,7 @@ public class JukeboxBlock extends BlockWithEntity {
 
 	@Override
 	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-		if (world.getBlockEntity(pos) instanceof JukeboxBlockEntity jukeboxBlockEntity && jukeboxBlockEntity.method_60784().method_60754()) {
+		if (world.getBlockEntity(pos) instanceof JukeboxBlockEntity jukeboxBlockEntity && jukeboxBlockEntity.getManager().isPlaying()) {
 			return 15;
 		}
 
@@ -105,7 +105,7 @@ public class JukeboxBlock extends BlockWithEntity {
 
 	@Override
 	protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		return world.getBlockEntity(pos) instanceof JukeboxBlockEntity jukeboxBlockEntity ? jukeboxBlockEntity.method_60784().method_60762() : 0;
+		return world.getBlockEntity(pos) instanceof JukeboxBlockEntity jukeboxBlockEntity ? jukeboxBlockEntity.getManager().getComparatorOutput() : 0;
 	}
 
 	@Override

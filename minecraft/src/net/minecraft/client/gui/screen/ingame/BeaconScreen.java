@@ -30,13 +30,13 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/beacon.png");
-	static final Identifier BUTTON_DISABLED_TEXTURE = Identifier.method_60656("container/beacon/button_disabled");
-	static final Identifier BUTTON_SELECTED_TEXTURE = Identifier.method_60656("container/beacon/button_selected");
-	static final Identifier BUTTON_HIGHLIGHTED_TEXTURE = Identifier.method_60656("container/beacon/button_highlighted");
-	static final Identifier BUTTON_TEXTURE = Identifier.method_60656("container/beacon/button");
-	static final Identifier CONFIRM_TEXTURE = Identifier.method_60656("container/beacon/confirm");
-	static final Identifier CANCEL_TEXTURE = Identifier.method_60656("container/beacon/cancel");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/gui/container/beacon.png");
+	static final Identifier BUTTON_DISABLED_TEXTURE = Identifier.ofVanilla("container/beacon/button_disabled");
+	static final Identifier BUTTON_SELECTED_TEXTURE = Identifier.ofVanilla("container/beacon/button_selected");
+	static final Identifier BUTTON_HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("container/beacon/button_highlighted");
+	static final Identifier BUTTON_TEXTURE = Identifier.ofVanilla("container/beacon/button");
+	static final Identifier CONFIRM_TEXTURE = Identifier.ofVanilla("container/beacon/confirm");
+	static final Identifier CANCEL_TEXTURE = Identifier.ofVanilla("container/beacon/cancel");
 	private static final Text PRIMARY_POWER_TEXT = Text.translatable("block.minecraft.beacon.primary");
 	private static final Text SECONDARY_POWER_TEXT = Text.translatable("block.minecraft.beacon.secondary");
 	private final List<BeaconScreen.BeaconButtonWidget> buttons = Lists.<BeaconScreen.BeaconButtonWidget>newArrayList();

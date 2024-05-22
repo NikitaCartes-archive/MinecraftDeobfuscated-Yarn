@@ -76,8 +76,8 @@ public class LeavesFix extends DataFix {
 		"minecraft:stripped_spruce_log"
 	);
 
-	public LeavesFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public LeavesFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -94,21 +94,21 @@ public class LeavesFix extends DataFix {
 			return this.fixTypeEverywhereTyped(
 				"Leaves fix",
 				type,
-				typed -> typed.updateTyped(
+				chunkTyped -> chunkTyped.updateTyped(
 						opticFinder,
-						typedx -> {
+						levelTyped -> {
 							int[] is = new int[]{0};
-							Typed<?> typed2 = typedx.updateTyped(
+							Typed<?> typed = levelTyped.updateTyped(
 								opticFinder2,
-								typedxx -> {
+								sectionsTyped -> {
 									Int2ObjectMap<LeavesFix.LeavesLogFixer> int2ObjectMap = new Int2ObjectOpenHashMap<>(
-										(Map<? extends Integer, ? extends LeavesFix.LeavesLogFixer>)typedxx.getAllTyped(opticFinder3)
+										(Map<? extends Integer, ? extends LeavesFix.LeavesLogFixer>)sectionsTyped.getAllTyped(opticFinder3)
 											.stream()
-											.map(typedxxx -> new LeavesFix.LeavesLogFixer(typedxxx, this.getInputSchema()))
-											.collect(Collectors.toMap(LeavesFix.ListFixer::getY, leavesLogFixer -> leavesLogFixer))
+											.map(sectionTyped -> new LeavesFix.LeavesLogFixer(sectionTyped, this.getInputSchema()))
+											.collect(Collectors.toMap(LeavesFix.ListFixer::getY, fixer -> fixer))
 									);
 									if (int2ObjectMap.values().stream().allMatch(LeavesFix.ListFixer::isFixed)) {
-										return typedxx;
+										return sectionsTyped;
 									} else {
 										List<IntSet> list = Lists.<IntSet>newArrayList();
 
@@ -119,7 +119,7 @@ public class LeavesFix extends DataFix {
 										for (LeavesFix.LeavesLogFixer leavesLogFixer : int2ObjectMap.values()) {
 											if (!leavesLogFixer.isFixed()) {
 												for (int j = 0; j < 4096; j++) {
-													int k = leavesLogFixer.needsFix(j);
+													int k = leavesLogFixer.blockStateAt(j);
 													if (leavesLogFixer.isLog(k)) {
 														((IntSet)list.get(0)).add(leavesLogFixer.getY() << 12 | j);
 													} else if (leavesLogFixer.isLeaf(k)) {
@@ -150,7 +150,7 @@ public class LeavesFix extends DataFix {
 														LeavesFix.LeavesLogFixer leavesLogFixer2 = int2ObjectMap.get(q >> 4);
 														if (leavesLogFixer2 != null && !leavesLogFixer2.isFixed()) {
 															int s = packLocalPos(p, q & 15, r);
-															int t = leavesLogFixer2.needsFix(s);
+															int t = leavesLogFixer2.blockStateAt(s);
 															if (leavesLogFixer2.isLeaf(t)) {
 																int u = leavesLogFixer2.getDistanceToLog(t);
 																if (u > i) {
@@ -164,18 +164,20 @@ public class LeavesFix extends DataFix {
 											}
 										}
 
-										return typedxx.updateTyped(opticFinder3, typedxxx -> int2ObjectMap.get(typedxxx.get(DSL.remainderFinder()).get("Y").asInt(0)).method_5083(typedxxx));
+										return sectionsTyped.updateTyped(
+											opticFinder3, sectionDynamic -> int2ObjectMap.get(sectionDynamic.get(DSL.remainderFinder()).get("Y").asInt(0)).finalizeFix(sectionDynamic)
+										);
 									}
 								}
 							);
 							if (is[0] != 0) {
-								typed2 = typed2.update(DSL.remainderFinder(), dynamic -> {
+								typed = typed.update(DSL.remainderFinder(), dynamic -> {
 									Dynamic<?> dynamic2 = DataFixUtils.orElse(dynamic.get("UpgradeData").result(), dynamic.emptyMap());
 									return dynamic.set("UpgradeData", dynamic2.set("Sides", dynamic.createByte((byte)(dynamic2.get("Sides").asByte((byte)0) | is[0]))));
 								});
 							}
 
-							return typed2;
+							return typed;
 						}
 					)
 			);
@@ -241,7 +243,7 @@ public class LeavesFix extends DataFix {
 		}
 
 		@Override
-		protected boolean needsFix() {
+		protected boolean computeIsFixed() {
 			this.leafIndices = new IntOpenHashSet();
 			this.logIndices = new IntOpenHashSet();
 			this.leafStates = new Int2IntOpenHashMap();
@@ -273,42 +275,42 @@ public class LeavesFix extends DataFix {
 			return dynamic2.set("Name", dynamic2.createString(name));
 		}
 
-		public boolean isLog(int i) {
-			return this.logIndices.contains(i);
+		public boolean isLog(int index) {
+			return this.logIndices.contains(index);
 		}
 
-		public boolean isLeaf(int i) {
-			return this.leafIndices.contains(i);
+		public boolean isLeaf(int index) {
+			return this.leafIndices.contains(index);
 		}
 
-		int getDistanceToLog(int i) {
-			return this.isLog(i) ? 0 : Integer.parseInt(((Dynamic)this.properties.get(i)).get("Properties").get("distance").asString(""));
+		int getDistanceToLog(int index) {
+			return this.isLog(index) ? 0 : Integer.parseInt(((Dynamic)this.properties.get(index)).get("Properties").get("distance").asString(""));
 		}
 
-		void computeLeafStates(int i, int j, int distance) {
-			Dynamic<?> dynamic = (Dynamic<?>)this.properties.get(j);
+		void computeLeafStates(int packedLocalPos, int propertyIndex, int distance) {
+			Dynamic<?> dynamic = (Dynamic<?>)this.properties.get(propertyIndex);
 			String string = dynamic.get("Name").asString("");
 			boolean bl = Objects.equals(dynamic.get("Properties").get("persistent").asString(""), "true");
-			int k = this.computeFlags(string, bl, distance);
-			if (!this.leafStates.containsKey(k)) {
-				int l = this.properties.size();
-				this.leafIndices.add(l);
-				this.leafStates.put(k, l);
+			int i = this.computeFlags(string, bl, distance);
+			if (!this.leafStates.containsKey(i)) {
+				int j = this.properties.size();
+				this.leafIndices.add(j);
+				this.leafStates.put(i, j);
 				this.properties.add(this.createLeafProperties(dynamic, string, bl, distance));
 			}
 
-			int l = this.leafStates.get(k);
-			if (1 << this.blockStateMap.getUnitSize() <= l) {
+			int j = this.leafStates.get(i);
+			if (1 << this.blockStateMap.getUnitSize() <= j) {
 				WordPackedArray wordPackedArray = new WordPackedArray(this.blockStateMap.getUnitSize() + 1, 4096);
 
-				for (int m = 0; m < 4096; m++) {
-					wordPackedArray.set(m, this.blockStateMap.get(m));
+				for (int k = 0; k < 4096; k++) {
+					wordPackedArray.set(k, this.blockStateMap.get(k));
 				}
 
 				this.blockStateMap = wordPackedArray;
 			}
 
-			this.blockStateMap.set(i, l);
+			this.blockStateMap.set(packedLocalPos, j);
 		}
 	}
 
@@ -323,20 +325,21 @@ public class LeavesFix extends DataFix {
 		@Nullable
 		protected WordPackedArray blockStateMap;
 
-		public ListFixer(Typed<?> typed, Schema schema) {
-			if (!Objects.equals(schema.getType(TypeReferences.BLOCK_STATE), this.blockStateType)) {
+		public ListFixer(Typed<?> sectionTyped, Schema inputSchema) {
+			if (!Objects.equals(inputSchema.getType(TypeReferences.BLOCK_STATE), this.blockStateType)) {
 				throw new IllegalStateException("Block state type is not what was expected.");
 			} else {
-				Optional<List<Pair<String, Dynamic<?>>>> optional = typed.getOptional(this.paletteFinder);
-				this.properties = (List<Dynamic<?>>)optional.map(list -> (List)list.stream().map(Pair::getSecond).collect(Collectors.toList())).orElse(ImmutableList.of());
-				Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
+				Optional<List<Pair<String, Dynamic<?>>>> optional = sectionTyped.getOptional(this.paletteFinder);
+				this.properties = (List<Dynamic<?>>)optional.map(palettes -> (List)palettes.stream().map(Pair::getSecond).collect(Collectors.toList()))
+					.orElse(ImmutableList.of());
+				Dynamic<?> dynamic = sectionTyped.get(DSL.remainderFinder());
 				this.y = dynamic.get("Y").asInt(0);
 				this.computeFixableBlockStates(dynamic);
 			}
 		}
 
 		protected void computeFixableBlockStates(Dynamic<?> dynamic) {
-			if (this.needsFix()) {
+			if (this.computeIsFixed()) {
 				this.blockStateMap = null;
 			} else {
 				long[] ls = dynamic.get("BlockStates").asLongStream().toArray();
@@ -345,15 +348,17 @@ public class LeavesFix extends DataFix {
 			}
 		}
 
-		public Typed<?> method_5083(Typed<?> typed) {
+		public Typed<?> finalizeFix(Typed<?> typed) {
 			return this.isFixed()
 				? typed
-				: typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(this.blockStateMap.getAlignedArray()))))
+				: typed.update(
+						DSL.remainderFinder(), remainder -> remainder.set("BlockStates", remainder.createLongList(Arrays.stream(this.blockStateMap.getAlignedArray())))
+					)
 					.set(
 						this.paletteFinder,
 						(List<Pair<String, Dynamic<?>>>)this.properties
 							.stream()
-							.map(dynamic -> Pair.of(TypeReferences.BLOCK_STATE.typeName(), dynamic))
+							.map(propertiesDynamic -> Pair.of(TypeReferences.BLOCK_STATE.typeName(), propertiesDynamic))
 							.collect(Collectors.toList())
 					);
 		}
@@ -362,7 +367,7 @@ public class LeavesFix extends DataFix {
 			return this.blockStateMap == null;
 		}
 
-		public int needsFix(int index) {
+		public int blockStateAt(int index) {
 			return this.blockStateMap.get(index);
 		}
 
@@ -374,6 +379,6 @@ public class LeavesFix extends DataFix {
 			return this.y;
 		}
 
-		protected abstract boolean needsFix();
+		protected abstract boolean computeIsFixed();
 	}
 }

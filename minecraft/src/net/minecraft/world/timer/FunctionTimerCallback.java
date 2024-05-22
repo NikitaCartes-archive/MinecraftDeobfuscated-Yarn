@@ -20,7 +20,7 @@ public class FunctionTimerCallback implements TimerCallback<MinecraftServer> {
 
 	public static class Serializer extends TimerCallback.Serializer<MinecraftServer, FunctionTimerCallback> {
 		public Serializer() {
-			super(Identifier.method_60656("function"), FunctionTimerCallback.class);
+			super(Identifier.ofVanilla("function"), FunctionTimerCallback.class);
 		}
 
 		public void serialize(NbtCompound nbtCompound, FunctionTimerCallback functionTimerCallback) {
@@ -28,7 +28,7 @@ public class FunctionTimerCallback implements TimerCallback<MinecraftServer> {
 		}
 
 		public FunctionTimerCallback deserialize(NbtCompound nbtCompound) {
-			Identifier identifier = Identifier.method_60654(nbtCompound.getString("Name"));
+			Identifier identifier = Identifier.of(nbtCompound.getString("Name"));
 			return new FunctionTimerCallback(identifier);
 		}
 	}

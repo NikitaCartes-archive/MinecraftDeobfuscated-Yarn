@@ -8,9 +8,9 @@ import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class LogoDrawer {
-	public static final Identifier LOGO_TEXTURE = Identifier.method_60656("textures/gui/title/minecraft.png");
-	public static final Identifier MINCERAFT_TEXTURE = Identifier.method_60656("textures/gui/title/minceraft.png");
-	public static final Identifier EDITION_TEXTURE = Identifier.method_60656("textures/gui/title/edition.png");
+	public static final Identifier LOGO_TEXTURE = Identifier.ofVanilla("textures/gui/title/minecraft.png");
+	public static final Identifier MINCERAFT_TEXTURE = Identifier.ofVanilla("textures/gui/title/minceraft.png");
+	public static final Identifier EDITION_TEXTURE = Identifier.ofVanilla("textures/gui/title/edition.png");
 	public static final int LOGO_REGION_WIDTH = 256;
 	public static final int LOGO_REGION_HEIGHT = 44;
 	private static final int LOGO_TEXTURE_WIDTH = 256;

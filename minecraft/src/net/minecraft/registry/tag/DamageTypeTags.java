@@ -40,6 +40,6 @@ public interface DamageTypeTags {
 	TagKey<DamageType> PANIC_ENVIRONMENTAL_CAUSES = of("panic_environmental_causes");
 
 	private static TagKey<DamageType> of(String id) {
-		return TagKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.method_60656(id));
+		return TagKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.ofVanilla(id));
 	}
 }

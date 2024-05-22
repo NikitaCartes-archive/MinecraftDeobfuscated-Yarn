@@ -34,25 +34,27 @@ public abstract class ChoiceWriteReadFix extends DataFix {
 		Type<?> type3 = this.getOutputSchema().getType(this.type);
 		Type<?> type4 = this.getOutputSchema().getChoiceType(this.type, this.choiceName);
 		OpticFinder<?> opticFinder = DSL.namedChoice(this.choiceName, type2);
-		Type<?> type5 = type2.all(method_56640(type, type3), true, false).view().newType();
+		Type<?> type5 = type2.all(substitutionRewriteResult(type, type3), true, false).view().newType();
 		return this.method_56641(type, type3, opticFinder, type4, type5);
 	}
 
-	private <S, T, A, B> TypeRewriteRule method_56641(Type<S> type, Type<T> type2, OpticFinder<A> opticFinder, Type<B> type3, Type<?> type4) {
-		return this.fixTypeEverywhere(this.name, type, type2, dynamicOps -> object -> {
-				Typed<S> typed = new Typed<>(type, dynamicOps, (S)object);
-				return typed.update(opticFinder, type3, objectx -> {
-					Typed<A> typedx = new Typed<>((Type<A>)type4, dynamicOps, (A)objectx);
-					return Util.apply(typedx, type3, this::transform).getValue();
+	private <S, T, A, B> TypeRewriteRule method_56641(
+		Type<S> inputType, Type<T> outputType, OpticFinder<A> opticFinder, Type<B> outputSubtype, Type<?> rewrittenType
+	) {
+		return this.fixTypeEverywhere(this.name, inputType, outputType, dynamicOps -> input -> {
+				Typed<S> typed = new Typed<>(inputType, dynamicOps, (S)input);
+				return typed.update(opticFinder, outputSubtype, object -> {
+					Typed<A> typedx = new Typed<>((Type<A>)rewrittenType, dynamicOps, (A)object);
+					return Util.apply(typedx, outputSubtype, this::transform).getValue();
 				}).getValue();
 			});
 	}
 
-	private static <A, B> TypeRewriteRule method_56640(Type<A> type, Type<B> type2) {
-		RewriteResult<A, B> rewriteResult = RewriteResult.create(View.create("Patcher", type, type2, dynamicOps -> object -> {
+	private static <A, B> TypeRewriteRule substitutionRewriteResult(Type<A> inputSubtype, Type<B> outputSubtype) {
+		RewriteResult<A, B> rewriteResult = RewriteResult.create(View.create("Patcher", inputSubtype, outputSubtype, dynamicOps -> object -> {
 				throw new UnsupportedOperationException();
 			}), new BitSet());
-		return TypeRewriteRule.everywhere(TypeRewriteRule.ifSame(type, rewriteResult), PointFreeRule.nop(), true, true);
+		return TypeRewriteRule.everywhere(TypeRewriteRule.ifSame(inputSubtype, rewriteResult), PointFreeRule.nop(), true, true);
 	}
 
 	protected abstract <T> Dynamic<T> transform(Dynamic<T> data);

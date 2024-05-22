@@ -18,16 +18,16 @@ import net.minecraft.util.Util;
 
 public class SuggestionProviders {
 	private static final Map<Identifier, SuggestionProvider<CommandSource>> REGISTRY = Maps.<Identifier, SuggestionProvider<CommandSource>>newHashMap();
-	private static final Identifier ASK_SERVER_NAME = Identifier.method_60656("ask_server");
+	private static final Identifier ASK_SERVER_NAME = Identifier.ofVanilla("ask_server");
 	public static final SuggestionProvider<CommandSource> ASK_SERVER = register(ASK_SERVER_NAME, (context, builder) -> context.getSource().getCompletions(context));
 	public static final SuggestionProvider<ServerCommandSource> ALL_RECIPES = register(
-		Identifier.method_60656("all_recipes"), (context, builder) -> CommandSource.suggestIdentifiers(context.getSource().getRecipeIds(), builder)
+		Identifier.ofVanilla("all_recipes"), (context, builder) -> CommandSource.suggestIdentifiers(context.getSource().getRecipeIds(), builder)
 	);
 	public static final SuggestionProvider<ServerCommandSource> AVAILABLE_SOUNDS = register(
-		Identifier.method_60656("available_sounds"), (context, builder) -> CommandSource.suggestIdentifiers(context.getSource().getSoundIds(), builder)
+		Identifier.ofVanilla("available_sounds"), (context, builder) -> CommandSource.suggestIdentifiers(context.getSource().getSoundIds(), builder)
 	);
 	public static final SuggestionProvider<ServerCommandSource> SUMMONABLE_ENTITIES = register(
-		Identifier.method_60656("summonable_entities"),
+		Identifier.ofVanilla("summonable_entities"),
 		(context, builder) -> CommandSource.suggestFromIdentifier(
 				Registries.ENTITY_TYPE.stream().filter(entityType -> entityType.isEnabled(context.getSource().getEnabledFeatures()) && entityType.isSummonable()),
 				builder,

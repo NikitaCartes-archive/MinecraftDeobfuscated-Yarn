@@ -36,14 +36,14 @@ public class BlockPosFormatFix extends DataFix {
 	}
 
 	private <T> Dynamic<T> fixMapItemFrames(Dynamic<T> dynamic) {
-		return dynamic.update("frames", dynamicx -> dynamicx.createList(dynamicx.asStream().map(dynamicxx -> {
-				dynamicxx = dynamicxx.renameAndFixField("Pos", "pos", FixUtil::fixBlockPos);
-				dynamicxx = dynamicxx.renameField("Rotation", "rotation");
-				return dynamicxx.renameField("EntityId", "entity_id");
-			}))).update("banners", dynamicx -> dynamicx.createList(dynamicx.asStream().map(dynamicxx -> {
-				dynamicxx = dynamicxx.renameField("Pos", "pos");
-				dynamicxx = dynamicxx.renameField("Color", "color");
-				return dynamicxx.renameField("Name", "name");
+		return dynamic.update("frames", frames -> frames.createList(frames.asStream().map(frame -> {
+				frame = frame.renameAndFixField("Pos", "pos", FixUtil::fixBlockPos);
+				frame = frame.renameField("Rotation", "rotation");
+				return frame.renameField("EntityId", "entity_id");
+			}))).update("banners", banners -> banners.createList(banners.asStream().map(banner -> {
+				banner = banner.renameField("Pos", "pos");
+				banner = banner.renameField("Color", "color");
+				return banner.renameField("Name", "name");
 			})));
 	}
 
@@ -64,7 +64,7 @@ public class BlockPosFormatFix extends DataFix {
 			this.fixTypeEverywhereTyped(
 				"BlockPos format for compass target",
 				type,
-				ItemNbtFix.method_56971(type, "minecraft:compass"::equals, dynamic -> dynamic.update("LodestonePos", FixUtil::fixBlockPos))
+				ItemNbtFix.fixNbt(type, "minecraft:compass"::equals, tagDynamic -> tagDynamic.update("LodestonePos", FixUtil::fixBlockPos))
 			)
 		);
 		return TypeRewriteRule.seq(list);
@@ -83,7 +83,7 @@ public class BlockPosFormatFix extends DataFix {
 			this.fixTypeEverywhereTyped(
 				"BlockPos format in Leash for mobs",
 				this.getInputSchema().getType(TypeReferences.ENTITY),
-				typed -> typed.update(DSL.remainderFinder(), dynamic -> dynamic.renameAndFixField("Leash", "leash", FixUtil::fixBlockPos))
+				typed -> typed.update(DSL.remainderFinder(), entityDynamic -> entityDynamic.renameAndFixField("Leash", "leash", FixUtil::fixBlockPos))
 			)
 		);
 	}

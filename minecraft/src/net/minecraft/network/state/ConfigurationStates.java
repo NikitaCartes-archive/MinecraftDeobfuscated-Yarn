@@ -1,7 +1,5 @@
 package net.minecraft.network.state;
 
-import net.minecraft.class_9814;
-import net.minecraft.class_9815;
 import net.minecraft.network.NetworkPhase;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.NetworkStateBuilder;
@@ -21,10 +19,12 @@ import net.minecraft.network.packet.c2s.config.SelectKnownPacksC2SPacket;
 import net.minecraft.network.packet.s2c.common.CommonPingS2CPacket;
 import net.minecraft.network.packet.s2c.common.CookieRequestS2CPacket;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.common.CustomReportDetailsS2CPacket;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
+import net.minecraft.network.packet.s2c.common.ServerLinksS2CPacket;
 import net.minecraft.network.packet.s2c.common.ServerTransferS2CPacket;
 import net.minecraft.network.packet.s2c.common.StoreCookieS2CPacket;
 import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
@@ -63,7 +63,7 @@ public class ConfigurationStates {
 				.add(ConfigPackets.UPDATE_ENABLED_FEATURES, FeaturesS2CPacket.CODEC)
 				.add(CommonPackets.UPDATE_TAGS, SynchronizeTagsS2CPacket.CODEC)
 				.add(ConfigPackets.SELECT_KNOWN_PACKS_S2C, SelectKnownPacksS2CPacket.CODEC)
-				.add(CommonPackets.CUSTOM_REPORT_DETAILS, class_9814.field_52185)
-				.add(CommonPackets.SERVER_LINKS, class_9815.field_52190)
+				.add(CommonPackets.CUSTOM_REPORT_DETAILS, CustomReportDetailsS2CPacket.CODEC)
+				.add(CommonPackets.SERVER_LINKS, ServerLinksS2CPacket.CODEC)
 	);
 }

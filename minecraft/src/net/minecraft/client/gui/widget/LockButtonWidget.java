@@ -48,12 +48,12 @@ public class LockButtonWidget extends ButtonWidget {
 
 	@Environment(EnvType.CLIENT)
 	static enum Icon {
-		LOCKED(Identifier.method_60656("widget/locked_button")),
-		LOCKED_HOVER(Identifier.method_60656("widget/locked_button_highlighted")),
-		LOCKED_DISABLED(Identifier.method_60656("widget/locked_button_disabled")),
-		UNLOCKED(Identifier.method_60656("widget/unlocked_button")),
-		UNLOCKED_HOVER(Identifier.method_60656("widget/unlocked_button_highlighted")),
-		UNLOCKED_DISABLED(Identifier.method_60656("widget/unlocked_button_disabled"));
+		LOCKED(Identifier.ofVanilla("widget/locked_button")),
+		LOCKED_HOVER(Identifier.ofVanilla("widget/locked_button_highlighted")),
+		LOCKED_DISABLED(Identifier.ofVanilla("widget/locked_button_disabled")),
+		UNLOCKED(Identifier.ofVanilla("widget/unlocked_button")),
+		UNLOCKED_HOVER(Identifier.ofVanilla("widget/unlocked_button_highlighted")),
+		UNLOCKED_DISABLED(Identifier.ofVanilla("widget/unlocked_button_disabled"));
 
 		final Identifier texture;
 

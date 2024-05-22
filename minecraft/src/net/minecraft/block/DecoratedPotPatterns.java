@@ -67,7 +67,7 @@ public class DecoratedPotPatterns {
 	}
 
 	private static RegistryKey<DecoratedPotPattern> of(String path) {
-		return RegistryKey.of(RegistryKeys.DECORATED_POT_PATTERN, Identifier.method_60656(path));
+		return RegistryKey.of(RegistryKeys.DECORATED_POT_PATTERN, Identifier.ofVanilla(path));
 	}
 
 	public static DecoratedPotPattern registerAndGetDefault(Registry<DecoratedPotPattern> registry) {
@@ -98,6 +98,6 @@ public class DecoratedPotPatterns {
 	}
 
 	private static DecoratedPotPattern register(Registry<DecoratedPotPattern> registry, RegistryKey<DecoratedPotPattern> key, String id) {
-		return Registry.register(registry, key, new DecoratedPotPattern(Identifier.method_60656(id)));
+		return Registry.register(registry, key, new DecoratedPotPattern(Identifier.ofVanilla(id)));
 	}
 }

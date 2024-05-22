@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SilverfishEntityRenderer extends MobEntityRenderer<SilverfishEntity, SilverfishEntityModel<SilverfishEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/silverfish.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/silverfish.png");
 
 	public SilverfishEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new SilverfishEntityModel<>(context.getPart(EntityModelLayers.SILVERFISH)), 0.3F);

@@ -16,13 +16,13 @@ import net.minecraft.util.Util;
 @Environment(EnvType.CLIENT)
 public final class HorseEntityRenderer extends AbstractHorseEntityRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
 	private static final Map<HorseColor, Identifier> TEXTURES = Util.make(Maps.newEnumMap(HorseColor.class), map -> {
-		map.put(HorseColor.WHITE, Identifier.method_60656("textures/entity/horse/horse_white.png"));
-		map.put(HorseColor.CREAMY, Identifier.method_60656("textures/entity/horse/horse_creamy.png"));
-		map.put(HorseColor.CHESTNUT, Identifier.method_60656("textures/entity/horse/horse_chestnut.png"));
-		map.put(HorseColor.BROWN, Identifier.method_60656("textures/entity/horse/horse_brown.png"));
-		map.put(HorseColor.BLACK, Identifier.method_60656("textures/entity/horse/horse_black.png"));
-		map.put(HorseColor.GRAY, Identifier.method_60656("textures/entity/horse/horse_gray.png"));
-		map.put(HorseColor.DARK_BROWN, Identifier.method_60656("textures/entity/horse/horse_darkbrown.png"));
+		map.put(HorseColor.WHITE, Identifier.ofVanilla("textures/entity/horse/horse_white.png"));
+		map.put(HorseColor.CREAMY, Identifier.ofVanilla("textures/entity/horse/horse_creamy.png"));
+		map.put(HorseColor.CHESTNUT, Identifier.ofVanilla("textures/entity/horse/horse_chestnut.png"));
+		map.put(HorseColor.BROWN, Identifier.ofVanilla("textures/entity/horse/horse_brown.png"));
+		map.put(HorseColor.BLACK, Identifier.ofVanilla("textures/entity/horse/horse_black.png"));
+		map.put(HorseColor.GRAY, Identifier.ofVanilla("textures/entity/horse/horse_gray.png"));
+		map.put(HorseColor.DARK_BROWN, Identifier.ofVanilla("textures/entity/horse/horse_darkbrown.png"));
 	});
 
 	public HorseEntityRenderer(EntityRendererFactory.Context context) {

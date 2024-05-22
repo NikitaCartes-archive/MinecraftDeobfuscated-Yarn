@@ -10,22 +10,22 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class BlockEntityBlockStateFix extends ChoiceFix {
-	public BlockEntityBlockStateFix(Schema schema, boolean bl) {
-		super(schema, bl, "BlockEntityBlockStateFix", TypeReferences.BLOCK_ENTITY, "minecraft:piston");
+	public BlockEntityBlockStateFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "BlockEntityBlockStateFix", TypeReferences.BLOCK_ENTITY, "minecraft:piston");
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
+	protected Typed<?> transform(Typed<?> inputTyped) {
 		Type<?> type = this.getOutputSchema().getChoiceType(TypeReferences.BLOCK_ENTITY, "minecraft:piston");
 		Type<?> type2 = type.findFieldType("blockState");
 		OpticFinder<?> opticFinder = DSL.fieldFinder("blockState", type2);
-		Dynamic<?> dynamic = inputType.get(DSL.remainderFinder());
+		Dynamic<?> dynamic = inputTyped.get(DSL.remainderFinder());
 		int i = dynamic.get("blockId").asInt(0);
 		dynamic = dynamic.remove("blockId");
 		int j = dynamic.get("blockData").asInt(0) & 15;
 		dynamic = dynamic.remove("blockData");
 		Dynamic<?> dynamic2 = BlockStateFlattening.lookupState(i << 4 | j);
-		Typed<?> typed = (Typed<?>)type.pointTyped(inputType.getOps()).orElseThrow(() -> new IllegalStateException("Could not create new piston block entity."));
+		Typed<?> typed = (Typed<?>)type.pointTyped(inputTyped.getOps()).orElseThrow(() -> new IllegalStateException("Could not create new piston block entity."));
 		return typed.set(DSL.remainderFinder(), dynamic)
 			.set(
 				opticFinder,

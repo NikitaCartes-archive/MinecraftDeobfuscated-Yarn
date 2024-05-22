@@ -110,14 +110,14 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
 		boolean bl = this.plastron.visible;
 		if (bl) {
 			matrices.push();
 			matrices.translate(0.0F, -0.08F, 0.0F);
 		}
 
-		super.render(matrices, vertices, light, overlay, i);
+		super.render(matrices, vertices, light, overlay, color);
 		if (bl) {
 			matrices.pop();
 		}

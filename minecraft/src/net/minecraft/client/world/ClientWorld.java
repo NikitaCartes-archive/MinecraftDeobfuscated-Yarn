@@ -82,6 +82,7 @@ import net.minecraft.world.biome.ColorResolver;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.entity.ClientEntityManager;
 import net.minecraft.world.entity.EntityHandler;
 import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
@@ -564,7 +565,7 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public MapIdComponent getNextMapId() {
+	public MapIdComponent increaseAndGetMapId() {
 		return new MapIdComponent(0);
 	}
 

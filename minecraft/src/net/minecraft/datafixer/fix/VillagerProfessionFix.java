@@ -14,9 +14,9 @@ public class VillagerProfessionFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		Dynamic<?> dynamic = inputType.get(DSL.remainderFinder());
-		return inputType.set(
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		Dynamic<?> dynamic = inputTyped.get(DSL.remainderFinder());
+		return inputTyped.set(
 			DSL.remainderFinder(),
 			dynamic.remove("Profession")
 				.remove("Career")

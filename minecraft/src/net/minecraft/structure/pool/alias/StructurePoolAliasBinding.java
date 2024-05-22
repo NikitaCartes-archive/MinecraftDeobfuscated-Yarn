@@ -21,7 +21,7 @@ public interface StructurePoolAliasBinding {
 	Stream<RegistryKey<StructurePool>> streamTargets();
 
 	static DirectStructurePoolAliasBinding direct(String alias, String target) {
-		return direct(StructurePools.of(alias), StructurePools.of(target));
+		return direct(StructurePools.ofVanilla(alias), StructurePools.ofVanilla(target));
 	}
 
 	static DirectStructurePoolAliasBinding direct(RegistryKey<StructurePool> alias, RegistryKey<StructurePool> target) {
@@ -30,8 +30,8 @@ public interface StructurePoolAliasBinding {
 
 	static RandomStructurePoolAliasBinding random(String alias, DataPool<String> targets) {
 		DataPool.Builder<RegistryKey<StructurePool>> builder = DataPool.builder();
-		targets.getEntries().forEach(target -> builder.add(StructurePools.of((String)target.data()), target.getWeight().getValue()));
-		return random(StructurePools.of(alias), builder.build());
+		targets.getEntries().forEach(target -> builder.add(StructurePools.ofVanilla((String)target.data()), target.getWeight().getValue()));
+		return random(StructurePools.ofVanilla(alias), builder.build());
 	}
 
 	static RandomStructurePoolAliasBinding random(RegistryKey<StructurePool> alias, DataPool<RegistryKey<StructurePool>> targets) {

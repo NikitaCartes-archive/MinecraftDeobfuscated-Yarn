@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class WitherSkeletonEntityRenderer extends SkeletonEntityRenderer<WitherSkeletonEntity> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/skeleton/wither_skeleton.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/skeleton/wither_skeleton.png");
 
 	public WitherSkeletonEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, EntityModelLayers.WITHER_SKELETON, EntityModelLayers.WITHER_SKELETON_INNER_ARMOR, EntityModelLayers.WITHER_SKELETON_OUTER_ARMOR);

@@ -2,12 +2,12 @@ package net.minecraft.item;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.component.type.SuspiciousStewEffectsComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 

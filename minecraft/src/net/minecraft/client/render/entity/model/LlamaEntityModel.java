@@ -127,30 +127,30 @@ public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends EntityMode
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
 		if (this.child) {
 			float f = 2.0F;
 			matrices.push();
 			float g = 0.7F;
 			matrices.scale(0.71428573F, 0.64935064F, 0.7936508F);
 			matrices.translate(0.0F, 1.3125F, 0.22F);
-			this.head.render(matrices, vertices, light, overlay, i);
+			this.head.render(matrices, vertices, light, overlay, color);
 			matrices.pop();
 			matrices.push();
 			float h = 1.1F;
 			matrices.scale(0.625F, 0.45454544F, 0.45454544F);
 			matrices.translate(0.0F, 2.0625F, 0.0F);
-			this.body.render(matrices, vertices, light, overlay, i);
+			this.body.render(matrices, vertices, light, overlay, color);
 			matrices.pop();
 			matrices.push();
 			matrices.scale(0.45454544F, 0.41322312F, 0.45454544F);
 			matrices.translate(0.0F, 2.0625F, 0.0F);
 			ImmutableList.of(this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest)
-				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, i));
+				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, color));
 			matrices.pop();
 		} else {
 			ImmutableList.of(this.head, this.body, this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest)
-				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, i));
+				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, color));
 		}
 	}
 }

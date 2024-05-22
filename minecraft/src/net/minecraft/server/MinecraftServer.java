@@ -51,8 +51,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_9782;
-import net.minecraft.class_9813;
 import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
@@ -114,6 +112,7 @@ import net.minecraft.util.WinNativeModuleUtil;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.ReportType;
 import net.minecraft.util.function.Finishable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -143,11 +142,11 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.PersistentStateManager;
+import net.minecraft.world.PlayerSaveHandler;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.WanderingTraderManager;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
-import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
@@ -205,7 +204,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	);
 	public static final GameProfile ANONYMOUS_PLAYER_PROFILE = new GameProfile(Util.NIL_UUID, "Anonymous Player");
 	protected final LevelStorage.Session session;
-	protected final WorldSaveHandler saveHandler;
+	protected final PlayerSaveHandler saveHandler;
 	private final List<Runnable> serverGuiTickables = Lists.<Runnable>newArrayList();
 	private Recorder recorder = DummyRecorder.INSTANCE;
 	private Profiler profiler = this.recorder.getProfiler();
@@ -761,7 +760,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			CrashReport crashReport = createCrashReport(var46);
 			this.addSystemDetails(crashReport.getSystemDetailsSection());
 			Path path = this.getRunDirectory().resolve("crash-reports").resolve("crash-" + Util.getFormattedCurrentTime() + "-server.txt");
-			if (crashReport.method_60919(path, class_9813.MINECRAFT_CRASH_REPORT)) {
+			if (crashReport.writeToFIle(path, ReportType.MINECRAFT_CRASH_REPORT)) {
 				LOGGER.error("This crash report has been saved to: {}", path.toAbsolutePath());
 			} else {
 				LOGGER.error("We were unable to save this crash report to disk.");
@@ -904,7 +903,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private Optional<ServerMetadata.Favicon> loadFavicon() {
-		Optional<Path> optional = Optional.of(this.getFile("server-icon.png"))
+		Optional<Path> optional = Optional.of(this.getPath("server-icon.png"))
 			.filter(path -> Files.isRegularFile(path, new LinkOption[0]))
 			.or(() -> this.session.getIconFile().filter(path -> Files.isRegularFile(path, new LinkOption[0])));
 		return optional.flatMap(path -> {
@@ -1097,7 +1096,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.profiler.pop();
 	}
 
-	public boolean method_60671(World world) {
+	public boolean isWorldAllowed(World world) {
 		return true;
 	}
 
@@ -1116,7 +1115,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	/**
 	 * @param path relative path from the run directory
 	 */
-	public Path getFile(String path) {
+	public Path getPath(String path) {
 		return this.getRunDirectory().resolve(path);
 	}
 
@@ -2168,8 +2167,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.brewingRecipeRegistry;
 	}
 
-	public class_9782 method_60672() {
-		return class_9782.field_51977;
+	public ServerLinks getServerLinks() {
+		return ServerLinks.EMPTY;
 	}
 
 	static class DebugStart {

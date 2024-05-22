@@ -37,7 +37,7 @@ public class SoundEntryDeserializer implements JsonDeserializer<SoundEntry> {
 			for (int i = 0; i < jsonArray.size(); i++) {
 				JsonElement jsonElement = jsonArray.get(i);
 				if (JsonHelper.isString(jsonElement)) {
-					Identifier identifier = Identifier.method_60654(JsonHelper.asString(jsonElement, "sound"));
+					Identifier identifier = Identifier.of(JsonHelper.asString(jsonElement, "sound"));
 					list.add(new Sound(identifier, ONE, ONE, 1, Sound.RegistrationType.FILE, false, false, 16));
 				} else {
 					list.add(this.deserializeSound(JsonHelper.asObject(jsonElement, "sound")));
@@ -49,7 +49,7 @@ public class SoundEntryDeserializer implements JsonDeserializer<SoundEntry> {
 	}
 
 	private Sound deserializeSound(JsonObject json) {
-		Identifier identifier = Identifier.method_60654(JsonHelper.getString(json, "name"));
+		Identifier identifier = Identifier.of(JsonHelper.getString(json, "name"));
 		Sound.RegistrationType registrationType = this.deserializeType(json, Sound.RegistrationType.FILE);
 		float f = JsonHelper.getFloat(json, "volume", 1.0F);
 		Validate.isTrue(f > 0.0F, "Invalid volume");

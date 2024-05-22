@@ -16,23 +16,23 @@ public class ChunkRendererRegionBuilder {
 	private final Long2ObjectMap<ChunkRendererRegionBuilder.ClientChunk> chunks = new Long2ObjectOpenHashMap<>();
 
 	@Nullable
-	public ChunkRendererRegion build(World world, ChunkSectionPos chunkSectionPos) {
-		ChunkRendererRegionBuilder.ClientChunk clientChunk = this.method_60900(world, chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ());
-		if (clientChunk.getChunk().method_60791(chunkSectionPos.getSectionY())) {
+	public ChunkRendererRegion build(World world, ChunkSectionPos sectionPos) {
+		ChunkRendererRegionBuilder.ClientChunk clientChunk = this.computeClientChunk(world, sectionPos.getSectionX(), sectionPos.getSectionZ());
+		if (clientChunk.getChunk().isSectionEmpty(sectionPos.getSectionY())) {
 			return null;
 		} else {
-			int i = chunkSectionPos.getSectionX() - 1;
-			int j = chunkSectionPos.getSectionZ() - 1;
-			int k = chunkSectionPos.getSectionX() + 1;
-			int l = chunkSectionPos.getSectionZ() + 1;
+			int i = sectionPos.getSectionX() - 1;
+			int j = sectionPos.getSectionZ() - 1;
+			int k = sectionPos.getSectionX() + 1;
+			int l = sectionPos.getSectionZ() + 1;
 			RenderedChunk[] renderedChunks = new RenderedChunk[9];
 
 			for (int m = j; m <= l; m++) {
 				for (int n = i; n <= k; n++) {
-					int o = ChunkRendererRegion.method_60899(i, j, n, m);
-					ChunkRendererRegionBuilder.ClientChunk clientChunk2 = n == chunkSectionPos.getSectionX() && m == chunkSectionPos.getSectionZ()
+					int o = ChunkRendererRegion.getIndex(i, j, n, m);
+					ChunkRendererRegionBuilder.ClientChunk clientChunk2 = n == sectionPos.getSectionX() && m == sectionPos.getSectionZ()
 						? clientChunk
-						: this.method_60900(world, n, m);
+						: this.computeClientChunk(world, n, m);
 					renderedChunks[o] = clientChunk2.getRenderedChunk();
 				}
 			}
@@ -41,12 +41,12 @@ public class ChunkRendererRegionBuilder {
 		}
 	}
 
-	private ChunkRendererRegionBuilder.ClientChunk method_60900(World world, int i, int j) {
+	private ChunkRendererRegionBuilder.ClientChunk computeClientChunk(World world, int chunkX, int chunkZ) {
 		return this.chunks
 			.computeIfAbsent(
-				ChunkPos.toLong(i, j),
-				(Long2ObjectFunction<? extends ChunkRendererRegionBuilder.ClientChunk>)(l -> new ChunkRendererRegionBuilder.ClientChunk(
-						world.getChunk(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l))
+				ChunkPos.toLong(chunkX, chunkZ),
+				(Long2ObjectFunction<? extends ChunkRendererRegionBuilder.ClientChunk>)(chunkPos -> new ChunkRendererRegionBuilder.ClientChunk(
+						world.getChunk(ChunkPos.getPackedX(chunkPos), ChunkPos.getPackedZ(chunkPos))
 					))
 			);
 	}

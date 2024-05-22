@@ -54,68 +54,68 @@ public class OceanRuinGenerator {
 		Blocks.GRAVEL, Blocks.SUSPICIOUS_GRAVEL, LootTables.OCEAN_RUIN_COLD_ARCHAEOLOGY
 	);
 	private static final Identifier[] WARM_RUINS = new Identifier[]{
-		Identifier.method_60656("underwater_ruin/warm_1"),
-		Identifier.method_60656("underwater_ruin/warm_2"),
-		Identifier.method_60656("underwater_ruin/warm_3"),
-		Identifier.method_60656("underwater_ruin/warm_4"),
-		Identifier.method_60656("underwater_ruin/warm_5"),
-		Identifier.method_60656("underwater_ruin/warm_6"),
-		Identifier.method_60656("underwater_ruin/warm_7"),
-		Identifier.method_60656("underwater_ruin/warm_8")
+		Identifier.ofVanilla("underwater_ruin/warm_1"),
+		Identifier.ofVanilla("underwater_ruin/warm_2"),
+		Identifier.ofVanilla("underwater_ruin/warm_3"),
+		Identifier.ofVanilla("underwater_ruin/warm_4"),
+		Identifier.ofVanilla("underwater_ruin/warm_5"),
+		Identifier.ofVanilla("underwater_ruin/warm_6"),
+		Identifier.ofVanilla("underwater_ruin/warm_7"),
+		Identifier.ofVanilla("underwater_ruin/warm_8")
 	};
 	private static final Identifier[] BRICK_RUINS = new Identifier[]{
-		Identifier.method_60656("underwater_ruin/brick_1"),
-		Identifier.method_60656("underwater_ruin/brick_2"),
-		Identifier.method_60656("underwater_ruin/brick_3"),
-		Identifier.method_60656("underwater_ruin/brick_4"),
-		Identifier.method_60656("underwater_ruin/brick_5"),
-		Identifier.method_60656("underwater_ruin/brick_6"),
-		Identifier.method_60656("underwater_ruin/brick_7"),
-		Identifier.method_60656("underwater_ruin/brick_8")
+		Identifier.ofVanilla("underwater_ruin/brick_1"),
+		Identifier.ofVanilla("underwater_ruin/brick_2"),
+		Identifier.ofVanilla("underwater_ruin/brick_3"),
+		Identifier.ofVanilla("underwater_ruin/brick_4"),
+		Identifier.ofVanilla("underwater_ruin/brick_5"),
+		Identifier.ofVanilla("underwater_ruin/brick_6"),
+		Identifier.ofVanilla("underwater_ruin/brick_7"),
+		Identifier.ofVanilla("underwater_ruin/brick_8")
 	};
 	private static final Identifier[] CRACKED_RUINS = new Identifier[]{
-		Identifier.method_60656("underwater_ruin/cracked_1"),
-		Identifier.method_60656("underwater_ruin/cracked_2"),
-		Identifier.method_60656("underwater_ruin/cracked_3"),
-		Identifier.method_60656("underwater_ruin/cracked_4"),
-		Identifier.method_60656("underwater_ruin/cracked_5"),
-		Identifier.method_60656("underwater_ruin/cracked_6"),
-		Identifier.method_60656("underwater_ruin/cracked_7"),
-		Identifier.method_60656("underwater_ruin/cracked_8")
+		Identifier.ofVanilla("underwater_ruin/cracked_1"),
+		Identifier.ofVanilla("underwater_ruin/cracked_2"),
+		Identifier.ofVanilla("underwater_ruin/cracked_3"),
+		Identifier.ofVanilla("underwater_ruin/cracked_4"),
+		Identifier.ofVanilla("underwater_ruin/cracked_5"),
+		Identifier.ofVanilla("underwater_ruin/cracked_6"),
+		Identifier.ofVanilla("underwater_ruin/cracked_7"),
+		Identifier.ofVanilla("underwater_ruin/cracked_8")
 	};
 	private static final Identifier[] MOSSY_RUINS = new Identifier[]{
-		Identifier.method_60656("underwater_ruin/mossy_1"),
-		Identifier.method_60656("underwater_ruin/mossy_2"),
-		Identifier.method_60656("underwater_ruin/mossy_3"),
-		Identifier.method_60656("underwater_ruin/mossy_4"),
-		Identifier.method_60656("underwater_ruin/mossy_5"),
-		Identifier.method_60656("underwater_ruin/mossy_6"),
-		Identifier.method_60656("underwater_ruin/mossy_7"),
-		Identifier.method_60656("underwater_ruin/mossy_8")
+		Identifier.ofVanilla("underwater_ruin/mossy_1"),
+		Identifier.ofVanilla("underwater_ruin/mossy_2"),
+		Identifier.ofVanilla("underwater_ruin/mossy_3"),
+		Identifier.ofVanilla("underwater_ruin/mossy_4"),
+		Identifier.ofVanilla("underwater_ruin/mossy_5"),
+		Identifier.ofVanilla("underwater_ruin/mossy_6"),
+		Identifier.ofVanilla("underwater_ruin/mossy_7"),
+		Identifier.ofVanilla("underwater_ruin/mossy_8")
 	};
 	private static final Identifier[] BIG_BRICK_RUINS = new Identifier[]{
-		Identifier.method_60656("underwater_ruin/big_brick_1"),
-		Identifier.method_60656("underwater_ruin/big_brick_2"),
-		Identifier.method_60656("underwater_ruin/big_brick_3"),
-		Identifier.method_60656("underwater_ruin/big_brick_8")
+		Identifier.ofVanilla("underwater_ruin/big_brick_1"),
+		Identifier.ofVanilla("underwater_ruin/big_brick_2"),
+		Identifier.ofVanilla("underwater_ruin/big_brick_3"),
+		Identifier.ofVanilla("underwater_ruin/big_brick_8")
 	};
 	private static final Identifier[] BIG_MOSSY_RUINS = new Identifier[]{
-		Identifier.method_60656("underwater_ruin/big_mossy_1"),
-		Identifier.method_60656("underwater_ruin/big_mossy_2"),
-		Identifier.method_60656("underwater_ruin/big_mossy_3"),
-		Identifier.method_60656("underwater_ruin/big_mossy_8")
+		Identifier.ofVanilla("underwater_ruin/big_mossy_1"),
+		Identifier.ofVanilla("underwater_ruin/big_mossy_2"),
+		Identifier.ofVanilla("underwater_ruin/big_mossy_3"),
+		Identifier.ofVanilla("underwater_ruin/big_mossy_8")
 	};
 	private static final Identifier[] BIG_CRACKED_RUINS = new Identifier[]{
-		Identifier.method_60656("underwater_ruin/big_cracked_1"),
-		Identifier.method_60656("underwater_ruin/big_cracked_2"),
-		Identifier.method_60656("underwater_ruin/big_cracked_3"),
-		Identifier.method_60656("underwater_ruin/big_cracked_8")
+		Identifier.ofVanilla("underwater_ruin/big_cracked_1"),
+		Identifier.ofVanilla("underwater_ruin/big_cracked_2"),
+		Identifier.ofVanilla("underwater_ruin/big_cracked_3"),
+		Identifier.ofVanilla("underwater_ruin/big_cracked_8")
 	};
 	private static final Identifier[] BIG_WARM_RUINS = new Identifier[]{
-		Identifier.method_60656("underwater_ruin/big_warm_4"),
-		Identifier.method_60656("underwater_ruin/big_warm_5"),
-		Identifier.method_60656("underwater_ruin/big_warm_6"),
-		Identifier.method_60656("underwater_ruin/big_warm_7")
+		Identifier.ofVanilla("underwater_ruin/big_warm_4"),
+		Identifier.ofVanilla("underwater_ruin/big_warm_5"),
+		Identifier.ofVanilla("underwater_ruin/big_warm_6"),
+		Identifier.ofVanilla("underwater_ruin/big_warm_7")
 	};
 
 	private static StructureProcessor createArchaeologyStructureProcessor(Block baseBlock, Block suspiciousBlock, RegistryKey<LootTable> lootTable) {

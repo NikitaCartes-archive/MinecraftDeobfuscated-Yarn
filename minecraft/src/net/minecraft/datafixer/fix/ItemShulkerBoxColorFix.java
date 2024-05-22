@@ -34,8 +34,8 @@ public class ItemShulkerBoxColorFix extends DataFix {
 		"minecraft:black_shulker_box"
 	};
 
-	public ItemShulkerBoxColorFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemShulkerBoxColorFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -49,25 +49,25 @@ public class ItemShulkerBoxColorFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"ItemShulkerBoxColorFix",
 			type,
-			typed -> {
-				Optional<Pair<String, String>> optional = typed.getOptional(opticFinder);
+			itemStack -> {
+				Optional<Pair<String, String>> optional = itemStack.getOptional(opticFinder);
 				if (optional.isPresent() && Objects.equals(((Pair)optional.get()).getSecond(), "minecraft:shulker_box")) {
-					Optional<? extends Typed<?>> optional2 = typed.getOptionalTyped(opticFinder2);
+					Optional<? extends Typed<?>> optional2 = itemStack.getOptionalTyped(opticFinder2);
 					if (optional2.isPresent()) {
-						Typed<?> typed2 = (Typed<?>)optional2.get();
-						Optional<? extends Typed<?>> optional3 = typed2.getOptionalTyped(opticFinder3);
+						Typed<?> typed = (Typed<?>)optional2.get();
+						Optional<? extends Typed<?>> optional3 = typed.getOptionalTyped(opticFinder3);
 						if (optional3.isPresent()) {
-							Typed<?> typed3 = (Typed<?>)optional3.get();
-							Dynamic<?> dynamic = typed3.get(DSL.remainderFinder());
+							Typed<?> typed2 = (Typed<?>)optional3.get();
+							Dynamic<?> dynamic = typed2.get(DSL.remainderFinder());
 							int i = dynamic.get("Color").asInt(0);
 							dynamic.remove("Color");
-							return typed.set(opticFinder2, typed2.set(opticFinder3, typed3.set(DSL.remainderFinder(), dynamic)))
+							return itemStack.set(opticFinder2, typed.set(opticFinder3, typed2.set(DSL.remainderFinder(), dynamic)))
 								.set(opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), COLORED_SHULKER_BOX_IDS[i % 16]));
 						}
 					}
 				}
 
-				return typed;
+				return itemStack;
 			}
 		);
 	}

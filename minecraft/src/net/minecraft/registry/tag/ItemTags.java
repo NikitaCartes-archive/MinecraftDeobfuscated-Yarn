@@ -157,6 +157,6 @@ public final class ItemTags {
 	}
 
 	private static TagKey<Item> of(String id) {
-		return TagKey.of(RegistryKeys.ITEM, Identifier.method_60656(id));
+		return TagKey.of(RegistryKeys.ITEM, Identifier.ofVanilla(id));
 	}
 }

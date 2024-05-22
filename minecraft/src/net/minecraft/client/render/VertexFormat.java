@@ -2,7 +2,6 @@ package net.minecraft.client.render;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -22,28 +21,28 @@ import net.minecraft.client.gl.VertexBuffer;
 public class VertexFormat {
 	public static final int field_52099 = -1;
 	private final List<VertexFormatElement> elements;
-	private final List<String> field_52100;
+	private final List<String> names;
 	private final int vertexSizeByte;
-	private final int field_52101;
-	private final int[] field_52102 = new int[32];
+	private final int requiredMask;
+	private final int[] offsetsByElementId = new int[32];
 	@Nullable
 	private VertexBuffer buffer;
 
-	VertexFormat(List<VertexFormatElement> list, List<String> list2, IntList intList, int i) {
-		this.elements = list;
-		this.field_52100 = list2;
-		this.vertexSizeByte = i;
-		this.field_52101 = list.stream().mapToInt(VertexFormatElement::method_60843).reduce(0, (ix, jx) -> ix | jx);
+	VertexFormat(List<VertexFormatElement> elements, List<String> names, IntList offsets, int vertexSizeByte) {
+		this.elements = elements;
+		this.names = names;
+		this.vertexSizeByte = vertexSizeByte;
+		this.requiredMask = elements.stream().mapToInt(VertexFormatElement::getBit).reduce(0, (a, b) -> a | b);
 
-		for (int j = 0; j < this.field_52102.length; j++) {
-			VertexFormatElement vertexFormatElement = VertexFormatElement.method_60844(j);
-			int k = vertexFormatElement != null ? list.indexOf(vertexFormatElement) : -1;
-			this.field_52102[j] = k != -1 ? intList.getInt(k) : -1;
+		for (int i = 0; i < this.offsetsByElementId.length; i++) {
+			VertexFormatElement vertexFormatElement = VertexFormatElement.get(i);
+			int j = vertexFormatElement != null ? elements.indexOf(vertexFormatElement) : -1;
+			this.offsetsByElementId[i] = j != -1 ? offsets.getInt(j) : -1;
 		}
 	}
 
-	public static VertexFormat.class_9803 method_60833() {
-		return new VertexFormat.class_9803();
+	public static VertexFormat.Builder builder() {
+		return new VertexFormat.Builder();
 	}
 
 	public String toString() {
@@ -53,11 +52,11 @@ public class VertexFormat {
 			VertexFormatElement vertexFormatElement = (VertexFormatElement)this.elements.get(i);
 			stringBuilder.append(i)
 				.append(". ")
-				.append((String)this.field_52100.get(i))
+				.append((String)this.names.get(i))
 				.append(": ")
 				.append(vertexFormatElement)
 				.append(" @ ")
-				.append(this.method_60835(vertexFormatElement))
+				.append(this.getOffset(vertexFormatElement))
 				.append('\n');
 		}
 
@@ -73,43 +72,43 @@ public class VertexFormat {
 	}
 
 	public List<String> getAttributeNames() {
-		return this.field_52100;
+		return this.names;
 	}
 
-	public int[] method_60838() {
-		return this.field_52102;
+	public int[] getOffsetsByElementId() {
+		return this.offsetsByElementId;
 	}
 
-	public int method_60835(VertexFormatElement vertexFormatElement) {
-		return this.field_52102[vertexFormatElement.id()];
+	public int getOffset(VertexFormatElement element) {
+		return this.offsetsByElementId[element.id()];
 	}
 
-	public boolean method_60836(VertexFormatElement vertexFormatElement) {
-		return (this.field_52101 & vertexFormatElement.method_60843()) != 0;
+	public boolean has(VertexFormatElement element) {
+		return (this.requiredMask & element.getBit()) != 0;
 	}
 
-	public int method_60839() {
-		return this.field_52101;
+	public int getRequiredMask() {
+		return this.requiredMask;
 	}
 
-	public String method_60837(VertexFormatElement vertexFormatElement) {
-		int i = this.elements.indexOf(vertexFormatElement);
+	public String getName(VertexFormatElement element) {
+		int i = this.elements.indexOf(element);
 		if (i == -1) {
-			throw new IllegalArgumentException(vertexFormatElement + " is not contained in format");
+			throw new IllegalArgumentException(element + " is not contained in format");
 		} else {
-			return (String)this.field_52100.get(i);
+			return (String)this.names.get(i);
 		}
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		} else {
-			if (object instanceof VertexFormat vertexFormat
-				&& this.field_52101 == vertexFormat.field_52101
+			if (o instanceof VertexFormat vertexFormat
+				&& this.requiredMask == vertexFormat.requiredMask
 				&& this.vertexSizeByte == vertexFormat.vertexSizeByte
-				&& this.field_52100.equals(vertexFormat.field_52100)
-				&& Arrays.equals(this.field_52102, vertexFormat.field_52102)) {
+				&& this.names.equals(vertexFormat.names)
+				&& Arrays.equals(this.offsetsByElementId, vertexFormat.offsetsByElementId)) {
 				return true;
 			}
 
@@ -118,7 +117,7 @@ public class VertexFormat {
 	}
 
 	public int hashCode() {
-		return this.field_52101 * 31 + Arrays.hashCode(this.field_52102);
+		return this.requiredMask * 31 + Arrays.hashCode(this.offsetsByElementId);
 	}
 
 	/**
@@ -138,7 +137,7 @@ public class VertexFormat {
 		for (int j = 0; j < this.elements.size(); j++) {
 			GlStateManager._enableVertexAttribArray(j);
 			VertexFormatElement vertexFormatElement = (VertexFormatElement)this.elements.get(j);
-			vertexFormatElement.setupState(j, (long)this.method_60835(vertexFormatElement), i);
+			vertexFormatElement.setupState(j, (long)this.getOffset(vertexFormatElement), i);
 		}
 	}
 
@@ -169,6 +168,35 @@ public class VertexFormat {
 		}
 
 		return vertexBuffer;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class Builder {
+		private final ImmutableMap.Builder<String, VertexFormatElement> elements = ImmutableMap.builder();
+		private final IntList offsets = new IntArrayList();
+		private int currentOffset;
+
+		Builder() {
+		}
+
+		public VertexFormat.Builder add(String name, VertexFormatElement element) {
+			this.elements.put(name, element);
+			this.offsets.add(this.currentOffset);
+			this.currentOffset = this.currentOffset + element.getSizeInBytes();
+			return this;
+		}
+
+		public VertexFormat.Builder skip(int offset) {
+			this.currentOffset += offset;
+			return this;
+		}
+
+		public VertexFormat build() {
+			ImmutableMap<String, VertexFormatElement> immutableMap = this.elements.buildOrThrow();
+			ImmutableList<VertexFormatElement> immutableList = immutableMap.values().asList();
+			ImmutableList<String> immutableList2 = immutableMap.keySet().asList();
+			return new VertexFormat(immutableList, immutableList2, this.offsets, this.currentOffset);
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -232,35 +260,6 @@ public class VertexFormat {
 		 */
 		public static VertexFormat.IndexType smallestFor(int indexCount) {
 			return (indexCount & -65536) != 0 ? INT : SHORT;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class class_9803 {
-		private final Builder<String, VertexFormatElement> field_52103 = ImmutableMap.builder();
-		private final IntList field_52104 = new IntArrayList();
-		private int field_52105;
-
-		class_9803() {
-		}
-
-		public VertexFormat.class_9803 method_60842(String string, VertexFormatElement vertexFormatElement) {
-			this.field_52103.put(string, vertexFormatElement);
-			this.field_52104.add(this.field_52105);
-			this.field_52105 = this.field_52105 + vertexFormatElement.method_60847();
-			return this;
-		}
-
-		public VertexFormat.class_9803 method_60841(int i) {
-			this.field_52105 += i;
-			return this;
-		}
-
-		public VertexFormat method_60840() {
-			ImmutableMap<String, VertexFormatElement> immutableMap = this.field_52103.buildOrThrow();
-			ImmutableList<VertexFormatElement> immutableList = immutableMap.values().asList();
-			ImmutableList<String> immutableList2 = immutableMap.keySet().asList();
-			return new VertexFormat(immutableList, immutableList2, this.field_52104, this.field_52105);
 		}
 	}
 }

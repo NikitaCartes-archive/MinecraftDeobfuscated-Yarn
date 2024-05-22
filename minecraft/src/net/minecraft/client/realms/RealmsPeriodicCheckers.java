@@ -25,7 +25,7 @@ public class RealmsPeriodicCheckers {
 	public final PeriodicRunnerFactory.PeriodicRunner<Integer> pendingInvitesCount;
 	public final PeriodicRunnerFactory.PeriodicRunner<Boolean> trialAvailability;
 	public final PeriodicRunnerFactory.PeriodicRunner<RealmsNews> news;
-	public final PeriodicRunnerFactory.PeriodicRunner<RealmsServerPlayerList> field_52122;
+	public final PeriodicRunnerFactory.PeriodicRunner<RealmsServerPlayerList> onlinePlayers;
 	public final RealmsNewsUpdater newsUpdater = new RealmsNewsUpdater(new RealmsPersistence());
 
 	public RealmsPeriodicCheckers(RealmsClient client) {
@@ -45,8 +45,8 @@ public class RealmsPeriodicCheckers {
 		this.trialAvailability = this.runnerFactory.create("trial availablity", client::trialAvailable, Duration.ofSeconds(60L), Backoff.exponential(60));
 		this.news = this.runnerFactory.create("unread news", client::getNews, Duration.ofMinutes(5L), Backoff.ONE_CYCLE);
 		this.notifications = this.runnerFactory.create("notifications", client::listNotifications, Duration.ofMinutes(5L), Backoff.ONE_CYCLE);
-		this.field_52122 = this.runnerFactory.create("online players", client::getLiveStats, Duration.ofSeconds(10L), Backoff.ONE_CYCLE);
-		this.checkers = List.of(this.notifications, this.serverList, this.pendingInvitesCount, this.trialAvailability, this.news, this.field_52122);
+		this.onlinePlayers = this.runnerFactory.create("online players", client::getLiveStats, Duration.ofSeconds(10L), Backoff.ONE_CYCLE);
+		this.checkers = List.of(this.notifications, this.serverList, this.pendingInvitesCount, this.trialAvailability, this.news, this.onlinePlayers);
 	}
 
 	public List<PeriodicRunnerFactory.PeriodicRunner<?>> getCheckers() {

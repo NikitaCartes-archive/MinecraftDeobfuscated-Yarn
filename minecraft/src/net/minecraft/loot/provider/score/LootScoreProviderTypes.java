@@ -22,6 +22,6 @@ public class LootScoreProviderTypes {
 	public static final LootScoreProviderType CONTEXT = register("context", ContextLootScoreProvider.CODEC);
 
 	private static LootScoreProviderType register(String id, MapCodec<? extends LootScoreProvider> codec) {
-		return Registry.register(Registries.LOOT_SCORE_PROVIDER_TYPE, Identifier.method_60656(id), new LootScoreProviderType(codec));
+		return Registry.register(Registries.LOOT_SCORE_PROVIDER_TYPE, Identifier.ofVanilla(id), new LootScoreProviderType(codec));
 	}
 }

@@ -49,16 +49,16 @@ public record ChunkGeneratorSettings(
 				.apply(instance, ChunkGeneratorSettings::new)
 	);
 	public static final Codec<RegistryEntry<ChunkGeneratorSettings>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, CODEC);
-	public static final RegistryKey<ChunkGeneratorSettings> OVERWORLD = RegistryKey.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, Identifier.method_60656("overworld"));
+	public static final RegistryKey<ChunkGeneratorSettings> OVERWORLD = RegistryKey.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, Identifier.ofVanilla("overworld"));
 	public static final RegistryKey<ChunkGeneratorSettings> LARGE_BIOMES = RegistryKey.of(
-		RegistryKeys.CHUNK_GENERATOR_SETTINGS, Identifier.method_60656("large_biomes")
+		RegistryKeys.CHUNK_GENERATOR_SETTINGS, Identifier.ofVanilla("large_biomes")
 	);
-	public static final RegistryKey<ChunkGeneratorSettings> AMPLIFIED = RegistryKey.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, Identifier.method_60656("amplified"));
-	public static final RegistryKey<ChunkGeneratorSettings> NETHER = RegistryKey.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, Identifier.method_60656("nether"));
-	public static final RegistryKey<ChunkGeneratorSettings> END = RegistryKey.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, Identifier.method_60656("end"));
-	public static final RegistryKey<ChunkGeneratorSettings> CAVES = RegistryKey.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, Identifier.method_60656("caves"));
+	public static final RegistryKey<ChunkGeneratorSettings> AMPLIFIED = RegistryKey.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, Identifier.ofVanilla("amplified"));
+	public static final RegistryKey<ChunkGeneratorSettings> NETHER = RegistryKey.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, Identifier.ofVanilla("nether"));
+	public static final RegistryKey<ChunkGeneratorSettings> END = RegistryKey.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, Identifier.ofVanilla("end"));
+	public static final RegistryKey<ChunkGeneratorSettings> CAVES = RegistryKey.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, Identifier.ofVanilla("caves"));
 	public static final RegistryKey<ChunkGeneratorSettings> FLOATING_ISLANDS = RegistryKey.of(
-		RegistryKeys.CHUNK_GENERATOR_SETTINGS, Identifier.method_60656("floating_islands")
+		RegistryKeys.CHUNK_GENERATOR_SETTINGS, Identifier.ofVanilla("floating_islands")
 	);
 
 	public boolean hasAquifers() {

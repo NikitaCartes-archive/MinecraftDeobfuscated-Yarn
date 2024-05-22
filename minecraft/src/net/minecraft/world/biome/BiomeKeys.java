@@ -71,6 +71,6 @@ public abstract class BiomeKeys {
 	public static final RegistryKey<Biome> END_BARRENS = register("end_barrens");
 
 	private static RegistryKey<Biome> register(String name) {
-		return RegistryKey.of(RegistryKeys.BIOME, Identifier.method_60656(name));
+		return RegistryKey.of(RegistryKeys.BIOME, Identifier.ofVanilla(name));
 	}
 }

@@ -90,7 +90,7 @@ public record VillagerProfession(
 	) {
 		return Registry.register(
 			Registries.VILLAGER_PROFESSION,
-			Identifier.method_60656(id),
+			Identifier.ofVanilla(id),
 			new VillagerProfession(id, heldWorkstation, acquirableWorkstation, gatherableItems, secondaryJobSites, workSound)
 		);
 	}

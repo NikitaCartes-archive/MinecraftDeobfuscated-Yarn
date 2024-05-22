@@ -89,8 +89,8 @@ public class EntityIdFix extends DataFix {
 		map.put("ZombieVillager", "minecraft:zombie_villager");
 	});
 
-	public EntityIdFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public EntityIdFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

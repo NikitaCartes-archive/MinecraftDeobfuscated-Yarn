@@ -5,12 +5,12 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9782;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.session.telemetry.WorldSession;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.server.ServerLinks;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -26,6 +26,6 @@ public record ClientConnectionState(
 	@Nullable ChatHud.ChatState chatState,
 	@Deprecated(forRemoval = true) boolean strictErrorHandling,
 	Map<String, String> customReportDetails,
-	class_9782 serverLinks
+	ServerLinks serverLinks
 ) {
 }

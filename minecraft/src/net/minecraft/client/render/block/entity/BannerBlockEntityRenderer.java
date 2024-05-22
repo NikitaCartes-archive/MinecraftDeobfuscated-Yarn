@@ -139,7 +139,7 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 	private static void renderLayer(
 		MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, ModelPart canvas, SpriteIdentifier textureId, DyeColor color
 	) {
-		int i = color.getColorComponents();
+		int i = color.getEntityColor();
 		canvas.render(matrices, textureId.getVertexConsumer(vertexConsumers, RenderLayer::getEntityNoOutline), light, overlay, i);
 	}
 }

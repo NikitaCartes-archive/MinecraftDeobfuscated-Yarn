@@ -47,9 +47,9 @@ public class VertexConsumers {
 		}
 
 		@Override
-		public VertexConsumer vertex(float f, float g, float h) {
-			this.first.vertex(f, g, h);
-			this.second.vertex(f, g, h);
+		public VertexConsumer vertex(float x, float y, float z) {
+			this.first.vertex(x, y, z);
+			this.second.vertex(x, y, z);
 			return this;
 		}
 
@@ -68,9 +68,9 @@ public class VertexConsumers {
 		}
 
 		@Override
-		public VertexConsumer method_60796(int i, int j) {
-			this.first.method_60796(i, j);
-			this.second.method_60796(i, j);
+		public VertexConsumer overlay(int u, int v) {
+			this.first.overlay(u, v);
+			this.second.overlay(u, v);
 			return this;
 		}
 
@@ -89,9 +89,9 @@ public class VertexConsumers {
 		}
 
 		@Override
-		public void vertex(float x, float y, float z, int i, float green, float blue, int j, int k, float v, float f, float g) {
-			this.first.vertex(x, y, z, i, green, blue, j, k, v, f, g);
-			this.second.vertex(x, y, z, i, green, blue, j, k, v, f, g);
+		public void vertex(float x, float y, float z, int color, float u, float v, int overlay, int light, float normalX, float normalY, float normalZ) {
+			this.first.vertex(x, y, z, color, u, v, overlay, light, normalX, normalY, normalZ);
+			this.second.vertex(x, y, z, color, u, v, overlay, light, normalX, normalY, normalZ);
 		}
 	}
 
@@ -116,8 +116,8 @@ public class VertexConsumers {
 		}
 
 		@Override
-		public VertexConsumer vertex(float f, float g, float h) {
-			this.delegate(vertexConsumer -> vertexConsumer.vertex(f, g, h));
+		public VertexConsumer vertex(float x, float y, float z) {
+			this.delegate(vertexConsumer -> vertexConsumer.vertex(x, y, z));
 			return this;
 		}
 
@@ -134,8 +134,8 @@ public class VertexConsumers {
 		}
 
 		@Override
-		public VertexConsumer method_60796(int i, int j) {
-			this.delegate(vertexConsumer -> vertexConsumer.method_60796(i, j));
+		public VertexConsumer overlay(int u, int v) {
+			this.delegate(vertexConsumer -> vertexConsumer.overlay(u, v));
 			return this;
 		}
 
@@ -152,8 +152,8 @@ public class VertexConsumers {
 		}
 
 		@Override
-		public void vertex(float x, float y, float z, int i, float green, float blue, int j, int k, float v, float f, float g) {
-			this.delegate(vertexConsumer -> vertexConsumer.vertex(x, y, z, i, green, blue, j, k, v, f, g));
+		public void vertex(float x, float y, float z, int color, float u, float v, int overlay, int light, float normalX, float normalY, float normalZ) {
+			this.delegate(vertexConsumer -> vertexConsumer.vertex(x, y, z, color, u, v, overlay, light, normalX, normalY, normalZ));
 		}
 	}
 }

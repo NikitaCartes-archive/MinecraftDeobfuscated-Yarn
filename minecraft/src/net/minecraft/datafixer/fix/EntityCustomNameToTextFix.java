@@ -12,23 +12,25 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class EntityCustomNameToTextFix extends DataFix {
-	public EntityCustomNameToTextFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public EntityCustomNameToTextFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
 	public TypeRewriteRule makeRule() {
 		OpticFinder<String> opticFinder = DSL.fieldFinder("id", IdentifierNormalizingSchema.getIdentifierType());
 		return this.fixTypeEverywhereTyped(
-			"EntityCustomNameToComponentFix", this.getInputSchema().getType(TypeReferences.ENTITY), typed -> typed.update(DSL.remainderFinder(), dynamic -> {
-					Optional<String> optional = typed.getOptional(opticFinder);
-					return optional.isPresent() && Objects.equals(optional.get(), "minecraft:commandblock_minecart") ? dynamic : fixCustomName(dynamic);
+			"EntityCustomNameToComponentFix",
+			this.getInputSchema().getType(TypeReferences.ENTITY),
+			entityTyped -> entityTyped.update(DSL.remainderFinder(), entityDynamic -> {
+					Optional<String> optional = entityTyped.getOptional(opticFinder);
+					return optional.isPresent() && Objects.equals(optional.get(), "minecraft:commandblock_minecart") ? entityDynamic : fixCustomName(entityDynamic);
 				})
 		);
 	}
 
-	public static Dynamic<?> fixCustomName(Dynamic<?> dynamic) {
-		String string = dynamic.get("CustomName").asString("");
-		return string.isEmpty() ? dynamic.remove("CustomName") : dynamic.set("CustomName", TextFixes.text(dynamic.getOps(), string));
+	public static Dynamic<?> fixCustomName(Dynamic<?> entityDynamic) {
+		String string = entityDynamic.get("CustomName").asString("");
+		return string.isEmpty() ? entityDynamic.remove("CustomName") : entityDynamic.set("CustomName", TextFixes.text(entityDynamic.getOps(), string));
 	}
 }

@@ -9,6 +9,6 @@ public class ItemKeys {
 	public static final RegistryKey<Item> MELON_SEEDS = of("melon_seeds");
 
 	private static RegistryKey<Item> of(String id) {
-		return RegistryKey.of(RegistryKeys.ITEM, Identifier.method_60656(id));
+		return RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla(id));
 	}
 }

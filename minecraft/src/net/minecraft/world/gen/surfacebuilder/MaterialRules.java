@@ -90,7 +90,7 @@ public class MaterialRules {
 	}
 
 	public static MaterialRules.MaterialCondition verticalGradient(String id, YOffset trueAtAndBelow, YOffset falseAtAndAbove) {
-		return new MaterialRules.VerticalGradientMaterialCondition(Identifier.method_60654(id), trueAtAndBelow, falseAtAndAbove);
+		return new MaterialRules.VerticalGradientMaterialCondition(Identifier.of(id), trueAtAndBelow, falseAtAndAbove);
 	}
 
 	public static MaterialRules.MaterialCondition steepSlope() {

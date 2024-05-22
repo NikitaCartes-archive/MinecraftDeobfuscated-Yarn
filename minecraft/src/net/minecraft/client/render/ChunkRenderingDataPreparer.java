@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ChunkRenderingDataPreparer {
-	private static final Logger field_45617 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Direction[] field_45618 = Direction.values();
 	private static final int field_45619 = 60;
 	private static final double field_45620 = Math.ceil(Math.sqrt(3.0) * 16.0);
@@ -57,7 +57,7 @@ public class ChunkRenderingDataPreparer {
 				this.field_45622.get();
 				this.field_45622 = null;
 			} catch (Exception var3) {
-				field_45617.warn("Full update failed", (Throwable)var3);
+				LOGGER.warn("Full update failed", (Throwable)var3);
 			}
 		}
 

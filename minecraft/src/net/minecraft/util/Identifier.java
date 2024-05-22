@@ -72,17 +72,19 @@ import org.apache.commons.lang3.StringUtils;
  * <p>There are many ways to create a new identifier:
  * 
  * <ul>
- * <li>{@link Identifier(String)} creates an identifier from a string in
+ * <li>{@link #of(String)} creates an identifier from a string in
  * {@code <namespace>:<path>} format. If the colon is missing, the created identifier
  * has the namespace {@value #DEFAULT_NAMESPACE} and the argument is used as the path.
  * When passed an invalid value, this throws {@link InvalidIdentifierException}.</li>
- * <li>{@link Identifier(String, String)} creates an identifier from namespace and path.
+ * <li>{@link #of(String, String)} creates an identifier from namespace and path.
  * When passed an invalid value, this throws {@link InvalidIdentifierException}.</li>
- * <li>{@link #tryParse} creates an identifier from a string in
+ * <li>{@link #ofVanilla(String)} creates an identifier in the {@value #DEFAULT_NAMESPACE}
+ * namespace.
+ * <li>{@link #tryParse(String)} creates an identifier from a string in
  * {@code <namespace>:<path>} format. If the colon is missing, the created identifier
  * has the namespace {@value #DEFAULT_NAMESPACE} and the argument is used as the path.
  * When passed an invalid value, this returns {@code null}.</li>
- * <li>{@link #of} creates an identifier from namespace and path.
+ * <li>{@link #tryParse(String, String)} creates an identifier from namespace and path.
  * When passed an invalid value, this returns {@code null}.</li>
  * <li>{@link #fromCommandInput} reads an identifier from command input reader.
  * When an invalid value is read, this throws {@link #COMMAND_EXCEPTION}.</li>
@@ -110,7 +112,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class Identifier implements Comparable<Identifier> {
 	public static final Codec<Identifier> CODEC = Codec.STRING.<Identifier>comapFlatMap(Identifier::validate, Identifier::toString).stable();
-	public static final PacketCodec<ByteBuf, Identifier> PACKET_CODEC = PacketCodecs.STRING.xmap(Identifier::method_60654, Identifier::toString);
+	public static final PacketCodec<ByteBuf, Identifier> PACKET_CODEC = PacketCodecs.STRING.xmap(Identifier::of, Identifier::toString);
 	public static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.id.invalid"));
 	public static final char NAMESPACE_SEPARATOR = ':';
 	public static final String DEFAULT_NAMESPACE = "minecraft";
@@ -127,35 +129,35 @@ public class Identifier implements Comparable<Identifier> {
 		this(validateNamespace(namespace, path), validatePath(namespace, path), null);
 	}
 
-	public static Identifier method_60655(String string, String string2) {
-		return new Identifier(string, string2);
+	public static Identifier of(String namespace, String path) {
+		return new Identifier(namespace, path);
 	}
 
 	private Identifier(String[] id) {
 		this(id[0], id[1]);
 	}
 
-	public static Identifier method_60654(String string) {
-		return splitOn(string, ':');
+	public static Identifier of(String id) {
+		return splitOn(id, ':');
 	}
 
 	public static Identifier splitOn(String id, char delimiter) {
 		return new Identifier(split(id, delimiter));
 	}
 
-	public static Identifier method_60656(String string) {
-		return new Identifier("minecraft", string);
+	public static Identifier ofVanilla(String path) {
+		return new Identifier("minecraft", path);
 	}
 
 	/**
 	 * {@return {@code id} parsed as an identifier, or {@code null} if it cannot be parsed}
 	 * 
-	 * @see #of
+	 * @see #tryParse(String, String)
 	 */
 	@Nullable
 	public static Identifier tryParse(String id) {
 		try {
-			return method_60654(id);
+			return of(id);
 		} catch (InvalidIdentifierException var2) {
 			return null;
 		}
@@ -165,10 +167,10 @@ public class Identifier implements Comparable<Identifier> {
 	 * {@return an identifier from the provided {@code namespace} and {@code path}, or
 	 * {@code null} if either argument is invalid}
 	 * 
-	 * @see #tryParse
+	 * @see #tryParse(String)
 	 */
 	@Nullable
-	public static Identifier of(String namespace, String path) {
+	public static Identifier tryParse(String namespace, String path) {
 		try {
 			return new Identifier(namespace, path);
 		} catch (InvalidIdentifierException var3) {
@@ -194,7 +196,7 @@ public class Identifier implements Comparable<Identifier> {
 
 	public static DataResult<Identifier> validate(String id) {
 		try {
-			return DataResult.success(method_60654(id));
+			return DataResult.success(of(id));
 		} catch (InvalidIdentifierException var2) {
 			return DataResult.error(() -> "Not a valid resource location: " + id + " " + var2.getMessage());
 		}
@@ -310,7 +312,7 @@ public class Identifier implements Comparable<Identifier> {
 		String string = readString(reader);
 
 		try {
-			return method_60654(string);
+			return of(string);
 		} catch (InvalidIdentifierException var4) {
 			reader.setCursor(i);
 			throw COMMAND_EXCEPTION.createWithContext(reader);
@@ -324,7 +326,7 @@ public class Identifier implements Comparable<Identifier> {
 			throw COMMAND_EXCEPTION.createWithContext(reader);
 		} else {
 			try {
-				return method_60654(string);
+				return of(string);
 			} catch (InvalidIdentifierException var4) {
 				reader.setCursor(i);
 				throw COMMAND_EXCEPTION.createWithContext(reader);
@@ -414,7 +416,7 @@ public class Identifier implements Comparable<Identifier> {
 
 	public static class Serializer implements JsonDeserializer<Identifier>, JsonSerializer<Identifier> {
 		public Identifier deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-			return Identifier.method_60654(JsonHelper.asString(jsonElement, "location"));
+			return Identifier.of(JsonHelper.asString(jsonElement, "location"));
 		}
 
 		public JsonElement serialize(Identifier identifier, Type type, JsonSerializationContext jsonSerializationContext) {

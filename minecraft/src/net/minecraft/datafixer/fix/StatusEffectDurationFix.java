@@ -33,44 +33,44 @@ public class StatusEffectDurationFix extends DataFix {
 		OpticFinder<?> opticFinder2 = type.findField("tag");
 		return TypeRewriteRule.seq(
 			this.fixTypeEverywhereTyped(
-				"EffectDurationEntity", schema.getType(TypeReferences.ENTITY), typed -> typed.update(DSL.remainderFinder(), this::fixEntityStatusEffects)
+				"EffectDurationEntity", schema.getType(TypeReferences.ENTITY), entityTyped -> entityTyped.update(DSL.remainderFinder(), this::fixEntityStatusEffects)
 			),
 			this.fixTypeEverywhereTyped(
-				"EffectDurationPlayer", schema.getType(TypeReferences.PLAYER), typed -> typed.update(DSL.remainderFinder(), this::fixEntityStatusEffects)
+				"EffectDurationPlayer", schema.getType(TypeReferences.PLAYER), playerTyped -> playerTyped.update(DSL.remainderFinder(), this::fixEntityStatusEffects)
 			),
-			this.fixTypeEverywhereTyped("EffectDurationItem", type, typed -> {
-				Optional<Pair<String, String>> optional = typed.getOptional(opticFinder);
+			this.fixTypeEverywhereTyped("EffectDurationItem", type, itemStackTyped -> {
+				Optional<Pair<String, String>> optional = itemStackTyped.getOptional(opticFinder);
 				if (optional.filter(POTION_ITEM_IDS::contains).isPresent()) {
-					Optional<? extends Typed<?>> optional2 = typed.getOptionalTyped(opticFinder2);
+					Optional<? extends Typed<?>> optional2 = itemStackTyped.getOptionalTyped(opticFinder2);
 					if (optional2.isPresent()) {
 						Dynamic<?> dynamic = ((Typed)optional2.get()).get(DSL.remainderFinder());
-						Typed<?> typed2 = ((Typed)optional2.get()).set(DSL.remainderFinder(), dynamic.update("CustomPotionEffects", this::fixPotionEffects));
-						return typed.set(opticFinder2, typed2);
+						Typed<?> typed = ((Typed)optional2.get()).set(DSL.remainderFinder(), dynamic.update("CustomPotionEffects", this::fixPotionEffects));
+						return itemStackTyped.set(opticFinder2, typed);
 					}
 				}
 
-				return typed;
+				return itemStackTyped;
 			})
 		);
 	}
 
-	private Dynamic<?> fixPotionEffect(Dynamic<?> dynamic) {
-		return dynamic.update("FactorCalculationData", dynamic2 -> {
-			int i = dynamic2.get("effect_changed_timestamp").asInt(-1);
-			dynamic2 = dynamic2.remove("effect_changed_timestamp");
-			int j = dynamic.get("Duration").asInt(-1);
+	private Dynamic<?> fixPotionEffect(Dynamic<?> effectDynamic) {
+		return effectDynamic.update("FactorCalculationData", factorCalculationDataDynamic -> {
+			int i = factorCalculationDataDynamic.get("effect_changed_timestamp").asInt(-1);
+			factorCalculationDataDynamic = factorCalculationDataDynamic.remove("effect_changed_timestamp");
+			int j = effectDynamic.get("Duration").asInt(-1);
 			int k = i - j;
-			return dynamic2.set("ticks_active", dynamic2.createInt(k));
+			return factorCalculationDataDynamic.set("ticks_active", factorCalculationDataDynamic.createInt(k));
 		});
 	}
 
-	private Dynamic<?> fixPotionEffects(Dynamic<?> dynamic) {
-		return dynamic.createList(dynamic.asStream().map(this::fixPotionEffect));
+	private Dynamic<?> fixPotionEffects(Dynamic<?> effectsDynamic) {
+		return effectsDynamic.createList(effectsDynamic.asStream().map(this::fixPotionEffect));
 	}
 
-	private Dynamic<?> fixEntityStatusEffects(Dynamic<?> dynamic) {
-		dynamic = dynamic.update("Effects", this::fixPotionEffects);
-		dynamic = dynamic.update("ActiveEffects", this::fixPotionEffects);
-		return dynamic.update("CustomPotionEffects", this::fixPotionEffects);
+	private Dynamic<?> fixEntityStatusEffects(Dynamic<?> entityDynamic) {
+		entityDynamic = entityDynamic.update("Effects", this::fixPotionEffects);
+		entityDynamic = entityDynamic.update("ActiveEffects", this::fixPotionEffects);
+		return entityDynamic.update("CustomPotionEffects", this::fixPotionEffects);
 	}
 }

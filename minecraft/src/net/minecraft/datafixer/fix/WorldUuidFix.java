@@ -20,39 +20,44 @@ public class WorldUuidFix extends AbstractUuidFix {
 		return this.fixTypeEverywhereTyped(
 			"LevelUUIDFix",
 			this.getInputSchema().getType(this.typeReference),
-			typed -> typed.updateTyped(DSL.remainderFinder(), typedx -> typedx.update(DSL.remainderFinder(), dynamic -> {
-						dynamic = this.fixCustomBossEvents(dynamic);
-						dynamic = this.fixDragonUuid(dynamic);
-						return this.fixWanderingTraderId(dynamic);
+			levelTyped -> levelTyped.updateTyped(DSL.remainderFinder(), levelTyped2 -> levelTyped2.update(DSL.remainderFinder(), levelDynamic -> {
+						levelDynamic = this.fixCustomBossEvents(levelDynamic);
+						levelDynamic = this.fixDragonUuid(levelDynamic);
+						return this.fixWanderingTraderId(levelDynamic);
 					}))
 		);
 	}
 
-	private Dynamic<?> fixWanderingTraderId(Dynamic<?> dynamic) {
-		return (Dynamic<?>)updateStringUuid(dynamic, "WanderingTraderId", "WanderingTraderId").orElse(dynamic);
+	private Dynamic<?> fixWanderingTraderId(Dynamic<?> levelDynamic) {
+		return (Dynamic<?>)updateStringUuid(levelDynamic, "WanderingTraderId", "WanderingTraderId").orElse(levelDynamic);
 	}
 
-	private Dynamic<?> fixDragonUuid(Dynamic<?> dynamic) {
-		return dynamic.update(
+	private Dynamic<?> fixDragonUuid(Dynamic<?> levelDynamic) {
+		return levelDynamic.update(
 			"DimensionData",
-			dynamicx -> dynamicx.updateMapValues(
-					pair -> pair.mapSecond(
-							dynamicxx -> dynamicxx.update("DragonFight", dynamicxxx -> (Dynamic)updateRegularMostLeast(dynamicxxx, "DragonUUID", "Dragon").orElse(dynamicxxx))
+			dimensionDataDynamic -> dimensionDataDynamic.updateMapValues(
+					entry -> entry.mapSecond(
+							dimensionDataValueDynamic -> dimensionDataValueDynamic.update(
+									"DragonFight", dragonFightDynamic -> (Dynamic)updateRegularMostLeast(dragonFightDynamic, "DragonUUID", "Dragon").orElse(dragonFightDynamic)
+								)
 						)
 				)
 		);
 	}
 
-	private Dynamic<?> fixCustomBossEvents(Dynamic<?> dynamic) {
-		return dynamic.update(
+	private Dynamic<?> fixCustomBossEvents(Dynamic<?> levelDynamic) {
+		return levelDynamic.update(
 			"CustomBossEvents",
-			dynamicx -> dynamicx.updateMapValues(
-					pair -> pair.mapSecond(
-							dynamicxx -> dynamicxx.update(
-									"Players", dynamic2 -> dynamicxx.createList(dynamic2.asStream().map(dynamicxxxx -> (Dynamic)createArrayFromCompoundUuid(dynamicxxxx).orElseGet(() -> {
-												LOGGER.warn("CustomBossEvents contains invalid UUIDs.");
-												return dynamicxxxx;
-											})))
+			bossbarsDynamic -> bossbarsDynamic.updateMapValues(
+					entry -> entry.mapSecond(
+							bossbarDynamic -> bossbarDynamic.update(
+									"Players",
+									playersDynamic -> bossbarDynamic.createList(
+											playersDynamic.asStream().map(playerDynamic -> (Dynamic)createArrayFromCompoundUuid(playerDynamic).orElseGet(() -> {
+													LOGGER.warn("CustomBossEvents contains invalid UUIDs.");
+													return playerDynamic;
+												}))
+										)
 								)
 						)
 				)

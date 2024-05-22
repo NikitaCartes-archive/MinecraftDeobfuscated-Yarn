@@ -20,10 +20,10 @@ import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
-import net.minecraft.enchantment.EnchantmentLevelBasedValueType;
-import net.minecraft.enchantment.effect.EnchantmentEntityEffectType;
-import net.minecraft.enchantment.effect.EnchantmentLocationBasedEffectType;
-import net.minecraft.enchantment.effect.EnchantmentValueEffectType;
+import net.minecraft.enchantment.EnchantmentLevelBasedValue;
+import net.minecraft.enchantment.effect.EnchantmentEntityEffect;
+import net.minecraft.enchantment.effect.EnchantmentLocationBasedEffect;
+import net.minecraft.enchantment.effect.EnchantmentValueEffect;
 import net.minecraft.enchantment.provider.EnchantmentProvider;
 import net.minecraft.enchantment.provider.EnchantmentProviderType;
 import net.minecraft.entity.EntityType;
@@ -242,17 +242,17 @@ public class Registries {
 	public static final Registry<ComponentType<?>> ENCHANTMENT_EFFECT_COMPONENT_TYPE = create(
 		RegistryKeys.ENCHANTMENT_EFFECT_COMPONENT_TYPE, EnchantmentEffectComponentTypes::getDefault
 	);
-	public static final Registry<MapCodec<? extends EnchantmentLevelBasedValueType>> ENCHANTMENT_LEVEL_BASED_VALUE_TYPE = create(
-		RegistryKeys.ENCHANTMENT_LEVEL_BASED_VALUE_TYPE, EnchantmentLevelBasedValueType::registerAndGetDefault
+	public static final Registry<MapCodec<? extends EnchantmentLevelBasedValue>> ENCHANTMENT_LEVEL_BASED_VALUE_TYPE = create(
+		RegistryKeys.ENCHANTMENT_LEVEL_BASED_VALUE_TYPE, EnchantmentLevelBasedValue::registerAndGetDefault
 	);
-	public static final Registry<MapCodec<? extends EnchantmentEntityEffectType>> ENCHANTMENT_ENTITY_EFFECT_TYPE = create(
-		RegistryKeys.ENCHANTMENT_ENTITY_EFFECT_TYPE, EnchantmentEntityEffectType::registerAndGetDefault
+	public static final Registry<MapCodec<? extends EnchantmentEntityEffect>> ENCHANTMENT_ENTITY_EFFECT_TYPE = create(
+		RegistryKeys.ENCHANTMENT_ENTITY_EFFECT_TYPE, EnchantmentEntityEffect::registerAndGetDefault
 	);
-	public static final Registry<MapCodec<? extends EnchantmentLocationBasedEffectType>> ENCHANTMENT_LOCATION_BASED_EFFECT_TYPE = create(
-		RegistryKeys.ENCHANTMENT_LOCATION_BASED_EFFECT_TYPE, EnchantmentLocationBasedEffectType::registerAndGetDefault
+	public static final Registry<MapCodec<? extends EnchantmentLocationBasedEffect>> ENCHANTMENT_LOCATION_BASED_EFFECT_TYPE = create(
+		RegistryKeys.ENCHANTMENT_LOCATION_BASED_EFFECT_TYPE, EnchantmentLocationBasedEffect::registerAndGetDefault
 	);
-	public static final Registry<MapCodec<? extends EnchantmentValueEffectType>> ENCHANTMENT_VALUE_EFFECT_TYPE = create(
-		RegistryKeys.ENCHANTMENT_VALUE_EFFECT_TYPE, EnchantmentValueEffectType::registerAndGetDefault
+	public static final Registry<MapCodec<? extends EnchantmentValueEffect>> ENCHANTMENT_VALUE_EFFECT_TYPE = create(
+		RegistryKeys.ENCHANTMENT_VALUE_EFFECT_TYPE, EnchantmentValueEffect::registerAndGetDefault
 	);
 	public static final Registry<MapCodec<? extends EnchantmentProvider>> ENCHANTMENT_PROVIDER_TYPE = create(
 		RegistryKeys.ENCHANTMENT_PROVIDER_TYPE, EnchantmentProviderType::registerAndGetDefault

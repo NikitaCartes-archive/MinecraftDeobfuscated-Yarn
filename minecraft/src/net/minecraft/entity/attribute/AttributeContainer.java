@@ -60,9 +60,9 @@ public class AttributeContainer {
 		return this.custom.get(attribute) != null || this.fallback.has(attribute);
 	}
 
-	public boolean hasModifierForAttribute(RegistryEntry<EntityAttribute> attribute, Identifier identifier) {
+	public boolean hasModifierForAttribute(RegistryEntry<EntityAttribute> attribute, Identifier id) {
 		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
-		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(identifier) != null : this.fallback.hasModifier(attribute, identifier);
+		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(id) != null : this.fallback.hasModifier(attribute, id);
 	}
 
 	public double getValue(RegistryEntry<EntityAttribute> attribute) {
@@ -75,16 +75,16 @@ public class AttributeContainer {
 		return entityAttributeInstance != null ? entityAttributeInstance.getBaseValue() : this.fallback.getBaseValue(attribute);
 	}
 
-	public double getModifierValue(RegistryEntry<EntityAttribute> attribute, Identifier identifier) {
+	public double getModifierValue(RegistryEntry<EntityAttribute> attribute, Identifier id) {
 		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
-		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(identifier).value() : this.fallback.getModifierValue(attribute, identifier);
+		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(id).value() : this.fallback.getModifierValue(attribute, id);
 	}
 
 	public void addTemporaryModifiers(Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiersMap) {
 		modifiersMap.forEach((attribute, modifier) -> {
 			EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(attribute);
 			if (entityAttributeInstance != null) {
-				entityAttributeInstance.removeModifier(modifier.uuid());
+				entityAttributeInstance.removeModifier(modifier.id());
 				entityAttributeInstance.addTemporaryModifier(modifier);
 			}
 		});
@@ -94,7 +94,7 @@ public class AttributeContainer {
 		modifiersMap.asMap().forEach((attribute, modifiers) -> {
 			EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
 			if (entityAttributeInstance != null) {
-				modifiers.forEach(modifier -> entityAttributeInstance.removeModifier(modifier.uuid()));
+				modifiers.forEach(modifier -> entityAttributeInstance.removeModifier(modifier.id()));
 			}
 		});
 	}

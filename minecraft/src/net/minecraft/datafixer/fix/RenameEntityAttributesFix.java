@@ -27,40 +27,47 @@ public class RenameEntityAttributesFix extends DataFix {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.ITEM_STACK);
 		OpticFinder<?> opticFinder = type.findField("tag");
 		return TypeRewriteRule.seq(
-			this.fixTypeEverywhereTyped(this.description + " (ItemStack)", type, typed -> typed.updateTyped(opticFinder, this::updateAttributeModifiers)),
+			this.fixTypeEverywhereTyped(
+				this.description + " (ItemStack)", type, itemStackTyped -> itemStackTyped.updateTyped(opticFinder, this::updateAttributeModifiers)
+			),
 			this.fixTypeEverywhereTyped(this.description + " (Entity)", this.getInputSchema().getType(TypeReferences.ENTITY), this::updateEntityAttributes),
 			this.fixTypeEverywhereTyped(this.description + " (Player)", this.getInputSchema().getType(TypeReferences.PLAYER), this::updateEntityAttributes)
 		);
 	}
 
-	private Dynamic<?> updateAttributeName(Dynamic<?> dynamic) {
-		return DataFixUtils.orElse(dynamic.asString().result().map(this.renames).map(dynamic::createString), dynamic);
+	private Dynamic<?> updateAttributeName(Dynamic<?> attributeNameDynamic) {
+		return DataFixUtils.orElse(attributeNameDynamic.asString().result().map(this.renames).map(attributeNameDynamic::createString), attributeNameDynamic);
 	}
 
-	private Typed<?> updateAttributeModifiers(Typed<?> typed) {
-		return typed.update(
+	private Typed<?> updateAttributeModifiers(Typed<?> tagTyped) {
+		return tagTyped.update(
 			DSL.remainderFinder(),
-			dynamic -> dynamic.update(
+			tagDynamic -> tagDynamic.update(
 					"AttributeModifiers",
-					dynamicx -> DataFixUtils.orElse(
-							dynamicx.asStreamOpt()
+					attributeModifiersDynamic -> DataFixUtils.orElse(
+							attributeModifiersDynamic.asStreamOpt()
 								.result()
-								.map(stream -> stream.map(dynamicxx -> dynamicxx.update("AttributeName", this::updateAttributeName)))
-								.map(dynamicx::createList),
-							dynamicx
+								.map(
+									attributeModifiers -> attributeModifiers.map(attributeModifierDynamic -> attributeModifierDynamic.update("AttributeName", this::updateAttributeName))
+								)
+								.map(attributeModifiersDynamic::createList),
+							attributeModifiersDynamic
 						)
 				)
 		);
 	}
 
-	private Typed<?> updateEntityAttributes(Typed<?> typed) {
-		return typed.update(
+	private Typed<?> updateEntityAttributes(Typed<?> entityTyped) {
+		return entityTyped.update(
 			DSL.remainderFinder(),
-			dynamic -> dynamic.update(
+			entityDynamic -> entityDynamic.update(
 					"Attributes",
-					dynamicx -> DataFixUtils.orElse(
-							dynamicx.asStreamOpt().result().map(stream -> stream.map(dynamicxx -> dynamicxx.update("Name", this::updateAttributeName))).map(dynamicx::createList),
-							dynamicx
+					attributesDynamic -> DataFixUtils.orElse(
+							attributesDynamic.asStreamOpt()
+								.result()
+								.map(attributes -> attributes.map(attributeDynamic -> attributeDynamic.update("Name", this::updateAttributeName)))
+								.map(attributesDynamic::createList),
+							attributesDynamic
 						)
 				)
 		);

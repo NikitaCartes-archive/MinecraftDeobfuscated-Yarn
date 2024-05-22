@@ -20,7 +20,7 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEntity> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/fishing_hook.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/fishing_hook.png");
 	private static final RenderLayer LAYER = RenderLayer.getEntityCutout(TEXTURE);
 	private static final double field_33632 = 960.0;
 
@@ -94,8 +94,8 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			.color(Colors.WHITE)
 			.texture((float)u, (float)v)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.method_60803(light)
-			.method_60831(matrix, 0.0F, 1.0F, 0.0F);
+			.light(light)
+			.normal(matrix, 0.0F, 1.0F, 0.0F);
 	}
 
 	private static void renderFishingLine(float x, float y, float z, VertexConsumer buffer, MatrixStack.Entry matrices, float segmentStart, float segmentEnd) {
@@ -109,7 +109,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 		i /= l;
 		j /= l;
 		k /= l;
-		buffer.vertex(matrices, f, g, h).color(Colors.BLACK).method_60831(matrices, i, j, k);
+		buffer.vertex(matrices, f, g, h).color(Colors.BLACK).normal(matrices, i, j, k);
 	}
 
 	public Identifier getTexture(FishingBobberEntity fishingBobberEntity) {

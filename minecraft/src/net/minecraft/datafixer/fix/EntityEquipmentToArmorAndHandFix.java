@@ -18,8 +18,8 @@ import java.util.stream.Stream;
 import net.minecraft.datafixer.TypeReferences;
 
 public class EntityEquipmentToArmorAndHandFix extends DataFix {
-	public EntityEquipmentToArmorAndHandFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public EntityEquipmentToArmorAndHandFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -27,29 +27,29 @@ public class EntityEquipmentToArmorAndHandFix extends DataFix {
 		return this.fixEquipment(this.getInputSchema().getTypeRaw(TypeReferences.ITEM_STACK));
 	}
 
-	private <IS> TypeRewriteRule fixEquipment(Type<IS> type) {
-		Type<Pair<Either<List<IS>, Unit>, Dynamic<?>>> type2 = DSL.and(DSL.optional(DSL.field("Equipment", DSL.list(type))), DSL.remainderType());
-		Type<Pair<Either<List<IS>, Unit>, Pair<Either<List<IS>, Unit>, Pair<Either<IS, Unit>, Dynamic<?>>>>> type3 = DSL.and(
-			DSL.optional(DSL.field("ArmorItems", DSL.list(type))),
-			DSL.optional(DSL.field("HandItems", DSL.list(type))),
-			DSL.optional(DSL.field("body_armor_item", type)),
+	private <IS> TypeRewriteRule fixEquipment(Type<IS> itemStackType) {
+		Type<Pair<Either<List<IS>, Unit>, Dynamic<?>>> type = DSL.and(DSL.optional(DSL.field("Equipment", DSL.list(itemStackType))), DSL.remainderType());
+		Type<Pair<Either<List<IS>, Unit>, Pair<Either<List<IS>, Unit>, Pair<Either<IS, Unit>, Dynamic<?>>>>> type2 = DSL.and(
+			DSL.optional(DSL.field("ArmorItems", DSL.list(itemStackType))),
+			DSL.optional(DSL.field("HandItems", DSL.list(itemStackType))),
+			DSL.optional(DSL.field("body_armor_item", itemStackType)),
 			DSL.remainderType()
 		);
-		OpticFinder<Pair<Either<List<IS>, Unit>, Dynamic<?>>> opticFinder = DSL.typeFinder(type2);
-		OpticFinder<List<IS>> opticFinder2 = DSL.fieldFinder("Equipment", DSL.list(type));
+		OpticFinder<Pair<Either<List<IS>, Unit>, Dynamic<?>>> opticFinder = DSL.typeFinder(type);
+		OpticFinder<List<IS>> opticFinder2 = DSL.fieldFinder("Equipment", DSL.list(itemStackType));
 		return this.fixTypeEverywhereTyped(
 			"EntityEquipmentToArmorAndHandFix",
 			this.getInputSchema().getType(TypeReferences.ENTITY),
 			this.getOutputSchema().getType(TypeReferences.ENTITY),
-			typed -> {
+			entityTyped -> {
 				Either<List<IS>, Unit> either = Either.right(DSL.unit());
 				Either<List<IS>, Unit> either2 = Either.right(DSL.unit());
 				Either<IS, Unit> either3 = Either.right(DSL.unit());
-				Dynamic<?> dynamic = typed.getOrCreate(DSL.remainderFinder());
-				Optional<List<IS>> optional = typed.getOptional(opticFinder2);
+				Dynamic<?> dynamic = entityTyped.getOrCreate(DSL.remainderFinder());
+				Optional<List<IS>> optional = entityTyped.getOptional(opticFinder2);
 				if (optional.isPresent()) {
 					List<IS> list = (List<IS>)optional.get();
-					IS object = (IS)((Pair)type.read(dynamic.emptyMap())
+					IS object = (IS)((Pair)itemStackType.read(dynamic.emptyMap())
 							.result()
 							.orElseThrow(() -> new IllegalStateException("Could not parse newly created empty itemstack.")))
 						.getFirst();
@@ -94,7 +94,7 @@ public class EntityEquipmentToArmorAndHandFix extends DataFix {
 					dynamic = dynamic.remove("DropChances");
 				}
 
-				return typed.set(opticFinder, type3, Pair.of(either, Pair.of(either2, Pair.of(either3, dynamic))));
+				return entityTyped.set(opticFinder, type2, Pair.of(either, Pair.of(either2, Pair.of(either3, dynamic))));
 			}
 		);
 	}

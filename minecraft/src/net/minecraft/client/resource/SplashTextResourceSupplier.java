@@ -23,7 +23,7 @@ import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
 public class SplashTextResourceSupplier extends SinglePreparationResourceReloader<List<String>> {
-	private static final Identifier RESOURCE_ID = Identifier.method_60656("texts/splashes.txt");
+	private static final Identifier RESOURCE_ID = Identifier.ofVanilla("texts/splashes.txt");
 	private static final Random RANDOM = Random.create();
 	private final List<String> splashTexts = Lists.<String>newArrayList();
 	private final Session session;

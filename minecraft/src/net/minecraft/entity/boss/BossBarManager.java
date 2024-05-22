@@ -48,7 +48,7 @@ public class BossBarManager {
 
 	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
 		for (String string : nbt.getKeys()) {
-			Identifier identifier = Identifier.method_60654(string);
+			Identifier identifier = Identifier.of(string);
 			this.commandBossBars.put(identifier, CommandBossBar.fromNbt(nbt.getCompound(string), identifier, wrapperLookup));
 		}
 	}

@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class CreeperChargeFeatureRenderer extends EnergySwirlOverlayFeatureRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
-	private static final Identifier SKIN = Identifier.method_60656("textures/entity/creeper/creeper_armor.png");
+	private static final Identifier SKIN = Identifier.ofVanilla("textures/entity/creeper/creeper_armor.png");
 	private final CreeperEntityModel<CreeperEntity> model;
 
 	public CreeperChargeFeatureRenderer(FeatureRendererContext<CreeperEntity, CreeperEntityModel<CreeperEntity>> context, EntityModelLoader loader) {

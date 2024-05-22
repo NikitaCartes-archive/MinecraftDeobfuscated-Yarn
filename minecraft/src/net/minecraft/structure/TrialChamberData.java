@@ -18,9 +18,9 @@ import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.collection.DataPool;
 
 public class TrialChamberData {
-	public static final RegistryKey<StructurePool> CHAMBER_END_POOL_KEY = StructurePools.of("trial_chambers/chamber/end");
-	public static final RegistryKey<StructurePool> HALLWAY_FALLBACK_POOL_KEY = StructurePools.of("trial_chambers/hallway/fallback");
-	public static final RegistryKey<StructurePool> CHAMBER_ENTRANCE_CAP_POOL_KEY = StructurePools.of("trial_chambers/chamber/entrance_cap");
+	public static final RegistryKey<StructurePool> CHAMBER_END_POOL_KEY = StructurePools.ofVanilla("trial_chambers/chamber/end");
+	public static final RegistryKey<StructurePool> HALLWAY_FALLBACK_POOL_KEY = StructurePools.ofVanilla("trial_chambers/hallway/fallback");
+	public static final RegistryKey<StructurePool> CHAMBER_ENTRANCE_CAP_POOL_KEY = StructurePools.ofVanilla("trial_chambers/chamber/entrance_cap");
 	public static final List<StructurePoolAliasBinding> ALIAS_BINDINGS = ImmutableList.<StructurePoolAliasBinding>builder()
 		.add(
 			StructurePoolAliasBinding.randomGroup(

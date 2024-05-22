@@ -44,7 +44,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class WitchEntity extends RaiderEntity implements RangedAttackMob {
-	private static final Identifier DRINKING_SPEED_PENALTY_MODIFIER_ID = Identifier.method_60656("drinking");
+	private static final Identifier DRINKING_SPEED_PENALTY_MODIFIER_ID = Identifier.ofVanilla("drinking");
 	private static final EntityAttributeModifier DRINKING_SPEED_PENALTY_MODIFIER = new EntityAttributeModifier(
 		DRINKING_SPEED_PENALTY_MODIFIER_ID, -0.25, EntityAttributeModifier.Operation.ADD_VALUE
 	);
@@ -126,7 +126,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 					}
 
 					this.emitGameEvent(GameEvent.DRINK);
-					this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).removeModifier(DRINKING_SPEED_PENALTY_MODIFIER.uuid());
+					this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).removeModifier(DRINKING_SPEED_PENALTY_MODIFIER.id());
 				}
 			} else {
 				RegistryEntry<Potion> registryEntry = null;

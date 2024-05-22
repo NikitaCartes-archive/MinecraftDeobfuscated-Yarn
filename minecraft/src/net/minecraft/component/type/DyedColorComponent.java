@@ -6,12 +6,12 @@ import io.netty.buffer.ByteBuf;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.TooltipAppender;
+import net.minecraft.item.tooltip.TooltipAppender;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.tag.ItemTags;
@@ -61,7 +61,7 @@ public record DyedColorComponent(int rgb, boolean showInTooltip) implements Tool
 			}
 
 			for (DyeItem dyeItem : dyes) {
-				int p = dyeItem.getColor().getColorComponents();
+				int p = dyeItem.getColor().getEntityColor();
 				int q = ColorHelper.Argb.getRed(p);
 				int r = ColorHelper.Argb.getGreen(p);
 				int s = ColorHelper.Argb.getBlue(p);

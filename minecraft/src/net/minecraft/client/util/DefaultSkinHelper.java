@@ -42,6 +42,6 @@ public class DefaultSkinHelper {
 	}
 
 	private static SkinTextures createSkinTextures(String texture, SkinTextures.Model model) {
-		return new SkinTextures(Identifier.method_60656(texture), null, null, null, model, true);
+		return new SkinTextures(Identifier.ofVanilla(texture), null, null, null, model, true);
 	}
 }

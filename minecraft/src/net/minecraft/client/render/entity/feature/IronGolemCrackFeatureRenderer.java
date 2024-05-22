@@ -15,11 +15,11 @@ import net.minecraft.util.Identifier;
 public class IronGolemCrackFeatureRenderer extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> {
 	private static final Map<Cracks.CrackLevel, Identifier> CRACK_TEXTURES = ImmutableMap.of(
 		Cracks.CrackLevel.LOW,
-		Identifier.method_60656("textures/entity/iron_golem/iron_golem_crackiness_low.png"),
+		Identifier.ofVanilla("textures/entity/iron_golem/iron_golem_crackiness_low.png"),
 		Cracks.CrackLevel.MEDIUM,
-		Identifier.method_60656("textures/entity/iron_golem/iron_golem_crackiness_medium.png"),
+		Identifier.ofVanilla("textures/entity/iron_golem/iron_golem_crackiness_medium.png"),
 		Cracks.CrackLevel.HIGH,
-		Identifier.method_60656("textures/entity/iron_golem/iron_golem_crackiness_high.png")
+		Identifier.ofVanilla("textures/entity/iron_golem/iron_golem_crackiness_high.png")
 	);
 
 	public IronGolemCrackFeatureRenderer(FeatureRendererContext<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> featureRendererContext) {

@@ -37,7 +37,7 @@ public class PiglinHeadEntityModel extends SkullBlockEntityModel {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {
-		this.head.render(matrices, vertices, light, overlay, i);
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
+		this.head.render(matrices, vertices, light, overlay, color);
 	}
 }

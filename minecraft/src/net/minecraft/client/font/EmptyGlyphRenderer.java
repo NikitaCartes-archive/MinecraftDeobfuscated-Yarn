@@ -11,7 +11,7 @@ public class EmptyGlyphRenderer extends GlyphRenderer {
 	public static final EmptyGlyphRenderer INSTANCE = new EmptyGlyphRenderer();
 
 	public EmptyGlyphRenderer() {
-		super(TextRenderLayerSet.of(Identifier.method_60656("")), 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+		super(TextRenderLayerSet.of(Identifier.ofVanilla("")), 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 	}
 
 	@Override

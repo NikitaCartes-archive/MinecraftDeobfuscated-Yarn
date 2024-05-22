@@ -26,7 +26,7 @@ public class RemoveFeatureTogglesFix extends DataFix {
 	@Override
 	protected TypeRewriteRule makeRule() {
 		return this.fixTypeEverywhereTyped(
-			this.name, this.getInputSchema().getType(TypeReferences.LEVEL), typed -> typed.update(DSL.remainderFinder(), this::removeFeatureToggles)
+			this.name, this.getInputSchema().getType(TypeReferences.LEVEL), levelTyped -> levelTyped.update(DSL.remainderFinder(), this::removeFeatureToggles)
 		);
 	}
 

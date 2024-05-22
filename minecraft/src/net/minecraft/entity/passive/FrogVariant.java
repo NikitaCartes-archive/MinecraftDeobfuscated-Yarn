@@ -16,7 +16,7 @@ public record FrogVariant(Identifier texture) {
 	public static final RegistryKey<FrogVariant> COLD = of("cold");
 
 	private static RegistryKey<FrogVariant> of(String id) {
-		return RegistryKey.of(RegistryKeys.FROG_VARIANT, Identifier.method_60656(id));
+		return RegistryKey.of(RegistryKeys.FROG_VARIANT, Identifier.ofVanilla(id));
 	}
 
 	public static FrogVariant registerAndGetDefault(Registry<FrogVariant> registry) {
@@ -26,6 +26,6 @@ public record FrogVariant(Identifier texture) {
 	}
 
 	private static FrogVariant register(Registry<FrogVariant> registry, RegistryKey<FrogVariant> key, String id) {
-		return Registry.register(registry, key, new FrogVariant(Identifier.method_60656(id)));
+		return Registry.register(registry, key, new FrogVariant(Identifier.ofVanilla(id)));
 	}
 }

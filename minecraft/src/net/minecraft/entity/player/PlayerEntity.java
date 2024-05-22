@@ -21,7 +21,6 @@ import net.minecraft.block.entity.SculkShriekerWarningManager;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.enchantment.EnchantmentHelper;

@@ -15,18 +15,18 @@ import net.minecraft.structure.VillageGenerator;
 import net.minecraft.util.Identifier;
 
 public class StructurePools {
-	public static final RegistryKey<StructurePool> EMPTY = of("empty");
+	public static final RegistryKey<StructurePool> EMPTY = ofVanilla("empty");
 
-	public static RegistryKey<StructurePool> of(String id) {
-		return RegistryKey.of(RegistryKeys.TEMPLATE_POOL, Identifier.method_60656(id));
+	public static RegistryKey<StructurePool> ofVanilla(String id) {
+		return RegistryKey.of(RegistryKeys.TEMPLATE_POOL, Identifier.ofVanilla(id));
 	}
 
-	public static RegistryKey<StructurePool> method_60923(String string) {
-		return RegistryKey.of(RegistryKeys.TEMPLATE_POOL, Identifier.method_60654(string));
+	public static RegistryKey<StructurePool> of(String id) {
+		return RegistryKey.of(RegistryKeys.TEMPLATE_POOL, Identifier.of(id));
 	}
 
 	public static void register(Registerable<StructurePool> structurePoolsRegisterable, String id, StructurePool pool) {
-		structurePoolsRegisterable.register(of(id), pool);
+		structurePoolsRegisterable.register(ofVanilla(id), pool);
 	}
 
 	public static void bootstrap(Registerable<StructurePool> structurePoolsRegisterable) {

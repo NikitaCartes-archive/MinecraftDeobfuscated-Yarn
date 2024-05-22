@@ -31,5 +31,5 @@ public abstract class ChoiceFix extends DataFix {
 		);
 	}
 
-	protected abstract Typed<?> transform(Typed<?> inputType);
+	protected abstract Typed<?> transform(Typed<?> inputTyped);
 }

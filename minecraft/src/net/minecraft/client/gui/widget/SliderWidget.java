@@ -18,10 +18,10 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public abstract class SliderWidget extends ClickableWidget {
-	private static final Identifier TEXTURE = Identifier.method_60656("widget/slider");
-	private static final Identifier HIGHLIGHTED_TEXTURE = Identifier.method_60656("widget/slider_highlighted");
-	private static final Identifier HANDLE_TEXTURE = Identifier.method_60656("widget/slider_handle");
-	private static final Identifier HANDLE_HIGHLIGHTED_TEXTURE = Identifier.method_60656("widget/slider_handle_highlighted");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("widget/slider");
+	private static final Identifier HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("widget/slider_highlighted");
+	private static final Identifier HANDLE_TEXTURE = Identifier.ofVanilla("widget/slider_handle");
+	private static final Identifier HANDLE_HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("widget/slider_handle_highlighted");
 	protected static final int field_43054 = 2;
 	private static final int field_41790 = 8;
 	private static final int field_41789 = 4;

@@ -18,9 +18,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class RecipeGroupButtonWidget extends ToggleButtonWidget {
-	private static final ButtonTextures TEXTURES = new ButtonTextures(
-		Identifier.method_60656("recipe_book/tab"), Identifier.method_60656("recipe_book/tab_selected")
-	);
+	private static final ButtonTextures TEXTURES = new ButtonTextures(Identifier.ofVanilla("recipe_book/tab"), Identifier.ofVanilla("recipe_book/tab_selected"));
 	private final RecipeBookGroup category;
 	private static final float field_32412 = 15.0F;
 	private float bounce;

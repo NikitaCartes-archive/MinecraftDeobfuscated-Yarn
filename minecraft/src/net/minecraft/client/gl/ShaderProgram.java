@@ -103,7 +103,7 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 	public ShaderProgram(ResourceFactory factory, String name, VertexFormat format) throws IOException {
 		this.name = name;
 		this.format = format;
-		Identifier identifier = Identifier.method_60656("shaders/core/" + name + ".json");
+		Identifier identifier = Identifier.ofVanilla("shaders/core/" + name + ".json");
 
 		try {
 			Reader reader = factory.openAsReader(identifier);
@@ -202,7 +202,7 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 		ShaderStage shaderStage2;
 		if (shaderStage == null) {
 			String string = "shaders/core/" + name + type.getFileExtension();
-			Resource resource = factory.getResourceOrThrow(Identifier.method_60656(string));
+			Resource resource = factory.getResourceOrThrow(Identifier.ofVanilla(string));
 			InputStream inputStream = resource.getInputStream();
 
 			try {
@@ -216,7 +216,7 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 						if (!this.visitedImports.add(name)) {
 							return null;
 						} else {
-							Identifier identifier = Identifier.method_60654(name);
+							Identifier identifier = Identifier.of(name);
 
 							try {
 								Reader reader = factory.openAsReader(identifier);
@@ -475,18 +475,18 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 		return this.glRef;
 	}
 
-	public void method_60897(VertexFormat.DrawMode drawMode, Matrix4f matrix4f, Matrix4f matrix4f2, Window window) {
+	public void initializeUniforms(VertexFormat.DrawMode drawMode, Matrix4f viewMatrix, Matrix4f projectionMatrix, Window window) {
 		for (int i = 0; i < 12; i++) {
 			int j = RenderSystem.getShaderTexture(i);
 			this.addSampler("Sampler" + i, j);
 		}
 
 		if (this.modelViewMat != null) {
-			this.modelViewMat.set(matrix4f);
+			this.modelViewMat.set(viewMatrix);
 		}
 
 		if (this.projectionMat != null) {
-			this.projectionMat.set(matrix4f2);
+			this.projectionMat.set(projectionMatrix);
 		}
 
 		if (this.colorModulator != null) {

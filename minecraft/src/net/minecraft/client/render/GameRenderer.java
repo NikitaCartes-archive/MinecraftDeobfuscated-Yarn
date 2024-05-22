@@ -26,6 +26,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.PostEffectProcessor;
@@ -84,8 +85,8 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class GameRenderer implements AutoCloseable {
-	private static final Identifier NAUSEA_OVERLAY = Identifier.method_60656("textures/misc/nausea.png");
-	private static final Identifier BLUR_PROCESSOR = Identifier.method_60656("shaders/post/blur.json");
+	private static final Identifier NAUSEA_OVERLAY = Identifier.ofVanilla("textures/misc/nausea.png");
+	private static final Identifier BLUR_PROCESSOR = Identifier.ofVanilla("shaders/post/blur.json");
 	public static final int field_49904 = 10;
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final boolean field_32688 = false;
@@ -310,11 +311,11 @@ public class GameRenderer implements AutoCloseable {
 
 		this.postProcessor = null;
 		if (entity instanceof CreeperEntity) {
-			this.loadPostProcessor(Identifier.method_60656("shaders/post/creeper.json"));
+			this.loadPostProcessor(Identifier.ofVanilla("shaders/post/creeper.json"));
 		} else if (entity instanceof SpiderEntity) {
-			this.loadPostProcessor(Identifier.method_60656("shaders/post/spider.json"));
+			this.loadPostProcessor(Identifier.ofVanilla("shaders/post/spider.json"));
 		} else if (entity instanceof EndermanEntity) {
-			this.loadPostProcessor(Identifier.method_60656("shaders/post/invert.json"));
+			this.loadPostProcessor(Identifier.ofVanilla("shaders/post/invert.json"));
 		}
 	}
 
@@ -1223,40 +1224,33 @@ public class GameRenderer implements AutoCloseable {
 		this.floatingItemHeight = this.random.nextFloat() * 2.0F - 1.0F;
 	}
 
-	private void renderFloatingItem(DrawContext drawContext, float f) {
+	private void renderFloatingItem(DrawContext context, float tickDelta) {
 		if (this.floatingItem != null && this.floatingItemTimeLeft > 0) {
 			int i = 40 - this.floatingItemTimeLeft;
-			float g = ((float)i + f) / 40.0F;
-			float h = g * g;
-			float j = g * h;
-			float k = 10.25F * j * h - 24.95F * h * h + 25.5F * j - 13.8F * h + 4.0F * g;
-			float l = k * (float) Math.PI;
-			float m = this.floatingItemWidth * (float)(drawContext.getScaledWindowWidth() / 4);
-			float n = this.floatingItemHeight * (float)(drawContext.getScaledWindowHeight() / 4);
+			float f = ((float)i + tickDelta) / 40.0F;
+			float g = f * f;
+			float h = f * g;
+			float j = 10.25F * h * g - 24.95F * g * g + 25.5F * h - 13.8F * g + 4.0F * f;
+			float k = j * (float) Math.PI;
+			float l = this.floatingItemWidth * (float)(context.getScaledWindowWidth() / 4);
+			float m = this.floatingItemHeight * (float)(context.getScaledWindowHeight() / 4);
 			MatrixStack matrixStack = new MatrixStack();
 			matrixStack.push();
 			matrixStack.translate(
-				(float)(drawContext.getScaledWindowWidth() / 2) + m * MathHelper.abs(MathHelper.sin(l * 2.0F)),
-				(float)(drawContext.getScaledWindowHeight() / 2) + n * MathHelper.abs(MathHelper.sin(l * 2.0F)),
+				(float)(context.getScaledWindowWidth() / 2) + l * MathHelper.abs(MathHelper.sin(k * 2.0F)),
+				(float)(context.getScaledWindowHeight() / 2) + m * MathHelper.abs(MathHelper.sin(k * 2.0F)),
 				-50.0F
 			);
-			float o = 50.0F + 175.0F * MathHelper.sin(l);
-			matrixStack.scale(o, -o, o);
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(900.0F * MathHelper.abs(MathHelper.sin(l))));
-			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(6.0F * MathHelper.cos(g * 8.0F)));
-			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(6.0F * MathHelper.cos(g * 8.0F)));
-			drawContext.draw(
+			float n = 50.0F + 175.0F * MathHelper.sin(k);
+			matrixStack.scale(n, -n, n);
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(900.0F * MathHelper.abs(MathHelper.sin(k))));
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(6.0F * MathHelper.cos(f * 8.0F)));
+			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(6.0F * MathHelper.cos(f * 8.0F)));
+			context.draw(
 				() -> this.client
 						.getItemRenderer()
 						.renderItem(
-							this.floatingItem,
-							ModelTransformationMode.FIXED,
-							15728880,
-							OverlayTexture.DEFAULT_UV,
-							matrixStack,
-							drawContext.getVertexConsumers(),
-							this.client.world,
-							0
+							this.floatingItem, ModelTransformationMode.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, context.getVertexConsumers(), this.client.world, 0
 						)
 			);
 			matrixStack.pop();

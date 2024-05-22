@@ -42,7 +42,7 @@ public abstract class TagProvider<T> implements DataProvider {
 		CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture,
 		CompletableFuture<TagProvider.TagLookup<T>> parentTagLookupFuture
 	) {
-		this.pathResolver = output.method_60918(registryRef);
+		this.pathResolver = output.getTagResolver(registryRef);
 		this.registryRef = registryRef;
 		this.parentTagLookupFuture = parentTagLookupFuture;
 		this.registryLookupFuture = registryLookupFuture;

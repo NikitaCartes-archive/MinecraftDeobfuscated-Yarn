@@ -19,14 +19,14 @@ public class FixUtil {
 			: dynamic;
 	}
 
-	public static <T, R> Typed<R> method_57182(Type<R> type, Typed<T> typed) {
+	public static <T, R> Typed<R> withType(Type<R> type, Typed<T> typed) {
 		return new Typed<>(type, typed.getOps(), (R)typed.getValue());
 	}
 
 	@SafeVarargs
-	public static <T> Function<Typed<?>, Typed<?>> method_59907(Function<Typed<?>, Typed<?>>... functions) {
+	public static <T> Function<Typed<?>, Typed<?>> compose(Function<Typed<?>, Typed<?>>... fixes) {
 		return typed -> {
-			for (Function<Typed<?>, Typed<?>> function : functions) {
+			for (Function<Typed<?>, Typed<?>> function : fixes) {
 				typed = (Typed)function.apply(typed);
 			}
 

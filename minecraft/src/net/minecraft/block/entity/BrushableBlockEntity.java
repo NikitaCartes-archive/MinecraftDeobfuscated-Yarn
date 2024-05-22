@@ -174,7 +174,7 @@ public class BrushableBlockEntity extends BlockEntity {
 
 	private boolean readLootTableFromNbt(NbtCompound nbt) {
 		if (nbt.contains("LootTable", NbtElement.STRING_TYPE)) {
-			this.lootTable = RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.method_60654(nbt.getString("LootTable")));
+			this.lootTable = RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of(nbt.getString("LootTable")));
 			this.lootTableSeed = nbt.getLong("LootTableSeed");
 			return true;
 		} else {

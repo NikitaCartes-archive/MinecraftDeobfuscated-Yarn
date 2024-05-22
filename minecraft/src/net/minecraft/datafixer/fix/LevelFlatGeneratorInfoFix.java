@@ -25,23 +25,28 @@ public class LevelFlatGeneratorInfoFix extends DataFix {
 	private static final Splitter SPLIT_ON_ASTERISK = Splitter.on('*').limit(2);
 	private static final Splitter SPLIT_ON_COLON = Splitter.on(':').limit(3);
 
-	public LevelFlatGeneratorInfoFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public LevelFlatGeneratorInfoFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
 	public TypeRewriteRule makeRule() {
 		return this.fixTypeEverywhereTyped(
-			"LevelFlatGeneratorInfoFix", this.getInputSchema().getType(TypeReferences.LEVEL), typed -> typed.update(DSL.remainderFinder(), this::fixGeneratorOptions)
+			"LevelFlatGeneratorInfoFix",
+			this.getInputSchema().getType(TypeReferences.LEVEL),
+			levelTyped -> levelTyped.update(DSL.remainderFinder(), this::fixGeneratorOptions)
 		);
 	}
 
-	private Dynamic<?> fixGeneratorOptions(Dynamic<?> dynamic) {
-		return dynamic.get("generatorName").asString("").equalsIgnoreCase("flat")
-			? dynamic.update(
-				"generatorOptions", dynamicx -> DataFixUtils.orElse(dynamicx.asString().map(this::fixFlatGeneratorOptions).map(dynamicx::createString).result(), dynamicx)
+	private Dynamic<?> fixGeneratorOptions(Dynamic<?> levelDynamic) {
+		return levelDynamic.get("generatorName").asString("").equalsIgnoreCase("flat")
+			? levelDynamic.update(
+				"generatorOptions",
+				generatorOptionsDynamic -> DataFixUtils.orElse(
+						generatorOptionsDynamic.asString().map(this::fixFlatGeneratorOptions).map(generatorOptionsDynamic::createString).result(), generatorOptionsDynamic
+					)
 			)
-			: dynamic;
+			: levelDynamic;
 	}
 
 	@VisibleForTesting

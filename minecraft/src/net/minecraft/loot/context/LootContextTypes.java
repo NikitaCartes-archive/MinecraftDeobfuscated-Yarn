@@ -129,7 +129,7 @@ public class LootContextTypes {
 		LootContextType.Builder builder = new LootContextType.Builder();
 		type.accept(builder);
 		LootContextType lootContextType = builder.build();
-		Identifier identifier = Identifier.method_60656(name);
+		Identifier identifier = Identifier.ofVanilla(name);
 		LootContextType lootContextType2 = MAP.put(identifier, lootContextType);
 		if (lootContextType2 != null) {
 			throw new IllegalStateException("Loot table parameter set " + identifier + " is already registered");

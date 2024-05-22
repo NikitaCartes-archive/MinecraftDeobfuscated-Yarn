@@ -194,6 +194,6 @@ public final class BlockTags {
 	}
 
 	private static TagKey<Block> of(String id) {
-		return TagKey.of(RegistryKeys.BLOCK, Identifier.method_60656(id));
+		return TagKey.of(RegistryKeys.BLOCK, Identifier.ofVanilla(id));
 	}
 }

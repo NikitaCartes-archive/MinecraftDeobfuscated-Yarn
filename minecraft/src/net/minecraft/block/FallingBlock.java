@@ -1,10 +1,10 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.client.util.ParticleUtil;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.ParticleUtil;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;

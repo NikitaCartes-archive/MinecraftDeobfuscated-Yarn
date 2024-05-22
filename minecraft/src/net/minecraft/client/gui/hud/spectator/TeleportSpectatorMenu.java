@@ -14,7 +14,7 @@ import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, SpectatorMenuCommand {
-	private static final Identifier TELEPORT_TO_PLAYER_TEXTURE = Identifier.method_60656("spectator/teleport_to_player");
+	private static final Identifier TELEPORT_TO_PLAYER_TEXTURE = Identifier.ofVanilla("spectator/teleport_to_player");
 	private static final Comparator<PlayerListEntry> ORDERING = Comparator.comparing(a -> a.getProfile().getId());
 	private static final Text TELEPORT_TEXT = Text.translatable("spectatorMenu.teleport");
 	private static final Text PROMPT_TEXT = Text.translatable("spectatorMenu.teleport.prompt");

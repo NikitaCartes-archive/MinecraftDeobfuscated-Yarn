@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class GoatEntityRenderer extends MobEntityRenderer<GoatEntity, GoatEntityModel<GoatEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/goat/goat.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/goat/goat.png");
 
 	public GoatEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new GoatEntityModel<>(context.getPart(EntityModelLayers.GOAT)), 0.7F);

@@ -89,7 +89,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				Blocks.RED_NETHER_BRICKS,
 				Text.translatable("advancements.nether.root.title"),
 				Text.translatable("advancements.nether.root.description"),
-				Identifier.method_60656("textures/gui/advancements/backgrounds/nether.png"),
+				Identifier.ofVanilla("textures/gui/advancements/backgrounds/nether.png"),
 				AdvancementFrame.TASK,
 				false,
 				false,

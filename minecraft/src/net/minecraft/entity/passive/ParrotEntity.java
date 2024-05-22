@@ -146,7 +146,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 
 	@Override
 	protected void initGoals() {
-		this.goalSelector.add(0, new TameableEntity.class_9788(1.25));
+		this.goalSelector.add(0, new TameableEntity.TameableEscapeDangerGoal(1.25));
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(2, new SitGoal(this));
@@ -426,7 +426,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 	}
 
 	@Override
-	protected boolean method_60716() {
+	protected boolean canTeleportOntoLeaves() {
 		return true;
 	}
 

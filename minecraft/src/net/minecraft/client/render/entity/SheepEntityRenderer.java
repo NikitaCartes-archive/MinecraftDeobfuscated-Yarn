@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SheepEntityRenderer extends MobEntityRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/sheep/sheep.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/sheep/sheep.png");
 
 	public SheepEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new SheepEntityModel<>(context.getPart(EntityModelLayers.SHEEP)), 0.7F);

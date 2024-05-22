@@ -43,7 +43,7 @@ public class DefaultClientResourcePackProvider extends VanillaResourcePackProvid
 	);
 	private static final ResourcePackPosition REQUIRED_POSITION = new ResourcePackPosition(true, ResourcePackProfile.InsertionPosition.BOTTOM, false);
 	private static final ResourcePackPosition OPTIONAL_POSITION = new ResourcePackPosition(false, ResourcePackProfile.InsertionPosition.TOP, false);
-	private static final Identifier ID = Identifier.method_60656("resourcepacks");
+	private static final Identifier ID = Identifier.ofVanilla("resourcepacks");
 	@Nullable
 	private final Path resourcePacksPath;
 

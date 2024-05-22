@@ -7,21 +7,21 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
-	public BlockEntitySignTextStrictJsonFix(Schema schema, boolean bl) {
-		super(schema, bl, "BlockEntitySignTextStrictJsonFix", TypeReferences.BLOCK_ENTITY, "Sign");
+	public BlockEntitySignTextStrictJsonFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "BlockEntitySignTextStrictJsonFix", TypeReferences.BLOCK_ENTITY, "Sign");
 	}
 
-	private Dynamic<?> fix(Dynamic<?> dynamic, String lineName) {
-		return dynamic.update(lineName, TextFixes::text);
+	private Dynamic<?> fix(Dynamic<?> signDynamic, String lineName) {
+		return signDynamic.update(lineName, TextFixes::text);
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(DSL.remainderFinder(), dynamic -> {
-			dynamic = this.fix(dynamic, "Text1");
-			dynamic = this.fix(dynamic, "Text2");
-			dynamic = this.fix(dynamic, "Text3");
-			return this.fix(dynamic, "Text4");
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(DSL.remainderFinder(), linesDynamic -> {
+			linesDynamic = this.fix(linesDynamic, "Text1");
+			linesDynamic = this.fix(linesDynamic, "Text2");
+			linesDynamic = this.fix(linesDynamic, "Text3");
+			return this.fix(linesDynamic, "Text4");
 		});
 	}
 }

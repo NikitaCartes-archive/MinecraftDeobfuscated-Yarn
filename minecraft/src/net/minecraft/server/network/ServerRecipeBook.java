@@ -101,7 +101,7 @@ public class ServerRecipeBook extends RecipeBook {
 			String string = list.getString(i);
 
 			try {
-				Identifier identifier = Identifier.method_60654(string);
+				Identifier identifier = Identifier.of(string);
 				Optional<RecipeEntry<?>> optional = recipeManager.get(identifier);
 				if (optional.isEmpty()) {
 					LOGGER.error("Tried to load unrecognized recipe: {} removed now.", identifier);

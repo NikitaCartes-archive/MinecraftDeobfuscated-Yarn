@@ -11,7 +11,7 @@ import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class SquidEntityRenderer<T extends SquidEntity> extends MobEntityRenderer<T, SquidEntityModel<T>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/squid/squid.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/squid/squid.png");
 
 	public SquidEntityRenderer(EntityRendererFactory.Context ctx, SquidEntityModel<T> model) {
 		super(ctx, model, 0.7F);

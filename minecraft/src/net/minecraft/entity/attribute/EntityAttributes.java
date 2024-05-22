@@ -104,7 +104,7 @@ public class EntityAttributes {
 	);
 
 	private static RegistryEntry<EntityAttribute> register(String id, EntityAttribute attribute) {
-		return Registry.registerReference(Registries.ATTRIBUTE, Identifier.method_60656(id), attribute);
+		return Registry.registerReference(Registries.ATTRIBUTE, Identifier.ofVanilla(id), attribute);
 	}
 
 	public static RegistryEntry<EntityAttribute> registerAndGetDefault(Registry<EntityAttribute> registry) {

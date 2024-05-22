@@ -9,16 +9,18 @@ import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
 
 public class OptionsLowerCaseLanguageFix extends DataFix {
-	public OptionsLowerCaseLanguageFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public OptionsLowerCaseLanguageFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
 	public TypeRewriteRule makeRule() {
 		return this.fixTypeEverywhereTyped(
-			"OptionsLowerCaseLanguageFix", this.getInputSchema().getType(TypeReferences.OPTIONS), typed -> typed.update(DSL.remainderFinder(), dynamic -> {
-					Optional<String> optional = dynamic.get("lang").asString().result();
-					return optional.isPresent() ? dynamic.set("lang", dynamic.createString(((String)optional.get()).toLowerCase(Locale.ROOT))) : dynamic;
+			"OptionsLowerCaseLanguageFix",
+			this.getInputSchema().getType(TypeReferences.OPTIONS),
+			optionsTyped -> optionsTyped.update(DSL.remainderFinder(), optionsDynamic -> {
+					Optional<String> optional = optionsDynamic.get("lang").asString().result();
+					return optional.isPresent() ? optionsDynamic.set("lang", optionsDynamic.createString(((String)optional.get()).toLowerCase(Locale.ROOT))) : optionsDynamic;
 				})
 		);
 	}

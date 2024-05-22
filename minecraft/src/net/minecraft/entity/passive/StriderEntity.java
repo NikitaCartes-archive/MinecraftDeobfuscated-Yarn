@@ -71,7 +71,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddleable {
-	private static final Identifier SUFFOCATING_MODIFIER_ID = Identifier.method_60656("suffocating");
+	private static final Identifier SUFFOCATING_MODIFIER_ID = Identifier.ofVanilla("suffocating");
 	private static final EntityAttributeModifier SUFFOCATING_MODIFIER = new EntityAttributeModifier(
 		SUFFOCATING_MODIFIER_ID, -0.34F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
 	);

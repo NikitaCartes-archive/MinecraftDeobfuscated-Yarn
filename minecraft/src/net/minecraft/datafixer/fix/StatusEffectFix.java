@@ -92,30 +92,30 @@ public class StatusEffectFix extends DataFix {
 		Optional<Dynamic<T>> optional = dynamic.get(oldEffectListKey)
 			.asStreamOpt()
 			.result()
-			.map(stream -> dynamic.createList(stream.map(StatusEffectFix::fixEffect)));
+			.map(oldEffects -> dynamic.createList(oldEffects.map(StatusEffectFix::fixEffect)));
 		return dynamic.replaceField(oldEffectListKey, newEffectListKey, optional);
 	}
 
-	private static <T> Dynamic<T> method_53083(Dynamic<T> dynamic, Dynamic<T> dynamic2) {
-		dynamic2 = renameKeyAndUpdateId(dynamic, "EffectId", dynamic2, "id");
-		Optional<Dynamic<T>> optional = dynamic.get("EffectDuration").result();
-		return dynamic2.replaceField("EffectDuration", "duration", optional);
+	private static <T> Dynamic<T> fixSuspiciousStewEffect(Dynamic<T> effectDynamicIn, Dynamic<T> effectDynamicOut) {
+		effectDynamicOut = renameKeyAndUpdateId(effectDynamicIn, "EffectId", effectDynamicOut, "id");
+		Optional<Dynamic<T>> optional = effectDynamicIn.get("EffectDuration").result();
+		return effectDynamicOut.replaceField("EffectDuration", "duration", optional);
 	}
 
-	private static <T> Dynamic<T> method_53095(Dynamic<T> dynamic) {
-		return method_53083(dynamic, dynamic);
+	private static <T> Dynamic<T> fixSuspiciousStewEffect(Dynamic<T> effectDynamic) {
+		return fixSuspiciousStewEffect(effectDynamic, effectDynamic);
 	}
 
-	private Typed<?> method_53081(Typed<?> typed, TypeReference typeReference, String string, Function<Dynamic<?>, Dynamic<?>> function) {
-		Type<?> type = this.getInputSchema().getChoiceType(typeReference, string);
-		Type<?> type2 = this.getOutputSchema().getChoiceType(typeReference, string);
-		return typed.updateTyped(DSL.namedChoice(string, type), type2, typedx -> typedx.update(DSL.remainderFinder(), function));
+	private Typed<?> fixEntityEffects(Typed<?> entityTyped, TypeReference entityTypeReference, String entityId, Function<Dynamic<?>, Dynamic<?>> effectsFixer) {
+		Type<?> type = this.getInputSchema().getChoiceType(entityTypeReference, entityId);
+		Type<?> type2 = this.getOutputSchema().getChoiceType(entityTypeReference, entityId);
+		return entityTyped.updateTyped(DSL.namedChoice(entityId, type), type2, matchingEntityTyped -> matchingEntityTyped.update(DSL.remainderFinder(), effectsFixer));
 	}
 
 	private TypeRewriteRule makeBlockEntitiesRule() {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.BLOCK_ENTITY);
 		return this.fixTypeEverywhereTyped(
-			"BlockEntityMobEffectIdFix", type, typed -> this.method_53081(typed, TypeReferences.BLOCK_ENTITY, "minecraft:beacon", dynamic -> {
+			"BlockEntityMobEffectIdFix", type, typed -> this.fixEntityEffects(typed, TypeReferences.BLOCK_ENTITY, "minecraft:beacon", dynamic -> {
 					dynamic = renameKeyAndUpdateId(dynamic, "Primary", "primary_effect");
 					return renameKeyAndUpdateId(dynamic, "Secondary", "secondary_effect");
 				})
@@ -124,7 +124,7 @@ public class StatusEffectFix extends DataFix {
 
 	private static <T> Dynamic<T> fixStewEffectsKey(Dynamic<T> dynamic) {
 		Dynamic<T> dynamic2 = dynamic.emptyMap();
-		Dynamic<T> dynamic3 = method_53083(dynamic, dynamic2);
+		Dynamic<T> dynamic3 = fixSuspiciousStewEffect(dynamic, dynamic2);
 		if (!dynamic3.equals(dynamic2)) {
 			dynamic = dynamic.set("stew_effects", dynamic.createList(Stream.of(dynamic3)));
 		}
@@ -146,11 +146,11 @@ public class StatusEffectFix extends DataFix {
 
 	private TypeRewriteRule makeEntitiesRule() {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.ENTITY);
-		return this.fixTypeEverywhereTyped("EntityMobEffectIdFix", type, typed -> {
-			typed = this.method_53081(typed, TypeReferences.ENTITY, "minecraft:mooshroom", StatusEffectFix::fixStewEffectsKey);
-			typed = this.method_53081(typed, TypeReferences.ENTITY, "minecraft:arrow", StatusEffectFix::fixCustomPotionEffectsKey);
-			typed = this.method_53081(typed, TypeReferences.ENTITY, "minecraft:area_effect_cloud", StatusEffectFix::fixEffectsKey);
-			return typed.update(DSL.remainderFinder(), StatusEffectFix::fixActiveEffectsKey);
+		return this.fixTypeEverywhereTyped("EntityMobEffectIdFix", type, entityTyped -> {
+			entityTyped = this.fixEntityEffects(entityTyped, TypeReferences.ENTITY, "minecraft:mooshroom", StatusEffectFix::fixStewEffectsKey);
+			entityTyped = this.fixEntityEffects(entityTyped, TypeReferences.ENTITY, "minecraft:arrow", StatusEffectFix::fixCustomPotionEffectsKey);
+			entityTyped = this.fixEntityEffects(entityTyped, TypeReferences.ENTITY, "minecraft:area_effect_cloud", StatusEffectFix::fixEffectsKey);
+			return entityTyped.update(DSL.remainderFinder(), StatusEffectFix::fixActiveEffectsKey);
 		});
 	}
 
@@ -159,9 +159,12 @@ public class StatusEffectFix extends DataFix {
 		return this.fixTypeEverywhereTyped("PlayerMobEffectIdFix", type, typed -> typed.update(DSL.remainderFinder(), StatusEffectFix::fixActiveEffectsKey));
 	}
 
-	private static <T> Dynamic<T> method_53106(Dynamic<T> dynamic) {
-		Optional<Dynamic<T>> optional = dynamic.get("Effects").asStreamOpt().result().map(stream -> dynamic.createList(stream.map(StatusEffectFix::method_53095)));
-		return dynamic.replaceField("Effects", "effects", optional);
+	private static <T> Dynamic<T> fixSuspiciousStewEffects(Dynamic<T> tagTyped) {
+		Optional<Dynamic<T>> optional = tagTyped.get("Effects")
+			.asStreamOpt()
+			.result()
+			.map(effects -> tagTyped.createList(effects.map(StatusEffectFix::fixSuspiciousStewEffect)));
+		return tagTyped.replaceField("Effects", "effects", optional);
 	}
 
 	private TypeRewriteRule makeItemStacksRule() {
@@ -173,22 +176,23 @@ public class StatusEffectFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"ItemStackMobEffectIdFix",
 			type,
-			typed -> {
-				Optional<Pair<String, String>> optional = typed.getOptional(opticFinder);
+			itemStackTyped -> {
+				Optional<Pair<String, String>> optional = itemStackTyped.getOptional(opticFinder);
 				if (optional.isPresent()) {
 					String string = (String)((Pair)optional.get()).getSecond();
 					if (string.equals("minecraft:suspicious_stew")) {
-						return typed.updateTyped(opticFinder2, typedx -> typedx.update(DSL.remainderFinder(), StatusEffectFix::method_53106));
+						return itemStackTyped.updateTyped(opticFinder2, tagTyped -> tagTyped.update(DSL.remainderFinder(), StatusEffectFix::fixSuspiciousStewEffects));
 					}
 
 					if (POTION_ITEM_IDS.contains(string)) {
-						return typed.updateTyped(
-							opticFinder2, typedx -> typedx.update(DSL.remainderFinder(), dynamic -> fixEffectList(dynamic, "CustomPotionEffects", "custom_potion_effects"))
+						return itemStackTyped.updateTyped(
+							opticFinder2,
+							tagTyped -> tagTyped.update(DSL.remainderFinder(), tagDynamic -> fixEffectList(tagDynamic, "CustomPotionEffects", "custom_potion_effects"))
 						);
 					}
 				}
 
-				return typed;
+				return itemStackTyped;
 			}
 		);
 	}

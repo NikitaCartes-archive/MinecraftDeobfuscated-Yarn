@@ -55,9 +55,9 @@ import net.minecraft.world.event.GameEvent;
 import org.joml.Vector3f;
 
 public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional<DyeColor>>, Monster {
-	private static final Identifier COVERED_ARMOR_BONUS_ID = Identifier.method_60656("covered");
+	private static final Identifier COVERED_ARMOR_MODIFIER_ID = Identifier.ofVanilla("covered");
 	private static final EntityAttributeModifier COVERED_ARMOR_BONUS = new EntityAttributeModifier(
-		COVERED_ARMOR_BONUS_ID, 20.0, EntityAttributeModifier.Operation.ADD_VALUE
+		COVERED_ARMOR_MODIFIER_ID, 20.0, EntityAttributeModifier.Operation.ADD_VALUE
 	);
 	protected static final TrackedData<Direction> ATTACHED_FACE = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.FACING);
 	protected static final TrackedData<Byte> PEEK_AMOUNT = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -485,7 +485,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 
 	void setPeekAmount(int peekAmount) {
 		if (!this.getWorld().isClient) {
-			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(COVERED_ARMOR_BONUS_ID);
+			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(COVERED_ARMOR_MODIFIER_ID);
 			if (peekAmount == 0) {
 				this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addPersistentModifier(COVERED_ARMOR_BONUS);
 				this.playSound(SoundEvents.ENTITY_SHULKER_CLOSE, 1.0F, 1.0F);

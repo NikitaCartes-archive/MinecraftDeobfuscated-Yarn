@@ -7,8 +7,8 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixer.TypeReferences;
 
 public class OptionsForceVBOFix extends DataFix {
-	public OptionsForceVBOFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public OptionsForceVBOFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -16,7 +16,7 @@ public class OptionsForceVBOFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"OptionsForceVBOFix",
 			this.getInputSchema().getType(TypeReferences.OPTIONS),
-			typed -> typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("useVbo", dynamic.createString("true")))
+			optionsTyped -> optionsTyped.update(DSL.remainderFinder(), optionsDynamic -> optionsDynamic.set("useVbo", optionsDynamic.createString("true")))
 		);
 	}
 }

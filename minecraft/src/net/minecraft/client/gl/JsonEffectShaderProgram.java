@@ -51,10 +51,10 @@ public class JsonEffectShaderProgram implements EffectShaderProgram, AutoCloseab
 	private final EffectShaderStage vertexShader;
 	private final EffectShaderStage fragmentShader;
 
-	public JsonEffectShaderProgram(ResourceFactory resourceFactory, String name) throws IOException {
-		Identifier identifier = Identifier.method_60656("shaders/program/" + name + ".json");
+	public JsonEffectShaderProgram(ResourceFactory factory, String name) throws IOException {
+		Identifier identifier = Identifier.ofVanilla("shaders/program/" + name + ".json");
 		this.name = name;
-		Resource resource = resourceFactory.getResourceOrThrow(identifier);
+		Resource resource = factory.getResourceOrThrow(identifier);
 
 		try {
 			Reader reader = resource.getReader();
@@ -120,8 +120,8 @@ public class JsonEffectShaderProgram implements EffectShaderProgram, AutoCloseab
 				}
 
 				this.blendState = deserializeBlendState(JsonHelper.getObject(jsonObject, "blend", null));
-				this.vertexShader = loadEffect(resourceFactory, ShaderStage.Type.VERTEX, string);
-				this.fragmentShader = loadEffect(resourceFactory, ShaderStage.Type.FRAGMENT, string2);
+				this.vertexShader = loadEffect(factory, ShaderStage.Type.VERTEX, string);
+				this.fragmentShader = loadEffect(factory, ShaderStage.Type.FRAGMENT, string2);
 				this.glRef = GlProgramManager.createProgram();
 				GlProgramManager.linkProgram(this);
 				this.finalizeUniformsAndSamplers();
@@ -162,7 +162,7 @@ public class JsonEffectShaderProgram implements EffectShaderProgram, AutoCloseab
 		} else {
 			EffectShaderStage effectShaderStage;
 			if (shaderStage == null) {
-				Identifier identifier = Identifier.method_60656("shaders/program/" + name + type.getFileExtension());
+				Identifier identifier = Identifier.ofVanilla("shaders/program/" + name + type.getFileExtension());
 				Resource resource = resourceFactory.getResourceOrThrow(identifier);
 				InputStream inputStream = resource.getInputStream();
 

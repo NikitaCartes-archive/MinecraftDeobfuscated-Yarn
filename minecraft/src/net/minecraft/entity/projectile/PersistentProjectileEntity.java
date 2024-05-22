@@ -453,16 +453,16 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		this.clearPiercingStatus();
 	}
 
-	protected void onBlockHitEnchantmentEffects(ServerWorld serverWorld, BlockHitResult blockHitResult, ItemStack shotFromStack) {
-		Vec3d vec3d = blockHitResult.getBlockPos().method_60913(blockHitResult.getPos());
+	protected void onBlockHitEnchantmentEffects(ServerWorld world, BlockHitResult blockHitResult, ItemStack weaponStack) {
+		Vec3d vec3d = blockHitResult.getBlockPos().clampToWithin(blockHitResult.getPos());
 		EnchantmentHelper.onHitBlock(
-			serverWorld,
-			shotFromStack,
+			world,
+			weaponStack,
 			this.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null,
 			this,
 			null,
 			vec3d,
-			serverWorld.getBlockState(blockHitResult.getBlockPos()),
+			world.getBlockState(blockHitResult.getBlockPos()),
 			item -> this.weapon = null
 		);
 	}
@@ -537,7 +537,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		this.setCritical(nbt.getBoolean("crit"));
 		this.setPierceLevel(nbt.getByte("PierceLevel"));
 		if (nbt.contains("SoundEvent", NbtElement.STRING_TYPE)) {
-			this.sound = (SoundEvent)Registries.SOUND_EVENT.getOrEmpty(Identifier.method_60654(nbt.getString("SoundEvent"))).orElse(this.getHitSound());
+			this.sound = (SoundEvent)Registries.SOUND_EVENT.getOrEmpty(Identifier.of(nbt.getString("SoundEvent"))).orElse(this.getHitSound());
 		}
 
 		if (nbt.contains("item", NbtElement.COMPOUND_TYPE)) {

@@ -170,7 +170,7 @@ public class PostEffectProcessor implements AutoCloseable {
 								throw new InvalidHierarchicalFileException("Render target '" + string6 + "' can't be used as depth buffer");
 							}
 
-							Identifier identifier = Identifier.method_60656("textures/effect/" + string6 + ".png");
+							Identifier identifier = Identifier.ofVanilla("textures/effect/" + string6 + ".png");
 							this.resourceFactory
 								.getResource(identifier)
 								.orElseThrow(() -> new InvalidHierarchicalFileException("Render target or texture '" + string6 + "' does not exist"));

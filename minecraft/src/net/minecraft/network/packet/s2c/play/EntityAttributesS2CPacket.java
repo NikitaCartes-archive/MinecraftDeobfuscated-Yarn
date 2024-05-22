@@ -66,7 +66,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	public static record Entry(RegistryEntry<EntityAttribute> attribute, double base, Collection<EntityAttributeModifier> modifiers) {
 		public static final PacketCodec<ByteBuf, EntityAttributeModifier> MODIFIER_CODEC = PacketCodec.tuple(
 			Identifier.PACKET_CODEC,
-			EntityAttributeModifier::uuid,
+			EntityAttributeModifier::id,
 			PacketCodecs.DOUBLE,
 			EntityAttributeModifier::value,
 			EntityAttributeModifier.Operation.PACKET_CODEC,

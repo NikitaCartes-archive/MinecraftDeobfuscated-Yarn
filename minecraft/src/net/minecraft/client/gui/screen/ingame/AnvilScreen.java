@@ -19,10 +19,10 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
-	private static final Identifier TEXT_FIELD_TEXTURE = Identifier.method_60656("container/anvil/text_field");
-	private static final Identifier TEXT_FIELD_DISABLED_TEXTURE = Identifier.method_60656("container/anvil/text_field_disabled");
-	private static final Identifier ERROR_TEXTURE = Identifier.method_60656("container/anvil/error");
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/anvil.png");
+	private static final Identifier TEXT_FIELD_TEXTURE = Identifier.ofVanilla("container/anvil/text_field");
+	private static final Identifier TEXT_FIELD_DISABLED_TEXTURE = Identifier.ofVanilla("container/anvil/text_field_disabled");
+	private static final Identifier ERROR_TEXTURE = Identifier.ofVanilla("container/anvil/error");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/gui/container/anvil.png");
 	private static final Text TOO_EXPENSIVE_TEXT = Text.translatable("container.repair.expensive");
 	private TextFieldWidget nameField;
 	private final PlayerEntity player;

@@ -26,9 +26,9 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class IglooGenerator {
 	public static final int OFFSET_Y = 90;
-	static final Identifier TOP_TEMPLATE = Identifier.method_60656("igloo/top");
-	private static final Identifier MIDDLE_TEMPLATE = Identifier.method_60656("igloo/middle");
-	private static final Identifier BOTTOM_TEMPLATE = Identifier.method_60656("igloo/bottom");
+	static final Identifier TOP_TEMPLATE = Identifier.ofVanilla("igloo/top");
+	private static final Identifier MIDDLE_TEMPLATE = Identifier.ofVanilla("igloo/middle");
+	private static final Identifier BOTTOM_TEMPLATE = Identifier.ofVanilla("igloo/bottom");
 	static final Map<Identifier, BlockPos> OFFSETS = ImmutableMap.of(
 		TOP_TEMPLATE, new BlockPos(3, 5, 5), MIDDLE_TEMPLATE, new BlockPos(1, 3, 1), BOTTOM_TEMPLATE, new BlockPos(3, 6, 7)
 	);
@@ -99,7 +99,7 @@ public class IglooGenerator {
 			ChunkPos chunkPos,
 			BlockPos pivot
 		) {
-			Identifier identifier = Identifier.method_60654(this.templateIdString);
+			Identifier identifier = Identifier.of(this.templateIdString);
 			StructurePlacementData structurePlacementData = createPlacementData(this.placementData.getRotation(), identifier);
 			BlockPos blockPos = (BlockPos)IglooGenerator.OFFSETS_FROM_TOP.get(identifier);
 			BlockPos blockPos2 = this.pos.add(StructureTemplate.transform(structurePlacementData, new BlockPos(3 - blockPos.getX(), 0, -blockPos.getZ())));

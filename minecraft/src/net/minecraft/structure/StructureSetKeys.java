@@ -27,6 +27,6 @@ public interface StructureSetKeys {
 	RegistryKey<StructureSet> TRIAL_CHAMBERS = of("trial_chambers");
 
 	private static RegistryKey<StructureSet> of(String id) {
-		return RegistryKey.of(RegistryKeys.STRUCTURE_SET, Identifier.method_60656(id));
+		return RegistryKey.of(RegistryKeys.STRUCTURE_SET, Identifier.ofVanilla(id));
 	}
 }

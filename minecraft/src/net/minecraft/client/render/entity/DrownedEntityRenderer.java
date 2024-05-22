@@ -14,7 +14,7 @@ import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class DrownedEntityRenderer extends ZombieBaseEntityRenderer<DrownedEntity, DrownedEntityModel<DrownedEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/zombie/drowned.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/zombie/drowned.png");
 
 	public DrownedEntityRenderer(EntityRendererFactory.Context context) {
 		super(

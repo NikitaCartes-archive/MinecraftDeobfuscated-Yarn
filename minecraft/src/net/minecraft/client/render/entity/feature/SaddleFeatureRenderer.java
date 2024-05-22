@@ -41,7 +41,7 @@ public class SaddleFeatureRenderer<T extends Entity & Saddleable, M extends Enti
 			this.model.animateModel(entity, limbAngle, limbDistance, tickDelta);
 			this.model.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
 			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(this.texture));
-			this.model.method_60879(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
+			this.model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
 		}
 	}
 }

@@ -24,9 +24,11 @@ public class OptionFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			this.name,
 			this.getInputSchema().getType(TypeReferences.OPTIONS),
-			typed -> typed.update(
+			optionsTyped -> optionsTyped.update(
 					DSL.remainderFinder(),
-					dynamic -> DataFixUtils.orElse(dynamic.get(this.oldName).result().map(dynamic2 -> dynamic.set(this.newName, dynamic2).remove(this.oldName)), dynamic)
+					optionsDynamic -> DataFixUtils.orElse(
+							optionsDynamic.get(this.oldName).result().map(setting -> optionsDynamic.set(this.newName, setting).remove(this.oldName)), optionsDynamic
+						)
 				)
 		);
 	}

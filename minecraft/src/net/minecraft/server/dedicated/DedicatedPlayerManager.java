@@ -6,13 +6,13 @@ import java.io.IOException;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.server.PlayerManager;
-import net.minecraft.world.WorldSaveHandler;
+import net.minecraft.world.PlayerSaveHandler;
 import org.slf4j.Logger;
 
 public class DedicatedPlayerManager extends PlayerManager {
 	private static final Logger LOGGER = LogUtils.getLogger();
 
-	public DedicatedPlayerManager(MinecraftDedicatedServer server, CombinedDynamicRegistries<ServerDynamicRegistryType> tracker, WorldSaveHandler saveHandler) {
+	public DedicatedPlayerManager(MinecraftDedicatedServer server, CombinedDynamicRegistries<ServerDynamicRegistryType> tracker, PlayerSaveHandler saveHandler) {
 		super(server, tracker, saveHandler, server.getProperties().maxPlayers);
 		ServerPropertiesHandler serverPropertiesHandler = server.getProperties();
 		this.setViewDistance(serverPropertiesHandler.viewDistance);

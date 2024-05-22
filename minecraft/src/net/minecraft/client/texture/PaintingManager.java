@@ -7,10 +7,10 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class PaintingManager extends SpriteAtlasHolder {
-	private static final Identifier PAINTING_BACK_ID = Identifier.method_60656("back");
+	private static final Identifier PAINTING_BACK_ID = Identifier.ofVanilla("back");
 
 	public PaintingManager(TextureManager manager) {
-		super(manager, Identifier.method_60656("textures/atlas/paintings.png"), Identifier.method_60656("paintings"));
+		super(manager, Identifier.ofVanilla("textures/atlas/paintings.png"), Identifier.ofVanilla("paintings"));
 	}
 
 	public Sprite getPaintingSprite(PaintingVariant variant) {

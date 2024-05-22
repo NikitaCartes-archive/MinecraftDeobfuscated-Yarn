@@ -10,13 +10,13 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class PigEntityRenderer extends MobEntityRenderer<PigEntity, PigEntityModel<PigEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/pig/pig.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/pig/pig.png");
 
 	public PigEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new PigEntityModel<>(context.getPart(EntityModelLayers.PIG)), 0.7F);
 		this.addFeature(
 			new SaddleFeatureRenderer<>(
-				this, new PigEntityModel<>(context.getPart(EntityModelLayers.PIG_SADDLE)), Identifier.method_60656("textures/entity/pig/pig_saddle.png")
+				this, new PigEntityModel<>(context.getPart(EntityModelLayers.PIG_SADDLE)), Identifier.ofVanilla("textures/entity/pig/pig_saddle.png")
 			)
 		);
 	}

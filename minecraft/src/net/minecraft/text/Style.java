@@ -28,7 +28,7 @@ public class Style {
 	/**
 	 * The identifier for the default font of a style.
 	 */
-	public static final Identifier DEFAULT_FONT_ID = Identifier.method_60656("default");
+	public static final Identifier DEFAULT_FONT_ID = Identifier.ofVanilla("default");
 	@Nullable
 	final TextColor color;
 	@Nullable

@@ -14,7 +14,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEntity> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/experience_orb.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/experience_orb.png");
 	private static final RenderLayer LAYER = RenderLayer.getItemEntityTranslucentCull(TEXTURE);
 
 	public ExperienceOrbEntityRenderer(EntityRendererFactory.Context context) {
@@ -63,8 +63,8 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 			.color(red, green, blue, 128)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.method_60803(light)
-			.method_60831(matrix, 0.0F, 1.0F, 0.0F);
+			.light(light)
+			.normal(matrix, 0.0F, 1.0F, 0.0F);
 	}
 
 	public Identifier getTexture(ExperienceOrbEntity experienceOrbEntity) {

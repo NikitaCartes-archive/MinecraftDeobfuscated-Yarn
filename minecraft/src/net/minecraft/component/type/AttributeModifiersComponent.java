@@ -53,7 +53,7 @@ public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry
 		ImmutableList.Builder<AttributeModifiersComponent.Entry> builder = ImmutableList.builderWithExpectedSize(this.modifiers.size() + 1);
 
 		for (AttributeModifiersComponent.Entry entry : this.modifiers) {
-			if (!entry.method_60767(attribute, modifier.uuid())) {
+			if (!entry.matches(attribute, modifier.id())) {
 				builder.add(entry);
 			}
 		}
@@ -131,8 +131,8 @@ public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry
 			AttributeModifiersComponent.Entry::new
 		);
 
-		public boolean method_60767(RegistryEntry<EntityAttribute> registryEntry, Identifier identifier) {
-			return registryEntry.equals(this.attribute) && identifier.equals(this.modifier);
+		public boolean matches(RegistryEntry<EntityAttribute> attribute, Identifier modifier) {
+			return attribute.equals(this.attribute) && modifier.equals(this.modifier);
 		}
 	}
 }

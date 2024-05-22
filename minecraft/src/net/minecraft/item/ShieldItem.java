@@ -2,11 +2,11 @@ package net.minecraft.item;
 
 import java.util.List;
 import net.minecraft.block.DispenserBlock;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;

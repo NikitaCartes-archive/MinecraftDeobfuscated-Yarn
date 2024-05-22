@@ -24,21 +24,21 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsServerPlayerList extends ValueObject {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public Map<Long, List<ProfileResult>> field_52121;
+	public Map<Long, List<ProfileResult>> serverIdToPlayers;
 
-	public static RealmsServerPlayerList parse(String string) {
+	public static RealmsServerPlayerList parse(String json) {
 		RealmsServerPlayerList realmsServerPlayerList = new RealmsServerPlayerList();
 		Builder<Long, List<ProfileResult>> builder = ImmutableMap.builder();
 
 		try {
-			JsonObject jsonObject = JsonHelper.deserialize(string);
+			JsonObject jsonObject = JsonHelper.deserialize(json);
 			if (JsonHelper.hasArray(jsonObject, "lists")) {
 				for (JsonElement jsonElement : jsonObject.getAsJsonArray("lists")) {
 					JsonObject jsonObject2 = jsonElement.getAsJsonObject();
-					String string2 = JsonUtils.getNullableStringOr("playerList", jsonObject2, null);
+					String string = JsonUtils.getNullableStringOr("playerList", jsonObject2, null);
 					List<ProfileResult> list;
-					if (string2 != null) {
-						JsonElement jsonElement2 = JsonParser.parseString(string2);
+					if (string != null) {
+						JsonElement jsonElement2 = JsonParser.parseString(string);
 						if (jsonElement2.isJsonArray()) {
 							list = parsePlayers(jsonElement2.getAsJsonArray());
 						} else {
@@ -55,7 +55,7 @@ public class RealmsServerPlayerList extends ValueObject {
 			LOGGER.error("Could not parse RealmsServerPlayerLists: {}", var11.getMessage());
 		}
 
-		realmsServerPlayerList.field_52121 = builder.build();
+		realmsServerPlayerList.serverIdToPlayers = builder.build();
 		return realmsServerPlayerList;
 	}
 
@@ -82,8 +82,8 @@ public class RealmsServerPlayerList extends ValueObject {
 		return list;
 	}
 
-	public List<ProfileResult> method_60863(long l) {
-		List<ProfileResult> list = (List<ProfileResult>)this.field_52121.get(l);
+	public List<ProfileResult> get(long serverId) {
+		List<ProfileResult> list = (List<ProfileResult>)this.serverIdToPlayers.get(serverId);
 		return list != null ? list : List.of();
 	}
 }

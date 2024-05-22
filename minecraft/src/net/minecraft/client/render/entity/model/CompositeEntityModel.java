@@ -21,8 +21,8 @@ public abstract class CompositeEntityModel<E extends Entity> extends EntityModel
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {
-		this.getParts().forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, i));
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
+		this.getParts().forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, color));
 	}
 
 	public abstract Iterable<ModelPart> getParts();

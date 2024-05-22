@@ -274,11 +274,11 @@ public class BlockPos extends Vec3i {
 		return new BlockPos.Mutable(this.getX(), this.getY(), this.getZ());
 	}
 
-	public Vec3d method_60913(Vec3d vec3d) {
+	public Vec3d clampToWithin(Vec3d pos) {
 		return new Vec3d(
-			MathHelper.clamp(vec3d.x, (double)((float)this.getX() + 1.0E-5F), (double)this.getX() + 1.0 - 1.0E-5F),
-			MathHelper.clamp(vec3d.y, (double)((float)this.getY() + 1.0E-5F), (double)this.getY() + 1.0 - 1.0E-5F),
-			MathHelper.clamp(vec3d.z, (double)((float)this.getZ() + 1.0E-5F), (double)this.getZ() + 1.0 - 1.0E-5F)
+			MathHelper.clamp(pos.x, (double)((float)this.getX() + 1.0E-5F), (double)this.getX() + 1.0 - 1.0E-5F),
+			MathHelper.clamp(pos.y, (double)((float)this.getY() + 1.0E-5F), (double)this.getY() + 1.0 - 1.0E-5F),
+			MathHelper.clamp(pos.z, (double)((float)this.getZ() + 1.0E-5F), (double)this.getZ() + 1.0 - 1.0E-5F)
 		);
 	}
 

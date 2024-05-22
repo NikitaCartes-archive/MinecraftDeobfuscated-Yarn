@@ -9,19 +9,19 @@ import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
 
 public class CauldronRenameFix extends DataFix {
-	public CauldronRenameFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public CauldronRenameFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
-	private static Dynamic<?> rename(Dynamic<?> dynamic) {
-		Optional<String> optional = dynamic.get("Name").asString().result();
+	private static Dynamic<?> rename(Dynamic<?> cauldronDynamic) {
+		Optional<String> optional = cauldronDynamic.get("Name").asString().result();
 		if (optional.equals(Optional.of("minecraft:cauldron"))) {
-			Dynamic<?> dynamic2 = dynamic.get("Properties").orElseEmptyMap();
-			return dynamic2.get("level").asString("0").equals("0")
-				? dynamic.remove("Properties")
-				: dynamic.set("Name", dynamic.createString("minecraft:water_cauldron"));
+			Dynamic<?> dynamic = cauldronDynamic.get("Properties").orElseEmptyMap();
+			return dynamic.get("level").asString("0").equals("0")
+				? cauldronDynamic.remove("Properties")
+				: cauldronDynamic.set("Name", cauldronDynamic.createString("minecraft:water_cauldron"));
 		} else {
-			return dynamic;
+			return cauldronDynamic;
 		}
 	}
 

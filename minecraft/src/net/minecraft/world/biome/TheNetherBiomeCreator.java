@@ -1,12 +1,12 @@
 package net.minecraft.world.biome;
 
-import net.minecraft.client.sound.MusicType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
+import net.minecraft.sound.MusicType;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.ConfiguredCarver;

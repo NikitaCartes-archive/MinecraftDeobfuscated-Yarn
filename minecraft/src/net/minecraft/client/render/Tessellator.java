@@ -3,7 +3,7 @@ package net.minecraft.client.render;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9799;
+import net.minecraft.client.util.BufferAllocator;
 
 /**
  * Holding a single instance of {@link BufferBuilder}.
@@ -14,7 +14,7 @@ import net.minecraft.class_9799;
 @Environment(EnvType.CLIENT)
 public class Tessellator {
 	private static final int field_46841 = 786432;
-	private final class_9799 field_52098;
+	private final BufferAllocator allocator;
 	@Nullable
 	private static Tessellator INSTANCE;
 
@@ -35,18 +35,18 @@ public class Tessellator {
 	}
 
 	public Tessellator(int bufferCapacity) {
-		this.field_52098 = new class_9799(bufferCapacity);
+		this.allocator = new BufferAllocator(bufferCapacity);
 	}
 
 	public Tessellator() {
 		this(786432);
 	}
 
-	public BufferBuilder method_60827(VertexFormat.DrawMode drawMode, VertexFormat vertexFormat) {
-		return new BufferBuilder(this.field_52098, drawMode, vertexFormat);
+	public BufferBuilder begin(VertexFormat.DrawMode drawMode, VertexFormat format) {
+		return new BufferBuilder(this.allocator, drawMode, format);
 	}
 
-	public void method_60828() {
-		this.field_52098.method_60809();
+	public void clear() {
+		this.allocator.clear();
 	}
 }

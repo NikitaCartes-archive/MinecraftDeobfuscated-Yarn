@@ -12,8 +12,8 @@ import java.util.stream.Stream;
 import net.minecraft.datafixer.TypeReferences;
 
 public class ItemLoreToTextFix extends DataFix {
-	public ItemLoreToTextFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemLoreToTextFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -23,14 +23,14 @@ public class ItemLoreToTextFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"Item Lore componentize",
 			type,
-			typed -> typed.updateTyped(
+			itemStackTyped -> itemStackTyped.updateTyped(
 					opticFinder,
-					typedx -> typedx.update(
+					tagTyped -> tagTyped.update(
 							DSL.remainderFinder(),
-							dynamic -> dynamic.update(
+							tagDynamic -> tagDynamic.update(
 									"display",
-									dynamicx -> dynamicx.update(
-											"Lore", dynamicxx -> DataFixUtils.orElse(dynamicxx.asStreamOpt().map(ItemLoreToTextFix::fixLoreNbt).map(dynamicxx::createList).result(), dynamicxx)
+									displaySubtag -> displaySubtag.update(
+											"Lore", lore -> DataFixUtils.orElse(lore.asStreamOpt().map(ItemLoreToTextFix::fixLoreNbt).map(lore::createList).result(), lore)
 										)
 								)
 						)

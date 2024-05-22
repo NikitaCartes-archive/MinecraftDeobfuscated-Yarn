@@ -2,10 +2,10 @@ package net.minecraft.item;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.WrittenBookContentComponent;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;

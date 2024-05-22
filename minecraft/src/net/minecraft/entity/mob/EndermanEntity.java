@@ -68,9 +68,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class EndermanEntity extends HostileEntity implements Angerable {
-	private static final Identifier ATTACKING_SPEED_BOOST_ID = Identifier.method_60656("attacking");
+	private static final Identifier ATTACKING_SPEED_MODIFIER_ID = Identifier.ofVanilla("attacking");
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
-		ATTACKING_SPEED_BOOST_ID, 0.15F, EntityAttributeModifier.Operation.ADD_VALUE
+		ATTACKING_SPEED_MODIFIER_ID, 0.15F, EntityAttributeModifier.Operation.ADD_VALUE
 	);
 	private static final int field_30462 = 400;
 	private static final int field_30461 = 600;
@@ -124,11 +124,11 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			this.ageWhenTargetSet = 0;
 			this.dataTracker.set(ANGRY, false);
 			this.dataTracker.set(PROVOKED, false);
-			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST_ID);
+			entityAttributeInstance.removeModifier(ATTACKING_SPEED_MODIFIER_ID);
 		} else {
 			this.ageWhenTargetSet = this.age;
 			this.dataTracker.set(ANGRY, true);
-			if (!entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST_ID)) {
+			if (!entityAttributeInstance.hasModifier(ATTACKING_SPEED_MODIFIER_ID)) {
 				entityAttributeInstance.addTemporaryModifier(ATTACKING_SPEED_BOOST);
 			}
 		}

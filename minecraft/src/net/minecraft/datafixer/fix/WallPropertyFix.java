@@ -28,8 +28,8 @@ public class WallPropertyFix extends DataFix {
 		"minecraft:stone_brick_wall"
 	);
 
-	public WallPropertyFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public WallPropertyFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class WallPropertyFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"WallPropertyFix",
 			this.getInputSchema().getType(TypeReferences.BLOCK_STATE),
-			typed -> typed.update(DSL.remainderFinder(), WallPropertyFix::updateWallProperties)
+			blockStateTyped -> blockStateTyped.update(DSL.remainderFinder(), WallPropertyFix::updateWallProperties)
 		);
 	}
 
@@ -45,19 +45,22 @@ public class WallPropertyFix extends DataFix {
 		return "true".equals(value) ? "low" : "none";
 	}
 
-	private static <T> Dynamic<T> updateWallValueReference(Dynamic<T> dynamic, String string) {
-		return dynamic.update(
-			string, dynamicx -> DataFixUtils.orElse(dynamicx.asString().result().map(WallPropertyFix::booleanToWallType).map(dynamicx::createString), dynamicx)
+	private static <T> Dynamic<T> updateWallValueReference(Dynamic<T> propertiesDynamic, String propertyName) {
+		return propertiesDynamic.update(
+			propertyName,
+			propertyValue -> DataFixUtils.orElse(
+					propertyValue.asString().result().map(WallPropertyFix::booleanToWallType).map(propertyValue::createString), propertyValue
+				)
 		);
 	}
 
-	private static <T> Dynamic<T> updateWallProperties(Dynamic<T> dynamic) {
-		boolean bl = dynamic.get("Name").asString().result().filter(TARGET_BLOCK_IDS::contains).isPresent();
-		return !bl ? dynamic : dynamic.update("Properties", dynamicx -> {
-			Dynamic<?> dynamic2 = updateWallValueReference(dynamicx, "east");
-			dynamic2 = updateWallValueReference(dynamic2, "west");
-			dynamic2 = updateWallValueReference(dynamic2, "north");
-			return updateWallValueReference(dynamic2, "south");
+	private static <T> Dynamic<T> updateWallProperties(Dynamic<T> blockStateDynamic) {
+		boolean bl = blockStateDynamic.get("Name").asString().result().filter(TARGET_BLOCK_IDS::contains).isPresent();
+		return !bl ? blockStateDynamic : blockStateDynamic.update("Properties", propertiesDynamic -> {
+			Dynamic<?> dynamic = updateWallValueReference(propertiesDynamic, "east");
+			dynamic = updateWallValueReference(dynamic, "west");
+			dynamic = updateWallValueReference(dynamic, "north");
+			return updateWallValueReference(dynamic, "south");
 		});
 	}
 }

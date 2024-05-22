@@ -18,8 +18,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.scoreboard.ReadableScoreboardScore;
 import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
@@ -49,20 +49,20 @@ import net.minecraft.world.GameMode;
  */
 @Environment(EnvType.CLIENT)
 public class PlayerListHud {
-	private static final Identifier PING_UNKNOWN_ICON_TEXTURE = Identifier.method_60656("icon/ping_unknown");
-	private static final Identifier PING_1_ICON_TEXTURE = Identifier.method_60656("icon/ping_1");
-	private static final Identifier PING_2_ICON_TEXTURE = Identifier.method_60656("icon/ping_2");
-	private static final Identifier PING_3_ICON_TEXTURE = Identifier.method_60656("icon/ping_3");
-	private static final Identifier PING_4_ICON_TEXTURE = Identifier.method_60656("icon/ping_4");
-	private static final Identifier PING_5_ICON_TEXTURE = Identifier.method_60656("icon/ping_5");
-	private static final Identifier CONTAINER_HEART_BLINKING_TEXTURE = Identifier.method_60656("hud/heart/container_blinking");
-	private static final Identifier CONTAINER_HEART_TEXTURE = Identifier.method_60656("hud/heart/container");
-	private static final Identifier FULL_HEART_BLINKING_TEXTURE = Identifier.method_60656("hud/heart/full_blinking");
-	private static final Identifier HALF_HEART_BLINKING_TEXTURE = Identifier.method_60656("hud/heart/half_blinking");
-	private static final Identifier ABSORBING_FULL_HEART_BLINKING_TEXTURE = Identifier.method_60656("hud/heart/absorbing_full_blinking");
-	private static final Identifier FULL_HEART_TEXTURE = Identifier.method_60656("hud/heart/full");
-	private static final Identifier ABSORBING_HALF_HEART_BLINKING_TEXTURE = Identifier.method_60656("hud/heart/absorbing_half_blinking");
-	private static final Identifier HALF_HEART_TEXTURE = Identifier.method_60656("hud/heart/half");
+	private static final Identifier PING_UNKNOWN_ICON_TEXTURE = Identifier.ofVanilla("icon/ping_unknown");
+	private static final Identifier PING_1_ICON_TEXTURE = Identifier.ofVanilla("icon/ping_1");
+	private static final Identifier PING_2_ICON_TEXTURE = Identifier.ofVanilla("icon/ping_2");
+	private static final Identifier PING_3_ICON_TEXTURE = Identifier.ofVanilla("icon/ping_3");
+	private static final Identifier PING_4_ICON_TEXTURE = Identifier.ofVanilla("icon/ping_4");
+	private static final Identifier PING_5_ICON_TEXTURE = Identifier.ofVanilla("icon/ping_5");
+	private static final Identifier CONTAINER_HEART_BLINKING_TEXTURE = Identifier.ofVanilla("hud/heart/container_blinking");
+	private static final Identifier CONTAINER_HEART_TEXTURE = Identifier.ofVanilla("hud/heart/container");
+	private static final Identifier FULL_HEART_BLINKING_TEXTURE = Identifier.ofVanilla("hud/heart/full_blinking");
+	private static final Identifier HALF_HEART_BLINKING_TEXTURE = Identifier.ofVanilla("hud/heart/half_blinking");
+	private static final Identifier ABSORBING_FULL_HEART_BLINKING_TEXTURE = Identifier.ofVanilla("hud/heart/absorbing_full_blinking");
+	private static final Identifier FULL_HEART_TEXTURE = Identifier.ofVanilla("hud/heart/full");
+	private static final Identifier ABSORBING_HALF_HEART_BLINKING_TEXTURE = Identifier.ofVanilla("hud/heart/absorbing_half_blinking");
+	private static final Identifier HALF_HEART_TEXTURE = Identifier.ofVanilla("hud/heart/half");
 	private static final Comparator<PlayerListEntry> ENTRY_ORDERING = Comparator.comparingInt(entry -> entry.getGameMode() == GameMode.SPECTATOR ? 1 : 0)
 		.thenComparing(entry -> Nullables.mapOrElse(entry.getScoreboardTeam(), Team::getName, ""))
 		.thenComparing(entry -> entry.getProfile().getName(), String::compareToIgnoreCase);

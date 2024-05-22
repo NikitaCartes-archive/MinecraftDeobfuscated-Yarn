@@ -207,7 +207,7 @@ public record Advancement(
 		}
 
 		public AdvancementEntry build(Consumer<AdvancementEntry> exporter, String id) {
-			AdvancementEntry advancementEntry = this.build(Identifier.method_60654(id));
+			AdvancementEntry advancementEntry = this.build(Identifier.of(id));
 			exporter.accept(advancementEntry);
 			return advancementEntry;
 		}

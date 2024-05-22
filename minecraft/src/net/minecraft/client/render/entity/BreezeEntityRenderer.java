@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class BreezeEntityRenderer extends MobEntityRenderer<BreezeEntity, BreezeEntityModel<BreezeEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/breeze/breeze.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/breeze/breeze.png");
 
 	public BreezeEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new BreezeEntityModel<>(context.getPart(EntityModelLayers.BREEZE)), 0.5F);

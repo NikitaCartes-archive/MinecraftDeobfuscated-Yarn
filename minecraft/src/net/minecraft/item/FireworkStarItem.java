@@ -1,9 +1,9 @@
 package net.minecraft.item;
 
 import java.util.List;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FireworkExplosionComponent;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 
 public class FireworkStarItem extends Item {

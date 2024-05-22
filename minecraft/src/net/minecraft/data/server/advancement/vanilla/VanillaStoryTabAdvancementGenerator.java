@@ -36,7 +36,7 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 				Blocks.GRASS_BLOCK,
 				Text.translatable("advancements.story.root.title"),
 				Text.translatable("advancements.story.root.description"),
-				Identifier.method_60656("textures/gui/advancements/backgrounds/stone.png"),
+				Identifier.ofVanilla("textures/gui/advancements/backgrounds/stone.png"),
 				AdvancementFrame.TASK,
 				false,
 				false,

@@ -229,77 +229,77 @@ public abstract class TameableEntity extends AnimalEntity implements Tameable {
 		this.sitting = sitting;
 	}
 
-	public void method_60713() {
+	public void tryTeleportToOwner() {
 		LivingEntity livingEntity = this.getOwner();
 		if (livingEntity != null) {
-			this.method_60712(livingEntity.getBlockPos());
+			this.tryTeleportNear(livingEntity.getBlockPos());
 		}
 	}
 
-	public boolean method_60714() {
+	public boolean shouldTryTeleportToOwner() {
 		LivingEntity livingEntity = this.getOwner();
 		return livingEntity != null && this.squaredDistanceTo(this.getOwner()) >= 144.0;
 	}
 
-	private void method_60712(BlockPos blockPos) {
+	private void tryTeleportNear(BlockPos pos) {
 		for (int i = 0; i < 10; i++) {
 			int j = this.random.nextBetween(-3, 3);
 			int k = this.random.nextBetween(-3, 3);
 			if (Math.abs(j) >= 2 || Math.abs(k) >= 2) {
 				int l = this.random.nextBetween(-1, 1);
-				if (this.method_60711(blockPos.getX() + j, blockPos.getY() + l, blockPos.getZ() + k)) {
+				if (this.tryTeleportTo(pos.getX() + j, pos.getY() + l, pos.getZ() + k)) {
 					return;
 				}
 			}
 		}
 	}
 
-	private boolean method_60711(int i, int j, int k) {
-		if (!this.method_60717(new BlockPos(i, j, k))) {
+	private boolean tryTeleportTo(int x, int y, int z) {
+		if (!this.canTeleportTo(new BlockPos(x, y, z))) {
 			return false;
 		} else {
-			this.refreshPositionAndAngles((double)i + 0.5, (double)j, (double)k + 0.5, this.getYaw(), this.getPitch());
+			this.refreshPositionAndAngles((double)x + 0.5, (double)y, (double)z + 0.5, this.getYaw(), this.getPitch());
 			this.navigation.stop();
 			return true;
 		}
 	}
 
-	private boolean method_60717(BlockPos blockPos) {
-		PathNodeType pathNodeType = LandPathNodeMaker.getLandNodeType(this, blockPos);
+	private boolean canTeleportTo(BlockPos pos) {
+		PathNodeType pathNodeType = LandPathNodeMaker.getLandNodeType(this, pos);
 		if (pathNodeType != PathNodeType.WALKABLE) {
 			return false;
 		} else {
-			BlockState blockState = this.getWorld().getBlockState(blockPos.down());
-			if (!this.method_60716() && blockState.getBlock() instanceof LeavesBlock) {
+			BlockState blockState = this.getWorld().getBlockState(pos.down());
+			if (!this.canTeleportOntoLeaves() && blockState.getBlock() instanceof LeavesBlock) {
 				return false;
 			} else {
-				BlockPos blockPos2 = blockPos.subtract(this.getBlockPos());
-				return this.getWorld().isSpaceEmpty(this, this.getBoundingBox().offset(blockPos2));
+				BlockPos blockPos = pos.subtract(this.getBlockPos());
+				return this.getWorld().isSpaceEmpty(this, this.getBoundingBox().offset(blockPos));
 			}
 		}
 	}
 
-	public final boolean method_60715() {
+	public final boolean cannotFollowOwner() {
 		return this.isSitting() || this.hasVehicle() || this.mightBeLeashed() || this.getOwner() != null && this.getOwner().isSpectator();
 	}
 
-	protected boolean method_60716() {
+	protected boolean canTeleportOntoLeaves() {
 		return false;
 	}
 
-	public class class_9788 extends EscapeDangerGoal {
-		public class_9788(final double d, final TagKey<DamageType> tagKey) {
-			super(TameableEntity.this, d, tagKey);
+	public class TameableEscapeDangerGoal extends EscapeDangerGoal {
+		public TameableEscapeDangerGoal(final double speed, final TagKey<DamageType> dangerousDamageTypes) {
+			super(TameableEntity.this, speed, dangerousDamageTypes);
 		}
 
-		public class_9788(final double d) {
-			super(TameableEntity.this, d);
+		public TameableEscapeDangerGoal(final double speed) {
+			super(TameableEntity.this, speed);
 		}
 
 		@Override
 		public void tick() {
-			if (!TameableEntity.this.method_60715() && TameableEntity.this.method_60714()) {
-				TameableEntity.this.method_60713();
+			if (!TameableEntity.this.cannotFollowOwner() && TameableEntity.this.shouldTryTeleportToOwner()) {
+				TameableEntity.this.tryTeleportToOwner();
 			}
 
 			super.tick();

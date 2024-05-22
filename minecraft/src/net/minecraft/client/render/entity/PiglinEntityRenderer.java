@@ -18,11 +18,11 @@ import net.minecraft.util.Identifier;
 public class PiglinEntityRenderer extends BipedEntityRenderer<MobEntity, PiglinEntityModel<MobEntity>> {
 	private static final Map<EntityType<?>, Identifier> TEXTURES = ImmutableMap.of(
 		EntityType.PIGLIN,
-		Identifier.method_60656("textures/entity/piglin/piglin.png"),
+		Identifier.ofVanilla("textures/entity/piglin/piglin.png"),
 		EntityType.ZOMBIFIED_PIGLIN,
-		Identifier.method_60656("textures/entity/piglin/zombified_piglin.png"),
+		Identifier.ofVanilla("textures/entity/piglin/zombified_piglin.png"),
 		EntityType.PIGLIN_BRUTE,
-		Identifier.method_60656("textures/entity/piglin/piglin_brute.png")
+		Identifier.ofVanilla("textures/entity/piglin/piglin_brute.png")
 	);
 	private static final float HORIZONTAL_SCALE = 1.0019531F;
 

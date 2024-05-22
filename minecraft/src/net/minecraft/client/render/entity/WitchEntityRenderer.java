@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class WitchEntityRenderer extends MobEntityRenderer<WitchEntity, WitchEntityModel<WitchEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/witch.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/witch.png");
 
 	public WitchEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new WitchEntityModel<>(context.getPart(EntityModelLayers.WITCH)), 0.5F);

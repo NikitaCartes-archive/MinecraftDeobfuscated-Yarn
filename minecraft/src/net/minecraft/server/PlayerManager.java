@@ -92,10 +92,10 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.PlayerSaveHandler;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
-import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
 import net.minecraft.world.dimension.DimensionType;
@@ -120,7 +120,7 @@ public abstract class PlayerManager {
 	private final Whitelist whitelist = new Whitelist(WHITELIST_FILE);
 	private final Map<UUID, ServerStatHandler> statisticsMap = Maps.<UUID, ServerStatHandler>newHashMap();
 	private final Map<UUID, PlayerAdvancementTracker> advancementTrackers = Maps.<UUID, PlayerAdvancementTracker>newHashMap();
-	private final WorldSaveHandler saveHandler;
+	private final PlayerSaveHandler saveHandler;
 	private boolean whitelistEnabled;
 	private final CombinedDynamicRegistries<ServerDynamicRegistryType> registryManager;
 	protected final int maxPlayers;
@@ -131,7 +131,7 @@ public abstract class PlayerManager {
 	private int latencyUpdateTimer;
 
 	public PlayerManager(
-		MinecraftServer server, CombinedDynamicRegistries<ServerDynamicRegistryType> registryManager, WorldSaveHandler saveHandler, int maxPlayers
+		MinecraftServer server, CombinedDynamicRegistries<ServerDynamicRegistryType> registryManager, PlayerSaveHandler saveHandler, int maxPlayers
 	) {
 		this.server = server;
 		this.registryManager = registryManager;
@@ -429,7 +429,7 @@ public abstract class PlayerManager {
 		this.players.remove(player);
 		player.getServerWorld().removePlayer(player, removalReason);
 		TeleportTarget teleportTarget = player.getRespawnTarget(alive);
-		ServerWorld serverWorld = teleportTarget.newLevel();
+		ServerWorld serverWorld = teleportTarget.world();
 		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld, player.getGameProfile(), player.getClientOptions());
 		serverPlayerEntity.networkHandler = player.networkHandler;
 		serverPlayerEntity.copyFrom(player, alive);

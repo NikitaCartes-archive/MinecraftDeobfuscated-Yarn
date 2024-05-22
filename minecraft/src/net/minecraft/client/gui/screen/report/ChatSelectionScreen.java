@@ -38,7 +38,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ChatSelectionScreen extends Screen {
-	static final Identifier CHECKMARK_ICON_TEXTURE = Identifier.method_60656("icon/checkmark");
+	static final Identifier CHECKMARK_ICON_TEXTURE = Identifier.ofVanilla("icon/checkmark");
 	private static final Text TITLE_TEXT = Text.translatable("gui.chatSelection.title");
 	private static final Text CONTEXT_TEXT = Text.translatable("gui.chatSelection.context");
 	@Nullable

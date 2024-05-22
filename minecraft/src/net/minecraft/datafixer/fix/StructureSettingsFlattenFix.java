@@ -23,29 +23,46 @@ public class StructureSettingsFlattenFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"StructureSettingsFlatten",
 			type,
-			typed -> typed.updateTyped(
-					opticFinder, typedx -> Util.apply(typedx, opticFinder.type(), dynamic -> dynamic.updateMapValues(StructureSettingsFlattenFix::method_40116))
+			worldGenSettingsTyped -> worldGenSettingsTyped.updateTyped(
+					opticFinder,
+					dimensionsTyped -> Util.apply(
+							dimensionsTyped, opticFinder.type(), dimensionsDynamic -> dimensionsDynamic.updateMapValues(StructureSettingsFlattenFix::fixDimensionEntry)
+						)
 				)
 		);
 	}
 
-	private static Pair<Dynamic<?>, Dynamic<?>> method_40116(Pair<Dynamic<?>, Dynamic<?>> pair) {
-		Dynamic<?> dynamic = pair.getSecond();
+	/**
+	 * @param dimensionEntry (dimension ID, dimension data)
+	 */
+	private static Pair<Dynamic<?>, Dynamic<?>> fixDimensionEntry(Pair<Dynamic<?>, Dynamic<?>> dimensionEntry) {
+		Dynamic<?> dynamic = dimensionEntry.getSecond();
 		return Pair.of(
-			pair.getFirst(),
-			dynamic.update("generator", dynamicx -> dynamicx.update("settings", dynamicxx -> dynamicxx.update("structures", StructureSettingsFlattenFix::method_40117)))
+			dimensionEntry.getFirst(),
+			dynamic.update(
+				"generator",
+				generatorDynamic -> generatorDynamic.update(
+						"settings", generatorSettingsDynamic -> generatorSettingsDynamic.update("structures", StructureSettingsFlattenFix::fixStructures)
+					)
+			)
 		);
 	}
 
-	private static Dynamic<?> method_40117(Dynamic<?> dynamic) {
-		Dynamic<?> dynamic2 = dynamic.get("structures")
+	private static Dynamic<?> fixStructures(Dynamic<?> structureSettingsDynamic) {
+		Dynamic<?> dynamic = structureSettingsDynamic.get("structures")
 			.orElseEmptyMap()
-			.updateMapValues(pair -> pair.mapSecond(dynamic2x -> dynamic2x.set("type", dynamic.createString("minecraft:random_spread"))));
+			.updateMapValues(
+				entry -> entry.mapSecond(structureDynamic -> structureDynamic.set("type", structureSettingsDynamic.createString("minecraft:random_spread")))
+			);
 		return DataFixUtils.orElse(
-			dynamic.get("stronghold")
+			structureSettingsDynamic.get("stronghold")
 				.result()
-				.map(dynamic3 -> dynamic2.set("minecraft:stronghold", dynamic3.set("type", dynamic.createString("minecraft:concentric_rings")))),
-			dynamic2
+				.map(
+					strongholdDynamic -> dynamic.set(
+							"minecraft:stronghold", strongholdDynamic.set("type", structureSettingsDynamic.createString("minecraft:concentric_rings"))
+						)
+				),
+			dynamic
 		);
 	}
 }

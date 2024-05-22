@@ -22,8 +22,6 @@ import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.client.item.TooltipData;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentHolder;
 import net.minecraft.component.ComponentMap;
@@ -48,6 +46,9 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
+import net.minecraft.item.tooltip.TooltipAppender;
+import net.minecraft.item.tooltip.TooltipData;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -551,7 +552,7 @@ public final class ItemStack implements ComponentHolder {
 	 * the maximum}, unlike {@link #damage(int, LivingEntity, EquipmentSlot)}.
 	 * 
 	 * @see #getDamage
-	 * @see #damage(int, Random, ServerPlayerEntity, Runnable)
+	 * @see #damage(int, ServerWorld, ServerPlayerEntity, Consumer)
 	 * @see #damage(int, LivingEntity, EquipmentSlot)
 	 */
 	public void setDamage(int damage) {
@@ -565,8 +566,7 @@ public final class ItemStack implements ComponentHolder {
 	/**
 	 * Damages this item stack. This method should be used when a non-entity, such as a
 	 * dispenser, damages the stack. This does not damage {@linkplain #isDamageable non-damageable}
-	 * stacks, and the {@linkplain net.minecraft.enchantment.UnbreakingEnchantment
-	 * unbreaking enchantment} is applied to {@code amount} before damaging.
+	 * stacks, and the enchantments are applied to {@code amount} before damaging.
 	 * 
 	 * <p>If {@code player} is not {@code null}, this triggers {@link
 	 * net.minecraft.advancement.criterion.Criteria#ITEM_DURABILITY_CHANGED}.
@@ -605,8 +605,7 @@ public final class ItemStack implements ComponentHolder {
 	/**
 	 * Damages this item stack. This method should be used when an entity, including a player,
 	 * damages the stack. This does not damage {@linkplain #isDamageable non-damageable}
-	 * stacks, and the {@linkplain net.minecraft.enchantment.UnbreakingEnchantment
-	 * unbreaking enchantment} is applied to {@code amount} before damaging. Additionally,
+	 * stacks, and the enchantments are applied to {@code amount} before damaging. Additionally,
 	 * if {@code entity} is a player in creative mode, the stack will not be damaged.
 	 * 
 	 * <p>If {@code entity} is a player, this triggers {@link
@@ -684,8 +683,8 @@ public final class ItemStack implements ComponentHolder {
 	 * Depending on block implementation, when combined together, the correct item and block may achieve a better mining speed and yield
 	 * drops that would not be obtained when mining otherwise.
 	 * 
-	 * @return values consistent with calls to {@link Item#isSuitableFor}
-	 * @see Item#isSuitableFor(BlockState)
+	 * @return values consistent with calls to {@link Item#isCorrectForDrops}
+	 * @see Item#isCorrectForDrops(ItemStack, BlockState)
 	 */
 	public boolean isSuitableFor(BlockState state) {
 		return this.getItem().isCorrectForDrops(this, state);
@@ -1091,10 +1090,10 @@ public final class ItemStack implements ComponentHolder {
 		double d = modifier.value();
 		boolean bl = false;
 		if (player != null) {
-			if (modifier.method_60718(Item.ATTACK_DAMAGE_MODIFIER_ID)) {
+			if (modifier.idMatches(Item.BASE_ATTACK_DAMAGE_MODIFIER_ID)) {
 				d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 				bl = true;
-			} else if (modifier.method_60718(Item.ATTACK_SPEED_MODIFIER_ID)) {
+			} else if (modifier.idMatches(Item.BASE_ATTACK_SPEED_MODIFIER_ID)) {
 				d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED);
 				bl = true;
 			}

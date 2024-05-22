@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Item;
-import net.minecraft.item.TooltipAppender;
+import net.minecraft.item.tooltip.TooltipAppender;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -38,7 +38,7 @@ public class ArmorTrim implements TooltipAppender {
 		trim -> trim.showInTooltip,
 		ArmorTrim::new
 	);
-	private static final Text UPGRADE_TEXT = Text.translatable(Util.createTranslationKey("item", Identifier.method_60656("smithing_template.upgrade")))
+	private static final Text UPGRADE_TEXT = Text.translatable(Util.createTranslationKey("item", Identifier.ofVanilla("smithing_template.upgrade")))
 		.formatted(Formatting.GRAY);
 	private final RegistryEntry<ArmorTrimMaterial> material;
 	private final RegistryEntry<ArmorTrimPattern> pattern;

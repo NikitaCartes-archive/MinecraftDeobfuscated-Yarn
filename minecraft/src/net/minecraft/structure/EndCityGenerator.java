@@ -290,7 +290,7 @@ public class EndCityGenerator {
 		}
 
 		private static Identifier getId(String template) {
-			return Identifier.method_60656("end_city/" + template);
+			return Identifier.ofVanilla("end_city/" + template);
 		}
 
 		@Override

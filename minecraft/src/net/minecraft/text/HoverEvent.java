@@ -167,7 +167,7 @@ public class HoverEvent {
 				NbtCompound nbtCompound = StringNbtReader.parse(text.getString());
 				DynamicOps<JsonElement> dynamicOps = (DynamicOps<JsonElement>)(ops != null ? ops.withDelegate(JsonOps.INSTANCE) : JsonOps.INSTANCE);
 				DataResult<Text> dataResult = TextCodecs.CODEC.parse(dynamicOps, JsonParser.parseString(nbtCompound.getString("name")));
-				EntityType<?> entityType = Registries.ENTITY_TYPE.get(Identifier.method_60654(nbtCompound.getString("type")));
+				EntityType<?> entityType = Registries.ENTITY_TYPE.get(Identifier.of(nbtCompound.getString("type")));
 				UUID uUID = UUID.fromString(nbtCompound.getString("id"));
 				return dataResult.map(textx -> new HoverEvent.EntityContent(entityType, uUID, textx));
 			} catch (Exception var7) {

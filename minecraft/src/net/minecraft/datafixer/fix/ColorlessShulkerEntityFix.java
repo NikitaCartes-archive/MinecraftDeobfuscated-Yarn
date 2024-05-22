@@ -6,12 +6,15 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixer.TypeReferences;
 
 public class ColorlessShulkerEntityFix extends ChoiceFix {
-	public ColorlessShulkerEntityFix(Schema schema, boolean bl) {
-		super(schema, bl, "Colorless shulker entity fix", TypeReferences.ENTITY, "minecraft:shulker");
+	public ColorlessShulkerEntityFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "Colorless shulker entity fix", TypeReferences.ENTITY, "minecraft:shulker");
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(DSL.remainderFinder(), dynamic -> dynamic.get("Color").asInt(0) == 10 ? dynamic.set("Color", dynamic.createByte((byte)16)) : dynamic);
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(
+			DSL.remainderFinder(),
+			shulkerDynamic -> shulkerDynamic.get("Color").asInt(0) == 10 ? shulkerDynamic.set("Color", shulkerDynamic.createByte((byte)16)) : shulkerDynamic
+		);
 	}
 }

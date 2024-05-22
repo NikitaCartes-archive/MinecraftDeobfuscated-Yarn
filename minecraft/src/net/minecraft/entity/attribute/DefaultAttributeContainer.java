@@ -31,10 +31,10 @@ public class DefaultAttributeContainer {
 		return this.require(attribute).getBaseValue();
 	}
 
-	public double getModifierValue(RegistryEntry<EntityAttribute> attribute, Identifier identifier) {
-		EntityAttributeModifier entityAttributeModifier = this.require(attribute).getModifier(identifier);
+	public double getModifierValue(RegistryEntry<EntityAttribute> attribute, Identifier id) {
+		EntityAttributeModifier entityAttributeModifier = this.require(attribute).getModifier(id);
 		if (entityAttributeModifier == null) {
-			throw new IllegalArgumentException("Can't find modifier " + identifier + " on attribute " + attribute.getIdAsString());
+			throw new IllegalArgumentException("Can't find modifier " + id + " on attribute " + attribute.getIdAsString());
 		} else {
 			return entityAttributeModifier.value();
 		}
@@ -60,9 +60,9 @@ public class DefaultAttributeContainer {
 		return this.instances.containsKey(attribute);
 	}
 
-	public boolean hasModifier(RegistryEntry<EntityAttribute> attribute, Identifier identifier) {
+	public boolean hasModifier(RegistryEntry<EntityAttribute> attribute, Identifier id) {
 		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.instances.get(attribute);
-		return entityAttributeInstance != null && entityAttributeInstance.getModifier(identifier) != null;
+		return entityAttributeInstance != null && entityAttributeInstance.getModifier(id) != null;
 	}
 
 	public static class Builder {

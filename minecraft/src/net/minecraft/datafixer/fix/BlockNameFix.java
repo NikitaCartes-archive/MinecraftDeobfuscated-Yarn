@@ -46,15 +46,18 @@ public abstract class BlockNameFix extends DataFix {
 		}
 	}
 
-	private Dynamic<?> fixBlockState(Dynamic<?> dynamic) {
-		Optional<String> optional = dynamic.get("Name").asString().result();
-		return optional.isPresent() ? dynamic.set("Name", dynamic.createString(this.rename((String)optional.get()))) : dynamic;
+	private Dynamic<?> fixBlockState(Dynamic<?> blockStateDynamic) {
+		Optional<String> optional = blockStateDynamic.get("Name").asString().result();
+		return optional.isPresent() ? blockStateDynamic.set("Name", blockStateDynamic.createString(this.rename((String)optional.get()))) : blockStateDynamic;
 	}
 
-	private String fixFlatBlockState(String string) {
-		int i = string.indexOf(91);
-		int j = string.indexOf(123);
-		int k = string.length();
+	/**
+	 * @implNote Replaces the part of {@code flatBlockState} before the first [ or {.
+	 */
+	private String fixFlatBlockState(String flatBlockState) {
+		int i = flatBlockState.indexOf(91);
+		int j = flatBlockState.indexOf(123);
+		int k = flatBlockState.length();
 		if (i > 0) {
 			k = i;
 		}
@@ -63,9 +66,9 @@ public abstract class BlockNameFix extends DataFix {
 			k = Math.min(k, j);
 		}
 
-		String string2 = string.substring(0, k);
-		String string3 = this.rename(string2);
-		return string3 + string.substring(k);
+		String string = flatBlockState.substring(0, k);
+		String string2 = this.rename(string);
+		return string2 + flatBlockState.substring(k);
 	}
 
 	protected abstract String rename(String oldName);

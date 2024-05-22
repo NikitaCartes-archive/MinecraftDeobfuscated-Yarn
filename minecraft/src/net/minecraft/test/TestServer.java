@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
-import net.minecraft.class_9813;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.Registry;
@@ -35,6 +34,7 @@ import net.minecraft.util.ApiServices;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.ReportType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.profiler.MultiValueDebugSampleLogImpl;
 import net.minecraft.util.profiler.log.DebugSampleLog;
@@ -210,7 +210,7 @@ public class TestServer extends MinecraftServer {
 	@Override
 	public void setCrashReport(CrashReport report) {
 		super.setCrashReport(report);
-		LOGGER.error("Game test server crashed\n{}", report.method_60920(class_9813.MINECRAFT_CRASH_REPORT));
+		LOGGER.error("Game test server crashed\n{}", report.asString(ReportType.MINECRAFT_CRASH_REPORT));
 		System.exit(1);
 	}
 

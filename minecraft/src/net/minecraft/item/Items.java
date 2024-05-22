@@ -2,10 +2,10 @@ package net.minecraft.item;
 
 import java.util.List;
 import java.util.function.UnaryOperator;
-import net.minecraft.class_9796;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.Sherds;
+import net.minecraft.block.jukebox.JukeboxSongs;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BannerPatternsComponent;
 import net.minecraft.component.type.BundleContentsComponent;
@@ -1728,61 +1728,61 @@ public class Items {
 		)
 	);
 	public static final Item MUSIC_DISC_13 = register(
-		"music_disc_13", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.field_52037))
+		"music_disc_13", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.THIRTEEN))
 	);
 	public static final Item MUSIC_DISC_CAT = register(
-		"music_disc_cat", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.CAT))
+		"music_disc_cat", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.CAT))
 	);
 	public static final Item MUSIC_DISC_BLOCKS = register(
-		"music_disc_blocks", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.BLOCKS))
+		"music_disc_blocks", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.BLOCKS))
 	);
 	public static final Item MUSIC_DISC_CHIRP = register(
-		"music_disc_chirp", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.CHIRP))
+		"music_disc_chirp", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.CHIRP))
 	);
 	public static final Item MUSIC_DISC_CREATOR = register(
-		"music_disc_creator", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.CREATOR))
+		"music_disc_creator", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.CREATOR))
 	);
 	public static final Item MUSIC_DISC_CREATOR_MUSIC_BOX = register(
-		"music_disc_creator_music_box", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.CREATOR_MUSIC_BOX))
+		"music_disc_creator_music_box", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.CREATOR_MUSIC_BOX))
 	);
 	public static final Item MUSIC_DISC_FAR = register(
-		"music_disc_far", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.FAR))
+		"music_disc_far", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.FAR))
 	);
 	public static final Item MUSIC_DISC_MALL = register(
-		"music_disc_mall", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.MALL))
+		"music_disc_mall", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.MALL))
 	);
 	public static final Item MUSIC_DISC_MELLOHI = register(
-		"music_disc_mellohi", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.MELLOHI))
+		"music_disc_mellohi", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.MELLOHI))
 	);
 	public static final Item MUSIC_DISC_STAL = register(
-		"music_disc_stal", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.STAL))
+		"music_disc_stal", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.STAL))
 	);
 	public static final Item MUSIC_DISC_STRAD = register(
-		"music_disc_strad", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.STRAD))
+		"music_disc_strad", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.STRAD))
 	);
 	public static final Item MUSIC_DISC_WARD = register(
-		"music_disc_ward", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.WARD))
+		"music_disc_ward", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.WARD))
 	);
 	public static final Item MUSIC_DISC_11 = register(
-		"music_disc_11", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.field_52047))
+		"music_disc_11", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.ELEVEN))
 	);
 	public static final Item MUSIC_DISC_WAIT = register(
-		"music_disc_wait", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.WAIT))
+		"music_disc_wait", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.WAIT))
 	);
 	public static final Item MUSIC_DISC_OTHERSIDE = register(
-		"music_disc_otherside", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.OTHERSIDE))
+		"music_disc_otherside", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.OTHERSIDE))
 	);
 	public static final Item MUSIC_DISC_RELIC = register(
-		"music_disc_relic", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.RELIC))
+		"music_disc_relic", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.RELIC))
 	);
 	public static final Item MUSIC_DISC_5 = register(
-		"music_disc_5", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.field_52051))
+		"music_disc_5", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.FIVE))
 	);
 	public static final Item MUSIC_DISC_PIGSTEP = register(
-		"music_disc_pigstep", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.PIGSTEP))
+		"music_disc_pigstep", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.PIGSTEP))
 	);
 	public static final Item MUSIC_DISC_PRECIPICE = register(
-		"music_disc_precipice", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.PRECIPICE))
+		"music_disc_precipice", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.PRECIPICE))
 	);
 	public static final Item DISC_FRAGMENT_5 = register("disc_fragment_5", new DiscFragmentItem(new Item.Settings()));
 	public static final Item TRIDENT = register(
@@ -2015,7 +2015,7 @@ public class Items {
 	}
 
 	public static Item register(String id, Item item) {
-		return register(Identifier.method_60656(id), item);
+		return register(Identifier.ofVanilla(id), item);
 	}
 
 	public static Item register(Identifier id, Item item) {

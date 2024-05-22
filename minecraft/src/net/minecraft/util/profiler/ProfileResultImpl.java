@@ -18,7 +18,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_9813;
+import net.minecraft.util.crash.ReportType;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
@@ -185,7 +185,7 @@ public class ProfileResultImpl implements ProfileResult {
 
 	protected String asString(long timeSpan, int tickSpan) {
 		StringBuilder stringBuilder = new StringBuilder();
-		class_9813.MINECRAFT_PROFILER_RESULTS.method_60928(stringBuilder, List.of());
+		ReportType.MINECRAFT_PROFILER_RESULTS.addHeaderAndNugget(stringBuilder, List.of());
 		stringBuilder.append("Version: ").append(SharedConstants.getGameVersion().getId()).append('\n');
 		stringBuilder.append("Time span: ").append(timeSpan / 1000000L).append(" ms\n");
 		stringBuilder.append("Tick span: ").append(tickSpan).append(" ticks\n");

@@ -140,7 +140,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	public static final int field_38932 = 2;
 	public static final int field_35039 = 2;
 	private static final double ATTACK_RANGE = Math.sqrt(2.04F) - 0.6F;
-	protected static final Identifier field_51997 = Identifier.method_60656("random_spawn_bonus");
+	protected static final Identifier RANDOM_SPAWN_BONUS_MODIFIER_ID = Identifier.ofVanilla("random_spawn_bonus");
 	public int ambientSoundChance;
 	protected int experiencePoints;
 	protected LookControl lookControl;
@@ -555,7 +555,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 
 		this.setLeftHanded(nbt.getBoolean("LeftHanded"));
 		if (nbt.contains("DeathLootTable", NbtElement.STRING_TYPE)) {
-			this.lootTable = RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.method_60654(nbt.getString("DeathLootTable")));
+			this.lootTable = RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of(nbt.getString("DeathLootTable")));
 			this.lootTableSeed = nbt.getLong("DeathLootTableSeed");
 		}
 
@@ -1211,9 +1211,11 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)Objects.requireNonNull(
 			this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
 		);
-		if (!entityAttributeInstance.hasModifier(field_51997)) {
+		if (!entityAttributeInstance.hasModifier(RANDOM_SPAWN_BONUS_MODIFIER_ID)) {
 			entityAttributeInstance.addPersistentModifier(
-				new EntityAttributeModifier(field_51997, random.nextTriangular(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE)
+				new EntityAttributeModifier(
+					RANDOM_SPAWN_BONUS_MODIFIER_ID, random.nextTriangular(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
+				)
 			);
 		}
 

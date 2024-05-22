@@ -19,11 +19,11 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.ValueLists;
 import org.slf4j.Logger;
 
-public record EntityAttributeModifier(Identifier uuid, double value, EntityAttributeModifier.Operation operation) {
+public record EntityAttributeModifier(Identifier id, double value, EntityAttributeModifier.Operation operation) {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final MapCodec<EntityAttributeModifier> MAP_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Identifier.CODEC.fieldOf("id").forGetter(EntityAttributeModifier::uuid),
+					Identifier.CODEC.fieldOf("id").forGetter(EntityAttributeModifier::id),
 					Codec.DOUBLE.fieldOf("amount").forGetter(EntityAttributeModifier::value),
 					EntityAttributeModifier.Operation.CODEC.fieldOf("operation").forGetter(EntityAttributeModifier::operation)
 				)
@@ -32,7 +32,7 @@ public record EntityAttributeModifier(Identifier uuid, double value, EntityAttri
 	public static final Codec<EntityAttributeModifier> CODEC = MAP_CODEC.codec();
 	public static final PacketCodec<ByteBuf, EntityAttributeModifier> PACKET_CODEC = PacketCodec.tuple(
 		Identifier.PACKET_CODEC,
-		EntityAttributeModifier::uuid,
+		EntityAttributeModifier::id,
 		PacketCodecs.DOUBLE,
 		EntityAttributeModifier::value,
 		EntityAttributeModifier.Operation.PACKET_CODEC,
@@ -56,8 +56,8 @@ public record EntityAttributeModifier(Identifier uuid, double value, EntityAttri
 		}
 	}
 
-	public boolean method_60718(Identifier identifier) {
-		return identifier.equals(this.uuid);
+	public boolean idMatches(Identifier id) {
+		return id.equals(this.id);
 	}
 
 	/**

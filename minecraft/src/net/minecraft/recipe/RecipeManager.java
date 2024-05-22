@@ -52,7 +52,7 @@ public class RecipeManager extends JsonDataLoader {
 	private boolean errored;
 
 	public RecipeManager(RegistryWrapper.WrapperLookup registryLookup) {
-		super(GSON, RegistryKeys.method_60915(RegistryKeys.RECIPE));
+		super(GSON, RegistryKeys.getPath(RegistryKeys.RECIPE));
 		this.registryLookup = registryLookup;
 	}
 

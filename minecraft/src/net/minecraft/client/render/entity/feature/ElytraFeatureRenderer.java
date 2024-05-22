@@ -7,7 +7,6 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.render.entity.model.ElytraEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -17,13 +16,14 @@ import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
-	private static final Identifier SKIN = Identifier.method_60656("textures/entity/elytra.png");
+	private static final Identifier SKIN = Identifier.ofVanilla("textures/entity/elytra.png");
 	private final ElytraEntityModel<T> elytra;
 
 	public ElytraFeatureRenderer(FeatureRendererContext<T, M> context, EntityModelLoader loader) {
@@ -57,7 +57,7 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 			VertexConsumer vertexConsumer = ItemRenderer.getArmorGlintConsumer(
 				vertexConsumerProvider, RenderLayer.getArmorCutoutNoCull(identifier), itemStack.hasGlint()
 			);
-			this.elytra.method_60879(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
+			this.elytra.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 			matrixStack.pop();
 		}
 	}

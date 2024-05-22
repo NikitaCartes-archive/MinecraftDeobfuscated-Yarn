@@ -136,7 +136,7 @@ public class TrialSpawnerData {
 				List<UUID> list = logic.getEntityDetector().detect(world, logic.getEntitySelector(), pos, (double)logic.getDetectionRadius(), true);
 				boolean bl2;
 				if (!logic.isOminous() && !list.isEmpty()) {
-					Optional<Pair<PlayerEntity, RegistryEntry<StatusEffect>>> optional = method_60789(world, list);
+					Optional<Pair<PlayerEntity, RegistryEntry<StatusEffect>>> optional = findPlayerWithOmen(world, list);
 					optional.ifPresent(pair -> {
 						PlayerEntity playerEntity = (PlayerEntity)pair.getFirst();
 						if (pair.getSecond() == StatusEffects.BAD_OMEN) {
@@ -166,11 +166,11 @@ public class TrialSpawnerData {
 		}
 	}
 
-	private static Optional<Pair<PlayerEntity, RegistryEntry<StatusEffect>>> method_60789(ServerWorld serverWorld, List<UUID> list) {
+	private static Optional<Pair<PlayerEntity, RegistryEntry<StatusEffect>>> findPlayerWithOmen(ServerWorld world, List<UUID> players) {
 		PlayerEntity playerEntity = null;
 
-		for (UUID uUID : list) {
-			PlayerEntity playerEntity2 = serverWorld.getPlayerByUuid(uUID);
+		for (UUID uUID : players) {
+			PlayerEntity playerEntity2 = world.getPlayerByUuid(uUID);
 			if (playerEntity2 != null) {
 				RegistryEntry<StatusEffect> registryEntry = StatusEffects.TRIAL_OMEN;
 				if (playerEntity2.hasStatusEffect(registryEntry)) {
@@ -183,7 +183,7 @@ public class TrialSpawnerData {
 			}
 		}
 
-		return Optional.ofNullable(playerEntity).map(playerEntityx -> Pair.of(playerEntityx, StatusEffects.BAD_OMEN));
+		return Optional.ofNullable(playerEntity).map(player -> Pair.of(player, StatusEffects.BAD_OMEN));
 	}
 
 	public void resetAndClearMobs(TrialSpawnerLogic logic, ServerWorld world) {
@@ -204,13 +204,13 @@ public class TrialSpawnerData {
 		this.cooldownEnd = world.getTime() + logic.getOminousConfig().getCooldownLength();
 	}
 
-	private static void applyTrialOmen(PlayerEntity playerEntity) {
-		StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.BAD_OMEN);
+	private static void applyTrialOmen(PlayerEntity player) {
+		StatusEffectInstance statusEffectInstance = player.getStatusEffect(StatusEffects.BAD_OMEN);
 		if (statusEffectInstance != null) {
 			int i = statusEffectInstance.getAmplifier() + 1;
 			int j = 18000 * i;
-			playerEntity.removeStatusEffect(StatusEffects.BAD_OMEN);
-			playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.TRIAL_OMEN, j, 0));
+			player.removeStatusEffect(StatusEffects.BAD_OMEN);
+			player.addStatusEffect(new StatusEffectInstance(StatusEffects.TRIAL_OMEN, j, 0));
 		}
 	}
 

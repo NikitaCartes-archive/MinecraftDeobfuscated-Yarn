@@ -3,7 +3,6 @@ package net.minecraft.block;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
-import net.minecraft.class_9797;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -21,9 +20,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.slf4j.Logger;
 
-public class EndGatewayBlock extends BlockWithEntity implements class_9797 {
+public class EndGatewayBlock extends BlockWithEntity implements Portal {
 	public static final MapCodec<EndGatewayBlock> CODEC = createCodec(EndGatewayBlock::new);
-	private static final Logger field_52058 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_52059 = 10;
 
 	@Override
@@ -89,17 +88,17 @@ public class EndGatewayBlock extends BlockWithEntity implements class_9797 {
 			&& !world.isClient
 			&& world.getBlockEntity(pos) instanceof EndGatewayBlockEntity endGatewayBlockEntity
 			&& !endGatewayBlockEntity.needsCooldownBeforeTeleporting()) {
-			entity.method_60697(this, pos);
+			entity.tryUsePortal(this, pos);
 			EndGatewayBlockEntity.startTeleportCooldown(world, pos, state, endGatewayBlockEntity);
 		}
 	}
 
 	@Nullable
 	@Override
-	public TeleportTarget method_60770(ServerWorld serverWorld, Entity entity, BlockPos blockPos) {
-		if (serverWorld.getBlockEntity(blockPos) instanceof EndGatewayBlockEntity endGatewayBlockEntity) {
-			Vec3d vec3d = endGatewayBlockEntity.method_60787(serverWorld, blockPos);
-			return vec3d != null ? new TeleportTarget(serverWorld, vec3d, entity.getVelocity(), entity.getYaw(), entity.getPitch()) : null;
+	public TeleportTarget createTeleportTarget(ServerWorld world, Entity entity, BlockPos pos) {
+		if (world.getBlockEntity(pos) instanceof EndGatewayBlockEntity endGatewayBlockEntity) {
+			Vec3d vec3d = endGatewayBlockEntity.getOrCreateExitPortalPos(world, pos);
+			return vec3d != null ? new TeleportTarget(world, vec3d, entity.getVelocity(), entity.getYaw(), entity.getPitch()) : null;
 		} else {
 			return null;
 		}

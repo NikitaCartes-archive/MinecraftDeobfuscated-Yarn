@@ -32,7 +32,7 @@ public interface VertexConsumer {
 	 * 
 	 * @return this consumer, for chaining
 	 */
-	VertexConsumer vertex(float f, float g, float h);
+	VertexConsumer vertex(float x, float y, float z);
 
 	/**
 	 * Specifies the {@linkplain VertexFormats#COLOR_ELEMENT
@@ -57,7 +57,16 @@ public interface VertexConsumer {
 	 */
 	VertexConsumer texture(float u, float v);
 
-	VertexConsumer method_60796(int i, int j);
+	/**
+	 * Specifies the {@linkplain VertexFormats#OVERLAY_ELEMENT
+	 * overlay element} of the current vertex.
+	 * 
+	 * @throws IllegalStateException if this consumer is not currently
+	 * accepting an overlay element.
+	 * 
+	 * @return this consumer, for chaining
+	 */
+	VertexConsumer overlay(int u, int v);
 
 	/**
 	 * Specifies the {@linkplain VertexFormats#LIGHT_ELEMENT
@@ -94,13 +103,13 @@ public interface VertexConsumer {
 	 * @throws IllegalStateException if a color has been set in {@link
 	 * #fixedColor}.
 	 */
-	default void vertex(float x, float y, float z, int i, float green, float blue, int j, int k, float v, float f, float g) {
+	default void vertex(float x, float y, float z, int color, float u, float v, int overlay, int light, float normalX, float normalY, float normalZ) {
 		this.vertex(x, y, z);
-		this.color(i);
-		this.texture(green, blue);
-		this.overlay(j);
-		this.method_60803(k);
-		this.normal(v, f, g);
+		this.color(color);
+		this.texture(u, v);
+		this.overlay(overlay);
+		this.light(light);
+		this.normal(normalX, normalY, normalZ);
 	}
 
 	/**
@@ -131,12 +140,31 @@ public interface VertexConsumer {
 		return this.color(ColorHelper.Argb.getRed(argb), ColorHelper.Argb.getGreen(argb), ColorHelper.Argb.getBlue(argb), ColorHelper.Argb.getAlpha(argb));
 	}
 
-	default VertexConsumer method_60832(int i) {
-		return this.color(ColorHelper.Argb.withAlpha(i, -1));
+	/**
+	 * Specifies the {@linkplain VertexFormats#COLOR_ELEMENT
+	 * color element} of the current vertex in rgb format.
+	 * 
+	 * @throws IllegalStateException if this consumer is not currently
+	 * accepting a color element or if a color has been set in {@link
+	 * #fixedColor}.
+	 * 
+	 * @return this consumer, for chaining
+	 */
+	default VertexConsumer colorRgb(int rgb) {
+		return this.color(ColorHelper.Argb.withAlpha(rgb, -1));
 	}
 
-	default VertexConsumer method_60803(int i) {
-		return this.light(i & 65535, i >> 16 & 65535);
+	/**
+	 * Specifies the {@linkplain VertexFormats#LIGHT_ELEMENT
+	 * light element} of the current vertex.
+	 * 
+	 * @throws IllegalStateException if this consumer is not currently
+	 * accepting a light element.
+	 * 
+	 * @return this consumer, for chaining
+	 */
+	default VertexConsumer light(int uv) {
+		return this.light(uv & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 65295), uv >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 65295));
 	}
 
 	/**
@@ -149,7 +177,7 @@ public interface VertexConsumer {
 	 * @return this consumer, for chaining
 	 */
 	default VertexConsumer overlay(int uv) {
-		return this.method_60796(uv & 65535, uv >> 16 & 65535);
+		return this.overlay(uv & 65535, uv >> 16 & 65535);
 	}
 
 	/**
@@ -217,8 +245,8 @@ public interface VertexConsumer {
 		}
 	}
 
-	default VertexConsumer method_60830(Vector3f vector3f) {
-		return this.vertex(vector3f.x(), vector3f.y(), vector3f.z());
+	default VertexConsumer vertex(Vector3f vec) {
+		return this.vertex(vec.x(), vec.y(), vec.z());
 	}
 
 	default VertexConsumer vertex(MatrixStack.Entry matrix, float x, float y, float z) {
@@ -243,8 +271,8 @@ public interface VertexConsumer {
 		return this.vertex(vector3f.x(), vector3f.y(), vector3f.z());
 	}
 
-	default VertexConsumer method_60831(MatrixStack.Entry entry, float f, float g, float h) {
-		Vector3f vector3f = entry.transformNormal(f, g, h, new Vector3f());
+	default VertexConsumer normal(MatrixStack.Entry matrix, float x, float y, float z) {
+		Vector3f vector3f = matrix.transformNormal(x, y, z, new Vector3f());
 		return this.normal(vector3f.x(), vector3f.y(), vector3f.z());
 	}
 }

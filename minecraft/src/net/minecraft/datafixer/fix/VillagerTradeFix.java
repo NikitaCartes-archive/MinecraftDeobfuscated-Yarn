@@ -27,13 +27,15 @@ public class VillagerTradeFix extends DataFix {
 		OpticFinder<Pair<String, String>> opticFinder4 = DSL.fieldFinder(
 			"id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType())
 		);
-		Function<Typed<?>, Typed<?>> function = typed -> this.fixPumpkinTrade(opticFinder4, typed);
+		Function<Typed<?>, Typed<?>> function = itemTyped -> this.fixPumpkinTrade(opticFinder4, itemTyped);
 		return this.fixTypeEverywhereTyped(
-			"Villager trade fix", type, typed -> typed.updateTyped(opticFinder, function).updateTyped(opticFinder2, function).updateTyped(opticFinder3, function)
+			"Villager trade fix",
+			type,
+			villagerTradeTyped -> villagerTradeTyped.updateTyped(opticFinder, function).updateTyped(opticFinder2, function).updateTyped(opticFinder3, function)
 		);
 	}
 
-	private Typed<?> fixPumpkinTrade(OpticFinder<Pair<String, String>> opticFinder, Typed<?> typed) {
-		return typed.update(opticFinder, pair -> pair.mapSecond(string -> Objects.equals(string, "minecraft:carved_pumpkin") ? "minecraft:pumpkin" : string));
+	private Typed<?> fixPumpkinTrade(OpticFinder<Pair<String, String>> idOpticFinder, Typed<?> itemTyped) {
+		return itemTyped.update(idOpticFinder, entry -> entry.mapSecond(id -> Objects.equals(id, "minecraft:carved_pumpkin") ? "minecraft:pumpkin" : id));
 	}
 }

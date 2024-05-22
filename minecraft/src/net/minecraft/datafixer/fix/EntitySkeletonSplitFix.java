@@ -6,14 +6,14 @@ import com.mojang.serialization.Dynamic;
 import java.util.Objects;
 
 public class EntitySkeletonSplitFix extends EntitySimpleTransformFix {
-	public EntitySkeletonSplitFix(Schema schema, boolean bl) {
-		super("EntitySkeletonSplitFix", schema, bl);
+	public EntitySkeletonSplitFix(Schema outputSchema, boolean changesType) {
+		super("EntitySkeletonSplitFix", outputSchema, changesType);
 	}
 
 	@Override
-	protected Pair<String, Dynamic<?>> transform(String choice, Dynamic<?> dynamic) {
+	protected Pair<String, Dynamic<?>> transform(String choice, Dynamic<?> entityDynamic) {
 		if (Objects.equals(choice, "Skeleton")) {
-			int i = dynamic.get("SkeletonType").asInt(0);
+			int i = entityDynamic.get("SkeletonType").asInt(0);
 			if (i == 1) {
 				choice = "WitherSkeleton";
 			} else if (i == 2) {
@@ -21,6 +21,6 @@ public class EntitySkeletonSplitFix extends EntitySimpleTransformFix {
 			}
 		}
 
-		return Pair.of(choice, dynamic);
+		return Pair.of(choice, entityDynamic);
 	}
 }

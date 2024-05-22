@@ -12,32 +12,32 @@ import net.minecraft.datafixer.TypeReferences;
 public class HangingEntityFix extends DataFix {
 	private static final int[][] OFFSETS = new int[][]{{0, 0, 1}, {-1, 0, 0}, {0, 0, -1}, {1, 0, 0}};
 
-	public HangingEntityFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public HangingEntityFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
-	private Dynamic<?> fixDecorationPosition(Dynamic<?> dynamic, boolean isPainting, boolean isItemFrame) {
-		if ((isPainting || isItemFrame) && dynamic.get("Facing").asNumber().result().isEmpty()) {
+	private Dynamic<?> fixDecorationPosition(Dynamic<?> entityDynamic, boolean isPainting, boolean isItemFrame) {
+		if ((isPainting || isItemFrame) && entityDynamic.get("Facing").asNumber().result().isEmpty()) {
 			int i;
-			if (dynamic.get("Direction").asNumber().result().isPresent()) {
-				i = dynamic.get("Direction").asByte((byte)0) % OFFSETS.length;
+			if (entityDynamic.get("Direction").asNumber().result().isPresent()) {
+				i = entityDynamic.get("Direction").asByte((byte)0) % OFFSETS.length;
 				int[] is = OFFSETS[i];
-				dynamic = dynamic.set("TileX", dynamic.createInt(dynamic.get("TileX").asInt(0) + is[0]));
-				dynamic = dynamic.set("TileY", dynamic.createInt(dynamic.get("TileY").asInt(0) + is[1]));
-				dynamic = dynamic.set("TileZ", dynamic.createInt(dynamic.get("TileZ").asInt(0) + is[2]));
-				dynamic = dynamic.remove("Direction");
-				if (isItemFrame && dynamic.get("ItemRotation").asNumber().result().isPresent()) {
-					dynamic = dynamic.set("ItemRotation", dynamic.createByte((byte)(dynamic.get("ItemRotation").asByte((byte)0) * 2)));
+				entityDynamic = entityDynamic.set("TileX", entityDynamic.createInt(entityDynamic.get("TileX").asInt(0) + is[0]));
+				entityDynamic = entityDynamic.set("TileY", entityDynamic.createInt(entityDynamic.get("TileY").asInt(0) + is[1]));
+				entityDynamic = entityDynamic.set("TileZ", entityDynamic.createInt(entityDynamic.get("TileZ").asInt(0) + is[2]));
+				entityDynamic = entityDynamic.remove("Direction");
+				if (isItemFrame && entityDynamic.get("ItemRotation").asNumber().result().isPresent()) {
+					entityDynamic = entityDynamic.set("ItemRotation", entityDynamic.createByte((byte)(entityDynamic.get("ItemRotation").asByte((byte)0) * 2)));
 				}
 			} else {
-				i = dynamic.get("Dir").asByte((byte)0) % OFFSETS.length;
-				dynamic = dynamic.remove("Dir");
+				i = entityDynamic.get("Dir").asByte((byte)0) % OFFSETS.length;
+				entityDynamic = entityDynamic.remove("Dir");
 			}
 
-			dynamic = dynamic.set("Facing", dynamic.createByte((byte)i));
+			entityDynamic = entityDynamic.set("Facing", entityDynamic.createByte((byte)i));
 		}
 
-		return dynamic;
+		return entityDynamic;
 	}
 
 	@Override
@@ -50,12 +50,20 @@ public class HangingEntityFix extends DataFix {
 		TypeRewriteRule typeRewriteRule = this.fixTypeEverywhereTyped(
 			"EntityPaintingFix",
 			type3,
-			typed -> typed.updateTyped(opticFinder, type, typedx -> typedx.update(DSL.remainderFinder(), dynamic -> this.fixDecorationPosition(dynamic, true, false)))
+			entityTyped -> entityTyped.updateTyped(
+					opticFinder,
+					type,
+					paintingTyped -> paintingTyped.update(DSL.remainderFinder(), paintingDynamic -> this.fixDecorationPosition(paintingDynamic, true, false))
+				)
 		);
 		TypeRewriteRule typeRewriteRule2 = this.fixTypeEverywhereTyped(
 			"EntityItemFrameFix",
 			type3,
-			typed -> typed.updateTyped(opticFinder2, type2, typedx -> typedx.update(DSL.remainderFinder(), dynamic -> this.fixDecorationPosition(dynamic, false, true)))
+			entityTyped -> entityTyped.updateTyped(
+					opticFinder2,
+					type2,
+					itemFrameTyped -> itemFrameTyped.update(DSL.remainderFinder(), itemFrameDynamic -> this.fixDecorationPosition(itemFrameDynamic, false, true))
+				)
 		);
 		return TypeRewriteRule.seq(typeRewriteRule, typeRewriteRule2);
 	}

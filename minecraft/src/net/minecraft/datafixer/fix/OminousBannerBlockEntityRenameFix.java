@@ -8,23 +8,23 @@ import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
 
 public class OminousBannerBlockEntityRenameFix extends ChoiceFix {
-	public OminousBannerBlockEntityRenameFix(Schema schema, boolean bl) {
-		super(schema, bl, "OminousBannerBlockEntityRenameFix", TypeReferences.BLOCK_ENTITY, "minecraft:banner");
+	public OminousBannerBlockEntityRenameFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "OminousBannerBlockEntityRenameFix", TypeReferences.BLOCK_ENTITY, "minecraft:banner");
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(DSL.remainderFinder(), this::fixBannerName);
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(DSL.remainderFinder(), this::fixBannerName);
 	}
 
-	private Dynamic<?> fixBannerName(Dynamic<?> dynamic) {
-		Optional<String> optional = dynamic.get("CustomName").asString().result();
+	private Dynamic<?> fixBannerName(Dynamic<?> bannerDynamic) {
+		Optional<String> optional = bannerDynamic.get("CustomName").asString().result();
 		if (optional.isPresent()) {
 			String string = (String)optional.get();
 			string = string.replace("\"translate\":\"block.minecraft.illager_banner\"", "\"translate\":\"block.minecraft.ominous_banner\"");
-			return dynamic.set("CustomName", dynamic.createString(string));
+			return bannerDynamic.set("CustomName", bannerDynamic.createString(string));
 		} else {
-			return dynamic;
+			return bannerDynamic;
 		}
 	}
 }

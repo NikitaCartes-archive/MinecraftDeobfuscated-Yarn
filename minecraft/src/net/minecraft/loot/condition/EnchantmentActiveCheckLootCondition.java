@@ -28,11 +28,11 @@ public record EnchantmentActiveCheckLootCondition(boolean active) implements Loo
 		return Set.of(LootContextParameters.ENCHANTMENT_ACTIVE);
 	}
 
-	public static LootCondition.Builder active() {
+	public static LootCondition.Builder requireActive() {
 		return () -> new EnchantmentActiveCheckLootCondition(true);
 	}
 
-	public static LootCondition.Builder inactive() {
+	public static LootCondition.Builder requireInactive() {
 		return () -> new EnchantmentActiveCheckLootCondition(false);
 	}
 }

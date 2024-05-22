@@ -70,7 +70,7 @@ public class SkullEntityModel extends SkullBlockEntityModel {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {
-		this.root.render(matrices, vertices, light, overlay, i);
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
+		this.root.render(matrices, vertices, light, overlay, color);
 	}
 }

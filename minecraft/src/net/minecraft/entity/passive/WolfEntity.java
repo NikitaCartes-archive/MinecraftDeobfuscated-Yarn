@@ -117,7 +117,7 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	@Override
 	protected void initGoals() {
 		this.goalSelector.add(1, new SwimGoal(this));
-		this.goalSelector.add(1, new TameableEntity.class_9788(1.5, DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES));
+		this.goalSelector.add(1, new TameableEntity.TameableEscapeDangerGoal(1.5, DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES));
 		this.goalSelector.add(2, new SitGoal(this));
 		this.goalSelector.add(3, new WolfEntity.AvoidLlamaGoal(this, LlamaEntity.class, 24.0F, 1.5, 1.5));
 		this.goalSelector.add(4, new PounceAtTargetGoal(this, 0.4F));

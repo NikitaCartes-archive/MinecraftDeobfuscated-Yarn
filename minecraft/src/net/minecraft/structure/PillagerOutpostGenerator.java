@@ -14,7 +14,7 @@ import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
 
 public class PillagerOutpostGenerator {
-	public static final RegistryKey<StructurePool> STRUCTURE_POOLS = StructurePools.of("pillager_outpost/base_plates");
+	public static final RegistryKey<StructurePool> STRUCTURE_POOLS = StructurePools.ofVanilla("pillager_outpost/base_plates");
 
 	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
 		RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST);

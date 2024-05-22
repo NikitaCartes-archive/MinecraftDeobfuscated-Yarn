@@ -8,8 +8,8 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixer.TypeReferences;
 
 public class OptionsAddTextBackgroundFix extends DataFix {
-	public OptionsAddTextBackgroundFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public OptionsAddTextBackgroundFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -17,14 +17,14 @@ public class OptionsAddTextBackgroundFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"OptionsAddTextBackgroundFix",
 			this.getInputSchema().getType(TypeReferences.OPTIONS),
-			typed -> typed.update(
+			optionsTyped -> optionsTyped.update(
 					DSL.remainderFinder(),
-					dynamic -> DataFixUtils.orElse(
-							dynamic.get("chatOpacity")
+					optionsDynamic -> DataFixUtils.orElse(
+							optionsDynamic.get("chatOpacity")
 								.asString()
-								.map(string -> dynamic.set("textBackgroundOpacity", dynamic.createDouble(this.convertToTextBackgroundOpacity(string))))
+								.map(string -> optionsDynamic.set("textBackgroundOpacity", optionsDynamic.createDouble(this.convertToTextBackgroundOpacity(string))))
 								.result(),
-							dynamic
+							optionsDynamic
 						)
 				)
 		);

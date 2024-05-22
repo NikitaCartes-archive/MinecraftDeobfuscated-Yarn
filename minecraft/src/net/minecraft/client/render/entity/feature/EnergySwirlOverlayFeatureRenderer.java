@@ -9,6 +9,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.SkinOverlayOwner;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)

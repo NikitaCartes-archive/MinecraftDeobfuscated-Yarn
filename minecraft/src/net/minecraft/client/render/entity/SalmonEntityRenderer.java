@@ -12,7 +12,7 @@ import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class SalmonEntityRenderer extends MobEntityRenderer<SalmonEntity, SalmonEntityModel<SalmonEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/fish/salmon.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/fish/salmon.png");
 
 	public SalmonEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new SalmonEntityModel<>(context.getPart(EntityModelLayers.SALMON)), 0.4F);

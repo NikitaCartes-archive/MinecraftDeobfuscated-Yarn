@@ -57,7 +57,7 @@ public class FallingBlockEntity extends Entity {
 	private float fallHurtAmount;
 	@Nullable
 	public NbtCompound blockEntityData;
-	public boolean field_52015;
+	public boolean shouldDupe;
 	protected static final TrackedData<BlockPos> BLOCK_POS = DataTracker.registerData(FallingBlockEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
 
 	public FallingBlockEntity(EntityType<? extends FallingBlockEntity> entityType, World world) {
@@ -135,8 +135,8 @@ public class FallingBlockEntity extends Entity {
 			this.timeFalling++;
 			this.applyGravity();
 			this.move(MovementType.SELF, this.getVelocity());
-			this.method_60698();
-			if (!this.getWorld().isClient && (this.isAlive() || this.field_52015)) {
+			this.tickPortalTeleportation();
+			if (!this.getWorld().isClient && (this.isAlive() || this.shouldDupe)) {
 				BlockPos blockPos = this.getBlockPos();
 				boolean bl = this.block.getBlock() instanceof ConcretePowderBlock;
 				boolean bl2 = bl && this.getWorld().getFluidState(blockPos).isIn(FluidTags.WATER);
@@ -357,12 +357,12 @@ public class FallingBlockEntity extends Entity {
 
 	@Nullable
 	@Override
-	public Entity moveToWorld(TeleportTarget teleportTarget) {
-		RegistryKey<World> registryKey = teleportTarget.newLevel().getRegistryKey();
+	public Entity teleportTo(TeleportTarget teleportTarget) {
+		RegistryKey<World> registryKey = teleportTarget.world().getRegistryKey();
 		RegistryKey<World> registryKey2 = this.getWorld().getRegistryKey();
 		boolean bl = (registryKey2 == World.END || registryKey == World.END) && registryKey2 != registryKey;
-		Entity entity = super.moveToWorld(teleportTarget);
-		this.field_52015 = entity != null && bl;
+		Entity entity = super.teleportTo(teleportTarget);
+		this.shouldDupe = entity != null && bl;
 		return entity;
 	}
 }

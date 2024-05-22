@@ -8,7 +8,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.render.entity.PlayerModelPart;
+import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)

@@ -337,7 +337,7 @@ public class FluidRenderer {
 	}
 
 	private void vertex(VertexConsumer vertexConsumer, float f, float g, float h, float i, float j, float k, float l, float m, int n) {
-		vertexConsumer.vertex(f, g, h).color(i, j, k, 1.0F).texture(l, m).method_60803(n).normal(0.0F, 1.0F, 0.0F);
+		vertexConsumer.vertex(f, g, h).color(i, j, k, 1.0F).texture(l, m).light(n).normal(0.0F, 1.0F, 0.0F);
 	}
 
 	private int getLight(BlockRenderView world, BlockPos pos) {

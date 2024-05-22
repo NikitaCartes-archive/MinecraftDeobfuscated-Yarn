@@ -33,18 +33,18 @@ import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
-	private static final Identifier DRAFT_REPORT_ICON_TEXTURE = Identifier.method_60656("icon/draft_report");
+	private static final Identifier DRAFT_REPORT_ICON_TEXTURE = Identifier.ofVanilla("icon/draft_report");
 	private static final Duration TOOLTIP_DELAY = Duration.ofMillis(500L);
 	private static final ButtonTextures REPORT_BUTTON_TEXTURES = new ButtonTextures(
-		Identifier.method_60656("social_interactions/report_button"),
-		Identifier.method_60656("social_interactions/report_button_disabled"),
-		Identifier.method_60656("social_interactions/report_button_highlighted")
+		Identifier.ofVanilla("social_interactions/report_button"),
+		Identifier.ofVanilla("social_interactions/report_button_disabled"),
+		Identifier.ofVanilla("social_interactions/report_button_highlighted")
 	);
 	private static final ButtonTextures MUTE_BUTTON_TEXTURES = new ButtonTextures(
-		Identifier.method_60656("social_interactions/mute_button"), Identifier.method_60656("social_interactions/mute_button_highlighted")
+		Identifier.ofVanilla("social_interactions/mute_button"), Identifier.ofVanilla("social_interactions/mute_button_highlighted")
 	);
 	private static final ButtonTextures UNMUTE_BUTTON_TEXTURES = new ButtonTextures(
-		Identifier.method_60656("social_interactions/unmute_button"), Identifier.method_60656("social_interactions/unmute_button_highlighted")
+		Identifier.ofVanilla("social_interactions/unmute_button"), Identifier.ofVanilla("social_interactions/unmute_button_highlighted")
 	);
 	private final MinecraftClient client;
 	private final List<ClickableWidget> buttons;

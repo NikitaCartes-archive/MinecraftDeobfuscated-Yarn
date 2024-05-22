@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class Generic3x3ContainerScreen extends HandledScreen<Generic3x3ContainerScreenHandler> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/dispenser.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/gui/container/dispenser.png");
 
 	public Generic3x3ContainerScreen(Generic3x3ContainerScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);

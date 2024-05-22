@@ -11,9 +11,9 @@ public class GoatMissingStateFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(
-			DSL.remainderFinder(), dynamic -> dynamic.set("HasLeftHorn", dynamic.createBoolean(true)).set("HasRightHorn", dynamic.createBoolean(true))
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(
+			DSL.remainderFinder(), goatDynamic -> goatDynamic.set("HasLeftHorn", goatDynamic.createBoolean(true)).set("HasRightHorn", goatDynamic.createBoolean(true))
 		);
 	}
 }

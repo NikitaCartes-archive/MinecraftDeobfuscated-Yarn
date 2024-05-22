@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class EndermanEyesFeatureRenderer<T extends LivingEntity> extends EyesFeatureRenderer<T, EndermanEntityModel<T>> {
-	private static final RenderLayer SKIN = RenderLayer.getEyes(Identifier.method_60656("textures/entity/enderman/enderman_eyes.png"));
+	private static final RenderLayer SKIN = RenderLayer.getEyes(Identifier.ofVanilla("textures/entity/enderman/enderman_eyes.png"));
 
 	public EndermanEyesFeatureRenderer(FeatureRendererContext<T, EndermanEntityModel<T>> featureRendererContext) {
 		super(featureRendererContext);

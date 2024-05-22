@@ -11,10 +11,10 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class PageTurnWidget extends ButtonWidget {
-	private static final Identifier PAGE_FORWARD_HIGHLIGHTED_TEXTURE = Identifier.method_60656("widget/page_forward_highlighted");
-	private static final Identifier PAGE_FORWARD_TEXTURE = Identifier.method_60656("widget/page_forward");
-	private static final Identifier PAGE_BACKWARD_HIGHLIGHTED_TEXTURE = Identifier.method_60656("widget/page_backward_highlighted");
-	private static final Identifier PAGE_BACKWARD_TEXTURE = Identifier.method_60656("widget/page_backward");
+	private static final Identifier PAGE_FORWARD_HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("widget/page_forward_highlighted");
+	private static final Identifier PAGE_FORWARD_TEXTURE = Identifier.ofVanilla("widget/page_forward");
+	private static final Identifier PAGE_BACKWARD_HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("widget/page_backward_highlighted");
+	private static final Identifier PAGE_BACKWARD_TEXTURE = Identifier.ofVanilla("widget/page_backward");
 	private final boolean isNextPageButton;
 	private final boolean playPageTurnSound;
 

@@ -13,6 +13,6 @@ public class BlockKeys {
 	public static final RegistryKey<Block> ATTACHED_MELON_STEM = of("attached_melon_stem");
 
 	private static RegistryKey<Block> of(String id) {
-		return RegistryKey.of(RegistryKeys.BLOCK, Identifier.method_60656(id));
+		return RegistryKey.of(RegistryKeys.BLOCK, Identifier.ofVanilla(id));
 	}
 }

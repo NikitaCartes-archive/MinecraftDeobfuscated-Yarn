@@ -25,11 +25,11 @@ public class WolfArmorFeatureRenderer extends FeatureRenderer<WolfEntity, WolfEn
 	private final WolfEntityModel<WolfEntity> model;
 	private static final Map<Cracks.CrackLevel, Identifier> CRACK_TEXTURES = Map.of(
 		Cracks.CrackLevel.LOW,
-		Identifier.method_60656("textures/entity/wolf/wolf_armor_crackiness_low.png"),
+		Identifier.ofVanilla("textures/entity/wolf/wolf_armor_crackiness_low.png"),
 		Cracks.CrackLevel.MEDIUM,
-		Identifier.method_60656("textures/entity/wolf/wolf_armor_crackiness_medium.png"),
+		Identifier.ofVanilla("textures/entity/wolf/wolf_armor_crackiness_medium.png"),
 		Cracks.CrackLevel.HIGH,
-		Identifier.method_60656("textures/entity/wolf/wolf_armor_crackiness_high.png")
+		Identifier.ofVanilla("textures/entity/wolf/wolf_armor_crackiness_high.png")
 	);
 
 	public WolfArmorFeatureRenderer(FeatureRendererContext<WolfEntity, WolfEntityModel<WolfEntity>> context, EntityModelLoader loader) {
@@ -47,7 +47,7 @@ public class WolfArmorFeatureRenderer extends FeatureRenderer<WolfEntity, WolfEn
 				this.model.animateModel(wolfEntity, f, g, h);
 				this.model.setAngles(wolfEntity, f, g, j, k, l);
 				VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(animalArmorItem.getEntityTexture()));
-				this.model.method_60879(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
+				this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 				this.renderDyed(matrixStack, vertexConsumerProvider, i, itemStack, animalArmorItem);
 				this.renderCracks(matrixStack, vertexConsumerProvider, i, itemStack);
 				return;
@@ -77,7 +77,7 @@ public class WolfArmorFeatureRenderer extends FeatureRenderer<WolfEntity, WolfEn
 		if (crackLevel != Cracks.CrackLevel.NONE) {
 			Identifier identifier = (Identifier)CRACK_TEXTURES.get(crackLevel);
 			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(identifier));
-			this.model.method_60879(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
+			this.model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
 		}
 	}
 }

@@ -59,7 +59,7 @@ public final class StructureStart {
 			return DEFAULT;
 		} else {
 			Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE);
-			Structure structure = registry.get(Identifier.method_60654(string));
+			Structure structure = registry.get(Identifier.of(string));
 			if (structure == null) {
 				LOGGER.error("Unknown stucture id: {}", string);
 				return null;

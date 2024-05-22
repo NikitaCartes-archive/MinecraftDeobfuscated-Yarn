@@ -16,11 +16,11 @@ public class EmptyItemInVillagerTradeFix extends DataFix {
 	@Override
 	public TypeRewriteRule makeRule() {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.VILLAGER_TRADE);
-		return this.writeFixAndRead("EmptyItemInVillagerTradeFix", type, type, dynamic -> {
-			Dynamic<?> dynamic2 = dynamic.get("buyB").orElseEmptyMap();
-			String string = IdentifierNormalizingSchema.normalize(dynamic2.get("id").asString("minecraft:air"));
-			int i = dynamic2.get("count").asInt(0);
-			return !string.equals("minecraft:air") && i != 0 ? dynamic : dynamic.remove("buyB");
+		return this.writeFixAndRead("EmptyItemInVillagerTradeFix", type, type, villagerTradeDynamic -> {
+			Dynamic<?> dynamic = villagerTradeDynamic.get("buyB").orElseEmptyMap();
+			String string = IdentifierNormalizingSchema.normalize(dynamic.get("id").asString("minecraft:air"));
+			int i = dynamic.get("count").asInt(0);
+			return !string.equals("minecraft:air") && i != 0 ? villagerTradeDynamic : villagerTradeDynamic.remove("buyB");
 		});
 	}
 }

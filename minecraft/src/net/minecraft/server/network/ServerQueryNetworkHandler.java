@@ -1,7 +1,7 @@
 package net.minecraft.server.network;
 
-import net.minecraft.class_9812;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.DisconnectionInfo;
 import net.minecraft.network.listener.ServerQueryPacketListener;
 import net.minecraft.network.packet.c2s.query.QueryPingC2SPacket;
 import net.minecraft.network.packet.c2s.query.QueryRequestC2SPacket;
@@ -22,7 +22,7 @@ public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
 	}
 
 	@Override
-	public void onDisconnected(class_9812 arg) {
+	public void onDisconnected(DisconnectionInfo info) {
 	}
 
 	@Override

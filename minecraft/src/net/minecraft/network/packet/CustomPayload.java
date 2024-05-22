@@ -18,7 +18,7 @@ public interface CustomPayload {
 	}
 
 	static <T extends CustomPayload> CustomPayload.Id<T> id(String id) {
-		return new CustomPayload.Id<>(Identifier.method_60656(id));
+		return new CustomPayload.Id<>(Identifier.ofVanilla(id));
 	}
 
 	static <B extends PacketByteBuf> PacketCodec<B, CustomPayload> createCodec(

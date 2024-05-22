@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class LeashKnotEntityRenderer extends EntityRenderer<LeashKnotEntity> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/lead_knot.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/lead_knot.png");
 	private final LeashKnotEntityModel<LeashKnotEntity> model;
 
 	public LeashKnotEntityRenderer(EntityRendererFactory.Context context) {
@@ -26,7 +26,7 @@ public class LeashKnotEntityRenderer extends EntityRenderer<LeashKnotEntity> {
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		this.model.setAngles(leashKnotEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(TEXTURE));
-		this.model.method_60879(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
+		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 		matrixStack.pop();
 		super.render(leashKnotEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}

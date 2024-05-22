@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_9805;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
@@ -27,6 +26,7 @@ import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.PopupScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.ProfilesTooltipComponent;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.tooltip.TooltipState;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
@@ -80,17 +80,17 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsMainScreen extends RealmsScreen {
-	static final Identifier INFO_ICON_TEXTURE = Identifier.method_60656("icon/info");
-	static final Identifier NEW_REALM_ICON_TEXTURE = Identifier.method_60656("icon/new_realm");
-	static final Identifier EXPIRED_STATUS_TEXTURE = Identifier.method_60656("realm_status/expired");
-	static final Identifier EXPIRES_SOON_STATUS_TEXTURE = Identifier.method_60656("realm_status/expires_soon");
-	static final Identifier OPEN_STATUS_TEXTURE = Identifier.method_60656("realm_status/open");
-	static final Identifier CLOSED_STATUS_TEXTURE = Identifier.method_60656("realm_status/closed");
-	private static final Identifier INVITE_ICON_TEXTURE = Identifier.method_60656("icon/invite");
-	private static final Identifier NEWS_ICON_TEXTURE = Identifier.method_60656("icon/news");
+	static final Identifier INFO_ICON_TEXTURE = Identifier.ofVanilla("icon/info");
+	static final Identifier NEW_REALM_ICON_TEXTURE = Identifier.ofVanilla("icon/new_realm");
+	static final Identifier EXPIRED_STATUS_TEXTURE = Identifier.ofVanilla("realm_status/expired");
+	static final Identifier EXPIRES_SOON_STATUS_TEXTURE = Identifier.ofVanilla("realm_status/expires_soon");
+	static final Identifier OPEN_STATUS_TEXTURE = Identifier.ofVanilla("realm_status/open");
+	static final Identifier CLOSED_STATUS_TEXTURE = Identifier.ofVanilla("realm_status/closed");
+	private static final Identifier INVITE_ICON_TEXTURE = Identifier.ofVanilla("icon/invite");
+	private static final Identifier NEWS_ICON_TEXTURE = Identifier.ofVanilla("icon/news");
 	static final Logger LOGGER = LogUtils.getLogger();
-	private static final Identifier REALMS_TITLE_TEXTURE = Identifier.method_60656("textures/gui/title/realms.png");
-	private static final Identifier NO_REALMS_TEXTURE = Identifier.method_60656("textures/gui/realms/no_realms.png");
+	private static final Identifier REALMS_TITLE_TEXTURE = Identifier.ofVanilla("textures/gui/title/realms.png");
+	private static final Identifier NO_REALMS_TEXTURE = Identifier.ofVanilla("textures/gui/realms/no_realms.png");
 	private static final Text MENU_TEXT = Text.translatable("menu.online");
 	private static final Text LOADING_TEXT = Text.translatable("mco.selectServer.loading");
 	static final Text UNINITIALIZED_TEXT = Text.translatable("mco.selectServer.uninitialized");
@@ -143,7 +143,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	RealmsMainScreen.RealmSelectionList realmSelectionList;
 	private RealmsServerFilterer serverFilterer;
 	private List<RealmsServer> availableSnapshotServers = List.of();
-	RealmsServerPlayerList field_52116 = new RealmsServerPlayerList();
+	RealmsServerPlayerList onlinePlayers = new RealmsServerPlayerList();
 	private volatile boolean trialAvailable;
 	@Nullable
 	private volatile String newsLink;
@@ -406,7 +406,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			}
 		});
 		runnersManager.add(periodicCheckers.trialAvailability, trialAvailable -> this.trialAvailable = trialAvailable);
-		runnersManager.add(periodicCheckers.field_52122, realmsServerPlayerList -> this.field_52116 = realmsServerPlayerList);
+		runnersManager.add(periodicCheckers.onlinePlayers, onlinePlayers -> this.onlinePlayers = onlinePlayers);
 		runnersManager.add(periodicCheckers.news, news -> {
 			periodicCheckers.newsUpdater.updateNews(news);
 			this.newsLink = periodicCheckers.newsUpdater.getNewsLink();
@@ -625,20 +625,20 @@ public class RealmsMainScreen extends RealmsScreen {
 		play(serverData, parent, false);
 	}
 
-	public static void play(@Nullable RealmsServer serverData, Screen parent, boolean needsPreparation) {
-		if (serverData != null) {
-			if (!isSnapshotRealmsEligible() || needsPreparation || serverData.isMinigame()) {
-				MinecraftClient.getInstance().setScreen(new RealmsLongRunningMcoTaskScreen(parent, new RealmsPrepareConnectionTask(parent, serverData)));
+	public static void play(@Nullable RealmsServer server, Screen parent, boolean needsPreparation) {
+		if (server != null) {
+			if (!isSnapshotRealmsEligible() || needsPreparation || server.isMinigame()) {
+				MinecraftClient.getInstance().setScreen(new RealmsLongRunningMcoTaskScreen(parent, new RealmsPrepareConnectionTask(parent, server)));
 				return;
 			}
 
-			switch (serverData.compatibility) {
+			switch (server.compatibility) {
 				case COMPATIBLE:
-					MinecraftClient.getInstance().setScreen(new RealmsLongRunningMcoTaskScreen(parent, new RealmsPrepareConnectionTask(parent, serverData)));
+					MinecraftClient.getInstance().setScreen(new RealmsLongRunningMcoTaskScreen(parent, new RealmsPrepareConnectionTask(parent, server)));
 					break;
 				case UNVERIFIABLE:
 					showCompatibilityScreen(
-						serverData,
+						server,
 						parent,
 						Text.translatable("mco.compatibility.unverifiable.title").withColor(Colors.LIGHT_YELLOW),
 						Text.translatable("mco.compatibility.unverifiable.message"),
@@ -647,19 +647,19 @@ public class RealmsMainScreen extends RealmsScreen {
 					break;
 				case NEEDS_DOWNGRADE:
 					showCompatibilityScreen(
-						serverData,
+						server,
 						parent,
 						Text.translatable("selectWorld.backupQuestion.downgrade").withColor(Colors.LIGHT_RED),
 						Text.translatable(
 							"mco.compatibility.downgrade.description",
-							Text.literal(serverData.activeVersion).withColor(Colors.LIGHT_YELLOW),
+							Text.literal(server.activeVersion).withColor(Colors.LIGHT_YELLOW),
 							Text.literal(SharedConstants.getGameVersion().getName()).withColor(Colors.LIGHT_YELLOW)
 						),
 						Text.translatable("mco.compatibility.downgrade")
 					);
 					break;
 				case NEEDS_UPGRADE:
-					method_60861(serverData, parent);
+					showNeedsUpgradeScreen(server, parent);
 					break;
 				case INCOMPATIBLE:
 					MinecraftClient.getInstance()
@@ -668,7 +668,7 @@ public class RealmsMainScreen extends RealmsScreen {
 								.message(
 									Text.translatable(
 										"mco.compatibility.incompatible.series.popup.message",
-										Text.literal(serverData.activeVersion).withColor(Colors.LIGHT_YELLOW),
+										Text.literal(server.activeVersion).withColor(Colors.LIGHT_YELLOW),
 										Text.literal(SharedConstants.getGameVersion().getName()).withColor(Colors.LIGHT_YELLOW)
 									)
 								)
@@ -688,22 +688,22 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 	}
 
-	private static void showCompatibilityScreen(RealmsServer realmsServer, Screen parent, Text text, Text text2, Text text3) {
-		MinecraftClient.getInstance().setScreen(new PopupScreen.Builder(parent, text).message(text2).button(text3, popupScreen -> {
-			MinecraftClient.getInstance().setScreen(new RealmsLongRunningMcoTaskScreen(parent, new RealmsPrepareConnectionTask(parent, realmsServer)));
+	private static void showCompatibilityScreen(RealmsServer server, Screen parent, Text title, Text description, Text confirmText) {
+		MinecraftClient.getInstance().setScreen(new PopupScreen.Builder(parent, title).message(description).button(confirmText, popup -> {
+			MinecraftClient.getInstance().setScreen(new RealmsLongRunningMcoTaskScreen(parent, new RealmsPrepareConnectionTask(parent, server)));
 			resetServerList();
 		}).button(ScreenTexts.CANCEL, PopupScreen::close).build());
 	}
 
-	private static void method_60861(RealmsServer realmsServer, Screen screen) {
+	private static void showNeedsUpgradeScreen(RealmsServer serverData, Screen parent) {
 		Text text = Text.translatable("mco.compatibility.upgrade.title").withColor(Colors.LIGHT_YELLOW);
 		Text text2 = Text.translatable("mco.compatibility.upgrade");
-		Text text3 = Text.literal(realmsServer.activeVersion).withColor(Colors.LIGHT_YELLOW);
+		Text text3 = Text.literal(serverData.activeVersion).withColor(Colors.LIGHT_YELLOW);
 		Text text4 = Text.literal(SharedConstants.getGameVersion().getName()).withColor(Colors.LIGHT_YELLOW);
-		Text text5 = isSelfOwnedServer(realmsServer)
+		Text text5 = isSelfOwnedServer(serverData)
 			? Text.translatable("mco.compatibility.upgrade.description", text3, text4)
 			: Text.translatable("mco.compatibility.upgrade.friend.description", text3, text4);
-		showCompatibilityScreen(realmsServer, screen, text, text5, text2);
+		showCompatibilityScreen(serverData, parent, text, text5, text2);
 	}
 
 	public static Text getVersionText(String version, boolean compatible) {
@@ -714,8 +714,8 @@ public class RealmsMainScreen extends RealmsScreen {
 		return (Text)(StringUtils.isBlank(version) ? ScreenTexts.EMPTY : Text.translatable("mco.version", Text.literal(version).withColor(color)));
 	}
 
-	static boolean isSelfOwnedServer(RealmsServer realmsServer) {
-		return MinecraftClient.getInstance().uuidEquals(realmsServer.ownerUUID);
+	static boolean isSelfOwnedServer(RealmsServer server) {
+		return MinecraftClient.getInstance().uuidEquals(server.ownerUUID);
 	}
 
 	private boolean isOwnedNotExpired(RealmsServer serverData) {
@@ -734,7 +734,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	@Environment(EnvType.CLIENT)
 	static class CrossButton extends TexturedButtonWidget {
 		private static final ButtonTextures TEXTURES = new ButtonTextures(
-			Identifier.method_60656("widget/cross_button"), Identifier.method_60656("widget/cross_button_highlighted")
+			Identifier.ofVanilla("widget/cross_button"), Identifier.ofVanilla("widget/cross_button_highlighted")
 		);
 
 		protected CrossButton(ButtonWidget.PressAction onPress, Text tooltip) {
@@ -850,12 +850,12 @@ public class RealmsMainScreen extends RealmsScreen {
 	@Environment(EnvType.CLIENT)
 	static class NotificationButtonWidget extends TextIconButtonWidget.IconOnly {
 		private static final Identifier[] TEXTURES = new Identifier[]{
-			Identifier.method_60656("notification/1"),
-			Identifier.method_60656("notification/2"),
-			Identifier.method_60656("notification/3"),
-			Identifier.method_60656("notification/4"),
-			Identifier.method_60656("notification/5"),
-			Identifier.method_60656("notification/more")
+			Identifier.ofVanilla("notification/1"),
+			Identifier.ofVanilla("notification/2"),
+			Identifier.ofVanilla("notification/3"),
+			Identifier.ofVanilla("notification/4"),
+			Identifier.ofVanilla("notification/5"),
+			Identifier.ofVanilla("notification/more")
 		};
 		private static final int field_45228 = Integer.MAX_VALUE;
 		private static final int SIZE = 20;
@@ -947,7 +947,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 	@Environment(EnvType.CLIENT)
 	class RealmSelectionListEntry extends RealmsMainScreen.Entry {
-		private static final Text field_52119 = Text.translatable("mco.onlinePlayers");
+		private static final Text ONLINE_PLAYERS_TEXT = Text.translatable("mco.onlinePlayers");
 		private static final int field_52120 = 9;
 		private static final int field_32054 = 36;
 		private final RealmsServer server;
@@ -975,7 +975,7 @@ public class RealmsMainScreen extends RealmsScreen {
 				this.drawServerNameAndVersion(context, y, x, entryWidth);
 				this.drawDescription(context, y, x);
 				this.drawOwnerOrExpiredText(context, y, x, this.server);
-				boolean bl = this.method_60862(context, y, x, entryWidth, entryHeight, mouseX, mouseY);
+				boolean bl = this.drawPlayers(context, y, x, entryWidth, entryHeight, mouseX, mouseY);
 				this.renderStatusIcon(this.server, context, x + entryWidth, y, mouseX, mouseY);
 				if (!bl) {
 					this.tooltip.render(hovered, this.isFocused(), new ScreenRect(x, y, entryWidth, entryHeight));
@@ -1009,20 +1009,22 @@ public class RealmsMainScreen extends RealmsScreen {
 			}
 		}
 
-		private boolean method_60862(DrawContext drawContext, int i, int j, int k, int l, int m, int n) {
-			List<ProfileResult> list = RealmsMainScreen.this.field_52116.method_60863(this.server.id);
+		private boolean drawPlayers(DrawContext context, int top, int left, int width, int height, int mouseX, int mouseY) {
+			List<ProfileResult> list = RealmsMainScreen.this.onlinePlayers.get(this.server.id);
 			if (!list.isEmpty()) {
-				int o = j + k - 21;
-				int p = i + l - 9 - 2;
-				int q = o;
+				int i = left + width - 21;
+				int j = top + height - 9 - 2;
+				int k = i;
 
-				for (int r = 0; r < list.size(); r++) {
-					q -= 9 + (r == 0 ? 0 : 3);
-					PlayerSkinDrawer.draw(drawContext, MinecraftClient.getInstance().getSkinProvider().getSkinTextures(((ProfileResult)list.get(r)).profile()), q, p, 9);
+				for (int l = 0; l < list.size(); l++) {
+					k -= 9 + (l == 0 ? 0 : 3);
+					PlayerSkinDrawer.draw(context, MinecraftClient.getInstance().getSkinProvider().getSkinTextures(((ProfileResult)list.get(l)).profile()), k, j, 9);
 				}
 
-				if (m >= q && m <= o && n >= p && n <= p + 9) {
-					drawContext.drawTooltip(RealmsMainScreen.this.textRenderer, List.of(field_52119), Optional.of(new class_9805.class_9806(list)), m, n);
+				if (mouseX >= k && mouseX <= i && mouseY >= j && mouseY <= j + 9) {
+					context.drawTooltip(
+						RealmsMainScreen.this.textRenderer, List.of(ONLINE_PLAYERS_TEXT), Optional.of(new ProfilesTooltipComponent.ProfilesData(list)), mouseX, mouseY
+					);
 					return true;
 				}
 			}

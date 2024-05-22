@@ -907,8 +907,8 @@ public class MathHelper {
 		return Math.sqrt(squaredMagnitude(a, b, c));
 	}
 
-	public static float method_60677(float f, float g, float h) {
-		return f * f + g * g + h * h;
+	public static float magnitude(float a, float b, float c) {
+		return a * a + b * b + c * c;
 	}
 
 	/**

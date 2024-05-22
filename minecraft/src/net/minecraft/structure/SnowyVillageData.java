@@ -16,8 +16,8 @@ import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.VillagePlacedFeatures;
 
 public class SnowyVillageData {
-	public static final RegistryKey<StructurePool> TOWN_CENTERS_KEY = StructurePools.of("village/snowy/town_centers");
-	private static final RegistryKey<StructurePool> TERMINATORS_KEY = StructurePools.of("village/snowy/terminators");
+	public static final RegistryKey<StructurePool> TOWN_CENTERS_KEY = StructurePools.ofVanilla("village/snowy/town_centers");
+	private static final RegistryKey<StructurePool> TERMINATORS_KEY = StructurePools.ofVanilla("village/snowy/terminators");
 
 	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
 		RegistryEntryLookup<PlacedFeature> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE);

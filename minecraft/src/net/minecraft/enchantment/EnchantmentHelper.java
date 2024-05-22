@@ -18,7 +18,7 @@ import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.effect.EnchantmentEffectTarget;
-import net.minecraft.enchantment.effect.EnchantmentValueEffectType;
+import net.minecraft.enchantment.effect.EnchantmentValueEffect;
 import net.minecraft.enchantment.provider.EnchantmentProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -296,11 +296,11 @@ public class EnchantmentHelper {
 		Entity enchantedEntity,
 		@Nullable EquipmentSlot slot,
 		Vec3d pos,
-		BlockState blockState,
-		java.util.function.Consumer<Item> consumer
+		BlockState state,
+		java.util.function.Consumer<Item> onBreak
 	) {
-		EnchantmentEffectContext enchantmentEffectContext = new EnchantmentEffectContext(stack, slot, user, consumer);
-		forEachEnchantment(stack, (registryEntry, i) -> registryEntry.value().onHitBlock(world, i, enchantmentEffectContext, enchantedEntity, pos, blockState));
+		EnchantmentEffectContext enchantmentEffectContext = new EnchantmentEffectContext(stack, slot, user, onBreak);
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().onHitBlock(world, level, enchantmentEffectContext, enchantedEntity, pos, state));
 	}
 
 	public static int getRepairWithXp(ServerWorld world, ItemStack stack, int baseRepairWithXp) {
@@ -316,7 +316,7 @@ public class EnchantmentHelper {
 			LootContext lootContext = Enchantment.createEnchantedDamageLootContext(world, level, attacker, damageSource);
 			enchantment.value().getEffect(EnchantmentEffectComponentTypes.EQUIPMENT_DROPS).forEach(effect -> {
 				if (effect.enchanted() == EnchantmentEffectTarget.VICTIM && effect.affected() == EnchantmentEffectTarget.VICTIM && effect.test(lootContext)) {
-					mutableFloat.setValue(((EnchantmentValueEffectType)effect.effect()).apply(level, random, mutableFloat.floatValue()));
+					mutableFloat.setValue(((EnchantmentValueEffect)effect.effect()).apply(level, random, mutableFloat.floatValue()));
 				}
 			});
 		});
@@ -325,7 +325,7 @@ public class EnchantmentHelper {
 				LootContext lootContext = Enchantment.createEnchantedDamageLootContext(world, level, attacker, damageSource);
 				enchantment.value().getEffect(EnchantmentEffectComponentTypes.EQUIPMENT_DROPS).forEach(effect -> {
 					if (effect.enchanted() == EnchantmentEffectTarget.ATTACKER && effect.affected() == EnchantmentEffectTarget.VICTIM && effect.test(lootContext)) {
-						mutableFloat.setValue(((EnchantmentValueEffectType)effect.effect()).apply(level, random, mutableFloat.floatValue()));
+						mutableFloat.setValue(((EnchantmentValueEffect)effect.effect()).apply(level, random, mutableFloat.floatValue()));
 					}
 				});
 			});

@@ -13,8 +13,8 @@ public class MapBannerBlockPosFormatFix extends DataFix {
 		super(outputSchema, false);
 	}
 
-	private static <T> Dynamic<T> update(Dynamic<T> dynamic) {
-		return dynamic.update("banners", dynamicx -> dynamicx.createList(dynamicx.asStream().map(dynamicxx -> dynamicxx.update("Pos", FixUtil::fixBlockPos))));
+	private static <T> Dynamic<T> update(Dynamic<T> mapDataDynamic) {
+		return mapDataDynamic.update("banners", banners -> banners.createList(banners.asStream().map(banner -> banner.update("Pos", FixUtil::fixBlockPos))));
 	}
 
 	@Override
@@ -22,7 +22,7 @@ public class MapBannerBlockPosFormatFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"MapBannerBlockPosFormatFix",
 			this.getInputSchema().getType(TypeReferences.SAVED_DATA_MAP_DATA),
-			typed -> typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("data", MapBannerBlockPosFormatFix::update))
+			mapDatTyped -> mapDatTyped.update(DSL.remainderFinder(), mapDatDynamic -> mapDatDynamic.update("data", MapBannerBlockPosFormatFix::update))
 		);
 	}
 }

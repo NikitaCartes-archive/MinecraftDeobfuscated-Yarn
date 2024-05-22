@@ -75,7 +75,7 @@ public class PointOfInterestTypes {
 	}
 
 	private static RegistryKey<PointOfInterestType> of(String id) {
-		return RegistryKey.of(RegistryKeys.POINT_OF_INTEREST_TYPE, Identifier.method_60656(id));
+		return RegistryKey.of(RegistryKeys.POINT_OF_INTEREST_TYPE, Identifier.ofVanilla(id));
 	}
 
 	private static PointOfInterestType register(

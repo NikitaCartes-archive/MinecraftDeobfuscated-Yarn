@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class HopperScreen extends HandledScreen<HopperScreenHandler> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/hopper.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/gui/container/hopper.png");
 
 	public HopperScreen(HopperScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);

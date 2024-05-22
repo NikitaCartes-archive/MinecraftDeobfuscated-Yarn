@@ -33,9 +33,9 @@ public abstract class Model {
 	 * 
 	 * @param light the lightmap coordinates used for this model rendering
 	 */
-	public abstract void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i);
+	public abstract void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color);
 
-	public final void method_60879(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j) {
-		this.render(matrixStack, vertexConsumer, i, j, -1);
+	public final void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
+		this.render(matrices, vertices, light, overlay, -1);
 	}
 }

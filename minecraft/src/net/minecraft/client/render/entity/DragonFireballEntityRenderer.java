@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballEntity> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/enderdragon/dragon_fireball.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/enderdragon/dragon_fireball.png");
 	private static final RenderLayer LAYER = RenderLayer.getEntityCutoutNoCull(TEXTURE);
 
 	public DragonFireballEntityRenderer(EntityRendererFactory.Context context) {
@@ -44,8 +44,8 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 			.color(Colors.WHITE)
 			.texture((float)textureU, (float)textureV)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.method_60803(light)
-			.method_60831(matrix, 0.0F, 1.0F, 0.0F);
+			.light(light)
+			.normal(matrix, 0.0F, 1.0F, 0.0F);
 	}
 
 	public Identifier getTexture(DragonFireballEntity dragonFireballEntity) {

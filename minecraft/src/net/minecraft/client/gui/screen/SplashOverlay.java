@@ -28,7 +28,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SplashOverlay extends Overlay {
-	static final Identifier LOGO = Identifier.method_60656("textures/gui/title/mojangstudios.png");
+	static final Identifier LOGO = Identifier.ofVanilla("textures/gui/title/mojangstudios.png");
 	private static final int MOJANG_RED = ColorHelper.Argb.getArgb(255, 239, 50, 61);
 	private static final int MONOCHROME_BLACK = ColorHelper.Argb.getArgb(255, 0, 0, 0);
 	private static final IntSupplier BRAND_ARGB = () -> MinecraftClient.getInstance().options.getMonochromeLogo().getValue() ? MONOCHROME_BLACK : MOJANG_RED;

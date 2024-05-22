@@ -11,7 +11,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.entity.ItemEntity;
@@ -21,6 +20,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.screen.ScreenHandler;
@@ -67,7 +67,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		map.put(Direction.DOWN, DOWN_SHAPE);
 	});
 	public static final EnumProperty<Direction> FACING = FacingBlock.FACING;
-	public static final Identifier CONTENTS_DYNAMIC_DROP_ID = Identifier.method_60656("contents");
+	public static final Identifier CONTENTS_DYNAMIC_DROP_ID = Identifier.ofVanilla("contents");
 	@Nullable
 	private final DyeColor color;
 

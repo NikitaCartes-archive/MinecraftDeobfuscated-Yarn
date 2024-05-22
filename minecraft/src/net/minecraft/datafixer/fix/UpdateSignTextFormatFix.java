@@ -60,7 +60,7 @@ public class UpdateSignTextFormatFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(DSL.remainderFinder(), UpdateSignTextFormatFix::updateSignTextFormat);
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(DSL.remainderFinder(), UpdateSignTextFormatFix::updateSignTextFormat);
 	}
 }

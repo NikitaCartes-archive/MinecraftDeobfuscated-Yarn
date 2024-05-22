@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class EvokerEntityRenderer<T extends SpellcastingIllagerEntity> extends IllagerEntityRenderer<T> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/illager/evoker.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/illager/evoker.png");
 
 	public EvokerEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new IllagerEntityModel<>(context.getPart(EntityModelLayers.EVOKER)), 0.5F);

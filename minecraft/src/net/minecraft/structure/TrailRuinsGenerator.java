@@ -14,7 +14,7 @@ import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
 
 public class TrailRuinsGenerator {
-	public static final RegistryKey<StructurePool> TOWER = StructurePools.of("trail_ruins/tower");
+	public static final RegistryKey<StructurePool> TOWER = StructurePools.ofVanilla("trail_ruins/tower");
 
 	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
 		RegistryEntryLookup<StructurePool> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL);

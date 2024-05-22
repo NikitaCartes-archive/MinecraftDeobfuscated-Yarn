@@ -7,11 +7,11 @@ import java.nio.ByteBuffer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9799;
-import net.minecraft.class_9801;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.util.BufferAllocator;
 import org.joml.Matrix4f;
 
 /**
@@ -54,8 +54,8 @@ public class VertexBuffer implements AutoCloseable {
 	 * <p>The caller of this method must {@linkplain #bind bind} this vertex
 	 * buffer before calling this method.
 	 */
-	public void upload(class_9801 arg) {
-		class_9801 var2 = arg;
+	public void upload(BuiltBuffer data) {
+		BuiltBuffer var2 = data;
 
 		label40: {
 			try {
@@ -64,14 +64,14 @@ public class VertexBuffer implements AutoCloseable {
 				}
 
 				RenderSystem.assertOnRenderThread();
-				class_9801.DrawParameters drawParameters = arg.method_60822();
-				this.vertexFormat = this.uploadVertexBuffer(drawParameters, arg.method_60818());
-				this.sharedSequentialIndexBuffer = this.uploadIndexBuffer(drawParameters, arg.method_60821());
+				BuiltBuffer.DrawParameters drawParameters = data.getDrawParameters();
+				this.vertexFormat = this.uploadVertexBuffer(drawParameters, data.getBuffer());
+				this.sharedSequentialIndexBuffer = this.uploadIndexBuffer(drawParameters, data.getSortedBuffer());
 				this.indexCount = drawParameters.indexCount();
 				this.indexType = drawParameters.indexType();
 				this.drawMode = drawParameters.mode();
 			} catch (Throwable var6) {
-				if (arg != null) {
+				if (data != null) {
 					try {
 						var2.close();
 					} catch (Throwable var5) {
@@ -82,20 +82,20 @@ public class VertexBuffer implements AutoCloseable {
 				throw var6;
 			}
 
-			if (arg != null) {
-				arg.close();
+			if (data != null) {
+				data.close();
 			}
 
 			return;
 		}
 
-		if (arg != null) {
-			arg.close();
+		if (data != null) {
+			data.close();
 		}
 	}
 
-	public void method_60829(class_9799.class_9800 arg) {
-		class_9799.class_9800 var2 = arg;
+	public void uploadIndexBuffer(BufferAllocator.CloseableBuffer indexBuffer) {
+		BufferAllocator.CloseableBuffer var2 = indexBuffer;
 
 		label40: {
 			try {
@@ -105,10 +105,10 @@ public class VertexBuffer implements AutoCloseable {
 
 				RenderSystem.assertOnRenderThread();
 				GlStateManager._glBindBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, this.indexBufferId);
-				RenderSystem.glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, arg.method_60817(), this.usage.id);
+				RenderSystem.glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, indexBuffer.getBuffer(), this.usage.id);
 				this.sharedSequentialIndexBuffer = null;
 			} catch (Throwable var6) {
-				if (arg != null) {
+				if (indexBuffer != null) {
 					try {
 						var2.close();
 					} catch (Throwable var5) {
@@ -119,19 +119,19 @@ public class VertexBuffer implements AutoCloseable {
 				throw var6;
 			}
 
-			if (arg != null) {
-				arg.close();
+			if (indexBuffer != null) {
+				indexBuffer.close();
 			}
 
 			return;
 		}
 
-		if (arg != null) {
-			arg.close();
+		if (indexBuffer != null) {
+			indexBuffer.close();
 		}
 	}
 
-	private VertexFormat uploadVertexBuffer(class_9801.DrawParameters parameters, @Nullable ByteBuffer vertexBuffer) {
+	private VertexFormat uploadVertexBuffer(BuiltBuffer.DrawParameters parameters, @Nullable ByteBuffer vertexBuffer) {
 		boolean bl = false;
 		if (!parameters.format().equals(this.vertexFormat)) {
 			if (this.vertexFormat != null) {
@@ -155,7 +155,7 @@ public class VertexBuffer implements AutoCloseable {
 	}
 
 	@Nullable
-	private RenderSystem.ShapeIndexBuffer uploadIndexBuffer(class_9801.DrawParameters parameters, @Nullable ByteBuffer indexBuffer) {
+	private RenderSystem.ShapeIndexBuffer uploadIndexBuffer(BuiltBuffer.DrawParameters parameters, @Nullable ByteBuffer indexBuffer) {
 		if (indexBuffer != null) {
 			GlStateManager._glBindBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, this.indexBufferId);
 			RenderSystem.glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, indexBuffer, this.usage.id);
@@ -218,11 +218,11 @@ public class VertexBuffer implements AutoCloseable {
 		}
 	}
 
-	private void drawInternal(Matrix4f viewMatrix, Matrix4f projectionMatrix, ShaderProgram shaderProgram) {
-		shaderProgram.method_60897(this.drawMode, viewMatrix, projectionMatrix, MinecraftClient.getInstance().getWindow());
-		shaderProgram.bind();
+	private void drawInternal(Matrix4f viewMatrix, Matrix4f projectionMatrix, ShaderProgram shader) {
+		shader.initializeUniforms(this.drawMode, viewMatrix, projectionMatrix, MinecraftClient.getInstance().getWindow());
+		shader.bind();
 		this.draw();
-		shaderProgram.unbind();
+		shader.unbind();
 	}
 
 	public void close() {

@@ -23,7 +23,7 @@ public class ArrowStoredWeaponFix extends DataFix {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.ENTITY);
 		Type<?> type2 = this.getOutputSchema().getType(TypeReferences.ENTITY);
 		return this.fixTypeEverywhereTyped(
-			"Fix Arrow stored weapon", type, type2, FixUtil.method_59907(this.fixFor("minecraft:arrow"), this.fixFor("minecraft:spectral_arrow"))
+			"Fix Arrow stored weapon", type, type2, FixUtil.compose(this.fixFor("minecraft:arrow"), this.fixFor("minecraft:spectral_arrow"))
 		);
 	}
 
@@ -33,8 +33,8 @@ public class ArrowStoredWeaponFix extends DataFix {
 		return method_59912(entityId, type, type2);
 	}
 
-	private static <T> Function<Typed<?>, Typed<?>> method_59912(String string, Type<?> type, Type<T> type2) {
-		OpticFinder<?> opticFinder = DSL.namedChoice(string, type);
+	private static <T> Function<Typed<?>, Typed<?>> method_59912(String name, Type<?> type, Type<T> type2) {
+		OpticFinder<?> opticFinder = DSL.namedChoice(name, type);
 		return typed -> typed.updateTyped(opticFinder, type2, typedx -> Util.apply(typedx, type2, UnaryOperator.identity()));
 	}
 }

@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class BreezeWindFeatureRenderer extends FeatureRenderer<BreezeEntity, BreezeEntityModel<BreezeEntity>> {
-	private static final Identifier texture = Identifier.method_60656("textures/entity/breeze/breeze_wind.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/breeze/breeze_wind.png");
 	private final BreezeEntityModel<BreezeEntity> model;
 
 	public BreezeWindFeatureRenderer(
@@ -39,9 +39,9 @@ public class BreezeWindFeatureRenderer extends FeatureRenderer<BreezeEntity, Bre
 		float l
 	) {
 		float m = (float)breezeEntity.age + h;
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getBreezeWind(texture, this.getXOffset(m) % 1.0F, 0.0F));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getBreezeWind(TEXTURE, this.getXOffset(m) % 1.0F, 0.0F));
 		this.model.setAngles(breezeEntity, f, g, j, k, l);
-		BreezeEntityRenderer.updatePartVisibility(this.model, this.model.getWindBody()).method_60879(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
+		BreezeEntityRenderer.updatePartVisibility(this.model, this.model.getWindBody()).render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 	}
 
 	private float getXOffset(float tickDelta) {

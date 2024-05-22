@@ -1,7 +1,7 @@
 package net.minecraft.server.network;
 
-import net.minecraft.class_9812;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.DisconnectionInfo;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
 import net.minecraft.network.packet.c2s.handshake.ConnectionIntent;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
@@ -37,7 +37,7 @@ public class LocalServerHandshakeNetworkHandler implements ServerHandshakePacket
 	}
 
 	@Override
-	public void onDisconnected(class_9812 arg) {
+	public void onDisconnected(DisconnectionInfo info) {
 	}
 
 	@Override

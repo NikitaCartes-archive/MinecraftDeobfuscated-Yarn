@@ -2,11 +2,11 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import java.util.OptionalInt;
-import net.minecraft.client.util.ParticleUtil;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.ParticleUtil;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;

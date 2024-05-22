@@ -16,8 +16,8 @@ import net.minecraft.datafixer.TypeReferences;
 public class ChunkToProtoChunkFix extends DataFix {
 	private static final int field_29881 = 16;
 
-	public ChunkToProtoChunkFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ChunkToProtoChunkFix(Schema outputSchema, boolean changestype) {
+		super(outputSchema, changestype);
 	}
 
 	@Override
@@ -26,13 +26,13 @@ public class ChunkToProtoChunkFix extends DataFix {
 			"ChunkToProtoChunkFix",
 			this.getInputSchema().getType(TypeReferences.CHUNK),
 			this.getOutputSchema().getType(TypeReferences.CHUNK),
-			dynamic -> dynamic.update("Level", ChunkToProtoChunkFix::fixLevel)
+			chunkDynamic -> chunkDynamic.update("Level", ChunkToProtoChunkFix::fixLevel)
 		);
 	}
 
-	private static <T> Dynamic<T> fixLevel(Dynamic<T> dynamic) {
-		boolean bl = dynamic.get("TerrainPopulated").asBoolean(false);
-		boolean bl2 = dynamic.get("LightPopulated").asNumber().result().isEmpty() || dynamic.get("LightPopulated").asBoolean(false);
+	private static <T> Dynamic<T> fixLevel(Dynamic<T> levelDynamic) {
+		boolean bl = levelDynamic.get("TerrainPopulated").asBoolean(false);
+		boolean bl2 = levelDynamic.get("LightPopulated").asNumber().result().isEmpty() || levelDynamic.get("LightPopulated").asBoolean(false);
 		String string;
 		if (bl) {
 			if (bl2) {
@@ -44,46 +44,48 @@ public class ChunkToProtoChunkFix extends DataFix {
 			string = "carved";
 		}
 
-		return fixTileTicks(fixBiomes(dynamic)).set("Status", dynamic.createString(string)).set("hasLegacyStructureData", dynamic.createBoolean(true));
+		return fixTileTicks(fixBiomes(levelDynamic)).set("Status", levelDynamic.createString(string)).set("hasLegacyStructureData", levelDynamic.createBoolean(true));
 	}
 
-	private static <T> Dynamic<T> fixBiomes(Dynamic<T> dynamic) {
-		return dynamic.update("Biomes", dynamic2 -> DataFixUtils.orElse(dynamic2.asByteBufferOpt().result().map(byteBuffer -> {
+	private static <T> Dynamic<T> fixBiomes(Dynamic<T> levelDynamic) {
+		return levelDynamic.update("Biomes", biomesDynamic -> DataFixUtils.orElse(biomesDynamic.asByteBufferOpt().result().map(biomes -> {
 				int[] is = new int[256];
 
 				for (int i = 0; i < is.length; i++) {
-					if (i < byteBuffer.capacity()) {
-						is[i] = byteBuffer.get(i) & 255;
+					if (i < biomes.capacity()) {
+						is[i] = biomes.get(i) & 255;
 					}
 				}
 
-				return dynamic.createIntList(Arrays.stream(is));
-			}), dynamic2));
+				return levelDynamic.createIntList(Arrays.stream(is));
+			}), biomesDynamic));
 	}
 
-	private static <T> Dynamic<T> fixTileTicks(Dynamic<T> dynamic) {
+	private static <T> Dynamic<T> fixTileTicks(Dynamic<T> levelDynamic) {
 		return DataFixUtils.orElse(
-			dynamic.get("TileTicks")
+			levelDynamic.get("TileTicks")
 				.asStreamOpt()
 				.result()
 				.map(
-					stream -> {
+					tileTicksDynamic -> {
 						List<ShortList> list = (List<ShortList>)IntStream.range(0, 16).mapToObj(sectionY -> new ShortArrayList()).collect(Collectors.toList());
-						stream.forEach(tickTag -> {
+						tileTicksDynamic.forEach(tickTag -> {
 							int i = tickTag.get("x").asInt(0);
 							int j = tickTag.get("y").asInt(0);
 							int k = tickTag.get("z").asInt(0);
 							short s = packChunkSectionPos(i, j, k);
 							((ShortList)list.get(j >> 4)).add(s);
 						});
-						return dynamic.remove("TileTicks")
+						return levelDynamic.remove("TileTicks")
 							.set(
 								"ToBeTicked",
-								dynamic.createList(list.stream().map(shortList -> dynamic.createList(shortList.intStream().mapToObj(i -> dynamic.createShort((short)i)))))
+								levelDynamic.createList(
+									list.stream().map(section -> levelDynamic.createList(section.intStream().mapToObj(packedLocalPos -> levelDynamic.createShort((short)packedLocalPos))))
+								)
 							);
 					}
 				),
-			dynamic
+			levelDynamic
 		);
 	}
 

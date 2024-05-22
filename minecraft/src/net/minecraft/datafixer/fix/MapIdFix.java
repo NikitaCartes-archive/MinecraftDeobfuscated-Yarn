@@ -8,8 +8,8 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixer.TypeReferences;
 
 public class MapIdFix extends DataFix {
-	public MapIdFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public MapIdFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -17,7 +17,9 @@ public class MapIdFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"Map id fix",
 			this.getInputSchema().getType(TypeReferences.SAVED_DATA_MAP_DATA),
-			typed -> typed.update(DSL.remainderFinder(), dynamic -> dynamic.createMap(ImmutableMap.of(dynamic.createString("data"), dynamic)))
+			mapDatTyped -> mapDatTyped.update(
+					DSL.remainderFinder(), mapDatDynamic -> mapDatDynamic.createMap(ImmutableMap.of(mapDatDynamic.createString("data"), mapDatDynamic))
+				)
 		);
 	}
 }

@@ -46,23 +46,23 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Map<Identifier, Identifier> LAYERS_TO_LOADERS = Map.of(
 		TexturedRenderLayers.BANNER_PATTERNS_ATLAS_TEXTURE,
-		Identifier.method_60656("banner_patterns"),
+		Identifier.ofVanilla("banner_patterns"),
 		TexturedRenderLayers.BEDS_ATLAS_TEXTURE,
-		Identifier.method_60656("beds"),
+		Identifier.ofVanilla("beds"),
 		TexturedRenderLayers.CHEST_ATLAS_TEXTURE,
-		Identifier.method_60656("chests"),
+		Identifier.ofVanilla("chests"),
 		TexturedRenderLayers.SHIELD_PATTERNS_ATLAS_TEXTURE,
-		Identifier.method_60656("shield_patterns"),
+		Identifier.ofVanilla("shield_patterns"),
 		TexturedRenderLayers.SIGNS_ATLAS_TEXTURE,
-		Identifier.method_60656("signs"),
+		Identifier.ofVanilla("signs"),
 		TexturedRenderLayers.SHULKER_BOXES_ATLAS_TEXTURE,
-		Identifier.method_60656("shulker_boxes"),
+		Identifier.ofVanilla("shulker_boxes"),
 		TexturedRenderLayers.ARMOR_TRIMS_ATLAS_TEXTURE,
-		Identifier.method_60656("armor_trims"),
+		Identifier.ofVanilla("armor_trims"),
 		TexturedRenderLayers.DECORATED_POT_ATLAS_TEXTURE,
-		Identifier.method_60656("decorated_pot"),
+		Identifier.ofVanilla("decorated_pot"),
 		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE,
-		Identifier.method_60656("blocks")
+		Identifier.ofVanilla("blocks")
 	);
 	private Map<Identifier, BakedModel> models;
 	private final SpriteAtlasManager atlasManager;

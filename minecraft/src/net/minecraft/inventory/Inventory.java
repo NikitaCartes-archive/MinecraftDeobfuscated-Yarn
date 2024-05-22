@@ -136,7 +136,7 @@ public interface Inventory extends Clearable {
 	 * by default.
 	 * 
 	 * <p>The method is called in both the client and the server. However, because
-	 * clientside screen handler is created with a {@link SimpleInventory},
+	 * clientside screen handler is created with a {@link net.minecraft.inventory.SimpleInventory},
 	 * other implementations can (and the vanilla code does) assume that the method is called
 	 * in the server.
 	 */
@@ -149,7 +149,7 @@ public interface Inventory extends Clearable {
 	 * by default.
 	 * 
 	 * <p>The method is called in both the client and the server. However, because
-	 * clientside screen handler is created with a {@link SimpleInventory},
+	 * clientside screen handler is created with a {@link net.minecraft.inventory.SimpleInventory},
 	 * other implementations can (and the vanilla code does) assume that the method is called
 	 * in the server.
 	 */

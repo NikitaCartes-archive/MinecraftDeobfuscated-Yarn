@@ -45,8 +45,8 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ItemRenderer implements SynchronousResourceReloader {
-	public static final Identifier ENTITY_ENCHANTMENT_GLINT = Identifier.method_60656("textures/misc/enchanted_glint_entity.png");
-	public static final Identifier ITEM_ENCHANTMENT_GLINT = Identifier.method_60656("textures/misc/enchanted_glint_item.png");
+	public static final Identifier ENTITY_ENCHANTMENT_GLINT = Identifier.ofVanilla("textures/misc/enchanted_glint_entity.png");
+	public static final Identifier ITEM_ENCHANTMENT_GLINT = Identifier.ofVanilla("textures/misc/enchanted_glint_item.png");
 	private static final Set<Item> WITHOUT_MODELS = Sets.<Item>newHashSet(Items.AIR);
 	public static final int field_32937 = 8;
 	public static final int field_32938 = 8;

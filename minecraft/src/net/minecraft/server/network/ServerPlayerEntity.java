@@ -169,11 +169,11 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private static final int field_29770 = 10;
 	private static final int field_46928 = 25;
 	public static final double field_47708 = 1.0;
-	private static final EntityAttributeModifier CREATIVE_BLOCK_INTERACTION_RANGE_MODIFIER_UUID = new EntityAttributeModifier(
-		Identifier.method_60656("creative_mode_block_range"), 0.5, EntityAttributeModifier.Operation.ADD_VALUE
+	private static final EntityAttributeModifier CREATIVE_BLOCK_INTERACTION_RANGE_MODIFIER = new EntityAttributeModifier(
+		Identifier.ofVanilla("creative_mode_block_range"), 0.5, EntityAttributeModifier.Operation.ADD_VALUE
 	);
-	private static final EntityAttributeModifier CREATIVE_ENTITY_INTERACTION_RANGE_MODIFIER_UUID = new EntityAttributeModifier(
-		Identifier.method_60656("creative_mode_entity_range"), 2.0, EntityAttributeModifier.Operation.ADD_VALUE
+	private static final EntityAttributeModifier CREATIVE_ENTITY_INTERACTION_RANGE_MODIFIER = new EntityAttributeModifier(
+		Identifier.ofVanilla("creative_mode_entity_range"), 2.0, EntityAttributeModifier.Operation.ADD_VALUE
 	);
 	public ServerPlayNetworkHandler networkHandler;
 	public final MinecraftServer server;
@@ -530,18 +530,18 @@ public class ServerPlayerEntity extends PlayerEntity {
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE);
 		if (entityAttributeInstance != null) {
 			if (this.isCreative()) {
-				entityAttributeInstance.updateModifier(CREATIVE_BLOCK_INTERACTION_RANGE_MODIFIER_UUID);
+				entityAttributeInstance.updateModifier(CREATIVE_BLOCK_INTERACTION_RANGE_MODIFIER);
 			} else {
-				entityAttributeInstance.removeModifier(CREATIVE_BLOCK_INTERACTION_RANGE_MODIFIER_UUID);
+				entityAttributeInstance.removeModifier(CREATIVE_BLOCK_INTERACTION_RANGE_MODIFIER);
 			}
 		}
 
 		EntityAttributeInstance entityAttributeInstance2 = this.getAttributeInstance(EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE);
 		if (entityAttributeInstance2 != null) {
 			if (this.isCreative()) {
-				entityAttributeInstance2.updateModifier(CREATIVE_ENTITY_INTERACTION_RANGE_MODIFIER_UUID);
+				entityAttributeInstance2.updateModifier(CREATIVE_ENTITY_INTERACTION_RANGE_MODIFIER);
 			} else {
-				entityAttributeInstance2.removeModifier(CREATIVE_ENTITY_INTERACTION_RANGE_MODIFIER_UUID);
+				entityAttributeInstance2.removeModifier(CREATIVE_ENTITY_INTERACTION_RANGE_MODIFIER);
 			}
 		}
 	}
@@ -845,7 +845,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Nullable
 	@Override
-	public Entity moveToWorld(TeleportTarget teleportTarget) {
+	public Entity teleportTo(TeleportTarget teleportTarget) {
 		if (this.isRemoved()) {
 			return null;
 		} else {
@@ -853,7 +853,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 				this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.NO_RESPAWN_BLOCK, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
 			}
 
-			ServerWorld serverWorld = teleportTarget.newLevel();
+			ServerWorld serverWorld = teleportTarget.world();
 			ServerWorld serverWorld2 = this.getServerWorld();
 			RegistryKey<World> registryKey = serverWorld2.getRegistryKey();
 			if (serverWorld.getRegistryKey() == registryKey) {
@@ -1343,7 +1343,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.totalExperience = oldPlayer.totalExperience;
 			this.experienceProgress = oldPlayer.experienceProgress;
 			this.setScore(oldPlayer.getScore());
-			this.field_51994 = oldPlayer.field_51994;
+			this.portalManager = oldPlayer.portalManager;
 		} else if (this.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
 			this.getInventory().clone(oldPlayer.getInventory());
 			this.experienceLevel = oldPlayer.experienceLevel;
@@ -1671,7 +1671,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (targetWorld == this.getWorld()) {
 			this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
 		} else {
-			this.moveToWorld(new TeleportTarget(targetWorld, new Vec3d(x, y, z), Vec3d.ZERO, yaw, pitch));
+			this.teleportTo(new TeleportTarget(targetWorld, new Vec3d(x, y, z), Vec3d.ZERO, yaw, pitch));
 		}
 	}
 

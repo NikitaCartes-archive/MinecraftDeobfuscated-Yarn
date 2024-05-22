@@ -28,8 +28,8 @@ public abstract class SinglePartEntityModel<E extends Entity> extends EntityMode
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {
-		this.getPart().render(matrices, vertices, light, overlay, i);
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
+		this.getPart().render(matrices, vertices, light, overlay, color);
 	}
 
 	public abstract ModelPart getPart();

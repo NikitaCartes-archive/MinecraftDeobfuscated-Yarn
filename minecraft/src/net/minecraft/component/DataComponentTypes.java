@@ -3,7 +3,6 @@ package net.minecraft.component;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.function.UnaryOperator;
-import net.minecraft.class_9792;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.Sherds;
 import net.minecraft.component.type.AttributeModifiersComponent;
@@ -20,6 +19,7 @@ import net.minecraft.component.type.FireworkExplosionComponent;
 import net.minecraft.component.type.FireworksComponent;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
+import net.minecraft.component.type.JukeboxPlayableComponent;
 import net.minecraft.component.type.LodestoneTrackerComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.MapColorComponent;
@@ -166,8 +166,8 @@ public class DataComponentTypes {
 	public static final ComponentType<Integer> OMINOUS_BOTTLE_AMPLIFIER = register(
 		"ominous_bottle_amplifier", builder -> builder.codec(Codecs.rangedInt(0, 4)).packetCodec(PacketCodecs.VAR_INT)
 	);
-	public static final ComponentType<class_9792> JUKEBOX_PLAYABLE = register(
-		"jukebox_playable", builder -> builder.codec(class_9792.field_52025).packetCodec(class_9792.field_52026)
+	public static final ComponentType<JukeboxPlayableComponent> JUKEBOX_PLAYABLE = register(
+		"jukebox_playable", builder -> builder.codec(JukeboxPlayableComponent.CODEC).packetCodec(JukeboxPlayableComponent.PACKET_CODEC)
 	);
 	public static final ComponentType<List<Identifier>> RECIPES = register("recipes", builder -> builder.codec(Identifier.CODEC.listOf()).cache());
 	public static final ComponentType<LodestoneTrackerComponent> LODESTONE_TRACKER = register(

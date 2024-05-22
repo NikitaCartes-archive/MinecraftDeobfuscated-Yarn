@@ -69,7 +69,7 @@ public class StructureProcessorLists {
 	public static final RegistryKey<StructureProcessorList> TRIAL_CHAMBERS_COPPER_BULB_DEGRADATION = of("trial_chambers_copper_bulb_degradation");
 
 	private static RegistryKey<StructureProcessorList> of(String id) {
-		return RegistryKey.of(RegistryKeys.PROCESSOR_LIST, Identifier.method_60656(id));
+		return RegistryKey.of(RegistryKeys.PROCESSOR_LIST, Identifier.ofVanilla(id));
 	}
 
 	private static void register(

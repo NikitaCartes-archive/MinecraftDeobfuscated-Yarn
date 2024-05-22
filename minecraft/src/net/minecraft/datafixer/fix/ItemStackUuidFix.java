@@ -19,27 +19,30 @@ public class ItemStackUuidFix extends AbstractUuidFix {
 		OpticFinder<Pair<String, String>> opticFinder = DSL.fieldFinder(
 			"id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType())
 		);
-		return this.fixTypeEverywhereTyped("ItemStackUUIDFix", this.getInputSchema().getType(this.typeReference), typed -> {
-			OpticFinder<?> opticFinder2 = typed.getType().findField("tag");
-			return typed.updateTyped(opticFinder2, typed2 -> typed2.update(DSL.remainderFinder(), dynamic -> {
-					dynamic = this.fixAttributeModifiers(dynamic);
-					if ((Boolean)typed.getOptional(opticFinder).map(pair -> "minecraft:player_head".equals(pair.getSecond())).orElse(false)) {
-						dynamic = this.fixSkullOwner(dynamic);
+		return this.fixTypeEverywhereTyped("ItemStackUUIDFix", this.getInputSchema().getType(this.typeReference), itemStackTyped -> {
+			OpticFinder<?> opticFinder2 = itemStackTyped.getType().findField("tag");
+			return itemStackTyped.updateTyped(opticFinder2, tagTyped -> tagTyped.update(DSL.remainderFinder(), tagDynamic -> {
+					tagDynamic = this.fixAttributeModifiers(tagDynamic);
+					if ((Boolean)itemStackTyped.getOptional(opticFinder).map(id -> "minecraft:player_head".equals(id.getSecond())).orElse(false)) {
+						tagDynamic = this.fixSkullOwner(tagDynamic);
 					}
 
-					return dynamic;
+					return tagDynamic;
 				}));
 		});
 	}
 
-	private Dynamic<?> fixAttributeModifiers(Dynamic<?> dynamic) {
-		return dynamic.update(
+	private Dynamic<?> fixAttributeModifiers(Dynamic<?> tagDynamic) {
+		return tagDynamic.update(
 			"AttributeModifiers",
-			dynamic2 -> dynamic.createList(dynamic2.asStream().map(dynamicxx -> (Dynamic)updateRegularMostLeast(dynamicxx, "UUID", "UUID").orElse(dynamicxx)))
+			attributeModifiersDynamic -> tagDynamic.createList(
+					attributeModifiersDynamic.asStream()
+						.map(attributeModifier -> (Dynamic)updateRegularMostLeast(attributeModifier, "UUID", "UUID").orElse(attributeModifier))
+				)
 		);
 	}
 
-	private Dynamic<?> fixSkullOwner(Dynamic<?> dynamic) {
-		return dynamic.update("SkullOwner", dynamicx -> (Dynamic)updateStringUuid(dynamicx, "Id", "Id").orElse(dynamicx));
+	private Dynamic<?> fixSkullOwner(Dynamic<?> tagDynamic) {
+		return tagDynamic.update("SkullOwner", skullOwner -> (Dynamic)updateStringUuid(skullOwner, "Id", "Id").orElse(skullOwner));
 	}
 }

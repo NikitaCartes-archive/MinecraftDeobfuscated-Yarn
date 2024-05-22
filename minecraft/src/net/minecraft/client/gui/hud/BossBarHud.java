@@ -19,34 +19,34 @@ public class BossBarHud {
 	private static final int WIDTH = 182;
 	private static final int HEIGHT = 5;
 	private static final Identifier[] BACKGROUND_TEXTURES = new Identifier[]{
-		Identifier.method_60656("boss_bar/pink_background"),
-		Identifier.method_60656("boss_bar/blue_background"),
-		Identifier.method_60656("boss_bar/red_background"),
-		Identifier.method_60656("boss_bar/green_background"),
-		Identifier.method_60656("boss_bar/yellow_background"),
-		Identifier.method_60656("boss_bar/purple_background"),
-		Identifier.method_60656("boss_bar/white_background")
+		Identifier.ofVanilla("boss_bar/pink_background"),
+		Identifier.ofVanilla("boss_bar/blue_background"),
+		Identifier.ofVanilla("boss_bar/red_background"),
+		Identifier.ofVanilla("boss_bar/green_background"),
+		Identifier.ofVanilla("boss_bar/yellow_background"),
+		Identifier.ofVanilla("boss_bar/purple_background"),
+		Identifier.ofVanilla("boss_bar/white_background")
 	};
 	private static final Identifier[] PROGRESS_TEXTURES = new Identifier[]{
-		Identifier.method_60656("boss_bar/pink_progress"),
-		Identifier.method_60656("boss_bar/blue_progress"),
-		Identifier.method_60656("boss_bar/red_progress"),
-		Identifier.method_60656("boss_bar/green_progress"),
-		Identifier.method_60656("boss_bar/yellow_progress"),
-		Identifier.method_60656("boss_bar/purple_progress"),
-		Identifier.method_60656("boss_bar/white_progress")
+		Identifier.ofVanilla("boss_bar/pink_progress"),
+		Identifier.ofVanilla("boss_bar/blue_progress"),
+		Identifier.ofVanilla("boss_bar/red_progress"),
+		Identifier.ofVanilla("boss_bar/green_progress"),
+		Identifier.ofVanilla("boss_bar/yellow_progress"),
+		Identifier.ofVanilla("boss_bar/purple_progress"),
+		Identifier.ofVanilla("boss_bar/white_progress")
 	};
 	private static final Identifier[] NOTCHED_BACKGROUND_TEXTURES = new Identifier[]{
-		Identifier.method_60656("boss_bar/notched_6_background"),
-		Identifier.method_60656("boss_bar/notched_10_background"),
-		Identifier.method_60656("boss_bar/notched_12_background"),
-		Identifier.method_60656("boss_bar/notched_20_background")
+		Identifier.ofVanilla("boss_bar/notched_6_background"),
+		Identifier.ofVanilla("boss_bar/notched_10_background"),
+		Identifier.ofVanilla("boss_bar/notched_12_background"),
+		Identifier.ofVanilla("boss_bar/notched_20_background")
 	};
 	private static final Identifier[] NOTCHED_PROGRESS_TEXTURES = new Identifier[]{
-		Identifier.method_60656("boss_bar/notched_6_progress"),
-		Identifier.method_60656("boss_bar/notched_10_progress"),
-		Identifier.method_60656("boss_bar/notched_12_progress"),
-		Identifier.method_60656("boss_bar/notched_20_progress")
+		Identifier.ofVanilla("boss_bar/notched_6_progress"),
+		Identifier.ofVanilla("boss_bar/notched_10_progress"),
+		Identifier.ofVanilla("boss_bar/notched_12_progress"),
+		Identifier.ofVanilla("boss_bar/notched_20_progress")
 	};
 	private final MinecraftClient client;
 	final Map<UUID, ClientBossBar> bossBars = Maps.<UUID, ClientBossBar>newLinkedHashMap();

@@ -25,12 +25,12 @@ public class DataOutput {
 		return new DataOutput.PathResolver(this, outputType, directoryName);
 	}
 
-	public DataOutput.PathResolver method_60917(RegistryKey<? extends Registry<?>> registryKey) {
-		return this.getResolver(DataOutput.OutputType.DATA_PACK, RegistryKeys.method_60915(registryKey));
+	public DataOutput.PathResolver getResolver(RegistryKey<? extends Registry<?>> registryRef) {
+		return this.getResolver(DataOutput.OutputType.DATA_PACK, RegistryKeys.getPath(registryRef));
 	}
 
-	public DataOutput.PathResolver method_60918(RegistryKey<? extends Registry<?>> registryKey) {
-		return this.getResolver(DataOutput.OutputType.DATA_PACK, RegistryKeys.method_60916(registryKey));
+	public DataOutput.PathResolver getTagResolver(RegistryKey<? extends Registry<?>> registryRef) {
+		return this.getResolver(DataOutput.OutputType.DATA_PACK, RegistryKeys.getTagPath(registryRef));
 	}
 
 	public static enum OutputType {

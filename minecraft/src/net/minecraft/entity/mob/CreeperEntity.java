@@ -2,12 +2,12 @@ package net.minecraft.entity.mob;
 
 import java.util.Collection;
 import javax.annotation.Nullable;
-import net.minecraft.client.render.entity.feature.SkinOverlayOwner;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SkinOverlayOwner;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.CreeperIgniteGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
@@ -237,7 +237,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 			this.dead = true;
 			this.getWorld().createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * f, World.ExplosionSourceType.MOB);
 			this.spawnEffectsCloud();
-			this.method_60699(Entity.RemovalReason.KILLED);
+			this.onRemoval(Entity.RemovalReason.KILLED);
 			this.discard();
 		}
 	}

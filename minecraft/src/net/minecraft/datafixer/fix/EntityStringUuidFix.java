@@ -9,8 +9,8 @@ import java.util.UUID;
 import net.minecraft.datafixer.TypeReferences;
 
 public class EntityStringUuidFix extends DataFix {
-	public EntityStringUuidFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public EntityStringUuidFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -18,17 +18,17 @@ public class EntityStringUuidFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"EntityStringUuidFix",
 			this.getInputSchema().getType(TypeReferences.ENTITY),
-			typed -> typed.update(
+			entityTyped -> entityTyped.update(
 					DSL.remainderFinder(),
-					dynamic -> {
-						Optional<String> optional = dynamic.get("UUID").asString().result();
+					entityDynamic -> {
+						Optional<String> optional = entityDynamic.get("UUID").asString().result();
 						if (optional.isPresent()) {
 							UUID uUID = UUID.fromString((String)optional.get());
-							return dynamic.remove("UUID")
-								.set("UUIDMost", dynamic.createLong(uUID.getMostSignificantBits()))
-								.set("UUIDLeast", dynamic.createLong(uUID.getLeastSignificantBits()));
+							return entityDynamic.remove("UUID")
+								.set("UUIDMost", entityDynamic.createLong(uUID.getMostSignificantBits()))
+								.set("UUIDLeast", entityDynamic.createLong(uUID.getLeastSignificantBits()));
 						} else {
-							return dynamic;
+							return entityDynamic;
 						}
 					}
 				)

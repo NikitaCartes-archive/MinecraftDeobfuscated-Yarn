@@ -21,9 +21,9 @@ import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
-	private static final Identifier ERROR_TEXTURE = Identifier.method_60656("container/smithing/error");
-	private static final Identifier EMPTY_SLOT_SMITHING_TEMPLATE_ARMOR_TRIM_TEXTURE = Identifier.method_60656("item/empty_slot_smithing_template_armor_trim");
-	private static final Identifier EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE_TEXTURE = Identifier.method_60656(
+	private static final Identifier ERROR_TEXTURE = Identifier.ofVanilla("container/smithing/error");
+	private static final Identifier EMPTY_SLOT_SMITHING_TEMPLATE_ARMOR_TRIM_TEXTURE = Identifier.ofVanilla("item/empty_slot_smithing_template_armor_trim");
+	private static final Identifier EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE_TEXTURE = Identifier.ofVanilla(
 		"item/empty_slot_smithing_template_netherite_upgrade"
 	);
 	private static final Text MISSING_TEMPLATE_TOOLTIP = Text.translatable("container.upgrade.missing_template_tooltip");
@@ -52,7 +52,7 @@ public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
 	private ArmorStandEntity armorStand;
 
 	public SmithingScreen(SmithingScreenHandler handler, PlayerInventory playerInventory, Text title) {
-		super(handler, playerInventory, title, Identifier.method_60656("textures/gui/container/smithing.png"));
+		super(handler, playerInventory, title, Identifier.ofVanilla("textures/gui/container/smithing.png"));
 		this.titleX = 44;
 		this.titleY = 15;
 	}

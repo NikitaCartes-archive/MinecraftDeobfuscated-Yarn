@@ -58,8 +58,8 @@ public class BannerPatternFormatFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(DSL.remainderFinder(), BannerPatternFormatFix::replacePatterns);
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(DSL.remainderFinder(), BannerPatternFormatFix::replacePatterns);
 	}
 
 	private static Dynamic<?> replacePatterns(Dynamic<?> dynamic) {

@@ -12,7 +12,7 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class DemoScreen extends Screen {
-	private static final Identifier DEMO_BG = Identifier.method_60656("textures/gui/demo_background.png");
+	private static final Identifier DEMO_BG = Identifier.ofVanilla("textures/gui/demo_background.png");
 	private MultilineText movementText = MultilineText.EMPTY;
 	private MultilineText fullWrappedText = MultilineText.EMPTY;
 

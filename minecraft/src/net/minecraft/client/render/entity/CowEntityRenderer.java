@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class CowEntityRenderer extends MobEntityRenderer<CowEntity, CowEntityModel<CowEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/cow/cow.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/cow/cow.png");
 
 	public CowEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new CowEntityModel<>(context.getPart(EntityModelLayers.COW)), 0.7F);

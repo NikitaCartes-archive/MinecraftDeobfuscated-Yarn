@@ -239,7 +239,7 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 		}
 
 		this.attemptTickInVoid();
-		this.method_60698();
+		this.tickPortalTeleportation();
 		if (this.getWorld().isClient) {
 			if (this.clientInterpolationSteps > 0) {
 				this.lerpPosAndRotation(this.clientInterpolationSteps, this.clientX, this.clientY, this.clientZ, this.clientYaw, this.clientPitch);

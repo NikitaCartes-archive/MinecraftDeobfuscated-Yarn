@@ -61,7 +61,7 @@ public final class VillagerType {
 	}
 
 	private static VillagerType create(String id) {
-		return Registry.register(Registries.VILLAGER_TYPE, Identifier.method_60656(id), new VillagerType(id));
+		return Registry.register(Registries.VILLAGER_TYPE, Identifier.ofVanilla(id), new VillagerType(id));
 	}
 
 	public static VillagerType forBiome(RegistryEntry<Biome> biomeEntry) {

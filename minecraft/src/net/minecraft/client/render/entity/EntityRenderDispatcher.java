@@ -56,7 +56,7 @@ import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class EntityRenderDispatcher implements SynchronousResourceReloader {
-	private static final RenderLayer SHADOW_LAYER = RenderLayer.getEntityShadow(Identifier.method_60656("textures/misc/shadow.png"));
+	private static final RenderLayer SHADOW_LAYER = RenderLayer.getEntityShadow(Identifier.ofVanilla("textures/misc/shadow.png"));
 	private static final float field_43377 = 32.0F;
 	private static final float field_43378 = 0.5F;
 	private Map<EntityType<?>, EntityRenderer<?>> renderers = ImmutableMap.of();
@@ -239,10 +239,10 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 
 		Vec3d vec3d2 = entity.getRotationVec(tickDelta);
 		MatrixStack.Entry entry = matrices.peek();
-		vertices.vertex(entry, 0.0F, entity.getStandingEyeHeight(), 0.0F).color(-16776961).method_60831(entry, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z);
+		vertices.vertex(entry, 0.0F, entity.getStandingEyeHeight(), 0.0F).color(-16776961).normal(entry, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z);
 		vertices.vertex(entry, (float)(vec3d2.x * 2.0), (float)((double)entity.getStandingEyeHeight() + vec3d2.y * 2.0), (float)(vec3d2.z * 2.0))
 			.color(0, 0, 255, 255)
-			.method_60831(entry, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z);
+			.normal(entry, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z);
 	}
 
 	private void renderFire(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity, Quaternionf rotation) {
@@ -287,7 +287,12 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	}
 
 	private static void drawFireVertex(MatrixStack.Entry entry, VertexConsumer vertices, float x, float y, float z, float u, float v) {
-		vertices.vertex(entry, x, y, z).color(Colors.WHITE).texture(u, v).method_60796(0, 10).method_60803(240).method_60831(entry, 0.0F, 1.0F, 0.0F);
+		vertices.vertex(entry, x, y, z)
+			.color(Colors.WHITE)
+			.texture(u, v)
+			.overlay(0, 10)
+			.light(LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE)
+			.normal(entry, 0.0F, 1.0F, 0.0F);
 	}
 
 	private static void renderShadow(

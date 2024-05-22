@@ -18,26 +18,26 @@ import net.minecraft.world.chunk.light.LightingProvider;
 public class ChunkRendererRegion implements BlockRenderView {
 	public static final int field_52160 = 1;
 	public static final int field_52161 = 3;
-	private final int field_52162;
-	private final int field_52163;
+	private final int chunkXOffset;
+	private final int chunkZOffset;
 	protected final RenderedChunk[] chunks;
 	protected final World world;
 
 	ChunkRendererRegion(World world, int chunkX, int chunkZ, RenderedChunk[] chunks) {
 		this.world = world;
-		this.field_52162 = chunkX;
-		this.field_52163 = chunkZ;
+		this.chunkXOffset = chunkX;
+		this.chunkZOffset = chunkZ;
 		this.chunks = chunks;
 	}
 
 	@Override
 	public BlockState getBlockState(BlockPos pos) {
-		return this.method_60898(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ())).getBlockState(pos);
+		return this.getRenderedChunk(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ())).getBlockState(pos);
 	}
 
 	@Override
 	public FluidState getFluidState(BlockPos pos) {
-		return this.method_60898(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ())).getBlockState(pos).getFluidState();
+		return this.getRenderedChunk(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ())).getBlockState(pos).getFluidState();
 	}
 
 	@Override
@@ -53,11 +53,11 @@ public class ChunkRendererRegion implements BlockRenderView {
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos pos) {
-		return this.method_60898(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ())).getBlockEntity(pos);
+		return this.getRenderedChunk(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ())).getBlockEntity(pos);
 	}
 
-	private RenderedChunk method_60898(int i, int j) {
-		return this.chunks[method_60899(this.field_52162, this.field_52163, i, j)];
+	private RenderedChunk getRenderedChunk(int x, int z) {
+		return this.chunks[getIndex(this.chunkXOffset, this.chunkZOffset, x, z)];
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class ChunkRendererRegion implements BlockRenderView {
 		return this.world.getHeight();
 	}
 
-	public static int method_60899(int i, int j, int k, int l) {
-		return k - i + (l - j) * 3;
+	public static int getIndex(int xOffset, int zOffset, int x, int z) {
+		return x - xOffset + (z - zOffset) * 3;
 	}
 }

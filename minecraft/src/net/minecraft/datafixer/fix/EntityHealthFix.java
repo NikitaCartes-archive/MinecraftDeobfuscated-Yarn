@@ -48,32 +48,32 @@ public class EntityHealthFix extends DataFix {
 		"Zombie"
 	);
 
-	public EntityHealthFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public EntityHealthFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
-	public Dynamic<?> fixHealth(Dynamic<?> dynamic) {
-		Optional<Number> optional = dynamic.get("HealF").asNumber().result();
-		Optional<Number> optional2 = dynamic.get("Health").asNumber().result();
+	public Dynamic<?> fixHealth(Dynamic<?> entityDynamic) {
+		Optional<Number> optional = entityDynamic.get("HealF").asNumber().result();
+		Optional<Number> optional2 = entityDynamic.get("Health").asNumber().result();
 		float f;
 		if (optional.isPresent()) {
 			f = ((Number)optional.get()).floatValue();
-			dynamic = dynamic.remove("HealF");
+			entityDynamic = entityDynamic.remove("HealF");
 		} else {
 			if (!optional2.isPresent()) {
-				return dynamic;
+				return entityDynamic;
 			}
 
 			f = ((Number)optional2.get()).floatValue();
 		}
 
-		return dynamic.set("Health", dynamic.createFloat(f));
+		return entityDynamic.set("Health", entityDynamic.createFloat(f));
 	}
 
 	@Override
 	public TypeRewriteRule makeRule() {
 		return this.fixTypeEverywhereTyped(
-			"EntityHealthFix", this.getInputSchema().getType(TypeReferences.ENTITY), typed -> typed.update(DSL.remainderFinder(), this::fixHealth)
+			"EntityHealthFix", this.getInputSchema().getType(TypeReferences.ENTITY), entityTyped -> entityTyped.update(DSL.remainderFinder(), this::fixHealth)
 		);
 	}
 }

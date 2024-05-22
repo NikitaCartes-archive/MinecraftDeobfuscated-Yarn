@@ -23,57 +23,57 @@ public class EntityProjectileOwnerFix extends DataFix {
 		return this.fixTypeEverywhereTyped("EntityProjectileOwner", schema.getType(TypeReferences.ENTITY), this::fixEntities);
 	}
 
-	private Typed<?> fixEntities(Typed<?> typed) {
-		typed = this.update(typed, "minecraft:egg", this::moveOwnerToArray);
-		typed = this.update(typed, "minecraft:ender_pearl", this::moveOwnerToArray);
-		typed = this.update(typed, "minecraft:experience_bottle", this::moveOwnerToArray);
-		typed = this.update(typed, "minecraft:snowball", this::moveOwnerToArray);
-		typed = this.update(typed, "minecraft:potion", this::moveOwnerToArray);
-		typed = this.update(typed, "minecraft:potion", this::renamePotionToItem);
-		typed = this.update(typed, "minecraft:llama_spit", this::moveNestedOwnerMostLeastToArray);
-		typed = this.update(typed, "minecraft:arrow", this::moveFlatOwnerMostLeastToArray);
-		typed = this.update(typed, "minecraft:spectral_arrow", this::moveFlatOwnerMostLeastToArray);
-		return this.update(typed, "minecraft:trident", this::moveFlatOwnerMostLeastToArray);
+	private Typed<?> fixEntities(Typed<?> entityTyped) {
+		entityTyped = this.update(entityTyped, "minecraft:egg", this::moveOwnerToArray);
+		entityTyped = this.update(entityTyped, "minecraft:ender_pearl", this::moveOwnerToArray);
+		entityTyped = this.update(entityTyped, "minecraft:experience_bottle", this::moveOwnerToArray);
+		entityTyped = this.update(entityTyped, "minecraft:snowball", this::moveOwnerToArray);
+		entityTyped = this.update(entityTyped, "minecraft:potion", this::moveOwnerToArray);
+		entityTyped = this.update(entityTyped, "minecraft:potion", this::renamePotionToItem);
+		entityTyped = this.update(entityTyped, "minecraft:llama_spit", this::moveNestedOwnerMostLeastToArray);
+		entityTyped = this.update(entityTyped, "minecraft:arrow", this::moveFlatOwnerMostLeastToArray);
+		entityTyped = this.update(entityTyped, "minecraft:spectral_arrow", this::moveFlatOwnerMostLeastToArray);
+		return this.update(entityTyped, "minecraft:trident", this::moveFlatOwnerMostLeastToArray);
 	}
 
-	private Dynamic<?> moveFlatOwnerMostLeastToArray(Dynamic<?> dynamic) {
-		long l = dynamic.get("OwnerUUIDMost").asLong(0L);
-		long m = dynamic.get("OwnerUUIDLeast").asLong(0L);
-		return this.insertOwnerUuidArray(dynamic, l, m).remove("OwnerUUIDMost").remove("OwnerUUIDLeast");
+	private Dynamic<?> moveFlatOwnerMostLeastToArray(Dynamic<?> entityDynamic) {
+		long l = entityDynamic.get("OwnerUUIDMost").asLong(0L);
+		long m = entityDynamic.get("OwnerUUIDLeast").asLong(0L);
+		return this.insertOwnerUuidArray(entityDynamic, l, m).remove("OwnerUUIDMost").remove("OwnerUUIDLeast");
 	}
 
-	private Dynamic<?> moveNestedOwnerMostLeastToArray(Dynamic<?> dynamic) {
-		OptionalDynamic<?> optionalDynamic = dynamic.get("Owner");
+	private Dynamic<?> moveNestedOwnerMostLeastToArray(Dynamic<?> entityDynamic) {
+		OptionalDynamic<?> optionalDynamic = entityDynamic.get("Owner");
 		long l = optionalDynamic.get("OwnerUUIDMost").asLong(0L);
 		long m = optionalDynamic.get("OwnerUUIDLeast").asLong(0L);
-		return this.insertOwnerUuidArray(dynamic, l, m).remove("Owner");
+		return this.insertOwnerUuidArray(entityDynamic, l, m).remove("Owner");
 	}
 
-	private Dynamic<?> renamePotionToItem(Dynamic<?> dynamic) {
-		OptionalDynamic<?> optionalDynamic = dynamic.get("Potion");
-		return dynamic.set("Item", optionalDynamic.orElseEmptyMap()).remove("Potion");
+	private Dynamic<?> renamePotionToItem(Dynamic<?> entityDynamic) {
+		OptionalDynamic<?> optionalDynamic = entityDynamic.get("Potion");
+		return entityDynamic.set("Item", optionalDynamic.orElseEmptyMap()).remove("Potion");
 	}
 
-	private Dynamic<?> moveOwnerToArray(Dynamic<?> dynamic) {
+	private Dynamic<?> moveOwnerToArray(Dynamic<?> entityDynamic) {
 		String string = "owner";
-		OptionalDynamic<?> optionalDynamic = dynamic.get("owner");
+		OptionalDynamic<?> optionalDynamic = entityDynamic.get("owner");
 		long l = optionalDynamic.get("M").asLong(0L);
 		long m = optionalDynamic.get("L").asLong(0L);
-		return this.insertOwnerUuidArray(dynamic, l, m).remove("owner");
+		return this.insertOwnerUuidArray(entityDynamic, l, m).remove("owner");
 	}
 
-	private Dynamic<?> insertOwnerUuidArray(Dynamic<?> dynamic, long most, long least) {
+	private Dynamic<?> insertOwnerUuidArray(Dynamic<?> entityDynamic, long most, long least) {
 		String string = "OwnerUUID";
-		return most != 0L && least != 0L ? dynamic.set("OwnerUUID", dynamic.createIntList(Arrays.stream(makeUuidArray(most, least)))) : dynamic;
+		return most != 0L && least != 0L ? entityDynamic.set("OwnerUUID", entityDynamic.createIntList(Arrays.stream(makeUuidArray(most, least)))) : entityDynamic;
 	}
 
 	private static int[] makeUuidArray(long most, long least) {
 		return new int[]{(int)(most >> 32), (int)most, (int)(least >> 32), (int)least};
 	}
 
-	private Typed<?> update(Typed<?> typed, String string, Function<Dynamic<?>, Dynamic<?>> function) {
-		Type<?> type = this.getInputSchema().getChoiceType(TypeReferences.ENTITY, string);
-		Type<?> type2 = this.getOutputSchema().getChoiceType(TypeReferences.ENTITY, string);
-		return typed.updateTyped(DSL.namedChoice(string, type), type2, typedx -> typedx.update(DSL.remainderFinder(), function));
+	private Typed<?> update(Typed<?> entityTyped, String matchId, Function<Dynamic<?>, Dynamic<?>> fixer) {
+		Type<?> type = this.getInputSchema().getChoiceType(TypeReferences.ENTITY, matchId);
+		Type<?> type2 = this.getOutputSchema().getChoiceType(TypeReferences.ENTITY, matchId);
+		return entityTyped.updateTyped(DSL.namedChoice(matchId, type), type2, typed -> typed.update(DSL.remainderFinder(), fixer));
 	}
 }

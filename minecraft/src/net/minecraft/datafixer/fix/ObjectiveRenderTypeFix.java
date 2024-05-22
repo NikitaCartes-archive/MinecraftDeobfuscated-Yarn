@@ -9,8 +9,8 @@ import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
 
 public class ObjectiveRenderTypeFix extends DataFix {
-	public ObjectiveRenderTypeFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ObjectiveRenderTypeFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	private static String parseLegacyRenderType(String oldName) {

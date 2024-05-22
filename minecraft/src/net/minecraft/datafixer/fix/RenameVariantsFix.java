@@ -16,8 +16,8 @@ public class RenameVariantsFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(
 			DSL.remainderFinder(),
 			dynamic -> dynamic.update(
 					"variant",

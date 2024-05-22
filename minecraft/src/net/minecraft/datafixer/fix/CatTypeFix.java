@@ -7,16 +7,16 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class CatTypeFix extends ChoiceFix {
-	public CatTypeFix(Schema schema, boolean bl) {
-		super(schema, bl, "CatTypeFix", TypeReferences.ENTITY, "minecraft:cat");
+	public CatTypeFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "CatTypeFix", TypeReferences.ENTITY, "minecraft:cat");
 	}
 
-	public Dynamic<?> fixCatTypeData(Dynamic<?> dynamic) {
-		return dynamic.get("CatType").asInt(0) == 9 ? dynamic.set("CatType", dynamic.createInt(10)) : dynamic;
+	public Dynamic<?> fixCatTypeData(Dynamic<?> catDynamic) {
+		return catDynamic.get("CatType").asInt(0) == 9 ? catDynamic.set("CatType", catDynamic.createInt(10)) : catDynamic;
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(DSL.remainderFinder(), this::fixCatTypeData);
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(DSL.remainderFinder(), this::fixCatTypeData);
 	}
 }

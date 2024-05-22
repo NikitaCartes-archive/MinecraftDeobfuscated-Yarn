@@ -21,7 +21,7 @@ public class ConfiguredCarvers {
 	public static final RegistryKey<ConfiguredCarver<?>> NETHER_CAVE = register("nether_cave");
 
 	private static RegistryKey<ConfiguredCarver<?>> register(String id) {
-		return RegistryKey.of(RegistryKeys.CONFIGURED_CARVER, Identifier.method_60656(id));
+		return RegistryKey.of(RegistryKeys.CONFIGURED_CARVER, Identifier.ofVanilla(id));
 	}
 
 	public static void bootstrap(Registerable<ConfiguredCarver<?>> carverRegisterable) {

@@ -117,7 +117,7 @@ public class ZipResourcePack extends AbstractFileResourcePack {
 					String string3 = zipEntry.getName();
 					if (string3.startsWith(string2)) {
 						String string4 = string3.substring(string.length());
-						Identifier identifier = Identifier.of(namespace, string4);
+						Identifier identifier = Identifier.tryParse(namespace, string4);
 						if (identifier != null) {
 							consumer.accept(identifier, InputSupplier.create(zipFile, zipEntry));
 						} else {

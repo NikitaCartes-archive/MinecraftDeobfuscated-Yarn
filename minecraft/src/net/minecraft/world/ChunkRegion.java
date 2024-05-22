@@ -74,7 +74,7 @@ public class ChunkRegion implements StructureWorldAccess {
 	@Nullable
 	private Supplier<String> currentlyGeneratingStructureName;
 	private final AtomicLong tickOrder = new AtomicLong();
-	private static final Identifier WORLDGEN_REGION_RANDOM_ID = Identifier.method_60656("worldgen_region_random");
+	private static final Identifier WORLDGEN_REGION_RANDOM_ID = Identifier.ofVanilla("worldgen_region_random");
 
 	public ChunkRegion(ServerWorld world, BoundedRegionArray<AbstractChunkHolder> chunks, ChunkGenerationStep generationStep, Chunk centerPos) {
 		this.generationStep = generationStep;

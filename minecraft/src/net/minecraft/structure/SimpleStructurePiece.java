@@ -61,7 +61,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 	}
 
 	protected Identifier getId() {
-		return Identifier.method_60654(this.templateIdString);
+		return Identifier.of(this.templateIdString);
 	}
 
 	@Override

@@ -13,29 +13,29 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class BlockBufferBuilderPool {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final Queue<BlockBufferBuilderStorage> availableBuilders;
+	private final Queue<BlockBufferAllocatorStorage> availableBuilders;
 	private volatile int availableBuilderCount;
 
-	private BlockBufferBuilderPool(List<BlockBufferBuilderStorage> availableBuilders) {
-		this.availableBuilders = Queues.<BlockBufferBuilderStorage>newArrayDeque(availableBuilders);
+	private BlockBufferBuilderPool(List<BlockBufferAllocatorStorage> availableBuilders) {
+		this.availableBuilders = Queues.<BlockBufferAllocatorStorage>newArrayDeque(availableBuilders);
 		this.availableBuilderCount = this.availableBuilders.size();
 	}
 
 	public static BlockBufferBuilderPool allocate(int max) {
-		int i = Math.max(1, (int)((double)Runtime.getRuntime().maxMemory() * 0.3) / BlockBufferBuilderStorage.EXPECTED_TOTAL_SIZE);
+		int i = Math.max(1, (int)((double)Runtime.getRuntime().maxMemory() * 0.3) / BlockBufferAllocatorStorage.EXPECTED_TOTAL_SIZE);
 		int j = Math.max(1, Math.min(max, i));
-		List<BlockBufferBuilderStorage> list = new ArrayList(j);
+		List<BlockBufferAllocatorStorage> list = new ArrayList(j);
 
 		try {
 			for (int k = 0; k < j; k++) {
-				list.add(new BlockBufferBuilderStorage());
+				list.add(new BlockBufferAllocatorStorage());
 			}
 		} catch (OutOfMemoryError var7) {
 			LOGGER.warn("Allocated only {}/{} buffers", list.size(), j);
 			int l = Math.min(list.size() * 2 / 3, list.size() - 1);
 
 			for (int m = 0; m < l; m++) {
-				((BlockBufferBuilderStorage)list.remove(list.size() - 1)).close();
+				((BlockBufferAllocatorStorage)list.remove(list.size() - 1)).close();
 			}
 		}
 
@@ -43,17 +43,17 @@ public class BlockBufferBuilderPool {
 	}
 
 	@Nullable
-	public BlockBufferBuilderStorage acquire() {
-		BlockBufferBuilderStorage blockBufferBuilderStorage = (BlockBufferBuilderStorage)this.availableBuilders.poll();
-		if (blockBufferBuilderStorage != null) {
+	public BlockBufferAllocatorStorage acquire() {
+		BlockBufferAllocatorStorage blockBufferAllocatorStorage = (BlockBufferAllocatorStorage)this.availableBuilders.poll();
+		if (blockBufferAllocatorStorage != null) {
 			this.availableBuilderCount = this.availableBuilders.size();
-			return blockBufferBuilderStorage;
+			return blockBufferAllocatorStorage;
 		} else {
 			return null;
 		}
 	}
 
-	public void release(BlockBufferBuilderStorage builders) {
+	public void release(BlockBufferAllocatorStorage builders) {
 		this.availableBuilders.add(builders);
 		this.availableBuilderCount = this.availableBuilders.size();
 	}

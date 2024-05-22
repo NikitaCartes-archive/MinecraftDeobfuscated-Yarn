@@ -11,8 +11,8 @@ public class RemoveFilteredSignTextFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(
 			DSL.remainderFinder(), blockEntity -> blockEntity.remove("FilteredText1").remove("FilteredText2").remove("FilteredText3").remove("FilteredText4")
 		);
 	}

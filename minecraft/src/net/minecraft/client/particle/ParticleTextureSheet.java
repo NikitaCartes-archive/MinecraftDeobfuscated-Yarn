@@ -18,7 +18,7 @@ import net.minecraft.client.texture.TextureManager;
  * <p>
  * Each {@link Particle} returns a sheet in {@link Particle#getType()}.
  * When particles are rendered, each sheet will be drawn once.
- * {@link #begin(BufferBuilder, TextureManager)} is first called to set up render state, and after each particle has emitted geometry, {@link #draw(Tessellator)} is called to draw to a target buffer.
+ * {@link #begin(Tessellator, TextureManager)} is first called to set up render state.
  */
 @Environment(EnvType.CLIENT)
 public interface ParticleTextureSheet {
@@ -29,7 +29,7 @@ public interface ParticleTextureSheet {
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.depthMask(true);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
-			return tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+			return tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		public String toString() {
@@ -43,7 +43,7 @@ public interface ParticleTextureSheet {
 			RenderSystem.depthMask(true);
 			RenderSystem.setShader(GameRenderer::getParticleProgram);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
-			return tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+			return tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		public String toString() {
@@ -57,7 +57,7 @@ public interface ParticleTextureSheet {
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
-			return tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+			return tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		public String toString() {
@@ -70,7 +70,7 @@ public interface ParticleTextureSheet {
 			RenderSystem.disableBlend();
 			RenderSystem.depthMask(true);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
-			return tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+			return tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		public String toString() {
@@ -82,7 +82,7 @@ public interface ParticleTextureSheet {
 		public BufferBuilder begin(Tessellator tessellator, TextureManager textureManager) {
 			RenderSystem.depthMask(true);
 			RenderSystem.disableBlend();
-			return tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+			return tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		public String toString() {

@@ -14,8 +14,8 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class ItemWaterPotionFix extends DataFix {
-	public ItemWaterPotionFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemWaterPotionFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -28,25 +28,25 @@ public class ItemWaterPotionFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"ItemWaterPotionFix",
 			type,
-			typed -> {
-				Optional<Pair<String, String>> optional = typed.getOptional(opticFinder);
+			itemStackTyped -> {
+				Optional<Pair<String, String>> optional = itemStackTyped.getOptional(opticFinder);
 				if (optional.isPresent()) {
 					String string = (String)((Pair)optional.get()).getSecond();
 					if ("minecraft:potion".equals(string)
 						|| "minecraft:splash_potion".equals(string)
 						|| "minecraft:lingering_potion".equals(string)
 						|| "minecraft:tipped_arrow".equals(string)) {
-						Typed<?> typed2 = typed.getOrCreateTyped(opticFinder2);
-						Dynamic<?> dynamic = typed2.get(DSL.remainderFinder());
+						Typed<?> typed = itemStackTyped.getOrCreateTyped(opticFinder2);
+						Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
 						if (dynamic.get("Potion").asString().result().isEmpty()) {
 							dynamic = dynamic.set("Potion", dynamic.createString("minecraft:water"));
 						}
 
-						return typed.set(opticFinder2, typed2.set(DSL.remainderFinder(), dynamic));
+						return itemStackTyped.set(opticFinder2, typed.set(DSL.remainderFinder(), dynamic));
 					}
 				}
 
-				return typed;
+				return itemStackTyped;
 			}
 		);
 	}

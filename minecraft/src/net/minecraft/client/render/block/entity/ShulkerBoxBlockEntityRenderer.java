@@ -53,7 +53,7 @@ public class ShulkerBoxBlockEntityRenderer implements BlockEntityRenderer<Shulke
 		modelPart.setPivot(0.0F, 24.0F - shulkerBoxBlockEntity.getAnimationProgress(f) * 0.5F * 16.0F, 0.0F);
 		modelPart.yaw = 270.0F * shulkerBoxBlockEntity.getAnimationProgress(f) * (float) (Math.PI / 180.0);
 		VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull);
-		this.model.method_60879(matrixStack, vertexConsumer, i, j);
+		this.model.render(matrixStack, vertexConsumer, i, j);
 		matrixStack.pop();
 	}
 }

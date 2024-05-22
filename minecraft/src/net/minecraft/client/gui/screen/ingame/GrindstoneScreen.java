@@ -10,8 +10,8 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class GrindstoneScreen extends HandledScreen<GrindstoneScreenHandler> {
-	private static final Identifier ERROR_TEXTURE = Identifier.method_60656("container/grindstone/error");
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/grindstone.png");
+	private static final Identifier ERROR_TEXTURE = Identifier.ofVanilla("container/grindstone/error");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/gui/container/grindstone.png");
 
 	public GrindstoneScreen(GrindstoneScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);

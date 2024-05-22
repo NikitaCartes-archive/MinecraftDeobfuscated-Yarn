@@ -26,8 +26,7 @@ import net.minecraft.util.crash.CrashReportSection;
  * Represents an NBT compound object. This mutable object holds unordered key-value pairs
  * with distinct case-sensitive string keys. This can effectively be used like a
  * {@code HashMap<String, NbtElement>}. Note that this <strong>does not</strong> implement
- * {@link java.util.Map}. Its type is {@value NbtElement#COMPOUND_TYPE}. To get the compound
- * as a map, use {@link #toMap()}.
+ * {@link java.util.Map}. Its type is {@value NbtElement#COMPOUND_TYPE}.
  * 
  * <p>There are two ways to use this compound; one is to create NBT instances yourself and use
  * {@link #get(String)} or {@link #put(String, NbtElement)}. Manual casting is required in

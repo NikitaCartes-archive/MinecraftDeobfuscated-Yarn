@@ -18,6 +18,6 @@ public class MultiNoiseBiomeSourceParameterLists {
 	}
 
 	private static RegistryKey<MultiNoiseBiomeSourceParameterList> of(String id) {
-		return RegistryKey.of(RegistryKeys.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST, Identifier.method_60656(id));
+		return RegistryKey.of(RegistryKeys.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST, Identifier.ofVanilla(id));
 	}
 }

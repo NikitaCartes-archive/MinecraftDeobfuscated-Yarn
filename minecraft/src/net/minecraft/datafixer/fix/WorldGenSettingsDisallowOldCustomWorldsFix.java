@@ -18,16 +18,18 @@ public class WorldGenSettingsDisallowOldCustomWorldsFix extends DataFix {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.WORLD_GEN_SETTINGS);
 		OpticFinder<?> opticFinder = type.findField("dimensions");
 		return this.fixTypeEverywhereTyped(
-			"WorldGenSettingsDisallowOldCustomWorldsFix_" + this.getOutputSchema().getVersionKey(), type, typed -> typed.updateTyped(opticFinder, typedx -> {
-					typedx.write().map(dynamic -> dynamic.getMapValues().map(map -> {
-							map.forEach((dynamicx, dynamic2) -> {
-								if (dynamic2.get("type").asString().result().isEmpty()) {
+			"WorldGenSettingsDisallowOldCustomWorldsFix_" + this.getOutputSchema().getVersionKey(),
+			type,
+			worldGenSettingsTyped -> worldGenSettingsTyped.updateTyped(opticFinder, dimensionsTyped -> {
+					dimensionsTyped.write().map(dimensionsDynamic -> dimensionsDynamic.getMapValues().map(dimensions -> {
+							dimensions.forEach((dimensionId, dimensionDynamic) -> {
+								if (dimensionDynamic.get("type").asString().result().isEmpty()) {
 									throw new InvalidNbtException("Unable load old custom worlds.");
 								}
 							});
-							return map;
+							return dimensions;
 						}));
-					return typedx;
+					return dimensionsTyped;
 				})
 		);
 	}

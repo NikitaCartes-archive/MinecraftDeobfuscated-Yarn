@@ -17,13 +17,13 @@ import net.minecraft.util.math.RotationAxis;
 @Environment(EnvType.CLIENT)
 public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
 	private static final Map<PandaEntity.Gene, Identifier> TEXTURES = Util.make(Maps.newEnumMap(PandaEntity.Gene.class), map -> {
-		map.put(PandaEntity.Gene.NORMAL, Identifier.method_60656("textures/entity/panda/panda.png"));
-		map.put(PandaEntity.Gene.LAZY, Identifier.method_60656("textures/entity/panda/lazy_panda.png"));
-		map.put(PandaEntity.Gene.WORRIED, Identifier.method_60656("textures/entity/panda/worried_panda.png"));
-		map.put(PandaEntity.Gene.PLAYFUL, Identifier.method_60656("textures/entity/panda/playful_panda.png"));
-		map.put(PandaEntity.Gene.BROWN, Identifier.method_60656("textures/entity/panda/brown_panda.png"));
-		map.put(PandaEntity.Gene.WEAK, Identifier.method_60656("textures/entity/panda/weak_panda.png"));
-		map.put(PandaEntity.Gene.AGGRESSIVE, Identifier.method_60656("textures/entity/panda/aggressive_panda.png"));
+		map.put(PandaEntity.Gene.NORMAL, Identifier.ofVanilla("textures/entity/panda/panda.png"));
+		map.put(PandaEntity.Gene.LAZY, Identifier.ofVanilla("textures/entity/panda/lazy_panda.png"));
+		map.put(PandaEntity.Gene.WORRIED, Identifier.ofVanilla("textures/entity/panda/worried_panda.png"));
+		map.put(PandaEntity.Gene.PLAYFUL, Identifier.ofVanilla("textures/entity/panda/playful_panda.png"));
+		map.put(PandaEntity.Gene.BROWN, Identifier.ofVanilla("textures/entity/panda/brown_panda.png"));
+		map.put(PandaEntity.Gene.WEAK, Identifier.ofVanilla("textures/entity/panda/weak_panda.png"));
+		map.put(PandaEntity.Gene.AGGRESSIVE, Identifier.ofVanilla("textures/entity/panda/aggressive_panda.png"));
 	});
 
 	public PandaEntityRenderer(EntityRendererFactory.Context context) {

@@ -32,23 +32,27 @@ public class HorseChestIndexingFix extends DataFix {
 	}
 
 	private TypeRewriteRule fixIndexing(
-		OpticFinder<Pair<String, Pair<Either<Pair<String, String>, Unit>, Pair<Either<?, Unit>, Dynamic<?>>>>> opticFinder, Type<?> type, String entityId
+		OpticFinder<Pair<String, Pair<Either<Pair<String, String>, Unit>, Pair<Either<?, Unit>, Dynamic<?>>>>> itemStackOpticFinder,
+		Type<?> entityType,
+		String entityId
 	) {
-		Type<?> type2 = this.getInputSchema().getChoiceType(TypeReferences.ENTITY, entityId);
-		OpticFinder<?> opticFinder2 = DSL.namedChoice(entityId, type2);
-		OpticFinder<?> opticFinder3 = type2.findField("Items");
+		Type<?> type = this.getInputSchema().getChoiceType(TypeReferences.ENTITY, entityId);
+		OpticFinder<?> opticFinder = DSL.namedChoice(entityId, type);
+		OpticFinder<?> opticFinder2 = type.findField("Items");
 		return this.fixTypeEverywhereTyped(
 			"Fix non-zero indexing in chest horse type " + entityId,
-			type,
-			typed -> typed.updateTyped(
-					opticFinder2,
-					typedx -> typedx.updateTyped(
-							opticFinder3,
-							typedxx -> typedxx.update(
-									opticFinder,
-									pair -> pair.mapSecond(
-											pairx -> pairx.mapSecond(
-													pairxx -> pairxx.mapSecond(dynamic -> dynamic.update("Slot", dynamicx -> dynamicx.createByte((byte)(dynamicx.asInt(2) - 2))))
+			entityType,
+			entityTyped -> entityTyped.updateTyped(
+					opticFinder,
+					specificEntityTyped -> specificEntityTyped.updateTyped(
+							opticFinder2,
+							entityItemsTyped -> entityItemsTyped.update(
+									itemStackOpticFinder,
+									itemStackEntry -> itemStackEntry.mapSecond(
+											pair -> pair.mapSecond(
+													pairx -> pairx.mapSecond(
+															itemStackDynamic -> itemStackDynamic.update("Slot", slotDynamic -> slotDynamic.createByte((byte)(slotDynamic.asInt(2) - 2)))
+														)
 												)
 										)
 								)

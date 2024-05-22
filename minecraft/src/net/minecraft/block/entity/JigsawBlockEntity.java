@@ -28,9 +28,9 @@ public class JigsawBlockEntity extends BlockEntity {
 	public static final String SELECTION_PRIORITY_KEY = "selection_priority";
 	public static final String NAME_KEY = "name";
 	public static final String FINAL_STATE_KEY = "final_state";
-	private Identifier name = Identifier.method_60656("empty");
-	private Identifier target = Identifier.method_60656("empty");
-	private RegistryKey<StructurePool> pool = RegistryKey.of(RegistryKeys.TEMPLATE_POOL, Identifier.method_60656("empty"));
+	private Identifier name = Identifier.ofVanilla("empty");
+	private Identifier target = Identifier.ofVanilla("empty");
+	private RegistryKey<StructurePool> pool = RegistryKey.of(RegistryKeys.TEMPLATE_POOL, Identifier.ofVanilla("empty"));
 	private JigsawBlockEntity.Joint joint = JigsawBlockEntity.Joint.ROLLABLE;
 	private String finalState = "minecraft:air";
 	private int placementPriority;
@@ -111,9 +111,9 @@ public class JigsawBlockEntity extends BlockEntity {
 	@Override
 	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
-		this.name = Identifier.method_60654(nbt.getString("name"));
-		this.target = Identifier.method_60654(nbt.getString("target"));
-		this.pool = RegistryKey.of(RegistryKeys.TEMPLATE_POOL, Identifier.method_60654(nbt.getString("pool")));
+		this.name = Identifier.of(nbt.getString("name"));
+		this.target = Identifier.of(nbt.getString("target"));
+		this.pool = RegistryKey.of(RegistryKeys.TEMPLATE_POOL, Identifier.of(nbt.getString("pool")));
 		this.finalState = nbt.getString("final_state");
 		this.joint = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(nbt.getString("joint"))
 			.orElseGet(() -> JigsawBlock.getFacing(this.getCachedState()).getAxis().isHorizontal() ? JigsawBlockEntity.Joint.ALIGNED : JigsawBlockEntity.Joint.ROLLABLE);

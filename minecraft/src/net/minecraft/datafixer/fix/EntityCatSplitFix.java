@@ -6,27 +6,27 @@ import com.mojang.serialization.Dynamic;
 import java.util.Objects;
 
 public class EntityCatSplitFix extends EntitySimpleTransformFix {
-	public EntityCatSplitFix(Schema schema, boolean bl) {
-		super("EntityCatSplitFix", schema, bl);
+	public EntityCatSplitFix(Schema outputSchema, boolean changesType) {
+		super("EntityCatSplitFix", outputSchema, changesType);
 	}
 
 	@Override
-	protected Pair<String, Dynamic<?>> transform(String choice, Dynamic<?> dynamic) {
+	protected Pair<String, Dynamic<?>> transform(String choice, Dynamic<?> entityDynamic) {
 		if (Objects.equals("minecraft:ocelot", choice)) {
-			int i = dynamic.get("CatType").asInt(0);
+			int i = entityDynamic.get("CatType").asInt(0);
 			if (i == 0) {
-				String string = dynamic.get("Owner").asString("");
-				String string2 = dynamic.get("OwnerUUID").asString("");
+				String string = entityDynamic.get("Owner").asString("");
+				String string2 = entityDynamic.get("OwnerUUID").asString("");
 				if (string.length() > 0 || string2.length() > 0) {
-					dynamic.set("Trusting", dynamic.createBoolean(true));
+					entityDynamic.set("Trusting", entityDynamic.createBoolean(true));
 				}
 			} else if (i > 0 && i < 4) {
-				dynamic = dynamic.set("CatType", dynamic.createInt(i));
-				dynamic = dynamic.set("OwnerUUID", dynamic.createString(dynamic.get("OwnerUUID").asString("")));
-				return Pair.of("minecraft:cat", dynamic);
+				entityDynamic = entityDynamic.set("CatType", entityDynamic.createInt(i));
+				entityDynamic = entityDynamic.set("OwnerUUID", entityDynamic.createString(entityDynamic.get("OwnerUUID").asString("")));
+				return Pair.of("minecraft:cat", entityDynamic);
 			}
 		}
 
-		return Pair.of(choice, dynamic);
+		return Pair.of(choice, entityDynamic);
 	}
 }

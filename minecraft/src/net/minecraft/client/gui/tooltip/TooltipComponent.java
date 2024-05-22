@@ -2,12 +2,11 @@ package net.minecraft.client.gui.tooltip;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9805;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.item.BundleTooltipData;
-import net.minecraft.client.item.TooltipData;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.item.tooltip.BundleTooltipData;
+import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.text.OrderedText;
 import org.joml.Matrix4f;
 
@@ -20,8 +19,8 @@ public interface TooltipComponent {
 	static TooltipComponent of(TooltipData data) {
 		if (data instanceof BundleTooltipData bundleTooltipData) {
 			return new BundleTooltipComponent(bundleTooltipData.contents());
-		} else if (data instanceof class_9805.class_9806 lv) {
-			return new class_9805(lv);
+		} else if (data instanceof ProfilesTooltipComponent.ProfilesData profilesData) {
+			return new ProfilesTooltipComponent(profilesData);
 		} else {
 			throw new IllegalArgumentException("Unknown TooltipComponent");
 		}

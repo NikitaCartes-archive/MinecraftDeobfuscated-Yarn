@@ -30,7 +30,7 @@ public abstract class EyesFeatureRenderer<T extends Entity, M extends EntityMode
 		float headPitch
 	) {
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.getEyesTexture());
-		this.getContextModel().method_60879(matrices, vertexConsumer, 15728640, OverlayTexture.DEFAULT_UV);
+		this.getContextModel().render(matrices, vertexConsumer, 15728640, OverlayTexture.DEFAULT_UV);
 	}
 
 	public abstract RenderLayer getEyesTexture();

@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9801;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -43,6 +43,7 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleGroup;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
@@ -69,7 +70,7 @@ import org.slf4j.Logger;
 public class ParticleManager implements ResourceReloader {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final ResourceFinder FINDER = ResourceFinder.json("particles");
-	private static final Identifier PARTICLES_PATH = Identifier.method_60656("particles");
+	private static final Identifier PARTICLES_PATH = Identifier.ofVanilla("particles");
 	private static final int MAX_PARTICLE_COUNT = 16384;
 	private static final List<ParticleTextureSheet> PARTICLE_TEXTURE_SHEETS = ImmutableList.of(
 		ParticleTextureSheet.TERRAIN_SHEET,
@@ -460,9 +461,9 @@ public class ParticleManager implements ResourceReloader {
 						}
 					}
 
-					class_9801 lv = bufferBuilder.method_60794();
-					if (lv != null) {
-						BufferRenderer.drawWithGlobalProgram(lv);
+					BuiltBuffer builtBuffer = bufferBuilder.endNullable();
+					if (builtBuffer != null) {
+						BufferRenderer.drawWithGlobalProgram(builtBuffer);
 					}
 				}
 			}

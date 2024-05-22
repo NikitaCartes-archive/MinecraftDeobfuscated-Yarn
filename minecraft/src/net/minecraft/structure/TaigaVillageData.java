@@ -16,8 +16,8 @@ import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.VillagePlacedFeatures;
 
 public class TaigaVillageData {
-	public static final RegistryKey<StructurePool> TOWN_CENTERS_KEY = StructurePools.of("village/taiga/town_centers");
-	private static final RegistryKey<StructurePool> TERMINATORS_KEY = StructurePools.of("village/taiga/terminators");
+	public static final RegistryKey<StructurePool> TOWN_CENTERS_KEY = StructurePools.ofVanilla("village/taiga/town_centers");
+	private static final RegistryKey<StructurePool> TERMINATORS_KEY = StructurePools.ofVanilla("village/taiga/terminators");
 
 	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
 		RegistryEntryLookup<PlacedFeature> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE);

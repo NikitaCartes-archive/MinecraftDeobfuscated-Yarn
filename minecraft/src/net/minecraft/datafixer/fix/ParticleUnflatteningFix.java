@@ -61,14 +61,14 @@ public class ParticleUnflatteningFix extends DataFix {
 		}
 	}
 
-	private <T> Dynamic<T> fixItemParticle(Dynamic<T> dynamic, String string) {
-		int i = string.indexOf("{");
+	private <T> Dynamic<T> fixItemParticle(Dynamic<T> dynamic, String params) {
+		int i = params.indexOf("{");
 		Dynamic<T> dynamic2 = dynamic.createMap(Map.of(dynamic.createString("Count"), dynamic.createInt(1)));
 		if (i == -1) {
-			dynamic2 = dynamic2.set("id", dynamic.createString(string));
+			dynamic2 = dynamic2.set("id", dynamic.createString(params));
 		} else {
-			dynamic2 = dynamic2.set("id", dynamic.createString(string.substring(0, i)));
-			NbtCompound nbtCompound = tryParse(string.substring(i));
+			dynamic2 = dynamic2.set("id", dynamic.createString(params.substring(0, i)));
+			NbtCompound nbtCompound = tryParse(params.substring(i));
 			if (nbtCompound != null) {
 				dynamic2 = dynamic2.set("tag", new Dynamic<>(NbtOps.INSTANCE, nbtCompound).convert(dynamic.getOps()));
 			}
@@ -87,14 +87,14 @@ public class ParticleUnflatteningFix extends DataFix {
 		}
 	}
 
-	private <T> Dynamic<T> fixBlockParticle(Dynamic<T> dynamic, String string) {
-		int i = string.indexOf("[");
+	private <T> Dynamic<T> fixBlockParticle(Dynamic<T> dynamic, String params) {
+		int i = params.indexOf("[");
 		Dynamic<T> dynamic2 = dynamic.emptyMap();
 		if (i == -1) {
-			dynamic2 = dynamic2.set("Name", dynamic.createString(IdentifierNormalizingSchema.normalize(string)));
+			dynamic2 = dynamic2.set("Name", dynamic.createString(IdentifierNormalizingSchema.normalize(params)));
 		} else {
-			dynamic2 = dynamic2.set("Name", dynamic.createString(IdentifierNormalizingSchema.normalize(string.substring(0, i))));
-			Map<Dynamic<T>, Dynamic<T>> map = method_59632(dynamic, string.substring(i));
+			dynamic2 = dynamic2.set("Name", dynamic.createString(IdentifierNormalizingSchema.normalize(params.substring(0, i))));
+			Map<Dynamic<T>, Dynamic<T>> map = parseBlockProperties(dynamic, params.substring(i));
 			if (!map.isEmpty()) {
 				dynamic2 = dynamic2.set("Properties", dynamic.createMap(map));
 			}
@@ -103,22 +103,22 @@ public class ParticleUnflatteningFix extends DataFix {
 		return dynamic.set("block_state", dynamic2);
 	}
 
-	private static <T> Map<Dynamic<T>, Dynamic<T>> method_59632(Dynamic<T> dynamic, String string) {
+	private static <T> Map<Dynamic<T>, Dynamic<T>> parseBlockProperties(Dynamic<T> dynamic, String propertiesStr) {
 		try {
 			Map<Dynamic<T>, Dynamic<T>> map = new HashMap();
-			StringReader stringReader = new StringReader(string);
+			StringReader stringReader = new StringReader(propertiesStr);
 			stringReader.expect('[');
 			stringReader.skipWhitespace();
 
 			while (stringReader.canRead() && stringReader.peek() != ']') {
 				stringReader.skipWhitespace();
-				String string2 = stringReader.readString();
+				String string = stringReader.readString();
 				stringReader.skipWhitespace();
 				stringReader.expect('=');
 				stringReader.skipWhitespace();
-				String string3 = stringReader.readString();
+				String string2 = stringReader.readString();
 				stringReader.skipWhitespace();
-				map.put(dynamic.createString(string2), dynamic.createString(string3));
+				map.put(dynamic.createString(string), dynamic.createString(string2));
 				if (stringReader.canRead()) {
 					if (stringReader.peek() != ',') {
 						break;
@@ -131,62 +131,62 @@ public class ParticleUnflatteningFix extends DataFix {
 			stringReader.expect(']');
 			return map;
 		} catch (Exception var6) {
-			LOGGER.warn("Failed to parse block properties: {}", string, var6);
+			LOGGER.warn("Failed to parse block properties: {}", propertiesStr, var6);
 			return Map.of();
 		}
 	}
 
-	private static <T> Dynamic<T> method_59628(Dynamic<T> dynamic, StringReader stringReader) throws CommandSyntaxException {
-		float f = stringReader.readFloat();
-		stringReader.expect(' ');
-		float g = stringReader.readFloat();
-		stringReader.expect(' ');
-		float h = stringReader.readFloat();
+	private static <T> Dynamic<T> parseColor(Dynamic<T> dynamic, StringReader paramsReader) throws CommandSyntaxException {
+		float f = paramsReader.readFloat();
+		paramsReader.expect(' ');
+		float g = paramsReader.readFloat();
+		paramsReader.expect(' ');
+		float h = paramsReader.readFloat();
 		return dynamic.createList(Stream.of(f, g, h).map(dynamic::createFloat));
 	}
 
-	private <T> Dynamic<T> fixDustParticle(Dynamic<T> dynamic, String string) {
+	private <T> Dynamic<T> fixDustParticle(Dynamic<T> dynamic, String params) {
 		try {
-			StringReader stringReader = new StringReader(string);
-			Dynamic<T> dynamic2 = method_59628(dynamic, stringReader);
+			StringReader stringReader = new StringReader(params);
+			Dynamic<T> dynamic2 = parseColor(dynamic, stringReader);
 			stringReader.expect(' ');
 			float f = stringReader.readFloat();
 			return dynamic.set("color", dynamic2).set("scale", dynamic.createFloat(f));
 		} catch (Exception var6) {
-			LOGGER.warn("Failed to parse particle options: {}", string, var6);
+			LOGGER.warn("Failed to parse particle options: {}", params, var6);
 			return dynamic;
 		}
 	}
 
-	private <T> Dynamic<T> fixDustColorTransitionParticle(Dynamic<T> dynamic, String string) {
+	private <T> Dynamic<T> fixDustColorTransitionParticle(Dynamic<T> dynamic, String params) {
 		try {
-			StringReader stringReader = new StringReader(string);
-			Dynamic<T> dynamic2 = method_59628(dynamic, stringReader);
+			StringReader stringReader = new StringReader(params);
+			Dynamic<T> dynamic2 = parseColor(dynamic, stringReader);
 			stringReader.expect(' ');
 			float f = stringReader.readFloat();
 			stringReader.expect(' ');
-			Dynamic<T> dynamic3 = method_59628(dynamic, stringReader);
+			Dynamic<T> dynamic3 = parseColor(dynamic, stringReader);
 			return dynamic.set("from_color", dynamic2).set("to_color", dynamic3).set("scale", dynamic.createFloat(f));
 		} catch (Exception var7) {
-			LOGGER.warn("Failed to parse particle options: {}", string, var7);
+			LOGGER.warn("Failed to parse particle options: {}", params, var7);
 			return dynamic;
 		}
 	}
 
-	private <T> Dynamic<T> fixSculkChargeParticle(Dynamic<T> dynamic, String string) {
+	private <T> Dynamic<T> fixSculkChargeParticle(Dynamic<T> dynamic, String params) {
 		try {
-			StringReader stringReader = new StringReader(string);
+			StringReader stringReader = new StringReader(params);
 			float f = stringReader.readFloat();
 			return dynamic.set("roll", dynamic.createFloat(f));
 		} catch (Exception var5) {
-			LOGGER.warn("Failed to parse particle options: {}", string, var5);
+			LOGGER.warn("Failed to parse particle options: {}", params, var5);
 			return dynamic;
 		}
 	}
 
-	private <T> Dynamic<T> fixVibrationParticle(Dynamic<T> dynamic, String string) {
+	private <T> Dynamic<T> fixVibrationParticle(Dynamic<T> dynamic, String params) {
 		try {
-			StringReader stringReader = new StringReader(string);
+			StringReader stringReader = new StringReader(params);
 			float f = (float)stringReader.readDouble();
 			stringReader.expect(' ');
 			float g = (float)stringReader.readDouble();
@@ -198,18 +198,18 @@ public class ParticleUnflatteningFix extends DataFix {
 			Dynamic<T> dynamic3 = dynamic.createMap(Map.of(dynamic.createString("type"), dynamic.createString("minecraft:block"), dynamic.createString("pos"), dynamic2));
 			return dynamic.set("destination", dynamic3).set("arrival_in_ticks", dynamic.createInt(i));
 		} catch (Exception var10) {
-			LOGGER.warn("Failed to parse particle options: {}", string, var10);
+			LOGGER.warn("Failed to parse particle options: {}", params, var10);
 			return dynamic;
 		}
 	}
 
-	private <T> Dynamic<T> fixShriekParticle(Dynamic<T> dynamic, String string) {
+	private <T> Dynamic<T> fixShriekParticle(Dynamic<T> dynamic, String params) {
 		try {
-			StringReader stringReader = new StringReader(string);
+			StringReader stringReader = new StringReader(params);
 			int i = stringReader.readInt();
 			return dynamic.set("delay", dynamic.createInt(i));
 		} catch (Exception var5) {
-			LOGGER.warn("Failed to parse particle options: {}", string, var5);
+			LOGGER.warn("Failed to parse particle options: {}", params, var5);
 			return dynamic;
 		}
 	}

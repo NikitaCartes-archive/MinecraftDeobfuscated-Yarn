@@ -20,16 +20,16 @@ public class JigsawRotationFix extends DataFix {
 		.put("east", "east_up")
 		.build();
 
-	public JigsawRotationFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public JigsawRotationFix(Schema outputSchema, boolean changesTyped) {
+		super(outputSchema, changesTyped);
 	}
 
-	private static Dynamic<?> updateBlockState(Dynamic<?> dynamic) {
-		Optional<String> optional = dynamic.get("Name").asString().result();
-		return optional.equals(Optional.of("minecraft:jigsaw")) ? dynamic.update("Properties", dynamicx -> {
-			String string = dynamicx.get("facing").asString("north");
-			return dynamicx.remove("facing").set("orientation", dynamicx.createString((String)ORIENTATION_UPDATES.getOrDefault(string, string)));
-		}) : dynamic;
+	private static Dynamic<?> updateBlockState(Dynamic<?> blockStateDynamic) {
+		Optional<String> optional = blockStateDynamic.get("Name").asString().result();
+		return optional.equals(Optional.of("minecraft:jigsaw")) ? blockStateDynamic.update("Properties", propertiesDynamic -> {
+			String string = propertiesDynamic.get("facing").asString("north");
+			return propertiesDynamic.remove("facing").set("orientation", propertiesDynamic.createString((String)ORIENTATION_UPDATES.getOrDefault(string, string)));
+		}) : blockStateDynamic;
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class JigsawRotationFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"jigsaw_rotation_fix",
 			this.getInputSchema().getType(TypeReferences.BLOCK_STATE),
-			typed -> typed.update(DSL.remainderFinder(), JigsawRotationFix::updateBlockState)
+			blockStateTyped -> blockStateTyped.update(DSL.remainderFinder(), JigsawRotationFix::updateBlockState)
 		);
 	}
 }

@@ -17,7 +17,7 @@ import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEntity> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/shulker/spark.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/shulker/spark.png");
 	private static final RenderLayer LAYER = RenderLayer.getEntityTranslucent(TEXTURE);
 	private final ShulkerBulletEntityModel<ShulkerBulletEntity> model;
 
@@ -42,7 +42,7 @@ public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEnt
 		matrixStack.scale(-0.5F, -0.5F, 0.5F);
 		this.model.setAngles(shulkerBulletEntity, 0.0F, 0.0F, 0.0F, h, j);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(TEXTURE));
-		this.model.method_60879(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
+		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 		matrixStack.scale(1.5F, 1.5F, 1.5F);
 		VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(LAYER);
 		this.model.render(matrixStack, vertexConsumer2, i, OverlayTexture.DEFAULT_UV, 654311423);

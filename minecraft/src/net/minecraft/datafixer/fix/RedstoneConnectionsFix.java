@@ -16,36 +16,38 @@ public class RedstoneConnectionsFix extends DataFix {
 	protected TypeRewriteRule makeRule() {
 		Schema schema = this.getInputSchema();
 		return this.fixTypeEverywhereTyped(
-			"RedstoneConnectionsFix", schema.getType(TypeReferences.BLOCK_STATE), typed -> typed.update(DSL.remainderFinder(), this::updateBlockState)
+			"RedstoneConnectionsFix",
+			schema.getType(TypeReferences.BLOCK_STATE),
+			blockStateTyped -> blockStateTyped.update(DSL.remainderFinder(), this::updateBlockState)
 		);
 	}
 
-	private <T> Dynamic<T> updateBlockState(Dynamic<T> dynamic) {
-		boolean bl = dynamic.get("Name").asString().result().filter("minecraft:redstone_wire"::equals).isPresent();
+	private <T> Dynamic<T> updateBlockState(Dynamic<T> blockStateDynamic) {
+		boolean bl = blockStateDynamic.get("Name").asString().result().filter("minecraft:redstone_wire"::equals).isPresent();
 		return !bl
-			? dynamic
-			: dynamic.update(
+			? blockStateDynamic
+			: blockStateDynamic.update(
 				"Properties",
-				dynamicx -> {
-					String string = dynamicx.get("east").asString("none");
-					String string2 = dynamicx.get("west").asString("none");
-					String string3 = dynamicx.get("north").asString("none");
-					String string4 = dynamicx.get("south").asString("none");
+				propertiesDynamic -> {
+					String string = propertiesDynamic.get("east").asString("none");
+					String string2 = propertiesDynamic.get("west").asString("none");
+					String string3 = propertiesDynamic.get("north").asString("none");
+					String string4 = propertiesDynamic.get("south").asString("none");
 					boolean blx = hasObsoleteValue(string) || hasObsoleteValue(string2);
 					boolean bl2 = hasObsoleteValue(string3) || hasObsoleteValue(string4);
 					String string5 = !hasObsoleteValue(string) && !bl2 ? "side" : string;
 					String string6 = !hasObsoleteValue(string2) && !bl2 ? "side" : string2;
 					String string7 = !hasObsoleteValue(string3) && !blx ? "side" : string3;
 					String string8 = !hasObsoleteValue(string4) && !blx ? "side" : string4;
-					return dynamicx.update("east", dynamicxx -> dynamicxx.createString(string5))
-						.update("west", dynamicxx -> dynamicxx.createString(string6))
-						.update("north", dynamicxx -> dynamicxx.createString(string7))
-						.update("south", dynamicxx -> dynamicxx.createString(string8));
+					return propertiesDynamic.update("east", eastDynamic -> eastDynamic.createString(string5))
+						.update("west", westDynamic -> westDynamic.createString(string6))
+						.update("north", northDynamic -> northDynamic.createString(string7))
+						.update("south", southDynamic -> southDynamic.createString(string8));
 				}
 			);
 	}
 
-	private static boolean hasObsoleteValue(String string) {
-		return !"none".equals(string);
+	private static boolean hasObsoleteValue(String value) {
+		return !"none".equals(value);
 	}
 }

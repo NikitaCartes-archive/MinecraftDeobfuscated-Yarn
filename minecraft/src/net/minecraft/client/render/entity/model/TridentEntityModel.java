@@ -43,7 +43,7 @@ import net.minecraft.util.Identifier;
  */
 @Environment(EnvType.CLIENT)
 public class TridentEntityModel extends Model {
-	public static final Identifier TEXTURE = Identifier.method_60656("textures/entity/trident.png");
+	public static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/trident.png");
 	private final ModelPart root;
 
 	public TridentEntityModel(ModelPart root) {
@@ -65,7 +65,7 @@ public class TridentEntityModel extends Model {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {
-		this.root.render(matrices, vertices, light, overlay, i);
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
+		this.root.render(matrices, vertices, light, overlay, color);
 	}
 }

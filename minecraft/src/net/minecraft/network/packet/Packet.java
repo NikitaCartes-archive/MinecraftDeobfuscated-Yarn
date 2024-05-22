@@ -23,7 +23,7 @@ public interface Packet<T extends PacketListener> {
 	 * {@return {@code true} if the packet signals transitioning between {@link
 	 * net.minecraft.network.NetworkState}s}
 	 * 
-	 * <p>Such packets cannot be {@linkplain BundlePacket bundled}.
+	 * <p>Such packets cannot be {@linkplain net.minecraft.network.packet.BundlePacket bundled}.
 	 */
 	default boolean transitionsNetworkState() {
 		return false;

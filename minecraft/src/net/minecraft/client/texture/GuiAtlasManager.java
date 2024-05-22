@@ -13,7 +13,7 @@ public class GuiAtlasManager extends SpriteAtlasHolder {
 	private static final Set<ResourceMetadataReader<?>> METADATA_READERS = Set.of(AnimationResourceMetadata.READER, GuiResourceMetadata.SERIALIZER);
 
 	public GuiAtlasManager(TextureManager manager) {
-		super(manager, Identifier.method_60656("textures/atlas/gui.png"), Identifier.method_60656("gui"), METADATA_READERS);
+		super(manager, Identifier.ofVanilla("textures/atlas/gui.png"), Identifier.ofVanilla("gui"), METADATA_READERS);
 	}
 
 	@Override

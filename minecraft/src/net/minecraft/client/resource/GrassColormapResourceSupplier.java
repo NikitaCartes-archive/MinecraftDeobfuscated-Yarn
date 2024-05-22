@@ -3,16 +3,16 @@ package net.minecraft.client.resource;
 import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.color.world.GrassColors;
 import net.minecraft.client.util.RawTextureDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.world.biome.GrassColors;
 
 @Environment(EnvType.CLIENT)
 public class GrassColormapResourceSupplier extends SinglePreparationResourceReloader<int[]> {
-	private static final Identifier GRASS_COLORMAP_LOC = Identifier.method_60656("textures/colormap/grass.png");
+	private static final Identifier GRASS_COLORMAP_LOC = Identifier.ofVanilla("textures/colormap/grass.png");
 
 	protected int[] tryLoad(ResourceManager resourceManager, Profiler profiler) {
 		try {

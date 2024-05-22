@@ -120,30 +120,35 @@ public class ChunkStructuresTemplateRenameFix extends DataFix {
 		)
 		.build();
 
-	public ChunkStructuresTemplateRenameFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ChunkStructuresTemplateRenameFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
 	public TypeRewriteRule makeRule() {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.STRUCTURE_FEATURE);
-		return this.fixTypeEverywhereTyped("ChunkStructuresTemplateRenameFix", type, typed -> typed.update(DSL.remainderFinder(), this::fixChildren));
+		return this.fixTypeEverywhereTyped(
+			"ChunkStructuresTemplateRenameFix", type, structureFeatureTyped -> structureFeatureTyped.update(DSL.remainderFinder(), this::fixChildren)
+		);
 	}
 
-	private Dynamic<?> fixChildren(Dynamic<?> dynamic) {
-		return dynamic.update("Children", dynamic2 -> dynamic.createList(dynamic2.asStream().map(dynamic2x -> this.fix(dynamic, dynamic2x))));
+	private Dynamic<?> fixChildren(Dynamic<?> structureFeatureDynamic) {
+		return structureFeatureDynamic.update(
+			"Children",
+			childrenDynamic -> structureFeatureDynamic.createList(childrenDynamic.asStream().map(childDynamic -> this.fix(structureFeatureDynamic, childDynamic)))
+		);
 	}
 
-	private Dynamic<?> fix(Dynamic<?> dynamic, Dynamic<?> dynamic2) {
-		String string = dynamic.get("id").asString("");
+	private Dynamic<?> fix(Dynamic<?> structureFeatureDynamic, Dynamic<?> childDynamic) {
+		String string = structureFeatureDynamic.get("id").asString("");
 		if (STRUCTURES.containsKey(string)) {
 			Pair<String, ImmutableMap<String, String>> pair = STRUCTURES.get(string);
-			if (pair.getFirst().equals(dynamic2.get("id").asString(""))) {
-				String string2 = dynamic2.get("Template").asString("");
-				dynamic2 = dynamic2.set("Template", dynamic2.createString(pair.getSecond().getOrDefault(string2, string2)));
+			if (pair.getFirst().equals(childDynamic.get("id").asString(""))) {
+				String string2 = childDynamic.get("Template").asString("");
+				childDynamic = childDynamic.set("Template", childDynamic.createString(pair.getSecond().getOrDefault(string2, string2)));
 			}
 		}
 
-		return dynamic2;
+		return childDynamic;
 	}
 }

@@ -1621,7 +1621,7 @@ public class SoundEvents {
 	}
 
 	private static SoundEvent register(String id) {
-		return register(Identifier.method_60656(id));
+		return register(Identifier.ofVanilla(id));
 	}
 
 	private static SoundEvent register(Identifier id) {
@@ -1629,7 +1629,7 @@ public class SoundEvents {
 	}
 
 	private static RegistryEntry.Reference<SoundEvent> registerReference(String id) {
-		return registerReference(Identifier.method_60656(id));
+		return registerReference(Identifier.ofVanilla(id));
 	}
 
 	private static RegistryEntry.Reference<SoundEvent> registerReference(Identifier id) {

@@ -19,22 +19,22 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class MissingDimensionFix extends DataFix {
-	public MissingDimensionFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public MissingDimensionFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
-	protected static <A> Type<Pair<A, Dynamic<?>>> method_29913(String string, Type<A> type) {
-		return DSL.and(DSL.field(string, type), DSL.remainderType());
+	protected static <A> Type<Pair<A, Dynamic<?>>> extract1(String field, Type<A> type) {
+		return DSL.and(DSL.field(field, type), DSL.remainderType());
 	}
 
-	protected static <A> Type<Pair<Either<A, Unit>, Dynamic<?>>> method_29915(String string, Type<A> type) {
-		return DSL.and(DSL.optional(DSL.field(string, type)), DSL.remainderType());
+	protected static <A> Type<Pair<Either<A, Unit>, Dynamic<?>>> extract1Opt(String field, Type<A> type) {
+		return DSL.and(DSL.optional(DSL.field(field, type)), DSL.remainderType());
 	}
 
-	protected static <A1, A2> Type<Pair<Either<A1, Unit>, Pair<Either<A2, Unit>, Dynamic<?>>>> method_29914(
-		String string, Type<A1> type, String string2, Type<A2> type2
+	protected static <A1, A2> Type<Pair<Either<A1, Unit>, Pair<Either<A2, Unit>, Dynamic<?>>>> extract2Opt(
+		String field1, Type<A1> type1, String field2, Type<A2> type2
 	) {
-		return DSL.and(DSL.optional(DSL.field(string, type)), DSL.optional(DSL.field(string2, type2)), DSL.remainderType());
+		return DSL.and(DSL.optional(DSL.field(field1, type1)), DSL.optional(DSL.field(field2, type2)), DSL.remainderType());
 	}
 
 	@Override
@@ -47,20 +47,20 @@ public class MissingDimensionFix extends DataFix {
 				"minecraft:debug",
 				DSL.remainderType(),
 				"minecraft:flat",
-				method_38820(schema),
+				flatGeneratorType(schema),
 				"minecraft:noise",
-				method_29914(
+				extract2Opt(
 					"biome_source",
 					DSL.taggedChoiceType(
 						"type",
 						DSL.string(),
 						ImmutableMap.of(
 							"minecraft:fixed",
-							method_29913("biome", schema.getType(TypeReferences.BIOME)),
+							extract1("biome", schema.getType(TypeReferences.BIOME)),
 							"minecraft:multi_noise",
-							DSL.list(method_29913("biome", schema.getType(TypeReferences.BIOME))),
+							DSL.list(extract1("biome", schema.getType(TypeReferences.BIOME))),
 							"minecraft:checkerboard",
-							method_29913("biomes", DSL.list(schema.getType(TypeReferences.BIOME))),
+							extract1("biomes", DSL.list(schema.getType(TypeReferences.BIOME))),
 							"minecraft:vanilla_layered",
 							DSL.remainderType(),
 							"minecraft:the_end",
@@ -68,11 +68,11 @@ public class MissingDimensionFix extends DataFix {
 						)
 					),
 					"settings",
-					DSL.or(DSL.string(), method_29914("default_block", schema.getType(TypeReferences.BLOCK_NAME), "default_fluid", schema.getType(TypeReferences.BLOCK_NAME)))
+					DSL.or(DSL.string(), extract2Opt("default_block", schema.getType(TypeReferences.BLOCK_NAME), "default_fluid", schema.getType(TypeReferences.BLOCK_NAME)))
 				)
 			)
 		);
-		CompoundListType<String, ?> compoundListType = DSL.compoundList(IdentifierNormalizingSchema.getIdentifierType(), method_29913("generator", type));
+		CompoundListType<String, ?> compoundListType = DSL.compoundList(IdentifierNormalizingSchema.getIdentifierType(), extract1("generator", type));
 		Type<?> type2 = DSL.and(compoundListType, DSL.remainderType());
 		Type<?> type3 = schema.getType(TypeReferences.WORLD_GEN_SETTINGS);
 		FieldFinder<?> fieldFinder = new FieldFinder<>("dimensions", type2);
@@ -81,32 +81,40 @@ public class MissingDimensionFix extends DataFix {
 		} else {
 			OpticFinder<? extends List<? extends Pair<String, ?>>> opticFinder = compoundListType.finder();
 			return this.fixTypeEverywhereTyped(
-				"MissingDimensionFix", type3, typed -> typed.updateTyped(fieldFinder, typed2 -> typed2.updateTyped(opticFinder, typed2x -> {
-							if (!(typed2x.getValue() instanceof List)) {
-								throw new IllegalStateException("List exptected");
-							} else if (((List)typed2x.getValue()).isEmpty()) {
-								Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
-								Dynamic<?> dynamic2 = this.method_29912(dynamic);
-								return DataFixUtils.orElse(compoundListType.readTyped(dynamic2).result().map(Pair::getFirst), typed2x);
-							} else {
-								return typed2x;
-							}
-						}))
+				"MissingDimensionFix",
+				type3,
+				worldGenSettingsTyped -> worldGenSettingsTyped.updateTyped(
+						fieldFinder, dimensionsTyped -> dimensionsTyped.updateTyped(opticFinder, dimensionsListTyped -> {
+								if (!(dimensionsListTyped.getValue() instanceof List)) {
+									throw new IllegalStateException("List exptected");
+								} else if (((List)dimensionsListTyped.getValue()).isEmpty()) {
+									Dynamic<?> dynamic = worldGenSettingsTyped.get(DSL.remainderFinder());
+									Dynamic<?> dynamic2 = this.method_29912(dynamic);
+									return DataFixUtils.orElse(compoundListType.readTyped(dynamic2).result().map(Pair::getFirst), dimensionsListTyped);
+								} else {
+									return dimensionsListTyped;
+								}
+							})
+					)
 			);
 		}
 	}
 
-	protected static Type<? extends Pair<? extends Either<? extends Pair<? extends Either<?, Unit>, ? extends Pair<? extends Either<? extends List<? extends Pair<? extends Either<?, Unit>, Dynamic<?>>>, Unit>, Dynamic<?>>>, Unit>, Dynamic<?>>> method_38820(
+	protected static Type<? extends Pair<? extends Either<? extends Pair<? extends Either<?, Unit>, ? extends Pair<? extends Either<? extends List<? extends Pair<? extends Either<?, Unit>, Dynamic<?>>>, Unit>, Dynamic<?>>>, Unit>, Dynamic<?>>> flatGeneratorType(
 		Schema schema
 	) {
-		return method_29915(
-			"settings",
-			method_29914("biome", schema.getType(TypeReferences.BIOME), "layers", DSL.list(method_29915("block", schema.getType(TypeReferences.BLOCK_NAME))))
+		return extract1Opt(
+			"settings", extract2Opt("biome", schema.getType(TypeReferences.BIOME), "layers", DSL.list(extract1Opt("block", schema.getType(TypeReferences.BLOCK_NAME))))
 		);
 	}
 
-	private <T> Dynamic<T> method_29912(Dynamic<T> dynamic) {
-		long l = dynamic.get("seed").asLong(0L);
-		return new Dynamic<>(dynamic.getOps(), StructureSeparationDataFix.method_29917(dynamic, l, StructureSeparationDataFix.method_29916(dynamic, l), false));
+	private <T> Dynamic<T> method_29912(Dynamic<T> worldGenSettingsDynamic) {
+		long l = worldGenSettingsDynamic.get("seed").asLong(0L);
+		return new Dynamic<>(
+			worldGenSettingsDynamic.getOps(),
+			StructureSeparationDataFix.createDimensionSettings(
+				worldGenSettingsDynamic, l, StructureSeparationDataFix.createDefaultOverworldGeneratorSettings(worldGenSettingsDynamic, l), false
+			)
+		);
 	}
 }

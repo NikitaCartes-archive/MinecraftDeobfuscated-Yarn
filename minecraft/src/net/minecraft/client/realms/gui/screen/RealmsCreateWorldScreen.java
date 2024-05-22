@@ -53,12 +53,12 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 	private final Text subtitle;
 	private final int subtitleColor;
 	private final Text taskTitle;
-	private static final Identifier UPLOAD_TEXTURE = Identifier.method_60656("textures/gui/realms/upload.png");
-	private static final Identifier ADVENTURE_TEXTURE = Identifier.method_60656("textures/gui/realms/adventure.png");
-	private static final Identifier SURVIVAL_SPAWN_TEXTURE = Identifier.method_60656("textures/gui/realms/survival_spawn.png");
-	private static final Identifier NEW_WORLD_TEXTURE = Identifier.method_60656("textures/gui/realms/new_world.png");
-	private static final Identifier EXPERIENCE_TEXTURE = Identifier.method_60656("textures/gui/realms/experience.png");
-	private static final Identifier INSPIRATION_TEXTURE = Identifier.method_60656("textures/gui/realms/inspiration.png");
+	private static final Identifier UPLOAD_TEXTURE = Identifier.ofVanilla("textures/gui/realms/upload.png");
+	private static final Identifier ADVENTURE_TEXTURE = Identifier.ofVanilla("textures/gui/realms/adventure.png");
+	private static final Identifier SURVIVAL_SPAWN_TEXTURE = Identifier.ofVanilla("textures/gui/realms/survival_spawn.png");
+	private static final Identifier NEW_WORLD_TEXTURE = Identifier.ofVanilla("textures/gui/realms/new_world.png");
+	private static final Identifier EXPERIENCE_TEXTURE = Identifier.ofVanilla("textures/gui/realms/experience.png");
+	private static final Identifier INSPIRATION_TEXTURE = Identifier.ofVanilla("textures/gui/realms/inspiration.png");
 	WorldTemplatePaginatedList normalWorldTemplates;
 	WorldTemplatePaginatedList adventureWorldTemplates;
 	WorldTemplatePaginatedList experienceWorldTemplates;
@@ -252,7 +252,7 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 
 	@Environment(EnvType.CLIENT)
 	class FrameButton extends ButtonWidget {
-		private static final Identifier TEXTURE = Identifier.method_60656("widget/slot_frame");
+		private static final Identifier TEXTURE = Identifier.ofVanilla("widget/slot_frame");
 		private static final int SIZE = 60;
 		private static final int TEXTURE_MARGIN = 2;
 		private static final int TEXTURE_SIZE = 56;

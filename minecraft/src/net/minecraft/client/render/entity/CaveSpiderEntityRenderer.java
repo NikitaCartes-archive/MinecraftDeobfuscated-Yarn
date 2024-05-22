@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class CaveSpiderEntityRenderer extends SpiderEntityRenderer<CaveSpiderEntity> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/spider/cave_spider.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/spider/cave_spider.png");
 	private static final float SCALE = 0.7F;
 
 	public CaveSpiderEntityRenderer(EntityRendererFactory.Context context) {

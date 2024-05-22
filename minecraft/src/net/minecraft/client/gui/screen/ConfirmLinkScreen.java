@@ -64,15 +64,15 @@ public class ConfirmLinkScreen extends ConfirmScreen {
 		}
 	}
 
-	public static void method_60866(Screen screen, String string, boolean bl) {
+	public static void open(Screen parent, String url, boolean linkTrusted) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.setScreen(new ConfirmLinkScreen(confirmed -> {
 			if (confirmed) {
-				Util.getOperatingSystem().open(string);
+				Util.getOperatingSystem().open(url);
 			}
 
-			minecraftClient.setScreen(screen);
-		}, string, bl));
+			minecraftClient.setScreen(parent);
+		}, url, linkTrusted));
 	}
 
 	/**
@@ -82,11 +82,11 @@ public class ConfirmLinkScreen extends ConfirmScreen {
 	 * @see #opening
 	 */
 	public static void open(Screen parent, String url) {
-		method_60866(parent, url, true);
+		open(parent, url, true);
 	}
 
-	public static ButtonWidget.PressAction method_60867(Screen screen, String string, boolean bl) {
-		return buttonWidget -> method_60866(screen, string, bl);
+	public static ButtonWidget.PressAction createOpenPressAction(Screen parent, String url, boolean linkTrusted) {
+		return button -> open(parent, url, linkTrusted);
 	}
 
 	/**
@@ -97,6 +97,6 @@ public class ConfirmLinkScreen extends ConfirmScreen {
 	 * @see #open
 	 */
 	public static ButtonWidget.PressAction opening(Screen parent, String url) {
-		return method_60867(parent, url, true);
+		return createOpenPressAction(parent, url, true);
 	}
 }

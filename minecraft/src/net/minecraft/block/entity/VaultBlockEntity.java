@@ -341,9 +341,9 @@ public class VaultBlockEntity extends BlockEntity {
 			return time % 20L == 0L && state == VaultState.ACTIVE;
 		}
 
-		private static void playFailedUnlockSound(ServerWorld world, VaultServerData serverData, BlockPos pos, SoundEvent soundEvent) {
+		private static void playFailedUnlockSound(ServerWorld world, VaultServerData serverData, BlockPos pos, SoundEvent sound) {
 			if (world.getTime() >= serverData.getLastFailedUnlockTime() + 15L) {
-				world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS);
+				world.playSound(null, pos, sound, SoundCategory.BLOCKS);
 				serverData.setLastFailedUnlockTime(world.getTime());
 			}
 		}

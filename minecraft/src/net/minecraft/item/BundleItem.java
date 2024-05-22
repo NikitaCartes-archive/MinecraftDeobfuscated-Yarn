@@ -2,15 +2,15 @@ package net.minecraft.item;
 
 import java.util.List;
 import java.util.Optional;
-import net.minecraft.client.item.BundleTooltipData;
-import net.minecraft.client.item.TooltipData;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
+import net.minecraft.item.tooltip.BundleTooltipData;
+import net.minecraft.item.tooltip.TooltipData;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;

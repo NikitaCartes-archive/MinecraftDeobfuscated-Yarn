@@ -29,7 +29,7 @@ public class ProjectileItemTypeFix extends DataFix {
 			"Fix AbstractArrow item type",
 			type,
 			type2,
-			FixUtil.method_59907(
+			FixUtil.compose(
 				this.createFixApplier("minecraft:trident", ProjectileItemTypeFix::fixTrident),
 				this.createFixApplier("minecraft:arrow", ProjectileItemTypeFix::fixArrow),
 				this.createFixApplier("minecraft:spectral_arrow", ProjectileItemTypeFix::fixSpectralArrow)

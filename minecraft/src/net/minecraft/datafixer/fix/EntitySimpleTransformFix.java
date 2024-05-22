@@ -12,10 +12,10 @@ public abstract class EntitySimpleTransformFix extends EntityTransformFix {
 	}
 
 	@Override
-	protected Pair<String, Typed<?>> transform(String choice, Typed<?> typed) {
-		Pair<String, Dynamic<?>> pair = this.transform(choice, typed.getOrCreate(DSL.remainderFinder()));
-		return Pair.of(pair.getFirst(), typed.set(DSL.remainderFinder(), pair.getSecond()));
+	protected Pair<String, Typed<?>> transform(String choice, Typed<?> entityTyped) {
+		Pair<String, Dynamic<?>> pair = this.transform(choice, entityTyped.getOrCreate(DSL.remainderFinder()));
+		return Pair.of(pair.getFirst(), entityTyped.set(DSL.remainderFinder(), pair.getSecond()));
 	}
 
-	protected abstract Pair<String, Dynamic<?>> transform(String choice, Dynamic<?> dynamic);
+	protected abstract Pair<String, Dynamic<?>> transform(String choice, Dynamic<?> entityDynamic);
 }

@@ -19,8 +19,8 @@ import java.util.function.Function;
 import net.minecraft.datafixer.TypeReferences;
 
 public class BedBlockEntityFix extends DataFix {
-	public BedBlockEntityFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public BedBlockEntityFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -58,17 +58,17 @@ public class BedBlockEntityFix extends DataFix {
 
 					for (Dynamic<?> dynamic2 : dynamic.get("Sections").asList(Function.identity())) {
 						int k = dynamic2.get("Y").asInt(0);
-						Streams.mapWithIndex(dynamic2.get("Blocks").asIntStream(), (l, m) -> {
-								if (416 == (l & 0xFF) << 4) {
-									int n = (int)m;
-									int o = n & 15;
-									int p = n >> 8 & 15;
-									int q = n >> 4 & 15;
+						Streams.mapWithIndex(dynamic2.get("Blocks").asIntStream(), (blockData, index) -> {
+								if (416 == (blockData & 0xFF) << 4) {
+									int l = (int)index;
+									int m = l & 15;
+									int n = l >> 8 & 15;
+									int o = l >> 4 & 15;
 									Map<Dynamic<?>, Dynamic<?>> map = Maps.<Dynamic<?>, Dynamic<?>>newHashMap();
 									map.put(dynamic2.createString("id"), dynamic2.createString("minecraft:bed"));
-									map.put(dynamic2.createString("x"), dynamic2.createInt(o + (ix << 4)));
-									map.put(dynamic2.createString("y"), dynamic2.createInt(p + (k << 4)));
-									map.put(dynamic2.createString("z"), dynamic2.createInt(q + (j << 4)));
+									map.put(dynamic2.createString("x"), dynamic2.createInt(m + (ix << 4)));
+									map.put(dynamic2.createString("y"), dynamic2.createInt(n + (k << 4)));
+									map.put(dynamic2.createString("z"), dynamic2.createInt(o + (j << 4)));
 									map.put(dynamic2.createString("color"), dynamic2.createShort((short)14));
 									return map;
 								} else {

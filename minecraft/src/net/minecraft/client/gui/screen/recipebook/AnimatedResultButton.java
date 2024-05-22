@@ -21,10 +21,10 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class AnimatedResultButton extends ClickableWidget {
-	private static final Identifier SLOT_MANY_CRAFTABLE_TEXTURE = Identifier.method_60656("recipe_book/slot_many_craftable");
-	private static final Identifier SLOT_CRAFTABLE_TEXTURE = Identifier.method_60656("recipe_book/slot_craftable");
-	private static final Identifier SLOT_MANY_UNCRAFTABLE_TEXTURE = Identifier.method_60656("recipe_book/slot_many_uncraftable");
-	private static final Identifier SLOT_UNCRAFTABLE_TEXTURE = Identifier.method_60656("recipe_book/slot_uncraftable");
+	private static final Identifier SLOT_MANY_CRAFTABLE_TEXTURE = Identifier.ofVanilla("recipe_book/slot_many_craftable");
+	private static final Identifier SLOT_CRAFTABLE_TEXTURE = Identifier.ofVanilla("recipe_book/slot_craftable");
+	private static final Identifier SLOT_MANY_UNCRAFTABLE_TEXTURE = Identifier.ofVanilla("recipe_book/slot_many_uncraftable");
+	private static final Identifier SLOT_UNCRAFTABLE_TEXTURE = Identifier.ofVanilla("recipe_book/slot_uncraftable");
 	private static final float field_32414 = 15.0F;
 	private static final int field_32415 = 25;
 	public static final int field_32413 = 30;

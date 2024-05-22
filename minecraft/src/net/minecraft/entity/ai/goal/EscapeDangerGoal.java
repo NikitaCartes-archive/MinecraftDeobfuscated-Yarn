@@ -22,20 +22,20 @@ public class EscapeDangerGoal extends Goal {
 	protected double targetY;
 	protected double targetZ;
 	protected boolean active;
-	private final Function<PathAwareEntity, TagKey<DamageType>> field_52011;
+	private final Function<PathAwareEntity, TagKey<DamageType>> entityToDangerousDamageTypes;
 
-	public EscapeDangerGoal(PathAwareEntity pathAwareEntity, double d) {
-		this(pathAwareEntity, d, DamageTypeTags.PANIC_CAUSES);
+	public EscapeDangerGoal(PathAwareEntity mob, double speed) {
+		this(mob, speed, DamageTypeTags.PANIC_CAUSES);
 	}
 
-	public EscapeDangerGoal(PathAwareEntity pathAwareEntity, double d, TagKey<DamageType> tagKey) {
-		this(pathAwareEntity, d, pathAwareEntityx -> tagKey);
+	public EscapeDangerGoal(PathAwareEntity mob, double speed, TagKey<DamageType> dangerousDamageTypes) {
+		this(mob, speed, entity -> dangerousDamageTypes);
 	}
 
-	public EscapeDangerGoal(PathAwareEntity mob, double speed, Function<PathAwareEntity, TagKey<DamageType>> function) {
+	public EscapeDangerGoal(PathAwareEntity mob, double speed, Function<PathAwareEntity, TagKey<DamageType>> entityToDangerousDamageTypes) {
 		this.mob = mob;
 		this.speed = speed;
-		this.field_52011 = function;
+		this.entityToDangerousDamageTypes = entityToDangerousDamageTypes;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
@@ -59,7 +59,8 @@ public class EscapeDangerGoal extends Goal {
 	}
 
 	protected boolean isInDanger() {
-		return this.mob.getRecentDamageSource() != null && this.mob.getRecentDamageSource().isIn((TagKey<DamageType>)this.field_52011.apply(this.mob));
+		return this.mob.getRecentDamageSource() != null
+			&& this.mob.getRecentDamageSource().isIn((TagKey<DamageType>)this.entityToDangerousDamageTypes.apply(this.mob));
 	}
 
 	protected boolean findTarget() {

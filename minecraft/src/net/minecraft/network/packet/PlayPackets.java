@@ -329,10 +329,10 @@ public class PlayPackets {
 	public static final PacketType<TickStepS2CPacket> TICKING_STEP = s2c("ticking_step");
 
 	private static <T extends Packet<ClientPlayPacketListener>> PacketType<T> s2c(String id) {
-		return new PacketType<>(NetworkSide.CLIENTBOUND, Identifier.method_60656(id));
+		return new PacketType<>(NetworkSide.CLIENTBOUND, Identifier.ofVanilla(id));
 	}
 
 	private static <T extends Packet<ServerPlayPacketListener>> PacketType<T> c2s(String id) {
-		return new PacketType<>(NetworkSide.SERVERBOUND, Identifier.method_60656(id));
+		return new PacketType<>(NetworkSide.SERVERBOUND, Identifier.ofVanilla(id));
 	}
 }

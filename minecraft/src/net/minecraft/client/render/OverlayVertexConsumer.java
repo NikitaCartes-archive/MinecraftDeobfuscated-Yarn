@@ -15,25 +15,25 @@ public class OverlayVertexConsumer implements VertexConsumer {
 	private final Matrix4f inverseTextureMatrix;
 	private final Matrix3f inverseNormalMatrix;
 	private final float textureScale;
-	private final Vector3f field_52096 = new Vector3f();
-	private final Vector3f field_52097 = new Vector3f();
+	private final Vector3f normal = new Vector3f();
+	private final Vector3f pos = new Vector3f();
 	private float x;
 	private float y;
 	private float z;
 
-	public OverlayVertexConsumer(VertexConsumer vertexConsumer, MatrixStack.Entry matrix, float textureScale) {
-		this.delegate = vertexConsumer;
+	public OverlayVertexConsumer(VertexConsumer delegate, MatrixStack.Entry matrix, float textureScale) {
+		this.delegate = delegate;
 		this.inverseTextureMatrix = new Matrix4f(matrix.getPositionMatrix()).invert();
 		this.inverseNormalMatrix = new Matrix3f(matrix.getNormalMatrix()).invert();
 		this.textureScale = textureScale;
 	}
 
 	@Override
-	public VertexConsumer vertex(float f, float g, float h) {
-		this.x = f;
-		this.y = g;
-		this.z = h;
-		this.delegate.vertex(f, g, h);
+	public VertexConsumer vertex(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.delegate.vertex(x, y, z);
 		return this;
 	}
 
@@ -49,8 +49,8 @@ public class OverlayVertexConsumer implements VertexConsumer {
 	}
 
 	@Override
-	public VertexConsumer method_60796(int i, int j) {
-		this.delegate.method_60796(i, j);
+	public VertexConsumer overlay(int u, int v) {
+		this.delegate.overlay(u, v);
 		return this;
 	}
 
@@ -63,9 +63,9 @@ public class OverlayVertexConsumer implements VertexConsumer {
 	@Override
 	public VertexConsumer normal(float x, float y, float z) {
 		this.delegate.normal(x, y, z);
-		Vector3f vector3f = this.inverseNormalMatrix.transform(x, y, z, this.field_52097);
+		Vector3f vector3f = this.inverseNormalMatrix.transform(x, y, z, this.pos);
 		Direction direction = Direction.getFacing(vector3f.x(), vector3f.y(), vector3f.z());
-		Vector3f vector3f2 = this.inverseTextureMatrix.transformPosition(this.x, this.y, this.z, this.field_52096);
+		Vector3f vector3f2 = this.inverseTextureMatrix.transformPosition(this.x, this.y, this.z, this.normal);
 		vector3f2.rotateY((float) Math.PI);
 		vector3f2.rotateX((float) (-Math.PI / 2));
 		vector3f2.rotate(direction.getRotationQuaternion());

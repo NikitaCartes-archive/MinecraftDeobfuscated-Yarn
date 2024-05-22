@@ -13,7 +13,7 @@ import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class IronGolemEntityRenderer extends MobEntityRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/iron_golem/iron_golem.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/iron_golem/iron_golem.png");
 
 	public IronGolemEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new IronGolemEntityModel<>(context.getPart(EntityModelLayers.IRON_GOLEM)), 0.7F);

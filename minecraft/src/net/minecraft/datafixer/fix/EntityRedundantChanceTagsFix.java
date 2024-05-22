@@ -12,30 +12,30 @@ import net.minecraft.datafixer.TypeReferences;
 public class EntityRedundantChanceTagsFix extends DataFix {
 	private static final Codec<List<Float>> FLOAT_LIST_CODEC = Codec.FLOAT.listOf();
 
-	public EntityRedundantChanceTagsFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public EntityRedundantChanceTagsFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
 	public TypeRewriteRule makeRule() {
 		return this.fixTypeEverywhereTyped(
-			"EntityRedundantChanceTagsFix", this.getInputSchema().getType(TypeReferences.ENTITY), typed -> typed.update(DSL.remainderFinder(), dynamic -> {
-					if (hasZeroDropChance(dynamic.get("HandDropChances"), 2)) {
-						dynamic = dynamic.remove("HandDropChances");
+			"EntityRedundantChanceTagsFix", this.getInputSchema().getType(TypeReferences.ENTITY), typed -> typed.update(DSL.remainderFinder(), entityTyped -> {
+					if (hasZeroDropChance(entityTyped.get("HandDropChances"), 2)) {
+						entityTyped = entityTyped.remove("HandDropChances");
 					}
 
-					if (hasZeroDropChance(dynamic.get("ArmorDropChances"), 4)) {
-						dynamic = dynamic.remove("ArmorDropChances");
+					if (hasZeroDropChance(entityTyped.get("ArmorDropChances"), 4)) {
+						entityTyped = entityTyped.remove("ArmorDropChances");
 					}
 
-					return dynamic;
+					return entityTyped;
 				})
 		);
 	}
 
 	private static boolean hasZeroDropChance(OptionalDynamic<?> listTag, int expectedLength) {
 		return (Boolean)listTag.flatMap(FLOAT_LIST_CODEC::parse)
-			.map(list -> list.size() == expectedLength && list.stream().allMatch(chance -> chance == 0.0F))
+			.map(chances -> chances.size() == expectedLength && chances.stream().allMatch(chance -> chance == 0.0F))
 			.result()
 			.orElse(false);
 	}

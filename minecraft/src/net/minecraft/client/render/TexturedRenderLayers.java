@@ -29,14 +29,14 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class TexturedRenderLayers {
-	public static final Identifier SHULKER_BOXES_ATLAS_TEXTURE = Identifier.method_60656("textures/atlas/shulker_boxes.png");
-	public static final Identifier BEDS_ATLAS_TEXTURE = Identifier.method_60656("textures/atlas/beds.png");
-	public static final Identifier BANNER_PATTERNS_ATLAS_TEXTURE = Identifier.method_60656("textures/atlas/banner_patterns.png");
-	public static final Identifier SHIELD_PATTERNS_ATLAS_TEXTURE = Identifier.method_60656("textures/atlas/shield_patterns.png");
-	public static final Identifier SIGNS_ATLAS_TEXTURE = Identifier.method_60656("textures/atlas/signs.png");
-	public static final Identifier CHEST_ATLAS_TEXTURE = Identifier.method_60656("textures/atlas/chest.png");
-	public static final Identifier ARMOR_TRIMS_ATLAS_TEXTURE = Identifier.method_60656("textures/atlas/armor_trims.png");
-	public static final Identifier DECORATED_POT_ATLAS_TEXTURE = Identifier.method_60656("textures/atlas/decorated_pot.png");
+	public static final Identifier SHULKER_BOXES_ATLAS_TEXTURE = Identifier.ofVanilla("textures/atlas/shulker_boxes.png");
+	public static final Identifier BEDS_ATLAS_TEXTURE = Identifier.ofVanilla("textures/atlas/beds.png");
+	public static final Identifier BANNER_PATTERNS_ATLAS_TEXTURE = Identifier.ofVanilla("textures/atlas/banner_patterns.png");
+	public static final Identifier SHIELD_PATTERNS_ATLAS_TEXTURE = Identifier.ofVanilla("textures/atlas/shield_patterns.png");
+	public static final Identifier SIGNS_ATLAS_TEXTURE = Identifier.ofVanilla("textures/atlas/signs.png");
+	public static final Identifier CHEST_ATLAS_TEXTURE = Identifier.ofVanilla("textures/atlas/chest.png");
+	public static final Identifier ARMOR_TRIMS_ATLAS_TEXTURE = Identifier.ofVanilla("textures/atlas/armor_trims.png");
+	public static final Identifier DECORATED_POT_ATLAS_TEXTURE = Identifier.ofVanilla("textures/atlas/decorated_pot.png");
 	private static final RenderLayer SHULKER_BOXES_RENDER_LAYER = RenderLayer.getEntityCutoutNoCull(SHULKER_BOXES_ATLAS_TEXTURE);
 	private static final RenderLayer BEDS_RENDER_LAYER = RenderLayer.getEntitySolid(BEDS_ATLAS_TEXTURE);
 	private static final RenderLayer BANNER_PATTERNS_RENDER_LAYER = RenderLayer.getEntityNoOutline(BANNER_PATTERNS_ATLAS_TEXTURE);
@@ -49,18 +49,18 @@ public class TexturedRenderLayers {
 	private static final RenderLayer ENTITY_CUTOUT = RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
 	private static final RenderLayer ITEM_ENTITY_TRANSLUCENT_CULL = RenderLayer.getItemEntityTranslucentCull(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
 	private static final RenderLayer ENTITY_TRANSLUCENT_CULL = RenderLayer.getEntityTranslucentCull(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
-	public static final SpriteIdentifier SHULKER_TEXTURE_ID = new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, Identifier.method_60656("entity/shulker/shulker"));
+	public static final SpriteIdentifier SHULKER_TEXTURE_ID = new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, Identifier.ofVanilla("entity/shulker/shulker"));
 	public static final List<SpriteIdentifier> COLORED_SHULKER_BOXES_TEXTURES = (List<SpriteIdentifier>)Stream.of(
 			"white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black"
 		)
-		.map(colorName -> new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, Identifier.method_60656("entity/shulker/shulker_" + colorName)))
+		.map(colorName -> new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, Identifier.ofVanilla("entity/shulker/shulker_" + colorName)))
 		.collect(ImmutableList.toImmutableList());
 	public static final Map<WoodType, SpriteIdentifier> SIGN_TYPE_TEXTURES = (Map<WoodType, SpriteIdentifier>)WoodType.stream()
 		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createSignTextureId));
 	public static final Map<WoodType, SpriteIdentifier> HANGING_SIGN_TYPE_TEXTURES = (Map<WoodType, SpriteIdentifier>)WoodType.stream()
 		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createHangingSignTextureId));
-	public static final SpriteIdentifier BANNER_BASE = new SpriteIdentifier(BANNER_PATTERNS_ATLAS_TEXTURE, Identifier.method_60656("entity/banner/base"));
-	public static final SpriteIdentifier SHIELD_BASE = new SpriteIdentifier(SHIELD_PATTERNS_ATLAS_TEXTURE, Identifier.method_60656("entity/shield/base"));
+	public static final SpriteIdentifier BANNER_BASE = new SpriteIdentifier(BANNER_PATTERNS_ATLAS_TEXTURE, Identifier.ofVanilla("entity/banner/base"));
+	public static final SpriteIdentifier SHIELD_BASE = new SpriteIdentifier(SHIELD_PATTERNS_ATLAS_TEXTURE, Identifier.ofVanilla("entity/shield/base"));
 	private static final Map<Identifier, SpriteIdentifier> BANNER_PATTERN_TEXTURES = new HashMap();
 	private static final Map<Identifier, SpriteIdentifier> SHIELD_PATTERN_TEXTURES = new HashMap();
 	public static final Map<RegistryKey<DecoratedPotPattern>, SpriteIdentifier> DECORATED_POT_PATTERN_TEXTURES = (Map<RegistryKey<DecoratedPotPattern>, SpriteIdentifier>)Registries.DECORATED_POT_PATTERN
@@ -68,11 +68,11 @@ public class TexturedRenderLayers {
 		.collect(
 			Collectors.toMap(RegistryEntry.Reference::registryKey, reference -> createDecoratedPotPatternTextureId(((DecoratedPotPattern)reference.value()).assetId()))
 		);
-	public static final SpriteIdentifier DECORATED_POT_BASE = createDecoratedPotPatternTextureId(Identifier.method_60656("decorated_pot_base"));
-	public static final SpriteIdentifier DECORATED_POT_SIDE = createDecoratedPotPatternTextureId(Identifier.method_60656("decorated_pot_side"));
+	public static final SpriteIdentifier DECORATED_POT_BASE = createDecoratedPotPatternTextureId(Identifier.ofVanilla("decorated_pot_base"));
+	public static final SpriteIdentifier DECORATED_POT_SIDE = createDecoratedPotPatternTextureId(Identifier.ofVanilla("decorated_pot_side"));
 	public static final SpriteIdentifier[] BED_TEXTURES = (SpriteIdentifier[])Arrays.stream(DyeColor.values())
 		.sorted(Comparator.comparingInt(DyeColor::getId))
-		.map(color -> new SpriteIdentifier(BEDS_ATLAS_TEXTURE, Identifier.method_60656("entity/bed/" + color.getName())))
+		.map(color -> new SpriteIdentifier(BEDS_ATLAS_TEXTURE, Identifier.ofVanilla("entity/bed/" + color.getName())))
 		.toArray(SpriteIdentifier[]::new);
 	public static final SpriteIdentifier TRAPPED = createChestTextureId("trapped");
 	public static final SpriteIdentifier TRAPPED_LEFT = createChestTextureId("trapped_left");
@@ -134,11 +134,11 @@ public class TexturedRenderLayers {
 	}
 
 	private static SpriteIdentifier createSignTextureId(WoodType type) {
-		return new SpriteIdentifier(SIGNS_ATLAS_TEXTURE, Identifier.method_60656("entity/signs/" + type.name()));
+		return new SpriteIdentifier(SIGNS_ATLAS_TEXTURE, Identifier.ofVanilla("entity/signs/" + type.name()));
 	}
 
 	private static SpriteIdentifier createHangingSignTextureId(WoodType type) {
-		return new SpriteIdentifier(SIGNS_ATLAS_TEXTURE, Identifier.method_60656("entity/signs/hanging/" + type.name()));
+		return new SpriteIdentifier(SIGNS_ATLAS_TEXTURE, Identifier.ofVanilla("entity/signs/hanging/" + type.name()));
 	}
 
 	public static SpriteIdentifier getSignTextureId(WoodType signType) {
@@ -164,7 +164,7 @@ public class TexturedRenderLayers {
 	}
 
 	private static SpriteIdentifier createChestTextureId(String variant) {
-		return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, Identifier.method_60656("entity/chest/" + variant));
+		return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, Identifier.ofVanilla("entity/chest/" + variant));
 	}
 
 	private static SpriteIdentifier createDecoratedPotPatternTextureId(Identifier patternId) {

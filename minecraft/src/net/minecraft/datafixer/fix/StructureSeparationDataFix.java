@@ -55,164 +55,195 @@ public class StructureSeparationDataFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"WorldGenSettings building",
 			this.getInputSchema().getType(TypeReferences.WORLD_GEN_SETTINGS),
-			typed -> typed.update(DSL.remainderFinder(), StructureSeparationDataFix::method_28271)
+			worldGenSettingsTyped -> worldGenSettingsTyped.update(DSL.remainderFinder(), StructureSeparationDataFix::updateWorldGenSettings)
 		);
 	}
 
-	private static <T> Dynamic<T> method_28268(long l, DynamicLike<T> dynamicLike, Dynamic<T> dynamic, Dynamic<T> dynamic2) {
-		return dynamicLike.createMap(
+	private static <T> Dynamic<T> createGeneratorSettings(
+		long seed, DynamicLike<T> worldGenSettingsDynamic, Dynamic<T> settingsDynamic, Dynamic<T> biomeSourceDynamic
+	) {
+		return worldGenSettingsDynamic.createMap(
 			ImmutableMap.of(
-				dynamicLike.createString("type"),
-				dynamicLike.createString("minecraft:noise"),
-				dynamicLike.createString("biome_source"),
-				dynamic2,
-				dynamicLike.createString("seed"),
-				dynamicLike.createLong(l),
-				dynamicLike.createString("settings"),
-				dynamic
+				worldGenSettingsDynamic.createString("type"),
+				worldGenSettingsDynamic.createString("minecraft:noise"),
+				worldGenSettingsDynamic.createString("biome_source"),
+				biomeSourceDynamic,
+				worldGenSettingsDynamic.createString("seed"),
+				worldGenSettingsDynamic.createLong(seed),
+				worldGenSettingsDynamic.createString("settings"),
+				settingsDynamic
 			)
 		);
 	}
 
-	private static <T> Dynamic<T> method_28272(Dynamic<T> dynamic, long l, boolean bl, boolean bl2) {
+	private static <T> Dynamic<T> createBiomeSource(Dynamic<T> worldGenSettingsDynamic, long seed, boolean legacyBiomeInitLayer, boolean largeBiomes) {
 		Builder<Dynamic<T>, Dynamic<T>> builder = ImmutableMap.<Dynamic<T>, Dynamic<T>>builder()
-			.put(dynamic.createString("type"), dynamic.createString("minecraft:vanilla_layered"))
-			.put(dynamic.createString("seed"), dynamic.createLong(l))
-			.put(dynamic.createString("large_biomes"), dynamic.createBoolean(bl2));
-		if (bl) {
-			builder.put(dynamic.createString("legacy_biome_init_layer"), dynamic.createBoolean(bl));
+			.put(worldGenSettingsDynamic.createString("type"), worldGenSettingsDynamic.createString("minecraft:vanilla_layered"))
+			.put(worldGenSettingsDynamic.createString("seed"), worldGenSettingsDynamic.createLong(seed))
+			.put(worldGenSettingsDynamic.createString("large_biomes"), worldGenSettingsDynamic.createBoolean(largeBiomes));
+		if (legacyBiomeInitLayer) {
+			builder.put(worldGenSettingsDynamic.createString("legacy_biome_init_layer"), worldGenSettingsDynamic.createBoolean(legacyBiomeInitLayer));
 		}
 
-		return dynamic.createMap(builder.build());
+		return worldGenSettingsDynamic.createMap(builder.build());
 	}
 
-	private static <T> Dynamic<T> method_28271(Dynamic<T> dynamic) {
-		DynamicOps<T> dynamicOps = dynamic.getOps();
-		long l = dynamic.get("RandomSeed").asLong(0L);
-		Optional<String> optional = dynamic.get("generatorName").asString().<String>map(string -> string.toLowerCase(Locale.ROOT)).result();
-		Optional<String> optional2 = (Optional<String>)dynamic.get("legacy_custom_options")
+	private static <T> Dynamic<T> updateWorldGenSettings(Dynamic<T> worldGenSettingsDynamic) {
+		DynamicOps<T> dynamicOps = worldGenSettingsDynamic.getOps();
+		long l = worldGenSettingsDynamic.get("RandomSeed").asLong(0L);
+		Optional<String> optional = worldGenSettingsDynamic.get("generatorName")
+			.asString()
+			.<String>map(generatorName -> generatorName.toLowerCase(Locale.ROOT))
+			.result();
+		Optional<String> optional2 = (Optional<String>)worldGenSettingsDynamic.get("legacy_custom_options")
 			.asString()
 			.result()
 			.map(Optional::of)
-			.orElseGet(() -> optional.equals(Optional.of("customized")) ? dynamic.get("generatorOptions").asString().result() : Optional.empty());
+			.orElseGet(() -> optional.equals(Optional.of("customized")) ? worldGenSettingsDynamic.get("generatorOptions").asString().result() : Optional.empty());
 		boolean bl = false;
-		Dynamic<T> dynamic2;
+		Dynamic<T> dynamic;
 		if (optional.equals(Optional.of("customized"))) {
-			dynamic2 = method_29916(dynamic, l);
+			dynamic = createDefaultOverworldGeneratorSettings(worldGenSettingsDynamic, l);
 		} else if (optional.isEmpty()) {
-			dynamic2 = method_29916(dynamic, l);
+			dynamic = createDefaultOverworldGeneratorSettings(worldGenSettingsDynamic, l);
 		} else {
 			String bl6 = (String)optional.get();
 			switch (bl6) {
 				case "flat":
-					OptionalDynamic<T> optionalDynamic = dynamic.get("generatorOptions");
-					Map<Dynamic<T>, Dynamic<T>> map = method_28275(dynamicOps, optionalDynamic);
-					dynamic2 = dynamic.createMap(
+					OptionalDynamic<T> optionalDynamic = worldGenSettingsDynamic.get("generatorOptions");
+					Map<Dynamic<T>, Dynamic<T>> map = createFlatWorldStructureSettings(dynamicOps, optionalDynamic);
+					dynamic = worldGenSettingsDynamic.createMap(
 						ImmutableMap.of(
-							dynamic.createString("type"),
-							dynamic.createString("minecraft:flat"),
-							dynamic.createString("settings"),
-							dynamic.createMap(
+							worldGenSettingsDynamic.createString("type"),
+							worldGenSettingsDynamic.createString("minecraft:flat"),
+							worldGenSettingsDynamic.createString("settings"),
+							worldGenSettingsDynamic.createMap(
 								ImmutableMap.of(
-									dynamic.createString("structures"),
-									dynamic.createMap(map),
-									dynamic.createString("layers"),
+									worldGenSettingsDynamic.createString("structures"),
+									worldGenSettingsDynamic.createMap(map),
+									worldGenSettingsDynamic.createString("layers"),
 									(Dynamic<?>)optionalDynamic.get("layers")
 										.result()
 										.orElseGet(
-											() -> dynamic.createList(
+											() -> worldGenSettingsDynamic.createList(
 													Stream.of(
-														dynamic.createMap(
-															ImmutableMap.of(dynamic.createString("height"), dynamic.createInt(1), dynamic.createString("block"), dynamic.createString("minecraft:bedrock"))
-														),
-														dynamic.createMap(
-															ImmutableMap.of(dynamic.createString("height"), dynamic.createInt(2), dynamic.createString("block"), dynamic.createString("minecraft:dirt"))
-														),
-														dynamic.createMap(
+														worldGenSettingsDynamic.createMap(
 															ImmutableMap.of(
-																dynamic.createString("height"), dynamic.createInt(1), dynamic.createString("block"), dynamic.createString("minecraft:grass_block")
+																worldGenSettingsDynamic.createString("height"),
+																worldGenSettingsDynamic.createInt(1),
+																worldGenSettingsDynamic.createString("block"),
+																worldGenSettingsDynamic.createString("minecraft:bedrock")
+															)
+														),
+														worldGenSettingsDynamic.createMap(
+															ImmutableMap.of(
+																worldGenSettingsDynamic.createString("height"),
+																worldGenSettingsDynamic.createInt(2),
+																worldGenSettingsDynamic.createString("block"),
+																worldGenSettingsDynamic.createString("minecraft:dirt")
+															)
+														),
+														worldGenSettingsDynamic.createMap(
+															ImmutableMap.of(
+																worldGenSettingsDynamic.createString("height"),
+																worldGenSettingsDynamic.createInt(1),
+																worldGenSettingsDynamic.createString("block"),
+																worldGenSettingsDynamic.createString("minecraft:grass_block")
 															)
 														)
 													)
 												)
 										),
-									dynamic.createString("biome"),
-									dynamic.createString(optionalDynamic.get("biome").asString("minecraft:plains"))
+									worldGenSettingsDynamic.createString("biome"),
+									worldGenSettingsDynamic.createString(optionalDynamic.get("biome").asString("minecraft:plains"))
 								)
 							)
 						)
 					);
 					break;
 				case "debug_all_block_states":
-					dynamic2 = dynamic.createMap(ImmutableMap.of(dynamic.createString("type"), dynamic.createString("minecraft:debug")));
+					dynamic = worldGenSettingsDynamic.createMap(
+						ImmutableMap.of(worldGenSettingsDynamic.createString("type"), worldGenSettingsDynamic.createString("minecraft:debug"))
+					);
 					break;
 				case "buffet":
-					OptionalDynamic<T> optionalDynamic2 = dynamic.get("generatorOptions");
+					OptionalDynamic<T> optionalDynamic2 = worldGenSettingsDynamic.get("generatorOptions");
 					OptionalDynamic<?> optionalDynamic3 = optionalDynamic2.get("chunk_generator");
 					Optional<String> optional3 = optionalDynamic3.get("type").asString().result();
-					Dynamic<T> dynamic3;
+					Dynamic<T> dynamic2;
 					if (Objects.equals(optional3, Optional.of("minecraft:caves"))) {
-						dynamic3 = dynamic.createString("minecraft:caves");
+						dynamic2 = worldGenSettingsDynamic.createString("minecraft:caves");
 						bl = true;
 					} else if (Objects.equals(optional3, Optional.of("minecraft:floating_islands"))) {
-						dynamic3 = dynamic.createString("minecraft:floating_islands");
+						dynamic2 = worldGenSettingsDynamic.createString("minecraft:floating_islands");
 					} else {
-						dynamic3 = dynamic.createString("minecraft:overworld");
+						dynamic2 = worldGenSettingsDynamic.createString("minecraft:overworld");
 					}
 
-					Dynamic<T> dynamic4 = (Dynamic<T>)optionalDynamic2.get("biome_source")
+					Dynamic<T> dynamic3 = (Dynamic<T>)optionalDynamic2.get("biome_source")
 						.result()
-						.orElseGet(() -> dynamic.createMap(ImmutableMap.of(dynamic.createString("type"), dynamic.createString("minecraft:fixed"))));
-					Dynamic<T> dynamic5;
-					if (dynamic4.get("type").asString().result().equals(Optional.of("minecraft:fixed"))) {
-						String string = (String)dynamic4.get("options")
+						.orElseGet(
+							() -> worldGenSettingsDynamic.createMap(
+									ImmutableMap.of(worldGenSettingsDynamic.createString("type"), worldGenSettingsDynamic.createString("minecraft:fixed"))
+								)
+						);
+					Dynamic<T> dynamic4;
+					if (dynamic3.get("type").asString().result().equals(Optional.of("minecraft:fixed"))) {
+						String string = (String)dynamic3.get("options")
 							.get("biomes")
 							.asStream()
 							.findFirst()
-							.flatMap(dynamicx -> dynamicx.asString().result())
+							.flatMap(biomeDynamic -> biomeDynamic.asString().result())
 							.orElse("minecraft:ocean");
-						dynamic5 = dynamic4.remove("options").set("biome", dynamic.createString(string));
+						dynamic4 = dynamic3.remove("options").set("biome", worldGenSettingsDynamic.createString(string));
 					} else {
-						dynamic5 = dynamic4;
+						dynamic4 = dynamic3;
 					}
 
-					dynamic2 = method_28268(l, dynamic, dynamic3, dynamic5);
+					dynamic = createGeneratorSettings(l, worldGenSettingsDynamic, dynamic2, dynamic4);
 					break;
 				default:
 					boolean bl2 = ((String)optional.get()).equals("default");
-					boolean bl3 = ((String)optional.get()).equals("default_1_1") || bl2 && dynamic.get("generatorVersion").asInt(0) == 0;
+					boolean bl3 = ((String)optional.get()).equals("default_1_1") || bl2 && worldGenSettingsDynamic.get("generatorVersion").asInt(0) == 0;
 					boolean bl4 = ((String)optional.get()).equals("amplified");
 					boolean bl5 = ((String)optional.get()).equals("largebiomes");
-					dynamic2 = method_28268(l, dynamic, dynamic.createString(bl4 ? "minecraft:amplified" : "minecraft:overworld"), method_28272(dynamic, l, bl3, bl5));
+					dynamic = createGeneratorSettings(
+						l,
+						worldGenSettingsDynamic,
+						worldGenSettingsDynamic.createString(bl4 ? "minecraft:amplified" : "minecraft:overworld"),
+						createBiomeSource(worldGenSettingsDynamic, l, bl3, bl5)
+					);
 			}
 		}
 
-		boolean bl6 = dynamic.get("MapFeatures").asBoolean(true);
-		boolean bl7 = dynamic.get("BonusChest").asBoolean(false);
+		boolean bl6 = worldGenSettingsDynamic.get("MapFeatures").asBoolean(true);
+		boolean bl7 = worldGenSettingsDynamic.get("BonusChest").asBoolean(false);
 		Builder<T, T> builder = ImmutableMap.builder();
 		builder.put(dynamicOps.createString("seed"), dynamicOps.createLong(l));
 		builder.put(dynamicOps.createString("generate_features"), dynamicOps.createBoolean(bl6));
 		builder.put(dynamicOps.createString("bonus_chest"), dynamicOps.createBoolean(bl7));
-		builder.put(dynamicOps.createString("dimensions"), method_29917(dynamic, l, dynamic2, bl));
-		optional2.ifPresent(string -> builder.put(dynamicOps.createString("legacy_custom_options"), dynamicOps.createString(string)));
+		builder.put(dynamicOps.createString("dimensions"), createDimensionSettings(worldGenSettingsDynamic, l, dynamic, bl));
+		optional2.ifPresent(legacyCustomOptions -> builder.put(dynamicOps.createString("legacy_custom_options"), dynamicOps.createString(legacyCustomOptions)));
 		return new Dynamic<>(dynamicOps, dynamicOps.createMap(builder.build()));
 	}
 
-	protected static <T> Dynamic<T> method_29916(Dynamic<T> dynamic, long l) {
-		return method_28268(l, dynamic, dynamic.createString("minecraft:overworld"), method_28272(dynamic, l, false, false));
+	protected static <T> Dynamic<T> createDefaultOverworldGeneratorSettings(Dynamic<T> worldGenSettingsDynamic, long seed) {
+		return createGeneratorSettings(
+			seed, worldGenSettingsDynamic, worldGenSettingsDynamic.createString("minecraft:overworld"), createBiomeSource(worldGenSettingsDynamic, seed, false, false)
+		);
 	}
 
-	protected static <T> T method_29917(Dynamic<T> dynamic, long l, Dynamic<T> dynamic2, boolean bl) {
-		DynamicOps<T> dynamicOps = dynamic.getOps();
+	protected static <T> T createDimensionSettings(Dynamic<T> worldGenSettingsDynamic, long seed, Dynamic<T> generatorSettingsDynamic, boolean caves) {
+		DynamicOps<T> dynamicOps = worldGenSettingsDynamic.getOps();
 		return dynamicOps.createMap(
 			ImmutableMap.of(
 				dynamicOps.createString("minecraft:overworld"),
 				dynamicOps.createMap(
 					ImmutableMap.of(
 						dynamicOps.createString("type"),
-						dynamicOps.createString("minecraft:overworld" + (bl ? "_caves" : "")),
+						dynamicOps.createString("minecraft:overworld" + (caves ? "_caves" : "")),
 						dynamicOps.createString("generator"),
-						dynamic2.getValue()
+						generatorSettingsDynamic.getValue()
 					)
 				),
 				dynamicOps.createString("minecraft:the_nether"),
@@ -221,18 +252,18 @@ public class StructureSeparationDataFix extends DataFix {
 						dynamicOps.createString("type"),
 						dynamicOps.createString("minecraft:the_nether"),
 						dynamicOps.createString("generator"),
-						method_28268(
-								l,
-								dynamic,
-								dynamic.createString("minecraft:nether"),
-								dynamic.createMap(
+						createGeneratorSettings(
+								seed,
+								worldGenSettingsDynamic,
+								worldGenSettingsDynamic.createString("minecraft:nether"),
+								worldGenSettingsDynamic.createMap(
 									ImmutableMap.of(
-										dynamic.createString("type"),
-										dynamic.createString("minecraft:multi_noise"),
-										dynamic.createString("seed"),
-										dynamic.createLong(l),
-										dynamic.createString("preset"),
-										dynamic.createString("minecraft:nether")
+										worldGenSettingsDynamic.createString("type"),
+										worldGenSettingsDynamic.createString("minecraft:multi_noise"),
+										worldGenSettingsDynamic.createString("seed"),
+										worldGenSettingsDynamic.createLong(seed),
+										worldGenSettingsDynamic.createString("preset"),
+										worldGenSettingsDynamic.createString("minecraft:nether")
 									)
 								)
 							)
@@ -245,12 +276,17 @@ public class StructureSeparationDataFix extends DataFix {
 						dynamicOps.createString("type"),
 						dynamicOps.createString("minecraft:the_end"),
 						dynamicOps.createString("generator"),
-						method_28268(
-								l,
-								dynamic,
-								dynamic.createString("minecraft:end"),
-								dynamic.createMap(
-									ImmutableMap.of(dynamic.createString("type"), dynamic.createString("minecraft:the_end"), dynamic.createString("seed"), dynamic.createLong(l))
+						createGeneratorSettings(
+								seed,
+								worldGenSettingsDynamic,
+								worldGenSettingsDynamic.createString("minecraft:end"),
+								worldGenSettingsDynamic.createMap(
+									ImmutableMap.of(
+										worldGenSettingsDynamic.createString("type"),
+										worldGenSettingsDynamic.createString("minecraft:the_end"),
+										worldGenSettingsDynamic.createString("seed"),
+										worldGenSettingsDynamic.createLong(seed)
+									)
 								)
 							)
 							.getValue()
@@ -260,40 +296,42 @@ public class StructureSeparationDataFix extends DataFix {
 		);
 	}
 
-	private static <T> Map<Dynamic<T>, Dynamic<T>> method_28275(DynamicOps<T> dynamicOps, OptionalDynamic<T> optionalDynamic) {
+	private static <T> Map<Dynamic<T>, Dynamic<T>> createFlatWorldStructureSettings(
+		DynamicOps<T> worldGenSettingsDynamicOps, OptionalDynamic<T> generatorOptionsDynamic
+	) {
 		MutableInt mutableInt = new MutableInt(32);
 		MutableInt mutableInt2 = new MutableInt(3);
 		MutableInt mutableInt3 = new MutableInt(128);
 		MutableBoolean mutableBoolean = new MutableBoolean(false);
 		Map<String, StructureSeparationDataFix.Information> map = Maps.<String, StructureSeparationDataFix.Information>newHashMap();
-		if (optionalDynamic.result().isEmpty()) {
+		if (generatorOptionsDynamic.result().isEmpty()) {
 			mutableBoolean.setTrue();
 			map.put("minecraft:village", STRUCTURE_SPACING.get("minecraft:village"));
 		}
 
-		optionalDynamic.get("structures")
+		generatorOptionsDynamic.get("structures")
 			.flatMap(Dynamic::getMapValues)
 			.ifSuccess(
 				map2 -> map2.forEach(
-						(dynamic, dynamic2) -> dynamic2.getMapValues()
+						(oldStructureName, dynamic) -> dynamic.getMapValues()
 								.result()
 								.ifPresent(
 									map2x -> map2x.forEach(
-											(dynamic2x, dynamic3) -> {
-												String string = dynamic.asString("");
-												String string2 = dynamic2x.asString("");
-												String string3 = dynamic3.asString("");
+											(propertyName, spacing) -> {
+												String string = oldStructureName.asString("");
+												String string2 = propertyName.asString("");
+												String string3 = spacing.asString("");
 												if ("stronghold".equals(string)) {
 													mutableBoolean.setTrue();
 													switch (string2) {
 														case "distance":
-															mutableInt.setValue(method_28280(string3, mutableInt.getValue(), 1));
+															mutableInt.setValue(parseInt(string3, mutableInt.getValue(), 1));
 															return;
 														case "spread":
-															mutableInt2.setValue(method_28280(string3, mutableInt2.getValue(), 1));
+															mutableInt2.setValue(parseInt(string3, mutableInt2.getValue(), 1));
 															return;
 														case "count":
-															mutableInt3.setValue(method_28280(string3, mutableInt3.getValue(), 1));
+															mutableInt3.setValue(parseInt(string3, mutableInt3.getValue(), 1));
 															return;
 													}
 												} else {
@@ -301,20 +339,20 @@ public class StructureSeparationDataFix extends DataFix {
 														case "distance":
 															switch (string) {
 																case "village":
-																	method_28281(map, "minecraft:village", string3, 9);
+																	insertStructureSettings(map, "minecraft:village", string3, 9);
 																	return;
 																case "biome_1":
-																	method_28281(map, "minecraft:desert_pyramid", string3, 9);
-																	method_28281(map, "minecraft:igloo", string3, 9);
-																	method_28281(map, "minecraft:jungle_pyramid", string3, 9);
-																	method_28281(map, "minecraft:swamp_hut", string3, 9);
-																	method_28281(map, "minecraft:pillager_outpost", string3, 9);
+																	insertStructureSettings(map, "minecraft:desert_pyramid", string3, 9);
+																	insertStructureSettings(map, "minecraft:igloo", string3, 9);
+																	insertStructureSettings(map, "minecraft:jungle_pyramid", string3, 9);
+																	insertStructureSettings(map, "minecraft:swamp_hut", string3, 9);
+																	insertStructureSettings(map, "minecraft:pillager_outpost", string3, 9);
 																	return;
 																case "endcity":
-																	method_28281(map, "minecraft:endcity", string3, 1);
+																	insertStructureSettings(map, "minecraft:endcity", string3, 1);
 																	return;
 																case "mansion":
-																	method_28281(map, "minecraft:mansion", string3, 1);
+																	insertStructureSettings(map, "minecraft:mansion", string3, 1);
 																	return;
 																default:
 																	return;
@@ -324,14 +362,14 @@ public class StructureSeparationDataFix extends DataFix {
 																StructureSeparationDataFix.Information information = (StructureSeparationDataFix.Information)map.getOrDefault(
 																	"minecraft:monument", STRUCTURE_SPACING.get("minecraft:monument")
 																);
-																int i = method_28280(string3, information.separation, 1);
+																int i = parseInt(string3, information.separation, 1);
 																map.put("minecraft:monument", new StructureSeparationDataFix.Information(i, information.separation, information.salt));
 															}
 
 															return;
 														case "spacing":
 															if ("oceanmonument".equals(string)) {
-																method_28281(map, "minecraft:monument", string3, 1);
+																insertStructureSettings(map, "minecraft:monument", string3, 1);
 															}
 
 															return;
@@ -344,29 +382,29 @@ public class StructureSeparationDataFix extends DataFix {
 			);
 		Builder<Dynamic<T>, Dynamic<T>> builder = ImmutableMap.builder();
 		builder.put(
-			optionalDynamic.createString("structures"),
-			optionalDynamic.createMap(
+			generatorOptionsDynamic.createString("structures"),
+			generatorOptionsDynamic.createMap(
 				(Map<? extends Dynamic<?>, ? extends Dynamic<?>>)map.entrySet()
 					.stream()
 					.collect(
 						Collectors.toMap(
-							entry -> optionalDynamic.createString((String)entry.getKey()),
-							entry -> ((StructureSeparationDataFix.Information)entry.getValue()).method_28288(dynamicOps)
+							entry -> generatorOptionsDynamic.createString((String)entry.getKey()),
+							entry -> ((StructureSeparationDataFix.Information)entry.getValue()).method_28288(worldGenSettingsDynamicOps)
 						)
 					)
 			)
 		);
 		if (mutableBoolean.isTrue()) {
 			builder.put(
-				optionalDynamic.createString("stronghold"),
-				optionalDynamic.createMap(
+				generatorOptionsDynamic.createString("stronghold"),
+				generatorOptionsDynamic.createMap(
 					ImmutableMap.of(
-						optionalDynamic.createString("distance"),
-						optionalDynamic.createInt(mutableInt.getValue()),
-						optionalDynamic.createString("spread"),
-						optionalDynamic.createInt(mutableInt2.getValue()),
-						optionalDynamic.createString("count"),
-						optionalDynamic.createInt(mutableInt3.getValue())
+						generatorOptionsDynamic.createString("distance"),
+						generatorOptionsDynamic.createInt(mutableInt.getValue()),
+						generatorOptionsDynamic.createString("spread"),
+						generatorOptionsDynamic.createInt(mutableInt2.getValue()),
+						generatorOptionsDynamic.createString("count"),
+						generatorOptionsDynamic.createInt(mutableInt3.getValue())
 					)
 				)
 			);
@@ -375,18 +413,18 @@ public class StructureSeparationDataFix extends DataFix {
 		return builder.build();
 	}
 
-	private static int method_28279(String string, int i) {
-		return NumberUtils.toInt(string, i);
+	private static int parseInt(String string, int defaultValue) {
+		return NumberUtils.toInt(string, defaultValue);
 	}
 
-	private static int method_28280(String string, int i, int j) {
-		return Math.max(j, method_28279(string, i));
+	private static int parseInt(String string, int defaultValue, int minValue) {
+		return Math.max(minValue, parseInt(string, defaultValue));
 	}
 
-	private static void method_28281(Map<String, StructureSeparationDataFix.Information> map, String string, String string2, int i) {
-		StructureSeparationDataFix.Information information = (StructureSeparationDataFix.Information)map.getOrDefault(string, STRUCTURE_SPACING.get(string));
-		int j = method_28280(string2, information.spacing, i);
-		map.put(string, new StructureSeparationDataFix.Information(j, information.separation, information.salt));
+	private static void insertStructureSettings(Map<String, StructureSeparationDataFix.Information> map, String structureId, String spacingStr, int minSpacing) {
+		StructureSeparationDataFix.Information information = (StructureSeparationDataFix.Information)map.getOrDefault(structureId, STRUCTURE_SPACING.get(structureId));
+		int i = parseInt(spacingStr, information.spacing, minSpacing);
+		map.put(structureId, new StructureSeparationDataFix.Information(i, information.separation, information.salt));
 	}
 
 	static final class Information {

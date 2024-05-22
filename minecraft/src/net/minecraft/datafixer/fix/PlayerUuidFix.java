@@ -17,14 +17,16 @@ public class PlayerUuidFix extends AbstractUuidFix {
 		return this.fixTypeEverywhereTyped(
 			"PlayerUUIDFix",
 			this.getInputSchema().getType(this.typeReference),
-			typed -> {
-				OpticFinder<?> opticFinder = typed.getType().findField("RootVehicle");
-				return typed.updateTyped(
+			playerTyped -> {
+				OpticFinder<?> opticFinder = playerTyped.getType().findField("RootVehicle");
+				return playerTyped.updateTyped(
 						opticFinder,
 						opticFinder.type(),
-						typedx -> typedx.update(DSL.remainderFinder(), dynamic -> (Dynamic)updateRegularMostLeast(dynamic, "Attach", "Attach").orElse(dynamic))
+						rootVehicleTyped -> rootVehicleTyped.update(
+								DSL.remainderFinder(), rootVehicleDynamic -> (Dynamic)updateRegularMostLeast(rootVehicleDynamic, "Attach", "Attach").orElse(rootVehicleDynamic)
+							)
 					)
-					.update(DSL.remainderFinder(), dynamic -> EntityUuidFix.updateSelfUuid(EntityUuidFix.updateLiving(dynamic)));
+					.update(DSL.remainderFinder(), playerDynamic -> EntityUuidFix.updateSelfUuid(EntityUuidFix.updateLiving(playerDynamic)));
 			}
 		);
 	}

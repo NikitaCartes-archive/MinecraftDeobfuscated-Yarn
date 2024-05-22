@@ -112,8 +112,8 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		float u = f * m;
 		float v = g > 0.0F ? g * m * m : g - g * (1.0F - m) * (1.0F - m);
 		float w = h * m;
-		vertexConsumer.vertex(positionMatrix, u - k, v + j, w + l).color(r, s, t, 1.0F).method_60803(p);
-		vertexConsumer.vertex(positionMatrix, u + k, v + i - j, w - l).color(r, s, t, 1.0F).method_60803(p);
+		vertexConsumer.vertex(positionMatrix, u - k, v + j, w + l).color(r, s, t, 1.0F).light(p);
+		vertexConsumer.vertex(positionMatrix, u + k, v + i - j, w - l).color(r, s, t, 1.0F).light(p);
 	}
 
 	protected float getShadowRadius(T mobEntity) {

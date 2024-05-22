@@ -334,8 +334,8 @@ public class ItemIdFix extends DataFix {
 		map.defaultReturnValue("minecraft:air");
 	});
 
-	public ItemIdFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemIdFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	public static String fromId(int id) {
@@ -353,7 +353,9 @@ public class ItemIdFix extends DataFix {
 			"ItemIdFix",
 			this.getInputSchema().getType(TypeReferences.ITEM_STACK),
 			this.getOutputSchema().getType(TypeReferences.ITEM_STACK),
-			typed -> typed.update(opticFinder, type2, either -> either.map(integer -> Pair.of(TypeReferences.ITEM_NAME.typeName(), fromId(integer)), pair -> pair))
+			itemStackTyped -> itemStackTyped.update(
+					opticFinder, type2, id -> id.map(ordinal -> Pair.of(TypeReferences.ITEM_NAME.typeName(), fromId(ordinal)), named -> named)
+				)
 		);
 	}
 }

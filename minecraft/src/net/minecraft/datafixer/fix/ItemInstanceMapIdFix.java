@@ -15,8 +15,8 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class ItemInstanceMapIdFix extends DataFix {
-	public ItemInstanceMapIdFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemInstanceMapIdFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -26,16 +26,16 @@ public class ItemInstanceMapIdFix extends DataFix {
 			"id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType())
 		);
 		OpticFinder<?> opticFinder2 = type.findField("tag");
-		return this.fixTypeEverywhereTyped("ItemInstanceMapIdFix", type, typed -> {
-			Optional<Pair<String, String>> optional = typed.getOptional(opticFinder);
+		return this.fixTypeEverywhereTyped("ItemInstanceMapIdFix", type, itemStack -> {
+			Optional<Pair<String, String>> optional = itemStack.getOptional(opticFinder);
 			if (optional.isPresent() && Objects.equals(((Pair)optional.get()).getSecond(), "minecraft:filled_map")) {
-				Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
-				Typed<?> typed2 = typed.getOrCreateTyped(opticFinder2);
-				Dynamic<?> dynamic2 = typed2.get(DSL.remainderFinder());
+				Dynamic<?> dynamic = itemStack.get(DSL.remainderFinder());
+				Typed<?> typed = itemStack.getOrCreateTyped(opticFinder2);
+				Dynamic<?> dynamic2 = typed.get(DSL.remainderFinder());
 				dynamic2 = dynamic2.set("map", dynamic2.createInt(dynamic.get("Damage").asInt(0)));
-				return typed.set(opticFinder2, typed2.set(DSL.remainderFinder(), dynamic2));
+				return itemStack.set(opticFinder2, typed.set(DSL.remainderFinder(), dynamic2));
 			} else {
-				return typed;
+				return itemStack;
 			}
 		});
 	}

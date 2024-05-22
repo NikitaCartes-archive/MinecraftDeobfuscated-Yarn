@@ -130,18 +130,18 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	}
 
 	@Nullable
-	public Vec3d method_60787(ServerWorld serverWorld, BlockPos blockPos) {
-		if (this.exitPortalPos == null && serverWorld.getRegistryKey() == World.END) {
-			BlockPos blockPos2 = setupExitPortalLocation(serverWorld, blockPos);
-			blockPos2 = blockPos2.up(10);
-			LOGGER.debug("Creating portal at {}", blockPos2);
-			createPortal(serverWorld, blockPos2, EndGatewayFeatureConfig.createConfig(blockPos, false));
-			this.exitPortalPos = blockPos2;
+	public Vec3d getOrCreateExitPortalPos(ServerWorld world, BlockPos pos) {
+		if (this.exitPortalPos == null && world.getRegistryKey() == World.END) {
+			BlockPos blockPos = setupExitPortalLocation(world, pos);
+			blockPos = blockPos.up(10);
+			LOGGER.debug("Creating portal at {}", blockPos);
+			createPortal(world, blockPos, EndGatewayFeatureConfig.createConfig(pos, false));
+			this.exitPortalPos = blockPos;
 		}
 
 		if (this.exitPortalPos != null) {
-			BlockPos blockPos2 = this.exactTeleport ? this.exitPortalPos : findBestPortalExitPos(serverWorld, this.exitPortalPos);
-			return new Vec3d((double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5);
+			BlockPos blockPos = this.exactTeleport ? this.exitPortalPos : findBestPortalExitPos(world, this.exitPortalPos);
+			return new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
 		} else {
 			return null;
 		}

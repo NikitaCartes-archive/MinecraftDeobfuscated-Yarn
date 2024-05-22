@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class AdvancementToast implements Toast {
-	private static final Identifier TEXTURE = Identifier.method_60656("toast/advancement");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("toast/advancement");
 	public static final int DEFAULT_DURATION_MS = 5000;
 	private final AdvancementEntry advancement;
 	private boolean soundPlayed;

@@ -11,6 +11,6 @@ public class PaintingVariantTags {
 	}
 
 	private static TagKey<PaintingVariant> of(String id) {
-		return TagKey.of(RegistryKeys.PAINTING_VARIANT, Identifier.method_60656(id));
+		return TagKey.of(RegistryKeys.PAINTING_VARIANT, Identifier.ofVanilla(id));
 	}
 }

@@ -34,8 +34,8 @@ import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class HeldItemRenderer {
-	private static final RenderLayer MAP_BACKGROUND = RenderLayer.getText(Identifier.method_60656("textures/map/map_background.png"));
-	private static final RenderLayer MAP_BACKGROUND_CHECKERBOARD = RenderLayer.getText(Identifier.method_60656("textures/map/map_background_checkerboard.png"));
+	private static final RenderLayer MAP_BACKGROUND = RenderLayer.getText(Identifier.ofVanilla("textures/map/map_background.png"));
+	private static final RenderLayer MAP_BACKGROUND_CHECKERBOARD = RenderLayer.getText(Identifier.ofVanilla("textures/map/map_background_checkerboard.png"));
 	private static final float field_32735 = -0.4F;
 	private static final float field_32736 = 0.2F;
 	private static final float field_32737 = -0.2F;
@@ -231,10 +231,10 @@ public class HeldItemRenderer {
 		MapState mapState = FilledMapItem.getMapState(mapIdComponent, this.client.world);
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(mapState == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD);
 		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-		vertexConsumer.vertex(matrix4f, -7.0F, 135.0F, 0.0F).color(Colors.WHITE).texture(0.0F, 1.0F).method_60803(swingProgress);
-		vertexConsumer.vertex(matrix4f, 135.0F, 135.0F, 0.0F).color(Colors.WHITE).texture(1.0F, 1.0F).method_60803(swingProgress);
-		vertexConsumer.vertex(matrix4f, 135.0F, -7.0F, 0.0F).color(Colors.WHITE).texture(1.0F, 0.0F).method_60803(swingProgress);
-		vertexConsumer.vertex(matrix4f, -7.0F, -7.0F, 0.0F).color(Colors.WHITE).texture(0.0F, 0.0F).method_60803(swingProgress);
+		vertexConsumer.vertex(matrix4f, -7.0F, 135.0F, 0.0F).color(Colors.WHITE).texture(0.0F, 1.0F).light(swingProgress);
+		vertexConsumer.vertex(matrix4f, 135.0F, 135.0F, 0.0F).color(Colors.WHITE).texture(1.0F, 1.0F).light(swingProgress);
+		vertexConsumer.vertex(matrix4f, 135.0F, -7.0F, 0.0F).color(Colors.WHITE).texture(1.0F, 0.0F).light(swingProgress);
+		vertexConsumer.vertex(matrix4f, -7.0F, -7.0F, 0.0F).color(Colors.WHITE).texture(0.0F, 0.0F).light(swingProgress);
 		if (mapState != null) {
 			this.client.gameRenderer.getMapRenderer().draw(matrices, vertexConsumers, mapIdComponent, mapState, false, swingProgress);
 		}

@@ -9,14 +9,14 @@ import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class TintableAnimalModel<E extends Entity> extends AnimalModel<E> {
-	private int field_52151 = -1;
+	private int tint = -1;
 
-	public void setColorMultiplier(int i) {
-		this.field_52151 = i;
+	public void setColorMultiplier(int tint) {
+		this.tint = tint;
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {
-		super.render(matrices, vertices, light, overlay, ColorHelper.Argb.mixColor(i, this.field_52151));
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
+		super.render(matrices, vertices, light, overlay, ColorHelper.Argb.mixColor(color, this.tint));
 	}
 }

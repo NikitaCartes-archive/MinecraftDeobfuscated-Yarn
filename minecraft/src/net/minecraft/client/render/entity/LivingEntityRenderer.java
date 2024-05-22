@@ -19,6 +19,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;

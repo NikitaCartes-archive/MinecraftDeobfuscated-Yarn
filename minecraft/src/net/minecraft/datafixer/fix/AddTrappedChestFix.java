@@ -25,8 +25,8 @@ public class AddTrappedChestFix extends DataFix {
 	private static final int field_29910 = 4096;
 	private static final short field_29911 = 12;
 
-	public AddTrappedChestFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public AddTrappedChestFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class AddTrappedChestFix extends DataFix {
 									AddTrappedChestFix.ListFixer listFixer = new AddTrappedChestFix.ListFixer(typed2, this.getInputSchema());
 									if (!listFixer.isFixed()) {
 										for (int i = 0; i < 4096; i++) {
-											int j = listFixer.needsFix(i);
+											int j = listFixer.blockStateAt(i);
 											if (listFixer.isTarget(j)) {
 												intSet.add(listFixer.getY() << 12 | i);
 											}
@@ -101,7 +101,7 @@ public class AddTrappedChestFix extends DataFix {
 		}
 
 		@Override
-		protected boolean needsFix() {
+		protected boolean computeIsFixed() {
 			this.targets = new IntOpenHashSet();
 
 			for (int i = 0; i < this.properties.size(); i++) {

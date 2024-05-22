@@ -7,8 +7,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9799;
-import net.minecraft.class_9801;
+import net.minecraft.client.util.BufferAllocator;
 
 /**
  * Manages rendering with multiple {@linkplain RenderLayer render layers}.
@@ -19,7 +18,7 @@ public interface VertexConsumerProvider {
 	 * {@return a vertex consumer provider that immediately draws the current
 	 * buffer builder when a different render layer is requested}.
 	 */
-	static VertexConsumerProvider.Immediate immediate(class_9799 buffer) {
+	static VertexConsumerProvider.Immediate immediate(BufferAllocator buffer) {
 		return immediate(ImmutableMap.of(), buffer);
 	}
 
@@ -35,7 +34,7 @@ public interface VertexConsumerProvider {
 	 * a later stage so the other things behind translucent objects are
 	 * visible.
 	 */
-	static VertexConsumerProvider.Immediate immediate(Map<RenderLayer, class_9799> layerBuffers, class_9799 fallbackBuffer) {
+	static VertexConsumerProvider.Immediate immediate(Map<RenderLayer, BufferAllocator> layerBuffers, BufferAllocator fallbackBuffer) {
 		return new VertexConsumerProvider.Immediate(fallbackBuffer, layerBuffers);
 	}
 
@@ -57,46 +56,46 @@ public interface VertexConsumerProvider {
 	 * builder when a different render layer is requested except for render
 	 * layers specified in the constructor.
 	 * 
-	 * @see VertexConsumerProvider#immediate(BufferBuilder)
-	 * @see VertexConsumerProvider#immediate(Map, BufferBuilder)
+	 * @see VertexConsumerProvider#immediate(BufferAllocator)
+	 * @see VertexConsumerProvider#immediate(Map, BufferAllocator)
 	 */
 	@Environment(EnvType.CLIENT)
 	public static class Immediate implements VertexConsumerProvider {
-		protected final class_9799 field_52156;
-		protected final Map<RenderLayer, class_9799> layerBuffers;
-		protected final Map<RenderLayer, BufferBuilder> field_52157 = new HashMap();
+		protected final BufferAllocator allocator;
+		protected final Map<RenderLayer, BufferAllocator> layerBuffers;
+		protected final Map<RenderLayer, BufferBuilder> pending = new HashMap();
 		@Nullable
-		protected RenderLayer field_52158;
+		protected RenderLayer currentLayer;
 
-		protected Immediate(class_9799 fallbackBuffer, Map<RenderLayer, class_9799> layerBuffers) {
-			this.field_52156 = fallbackBuffer;
+		protected Immediate(BufferAllocator allocator, Map<RenderLayer, BufferAllocator> layerBuffers) {
+			this.allocator = allocator;
 			this.layerBuffers = layerBuffers;
 		}
 
 		@Override
 		public VertexConsumer getBuffer(RenderLayer renderLayer) {
-			BufferBuilder bufferBuilder = (BufferBuilder)this.field_52157.get(renderLayer);
+			BufferBuilder bufferBuilder = (BufferBuilder)this.pending.get(renderLayer);
 			if (bufferBuilder != null && !renderLayer.areVerticesNotShared()) {
-				this.method_60893(renderLayer, bufferBuilder);
+				this.draw(renderLayer, bufferBuilder);
 				bufferBuilder = null;
 			}
 
 			if (bufferBuilder != null) {
 				return bufferBuilder;
 			} else {
-				class_9799 lv = (class_9799)this.layerBuffers.get(renderLayer);
-				if (lv != null) {
-					bufferBuilder = new BufferBuilder(lv, renderLayer.getDrawMode(), renderLayer.getVertexFormat());
+				BufferAllocator bufferAllocator = (BufferAllocator)this.layerBuffers.get(renderLayer);
+				if (bufferAllocator != null) {
+					bufferBuilder = new BufferBuilder(bufferAllocator, renderLayer.getDrawMode(), renderLayer.getVertexFormat());
 				} else {
-					if (this.field_52158 != null) {
-						this.draw(this.field_52158);
+					if (this.currentLayer != null) {
+						this.draw(this.currentLayer);
 					}
 
-					bufferBuilder = new BufferBuilder(this.field_52156, renderLayer.getDrawMode(), renderLayer.getVertexFormat());
-					this.field_52158 = renderLayer;
+					bufferBuilder = new BufferBuilder(this.allocator, renderLayer.getDrawMode(), renderLayer.getVertexFormat());
+					this.currentLayer = renderLayer;
 				}
 
-				this.field_52157.put(renderLayer, bufferBuilder);
+				this.pending.put(renderLayer, bufferBuilder);
 				return bufferBuilder;
 			}
 		}
@@ -106,11 +105,11 @@ public interface VertexConsumerProvider {
 		 * specified in the constructor.
 		 */
 		public void drawCurrentLayer() {
-			if (this.field_52158 != null && !this.layerBuffers.containsKey(this.field_52158)) {
-				this.draw(this.field_52158);
+			if (this.currentLayer != null && !this.layerBuffers.containsKey(this.currentLayer)) {
+				this.draw(this.currentLayer);
 			}
 
-			this.field_52158 = null;
+			this.currentLayer = null;
 		}
 
 		/**
@@ -118,33 +117,33 @@ public interface VertexConsumerProvider {
 		 * specified in the constructor.
 		 */
 		public void draw() {
-			this.field_52157.forEach(this::method_60893);
-			this.field_52157.clear();
+			this.pending.forEach(this::draw);
+			this.pending.clear();
 		}
 
 		/**
 		 * Draws the contents in the {@code layer}'s buffer.
 		 */
 		public void draw(RenderLayer layer) {
-			BufferBuilder bufferBuilder = (BufferBuilder)this.field_52157.remove(layer);
+			BufferBuilder bufferBuilder = (BufferBuilder)this.pending.remove(layer);
 			if (bufferBuilder != null) {
-				this.method_60893(layer, bufferBuilder);
+				this.draw(layer, bufferBuilder);
 			}
 		}
 
-		private void method_60893(RenderLayer renderLayer, BufferBuilder bufferBuilder) {
-			class_9801 lv = bufferBuilder.method_60794();
-			if (lv != null) {
-				if (renderLayer.method_60894()) {
-					class_9799 lv2 = (class_9799)this.layerBuffers.getOrDefault(renderLayer, this.field_52156);
-					lv.method_60819(lv2, RenderSystem.getVertexSorting());
+		private void draw(RenderLayer layer, BufferBuilder builder) {
+			BuiltBuffer builtBuffer = builder.endNullable();
+			if (builtBuffer != null) {
+				if (layer.isTranslucent()) {
+					BufferAllocator bufferAllocator = (BufferAllocator)this.layerBuffers.getOrDefault(layer, this.allocator);
+					builtBuffer.sortQuads(bufferAllocator, RenderSystem.getVertexSorting());
 				}
 
-				renderLayer.method_60895(lv);
+				layer.draw(builtBuffer);
 			}
 
-			if (renderLayer.equals(this.field_52158)) {
-				this.field_52158 = null;
+			if (layer.equals(this.currentLayer)) {
+				this.currentLayer = null;
 			}
 		}
 	}

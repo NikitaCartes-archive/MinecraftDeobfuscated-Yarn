@@ -201,7 +201,7 @@ public class EntityModelLayers {
 	}
 
 	private static EntityModelLayer create(String id, String layer) {
-		return new EntityModelLayer(Identifier.method_60656(id), layer);
+		return new EntityModelLayer(Identifier.ofVanilla(id), layer);
 	}
 
 	private static EntityModelLayer createInnerArmor(String id) {

@@ -18,7 +18,7 @@ import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class StuckStingersFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>> extends StuckObjectsFeatureRenderer<T, M> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/bee/bee_stinger.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/bee/bee_stinger.png");
 
 	public StuckStingersFeatureRenderer(LivingEntityRenderer<T, M> livingEntityRenderer) {
 		super(livingEntityRenderer);
@@ -64,7 +64,7 @@ public class StuckStingersFeatureRenderer<T extends LivingEntity, M extends Play
 			.color(Colors.WHITE)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.method_60803(light)
-			.method_60831(matrix, 0.0F, 1.0F, 0.0F);
+			.light(light)
+			.normal(matrix, 0.0F, 1.0F, 0.0F);
 	}
 }

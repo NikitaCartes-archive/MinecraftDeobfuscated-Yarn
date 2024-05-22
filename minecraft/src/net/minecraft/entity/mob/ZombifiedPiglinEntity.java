@@ -42,9 +42,9 @@ import net.minecraft.world.WorldView;
 
 public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	private static final EntityDimensions BABY_BASE_DIMENSIONS = EntityType.ZOMBIFIED_PIGLIN.getDimensions().scaled(0.5F).withEyeHeight(0.97F);
-	private static final Identifier ATTACKING_SPEED_BOOST_ID = Identifier.method_60656("attacking");
+	private static final Identifier ATTACKING_SPEED_MODIFIER_ID = Identifier.ofVanilla("attacking");
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
-		ATTACKING_SPEED_BOOST_ID, 0.05, EntityAttributeModifier.Operation.ADD_VALUE
+		ATTACKING_SPEED_MODIFIER_ID, 0.05, EntityAttributeModifier.Operation.ADD_VALUE
 	);
 	private static final UniformIntProvider ANGRY_SOUND_DELAY_RANGE = TimeHelper.betweenSeconds(0, 1);
 	private int angrySoundDelay;
@@ -96,13 +96,13 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	protected void mobTick() {
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 		if (this.hasAngerTime()) {
-			if (!this.isBaby() && !entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST_ID)) {
+			if (!this.isBaby() && !entityAttributeInstance.hasModifier(ATTACKING_SPEED_MODIFIER_ID)) {
 				entityAttributeInstance.addTemporaryModifier(ATTACKING_SPEED_BOOST);
 			}
 
 			this.tickAngrySound();
-		} else if (entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST_ID)) {
-			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST_ID);
+		} else if (entityAttributeInstance.hasModifier(ATTACKING_SPEED_MODIFIER_ID)) {
+			entityAttributeInstance.removeModifier(ATTACKING_SPEED_MODIFIER_ID);
 		}
 
 		this.tickAngerLogic((ServerWorld)this.getWorld(), true);

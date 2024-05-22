@@ -16,10 +16,10 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class CrafterScreen extends HandledScreen<CrafterScreenHandler> {
-	private static final Identifier DISABLED_SLOT_TEXTURE = Identifier.method_60656("container/crafter/disabled_slot");
-	private static final Identifier POWERED_REDSTONE_TEXTURE = Identifier.method_60656("container/crafter/powered_redstone");
-	private static final Identifier UNPOWERED_REDSTONE_TEXTURE = Identifier.method_60656("container/crafter/unpowered_redstone");
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/crafter.png");
+	private static final Identifier DISABLED_SLOT_TEXTURE = Identifier.ofVanilla("container/crafter/disabled_slot");
+	private static final Identifier POWERED_REDSTONE_TEXTURE = Identifier.ofVanilla("container/crafter/powered_redstone");
+	private static final Identifier UNPOWERED_REDSTONE_TEXTURE = Identifier.ofVanilla("container/crafter/unpowered_redstone");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/gui/container/crafter.png");
 	private static final Text TOGGLEABLE_SLOT_TEXT = Text.translatable("gui.togglable_slot");
 	private final PlayerEntity player;
 

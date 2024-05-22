@@ -20,8 +20,8 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.minecraft.class_9793;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.block.jukebox.JukeboxSong;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.provider.EnchantmentProvider;
 import net.minecraft.entity.damage.DamageType;
@@ -91,7 +91,7 @@ public class RegistryLoader {
 		new RegistryLoader.Entry<>(RegistryKeys.BANNER_PATTERN, BannerPattern.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.ENCHANTMENT, Enchantment.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.ENCHANTMENT_PROVIDER, EnchantmentProvider.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.JUKEBOX_SONG, class_9793.field_52027)
+		new RegistryLoader.Entry<>(RegistryKeys.JUKEBOX_SONG, JukeboxSong.CODEC)
 	);
 	public static final List<RegistryLoader.Entry<?>> DIMENSION_REGISTRIES = List.of(new RegistryLoader.Entry<>(RegistryKeys.DIMENSION, DimensionOptions.CODEC));
 	public static final List<RegistryLoader.Entry<?>> SYNCED_REGISTRIES = List.of(
@@ -105,7 +105,7 @@ public class RegistryLoader {
 		new RegistryLoader.Entry<>(RegistryKeys.DAMAGE_TYPE, DamageType.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.BANNER_PATTERN, BannerPattern.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.ENCHANTMENT, Enchantment.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.JUKEBOX_SONG, class_9793.field_52027)
+		new RegistryLoader.Entry<>(RegistryKeys.JUKEBOX_SONG, JukeboxSong.CODEC)
 	);
 
 	public static DynamicRegistryManager.Immutable loadFromResource(
@@ -228,7 +228,7 @@ public class RegistryLoader {
 		Decoder<E> elementDecoder,
 		Map<RegistryKey<?>, Exception> errors
 	) {
-		String string = RegistryKeys.method_60915(registry.getKey());
+		String string = RegistryKeys.getPath(registry.getKey());
 		ResourceFinder resourceFinder = ResourceFinder.json(string);
 		RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, infoGetter);
 
@@ -258,7 +258,7 @@ public class RegistryLoader {
 		if (list != null) {
 			RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, infoGetter);
 			RegistryOps<JsonElement> registryOps2 = RegistryOps.of(JsonOps.INSTANCE, infoGetter);
-			String string = RegistryKeys.method_60915(registry.getKey());
+			String string = RegistryKeys.getPath(registry.getKey());
 			ResourceFinder resourceFinder = ResourceFinder.json(string);
 
 			for (SerializableRegistries.SerializedRegistryEntry serializedRegistryEntry : list) {

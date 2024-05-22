@@ -16,7 +16,7 @@ import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class EndermanEntityRenderer extends MobEntityRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/enderman/enderman.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/enderman/enderman.png");
 	private final Random random = Random.create();
 
 	public EndermanEntityRenderer(EntityRendererFactory.Context context) {

@@ -16,7 +16,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.HotbarStorage;
@@ -34,6 +33,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
@@ -53,43 +53,43 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInventoryScreen.CreativeScreenHandler> {
-	private static final Identifier SCROLLER_TEXTURE = Identifier.method_60656("container/creative_inventory/scroller");
-	private static final Identifier SCROLLER_DISABLED_TEXTURE = Identifier.method_60656("container/creative_inventory/scroller_disabled");
+	private static final Identifier SCROLLER_TEXTURE = Identifier.ofVanilla("container/creative_inventory/scroller");
+	private static final Identifier SCROLLER_DISABLED_TEXTURE = Identifier.ofVanilla("container/creative_inventory/scroller_disabled");
 	private static final Identifier[] TAB_TOP_UNSELECTED_TEXTURES = new Identifier[]{
-		Identifier.method_60656("container/creative_inventory/tab_top_unselected_1"),
-		Identifier.method_60656("container/creative_inventory/tab_top_unselected_2"),
-		Identifier.method_60656("container/creative_inventory/tab_top_unselected_3"),
-		Identifier.method_60656("container/creative_inventory/tab_top_unselected_4"),
-		Identifier.method_60656("container/creative_inventory/tab_top_unselected_5"),
-		Identifier.method_60656("container/creative_inventory/tab_top_unselected_6"),
-		Identifier.method_60656("container/creative_inventory/tab_top_unselected_7")
+		Identifier.ofVanilla("container/creative_inventory/tab_top_unselected_1"),
+		Identifier.ofVanilla("container/creative_inventory/tab_top_unselected_2"),
+		Identifier.ofVanilla("container/creative_inventory/tab_top_unselected_3"),
+		Identifier.ofVanilla("container/creative_inventory/tab_top_unselected_4"),
+		Identifier.ofVanilla("container/creative_inventory/tab_top_unselected_5"),
+		Identifier.ofVanilla("container/creative_inventory/tab_top_unselected_6"),
+		Identifier.ofVanilla("container/creative_inventory/tab_top_unselected_7")
 	};
 	private static final Identifier[] TAB_TOP_SELECTED_TEXTURES = new Identifier[]{
-		Identifier.method_60656("container/creative_inventory/tab_top_selected_1"),
-		Identifier.method_60656("container/creative_inventory/tab_top_selected_2"),
-		Identifier.method_60656("container/creative_inventory/tab_top_selected_3"),
-		Identifier.method_60656("container/creative_inventory/tab_top_selected_4"),
-		Identifier.method_60656("container/creative_inventory/tab_top_selected_5"),
-		Identifier.method_60656("container/creative_inventory/tab_top_selected_6"),
-		Identifier.method_60656("container/creative_inventory/tab_top_selected_7")
+		Identifier.ofVanilla("container/creative_inventory/tab_top_selected_1"),
+		Identifier.ofVanilla("container/creative_inventory/tab_top_selected_2"),
+		Identifier.ofVanilla("container/creative_inventory/tab_top_selected_3"),
+		Identifier.ofVanilla("container/creative_inventory/tab_top_selected_4"),
+		Identifier.ofVanilla("container/creative_inventory/tab_top_selected_5"),
+		Identifier.ofVanilla("container/creative_inventory/tab_top_selected_6"),
+		Identifier.ofVanilla("container/creative_inventory/tab_top_selected_7")
 	};
 	private static final Identifier[] TAB_BOTTOM_UNSELECTED_TEXTURES = new Identifier[]{
-		Identifier.method_60656("container/creative_inventory/tab_bottom_unselected_1"),
-		Identifier.method_60656("container/creative_inventory/tab_bottom_unselected_2"),
-		Identifier.method_60656("container/creative_inventory/tab_bottom_unselected_3"),
-		Identifier.method_60656("container/creative_inventory/tab_bottom_unselected_4"),
-		Identifier.method_60656("container/creative_inventory/tab_bottom_unselected_5"),
-		Identifier.method_60656("container/creative_inventory/tab_bottom_unselected_6"),
-		Identifier.method_60656("container/creative_inventory/tab_bottom_unselected_7")
+		Identifier.ofVanilla("container/creative_inventory/tab_bottom_unselected_1"),
+		Identifier.ofVanilla("container/creative_inventory/tab_bottom_unselected_2"),
+		Identifier.ofVanilla("container/creative_inventory/tab_bottom_unselected_3"),
+		Identifier.ofVanilla("container/creative_inventory/tab_bottom_unselected_4"),
+		Identifier.ofVanilla("container/creative_inventory/tab_bottom_unselected_5"),
+		Identifier.ofVanilla("container/creative_inventory/tab_bottom_unselected_6"),
+		Identifier.ofVanilla("container/creative_inventory/tab_bottom_unselected_7")
 	};
 	private static final Identifier[] TAB_BOTTOM_SELECTED_TEXTURES = new Identifier[]{
-		Identifier.method_60656("container/creative_inventory/tab_bottom_selected_1"),
-		Identifier.method_60656("container/creative_inventory/tab_bottom_selected_2"),
-		Identifier.method_60656("container/creative_inventory/tab_bottom_selected_3"),
-		Identifier.method_60656("container/creative_inventory/tab_bottom_selected_4"),
-		Identifier.method_60656("container/creative_inventory/tab_bottom_selected_5"),
-		Identifier.method_60656("container/creative_inventory/tab_bottom_selected_6"),
-		Identifier.method_60656("container/creative_inventory/tab_bottom_selected_7")
+		Identifier.ofVanilla("container/creative_inventory/tab_bottom_selected_1"),
+		Identifier.ofVanilla("container/creative_inventory/tab_bottom_selected_2"),
+		Identifier.ofVanilla("container/creative_inventory/tab_bottom_selected_3"),
+		Identifier.ofVanilla("container/creative_inventory/tab_bottom_selected_4"),
+		Identifier.ofVanilla("container/creative_inventory/tab_bottom_selected_5"),
+		Identifier.ofVanilla("container/creative_inventory/tab_bottom_selected_6"),
+		Identifier.ofVanilla("container/creative_inventory/tab_bottom_selected_7")
 	};
 	private static final int ROWS_COUNT = 5;
 	private static final int COLUMNS_COUNT = 9;

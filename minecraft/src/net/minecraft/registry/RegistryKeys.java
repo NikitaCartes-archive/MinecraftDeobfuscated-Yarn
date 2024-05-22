@@ -1,20 +1,20 @@
 package net.minecraft.registry;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.class_9793;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.DecoratedPotPattern;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.jukebox.JukeboxSong;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.component.ComponentType;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentLevelBasedValueType;
-import net.minecraft.enchantment.effect.EnchantmentEntityEffectType;
-import net.minecraft.enchantment.effect.EnchantmentLocationBasedEffectType;
-import net.minecraft.enchantment.effect.EnchantmentValueEffectType;
+import net.minecraft.enchantment.EnchantmentLevelBasedValue;
+import net.minecraft.enchantment.effect.EnchantmentEntityEffect;
+import net.minecraft.enchantment.effect.EnchantmentLocationBasedEffect;
+import net.minecraft.enchantment.effect.EnchantmentValueEffect;
 import net.minecraft.enchantment.provider.EnchantmentProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Activity;
@@ -108,7 +108,7 @@ import net.minecraft.world.gen.trunk.TrunkPlacerType;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class RegistryKeys {
-	public static final Identifier ROOT = Identifier.method_60656("root");
+	public static final Identifier ROOT = Identifier.ofVanilla("root");
 	public static final RegistryKey<Registry<Activity>> ACTIVITY = of("activity");
 	public static final RegistryKey<Registry<EntityAttribute>> ATTRIBUTE = of("attribute");
 	public static final RegistryKey<Registry<BannerPattern>> BANNER_PATTERN = of("banner_pattern");
@@ -128,17 +128,15 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<Identifier>> CUSTOM_STAT = of("custom_stat");
 	public static final RegistryKey<Registry<DamageType>> DAMAGE_TYPE = of("damage_type");
 	public static final RegistryKey<Registry<MapCodec<? extends DensityFunction>>> DENSITY_FUNCTION_TYPE = of("worldgen/density_function_type");
-	public static final RegistryKey<Registry<MapCodec<? extends EnchantmentEntityEffectType>>> ENCHANTMENT_ENTITY_EFFECT_TYPE = of(
-		"enchantment_entity_effect_type"
-	);
-	public static final RegistryKey<Registry<MapCodec<? extends EnchantmentLevelBasedValueType>>> ENCHANTMENT_LEVEL_BASED_VALUE_TYPE = of(
+	public static final RegistryKey<Registry<MapCodec<? extends EnchantmentEntityEffect>>> ENCHANTMENT_ENTITY_EFFECT_TYPE = of("enchantment_entity_effect_type");
+	public static final RegistryKey<Registry<MapCodec<? extends EnchantmentLevelBasedValue>>> ENCHANTMENT_LEVEL_BASED_VALUE_TYPE = of(
 		"enchantment_level_based_value_type"
 	);
-	public static final RegistryKey<Registry<MapCodec<? extends EnchantmentLocationBasedEffectType>>> ENCHANTMENT_LOCATION_BASED_EFFECT_TYPE = of(
+	public static final RegistryKey<Registry<MapCodec<? extends EnchantmentLocationBasedEffect>>> ENCHANTMENT_LOCATION_BASED_EFFECT_TYPE = of(
 		"enchantment_location_based_effect_type"
 	);
 	public static final RegistryKey<Registry<MapCodec<? extends EnchantmentProvider>>> ENCHANTMENT_PROVIDER_TYPE = of("enchantment_provider_type");
-	public static final RegistryKey<Registry<MapCodec<? extends EnchantmentValueEffectType>>> ENCHANTMENT_VALUE_EFFECT_TYPE = of("enchantment_value_effect_type");
+	public static final RegistryKey<Registry<MapCodec<? extends EnchantmentValueEffect>>> ENCHANTMENT_VALUE_EFFECT_TYPE = of("enchantment_value_effect_type");
 	public static final RegistryKey<Registry<EntityType<?>>> ENTITY_TYPE = of("entity_type");
 	public static final RegistryKey<Registry<Feature<?>>> FEATURE = of("worldgen/feature");
 	public static final RegistryKey<Registry<FeatureSizeType<?>>> FEATURE_SIZE_TYPE = of("worldgen/feature_size_type");
@@ -151,7 +149,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<Instrument>> INSTRUMENT = of("instrument");
 	public static final RegistryKey<Registry<IntProviderType<?>>> INT_PROVIDER_TYPE = of("int_provider_type");
 	public static final RegistryKey<Registry<Item>> ITEM = of("item");
-	public static final RegistryKey<Registry<class_9793>> JUKEBOX_SONG = of("jukebox_song");
+	public static final RegistryKey<Registry<JukeboxSong>> JUKEBOX_SONG = of("jukebox_song");
 	public static final RegistryKey<Registry<LootConditionType>> LOOT_CONDITION_TYPE = of("loot_condition_type");
 	public static final RegistryKey<Registry<LootFunctionType<?>>> LOOT_FUNCTION_TYPE = of("loot_function_type");
 	public static final RegistryKey<Registry<LootNbtProviderType>> LOOT_NBT_PROVIDER_TYPE = of("loot_nbt_provider_type");
@@ -237,14 +235,14 @@ public class RegistryKeys {
 	}
 
 	private static <T> RegistryKey<Registry<T>> of(String id) {
-		return RegistryKey.ofRegistry(Identifier.method_60656(id));
+		return RegistryKey.ofRegistry(Identifier.ofVanilla(id));
 	}
 
-	public static String method_60915(RegistryKey<? extends Registry<?>> registryKey) {
-		return registryKey.getValue().getPath();
+	public static String getPath(RegistryKey<? extends Registry<?>> registryRef) {
+		return registryRef.getValue().getPath();
 	}
 
-	public static String method_60916(RegistryKey<? extends Registry<?>> registryKey) {
-		return "tags/" + registryKey.getValue().getPath();
+	public static String getTagPath(RegistryKey<? extends Registry<?>> registryRef) {
+		return "tags/" + registryRef.getValue().getPath();
 	}
 }

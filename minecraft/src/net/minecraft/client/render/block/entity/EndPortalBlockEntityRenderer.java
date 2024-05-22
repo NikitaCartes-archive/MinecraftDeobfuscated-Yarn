@@ -13,8 +13,8 @@ import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity> implements BlockEntityRenderer<T> {
-	public static final Identifier SKY_TEXTURE = Identifier.method_60656("textures/environment/end_sky.png");
-	public static final Identifier PORTAL_TEXTURE = Identifier.method_60656("textures/entity/end_portal.png");
+	public static final Identifier SKY_TEXTURE = Identifier.ofVanilla("textures/environment/end_sky.png");
+	public static final Identifier PORTAL_TEXTURE = Identifier.ofVanilla("textures/entity/end_portal.png");
 
 	public EndPortalBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
 	}

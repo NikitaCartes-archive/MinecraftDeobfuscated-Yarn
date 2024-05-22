@@ -453,7 +453,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * 
 	 * <p>This method is called on both the logical client and logical server, so take caution
 	 * when overriding this method. The logical side can be checked using {@link
-	 * World#isClient}. This is not called if {@link Block#FORCE_STATE} flag is set in the {@code
+	 * net.minecraft.world.World#isClient}. This is not called if {@link Block#FORCE_STATE} flag is set in the {@code
 	 * setBlockState} call.
 	 * 
 	 * <p>This method can be used for multiple purposes. Here are some examples:
@@ -817,7 +817,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * {@return the screen handler factory or {@code null} if screen handler cannot be created}
 	 * 
 	 * <p>This method should be overridden for blocks with screen handlers, such as anvils.
-	 * The created screen handler is usually passed to {@link PlayerEntity#openHandledScreen}.
+	 * The created screen handler is usually passed to {@link net.minecraft.entity.player.PlayerEntity#openHandledScreen}.
 	 * See {@link AnvilBlock#createScreenHandlerFactory} for basic usage. {@link BlockWithEntity}
 	 * delegates this logic to the block entity implementing {@link
 	 * net.minecraft.screen.NamedScreenHandlerFactory}. For example, any {@link BlockWithEntity} whose block entity
@@ -848,11 +848,11 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * <p>This is only checked during {@linkplain net.minecraft.item.BlockItem#canPlace the
 	 * use of block items} or by endermen, falling blocks, etc that can place blocks. This
 	 * does not affect block state changes performed through {@link
-	 * World#setBlockState(BlockPos, BlockState)} call.
+	 * net.minecraft.world.World#setBlockState(BlockPos, BlockState)} call.
 	 * 
 	 * <p>This method is called on both the logical client and logical server, so take caution
 	 * when overriding this method. The logical side can be checked using {@link
-	 * World#isClient}.
+	 * net.minecraft.world.World#isClient}.
 	 * 
 	 * @see AbstractBlockState#canPlaceAt
 	 * @see #getStateForNeighborUpdate
@@ -944,7 +944,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	/**
 	 * Called server-side when a block receives a scheduled tick. This can be used like a timer.
 	 * Scheduled ticks are added using {@link
-	 * WorldAccess#scheduleBlockTick(BlockPos, Block, int)}.
+	 * net.minecraft.world.WorldAccess#scheduleBlockTick(BlockPos, Block, int)}.
 	 * 
 	 * <p>Scheduled ticks are often used inside {@link #getStateForNeighborUpdate}.
 	 * 
@@ -959,7 +959,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * </ul>
 	 * 
 	 * @see AbstractBlockState#scheduledTick
-	 * @see WorldAccess#scheduleBlockTick(BlockPos, Block, int)
+	 * @see net.minecraft.world.WorldAccess#scheduleBlockTick(BlockPos, Block, int)
 	 * @see #getStateForNeighborUpdate
 	 * @see #randomTick
 	 */
@@ -1408,9 +1408,9 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return Block.isFaceFullSquare(this.getCollisionShape(world, pos, ShapeContext.of(entity)), direction);
 		}
 
-		public Vec3d getModelOffset(BlockView blockView, BlockPos blockPos) {
+		public Vec3d getModelOffset(BlockView world, BlockPos pos) {
 			AbstractBlock.Offsetter offsetter = this.offsetter;
-			return offsetter != null ? offsetter.evaluate(this.asBlockState(), blockView, blockPos) : Vec3d.ZERO;
+			return offsetter != null ? offsetter.evaluate(this.asBlockState(), world, pos) : Vec3d.ZERO;
 		}
 
 		public boolean hasModelOffset() {

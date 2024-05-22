@@ -149,8 +149,8 @@ public class EntityUuidFix extends AbstractUuidFix {
 		return DataFixUtils.orElse(dynamic.get("OwnerUUID").result().map(dynamic2 -> dynamic.remove("OwnerUUID").set("Owner", dynamic2)), dynamic);
 	}
 
-	public static Dynamic<?> updateSelfUuid(Dynamic<?> dynamic) {
-		return (Dynamic<?>)updateRegularMostLeast(dynamic, "UUID", "UUID").orElse(dynamic);
+	public static Dynamic<?> updateSelfUuid(Dynamic<?> entityDynamic) {
+		return (Dynamic<?>)updateRegularMostLeast(entityDynamic, "UUID", "UUID").orElse(entityDynamic);
 	}
 
 	static {

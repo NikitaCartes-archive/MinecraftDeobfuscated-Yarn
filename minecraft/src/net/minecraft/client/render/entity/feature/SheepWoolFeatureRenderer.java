@@ -19,7 +19,7 @@ import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
-	private static final Identifier SKIN = Identifier.method_60656("textures/entity/sheep/sheep_fur.png");
+	private static final Identifier SKIN = Identifier.ofVanilla("textures/entity/sheep/sheep_fur.png");
 	private final SheepWoolEntityModel<SheepEntity> model;
 
 	public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepEntityModel<SheepEntity>> context, EntityModelLoader loader) {

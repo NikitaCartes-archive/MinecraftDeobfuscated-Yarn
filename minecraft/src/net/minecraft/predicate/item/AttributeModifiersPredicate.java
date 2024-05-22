@@ -64,7 +64,7 @@ public record AttributeModifiersPredicate(
 		public boolean test(AttributeModifiersComponent.Entry entry) {
 			if (this.attribute.isPresent() && !((RegistryEntryList)this.attribute.get()).contains(entry.attribute())) {
 				return false;
-			} else if (this.id.isPresent() && !((Identifier)this.id.get()).equals(entry.modifier().uuid())) {
+			} else if (this.id.isPresent() && !((Identifier)this.id.get()).equals(entry.modifier().id())) {
 				return false;
 			} else if (!this.amount.test(entry.modifier().value())) {
 				return false;

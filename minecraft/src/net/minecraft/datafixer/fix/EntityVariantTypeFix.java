@@ -20,24 +20,32 @@ public class EntityVariantTypeFix extends ChoiceFix {
 		this.variantIntToId = variantIntToId;
 	}
 
-	private static <T> Dynamic<T> method_43072(Dynamic<T> dynamic, String string, String string2, Function<Dynamic<T>, Dynamic<T>> function) {
-		return dynamic.map(object -> {
-			DynamicOps<T> dynamicOps = dynamic.getOps();
-			Function<T, T> function2 = objectx -> ((Dynamic)function.apply(new Dynamic<>(dynamicOps, (T)objectx))).getValue();
-			return dynamicOps.get((T)object, string).map(object2 -> dynamicOps.set((T)object, string2, (T)function2.apply(object2))).result().orElse(object);
-		});
+	private static <T> Dynamic<T> updateEntity(
+		Dynamic<T> entityDynamic, String oldVariantKey, String newVariantKey, Function<Dynamic<T>, Dynamic<T>> variantIntToId
+	) {
+		return entityDynamic.map(
+			object -> {
+				DynamicOps<T> dynamicOps = entityDynamic.getOps();
+				Function<T, T> function2 = objectx -> ((Dynamic)variantIntToId.apply(new Dynamic<>(dynamicOps, (T)objectx))).getValue();
+				return dynamicOps.get((T)object, oldVariantKey)
+					.map(object2 -> dynamicOps.set((T)object, newVariantKey, (T)function2.apply(object2)))
+					.result()
+					.orElse(object);
+			}
+		);
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(
 			DSL.remainderFinder(),
-			dynamic -> method_43072(
-					dynamic,
+			entityDynamic -> updateEntity(
+					entityDynamic,
 					this.variantKey,
 					"variant",
-					dynamicx -> DataFixUtils.orElse(
-							dynamicx.asNumber().map(number -> dynamicx.createString((String)this.variantIntToId.apply(number.intValue()))).result(), dynamicx
+					variantDynamic -> DataFixUtils.orElse(
+							variantDynamic.asNumber().map(variantInt -> variantDynamic.createString((String)this.variantIntToId.apply(variantInt.intValue()))).result(),
+							variantDynamic
 						)
 				)
 		);

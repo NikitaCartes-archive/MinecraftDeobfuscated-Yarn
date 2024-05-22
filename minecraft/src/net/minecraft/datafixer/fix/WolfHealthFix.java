@@ -16,34 +16,34 @@ public class WolfHealthFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(
 			DSL.remainderFinder(),
-			dynamic -> {
+			wolfDynamic -> {
 				MutableBoolean mutableBoolean = new MutableBoolean(false);
-				dynamic = dynamic.update(
+				wolfDynamic = wolfDynamic.update(
 					"Attributes",
-					dynamicx -> dynamicx.createList(
-							dynamicx.asStream()
+					attributesDynamic -> attributesDynamic.createList(
+							attributesDynamic.asStream()
 								.map(
-									dynamicxx -> "minecraft:generic.max_health".equals(IdentifierNormalizingSchema.normalize(dynamicxx.get("Name").asString("")))
-											? dynamicxx.update("Base", dynamicxxx -> {
-												if (dynamicxxx.asDouble(0.0) == 20.0) {
+									attributeDynamic -> "minecraft:generic.max_health".equals(IdentifierNormalizingSchema.normalize(attributeDynamic.get("Name").asString("")))
+											? attributeDynamic.update("Base", baseDynamic -> {
+												if (baseDynamic.asDouble(0.0) == 20.0) {
 													mutableBoolean.setTrue();
-													return dynamicxxx.createDouble(40.0);
+													return baseDynamic.createDouble(40.0);
 												} else {
-													return dynamicxxx;
+													return baseDynamic;
 												}
 											})
-											: dynamicxx
+											: attributeDynamic
 								)
 						)
 				);
 				if (mutableBoolean.isTrue()) {
-					dynamic = dynamic.update("Health", dynamicx -> dynamicx.createFloat(dynamicx.asFloat(0.0F) * 2.0F));
+					wolfDynamic = wolfDynamic.update("Health", healthDynamic -> healthDynamic.createFloat(healthDynamic.asFloat(0.0F) * 2.0F));
 				}
 
-				return dynamic;
+				return wolfDynamic;
 			}
 		);
 	}

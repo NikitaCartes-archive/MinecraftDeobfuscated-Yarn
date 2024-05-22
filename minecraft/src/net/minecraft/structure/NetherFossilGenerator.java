@@ -17,20 +17,20 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class NetherFossilGenerator {
 	private static final Identifier[] FOSSILS = new Identifier[]{
-		Identifier.method_60656("nether_fossils/fossil_1"),
-		Identifier.method_60656("nether_fossils/fossil_2"),
-		Identifier.method_60656("nether_fossils/fossil_3"),
-		Identifier.method_60656("nether_fossils/fossil_4"),
-		Identifier.method_60656("nether_fossils/fossil_5"),
-		Identifier.method_60656("nether_fossils/fossil_6"),
-		Identifier.method_60656("nether_fossils/fossil_7"),
-		Identifier.method_60656("nether_fossils/fossil_8"),
-		Identifier.method_60656("nether_fossils/fossil_9"),
-		Identifier.method_60656("nether_fossils/fossil_10"),
-		Identifier.method_60656("nether_fossils/fossil_11"),
-		Identifier.method_60656("nether_fossils/fossil_12"),
-		Identifier.method_60656("nether_fossils/fossil_13"),
-		Identifier.method_60656("nether_fossils/fossil_14")
+		Identifier.ofVanilla("nether_fossils/fossil_1"),
+		Identifier.ofVanilla("nether_fossils/fossil_2"),
+		Identifier.ofVanilla("nether_fossils/fossil_3"),
+		Identifier.ofVanilla("nether_fossils/fossil_4"),
+		Identifier.ofVanilla("nether_fossils/fossil_5"),
+		Identifier.ofVanilla("nether_fossils/fossil_6"),
+		Identifier.ofVanilla("nether_fossils/fossil_7"),
+		Identifier.ofVanilla("nether_fossils/fossil_8"),
+		Identifier.ofVanilla("nether_fossils/fossil_9"),
+		Identifier.ofVanilla("nether_fossils/fossil_10"),
+		Identifier.ofVanilla("nether_fossils/fossil_11"),
+		Identifier.ofVanilla("nether_fossils/fossil_12"),
+		Identifier.ofVanilla("nether_fossils/fossil_13"),
+		Identifier.ofVanilla("nether_fossils/fossil_14")
 	};
 
 	public static void addPieces(StructureTemplateManager manager, StructurePiecesHolder holder, Random random, BlockPos pos) {

@@ -18,16 +18,16 @@ public class BlockEntityUuidFix extends AbstractUuidFix {
 		});
 	}
 
-	private Dynamic<?> updateSkull(Dynamic<?> dynamic) {
-		return (Dynamic<?>)dynamic.get("Owner")
+	private Dynamic<?> updateSkull(Dynamic<?> skullDynamic) {
+		return (Dynamic<?>)skullDynamic.get("Owner")
 			.get()
-			.map(dynamicx -> (Dynamic)updateStringUuid(dynamicx, "Id", "Id").orElse(dynamicx))
-			.map(dynamic2 -> dynamic.remove("Owner").set("SkullOwner", dynamic2))
+			.map(ownerDynamic -> (Dynamic)updateStringUuid(ownerDynamic, "Id", "Id").orElse(ownerDynamic))
+			.map(ownerDynamic -> skullDynamic.remove("Owner").set("SkullOwner", ownerDynamic))
 			.result()
-			.orElse(dynamic);
+			.orElse(skullDynamic);
 	}
 
-	private Dynamic<?> updateConduit(Dynamic<?> dynamic) {
-		return (Dynamic<?>)updateCompoundUuid(dynamic, "target_uuid", "Target").orElse(dynamic);
+	private Dynamic<?> updateConduit(Dynamic<?> conduitDynamic) {
+		return (Dynamic<?>)updateCompoundUuid(conduitDynamic, "target_uuid", "Target").orElse(conduitDynamic);
 	}
 }

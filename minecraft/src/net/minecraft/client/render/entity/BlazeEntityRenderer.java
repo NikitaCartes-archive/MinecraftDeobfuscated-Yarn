@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class BlazeEntityRenderer extends MobEntityRenderer<BlazeEntity, BlazeEntityModel<BlazeEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/blaze.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/blaze.png");
 
 	public BlazeEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new BlazeEntityModel<>(context.getPart(EntityModelLayers.BLAZE)), 0.5F);

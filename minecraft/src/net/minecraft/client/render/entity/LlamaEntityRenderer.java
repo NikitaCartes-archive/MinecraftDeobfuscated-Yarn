@@ -10,10 +10,10 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class LlamaEntityRenderer extends MobEntityRenderer<LlamaEntity, LlamaEntityModel<LlamaEntity>> {
-	private static final Identifier CREAMY_TEXTURE = Identifier.method_60656("textures/entity/llama/creamy.png");
-	private static final Identifier WHITE_TEXTURE = Identifier.method_60656("textures/entity/llama/white.png");
-	private static final Identifier BROWN_TEXTURE = Identifier.method_60656("textures/entity/llama/brown.png");
-	private static final Identifier GRAY_TEXTURE = Identifier.method_60656("textures/entity/llama/gray.png");
+	private static final Identifier CREAMY_TEXTURE = Identifier.ofVanilla("textures/entity/llama/creamy.png");
+	private static final Identifier WHITE_TEXTURE = Identifier.ofVanilla("textures/entity/llama/white.png");
+	private static final Identifier BROWN_TEXTURE = Identifier.ofVanilla("textures/entity/llama/brown.png");
+	private static final Identifier GRAY_TEXTURE = Identifier.ofVanilla("textures/entity/llama/gray.png");
 
 	public LlamaEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer) {
 		super(ctx, new LlamaEntityModel<>(ctx.getPart(layer)), 0.7F);

@@ -27,7 +27,7 @@ import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class InGameOverlayRenderer {
-	private static final Identifier UNDERWATER_TEXTURE = Identifier.method_60656("textures/misc/underwater.png");
+	private static final Identifier UNDERWATER_TEXTURE = Identifier.ofVanilla("textures/misc/underwater.png");
 
 	public static void renderOverlays(MinecraftClient client, MatrixStack matrices) {
 		PlayerEntity playerEntity = client.player;
@@ -81,12 +81,12 @@ public class InGameOverlayRenderer {
 		float n = sprite.getMinV();
 		float o = sprite.getMaxV();
 		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-		BufferBuilder bufferBuilder = Tessellator.getInstance().method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+		BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
 		bufferBuilder.vertex(matrix4f, -1.0F, -1.0F, -0.5F).texture(m, o).color(0.1F, 0.1F, 0.1F, 1.0F);
 		bufferBuilder.vertex(matrix4f, 1.0F, -1.0F, -0.5F).texture(l, o).color(0.1F, 0.1F, 0.1F, 1.0F);
 		bufferBuilder.vertex(matrix4f, 1.0F, 1.0F, -0.5F).texture(l, n).color(0.1F, 0.1F, 0.1F, 1.0F);
 		bufferBuilder.vertex(matrix4f, -1.0F, 1.0F, -0.5F).texture(m, n).color(0.1F, 0.1F, 0.1F, 1.0F);
-		BufferRenderer.drawWithGlobalProgram(bufferBuilder.method_60800());
+		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 	}
 
 	private static void renderUnderwaterOverlay(MinecraftClient client, MatrixStack matrices) {
@@ -105,12 +105,12 @@ public class InGameOverlayRenderer {
 		float m = -client.player.getYaw() / 64.0F;
 		float n = client.player.getPitch() / 64.0F;
 		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-		BufferBuilder bufferBuilder = Tessellator.getInstance().method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+		BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 		bufferBuilder.vertex(matrix4f, -1.0F, -1.0F, -0.5F).texture(4.0F + m, 4.0F + n);
 		bufferBuilder.vertex(matrix4f, 1.0F, -1.0F, -0.5F).texture(0.0F + m, 4.0F + n);
 		bufferBuilder.vertex(matrix4f, 1.0F, 1.0F, -0.5F).texture(0.0F + m, 0.0F + n);
 		bufferBuilder.vertex(matrix4f, -1.0F, 1.0F, -0.5F).texture(4.0F + m, 0.0F + n);
-		BufferRenderer.drawWithGlobalProgram(bufferBuilder.method_60800());
+		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.disableBlend();
 	}
@@ -145,12 +145,12 @@ public class InGameOverlayRenderer {
 			matrices.translate((float)(-(r * 2 - 1)) * 0.24F, -0.3F, 0.0F);
 			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float)(r * 2 - 1) * 10.0F));
 			Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-			BufferBuilder bufferBuilder = Tessellator.getInstance().method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+			BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
 			bufferBuilder.vertex(matrix4f, -0.5F, -0.5F, -0.5F).texture(n, p).color(1.0F, 1.0F, 1.0F, 0.9F);
 			bufferBuilder.vertex(matrix4f, 0.5F, -0.5F, -0.5F).texture(m, p).color(1.0F, 1.0F, 1.0F, 0.9F);
 			bufferBuilder.vertex(matrix4f, 0.5F, 0.5F, -0.5F).texture(m, o).color(1.0F, 1.0F, 1.0F, 0.9F);
 			bufferBuilder.vertex(matrix4f, -0.5F, 0.5F, -0.5F).texture(n, o).color(1.0F, 1.0F, 1.0F, 0.9F);
-			BufferRenderer.drawWithGlobalProgram(bufferBuilder.method_60800());
+			BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 			matrices.pop();
 		}
 

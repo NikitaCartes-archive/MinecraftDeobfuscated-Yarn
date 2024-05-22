@@ -11,22 +11,22 @@ import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
 
 public class ItemCustomNameToComponentFix extends DataFix {
-	public ItemCustomNameToComponentFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemCustomNameToComponentFix(Schema outputSchema, boolean changesTyped) {
+		super(outputSchema, changesTyped);
 	}
 
-	private Dynamic<?> fixCustomName(Dynamic<?> dynamic) {
-		Optional<? extends Dynamic<?>> optional = dynamic.get("display").result();
+	private Dynamic<?> fixCustomName(Dynamic<?> tagDynamic) {
+		Optional<? extends Dynamic<?>> optional = tagDynamic.get("display").result();
 		if (optional.isPresent()) {
-			Dynamic<?> dynamic2 = (Dynamic<?>)optional.get();
-			Optional<String> optional2 = dynamic2.get("Name").asString().result();
+			Dynamic<?> dynamic = (Dynamic<?>)optional.get();
+			Optional<String> optional2 = dynamic.get("Name").asString().result();
 			if (optional2.isPresent()) {
-				dynamic2 = dynamic2.set("Name", TextFixes.text(dynamic2.getOps(), (String)optional2.get()));
+				dynamic = dynamic.set("Name", TextFixes.text(dynamic.getOps(), (String)optional2.get()));
 			}
 
-			return dynamic.set("display", dynamic2);
+			return tagDynamic.set("display", dynamic);
 		} else {
-			return dynamic;
+			return tagDynamic;
 		}
 	}
 
@@ -35,7 +35,9 @@ public class ItemCustomNameToComponentFix extends DataFix {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.ITEM_STACK);
 		OpticFinder<?> opticFinder = type.findField("tag");
 		return this.fixTypeEverywhereTyped(
-			"ItemCustomNameToComponentFix", type, typed -> typed.updateTyped(opticFinder, typedx -> typedx.update(DSL.remainderFinder(), this::fixCustomName))
+			"ItemCustomNameToComponentFix",
+			type,
+			itemStackTyped -> itemStackTyped.updateTyped(opticFinder, tagTyped -> tagTyped.update(DSL.remainderFinder(), this::fixCustomName))
 		);
 	}
 }

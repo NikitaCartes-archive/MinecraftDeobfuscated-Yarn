@@ -16,8 +16,6 @@ import net.minecraft.block.StemBlock;
 import net.minecraft.block.TallPlantBlock;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.client.color.world.BiomeColors;
-import net.minecraft.client.color.world.FoliageColors;
-import net.minecraft.client.color.world.GrassColors;
 import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.collection.IdList;
@@ -25,6 +23,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.FoliageColors;
+import net.minecraft.world.biome.GrassColors;
 
 @Environment(EnvType.CLIENT)
 public class BlockColors {

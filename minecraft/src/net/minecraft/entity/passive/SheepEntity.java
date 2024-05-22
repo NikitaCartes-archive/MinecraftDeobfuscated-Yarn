@@ -91,7 +91,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		if (color == DyeColor.WHITE) {
 			return -1644826;
 		} else {
-			int i = color.getColorComponents();
+			int i = color.getEntityColor();
 			float f = 0.75F;
 			return ColorHelper.Argb.getArgb(
 				255,

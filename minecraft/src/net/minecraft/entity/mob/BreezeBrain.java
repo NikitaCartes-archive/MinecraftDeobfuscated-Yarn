@@ -59,10 +59,10 @@ public class BreezeBrain {
 		MemoryModuleType.PATH
 	);
 
-	protected static Brain<?> create(BreezeEntity breezeEntity, Brain<BreezeEntity> brain) {
+	protected static Brain<?> create(BreezeEntity breeze, Brain<BreezeEntity> brain) {
 		addCoreTasks(brain);
 		addIdleTasks(brain);
-		addFightTasks(breezeEntity, brain);
+		addFightTasks(breeze, brain);
 		brain.setCoreActivities(Set.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.FIGHT);
 		brain.resetPossibleActivities();
@@ -85,11 +85,11 @@ public class BreezeBrain {
 		);
 	}
 
-	private static void addFightTasks(BreezeEntity breezeEntity, Brain<BreezeEntity> brain) {
+	private static void addFightTasks(BreezeEntity breeze, Brain<BreezeEntity> brain) {
 		brain.setTaskList(
 			Activity.FIGHT,
 			ImmutableList.of(
-				Pair.of(0, ForgetAttackTargetTask.create((Predicate<LivingEntity>)(livingEntity -> !Sensor.testAttackableTargetPredicate(breezeEntity, livingEntity)))),
+				Pair.of(0, ForgetAttackTargetTask.create((Predicate<LivingEntity>)(livingEntity -> !Sensor.testAttackableTargetPredicate(breeze, livingEntity)))),
 				Pair.of(1, new BreezeShootTask()),
 				Pair.of(2, new BreezeJumpTask()),
 				Pair.of(3, new BreezeShootIfStuckTask()),

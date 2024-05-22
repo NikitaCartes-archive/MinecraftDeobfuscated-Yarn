@@ -14,7 +14,7 @@ import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
 
 public class AncientCityGenerator {
-	public static final RegistryKey<StructurePool> CITY_CENTER = StructurePools.of("ancient_city/city_center");
+	public static final RegistryKey<StructurePool> CITY_CENTER = StructurePools.ofVanilla("ancient_city/city_center");
 
 	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
 		RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST);

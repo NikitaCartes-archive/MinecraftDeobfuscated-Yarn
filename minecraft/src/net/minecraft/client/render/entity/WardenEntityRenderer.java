@@ -11,11 +11,11 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class WardenEntityRenderer extends MobEntityRenderer<WardenEntity, WardenEntityModel<WardenEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/warden/warden.png");
-	private static final Identifier BIOLUMINESCENT_LAYER_TEXTURE = Identifier.method_60656("textures/entity/warden/warden_bioluminescent_layer.png");
-	private static final Identifier HEART_TEXTURE = Identifier.method_60656("textures/entity/warden/warden_heart.png");
-	private static final Identifier PULSATING_SPOTS_1_TEXTURE = Identifier.method_60656("textures/entity/warden/warden_pulsating_spots_1.png");
-	private static final Identifier PULSATING_SPOTS_2_TEXTURE = Identifier.method_60656("textures/entity/warden/warden_pulsating_spots_2.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/warden/warden.png");
+	private static final Identifier BIOLUMINESCENT_LAYER_TEXTURE = Identifier.ofVanilla("textures/entity/warden/warden_bioluminescent_layer.png");
+	private static final Identifier HEART_TEXTURE = Identifier.ofVanilla("textures/entity/warden/warden_heart.png");
+	private static final Identifier PULSATING_SPOTS_1_TEXTURE = Identifier.ofVanilla("textures/entity/warden/warden_pulsating_spots_1.png");
+	private static final Identifier PULSATING_SPOTS_2_TEXTURE = Identifier.ofVanilla("textures/entity/warden/warden_pulsating_spots_2.png");
 
 	public WardenEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new WardenEntityModel<>(context.getPart(EntityModelLayers.WARDEN)), 0.9F);

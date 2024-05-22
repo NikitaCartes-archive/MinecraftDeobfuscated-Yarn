@@ -22,10 +22,10 @@ import net.minecraft.util.Identifier;
 public class RecipeBookResults {
 	public static final int field_32411 = 20;
 	private static final ButtonTextures PAGE_FORWARD_TEXTURES = new ButtonTextures(
-		Identifier.method_60656("recipe_book/page_forward"), Identifier.method_60656("recipe_book/page_forward_highlighted")
+		Identifier.ofVanilla("recipe_book/page_forward"), Identifier.ofVanilla("recipe_book/page_forward_highlighted")
 	);
 	private static final ButtonTextures PAGE_BACKWARD_TEXTURES = new ButtonTextures(
-		Identifier.method_60656("recipe_book/page_backward"), Identifier.method_60656("recipe_book/page_backward_highlighted")
+		Identifier.ofVanilla("recipe_book/page_backward"), Identifier.ofVanilla("recipe_book/page_backward_highlighted")
 	);
 	private final List<AnimatedResultButton> resultButtons = Lists.<AnimatedResultButton>newArrayListWithCapacity(20);
 	@Nullable

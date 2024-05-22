@@ -41,6 +41,6 @@ public interface StructureKeys {
 	RegistryKey<Structure> TRIAL_CHAMBERS = of("trial_chambers");
 
 	private static RegistryKey<Structure> of(String id) {
-		return RegistryKey.of(RegistryKeys.STRUCTURE, Identifier.method_60656(id));
+		return RegistryKey.of(RegistryKeys.STRUCTURE, Identifier.ofVanilla(id));
 	}
 }

@@ -70,7 +70,7 @@ public class ArmorItem extends Item implements Equipment {
 				float f = material.value().toughness();
 				AttributeModifiersComponent.Builder builder = AttributeModifiersComponent.builder();
 				AttributeModifierSlot attributeModifierSlot = AttributeModifierSlot.forEquipmentSlot(type.getEquipmentSlot());
-				Identifier identifier = Identifier.method_60656("armor." + type.getName());
+				Identifier identifier = Identifier.ofVanilla("armor." + type.getName());
 				builder.add(
 					EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier(identifier, (double)i, EntityAttributeModifier.Operation.ADD_VALUE), attributeModifierSlot
 				);

@@ -37,7 +37,7 @@ public class TranslationStorage extends Language {
 
 			for (String string3 : resourceManager.getAllNamespaces()) {
 				try {
-					Identifier identifier = Identifier.method_60655(string3, string2);
+					Identifier identifier = Identifier.of(string3, string2);
 					load(string, resourceManager.getAllResources(identifier), map);
 				} catch (Exception var10) {
 					LOGGER.warn("Skipped language file: {}:{} ({})", string3, string2, var10.toString());

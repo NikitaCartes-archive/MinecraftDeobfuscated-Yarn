@@ -51,10 +51,12 @@ import org.slf4j.Logger;
  */
 public class FunctionLoader implements ResourceReloader {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final RegistryKey<Registry<CommandFunction<ServerCommandSource>>> field_51976 = RegistryKey.ofRegistry(Identifier.method_60656("function"));
-	private static final ResourceFinder FINDER = new ResourceFinder(RegistryKeys.method_60915(field_51976), ".mcfunction");
+	public static final RegistryKey<Registry<CommandFunction<ServerCommandSource>>> FUNCTION_REGISTRY_KEY = RegistryKey.ofRegistry(
+		Identifier.ofVanilla("function")
+	);
+	private static final ResourceFinder FINDER = new ResourceFinder(RegistryKeys.getPath(FUNCTION_REGISTRY_KEY), ".mcfunction");
 	private volatile Map<Identifier, CommandFunction<ServerCommandSource>> functions = ImmutableMap.of();
-	private final TagGroupLoader<CommandFunction<ServerCommandSource>> tagLoader = new TagGroupLoader<>(this::get, RegistryKeys.method_60916(field_51976));
+	private final TagGroupLoader<CommandFunction<ServerCommandSource>> tagLoader = new TagGroupLoader<>(this::get, RegistryKeys.getTagPath(FUNCTION_REGISTRY_KEY));
 	private volatile Map<Identifier, Collection<CommandFunction<ServerCommandSource>>> tags = Map.of();
 	private final int level;
 	private final CommandDispatcher<ServerCommandSource> commandDispatcher;

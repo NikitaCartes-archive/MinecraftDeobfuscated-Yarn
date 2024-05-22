@@ -166,7 +166,7 @@ public class StructureTemplateManager {
 			try {
 				return Files.walk(structuresDirectoryPath).filter(path -> path.toString().endsWith(extension)).mapMulti((path, consumer) -> {
 					try {
-						consumer.accept(Identifier.method_60655(namespace, (String)function.apply(this.toRelativePath(structuresDirectoryPath, path))));
+						consumer.accept(Identifier.of(namespace, (String)function.apply(this.toRelativePath(structuresDirectoryPath, path))));
 					} catch (InvalidIdentifierException var7x) {
 						LOGGER.error("Invalid location while listing pack contents", (Throwable)var7x);
 					}

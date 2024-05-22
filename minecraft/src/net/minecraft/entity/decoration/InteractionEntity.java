@@ -31,7 +31,7 @@ import net.minecraft.world.World;
 import org.slf4j.Logger;
 
 public class InteractionEntity extends Entity implements Attackable, Targeter {
-	private static final Logger field_42624 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final TrackedData<Float> WIDTH = DataTracker.registerData(InteractionEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Float> HEIGHT = DataTracker.registerData(InteractionEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Boolean> RESPONSE = DataTracker.registerData(InteractionEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -70,7 +70,7 @@ public class InteractionEntity extends Entity implements Attackable, Targeter {
 		if (nbt.contains("attack")) {
 			InteractionEntity.Interaction.CODEC
 				.decode(NbtOps.INSTANCE, nbt.get("attack"))
-				.resultOrPartial(Util.addPrefix("Interaction entity", field_42624::error))
+				.resultOrPartial(Util.addPrefix("Interaction entity", LOGGER::error))
 				.ifPresent(pair -> this.attack = (InteractionEntity.Interaction)pair.getFirst());
 		} else {
 			this.attack = null;
@@ -79,7 +79,7 @@ public class InteractionEntity extends Entity implements Attackable, Targeter {
 		if (nbt.contains("interaction")) {
 			InteractionEntity.Interaction.CODEC
 				.decode(NbtOps.INSTANCE, nbt.get("interaction"))
-				.resultOrPartial(Util.addPrefix("Interaction entity", field_42624::error))
+				.resultOrPartial(Util.addPrefix("Interaction entity", LOGGER::error))
 				.ifPresent(pair -> this.interaction = (InteractionEntity.Interaction)pair.getFirst());
 		} else {
 			this.interaction = null;

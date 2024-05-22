@@ -12,7 +12,7 @@ import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class EnchantingPhrases {
-	private static final Identifier FONT_ID = Identifier.method_60656("alt");
+	private static final Identifier FONT_ID = Identifier.ofVanilla("alt");
 	private static final Style STYLE = Style.EMPTY.withFont(FONT_ID);
 	private static final EnchantingPhrases INSTANCE = new EnchantingPhrases();
 	private final Random random = Random.create();

@@ -50,7 +50,7 @@ public class ReloadableRegistries {
 			() -> {
 				MutableRegistry<T> mutableRegistry = new SimpleRegistry<>(type.registryKey(), Lifecycle.experimental());
 				Map<Identifier, JsonElement> map = new HashMap();
-				String string = RegistryKeys.method_60915(type.registryKey());
+				String string = RegistryKeys.getPath(type.registryKey());
 				JsonDataLoader.load(resourceManager, string, GSON, map);
 				map.forEach(
 					(id, json) -> type.parse(id, ops, json)

@@ -91,21 +91,21 @@ public abstract class StructurePoolElement {
 	}
 
 	public static Function<StructurePool.Projection, LegacySinglePoolElement> ofLegacySingle(String id) {
-		return projection -> new LegacySinglePoolElement(Either.left(Identifier.method_60654(id)), EMPTY_PROCESSORS, projection);
+		return projection -> new LegacySinglePoolElement(Either.left(Identifier.of(id)), EMPTY_PROCESSORS, projection);
 	}
 
 	public static Function<StructurePool.Projection, LegacySinglePoolElement> ofProcessedLegacySingle(
 		String id, RegistryEntry<StructureProcessorList> processorListEntry
 	) {
-		return projection -> new LegacySinglePoolElement(Either.left(Identifier.method_60654(id)), processorListEntry, projection);
+		return projection -> new LegacySinglePoolElement(Either.left(Identifier.of(id)), processorListEntry, projection);
 	}
 
 	public static Function<StructurePool.Projection, SinglePoolElement> ofSingle(String id) {
-		return projection -> new SinglePoolElement(Either.left(Identifier.method_60654(id)), EMPTY_PROCESSORS, projection);
+		return projection -> new SinglePoolElement(Either.left(Identifier.of(id)), EMPTY_PROCESSORS, projection);
 	}
 
 	public static Function<StructurePool.Projection, SinglePoolElement> ofProcessedSingle(String id, RegistryEntry<StructureProcessorList> processorListEntry) {
-		return projection -> new SinglePoolElement(Either.left(Identifier.method_60654(id)), processorListEntry, projection);
+		return projection -> new SinglePoolElement(Either.left(Identifier.of(id)), processorListEntry, projection);
 	}
 
 	public static Function<StructurePool.Projection, FeaturePoolElement> ofFeature(RegistryEntry<PlacedFeature> placedFeatureEntry) {

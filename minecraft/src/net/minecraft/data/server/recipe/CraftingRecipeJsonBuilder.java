@@ -10,7 +10,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
 public interface CraftingRecipeJsonBuilder {
-	Identifier ROOT = Identifier.method_60656("recipes/root");
+	Identifier ROOT = Identifier.ofVanilla("recipes/root");
 
 	CraftingRecipeJsonBuilder criterion(String name, AdvancementCriterion<?> criterion);
 
@@ -26,7 +26,7 @@ public interface CraftingRecipeJsonBuilder {
 
 	default void offerTo(RecipeExporter exporter, String recipePath) {
 		Identifier identifier = getItemId(this.getOutputItem());
-		Identifier identifier2 = Identifier.method_60654(recipePath);
+		Identifier identifier2 = Identifier.of(recipePath);
 		if (identifier2.equals(identifier)) {
 			throw new IllegalStateException("Recipe " + recipePath + " should remove its 'save' argument as it is equal to default one");
 		} else {

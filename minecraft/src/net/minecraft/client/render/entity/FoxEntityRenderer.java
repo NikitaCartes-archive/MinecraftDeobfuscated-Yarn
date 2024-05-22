@@ -13,10 +13,10 @@ import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class FoxEntityRenderer extends MobEntityRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/fox/fox.png");
-	private static final Identifier SLEEPING_TEXTURE = Identifier.method_60656("textures/entity/fox/fox_sleep.png");
-	private static final Identifier SNOW_TEXTURE = Identifier.method_60656("textures/entity/fox/snow_fox.png");
-	private static final Identifier SLEEPING_SNOW_TEXTURE = Identifier.method_60656("textures/entity/fox/snow_fox_sleep.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/fox/fox.png");
+	private static final Identifier SLEEPING_TEXTURE = Identifier.ofVanilla("textures/entity/fox/fox_sleep.png");
+	private static final Identifier SNOW_TEXTURE = Identifier.ofVanilla("textures/entity/fox/snow_fox.png");
+	private static final Identifier SLEEPING_SNOW_TEXTURE = Identifier.ofVanilla("textures/entity/fox/snow_fox_sleep.png");
 
 	public FoxEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new FoxEntityModel<>(context.getPart(EntityModelLayers.FOX)), 0.4F);

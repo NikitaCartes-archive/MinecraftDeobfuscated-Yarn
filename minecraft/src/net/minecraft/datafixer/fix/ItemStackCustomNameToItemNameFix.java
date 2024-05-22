@@ -44,15 +44,15 @@ public class ItemStackCustomNameToItemNameFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"ItemStack custom_name to item_name component fix",
 			type,
-			typed -> {
-				Optional<Pair<String, String>> optional = typed.getOptional(opticFinder);
+			itemStackTyped -> {
+				Optional<Pair<String, String>> optional = itemStackTyped.getOptional(opticFinder);
 				Optional<String> optional2 = optional.map(Pair::getSecond);
 				if (optional2.filter(itemId -> itemId.equals("minecraft:white_banner")).isPresent()) {
-					return typed.updateTyped(opticFinder2, typedx -> typedx.update(DSL.remainderFinder(), ItemStackCustomNameToItemNameFix::fixOminousBanner));
+					return itemStackTyped.updateTyped(opticFinder2, typed -> typed.update(DSL.remainderFinder(), ItemStackCustomNameToItemNameFix::fixOminousBanner));
 				} else {
 					return optional2.filter(itemId -> itemId.equals("minecraft:filled_map")).isPresent()
-						? typed.updateTyped(opticFinder2, typedx -> typedx.update(DSL.remainderFinder(), ItemStackCustomNameToItemNameFix::fixExplorerMaps))
-						: typed;
+						? itemStackTyped.updateTyped(opticFinder2, typed -> typed.update(DSL.remainderFinder(), ItemStackCustomNameToItemNameFix::fixExplorerMaps))
+						: itemStackTyped;
 				}
 			}
 		);

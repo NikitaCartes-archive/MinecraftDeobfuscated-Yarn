@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class GenericContainerScreen extends HandledScreen<GenericContainerScreenHandler> implements ScreenHandlerProvider<GenericContainerScreenHandler> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/generic_54.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/gui/container/generic_54.png");
 	private final int rows;
 
 	public GenericContainerScreen(GenericContainerScreenHandler handler, PlayerInventory inventory, Text title) {

@@ -42,7 +42,7 @@ public class IdCountsState extends PersistentState {
 		return nbt;
 	}
 
-	public MapIdComponent getNextMapId() {
+	public MapIdComponent increaseAndGetMapId() {
 		int i = this.idCounts.getInt("map") + 1;
 		this.idCounts.put("map", i);
 		this.markDirty();

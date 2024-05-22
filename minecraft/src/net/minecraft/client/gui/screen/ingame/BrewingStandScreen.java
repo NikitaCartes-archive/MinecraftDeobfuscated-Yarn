@@ -11,10 +11,10 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BrewingStandScreen extends HandledScreen<BrewingStandScreenHandler> {
-	private static final Identifier FUEL_LENGTH_TEXTURE = Identifier.method_60656("container/brewing_stand/fuel_length");
-	private static final Identifier BREW_PROGRESS_TEXTURE = Identifier.method_60656("container/brewing_stand/brew_progress");
-	private static final Identifier BUBBLES_TEXTURE = Identifier.method_60656("container/brewing_stand/bubbles");
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/brewing_stand.png");
+	private static final Identifier FUEL_LENGTH_TEXTURE = Identifier.ofVanilla("container/brewing_stand/fuel_length");
+	private static final Identifier BREW_PROGRESS_TEXTURE = Identifier.ofVanilla("container/brewing_stand/brew_progress");
+	private static final Identifier BUBBLES_TEXTURE = Identifier.ofVanilla("container/brewing_stand/bubbles");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/gui/container/brewing_stand.png");
 	private static final int[] BUBBLE_PROGRESS = new int[]{29, 24, 20, 16, 11, 6, 0};
 
 	public BrewingStandScreen(BrewingStandScreenHandler handler, PlayerInventory inventory, Text title) {

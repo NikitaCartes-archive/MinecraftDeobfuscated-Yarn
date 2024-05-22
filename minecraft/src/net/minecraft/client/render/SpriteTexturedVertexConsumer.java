@@ -15,8 +15,8 @@ public class SpriteTexturedVertexConsumer implements VertexConsumer {
 	}
 
 	@Override
-	public VertexConsumer vertex(float f, float g, float h) {
-		return this.delegate.vertex(f, g, h);
+	public VertexConsumer vertex(float x, float y, float z) {
+		return this.delegate.vertex(x, y, z);
 	}
 
 	@Override
@@ -30,8 +30,8 @@ public class SpriteTexturedVertexConsumer implements VertexConsumer {
 	}
 
 	@Override
-	public VertexConsumer method_60796(int i, int j) {
-		return this.delegate.method_60796(i, j);
+	public VertexConsumer overlay(int u, int v) {
+		return this.delegate.overlay(u, v);
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class SpriteTexturedVertexConsumer implements VertexConsumer {
 	}
 
 	@Override
-	public void vertex(float x, float y, float z, int i, float green, float blue, int j, int k, float v, float f, float g) {
-		this.delegate.vertex(x, y, z, i, this.sprite.getFrameU(green), this.sprite.getFrameV(blue), j, k, v, f, g);
+	public void vertex(float x, float y, float z, int color, float u, float v, int overlay, int light, float normalX, float normalY, float normalZ) {
+		this.delegate.vertex(x, y, z, color, this.sprite.getFrameU(u), this.sprite.getFrameV(v), overlay, light, normalX, normalY, normalZ);
 	}
 }

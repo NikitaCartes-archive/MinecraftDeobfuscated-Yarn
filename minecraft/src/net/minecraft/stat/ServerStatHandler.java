@@ -101,7 +101,7 @@ public class ServerStatHandler extends StatHandler {
 							String string = (String)var7.next();
 							if (nbtCompound2.contains(string, NbtElement.COMPOUND_TYPE)) {
 								Util.ifPresentOrElse(
-									Registries.STAT_TYPE.getOrEmpty(Identifier.method_60654(string)),
+									Registries.STAT_TYPE.getOrEmpty(Identifier.of(string)),
 									statType -> {
 										NbtCompound nbtCompound2x = nbtCompound2.getCompound(string);
 

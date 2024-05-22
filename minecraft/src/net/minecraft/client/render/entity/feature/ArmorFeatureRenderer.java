@@ -118,11 +118,11 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 		VertexConsumer vertexConsumer = sprite.getTextureSpecificVertexConsumer(
 			vertexConsumers.getBuffer(TexturedRenderLayers.getArmorTrims(trim.getPattern().value().decal()))
 		);
-		model.method_60879(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
+		model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
 	}
 
 	private void renderGlint(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, A model) {
-		model.method_60879(matrices, vertexConsumers.getBuffer(RenderLayer.getArmorEntityGlint()), light, OverlayTexture.DEFAULT_UV);
+		model.render(matrices, vertexConsumers.getBuffer(RenderLayer.getArmorEntityGlint()), light, OverlayTexture.DEFAULT_UV);
 	}
 
 	private A getModel(EquipmentSlot slot) {

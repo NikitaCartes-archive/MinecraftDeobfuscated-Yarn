@@ -7,17 +7,17 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class EntityItemFrameDirectionFix extends ChoiceFix {
-	public EntityItemFrameDirectionFix(Schema schema, boolean bl) {
-		super(schema, bl, "EntityItemFrameDirectionFix", TypeReferences.ENTITY, "minecraft:item_frame");
+	public EntityItemFrameDirectionFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "EntityItemFrameDirectionFix", TypeReferences.ENTITY, "minecraft:item_frame");
 	}
 
-	public Dynamic<?> fixDirection(Dynamic<?> dynamic) {
-		return dynamic.set("Facing", dynamic.createByte(updateDirection(dynamic.get("Facing").asByte((byte)0))));
+	public Dynamic<?> fixDirection(Dynamic<?> itemFrameDynamic) {
+		return itemFrameDynamic.set("Facing", itemFrameDynamic.createByte(updateDirection(itemFrameDynamic.get("Facing").asByte((byte)0))));
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(DSL.remainderFinder(), this::fixDirection);
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(DSL.remainderFinder(), this::fixDirection);
 	}
 
 	private static byte updateDirection(byte oldDirection) {

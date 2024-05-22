@@ -86,7 +86,7 @@ public record GameEvent(int notificationRadius) {
 	}
 
 	private static RegistryEntry.Reference<GameEvent> register(String id, int range) {
-		return Registry.registerReference(Registries.GAME_EVENT, Identifier.method_60656(id), new GameEvent(range));
+		return Registry.registerReference(Registries.GAME_EVENT, Identifier.ofVanilla(id), new GameEvent(range));
 	}
 
 	public static record Emitter(@Nullable Entity sourceEntity, @Nullable BlockState affectedState) {

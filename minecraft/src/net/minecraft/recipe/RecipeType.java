@@ -20,7 +20,7 @@ public interface RecipeType<T extends Recipe<?>> {
 	RecipeType<SmithingRecipe> SMITHING = register("smithing");
 
 	static <T extends Recipe<?>> RecipeType<T> register(String id) {
-		return Registry.register(Registries.RECIPE_TYPE, Identifier.method_60656(id), new RecipeType<T>() {
+		return Registry.register(Registries.RECIPE_TYPE, Identifier.ofVanilla(id), new RecipeType<T>() {
 			public String toString() {
 				return id;
 			}

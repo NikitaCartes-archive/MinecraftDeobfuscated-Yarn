@@ -118,9 +118,9 @@ public interface ModifiableWorld {
 	 * Spawns an entity.
 	 * 
 	 * @apiNote To spawn an entity with passengers, use
-	 * {@link ServerWorldAccess#spawnEntityAndPassengers}.
+	 * {@link net.minecraft.world.ServerWorldAccess#spawnEntityAndPassengers}.
 	 * 
-	 * @see ServerWorldAccess#spawnEntityAndPassengers
+	 * @see net.minecraft.world.ServerWorldAccess#spawnEntityAndPassengers
 	 */
 	default boolean spawnEntity(Entity entity) {
 		return false;

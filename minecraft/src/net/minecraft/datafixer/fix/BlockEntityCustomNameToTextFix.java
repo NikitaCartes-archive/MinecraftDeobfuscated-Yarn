@@ -11,8 +11,8 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class BlockEntityCustomNameToTextFix extends DataFix {
-	public BlockEntityCustomNameToTextFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public BlockEntityCustomNameToTextFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

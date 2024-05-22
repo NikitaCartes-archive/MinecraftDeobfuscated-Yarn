@@ -642,13 +642,13 @@ public class ItemStackComponentizationFix extends DataFix {
 	public static Dynamic<?> createProfileDynamic(Dynamic<?> dynamic) {
 		Optional<String> optional = dynamic.asString().result();
 		if (optional.isPresent()) {
-			return method_58048((String)optional.get()) ? dynamic.emptyMap().set("name", dynamic.createString((String)optional.get())) : dynamic.emptyMap();
+			return isValidUsername((String)optional.get()) ? dynamic.emptyMap().set("name", dynamic.createString((String)optional.get())) : dynamic.emptyMap();
 		} else {
 			String string = dynamic.get("Name").asString("");
 			Optional<? extends Dynamic<?>> optional2 = dynamic.get("Id").result();
 			Dynamic<?> dynamic2 = createPropertiesDynamic(dynamic.get("Properties"));
 			Dynamic<?> dynamic3 = dynamic.emptyMap();
-			if (method_58048(string)) {
+			if (isValidUsername(string)) {
 				dynamic3 = dynamic3.set("name", dynamic.createString(string));
 			}
 
@@ -664,20 +664,20 @@ public class ItemStackComponentizationFix extends DataFix {
 		}
 	}
 
-	private static boolean method_58048(String string) {
-		return string.length() > 16 ? false : string.chars().filter(i -> i <= 32 || i >= 127).findAny().isEmpty();
+	private static boolean isValidUsername(String username) {
+		return username.length() > 16 ? false : username.chars().filter(c -> c <= 32 || c >= 127).findAny().isEmpty();
 	}
 
 	@Nullable
-	private static Dynamic<?> createPropertiesDynamic(OptionalDynamic<?> optionalDynamic) {
-		Map<String, List<Pair<String, Optional<String>>>> map = optionalDynamic.asMap(dynamic -> dynamic.asString(""), dynamic -> dynamic.asList(dynamicx -> {
+	private static Dynamic<?> createPropertiesDynamic(OptionalDynamic<?> propertiesDynamic) {
+		Map<String, List<Pair<String, Optional<String>>>> map = propertiesDynamic.asMap(dynamic -> dynamic.asString(""), dynamic -> dynamic.asList(dynamicx -> {
 				String string = dynamicx.get("Value").asString("");
 				Optional<String> optional = dynamicx.get("Signature").asString().result();
 				return Pair.of(string, optional);
 			}));
 		return map.isEmpty()
 			? null
-			: optionalDynamic.createList(
+			: propertiesDynamic.createList(
 				map.entrySet()
 					.stream()
 					.flatMap(
@@ -685,11 +685,11 @@ public class ItemStackComponentizationFix extends DataFix {
 								.stream()
 								.map(
 									pair -> {
-										Dynamic<?> dynamic = optionalDynamic.emptyMap()
-											.set("name", optionalDynamic.createString((String)entry.getKey()))
-											.set("value", optionalDynamic.createString((String)pair.getFirst()));
+										Dynamic<?> dynamic = propertiesDynamic.emptyMap()
+											.set("name", propertiesDynamic.createString((String)entry.getKey()))
+											.set("value", propertiesDynamic.createString((String)pair.getFirst()));
 										Optional<String> optional = (Optional<String>)pair.getSecond();
-										return optional.isPresent() ? dynamic.set("signature", optionalDynamic.createString((String)optional.get())) : dynamic;
+										return optional.isPresent() ? dynamic.set("signature", propertiesDynamic.createString((String)optional.get())) : dynamic;
 									}
 								)
 					)

@@ -22,8 +22,6 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_9785;
-import net.minecraft.class_9786;
 import net.minecraft.datafixer.fix.AddFlagIfNotPresentFix;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementCriteriaRenameFix;
@@ -32,6 +30,7 @@ import net.minecraft.datafixer.fix.AdvancementsFix;
 import net.minecraft.datafixer.fix.AreaEffectCloudPotionFix;
 import net.minecraft.datafixer.fix.ArrowPickupFix;
 import net.minecraft.datafixer.fix.ArrowStoredWeaponFix;
+import net.minecraft.datafixer.fix.AttributeIdFix;
 import net.minecraft.datafixer.fix.BannerCustomNameToItemNameFix;
 import net.minecraft.datafixer.fix.BannerPatternFormatFix;
 import net.minecraft.datafixer.fix.BedBlockEntityFix;
@@ -135,6 +134,7 @@ import net.minecraft.datafixer.fix.ItemWaterPotionFix;
 import net.minecraft.datafixer.fix.ItemWrittenBookPagesStrictJsonFix;
 import net.minecraft.datafixer.fix.JigsawPropertiesFix;
 import net.minecraft.datafixer.fix.JigsawRotationFix;
+import net.minecraft.datafixer.fix.JukeboxTicksSinceSongStartedFix;
 import net.minecraft.datafixer.fix.LeavesFix;
 import net.minecraft.datafixer.fix.LegacyDragonFightFix;
 import net.minecraft.datafixer.fix.LevelDataGeneratorOptionsFix;
@@ -572,14 +572,14 @@ public class Schemas {
 		builder.addFixer(ItemNameFix.create(schema58, "Rename kelptop", replacing("minecraft:kelp_top", "minecraft:kelp")));
 		builder.addFixer(new ChoiceFix(schema58, false, "Command block block entity custom name fix", TypeReferences.BLOCK_ENTITY, "minecraft:command_block") {
 			@Override
-			protected Typed<?> transform(Typed<?> inputType) {
-				return inputType.update(DSL.remainderFinder(), EntityCustomNameToTextFix::fixCustomName);
+			protected Typed<?> transform(Typed<?> inputTyped) {
+				return inputTyped.update(DSL.remainderFinder(), EntityCustomNameToTextFix::fixCustomName);
 			}
 		});
 		builder.addFixer(new ChoiceFix(schema58, false, "Command block minecart custom name fix", TypeReferences.ENTITY, "minecraft:commandblock_minecart") {
 			@Override
-			protected Typed<?> transform(Typed<?> inputType) {
-				return inputType.update(DSL.remainderFinder(), EntityCustomNameToTextFix::fixCustomName);
+			protected Typed<?> transform(Typed<?> inputTyped) {
+				return inputTyped.update(DSL.remainderFinder(), EntityCustomNameToTextFix::fixCustomName);
 			}
 		});
 		builder.addFixer(new IglooMetadataRemovalFix(schema58, false));
@@ -1306,8 +1306,8 @@ public class Schemas {
 		Schema schema225 = builder.addSchema(3943, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new OptionsMenuBlurrinessFix(schema225));
 		Schema schema226 = builder.addSchema(3945, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new class_9785(schema226));
-		builder.addFixer(new class_9786(schema226));
+		builder.addFixer(new AttributeIdFix(schema226));
+		builder.addFixer(new JukeboxTicksSinceSongStartedFix(schema226));
 	}
 
 	private static UnaryOperator<String> replacingRaw(Map<String, String> replacements) {

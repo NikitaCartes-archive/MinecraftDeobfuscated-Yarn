@@ -19,22 +19,24 @@ public class EntityPaintingMotiveFix extends ChoiceFix {
 		map.put("skullandroses", "skull_and_roses");
 	});
 
-	public EntityPaintingMotiveFix(Schema schema, boolean bl) {
-		super(schema, bl, "EntityPaintingMotiveFix", TypeReferences.ENTITY, "minecraft:painting");
+	public EntityPaintingMotiveFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "EntityPaintingMotiveFix", TypeReferences.ENTITY, "minecraft:painting");
 	}
 
-	public Dynamic<?> renameMotive(Dynamic<?> dynamic) {
-		Optional<String> optional = dynamic.get("Motive").asString().result();
+	public Dynamic<?> renameMotive(Dynamic<?> paintingdynamic) {
+		Optional<String> optional = paintingdynamic.get("Motive").asString().result();
 		if (optional.isPresent()) {
 			String string = ((String)optional.get()).toLowerCase(Locale.ROOT);
-			return dynamic.set("Motive", dynamic.createString(IdentifierNormalizingSchema.normalize((String)RENAMED_MOTIVES.getOrDefault(string, string))));
+			return paintingdynamic.set(
+				"Motive", paintingdynamic.createString(IdentifierNormalizingSchema.normalize((String)RENAMED_MOTIVES.getOrDefault(string, string)))
+			);
 		} else {
-			return dynamic;
+			return paintingdynamic;
 		}
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(DSL.remainderFinder(), this::renameMotive);
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(DSL.remainderFinder(), this::renameMotive);
 	}
 }

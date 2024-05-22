@@ -370,8 +370,8 @@ public class ItemEntity extends Entity implements Ownable {
 
 	@Nullable
 	@Override
-	public Entity moveToWorld(TeleportTarget teleportTarget) {
-		Entity entity = super.moveToWorld(teleportTarget);
+	public Entity teleportTo(TeleportTarget teleportTarget) {
+		Entity entity = super.teleportTo(teleportTarget);
 		if (!this.getWorld().isClient && entity instanceof ItemEntity itemEntity) {
 			itemEntity.tryMerge();
 		}

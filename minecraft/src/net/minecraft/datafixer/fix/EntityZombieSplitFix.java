@@ -12,21 +12,21 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.Util;
 
 public class EntityZombieSplitFix extends EntityTransformFix {
-	private final Supplier<Type<?>> field_51480 = Suppliers.memoize(() -> this.getOutputSchema().getChoiceType(TypeReferences.ENTITY, "ZombieVillager"));
+	private final Supplier<Type<?>> ZOMBIE_VILLAGER_TYPE = Suppliers.memoize(() -> this.getOutputSchema().getChoiceType(TypeReferences.ENTITY, "ZombieVillager"));
 
-	public EntityZombieSplitFix(Schema schema) {
-		super("EntityZombieSplitFix", schema, true);
+	public EntityZombieSplitFix(Schema outputSchema) {
+		super("EntityZombieSplitFix", outputSchema, true);
 	}
 
 	@Override
-	protected Pair<String, Typed<?>> transform(String choice, Typed<?> typed) {
+	protected Pair<String, Typed<?>> transform(String choice, Typed<?> entityTyped) {
 		if (!choice.equals("Zombie")) {
-			return Pair.of(choice, typed);
+			return Pair.of(choice, entityTyped);
 		} else {
-			Dynamic<?> dynamic = (Dynamic<?>)typed.getOptional(DSL.remainderFinder()).orElseThrow();
+			Dynamic<?> dynamic = (Dynamic<?>)entityTyped.getOptional(DSL.remainderFinder()).orElseThrow();
 			int i = dynamic.get("ZombieType").asInt(0);
 			String string;
-			Typed<?> typed2;
+			Typed<?> typed;
 			switch (i) {
 				case 1:
 				case 2:
@@ -34,22 +34,26 @@ public class EntityZombieSplitFix extends EntityTransformFix {
 				case 4:
 				case 5:
 					string = "ZombieVillager";
-					typed2 = this.method_59812(typed, i - 1);
+					typed = this.setZombieVillagerProfession(entityTyped, i - 1);
 					break;
 				case 6:
 					string = "Husk";
-					typed2 = typed;
+					typed = entityTyped;
 					break;
 				default:
 					string = "Zombie";
-					typed2 = typed;
+					typed = entityTyped;
 			}
 
-			return Pair.of(string, typed2.update(DSL.remainderFinder(), dynamicx -> dynamicx.remove("ZombieType")));
+			return Pair.of(string, typed.update(DSL.remainderFinder(), entityDynamic -> entityDynamic.remove("ZombieType")));
 		}
 	}
 
-	private Typed<?> method_59812(Typed<?> typed, int i) {
-		return Util.apply(typed, (Type)this.field_51480.get(), dynamic -> dynamic.set("Profession", dynamic.createInt(i)));
+	private Typed<?> setZombieVillagerProfession(Typed<?> entityTyped, int variant) {
+		return Util.apply(
+			entityTyped,
+			(Type)this.ZOMBIE_VILLAGER_TYPE.get(),
+			zombieVillagerDynamic -> zombieVillagerDynamic.set("Profession", zombieVillagerDynamic.createInt(variant))
+		);
 	}
 }

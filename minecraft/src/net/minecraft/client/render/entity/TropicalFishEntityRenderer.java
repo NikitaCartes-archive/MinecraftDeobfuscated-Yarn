@@ -18,8 +18,8 @@ import net.minecraft.util.math.RotationAxis;
 public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEntity, TintableCompositeModel<TropicalFishEntity>> {
 	private final TintableCompositeModel<TropicalFishEntity> smallModel = this.getModel();
 	private final TintableCompositeModel<TropicalFishEntity> largeModel;
-	private static final Identifier A_TEXTURE = Identifier.method_60656("textures/entity/fish/tropical_a.png");
-	private static final Identifier B_TEXTURE = Identifier.method_60656("textures/entity/fish/tropical_b.png");
+	private static final Identifier A_TEXTURE = Identifier.ofVanilla("textures/entity/fish/tropical_a.png");
+	private static final Identifier B_TEXTURE = Identifier.ofVanilla("textures/entity/fish/tropical_b.png");
 
 	public TropicalFishEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new SmallTropicalFishEntityModel<>(context.getPart(EntityModelLayers.TROPICAL_FISH_SMALL)), 0.15F);
@@ -40,7 +40,7 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 			case LARGE -> this.largeModel;
 		};
 		this.model = tintableCompositeModel;
-		tintableCompositeModel.setColorMultiplier(tropicalFishEntity.getBaseColorComponents().getColorComponents());
+		tintableCompositeModel.setColorMultiplier(tropicalFishEntity.getBaseColorComponents().getEntityColor());
 		super.render(tropicalFishEntity, f, g, matrixStack, vertexConsumerProvider, i);
 		tintableCompositeModel.setColorMultiplier(-1);
 	}

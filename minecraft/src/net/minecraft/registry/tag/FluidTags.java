@@ -12,6 +12,6 @@ public final class FluidTags {
 	}
 
 	private static TagKey<Fluid> of(String id) {
-		return TagKey.of(RegistryKeys.FLUID, Identifier.method_60656(id));
+		return TagKey.of(RegistryKeys.FLUID, Identifier.ofVanilla(id));
 	}
 }

@@ -46,7 +46,7 @@ public class LootTableProvider implements DataProvider {
 		List<LootTableProvider.LootTypeGenerator> lootTypeGenerators,
 		CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture
 	) {
-		this.pathResolver = output.method_60917(RegistryKeys.LOOT_TABLE);
+		this.pathResolver = output.getResolver(RegistryKeys.LOOT_TABLE);
 		this.lootTypeGenerators = lootTypeGenerators;
 		this.lootTableIds = lootTableIds;
 		this.registryLookupFuture = registryLookupFuture;

@@ -10,14 +10,14 @@ import net.minecraft.util.Identifier;
 enum AdvancementTabType {
 	ABOVE(
 		new AdvancementTabType.Textures(
-			Identifier.method_60656("advancements/tab_above_left_selected"),
-			Identifier.method_60656("advancements/tab_above_middle_selected"),
-			Identifier.method_60656("advancements/tab_above_right_selected")
+			Identifier.ofVanilla("advancements/tab_above_left_selected"),
+			Identifier.ofVanilla("advancements/tab_above_middle_selected"),
+			Identifier.ofVanilla("advancements/tab_above_right_selected")
 		),
 		new AdvancementTabType.Textures(
-			Identifier.method_60656("advancements/tab_above_left"),
-			Identifier.method_60656("advancements/tab_above_middle"),
-			Identifier.method_60656("advancements/tab_above_right")
+			Identifier.ofVanilla("advancements/tab_above_left"),
+			Identifier.ofVanilla("advancements/tab_above_middle"),
+			Identifier.ofVanilla("advancements/tab_above_right")
 		),
 		28,
 		32,
@@ -25,14 +25,14 @@ enum AdvancementTabType {
 	),
 	BELOW(
 		new AdvancementTabType.Textures(
-			Identifier.method_60656("advancements/tab_below_left_selected"),
-			Identifier.method_60656("advancements/tab_below_middle_selected"),
-			Identifier.method_60656("advancements/tab_below_right_selected")
+			Identifier.ofVanilla("advancements/tab_below_left_selected"),
+			Identifier.ofVanilla("advancements/tab_below_middle_selected"),
+			Identifier.ofVanilla("advancements/tab_below_right_selected")
 		),
 		new AdvancementTabType.Textures(
-			Identifier.method_60656("advancements/tab_below_left"),
-			Identifier.method_60656("advancements/tab_below_middle"),
-			Identifier.method_60656("advancements/tab_below_right")
+			Identifier.ofVanilla("advancements/tab_below_left"),
+			Identifier.ofVanilla("advancements/tab_below_middle"),
+			Identifier.ofVanilla("advancements/tab_below_right")
 		),
 		28,
 		32,
@@ -40,14 +40,14 @@ enum AdvancementTabType {
 	),
 	LEFT(
 		new AdvancementTabType.Textures(
-			Identifier.method_60656("advancements/tab_left_top_selected"),
-			Identifier.method_60656("advancements/tab_left_middle_selected"),
-			Identifier.method_60656("advancements/tab_left_bottom_selected")
+			Identifier.ofVanilla("advancements/tab_left_top_selected"),
+			Identifier.ofVanilla("advancements/tab_left_middle_selected"),
+			Identifier.ofVanilla("advancements/tab_left_bottom_selected")
 		),
 		new AdvancementTabType.Textures(
-			Identifier.method_60656("advancements/tab_left_top"),
-			Identifier.method_60656("advancements/tab_left_middle"),
-			Identifier.method_60656("advancements/tab_left_bottom")
+			Identifier.ofVanilla("advancements/tab_left_top"),
+			Identifier.ofVanilla("advancements/tab_left_middle"),
+			Identifier.ofVanilla("advancements/tab_left_bottom")
 		),
 		32,
 		28,
@@ -55,14 +55,14 @@ enum AdvancementTabType {
 	),
 	RIGHT(
 		new AdvancementTabType.Textures(
-			Identifier.method_60656("advancements/tab_right_top_selected"),
-			Identifier.method_60656("advancements/tab_right_middle_selected"),
-			Identifier.method_60656("advancements/tab_right_bottom_selected")
+			Identifier.ofVanilla("advancements/tab_right_top_selected"),
+			Identifier.ofVanilla("advancements/tab_right_middle_selected"),
+			Identifier.ofVanilla("advancements/tab_right_bottom_selected")
 		),
 		new AdvancementTabType.Textures(
-			Identifier.method_60656("advancements/tab_right_top"),
-			Identifier.method_60656("advancements/tab_right_middle"),
-			Identifier.method_60656("advancements/tab_right_bottom")
+			Identifier.ofVanilla("advancements/tab_right_top"),
+			Identifier.ofVanilla("advancements/tab_right_middle"),
+			Identifier.ofVanilla("advancements/tab_right_bottom")
 		),
 		32,
 		28,

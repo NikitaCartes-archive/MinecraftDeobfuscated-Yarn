@@ -187,9 +187,9 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 
 	@Nullable
 	@Override
-	public Entity moveToWorld(TeleportTarget teleportTarget) {
+	public Entity teleportTo(TeleportTarget teleportTarget) {
 		this.resetCustomer();
-		return super.moveToWorld(teleportTarget);
+		return super.teleportTo(teleportTarget);
 	}
 
 	protected void resetCustomer() {

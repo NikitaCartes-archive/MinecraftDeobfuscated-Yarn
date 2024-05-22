@@ -122,10 +122,8 @@ public class StatusEffect implements ToggleableFeature {
 		return this.color;
 	}
 
-	public StatusEffect addAttributeModifier(
-		RegistryEntry<EntityAttribute> attribute, Identifier identifier, double amount, EntityAttributeModifier.Operation operation
-	) {
-		this.attributeModifiers.put(attribute, new StatusEffect.EffectAttributeModifierCreator(identifier, amount, operation));
+	public StatusEffect addAttributeModifier(RegistryEntry<EntityAttribute> attribute, Identifier id, double amount, EntityAttributeModifier.Operation operation) {
+		this.attributeModifiers.put(attribute, new StatusEffect.EffectAttributeModifierCreator(id, amount, operation));
 		return this;
 	}
 
@@ -142,16 +140,14 @@ public class StatusEffect implements ToggleableFeature {
 
 	public void forEachAttributeModifier(int amplifier, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> consumer) {
 		this.attributeModifiers
-			.forEach(
-				(registryEntry, effectAttributeModifierCreator) -> consumer.accept(registryEntry, effectAttributeModifierCreator.createAttributeModifier(amplifier))
-			);
+			.forEach((attribute, attributeModifierCreator) -> consumer.accept(attribute, attributeModifierCreator.createAttributeModifier(amplifier)));
 	}
 
 	public void onRemoved(AttributeContainer attributeContainer) {
 		for (Entry<RegistryEntry<EntityAttribute>, StatusEffect.EffectAttributeModifierCreator> entry : this.attributeModifiers.entrySet()) {
 			EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance((RegistryEntry<EntityAttribute>)entry.getKey());
 			if (entityAttributeInstance != null) {
-				entityAttributeInstance.removeModifier(((StatusEffect.EffectAttributeModifierCreator)entry.getValue()).uuid());
+				entityAttributeInstance.removeModifier(((StatusEffect.EffectAttributeModifierCreator)entry.getValue()).id());
 			}
 		}
 	}
@@ -160,7 +156,7 @@ public class StatusEffect implements ToggleableFeature {
 		for (Entry<RegistryEntry<EntityAttribute>, StatusEffect.EffectAttributeModifierCreator> entry : this.attributeModifiers.entrySet()) {
 			EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance((RegistryEntry<EntityAttribute>)entry.getKey());
 			if (entityAttributeInstance != null) {
-				entityAttributeInstance.removeModifier(((StatusEffect.EffectAttributeModifierCreator)entry.getValue()).uuid());
+				entityAttributeInstance.removeModifier(((StatusEffect.EffectAttributeModifierCreator)entry.getValue()).id());
 				entityAttributeInstance.addPersistentModifier(((StatusEffect.EffectAttributeModifierCreator)entry.getValue()).createAttributeModifier(amplifier));
 			}
 		}
@@ -189,9 +185,9 @@ public class StatusEffect implements ToggleableFeature {
 		return this.requiredFeatures;
 	}
 
-	static record EffectAttributeModifierCreator(Identifier uuid, double baseValue, EntityAttributeModifier.Operation operation) {
-		public EntityAttributeModifier createAttributeModifier(int i) {
-			return new EntityAttributeModifier(this.uuid, this.baseValue * (double)(i + 1), this.operation);
+	static record EffectAttributeModifierCreator(Identifier id, double baseValue, EntityAttributeModifier.Operation operation) {
+		public EntityAttributeModifier createAttributeModifier(int amplifier) {
+			return new EntityAttributeModifier(this.id, this.baseValue * (double)(amplifier + 1), this.operation);
 		}
 	}
 }

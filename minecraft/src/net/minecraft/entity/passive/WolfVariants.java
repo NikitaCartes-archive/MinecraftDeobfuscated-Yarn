@@ -26,7 +26,7 @@ public class WolfVariants {
 	public static final RegistryKey<WolfVariant> DEFAULT = PALE;
 
 	private static RegistryKey<WolfVariant> of(String id) {
-		return RegistryKey.of(RegistryKeys.WOLF_VARIANT, Identifier.method_60656(id));
+		return RegistryKey.of(RegistryKeys.WOLF_VARIANT, Identifier.ofVanilla(id));
 	}
 
 	static void register(Registerable<WolfVariant> registry, RegistryKey<WolfVariant> key, String textureName, RegistryKey<Biome> biome) {
@@ -38,9 +38,9 @@ public class WolfVariants {
 	}
 
 	static void register(Registerable<WolfVariant> registry, RegistryKey<WolfVariant> key, String textureName, RegistryEntryList<Biome> biomes) {
-		Identifier identifier = Identifier.method_60656("entity/wolf/" + textureName);
-		Identifier identifier2 = Identifier.method_60656("entity/wolf/" + textureName + "_tame");
-		Identifier identifier3 = Identifier.method_60656("entity/wolf/" + textureName + "_angry");
+		Identifier identifier = Identifier.ofVanilla("entity/wolf/" + textureName);
+		Identifier identifier2 = Identifier.ofVanilla("entity/wolf/" + textureName + "_tame");
+		Identifier identifier3 = Identifier.ofVanilla("entity/wolf/" + textureName + "_angry");
 		registry.register(key, new WolfVariant(identifier, identifier2, identifier3, biomes));
 	}
 

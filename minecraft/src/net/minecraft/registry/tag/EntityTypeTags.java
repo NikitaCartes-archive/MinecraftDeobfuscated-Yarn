@@ -41,6 +41,6 @@ public interface EntityTypeTags {
 	TagKey<EntityType<?>> REDIRECTABLE_PROJECTILE = of("redirectable_projectile");
 
 	private static TagKey<EntityType<?>> of(String id) {
-		return TagKey.of(RegistryKeys.ENTITY_TYPE, Identifier.method_60656(id));
+		return TagKey.of(RegistryKeys.ENTITY_TYPE, Identifier.ofVanilla(id));
 	}
 }

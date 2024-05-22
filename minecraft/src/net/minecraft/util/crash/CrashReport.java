@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletionException;
 import javax.annotation.Nullable;
-import net.minecraft.class_9813;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.SystemDetails;
 import org.apache.commons.io.IOUtils;
@@ -48,11 +47,11 @@ public class CrashReport {
 
 	public String getStackTrace() {
 		StringBuilder stringBuilder = new StringBuilder();
-		this.addStackTrace(stringBuilder);
+		this.addDetails(stringBuilder);
 		return stringBuilder.toString();
 	}
 
-	public void addStackTrace(StringBuilder crashReportBuilder) {
+	public void addDetails(StringBuilder crashReportBuilder) {
 		if ((this.stackTrace == null || this.stackTrace.length <= 0) && !this.otherSections.isEmpty()) {
 			this.stackTrace = ArrayUtils.subarray(((CrashReportSection)this.otherSections.get(0)).getStackTrace(), 0, 1);
 		}
@@ -108,9 +107,9 @@ public class CrashReport {
 		return var4;
 	}
 
-	public String method_60921(class_9813 arg, List<String> list) {
+	public String asString(ReportType type, List<String> extraInfo) {
 		StringBuilder stringBuilder = new StringBuilder();
-		arg.method_60928(stringBuilder, list);
+		type.addHeaderAndNugget(stringBuilder, extraInfo);
 		stringBuilder.append("Time: ");
 		stringBuilder.append(DATE_TIME_FORMATTER.format(ZonedDateTime.now()));
 		stringBuilder.append("\n");
@@ -125,12 +124,12 @@ public class CrashReport {
 		}
 
 		stringBuilder.append("\n\n");
-		this.addStackTrace(stringBuilder);
+		this.addDetails(stringBuilder);
 		return stringBuilder.toString();
 	}
 
-	public String method_60920(class_9813 arg) {
-		return this.method_60921(arg, List.of());
+	public String asString(ReportType type) {
+		return this.asString(type, List.of());
 	}
 
 	@Nullable
@@ -138,7 +137,7 @@ public class CrashReport {
 		return this.file;
 	}
 
-	public boolean writeToFile(Path path, class_9813 arg, List<String> list) {
+	public boolean writeToFile(Path path, ReportType type, List<String> extraInfo) {
 		if (this.file != null) {
 			return false;
 		} else {
@@ -150,7 +149,7 @@ public class CrashReport {
 				Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
 
 				try {
-					writer.write(this.method_60921(arg, list));
+					writer.write(this.asString(type, extraInfo));
 				} catch (Throwable var8) {
 					if (writer != null) {
 						try {
@@ -176,8 +175,8 @@ public class CrashReport {
 		}
 	}
 
-	public boolean method_60919(Path path, class_9813 arg) {
-		return this.writeToFile(path, arg, List.of());
+	public boolean writeToFIle(Path path, ReportType type) {
+		return this.writeToFile(path, type, List.of());
 	}
 
 	public SystemDetails getSystemDetailsSection() {
@@ -237,6 +236,6 @@ public class CrashReport {
 
 	public static void initCrashReport() {
 		CrashMemoryReserve.reserveMemory();
-		new CrashReport("Don't panic!", new Throwable()).method_60920(class_9813.MINECRAFT_CRASH_REPORT);
+		new CrashReport("Don't panic!", new Throwable()).asString(ReportType.MINECRAFT_CRASH_REPORT);
 	}
 }

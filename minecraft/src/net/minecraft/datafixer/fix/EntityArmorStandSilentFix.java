@@ -7,16 +7,18 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class EntityArmorStandSilentFix extends ChoiceFix {
-	public EntityArmorStandSilentFix(Schema schema, boolean bl) {
-		super(schema, bl, "EntityArmorStandSilentFix", TypeReferences.ENTITY, "ArmorStand");
+	public EntityArmorStandSilentFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "EntityArmorStandSilentFix", TypeReferences.ENTITY, "ArmorStand");
 	}
 
-	public Dynamic<?> fixSilent(Dynamic<?> dynamic) {
-		return dynamic.get("Silent").asBoolean(false) && !dynamic.get("Marker").asBoolean(false) ? dynamic.remove("Silent") : dynamic;
+	public Dynamic<?> fixSilent(Dynamic<?> armorStandDynamic) {
+		return armorStandDynamic.get("Silent").asBoolean(false) && !armorStandDynamic.get("Marker").asBoolean(false)
+			? armorStandDynamic.remove("Silent")
+			: armorStandDynamic;
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(DSL.remainderFinder(), this::fixSilent);
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(DSL.remainderFinder(), this::fixSilent);
 	}
 }

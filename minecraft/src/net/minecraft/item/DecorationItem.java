@@ -2,7 +2,6 @@ package net.minecraft.item;
 
 import java.util.List;
 import java.util.Optional;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.EntityType;
@@ -12,6 +11,7 @@ import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;

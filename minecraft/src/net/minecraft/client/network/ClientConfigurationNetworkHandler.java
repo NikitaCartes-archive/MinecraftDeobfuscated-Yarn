@@ -7,11 +7,11 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9812;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.resource.ClientDataPackManager;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.DisconnectionInfo;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.listener.ClientConfigurationPacketListener;
@@ -137,8 +137,8 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 						this.serverCookies,
 						this.chatState,
 						this.strictErrorHandling,
-						this.field_52154,
-						this.field_52155
+						this.customReportDetails,
+						this.serverLinks
 					)
 				)
 			);
@@ -152,8 +152,8 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 	}
 
 	@Override
-	public void onDisconnected(class_9812 arg) {
-		super.onDisconnected(arg);
+	public void onDisconnected(DisconnectionInfo info) {
+		super.onDisconnected(info);
 		this.client.onDisconnected();
 	}
 }

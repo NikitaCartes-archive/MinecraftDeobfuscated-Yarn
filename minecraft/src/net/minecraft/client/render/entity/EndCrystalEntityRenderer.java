@@ -25,7 +25,7 @@ import org.joml.Quaternionf;
 
 @Environment(EnvType.CLIENT)
 public class EndCrystalEntityRenderer extends EntityRenderer<EndCrystalEntity> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/end_crystal/end_crystal.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/end_crystal/end_crystal.png");
 	private static final RenderLayer END_CRYSTAL = RenderLayer.getEntityCutoutNoCull(TEXTURE);
 	private static final float SINE_45_DEGREES = (float)Math.sin(Math.PI / 4);
 	private static final String GLASS = "glass";

@@ -15,19 +15,19 @@ public class VillagerFollowRangeFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(DSL.remainderFinder(), VillagerFollowRangeFix::fix);
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(DSL.remainderFinder(), VillagerFollowRangeFix::fix);
 	}
 
-	private static Dynamic<?> fix(Dynamic<?> dynamic) {
-		return dynamic.update(
+	private static Dynamic<?> fix(Dynamic<?> villagerDynamic) {
+		return villagerDynamic.update(
 			"Attributes",
-			dynamic2 -> dynamic.createList(
-					dynamic2.asStream()
+			attributesDynamic -> villagerDynamic.createList(
+					attributesDynamic.asStream()
 						.map(
-							dynamicxx -> dynamicxx.get("Name").asString("").equals("generic.follow_range") && dynamicxx.get("Base").asDouble(0.0) == 16.0
-									? dynamicxx.set("Base", dynamicxx.createDouble(48.0))
-									: dynamicxx
+							attributeDynamic -> attributeDynamic.get("Name").asString("").equals("generic.follow_range") && attributeDynamic.get("Base").asDouble(0.0) == 16.0
+									? attributeDynamic.set("Base", attributeDynamic.createDouble(48.0))
+									: attributeDynamic
 						)
 				)
 		);

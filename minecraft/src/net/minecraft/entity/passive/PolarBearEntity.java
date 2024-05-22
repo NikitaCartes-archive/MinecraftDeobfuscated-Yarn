@@ -80,9 +80,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new PolarBearEntity.AttackGoal());
 		this.goalSelector
-			.add(
-				1, new EscapeDangerGoal(this, 2.0, pathAwareEntity -> pathAwareEntity.isBaby() ? DamageTypeTags.PANIC_CAUSES : DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES)
-			);
+			.add(1, new EscapeDangerGoal(this, 2.0, polarBear -> polarBear.isBaby() ? DamageTypeTags.PANIC_CAUSES : DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES));
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.25));
 		this.goalSelector.add(5, new WanderAroundGoal(this, 1.0));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));

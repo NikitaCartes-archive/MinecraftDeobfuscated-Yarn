@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class PolarBearEntityRenderer extends MobEntityRenderer<PolarBearEntity, PolarBearEntityModel<PolarBearEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/bear/polarbear.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/bear/polarbear.png");
 
 	public PolarBearEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new PolarBearEntityModel<>(context.getPart(EntityModelLayers.POLAR_BEAR)), 0.9F);

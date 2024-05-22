@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBrokenWorldScreen extends RealmsScreen {
-	private static final Identifier SLOT_FRAME_TEXTURE = Identifier.method_60656("widget/slot_frame");
+	private static final Identifier SLOT_FRAME_TEXTURE = Identifier.ofVanilla("widget/slot_frame");
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_32120 = 80;
 	private final Screen parent;

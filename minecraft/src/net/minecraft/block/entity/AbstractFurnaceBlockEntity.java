@@ -238,7 +238,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		NbtCompound nbtCompound = nbt.getCompound("RecipesUsed");
 
 		for (String string : nbtCompound.getKeys()) {
-			this.recipesUsed.put(Identifier.method_60654(string), nbtCompound.getInt(string));
+			this.recipesUsed.put(Identifier.of(string), nbtCompound.getInt(string));
 		}
 	}
 

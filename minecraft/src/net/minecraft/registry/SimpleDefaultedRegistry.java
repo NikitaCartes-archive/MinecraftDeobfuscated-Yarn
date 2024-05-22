@@ -18,7 +18,7 @@ public class SimpleDefaultedRegistry<T> extends SimpleRegistry<T> implements Def
 
 	public SimpleDefaultedRegistry(String defaultId, RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, boolean intrusive) {
 		super(key, lifecycle, intrusive);
-		this.defaultId = Identifier.method_60654(defaultId);
+		this.defaultId = Identifier.of(defaultId);
 	}
 
 	@Override

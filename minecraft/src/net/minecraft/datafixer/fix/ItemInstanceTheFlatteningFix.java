@@ -345,7 +345,7 @@ public class ItemInstanceTheFlatteningFix extends DataFix {
 	});
 	private static final Set<String> ORIGINAL_ITEM_NAMES = (Set<String>)FLATTENING_MAP.keySet()
 		.stream()
-		.map(string -> string.substring(0, string.indexOf(46)))
+		.map(oldId -> oldId.substring(0, oldId.indexOf(46)))
 		.collect(Collectors.toSet());
 	private static final Set<String> DAMAGEABLE_ITEMS = Sets.<String>newHashSet(
 		"minecraft:bow",
@@ -402,8 +402,8 @@ public class ItemInstanceTheFlatteningFix extends DataFix {
 		"minecraft:wooden_sword"
 	);
 
-	public ItemInstanceTheFlatteningFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemInstanceTheFlatteningFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -413,27 +413,27 @@ public class ItemInstanceTheFlatteningFix extends DataFix {
 			"id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType())
 		);
 		OpticFinder<?> opticFinder2 = type.findField("tag");
-		return this.fixTypeEverywhereTyped("ItemInstanceTheFlatteningFix", type, typed -> {
-			Optional<Pair<String, String>> optional = typed.getOptional(opticFinder);
+		return this.fixTypeEverywhereTyped("ItemInstanceTheFlatteningFix", type, itemStackTyped -> {
+			Optional<Pair<String, String>> optional = itemStackTyped.getOptional(opticFinder);
 			if (optional.isEmpty()) {
-				return typed;
+				return itemStackTyped;
 			} else {
-				Typed<?> typed2 = typed;
-				Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
+				Typed<?> typed = itemStackTyped;
+				Dynamic<?> dynamic = itemStackTyped.get(DSL.remainderFinder());
 				int i = dynamic.get("Damage").asInt(0);
 				String string = getItem((String)((Pair)optional.get()).getSecond(), i);
 				if (string != null) {
-					typed2 = typed.set(opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), string));
+					typed = itemStackTyped.set(opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), string));
 				}
 
 				if (DAMAGEABLE_ITEMS.contains(((Pair)optional.get()).getSecond())) {
-					Typed<?> typed3 = typed.getOrCreateTyped(opticFinder2);
-					Dynamic<?> dynamic2 = typed3.get(DSL.remainderFinder());
+					Typed<?> typed2 = itemStackTyped.getOrCreateTyped(opticFinder2);
+					Dynamic<?> dynamic2 = typed2.get(DSL.remainderFinder());
 					dynamic2 = dynamic2.set("Damage", dynamic2.createInt(i));
-					typed2 = typed2.set(opticFinder2, typed3.set(DSL.remainderFinder(), dynamic2));
+					typed = typed.set(opticFinder2, typed2.set(DSL.remainderFinder(), dynamic2));
 				}
 
-				return typed2.set(DSL.remainderFinder(), dynamic.remove("Damage"));
+				return typed.set(DSL.remainderFinder(), dynamic.remove("Damage"));
 			}
 		});
 	}

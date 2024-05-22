@@ -33,7 +33,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 				.<List<SetAttributesLootFunction.Attribute>, boolean>and(
 					instance.group(
 						SetAttributesLootFunction.Attribute.CODEC.listOf().fieldOf("modifiers").forGetter(function -> function.attributes),
-						Codec.BOOL.optionalFieldOf("replace", Boolean.valueOf(true)).forGetter(setAttributesLootFunction -> setAttributesLootFunction.replace)
+						Codec.BOOL.optionalFieldOf("replace", Boolean.valueOf(true)).forGetter(lootFunction -> lootFunction.replace)
 					)
 				)
 				.apply(instance, SetAttributesLootFunction::new)
@@ -89,9 +89,9 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 	}
 
 	public static SetAttributesLootFunction.AttributeBuilder attributeBuilder(
-		Identifier identifier, RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amountRange
+		Identifier id, RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amountRange
 	) {
-		return new SetAttributesLootFunction.AttributeBuilder(identifier, attribute, operation, amountRange);
+		return new SetAttributesLootFunction.AttributeBuilder(id, attribute, operation, amountRange);
 	}
 
 	public static SetAttributesLootFunction.Builder builder() {
@@ -125,16 +125,14 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class AttributeBuilder {
-		private final Identifier uuid;
+		private final Identifier id;
 		private final RegistryEntry<EntityAttribute> attribute;
 		private final EntityAttributeModifier.Operation operation;
 		private final LootNumberProvider amount;
 		private final Set<AttributeModifierSlot> slots = EnumSet.noneOf(AttributeModifierSlot.class);
 
-		public AttributeBuilder(
-			Identifier identifier, RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amount
-		) {
-			this.uuid = identifier;
+		public AttributeBuilder(Identifier id, RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amount) {
+			this.id = id;
 			this.attribute = attribute;
 			this.operation = operation;
 			this.amount = amount;
@@ -146,7 +144,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		}
 
 		public SetAttributesLootFunction.Attribute build() {
-			return new SetAttributesLootFunction.Attribute(this.uuid, this.attribute, this.operation, this.amount, List.copyOf(this.slots));
+			return new SetAttributesLootFunction.Attribute(this.id, this.attribute, this.operation, this.amount, List.copyOf(this.slots));
 		}
 	}
 

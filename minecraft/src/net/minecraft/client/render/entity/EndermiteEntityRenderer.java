@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class EndermiteEntityRenderer extends MobEntityRenderer<EndermiteEntity, EndermiteEntityModel<EndermiteEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/endermite.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/endermite.png");
 
 	public EndermiteEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new EndermiteEntityModel<>(context.getPart(EntityModelLayers.ENDERMITE)), 0.3F);

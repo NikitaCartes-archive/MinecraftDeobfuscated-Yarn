@@ -22,7 +22,7 @@ import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 
 @Environment(EnvType.CLIENT)
 public class CustomizeFlatLevelScreen extends Screen {
-	static final Identifier SLOT_TEXTURE = Identifier.method_60656("container/slot");
+	static final Identifier SLOT_TEXTURE = Identifier.ofVanilla("container/slot");
 	private static final int ICON_SIZE = 18;
 	private static final int BUTTON_HEIGHT = 20;
 	private static final int ICON_BACKGROUND_OFFSET_X = 1;

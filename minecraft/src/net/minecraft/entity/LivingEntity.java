@@ -36,7 +36,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.effect.EnchantmentLocationBasedEffectType;
+import net.minecraft.enchantment.effect.EnchantmentLocationBasedEffect;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -137,10 +137,10 @@ import org.slf4j.Logger;
 public abstract class LivingEntity extends Entity implements Attackable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String ACTIVE_EFFECTS_NBT_KEY = "active_effects";
-	private static final Identifier POWDER_SNOW_SLOW_ID = Identifier.method_60656("powder_snow");
-	private static final Identifier field_51996 = Identifier.method_60656("sprinting");
+	private static final Identifier POWDER_SNOW_SPEED_MODIFIER_ID = Identifier.ofVanilla("powder_snow");
+	private static final Identifier SPRINTING_SPEED_MODIFIER_ID = Identifier.ofVanilla("sprinting");
 	private static final EntityAttributeModifier SPRINTING_SPEED_BOOST = new EntityAttributeModifier(
-		field_51996, 0.3F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+		SPRINTING_SPEED_MODIFIER_ID, 0.3F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
 	);
 	public static final int field_30069 = 2;
 	public static final int field_30070 = 4;
@@ -175,7 +175,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	public static final float BABY_SCALE_FACTOR = 0.5F;
 	public static final float field_47756 = 0.5F;
 	private static final float field_49972 = 0.21875F;
-	public static final String field_51995 = "attributes";
+	public static final String ATTRIBUTES_NBT_KEY = "attributes";
 	private final AttributeContainer attributes;
 	private final DamageTracker damageTracker = new DamageTracker(this);
 	private final Map<RegistryEntry<StatusEffect>, StatusEffectInstance> activeStatusEffects = Maps.<RegistryEntry<StatusEffect>, StatusEffectInstance>newHashMap();
@@ -252,7 +252,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	private float lastLeaningPitch;
 	protected Brain<?> brain;
 	private boolean experienceDroppingDisabled;
-	private final Reference2ObjectMap<Enchantment, Set<EnchantmentLocationBasedEffectType>> locationBasedEnchantmentEffects = new Reference2ObjectArrayMap<>();
+	private final Reference2ObjectMap<Enchantment, Set<EnchantmentLocationBasedEffect>> locationBasedEnchantmentEffects = new Reference2ObjectArrayMap<>();
 	protected float prevScale = 1.0F;
 
 	protected LivingEntity(EntityType<? extends LivingEntity> entityType, World world) {
@@ -490,8 +490,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	protected void removePowderSnowSlow() {
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 		if (entityAttributeInstance != null) {
-			if (entityAttributeInstance.getModifier(POWDER_SNOW_SLOW_ID) != null) {
-				entityAttributeInstance.removeModifier(POWDER_SNOW_SLOW_ID);
+			if (entityAttributeInstance.getModifier(POWDER_SNOW_SPEED_MODIFIER_ID) != null) {
+				entityAttributeInstance.removeModifier(POWDER_SNOW_SPEED_MODIFIER_ID);
 			}
 		}
 	}
@@ -506,7 +506,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				}
 
 				float f = -0.05F * this.getFreezingScale();
-				entityAttributeInstance.addTemporaryModifier(new EntityAttributeModifier(POWDER_SNOW_SLOW_ID, (double)f, EntityAttributeModifier.Operation.ADD_VALUE));
+				entityAttributeInstance.addTemporaryModifier(
+					new EntityAttributeModifier(POWDER_SNOW_SPEED_MODIFIER_ID, (double)f, EntityAttributeModifier.Operation.ADD_VALUE)
+				);
 			}
 		}
 	}
@@ -552,7 +554,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 * <p>If {@link #shouldAlwaysDropXp() shouldAlwaysDropXp()} returns {@code
 	 * true}, this check is disregarded.
 	 * 
-	 * @see #dropXp()
+	 * @see #dropXp
 	 * @see #shouldAlwaysDropXp()
 	 * @see #getXpToDrop()
 	 */
@@ -588,7 +590,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 * Called when this entity is killed and returns the amount of experience
 	 * to drop.
 	 * 
-	 * @see #dropXp()
+	 * @see #dropXp
 	 * @see #shouldAlwaysDropXp()
 	 * @see #shouldDropXp()
 	 */
@@ -600,7 +602,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 * Returns if this entity may always drop experience, skipping any
 	 * other checks.
 	 * 
-	 * @see #dropXp()
+	 * @see #dropXp
 	 * @see #getXpToDrop()
 	 */
 	protected boolean shouldAlwaysDropXp() {
@@ -690,16 +692,16 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	@Override
 	public void remove(Entity.RemovalReason reason) {
 		if (reason == Entity.RemovalReason.KILLED || reason == Entity.RemovalReason.DISCARDED) {
-			this.method_60699(reason);
+			this.onRemoval(reason);
 		}
 
 		super.remove(reason);
 		this.brain.forgetAll();
 	}
 
-	protected void method_60699(Entity.RemovalReason removalReason) {
+	protected void onRemoval(Entity.RemovalReason reason) {
 		for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
-			statusEffectInstance.onEntityRemoval(this, removalReason);
+			statusEffectInstance.onEntityRemoval(this, reason);
 		}
 
 		this.activeStatusEffects.clear();
@@ -1589,7 +1591,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
-	public Map<Enchantment, Set<EnchantmentLocationBasedEffectType>> getLocationBasedEnchantmentEffects() {
+	public Map<Enchantment, Set<EnchantmentLocationBasedEffect>> getLocationBasedEnchantmentEffects() {
 		return this.locationBasedEnchantmentEffects;
 	}
 
@@ -1735,8 +1737,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 * 
 	 * @apiNote Subclasses should override this to make the entity take reduced damage.
 	 * 
-	 * @implNote This applies various {@linkplain net.minecraft.enchantment.ProtectionEnchantment
-	 * protection enchantments} and the resistance effect. {@link
+	 * @implNote This applies enchantments and the resistance effect. {@link
 	 * net.minecraft.entity.mob.WitchEntity} uses this to negate their own damage and reduce the
 	 * applied status effect damage.
 	 */
@@ -2104,7 +2105,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	public void setSprinting(boolean sprinting) {
 		super.setSprinting(sprinting);
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-		entityAttributeInstance.removeModifier(SPRINTING_SPEED_BOOST.uuid());
+		entityAttributeInstance.removeModifier(SPRINTING_SPEED_BOOST.id());
 		if (sprinting) {
 			entityAttributeInstance.addTemporaryModifier(SPRINTING_SPEED_BOOST);
 		}
@@ -2611,7 +2612,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 					itemStack2.applyAttributeModifiers(equipmentSlot, (attribute, modifier) -> {
 						EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(attribute);
 						if (entityAttributeInstance != null) {
-							entityAttributeInstance.removeModifier(modifier.uuid());
+							entityAttributeInstance.removeModifier(modifier.id());
 							entityAttributeInstance.addTemporaryModifier(modifier);
 						}
 

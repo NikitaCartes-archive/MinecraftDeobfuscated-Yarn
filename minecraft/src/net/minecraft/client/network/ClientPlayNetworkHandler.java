@@ -23,7 +23,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9782;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -282,6 +281,7 @@ import net.minecraft.screen.HorseScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.ServerLinks;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
@@ -811,8 +811,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 						this.serverCookies,
 						chatState,
 						this.strictErrorHandling,
-						this.field_52154,
-						this.field_52155
+						this.customReportDetails,
+						this.serverLinks
 					)
 				)
 			);
@@ -2462,7 +2462,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		return this.searchManager;
 	}
 
-	public class_9782 method_60885() {
-		return this.field_52155;
+	public ServerLinks getServerLinks() {
+		return this.serverLinks;
 	}
 }

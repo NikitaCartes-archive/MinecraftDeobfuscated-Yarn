@@ -37,7 +37,7 @@ public class FollowOwnerGoal extends Goal {
 		LivingEntity livingEntity = this.tameable.getOwner();
 		if (livingEntity == null) {
 			return false;
-		} else if (this.tameable.method_60715()) {
+		} else if (this.tameable.cannotFollowOwner()) {
 			return false;
 		} else if (this.tameable.squaredDistanceTo(livingEntity) < (double)(this.minDistance * this.minDistance)) {
 			return false;
@@ -52,7 +52,7 @@ public class FollowOwnerGoal extends Goal {
 		if (this.navigation.isIdle()) {
 			return false;
 		} else {
-			return this.tameable.method_60715() ? false : !(this.tameable.squaredDistanceTo(this.owner) <= (double)(this.maxDistance * this.maxDistance));
+			return this.tameable.cannotFollowOwner() ? false : !(this.tameable.squaredDistanceTo(this.owner) <= (double)(this.maxDistance * this.maxDistance));
 		}
 	}
 
@@ -75,8 +75,8 @@ public class FollowOwnerGoal extends Goal {
 		this.tameable.getLookControl().lookAt(this.owner, 10.0F, (float)this.tameable.getMaxLookPitchChange());
 		if (--this.updateCountdownTicks <= 0) {
 			this.updateCountdownTicks = this.getTickCount(10);
-			if (this.tameable.method_60714()) {
-				this.tameable.method_60713();
+			if (this.tameable.shouldTryTeleportToOwner()) {
+				this.tameable.tryTeleportToOwner();
 			} else {
 				this.navigation.startMovingTo(this.owner, this.speed);
 			}

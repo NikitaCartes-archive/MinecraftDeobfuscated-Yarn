@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class RotatingCubeMapRenderer {
-	public static final Identifier OVERLAY_TEXTURE = Identifier.method_60656("textures/gui/title/background/panorama_overlay.png");
+	public static final Identifier OVERLAY_TEXTURE = Identifier.ofVanilla("textures/gui/title/background/panorama_overlay.png");
 	private final MinecraftClient client;
 	private final CubeMapRenderer cubeMap;
 	private float pitch;

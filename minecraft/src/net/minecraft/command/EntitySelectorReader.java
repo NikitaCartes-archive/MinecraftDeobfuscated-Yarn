@@ -40,7 +40,7 @@ public class EntitySelectorReader {
 	private static final char RANDOM_PLAYER = 'r';
 	private static final char SELF = 's';
 	private static final char ALL_ENTITIES = 'e';
-	private static final char field_52174 = 'n';
+	private static final char NEAREST_ENTITY = 'n';
 	public static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.entity.invalid"));
 	public static final DynamicCommandExceptionType UNKNOWN_SELECTOR_EXCEPTION = new DynamicCommandExceptionType(
 		selectorType -> Text.stringifiedTranslatable("argument.entity.selector.unknown", selectorType)

@@ -21,9 +21,9 @@ import net.minecraft.util.Identifier;
  * A double-valued attribute.
  */
 public class EntityAttributeInstance {
-	private static final String field_52008 = "base";
-	private static final String field_52009 = "modifiers";
-	public static final String field_52007 = "id";
+	private static final String BASE_NBT_KEY = "base";
+	private static final String MODIFIERS_NBT_KEY = "modifiers";
+	public static final String ID_NBT_KEY = "id";
 	private final RegistryEntry<EntityAttribute> type;
 	private final Map<EntityAttributeModifier.Operation, Map<Identifier, EntityAttributeModifier>> operationToModifiers = Maps.newEnumMap(
 		EntityAttributeModifier.Operation.class
@@ -70,28 +70,28 @@ public class EntityAttributeInstance {
 	}
 
 	@Nullable
-	public EntityAttributeModifier getModifier(Identifier identifier) {
-		return (EntityAttributeModifier)this.idToModifiers.get(identifier);
+	public EntityAttributeModifier getModifier(Identifier id) {
+		return (EntityAttributeModifier)this.idToModifiers.get(id);
 	}
 
-	public boolean hasModifier(Identifier identifier) {
-		return this.idToModifiers.get(identifier) != null;
+	public boolean hasModifier(Identifier id) {
+		return this.idToModifiers.get(id) != null;
 	}
 
 	private void addModifier(EntityAttributeModifier modifier) {
-		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.idToModifiers.putIfAbsent(modifier.uuid(), modifier);
+		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.idToModifiers.putIfAbsent(modifier.id(), modifier);
 		if (entityAttributeModifier != null) {
 			throw new IllegalArgumentException("Modifier is already applied on this attribute!");
 		} else {
-			this.getModifiers(modifier.operation()).put(modifier.uuid(), modifier);
+			this.getModifiers(modifier.operation()).put(modifier.id(), modifier);
 			this.onUpdate();
 		}
 	}
 
 	public void updateModifier(EntityAttributeModifier modifier) {
-		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.idToModifiers.put(modifier.uuid(), modifier);
+		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.idToModifiers.put(modifier.id(), modifier);
 		if (modifier != entityAttributeModifier) {
-			this.getModifiers(modifier.operation()).put(modifier.uuid(), modifier);
+			this.getModifiers(modifier.operation()).put(modifier.id(), modifier);
 			this.onUpdate();
 		}
 	}
@@ -106,7 +106,7 @@ public class EntityAttributeInstance {
 
 	public void addPersistentModifier(EntityAttributeModifier modifier) {
 		this.addModifier(modifier);
-		this.persistentModifiers.put(modifier.uuid(), modifier);
+		this.persistentModifiers.put(modifier.id(), modifier);
 	}
 
 	protected void onUpdate() {
@@ -115,25 +115,25 @@ public class EntityAttributeInstance {
 	}
 
 	public void removeModifier(EntityAttributeModifier modifier) {
-		this.removeModifier(modifier.uuid());
+		this.removeModifier(modifier.id());
 	}
 
-	public void removeModifier(Identifier identifier) {
-		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.idToModifiers.remove(identifier);
+	public void removeModifier(Identifier id) {
+		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.idToModifiers.remove(id);
 		if (entityAttributeModifier != null) {
-			this.getModifiers(entityAttributeModifier.operation()).remove(identifier);
-			this.persistentModifiers.remove(identifier);
+			this.getModifiers(entityAttributeModifier.operation()).remove(id);
+			this.persistentModifiers.remove(id);
 			this.onUpdate();
 		}
 	}
 
-	public boolean tryRemoveModifier(Identifier identifier) {
-		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.persistentModifiers.remove(identifier);
+	public boolean tryRemoveModifier(Identifier id) {
+		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.persistentModifiers.remove(id);
 		if (entityAttributeModifier == null) {
 			return false;
 		} else {
-			this.getModifiers(entityAttributeModifier.operation()).remove(entityAttributeModifier.uuid());
-			this.idToModifiers.remove(identifier);
+			this.getModifiers(entityAttributeModifier.operation()).remove(entityAttributeModifier.id());
+			this.idToModifiers.remove(id);
 			this.onUpdate();
 			return true;
 		}
@@ -231,9 +231,9 @@ public class EntityAttributeInstance {
 			for (int i = 0; i < nbtList.size(); i++) {
 				EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromNbt(nbtList.getCompound(i));
 				if (entityAttributeModifier != null) {
-					this.idToModifiers.put(entityAttributeModifier.uuid(), entityAttributeModifier);
-					this.getModifiers(entityAttributeModifier.operation()).put(entityAttributeModifier.uuid(), entityAttributeModifier);
-					this.persistentModifiers.put(entityAttributeModifier.uuid(), entityAttributeModifier);
+					this.idToModifiers.put(entityAttributeModifier.id(), entityAttributeModifier);
+					this.getModifiers(entityAttributeModifier.operation()).put(entityAttributeModifier.id(), entityAttributeModifier);
+					this.persistentModifiers.put(entityAttributeModifier.id(), entityAttributeModifier);
 				}
 			}
 		}

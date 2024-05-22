@@ -17,10 +17,10 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class CheckboxWidget extends PressableWidget {
-	private static final Identifier SELECTED_HIGHLIGHTED_TEXTURE = Identifier.method_60656("widget/checkbox_selected_highlighted");
-	private static final Identifier SELECTED_TEXTURE = Identifier.method_60656("widget/checkbox_selected");
-	private static final Identifier HIGHLIGHTED_TEXTURE = Identifier.method_60656("widget/checkbox_highlighted");
-	private static final Identifier TEXTURE = Identifier.method_60656("widget/checkbox");
+	private static final Identifier SELECTED_HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("widget/checkbox_selected_highlighted");
+	private static final Identifier SELECTED_TEXTURE = Identifier.ofVanilla("widget/checkbox_selected");
+	private static final Identifier HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("widget/checkbox_highlighted");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("widget/checkbox");
 	private static final int TEXT_COLOR = 14737632;
 	private static final int field_47105 = 4;
 	private static final int field_47106 = 8;

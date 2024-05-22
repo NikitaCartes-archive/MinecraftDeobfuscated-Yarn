@@ -66,14 +66,14 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidget.Entry> {
 	public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
-	static final Identifier ERROR_HIGHLIGHTED_TEXTURE = Identifier.method_60656("world_list/error_highlighted");
-	static final Identifier ERROR_TEXTURE = Identifier.method_60656("world_list/error");
-	static final Identifier MARKED_JOIN_HIGHLIGHTED_TEXTURE = Identifier.method_60656("world_list/marked_join_highlighted");
-	static final Identifier MARKED_JOIN_TEXTURE = Identifier.method_60656("world_list/marked_join");
-	static final Identifier WARNING_HIGHLIGHTED_TEXTURE = Identifier.method_60656("world_list/warning_highlighted");
-	static final Identifier WARNING_TEXTURE = Identifier.method_60656("world_list/warning");
-	static final Identifier JOIN_HIGHLIGHTED_TEXTURE = Identifier.method_60656("world_list/join_highlighted");
-	static final Identifier JOIN_TEXTURE = Identifier.method_60656("world_list/join");
+	static final Identifier ERROR_HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("world_list/error_highlighted");
+	static final Identifier ERROR_TEXTURE = Identifier.ofVanilla("world_list/error");
+	static final Identifier MARKED_JOIN_HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("world_list/marked_join_highlighted");
+	static final Identifier MARKED_JOIN_TEXTURE = Identifier.ofVanilla("world_list/marked_join");
+	static final Identifier WARNING_HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("world_list/warning_highlighted");
+	static final Identifier WARNING_TEXTURE = Identifier.ofVanilla("world_list/warning");
+	static final Identifier JOIN_HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("world_list/join_highlighted");
+	static final Identifier JOIN_TEXTURE = Identifier.ofVanilla("world_list/join");
 	static final Logger LOGGER = LogUtils.getLogger();
 	static final Text FROM_NEWER_VERSION_FIRST_LINE = Text.translatable("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED);
 	static final Text FROM_NEWER_VERSION_SECOND_LINE = Text.translatable("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED);

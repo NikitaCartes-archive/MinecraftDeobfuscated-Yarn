@@ -18,9 +18,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.LogoDrawer;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.sound.MusicType;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.sound.MusicSound;
+import net.minecraft.sound.MusicType;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -35,15 +35,15 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class CreditsScreen extends Screen {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Identifier VIGNETTE_TEXTURE = Identifier.method_60656("textures/misc/credits_vignette.png");
+	private static final Identifier VIGNETTE_TEXTURE = Identifier.ofVanilla("textures/misc/credits_vignette.png");
 	private static final Text SEPARATOR_LINE = Text.literal("============").formatted(Formatting.WHITE);
 	private static final String CENTERED_LINE_PREFIX = "           ";
 	private static final String OBFUSCATION_PLACEHOLDER = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
 	private static final float SPACE_BAR_SPEED_MULTIPLIER = 5.0F;
 	private static final float CTRL_KEY_SPEED_MULTIPLIER = 15.0F;
-	private static final Identifier field_52137 = Identifier.method_60656("texts/end.txt");
-	private static final Identifier field_52138 = Identifier.method_60656("texts/credits.json");
-	private static final Identifier field_52139 = Identifier.method_60656("texts/postcredits.txt");
+	private static final Identifier END_POEM_TEXT_LOCATION = Identifier.ofVanilla("texts/end.txt");
+	private static final Identifier CREDITS_TEXT_LOCATION = Identifier.ofVanilla("texts/credits.json");
+	private static final Identifier POST_CREDITS_TEXT_LOCATION = Identifier.ofVanilla("texts/postcredits.txt");
 	private final boolean endCredits;
 	private final Runnable finishAction;
 	private float time;
@@ -132,21 +132,21 @@ public class CreditsScreen extends Screen {
 			this.credits = Lists.<OrderedText>newArrayList();
 			this.centeredLines = new IntOpenHashSet();
 			if (this.endCredits) {
-				this.load(field_52137, this::readPoem);
+				this.load(END_POEM_TEXT_LOCATION, this::readPoem);
 			}
 
-			this.load(field_52138, this::readCredits);
+			this.load(CREDITS_TEXT_LOCATION, this::readCredits);
 			if (this.endCredits) {
-				this.load(field_52139, this::readPoem);
+				this.load(POST_CREDITS_TEXT_LOCATION, this::readPoem);
 			}
 
 			this.creditsHeight = this.credits.size() * 12;
 		}
 	}
 
-	private void load(Identifier identifier, CreditsScreen.CreditsReader reader) {
+	private void load(Identifier fileLocation, CreditsScreen.CreditsReader reader) {
 		try {
-			Reader reader2 = this.client.getResourceManager().openAsReader(identifier);
+			Reader reader2 = this.client.getResourceManager().openAsReader(fileLocation);
 
 			try {
 				reader.read(reader2);
@@ -166,7 +166,7 @@ public class CreditsScreen extends Screen {
 				reader2.close();
 			}
 		} catch (Exception var8) {
-			LOGGER.error("Couldn't load credits from file {}", identifier, var8);
+			LOGGER.error("Couldn't load credits from file {}", fileLocation, var8);
 		}
 	}
 

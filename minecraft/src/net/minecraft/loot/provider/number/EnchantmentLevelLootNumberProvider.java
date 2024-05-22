@@ -2,13 +2,13 @@ package net.minecraft.loot.provider.number;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.enchantment.EnchantmentLevelBasedValueType;
+import net.minecraft.enchantment.EnchantmentLevelBasedValue;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 
-public record EnchantmentLevelLootNumberProvider(EnchantmentLevelBasedValueType amount) implements LootNumberProvider {
+public record EnchantmentLevelLootNumberProvider(EnchantmentLevelBasedValue amount) implements LootNumberProvider {
 	public static final MapCodec<EnchantmentLevelLootNumberProvider> CODEC = RecordCodecBuilder.mapCodec(
-		instance -> instance.group(EnchantmentLevelBasedValueType.CODEC.fieldOf("amount").forGetter(EnchantmentLevelLootNumberProvider::amount))
+		instance -> instance.group(EnchantmentLevelBasedValue.CODEC.fieldOf("amount").forGetter(EnchantmentLevelLootNumberProvider::amount))
 				.apply(instance, EnchantmentLevelLootNumberProvider::new)
 	);
 
@@ -23,7 +23,7 @@ public record EnchantmentLevelLootNumberProvider(EnchantmentLevelBasedValueType 
 		return LootNumberProviderTypes.ENCHANTMENT_LEVEL;
 	}
 
-	public static EnchantmentLevelLootNumberProvider create(EnchantmentLevelBasedValueType amount) {
+	public static EnchantmentLevelLootNumberProvider create(EnchantmentLevelBasedValue amount) {
 		return new EnchantmentLevelLootNumberProvider(amount);
 	}
 }

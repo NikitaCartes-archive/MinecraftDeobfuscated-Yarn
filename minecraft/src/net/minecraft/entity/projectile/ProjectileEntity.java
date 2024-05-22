@@ -49,7 +49,7 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 		}
 	}
 
-	protected void method_60728() {
+	protected void removeOwner() {
 		this.ownerUuid = null;
 		this.owner = null;
 	}

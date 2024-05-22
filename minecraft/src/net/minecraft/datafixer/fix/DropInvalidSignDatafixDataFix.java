@@ -53,7 +53,7 @@ public class DropInvalidSignDatafixDataFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> inputType) {
-		return inputType.update(DSL.remainderFinder(), DropInvalidSignDatafixDataFix::dropInvalidDatafixData);
+	protected Typed<?> transform(Typed<?> inputTyped) {
+		return inputTyped.update(DSL.remainderFinder(), DropInvalidSignDatafixDataFix::dropInvalidDatafixData);
 	}
 }

@@ -229,7 +229,7 @@ public class ArmadilloBrain {
 
 	public static class UnrollAndFleeTask extends FleeTask<ArmadilloEntity> {
 		public UnrollAndFleeTask(float f) {
-			super(f, pathAwareEntity -> DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES);
+			super(f, entity -> DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES);
 		}
 
 		protected void run(ServerWorld serverWorld, ArmadilloEntity armadilloEntity, long l) {

@@ -74,7 +74,7 @@ public interface VehicleInventory extends Inventory, NamedScreenHandlerFactory {
 	default void readInventoryFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registriesLookup) {
 		this.resetInventory();
 		if (nbt.contains("LootTable", NbtElement.STRING_TYPE)) {
-			this.setLootTable(RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.method_60654(nbt.getString("LootTable"))));
+			this.setLootTable(RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of(nbt.getString("LootTable"))));
 			this.setLootTableSeed(nbt.getLong("LootTableSeed"));
 		} else {
 			Inventories.readNbt(nbt, this.getInventory(), registriesLookup);

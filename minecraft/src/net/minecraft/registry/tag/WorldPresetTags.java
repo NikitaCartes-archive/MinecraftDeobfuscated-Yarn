@@ -12,6 +12,6 @@ public class WorldPresetTags {
 	}
 
 	private static TagKey<WorldPreset> of(String id) {
-		return TagKey.of(RegistryKeys.WORLD_PRESET, Identifier.method_60656(id));
+		return TagKey.of(RegistryKeys.WORLD_PRESET, Identifier.ofVanilla(id));
 	}
 }

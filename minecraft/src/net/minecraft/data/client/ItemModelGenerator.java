@@ -18,7 +18,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
 public class ItemModelGenerator {
-	public static final Identifier TRIM_TYPE = Identifier.method_60656("trim_type");
+	public static final Identifier TRIM_TYPE = Identifier.ofVanilla("trim_type");
 	private static final List<ItemModelGenerator.TrimMaterial> TRIM_MATERIALS = List.of(
 		new ItemModelGenerator.TrimMaterial("quartz", 0.1F, Map.of()),
 		new ItemModelGenerator.TrimMaterial("iron", 0.2F, Map.of(ArmorMaterials.IRON, "iron_darker")),
@@ -112,7 +112,7 @@ public class ItemModelGenerator {
 				String string = trimMaterial.getAppliedName(armor.getMaterial());
 				Identifier identifier4 = this.suffixTrim(identifier, string);
 				String string2 = armor.getType().getName() + "_trim_" + string;
-				Identifier identifier5 = Identifier.method_60656(string2).withPrefixedPath("trims/items/");
+				Identifier identifier5 = Identifier.ofVanilla(string2).withPrefixedPath("trims/items/");
 				if (armor.getMaterial().matches(ArmorMaterials.LEATHER)) {
 					this.uploadArmor(identifier4, identifier2, identifier3, identifier5);
 				} else {

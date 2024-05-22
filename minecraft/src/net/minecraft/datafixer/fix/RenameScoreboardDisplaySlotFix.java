@@ -51,17 +51,15 @@ public class RenameScoreboardDisplaySlotFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"Scoreboard DisplaySlot rename",
 			type,
-			typed -> typed.updateTyped(
+			scoreboardTyped -> scoreboardTyped.updateTyped(
 					opticFinder,
-					typedx -> typedx.update(
+					scoreboardDataTyped -> scoreboardDataTyped.update(
 							DSL.remainderFinder(),
-							dynamic -> dynamic.update(
+							scoreboardDataDynamic -> scoreboardDataDynamic.update(
 									"DisplaySlots",
-									dynamicx -> dynamicx.updateMapValues(
-											pair -> pair.mapFirst(
-													dynamicxx -> DataFixUtils.orElse(
-															dynamicxx.asString().result().map(RenameScoreboardDisplaySlotFix::getUpdatedName).map(dynamicxx::createString), dynamicxx
-														)
+									displaySlotsDynamic -> displaySlotsDynamic.updateMapValues(
+											entry -> entry.mapFirst(
+													key -> DataFixUtils.orElse(key.asString().result().map(RenameScoreboardDisplaySlotFix::getUpdatedName).map(key::createString), key)
 												)
 										)
 								)

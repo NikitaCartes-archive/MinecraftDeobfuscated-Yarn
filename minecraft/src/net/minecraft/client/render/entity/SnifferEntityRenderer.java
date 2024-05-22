@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SnifferEntityRenderer extends MobEntityRenderer<SnifferEntity, SnifferEntityModel<SnifferEntity>> {
-	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/sniffer/sniffer.png");
+	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/sniffer/sniffer.png");
 
 	public SnifferEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new SnifferEntityModel<>(context.getPart(EntityModelLayers.SNIFFER)), 1.1F);
