@@ -10,11 +10,11 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ParrotEntityRenderer extends MobEntityRenderer<ParrotEntity, ParrotEntityModel> {
-	private static final Identifier RED_BLUE_TEXTURE = new Identifier("textures/entity/parrot/parrot_red_blue.png");
-	private static final Identifier BLUE_TEXTURE = new Identifier("textures/entity/parrot/parrot_blue.png");
-	private static final Identifier GREEN_TEXTURE = new Identifier("textures/entity/parrot/parrot_green.png");
-	private static final Identifier YELLOW_TEXTURE = new Identifier("textures/entity/parrot/parrot_yellow_blue.png");
-	private static final Identifier GREY_TEXTURE = new Identifier("textures/entity/parrot/parrot_grey.png");
+	private static final Identifier RED_BLUE_TEXTURE = Identifier.method_60656("textures/entity/parrot/parrot_red_blue.png");
+	private static final Identifier BLUE_TEXTURE = Identifier.method_60656("textures/entity/parrot/parrot_blue.png");
+	private static final Identifier GREEN_TEXTURE = Identifier.method_60656("textures/entity/parrot/parrot_green.png");
+	private static final Identifier YELLOW_TEXTURE = Identifier.method_60656("textures/entity/parrot/parrot_yellow_blue.png");
+	private static final Identifier GREY_TEXTURE = Identifier.method_60656("textures/entity/parrot/parrot_grey.png");
 
 	public ParrotEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new ParrotEntityModel(context.getPart(EntityModelLayers.PARROT)), 0.3F);

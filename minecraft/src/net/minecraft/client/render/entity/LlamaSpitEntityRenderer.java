@@ -15,7 +15,7 @@ import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/llama/spit.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/llama/spit.png");
 	private final LlamaSpitEntityModel<LlamaSpitEntity> model;
 
 	public LlamaSpitEntityRenderer(EntityRendererFactory.Context context) {
@@ -30,7 +30,7 @@ public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity> {
 		matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.lerp(g, llamaSpitEntity.prevPitch, llamaSpitEntity.getPitch())));
 		this.model.setAngles(llamaSpitEntity, g, 0.0F, -0.1F, 0.0F, 0.0F);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(TEXTURE));
-		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+		this.model.method_60879(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 		matrixStack.pop();
 		super.render(llamaSpitEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}

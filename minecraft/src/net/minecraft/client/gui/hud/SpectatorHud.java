@@ -18,8 +18,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SpectatorHud implements SpectatorMenuCloseCallback {
-	private static final Identifier HOTBAR_TEXTURE = new Identifier("hud/hotbar");
-	private static final Identifier HOTBAR_SELECTION_TEXTURE = new Identifier("hud/hotbar_selection");
+	private static final Identifier HOTBAR_TEXTURE = Identifier.method_60656("hud/hotbar");
+	private static final Identifier HOTBAR_SELECTION_TEXTURE = Identifier.method_60656("hud/hotbar_selection");
 	private static final long FADE_OUT_DELAY = 5000L;
 	private static final long FADE_OUT_DURATION = 2000L;
 	private final MinecraftClient client;

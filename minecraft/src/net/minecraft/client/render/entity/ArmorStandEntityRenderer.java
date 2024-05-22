@@ -19,7 +19,7 @@ import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
-	public static final Identifier TEXTURE = new Identifier("textures/entity/armorstand/wood.png");
+	public static final Identifier TEXTURE = Identifier.method_60656("textures/entity/armorstand/wood.png");
 
 	public ArmorStandEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new ArmorStandEntityModel(context.getPart(EntityModelLayers.ARMOR_STAND)), 0.0F);

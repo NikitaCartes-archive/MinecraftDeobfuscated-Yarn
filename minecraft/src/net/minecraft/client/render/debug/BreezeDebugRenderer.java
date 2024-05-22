@@ -71,8 +71,8 @@ public class BreezeDebugRenderer {
 		MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ, Vec3d entityPos, Vec3d targetPos, int color
 	) {
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getDebugLineStrip(2.0));
-		vertexConsumer.vertex(matrices.peek(), (float)(entityPos.x - cameraX), (float)(entityPos.y - cameraY), (float)(entityPos.z - cameraZ)).color(color).next();
-		vertexConsumer.vertex(matrices.peek(), (float)(targetPos.x - cameraX), (float)(targetPos.y - cameraY), (float)(targetPos.z - cameraZ)).color(color).next();
+		vertexConsumer.vertex(matrices.peek(), (float)(entityPos.x - cameraX), (float)(entityPos.y - cameraY), (float)(entityPos.z - cameraZ)).color(color);
+		vertexConsumer.vertex(matrices.peek(), (float)(targetPos.x - cameraX), (float)(targetPos.y - cameraY), (float)(targetPos.z - cameraZ)).color(color);
 	}
 
 	private static void drawCurve(
@@ -90,7 +90,7 @@ public class BreezeDebugRenderer {
 	) {
 		float f = (float)index * (float) (Math.PI / 10);
 		Vec3d vec3d = targetPos.add((double)multiplier * Math.cos((double)f), 0.0, (double)multiplier * Math.sin((double)f));
-		vertexConsumer.vertex(matrix, (float)(vec3d.x - cameraX), (float)(vec3d.y - cameraY), (float)(vec3d.z - cameraZ)).color(color).next();
+		vertexConsumer.vertex(matrix, (float)(vec3d.x - cameraX), (float)(vec3d.y - cameraY), (float)(vec3d.z - cameraZ)).color(color);
 	}
 
 	public void clear() {

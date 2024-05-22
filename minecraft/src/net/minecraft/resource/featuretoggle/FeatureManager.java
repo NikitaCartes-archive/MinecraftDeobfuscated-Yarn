@@ -85,7 +85,7 @@ public class FeatureManager {
 		}
 
 		public FeatureFlag addVanillaFlag(String feature) {
-			return this.addFlag(new Identifier("minecraft", feature));
+			return this.addFlag(Identifier.method_60656(feature));
 		}
 
 		public FeatureFlag addFlag(Identifier feature) {

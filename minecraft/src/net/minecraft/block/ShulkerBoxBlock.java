@@ -67,7 +67,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		map.put(Direction.DOWN, DOWN_SHAPE);
 	});
 	public static final EnumProperty<Direction> FACING = FacingBlock.FACING;
-	public static final Identifier CONTENTS_DYNAMIC_DROP_ID = new Identifier("contents");
+	public static final Identifier CONTENTS_DYNAMIC_DROP_ID = Identifier.method_60656("contents");
 	@Nullable
 	private final DyeColor color;
 

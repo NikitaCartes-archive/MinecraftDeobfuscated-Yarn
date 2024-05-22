@@ -12,9 +12,9 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SpectatorMenu {
-	static final Identifier CLOSE_TEXTURE = new Identifier("spectator/close");
-	static final Identifier SCROLL_LEFT_TEXTURE = new Identifier("spectator/scroll_left");
-	static final Identifier SCROLL_RIGHT_TEXTURE = new Identifier("spectator/scroll_right");
+	static final Identifier CLOSE_TEXTURE = Identifier.method_60656("spectator/close");
+	static final Identifier SCROLL_LEFT_TEXTURE = Identifier.method_60656("spectator/scroll_left");
+	static final Identifier SCROLL_RIGHT_TEXTURE = Identifier.method_60656("spectator/scroll_right");
 	private static final SpectatorMenuCommand CLOSE_COMMAND = new SpectatorMenu.CloseSpectatorMenuCommand();
 	private static final SpectatorMenuCommand PREVIOUS_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(-1, true);
 	private static final SpectatorMenuCommand NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, true);

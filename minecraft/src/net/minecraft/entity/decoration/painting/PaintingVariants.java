@@ -115,6 +115,6 @@ public class PaintingVariants {
 	}
 
 	private static RegistryKey<PaintingVariant> of(String id) {
-		return RegistryKey.of(RegistryKeys.PAINTING_VARIANT, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.PAINTING_VARIANT, Identifier.method_60656(id));
 	}
 }

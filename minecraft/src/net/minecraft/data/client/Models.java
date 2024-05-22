@@ -184,14 +184,14 @@ public class Models {
 	}
 
 	private static Model block(String parent, TextureKey... requiredTextureKeys) {
-		return new Model(Optional.of(new Identifier("minecraft", "block/" + parent)), Optional.empty(), requiredTextureKeys);
+		return new Model(Optional.of(Identifier.method_60656("block/" + parent)), Optional.empty(), requiredTextureKeys);
 	}
 
 	private static Model item(String parent, TextureKey... requiredTextureKeys) {
-		return new Model(Optional.of(new Identifier("minecraft", "item/" + parent)), Optional.empty(), requiredTextureKeys);
+		return new Model(Optional.of(Identifier.method_60656("item/" + parent)), Optional.empty(), requiredTextureKeys);
 	}
 
 	private static Model block(String parent, String variant, TextureKey... requiredTextureKeys) {
-		return new Model(Optional.of(new Identifier("minecraft", "block/" + parent)), Optional.of(variant), requiredTextureKeys);
+		return new Model(Optional.of(Identifier.method_60656("block/" + parent)), Optional.of(variant), requiredTextureKeys);
 	}
 }

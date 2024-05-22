@@ -47,7 +47,7 @@ public record MessageIndicator(int indicatorColor, @Nullable MessageIndicator.Ic
 
 	@Environment(EnvType.CLIENT)
 	public static enum Icon {
-		CHAT_MODIFIED(new Identifier("icon/chat_modified"), 9, 9);
+		CHAT_MODIFIED(Identifier.method_60656("icon/chat_modified"), 9, 9);
 
 		public final Identifier texture;
 		public final int width;

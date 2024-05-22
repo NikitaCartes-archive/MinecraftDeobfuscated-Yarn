@@ -31,20 +31,20 @@ import net.minecraft.util.math.random.Random;
 @Environment(EnvType.CLIENT)
 public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 	private static final Identifier[] LEVEL_TEXTURES = new Identifier[]{
-		new Identifier("container/enchanting_table/level_1"),
-		new Identifier("container/enchanting_table/level_2"),
-		new Identifier("container/enchanting_table/level_3")
+		Identifier.method_60656("container/enchanting_table/level_1"),
+		Identifier.method_60656("container/enchanting_table/level_2"),
+		Identifier.method_60656("container/enchanting_table/level_3")
 	};
 	private static final Identifier[] LEVEL_DISABLED_TEXTURES = new Identifier[]{
-		new Identifier("container/enchanting_table/level_1_disabled"),
-		new Identifier("container/enchanting_table/level_2_disabled"),
-		new Identifier("container/enchanting_table/level_3_disabled")
+		Identifier.method_60656("container/enchanting_table/level_1_disabled"),
+		Identifier.method_60656("container/enchanting_table/level_2_disabled"),
+		Identifier.method_60656("container/enchanting_table/level_3_disabled")
 	};
-	private static final Identifier ENCHANTMENT_SLOT_DISABLED_TEXTURE = new Identifier("container/enchanting_table/enchantment_slot_disabled");
-	private static final Identifier ENCHANTMENT_SLOT_HIGHLIGHTED_TEXTURE = new Identifier("container/enchanting_table/enchantment_slot_highlighted");
-	private static final Identifier ENCHANTMENT_SLOT_TEXTURE = new Identifier("container/enchanting_table/enchantment_slot");
-	private static final Identifier TEXTURE = new Identifier("textures/gui/container/enchanting_table.png");
-	private static final Identifier BOOK_TEXTURE = new Identifier("textures/entity/enchanting_table_book.png");
+	private static final Identifier ENCHANTMENT_SLOT_DISABLED_TEXTURE = Identifier.method_60656("container/enchanting_table/enchantment_slot_disabled");
+	private static final Identifier ENCHANTMENT_SLOT_HIGHLIGHTED_TEXTURE = Identifier.method_60656("container/enchanting_table/enchantment_slot_highlighted");
+	private static final Identifier ENCHANTMENT_SLOT_TEXTURE = Identifier.method_60656("container/enchanting_table/enchantment_slot");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/enchanting_table.png");
+	private static final Identifier BOOK_TEXTURE = Identifier.method_60656("textures/entity/enchanting_table_book.png");
 	private final Random random = Random.create();
 	private BookModel BOOK_MODEL;
 	public int ticks;
@@ -157,7 +157,7 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 		float k = MathHelper.clamp(MathHelper.fractionalPart(g + 0.75F) * 1.6F - 0.3F, 0.0F, 1.0F);
 		this.BOOK_MODEL.setPageAngles(0.0F, j, k, f);
 		VertexConsumer vertexConsumer = context.getVertexConsumers().getBuffer(this.BOOK_MODEL.getLayer(BOOK_TEXTURE));
-		this.BOOK_MODEL.render(context.getMatrices(), vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+		this.BOOK_MODEL.method_60879(context.getMatrices(), vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
 		context.draw();
 		context.getMatrices().pop();
 		DiffuseLighting.enableGuiDepthLighting();

@@ -28,7 +28,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public abstract class HandledScreen<T extends ScreenHandler> extends Screen implements ScreenHandlerProvider<T> {
-	public static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/container/inventory.png");
+	public static final Identifier BACKGROUND_TEXTURE = Identifier.method_60656("textures/gui/container/inventory.png");
 	private static final float field_32318 = 100.0F;
 	private static final int field_32319 = 500;
 	public static final int field_32322 = 100;

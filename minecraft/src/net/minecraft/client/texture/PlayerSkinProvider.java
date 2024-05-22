@@ -158,7 +158,7 @@ public class PlayerSkinProvider {
 				case CAPE -> "capes";
 				case ELYTRA -> "elytra";
 			};
-			return new Identifier(string + "/" + hash);
+			return Identifier.method_60656(string + "/" + hash);
 		}
 	}
 

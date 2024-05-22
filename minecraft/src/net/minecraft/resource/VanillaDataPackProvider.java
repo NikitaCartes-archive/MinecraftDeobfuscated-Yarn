@@ -29,7 +29,7 @@ public class VanillaDataPackProvider extends VanillaResourcePackProvider {
 	);
 	private static final ResourcePackPosition BOTTOM_POSITION = new ResourcePackPosition(false, ResourcePackProfile.InsertionPosition.BOTTOM, false);
 	private static final ResourcePackPosition TOP_POSITION = new ResourcePackPosition(false, ResourcePackProfile.InsertionPosition.TOP, false);
-	private static final Identifier ID = new Identifier("minecraft", "datapacks");
+	private static final Identifier ID = Identifier.method_60656("datapacks");
 
 	public VanillaDataPackProvider(SymlinkFinder symlinkFinder) {
 		super(ResourceType.SERVER_DATA, createDefaultPack(), ID, symlinkFinder);

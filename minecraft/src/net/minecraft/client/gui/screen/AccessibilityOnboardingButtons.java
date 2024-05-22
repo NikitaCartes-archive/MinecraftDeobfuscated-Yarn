@@ -12,12 +12,12 @@ public class AccessibilityOnboardingButtons {
 	public static TextIconButtonWidget createLanguageButton(int width, ButtonWidget.PressAction onPress, boolean hideText) {
 		return TextIconButtonWidget.builder(Text.translatable("options.language"), onPress, hideText)
 			.width(width)
-			.texture(new Identifier("icon/language"), 15, 15)
+			.texture(Identifier.method_60656("icon/language"), 15, 15)
 			.build();
 	}
 
 	public static TextIconButtonWidget createAccessibilityButton(int width, ButtonWidget.PressAction onPress, boolean hideText) {
 		Text text = hideText ? Text.translatable("options.accessibility") : Text.translatable("accessibility.onboarding.accessibility.button");
-		return TextIconButtonWidget.builder(text, onPress, hideText).width(width).texture(new Identifier("icon/accessibility"), 15, 15).build();
+		return TextIconButtonWidget.builder(text, onPress, hideText).width(width).texture(Identifier.method_60656("icon/accessibility"), 15, 15).build();
 	}
 }

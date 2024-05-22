@@ -18,7 +18,11 @@ public class StructurePools {
 	public static final RegistryKey<StructurePool> EMPTY = of("empty");
 
 	public static RegistryKey<StructurePool> of(String id) {
-		return RegistryKey.of(RegistryKeys.TEMPLATE_POOL, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.TEMPLATE_POOL, Identifier.method_60656(id));
+	}
+
+	public static RegistryKey<StructurePool> method_60923(String string) {
+		return RegistryKey.of(RegistryKeys.TEMPLATE_POOL, Identifier.method_60654(string));
 	}
 
 	public static void register(Registerable<StructurePool> structurePoolsRegisterable, String id, StructurePool pool) {

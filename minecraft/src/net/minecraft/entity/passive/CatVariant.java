@@ -24,7 +24,7 @@ public record CatVariant(Identifier texture) {
 	public static final RegistryKey<CatVariant> ALL_BLACK = of("all_black");
 
 	private static RegistryKey<CatVariant> of(String id) {
-		return RegistryKey.of(RegistryKeys.CAT_VARIANT, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.CAT_VARIANT, Identifier.method_60656(id));
 	}
 
 	public static CatVariant registerAndGetDefault(Registry<CatVariant> registry) {
@@ -42,6 +42,6 @@ public record CatVariant(Identifier texture) {
 	}
 
 	private static CatVariant register(Registry<CatVariant> registry, RegistryKey<CatVariant> key, String textureId) {
-		return Registry.register(registry, key, new CatVariant(new Identifier(textureId)));
+		return Registry.register(registry, key, new CatVariant(Identifier.method_60656(textureId)));
 	}
 }

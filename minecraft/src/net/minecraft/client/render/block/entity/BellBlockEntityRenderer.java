@@ -22,7 +22,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BellBlockEntityRenderer implements BlockEntityRenderer<BellBlockEntity> {
-	public static final SpriteIdentifier BELL_BODY_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/bell/bell_body"));
+	public static final SpriteIdentifier BELL_BODY_TEXTURE = new SpriteIdentifier(
+		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.method_60656("entity/bell/bell_body")
+	);
 	private static final String BELL_BODY = "bell_body";
 	private final ModelPart bellBody;
 

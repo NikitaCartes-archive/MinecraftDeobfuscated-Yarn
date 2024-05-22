@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.minecraft.class_9792;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
@@ -30,7 +31,8 @@ public class ToggleTooltipsLootFunction extends ConditionalLootFunction {
 			new ToggleTooltipsLootFunction.Toggle<>(DataComponentTypes.UNBREAKABLE, UnbreakableComponent::withShowInTooltip),
 			new ToggleTooltipsLootFunction.Toggle<>(DataComponentTypes.CAN_BREAK, BlockPredicatesChecker::withShowInTooltip),
 			new ToggleTooltipsLootFunction.Toggle<>(DataComponentTypes.CAN_PLACE_ON, BlockPredicatesChecker::withShowInTooltip),
-			new ToggleTooltipsLootFunction.Toggle<>(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent::withShowInTooltip)
+			new ToggleTooltipsLootFunction.Toggle<>(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent::withShowInTooltip),
+			new ToggleTooltipsLootFunction.Toggle<>(DataComponentTypes.JUKEBOX_PLAYABLE, class_9792::method_60749)
 		)
 		.collect(Collectors.toMap(ToggleTooltipsLootFunction.Toggle::type, toggle -> toggle));
 	private static final Codec<ToggleTooltipsLootFunction.Toggle<?>> TOGGLE_CODEC = Registries.DATA_COMPONENT_TYPE

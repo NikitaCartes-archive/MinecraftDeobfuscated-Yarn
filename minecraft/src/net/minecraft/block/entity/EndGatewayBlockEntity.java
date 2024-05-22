@@ -1,24 +1,17 @@
 package net.minecraft.block.entity;
 
 import com.mojang.logging.LogUtils;
-import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -84,24 +77,13 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		blockEntity.age++;
 		if (bl2) {
 			blockEntity.teleportCooldown--;
-		} else {
-			List<Entity> list = world.getEntitiesByClass(Entity.class, new Box(pos), EndGatewayBlockEntity::canTeleport);
-			if (!list.isEmpty()) {
-				tryTeleportingEntity(world, pos, state, (Entity)list.get(world.random.nextInt(list.size())), blockEntity);
-			}
-
-			if (blockEntity.age % 2400L == 0L) {
-				startTeleportCooldown(world, pos, state, blockEntity);
-			}
+		} else if (blockEntity.age % 2400L == 0L) {
+			startTeleportCooldown(world, pos, state, blockEntity);
 		}
 
 		if (bl != blockEntity.isRecentlyGenerated() || bl2 != blockEntity.needsCooldownBeforeTeleporting()) {
 			markDirty(world, pos, state);
 		}
-	}
-
-	public static boolean canTeleport(Entity entity) {
-		return EntityPredicates.EXCEPT_SPECTATOR.test(entity) && !entity.getRootVehicle().hasPortalCooldown();
 	}
 
 	public boolean isRecentlyGenerated() {
@@ -129,7 +111,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		return this.createComponentlessNbt(registryLookup);
 	}
 
-	private static void startTeleportCooldown(World world, BlockPos pos, BlockState state, EndGatewayBlockEntity blockEntity) {
+	public static void startTeleportCooldown(World world, BlockPos pos, BlockState state, EndGatewayBlockEntity blockEntity) {
 		if (!world.isClient) {
 			blockEntity.teleportCooldown = 40;
 			world.addSyncedBlockEvent(pos, state.getBlock(), 1, 0);
@@ -147,42 +129,21 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		}
 	}
 
-	public static void tryTeleportingEntity(World world, BlockPos pos, BlockState state, Entity entity, EndGatewayBlockEntity blockEntity) {
-		if (world instanceof ServerWorld && !blockEntity.needsCooldownBeforeTeleporting()) {
-			ServerWorld serverWorld = (ServerWorld)world;
-			blockEntity.teleportCooldown = 100;
-			if (blockEntity.exitPortalPos == null && world.getRegistryKey() == World.END) {
-				BlockPos blockPos = setupExitPortalLocation(serverWorld, pos);
-				blockPos = blockPos.up(10);
-				LOGGER.debug("Creating portal at {}", blockPos);
-				createPortal(serverWorld, blockPos, EndGatewayFeatureConfig.createConfig(pos, false));
-				blockEntity.exitPortalPos = blockPos;
-			}
+	@Nullable
+	public Vec3d method_60787(ServerWorld serverWorld, BlockPos blockPos) {
+		if (this.exitPortalPos == null && serverWorld.getRegistryKey() == World.END) {
+			BlockPos blockPos2 = setupExitPortalLocation(serverWorld, blockPos);
+			blockPos2 = blockPos2.up(10);
+			LOGGER.debug("Creating portal at {}", blockPos2);
+			createPortal(serverWorld, blockPos2, EndGatewayFeatureConfig.createConfig(blockPos, false));
+			this.exitPortalPos = blockPos2;
+		}
 
-			if (blockEntity.exitPortalPos != null) {
-				BlockPos blockPos = blockEntity.exactTeleport ? blockEntity.exitPortalPos : findBestPortalExitPos(world, blockEntity.exitPortalPos);
-				Entity entity3;
-				if (entity instanceof EnderPearlEntity) {
-					Entity entity2 = ((EnderPearlEntity)entity).getOwner();
-					if (entity2 instanceof ServerPlayerEntity) {
-						Criteria.ENTER_BLOCK.trigger((ServerPlayerEntity)entity2, state);
-					}
-
-					if (entity2 != null) {
-						entity3 = entity2;
-						entity.discard();
-					} else {
-						entity3 = entity;
-					}
-				} else {
-					entity3 = entity.getRootVehicle();
-				}
-
-				entity3.resetPortalCooldown();
-				entity3.teleport((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
-			}
-
-			startTeleportCooldown(world, pos, state, blockEntity);
+		if (this.exitPortalPos != null) {
+			BlockPos blockPos2 = this.exactTeleport ? this.exitPortalPos : findBestPortalExitPos(serverWorld, this.exitPortalPos);
+			return new Vec3d((double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5);
+		} else {
+			return null;
 		}
 	}
 

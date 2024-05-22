@@ -10,8 +10,8 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class GhastEntityRenderer extends MobEntityRenderer<GhastEntity, GhastEntityModel<GhastEntity>> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/ghast/ghast.png");
-	private static final Identifier ANGRY_TEXTURE = new Identifier("textures/entity/ghast/ghast_shooting.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/ghast/ghast.png");
+	private static final Identifier ANGRY_TEXTURE = Identifier.method_60656("textures/entity/ghast/ghast_shooting.png");
 
 	public GhastEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new GhastEntityModel<>(context.getPart(EntityModelLayers.GHAST)), 1.5F);

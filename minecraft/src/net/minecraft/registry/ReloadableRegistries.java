@@ -50,7 +50,8 @@ public class ReloadableRegistries {
 			() -> {
 				MutableRegistry<T> mutableRegistry = new SimpleRegistry<>(type.registryKey(), Lifecycle.experimental());
 				Map<Identifier, JsonElement> map = new HashMap();
-				JsonDataLoader.load(resourceManager, type.directory(), GSON, map);
+				String string = RegistryKeys.method_60915(type.registryKey());
+				JsonDataLoader.load(resourceManager, string, GSON, map);
 				map.forEach(
 					(id, json) -> type.parse(id, ops, json)
 							.ifPresent(value -> mutableRegistry.add(RegistryKey.of(type.registryKey(), id), (T)value, DEFAULT_REGISTRY_ENTRY_INFO))

@@ -1,5 +1,6 @@
 package net.minecraft.network.listener;
 
+import net.minecraft.class_9812;
 import net.minecraft.network.NetworkPhase;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.NetworkThreadUtils;
@@ -25,13 +26,15 @@ public interface PacketListener {
 	/**
 	 * Called when the connection this listener listens to has disconnected.
 	 * Can be used to display the disconnection reason.
-	 * 
-	 * @param reason the reason of disconnection; may be a generic message
 	 */
-	void onDisconnected(Text reason);
+	void onDisconnected(class_9812 arg);
 
 	default void onPacketException(Packet packet, Exception exception) throws CrashException {
 		throw NetworkThreadUtils.createCrashException(exception, packet, this);
+	}
+
+	default class_9812 method_60881(Text text, Throwable throwable) {
+		return new class_9812(text);
 	}
 
 	boolean isConnectionOpen();
@@ -44,9 +47,9 @@ public interface PacketListener {
 		CrashReportSection crashReportSection = report.addElement("Connection");
 		crashReportSection.add("Protocol", (CrashCallable<String>)(() -> this.getPhase().getId()));
 		crashReportSection.add("Flow", (CrashCallable<String>)(() -> this.getSide().toString()));
-		this.addCustomCrashReportInfo(crashReportSection);
+		this.addCustomCrashReportInfo(report, crashReportSection);
 	}
 
-	default void addCustomCrashReportInfo(CrashReportSection section) {
+	default void addCustomCrashReportInfo(CrashReport crashReport, CrashReportSection crashReportSection) {
 	}
 }

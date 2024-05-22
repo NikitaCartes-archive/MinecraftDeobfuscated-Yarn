@@ -145,7 +145,7 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 					.getTextureSpecificVertexConsumer(
 						ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), true, stack.hasGlint())
 					);
-				this.modelShield.getHandle().render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+				this.modelShield.getHandle().render(matrices, vertexConsumer, light, overlay);
 				if (bl) {
 					BannerBlockEntityRenderer.renderCanvas(
 						matrices,
@@ -160,7 +160,7 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 						stack.hasGlint()
 					);
 				} else {
-					this.modelShield.getPlate().render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+					this.modelShield.getPlate().render(matrices, vertexConsumer, light, overlay);
 				}
 
 				matrices.pop();
@@ -170,7 +170,7 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 				VertexConsumer vertexConsumer2 = ItemRenderer.getDirectItemGlintConsumer(
 					vertexConsumers, this.modelTrident.getLayer(TridentEntityModel.TEXTURE), false, stack.hasGlint()
 				);
-				this.modelTrident.render(matrices, vertexConsumer2, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+				this.modelTrident.method_60879(matrices, vertexConsumer2, light, overlay);
 				matrices.pop();
 			}
 		}

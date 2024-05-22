@@ -8,16 +8,16 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public enum AdvancementObtainedStatus {
 	OBTAINED(
-		new Identifier("advancements/box_obtained"),
-		new Identifier("advancements/task_frame_obtained"),
-		new Identifier("advancements/challenge_frame_obtained"),
-		new Identifier("advancements/goal_frame_obtained")
+		Identifier.method_60656("advancements/box_obtained"),
+		Identifier.method_60656("advancements/task_frame_obtained"),
+		Identifier.method_60656("advancements/challenge_frame_obtained"),
+		Identifier.method_60656("advancements/goal_frame_obtained")
 	),
 	UNOBTAINED(
-		new Identifier("advancements/box_unobtained"),
-		new Identifier("advancements/task_frame_unobtained"),
-		new Identifier("advancements/challenge_frame_unobtained"),
-		new Identifier("advancements/goal_frame_unobtained")
+		Identifier.method_60656("advancements/box_unobtained"),
+		Identifier.method_60656("advancements/task_frame_unobtained"),
+		Identifier.method_60656("advancements/challenge_frame_unobtained"),
+		Identifier.method_60656("advancements/goal_frame_unobtained")
 	);
 
 	private final Identifier boxTexture;

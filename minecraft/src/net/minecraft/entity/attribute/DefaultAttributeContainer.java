@@ -2,10 +2,10 @@ package net.minecraft.entity.attribute;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Identifier;
 
 public class DefaultAttributeContainer {
 	private final Map<RegistryEntry<EntityAttribute>, EntityAttributeInstance> instances;
@@ -31,10 +31,10 @@ public class DefaultAttributeContainer {
 		return this.require(attribute).getBaseValue();
 	}
 
-	public double getModifierValue(RegistryEntry<EntityAttribute> attribute, UUID uuid) {
-		EntityAttributeModifier entityAttributeModifier = this.require(attribute).getModifier(uuid);
+	public double getModifierValue(RegistryEntry<EntityAttribute> attribute, Identifier identifier) {
+		EntityAttributeModifier entityAttributeModifier = this.require(attribute).getModifier(identifier);
 		if (entityAttributeModifier == null) {
-			throw new IllegalArgumentException("Can't find modifier " + uuid + " on attribute " + attribute.getIdAsString());
+			throw new IllegalArgumentException("Can't find modifier " + identifier + " on attribute " + attribute.getIdAsString());
 		} else {
 			return entityAttributeModifier.value();
 		}
@@ -60,9 +60,9 @@ public class DefaultAttributeContainer {
 		return this.instances.containsKey(attribute);
 	}
 
-	public boolean hasModifier(RegistryEntry<EntityAttribute> attribute, UUID uuid) {
+	public boolean hasModifier(RegistryEntry<EntityAttribute> attribute, Identifier identifier) {
 		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.instances.get(attribute);
-		return entityAttributeInstance != null && entityAttributeInstance.getModifier(uuid) != null;
+		return entityAttributeInstance != null && entityAttributeInstance.getModifier(identifier) != null;
 	}
 
 	public static class Builder {

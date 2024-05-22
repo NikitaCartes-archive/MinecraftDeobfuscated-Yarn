@@ -81,7 +81,7 @@ public class RandomSequencesState extends PersistentState {
 		for (String string : nbtCompound.getKeys()) {
 			try {
 				RandomSequence randomSequence = (RandomSequence)((Pair)RandomSequence.CODEC.decode(NbtOps.INSTANCE, nbtCompound.get(string)).result().get()).getFirst();
-				randomSequencesState.sequences.put(new Identifier(string), randomSequence);
+				randomSequencesState.sequences.put(Identifier.method_60654(string), randomSequence);
 			} catch (Exception var9) {
 				LOGGER.error("Failed to load random sequence {}", string, var9);
 			}

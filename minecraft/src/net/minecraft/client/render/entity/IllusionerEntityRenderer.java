@@ -15,7 +15,7 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEntity> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/illager/illusioner.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/illager/illusioner.png");
 
 	public IllusionerEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new IllagerEntityModel<>(context.getPart(EntityModelLayers.ILLUSIONER)), 0.5F);

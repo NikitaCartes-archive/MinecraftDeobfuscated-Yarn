@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class WitherArmorFeatureRenderer extends EnergySwirlOverlayFeatureRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/wither/wither_armor.png");
+	private static final Identifier SKIN = Identifier.method_60656("textures/entity/wither/wither_armor.png");
 	private final WitherEntityModel<WitherEntity> model;
 
 	public WitherArmorFeatureRenderer(FeatureRendererContext<WitherEntity, WitherEntityModel<WitherEntity>> context, EntityModelLoader loader) {

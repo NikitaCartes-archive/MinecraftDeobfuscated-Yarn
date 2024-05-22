@@ -39,10 +39,10 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class StatsScreen extends Screen {
 	private static final Text TITLE_TEXT = Text.translatable("gui.stats");
-	static final Identifier SLOT_TEXTURE = new Identifier("container/slot");
-	static final Identifier HEADER_TEXTURE = new Identifier("statistics/header");
-	static final Identifier SORT_UP_TEXTURE = new Identifier("statistics/sort_up");
-	static final Identifier SORT_DOWN_TEXTURE = new Identifier("statistics/sort_down");
+	static final Identifier SLOT_TEXTURE = Identifier.method_60656("container/slot");
+	static final Identifier HEADER_TEXTURE = Identifier.method_60656("statistics/header");
+	static final Identifier SORT_UP_TEXTURE = Identifier.method_60656("statistics/sort_up");
+	static final Identifier SORT_DOWN_TEXTURE = Identifier.method_60656("statistics/sort_down");
 	private static final Text DOWNLOADING_STATS_TEXT = Text.translatable("multiplayer.downloadingStats");
 	static final Text NONE_TEXT = Text.translatable("stats.none");
 	private static final Text GENERAL_BUTTON_TEXT = Text.translatable("stat.generalButton");
@@ -274,12 +274,12 @@ public class StatsScreen extends Screen {
 		private static final int field_49528 = -1;
 		private static final int field_49529 = 1;
 		private final Identifier[] headerIconTextures = new Identifier[]{
-			new Identifier("statistics/block_mined"),
-			new Identifier("statistics/item_broken"),
-			new Identifier("statistics/item_crafted"),
-			new Identifier("statistics/item_used"),
-			new Identifier("statistics/item_picked_up"),
-			new Identifier("statistics/item_dropped")
+			Identifier.method_60656("statistics/block_mined"),
+			Identifier.method_60656("statistics/item_broken"),
+			Identifier.method_60656("statistics/item_crafted"),
+			Identifier.method_60656("statistics/item_used"),
+			Identifier.method_60656("statistics/item_picked_up"),
+			Identifier.method_60656("statistics/item_dropped")
 		};
 		protected final List<StatType<Block>> blockStatTypes;
 		protected final List<StatType<Item>> itemStatTypes;

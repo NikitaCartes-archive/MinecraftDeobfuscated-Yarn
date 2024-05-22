@@ -22,6 +22,8 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9782;
+import net.minecraft.class_9812;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
@@ -51,6 +53,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
+import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import org.slf4j.Logger;
 
@@ -191,7 +194,9 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 						this.parentScreen,
 						this.serverCookies,
 						null,
-						packet.strictErrorHandling()
+						packet.strictErrorHandling(),
+						Map.of(),
+						class_9782.field_51977
 					)
 				)
 			);
@@ -202,12 +207,12 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	}
 
 	@Override
-	public void onDisconnected(Text reason) {
+	public void onDisconnected(class_9812 arg) {
 		Text text = this.hasCookies ? ScreenTexts.CONNECT_FAILED_TRANSFER : ScreenTexts.CONNECT_FAILED;
 		if (this.serverInfo != null && this.serverInfo.isRealm()) {
-			this.client.setScreen(new DisconnectedRealmsScreen(this.parentScreen, text, reason));
+			this.client.setScreen(new DisconnectedRealmsScreen(this.parentScreen, text, arg.reason()));
 		} else {
-			this.client.setScreen(new DisconnectedScreen(this.parentScreen, text, reason));
+			this.client.setScreen(new DisconnectedScreen(this.parentScreen, text, arg));
 		}
 	}
 
@@ -244,9 +249,9 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	}
 
 	@Override
-	public void addCustomCrashReportInfo(CrashReportSection section) {
-		section.add("Server type", (CrashCallable<String>)(() -> this.serverInfo != null ? this.serverInfo.getServerType().toString() : "<unknown>"));
-		section.add("Login phase", (CrashCallable<String>)(() -> ((ClientLoginNetworkHandler.State)this.state.get()).toString()));
+	public void addCustomCrashReportInfo(CrashReport crashReport, CrashReportSection crashReportSection) {
+		crashReportSection.add("Server type", (CrashCallable<String>)(() -> this.serverInfo != null ? this.serverInfo.getServerType().toString() : "<unknown>"));
+		crashReportSection.add("Login phase", (CrashCallable<String>)(() -> ((ClientLoginNetworkHandler.State)this.state.get()).toString()));
 	}
 
 	@Environment(EnvType.CLIENT)

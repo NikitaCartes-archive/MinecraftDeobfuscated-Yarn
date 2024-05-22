@@ -58,7 +58,7 @@ public class SurfaceBuilder {
 		this.seaLevel = seaLevel;
 		this.randomDeriver = randomDeriver;
 		this.terracottaBandsOffsetNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.CLAY_BANDS_OFFSET);
-		this.terracottaBands = createTerracottaBands(randomDeriver.split(new Identifier("clay_bands")));
+		this.terracottaBands = createTerracottaBands(randomDeriver.split(Identifier.method_60656("clay_bands")));
 		this.surfaceNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.SURFACE);
 		this.surfaceSecondaryNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.SURFACE_SECONDARY);
 		this.badlandsPillarNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.BADLANDS_PILLAR);

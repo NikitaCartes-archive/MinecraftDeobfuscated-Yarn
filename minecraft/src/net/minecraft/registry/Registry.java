@@ -307,7 +307,7 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 	boolean contains(RegistryKey<T> key);
 
 	static <T> T register(Registry<? super T> registry, String id, T entry) {
-		return register(registry, new Identifier(id), entry);
+		return register(registry, Identifier.method_60654(id), entry);
 	}
 
 	/**

@@ -17,12 +17,12 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
-	private static final Identifier SCROLLER_TEXTURE = new Identifier("container/stonecutter/scroller");
-	private static final Identifier SCROLLER_DISABLED_TEXTURE = new Identifier("container/stonecutter/scroller_disabled");
-	private static final Identifier RECIPE_SELECTED_TEXTURE = new Identifier("container/stonecutter/recipe_selected");
-	private static final Identifier RECIPE_HIGHLIGHTED_TEXTURE = new Identifier("container/stonecutter/recipe_highlighted");
-	private static final Identifier RECIPE_TEXTURE = new Identifier("container/stonecutter/recipe");
-	private static final Identifier TEXTURE = new Identifier("textures/gui/container/stonecutter.png");
+	private static final Identifier SCROLLER_TEXTURE = Identifier.method_60656("container/stonecutter/scroller");
+	private static final Identifier SCROLLER_DISABLED_TEXTURE = Identifier.method_60656("container/stonecutter/scroller_disabled");
+	private static final Identifier RECIPE_SELECTED_TEXTURE = Identifier.method_60656("container/stonecutter/recipe_selected");
+	private static final Identifier RECIPE_HIGHLIGHTED_TEXTURE = Identifier.method_60656("container/stonecutter/recipe_highlighted");
+	private static final Identifier RECIPE_TEXTURE = Identifier.method_60656("container/stonecutter/recipe");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/stonecutter.png");
 	private static final int SCROLLBAR_WIDTH = 12;
 	private static final int SCROLLBAR_HEIGHT = 15;
 	private static final int RECIPE_LIST_COLUMNS = 4;

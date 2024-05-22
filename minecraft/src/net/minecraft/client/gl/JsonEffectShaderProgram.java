@@ -52,7 +52,7 @@ public class JsonEffectShaderProgram implements EffectShaderProgram, AutoCloseab
 	private final EffectShaderStage fragmentShader;
 
 	public JsonEffectShaderProgram(ResourceFactory resourceFactory, String name) throws IOException {
-		Identifier identifier = new Identifier("shaders/program/" + name + ".json");
+		Identifier identifier = Identifier.method_60656("shaders/program/" + name + ".json");
 		this.name = name;
 		Resource resource = resourceFactory.getResourceOrThrow(identifier);
 
@@ -162,7 +162,7 @@ public class JsonEffectShaderProgram implements EffectShaderProgram, AutoCloseab
 		} else {
 			EffectShaderStage effectShaderStage;
 			if (shaderStage == null) {
-				Identifier identifier = new Identifier("shaders/program/" + name + type.getFileExtension());
+				Identifier identifier = Identifier.method_60656("shaders/program/" + name + type.getFileExtension());
 				Resource resource = resourceFactory.getResourceOrThrow(identifier);
 				InputStream inputStream = resource.getInputStream();
 

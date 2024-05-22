@@ -34,31 +34,21 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 		float headYaw,
 		float headPitch,
 		float tickDelta,
-		float red,
-		float green,
-		float blue
+		int i
 	) {
 		if (!entity.isInvisible()) {
 			contextModel.copyStateTo(model);
 			model.animateModel(entity, limbAngle, limbDistance, tickDelta);
 			model.setAngles(entity, limbAngle, limbDistance, age, headYaw, headPitch);
-			renderModel(model, texture, matrices, vertexConsumers, light, entity, red, green, blue);
+			renderModel(model, texture, matrices, vertexConsumers, light, entity, i);
 		}
 	}
 
 	protected static <T extends LivingEntity> void renderModel(
-		EntityModel<T> model,
-		Identifier texture,
-		MatrixStack matrices,
-		VertexConsumerProvider vertexConsumers,
-		int light,
-		T entity,
-		float red,
-		float green,
-		float blue
+		EntityModel<T> model, Identifier texture, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, int i
 	) {
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(texture));
-		model.render(matrices, vertexConsumer, light, LivingEntityRenderer.getOverlay(entity, 0.0F), red, green, blue, 1.0F);
+		model.render(matrices, vertexConsumer, light, LivingEntityRenderer.getOverlay(entity, 0.0F), i);
 	}
 
 	public M getContextModel() {

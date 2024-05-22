@@ -16,6 +16,7 @@ import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementManager;
 import net.minecraft.advancement.AdvancementPositioner;
 import net.minecraft.advancement.PlacedAdvancement;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.JsonDataLoader;
@@ -33,7 +34,7 @@ public class ServerAdvancementLoader extends JsonDataLoader {
 	private final RegistryWrapper.WrapperLookup registryLookup;
 
 	public ServerAdvancementLoader(RegistryWrapper.WrapperLookup registryLookup) {
-		super(GSON, "advancements");
+		super(GSON, RegistryKeys.method_60915(RegistryKeys.ADVANCEMENT));
 		this.registryLookup = registryLookup;
 	}
 

@@ -14,56 +14,56 @@ import net.minecraft.util.Util;
 public class SmithingTemplateItem extends Item {
 	private static final Formatting TITLE_FORMATTING = Formatting.GRAY;
 	private static final Formatting DESCRIPTION_FORMATTING = Formatting.BLUE;
-	private static final Text INGREDIENTS_TEXT = Text.translatable(Util.createTranslationKey("item", new Identifier("smithing_template.ingredients")))
+	private static final Text INGREDIENTS_TEXT = Text.translatable(Util.createTranslationKey("item", Identifier.method_60656("smithing_template.ingredients")))
 		.formatted(TITLE_FORMATTING);
-	private static final Text APPLIES_TO_TEXT = Text.translatable(Util.createTranslationKey("item", new Identifier("smithing_template.applies_to")))
+	private static final Text APPLIES_TO_TEXT = Text.translatable(Util.createTranslationKey("item", Identifier.method_60656("smithing_template.applies_to")))
 		.formatted(TITLE_FORMATTING);
-	private static final Text NETHERITE_UPGRADE_TEXT = Text.translatable(Util.createTranslationKey("upgrade", new Identifier("netherite_upgrade")))
+	private static final Text NETHERITE_UPGRADE_TEXT = Text.translatable(Util.createTranslationKey("upgrade", Identifier.method_60656("netherite_upgrade")))
 		.formatted(TITLE_FORMATTING);
 	private static final Text ARMOR_TRIM_APPLIES_TO_TEXT = Text.translatable(
-			Util.createTranslationKey("item", new Identifier("smithing_template.armor_trim.applies_to"))
+			Util.createTranslationKey("item", Identifier.method_60656("smithing_template.armor_trim.applies_to"))
 		)
 		.formatted(DESCRIPTION_FORMATTING);
 	private static final Text ARMOR_TRIM_INGREDIENTS_TEXT = Text.translatable(
-			Util.createTranslationKey("item", new Identifier("smithing_template.armor_trim.ingredients"))
+			Util.createTranslationKey("item", Identifier.method_60656("smithing_template.armor_trim.ingredients"))
 		)
 		.formatted(DESCRIPTION_FORMATTING);
 	private static final Text ARMOR_TRIM_BASE_SLOT_DESCRIPTION_TEXT = Text.translatable(
-		Util.createTranslationKey("item", new Identifier("smithing_template.armor_trim.base_slot_description"))
+		Util.createTranslationKey("item", Identifier.method_60656("smithing_template.armor_trim.base_slot_description"))
 	);
 	private static final Text ARMOR_TRIM_ADDITIONS_SLOT_DESCRIPTION_TEXT = Text.translatable(
-		Util.createTranslationKey("item", new Identifier("smithing_template.armor_trim.additions_slot_description"))
+		Util.createTranslationKey("item", Identifier.method_60656("smithing_template.armor_trim.additions_slot_description"))
 	);
 	private static final Text NETHERITE_UPGRADE_APPLIES_TO_TEXT = Text.translatable(
-			Util.createTranslationKey("item", new Identifier("smithing_template.netherite_upgrade.applies_to"))
+			Util.createTranslationKey("item", Identifier.method_60656("smithing_template.netherite_upgrade.applies_to"))
 		)
 		.formatted(DESCRIPTION_FORMATTING);
 	private static final Text NETHERITE_UPGRADE_INGREDIENTS_TEXT = Text.translatable(
-			Util.createTranslationKey("item", new Identifier("smithing_template.netherite_upgrade.ingredients"))
+			Util.createTranslationKey("item", Identifier.method_60656("smithing_template.netherite_upgrade.ingredients"))
 		)
 		.formatted(DESCRIPTION_FORMATTING);
 	private static final Text NETHERITE_UPGRADE_BASE_SLOT_DESCRIPTION_TEXT = Text.translatable(
-		Util.createTranslationKey("item", new Identifier("smithing_template.netherite_upgrade.base_slot_description"))
+		Util.createTranslationKey("item", Identifier.method_60656("smithing_template.netherite_upgrade.base_slot_description"))
 	);
 	private static final Text NETHERITE_UPGRADE_ADDITIONS_SLOT_DESCRIPTION_TEXT = Text.translatable(
-		Util.createTranslationKey("item", new Identifier("smithing_template.netherite_upgrade.additions_slot_description"))
+		Util.createTranslationKey("item", Identifier.method_60656("smithing_template.netherite_upgrade.additions_slot_description"))
 	);
-	private static final Identifier EMPTY_ARMOR_SLOT_HELMET_TEXTURE = new Identifier("item/empty_armor_slot_helmet");
-	private static final Identifier EMPTY_ARMOR_SLOT_CHESTPLATE_TEXTURE = new Identifier("item/empty_armor_slot_chestplate");
-	private static final Identifier EMPTY_ARMOR_SLOT_LEGGINGS_TEXTURE = new Identifier("item/empty_armor_slot_leggings");
-	private static final Identifier EMPTY_ARMOR_SLOT_BOOTS_TEXTURE = new Identifier("item/empty_armor_slot_boots");
-	private static final Identifier EMPTY_SLOT_HOE_TEXTURE = new Identifier("item/empty_slot_hoe");
-	private static final Identifier EMPTY_SLOT_AXE_TEXTURE = new Identifier("item/empty_slot_axe");
-	private static final Identifier EMPTY_SLOT_SWORD_TEXTURE = new Identifier("item/empty_slot_sword");
-	private static final Identifier EMPTY_SLOT_SHOVEL_TEXTURE = new Identifier("item/empty_slot_shovel");
-	private static final Identifier EMPTY_SLOT_PICKAXE_TEXTURE = new Identifier("item/empty_slot_pickaxe");
-	private static final Identifier EMPTY_SLOT_INGOT_TEXTURE = new Identifier("item/empty_slot_ingot");
-	private static final Identifier EMPTY_SLOT_REDSTONE_DUST_TEXTURE = new Identifier("item/empty_slot_redstone_dust");
-	private static final Identifier EMPTY_SLOT_QUARTZ_TEXTURE = new Identifier("item/empty_slot_quartz");
-	private static final Identifier EMPTY_SLOT_EMERALD_TEXTURE = new Identifier("item/empty_slot_emerald");
-	private static final Identifier EMPTY_SLOT_DIAMOND_TEXTURE = new Identifier("item/empty_slot_diamond");
-	private static final Identifier EMPTY_SLOT_LAPIS_LAZULI_TEXTURE = new Identifier("item/empty_slot_lapis_lazuli");
-	private static final Identifier EMPTY_SLOT_AMETHYST_SHARD_TEXTURE = new Identifier("item/empty_slot_amethyst_shard");
+	private static final Identifier EMPTY_ARMOR_SLOT_HELMET_TEXTURE = Identifier.method_60656("item/empty_armor_slot_helmet");
+	private static final Identifier EMPTY_ARMOR_SLOT_CHESTPLATE_TEXTURE = Identifier.method_60656("item/empty_armor_slot_chestplate");
+	private static final Identifier EMPTY_ARMOR_SLOT_LEGGINGS_TEXTURE = Identifier.method_60656("item/empty_armor_slot_leggings");
+	private static final Identifier EMPTY_ARMOR_SLOT_BOOTS_TEXTURE = Identifier.method_60656("item/empty_armor_slot_boots");
+	private static final Identifier EMPTY_SLOT_HOE_TEXTURE = Identifier.method_60656("item/empty_slot_hoe");
+	private static final Identifier EMPTY_SLOT_AXE_TEXTURE = Identifier.method_60656("item/empty_slot_axe");
+	private static final Identifier EMPTY_SLOT_SWORD_TEXTURE = Identifier.method_60656("item/empty_slot_sword");
+	private static final Identifier EMPTY_SLOT_SHOVEL_TEXTURE = Identifier.method_60656("item/empty_slot_shovel");
+	private static final Identifier EMPTY_SLOT_PICKAXE_TEXTURE = Identifier.method_60656("item/empty_slot_pickaxe");
+	private static final Identifier EMPTY_SLOT_INGOT_TEXTURE = Identifier.method_60656("item/empty_slot_ingot");
+	private static final Identifier EMPTY_SLOT_REDSTONE_DUST_TEXTURE = Identifier.method_60656("item/empty_slot_redstone_dust");
+	private static final Identifier EMPTY_SLOT_QUARTZ_TEXTURE = Identifier.method_60656("item/empty_slot_quartz");
+	private static final Identifier EMPTY_SLOT_EMERALD_TEXTURE = Identifier.method_60656("item/empty_slot_emerald");
+	private static final Identifier EMPTY_SLOT_DIAMOND_TEXTURE = Identifier.method_60656("item/empty_slot_diamond");
+	private static final Identifier EMPTY_SLOT_LAPIS_LAZULI_TEXTURE = Identifier.method_60656("item/empty_slot_lapis_lazuli");
+	private static final Identifier EMPTY_SLOT_AMETHYST_SHARD_TEXTURE = Identifier.method_60656("item/empty_slot_amethyst_shard");
 	private final Text appliesToText;
 	private final Text ingredientsText;
 	private final Text titleText;

@@ -38,7 +38,7 @@ public class ArmorTrim implements TooltipAppender {
 		trim -> trim.showInTooltip,
 		ArmorTrim::new
 	);
-	private static final Text UPGRADE_TEXT = Text.translatable(Util.createTranslationKey("item", new Identifier("smithing_template.upgrade")))
+	private static final Text UPGRADE_TEXT = Text.translatable(Util.createTranslationKey("item", Identifier.method_60656("smithing_template.upgrade")))
 		.formatted(Formatting.GRAY);
 	private final RegistryEntry<ArmorTrimMaterial> material;
 	private final RegistryEntry<ArmorTrimPattern> pattern;

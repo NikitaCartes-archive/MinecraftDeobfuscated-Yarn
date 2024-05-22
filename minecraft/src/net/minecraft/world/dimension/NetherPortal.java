@@ -12,7 +12,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -21,7 +20,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockLocating;
-import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.WorldAccess;
 
 public class NetherPortal {
@@ -200,32 +198,7 @@ public class NetherPortal {
 		return new Vec3d(g, f, h);
 	}
 
-	/**
-	 * Determines a {@link TeleportTarget} based on a specific portal.
-	 * 
-	 * <p>The offset, velocity, and angle are modified based on the portal's axis.
-	 */
-	public static TeleportTarget getNetherTeleportTarget(
-		ServerWorld destination, BlockLocating.Rectangle portalRect, Direction.Axis portalAxis, Vec3d offset, Entity entity, Vec3d velocity, float yaw, float pitch
-	) {
-		BlockPos blockPos = portalRect.lowerLeft;
-		BlockState blockState = destination.getBlockState(blockPos);
-		Direction.Axis axis = (Direction.Axis)blockState.getOrEmpty(Properties.HORIZONTAL_AXIS).orElse(Direction.Axis.X);
-		double d = (double)portalRect.width;
-		double e = (double)portalRect.height;
-		EntityDimensions entityDimensions = entity.getDimensions(entity.getPose());
-		int i = portalAxis == axis ? 0 : 90;
-		Vec3d vec3d = portalAxis == axis ? velocity : new Vec3d(velocity.z, velocity.y, -velocity.x);
-		double f = (double)entityDimensions.width() / 2.0 + (d - (double)entityDimensions.width()) * offset.getX();
-		double g = (e - (double)entityDimensions.height()) * offset.getY();
-		double h = 0.5 + offset.getZ();
-		boolean bl = axis == Direction.Axis.X;
-		Vec3d vec3d2 = new Vec3d((double)blockPos.getX() + (bl ? f : h), (double)blockPos.getY() + g, (double)blockPos.getZ() + (bl ? h : f));
-		Vec3d vec3d3 = findOpenPosition(vec3d2, destination, entity, entityDimensions);
-		return new TeleportTarget(destination, vec3d3, vec3d, yaw + (float)i, pitch);
-	}
-
-	private static Vec3d findOpenPosition(Vec3d fallback, ServerWorld world, Entity entity, EntityDimensions dimensions) {
+	public static Vec3d findOpenPosition(Vec3d fallback, ServerWorld world, Entity entity, EntityDimensions dimensions) {
 		if (!(dimensions.width() > 4.0F) && !(dimensions.height() > 4.0F)) {
 			double d = (double)dimensions.height() / 2.0;
 			Vec3d vec3d = fallback.add(0.0, d, 0.0);

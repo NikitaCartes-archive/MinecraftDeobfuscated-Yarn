@@ -2,28 +2,28 @@ package net.minecraft.entity.attribute;
 
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.DataResult.Error;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
-import java.util.UUID;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.Uuids;
 import net.minecraft.util.function.ValueLists;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.Random;
 import org.slf4j.Logger;
 
-public record EntityAttributeModifier(UUID uuid, String name, double value, EntityAttributeModifier.Operation operation) {
+public record EntityAttributeModifier(Identifier uuid, double value, EntityAttributeModifier.Operation operation) {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final MapCodec<EntityAttributeModifier> MAP_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Uuids.INT_STREAM_CODEC.fieldOf("uuid").forGetter(EntityAttributeModifier::uuid),
-					Codec.STRING.fieldOf("name").forGetter(modifier -> modifier.name),
+					Identifier.CODEC.fieldOf("id").forGetter(EntityAttributeModifier::uuid),
 					Codec.DOUBLE.fieldOf("amount").forGetter(EntityAttributeModifier::value),
 					EntityAttributeModifier.Operation.CODEC.fieldOf("operation").forGetter(EntityAttributeModifier::operation)
 				)
@@ -31,10 +31,8 @@ public record EntityAttributeModifier(UUID uuid, String name, double value, Enti
 	);
 	public static final Codec<EntityAttributeModifier> CODEC = MAP_CODEC.codec();
 	public static final PacketCodec<ByteBuf, EntityAttributeModifier> PACKET_CODEC = PacketCodec.tuple(
-		Uuids.PACKET_CODEC,
+		Identifier.PACKET_CODEC,
 		EntityAttributeModifier::uuid,
-		PacketCodecs.STRING,
-		modifier -> modifier.name,
 		PacketCodecs.DOUBLE,
 		EntityAttributeModifier::value,
 		EntityAttributeModifier.Operation.PACKET_CODEC,
@@ -42,30 +40,24 @@ public record EntityAttributeModifier(UUID uuid, String name, double value, Enti
 		EntityAttributeModifier::new
 	);
 
-	public EntityAttributeModifier(String name, double value, EntityAttributeModifier.Operation operation) {
-		this(MathHelper.randomUuid(Random.createLocal()), name, value, operation);
-	}
-
 	public NbtCompound toNbt() {
-		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putString("Name", this.name);
-		nbtCompound.putDouble("Amount", this.value);
-		nbtCompound.putInt("Operation", this.operation.getId());
-		nbtCompound.putUuid("UUID", this.uuid);
-		return nbtCompound;
+		DataResult<NbtElement> dataResult = CODEC.encode(this, NbtOps.INSTANCE, new NbtCompound());
+		return (NbtCompound)dataResult.getOrThrow();
 	}
 
 	@Nullable
 	public static EntityAttributeModifier fromNbt(NbtCompound nbt) {
-		try {
-			UUID uUID = nbt.getUuid("UUID");
-			EntityAttributeModifier.Operation operation = (EntityAttributeModifier.Operation)EntityAttributeModifier.Operation.ID_TO_VALUE
-				.apply(nbt.getInt("Operation"));
-			return new EntityAttributeModifier(uUID, nbt.getString("Name"), nbt.getDouble("Amount"), operation);
-		} catch (Exception var3) {
-			LOGGER.warn("Unable to create attribute: {}", var3.getMessage());
+		DataResult<EntityAttributeModifier> dataResult = CODEC.parse(NbtOps.INSTANCE, nbt);
+		if (dataResult.isSuccess()) {
+			return dataResult.getOrThrow();
+		} else {
+			LOGGER.warn("Unable to create attribute: {}", ((Error)dataResult.error().get()).message());
 			return null;
 		}
+	}
+
+	public boolean method_60718(Identifier identifier) {
+		return identifier.equals(this.uuid);
 	}
 
 	/**

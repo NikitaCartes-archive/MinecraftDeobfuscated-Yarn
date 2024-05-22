@@ -11,8 +11,8 @@ import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class VexEntityRenderer extends MobEntityRenderer<VexEntity, VexEntityModel> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/illager/vex.png");
-	private static final Identifier CHARGING_TEXTURE = new Identifier("textures/entity/illager/vex_charging.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/illager/vex.png");
+	private static final Identifier CHARGING_TEXTURE = Identifier.method_60656("textures/entity/illager/vex_charging.png");
 
 	public VexEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new VexEntityModel(context.getPart(EntityModelLayers.VEX)), 0.3F);

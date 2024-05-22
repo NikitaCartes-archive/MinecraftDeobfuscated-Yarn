@@ -22,6 +22,8 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9785;
+import net.minecraft.class_9786;
 import net.minecraft.datafixer.fix.AddFlagIfNotPresentFix;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementCriteriaRenameFix;
@@ -1303,6 +1305,9 @@ public class Schemas {
 		builder.addFixer(new RemoveFeatureTogglesFix(schema224, "Remove 1.21 feature toggle", Set.of("minecraft:update_1_21")));
 		Schema schema225 = builder.addSchema(3943, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new OptionsMenuBlurrinessFix(schema225));
+		Schema schema226 = builder.addSchema(3945, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new class_9785(schema226));
+		builder.addFixer(new class_9786(schema226));
 	}
 
 	private static UnaryOperator<String> replacingRaw(Map<String, String> replacements) {

@@ -16,30 +16,28 @@ import net.minecraft.world.chunk.light.LightingProvider;
 
 @Environment(EnvType.CLIENT)
 public class ChunkRendererRegion implements BlockRenderView {
-	private final int chunkXOffset;
-	private final int chunkZOffset;
-	protected final RenderedChunk[][] chunks;
+	public static final int field_52160 = 1;
+	public static final int field_52161 = 3;
+	private final int field_52162;
+	private final int field_52163;
+	protected final RenderedChunk[] chunks;
 	protected final World world;
 
-	ChunkRendererRegion(World world, int chunkX, int chunkZ, RenderedChunk[][] chunks) {
+	ChunkRendererRegion(World world, int chunkX, int chunkZ, RenderedChunk[] chunks) {
 		this.world = world;
-		this.chunkXOffset = chunkX;
-		this.chunkZOffset = chunkZ;
+		this.field_52162 = chunkX;
+		this.field_52163 = chunkZ;
 		this.chunks = chunks;
 	}
 
 	@Override
 	public BlockState getBlockState(BlockPos pos) {
-		int i = ChunkSectionPos.getSectionCoord(pos.getX()) - this.chunkXOffset;
-		int j = ChunkSectionPos.getSectionCoord(pos.getZ()) - this.chunkZOffset;
-		return this.chunks[i][j].getBlockState(pos);
+		return this.method_60898(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ())).getBlockState(pos);
 	}
 
 	@Override
 	public FluidState getFluidState(BlockPos pos) {
-		int i = ChunkSectionPos.getSectionCoord(pos.getX()) - this.chunkXOffset;
-		int j = ChunkSectionPos.getSectionCoord(pos.getZ()) - this.chunkZOffset;
-		return this.chunks[i][j].getBlockState(pos).getFluidState();
+		return this.method_60898(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ())).getBlockState(pos).getFluidState();
 	}
 
 	@Override
@@ -55,9 +53,11 @@ public class ChunkRendererRegion implements BlockRenderView {
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos pos) {
-		int i = ChunkSectionPos.getSectionCoord(pos.getX()) - this.chunkXOffset;
-		int j = ChunkSectionPos.getSectionCoord(pos.getZ()) - this.chunkZOffset;
-		return this.chunks[i][j].getBlockEntity(pos);
+		return this.method_60898(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ())).getBlockEntity(pos);
+	}
+
+	private RenderedChunk method_60898(int i, int j) {
+		return this.chunks[method_60899(this.field_52162, this.field_52163, i, j)];
 	}
 
 	@Override
@@ -73,5 +73,9 @@ public class ChunkRendererRegion implements BlockRenderView {
 	@Override
 	public int getHeight() {
 		return this.world.getHeight();
+	}
+
+	public static int method_60899(int i, int j, int k, int l) {
+		return k - i + (l - j) * 3;
 	}
 }

@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
@@ -14,14 +13,13 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.realms.RealmsLabel;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
+import net.minecraft.client.realms.gui.RealmsPopups;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
-import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsSlotOptionsScreen extends RealmsScreen {
@@ -31,7 +29,6 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 	public static final List<GameMode> GAME_MODES = ImmutableList.of(GameMode.SURVIVAL, GameMode.CREATIVE, GameMode.ADVENTURE);
 	private static final Text EDIT_SLOT_NAME = Text.translatable("mco.configure.world.edit.slot.name");
 	static final Text SPAWN_PROTECTION = Text.translatable("mco.configure.world.spawnProtection");
-	private static final Text SPAWN_TOGGLE_TITLE = Text.translatable("mco.configure.world.spawn_toggle.title").formatted(Formatting.RED, Formatting.BOLD);
 	private TextFieldWidget nameEdit;
 	protected final RealmsConfigureWorldScreen parent;
 	private int column1_x;
@@ -80,13 +77,8 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.client.setScreen(this.parent);
-			return true;
-		} else {
-			return super.keyPressed(keyCode, scanCode, modifiers);
-		}
+	public void close() {
+		this.client.setScreen(this.parent);
 	}
 
 	private static <T> T get(List<T> list, int index, int fallbackIndex) {
@@ -219,9 +211,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 				.dimensions(this.column1_x, row(13), this.column2_x, 20)
 				.build()
 		);
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(i, row(13), this.column2_x, 20).build()
-		);
+		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).dimensions(i, row(13), this.column2_x, 20).build());
 	}
 
 	private CyclingButtonWidget.UpdateCallback<Boolean> getSpawnToggleButtonCallback(Text text, Consumer<Boolean> valueSetter) {
@@ -229,13 +219,10 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 			if (value) {
 				valueSetter.accept(true);
 			} else {
-				this.client.setScreen(new ConfirmScreen(confirmed -> {
-					if (confirmed) {
-						valueSetter.accept(false);
-					}
-
-					this.client.setScreen(this);
-				}, SPAWN_TOGGLE_TITLE, text, ScreenTexts.PROCEED, ScreenTexts.CANCEL));
+				this.client.setScreen(RealmsPopups.createContinuableWarningPopup(this, text, popupScreen -> {
+					valueSetter.accept(false);
+					popupScreen.close();
+				}));
 			}
 		};
 	}

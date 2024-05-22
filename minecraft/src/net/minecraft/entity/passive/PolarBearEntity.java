@@ -33,6 +33,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -78,7 +79,10 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 		super.initGoals();
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new PolarBearEntity.AttackGoal());
-		this.goalSelector.add(1, new PolarBearEntity.PolarBearEscapeDangerGoal());
+		this.goalSelector
+			.add(
+				1, new EscapeDangerGoal(this, 2.0, pathAwareEntity -> pathAwareEntity.isBaby() ? DamageTypeTags.PANIC_CAUSES : DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES)
+			);
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.25));
 		this.goalSelector.add(5, new WanderAroundGoal(this, 1.0));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
@@ -269,17 +273,6 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 		public void stop() {
 			PolarBearEntity.this.setWarning(false);
 			super.stop();
-		}
-	}
-
-	class PolarBearEscapeDangerGoal extends EscapeDangerGoal {
-		public PolarBearEscapeDangerGoal() {
-			super(PolarBearEntity.this, 2.0);
-		}
-
-		@Override
-		protected boolean isInDanger() {
-			return this.mob.getAttacker() != null && this.mob.isBaby() || this.mob.isOnFire();
 		}
 	}
 

@@ -108,40 +108,40 @@ public class LightDebugRenderer implements DebugRenderer.Renderer {
 		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 		switch (direction) {
 			case DOWN:
-				vertexConsumer.vertex(matrix4f, f, g, h).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, i, g, h).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, i, g, k).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, f, g, k).color(l, m, n, o).next();
+				vertexConsumer.vertex(matrix4f, f, g, h).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, i, g, h).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, i, g, k).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, f, g, k).color(l, m, n, o);
 				break;
 			case UP:
-				vertexConsumer.vertex(matrix4f, f, j, h).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, f, j, k).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, i, j, k).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, i, j, h).color(l, m, n, o).next();
+				vertexConsumer.vertex(matrix4f, f, j, h).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, f, j, k).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, i, j, k).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, i, j, h).color(l, m, n, o);
 				break;
 			case NORTH:
-				vertexConsumer.vertex(matrix4f, f, g, h).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, f, j, h).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, i, j, h).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, i, g, h).color(l, m, n, o).next();
+				vertexConsumer.vertex(matrix4f, f, g, h).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, f, j, h).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, i, j, h).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, i, g, h).color(l, m, n, o);
 				break;
 			case SOUTH:
-				vertexConsumer.vertex(matrix4f, f, g, k).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, i, g, k).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, i, j, k).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, f, j, k).color(l, m, n, o).next();
+				vertexConsumer.vertex(matrix4f, f, g, k).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, i, g, k).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, i, j, k).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, f, j, k).color(l, m, n, o);
 				break;
 			case WEST:
-				vertexConsumer.vertex(matrix4f, f, g, h).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, f, g, k).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, f, j, k).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, f, j, h).color(l, m, n, o).next();
+				vertexConsumer.vertex(matrix4f, f, g, h).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, f, g, k).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, f, j, k).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, f, j, h).color(l, m, n, o);
 				break;
 			case EAST:
-				vertexConsumer.vertex(matrix4f, i, g, h).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, i, j, h).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, i, j, k).color(l, m, n, o).next();
-				vertexConsumer.vertex(matrix4f, i, g, k).color(l, m, n, o).next();
+				vertexConsumer.vertex(matrix4f, i, g, h).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, i, j, h).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, i, j, k).color(l, m, n, o);
+				vertexConsumer.vertex(matrix4f, i, g, k).color(l, m, n, o);
 		}
 	}
 
@@ -166,8 +166,8 @@ public class LightDebugRenderer implements DebugRenderer.Renderer {
 		float j = (float)((double)ChunkSectionPos.getBlockCoord(y2) - cameraY);
 		float k = (float)((double)ChunkSectionPos.getBlockCoord(z) - cameraZ);
 		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-		vertexConsumer.vertex(matrix4f, f, g, h).color(color.x(), color.y(), color.z(), 1.0F).next();
-		vertexConsumer.vertex(matrix4f, i, j, k).color(color.x(), color.y(), color.z(), 1.0F).next();
+		vertexConsumer.vertex(matrix4f, f, g, h).color(color.x(), color.y(), color.z(), 1.0F);
+		vertexConsumer.vertex(matrix4f, i, j, k).color(color.x(), color.y(), color.z(), 1.0F);
 	}
 
 	@Environment(EnvType.CLIENT)

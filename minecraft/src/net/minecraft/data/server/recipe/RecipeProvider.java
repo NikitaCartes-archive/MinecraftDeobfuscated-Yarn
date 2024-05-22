@@ -40,6 +40,7 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SmeltingRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
@@ -69,8 +70,8 @@ public abstract class RecipeProvider implements DataProvider {
 		.build();
 
 	public RecipeProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		this.recipesPathResolver = output.getResolver(DataOutput.OutputType.DATA_PACK, "recipes");
-		this.advancementsPathResolver = output.getResolver(DataOutput.OutputType.DATA_PACK, "advancements");
+		this.recipesPathResolver = output.method_60917(RegistryKeys.RECIPE);
+		this.advancementsPathResolver = output.method_60917(RegistryKeys.ADVANCEMENT);
 		this.registryLookupFuture = registryLookupFuture;
 	}
 
@@ -538,7 +539,7 @@ public abstract class RecipeProvider implements DataProvider {
 			.input(compactItem)
 			.group(reverseGroup)
 			.criterion(hasItem(compactItem), conditionsFromItem(compactItem))
-			.offerTo(exporter, new Identifier(reverseId));
+			.offerTo(exporter, Identifier.method_60654(reverseId));
 		ShapedRecipeJsonBuilder.create(compactingCategory, compactItem)
 			.input('#', baseItem)
 			.pattern("###")
@@ -546,7 +547,7 @@ public abstract class RecipeProvider implements DataProvider {
 			.pattern("###")
 			.group(compactingGroup)
 			.criterion(hasItem(baseItem), conditionsFromItem(baseItem))
-			.offerTo(exporter, new Identifier(compactingId));
+			.offerTo(exporter, Identifier.method_60654(compactingId));
 	}
 
 	protected static void offerSmithingTemplateCopyingRecipe(RecipeExporter exporter, ItemConvertible template, TagKey<Item> resource) {
@@ -571,6 +572,18 @@ public abstract class RecipeProvider implements DataProvider {
 			.pattern("###")
 			.criterion(hasItem(template), conditionsFromItem(template))
 			.offerTo(exporter);
+	}
+
+	protected static void method_60922(RecipeExporter recipeExporter, ItemConvertible itemConvertible, Ingredient ingredient) {
+		ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, itemConvertible, 2)
+			.input('#', Items.DIAMOND)
+			.input('C', ingredient)
+			.input('S', itemConvertible)
+			.pattern("#S#")
+			.pattern("#C#")
+			.pattern("###")
+			.criterion(hasItem(itemConvertible), conditionsFromItem(itemConvertible))
+			.offerTo(recipeExporter);
 	}
 
 	protected static <T extends AbstractCookingRecipe> void generateCookingRecipes(

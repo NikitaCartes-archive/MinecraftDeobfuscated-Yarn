@@ -25,11 +25,11 @@ public class WolfArmorFeatureRenderer extends FeatureRenderer<WolfEntity, WolfEn
 	private final WolfEntityModel<WolfEntity> model;
 	private static final Map<Cracks.CrackLevel, Identifier> CRACK_TEXTURES = Map.of(
 		Cracks.CrackLevel.LOW,
-		new Identifier("textures/entity/wolf/wolf_armor_crackiness_low.png"),
+		Identifier.method_60656("textures/entity/wolf/wolf_armor_crackiness_low.png"),
 		Cracks.CrackLevel.MEDIUM,
-		new Identifier("textures/entity/wolf/wolf_armor_crackiness_medium.png"),
+		Identifier.method_60656("textures/entity/wolf/wolf_armor_crackiness_medium.png"),
 		Cracks.CrackLevel.HIGH,
-		new Identifier("textures/entity/wolf/wolf_armor_crackiness_high.png")
+		Identifier.method_60656("textures/entity/wolf/wolf_armor_crackiness_high.png")
 	);
 
 	public WolfArmorFeatureRenderer(FeatureRendererContext<WolfEntity, WolfEntityModel<WolfEntity>> context, EntityModelLoader loader) {
@@ -47,7 +47,7 @@ public class WolfArmorFeatureRenderer extends FeatureRenderer<WolfEntity, WolfEn
 				this.model.animateModel(wolfEntity, f, g, h);
 				this.model.setAngles(wolfEntity, f, g, j, k, l);
 				VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(animalArmorItem.getEntityTexture()));
-				this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+				this.model.method_60879(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 				this.renderDyed(matrixStack, vertexConsumerProvider, i, itemStack, animalArmorItem);
 				this.renderCracks(matrixStack, vertexConsumerProvider, i, itemStack);
 				return;
@@ -67,10 +67,8 @@ public class WolfArmorFeatureRenderer extends FeatureRenderer<WolfEntity, WolfEn
 				return;
 			}
 
-			float f = (float)ColorHelper.Argb.getRed(i) / 255.0F;
-			float g = (float)ColorHelper.Argb.getGreen(i) / 255.0F;
-			float h = (float)ColorHelper.Argb.getBlue(i) / 255.0F;
-			this.model.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(identifier)), light, OverlayTexture.DEFAULT_UV, f, g, h, 1.0F);
+			this.model
+				.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(identifier)), light, OverlayTexture.DEFAULT_UV, ColorHelper.Argb.fullAlpha(i));
 		}
 	}
 
@@ -79,7 +77,7 @@ public class WolfArmorFeatureRenderer extends FeatureRenderer<WolfEntity, WolfEn
 		if (crackLevel != Cracks.CrackLevel.NONE) {
 			Identifier identifier = (Identifier)CRACK_TEXTURES.get(crackLevel);
 			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(identifier));
-			this.model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+			this.model.method_60879(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
 		}
 	}
 }

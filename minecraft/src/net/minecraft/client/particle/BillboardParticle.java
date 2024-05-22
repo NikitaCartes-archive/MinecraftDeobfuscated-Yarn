@@ -55,21 +55,17 @@ public abstract class BillboardParticle extends Particle {
 		float m = this.getMinV();
 		float n = this.getMaxV();
 		int o = this.getBrightness(i);
-		this.method_60375(vertexConsumer, quaternionf, f, g, h, -1.0F, -1.0F, j, l, n, o);
-		this.method_60375(vertexConsumer, quaternionf, f, g, h, -1.0F, 1.0F, j, l, m, o);
-		this.method_60375(vertexConsumer, quaternionf, f, g, h, 1.0F, 1.0F, j, k, m, o);
-		this.method_60375(vertexConsumer, quaternionf, f, g, h, 1.0F, -1.0F, j, k, n, o);
+		this.method_60375(vertexConsumer, quaternionf, f, g, h, 1.0F, -1.0F, j, l, n, o);
+		this.method_60375(vertexConsumer, quaternionf, f, g, h, 1.0F, 1.0F, j, l, m, o);
+		this.method_60375(vertexConsumer, quaternionf, f, g, h, -1.0F, 1.0F, j, k, m, o);
+		this.method_60375(vertexConsumer, quaternionf, f, g, h, -1.0F, -1.0F, j, k, n, o);
 	}
 
 	private void method_60375(
 		VertexConsumer vertexConsumer, Quaternionf quaternionf, float f, float g, float h, float i, float j, float k, float l, float m, int n
 	) {
 		Vector3f vector3f = new Vector3f(i, j, 0.0F).rotate(quaternionf).mul(k).add(f, g, h);
-		vertexConsumer.vertex((double)vector3f.x(), (double)vector3f.y(), (double)vector3f.z())
-			.texture(l, m)
-			.color(this.red, this.green, this.blue, this.alpha)
-			.light(n)
-			.next();
+		vertexConsumer.vertex(vector3f.x(), vector3f.y(), vector3f.z()).texture(l, m).color(this.red, this.green, this.blue, this.alpha).method_60803(n);
 	}
 
 	/**

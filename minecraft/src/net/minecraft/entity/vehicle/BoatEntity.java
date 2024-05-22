@@ -139,7 +139,7 @@ public class BoatEntity extends VehicleEntity implements VariantHolder<BoatEntit
 	}
 
 	@Override
-	protected Vec3d positionInPortal(Direction.Axis portalAxis, BlockLocating.Rectangle portalRect) {
+	public Vec3d positionInPortal(Direction.Axis portalAxis, BlockLocating.Rectangle portalRect) {
 		return LivingEntity.positionInPortal(super.positionInPortal(portalAxis, portalRect));
 	}
 

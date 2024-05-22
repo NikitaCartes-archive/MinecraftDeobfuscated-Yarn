@@ -12,6 +12,7 @@ import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 
@@ -23,7 +24,7 @@ public class AdvancementProvider implements DataProvider {
 	public AdvancementProvider(
 		DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture, List<AdvancementTabGenerator> tabGenerators
 	) {
-		this.pathResolver = output.getResolver(DataOutput.OutputType.DATA_PACK, "advancements");
+		this.pathResolver = output.method_60917(RegistryKeys.ADVANCEMENT);
 		this.tabGenerators = tabGenerators;
 		this.registryLookupFuture = registryLookupFuture;
 	}

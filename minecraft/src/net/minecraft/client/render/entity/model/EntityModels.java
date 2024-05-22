@@ -70,6 +70,7 @@ public class EntityModels {
 		builder.put(EntityModelLayers.BOGGED_OUTER, TexturedModelData.of(BipedEntityModel.getModelData(new Dilation(0.2F), 0.0F), 64, 32));
 		builder.put(EntityModelLayers.BOOK, BookModel.getTexturedModelData());
 		builder.put(EntityModelLayers.BREEZE, BreezeEntityModel.getTexturedModelData(32, 32));
+		builder.put(EntityModelLayers.BREEZE_WIND, BreezeEntityModel.getTexturedModelData(128, 128));
 		builder.put(EntityModelLayers.CAT, texturedModelData10);
 		builder.put(EntityModelLayers.CAT_COLLAR, TexturedModelData.of(OcelotEntityModel.getModelData(new Dilation(0.01F)), 64, 32));
 		builder.put(EntityModelLayers.CAMEL, CamelEntityModel.getTexturedModelData());

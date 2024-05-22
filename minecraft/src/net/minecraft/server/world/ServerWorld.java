@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.class_9813;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -1615,7 +1616,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		Writer writer2 = Files.newBufferedWriter(path.resolve("example_crash.txt"));
 
 		try {
-			writer2.write(crashReport.asString());
+			writer2.write(crashReport.method_60920(class_9813.MINECRAFT_TEST_REPORT));
 		} catch (Throwable var21) {
 			if (writer2 != null) {
 				try {
@@ -1839,15 +1840,6 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		} catch (Exception var6) {
 			return "";
 		}
-	}
-
-	public static void createEndSpawnPlatform(ServerWorld world) {
-		BlockPos blockPos = END_SPAWN_POS;
-		int i = blockPos.getX();
-		int j = blockPos.getY() - 2;
-		int k = blockPos.getZ();
-		BlockPos.iterate(i - 2, j + 1, k - 2, i + 2, j + 3, k + 2).forEach(pos -> world.setBlockState(pos, Blocks.AIR.getDefaultState()));
-		BlockPos.iterate(i - 2, j, k - 2, i + 2, j, k + 2).forEach(pos -> world.setBlockState(pos, Blocks.OBSIDIAN.getDefaultState()));
 	}
 
 	@Override

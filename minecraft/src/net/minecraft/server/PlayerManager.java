@@ -429,7 +429,7 @@ public abstract class PlayerManager {
 		this.players.remove(player);
 		player.getServerWorld().removePlayer(player, removalReason);
 		TeleportTarget teleportTarget = player.getRespawnTarget(alive);
-		ServerWorld serverWorld = teleportTarget.newDimension();
+		ServerWorld serverWorld = teleportTarget.newLevel();
 		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld, player.getGameProfile(), player.getClientOptions());
 		serverPlayerEntity.networkHandler = player.networkHandler;
 		serverPlayerEntity.copyFrom(player, alive);

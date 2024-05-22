@@ -3,6 +3,7 @@ package net.minecraft.client.render;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9799;
 
 /**
  * Holding a single instance of {@link BufferBuilder}.
@@ -13,7 +14,7 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class Tessellator {
 	private static final int field_46841 = 786432;
-	private final BufferBuilder buffer;
+	private final class_9799 field_52098;
 	@Nullable
 	private static Tessellator INSTANCE;
 
@@ -34,23 +35,18 @@ public class Tessellator {
 	}
 
 	public Tessellator(int bufferCapacity) {
-		this.buffer = new BufferBuilder(bufferCapacity);
+		this.field_52098 = new class_9799(bufferCapacity);
 	}
 
 	public Tessellator() {
 		this(786432);
 	}
 
-	/**
-	 * Draws the contents of the buffer builder using the shader program
-	 * specified with {@link com.mojang.blaze3d.systems.RenderSystem#setShader
-	 * RenderSystem#setShader}.
-	 */
-	public void draw() {
-		BufferRenderer.drawWithGlobalProgram(this.buffer.end());
+	public BufferBuilder method_60827(VertexFormat.DrawMode drawMode, VertexFormat vertexFormat) {
+		return new BufferBuilder(this.field_52098, drawMode, vertexFormat);
 	}
 
-	public BufferBuilder getBuffer() {
-		return this.buffer;
+	public void method_60828() {
+		this.field_52098.method_60809();
 	}
 }

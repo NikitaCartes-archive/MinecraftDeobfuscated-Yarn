@@ -1,6 +1,8 @@
 package net.minecraft.registry;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.class_9793;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.DecoratedPotPattern;
@@ -48,6 +50,7 @@ import net.minecraft.particle.ParticleType;
 import net.minecraft.potion.Potion;
 import net.minecraft.predicate.entity.EntitySubPredicate;
 import net.minecraft.predicate.item.ItemSubPredicate;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.scoreboard.number.NumberFormatType;
@@ -105,7 +108,7 @@ import net.minecraft.world.gen.trunk.TrunkPlacerType;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class RegistryKeys {
-	public static final Identifier ROOT = new Identifier("root");
+	public static final Identifier ROOT = Identifier.method_60656("root");
 	public static final RegistryKey<Registry<Activity>> ACTIVITY = of("activity");
 	public static final RegistryKey<Registry<EntityAttribute>> ATTRIBUTE = of("attribute");
 	public static final RegistryKey<Registry<BannerPattern>> BANNER_PATTERN = of("banner_pattern");
@@ -148,6 +151,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<Instrument>> INSTRUMENT = of("instrument");
 	public static final RegistryKey<Registry<IntProviderType<?>>> INT_PROVIDER_TYPE = of("int_provider_type");
 	public static final RegistryKey<Registry<Item>> ITEM = of("item");
+	public static final RegistryKey<Registry<class_9793>> JUKEBOX_SONG = of("jukebox_song");
 	public static final RegistryKey<Registry<LootConditionType>> LOOT_CONDITION_TYPE = of("loot_condition_type");
 	public static final RegistryKey<Registry<LootFunctionType<?>>> LOOT_FUNCTION_TYPE = of("loot_function_type");
 	public static final RegistryKey<Registry<LootNbtProviderType>> LOOT_NBT_PROVIDER_TYPE = of("loot_nbt_provider_type");
@@ -221,6 +225,8 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<LootTable>> LOOT_TABLE = of("loot_table");
 	public static final RegistryKey<Registry<LootFunction>> ITEM_MODIFIER = of("item_modifier");
 	public static final RegistryKey<Registry<LootCondition>> PREDICATE = of("predicate");
+	public static final RegistryKey<Registry<Advancement>> ADVANCEMENT = of("advancement");
+	public static final RegistryKey<Registry<Recipe<?>>> RECIPE = of("recipe");
 
 	public static RegistryKey<World> toWorldKey(RegistryKey<DimensionOptions> key) {
 		return RegistryKey.of(WORLD, key.getValue());
@@ -231,6 +237,14 @@ public class RegistryKeys {
 	}
 
 	private static <T> RegistryKey<Registry<T>> of(String id) {
-		return RegistryKey.ofRegistry(new Identifier(id));
+		return RegistryKey.ofRegistry(Identifier.method_60656(id));
+	}
+
+	public static String method_60915(RegistryKey<? extends Registry<?>> registryKey) {
+		return registryKey.getValue().getPath();
+	}
+
+	public static String method_60916(RegistryKey<? extends Registry<?>> registryKey) {
+		return "tags/" + registryKey.getValue().getPath();
 	}
 }

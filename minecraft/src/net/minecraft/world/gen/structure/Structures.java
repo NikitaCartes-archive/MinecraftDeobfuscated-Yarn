@@ -332,7 +332,7 @@ public class Structures {
 					StructureTerrainAdaptation.BEARD_BOX
 				),
 				registryEntryLookup2.getOrThrow(AncientCityGenerator.CITY_CENTER),
-				Optional.of(new Identifier("city_anchor")),
+				Optional.of(Identifier.method_60656("city_anchor")),
 				7,
 				ConstantHeightProvider.create(YOffset.fixed(-27)),
 				false,

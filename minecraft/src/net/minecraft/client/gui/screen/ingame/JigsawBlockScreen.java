@@ -66,9 +66,9 @@ public class JigsawBlockScreen extends Screen {
 			.sendPacket(
 				new UpdateJigsawC2SPacket(
 					this.jigsaw.getPos(),
-					new Identifier(this.nameField.getText()),
-					new Identifier(this.targetField.getText()),
-					new Identifier(this.poolField.getText()),
+					Identifier.method_60654(this.nameField.getText()),
+					Identifier.method_60654(this.targetField.getText()),
+					Identifier.method_60654(this.poolField.getText()),
 					this.finalStateField.getText(),
 					this.joint,
 					this.parseInt(this.selectionPriorityField.getText()),

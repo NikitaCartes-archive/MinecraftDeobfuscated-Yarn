@@ -29,7 +29,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements DynamicTextur
 	@Deprecated
 	public static final Identifier BLOCK_ATLAS_TEXTURE = PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
 	@Deprecated
-	public static final Identifier PARTICLE_ATLAS_TEXTURE = new Identifier("textures/atlas/particles.png");
+	public static final Identifier PARTICLE_ATLAS_TEXTURE = Identifier.method_60656("textures/atlas/particles.png");
 	private List<SpriteContents> spritesToLoad = List.of();
 	private List<Sprite.TickableAnimation> animatedSprites = List.of();
 	private Map<Identifier, Sprite> sprites = Map.of();

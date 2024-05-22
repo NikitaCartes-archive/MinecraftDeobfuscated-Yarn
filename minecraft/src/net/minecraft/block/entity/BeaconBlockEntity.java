@@ -2,7 +2,6 @@ package net.minecraft.block.entity;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -10,7 +9,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Stainable;
@@ -43,6 +41,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 
@@ -140,19 +139,16 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 
 		for (int m = 0; m < 10 && blockPos.getY() <= l; m++) {
 			BlockState blockState = world.getBlockState(blockPos);
-			Block block = blockState.getBlock();
-			if (block instanceof Stainable) {
-				float[] fs = ((Stainable)block).getColor().getColorComponents();
+			if (blockState.getBlock() instanceof Stainable stainable) {
+				int n = stainable.getColor().getColorComponents();
 				if (blockEntity.field_19178.size() <= 1) {
-					beamSegment = new BeaconBlockEntity.BeamSegment(fs);
+					beamSegment = new BeaconBlockEntity.BeamSegment(n);
 					blockEntity.field_19178.add(beamSegment);
 				} else if (beamSegment != null) {
-					if (Arrays.equals(fs, beamSegment.color)) {
+					if (n == beamSegment.color) {
 						beamSegment.increaseHeight();
 					} else {
-						beamSegment = new BeaconBlockEntity.BeamSegment(
-							new float[]{(beamSegment.color[0] + fs[0]) / 2.0F, (beamSegment.color[1] + fs[1]) / 2.0F, (beamSegment.color[2] + fs[2]) / 2.0F}
-						);
+						beamSegment = new BeaconBlockEntity.BeamSegment(ColorHelper.Argb.method_60676(beamSegment.color, n));
 						blockEntity.field_19178.add(beamSegment);
 					}
 				}
@@ -378,11 +374,11 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	public static class BeamSegment {
-		final float[] color;
+		final int color;
 		private int height;
 
-		public BeamSegment(float[] color) {
-			this.color = color;
+		public BeamSegment(int i) {
+			this.color = i;
 			this.height = 1;
 		}
 
@@ -390,7 +386,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 			this.height++;
 		}
 
-		public float[] getColor() {
+		public int getColor() {
 			return this.color;
 		}
 

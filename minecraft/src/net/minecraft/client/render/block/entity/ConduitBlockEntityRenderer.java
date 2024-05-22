@@ -25,15 +25,23 @@ import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class ConduitBlockEntityRenderer implements BlockEntityRenderer<ConduitBlockEntity> {
-	public static final SpriteIdentifier BASE_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/conduit/base"));
-	public static final SpriteIdentifier CAGE_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/conduit/cage"));
-	public static final SpriteIdentifier WIND_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/conduit/wind"));
-	public static final SpriteIdentifier WIND_VERTICAL_TEXTURE = new SpriteIdentifier(
-		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/conduit/wind_vertical")
+	public static final SpriteIdentifier BASE_TEXTURE = new SpriteIdentifier(
+		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.method_60656("entity/conduit/base")
 	);
-	public static final SpriteIdentifier OPEN_EYE_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/conduit/open_eye"));
+	public static final SpriteIdentifier CAGE_TEXTURE = new SpriteIdentifier(
+		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.method_60656("entity/conduit/cage")
+	);
+	public static final SpriteIdentifier WIND_TEXTURE = new SpriteIdentifier(
+		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.method_60656("entity/conduit/wind")
+	);
+	public static final SpriteIdentifier WIND_VERTICAL_TEXTURE = new SpriteIdentifier(
+		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.method_60656("entity/conduit/wind_vertical")
+	);
+	public static final SpriteIdentifier OPEN_EYE_TEXTURE = new SpriteIdentifier(
+		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.method_60656("entity/conduit/open_eye")
+	);
 	public static final SpriteIdentifier CLOSED_EYE_TEXTURE = new SpriteIdentifier(
-		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/conduit/closed_eye")
+		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.method_60656("entity/conduit/closed_eye")
 	);
 	private final ModelPart conduitEye;
 	private final ModelPart conduitWind;

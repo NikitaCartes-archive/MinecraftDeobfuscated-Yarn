@@ -22,10 +22,10 @@ public class ConfigPackets {
 	public static final PacketType<SelectKnownPacksC2SPacket> SELECT_KNOWN_PACKS_C2S = c2s("select_known_packs");
 
 	private static <T extends Packet<ClientConfigurationPacketListener>> PacketType<T> s2c(String id) {
-		return new PacketType<>(NetworkSide.CLIENTBOUND, new Identifier(id));
+		return new PacketType<>(NetworkSide.CLIENTBOUND, Identifier.method_60656(id));
 	}
 
 	private static <T extends Packet<ServerConfigurationPacketListener>> PacketType<T> c2s(String id) {
-		return new PacketType<>(NetworkSide.SERVERBOUND, new Identifier(id));
+		return new PacketType<>(NetworkSide.SERVERBOUND, Identifier.method_60656(id));
 	}
 }

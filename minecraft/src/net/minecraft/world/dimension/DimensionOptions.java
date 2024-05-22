@@ -16,7 +16,7 @@ public record DimensionOptions(RegistryEntry<DimensionType> dimensionTypeEntry, 
 				)
 				.apply(instance, instance.stable(DimensionOptions::new))
 	);
-	public static final RegistryKey<DimensionOptions> OVERWORLD = RegistryKey.of(RegistryKeys.DIMENSION, new Identifier("overworld"));
-	public static final RegistryKey<DimensionOptions> NETHER = RegistryKey.of(RegistryKeys.DIMENSION, new Identifier("the_nether"));
-	public static final RegistryKey<DimensionOptions> END = RegistryKey.of(RegistryKeys.DIMENSION, new Identifier("the_end"));
+	public static final RegistryKey<DimensionOptions> OVERWORLD = RegistryKey.of(RegistryKeys.DIMENSION, Identifier.method_60656("overworld"));
+	public static final RegistryKey<DimensionOptions> NETHER = RegistryKey.of(RegistryKeys.DIMENSION, Identifier.method_60656("the_nether"));
+	public static final RegistryKey<DimensionOptions> END = RegistryKey.of(RegistryKeys.DIMENSION, Identifier.method_60656("the_end"));
 }

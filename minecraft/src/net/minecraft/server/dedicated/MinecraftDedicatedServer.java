@@ -21,6 +21,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9782;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourcePackManager;
@@ -310,8 +311,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public boolean isNetherAllowed() {
-		return this.getProperties().allowNether;
+	public boolean method_60671(World world) {
+		return world.getRegistryKey() == World.NETHER ? this.getProperties().allowNether : true;
 	}
 
 	public void enqueueCommand(String command, ServerCommandSource commandSource) {
@@ -619,5 +620,11 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public boolean acceptsTransfers() {
 		return this.propertiesLoader.getPropertiesHandler().acceptsTransfers;
+	}
+
+	@Override
+	public class_9782 method_60672() {
+		String string = this.propertiesLoader.getPropertiesHandler().field_51987;
+		return string.isEmpty() ? class_9782.field_51977 : new class_9782(List.of(class_9782.class_9784.BUG_REPORT.method_60668(string)));
 	}
 }

@@ -6,7 +6,6 @@ import net.minecraft.util.Identifier;
 
 public interface DamageTypeTags {
 	TagKey<DamageType> DAMAGES_HELMET = of("damages_helmet");
-	TagKey<DamageType> BREEZE_IMMUNE_TO = of("breeze_immune_to");
 	TagKey<DamageType> BYPASSES_ARMOR = of("bypasses_armor");
 	TagKey<DamageType> BYPASSES_SHIELD = of("bypasses_shield");
 	TagKey<DamageType> BYPASSES_INVULNERABILITY = of("bypasses_invulnerability");
@@ -37,8 +36,10 @@ public interface DamageTypeTags {
 	TagKey<DamageType> BYPASSES_WOLF_ARMOR = of("bypasses_wolf_armor");
 	TagKey<DamageType> IS_PLAYER_ATTACK = of("is_player_attack");
 	TagKey<DamageType> BURN_FROM_STEPPING = of("burn_from_stepping");
+	TagKey<DamageType> PANIC_CAUSES = of("panic_causes");
+	TagKey<DamageType> PANIC_ENVIRONMENTAL_CAUSES = of("panic_environmental_causes");
 
 	private static TagKey<DamageType> of(String id) {
-		return TagKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(id));
+		return TagKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.method_60656(id));
 	}
 }

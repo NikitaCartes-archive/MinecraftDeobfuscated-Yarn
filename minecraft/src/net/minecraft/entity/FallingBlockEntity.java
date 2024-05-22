@@ -26,6 +26,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
@@ -41,6 +42,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 
@@ -55,6 +57,7 @@ public class FallingBlockEntity extends Entity {
 	private float fallHurtAmount;
 	@Nullable
 	public NbtCompound blockEntityData;
+	public boolean field_52015;
 	protected static final TrackedData<BlockPos> BLOCK_POS = DataTracker.registerData(FallingBlockEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
 
 	public FallingBlockEntity(EntityType<? extends FallingBlockEntity> entityType, World world) {
@@ -132,7 +135,8 @@ public class FallingBlockEntity extends Entity {
 			this.timeFalling++;
 			this.applyGravity();
 			this.move(MovementType.SELF, this.getVelocity());
-			if (!this.getWorld().isClient) {
+			this.method_60698();
+			if (!this.getWorld().isClient && (this.isAlive() || this.field_52015)) {
 				BlockPos blockPos = this.getBlockPos();
 				boolean bl = this.block.getBlock() instanceof ConcretePowderBlock;
 				boolean bl2 = bl && this.getWorld().getFluidState(blockPos).isIn(FluidTags.WATER);
@@ -219,7 +223,6 @@ public class FallingBlockEntity extends Entity {
 			}
 
 			this.setVelocity(this.getVelocity().multiply(0.98));
-			this.tickPortal();
 		}
 	}
 
@@ -350,5 +353,16 @@ public class FallingBlockEntity extends Entity {
 		double f = packet.getZ();
 		this.setPosition(d, e, f);
 		this.setFallingBlockPos(this.getBlockPos());
+	}
+
+	@Nullable
+	@Override
+	public Entity moveToWorld(TeleportTarget teleportTarget) {
+		RegistryKey<World> registryKey = teleportTarget.newLevel().getRegistryKey();
+		RegistryKey<World> registryKey2 = this.getWorld().getRegistryKey();
+		boolean bl = (registryKey2 == World.END || registryKey == World.END) && registryKey2 != registryKey;
+		Entity entity = super.moveToWorld(teleportTarget);
+		this.field_52015 = entity != null && bl;
+		return entity;
 	}
 }

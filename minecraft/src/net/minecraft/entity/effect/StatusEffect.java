@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -31,6 +30,7 @@ import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.resource.featuretoggle.ToggleableFeature;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
@@ -122,8 +122,10 @@ public class StatusEffect implements ToggleableFeature {
 		return this.color;
 	}
 
-	public StatusEffect addAttributeModifier(RegistryEntry<EntityAttribute> attribute, String uuid, double amount, EntityAttributeModifier.Operation operation) {
-		this.attributeModifiers.put(attribute, new StatusEffect.EffectAttributeModifierCreator(UUID.fromString(uuid), amount, operation));
+	public StatusEffect addAttributeModifier(
+		RegistryEntry<EntityAttribute> attribute, Identifier identifier, double amount, EntityAttributeModifier.Operation operation
+	) {
+		this.attributeModifiers.put(attribute, new StatusEffect.EffectAttributeModifierCreator(identifier, amount, operation));
 		return this;
 	}
 
@@ -139,7 +141,10 @@ public class StatusEffect implements ToggleableFeature {
 	}
 
 	public void forEachAttributeModifier(int amplifier, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> consumer) {
-		this.attributeModifiers.forEach((attribute, modifier) -> consumer.accept(attribute, modifier.createAttributeModifier(this.getTranslationKey(), amplifier)));
+		this.attributeModifiers
+			.forEach(
+				(registryEntry, effectAttributeModifierCreator) -> consumer.accept(registryEntry, effectAttributeModifierCreator.createAttributeModifier(amplifier))
+			);
 	}
 
 	public void onRemoved(AttributeContainer attributeContainer) {
@@ -156,9 +161,7 @@ public class StatusEffect implements ToggleableFeature {
 			EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance((RegistryEntry<EntityAttribute>)entry.getKey());
 			if (entityAttributeInstance != null) {
 				entityAttributeInstance.removeModifier(((StatusEffect.EffectAttributeModifierCreator)entry.getValue()).uuid());
-				entityAttributeInstance.addPersistentModifier(
-					((StatusEffect.EffectAttributeModifierCreator)entry.getValue()).createAttributeModifier(this.getTranslationKey(), amplifier)
-				);
+				entityAttributeInstance.addPersistentModifier(((StatusEffect.EffectAttributeModifierCreator)entry.getValue()).createAttributeModifier(amplifier));
 			}
 		}
 	}
@@ -186,9 +189,9 @@ public class StatusEffect implements ToggleableFeature {
 		return this.requiredFeatures;
 	}
 
-	static record EffectAttributeModifierCreator(UUID uuid, double baseValue, EntityAttributeModifier.Operation operation) {
-		public EntityAttributeModifier createAttributeModifier(String translationKey, int amplifier) {
-			return new EntityAttributeModifier(this.uuid, translationKey + " " + amplifier, this.baseValue * (double)(amplifier + 1), this.operation);
+	static record EffectAttributeModifierCreator(Identifier uuid, double baseValue, EntityAttributeModifier.Operation operation) {
+		public EntityAttributeModifier createAttributeModifier(int i) {
+			return new EntityAttributeModifier(this.uuid, this.baseValue * (double)(i + 1), this.operation);
 		}
 	}
 }

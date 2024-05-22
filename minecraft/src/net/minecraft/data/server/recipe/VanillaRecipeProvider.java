@@ -2627,7 +2627,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerSmithingTemplateCopyingRecipe(exporter, Items.RAISER_ARMOR_TRIM_SMITHING_TEMPLATE, Items.TERRACOTTA);
 		offerSmithingTemplateCopyingRecipe(exporter, Items.HOST_ARMOR_TRIM_SMITHING_TEMPLATE, Items.TERRACOTTA);
 		offerSmithingTemplateCopyingRecipe(exporter, Items.FLOW_ARMOR_TRIM_SMITHING_TEMPLATE, Items.BREEZE_ROD);
-		offerSmithingTemplateCopyingRecipe(exporter, Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, Items.COPPER_BLOCK);
+		method_60922(exporter, Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, Ingredient.ofItems(Items.COPPER_BLOCK, Items.WAXED_COPPER_BLOCK));
 		offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.BAMBOO_BLOCK, Items.BAMBOO);
 		offerPlanksRecipe(exporter, Blocks.BAMBOO_PLANKS, ItemTags.BAMBOO_BLOCKS, 2);
 		offerMosaicRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.BAMBOO_MOSAIC, Blocks.BAMBOO_SLAB);
@@ -2793,7 +2793,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 				Items.WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE,
 				Items.WILD_ARMOR_TRIM_SMITHING_TEMPLATE
 			)
-			.map(template -> new VanillaRecipeProvider.SmithingTemplate(template, new Identifier(getItemPath(template) + "_smithing_trim")));
+			.map(template -> new VanillaRecipeProvider.SmithingTemplate(template, Identifier.method_60656(getItemPath(template) + "_smithing_trim")));
 	}
 
 	public static record SmithingTemplate(Item template, Identifier id) {

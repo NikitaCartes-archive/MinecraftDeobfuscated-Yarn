@@ -13,6 +13,8 @@ import net.minecraft.client.render.entity.model.WardenEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class WardenFeatureRenderer<T extends WardenEntity, M extends WardenEntityModel<T>> extends FeatureRenderer<T, M> {
@@ -38,17 +40,9 @@ public class WardenFeatureRenderer<T extends WardenEntity, M extends WardenEntit
 		if (!wardenEntity.isInvisible()) {
 			this.updateModelPartVisibility();
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucentEmissive(this.texture));
-			this.getContextModel()
-				.render(
-					matrixStack,
-					vertexConsumer,
-					i,
-					LivingEntityRenderer.getOverlay(wardenEntity, 0.0F),
-					1.0F,
-					1.0F,
-					1.0F,
-					this.animationAngleAdjuster.apply(wardenEntity, h, j)
-				);
+			float m = this.animationAngleAdjuster.apply(wardenEntity, h, j);
+			int n = ColorHelper.Argb.getArgb(MathHelper.floor(m * 255.0F), 255, 255, 255);
+			this.getContextModel().render(matrixStack, vertexConsumer, i, LivingEntityRenderer.getOverlay(wardenEntity, 0.0F), n);
 			this.unhideAllModelParts();
 		}
 	}

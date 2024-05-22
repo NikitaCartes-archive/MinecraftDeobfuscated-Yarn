@@ -63,7 +63,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 	static final Dynamic2CommandExceptionType MALFORMED_ITEM_PREDICATE_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> Text.stringifiedTranslatable("arguments.item.predicate.malformed", object, object2)
 	);
-	private static final Identifier COUNT_ID = new Identifier("count");
+	private static final Identifier COUNT_ID = Identifier.method_60656("count");
 	static final Map<Identifier, ItemPredicateArgumentType.ComponentCheck> SPECIAL_COMPONENT_CHECKS = (Map<Identifier, ItemPredicateArgumentType.ComponentCheck>)Stream.of(
 			new ItemPredicateArgumentType.ComponentCheck(COUNT_ID, stack -> true, NumberRange.IntRange.CODEC.map(range -> stack -> range.test(stack.getCount())))
 		)

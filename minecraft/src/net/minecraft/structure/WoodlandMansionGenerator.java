@@ -1106,7 +1106,7 @@ public class WoodlandMansionGenerator {
 		}
 
 		private static Identifier getId(String identifier) {
-			return new Identifier("woodland_mansion/" + identifier);
+			return Identifier.method_60656("woodland_mansion/" + identifier);
 		}
 
 		private static StructurePlacementData createPlacementData(BlockMirror mirror, BlockRotation rotation) {

@@ -50,7 +50,7 @@ public class DynamicRegistriesProvider implements DataProvider {
 		return lookup.getOptionalWrapper(registryKey)
 			.map(
 				wrapper -> {
-					DataOutput.PathResolver pathResolver = this.output.getResolver(DataOutput.OutputType.DATA_PACK, registryKey.getValue().getPath());
+					DataOutput.PathResolver pathResolver = this.output.method_60917(registryKey);
 					return CompletableFuture.allOf(
 						(CompletableFuture[])wrapper.streamEntries()
 							.map(entryx -> writeToPath(pathResolver.resolveJson(entryx.registryKey().getValue()), writer, ops, registry.elementCodec(), (T)entryx.value()))

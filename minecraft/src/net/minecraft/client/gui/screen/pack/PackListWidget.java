@@ -19,14 +19,14 @@ import net.minecraft.util.Language;
 
 @Environment(EnvType.CLIENT)
 public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget.ResourcePackEntry> {
-	static final Identifier SELECT_HIGHLIGHTED_TEXTURE = new Identifier("transferable_list/select_highlighted");
-	static final Identifier SELECT_TEXTURE = new Identifier("transferable_list/select");
-	static final Identifier UNSELECT_HIGHLIGHTED_TEXTURE = new Identifier("transferable_list/unselect_highlighted");
-	static final Identifier UNSELECT_TEXTURE = new Identifier("transferable_list/unselect");
-	static final Identifier MOVE_UP_HIGHLIGHTED_TEXTURE = new Identifier("transferable_list/move_up_highlighted");
-	static final Identifier MOVE_UP_TEXTURE = new Identifier("transferable_list/move_up");
-	static final Identifier MOVE_DOWN_HIGHLIGHTED_TEXTURE = new Identifier("transferable_list/move_down_highlighted");
-	static final Identifier MOVE_DOWN_TEXTURE = new Identifier("transferable_list/move_down");
+	static final Identifier SELECT_HIGHLIGHTED_TEXTURE = Identifier.method_60656("transferable_list/select_highlighted");
+	static final Identifier SELECT_TEXTURE = Identifier.method_60656("transferable_list/select");
+	static final Identifier UNSELECT_HIGHLIGHTED_TEXTURE = Identifier.method_60656("transferable_list/unselect_highlighted");
+	static final Identifier UNSELECT_TEXTURE = Identifier.method_60656("transferable_list/unselect");
+	static final Identifier MOVE_UP_HIGHLIGHTED_TEXTURE = Identifier.method_60656("transferable_list/move_up_highlighted");
+	static final Identifier MOVE_UP_TEXTURE = Identifier.method_60656("transferable_list/move_up");
+	static final Identifier MOVE_DOWN_HIGHLIGHTED_TEXTURE = Identifier.method_60656("transferable_list/move_down_highlighted");
+	static final Identifier MOVE_DOWN_TEXTURE = Identifier.method_60656("transferable_list/move_down");
 	static final Text INCOMPATIBLE = Text.translatable("pack.incompatible");
 	static final Text INCOMPATIBLE_CONFIRM = Text.translatable("pack.incompatible.confirm.title");
 	private final Text title;

@@ -100,9 +100,9 @@ public class RuinedPortalStructure extends Structure {
 			properties.replaceWithBlackstone = setup4.replaceWithBlackstone();
 			Identifier identifier;
 			if (chunkRandom.nextFloat() < 0.05F) {
-				identifier = new Identifier(RARE_PORTAL_STRUCTURE_IDS[chunkRandom.nextInt(RARE_PORTAL_STRUCTURE_IDS.length)]);
+				identifier = Identifier.method_60656(RARE_PORTAL_STRUCTURE_IDS[chunkRandom.nextInt(RARE_PORTAL_STRUCTURE_IDS.length)]);
 			} else {
-				identifier = new Identifier(COMMON_PORTAL_STRUCTURE_IDS[chunkRandom.nextInt(COMMON_PORTAL_STRUCTURE_IDS.length)]);
+				identifier = Identifier.method_60656(COMMON_PORTAL_STRUCTURE_IDS[chunkRandom.nextInt(COMMON_PORTAL_STRUCTURE_IDS.length)]);
 			}
 
 			StructureTemplate structureTemplate = context.structureTemplateManager().getTemplateOrBlank(identifier);

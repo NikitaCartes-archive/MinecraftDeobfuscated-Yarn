@@ -136,7 +136,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 				Blocks.HAY_BLOCK,
 				Text.translatable("advancements.husbandry.root.title"),
 				Text.translatable("advancements.husbandry.root.description"),
-				new Identifier("textures/gui/advancements/backgrounds/husbandry.png"),
+				Identifier.method_60656("textures/gui/advancements/backgrounds/husbandry.png"),
 				AdvancementFrame.TASK,
 				false,
 				false,

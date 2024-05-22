@@ -13,7 +13,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class MagmaCubeEntityRenderer extends MobEntityRenderer<MagmaCubeEntity, MagmaCubeEntityModel<MagmaCubeEntity>> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/slime/magmacube.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/slime/magmacube.png");
 
 	public MagmaCubeEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new MagmaCubeEntityModel<>(context.getPart(EntityModelLayers.MAGMA_CUBE)), 0.25F);

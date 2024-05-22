@@ -35,6 +35,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Util;
@@ -268,9 +269,9 @@ public class VaultBlockEntity extends BlockEntity {
 			VaultState vaultState = state.get(VaultBlock.VAULT_STATE);
 			if (canBeUnlocked(config, vaultState)) {
 				if (!isValidKey(config, stack)) {
-					playFailedUnlockSound(world, serverData, pos);
+					playFailedUnlockSound(world, serverData, pos, SoundEvents.BLOCK_VAULT_INSERT_ITEM_FAIL);
 				} else if (serverData.hasRewardedPlayer(player)) {
-					playFailedUnlockSound(world, serverData, pos);
+					playFailedUnlockSound(world, serverData, pos, SoundEvents.BLOCK_VAULT_REJECT_REWARDED_PLAYER);
 				} else {
 					List<ItemStack> list = generateLoot(world, config, pos, player);
 					if (!list.isEmpty()) {
@@ -340,9 +341,9 @@ public class VaultBlockEntity extends BlockEntity {
 			return time % 20L == 0L && state == VaultState.ACTIVE;
 		}
 
-		private static void playFailedUnlockSound(ServerWorld world, VaultServerData serverData, BlockPos pos) {
+		private static void playFailedUnlockSound(ServerWorld world, VaultServerData serverData, BlockPos pos, SoundEvent soundEvent) {
 			if (world.getTime() >= serverData.getLastFailedUnlockTime() + 15L) {
-				world.playSound(null, pos, SoundEvents.BLOCK_VAULT_INSERT_ITEM_FAIL, SoundCategory.BLOCKS);
+				world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS);
 				serverData.setLastFailedUnlockTime(world.getTime());
 			}
 		}

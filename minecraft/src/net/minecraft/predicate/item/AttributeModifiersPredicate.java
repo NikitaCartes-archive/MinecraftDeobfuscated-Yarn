@@ -3,7 +3,6 @@ package net.minecraft.predicate.item;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Predicate;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
@@ -17,7 +16,7 @@ import net.minecraft.predicate.collection.CollectionPredicate;
 import net.minecraft.registry.RegistryCodecs;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.util.Uuids;
+import net.minecraft.util.Identifier;
 
 public record AttributeModifiersPredicate(
 	Optional<CollectionPredicate<AttributeModifiersComponent.Entry, AttributeModifiersPredicate.AttributeModifierPredicate>> modifiers
@@ -42,8 +41,7 @@ public record AttributeModifiersPredicate(
 
 	public static record AttributeModifierPredicate(
 		Optional<RegistryEntryList<EntityAttribute>> attribute,
-		Optional<UUID> id,
-		Optional<String> name,
+		Optional<Identifier> id,
 		NumberRange.DoubleRange amount,
 		Optional<EntityAttributeModifier.Operation> operation,
 		Optional<AttributeModifierSlot> slot
@@ -53,8 +51,7 @@ public record AttributeModifiersPredicate(
 						RegistryCodecs.entryList(RegistryKeys.ATTRIBUTE)
 							.optionalFieldOf("attribute")
 							.forGetter(AttributeModifiersPredicate.AttributeModifierPredicate::attribute),
-						Uuids.STRICT_CODEC.optionalFieldOf("uuid").forGetter(AttributeModifiersPredicate.AttributeModifierPredicate::id),
-						Codec.STRING.optionalFieldOf("name").forGetter(AttributeModifiersPredicate.AttributeModifierPredicate::name),
+						Identifier.CODEC.optionalFieldOf("id").forGetter(AttributeModifiersPredicate.AttributeModifierPredicate::id),
 						NumberRange.DoubleRange.CODEC
 							.optionalFieldOf("amount", NumberRange.DoubleRange.ANY)
 							.forGetter(AttributeModifiersPredicate.AttributeModifierPredicate::amount),
@@ -67,9 +64,7 @@ public record AttributeModifiersPredicate(
 		public boolean test(AttributeModifiersComponent.Entry entry) {
 			if (this.attribute.isPresent() && !((RegistryEntryList)this.attribute.get()).contains(entry.attribute())) {
 				return false;
-			} else if (this.id.isPresent() && !((UUID)this.id.get()).equals(entry.modifier().uuid())) {
-				return false;
-			} else if (this.name.isPresent() && !((String)this.name.get()).equals(entry.modifier().name())) {
+			} else if (this.id.isPresent() && !((Identifier)this.id.get()).equals(entry.modifier().uuid())) {
 				return false;
 			} else if (!this.amount.test(entry.modifier().value())) {
 				return false;

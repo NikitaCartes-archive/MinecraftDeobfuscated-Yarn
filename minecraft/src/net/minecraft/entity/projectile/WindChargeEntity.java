@@ -2,7 +2,10 @@ package net.minecraft.entity.projectile;
 
 import java.util.Optional;
 import java.util.function.Function;
+import javax.annotation.Nullable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ProjectileDeflection;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
@@ -18,6 +21,7 @@ public class WindChargeEntity extends AbstractWindChargeEntity {
 		true, false, Optional.of(1.1F), Registries.BLOCK.getEntryList(BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS).map(Function.identity())
 	);
 	private static final float EXPLOSION_POWER = 1.2F;
+	private int field_52019 = 5;
 
 	public WindChargeEntity(EntityType<? extends AbstractWindChargeEntity> entityType, World world) {
 		super(entityType, world);
@@ -29,6 +33,19 @@ public class WindChargeEntity extends AbstractWindChargeEntity {
 
 	public WindChargeEntity(World world, double x, double y, double z, Vec3d velocity) {
 		super(EntityType.WIND_CHARGE, x, y, z, velocity, world);
+	}
+
+	@Override
+	public void tick() {
+		super.tick();
+		if (this.field_52019 > 0) {
+			this.field_52019--;
+		}
+	}
+
+	@Override
+	public boolean deflect(ProjectileDeflection deflection, @Nullable Entity deflector, @Nullable Entity owner, boolean fromAttack) {
+		return this.field_52019 > 0 ? false : super.deflect(deflection, deflector, owner, fromAttack);
 	}
 
 	@Override

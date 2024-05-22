@@ -25,15 +25,15 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class RecipeAlternativesWidget implements Drawable, Element {
-	private static final Identifier OVERLAY_RECIPE_TEXTURE = new Identifier("recipe_book/overlay_recipe");
-	static final Identifier FURNACE_OVERLAY_HIGHLIGHTED_TEXTURE = new Identifier("recipe_book/furnace_overlay_highlighted");
-	static final Identifier FURNACE_OVERLAY_TEXTURE = new Identifier("recipe_book/furnace_overlay");
-	static final Identifier CRAFTING_OVERLAY_HIGHLIGHTED_TEXTURE = new Identifier("recipe_book/crafting_overlay_highlighted");
-	static final Identifier CRAFTING_OVERLAY_TEXTURE = new Identifier("recipe_book/crafting_overlay");
-	static final Identifier FURNACE_OVERLAY_DISABLED_HIGHLIGHTED_TEXTURE = new Identifier("recipe_book/furnace_overlay_disabled_highlighted");
-	static final Identifier FURNACE_OVERLAY_DISABLED_TEXTURE = new Identifier("recipe_book/furnace_overlay_disabled");
-	static final Identifier CRAFTING_OVERLAY_DISABLED_HIGHLIGHTED_TEXTURE = new Identifier("recipe_book/crafting_overlay_disabled_highlighted");
-	static final Identifier CRAFTING_OVERLAY_DISABLED_TEXTURE = new Identifier("recipe_book/crafting_overlay_disabled");
+	private static final Identifier OVERLAY_RECIPE_TEXTURE = Identifier.method_60656("recipe_book/overlay_recipe");
+	static final Identifier FURNACE_OVERLAY_HIGHLIGHTED_TEXTURE = Identifier.method_60656("recipe_book/furnace_overlay_highlighted");
+	static final Identifier FURNACE_OVERLAY_TEXTURE = Identifier.method_60656("recipe_book/furnace_overlay");
+	static final Identifier CRAFTING_OVERLAY_HIGHLIGHTED_TEXTURE = Identifier.method_60656("recipe_book/crafting_overlay_highlighted");
+	static final Identifier CRAFTING_OVERLAY_TEXTURE = Identifier.method_60656("recipe_book/crafting_overlay");
+	static final Identifier FURNACE_OVERLAY_DISABLED_HIGHLIGHTED_TEXTURE = Identifier.method_60656("recipe_book/furnace_overlay_disabled_highlighted");
+	static final Identifier FURNACE_OVERLAY_DISABLED_TEXTURE = Identifier.method_60656("recipe_book/furnace_overlay_disabled");
+	static final Identifier CRAFTING_OVERLAY_DISABLED_HIGHLIGHTED_TEXTURE = Identifier.method_60656("recipe_book/crafting_overlay_disabled_highlighted");
+	static final Identifier CRAFTING_OVERLAY_DISABLED_TEXTURE = Identifier.method_60656("recipe_book/crafting_overlay_disabled");
 	private static final int field_32406 = 4;
 	private static final int field_32407 = 5;
 	private static final float field_33739 = 0.375F;

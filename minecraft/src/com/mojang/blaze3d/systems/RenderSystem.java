@@ -142,7 +142,7 @@ public class RenderSystem {
 	public static void flipFrame(long window) {
 		pollEvents();
 		replayQueue();
-		Tessellator.getInstance().getBuffer().clear();
+		Tessellator.getInstance().method_60828();
 		GLFW.glfwSwapBuffers(window);
 		pollEvents();
 	}

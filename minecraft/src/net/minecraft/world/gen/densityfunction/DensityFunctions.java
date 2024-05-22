@@ -63,7 +63,7 @@ public class DensityFunctions {
 	private static final RegistryKey<DensityFunction> CAVES_SPAGHETTI_2D_OVERWORLD = of("overworld/caves/spaghetti_2d");
 
 	private static RegistryKey<DensityFunction> of(String id) {
-		return RegistryKey.of(RegistryKeys.DENSITY_FUNCTION, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.DENSITY_FUNCTION, Identifier.method_60656(id));
 	}
 
 	public static RegistryEntry<? extends DensityFunction> bootstrap(Registerable<DensityFunction> densityFunctionRegisterable) {

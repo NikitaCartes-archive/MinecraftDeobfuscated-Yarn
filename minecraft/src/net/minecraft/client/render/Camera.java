@@ -23,17 +23,20 @@ import org.joml.Vector3f;
 @Environment(EnvType.CLIENT)
 public class Camera {
 	private static final float BASE_CAMERA_DISTANCE = 4.0F;
+	private static final Vector3f field_52123 = new Vector3f(0.0F, 0.0F, -1.0F);
+	private static final Vector3f field_52124 = new Vector3f(0.0F, 1.0F, 0.0F);
+	private static final Vector3f field_52125 = new Vector3f(-1.0F, 0.0F, 0.0F);
 	private boolean ready;
 	private BlockView area;
 	private Entity focusedEntity;
 	private Vec3d pos = Vec3d.ZERO;
 	private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
-	private final Vector3f horizontalPlane = new Vector3f(0.0F, 0.0F, 1.0F);
-	private final Vector3f verticalPlane = new Vector3f(0.0F, 1.0F, 0.0F);
-	private final Vector3f diagonalPlane = new Vector3f(1.0F, 0.0F, 0.0F);
+	private final Vector3f horizontalPlane = new Vector3f(field_52123);
+	private final Vector3f verticalPlane = new Vector3f(field_52124);
+	private final Vector3f diagonalPlane = new Vector3f(field_52125);
 	private float pitch;
 	private float yaw;
-	private final Quaternionf rotation = new Quaternionf(0.0F, 0.0F, 0.0F, 1.0F);
+	private final Quaternionf rotation = new Quaternionf();
 	private boolean thirdPerson;
 	private float cameraY;
 	private float lastCameraY;
@@ -58,11 +61,11 @@ public class Camera {
 			}
 
 			float f = focusedEntity instanceof LivingEntity livingEntity ? livingEntity.getScale() : 1.0F;
-			this.moveBy(-this.clipToSpace((double)(4.0F * f)), 0.0, 0.0);
+			this.moveBy(-this.clipToSpace(4.0F * f), 0.0F, 0.0F);
 		} else if (focusedEntity instanceof LivingEntity && ((LivingEntity)focusedEntity).isSleeping()) {
 			Direction direction = ((LivingEntity)focusedEntity).getSleepingDirection();
 			this.setRotation(direction != null ? direction.asRotation() - 180.0F : 0.0F, 0.0F);
-			this.moveBy(0.0, 0.3, 0.0);
+			this.moveBy(0.0F, 0.3F, 0.0F);
 		}
 	}
 
@@ -73,47 +76,40 @@ public class Camera {
 		}
 	}
 
-	private double clipToSpace(double desiredCameraDistance) {
+	private float clipToSpace(float f) {
+		float g = 0.1F;
+
 		for (int i = 0; i < 8; i++) {
-			float f = (float)((i & 1) * 2 - 1);
-			float g = (float)((i >> 1 & 1) * 2 - 1);
-			float h = (float)((i >> 2 & 1) * 2 - 1);
-			f *= 0.1F;
-			g *= 0.1F;
-			h *= 0.1F;
-			Vec3d vec3d = this.pos.add((double)f, (double)g, (double)h);
-			Vec3d vec3d2 = new Vec3d(
-				this.pos.x - (double)this.horizontalPlane.x() * desiredCameraDistance + (double)f,
-				this.pos.y - (double)this.horizontalPlane.y() * desiredCameraDistance + (double)g,
-				this.pos.z - (double)this.horizontalPlane.z() * desiredCameraDistance + (double)h
-			);
+			float h = (float)((i & 1) * 2 - 1);
+			float j = (float)((i >> 1 & 1) * 2 - 1);
+			float k = (float)((i >> 2 & 1) * 2 - 1);
+			Vec3d vec3d = this.pos.add((double)(h * 0.1F), (double)(j * 0.1F), (double)(k * 0.1F));
+			Vec3d vec3d2 = vec3d.add(new Vec3d(this.horizontalPlane).multiply((double)(-f)));
 			HitResult hitResult = this.area
 				.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.VISUAL, RaycastContext.FluidHandling.NONE, this.focusedEntity));
 			if (hitResult.getType() != HitResult.Type.MISS) {
-				double d = hitResult.getPos().distanceTo(this.pos);
-				if (d < desiredCameraDistance) {
-					desiredCameraDistance = d;
+				float l = (float)hitResult.getPos().squaredDistanceTo(this.pos);
+				if (l < MathHelper.square(f)) {
+					f = MathHelper.sqrt(l);
 				}
 			}
 		}
 
-		return desiredCameraDistance;
+		return f;
 	}
 
-	protected void moveBy(double x, double y, double z) {
-		double d = (double)this.horizontalPlane.x() * x + (double)this.verticalPlane.x() * y + (double)this.diagonalPlane.x() * z;
-		double e = (double)this.horizontalPlane.y() * x + (double)this.verticalPlane.y() * y + (double)this.diagonalPlane.y() * z;
-		double f = (double)this.horizontalPlane.z() * x + (double)this.verticalPlane.z() * y + (double)this.diagonalPlane.z() * z;
-		this.setPos(new Vec3d(this.pos.x + d, this.pos.y + e, this.pos.z + f));
+	protected void moveBy(float f, float g, float h) {
+		Vector3f vector3f = new Vector3f(h, g, -f).rotate(this.rotation);
+		this.setPos(new Vec3d(this.pos.x + (double)vector3f.x, this.pos.y + (double)vector3f.y, this.pos.z + (double)vector3f.z));
 	}
 
 	protected void setRotation(float yaw, float pitch) {
 		this.pitch = pitch;
 		this.yaw = yaw;
-		this.rotation.rotationYXZ(-yaw * (float) (Math.PI / 180.0), pitch * (float) (Math.PI / 180.0), 0.0F);
-		this.horizontalPlane.set(0.0F, 0.0F, 1.0F).rotate(this.rotation);
-		this.verticalPlane.set(0.0F, 1.0F, 0.0F).rotate(this.rotation);
-		this.diagonalPlane.set(1.0F, 0.0F, 0.0F).rotate(this.rotation);
+		this.rotation.rotationYXZ((float) Math.PI - yaw * (float) (Math.PI / 180.0), -pitch * (float) (Math.PI / 180.0), 0.0F);
+		field_52123.rotate(this.rotation, this.horizontalPlane);
+		field_52124.rotate(this.rotation, this.verticalPlane);
+		field_52125.rotate(this.rotation, this.diagonalPlane);
 	}
 
 	protected void setPos(double x, double y, double z) {

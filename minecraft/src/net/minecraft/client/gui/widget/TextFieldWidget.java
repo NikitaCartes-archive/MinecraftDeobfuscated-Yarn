@@ -29,7 +29,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TextFieldWidget extends ClickableWidget implements Drawable {
-	private static final ButtonTextures TEXTURES = new ButtonTextures(new Identifier("widget/text_field"), new Identifier("widget/text_field_highlighted"));
+	private static final ButtonTextures TEXTURES = new ButtonTextures(
+		Identifier.method_60656("widget/text_field"), Identifier.method_60656("widget/text_field_highlighted")
+	);
 	public static final int field_32194 = -1;
 	public static final int field_32195 = 1;
 	private static final int field_32197 = 1;

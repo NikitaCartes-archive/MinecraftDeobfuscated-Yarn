@@ -17,12 +17,12 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class CartographyTableScreen extends HandledScreen<CartographyTableScreenHandler> {
-	private static final Identifier ERROR_TEXTURE = new Identifier("container/cartography_table/error");
-	private static final Identifier SCALED_MAP_TEXTURE = new Identifier("container/cartography_table/scaled_map");
-	private static final Identifier DUPLICATED_MAP_TEXTURE = new Identifier("container/cartography_table/duplicated_map");
-	private static final Identifier MAP_TEXTURE = new Identifier("container/cartography_table/map");
-	private static final Identifier LOCKED_TEXTURE = new Identifier("container/cartography_table/locked");
-	private static final Identifier TEXTURE = new Identifier("textures/gui/container/cartography_table.png");
+	private static final Identifier ERROR_TEXTURE = Identifier.method_60656("container/cartography_table/error");
+	private static final Identifier SCALED_MAP_TEXTURE = Identifier.method_60656("container/cartography_table/scaled_map");
+	private static final Identifier DUPLICATED_MAP_TEXTURE = Identifier.method_60656("container/cartography_table/duplicated_map");
+	private static final Identifier MAP_TEXTURE = Identifier.method_60656("container/cartography_table/map");
+	private static final Identifier LOCKED_TEXTURE = Identifier.method_60656("container/cartography_table/locked");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/cartography_table.png");
 
 	public CartographyTableScreen(CartographyTableScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);

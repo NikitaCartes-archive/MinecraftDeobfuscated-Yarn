@@ -76,15 +76,15 @@ public class LootContext {
 	}
 
 	public static LootContext.Entry<LootTable> table(LootTable table) {
-		return new LootContext.Entry<>(LootDataType.LOOT_TABLES, table);
+		return new LootContext.Entry<>(LootDataType.field_44498, table);
 	}
 
 	public static LootContext.Entry<LootCondition> predicate(LootCondition predicate) {
-		return new LootContext.Entry<>(LootDataType.PREDICATES, predicate);
+		return new LootContext.Entry<>(LootDataType.field_44496, predicate);
 	}
 
 	public static LootContext.Entry<LootFunction> itemModifier(LootFunction itemModifier) {
-		return new LootContext.Entry<>(LootDataType.ITEM_MODIFIERS, itemModifier);
+		return new LootContext.Entry<>(LootDataType.field_44497, itemModifier);
 	}
 
 	public static class Builder {

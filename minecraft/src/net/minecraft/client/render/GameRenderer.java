@@ -78,13 +78,14 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.GameMode;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class GameRenderer implements AutoCloseable {
-	private static final Identifier NAUSEA_OVERLAY = new Identifier("textures/misc/nausea.png");
-	private static final Identifier BLUR_PROCESSOR = new Identifier("shaders/post/blur.json");
+	private static final Identifier NAUSEA_OVERLAY = Identifier.method_60656("textures/misc/nausea.png");
+	private static final Identifier BLUR_PROCESSOR = Identifier.method_60656("shaders/post/blur.json");
 	public static final int field_49904 = 10;
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final boolean field_32688 = false;
@@ -131,14 +132,13 @@ public class GameRenderer implements AutoCloseable {
 	private PostEffectProcessor blurPostProcessor;
 	private boolean postProcessorEnabled;
 	private final Camera camera = new Camera();
+	@Nullable
 	public ShaderProgram blitScreenProgram;
 	private final Map<String, ShaderProgram> programs = Maps.<String, ShaderProgram>newHashMap();
 	@Nullable
 	private static ShaderProgram positionProgram;
 	@Nullable
 	private static ShaderProgram positionColorProgram;
-	@Nullable
-	private static ShaderProgram positionColorTexProgram;
 	@Nullable
 	private static ShaderProgram positionTexProgram;
 	@Nullable
@@ -310,11 +310,11 @@ public class GameRenderer implements AutoCloseable {
 
 		this.postProcessor = null;
 		if (entity instanceof CreeperEntity) {
-			this.loadPostProcessor(new Identifier("shaders/post/creeper.json"));
+			this.loadPostProcessor(Identifier.method_60656("shaders/post/creeper.json"));
 		} else if (entity instanceof SpiderEntity) {
-			this.loadPostProcessor(new Identifier("shaders/post/spider.json"));
+			this.loadPostProcessor(Identifier.method_60656("shaders/post/spider.json"));
 		} else if (entity instanceof EndermanEntity) {
-			this.loadPostProcessor(new Identifier("shaders/post/invert.json"));
+			this.loadPostProcessor(Identifier.method_60656("shaders/post/invert.json"));
 		}
 	}
 
@@ -354,10 +354,8 @@ public class GameRenderer implements AutoCloseable {
 	public void renderBlur(float delta) {
 		float f = (float)this.client.options.getMenuBackgroundBlurrinessValue();
 		if (this.blurPostProcessor != null && f >= 1.0F) {
-			RenderSystem.enableBlend();
 			this.blurPostProcessor.setUniforms("Radius", f);
 			this.blurPostProcessor.render(delta);
-			RenderSystem.disableBlend();
 		}
 	}
 
@@ -435,7 +433,6 @@ public class GameRenderer implements AutoCloseable {
 			renderTypeGuiOverlayProgram = this.preloadProgram(factory, "rendertype_gui_overlay", VertexFormats.POSITION_COLOR);
 			positionProgram = this.preloadProgram(factory, "position", VertexFormats.POSITION);
 			positionColorProgram = this.preloadProgram(factory, "position_color", VertexFormats.POSITION_COLOR);
-			positionColorTexProgram = this.preloadProgram(factory, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE);
 			positionTexProgram = this.preloadProgram(factory, "position_tex", VertexFormats.POSITION_TEXTURE);
 			positionTexColorProgram = this.preloadProgram(factory, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR);
 			renderTypeTextProgram = this.preloadProgram(factory, "rendertype_text", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
@@ -467,7 +464,6 @@ public class GameRenderer implements AutoCloseable {
 			list2.add(
 				Pair.of(new ShaderProgram(factory, "position_color_lightmap", VertexFormats.POSITION_COLOR_LIGHT), program -> positionColorLightmapProgram = program)
 			);
-			list2.add(Pair.of(new ShaderProgram(factory, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE), program -> positionColorTexProgram = program));
 			list2.add(
 				Pair.of(
 					new ShaderProgram(factory, "position_color_tex_lightmap", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT),
@@ -601,8 +597,7 @@ public class GameRenderer implements AutoCloseable {
 			);
 			list2.add(Pair.of(new ShaderProgram(factory, "rendertype_leash", VertexFormats.POSITION_COLOR_LIGHT), program -> renderTypeLeashProgram = program));
 			list2.add(Pair.of(new ShaderProgram(factory, "rendertype_water_mask", VertexFormats.POSITION), program -> renderTypeWaterMaskProgram = program));
-			list2.add(Pair.of(new ShaderProgram(factory, "rendertype_outline", VertexFormats.POSITION_COLOR_TEXTURE), program -> renderTypeOutlineProgram = program));
-			list2.add(Pair.of(new ShaderProgram(factory, "rendertype_armor_glint", VertexFormats.POSITION_TEXTURE), program -> renderTypeArmorGlintProgram = program));
+			list2.add(Pair.of(new ShaderProgram(factory, "rendertype_outline", VertexFormats.POSITION_TEXTURE_COLOR), program -> renderTypeOutlineProgram = program));
 			list2.add(
 				Pair.of(new ShaderProgram(factory, "rendertype_armor_entity_glint", VertexFormats.POSITION_TEXTURE), program -> renderTypeArmorEntityGlintProgram = program)
 			);
@@ -610,7 +605,6 @@ public class GameRenderer implements AutoCloseable {
 				Pair.of(new ShaderProgram(factory, "rendertype_glint_translucent", VertexFormats.POSITION_TEXTURE), program -> renderTypeGlintTranslucentProgram = program)
 			);
 			list2.add(Pair.of(new ShaderProgram(factory, "rendertype_glint", VertexFormats.POSITION_TEXTURE), program -> renderTypeGlintProgram = program));
-			list2.add(Pair.of(new ShaderProgram(factory, "rendertype_glint_direct", VertexFormats.POSITION_TEXTURE), program -> renderTypeGlintDirectProgram = program));
 			list2.add(Pair.of(new ShaderProgram(factory, "rendertype_entity_glint", VertexFormats.POSITION_TEXTURE), program -> renderTypeEntityGlintProgram = program));
 			list2.add(
 				Pair.of(
@@ -1013,7 +1007,7 @@ public class GameRenderer implements AutoCloseable {
 				}
 
 				if (!this.client.options.hudHidden) {
-					this.renderFloatingItem(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight(), tickCounter.getTickDelta(false));
+					this.renderFloatingItem(drawContext, tickCounter.getTickDelta(false));
 				}
 
 				this.client.inGameHud.render(drawContext, tickCounter);
@@ -1196,8 +1190,8 @@ public class GameRenderer implements AutoCloseable {
 		}
 
 		this.loadProjectionMatrix(matrix4f);
-		Matrix4f matrix4f2 = new Matrix4f()
-			.rotationXYZ(camera.getPitch() * (float) (Math.PI / 180.0), camera.getYaw() * (float) (Math.PI / 180.0) + (float) Math.PI, 0.0F);
+		Quaternionf quaternionf = camera.getRotation().conjugate(new Quaternionf());
+		Matrix4f matrix4f2 = new Matrix4f().rotation(quaternionf);
 		this.client
 			.worldRenderer
 			.setupFrustum(camera.getPos(), matrix4f2, this.getBasicProjectionMatrix(Math.max(d, (double)this.client.options.getFov().getValue().intValue())));
@@ -1229,36 +1223,43 @@ public class GameRenderer implements AutoCloseable {
 		this.floatingItemHeight = this.random.nextFloat() * 2.0F - 1.0F;
 	}
 
-	private void renderFloatingItem(int scaledWidth, int scaledHeight, float tickDelta) {
+	private void renderFloatingItem(DrawContext drawContext, float f) {
 		if (this.floatingItem != null && this.floatingItemTimeLeft > 0) {
 			int i = 40 - this.floatingItemTimeLeft;
-			float f = ((float)i + tickDelta) / 40.0F;
-			float g = f * f;
-			float h = f * g;
-			float j = 10.25F * h * g - 24.95F * g * g + 25.5F * h - 13.8F * g + 4.0F * f;
-			float k = j * (float) Math.PI;
-			float l = this.floatingItemWidth * (float)(scaledWidth / 4);
-			float m = this.floatingItemHeight * (float)(scaledHeight / 4);
-			RenderSystem.enableDepthTest();
-			RenderSystem.disableCull();
+			float g = ((float)i + f) / 40.0F;
+			float h = g * g;
+			float j = g * h;
+			float k = 10.25F * j * h - 24.95F * h * h + 25.5F * j - 13.8F * h + 4.0F * g;
+			float l = k * (float) Math.PI;
+			float m = this.floatingItemWidth * (float)(drawContext.getScaledWindowWidth() / 4);
+			float n = this.floatingItemHeight * (float)(drawContext.getScaledWindowHeight() / 4);
 			MatrixStack matrixStack = new MatrixStack();
 			matrixStack.push();
 			matrixStack.translate(
-				(float)(scaledWidth / 2) + l * MathHelper.abs(MathHelper.sin(k * 2.0F)), (float)(scaledHeight / 2) + m * MathHelper.abs(MathHelper.sin(k * 2.0F)), -50.0F
+				(float)(drawContext.getScaledWindowWidth() / 2) + m * MathHelper.abs(MathHelper.sin(l * 2.0F)),
+				(float)(drawContext.getScaledWindowHeight() / 2) + n * MathHelper.abs(MathHelper.sin(l * 2.0F)),
+				-50.0F
 			);
-			float n = 50.0F + 175.0F * MathHelper.sin(k);
-			matrixStack.scale(n, -n, n);
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(900.0F * MathHelper.abs(MathHelper.sin(k))));
-			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(6.0F * MathHelper.cos(f * 8.0F)));
-			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(6.0F * MathHelper.cos(f * 8.0F)));
-			VertexConsumerProvider.Immediate immediate = this.buffers.getEntityVertexConsumers();
-			this.client
-				.getItemRenderer()
-				.renderItem(this.floatingItem, ModelTransformationMode.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, immediate, this.client.world, 0);
+			float o = 50.0F + 175.0F * MathHelper.sin(l);
+			matrixStack.scale(o, -o, o);
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(900.0F * MathHelper.abs(MathHelper.sin(l))));
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(6.0F * MathHelper.cos(g * 8.0F)));
+			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(6.0F * MathHelper.cos(g * 8.0F)));
+			drawContext.draw(
+				() -> this.client
+						.getItemRenderer()
+						.renderItem(
+							this.floatingItem,
+							ModelTransformationMode.FIXED,
+							15728880,
+							OverlayTexture.DEFAULT_UV,
+							matrixStack,
+							drawContext.getVertexConsumers(),
+							this.client.world,
+							0
+						)
+			);
 			matrixStack.pop();
-			immediate.draw();
-			RenderSystem.enableCull();
-			RenderSystem.disableDepthTest();
 		}
 	}
 
@@ -1319,11 +1320,6 @@ public class GameRenderer implements AutoCloseable {
 	@Nullable
 	public static ShaderProgram getPositionColorProgram() {
 		return positionColorProgram;
-	}
-
-	@Nullable
-	public static ShaderProgram getPositionColorTexProgram() {
-		return positionColorTexProgram;
 	}
 
 	@Nullable

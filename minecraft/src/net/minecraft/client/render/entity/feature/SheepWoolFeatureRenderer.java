@@ -15,10 +15,11 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/sheep/sheep_fur.png");
+	private static final Identifier SKIN = Identifier.method_60656("textures/entity/sheep/sheep_fur.png");
 	private final SheepWoolEntityModel<SheepEntity> model;
 
 	public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepEntityModel<SheepEntity>> context, EntityModelLoader loader) {
@@ -38,12 +39,10 @@ public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, Sheep
 					this.model.animateModel(sheepEntity, f, g, h);
 					this.model.setAngles(sheepEntity, f, g, j, k, l);
 					VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getOutline(SKIN));
-					this.model.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.getOverlay(sheepEntity, 0.0F), 0.0F, 0.0F, 0.0F, 1.0F);
+					this.model.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.getOverlay(sheepEntity, 0.0F), -16777216);
 				}
 			} else {
-				float s;
-				float t;
-				float u;
+				int u;
 				if (sheepEntity.hasCustomName() && "jeb_".equals(sheepEntity.getName().getString())) {
 					int m = 25;
 					int n = sheepEntity.age / 25 + sheepEntity.getId();
@@ -51,19 +50,14 @@ public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, Sheep
 					int p = n % o;
 					int q = (n + 1) % o;
 					float r = ((float)(sheepEntity.age % 25) + h) / 25.0F;
-					float[] fs = SheepEntity.getRgbColor(DyeColor.byId(p));
-					float[] gs = SheepEntity.getRgbColor(DyeColor.byId(q));
-					s = fs[0] * (1.0F - r) + gs[0] * r;
-					t = fs[1] * (1.0F - r) + gs[1] * r;
-					u = fs[2] * (1.0F - r) + gs[2] * r;
+					int s = SheepEntity.getRgbColor(DyeColor.byId(p));
+					int t = SheepEntity.getRgbColor(DyeColor.byId(q));
+					u = ColorHelper.Argb.lerp(r, s, t);
 				} else {
-					float[] hs = SheepEntity.getRgbColor(sheepEntity.getColor());
-					s = hs[0];
-					t = hs[1];
-					u = hs[2];
+					u = SheepEntity.getRgbColor(sheepEntity.getColor());
 				}
 
-				render(this.getContextModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, sheepEntity, f, g, j, k, l, h, s, t, u);
+				render(this.getContextModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, sheepEntity, f, g, j, k, l, h, u);
 			}
 		}
 	}

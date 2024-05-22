@@ -22,6 +22,6 @@ public class LootNbtProviderTypes {
 	public static final LootNbtProviderType CONTEXT = register("context", ContextLootNbtProvider.CODEC);
 
 	private static LootNbtProviderType register(String id, MapCodec<? extends LootNbtProvider> codec) {
-		return Registry.register(Registries.LOOT_NBT_PROVIDER_TYPE, new Identifier(id), new LootNbtProviderType(codec));
+		return Registry.register(Registries.LOOT_NBT_PROVIDER_TYPE, Identifier.method_60656(id), new LootNbtProviderType(codec));
 	}
 }

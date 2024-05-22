@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ZombieVillagerEntityRenderer extends BipedEntityRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<ZombieVillagerEntity>> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/zombie_villager/zombie_villager.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/zombie_villager/zombie_villager.png");
 
 	public ZombieVillagerEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new ZombieVillagerEntityModel<>(context.getPart(EntityModelLayers.ZOMBIE_VILLAGER)), 0.5F);

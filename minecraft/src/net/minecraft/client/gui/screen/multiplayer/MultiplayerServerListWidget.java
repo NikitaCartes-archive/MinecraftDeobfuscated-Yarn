@@ -38,24 +38,24 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<MultiplayerServerListWidget.Entry> {
-	static final Identifier INCOMPATIBLE_TEXTURE = new Identifier("server_list/incompatible");
-	static final Identifier UNREACHABLE_TEXTURE = new Identifier("server_list/unreachable");
-	static final Identifier PING_1_TEXTURE = new Identifier("server_list/ping_1");
-	static final Identifier PING_2_TEXTURE = new Identifier("server_list/ping_2");
-	static final Identifier PING_3_TEXTURE = new Identifier("server_list/ping_3");
-	static final Identifier PING_4_TEXTURE = new Identifier("server_list/ping_4");
-	static final Identifier PING_5_TEXTURE = new Identifier("server_list/ping_5");
-	static final Identifier PINGING_1_TEXTURE = new Identifier("server_list/pinging_1");
-	static final Identifier PINGING_2_TEXTURE = new Identifier("server_list/pinging_2");
-	static final Identifier PINGING_3_TEXTURE = new Identifier("server_list/pinging_3");
-	static final Identifier PINGING_4_TEXTURE = new Identifier("server_list/pinging_4");
-	static final Identifier PINGING_5_TEXTURE = new Identifier("server_list/pinging_5");
-	static final Identifier JOIN_HIGHLIGHTED_TEXTURE = new Identifier("server_list/join_highlighted");
-	static final Identifier JOIN_TEXTURE = new Identifier("server_list/join");
-	static final Identifier MOVE_UP_HIGHLIGHTED_TEXTURE = new Identifier("server_list/move_up_highlighted");
-	static final Identifier MOVE_UP_TEXTURE = new Identifier("server_list/move_up");
-	static final Identifier MOVE_DOWN_HIGHLIGHTED_TEXTURE = new Identifier("server_list/move_down_highlighted");
-	static final Identifier MOVE_DOWN_TEXTURE = new Identifier("server_list/move_down");
+	static final Identifier INCOMPATIBLE_TEXTURE = Identifier.method_60656("server_list/incompatible");
+	static final Identifier UNREACHABLE_TEXTURE = Identifier.method_60656("server_list/unreachable");
+	static final Identifier PING_1_TEXTURE = Identifier.method_60656("server_list/ping_1");
+	static final Identifier PING_2_TEXTURE = Identifier.method_60656("server_list/ping_2");
+	static final Identifier PING_3_TEXTURE = Identifier.method_60656("server_list/ping_3");
+	static final Identifier PING_4_TEXTURE = Identifier.method_60656("server_list/ping_4");
+	static final Identifier PING_5_TEXTURE = Identifier.method_60656("server_list/ping_5");
+	static final Identifier PINGING_1_TEXTURE = Identifier.method_60656("server_list/pinging_1");
+	static final Identifier PINGING_2_TEXTURE = Identifier.method_60656("server_list/pinging_2");
+	static final Identifier PINGING_3_TEXTURE = Identifier.method_60656("server_list/pinging_3");
+	static final Identifier PINGING_4_TEXTURE = Identifier.method_60656("server_list/pinging_4");
+	static final Identifier PINGING_5_TEXTURE = Identifier.method_60656("server_list/pinging_5");
+	static final Identifier JOIN_HIGHLIGHTED_TEXTURE = Identifier.method_60656("server_list/join_highlighted");
+	static final Identifier JOIN_TEXTURE = Identifier.method_60656("server_list/join");
+	static final Identifier MOVE_UP_HIGHLIGHTED_TEXTURE = Identifier.method_60656("server_list/move_up_highlighted");
+	static final Identifier MOVE_UP_TEXTURE = Identifier.method_60656("server_list/move_up");
+	static final Identifier MOVE_DOWN_HIGHLIGHTED_TEXTURE = Identifier.method_60656("server_list/move_down_highlighted");
+	static final Identifier MOVE_DOWN_TEXTURE = Identifier.method_60656("server_list/move_down");
 	static final Logger LOGGER = LogUtils.getLogger();
 	static final ThreadPoolExecutor SERVER_PINGER_THREAD_POOL = new ScheduledThreadPoolExecutor(
 		5, new ThreadFactoryBuilder().setNameFormat("Server Pinger #%d").setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).build()

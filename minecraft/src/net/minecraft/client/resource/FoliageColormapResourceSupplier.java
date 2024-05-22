@@ -12,7 +12,7 @@ import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
 public class FoliageColormapResourceSupplier extends SinglePreparationResourceReloader<int[]> {
-	private static final Identifier FOLIAGE_COLORMAP = new Identifier("textures/colormap/foliage.png");
+	private static final Identifier FOLIAGE_COLORMAP = Identifier.method_60656("textures/colormap/foliage.png");
 
 	protected int[] reload(ResourceManager resourceManager, Profiler profiler) {
 		try {

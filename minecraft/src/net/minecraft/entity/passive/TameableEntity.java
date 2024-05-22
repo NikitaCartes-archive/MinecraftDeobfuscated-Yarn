@@ -4,12 +4,18 @@ import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
+import net.minecraft.entity.ai.goal.EscapeDangerGoal;
+import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -17,13 +23,19 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public abstract class TameableEntity extends AnimalEntity implements Tameable {
+	public static final int field_52002 = 144;
+	private static final int field_52003 = 2;
+	private static final int field_52004 = 3;
+	private static final int field_52005 = 1;
 	/**
 	 * The tracked flags of tameable entities. Has the {@code 1} flag for {@linkplain
 	 * #isInSittingPose() sitting pose} and the {@code 4} flag for {@linkplain
@@ -215,5 +227,82 @@ public abstract class TameableEntity extends AnimalEntity implements Tameable {
 
 	public void setSitting(boolean sitting) {
 		this.sitting = sitting;
+	}
+
+	public void method_60713() {
+		LivingEntity livingEntity = this.getOwner();
+		if (livingEntity != null) {
+			this.method_60712(livingEntity.getBlockPos());
+		}
+	}
+
+	public boolean method_60714() {
+		LivingEntity livingEntity = this.getOwner();
+		return livingEntity != null && this.squaredDistanceTo(this.getOwner()) >= 144.0;
+	}
+
+	private void method_60712(BlockPos blockPos) {
+		for (int i = 0; i < 10; i++) {
+			int j = this.random.nextBetween(-3, 3);
+			int k = this.random.nextBetween(-3, 3);
+			if (Math.abs(j) >= 2 || Math.abs(k) >= 2) {
+				int l = this.random.nextBetween(-1, 1);
+				if (this.method_60711(blockPos.getX() + j, blockPos.getY() + l, blockPos.getZ() + k)) {
+					return;
+				}
+			}
+		}
+	}
+
+	private boolean method_60711(int i, int j, int k) {
+		if (!this.method_60717(new BlockPos(i, j, k))) {
+			return false;
+		} else {
+			this.refreshPositionAndAngles((double)i + 0.5, (double)j, (double)k + 0.5, this.getYaw(), this.getPitch());
+			this.navigation.stop();
+			return true;
+		}
+	}
+
+	private boolean method_60717(BlockPos blockPos) {
+		PathNodeType pathNodeType = LandPathNodeMaker.getLandNodeType(this, blockPos);
+		if (pathNodeType != PathNodeType.WALKABLE) {
+			return false;
+		} else {
+			BlockState blockState = this.getWorld().getBlockState(blockPos.down());
+			if (!this.method_60716() && blockState.getBlock() instanceof LeavesBlock) {
+				return false;
+			} else {
+				BlockPos blockPos2 = blockPos.subtract(this.getBlockPos());
+				return this.getWorld().isSpaceEmpty(this, this.getBoundingBox().offset(blockPos2));
+			}
+		}
+	}
+
+	public final boolean method_60715() {
+		return this.isSitting() || this.hasVehicle() || this.mightBeLeashed() || this.getOwner() != null && this.getOwner().isSpectator();
+	}
+
+	protected boolean method_60716() {
+		return false;
+	}
+
+	public class class_9788 extends EscapeDangerGoal {
+		public class_9788(final double d, final TagKey<DamageType> tagKey) {
+			super(TameableEntity.this, d, tagKey);
+		}
+
+		public class_9788(final double d) {
+			super(TameableEntity.this, d);
+		}
+
+		@Override
+		public void tick() {
+			if (!TameableEntity.this.method_60715() && TameableEntity.this.method_60714()) {
+				TameableEntity.this.method_60713();
+			}
+
+			super.tick();
+		}
 	}
 }

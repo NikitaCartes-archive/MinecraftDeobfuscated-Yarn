@@ -3,11 +3,13 @@ package net.minecraft.client.render;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9799;
+import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 	private final VertexConsumerProvider.Immediate parent;
-	private final VertexConsumerProvider.Immediate plainDrawer = VertexConsumerProvider.immediate(new BufferBuilder(1536));
+	private final VertexConsumerProvider.Immediate plainDrawer = VertexConsumerProvider.immediate(new class_9799(1536));
 	private int red = 255;
 	private int green = 255;
 	private int blue = 255;
@@ -49,32 +51,14 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class OutlineVertexConsumer extends FixedColorVertexConsumer {
-		private final VertexConsumer delegate;
-		private double x;
-		private double y;
-		private double z;
-		private float textureU;
-		private float textureV;
-
-		OutlineVertexConsumer(VertexConsumer delegate, int red, int green, int blue, int alpha) {
-			this.delegate = delegate;
-			super.fixedColor(red, green, blue, alpha);
+	static record OutlineVertexConsumer(VertexConsumer delegate, int color) implements VertexConsumer {
+		public OutlineVertexConsumer(VertexConsumer delegate, int red, int green, int blue, int alpha) {
+			this(delegate, ColorHelper.Argb.getArgb(alpha, red, green, blue));
 		}
 
 		@Override
-		public void fixedColor(int red, int green, int blue, int alpha) {
-		}
-
-		@Override
-		public void unfixColor() {
-		}
-
-		@Override
-		public VertexConsumer vertex(double x, double y, double z) {
-			this.x = x;
-			this.y = y;
-			this.z = z;
+		public VertexConsumer vertex(float f, float g, float h) {
+			this.delegate.vertex(f, g, h).color(this.color);
 			return this;
 		}
 
@@ -85,13 +69,12 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 
 		@Override
 		public VertexConsumer texture(float u, float v) {
-			this.textureU = u;
-			this.textureV = v;
+			this.delegate.texture(u, v);
 			return this;
 		}
 
 		@Override
-		public VertexConsumer overlay(int u, int v) {
+		public VertexConsumer method_60796(int i, int j) {
 			return this;
 		}
 
@@ -103,35 +86,6 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 		@Override
 		public VertexConsumer normal(float x, float y, float z) {
 			return this;
-		}
-
-		@Override
-		public void vertex(
-			float x,
-			float y,
-			float z,
-			float red,
-			float green,
-			float blue,
-			float alpha,
-			float u,
-			float v,
-			int overlay,
-			int light,
-			float normalX,
-			float normalY,
-			float normalZ
-		) {
-			this.delegate.vertex((double)x, (double)y, (double)z).color(this.fixedRed, this.fixedGreen, this.fixedBlue, this.fixedAlpha).texture(u, v).next();
-		}
-
-		@Override
-		public void next() {
-			this.delegate
-				.vertex(this.x, this.y, this.z)
-				.color(this.fixedRed, this.fixedGreen, this.fixedBlue, this.fixedAlpha)
-				.texture(this.textureU, this.textureV)
-				.next();
 		}
 	}
 }

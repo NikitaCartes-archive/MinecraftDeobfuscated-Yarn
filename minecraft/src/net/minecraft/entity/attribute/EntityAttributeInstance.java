@@ -8,7 +8,6 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
@@ -16,17 +15,21 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Identifier;
 
 /**
  * A double-valued attribute.
  */
 public class EntityAttributeInstance {
+	private static final String field_52008 = "base";
+	private static final String field_52009 = "modifiers";
+	public static final String field_52007 = "id";
 	private final RegistryEntry<EntityAttribute> type;
-	private final Map<EntityAttributeModifier.Operation, Map<UUID, EntityAttributeModifier>> operationToModifiers = Maps.newEnumMap(
+	private final Map<EntityAttributeModifier.Operation, Map<Identifier, EntityAttributeModifier>> operationToModifiers = Maps.newEnumMap(
 		EntityAttributeModifier.Operation.class
 	);
-	private final Map<UUID, EntityAttributeModifier> idToModifiers = new Object2ObjectArrayMap<>();
-	private final Map<UUID, EntityAttributeModifier> persistentModifiers = new Object2ObjectArrayMap<>();
+	private final Map<Identifier, EntityAttributeModifier> idToModifiers = new Object2ObjectArrayMap<>();
+	private final Map<Identifier, EntityAttributeModifier> persistentModifiers = new Object2ObjectArrayMap<>();
 	private double baseValue;
 	private boolean dirty = true;
 	private double value;
@@ -58,8 +61,8 @@ public class EntityAttributeInstance {
 	}
 
 	@VisibleForTesting
-	Map<UUID, EntityAttributeModifier> getModifiers(EntityAttributeModifier.Operation operation) {
-		return (Map<UUID, EntityAttributeModifier>)this.operationToModifiers.computeIfAbsent(operation, operationx -> new Object2ObjectOpenHashMap());
+	Map<Identifier, EntityAttributeModifier> getModifiers(EntityAttributeModifier.Operation operation) {
+		return (Map<Identifier, EntityAttributeModifier>)this.operationToModifiers.computeIfAbsent(operation, operationx -> new Object2ObjectOpenHashMap());
 	}
 
 	public Set<EntityAttributeModifier> getModifiers() {
@@ -67,12 +70,12 @@ public class EntityAttributeInstance {
 	}
 
 	@Nullable
-	public EntityAttributeModifier getModifier(UUID uuid) {
-		return (EntityAttributeModifier)this.idToModifiers.get(uuid);
+	public EntityAttributeModifier getModifier(Identifier identifier) {
+		return (EntityAttributeModifier)this.idToModifiers.get(identifier);
 	}
 
-	public boolean hasModifier(EntityAttributeModifier modifier) {
-		return this.idToModifiers.get(modifier.uuid()) != null;
+	public boolean hasModifier(Identifier identifier) {
+		return this.idToModifiers.get(identifier) != null;
 	}
 
 	private void addModifier(EntityAttributeModifier modifier) {
@@ -115,22 +118,22 @@ public class EntityAttributeInstance {
 		this.removeModifier(modifier.uuid());
 	}
 
-	public void removeModifier(UUID uuid) {
-		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.idToModifiers.remove(uuid);
+	public void removeModifier(Identifier identifier) {
+		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.idToModifiers.remove(identifier);
 		if (entityAttributeModifier != null) {
-			this.getModifiers(entityAttributeModifier.operation()).remove(uuid);
-			this.persistentModifiers.remove(uuid);
+			this.getModifiers(entityAttributeModifier.operation()).remove(identifier);
+			this.persistentModifiers.remove(identifier);
 			this.onUpdate();
 		}
 	}
 
-	public boolean tryRemoveModifier(UUID uuid) {
-		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.persistentModifiers.remove(uuid);
+	public boolean tryRemoveModifier(Identifier identifier) {
+		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.persistentModifiers.remove(identifier);
 		if (entityAttributeModifier == null) {
 			return false;
 		} else {
 			this.getModifiers(entityAttributeModifier.operation()).remove(entityAttributeModifier.uuid());
-			this.idToModifiers.remove(uuid);
+			this.idToModifiers.remove(identifier);
 			this.onUpdate();
 			return true;
 		}
@@ -205,8 +208,8 @@ public class EntityAttributeInstance {
 		RegistryKey<EntityAttribute> registryKey = (RegistryKey<EntityAttribute>)this.type
 			.getKey()
 			.orElseThrow(() -> new IllegalStateException("Tried to serialize unregistered attribute"));
-		nbtCompound.putString("Name", registryKey.getValue().toString());
-		nbtCompound.putDouble("Base", this.baseValue);
+		nbtCompound.putString("id", registryKey.getValue().toString());
+		nbtCompound.putDouble("base", this.baseValue);
 		if (!this.persistentModifiers.isEmpty()) {
 			NbtList nbtList = new NbtList();
 
@@ -214,16 +217,16 @@ public class EntityAttributeInstance {
 				nbtList.add(entityAttributeModifier.toNbt());
 			}
 
-			nbtCompound.put("Modifiers", nbtList);
+			nbtCompound.put("modifiers", nbtList);
 		}
 
 		return nbtCompound;
 	}
 
 	public void readNbt(NbtCompound nbt) {
-		this.baseValue = nbt.getDouble("Base");
-		if (nbt.contains("Modifiers", NbtElement.LIST_TYPE)) {
-			NbtList nbtList = nbt.getList("Modifiers", NbtElement.COMPOUND_TYPE);
+		this.baseValue = nbt.getDouble("base");
+		if (nbt.contains("modifiers", NbtElement.LIST_TYPE)) {
+			NbtList nbtList = nbt.getList("modifiers", NbtElement.COMPOUND_TYPE);
 
 			for (int i = 0; i < nbtList.size(); i++) {
 				EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromNbt(nbtList.getCompound(i));

@@ -1,6 +1,7 @@
 package net.minecraft.network;
 
 import com.mojang.logging.LogUtils;
+import javax.annotation.Nullable;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.server.world.ServerWorld;
@@ -50,11 +51,14 @@ public class NetworkThreadUtils {
 		}
 	}
 
-	private static <T extends PacketListener> void fillCrashReport(CrashReport report, T listener, Packet<T> packet) {
-		CrashReportSection crashReportSection = report.addElement("Incoming Packet");
-		crashReportSection.add("Type", (CrashCallable<String>)(() -> packet.getPacketId().toString()));
-		crashReportSection.add("Is Terminal", (CrashCallable<String>)(() -> Boolean.toString(packet.transitionsNetworkState())));
-		crashReportSection.add("Is Skippable", (CrashCallable<String>)(() -> Boolean.toString(packet.isWritingErrorSkippable())));
+	public static <T extends PacketListener> void fillCrashReport(CrashReport report, T listener, @Nullable Packet<T> packet) {
+		if (packet != null) {
+			CrashReportSection crashReportSection = report.addElement("Incoming Packet");
+			crashReportSection.add("Type", (CrashCallable<String>)(() -> packet.getPacketId().toString()));
+			crashReportSection.add("Is Terminal", (CrashCallable<String>)(() -> Boolean.toString(packet.transitionsNetworkState())));
+			crashReportSection.add("Is Skippable", (CrashCallable<String>)(() -> Boolean.toString(packet.isWritingErrorSkippable())));
+		}
+
 		listener.fillCrashReport(report);
 	}
 }

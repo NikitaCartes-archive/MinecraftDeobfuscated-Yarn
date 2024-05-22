@@ -41,6 +41,6 @@ public interface EnchantmentProviders {
 	}
 
 	static RegistryKey<EnchantmentProvider> of(String id) {
-		return RegistryKey.of(RegistryKeys.ENCHANTMENT_PROVIDER, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.ENCHANTMENT_PROVIDER, Identifier.method_60656(id));
 	}
 }

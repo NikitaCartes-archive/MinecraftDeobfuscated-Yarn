@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9812;
 import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.listener.ClientQueryPacketListener;
@@ -113,9 +114,9 @@ public class MultiplayerServerListPinger {
 				}
 
 				@Override
-				public void onDisconnected(Text reason) {
+				public void onDisconnected(class_9812 arg) {
 					if (!this.sentQuery) {
-						MultiplayerServerListPinger.this.showError(reason, entry);
+						MultiplayerServerListPinger.this.showError(arg.reason(), entry);
 						MultiplayerServerListPinger.this.ping(inetSocketAddress, serverAddress, entry);
 					}
 				}

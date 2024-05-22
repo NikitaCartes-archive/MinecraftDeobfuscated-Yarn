@@ -15,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity, EntityModel<PufferfishEntity>> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/fish/pufferfish.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/fish/pufferfish.png");
 	private int modelSize = 3;
 	private final EntityModel<PufferfishEntity> smallModel;
 	private final EntityModel<PufferfishEntity> mediumModel;

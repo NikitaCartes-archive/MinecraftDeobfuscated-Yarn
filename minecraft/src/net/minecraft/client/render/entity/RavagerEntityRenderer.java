@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class RavagerEntityRenderer extends MobEntityRenderer<RavagerEntity, RavagerEntityModel> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/illager/ravager.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/illager/ravager.png");
 
 	public RavagerEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new RavagerEntityModel(context.getPart(EntityModelLayers.RAVAGER)), 1.1F);

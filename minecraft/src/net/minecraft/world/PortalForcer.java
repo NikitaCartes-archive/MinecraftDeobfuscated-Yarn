@@ -6,11 +6,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NetherPortalBlock;
-import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.border.WorldBorder;
@@ -52,7 +50,6 @@ public class PortalForcer {
 		return optional.map(
 			poi -> {
 				BlockPos blockPos = poi.getPos();
-				this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);
 				BlockState blockState = this.world.getBlockState(blockPos);
 				return BlockLocating.getLargestRectangle(
 					blockPos, blockState.get(Properties.HORIZONTAL_AXIS), 21, Direction.Axis.Y, 21, posx -> this.world.getBlockState(posx) == blockState

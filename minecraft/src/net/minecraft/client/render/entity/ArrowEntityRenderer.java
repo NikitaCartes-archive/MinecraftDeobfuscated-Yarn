@@ -7,8 +7,8 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ArrowEntityRenderer extends ProjectileEntityRenderer<ArrowEntity> {
-	public static final Identifier TEXTURE = new Identifier("textures/entity/projectiles/arrow.png");
-	public static final Identifier TIPPED_TEXTURE = new Identifier("textures/entity/projectiles/tipped_arrow.png");
+	public static final Identifier TEXTURE = Identifier.method_60656("textures/entity/projectiles/arrow.png");
+	public static final Identifier TIPPED_TEXTURE = Identifier.method_60656("textures/entity/projectiles/tipped_arrow.png");
 
 	public ArrowEntityRenderer(EntityRendererFactory.Context context) {
 		super(context);

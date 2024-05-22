@@ -21,7 +21,6 @@ import net.minecraft.registry.tag.TagBuilder;
 import net.minecraft.registry.tag.TagEntry;
 import net.minecraft.registry.tag.TagFile;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.registry.tag.TagManagerLoader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
@@ -43,7 +42,7 @@ public abstract class TagProvider<T> implements DataProvider {
 		CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture,
 		CompletableFuture<TagProvider.TagLookup<T>> parentTagLookupFuture
 	) {
-		this.pathResolver = output.getResolver(DataOutput.OutputType.DATA_PACK, TagManagerLoader.getPath(registryRef));
+		this.pathResolver = output.method_60918(registryRef);
 		this.registryRef = registryRef;
 		this.parentTagLookupFuture = parentTagLookupFuture;
 		this.registryLookupFuture = registryLookupFuture;

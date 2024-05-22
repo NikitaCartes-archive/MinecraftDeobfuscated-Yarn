@@ -1,6 +1,7 @@
 package net.minecraft.block.spawner;
 
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -16,6 +17,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.enums.TrialSpawnerState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,6 +31,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
@@ -131,27 +134,24 @@ public class TrialSpawnerData {
 		if (!bl) {
 			if (!logic.getSpawnerState().equals(TrialSpawnerState.COOLDOWN) || !logic.isOminous()) {
 				List<UUID> list = logic.getEntityDetector().detect(world, logic.getEntitySelector(), pos, (double)logic.getDetectionRadius(), true);
-				PlayerEntity playerEntity = null;
-
-				for (UUID uUID : list) {
-					PlayerEntity playerEntity2 = world.getPlayerByUuid(uUID);
-					if (playerEntity2 != null) {
-						if (playerEntity2.hasStatusEffect(StatusEffects.BAD_OMEN)) {
-							this.applyTrialOmen(playerEntity2, playerEntity2.getStatusEffect(StatusEffects.BAD_OMEN));
-							playerEntity = playerEntity2;
-						} else if (playerEntity2.hasStatusEffect(StatusEffects.TRIAL_OMEN)) {
-							playerEntity = playerEntity2;
+				boolean bl2;
+				if (!logic.isOminous() && !list.isEmpty()) {
+					Optional<Pair<PlayerEntity, RegistryEntry<StatusEffect>>> optional = method_60789(world, list);
+					optional.ifPresent(pair -> {
+						PlayerEntity playerEntity = (PlayerEntity)pair.getFirst();
+						if (pair.getSecond() == StatusEffects.BAD_OMEN) {
+							applyTrialOmen(playerEntity);
 						}
-					}
-				}
 
-				boolean bl2 = !logic.isOminous() && playerEntity != null;
-				if (!logic.getSpawnerState().equals(TrialSpawnerState.COOLDOWN) || bl2) {
-					if (bl2) {
 						world.syncWorldEvent(WorldEvents.TRIAL_SPAWNER_TURNS_OMINOUS, BlockPos.ofFloored(playerEntity.getEyePos()), 0);
 						logic.setOminous(world, pos);
-					}
+					});
+					bl2 = optional.isPresent();
+				} else {
+					bl2 = false;
+				}
 
+				if (!logic.getSpawnerState().equals(TrialSpawnerState.COOLDOWN) || bl2) {
 					boolean bl3 = logic.getData().players.isEmpty();
 					List<UUID> list2 = bl3 ? list : logic.getEntityDetector().detect(world, logic.getEntitySelector(), pos, (double)logic.getDetectionRadius(), false);
 					if (this.players.addAll(list2)) {
@@ -164,6 +164,26 @@ public class TrialSpawnerData {
 				}
 			}
 		}
+	}
+
+	private static Optional<Pair<PlayerEntity, RegistryEntry<StatusEffect>>> method_60789(ServerWorld serverWorld, List<UUID> list) {
+		PlayerEntity playerEntity = null;
+
+		for (UUID uUID : list) {
+			PlayerEntity playerEntity2 = serverWorld.getPlayerByUuid(uUID);
+			if (playerEntity2 != null) {
+				RegistryEntry<StatusEffect> registryEntry = StatusEffects.TRIAL_OMEN;
+				if (playerEntity2.hasStatusEffect(registryEntry)) {
+					return Optional.of(Pair.of(playerEntity2, registryEntry));
+				}
+
+				if (playerEntity2.hasStatusEffect(StatusEffects.BAD_OMEN)) {
+					playerEntity = playerEntity2;
+				}
+			}
+		}
+
+		return Optional.ofNullable(playerEntity).map(playerEntityx -> Pair.of(playerEntityx, StatusEffects.BAD_OMEN));
 	}
 
 	public void resetAndClearMobs(TrialSpawnerLogic logic, ServerWorld world) {
@@ -184,11 +204,14 @@ public class TrialSpawnerData {
 		this.cooldownEnd = world.getTime() + logic.getOminousConfig().getCooldownLength();
 	}
 
-	private void applyTrialOmen(PlayerEntity player, StatusEffectInstance effectInstance) {
-		int i = effectInstance.getAmplifier() + 1;
-		int j = 18000 * i;
-		player.removeStatusEffect(StatusEffects.BAD_OMEN);
-		player.addStatusEffect(new StatusEffectInstance(StatusEffects.TRIAL_OMEN, j, 0));
+	private static void applyTrialOmen(PlayerEntity playerEntity) {
+		StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.BAD_OMEN);
+		if (statusEffectInstance != null) {
+			int i = statusEffectInstance.getAmplifier() + 1;
+			int j = 18000 * i;
+			playerEntity.removeStatusEffect(StatusEffects.BAD_OMEN);
+			playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.TRIAL_OMEN, j, 0));
+		}
 	}
 
 	public boolean isCooldownPast(ServerWorld world, float f, int i) {

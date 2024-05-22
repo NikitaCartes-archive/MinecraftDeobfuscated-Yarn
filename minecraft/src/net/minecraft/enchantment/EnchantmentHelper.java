@@ -11,6 +11,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.block.BlockState;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
@@ -295,10 +296,11 @@ public class EnchantmentHelper {
 		Entity enchantedEntity,
 		@Nullable EquipmentSlot slot,
 		Vec3d pos,
-		java.util.function.Consumer<Item> onBreak
+		BlockState blockState,
+		java.util.function.Consumer<Item> consumer
 	) {
-		EnchantmentEffectContext enchantmentEffectContext = new EnchantmentEffectContext(stack, slot, user, onBreak);
-		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().onHitBlock(world, level, enchantmentEffectContext, enchantedEntity, pos));
+		EnchantmentEffectContext enchantmentEffectContext = new EnchantmentEffectContext(stack, slot, user, consumer);
+		forEachEnchantment(stack, (registryEntry, i) -> registryEntry.value().onHitBlock(world, i, enchantmentEffectContext, enchantedEntity, pos, blockState));
 	}
 
 	public static int getRepairWithXp(ServerWorld world, ItemStack stack, int baseRepairWithXp) {
@@ -337,7 +339,7 @@ public class EnchantmentHelper {
 	) {
 		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().getEffect(EnchantmentEffectComponentTypes.ATTRIBUTES).forEach(effect -> {
 				if (((Enchantment)enchantment.value()).definition().slots().contains(slot)) {
-					attributeModifierConsumer.accept(effect.attribute(), effect.createAttributeModifier(level));
+					attributeModifierConsumer.accept(effect.attribute(), effect.createAttributeModifier(level, slot));
 				}
 			}));
 	}
@@ -347,7 +349,7 @@ public class EnchantmentHelper {
 	) {
 		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().getEffect(EnchantmentEffectComponentTypes.ATTRIBUTES).forEach(effect -> {
 				if (((Enchantment)enchantment.value()).slotMatches(slot)) {
-					attributeModifierConsumer.accept(effect.attribute(), effect.createAttributeModifier(level));
+					attributeModifierConsumer.accept(effect.attribute(), effect.createAttributeModifier(level, slot));
 				}
 			}));
 	}

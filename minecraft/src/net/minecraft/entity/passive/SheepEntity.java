@@ -52,6 +52,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
@@ -80,24 +81,29 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		map.put(DyeColor.RED, Blocks.RED_WOOL);
 		map.put(DyeColor.BLACK, Blocks.BLACK_WOOL);
 	});
-	private static final Map<DyeColor, float[]> COLORS = Maps.newEnumMap(
+	private static final Map<DyeColor, Integer> COLORS = Maps.newEnumMap(
 		(Map)Arrays.stream(DyeColor.values()).collect(Collectors.toMap(color -> color, SheepEntity::getDyedColor))
 	);
 	private int eatGrassTimer;
 	private EatGrassGoal eatGrassGoal;
 
-	private static float[] getDyedColor(DyeColor color) {
+	private static int getDyedColor(DyeColor color) {
 		if (color == DyeColor.WHITE) {
-			return new float[]{0.9019608F, 0.9019608F, 0.9019608F};
+			return -1644826;
 		} else {
-			float[] fs = color.getColorComponents();
+			int i = color.getColorComponents();
 			float f = 0.75F;
-			return new float[]{fs[0] * 0.75F, fs[1] * 0.75F, fs[2] * 0.75F};
+			return ColorHelper.Argb.getArgb(
+				255,
+				MathHelper.floor((float)ColorHelper.Argb.getRed(i) * 0.75F),
+				MathHelper.floor((float)ColorHelper.Argb.getGreen(i) * 0.75F),
+				MathHelper.floor((float)ColorHelper.Argb.getBlue(i) * 0.75F)
+			);
 		}
 	}
 
-	public static float[] getRgbColor(DyeColor dyeColor) {
-		return (float[])COLORS.get(dyeColor);
+	public static int getRgbColor(DyeColor dyeColor) {
+		return (Integer)COLORS.get(dyeColor);
 	}
 
 	public SheepEntity(EntityType<? extends SheepEntity> entityType, World world) {

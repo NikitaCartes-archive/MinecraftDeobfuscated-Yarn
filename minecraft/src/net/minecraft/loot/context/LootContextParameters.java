@@ -24,6 +24,6 @@ public class LootContextParameters {
 	public static final LootContextParameter<Boolean> ENCHANTMENT_ACTIVE = register("enchantment_active");
 
 	private static <T> LootContextParameter<T> register(String name) {
-		return new LootContextParameter<>(new Identifier(name));
+		return new LootContextParameter<>(Identifier.method_60656(name));
 	}
 }

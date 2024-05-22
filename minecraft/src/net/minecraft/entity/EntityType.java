@@ -1221,7 +1221,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	}
 
 	public static Optional<EntityType<?>> fromNbt(NbtCompound nbt) {
-		return Registries.ENTITY_TYPE.getOrEmpty(new Identifier(nbt.getString("id")));
+		return Registries.ENTITY_TYPE.getOrEmpty(Identifier.method_60654(nbt.getString("id")));
 	}
 
 	@Nullable

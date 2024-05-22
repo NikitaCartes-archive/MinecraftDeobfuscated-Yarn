@@ -2,7 +2,6 @@ package net.minecraft.entity.passive;
 
 import com.google.common.collect.Sets;
 import java.util.Set;
-import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -58,6 +57,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -71,9 +71,9 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddleable {
-	private static final UUID SUFFOCATING_MODIFIER_ID = UUID.fromString("9e362924-01de-4ddd-a2b2-d0f7a405a174");
+	private static final Identifier SUFFOCATING_MODIFIER_ID = Identifier.method_60656("suffocating");
 	private static final EntityAttributeModifier SUFFOCATING_MODIFIER = new EntityAttributeModifier(
-		SUFFOCATING_MODIFIER_ID, "Strider suffocating modifier", -0.34F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
+		SUFFOCATING_MODIFIER_ID, -0.34F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
 	);
 	private static final float COLD_SADDLED_SPEED = 0.35F;
 	private static final float DEFAULT_SADDLED_SPEED = 0.55F;
@@ -171,7 +171,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 			if (cold) {
 				entityAttributeInstance.updateModifier(SUFFOCATING_MODIFIER);
 			} else {
-				entityAttributeInstance.removeModifier(SUFFOCATING_MODIFIER);
+				entityAttributeInstance.removeModifier(SUFFOCATING_MODIFIER_ID);
 			}
 		}
 	}

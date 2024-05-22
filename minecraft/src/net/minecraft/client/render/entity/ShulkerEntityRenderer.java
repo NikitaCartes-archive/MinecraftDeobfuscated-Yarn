@@ -1,5 +1,6 @@
 package net.minecraft.client.render.entity;
 
+import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,10 +19,12 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
-	private static final Identifier TEXTURE = new Identifier("textures/" + TexturedRenderLayers.SHULKER_TEXTURE_ID.getTextureId().getPath() + ".png");
+	private static final Identifier TEXTURE = TexturedRenderLayers.SHULKER_TEXTURE_ID
+		.getTextureId()
+		.withPath((UnaryOperator<String>)(string -> "textures/" + string + ".png"));
 	private static final Identifier[] COLORED_TEXTURES = (Identifier[])TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES
 		.stream()
-		.map(spriteId -> new Identifier("textures/" + spriteId.getTextureId().getPath() + ".png"))
+		.map(spriteId -> spriteId.getTextureId().withPath((UnaryOperator<String>)(string -> "textures/" + string + ".png")))
 		.toArray(Identifier[]::new);
 
 	public ShulkerEntityRenderer(EntityRendererFactory.Context context) {

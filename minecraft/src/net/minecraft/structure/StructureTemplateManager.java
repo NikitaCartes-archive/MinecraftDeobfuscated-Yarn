@@ -49,7 +49,7 @@ import org.slf4j.Logger;
 
 public class StructureTemplateManager {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final String STRUCTURES_DIRECTORY = "structures";
+	public static final String STRUCTURES_DIRECTORY = "structure";
 	private static final String NBT_FILE_EXTENSION = ".nbt";
 	private static final String SNBT_FILE_EXTENSION = ".snbt";
 	private final Map<Identifier, Optional<StructureTemplate>> templates = Maps.<Identifier, Optional<StructureTemplate>>newConcurrentMap();
@@ -58,7 +58,7 @@ public class StructureTemplateManager {
 	private final Path generatedPath;
 	private final List<StructureTemplateManager.Provider> providers;
 	private final RegistryEntryLookup<Block> blockLookup;
-	private static final ResourceFinder NBT_FINDER = new ResourceFinder("structures", ".nbt");
+	private static final ResourceFinder NBT_FINDER = new ResourceFinder("structure", ".nbt");
 
 	public StructureTemplateManager(ResourceManager resourceManager, LevelStorage.Session session, DataFixer dataFixer, RegistryEntryLookup<Block> blockLookup) {
 		this.resourceManager = resourceManager;
@@ -152,7 +152,7 @@ public class StructureTemplateManager {
 	}
 
 	private Stream<Identifier> streamTemplates(Path namespaceDirectory) {
-		Path path = namespaceDirectory.resolve("structures");
+		Path path = namespaceDirectory.resolve("structure");
 		return this.streamTemplates(path, namespaceDirectory.getFileName().toString(), ".nbt");
 	}
 
@@ -166,7 +166,7 @@ public class StructureTemplateManager {
 			try {
 				return Files.walk(structuresDirectoryPath).filter(path -> path.toString().endsWith(extension)).mapMulti((path, consumer) -> {
 					try {
-						consumer.accept(new Identifier(namespace, (String)function.apply(this.toRelativePath(structuresDirectoryPath, path))));
+						consumer.accept(Identifier.method_60655(namespace, (String)function.apply(this.toRelativePath(structuresDirectoryPath, path))));
 					} catch (InvalidIdentifierException var7x) {
 						LOGGER.error("Invalid location while listing pack contents", (Throwable)var7x);
 					}
@@ -330,7 +330,7 @@ public class StructureTemplateManager {
 	public static Path getTemplatePath(Path path, Identifier id, String extension) {
 		try {
 			Path path2 = path.resolve(id.getNamespace());
-			Path path3 = path2.resolve("structures");
+			Path path3 = path2.resolve("structure");
 			return PathUtil.getResourcePath(path3, id.getPath(), extension);
 		} catch (InvalidPathException var5) {
 			throw new InvalidIdentifierException("Invalid resource path: " + id, var5);

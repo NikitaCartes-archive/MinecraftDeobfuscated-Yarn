@@ -213,15 +213,11 @@ public class DrawContext {
 			y2 = i;
 		}
 
-		float f = (float)ColorHelper.Argb.getAlpha(color) / 255.0F;
-		float g = (float)ColorHelper.Argb.getRed(color) / 255.0F;
-		float h = (float)ColorHelper.Argb.getGreen(color) / 255.0F;
-		float j = (float)ColorHelper.Argb.getBlue(color) / 255.0F;
 		VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(layer);
-		vertexConsumer.vertex(matrix4f, (float)x1, (float)y1, (float)z).color(g, h, j, f).next();
-		vertexConsumer.vertex(matrix4f, (float)x1, (float)y2, (float)z).color(g, h, j, f).next();
-		vertexConsumer.vertex(matrix4f, (float)x2, (float)y2, (float)z).color(g, h, j, f).next();
-		vertexConsumer.vertex(matrix4f, (float)x2, (float)y1, (float)z).color(g, h, j, f).next();
+		vertexConsumer.vertex(matrix4f, (float)x1, (float)y1, (float)z).color(color);
+		vertexConsumer.vertex(matrix4f, (float)x1, (float)y2, (float)z).color(color);
+		vertexConsumer.vertex(matrix4f, (float)x2, (float)y2, (float)z).color(color);
+		vertexConsumer.vertex(matrix4f, (float)x2, (float)y1, (float)z).color(color);
 		this.tryDraw();
 	}
 
@@ -240,28 +236,20 @@ public class DrawContext {
 	}
 
 	private void fillGradient(VertexConsumer vertexConsumer, int startX, int startY, int endX, int endY, int z, int colorStart, int colorEnd) {
-		float f = (float)ColorHelper.Argb.getAlpha(colorStart) / 255.0F;
-		float g = (float)ColorHelper.Argb.getRed(colorStart) / 255.0F;
-		float h = (float)ColorHelper.Argb.getGreen(colorStart) / 255.0F;
-		float i = (float)ColorHelper.Argb.getBlue(colorStart) / 255.0F;
-		float j = (float)ColorHelper.Argb.getAlpha(colorEnd) / 255.0F;
-		float k = (float)ColorHelper.Argb.getRed(colorEnd) / 255.0F;
-		float l = (float)ColorHelper.Argb.getGreen(colorEnd) / 255.0F;
-		float m = (float)ColorHelper.Argb.getBlue(colorEnd) / 255.0F;
 		Matrix4f matrix4f = this.matrices.peek().getPositionMatrix();
-		vertexConsumer.vertex(matrix4f, (float)startX, (float)startY, (float)z).color(g, h, i, f).next();
-		vertexConsumer.vertex(matrix4f, (float)startX, (float)endY, (float)z).color(k, l, m, j).next();
-		vertexConsumer.vertex(matrix4f, (float)endX, (float)endY, (float)z).color(k, l, m, j).next();
-		vertexConsumer.vertex(matrix4f, (float)endX, (float)startY, (float)z).color(g, h, i, f).next();
+		vertexConsumer.vertex(matrix4f, (float)startX, (float)startY, (float)z).color(colorStart);
+		vertexConsumer.vertex(matrix4f, (float)startX, (float)endY, (float)z).color(colorEnd);
+		vertexConsumer.vertex(matrix4f, (float)endX, (float)endY, (float)z).color(colorEnd);
+		vertexConsumer.vertex(matrix4f, (float)endX, (float)startY, (float)z).color(colorStart);
 	}
 
 	public void fillWithLayer(RenderLayer layer, int startX, int startY, int endX, int endY, int z) {
 		Matrix4f matrix4f = this.matrices.peek().getPositionMatrix();
 		VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(layer);
-		vertexConsumer.vertex(matrix4f, (float)startX, (float)startY, (float)z).next();
-		vertexConsumer.vertex(matrix4f, (float)startX, (float)endY, (float)z).next();
-		vertexConsumer.vertex(matrix4f, (float)endX, (float)endY, (float)z).next();
-		vertexConsumer.vertex(matrix4f, (float)endX, (float)startY, (float)z).next();
+		vertexConsumer.vertex(matrix4f, (float)startX, (float)startY, (float)z);
+		vertexConsumer.vertex(matrix4f, (float)startX, (float)endY, (float)z);
+		vertexConsumer.vertex(matrix4f, (float)endX, (float)endY, (float)z);
+		vertexConsumer.vertex(matrix4f, (float)endX, (float)startY, (float)z);
 		this.tryDraw();
 	}
 
@@ -473,29 +461,27 @@ public class DrawContext {
 		RenderSystem.setShaderTexture(0, texture);
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		Matrix4f matrix4f = this.matrices.peek().getPositionMatrix();
-		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-		bufferBuilder.vertex(matrix4f, (float)x1, (float)y1, (float)z).texture(u1, v1).next();
-		bufferBuilder.vertex(matrix4f, (float)x1, (float)y2, (float)z).texture(u1, v2).next();
-		bufferBuilder.vertex(matrix4f, (float)x2, (float)y2, (float)z).texture(u2, v2).next();
-		bufferBuilder.vertex(matrix4f, (float)x2, (float)y1, (float)z).texture(u2, v1).next();
-		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+		BufferBuilder bufferBuilder = Tessellator.getInstance().method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+		bufferBuilder.vertex(matrix4f, (float)x1, (float)y1, (float)z).texture(u1, v1);
+		bufferBuilder.vertex(matrix4f, (float)x1, (float)y2, (float)z).texture(u1, v2);
+		bufferBuilder.vertex(matrix4f, (float)x2, (float)y2, (float)z).texture(u2, v2);
+		bufferBuilder.vertex(matrix4f, (float)x2, (float)y1, (float)z).texture(u2, v1);
+		BufferRenderer.drawWithGlobalProgram(bufferBuilder.method_60800());
 	}
 
 	void drawTexturedQuad(
 		Identifier texture, int x1, int x2, int y1, int y2, int z, float u1, float u2, float v1, float v2, float red, float green, float blue, float alpha
 	) {
 		RenderSystem.setShaderTexture(0, texture);
-		RenderSystem.setShader(GameRenderer::getPositionColorTexProgram);
+		RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
 		RenderSystem.enableBlend();
 		Matrix4f matrix4f = this.matrices.peek().getPositionMatrix();
-		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
-		bufferBuilder.vertex(matrix4f, (float)x1, (float)y1, (float)z).color(red, green, blue, alpha).texture(u1, v1).next();
-		bufferBuilder.vertex(matrix4f, (float)x1, (float)y2, (float)z).color(red, green, blue, alpha).texture(u1, v2).next();
-		bufferBuilder.vertex(matrix4f, (float)x2, (float)y2, (float)z).color(red, green, blue, alpha).texture(u2, v2).next();
-		bufferBuilder.vertex(matrix4f, (float)x2, (float)y1, (float)z).color(red, green, blue, alpha).texture(u2, v1).next();
-		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+		BufferBuilder bufferBuilder = Tessellator.getInstance().method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+		bufferBuilder.vertex(matrix4f, (float)x1, (float)y1, (float)z).texture(u1, v1).color(red, green, blue, alpha);
+		bufferBuilder.vertex(matrix4f, (float)x1, (float)y2, (float)z).texture(u1, v2).color(red, green, blue, alpha);
+		bufferBuilder.vertex(matrix4f, (float)x2, (float)y2, (float)z).texture(u2, v2).color(red, green, blue, alpha);
+		bufferBuilder.vertex(matrix4f, (float)x2, (float)y1, (float)z).texture(u2, v1).color(red, green, blue, alpha);
+		BufferRenderer.drawWithGlobalProgram(bufferBuilder.method_60800());
 		RenderSystem.disableBlend();
 	}
 

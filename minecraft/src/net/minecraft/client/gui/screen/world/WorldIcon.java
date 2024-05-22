@@ -12,7 +12,7 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class WorldIcon implements AutoCloseable {
-	private static final Identifier UNKNOWN_SERVER_ID = new Identifier("textures/misc/unknown_server.png");
+	private static final Identifier UNKNOWN_SERVER_ID = Identifier.method_60656("textures/misc/unknown_server.png");
 	private static final int ICON_WIDTH = 64;
 	private static final int ICON_HEIGHT = 64;
 	private final TextureManager textureManager;
@@ -29,15 +29,14 @@ public class WorldIcon implements AutoCloseable {
 	public static WorldIcon forWorld(TextureManager textureManager, String worldName) {
 		return new WorldIcon(
 			textureManager,
-			new Identifier(
-				"minecraft",
+			Identifier.method_60656(
 				"worlds/" + Util.replaceInvalidChars(worldName, Identifier::isPathCharacterValid) + "/" + Hashing.sha1().hashUnencodedChars(worldName) + "/icon"
 			)
 		);
 	}
 
 	public static WorldIcon forServer(TextureManager textureManager, String serverAddress) {
-		return new WorldIcon(textureManager, new Identifier("minecraft", "servers/" + Hashing.sha1().hashUnencodedChars(serverAddress) + "/icon"));
+		return new WorldIcon(textureManager, Identifier.method_60656("servers/" + Hashing.sha1().hashUnencodedChars(serverAddress) + "/icon"));
 	}
 
 	public void load(NativeImage image) {

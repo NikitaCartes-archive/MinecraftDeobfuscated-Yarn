@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class TurtleEntityRenderer extends MobEntityRenderer<TurtleEntity, TurtleEntityModel<TurtleEntity>> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/turtle/big_sea_turtle.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/turtle/big_sea_turtle.png");
 
 	public TurtleEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new TurtleEntityModel<>(context.getPart(EntityModelLayers.TURTLE)), 0.7F);

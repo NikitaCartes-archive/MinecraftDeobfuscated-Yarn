@@ -1,21 +1,30 @@
 package net.minecraft.block;
 
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
+import net.minecraft.class_9797;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.EndGatewayBlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import org.slf4j.Logger;
 
-public class EndGatewayBlock extends BlockWithEntity {
+public class EndGatewayBlock extends BlockWithEntity implements class_9797 {
 	public static final MapCodec<EndGatewayBlock> CODEC = createCodec(EndGatewayBlock::new);
+	private static final Logger field_52058 = LogUtils.getLogger();
+	private static final int field_52059 = 10;
 
 	@Override
 	public MapCodec<EndGatewayBlock> getCodec() {
@@ -72,5 +81,27 @@ public class EndGatewayBlock extends BlockWithEntity {
 	@Override
 	protected boolean canBucketPlace(BlockState state, Fluid fluid) {
 		return false;
+	}
+
+	@Override
+	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+		if (entity.canUsePortals()
+			&& !world.isClient
+			&& world.getBlockEntity(pos) instanceof EndGatewayBlockEntity endGatewayBlockEntity
+			&& !endGatewayBlockEntity.needsCooldownBeforeTeleporting()) {
+			entity.method_60697(this, pos);
+			EndGatewayBlockEntity.startTeleportCooldown(world, pos, state, endGatewayBlockEntity);
+		}
+	}
+
+	@Nullable
+	@Override
+	public TeleportTarget method_60770(ServerWorld serverWorld, Entity entity, BlockPos blockPos) {
+		if (serverWorld.getBlockEntity(blockPos) instanceof EndGatewayBlockEntity endGatewayBlockEntity) {
+			Vec3d vec3d = endGatewayBlockEntity.method_60787(serverWorld, blockPos);
+			return vec3d != null ? new TeleportTarget(serverWorld, vec3d, entity.getVelocity(), entity.getYaw(), entity.getPitch()) : null;
+		} else {
+			return null;
+		}
 	}
 }

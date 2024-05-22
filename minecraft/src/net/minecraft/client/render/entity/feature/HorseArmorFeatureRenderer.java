@@ -34,22 +34,15 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 			this.getContextModel().copyStateTo(this.model);
 			this.model.animateModel(horseEntity, f, g, h);
 			this.model.setAngles(horseEntity, f, g, j, k, l);
-			float o;
-			float p;
-			float n;
+			int m;
 			if (itemStack.isIn(ItemTags.DYEABLE)) {
-				int m = DyedColorComponent.getColor(itemStack, -6265536);
-				n = (float)ColorHelper.Argb.getRed(m) / 255.0F;
-				o = (float)ColorHelper.Argb.getGreen(m) / 255.0F;
-				p = (float)ColorHelper.Argb.getBlue(m) / 255.0F;
+				m = ColorHelper.Argb.fullAlpha(DyedColorComponent.getColor(itemStack, -6265536));
 			} else {
-				n = 1.0F;
-				o = 1.0F;
-				p = 1.0F;
+				m = -1;
 			}
 
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(animalArmorItem.getEntityTexture()));
-			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, n, o, p, 1.0F);
+			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, m);
 			return;
 		}
 	}

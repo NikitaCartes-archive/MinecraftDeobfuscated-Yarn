@@ -95,7 +95,7 @@ public class Stats {
 	public static final Identifier INTERACT_WITH_SMITHING_TABLE = register("interact_with_smithing_table", StatFormatter.DEFAULT);
 
 	private static Identifier register(String id, StatFormatter formatter) {
-		Identifier identifier = new Identifier(id);
+		Identifier identifier = Identifier.method_60656(id);
 		Registry.register(Registries.CUSTOM_STAT, id, identifier);
 		CUSTOM.getOrCreateStat(identifier, formatter);
 		return identifier;

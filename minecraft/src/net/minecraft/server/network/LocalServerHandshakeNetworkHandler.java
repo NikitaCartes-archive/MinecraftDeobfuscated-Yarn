@@ -1,12 +1,12 @@
 package net.minecraft.server.network;
 
+import net.minecraft.class_9812;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
 import net.minecraft.network.packet.c2s.handshake.ConnectionIntent;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.state.LoginStates;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.Text;
 
 /**
  * A server handshake network handler that exclusively handles local
@@ -37,7 +37,7 @@ public class LocalServerHandshakeNetworkHandler implements ServerHandshakePacket
 	}
 
 	@Override
-	public void onDisconnected(Text reason) {
+	public void onDisconnected(class_9812 arg) {
 	}
 
 	@Override

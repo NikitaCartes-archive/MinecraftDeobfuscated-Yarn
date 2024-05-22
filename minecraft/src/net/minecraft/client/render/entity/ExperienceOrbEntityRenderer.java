@@ -11,11 +11,10 @@ import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEntity> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/experience_orb.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/experience_orb.png");
 	private static final RenderLayer LAYER = RenderLayer.getItemEntityTranslucentCull(TEXTURE);
 
 	public ExperienceOrbEntityRenderer(EntityRendererFactory.Context context) {
@@ -45,7 +44,6 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 		int u = (int)((MathHelper.sin(r + (float) (Math.PI * 4.0 / 3.0)) + 1.0F) * 0.1F * 255.0F);
 		matrixStack.translate(0.0F, 0.1F, 0.0F);
 		matrixStack.multiply(this.dispatcher.getRotation());
-		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 		float v = 0.3F;
 		matrixStack.scale(0.3F, 0.3F, 0.3F);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
@@ -65,9 +63,8 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 			.color(red, green, blue, 128)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.light(light)
-			.normal(matrix, 0.0F, 1.0F, 0.0F)
-			.next();
+			.method_60803(light)
+			.method_60831(matrix, 0.0F, 1.0F, 0.0F);
 	}
 
 	public Identifier getTexture(ExperienceOrbEntity experienceOrbEntity) {

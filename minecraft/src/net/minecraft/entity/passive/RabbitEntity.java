@@ -1,7 +1,6 @@
 package net.minecraft.entity.passive;
 
 import com.mojang.serialization.Codec;
-import java.util.UUID;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -74,10 +73,10 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 	public static final double ESCAPE_DANGER_SPEED = 2.2;
 	public static final double MELEE_ATTACK_SPEED = 1.4;
 	private static final TrackedData<Integer> RABBIT_TYPE = DataTracker.registerData(RabbitEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final Identifier KILLER_BUNNY = new Identifier("killer_bunny");
+	private static final Identifier KILLER_BUNNY = Identifier.method_60656("killer_bunny");
 	private static final int field_51585 = 3;
 	private static final int field_51586 = 5;
-	private static final UUID KILLER_BUNNY_ATTACK_DAMAGE_MODIFIER = UUID.fromString("6555be74-63b3-41f1-a245-77833b3c2562");
+	private static final Identifier KILLER_BUNNY_ATTACK_DAMAGE_MODIFIER = Identifier.method_60656("evil");
 	private static final int field_30369 = 8;
 	private static final int field_30370 = 40;
 	private int jumpTicks;
@@ -357,7 +356,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 			this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
 			this.targetSelector.add(2, new ActiveTargetGoal(this, WolfEntity.class, true));
 			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)
-				.updateModifier(new EntityAttributeModifier(KILLER_BUNNY_ATTACK_DAMAGE_MODIFIER, "Evil rabbit strength", 5.0, EntityAttributeModifier.Operation.ADD_VALUE));
+				.updateModifier(new EntityAttributeModifier(KILLER_BUNNY_ATTACK_DAMAGE_MODIFIER, 5.0, EntityAttributeModifier.Operation.ADD_VALUE));
 			if (!this.hasCustomName()) {
 				this.setCustomName(Text.translatable(Util.createTranslationKey("entity", KILLER_BUNNY)));
 			}

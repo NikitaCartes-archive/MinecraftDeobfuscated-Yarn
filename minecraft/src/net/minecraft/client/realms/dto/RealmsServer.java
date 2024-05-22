@@ -1,6 +1,5 @@
 package net.minecraft.client.realms.dto;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -8,8 +7,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.yggdrasil.ProfileResult;
 import com.mojang.logging.LogUtils;
 import java.util.Comparator;
 import java.util.List;
@@ -21,7 +18,6 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.realms.util.JsonUtils;
 import net.minecraft.util.Util;
@@ -55,7 +51,6 @@ public class RealmsServer extends ValueObject {
 	public String parentWorldName;
 	public String activeVersion = "";
 	public RealmsServer.Compatibility compatibility = RealmsServer.Compatibility.UNVERIFIABLE;
-	public RealmsServerPing serverPing = new RealmsServerPing();
 
 	public String getDescription() {
 		return this.description;
@@ -76,30 +71,6 @@ public class RealmsServer extends ValueObject {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public void updateServerPing(RealmsServerPlayerList serverPlayerList) {
-		List<String> list = Lists.<String>newArrayList();
-		int i = 0;
-		MinecraftSessionService minecraftSessionService = MinecraftClient.getInstance().getSessionService();
-
-		for (UUID uUID : serverPlayerList.players) {
-			if (!MinecraftClient.getInstance().uuidEquals(uUID)) {
-				try {
-					ProfileResult profileResult = minecraftSessionService.fetchProfile(uUID, false);
-					if (profileResult != null) {
-						list.add(profileResult.profile().getName());
-					}
-
-					i++;
-				} catch (Exception var8) {
-					LOGGER.error("Could not get name for {}", uUID, var8);
-				}
-			}
-		}
-
-		this.serverPing.nrOfPlayers = String.valueOf(i);
-		this.serverPing.playerList = Joiner.on('\n').join(list);
 	}
 
 	public static RealmsServer parse(JsonObject node) {
@@ -296,9 +267,6 @@ public class RealmsServer extends ValueObject {
 		realmsServer.expired = this.expired;
 		realmsServer.expiredTrial = this.expiredTrial;
 		realmsServer.daysLeft = this.daysLeft;
-		realmsServer.serverPing = new RealmsServerPing();
-		realmsServer.serverPing.nrOfPlayers = this.serverPing.nrOfPlayers;
-		realmsServer.serverPing.playerList = this.serverPing.playerList;
 		realmsServer.worldType = this.worldType;
 		realmsServer.ownerUUID = this.ownerUUID;
 		realmsServer.minigameName = this.minigameName;

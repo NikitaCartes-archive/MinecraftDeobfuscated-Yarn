@@ -1,7 +1,6 @@
 package net.minecraft.client.render;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.systems.VertexSorter;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -9,6 +8,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9801;
 import net.minecraft.client.render.block.entity.EndPortalBlockEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.util.Identifier;
@@ -308,22 +308,6 @@ public abstract class RenderLayer extends RenderPhase {
 		1536,
 		RenderLayer.MultiPhaseParameters.builder().program(WATER_MASK_PROGRAM).texture(NO_TEXTURE).writeMaskState(DEPTH_MASK).build(false)
 	);
-	private static final RenderLayer ARMOR_GLINT = of(
-		"armor_glint",
-		VertexFormats.POSITION_TEXTURE,
-		VertexFormat.DrawMode.QUADS,
-		1536,
-		RenderLayer.MultiPhaseParameters.builder()
-			.program(ARMOR_GLINT_PROGRAM)
-			.texture(new RenderPhase.Texture(ItemRenderer.ENTITY_ENCHANTMENT_GLINT, true, false))
-			.writeMaskState(COLOR_MASK)
-			.cull(DISABLE_CULLING)
-			.depthTest(EQUAL_DEPTH_TEST)
-			.transparency(GLINT_TRANSPARENCY)
-			.texturing(GLINT_TEXTURING)
-			.layering(VIEW_OFFSET_Z_LAYERING)
-			.build(false)
-	);
 	private static final RenderLayer ARMOR_ENTITY_GLINT = of(
 		"armor_entity_glint",
 		VertexFormats.POSITION_TEXTURE,
@@ -363,21 +347,6 @@ public abstract class RenderLayer extends RenderPhase {
 		1536,
 		RenderLayer.MultiPhaseParameters.builder()
 			.program(GLINT_PROGRAM)
-			.texture(new RenderPhase.Texture(ItemRenderer.ITEM_ENCHANTMENT_GLINT, true, false))
-			.writeMaskState(COLOR_MASK)
-			.cull(DISABLE_CULLING)
-			.depthTest(EQUAL_DEPTH_TEST)
-			.transparency(GLINT_TRANSPARENCY)
-			.texturing(GLINT_TEXTURING)
-			.build(false)
-	);
-	private static final RenderLayer DIRECT_GLINT = of(
-		"glint_direct",
-		VertexFormats.POSITION_TEXTURE,
-		VertexFormat.DrawMode.QUADS,
-		1536,
-		RenderLayer.MultiPhaseParameters.builder()
-			.program(DIRECT_GLINT_PROGRAM)
 			.texture(new RenderPhase.Texture(ItemRenderer.ITEM_ENCHANTMENT_GLINT, true, false))
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
@@ -747,7 +716,6 @@ public abstract class RenderLayer extends RenderPhase {
 	private final int expectedBufferSize;
 	private final boolean hasCrumbling;
 	private final boolean translucent;
-	private final Optional<RenderLayer> optionalThis;
 
 	public static RenderLayer getSolid() {
 		return SOLID;
@@ -943,10 +911,6 @@ public abstract class RenderLayer extends RenderPhase {
 		return (RenderLayer)RenderLayer.MultiPhase.CULLING_LAYERS.apply(texture, DISABLE_CULLING);
 	}
 
-	public static RenderLayer getArmorGlint() {
-		return ARMOR_GLINT;
-	}
-
 	public static RenderLayer getArmorEntityGlint() {
 		return ARMOR_ENTITY_GLINT;
 	}
@@ -957,10 +921,6 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer getGlint() {
 		return GLINT;
-	}
-
-	public static RenderLayer getDirectGlint() {
-		return DIRECT_GLINT;
 	}
 
 	public static RenderLayer getEntityGlint() {
@@ -1116,7 +1076,6 @@ public abstract class RenderLayer extends RenderPhase {
 		this.expectedBufferSize = expectedBufferSize;
 		this.hasCrumbling = hasCrumbling;
 		this.translucent = translucent;
-		this.optionalThis = Optional.of(this);
 	}
 
 	static RenderLayer.MultiPhase of(
@@ -1137,17 +1096,10 @@ public abstract class RenderLayer extends RenderPhase {
 		return new RenderLayer.MultiPhase(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, phases);
 	}
 
-	public void draw(BufferBuilder buffer, VertexSorter sorter) {
-		if (buffer.isBuilding()) {
-			if (this.translucent) {
-				buffer.setSorter(sorter);
-			}
-
-			BufferBuilder.BuiltBuffer builtBuffer = buffer.end();
-			this.startDrawing();
-			BufferRenderer.drawWithGlobalProgram(builtBuffer);
-			this.endDrawing();
-		}
+	public void method_60895(class_9801 arg) {
+		this.startDrawing();
+		BufferRenderer.drawWithGlobalProgram(arg);
+		this.endDrawing();
 	}
 
 	@Override
@@ -1187,8 +1139,8 @@ public abstract class RenderLayer extends RenderPhase {
 		return !this.drawMode.shareVertices;
 	}
 
-	public Optional<RenderLayer> asOptional() {
-		return this.optionalThis;
+	public boolean method_60894() {
+		return this.translucent;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -1196,7 +1148,7 @@ public abstract class RenderLayer extends RenderPhase {
 		static final BiFunction<Identifier, RenderPhase.Cull, RenderLayer> CULLING_LAYERS = Util.memoize(
 			(BiFunction<Identifier, RenderPhase.Cull, RenderLayer>)((texture, culling) -> RenderLayer.of(
 					"outline",
-					VertexFormats.POSITION_COLOR_TEXTURE,
+					VertexFormats.POSITION_TEXTURE_COLOR,
 					VertexFormat.DrawMode.QUADS,
 					1536,
 					RenderLayer.MultiPhaseParameters.builder()

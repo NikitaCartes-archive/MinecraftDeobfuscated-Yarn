@@ -4,20 +4,20 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BeaconBlockEntity;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class BeaconBlockEntityRenderer implements BlockEntityRenderer<BeaconBlockEntity> {
-	public static final Identifier BEAM_TEXTURE = new Identifier("textures/entity/beacon_beam.png");
+	public static final Identifier BEAM_TEXTURE = Identifier.method_60656("textures/entity/beacon_beam.png");
 	public static final int MAX_BEAM_HEIGHT = 1024;
 
 	public BeaconBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
@@ -35,10 +35,8 @@ public class BeaconBlockEntityRenderer implements BlockEntityRenderer<BeaconBloc
 		}
 	}
 
-	private static void renderBeam(
-		MatrixStack matrices, VertexConsumerProvider vertexConsumers, float tickDelta, long worldTime, int yOffset, int maxY, float[] color
-	) {
-		renderBeam(matrices, vertexConsumers, BEAM_TEXTURE, tickDelta, 1.0F, worldTime, yOffset, maxY, color, 0.2F, 0.25F);
+	private static void renderBeam(MatrixStack matrices, VertexConsumerProvider vertexConsumers, float tickDelta, long worldTime, int yOffset, int maxY, int i) {
+		renderBeam(matrices, vertexConsumers, BEAM_TEXTURE, tickDelta, 1.0F, worldTime, yOffset, maxY, i, 0.2F, 0.25F);
 	}
 
 	public static void renderBeam(
@@ -50,83 +48,74 @@ public class BeaconBlockEntityRenderer implements BlockEntityRenderer<BeaconBloc
 		long worldTime,
 		int yOffset,
 		int maxY,
-		float[] color,
+		int i,
 		float innerRadius,
 		float outerRadius
 	) {
-		int i = yOffset + maxY;
+		int j = yOffset + maxY;
 		matrices.push();
 		matrices.translate(0.5, 0.0, 0.5);
 		float f = (float)Math.floorMod(worldTime, 40) + tickDelta;
 		float g = maxY < 0 ? f : -f;
 		float h = MathHelper.fractionalPart(g * 0.2F - (float)MathHelper.floor(g * 0.1F));
-		float j = color[0];
-		float k = color[1];
-		float l = color[2];
 		matrices.push();
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(f * 2.25F - 45.0F));
-		float m = 0.0F;
+		float k = 0.0F;
+		float n = 0.0F;
+		float o = -innerRadius;
 		float p = 0.0F;
-		float q = -innerRadius;
-		float r = 0.0F;
+		float q = 0.0F;
+		float r = -innerRadius;
 		float s = 0.0F;
-		float t = -innerRadius;
-		float u = 0.0F;
-		float v = 1.0F;
-		float w = -1.0F + h;
-		float x = (float)maxY * heightScale * (0.5F / innerRadius) + w;
+		float t = 1.0F;
+		float u = -1.0F + h;
+		float v = (float)maxY * heightScale * (0.5F / innerRadius) + u;
 		renderBeamLayer(
 			matrices,
 			vertexConsumers.getBuffer(RenderLayer.getBeaconBeam(textureId, false)),
-			j,
-			k,
-			l,
-			1.0F,
-			yOffset,
 			i,
+			yOffset,
+			j,
 			0.0F,
 			innerRadius,
 			innerRadius,
 			0.0F,
-			q,
+			o,
 			0.0F,
 			0.0F,
-			t,
+			r,
 			0.0F,
 			1.0F,
-			x,
-			w
+			v,
+			u
 		);
 		matrices.pop();
-		m = -outerRadius;
-		float n = -outerRadius;
-		p = -outerRadius;
-		q = -outerRadius;
-		u = 0.0F;
-		v = 1.0F;
-		w = -1.0F + h;
-		x = (float)maxY * heightScale + w;
+		k = -outerRadius;
+		float l = -outerRadius;
+		n = -outerRadius;
+		o = -outerRadius;
+		s = 0.0F;
+		t = 1.0F;
+		u = -1.0F + h;
+		v = (float)maxY * heightScale + u;
 		renderBeamLayer(
 			matrices,
 			vertexConsumers.getBuffer(RenderLayer.getBeaconBeam(textureId, true)),
+			ColorHelper.Argb.withAlpha(32, i),
+			yOffset,
 			j,
 			k,
 			l,
-			0.125F,
-			yOffset,
-			i,
-			m,
-			n,
 			outerRadius,
-			p,
-			q,
+			n,
+			o,
 			outerRadius,
 			outerRadius,
 			outerRadius,
 			0.0F,
 			1.0F,
-			x,
-			w
+			v,
+			u
 		);
 		matrices.pop();
 	}
@@ -134,66 +123,45 @@ public class BeaconBlockEntityRenderer implements BlockEntityRenderer<BeaconBloc
 	private static void renderBeamLayer(
 		MatrixStack matrices,
 		VertexConsumer vertices,
-		float red,
-		float green,
-		float blue,
+		int i,
+		int j,
+		int k,
 		float alpha,
-		int yOffset,
-		int height,
+		float f,
+		float g,
 		float x1,
-		float z1,
-		float x2,
+		float h,
+		float l,
 		float z2,
-		float x3,
-		float z3,
-		float x4,
-		float z4,
-		float u1,
-		float u2,
-		float v1,
-		float v2
+		float m,
+		float n,
+		float o,
+		float p,
+		float q
 	) {
 		MatrixStack.Entry entry = matrices.peek();
-		renderBeamFace(entry, vertices, red, green, blue, alpha, yOffset, height, x1, z1, x2, z2, u1, u2, v1, v2);
-		renderBeamFace(entry, vertices, red, green, blue, alpha, yOffset, height, x4, z4, x3, z3, u1, u2, v1, v2);
-		renderBeamFace(entry, vertices, red, green, blue, alpha, yOffset, height, x2, z2, x4, z4, u1, u2, v1, v2);
-		renderBeamFace(entry, vertices, red, green, blue, alpha, yOffset, height, x3, z3, x1, z1, u1, u2, v1, v2);
+		renderBeamFace(entry, vertices, i, j, k, alpha, f, g, x1, n, o, p, q);
+		renderBeamFace(entry, vertices, i, j, k, z2, m, h, l, n, o, p, q);
+		renderBeamFace(entry, vertices, i, j, k, g, x1, z2, m, n, o, p, q);
+		renderBeamFace(entry, vertices, i, j, k, h, l, alpha, f, n, o, p, q);
 	}
 
 	private static void renderBeamFace(
-		MatrixStack.Entry matrix,
-		VertexConsumer vertices,
-		float red,
-		float green,
-		float blue,
-		float alpha,
-		int yOffset,
-		int height,
-		float x1,
-		float z1,
-		float x2,
-		float z2,
-		float u1,
-		float u2,
-		float v1,
-		float v2
+		MatrixStack.Entry matrix, VertexConsumer vertices, int i, int j, int k, float alpha, float f, float g, float h, float l, float m, float n, float o
 	) {
-		renderBeamVertex(matrix, vertices, red, green, blue, alpha, height, x1, z1, u2, v1);
-		renderBeamVertex(matrix, vertices, red, green, blue, alpha, yOffset, x1, z1, u2, v2);
-		renderBeamVertex(matrix, vertices, red, green, blue, alpha, yOffset, x2, z2, u1, v2);
-		renderBeamVertex(matrix, vertices, red, green, blue, alpha, height, x2, z2, u1, v1);
+		renderBeamVertex(matrix, vertices, i, k, alpha, f, m, n);
+		renderBeamVertex(matrix, vertices, i, j, alpha, f, m, o);
+		renderBeamVertex(matrix, vertices, i, j, g, h, l, o);
+		renderBeamVertex(matrix, vertices, i, k, g, h, l, n);
 	}
 
-	private static void renderBeamVertex(
-		MatrixStack.Entry matrix, VertexConsumer vertices, float red, float green, float blue, float alpha, int y, float x, float z, float u, float v
-	) {
-		vertices.vertex(matrix, x, (float)y, z)
-			.color(red, green, blue, alpha)
-			.texture(u, v)
+	private static void renderBeamVertex(MatrixStack.Entry matrix, VertexConsumer vertices, int i, int j, float blue, float alpha, float f, float g) {
+		vertices.vertex(matrix, blue, (float)j, alpha)
+			.color(i)
+			.texture(f, g)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.light(LightmapTextureManager.MAX_LIGHT_COORDINATE)
-			.normal(matrix, 0.0F, 1.0F, 0.0F)
-			.next();
+			.method_60803(15728880)
+			.method_60831(matrix, 0.0F, 1.0F, 0.0F);
 	}
 
 	public boolean rendersOutsideBoundingBox(BeaconBlockEntity beaconBlockEntity) {

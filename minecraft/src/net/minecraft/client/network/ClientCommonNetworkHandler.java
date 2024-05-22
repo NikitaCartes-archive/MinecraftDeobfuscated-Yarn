@@ -5,17 +5,24 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9782;
+import net.minecraft.class_9812;
+import net.minecraft.class_9813;
+import net.minecraft.class_9814;
+import net.minecraft.class_9815;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
@@ -54,6 +61,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
+import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import org.slf4j.Logger;
 
@@ -77,6 +85,8 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	protected final boolean strictErrorHandling;
 	private final List<ClientCommonNetworkHandler.QueuedPacket> queuedPackets = new ArrayList();
 	protected final Map<Identifier, byte[]> serverCookies;
+	protected Map<String, String> field_52154;
+	protected class_9782 field_52155;
 
 	protected ClientCommonNetworkHandler(MinecraftClient client, ClientConnection connection, ClientConnectionState connectionState) {
 		this.client = client;
@@ -87,15 +97,36 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 		this.postDisconnectScreen = connectionState.postDisconnectScreen();
 		this.serverCookies = connectionState.serverCookies();
 		this.strictErrorHandling = connectionState.strictErrorHandling();
+		this.field_52154 = connectionState.customReportDetails();
+		this.field_52155 = connectionState.serverLinks();
 	}
 
 	@Override
 	public void onPacketException(Packet packet, Exception exception) {
 		LOGGER.error("Failed to handle packet {}", packet, exception);
 		ClientCommonPacketListener.super.onPacketException(packet, exception);
+		Optional<Path> optional = this.method_60882(packet, exception);
+		Optional<String> optional2 = this.field_52155.method_60658(class_9782.class_9784.BUG_REPORT).map(class_9782.class_9783::url);
 		if (this.strictErrorHandling) {
-			this.connection.disconnect(Text.translatable("disconnect.packetError"));
+			this.connection.method_60924(new class_9812(Text.translatable("disconnect.packetError"), optional, optional2));
 		}
+	}
+
+	@Override
+	public class_9812 method_60881(Text text, Throwable throwable) {
+		Optional<Path> optional = this.method_60882(null, throwable);
+		Optional<String> optional2 = this.field_52155.method_60658(class_9782.class_9784.BUG_REPORT).map(class_9782.class_9783::url);
+		return new class_9812(text, optional, optional2);
+	}
+
+	private Optional<Path> method_60882(@Nullable Packet packet, Throwable throwable) {
+		CrashReport crashReport = CrashReport.create(throwable, "Packet handling error");
+		NetworkThreadUtils.fillCrashReport(crashReport, this, packet);
+		Path path = this.client.runDirectory.toPath().resolve("debug");
+		Path path2 = path.resolve("disconnect-" + Util.getFormattedCurrentTime() + "-client.txt");
+		Optional<class_9782.class_9783> optional = this.field_52155.method_60658(class_9782.class_9784.BUG_REPORT);
+		List<String> list = (List<String>)optional.map(arg -> List.of("Server bug reporting link: " + arg.url())).orElse(List.of());
+		return crashReport.writeToFile(path2, class_9813.MINECRAFT_NETWORK_PROTOCOL_ERROR_REPORT, list) ? Optional.of(path2) : Optional.empty();
 	}
 
 	@Override
@@ -185,6 +216,18 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	}
 
 	@Override
+	public void method_60883(class_9814 arg) {
+		NetworkThreadUtils.forceMainThread(arg, this, this.client);
+		this.field_52154 = arg.details();
+	}
+
+	@Override
+	public void method_60884(class_9815 arg) {
+		NetworkThreadUtils.forceMainThread(arg, this, this.client);
+		this.field_52155 = arg.links();
+	}
+
+	@Override
 	public void onServerTransfer(ServerTransferS2CPacket packet) {
 		this.transferring = true;
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
@@ -230,23 +273,27 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	}
 
 	@Override
-	public void onDisconnected(Text reason) {
+	public void onDisconnected(class_9812 arg) {
 		this.worldSession.onUnload();
-		this.client.disconnect(this.createDisconnectedScreen(reason), this.transferring);
-		LOGGER.warn("Client disconnected with reason: {}", reason.getString());
+		this.client.disconnect(this.createDisconnectedScreen(arg), this.transferring);
+		LOGGER.warn("Client disconnected with reason: {}", arg.reason().getString());
 	}
 
 	@Override
-	public void addCustomCrashReportInfo(CrashReportSection section) {
-		section.add("Server type", (CrashCallable<String>)(() -> this.serverInfo != null ? this.serverInfo.getServerType().toString() : "<none>"));
-		section.add("Server brand", (CrashCallable<String>)(() -> this.brand));
+	public void addCustomCrashReportInfo(CrashReport crashReport, CrashReportSection crashReportSection) {
+		crashReportSection.add("Server type", (CrashCallable<String>)(() -> this.serverInfo != null ? this.serverInfo.getServerType().toString() : "<none>"));
+		crashReportSection.add("Server brand", (CrashCallable<String>)(() -> this.brand));
+		if (!this.field_52154.isEmpty()) {
+			CrashReportSection crashReportSection2 = crashReport.addElement("Custom Server Details");
+			this.field_52154.forEach(crashReportSection2::add);
+		}
 	}
 
-	protected Screen createDisconnectedScreen(Text reason) {
+	protected Screen createDisconnectedScreen(class_9812 arg) {
 		Screen screen = (Screen)Objects.requireNonNullElseGet(this.postDisconnectScreen, () -> new MultiplayerScreen(new TitleScreen()));
 		return (Screen)(this.serverInfo != null && this.serverInfo.isRealm()
-			? new DisconnectedRealmsScreen(screen, LOST_CONNECTION_TEXT, reason)
-			: new DisconnectedScreen(screen, LOST_CONNECTION_TEXT, reason));
+			? new DisconnectedRealmsScreen(screen, LOST_CONNECTION_TEXT, arg.reason())
+			: new DisconnectedScreen(screen, LOST_CONNECTION_TEXT, arg));
 	}
 
 	@Nullable

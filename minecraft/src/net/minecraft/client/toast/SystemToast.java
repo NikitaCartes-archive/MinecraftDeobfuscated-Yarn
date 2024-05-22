@@ -17,7 +17,7 @@ import net.minecraft.util.math.ChunkPos;
 
 @Environment(EnvType.CLIENT)
 public class SystemToast implements Toast {
-	private static final Identifier TEXTURE = new Identifier("toast/system");
+	private static final Identifier TEXTURE = Identifier.method_60656("toast/system");
 	private static final int MIN_WIDTH = 200;
 	private static final int LINE_HEIGHT = 12;
 	private static final int PADDING_Y = 10;
@@ -169,6 +169,15 @@ public class SystemToast implements Toast {
 		add(client.getToastManager(), SystemToast.Type.PACK_COPY_FAILURE, Text.translatable("pack.copyFailure"), Text.literal(directory));
 	}
 
+	public static void method_60865(MinecraftClient minecraftClient, int i) {
+		add(
+			minecraftClient.getToastManager(),
+			SystemToast.Type.field_52128,
+			Text.translatable("gui.fileDropFailure.title"),
+			Text.translatable("gui.fileDropFailure.detail", i)
+		);
+	}
+
 	public static void addLowDiskSpace(MinecraftClient client) {
 		show(
 			client.getToastManager(),
@@ -203,6 +212,7 @@ public class SystemToast implements Toast {
 		public static final SystemToast.Type PACK_LOAD_FAILURE = new SystemToast.Type();
 		public static final SystemToast.Type WORLD_ACCESS_FAILURE = new SystemToast.Type();
 		public static final SystemToast.Type PACK_COPY_FAILURE = new SystemToast.Type();
+		public static final SystemToast.Type field_52128 = new SystemToast.Type();
 		public static final SystemToast.Type PERIODIC_NOTIFICATION = new SystemToast.Type();
 		public static final SystemToast.Type LOW_DISK_SPACE = new SystemToast.Type(10000L);
 		public static final SystemToast.Type CHUNK_LOAD_FAILURE = new SystemToast.Type();

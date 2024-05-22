@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class TadpoleEntityRenderer extends MobEntityRenderer<TadpoleEntity, TadpoleEntityModel<TadpoleEntity>> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/tadpole/tadpole.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/tadpole/tadpole.png");
 
 	public TadpoleEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new TadpoleEntityModel<>(context.getPart(EntityModelLayers.TADPOLE)), 0.14F);

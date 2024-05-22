@@ -7,15 +7,17 @@ import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.Registries;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.structure.StructureTemplate;
 import org.slf4j.Logger;
 
 public class StructureValidatorProvider implements SnbtProvider.Tweaker {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final String field_52179 = ResourceType.SERVER_DATA.getDirectory() + "/minecraft/structure/";
 
 	@Override
 	public NbtCompound write(String name, NbtCompound nbt) {
-		return name.startsWith("data/minecraft/structures/") ? update(name, nbt) : nbt;
+		return name.startsWith(field_52179) ? update(name, nbt) : nbt;
 	}
 
 	public static NbtCompound update(String name, NbtCompound nbt) {

@@ -1,11 +1,18 @@
 package net.minecraft.block;
 
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.MapCodec;
+import java.util.Optional;
+import javax.annotation.Nullable;
+import net.minecraft.class_9797;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -15,18 +22,25 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockLocating;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.NetherPortal;
+import org.slf4j.Logger;
 
-public class NetherPortalBlock extends Block {
+public class NetherPortalBlock extends Block implements class_9797 {
 	public static final MapCodec<NetherPortalBlock> CODEC = createCodec(NetherPortalBlock::new);
 	public static final EnumProperty<Direction.Axis> AXIS = Properties.HORIZONTAL_AXIS;
+	private static final Logger field_52060 = LogUtils.getLogger();
 	protected static final int field_31196 = 2;
 	protected static final VoxelShape X_SHAPE = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
 	protected static final VoxelShape Z_SHAPE = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
@@ -83,8 +97,91 @@ public class NetherPortalBlock extends Block {
 	@Override
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (entity.canUsePortals()) {
-			entity.setInNetherPortal(pos);
+			entity.method_60697(this, pos);
 		}
+	}
+
+	@Override
+	public int method_60772(ServerWorld serverWorld, Entity entity) {
+		return entity instanceof PlayerEntity playerEntity
+			? Math.max(
+				1,
+				serverWorld.getGameRules()
+					.getInt(playerEntity.getAbilities().invulnerable ? GameRules.PLAYERS_NETHER_PORTAL_CREATIVE_DELAY : GameRules.PLAYERS_NETHER_PORTAL_DEFAULT_DELAY)
+			)
+			: 0;
+	}
+
+	@Nullable
+	@Override
+	public TeleportTarget method_60770(ServerWorld serverWorld, Entity entity, BlockPos blockPos) {
+		RegistryKey<World> registryKey = serverWorld.getRegistryKey() == World.NETHER ? World.OVERWORLD : World.NETHER;
+		ServerWorld serverWorld2 = serverWorld.getServer().getWorld(registryKey);
+		boolean bl = serverWorld2.getRegistryKey() == World.NETHER;
+		WorldBorder worldBorder = serverWorld2.getWorldBorder();
+		double d = DimensionType.getCoordinateScaleFactor(serverWorld.getDimension(), serverWorld2.getDimension());
+		BlockPos blockPos2 = worldBorder.clamp(entity.getX() * d, entity.getY(), entity.getZ() * d);
+		return this.method_60773(serverWorld2, entity, blockPos, blockPos2, bl, worldBorder);
+	}
+
+	@Nullable
+	private TeleportTarget method_60773(ServerWorld serverWorld, Entity entity, BlockPos blockPos, BlockPos blockPos2, boolean bl, WorldBorder worldBorder) {
+		Optional<BlockLocating.Rectangle> optional = serverWorld.getPortalForcer().getPortalRect(blockPos2, bl, worldBorder);
+		if (optional.isEmpty()) {
+			Direction.Axis axis = (Direction.Axis)entity.getWorld().getBlockState(blockPos).getOrEmpty(AXIS).orElse(Direction.Axis.X);
+			Optional<BlockLocating.Rectangle> optional2 = serverWorld.getPortalForcer().createPortal(blockPos2, axis);
+			if (optional2.isEmpty()) {
+				field_52060.error("Unable to create a portal, likely target out of worldborder");
+				return null;
+			} else {
+				return method_60777(entity, blockPos, (BlockLocating.Rectangle)optional2.get(), serverWorld);
+			}
+		} else {
+			return (TeleportTarget)optional.map(rectangle -> method_60777(entity, blockPos, rectangle, serverWorld)).orElse(null);
+		}
+	}
+
+	private static TeleportTarget method_60777(Entity entity, BlockPos blockPos, BlockLocating.Rectangle rectangle, ServerWorld serverWorld) {
+		BlockState blockState = entity.getWorld().getBlockState(blockPos);
+		Direction.Axis axis;
+		Vec3d vec3d;
+		if (blockState.contains(Properties.HORIZONTAL_AXIS)) {
+			axis = blockState.get(Properties.HORIZONTAL_AXIS);
+			BlockLocating.Rectangle rectangle2 = BlockLocating.getLargestRectangle(
+				blockPos, axis, 21, Direction.Axis.Y, 21, blockPosx -> entity.getWorld().getBlockState(blockPosx) == blockState
+			);
+			vec3d = entity.positionInPortal(axis, rectangle2);
+		} else {
+			axis = Direction.Axis.X;
+			vec3d = new Vec3d(0.5, 0.0, 0.0);
+		}
+
+		return method_60774(serverWorld, rectangle, axis, vec3d, entity, entity.getVelocity(), entity.getYaw(), entity.getPitch());
+	}
+
+	private static TeleportTarget method_60774(
+		ServerWorld serverWorld, BlockLocating.Rectangle rectangle, Direction.Axis axis, Vec3d vec3d, Entity entity, Vec3d vec3d2, float f, float g
+	) {
+		BlockPos blockPos = rectangle.lowerLeft;
+		BlockState blockState = serverWorld.getBlockState(blockPos);
+		Direction.Axis axis2 = (Direction.Axis)blockState.getOrEmpty(Properties.HORIZONTAL_AXIS).orElse(Direction.Axis.X);
+		double d = (double)rectangle.width;
+		double e = (double)rectangle.height;
+		EntityDimensions entityDimensions = entity.getDimensions(entity.getPose());
+		int i = axis == axis2 ? 0 : 90;
+		Vec3d vec3d3 = axis == axis2 ? vec3d2 : new Vec3d(vec3d2.z, vec3d2.y, -vec3d2.x);
+		double h = (double)entityDimensions.width() / 2.0 + (d - (double)entityDimensions.width()) * vec3d.getX();
+		double j = (e - (double)entityDimensions.height()) * vec3d.getY();
+		double k = 0.5 + vec3d.getZ();
+		boolean bl = axis2 == Direction.Axis.X;
+		Vec3d vec3d4 = new Vec3d((double)blockPos.getX() + (bl ? h : k), (double)blockPos.getY() + j, (double)blockPos.getZ() + (bl ? k : h));
+		Vec3d vec3d5 = NetherPortal.findOpenPosition(vec3d4, serverWorld, entity, entityDimensions);
+		return new TeleportTarget(serverWorld, vec3d5, vec3d3, f + (float)i, g);
+	}
+
+	@Override
+	public class_9797.class_9798 method_60778() {
+		return class_9797.class_9798.CONFUSION;
 	}
 
 	@Override

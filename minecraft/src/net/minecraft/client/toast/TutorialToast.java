@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TutorialToast implements Toast {
-	private static final Identifier TEXTURE = new Identifier("toast/tutorial");
+	private static final Identifier TEXTURE = Identifier.method_60656("toast/tutorial");
 	public static final int PROGRESS_BAR_WIDTH = 154;
 	public static final int PROGRESS_BAR_HEIGHT = 1;
 	public static final int PROGRESS_BAR_X = 3;
@@ -73,13 +73,13 @@ public class TutorialToast implements Toast {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		MOVEMENT_KEYS(new Identifier("toast/movement_keys")),
-		MOUSE(new Identifier("toast/mouse")),
-		TREE(new Identifier("toast/tree")),
-		RECIPE_BOOK(new Identifier("toast/recipe_book")),
-		WOODEN_PLANKS(new Identifier("toast/wooden_planks")),
-		SOCIAL_INTERACTIONS(new Identifier("toast/social_interactions")),
-		RIGHT_CLICK(new Identifier("toast/right_click"));
+		MOVEMENT_KEYS(Identifier.method_60656("toast/movement_keys")),
+		MOUSE(Identifier.method_60656("toast/mouse")),
+		TREE(Identifier.method_60656("toast/tree")),
+		RECIPE_BOOK(Identifier.method_60656("toast/recipe_book")),
+		WOODEN_PLANKS(Identifier.method_60656("toast/wooden_planks")),
+		SOCIAL_INTERACTIONS(Identifier.method_60656("toast/social_interactions")),
+		RIGHT_CLICK(Identifier.method_60656("toast/right_click"));
 
 		private final Identifier texture;
 

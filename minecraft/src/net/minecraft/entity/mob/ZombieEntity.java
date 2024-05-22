@@ -3,7 +3,6 @@ package net.minecraft.entity.mob;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -54,6 +53,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
@@ -66,10 +66,15 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 
 public class ZombieEntity extends HostileEntity {
-	private static final UUID BABY_SPEED_ID = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
+	private static final Identifier BABY_SPEED_ID = Identifier.method_60656("baby");
 	private static final EntityAttributeModifier BABY_SPEED_BONUS = new EntityAttributeModifier(
-		BABY_SPEED_ID, "Baby speed boost", 0.5, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
+		BABY_SPEED_ID, 0.5, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
 	);
+	private static final Identifier field_52018 = Identifier.method_60656("reinforcement_caller_charge");
+	private static final EntityAttributeModifier field_52016 = new EntityAttributeModifier(
+		Identifier.method_60656("reinforcement_callee_charge"), -0.05F, EntityAttributeModifier.Operation.ADD_VALUE
+	);
+	private static final Identifier field_52017 = Identifier.method_60656("leader_zombie_bonus");
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	/**
 	 * Unused tracked data, left over from 1.10 when zombies, zombie villagers and husks were all the same type of entity.
@@ -180,7 +185,7 @@ public class ZombieEntity extends HostileEntity {
 		this.getDataTracker().set(BABY, baby);
 		if (this.getWorld() != null && !this.getWorld().isClient) {
 			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-			entityAttributeInstance.removeModifier(BABY_SPEED_BONUS.uuid());
+			entityAttributeInstance.removeModifier(BABY_SPEED_ID);
 			if (baby) {
 				entityAttributeInstance.addTemporaryModifier(BABY_SPEED_BONUS);
 			}
@@ -313,10 +318,11 @@ public class ZombieEntity extends HostileEntity {
 							zombieEntity.setTarget(livingEntity);
 							zombieEntity.initialize(serverWorld, this.getWorld().getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.REINFORCEMENT, null);
 							serverWorld.spawnEntityAndPassengers(zombieEntity);
-							this.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
-								.addPersistentModifier(new EntityAttributeModifier("Zombie reinforcement caller charge", -0.05F, EntityAttributeModifier.Operation.ADD_VALUE));
-							zombieEntity.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
-								.addPersistentModifier(new EntityAttributeModifier("Zombie reinforcement callee charge", -0.05F, EntityAttributeModifier.Operation.ADD_VALUE));
+							EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS);
+							EntityAttributeModifier entityAttributeModifier = entityAttributeInstance.getModifier(field_52018);
+							double d = entityAttributeModifier != null ? entityAttributeModifier.value() : 0.0;
+							entityAttributeInstance.addPersistentModifier(new EntityAttributeModifier(field_52018, d - 0.05, EntityAttributeModifier.Operation.ADD_VALUE));
+							zombieEntity.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS).addPersistentModifier(field_52016);
 							break;
 						}
 					}
@@ -501,21 +507,19 @@ public class ZombieEntity extends HostileEntity {
 	protected void applyAttributeModifiers(float chanceMultiplier) {
 		this.initAttributes();
 		this.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)
-			.addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", this.random.nextDouble() * 0.05F, EntityAttributeModifier.Operation.ADD_VALUE));
+			.addPersistentModifier(new EntityAttributeModifier(field_51997, this.random.nextDouble() * 0.05F, EntityAttributeModifier.Operation.ADD_VALUE));
 		double d = this.random.nextDouble() * 1.5 * (double)chanceMultiplier;
 		if (d > 1.0) {
 			this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
-				.addPersistentModifier(new EntityAttributeModifier("Random zombie-spawn bonus", d, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+				.addPersistentModifier(new EntityAttributeModifier(field_51997, d, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
 		}
 
 		if (this.random.nextFloat() < chanceMultiplier * 0.05F) {
 			this.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
-				.addPersistentModifier(
-					new EntityAttributeModifier("Leader zombie bonus", this.random.nextDouble() * 0.25 + 0.5, EntityAttributeModifier.Operation.ADD_VALUE)
-				);
+				.addPersistentModifier(new EntityAttributeModifier(field_52017, this.random.nextDouble() * 0.25 + 0.5, EntityAttributeModifier.Operation.ADD_VALUE));
 			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)
 				.addPersistentModifier(
-					new EntityAttributeModifier("Leader zombie bonus", this.random.nextDouble() * 3.0 + 1.0, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
+					new EntityAttributeModifier(field_52017, this.random.nextDouble() * 3.0 + 1.0, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
 				);
 			this.setCanBreakDoors(this.shouldBreakDoors());
 		}

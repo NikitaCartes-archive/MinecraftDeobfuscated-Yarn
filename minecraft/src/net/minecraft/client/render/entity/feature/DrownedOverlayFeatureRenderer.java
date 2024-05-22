@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class DrownedOverlayFeatureRenderer<T extends DrownedEntity> extends FeatureRenderer<T, DrownedEntityModel<T>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/zombie/drowned_outer_layer.png");
+	private static final Identifier SKIN = Identifier.method_60656("textures/entity/zombie/drowned_outer_layer.png");
 	private final DrownedEntityModel<T> model;
 
 	public DrownedOverlayFeatureRenderer(FeatureRendererContext<T, DrownedEntityModel<T>> context, EntityModelLoader loader) {
@@ -23,6 +23,6 @@ public class DrownedOverlayFeatureRenderer<T extends DrownedEntity> extends Feat
 	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T drownedEntity, float f, float g, float h, float j, float k, float l
 	) {
-		render(this.getContextModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, drownedEntity, f, g, j, k, l, h, 1.0F, 1.0F, 1.0F);
+		render(this.getContextModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, drownedEntity, f, g, j, k, l, h, -1);
 	}
 }

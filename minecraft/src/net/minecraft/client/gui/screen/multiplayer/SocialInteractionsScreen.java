@@ -30,8 +30,8 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class SocialInteractionsScreen extends Screen {
 	private static final Text TITLE = Text.translatable("gui.socialInteractions.title");
-	private static final Identifier BACKGROUND_TEXTURE = new Identifier("social_interactions/background");
-	private static final Identifier SEARCH_ICON_TEXTURE = new Identifier("icon/search");
+	private static final Identifier BACKGROUND_TEXTURE = Identifier.method_60656("social_interactions/background");
+	private static final Identifier SEARCH_ICON_TEXTURE = Identifier.method_60656("icon/search");
 	private static final Text ALL_TAB_TITLE = Text.translatable("gui.socialInteractions.tab_all");
 	private static final Text HIDDEN_TAB_TITLE = Text.translatable("gui.socialInteractions.tab_hidden");
 	private static final Text BLOCKED_TAB_TITLE = Text.translatable("gui.socialInteractions.tab_blocked");

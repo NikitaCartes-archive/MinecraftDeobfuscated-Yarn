@@ -137,7 +137,7 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 	}
 
 	@Override
-	protected Vec3d positionInPortal(Direction.Axis portalAxis, BlockLocating.Rectangle portalRect) {
+	public Vec3d positionInPortal(Direction.Axis portalAxis, BlockLocating.Rectangle portalRect) {
 		return LivingEntity.positionInPortal(super.positionInPortal(portalAxis, portalRect));
 	}
 
@@ -239,7 +239,7 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 		}
 
 		this.attemptTickInVoid();
-		this.tickPortal();
+		this.method_60698();
 		if (this.getWorld().isClient) {
 			if (this.clientInterpolationSteps > 0) {
 				this.lerpPosAndRotation(this.clientInterpolationSteps, this.clientX, this.clientY, this.clientZ, this.clientYaw, this.clientPitch);

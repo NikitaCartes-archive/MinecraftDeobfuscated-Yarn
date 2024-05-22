@@ -23,6 +23,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9782;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -809,7 +810,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 						this.postDisconnectScreen,
 						this.serverCookies,
 						chatState,
-						this.strictErrorHandling
+						this.strictErrorHandling,
+						this.field_52154,
+						this.field_52155
 					)
 				)
 			);
@@ -2457,5 +2460,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 	public SearchManager getSearchManager() {
 		return this.searchManager;
+	}
+
+	public class_9782 method_60885() {
+		return this.field_52155;
 	}
 }

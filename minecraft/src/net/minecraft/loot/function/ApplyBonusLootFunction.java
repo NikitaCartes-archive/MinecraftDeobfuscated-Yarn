@@ -99,7 +99,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 					)
 					.apply(instance, ApplyBonusLootFunction.BinomialWithBonusCount::new)
 		);
-		public static final ApplyBonusLootFunction.Type TYPE = new ApplyBonusLootFunction.Type(new Identifier("binomial_with_bonus_count"), CODEC);
+		public static final ApplyBonusLootFunction.Type TYPE = new ApplyBonusLootFunction.Type(Identifier.method_60656("binomial_with_bonus_count"), CODEC);
 
 		@Override
 		public int getValue(Random random, int initialCount, int enchantmentLevel) {
@@ -126,7 +126,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 
 	static record OreDrops() implements ApplyBonusLootFunction.Formula {
 		public static final Codec<ApplyBonusLootFunction.OreDrops> CODEC = Codec.unit(ApplyBonusLootFunction.OreDrops::new);
-		public static final ApplyBonusLootFunction.Type TYPE = new ApplyBonusLootFunction.Type(new Identifier("ore_drops"), CODEC);
+		public static final ApplyBonusLootFunction.Type TYPE = new ApplyBonusLootFunction.Type(Identifier.method_60656("ore_drops"), CODEC);
 
 		@Override
 		public int getValue(Random random, int initialCount, int enchantmentLevel) {
@@ -156,7 +156,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 			instance -> instance.group(Codec.INT.fieldOf("bonusMultiplier").forGetter(ApplyBonusLootFunction.UniformBonusCount::bonusMultiplier))
 					.apply(instance, ApplyBonusLootFunction.UniformBonusCount::new)
 		);
-		public static final ApplyBonusLootFunction.Type TYPE = new ApplyBonusLootFunction.Type(new Identifier("uniform_bonus_count"), CODEC);
+		public static final ApplyBonusLootFunction.Type TYPE = new ApplyBonusLootFunction.Type(Identifier.method_60656("uniform_bonus_count"), CODEC);
 
 		@Override
 		public int getValue(Random random, int initialCount, int enchantmentLevel) {

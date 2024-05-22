@@ -1,6 +1,7 @@
 package net.minecraft.server.network;
 
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9812;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
@@ -69,7 +70,7 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 	}
 
 	@Override
-	public void onDisconnected(Text reason) {
+	public void onDisconnected(class_9812 arg) {
 	}
 
 	@Override

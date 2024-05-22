@@ -15,11 +15,11 @@ import net.minecraft.util.Identifier;
 public class IronGolemCrackFeatureRenderer extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> {
 	private static final Map<Cracks.CrackLevel, Identifier> CRACK_TEXTURES = ImmutableMap.of(
 		Cracks.CrackLevel.LOW,
-		new Identifier("textures/entity/iron_golem/iron_golem_crackiness_low.png"),
+		Identifier.method_60656("textures/entity/iron_golem/iron_golem_crackiness_low.png"),
 		Cracks.CrackLevel.MEDIUM,
-		new Identifier("textures/entity/iron_golem/iron_golem_crackiness_medium.png"),
+		Identifier.method_60656("textures/entity/iron_golem/iron_golem_crackiness_medium.png"),
 		Cracks.CrackLevel.HIGH,
-		new Identifier("textures/entity/iron_golem/iron_golem_crackiness_high.png")
+		Identifier.method_60656("textures/entity/iron_golem/iron_golem_crackiness_high.png")
 	);
 
 	public IronGolemCrackFeatureRenderer(FeatureRendererContext<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> featureRendererContext) {
@@ -42,7 +42,7 @@ public class IronGolemCrackFeatureRenderer extends FeatureRenderer<IronGolemEnti
 			Cracks.CrackLevel crackLevel = ironGolemEntity.getCrackLevel();
 			if (crackLevel != Cracks.CrackLevel.NONE) {
 				Identifier identifier = (Identifier)CRACK_TEXTURES.get(crackLevel);
-				renderModel(this.getContextModel(), identifier, matrixStack, vertexConsumerProvider, i, ironGolemEntity, 1.0F, 1.0F, 1.0F);
+				renderModel(this.getContextModel(), identifier, matrixStack, vertexConsumerProvider, i, ironGolemEntity, -1);
 			}
 		}
 	}

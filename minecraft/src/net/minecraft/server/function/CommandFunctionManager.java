@@ -22,8 +22,8 @@ import org.slf4j.Logger;
  */
 public class CommandFunctionManager {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Identifier TICK_TAG_ID = new Identifier("tick");
-	private static final Identifier LOAD_TAG_ID = new Identifier("load");
+	private static final Identifier TICK_TAG_ID = Identifier.method_60656("tick");
+	private static final Identifier LOAD_TAG_ID = Identifier.method_60656("load");
 	private final MinecraftServer server;
 	/**
 	 * A list of {@code minecraft:tick} tag functions to run on every tick. Set up on

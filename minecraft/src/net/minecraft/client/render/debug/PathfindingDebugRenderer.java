@@ -209,8 +209,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 				vertexConsumers.vertex(
 						matrices.peek(), (float)((double)pathNode.x - cameraX + 0.5), (float)((double)pathNode.y - cameraY + 0.5), (float)((double)pathNode.z - cameraZ + 0.5)
 					)
-					.color(k, l, m, 255)
-					.next();
+					.color(k, l, m, 255);
 			}
 		}
 	}

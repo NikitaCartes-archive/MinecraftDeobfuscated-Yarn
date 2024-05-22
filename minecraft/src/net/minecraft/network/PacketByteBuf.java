@@ -1302,7 +1302,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #writeIdentifier(Identifier)
 	 */
 	public Identifier readIdentifier() {
-		return new Identifier(this.readString(DEFAULT_MAX_STRING_LENGTH));
+		return Identifier.method_60654(this.readString(DEFAULT_MAX_STRING_LENGTH));
 	}
 
 	/**

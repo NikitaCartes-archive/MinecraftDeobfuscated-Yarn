@@ -2,6 +2,10 @@ package net.minecraft.client.render;
 
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -13,25 +17,40 @@ import net.fabricmc.api.Environment;
  * and a type that describes how the components should be interpreted.
  */
 @Environment(EnvType.CLIENT)
-public class VertexFormatElement {
-	private final VertexFormatElement.ComponentType componentType;
-	private final VertexFormatElement.Type type;
-	private final int uvIndex;
-	private final int componentCount;
-	/**
-	 * The total length of this element (in bytes).
-	 */
-	private final int byteLength;
+public record VertexFormatElement(int id, int uvIndex, VertexFormatElement.ComponentType componentType, VertexFormatElement.Type type, int componentCount) {
+	public static final int field_52106 = 32;
+	private static final VertexFormatElement[] field_52114 = new VertexFormatElement[32];
+	private static final List<VertexFormatElement> field_52115 = new ArrayList(32);
+	public static final VertexFormatElement field_52107 = method_60845(0, 0, VertexFormatElement.ComponentType.FLOAT, VertexFormatElement.Type.POSITION, 3);
+	public static final VertexFormatElement field_52108 = method_60845(1, 0, VertexFormatElement.ComponentType.UBYTE, VertexFormatElement.Type.COLOR, 4);
+	public static final VertexFormatElement field_52109 = method_60845(2, 0, VertexFormatElement.ComponentType.FLOAT, VertexFormatElement.Type.UV, 2);
+	public static final VertexFormatElement field_52110 = field_52109;
+	public static final VertexFormatElement field_52111 = method_60845(3, 1, VertexFormatElement.ComponentType.SHORT, VertexFormatElement.Type.UV, 2);
+	public static final VertexFormatElement field_52112 = method_60845(4, 2, VertexFormatElement.ComponentType.SHORT, VertexFormatElement.Type.UV, 2);
+	public static final VertexFormatElement field_52113 = method_60845(5, 0, VertexFormatElement.ComponentType.BYTE, VertexFormatElement.Type.NORMAL, 3);
 
-	public VertexFormatElement(int uvIndex, VertexFormatElement.ComponentType componentType, VertexFormatElement.Type type, int componentCount) {
-		if (this.isValidType(uvIndex, type)) {
-			this.type = type;
-			this.componentType = componentType;
-			this.uvIndex = uvIndex;
-			this.componentCount = componentCount;
-			this.byteLength = componentType.getByteLength() * this.componentCount;
-		} else {
+	public VertexFormatElement(int id, int uvIndex, VertexFormatElement.ComponentType componentType, VertexFormatElement.Type type, int componentCount) {
+		if (id < 0 || id >= field_52114.length) {
+			throw new IllegalArgumentException("Element ID must be in range [0; " + field_52114.length + ")");
+		} else if (!this.isValidType(uvIndex, type)) {
 			throw new IllegalStateException("Multiple vertex elements of the same type other than UVs are not supported");
+		} else {
+			this.id = id;
+			this.uvIndex = uvIndex;
+			this.componentType = componentType;
+			this.type = type;
+			this.componentCount = componentCount;
+		}
+	}
+
+	public static VertexFormatElement method_60845(int i, int j, VertexFormatElement.ComponentType componentType, VertexFormatElement.Type type, int k) {
+		VertexFormatElement vertexFormatElement = new VertexFormatElement(i, j, componentType, type, k);
+		if (field_52114[i] != null) {
+			throw new IllegalArgumentException("Duplicate element registration for: " + i);
+		} else {
+			field_52114[i] = vertexFormatElement;
+			field_52115.add(vertexFormatElement);
+			return vertexFormatElement;
 		}
 	}
 
@@ -39,56 +58,16 @@ public class VertexFormatElement {
 		return uvIndex == 0 || type == VertexFormatElement.Type.UV;
 	}
 
-	public final VertexFormatElement.ComponentType getComponentType() {
-		return this.componentType;
-	}
-
-	public final VertexFormatElement.Type getType() {
-		return this.type;
-	}
-
-	public final int getComponentCount() {
-		return this.componentCount;
-	}
-
-	public final int getUvIndex() {
-		return this.uvIndex;
-	}
-
 	public String toString() {
-		return this.componentCount + "," + this.type.getName() + "," + this.componentType.getName();
+		return this.componentCount + "," + this.type + "," + this.componentType + " (" + this.id + ")";
 	}
 
-	public final int getByteLength() {
-		return this.byteLength;
+	public int method_60843() {
+		return 1 << this.id;
 	}
 
-	public final boolean isPosition() {
-		return this.type == VertexFormatElement.Type.POSITION;
-	}
-
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		} else if (o != null && this.getClass() == o.getClass()) {
-			VertexFormatElement vertexFormatElement = (VertexFormatElement)o;
-			if (this.componentCount != vertexFormatElement.componentCount) {
-				return false;
-			} else if (this.uvIndex != vertexFormatElement.uvIndex) {
-				return false;
-			} else {
-				return this.componentType != vertexFormatElement.componentType ? false : this.type == vertexFormatElement.type;
-			}
-		} else {
-			return false;
-		}
-	}
-
-	public int hashCode() {
-		int i = this.componentType.hashCode();
-		i = 31 * i + this.type.hashCode();
-		i = 31 * i + this.uvIndex;
-		return 31 * i + this.componentCount;
+	public int method_60847() {
+		return this.componentType.getByteLength() * this.componentCount;
 	}
 
 	/**
@@ -101,11 +80,16 @@ public class VertexFormatElement {
 	 * @param stride the distance between consecutive instances of the element in the buffer
 	 */
 	public void setupState(int elementIndex, long offset, int stride) {
-		this.type.setupState(this.componentCount, this.componentType.getGlType(), stride, offset, this.uvIndex, elementIndex);
+		this.type.setupTask.setupBufferState(this.componentCount, this.componentType.getGlType(), stride, offset, elementIndex);
 	}
 
-	public void clearState(int elementIndex) {
-		this.type.clearState(this.uvIndex, elementIndex);
+	@Nullable
+	public static VertexFormatElement method_60844(int i) {
+		return field_52114[i];
+	}
+
+	public static Stream<VertexFormatElement> method_60848(int i) {
+		return field_52115.stream().filter(vertexFormatElement -> vertexFormatElement != null && (i & vertexFormatElement.method_60843()) != 0);
 	}
 
 	/**
@@ -135,12 +119,12 @@ public class VertexFormatElement {
 			return this.byteLength;
 		}
 
-		public String getName() {
-			return this.name;
-		}
-
 		public int getGlType() {
 			return this.glType;
+		}
+
+		public String toString() {
+			return this.name;
 		}
 	}
 
@@ -149,63 +133,33 @@ public class VertexFormatElement {
 	 */
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		POSITION("Position", (componentCount, componentType, stride, offset, uvIndex, elementIndex) -> {
-			GlStateManager._enableVertexAttribArray(elementIndex);
-			GlStateManager._vertexAttribPointer(elementIndex, componentCount, componentType, false, stride, offset);
-		}, (uvIndex, elementIndex) -> GlStateManager._disableVertexAttribArray(elementIndex)),
-		NORMAL("Normal", (componentCount, componentType, stride, offset, uvIndex, elementIndex) -> {
-			GlStateManager._enableVertexAttribArray(elementIndex);
-			GlStateManager._vertexAttribPointer(elementIndex, componentCount, componentType, true, stride, offset);
-		}, (uvIndex, elementIndex) -> GlStateManager._disableVertexAttribArray(elementIndex)),
-		COLOR("Vertex Color", (componentCount, componentType, stride, offset, uvIndex, elementIndex) -> {
-			GlStateManager._enableVertexAttribArray(elementIndex);
-			GlStateManager._vertexAttribPointer(elementIndex, componentCount, componentType, true, stride, offset);
-		}, (uvIndex, elementIndex) -> GlStateManager._disableVertexAttribArray(elementIndex)),
-		UV("UV", (componentCount, componentType, stride, offset, uvIndex, elementIndex) -> {
-			GlStateManager._enableVertexAttribArray(elementIndex);
+		POSITION(
+			"Position",
+			(componentCount, componentType, stride, offset, uvIndex) -> GlStateManager._vertexAttribPointer(
+					uvIndex, componentCount, componentType, false, stride, offset
+				)
+		),
+		NORMAL("Normal", (i, j, k, l, m) -> GlStateManager._vertexAttribPointer(m, i, j, true, k, l)),
+		COLOR("Vertex Color", (i, j, k, l, m) -> GlStateManager._vertexAttribPointer(m, i, j, true, k, l)),
+		UV("UV", (componentCount, componentType, stride, offset, uvIndex) -> {
 			if (componentType == 5126) {
-				GlStateManager._vertexAttribPointer(elementIndex, componentCount, componentType, false, stride, offset);
+				GlStateManager._vertexAttribPointer(uvIndex, componentCount, componentType, false, stride, offset);
 			} else {
-				GlStateManager._vertexAttribIPointer(elementIndex, componentCount, componentType, stride, offset);
+				GlStateManager._vertexAttribIPointer(uvIndex, componentCount, componentType, stride, offset);
 			}
-		}, (uvIndex, elementIndex) -> GlStateManager._disableVertexAttribArray(elementIndex)),
-		PADDING("Padding", (componentCount, componentType, stride, offset, uvIndex, elementIndex) -> {
-		}, (uvIndex, elementIndex) -> {
 		}),
-		GENERIC("Generic", (componentCount, componentType, stride, offset, uvIndex, elementIndex) -> {
-			GlStateManager._enableVertexAttribArray(elementIndex);
-			GlStateManager._vertexAttribPointer(elementIndex, componentCount, componentType, false, stride, offset);
-		}, (uvIndex, elementIndex) -> GlStateManager._disableVertexAttribArray(elementIndex));
+		GENERIC("Generic", (i, j, k, l, m) -> GlStateManager._vertexAttribPointer(m, i, j, false, k, l));
 
 		private final String name;
-		private final VertexFormatElement.Type.SetupTask setupTask;
-		private final VertexFormatElement.Type.ClearTask clearTask;
+		final VertexFormatElement.Type.SetupTask setupTask;
 
-		private Type(final String name, final VertexFormatElement.Type.SetupTask setupTask, final VertexFormatElement.Type.ClearTask clearTask) {
+		private Type(final String name, final VertexFormatElement.Type.SetupTask setupTask) {
 			this.name = name;
 			this.setupTask = setupTask;
-			this.clearTask = clearTask;
 		}
 
-		void setupState(int componentCount, int componentType, int stride, long offset, int uvIndex, int elementIndex) {
-			this.setupTask.setupBufferState(componentCount, componentType, stride, offset, uvIndex, elementIndex);
-		}
-
-		public void clearState(int uvIndex, int elementIndex) {
-			this.clearTask.clearBufferState(uvIndex, elementIndex);
-		}
-
-		public String getName() {
+		public String toString() {
 			return this.name;
-		}
-
-		@FunctionalInterface
-		@Environment(EnvType.CLIENT)
-		interface ClearTask {
-			/**
-			 * @param elementIndex the index of the element in a vertex format
-			 */
-			void clearBufferState(int uvIndex, int elementIndex);
 		}
 
 		@FunctionalInterface
@@ -215,15 +169,14 @@ public class VertexFormatElement {
 			 * Specifies for OpenGL how the vertex data corresponding to the element
 			 * should be interpreted.
 			 * 
+			 * @param stride the distance between consecutive instances of the element in the buffer
 			 * @param componentType the GL type of components in the element
-			 * @param componentCount the number of components in the element
 			 * @param offset the distance between the start of the buffer and the first instance of
 			 * the element in the buffer; be aware that {@code pointer} is a legacy
 			 * name from OpenGL 2
-			 * @param stride the distance between consecutive instances of the element in the buffer
-			 * @param elementIndex the index of the element in a vertex format
+			 * @param componentCount the number of components in the element
 			 */
-			void setupBufferState(int componentCount, int componentType, int stride, long offset, int uvIndex, int elementIndex);
+			void setupBufferState(int componentCount, int componentType, int stride, long offset, int uvIndex);
 		}
 	}
 }

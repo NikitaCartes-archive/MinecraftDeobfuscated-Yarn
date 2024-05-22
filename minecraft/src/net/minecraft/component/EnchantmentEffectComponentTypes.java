@@ -48,7 +48,7 @@ public interface EnchantmentEffectComponentTypes {
 		builder -> builder.codec(TargetedEnchantmentEffectType.createPostAttackCodec(EnchantmentEntityEffectType.CODEC, LootContextTypes.ENCHANTED_DAMAGE).listOf())
 	);
 	ComponentType<List<EnchantmentEffectEntry<EnchantmentEntityEffectType>>> HIT_BLOCK = register(
-		"hit_block", builder -> builder.codec(EnchantmentEffectEntry.createCodec(EnchantmentEntityEffectType.CODEC, LootContextTypes.ENCHANTED_ENTITY).listOf())
+		"hit_block", builder -> builder.codec(EnchantmentEffectEntry.createCodec(EnchantmentEntityEffectType.CODEC, LootContextTypes.HIT_BLOCK).listOf())
 	);
 	ComponentType<List<EnchantmentEffectEntry<EnchantmentValueEffectType>>> ITEM_DAMAGE = register(
 		"item_damage", builder -> builder.codec(EnchantmentEffectEntry.createCodec(EnchantmentValueEffectType.CODEC, LootContextTypes.ENCHANTED_ITEM).listOf())

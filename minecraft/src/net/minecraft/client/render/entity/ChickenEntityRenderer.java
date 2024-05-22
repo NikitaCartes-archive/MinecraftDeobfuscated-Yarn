@@ -10,7 +10,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ChickenEntityRenderer extends MobEntityRenderer<ChickenEntity, ChickenEntityModel<ChickenEntity>> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/chicken.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/chicken.png");
 
 	public ChickenEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new ChickenEntityModel<>(context.getPart(EntityModelLayers.CHICKEN)), 0.3F);

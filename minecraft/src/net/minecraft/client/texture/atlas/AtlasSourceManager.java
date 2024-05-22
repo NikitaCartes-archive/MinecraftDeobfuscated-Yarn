@@ -30,7 +30,7 @@ public class AtlasSourceManager {
 
 	private static AtlasSourceType register(String id, MapCodec<? extends AtlasSource> codec) {
 		AtlasSourceType atlasSourceType = new AtlasSourceType(codec);
-		Identifier identifier = new Identifier(id);
+		Identifier identifier = Identifier.method_60656(id);
 		AtlasSourceType atlasSourceType2 = (AtlasSourceType)SOURCE_TYPE_BY_ID.putIfAbsent(identifier, atlasSourceType);
 		if (atlasSourceType2 != null) {
 			throw new IllegalStateException("Duplicate registration " + identifier);

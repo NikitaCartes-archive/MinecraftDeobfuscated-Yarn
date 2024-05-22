@@ -372,7 +372,7 @@ public class TestCommand {
 
 	private static int executeExport(ServerCommandSource source, String testName) {
 		Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName);
-		Identifier identifier = new Identifier(testName);
+		Identifier identifier = Identifier.method_60654(testName);
 		Path path2 = source.getWorld().getStructureTemplateManager().getTemplatePath(identifier, ".nbt");
 		Path path3 = NbtProvider.convertNbtToSnbt(DataWriter.UNCACHED, path2, identifier.getPath(), path);
 		if (path3 == null) {
@@ -393,7 +393,7 @@ public class TestCommand {
 	}
 
 	private static boolean checkStructure(ServerWorld world, String templateId) {
-		if (world.getStructureTemplateManager().getTemplate(new Identifier(templateId)).isEmpty()) {
+		if (world.getStructureTemplateManager().getTemplate(Identifier.method_60654(templateId)).isEmpty()) {
 			sendMessage(world, "Test structure " + templateId + " could not be found", Formatting.RED);
 			return false;
 		} else {
@@ -413,7 +413,7 @@ public class TestCommand {
 
 	private static int executeImport(ServerCommandSource source, String testName) {
 		Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName, testName + ".snbt");
-		Identifier identifier = new Identifier("minecraft", testName);
+		Identifier identifier = Identifier.method_60656(testName);
 		Path path2 = source.getWorld().getStructureTemplateManager().getTemplatePath(identifier, ".nbt");
 
 		try {

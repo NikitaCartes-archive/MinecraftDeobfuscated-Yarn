@@ -21,12 +21,12 @@ import org.slf4j.Logger;
  */
 public record StructurePiecesList(List<StructurePiece> pieces) {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Identifier JIGSAW = new Identifier("jigsaw");
+	private static final Identifier JIGSAW = Identifier.method_60656("jigsaw");
 	private static final Map<Identifier, Identifier> ID_UPDATES = ImmutableMap.<Identifier, Identifier>builder()
-		.put(new Identifier("nvi"), JIGSAW)
-		.put(new Identifier("pcp"), JIGSAW)
-		.put(new Identifier("bastionremnant"), JIGSAW)
-		.put(new Identifier("runtime"), JIGSAW)
+		.put(Identifier.method_60656("nvi"), JIGSAW)
+		.put(Identifier.method_60656("pcp"), JIGSAW)
+		.put(Identifier.method_60656("bastionremnant"), JIGSAW)
+		.put(Identifier.method_60656("runtime"), JIGSAW)
 		.build();
 
 	public StructurePiecesList(final List<StructurePiece> pieces) {
@@ -63,7 +63,7 @@ public record StructurePiecesList(List<StructurePiece> pieces) {
 		for (int i = 0; i < list.size(); i++) {
 			NbtCompound nbtCompound = list.getCompound(i);
 			String string = nbtCompound.getString("id").toLowerCase(Locale.ROOT);
-			Identifier identifier = new Identifier(string);
+			Identifier identifier = Identifier.method_60654(string);
 			Identifier identifier2 = (Identifier)ID_UPDATES.getOrDefault(identifier, identifier);
 			StructurePieceType structurePieceType = Registries.STRUCTURE_PIECE.get(identifier2);
 			if (structurePieceType == null) {

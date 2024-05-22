@@ -23,7 +23,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
-	private static final Identifier SKIN = new Identifier("textures/entity/elytra.png");
+	private static final Identifier SKIN = Identifier.method_60656("textures/entity/elytra.png");
 	private final ElytraEntityModel<T> elytra;
 
 	public ElytraFeatureRenderer(FeatureRendererContext<T, M> context, EntityModelLoader loader) {
@@ -55,9 +55,9 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 			this.getContextModel().copyStateTo(this.elytra);
 			this.elytra.setAngles(livingEntity, f, g, j, k, l);
 			VertexConsumer vertexConsumer = ItemRenderer.getArmorGlintConsumer(
-				vertexConsumerProvider, RenderLayer.getArmorCutoutNoCull(identifier), false, itemStack.hasGlint()
+				vertexConsumerProvider, RenderLayer.getArmorCutoutNoCull(identifier), itemStack.hasGlint()
 			);
-			this.elytra.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+			this.elytra.method_60879(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 			matrixStack.pop();
 		}
 	}

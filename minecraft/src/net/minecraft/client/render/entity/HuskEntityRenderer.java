@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class HuskEntityRenderer extends ZombieEntityRenderer {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/zombie/husk.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/zombie/husk.png");
 
 	public HuskEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, EntityModelLayers.HUSK, EntityModelLayers.HUSK_INNER_ARMOR, EntityModelLayers.HUSK_OUTER_ARMOR);

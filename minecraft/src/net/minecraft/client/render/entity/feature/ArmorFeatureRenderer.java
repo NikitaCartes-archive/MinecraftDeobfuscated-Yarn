@@ -24,7 +24,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.trim.ArmorTrim;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 
@@ -59,23 +58,11 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 				this.setVisible(model, armorSlot);
 				boolean bl = this.usesInnerModel(armorSlot);
 				ArmorMaterial armorMaterial = armorItem.getMaterial().value();
-				int i = itemStack.isIn(ItemTags.DYEABLE) ? DyedColorComponent.getColor(itemStack, -6265536) : Colors.WHITE;
+				int i = itemStack.isIn(ItemTags.DYEABLE) ? ColorHelper.Argb.fullAlpha(DyedColorComponent.getColor(itemStack, -6265536)) : -1;
 
 				for (ArmorMaterial.Layer layer : armorMaterial.layers()) {
-					float f;
-					float g;
-					float h;
-					if (layer.isDyeable() && i != Colors.WHITE) {
-						f = (float)ColorHelper.Argb.getRed(i) / 255.0F;
-						g = (float)ColorHelper.Argb.getGreen(i) / 255.0F;
-						h = (float)ColorHelper.Argb.getBlue(i) / 255.0F;
-					} else {
-						f = 1.0F;
-						g = 1.0F;
-						h = 1.0F;
-					}
-
-					this.renderArmorParts(matrices, vertexConsumers, light, model, f, g, h, layer.getTexture(bl));
+					int j = layer.isDyeable() ? i : -1;
+					this.renderArmorParts(matrices, vertexConsumers, light, model, j, layer.getTexture(bl));
 				}
 
 				ArmorTrim armorTrim = itemStack.get(DataComponentTypes.TRIM);
@@ -113,11 +100,9 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 		}
 	}
 
-	private void renderArmorParts(
-		MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, A model, float red, float green, float blue, Identifier overlay
-	) {
-		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(overlay));
-		model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, red, green, blue, 1.0F);
+	private void renderArmorParts(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, A model, int i, Identifier identifier) {
+		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(identifier));
+		model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, i);
 	}
 
 	private void renderTrim(
@@ -133,11 +118,11 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 		VertexConsumer vertexConsumer = sprite.getTextureSpecificVertexConsumer(
 			vertexConsumers.getBuffer(TexturedRenderLayers.getArmorTrims(trim.getPattern().value().decal()))
 		);
-		model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+		model.method_60879(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
 	}
 
 	private void renderGlint(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, A model) {
-		model.render(matrices, vertexConsumers.getBuffer(RenderLayer.getArmorEntityGlint()), light, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+		model.method_60879(matrices, vertexConsumers.getBuffer(RenderLayer.getArmorEntityGlint()), light, OverlayTexture.DEFAULT_UV);
 	}
 
 	private A getModel(EquipmentSlot slot) {

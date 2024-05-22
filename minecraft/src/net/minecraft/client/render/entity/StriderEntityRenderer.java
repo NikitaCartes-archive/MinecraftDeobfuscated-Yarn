@@ -11,15 +11,15 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class StriderEntityRenderer extends MobEntityRenderer<StriderEntity, StriderEntityModel<StriderEntity>> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/strider/strider.png");
-	private static final Identifier COLD_TEXTURE = new Identifier("textures/entity/strider/strider_cold.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/strider/strider.png");
+	private static final Identifier COLD_TEXTURE = Identifier.method_60656("textures/entity/strider/strider_cold.png");
 	private static final float BABY_SHADOW_RADIUS_SCALE = 0.5F;
 
 	public StriderEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new StriderEntityModel<>(context.getPart(EntityModelLayers.STRIDER)), 0.5F);
 		this.addFeature(
 			new SaddleFeatureRenderer<>(
-				this, new StriderEntityModel<>(context.getPart(EntityModelLayers.STRIDER_SADDLE)), new Identifier("textures/entity/strider/strider_saddle.png")
+				this, new StriderEntityModel<>(context.getPart(EntityModelLayers.STRIDER_SADDLE)), Identifier.method_60656("textures/entity/strider/strider_saddle.png")
 			)
 		);
 	}

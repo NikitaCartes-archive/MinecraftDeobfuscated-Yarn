@@ -22,7 +22,7 @@ import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class TridentRiptideFeatureRenderer<T extends LivingEntity> extends FeatureRenderer<T, PlayerEntityModel<T>> {
-	public static final Identifier TEXTURE = new Identifier("textures/entity/trident_riptide.png");
+	public static final Identifier TEXTURE = Identifier.method_60656("textures/entity/trident_riptide.png");
 	public static final String BOX = "box";
 	private final ModelPart aura;
 

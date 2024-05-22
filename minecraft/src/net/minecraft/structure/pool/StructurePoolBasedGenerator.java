@@ -431,7 +431,7 @@ public class StructurePoolBasedGenerator {
 
 		private static RegistryKey<StructurePool> lookupPool(StructureTemplate.StructureBlockInfo structureBlockInfo, StructurePoolAliasLookup aliasLookup) {
 			NbtCompound nbtCompound = (NbtCompound)Objects.requireNonNull(structureBlockInfo.nbt(), () -> structureBlockInfo + " nbt was null");
-			RegistryKey<StructurePool> registryKey = StructurePools.of(nbtCompound.getString("pool"));
+			RegistryKey<StructurePool> registryKey = StructurePools.method_60923(nbtCompound.getString("pool"));
 			return aliasLookup.lookup(registryKey);
 		}
 	}

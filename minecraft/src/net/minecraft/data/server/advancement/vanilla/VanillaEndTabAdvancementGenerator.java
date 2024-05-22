@@ -35,7 +35,7 @@ public class VanillaEndTabAdvancementGenerator implements AdvancementTabGenerato
 				Blocks.END_STONE,
 				Text.translatable("advancements.end.root.title"),
 				Text.translatable("advancements.end.root.description"),
-				new Identifier("textures/gui/advancements/backgrounds/end.png"),
+				Identifier.method_60656("textures/gui/advancements/backgrounds/end.png"),
 				AdvancementFrame.TASK,
 				false,
 				false,

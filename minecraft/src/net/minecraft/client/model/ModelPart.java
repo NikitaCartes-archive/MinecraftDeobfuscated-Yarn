@@ -104,20 +104,20 @@ public final class ModelPart {
 	}
 
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
-		this.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+		this.render(matrices, vertices, light, overlay, -1);
 	}
 
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {
 		if (this.visible) {
 			if (!this.cuboids.isEmpty() || !this.children.isEmpty()) {
 				matrices.push();
 				this.rotate(matrices);
 				if (!this.hidden) {
-					this.renderCuboids(matrices.peek(), vertices, light, overlay, red, green, blue, alpha);
+					this.renderCuboids(matrices.peek(), vertices, light, overlay, i);
 				}
 
 				for (ModelPart modelPart : this.children.values()) {
-					modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+					modelPart.render(matrices, vertices, light, overlay, i);
 				}
 
 				matrices.pop();
@@ -156,9 +156,9 @@ public final class ModelPart {
 		}
 	}
 
-	private void renderCuboids(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+	private void renderCuboids(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int light, int overlay, int i) {
 		for (ModelPart.Cuboid cuboid : this.cuboids) {
-			cuboid.renderCuboid(entry, vertexConsumer, light, overlay, red, green, blue, alpha);
+			cuboid.renderCuboid(entry, vertexConsumer, light, overlay, i);
 		}
 	}
 
@@ -296,7 +296,7 @@ public final class ModelPart {
 			}
 		}
 
-		public void renderCuboid(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+		public void renderCuboid(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int light, int overlay, int i) {
 			Matrix4f matrix4f = entry.getPositionMatrix();
 			Vector3f vector3f = new Vector3f();
 
@@ -307,11 +307,11 @@ public final class ModelPart {
 				float h = vector3f2.z();
 
 				for (ModelPart.Vertex vertex : quad.vertices) {
-					float i = vertex.pos.x() / 16.0F;
-					float j = vertex.pos.y() / 16.0F;
-					float k = vertex.pos.z() / 16.0F;
-					Vector3f vector3f3 = matrix4f.transformPosition(i, j, k, vector3f);
-					vertexConsumer.vertex(vector3f3.x(), vector3f3.y(), vector3f3.z(), red, green, blue, alpha, vertex.u, vertex.v, overlay, light, f, g, h);
+					float j = vertex.pos.x() / 16.0F;
+					float k = vertex.pos.y() / 16.0F;
+					float l = vertex.pos.z() / 16.0F;
+					Vector3f vector3f3 = matrix4f.transformPosition(j, k, l, vector3f);
+					vertexConsumer.vertex(vector3f3.x(), vector3f3.y(), vector3f3.z(), i, vertex.u, vertex.v, overlay, light, f, g, h);
 				}
 			}
 		}

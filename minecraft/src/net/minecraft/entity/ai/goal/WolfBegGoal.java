@@ -63,11 +63,7 @@ public class WolfBegGoal extends Goal {
 	private boolean isAttractive(PlayerEntity player) {
 		for (Hand hand : Hand.values()) {
 			ItemStack itemStack = player.getStackInHand(hand);
-			if (this.wolf.isTamed() && itemStack.isOf(Items.BONE)) {
-				return true;
-			}
-
-			if (this.wolf.isBreedingItem(itemStack)) {
+			if (itemStack.isOf(Items.BONE) || this.wolf.isBreedingItem(itemStack)) {
 				return true;
 			}
 		}

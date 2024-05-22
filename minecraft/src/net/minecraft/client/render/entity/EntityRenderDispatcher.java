@@ -37,12 +37,14 @@ import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
@@ -54,7 +56,7 @@ import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class EntityRenderDispatcher implements SynchronousResourceReloader {
-	private static final RenderLayer SHADOW_LAYER = RenderLayer.getEntityShadow(new Identifier("textures/misc/shadow.png"));
+	private static final RenderLayer SHADOW_LAYER = RenderLayer.getEntityShadow(Identifier.method_60656("textures/misc/shadow.png"));
 	private static final float field_43377 = 32.0F;
 	private static final float field_43378 = 0.5F;
 	private Map<EntityType<?>, EntityRenderer<?>> renderers = ImmutableMap.of();
@@ -237,14 +239,10 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 
 		Vec3d vec3d2 = entity.getRotationVec(tickDelta);
 		MatrixStack.Entry entry = matrices.peek();
-		vertices.vertex(entry, 0.0F, entity.getStandingEyeHeight(), 0.0F)
-			.color(0, 0, 255, 255)
-			.normal(entry, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z)
-			.next();
+		vertices.vertex(entry, 0.0F, entity.getStandingEyeHeight(), 0.0F).color(-16776961).method_60831(entry, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z);
 		vertices.vertex(entry, (float)(vec3d2.x * 2.0), (float)((double)entity.getStandingEyeHeight() + vec3d2.y * 2.0), (float)(vec3d2.z * 2.0))
 			.color(0, 0, 255, 255)
-			.normal(entry, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z)
-			.next();
+			.method_60831(entry, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z);
 	}
 
 	private void renderFire(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity, Quaternionf rotation) {
@@ -258,7 +256,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		float i = entity.getHeight() / f;
 		float j = 0.0F;
 		matrices.multiply(rotation);
-		matrices.translate(0.0F, 0.0F, -0.3F + (float)((int)i) * 0.02F);
+		matrices.translate(0.0F, 0.0F, 0.3F - (float)((int)i) * 0.02F);
 		float k = 0.0F;
 		int l = 0;
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(TexturedRenderLayers.getEntityCutout());
@@ -275,27 +273,21 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 				m = q;
 			}
 
-			drawFireVertex(entry, vertexConsumer, g - 0.0F, 0.0F - j, k, o, p);
-			drawFireVertex(entry, vertexConsumer, -g - 0.0F, 0.0F - j, k, m, p);
-			drawFireVertex(entry, vertexConsumer, -g - 0.0F, 1.4F - j, k, m, n);
-			drawFireVertex(entry, vertexConsumer, g - 0.0F, 1.4F - j, k, o, n);
+			drawFireVertex(entry, vertexConsumer, -g - 0.0F, 0.0F - j, k, o, p);
+			drawFireVertex(entry, vertexConsumer, g - 0.0F, 0.0F - j, k, m, p);
+			drawFireVertex(entry, vertexConsumer, g - 0.0F, 1.4F - j, k, m, n);
+			drawFireVertex(entry, vertexConsumer, -g - 0.0F, 1.4F - j, k, o, n);
 			i -= 0.45F;
 			j -= 0.45F;
 			g *= 0.9F;
-			k += 0.03F;
+			k -= 0.03F;
 		}
 
 		matrices.pop();
 	}
 
 	private static void drawFireVertex(MatrixStack.Entry entry, VertexConsumer vertices, float x, float y, float z, float u, float v) {
-		vertices.vertex(entry, x, y, z)
-			.color(255, 255, 255, 255)
-			.texture(u, v)
-			.overlay(0, 10)
-			.light(LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE)
-			.normal(entry, 0.0F, 1.0F, 0.0F)
-			.next();
+		vertices.vertex(entry, x, y, z).color(Colors.WHITE).texture(u, v).method_60796(0, 10).method_60803(240).method_60831(entry, 0.0F, 1.0F, 0.0F);
 	}
 
 	private static void renderShadow(
@@ -345,49 +337,35 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 							g = 1.0F;
 						}
 
+						int i = ColorHelper.Argb.getArgb(MathHelper.floor(g * 255.0F), 255, 255, 255);
 						Box box = voxelShape.getBoundingBox();
 						double d = (double)pos.getX() + box.minX;
 						double e = (double)pos.getX() + box.maxX;
 						double h = (double)pos.getY() + box.minY;
-						double i = (double)pos.getZ() + box.minZ;
-						double j = (double)pos.getZ() + box.maxZ;
-						float k = (float)(d - x);
-						float l = (float)(e - x);
-						float m = (float)(h - y);
-						float n = (float)(i - z);
+						double j = (double)pos.getZ() + box.minZ;
+						double k = (double)pos.getZ() + box.maxZ;
+						float l = (float)(d - x);
+						float m = (float)(e - x);
+						float n = (float)(h - y);
 						float o = (float)(j - z);
-						float p = -k / 2.0F / radius + 0.5F;
+						float p = (float)(k - z);
 						float q = -l / 2.0F / radius + 0.5F;
-						float r = -n / 2.0F / radius + 0.5F;
+						float r = -m / 2.0F / radius + 0.5F;
 						float s = -o / 2.0F / radius + 0.5F;
-						drawShadowVertex(entry, vertices, g, k, m, n, p, r);
-						drawShadowVertex(entry, vertices, g, k, m, o, p, s);
-						drawShadowVertex(entry, vertices, g, l, m, o, q, s);
-						drawShadowVertex(entry, vertices, g, l, m, n, q, r);
+						float t = -p / 2.0F / radius + 0.5F;
+						drawShadowVertex(entry, vertices, i, l, n, o, q, s);
+						drawShadowVertex(entry, vertices, i, l, n, p, q, t);
+						drawShadowVertex(entry, vertices, i, m, n, p, r, t);
+						drawShadowVertex(entry, vertices, i, m, n, o, r, s);
 					}
 				}
 			}
 		}
 	}
 
-	private static void drawShadowVertex(MatrixStack.Entry entry, VertexConsumer vertices, float alpha, float x, float y, float z, float u, float v) {
+	private static void drawShadowVertex(MatrixStack.Entry entry, VertexConsumer vertices, int i, float x, float y, float z, float u, float v) {
 		Vector3f vector3f = entry.getPositionMatrix().transformPosition(x, y, z, new Vector3f());
-		vertices.vertex(
-			vector3f.x(),
-			vector3f.y(),
-			vector3f.z(),
-			1.0F,
-			1.0F,
-			1.0F,
-			alpha,
-			u,
-			v,
-			OverlayTexture.DEFAULT_UV,
-			LightmapTextureManager.MAX_LIGHT_COORDINATE,
-			0.0F,
-			1.0F,
-			0.0F
-		);
+		vertices.vertex(vector3f.x(), vector3f.y(), vector3f.z(), i, u, v, OverlayTexture.DEFAULT_UV, 15728880, 0.0F, 1.0F, 0.0F);
 	}
 
 	public void setWorld(@Nullable World world) {

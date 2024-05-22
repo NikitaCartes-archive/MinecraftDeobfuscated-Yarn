@@ -21,8 +21,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class WitherSkullEntityRenderer extends EntityRenderer<WitherSkullEntity> {
-	private static final Identifier INVULNERABLE_TEXTURE = new Identifier("textures/entity/wither/wither_invulnerable.png");
-	private static final Identifier TEXTURE = new Identifier("textures/entity/wither/wither.png");
+	private static final Identifier INVULNERABLE_TEXTURE = Identifier.method_60656("textures/entity/wither/wither_invulnerable.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/wither/wither.png");
 	private final SkullEntityModel model;
 
 	public WitherSkullEntityRenderer(EntityRendererFactory.Context context) {
@@ -48,7 +48,7 @@ public class WitherSkullEntityRenderer extends EntityRenderer<WitherSkullEntity>
 		float j = MathHelper.lerp(g, witherSkullEntity.prevPitch, witherSkullEntity.getPitch());
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.getTexture(witherSkullEntity)));
 		this.model.setHeadRotation(0.0F, h, j);
-		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+		this.model.method_60879(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 		matrixStack.pop();
 		super.render(witherSkullEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}

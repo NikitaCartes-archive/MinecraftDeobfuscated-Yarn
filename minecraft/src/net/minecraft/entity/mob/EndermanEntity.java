@@ -52,6 +52,7 @@ import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.TimeHelper;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -67,9 +68,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class EndermanEntity extends HostileEntity implements Angerable {
-	private static final UUID ATTACKING_SPEED_BOOST_ID = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
+	private static final Identifier ATTACKING_SPEED_BOOST_ID = Identifier.method_60656("attacking");
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
-		ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.15F, EntityAttributeModifier.Operation.ADD_VALUE
+		ATTACKING_SPEED_BOOST_ID, 0.15F, EntityAttributeModifier.Operation.ADD_VALUE
 	);
 	private static final int field_30462 = 400;
 	private static final int field_30461 = 600;
@@ -123,11 +124,11 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			this.ageWhenTargetSet = 0;
 			this.dataTracker.set(ANGRY, false);
 			this.dataTracker.set(PROVOKED, false);
-			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST.uuid());
+			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST_ID);
 		} else {
 			this.ageWhenTargetSet = this.age;
 			this.dataTracker.set(ANGRY, true);
-			if (!entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
+			if (!entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST_ID)) {
 				entityAttributeInstance.addTemporaryModifier(ATTACKING_SPEED_BOOST);
 			}
 		}

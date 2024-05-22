@@ -27,7 +27,7 @@ import net.minecraft.client.realms.dto.RealmsNotification;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsServerAddress;
 import net.minecraft.client.realms.dto.RealmsServerList;
-import net.minecraft.client.realms.dto.RealmsServerPlayerLists;
+import net.minecraft.client.realms.dto.RealmsServerPlayerList;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
 import net.minecraft.client.realms.dto.RealmsWorldResetDto;
 import net.minecraft.client.realms.dto.Subscription;
@@ -176,10 +176,10 @@ public class RealmsClient {
 		return PlayerActivities.parse(string2);
 	}
 
-	public RealmsServerPlayerLists getLiveStats() throws RealmsServiceException {
+	public RealmsServerPlayerList getLiveStats() throws RealmsServiceException {
 		String string = this.url("activities/liveplayerlist");
 		String string2 = this.execute(Request.get(string));
-		return RealmsServerPlayerLists.parse(string2);
+		return RealmsServerPlayerList.parse(string2);
 	}
 
 	public RealmsServerAddress join(long worldId) throws RealmsServiceException {

@@ -15,6 +15,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry> modifiers, boolean showInTooltip) {
@@ -52,7 +53,7 @@ public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry
 		ImmutableList.Builder<AttributeModifiersComponent.Entry> builder = ImmutableList.builderWithExpectedSize(this.modifiers.size() + 1);
 
 		for (AttributeModifiersComponent.Entry entry : this.modifiers) {
-			if (!entry.modifier.uuid().equals(modifier.uuid())) {
+			if (!entry.method_60767(attribute, modifier.uuid())) {
 				builder.add(entry);
 			}
 		}
@@ -129,5 +130,9 @@ public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry
 			AttributeModifiersComponent.Entry::slot,
 			AttributeModifiersComponent.Entry::new
 		);
+
+		public boolean method_60767(RegistryEntry<EntityAttribute> registryEntry, Identifier identifier) {
+			return registryEntry.equals(this.attribute) && identifier.equals(this.modifier);
+		}
 	}
 }

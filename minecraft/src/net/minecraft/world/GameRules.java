@@ -239,6 +239,9 @@ public class GameRules {
 			serverWorld.setSpawnPos(serverWorld.getSpawnPos(), serverWorld.getSpawnAngle());
 		})
 	);
+	public static final GameRules.Key<GameRules.BooleanRule> ENTITIES_WITH_PASSENGERS_CAN_USE_PORTALS = register(
+		"entitiesWithPassengersCanUsePortals", GameRules.Category.MOBS, GameRules.BooleanRule.create(false)
+	);
 	private final Map<GameRules.Key<?>, GameRules.Rule<?>> rules;
 
 	private static <T extends GameRules.Rule<T>> GameRules.Key<T> register(String name, GameRules.Category category, GameRules.Type<T> type) {

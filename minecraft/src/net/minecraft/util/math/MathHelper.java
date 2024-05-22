@@ -907,6 +907,10 @@ public class MathHelper {
 		return Math.sqrt(squaredMagnitude(a, b, c));
 	}
 
+	public static float method_60677(float f, float g, float h) {
+		return f * f + g * g + h * h;
+	}
+
 	/**
 	 * {@return {@code a} rounded down to the nearest multiple of {@code b}}
 	 */

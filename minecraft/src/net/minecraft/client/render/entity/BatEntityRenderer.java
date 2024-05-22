@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class BatEntityRenderer extends MobEntityRenderer<BatEntity, BatEntityModel> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/bat.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/bat.png");
 
 	public BatEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new BatEntityModel(context.getPart(EntityModelLayers.BAT)), 0.25F);

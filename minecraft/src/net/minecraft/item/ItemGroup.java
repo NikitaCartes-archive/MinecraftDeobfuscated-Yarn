@@ -9,13 +9,15 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 /**
  * A group of items that the items belong to. This is used by the creative inventory.
  */
 public class ItemGroup {
+	static final Identifier ITEMS = method_60733("items");
 	private final Text displayName;
-	String texture = "items.png";
+	Identifier texture = ITEMS;
 	boolean scrollbar = true;
 	boolean renderName = true;
 	boolean special = false;
@@ -38,6 +40,10 @@ public class ItemGroup {
 		this.type = type;
 	}
 
+	public static Identifier method_60733(String string) {
+		return Identifier.method_60656("textures/gui/container/creative_inventory/tab_" + string + ".png");
+	}
+
 	public static ItemGroup.Builder create(ItemGroup.Row location, int column) {
 		return new ItemGroup.Builder(location, column);
 	}
@@ -54,7 +60,7 @@ public class ItemGroup {
 		return this.icon;
 	}
 
-	public String getTexture() {
+	public Identifier getTexture() {
 		return this.texture;
 	}
 
@@ -129,7 +135,7 @@ public class ItemGroup {
 		private boolean renderName = true;
 		private boolean special = false;
 		private ItemGroup.Type type = ItemGroup.Type.CATEGORY;
-		private String texture = "items.png";
+		private Identifier texture = ItemGroup.ITEMS;
 
 		public Builder(ItemGroup.Row row, int column) {
 			this.row = row;
@@ -171,8 +177,8 @@ public class ItemGroup {
 			return this;
 		}
 
-		public ItemGroup.Builder texture(String texture) {
-			this.texture = texture;
+		public ItemGroup.Builder texture(Identifier identifier) {
+			this.texture = identifier;
 			return this;
 		}
 

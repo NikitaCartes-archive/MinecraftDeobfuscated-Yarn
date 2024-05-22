@@ -58,7 +58,7 @@ public class ModelOverride {
 	protected static class Deserializer implements JsonDeserializer<ModelOverride> {
 		public ModelOverride deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
-			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "model"));
+			Identifier identifier = Identifier.method_60654(JsonHelper.getString(jsonObject, "model"));
 			List<ModelOverride.Condition> list = this.deserializeMinPropertyValues(jsonObject);
 			return new ModelOverride(identifier, list);
 		}
@@ -68,7 +68,7 @@ public class ModelOverride {
 			JsonObject jsonObject = JsonHelper.getObject(object, "predicate");
 
 			for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-				map.put(new Identifier((String)entry.getKey()), JsonHelper.asFloat((JsonElement)entry.getValue(), (String)entry.getKey()));
+				map.put(Identifier.method_60654((String)entry.getKey()), JsonHelper.asFloat((JsonElement)entry.getValue(), (String)entry.getKey()));
 			}
 
 			return (List<ModelOverride.Condition>)map.entrySet()

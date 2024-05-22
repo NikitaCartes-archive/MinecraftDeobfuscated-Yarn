@@ -13,8 +13,8 @@ import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity> implements BlockEntityRenderer<T> {
-	public static final Identifier SKY_TEXTURE = new Identifier("textures/environment/end_sky.png");
-	public static final Identifier PORTAL_TEXTURE = new Identifier("textures/entity/end_portal.png");
+	public static final Identifier SKY_TEXTURE = Identifier.method_60656("textures/environment/end_sky.png");
+	public static final Identifier PORTAL_TEXTURE = Identifier.method_60656("textures/entity/end_portal.png");
 
 	public EndPortalBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
 	}
@@ -39,10 +39,10 @@ public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity> implem
 		T entity, Matrix4f model, VertexConsumer vertices, float x1, float x2, float y1, float y2, float z1, float z2, float z3, float z4, Direction side
 	) {
 		if (entity.shouldDrawSide(side)) {
-			vertices.vertex(model, x1, y1, z1).next();
-			vertices.vertex(model, x2, y1, z2).next();
-			vertices.vertex(model, x2, y2, z3).next();
-			vertices.vertex(model, x1, y2, z4).next();
+			vertices.vertex(model, x1, y1, z1);
+			vertices.vertex(model, x2, y1, z2);
+			vertices.vertex(model, x2, y2, z3);
+			vertices.vertex(model, x1, y2, z4);
 		}
 	}
 

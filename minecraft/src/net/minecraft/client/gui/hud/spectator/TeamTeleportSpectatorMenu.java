@@ -22,7 +22,7 @@ import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, SpectatorMenuCommand {
-	private static final Identifier TEXTURE = new Identifier("spectator/teleport_to_team");
+	private static final Identifier TEXTURE = Identifier.method_60656("spectator/teleport_to_team");
 	private static final Text TEAM_TELEPORT_TEXT = Text.translatable("spectatorMenu.team_teleport");
 	private static final Text PROMPT_TEXT = Text.translatable("spectatorMenu.team_teleport.prompt");
 	private final List<SpectatorMenuCommand> commands;

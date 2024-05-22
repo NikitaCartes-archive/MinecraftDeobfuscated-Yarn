@@ -37,13 +37,14 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class SoundManager extends SinglePreparationResourceReloader<SoundManager.SoundList> {
+	public static final Identifier field_52173 = Identifier.method_60656("empty");
 	public static final Sound MISSING_SOUND = new Sound(
-		"minecraft:empty", ConstantFloatProvider.create(1.0F), ConstantFloatProvider.create(1.0F), 1, Sound.RegistrationType.FILE, false, false, 16
+		field_52173, ConstantFloatProvider.create(1.0F), ConstantFloatProvider.create(1.0F), 1, Sound.RegistrationType.FILE, false, false, 16
 	);
-	public static final Identifier INTENTIONALLY_EMPTY_ID = new Identifier("minecraft", "intentionally_empty");
+	public static final Identifier INTENTIONALLY_EMPTY_ID = Identifier.method_60656("intentionally_empty");
 	public static final WeightedSoundSet INTENTIONALLY_EMPTY_SOUND_SET = new WeightedSoundSet(INTENTIONALLY_EMPTY_ID, null);
 	public static final Sound INTENTIONALLY_EMPTY_SOUND = new Sound(
-		INTENTIONALLY_EMPTY_ID.toString(), ConstantFloatProvider.create(1.0F), ConstantFloatProvider.create(1.0F), 1, Sound.RegistrationType.FILE, false, false, 16
+		INTENTIONALLY_EMPTY_ID, ConstantFloatProvider.create(1.0F), ConstantFloatProvider.create(1.0F), 1, Sound.RegistrationType.FILE, false, false, 16
 	);
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final String SOUNDS_JSON = "sounds.json";
@@ -72,7 +73,7 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 			profiler.push(string);
 
 			try {
-				for (Resource resource : resourceManager.getAllResources(new Identifier(string, "sounds.json"))) {
+				for (Resource resource : resourceManager.getAllResources(Identifier.method_60655(string, "sounds.json"))) {
 					profiler.push(resource.getPackId());
 
 					try {
@@ -84,7 +85,7 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 							profiler.swap("register");
 
 							for (Entry<String, SoundEntry> entry : map.entrySet()) {
-								soundList.register(new Identifier(string, (String)entry.getKey()), (SoundEntry)entry.getValue());
+								soundList.register(Identifier.method_60655(string, (String)entry.getKey()), (SoundEntry)entry.getValue());
 							}
 
 							profiler.pop();
@@ -293,7 +294,7 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 								} else {
 									Sound sound = weightedSoundSet.getSound(random);
 									return new Sound(
-										sound.getIdentifier().toString(),
+										sound.getIdentifier(),
 										new MultipliedFloatSupplier(sound.getVolume(), sound.getVolume()),
 										new MultipliedFloatSupplier(sound.getPitch(), sound.getPitch()),
 										sound.getWeight(),

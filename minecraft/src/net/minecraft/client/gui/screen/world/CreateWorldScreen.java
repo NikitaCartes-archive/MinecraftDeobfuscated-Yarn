@@ -100,7 +100,7 @@ public class CreateWorldScreen extends Screen {
 	private static final Text PREPARING_TEXT = Text.translatable("createWorld.preparing");
 	private static final int field_42170 = 10;
 	private static final int field_42171 = 8;
-	public static final Identifier TAB_HEADER_BACKGROUND_TEXTURE = new Identifier("textures/gui/tab_header_background.png");
+	public static final Identifier TAB_HEADER_BACKGROUND_TEXTURE = Identifier.method_60656("textures/gui/tab_header_background.png");
 	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 	final WorldCreator worldCreator;
 	private final TabManager tabManager = new TabManager(this::addDrawableChild, child -> this.remove(child));

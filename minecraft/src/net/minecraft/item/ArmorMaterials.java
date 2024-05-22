@@ -27,7 +27,7 @@ public class ArmorMaterials {
 		0.0F,
 		0.0F,
 		() -> Ingredient.ofItems(Items.LEATHER),
-		List.of(new ArmorMaterial.Layer(new Identifier("leather"), "", true), new ArmorMaterial.Layer(new Identifier("leather"), "_overlay", false))
+		List.of(new ArmorMaterial.Layer(Identifier.method_60656("leather"), "", true), new ArmorMaterial.Layer(Identifier.method_60656("leather"), "_overlay", false))
 	);
 	public static final RegistryEntry<ArmorMaterial> CHAIN = register("chainmail", Util.make(new EnumMap(ArmorItem.Type.class), map -> {
 		map.put(ArmorItem.Type.BOOTS, 1);
@@ -92,7 +92,7 @@ public class ArmorMaterials {
 		float knockbackResistance,
 		Supplier<Ingredient> repairIngredient
 	) {
-		List<ArmorMaterial.Layer> list = List.of(new ArmorMaterial.Layer(new Identifier(id)));
+		List<ArmorMaterial.Layer> list = List.of(new ArmorMaterial.Layer(Identifier.method_60656(id)));
 		return register(id, defense, enchantability, equipSound, toughness, knockbackResistance, repairIngredient, list);
 	}
 
@@ -114,7 +114,7 @@ public class ArmorMaterials {
 
 		return Registry.registerReference(
 			Registries.ARMOR_MATERIAL,
-			new Identifier(id),
+			Identifier.method_60656(id),
 			new ArmorMaterial(enumMap, enchantability, equipSound, repairIngredient, layers, toughness, knockbackResistance)
 		);
 	}

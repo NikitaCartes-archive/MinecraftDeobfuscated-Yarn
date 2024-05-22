@@ -16,6 +16,9 @@ import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagGroupLoader;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFinder;
@@ -48,9 +51,10 @@ import org.slf4j.Logger;
  */
 public class FunctionLoader implements ResourceReloader {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final ResourceFinder FINDER = new ResourceFinder("functions", ".mcfunction");
+	public static final RegistryKey<Registry<CommandFunction<ServerCommandSource>>> field_51976 = RegistryKey.ofRegistry(Identifier.method_60656("function"));
+	private static final ResourceFinder FINDER = new ResourceFinder(RegistryKeys.method_60915(field_51976), ".mcfunction");
 	private volatile Map<Identifier, CommandFunction<ServerCommandSource>> functions = ImmutableMap.of();
-	private final TagGroupLoader<CommandFunction<ServerCommandSource>> tagLoader = new TagGroupLoader<>(this::get, "tags/functions");
+	private final TagGroupLoader<CommandFunction<ServerCommandSource>> tagLoader = new TagGroupLoader<>(this::get, RegistryKeys.method_60916(field_51976));
 	private volatile Map<Identifier, Collection<CommandFunction<ServerCommandSource>>> tags = Map.of();
 	private final int level;
 	private final CommandDispatcher<ServerCommandSource> commandDispatcher;

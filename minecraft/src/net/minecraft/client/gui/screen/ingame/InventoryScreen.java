@@ -143,8 +143,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		DiffuseLighting.method_34742();
 		EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
 		if (quaternionf2 != null) {
-			quaternionf2.conjugate();
-			entityRenderDispatcher.setRotation(quaternionf2);
+			entityRenderDispatcher.setRotation(quaternionf2.conjugate(new Quaternionf()).rotateY((float) Math.PI));
 		}
 
 		entityRenderDispatcher.setRenderShadows(false);

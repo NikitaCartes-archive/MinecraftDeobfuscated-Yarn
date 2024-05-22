@@ -10,8 +10,8 @@ import it.unimi.dsi.fastutil.floats.FloatArrays;
 import it.unimi.dsi.fastutil.floats.FloatSet;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -24,6 +24,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_9787;
+import net.minecraft.class_9797;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -62,7 +64,6 @@ import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -82,7 +83,6 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.property.Properties;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -115,13 +115,11 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.Heightmap;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.NetherPortal;
 import net.minecraft.world.entity.EntityChangeListener;
 import net.minecraft.world.entity.EntityLike;
@@ -353,10 +351,9 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	private final TrackedPosition trackedPosition = new TrackedPosition();
 	public boolean ignoreCameraFrustum;
 	public boolean velocityDirty;
+	@Nullable
+	public class_9787 field_51994;
 	private int portalCooldown;
-	protected boolean inNetherPortal;
-	protected int netherPortalTime;
-	protected BlockPos lastNetherPortalPosition;
 	private boolean invulnerable;
 	protected UUID uuid = MathHelper.randomUuid(this.random);
 	protected String uuidString = this.uuid.toString();
@@ -679,7 +676,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		this.prevHorizontalSpeed = this.horizontalSpeed;
 		this.prevPitch = this.getPitch();
 		this.prevYaw = this.getYaw();
-		this.tickPortal();
+		this.method_60698();
 		if (this.shouldSpawnSprintingParticles()) {
 			this.spawnSprintingParticles();
 		}
@@ -766,14 +763,6 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		if (this.hasPortalCooldown()) {
 			this.portalCooldown--;
 		}
-	}
-
-	/**
-	 * {@return how long entities can be inside the nether portal without teleporting,
-	 * in ticks}
-	 */
-	public int getMaxNetherPortalTime() {
-		return 0;
 	}
 
 	/**
@@ -1244,7 +1233,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		for (VoxelShape voxelShape : collisions) {
 			for (double d : voxelShape.getPointPositions(Direction.Axis.Y)) {
 				float g = (float)(d - collisionBox.minY);
-				if (!(g < 0.0F) && !MathHelper.approximatelyEquals(g, stepHeight)) {
+				if (!(g < 0.0F) && g != stepHeight) {
 					if (g > f) {
 						break;
 					}
@@ -2907,46 +2896,40 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return Vec3d.fromPolar(this.getRotationClient());
 	}
 
-	public void setInNetherPortal(BlockPos pos) {
+	public void method_60697(class_9797 arg, BlockPos blockPos) {
 		if (this.hasPortalCooldown()) {
 			this.resetPortalCooldown();
 		} else {
-			if (!this.getWorld().isClient && !pos.equals(this.lastNetherPortalPosition)) {
-				this.lastNetherPortalPosition = pos.toImmutable();
+			if (this.field_51994 != null && this.field_51994.method_60703(arg)) {
+				this.field_51994.method_60704(blockPos.toImmutable());
+				this.field_51994.method_60705(true);
+			} else {
+				this.field_51994 = new class_9787(arg, blockPos.toImmutable());
 			}
-
-			this.inNetherPortal = true;
 		}
 	}
 
-	protected void tickPortal() {
-		if (this.getWorld() instanceof ServerWorld) {
-			int i = this.getMaxNetherPortalTime();
-			ServerWorld serverWorld = (ServerWorld)this.getWorld();
-			if (this.inNetherPortal) {
-				MinecraftServer minecraftServer = serverWorld.getServer();
-				RegistryKey<World> registryKey = this.getWorld().getRegistryKey() == World.NETHER ? World.OVERWORLD : World.NETHER;
-				ServerWorld serverWorld2 = minecraftServer.getWorld(registryKey);
-				if (serverWorld2 != null && minecraftServer.isNetherAllowed() && !this.hasVehicle() && this.netherPortalTime++ >= i) {
-					this.getWorld().getProfiler().push("portal");
-					this.netherPortalTime = i;
+	protected void method_60698() {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			this.tickPortalCooldown();
+			if (this.field_51994 != null) {
+				if (this.field_51994.method_60702(serverWorld, this, this.canUsePortals())) {
+					serverWorld.getProfiler().push("portal");
 					this.resetPortalCooldown();
-					this.moveToWorld(() -> this.getTeleportTarget(serverWorld2));
-					this.getWorld().getProfiler().pop();
-				}
+					TeleportTarget teleportTarget = this.field_51994.method_60701(serverWorld, this);
+					if (teleportTarget != null && serverWorld.getServer().method_60671(teleportTarget.newLevel())) {
+						Entity entity = this.moveToWorld(teleportTarget);
+						if (entity != null && entity.getWorld() instanceof ServerWorld serverWorld2) {
+							BlockPos blockPos = BlockPos.ofFloored(entity.pos);
+							serverWorld2.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);
+						}
+					}
 
-				this.inNetherPortal = false;
-			} else {
-				if (this.netherPortalTime > 0) {
-					this.netherPortalTime -= 4;
-				}
-
-				if (this.netherPortalTime < 0) {
-					this.netherPortalTime = 0;
+					serverWorld.getProfiler().pop();
+				} else if (this.field_51994.method_60706()) {
+					this.field_51994 = null;
 				}
 			}
-
-			this.tickPortalCooldown();
 		}
 	}
 
@@ -2958,7 +2941,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * @see #resetPortalCooldown
 	 */
 	public int getDefaultPortalCooldown() {
-		return 300;
+		Entity entity = this.getFirstPassenger();
+		return entity instanceof ServerPlayerEntity ? entity.getDefaultPortalCooldown() : 300;
 	}
 
 	public void setVelocityClient(double x, double y, double z) {
@@ -3809,7 +3793,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		nbtCompound.remove("Dimension");
 		this.readNbt(nbtCompound);
 		this.portalCooldown = original.portalCooldown;
-		this.lastNetherPortalPosition = original.lastNetherPortalPosition;
+		this.field_51994 = original.field_51994;
 	}
 
 	/**
@@ -3820,38 +3804,43 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * @return the entity in the other world
 	 */
 	@Nullable
-	public Entity moveToWorld(Entity.TeleportTargetSupplier teleportTargetSupplier) {
-		if (this.getWorld() instanceof ServerWorld && !this.isRemoved()) {
-			TeleportTarget teleportTarget = teleportTargetSupplier.get();
-			if (teleportTarget == null) {
-				return null;
-			} else {
-				ServerWorld serverWorld = teleportTarget.newDimension();
-				this.getWorld().getProfiler().push("changeDimension");
-				this.detach();
-				this.getWorld().getProfiler().push("reposition");
-				this.getWorld().getProfiler().swap("reloading");
-				Entity entity = this.getType().create(serverWorld);
-				if (entity != null) {
-					entity.copyFrom(this);
-					entity.refreshPositionAndAngles(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z, teleportTarget.yaw(), entity.getPitch());
-					entity.setVelocity(teleportTarget.velocity());
-					serverWorld.onDimensionChanged(entity);
-					if (serverWorld.getRegistryKey() == World.END) {
-						ServerWorld.createEndSpawnPlatform(serverWorld);
-					}
+	public Entity moveToWorld(TeleportTarget teleportTarget) {
+		if (this.getWorld() instanceof ServerWorld serverWorld && !this.isRemoved()) {
+			ServerWorld serverWorld2 = teleportTarget.newLevel();
+			List<Entity> list = this.getPassengerList();
+			this.detach();
+			List<Entity> list2 = new ArrayList();
+
+			for (Entity entity : list) {
+				list2.add(entity.moveToWorld(teleportTarget));
+			}
+
+			serverWorld.getProfiler().push("changeDimension");
+			Entity entity2 = serverWorld2.getRegistryKey() == serverWorld.getRegistryKey() ? this : this.getType().create(serverWorld2);
+			if (entity2 != null) {
+				if (this != entity2) {
+					entity2.copyFrom(this);
+					this.removeFromDimension();
 				}
 
-				this.removeFromDimension();
-				this.getWorld().getProfiler().pop();
-				((ServerWorld)this.getWorld()).resetIdleTimeout();
-				serverWorld.resetIdleTimeout();
-				this.getWorld().getProfiler().pop();
-				return entity;
+				entity2.refreshPositionAndAngles(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z, teleportTarget.yaw(), entity2.getPitch());
+				entity2.setVelocity(teleportTarget.velocity());
+				if (this != entity2) {
+					serverWorld2.onDimensionChanged(entity2);
+				}
+
+				for (Entity entity3 : list2) {
+					entity3.startRiding(entity2, true);
+				}
 			}
-		} else {
-			return null;
+
+			serverWorld.resetIdleTimeout();
+			serverWorld2.resetIdleTimeout();
+			serverWorld.getProfiler().pop();
+			return entity2;
 		}
+
+		return null;
 	}
 
 	/**
@@ -3868,75 +3857,12 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	}
 
 	/**
-	 * {@return a {@link TeleportTarget} for the entity based on its current and
-	 * destination worlds, plus any nether portals that may be present}
-	 */
-	@Nullable
-	public TeleportTarget getTeleportTarget(ServerWorld destination) {
-		boolean bl = this.getWorld().getRegistryKey() == World.END && destination.getRegistryKey() == World.OVERWORLD;
-		boolean bl2 = destination.getRegistryKey() == World.END;
-		if (!bl && !bl2) {
-			boolean bl3 = destination.getRegistryKey() == World.NETHER;
-			if (this.getWorld().getRegistryKey() != World.NETHER && !bl3) {
-				return null;
-			} else {
-				WorldBorder worldBorder = destination.getWorldBorder();
-				double d = DimensionType.getCoordinateScaleFactor(this.getWorld().getDimension(), destination.getDimension());
-				BlockPos blockPos2 = worldBorder.clamp(this.getX() * d, this.getY(), this.getZ() * d);
-				return (TeleportTarget)this.getPortalRect(destination, blockPos2, bl3, worldBorder)
-					.map(
-						rect -> {
-							BlockState blockState = this.getWorld().getBlockState(this.lastNetherPortalPosition);
-							Direction.Axis axis;
-							Vec3d vec3d;
-							if (blockState.contains(Properties.HORIZONTAL_AXIS)) {
-								axis = blockState.get(Properties.HORIZONTAL_AXIS);
-								BlockLocating.Rectangle rectangle = BlockLocating.getLargestRectangle(
-									this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, pos -> this.getWorld().getBlockState(pos) == blockState
-								);
-								vec3d = this.positionInPortal(axis, rectangle);
-							} else {
-								axis = Direction.Axis.X;
-								vec3d = new Vec3d(0.5, 0.0, 0.0);
-							}
-
-							return NetherPortal.getNetherTeleportTarget(destination, rect, axis, vec3d, this, this.getVelocity(), this.getYaw(), this.getPitch());
-						}
-					)
-					.orElse(null);
-			}
-		} else {
-			BlockPos blockPos = bl2 ? ServerWorld.END_SPAWN_POS : destination.getSpawnPos();
-			destination.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);
-			int i;
-			if (bl2) {
-				i = blockPos.getY();
-			} else {
-				i = destination.getWorldChunk(blockPos).sampleHeightmap(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos.getX(), blockPos.getZ()) + 1;
-			}
-
-			return new TeleportTarget(
-				destination, new Vec3d((double)blockPos.getX() + 0.5, (double)i, (double)blockPos.getZ() + 0.5), this.getVelocity(), this.getYaw(), this.getPitch()
-			);
-		}
-	}
-
-	/**
 	 * {@return the entity's position in the portal after teleportation}
 	 * 
 	 * @see net.minecraft.world.dimension.NetherPortal#entityPosInPortal
 	 */
-	protected Vec3d positionInPortal(Direction.Axis portalAxis, BlockLocating.Rectangle portalRect) {
+	public Vec3d positionInPortal(Direction.Axis portalAxis, BlockLocating.Rectangle portalRect) {
 		return NetherPortal.entityPosInPortal(portalRect, portalAxis, this.getPos(), this.getDimensions(this.getPose()));
-	}
-
-	/**
-	 * {@return the portal rect at {@code destPos}}
-	 * 
-	 * @see net.minecraft.world.PortalForcer#getPortalRect
-	 */
-	protected Optional<BlockLocating.Rectangle> getPortalRect(ServerWorld destWorld, BlockPos destPos, boolean destIsNether, WorldBorder worldBorder) {
-		return destWorld.getPortalForcer().getPortalRect(destPos, destIsNether, worldBorder);
 	}
 
 	/**
@@ -3947,7 +3873,9 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * net.minecraft.entity.projectile.FishingBobberEntity} cannot use portals.
 	 */
 	public boolean canUsePortals() {
-		return !this.hasVehicle() && !this.hasPassengers();
+		return !this.hasVehicle()
+			&& this.isAlive()
+			&& (!this.hasPassengers() || this.world.getGameRules().get(GameRules.ENTITIES_WITH_PASSENGERS_CAN_USE_PORTALS).get());
 	}
 
 	/**
@@ -4130,24 +4058,6 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 */
 	public boolean isCustomNameVisible() {
 		return this.dataTracker.get(NAME_VISIBLE);
-	}
-
-	/**
-	 * Teleports the entity to the given position, loading the chunk with
-	 * {@link net.minecraft.server.world.ChunkTicketType#POST_TELEPORT}.
-	 * 
-	 * @see #requestTeleportAndDismount
-	 * @see #requestTeleport
-	 * @see #teleport(ServerWorld, double, double, double, Set, float, float)
-	 * @see #refreshPositionAndAngles(double, double, double, float, float)
-	 */
-	public final void teleport(double destX, double destY, double destZ) {
-		if (this.getWorld() instanceof ServerWorld) {
-			ChunkPos chunkPos = new ChunkPos(BlockPos.ofFloored(destX, destY, destZ));
-			((ServerWorld)this.getWorld()).getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getId());
-			this.getWorld().getChunk(chunkPos.x, chunkPos.z);
-			this.requestTeleport(destX, destY, destZ);
-		}
 	}
 
 	/**
@@ -4544,10 +4454,6 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 */
 	public final List<Entity> getPassengerList() {
 		return this.passengerList;
-	}
-
-	public Optional<Entity> getPassengerNearestTo(Vec3d pos) {
-		return this.getPassengerList().stream().filter(entity -> entity != this).min(Comparator.comparingDouble(entity -> pos.squaredDistanceTo(entity.getPos())));
 	}
 
 	/**
@@ -5407,6 +5313,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	}
 
 	public Vec3d getMovement() {
+		if (this.getControllingPassenger() instanceof PlayerEntity playerEntity && this.isAlive()) {
+			return playerEntity.getMovement();
+		}
+
 		return this.getVelocity();
 	}
 
@@ -5511,11 +5421,5 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		public boolean shouldSave() {
 			return this.save;
 		}
-	}
-
-	@FunctionalInterface
-	public interface TeleportTargetSupplier {
-		@Nullable
-		TeleportTarget get();
 	}
 }

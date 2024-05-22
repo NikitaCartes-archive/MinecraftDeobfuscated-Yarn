@@ -20,7 +20,6 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.ai.control.FlightMoveControl;
-import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FlyGoal;
 import net.minecraft.entity.ai.goal.FollowMobGoal;
 import net.minecraft.entity.ai.goal.FollowOwnerGoal;
@@ -147,11 +146,11 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 
 	@Override
 	protected void initGoals() {
-		this.goalSelector.add(0, new EscapeDangerGoal(this, 1.25));
+		this.goalSelector.add(0, new TameableEntity.class_9788(1.25));
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(2, new SitGoal(this));
-		this.goalSelector.add(2, new FollowOwnerGoal(this, 1.0, 5.0F, 1.0F, true));
+		this.goalSelector.add(2, new FollowOwnerGoal(this, 1.0, 5.0F, 1.0F));
 		this.goalSelector.add(2, new ParrotEntity.FlyOntoTreeGoal(this, 1.0));
 		this.goalSelector.add(3, new SitOnOwnerShoulderGoal(this));
 		this.goalSelector.add(3, new FollowMobGoal(this, 1.0, 3.0F, 7.0F));
@@ -424,6 +423,11 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 	@Override
 	public boolean isInAir() {
 		return !this.isOnGround();
+	}
+
+	@Override
+	protected boolean method_60716() {
+		return true;
 	}
 
 	@Override

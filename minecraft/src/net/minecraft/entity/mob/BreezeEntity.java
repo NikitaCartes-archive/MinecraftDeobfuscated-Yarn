@@ -21,7 +21,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -70,7 +70,7 @@ public class BreezeEntity extends HostileEntity {
 
 	@Override
 	protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
-		return BreezeBrain.create(this.createBrainProfile().deserialize(dynamic));
+		return BreezeBrain.create(this, this.createBrainProfile().deserialize(dynamic));
 	}
 
 	@Override
@@ -184,9 +184,11 @@ public class BreezeEntity extends HostileEntity {
 
 	@Override
 	public ProjectileDeflection getProjectileDeflection(ProjectileEntity projectile) {
-		return projectile.getType() != EntityType.BREEZE_WIND_CHARGE && projectile.getType() != EntityType.WIND_CHARGE
-			? PROJECTILE_DEFLECTOR
-			: ProjectileDeflection.NONE;
+		if (projectile.getType() != EntityType.BREEZE_WIND_CHARGE && projectile.getType() != EntityType.WIND_CHARGE) {
+			return this.getType().isIn(EntityTypeTags.DEFLECTS_PROJECTILES) ? PROJECTILE_DEFLECTOR : ProjectileDeflection.NONE;
+		} else {
+			return ProjectileDeflection.NONE;
+		}
 	}
 
 	@Override
@@ -260,7 +262,7 @@ public class BreezeEntity extends HostileEntity {
 
 	@Override
 	public boolean isInvulnerableTo(DamageSource damageSource) {
-		return damageSource.isIn(DamageTypeTags.BREEZE_IMMUNE_TO) || damageSource.getAttacker() instanceof BreezeEntity || super.isInvulnerableTo(damageSource);
+		return damageSource.getAttacker() instanceof BreezeEntity || super.isInvulnerableTo(damageSource);
 	}
 
 	@Override

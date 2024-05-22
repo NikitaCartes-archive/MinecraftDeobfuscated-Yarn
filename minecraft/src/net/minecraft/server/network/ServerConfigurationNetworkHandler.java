@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.annotation.Nullable;
+import net.minecraft.class_9782;
+import net.minecraft.class_9812;
+import net.minecraft.class_9815;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.RegistryByteBuf;
@@ -53,9 +56,9 @@ public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandle
 	}
 
 	@Override
-	public void onDisconnected(Text reason) {
-		LOGGER.info("{} lost connection: {}", this.profile, reason.getString());
-		super.onDisconnected(reason);
+	public void onDisconnected(class_9812 arg) {
+		LOGGER.info("{} lost connection: {}", this.profile, arg.reason().getString());
+		super.onDisconnected(arg);
 	}
 
 	@Override
@@ -65,6 +68,11 @@ public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandle
 
 	public void sendConfigurations() {
 		this.sendPacket(new CustomPayloadS2CPacket(new BrandCustomPayload(this.server.getServerModName())));
+		class_9782 lv = this.server.method_60672();
+		if (!lv.method_60657()) {
+			this.sendPacket(new class_9815(lv));
+		}
+
 		CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries = this.server.getCombinedDynamicRegistries();
 		List<VersionedIdentifier> list = this.server.getResourceManager().streamResourcePacks().flatMap(pack -> pack.getInfo().knownPackInfo().stream()).toList();
 		this.sendPacket(new FeaturesS2CPacket(FeatureFlags.FEATURE_MANAGER.toId(this.server.getSaveProperties().getEnabledFeatures())));

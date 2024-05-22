@@ -135,9 +135,17 @@ public class TridentEntity extends PersistentProjectileEntity {
 	}
 
 	@Override
-	protected void onBlockHitEnchantmentEffects(ServerWorld world, BlockHitResult blockHitResult, ItemStack shotFromStack) {
+	protected void onBlockHitEnchantmentEffects(ServerWorld serverWorld, BlockHitResult blockHitResult, ItemStack shotFromStack) {
+		Vec3d vec3d = blockHitResult.getBlockPos().method_60913(blockHitResult.getPos());
 		EnchantmentHelper.onHitBlock(
-			world, shotFromStack, this.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null, this, null, blockHitResult.getPos(), item -> this.kill()
+			serverWorld,
+			shotFromStack,
+			this.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null,
+			this,
+			null,
+			vec3d,
+			serverWorld.getBlockState(blockHitResult.getBlockPos()),
+			item -> this.kill()
 		);
 	}
 

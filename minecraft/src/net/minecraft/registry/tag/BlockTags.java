@@ -188,11 +188,12 @@ public final class BlockTags {
 	public static final TagKey<Block> BLOCKS_WIND_CHARGE_EXPLOSIONS = of("blocks_wind_charge_explosions");
 	public static final TagKey<Block> DOES_NOT_BLOCK_HOPPERS = of("does_not_block_hoppers");
 	public static final TagKey<Block> FIRE_ASPECT_LIGHTABLE = of("fire_aspect_lightable");
+	public static final TagKey<Block> AIR = of("air");
 
 	private BlockTags() {
 	}
 
 	private static TagKey<Block> of(String id) {
-		return TagKey.of(RegistryKeys.BLOCK, new Identifier(id));
+		return TagKey.of(RegistryKeys.BLOCK, Identifier.method_60656(id));
 	}
 }

@@ -33,6 +33,7 @@ import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -228,7 +229,7 @@ public class ArmadilloBrain {
 
 	public static class UnrollAndFleeTask extends FleeTask<ArmadilloEntity> {
 		public UnrollAndFleeTask(float f) {
-			super(f, ArmadilloEntity::shouldUnrollAndFlee);
+			super(f, pathAwareEntity -> DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES);
 		}
 
 		protected void run(ServerWorld serverWorld, ArmadilloEntity armadilloEntity, long l) {

@@ -20,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
 public abstract class PressableWidget extends ClickableWidget {
 	protected static final int field_43050 = 2;
 	private static final ButtonTextures TEXTURES = new ButtonTextures(
-		new Identifier("widget/button"), new Identifier("widget/button_disabled"), new Identifier("widget/button_highlighted")
+		Identifier.method_60656("widget/button"), Identifier.method_60656("widget/button_disabled"), Identifier.method_60656("widget/button_highlighted")
 	);
 
 	public PressableWidget(int i, int j, int k, int l, Text text) {

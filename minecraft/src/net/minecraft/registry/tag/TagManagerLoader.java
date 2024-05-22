@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
@@ -25,10 +26,6 @@ public class TagManagerLoader implements ResourceReloader {
 
 	public List<TagManagerLoader.RegistryTags<?>> getRegistryTags() {
 		return this.registryTags;
-	}
-
-	public static String getPath(RegistryKey<? extends Registry<?>> registry) {
-		return "tags/" + registry.getValue().getPath();
 	}
 
 	@Override
@@ -57,7 +54,7 @@ public class TagManagerLoader implements ResourceReloader {
 	) {
 		RegistryKey<? extends Registry<T>> registryKey = requirement.key();
 		Registry<T> registry = requirement.value();
-		TagGroupLoader<RegistryEntry<T>> tagGroupLoader = new TagGroupLoader<>(registry::getEntry, getPath(registryKey));
+		TagGroupLoader<RegistryEntry<T>> tagGroupLoader = new TagGroupLoader<>(registry::getEntry, RegistryKeys.method_60916(registryKey));
 		return CompletableFuture.supplyAsync(() -> new TagManagerLoader.RegistryTags<>(registryKey, tagGroupLoader.load(resourceManager)), prepareExecutor);
 	}
 

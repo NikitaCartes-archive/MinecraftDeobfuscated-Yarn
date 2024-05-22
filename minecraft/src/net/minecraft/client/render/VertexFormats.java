@@ -1,6 +1,5 @@
 package net.minecraft.client.render;
 
-import com.google.common.collect.ImmutableMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -9,97 +8,72 @@ import net.fabricmc.api.Environment;
  */
 @Environment(EnvType.CLIENT)
 public class VertexFormats {
-	public static final VertexFormatElement POSITION_ELEMENT = new VertexFormatElement(
-		0, VertexFormatElement.ComponentType.FLOAT, VertexFormatElement.Type.POSITION, 3
-	);
-	public static final VertexFormatElement COLOR_ELEMENT = new VertexFormatElement(0, VertexFormatElement.ComponentType.UBYTE, VertexFormatElement.Type.COLOR, 4);
-	public static final VertexFormatElement TEXTURE_ELEMENT = new VertexFormatElement(0, VertexFormatElement.ComponentType.FLOAT, VertexFormatElement.Type.UV, 2);
-	public static final VertexFormatElement OVERLAY_ELEMENT = new VertexFormatElement(1, VertexFormatElement.ComponentType.SHORT, VertexFormatElement.Type.UV, 2);
-	public static final VertexFormatElement LIGHT_ELEMENT = new VertexFormatElement(2, VertexFormatElement.ComponentType.SHORT, VertexFormatElement.Type.UV, 2);
-	public static final VertexFormatElement NORMAL_ELEMENT = new VertexFormatElement(0, VertexFormatElement.ComponentType.BYTE, VertexFormatElement.Type.NORMAL, 3);
-	public static final VertexFormatElement PADDING_ELEMENT = new VertexFormatElement(
-		0, VertexFormatElement.ComponentType.BYTE, VertexFormatElement.Type.PADDING, 1
-	);
-	public static final VertexFormatElement UV_ELEMENT = TEXTURE_ELEMENT;
-	public static final VertexFormat BLIT_SCREEN = new VertexFormat(
-		ImmutableMap.<String, VertexFormatElement>builder().put("Position", POSITION_ELEMENT).put("UV", UV_ELEMENT).put("Color", COLOR_ELEMENT).build()
-	);
-	public static final VertexFormat POSITION_COLOR_TEXTURE_LIGHT_NORMAL = new VertexFormat(
-		ImmutableMap.<String, VertexFormatElement>builder()
-			.put("Position", POSITION_ELEMENT)
-			.put("Color", COLOR_ELEMENT)
-			.put("UV0", TEXTURE_ELEMENT)
-			.put("UV2", LIGHT_ELEMENT)
-			.put("Normal", NORMAL_ELEMENT)
-			.put("Padding", PADDING_ELEMENT)
-			.build()
-	);
-	public static final VertexFormat POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL = new VertexFormat(
-		ImmutableMap.<String, VertexFormatElement>builder()
-			.put("Position", POSITION_ELEMENT)
-			.put("Color", COLOR_ELEMENT)
-			.put("UV0", TEXTURE_ELEMENT)
-			.put("UV1", OVERLAY_ELEMENT)
-			.put("UV2", LIGHT_ELEMENT)
-			.put("Normal", NORMAL_ELEMENT)
-			.put("Padding", PADDING_ELEMENT)
-			.build()
-	);
-	public static final VertexFormat POSITION_TEXTURE_COLOR_LIGHT = new VertexFormat(
-		ImmutableMap.<String, VertexFormatElement>builder()
-			.put("Position", POSITION_ELEMENT)
-			.put("UV0", TEXTURE_ELEMENT)
-			.put("Color", COLOR_ELEMENT)
-			.put("UV2", LIGHT_ELEMENT)
-			.build()
-	);
-	public static final VertexFormat POSITION = new VertexFormat(ImmutableMap.<String, VertexFormatElement>builder().put("Position", POSITION_ELEMENT).build());
-	public static final VertexFormat POSITION_COLOR = new VertexFormat(
-		ImmutableMap.<String, VertexFormatElement>builder().put("Position", POSITION_ELEMENT).put("Color", COLOR_ELEMENT).build()
-	);
-	public static final VertexFormat LINES = new VertexFormat(
-		ImmutableMap.<String, VertexFormatElement>builder()
-			.put("Position", POSITION_ELEMENT)
-			.put("Color", COLOR_ELEMENT)
-			.put("Normal", NORMAL_ELEMENT)
-			.put("Padding", PADDING_ELEMENT)
-			.build()
-	);
-	public static final VertexFormat POSITION_COLOR_LIGHT = new VertexFormat(
-		ImmutableMap.<String, VertexFormatElement>builder().put("Position", POSITION_ELEMENT).put("Color", COLOR_ELEMENT).put("UV2", LIGHT_ELEMENT).build()
-	);
-	public static final VertexFormat POSITION_TEXTURE = new VertexFormat(
-		ImmutableMap.<String, VertexFormatElement>builder().put("Position", POSITION_ELEMENT).put("UV0", TEXTURE_ELEMENT).build()
-	);
-	public static final VertexFormat POSITION_COLOR_TEXTURE = new VertexFormat(
-		ImmutableMap.<String, VertexFormatElement>builder().put("Position", POSITION_ELEMENT).put("Color", COLOR_ELEMENT).put("UV0", TEXTURE_ELEMENT).build()
-	);
-	public static final VertexFormat POSITION_TEXTURE_COLOR = new VertexFormat(
-		ImmutableMap.<String, VertexFormatElement>builder().put("Position", POSITION_ELEMENT).put("UV0", TEXTURE_ELEMENT).put("Color", COLOR_ELEMENT).build()
-	);
-	public static final VertexFormat POSITION_COLOR_TEXTURE_LIGHT = new VertexFormat(
-		ImmutableMap.<String, VertexFormatElement>builder()
-			.put("Position", POSITION_ELEMENT)
-			.put("Color", COLOR_ELEMENT)
-			.put("UV0", TEXTURE_ELEMENT)
-			.put("UV2", LIGHT_ELEMENT)
-			.build()
-	);
-	public static final VertexFormat POSITION_TEXTURE_LIGHT_COLOR = new VertexFormat(
-		ImmutableMap.<String, VertexFormatElement>builder()
-			.put("Position", POSITION_ELEMENT)
-			.put("UV0", TEXTURE_ELEMENT)
-			.put("UV2", LIGHT_ELEMENT)
-			.put("Color", COLOR_ELEMENT)
-			.build()
-	);
-	public static final VertexFormat POSITION_TEXTURE_COLOR_NORMAL = new VertexFormat(
-		ImmutableMap.<String, VertexFormatElement>builder()
-			.put("Position", POSITION_ELEMENT)
-			.put("UV0", TEXTURE_ELEMENT)
-			.put("Color", COLOR_ELEMENT)
-			.put("Normal", NORMAL_ELEMENT)
-			.put("Padding", PADDING_ELEMENT)
-			.build()
-	);
+	public static final VertexFormat BLIT_SCREEN = VertexFormat.method_60833().method_60842("Position", VertexFormatElement.field_52107).method_60840();
+	public static final VertexFormat POSITION_COLOR_TEXTURE_LIGHT_NORMAL = VertexFormat.method_60833()
+		.method_60842("Position", VertexFormatElement.field_52107)
+		.method_60842("Color", VertexFormatElement.field_52108)
+		.method_60842("UV0", VertexFormatElement.field_52109)
+		.method_60842("UV2", VertexFormatElement.field_52112)
+		.method_60842("Normal", VertexFormatElement.field_52113)
+		.method_60841(1)
+		.method_60840();
+	public static final VertexFormat POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL = VertexFormat.method_60833()
+		.method_60842("Position", VertexFormatElement.field_52107)
+		.method_60842("Color", VertexFormatElement.field_52108)
+		.method_60842("UV0", VertexFormatElement.field_52109)
+		.method_60842("UV1", VertexFormatElement.field_52111)
+		.method_60842("UV2", VertexFormatElement.field_52112)
+		.method_60842("Normal", VertexFormatElement.field_52113)
+		.method_60841(1)
+		.method_60840();
+	public static final VertexFormat POSITION_TEXTURE_COLOR_LIGHT = VertexFormat.method_60833()
+		.method_60842("Position", VertexFormatElement.field_52107)
+		.method_60842("UV0", VertexFormatElement.field_52109)
+		.method_60842("Color", VertexFormatElement.field_52108)
+		.method_60842("UV2", VertexFormatElement.field_52112)
+		.method_60840();
+	public static final VertexFormat POSITION = VertexFormat.method_60833().method_60842("Position", VertexFormatElement.field_52107).method_60840();
+	public static final VertexFormat POSITION_COLOR = VertexFormat.method_60833()
+		.method_60842("Position", VertexFormatElement.field_52107)
+		.method_60842("Color", VertexFormatElement.field_52108)
+		.method_60840();
+	public static final VertexFormat LINES = VertexFormat.method_60833()
+		.method_60842("Position", VertexFormatElement.field_52107)
+		.method_60842("Color", VertexFormatElement.field_52108)
+		.method_60842("Normal", VertexFormatElement.field_52113)
+		.method_60841(1)
+		.method_60840();
+	public static final VertexFormat POSITION_COLOR_LIGHT = VertexFormat.method_60833()
+		.method_60842("Position", VertexFormatElement.field_52107)
+		.method_60842("Color", VertexFormatElement.field_52108)
+		.method_60842("UV2", VertexFormatElement.field_52112)
+		.method_60840();
+	public static final VertexFormat POSITION_TEXTURE = VertexFormat.method_60833()
+		.method_60842("Position", VertexFormatElement.field_52107)
+		.method_60842("UV0", VertexFormatElement.field_52109)
+		.method_60840();
+	public static final VertexFormat POSITION_TEXTURE_COLOR = VertexFormat.method_60833()
+		.method_60842("Position", VertexFormatElement.field_52107)
+		.method_60842("UV0", VertexFormatElement.field_52109)
+		.method_60842("Color", VertexFormatElement.field_52108)
+		.method_60840();
+	public static final VertexFormat POSITION_COLOR_TEXTURE_LIGHT = VertexFormat.method_60833()
+		.method_60842("Position", VertexFormatElement.field_52107)
+		.method_60842("Color", VertexFormatElement.field_52108)
+		.method_60842("UV0", VertexFormatElement.field_52109)
+		.method_60842("UV2", VertexFormatElement.field_52112)
+		.method_60840();
+	public static final VertexFormat POSITION_TEXTURE_LIGHT_COLOR = VertexFormat.method_60833()
+		.method_60842("Position", VertexFormatElement.field_52107)
+		.method_60842("UV0", VertexFormatElement.field_52109)
+		.method_60842("UV2", VertexFormatElement.field_52112)
+		.method_60842("Color", VertexFormatElement.field_52108)
+		.method_60840();
+	public static final VertexFormat POSITION_TEXTURE_COLOR_NORMAL = VertexFormat.method_60833()
+		.method_60842("Position", VertexFormatElement.field_52107)
+		.method_60842("UV0", VertexFormatElement.field_52109)
+		.method_60842("Color", VertexFormatElement.field_52108)
+		.method_60842("Normal", VertexFormatElement.field_52113)
+		.method_60841(1)
+		.method_60840();
 }

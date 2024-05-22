@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ArmadilloEntityRenderer extends MobEntityRenderer<ArmadilloEntity, ArmadilloEntityModel> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/armadillo.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/armadillo.png");
 
 	public ArmadilloEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new ArmadilloEntityModel(context.getPart(EntityModelLayers.ARMADILLO)), 0.4F);

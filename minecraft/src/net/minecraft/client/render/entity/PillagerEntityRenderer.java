@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class PillagerEntityRenderer extends IllagerEntityRenderer<PillagerEntity> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/illager/pillager.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/illager/pillager.png");
 
 	public PillagerEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new IllagerEntityModel<>(context.getPart(EntityModelLayers.PILLAGER)), 0.5F);

@@ -11,6 +11,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.floatprovider.ConstantFloatProvider;
 import net.minecraft.util.math.floatprovider.FloatProvider;
@@ -36,8 +37,8 @@ public class SoundEntryDeserializer implements JsonDeserializer<SoundEntry> {
 			for (int i = 0; i < jsonArray.size(); i++) {
 				JsonElement jsonElement = jsonArray.get(i);
 				if (JsonHelper.isString(jsonElement)) {
-					String string = JsonHelper.asString(jsonElement, "sound");
-					list.add(new Sound(string, ONE, ONE, 1, Sound.RegistrationType.FILE, false, false, 16));
+					Identifier identifier = Identifier.method_60654(JsonHelper.asString(jsonElement, "sound"));
+					list.add(new Sound(identifier, ONE, ONE, 1, Sound.RegistrationType.FILE, false, false, 16));
 				} else {
 					list.add(this.deserializeSound(JsonHelper.asObject(jsonElement, "sound")));
 				}
@@ -48,7 +49,7 @@ public class SoundEntryDeserializer implements JsonDeserializer<SoundEntry> {
 	}
 
 	private Sound deserializeSound(JsonObject json) {
-		String string = JsonHelper.getString(json, "name");
+		Identifier identifier = Identifier.method_60654(JsonHelper.getString(json, "name"));
 		Sound.RegistrationType registrationType = this.deserializeType(json, Sound.RegistrationType.FILE);
 		float f = JsonHelper.getFloat(json, "volume", 1.0F);
 		Validate.isTrue(f > 0.0F, "Invalid volume");
@@ -59,7 +60,7 @@ public class SoundEntryDeserializer implements JsonDeserializer<SoundEntry> {
 		boolean bl = JsonHelper.getBoolean(json, "preload", false);
 		boolean bl2 = JsonHelper.getBoolean(json, "stream", false);
 		int j = JsonHelper.getInt(json, "attenuation_distance", 16);
-		return new Sound(string, ConstantFloatProvider.create(f), ConstantFloatProvider.create(g), i, registrationType, bl2, bl, j);
+		return new Sound(identifier, ConstantFloatProvider.create(f), ConstantFloatProvider.create(g), i, registrationType, bl2, bl, j);
 	}
 
 	private Sound.RegistrationType deserializeType(JsonObject json, Sound.RegistrationType fallback) {

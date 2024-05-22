@@ -8,9 +8,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Function;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
@@ -24,8 +22,8 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.Uuids;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.random.Random;
 
@@ -81,12 +79,9 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		Random random = context.getRandom();
 
 		for (SetAttributesLootFunction.Attribute attribute : this.attributes) {
-			UUID uUID = (UUID)attribute.id.orElseGet(UUID::randomUUID);
 			AttributeModifierSlot attributeModifierSlot = Util.getRandom(attribute.slots, random);
 			attributeModifiersComponent = attributeModifiersComponent.with(
-				attribute.attribute,
-				new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amount.nextFloat(context), attribute.operation),
-				attributeModifierSlot
+				attribute.attribute, new EntityAttributeModifier(attribute.id, (double)attribute.amount.nextFloat(context), attribute.operation), attributeModifierSlot
 			);
 		}
 
@@ -94,9 +89,9 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 	}
 
 	public static SetAttributesLootFunction.AttributeBuilder attributeBuilder(
-		String name, RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amountRange
+		Identifier identifier, RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amountRange
 	) {
-		return new SetAttributesLootFunction.AttributeBuilder(name, attribute, operation, amountRange);
+		return new SetAttributesLootFunction.AttributeBuilder(identifier, attribute, operation, amountRange);
 	}
 
 	public static SetAttributesLootFunction.Builder builder() {
@@ -104,12 +99,11 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 	}
 
 	static record Attribute(
-		String name,
+		Identifier id,
 		RegistryEntry<EntityAttribute> attribute,
 		EntityAttributeModifier.Operation operation,
 		LootNumberProvider amount,
-		List<AttributeModifierSlot> slots,
-		Optional<UUID> id
+		List<AttributeModifierSlot> slots
 	) {
 		private static final Codec<List<AttributeModifierSlot>> EQUIPMENT_SLOT_LIST_CODEC = Codecs.nonEmptyList(
 			Codec.either(AttributeModifierSlot.CODEC, AttributeModifierSlot.CODEC.listOf())
@@ -120,27 +114,27 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		);
 		public static final Codec<SetAttributesLootFunction.Attribute> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codec.STRING.fieldOf("name").forGetter(SetAttributesLootFunction.Attribute::name),
+						Identifier.CODEC.fieldOf("id").forGetter(SetAttributesLootFunction.Attribute::id),
 						EntityAttribute.CODEC.fieldOf("attribute").forGetter(SetAttributesLootFunction.Attribute::attribute),
 						EntityAttributeModifier.Operation.CODEC.fieldOf("operation").forGetter(SetAttributesLootFunction.Attribute::operation),
 						LootNumberProviderTypes.CODEC.fieldOf("amount").forGetter(SetAttributesLootFunction.Attribute::amount),
-						EQUIPMENT_SLOT_LIST_CODEC.fieldOf("slot").forGetter(SetAttributesLootFunction.Attribute::slots),
-						Uuids.STRING_CODEC.optionalFieldOf("id").forGetter(SetAttributesLootFunction.Attribute::id)
+						EQUIPMENT_SLOT_LIST_CODEC.fieldOf("slot").forGetter(SetAttributesLootFunction.Attribute::slots)
 					)
 					.apply(instance, SetAttributesLootFunction.Attribute::new)
 		);
 	}
 
 	public static class AttributeBuilder {
-		private final String name;
+		private final Identifier uuid;
 		private final RegistryEntry<EntityAttribute> attribute;
 		private final EntityAttributeModifier.Operation operation;
 		private final LootNumberProvider amount;
-		private Optional<UUID> uuid = Optional.empty();
 		private final Set<AttributeModifierSlot> slots = EnumSet.noneOf(AttributeModifierSlot.class);
 
-		public AttributeBuilder(String name, RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amount) {
-			this.name = name;
+		public AttributeBuilder(
+			Identifier identifier, RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amount
+		) {
+			this.uuid = identifier;
 			this.attribute = attribute;
 			this.operation = operation;
 			this.amount = amount;
@@ -151,13 +145,8 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 			return this;
 		}
 
-		public SetAttributesLootFunction.AttributeBuilder uuid(UUID uuid) {
-			this.uuid = Optional.of(uuid);
-			return this;
-		}
-
 		public SetAttributesLootFunction.Attribute build() {
-			return new SetAttributesLootFunction.Attribute(this.name, this.attribute, this.operation, this.amount, List.copyOf(this.slots), this.uuid);
+			return new SetAttributesLootFunction.Attribute(this.uuid, this.attribute, this.operation, this.amount, List.copyOf(this.slots));
 		}
 	}
 

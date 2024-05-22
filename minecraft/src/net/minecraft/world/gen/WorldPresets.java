@@ -44,7 +44,7 @@ public class WorldPresets {
 	}
 
 	private static RegistryKey<WorldPreset> of(String id) {
-		return RegistryKey.of(RegistryKeys.WORLD_PRESET, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.WORLD_PRESET, Identifier.method_60656(id));
 	}
 
 	public static Optional<RegistryKey<WorldPreset>> getWorldPreset(DimensionOptionsRegistryHolder registry) {

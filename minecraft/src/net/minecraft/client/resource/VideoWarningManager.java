@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class VideoWarningManager extends SinglePreparationResourceReloader<VideoWarningManager.WarningPatternLoader> {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Identifier GPU_WARNLIST_ID = new Identifier("gpu_warnlist.json");
+	private static final Identifier GPU_WARNLIST_ID = Identifier.method_60656("gpu_warnlist.json");
 	private ImmutableMap<String, String> warnings = ImmutableMap.of();
 	private boolean warningScheduled;
 	private boolean warned;

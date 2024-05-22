@@ -1,23 +1,28 @@
 package net.minecraft.client;
 
+import com.mojang.logging.LogUtils;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.navigation.GuiNavigationType;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.SmoothUtil;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWDropCallback;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class Mouse {
+	private static final Logger field_52126 = LogUtils.getLogger();
 	private final MinecraftClient client;
 	private boolean leftButtonClicked;
 	private boolean middleButtonClicked;
@@ -171,9 +176,13 @@ public class Mouse {
 		}
 	}
 
-	private void onFilesDropped(long window, List<Path> paths) {
+	private void onFilesDropped(long window, List<Path> paths, int i) {
 		if (this.client.currentScreen != null) {
 			this.client.currentScreen.filesDragged(paths);
+		}
+
+		if (i > 0) {
+			SystemToast.method_60865(this.client, i);
 		}
 	}
 
@@ -184,13 +193,24 @@ public class Mouse {
 			(windowx, button, action, modifiers) -> this.client.execute(() -> this.onMouseButton(windowx, button, action, modifiers)),
 			(windowx, offsetX, offsetY) -> this.client.execute(() -> this.onMouseScroll(windowx, offsetX, offsetY)),
 			(windowx, count, names) -> {
-				Path[] paths = new Path[count];
+				List<Path> list = new ArrayList(count);
+				int i = 0;
 
-				for (int i = 0; i < count; i++) {
-					paths[i] = Paths.get(GLFWDropCallback.getName(names, i));
+				for (int j = 0; j < count; j++) {
+					String string = GLFWDropCallback.getName(names, j);
+
+					try {
+						list.add(Paths.get(string));
+					} catch (InvalidPathException var11) {
+						i++;
+						field_52126.error("Failed to parse path '{}'", string, var11);
+					}
 				}
 
-				this.client.execute(() -> this.onFilesDropped(windowx, Arrays.asList(paths)));
+				if (!list.isEmpty()) {
+					int j = i;
+					this.client.execute(() -> this.onFilesDropped(windowx, list, j));
+				}
 			}
 		);
 	}

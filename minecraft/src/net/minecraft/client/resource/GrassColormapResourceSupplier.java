@@ -12,7 +12,7 @@ import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
 public class GrassColormapResourceSupplier extends SinglePreparationResourceReloader<int[]> {
-	private static final Identifier GRASS_COLORMAP_LOC = new Identifier("textures/colormap/grass.png");
+	private static final Identifier GRASS_COLORMAP_LOC = Identifier.method_60656("textures/colormap/grass.png");
 
 	protected int[] tryLoad(ResourceManager resourceManager, Profiler profiler) {
 		try {

@@ -21,9 +21,16 @@ public class Sound implements SoundContainer<Sound> {
 	private final int attenuation;
 
 	public Sound(
-		String id, FloatSupplier volume, FloatSupplier pitch, int weight, Sound.RegistrationType registrationType, boolean stream, boolean preload, int attenuation
+		Identifier identifier,
+		FloatSupplier volume,
+		FloatSupplier pitch,
+		int weight,
+		Sound.RegistrationType registrationType,
+		boolean stream,
+		boolean preload,
+		int attenuation
 	) {
-		this.id = new Identifier(id);
+		this.id = identifier;
 		this.volume = volume;
 		this.pitch = pitch;
 		this.weight = weight;

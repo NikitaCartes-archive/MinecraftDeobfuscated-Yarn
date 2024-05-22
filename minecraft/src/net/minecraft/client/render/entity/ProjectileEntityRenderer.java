@@ -8,6 +8,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
@@ -69,11 +70,10 @@ public abstract class ProjectileEntityRenderer<T extends PersistentProjectileEnt
 		MatrixStack.Entry matrix, VertexConsumer vertexConsumer, int x, int y, int z, float u, float v, int normalX, int normalZ, int normalY, int light
 	) {
 		vertexConsumer.vertex(matrix, (float)x, (float)y, (float)z)
-			.color(255, 255, 255, 255)
+			.color(Colors.WHITE)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.light(light)
-			.normal(matrix, (float)normalX, (float)normalY, (float)normalZ)
-			.next();
+			.method_60803(light)
+			.method_60831(matrix, (float)normalX, (float)normalY, (float)normalZ);
 	}
 }

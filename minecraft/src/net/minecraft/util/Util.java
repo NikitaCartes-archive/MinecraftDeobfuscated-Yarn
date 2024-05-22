@@ -75,6 +75,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9813;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.registry.Registry;
 import net.minecraft.state.property.Property;
@@ -310,7 +311,7 @@ public class Util {
 		}
 
 		if (t instanceof CrashException crashException) {
-			Bootstrap.println(crashException.getReport().asString());
+			Bootstrap.println(crashException.getReport().method_60920(class_9813.MINECRAFT_CRASH_REPORT));
 			System.exit(-1);
 		}
 

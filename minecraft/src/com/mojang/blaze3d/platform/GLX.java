@@ -13,11 +13,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.GlDebug;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.Window;
+import net.minecraft.util.Colors;
 import net.minecraft.util.annotation.DeobfuscateClass;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFW;
@@ -112,51 +114,52 @@ public class GLX {
 	}
 
 	public static void _renderCrosshair(int size, boolean drawX, boolean drawY, boolean drawZ) {
-		RenderSystem.assertOnRenderThread();
-		GlStateManager._depthMask(false);
-		GlStateManager._disableCull();
-		RenderSystem.setShader(GameRenderer::getRenderTypeLinesProgram);
-		Tessellator tessellator = RenderSystem.renderThreadTesselator();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		RenderSystem.lineWidth(4.0F);
-		bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.LINES);
-		if (drawX) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).normal(1.0F, 0.0F, 0.0F).next();
-			bufferBuilder.vertex((double)size, 0.0, 0.0).color(0, 0, 0, 255).normal(1.0F, 0.0F, 0.0F).next();
-		}
+		if (drawX || drawY || drawZ) {
+			RenderSystem.assertOnRenderThread();
+			GlStateManager._depthMask(false);
+			GlStateManager._disableCull();
+			RenderSystem.setShader(GameRenderer::getRenderTypeLinesProgram);
+			Tessellator tessellator = RenderSystem.renderThreadTesselator();
+			BufferBuilder bufferBuilder = tessellator.method_60827(VertexFormat.DrawMode.LINES, VertexFormats.LINES);
+			RenderSystem.lineWidth(4.0F);
+			if (drawX) {
+				bufferBuilder.vertex(0.0F, 0.0F, 0.0F).color(Colors.BLACK).normal(1.0F, 0.0F, 0.0F);
+				bufferBuilder.vertex((float)size, 0.0F, 0.0F).color(Colors.BLACK).normal(1.0F, 0.0F, 0.0F);
+			}
 
-		if (drawY) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).normal(0.0F, 1.0F, 0.0F).next();
-			bufferBuilder.vertex(0.0, (double)size, 0.0).color(0, 0, 0, 255).normal(0.0F, 1.0F, 0.0F).next();
-		}
+			if (drawY) {
+				bufferBuilder.vertex(0.0F, 0.0F, 0.0F).color(Colors.BLACK).normal(0.0F, 1.0F, 0.0F);
+				bufferBuilder.vertex(0.0F, (float)size, 0.0F).color(Colors.BLACK).normal(0.0F, 1.0F, 0.0F);
+			}
 
-		if (drawZ) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).normal(0.0F, 0.0F, 1.0F).next();
-			bufferBuilder.vertex(0.0, 0.0, (double)size).color(0, 0, 0, 255).normal(0.0F, 0.0F, 1.0F).next();
-		}
+			if (drawZ) {
+				bufferBuilder.vertex(0.0F, 0.0F, 0.0F).color(Colors.BLACK).normal(0.0F, 0.0F, 1.0F);
+				bufferBuilder.vertex(0.0F, 0.0F, (float)size).color(Colors.BLACK).normal(0.0F, 0.0F, 1.0F);
+			}
 
-		tessellator.draw();
-		RenderSystem.lineWidth(2.0F);
-		bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.LINES);
-		if (drawX) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(255, 0, 0, 255).normal(1.0F, 0.0F, 0.0F).next();
-			bufferBuilder.vertex((double)size, 0.0, 0.0).color(255, 0, 0, 255).normal(1.0F, 0.0F, 0.0F).next();
-		}
+			BufferRenderer.drawWithGlobalProgram(bufferBuilder.method_60800());
+			RenderSystem.lineWidth(2.0F);
+			bufferBuilder = tessellator.method_60827(VertexFormat.DrawMode.LINES, VertexFormats.LINES);
+			if (drawX) {
+				bufferBuilder.vertex(0.0F, 0.0F, 0.0F).color(Colors.RED).normal(1.0F, 0.0F, 0.0F);
+				bufferBuilder.vertex((float)size, 0.0F, 0.0F).color(Colors.RED).normal(1.0F, 0.0F, 0.0F);
+			}
 
-		if (drawY) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 255, 0, 255).normal(0.0F, 1.0F, 0.0F).next();
-			bufferBuilder.vertex(0.0, (double)size, 0.0).color(0, 255, 0, 255).normal(0.0F, 1.0F, 0.0F).next();
-		}
+			if (drawY) {
+				bufferBuilder.vertex(0.0F, 0.0F, 0.0F).color(-16711936).normal(0.0F, 1.0F, 0.0F);
+				bufferBuilder.vertex(0.0F, (float)size, 0.0F).color(-16711936).normal(0.0F, 1.0F, 0.0F);
+			}
 
-		if (drawZ) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(127, 127, 255, 255).normal(0.0F, 0.0F, 1.0F).next();
-			bufferBuilder.vertex(0.0, 0.0, (double)size).color(127, 127, 255, 255).normal(0.0F, 0.0F, 1.0F).next();
-		}
+			if (drawZ) {
+				bufferBuilder.vertex(0.0F, 0.0F, 0.0F).color(-8421377).normal(0.0F, 0.0F, 1.0F);
+				bufferBuilder.vertex(0.0F, 0.0F, (float)size).color(-8421377).normal(0.0F, 0.0F, 1.0F);
+			}
 
-		tessellator.draw();
-		RenderSystem.lineWidth(1.0F);
-		GlStateManager._enableCull();
-		GlStateManager._depthMask(true);
+			BufferRenderer.drawWithGlobalProgram(bufferBuilder.method_60800());
+			RenderSystem.lineWidth(1.0F);
+			GlStateManager._enableCull();
+			GlStateManager._depthMask(true);
+		}
 	}
 
 	public static <T> T make(Supplier<T> factory) {

@@ -103,7 +103,7 @@ public class OminousItemSpawnerEntity extends Entity {
 			? (ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("item")).orElse(ItemStack.EMPTY)
 			: ItemStack.EMPTY;
 		this.setItem(itemStack);
-		nbt.getLong("spawn_item_after_ticks");
+		this.spawnItemAfterTicks = nbt.getLong("spawn_item_after_ticks");
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
+import net.minecraft.class_9792;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -11,11 +12,12 @@ import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.MusicDiscItem;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -56,6 +58,17 @@ public class JukeboxBlock extends BlockWithEntity {
 	}
 
 	@Override
+	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if ((Boolean)state.get(HAS_RECORD)) {
+			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		} else {
+			ItemStack itemStack = player.getStackInHand(hand);
+			ItemActionResult itemActionResult = class_9792.method_60747(world, pos, itemStack, player);
+			return !itemActionResult.isAccepted() ? ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION : itemActionResult;
+		}
+	}
+
+	@Override
 	protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!state.isOf(newState.getBlock())) {
 			if (world.getBlockEntity(pos) instanceof JukeboxBlockEntity jukeboxBlockEntity) {
@@ -78,7 +91,7 @@ public class JukeboxBlock extends BlockWithEntity {
 
 	@Override
 	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-		if (world.getBlockEntity(pos) instanceof JukeboxBlockEntity jukeboxBlockEntity && jukeboxBlockEntity.isPlayingRecord()) {
+		if (world.getBlockEntity(pos) instanceof JukeboxBlockEntity jukeboxBlockEntity && jukeboxBlockEntity.method_60784().method_60754()) {
 			return 15;
 		}
 
@@ -92,12 +105,7 @@ public class JukeboxBlock extends BlockWithEntity {
 
 	@Override
 	protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		if (world.getBlockEntity(pos) instanceof JukeboxBlockEntity jukeboxBlockEntity
-			&& jukeboxBlockEntity.getStack().getItem() instanceof MusicDiscItem musicDiscItem) {
-			return musicDiscItem.getComparatorOutput();
-		}
-
-		return 0;
+		return world.getBlockEntity(pos) instanceof JukeboxBlockEntity jukeboxBlockEntity ? jukeboxBlockEntity.method_60784().method_60762() : 0;
 	}
 
 	@Override

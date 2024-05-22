@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+import net.minecraft.class_9812;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.NetworkEncryptionException;
@@ -37,6 +38,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.crash.CrashCallable;
+import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.random.Random;
@@ -116,8 +118,8 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 	}
 
 	@Override
-	public void onDisconnected(Text reason) {
-		LOGGER.info("{} lost connection: {}", this.getConnectionInfo(), reason.getString());
+	public void onDisconnected(class_9812 arg) {
+		LOGGER.info("{} lost connection: {}", this.getConnectionInfo(), arg.reason().getString());
 	}
 
 	public String getConnectionInfo() {
@@ -254,8 +256,8 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 	}
 
 	@Override
-	public void addCustomCrashReportInfo(CrashReportSection section) {
-		section.add("Login phase", (CrashCallable<String>)(() -> this.state.toString()));
+	public void addCustomCrashReportInfo(CrashReport crashReport, CrashReportSection crashReportSection) {
+		crashReportSection.add("Login phase", (CrashCallable<String>)(() -> this.state.toString()));
 	}
 
 	@Override

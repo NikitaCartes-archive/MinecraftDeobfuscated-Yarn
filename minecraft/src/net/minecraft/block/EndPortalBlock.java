@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.class_9797;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EndPortalBlockEntity;
 import net.minecraft.entity.Entity;
@@ -12,14 +13,17 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.Heightmap;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class EndPortalBlock extends BlockWithEntity {
+public class EndPortalBlock extends BlockWithEntity implements class_9797 {
 	public static final MapCodec<EndPortalBlock> CODEC = createCodec(EndPortalBlock::new);
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 6.0, 0.0, 16.0, 12.0, 16.0);
 
@@ -44,25 +48,52 @@ public class EndPortalBlock extends BlockWithEntity {
 
 	@Override
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (world instanceof ServerWorld
-			&& entity.canUsePortals()
+		if (entity.canUsePortals()
 			&& VoxelShapes.matchesAnywhere(
 				VoxelShapes.cuboid(entity.getBoundingBox().offset((double)(-pos.getX()), (double)(-pos.getY()), (double)(-pos.getZ()))),
 				state.getOutlineShape(world, pos),
 				BooleanBiFunction.AND
 			)) {
-			RegistryKey<World> registryKey = world.getRegistryKey() == World.END ? World.OVERWORLD : World.END;
-			ServerWorld serverWorld = ((ServerWorld)world).getServer().getWorld(registryKey);
-			if (serverWorld == null) {
-				return;
-			}
-
-			if (world.getRegistryKey() == World.END && entity instanceof ServerPlayerEntity serverPlayerEntity && !serverPlayerEntity.seenCredits) {
+			if (!world.isClient && world.getRegistryKey() == World.END && entity instanceof ServerPlayerEntity serverPlayerEntity && !serverPlayerEntity.seenCredits) {
 				serverPlayerEntity.detachForDimensionChange();
 				return;
 			}
 
-			entity.moveToWorld(() -> entity.getTeleportTarget(serverWorld));
+			entity.method_60697(this, pos);
+		}
+	}
+
+	@Override
+	public TeleportTarget method_60770(ServerWorld serverWorld, Entity entity, BlockPos blockPos) {
+		RegistryKey<World> registryKey = serverWorld.getRegistryKey() == World.END ? World.OVERWORLD : World.END;
+		ServerWorld serverWorld2 = serverWorld.getServer().getWorld(registryKey);
+		boolean bl = registryKey == World.END;
+		BlockPos blockPos2 = bl ? ServerWorld.END_SPAWN_POS : serverWorld2.getSpawnPos();
+		Vec3d vec3d = new Vec3d((double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5);
+		if (bl) {
+			this.method_60771(serverWorld2, BlockPos.ofFloored(vec3d).down());
+		} else {
+			if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
+				return serverPlayerEntity.getRespawnTarget(false);
+			}
+
+			int i = serverWorld2.getWorldChunk(blockPos2).sampleHeightmap(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos2.getX(), blockPos2.getZ()) + 1;
+			vec3d = new Vec3d(vec3d.x, (double)i, vec3d.z);
+		}
+
+		return new TeleportTarget(serverWorld2, vec3d, entity.getVelocity(), entity.getYaw(), entity.getPitch());
+	}
+
+	private void method_60771(ServerWorld serverWorld, BlockPos blockPos) {
+		BlockPos.Mutable mutable = blockPos.mutableCopy();
+
+		for (int i = -2; i <= 2; i++) {
+			for (int j = -2; j <= 2; j++) {
+				for (int k = -1; k < 3; k++) {
+					BlockState blockState = k == -1 ? Blocks.OBSIDIAN.getDefaultState() : Blocks.AIR.getDefaultState();
+					serverWorld.setBlockState(mutable.set(blockPos).move(j, k, i), blockState);
+				}
+			}
 		}
 	}
 

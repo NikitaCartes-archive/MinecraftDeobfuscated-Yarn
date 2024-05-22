@@ -16,7 +16,7 @@ import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
-	public static final Identifier TEXTURE = new Identifier("textures/entity/trident.png");
+	public static final Identifier TEXTURE = Identifier.method_60656("textures/entity/trident.png");
 	private final TridentEntityModel model;
 
 	public TridentEntityRenderer(EntityRendererFactory.Context context) {
@@ -31,7 +31,7 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 		VertexConsumer vertexConsumer = ItemRenderer.getDirectItemGlintConsumer(
 			vertexConsumerProvider, this.model.getLayer(this.getTexture(tridentEntity)), false, tridentEntity.isEnchanted()
 		);
-		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+		this.model.method_60879(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 		matrixStack.pop();
 		super.render(tridentEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}

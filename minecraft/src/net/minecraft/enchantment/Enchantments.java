@@ -2,7 +2,6 @@ package net.minecraft.enchantment;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -40,6 +39,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.loot.condition.AllOfLootCondition;
 import net.minecraft.loot.condition.AnyOfLootCondition;
+import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
 import net.minecraft.loot.condition.DamageSourcePropertiesLootCondition;
 import net.minecraft.loot.condition.EnchantmentActiveCheckLootCondition;
 import net.minecraft.loot.condition.EntityPropertiesLootCondition;
@@ -183,11 +183,10 @@ public class Enchantments {
 				.addEffect(
 					EnchantmentEffectComponentTypes.ATTRIBUTES,
 					new AttributeEnchantmentEffectType(
-						"enchantment.fire_protection",
+						Identifier.method_60656("enchantment.fire_protection"),
 						EntityAttributes.GENERIC_BURNING_TIME,
 						EnchantmentLevelBasedValueType.linear(-0.15F),
-						EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE,
-						UUID.fromString("b572ecd2-ac0c-4071-abde-9594af072a37")
+						EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
 					)
 				)
 		);
@@ -242,11 +241,10 @@ public class Enchantments {
 				.addEffect(
 					EnchantmentEffectComponentTypes.ATTRIBUTES,
 					new AttributeEnchantmentEffectType(
-						"enchantment.blast_protection",
+						Identifier.method_60656("enchantment.blast_protection"),
 						EntityAttributes.GENERIC_EXPLOSION_KNOCKBACK_RESISTANCE,
 						EnchantmentLevelBasedValueType.linear(0.15F),
-						EntityAttributeModifier.Operation.ADD_VALUE,
-						UUID.fromString("40a9968f-5c66-4e2f-b7f4-2ec2f4b3e450")
+						EntityAttributeModifier.Operation.ADD_VALUE
 					)
 				)
 		);
@@ -292,11 +290,10 @@ public class Enchantments {
 				.addEffect(
 					EnchantmentEffectComponentTypes.ATTRIBUTES,
 					new AttributeEnchantmentEffectType(
-						"enchantment.respiration",
+						Identifier.method_60656("enchantment.respiration"),
 						EntityAttributes.GENERIC_OXYGEN_BONUS,
 						EnchantmentLevelBasedValueType.linear(1.0F),
-						EntityAttributeModifier.Operation.ADD_VALUE,
-						UUID.fromString("07a65791-f64d-4e79-86c7-f83932f007ec")
+						EntityAttributeModifier.Operation.ADD_VALUE
 					)
 				)
 		);
@@ -317,11 +314,10 @@ public class Enchantments {
 				.addEffect(
 					EnchantmentEffectComponentTypes.ATTRIBUTES,
 					new AttributeEnchantmentEffectType(
-						"enchantment.aqua_affinity",
+						Identifier.method_60656("enchantment.aqua_affinity"),
 						EntityAttributes.PLAYER_SUBMERGED_MINING_SPEED,
 						EnchantmentLevelBasedValueType.linear(4.0F),
-						EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL,
-						UUID.fromString("60b1b7db-fffd-4ad0-817c-d6c6a93d8a45")
+						EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
 					)
 				)
 		);
@@ -371,11 +367,10 @@ public class Enchantments {
 				.addEffect(
 					EnchantmentEffectComponentTypes.ATTRIBUTES,
 					new AttributeEnchantmentEffectType(
-						"enchantment.depth_strider",
+						Identifier.method_60656("enchantment.depth_strider"),
 						EntityAttributes.GENERIC_WATER_MOVEMENT_EFFICIENCY,
 						EnchantmentLevelBasedValueType.linear(0.33333334F),
-						EntityAttributeModifier.Operation.ADD_VALUE,
-						UUID.fromString("11dc269a-4476-46c0-aff3-9e17d7eb6801")
+						EntityAttributeModifier.Operation.ADD_VALUE
 					)
 				)
 		);
@@ -411,7 +406,10 @@ public class Enchantments {
 						new Vec3i(0, -1, 0),
 						Optional.of(
 							BlockPredicate.allOf(
-								BlockPredicate.matchingBlocks(new Vec3i(0, 1, 0), Blocks.AIR), BlockPredicate.matchingBlocks(Blocks.WATER), BlockPredicate.unobstructed()
+								BlockPredicate.matchingBlockTag(new Vec3i(0, 1, 0), BlockTags.AIR),
+								BlockPredicate.matchingBlocks(Blocks.WATER),
+								BlockPredicate.matchingFluids(Fluids.WATER),
+								BlockPredicate.unobstructed()
 							)
 						),
 						BlockStateProvider.of(Blocks.FROSTED_ICE),
@@ -460,11 +458,10 @@ public class Enchantments {
 				.addEffect(
 					EnchantmentEffectComponentTypes.LOCATION_CHANGED,
 					new AttributeEnchantmentEffectType(
-						"Soul speed boost",
+						Identifier.method_60656("enchantment.soul_speed"),
 						EntityAttributes.GENERIC_MOVEMENT_SPEED,
 						EnchantmentLevelBasedValueType.linear(0.0405F, 0.0105F),
-						EntityAttributeModifier.Operation.ADD_VALUE,
-						UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038")
+						EntityAttributeModifier.Operation.ADD_VALUE
 					),
 					AllOfLootCondition.builder(
 						InvertedLootCondition.builder(
@@ -506,11 +503,10 @@ public class Enchantments {
 				.addEffect(
 					EnchantmentEffectComponentTypes.LOCATION_CHANGED,
 					new AttributeEnchantmentEffectType(
-						"Soul speed movement efficiency",
+						Identifier.method_60656("enchantment.soul_speed"),
 						EntityAttributes.GENERIC_MOVEMENT_EFFICIENCY,
 						EnchantmentLevelBasedValueType.constant(1.0F),
-						EntityAttributeModifier.Operation.ADD_VALUE,
-						UUID.fromString("b9716dbd-50df-4080-850e-70347d24e687")
+						EntityAttributeModifier.Operation.ADD_VALUE
 					),
 					EntityPropertiesLootCondition.builder(
 						LootContext.EntityTarget.THIS,
@@ -566,11 +562,10 @@ public class Enchantments {
 				.addEffect(
 					EnchantmentEffectComponentTypes.ATTRIBUTES,
 					new AttributeEnchantmentEffectType(
-						"enchantment.swift_sneak",
+						Identifier.method_60656("enchantment.swift_sneak"),
 						EntityAttributes.PLAYER_SNEAKING_SPEED,
 						EnchantmentLevelBasedValueType.linear(0.15F),
-						EntityAttributeModifier.Operation.ADD_VALUE,
-						UUID.fromString("92437d00-c3a7-4f2e-8f6c-1f21585d5dd0")
+						EntityAttributeModifier.Operation.ADD_VALUE
 					)
 				)
 		);
@@ -752,11 +747,10 @@ public class Enchantments {
 				.addEffect(
 					EnchantmentEffectComponentTypes.ATTRIBUTES,
 					new AttributeEnchantmentEffectType(
-						"enchantment.sweeping_edge",
+						Identifier.method_60656("enchantment.sweeping_edge"),
 						EntityAttributes.PLAYER_SWEEPING_DAMAGE_RATIO,
 						new EnchantmentLevelBasedValueType.Fraction(EnchantmentLevelBasedValueType.linear(1.0F), EnchantmentLevelBasedValueType.linear(2.0F, 1.0F)),
-						EntityAttributeModifier.Operation.ADD_VALUE,
-						UUID.fromString("5d3d087b-debe-4037-b53e-d84f3ff51f17")
+						EntityAttributeModifier.Operation.ADD_VALUE
 					)
 				)
 		);
@@ -777,11 +771,10 @@ public class Enchantments {
 				.addEffect(
 					EnchantmentEffectComponentTypes.ATTRIBUTES,
 					new AttributeEnchantmentEffectType(
-						"enchantment.efficiency",
+						Identifier.method_60656("enchantment.efficiency"),
 						EntityAttributes.PLAYER_MINING_EFFICIENCY,
 						new EnchantmentLevelBasedValueType.LevelsSquared(1.0F),
-						EntityAttributeModifier.Operation.ADD_VALUE,
-						UUID.fromString("3ceb37c0-db62-46b5-bd02-785457b01d96")
+						EntityAttributeModifier.Operation.ADD_VALUE
 					)
 				)
 		);
@@ -1056,14 +1049,9 @@ public class Enchantments {
 					),
 					AllOfLootCondition.builder(
 						WeatherCheckLootCondition.create().thundering(true),
-						EntityPropertiesLootCondition.builder(
-							LootContext.EntityTarget.THIS,
-							EntityPredicate.Builder.create()
-								.type(EntityType.TRIDENT)
-								.location(
-									LocationPredicate.Builder.create().canSeeSky(true).block(net.minecraft.predicate.BlockPredicate.Builder.create().blocks(Blocks.LIGHTNING_ROD))
-								)
-						)
+						EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().type(EntityType.TRIDENT)),
+						LocationCheckLootCondition.builder(LocationPredicate.Builder.create().canSeeSky(true)),
+						BlockStatePropertyLootCondition.builder(Blocks.LIGHTNING_ROD)
 					)
 				)
 		);
@@ -1096,7 +1084,8 @@ public class Enchantments {
 						Enchantment.leveledCost(12, 20),
 						Enchantment.constantCost(50),
 						2,
-						AttributeModifierSlot.MAINHAND
+						AttributeModifierSlot.MAINHAND,
+						AttributeModifierSlot.OFFHAND
 					)
 				)
 				.addNonListEffect(EnchantmentEffectComponentTypes.CROSSBOW_CHARGE_TIME, new AddEnchantmentEffectType(EnchantmentLevelBasedValueType.linear(-0.25F)))
@@ -1244,6 +1233,6 @@ public class Enchantments {
 	}
 
 	private static RegistryKey<Enchantment> of(String id) {
-		return RegistryKey.of(RegistryKeys.ENCHANTMENT, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.ENCHANTMENT, Identifier.method_60656(id));
 	}
 }

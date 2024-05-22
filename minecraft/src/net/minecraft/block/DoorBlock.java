@@ -172,8 +172,8 @@ public class DoorBlock extends Block {
 			+ (blockState2.isFullCube(blockView, blockPos4) ? -1 : 0)
 			+ (blockState3.isFullCube(blockView, blockPos5) ? 1 : 0)
 			+ (blockState4.isFullCube(blockView, blockPos6) ? 1 : 0);
-		boolean bl = blockState.isOf(this) && blockState.get(HALF) == DoubleBlockHalf.LOWER;
-		boolean bl2 = blockState3.isOf(this) && blockState3.get(HALF) == DoubleBlockHalf.LOWER;
+		boolean bl = blockState.getBlock() instanceof DoorBlock && blockState.get(HALF) == DoubleBlockHalf.LOWER;
+		boolean bl2 = blockState3.getBlock() instanceof DoorBlock && blockState3.get(HALF) == DoubleBlockHalf.LOWER;
 		if ((!bl || bl2) && i <= 0) {
 			if ((!bl2 || bl) && i >= 0) {
 				int j = direction.getOffsetX();

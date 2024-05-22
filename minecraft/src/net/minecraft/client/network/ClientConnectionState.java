@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9782;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.session.telemetry.WorldSession;
@@ -23,6 +24,8 @@ public record ClientConnectionState(
 	@Nullable Screen postDisconnectScreen,
 	Map<Identifier, byte[]> serverCookies,
 	@Nullable ChatHud.ChatState chatState,
-	@Deprecated(forRemoval = true) boolean strictErrorHandling
+	@Deprecated(forRemoval = true) boolean strictErrorHandling,
+	Map<String, String> customReportDetails,
+	class_9782 serverLinks
 ) {
 }

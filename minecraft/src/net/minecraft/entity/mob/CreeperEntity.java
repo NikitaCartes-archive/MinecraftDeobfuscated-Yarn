@@ -236,8 +236,9 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 			float f = this.shouldRenderOverlay() ? 2.0F : 1.0F;
 			this.dead = true;
 			this.getWorld().createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * f, World.ExplosionSourceType.MOB);
-			this.discard();
 			this.spawnEffectsCloud();
+			this.method_60699(Entity.RemovalReason.KILLED);
+			this.discard();
 		}
 	}
 

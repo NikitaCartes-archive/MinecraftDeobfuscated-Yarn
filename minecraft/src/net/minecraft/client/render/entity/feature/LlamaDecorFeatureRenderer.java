@@ -17,24 +17,24 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntity, LlamaEntityModel<LlamaEntity>> {
 	private static final Identifier[] LLAMA_DECOR = new Identifier[]{
-		new Identifier("textures/entity/llama/decor/white.png"),
-		new Identifier("textures/entity/llama/decor/orange.png"),
-		new Identifier("textures/entity/llama/decor/magenta.png"),
-		new Identifier("textures/entity/llama/decor/light_blue.png"),
-		new Identifier("textures/entity/llama/decor/yellow.png"),
-		new Identifier("textures/entity/llama/decor/lime.png"),
-		new Identifier("textures/entity/llama/decor/pink.png"),
-		new Identifier("textures/entity/llama/decor/gray.png"),
-		new Identifier("textures/entity/llama/decor/light_gray.png"),
-		new Identifier("textures/entity/llama/decor/cyan.png"),
-		new Identifier("textures/entity/llama/decor/purple.png"),
-		new Identifier("textures/entity/llama/decor/blue.png"),
-		new Identifier("textures/entity/llama/decor/brown.png"),
-		new Identifier("textures/entity/llama/decor/green.png"),
-		new Identifier("textures/entity/llama/decor/red.png"),
-		new Identifier("textures/entity/llama/decor/black.png")
+		Identifier.method_60656("textures/entity/llama/decor/white.png"),
+		Identifier.method_60656("textures/entity/llama/decor/orange.png"),
+		Identifier.method_60656("textures/entity/llama/decor/magenta.png"),
+		Identifier.method_60656("textures/entity/llama/decor/light_blue.png"),
+		Identifier.method_60656("textures/entity/llama/decor/yellow.png"),
+		Identifier.method_60656("textures/entity/llama/decor/lime.png"),
+		Identifier.method_60656("textures/entity/llama/decor/pink.png"),
+		Identifier.method_60656("textures/entity/llama/decor/gray.png"),
+		Identifier.method_60656("textures/entity/llama/decor/light_gray.png"),
+		Identifier.method_60656("textures/entity/llama/decor/cyan.png"),
+		Identifier.method_60656("textures/entity/llama/decor/purple.png"),
+		Identifier.method_60656("textures/entity/llama/decor/blue.png"),
+		Identifier.method_60656("textures/entity/llama/decor/brown.png"),
+		Identifier.method_60656("textures/entity/llama/decor/green.png"),
+		Identifier.method_60656("textures/entity/llama/decor/red.png"),
+		Identifier.method_60656("textures/entity/llama/decor/black.png")
 	};
-	private static final Identifier TRADER_LLAMA_DECOR = new Identifier("textures/entity/llama/decor/trader_llama.png");
+	private static final Identifier TRADER_LLAMA_DECOR = Identifier.method_60656("textures/entity/llama/decor/trader_llama.png");
 	private final LlamaEntityModel<LlamaEntity> model;
 
 	public LlamaDecorFeatureRenderer(FeatureRendererContext<LlamaEntity, LlamaEntityModel<LlamaEntity>> context, EntityModelLoader loader) {
@@ -60,6 +60,6 @@ public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntity, Llam
 		this.getContextModel().copyStateTo(this.model);
 		this.model.setAngles(llamaEntity, f, g, j, k, l);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(identifier));
-		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+		this.model.method_60879(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 	}
 }

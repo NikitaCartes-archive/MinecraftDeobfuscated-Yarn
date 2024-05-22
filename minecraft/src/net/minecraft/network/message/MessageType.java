@@ -109,7 +109,7 @@ public record MessageType(Decoration chat, Decoration narration) {
 	public static final RegistryKey<MessageType> EMOTE_COMMAND = register("emote_command");
 
 	private static RegistryKey<MessageType> register(String id) {
-		return RegistryKey.of(RegistryKeys.MESSAGE_TYPE, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.MESSAGE_TYPE, Identifier.method_60656(id));
 	}
 
 	public static void bootstrap(Registerable<MessageType> messageTypeRegisterable) {

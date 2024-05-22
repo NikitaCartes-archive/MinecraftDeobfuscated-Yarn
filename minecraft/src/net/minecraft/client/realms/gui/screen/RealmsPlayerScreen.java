@@ -139,9 +139,9 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		private static final Text NORMAL_TOOLTIP_TEXT = Text.translatable("mco.configure.world.invites.normal.tooltip");
 		private static final Text OPS_TOOLTIP_TEXT = Text.translatable("mco.configure.world.invites.ops.tooltip");
 		private static final Text REMOVE_TOOLTIP_TEXT = Text.translatable("mco.configure.world.invites.remove.tooltip");
-		private static final Identifier MAKE_OPERATOR_TEXTURE = new Identifier("player_list/make_operator");
-		private static final Identifier REMOVE_OPERATOR_TEXTURE = new Identifier("player_list/remove_operator");
-		private static final Identifier REMOVE_PLAYER_TEXTURE = new Identifier("player_list/remove_player");
+		private static final Identifier MAKE_OPERATOR_TEXTURE = Identifier.method_60656("player_list/make_operator");
+		private static final Identifier REMOVE_OPERATOR_TEXTURE = Identifier.method_60656("player_list/remove_operator");
+		private static final Identifier REMOVE_PLAYER_TEXTURE = Identifier.method_60656("player_list/remove_player");
 		private static final int field_49470 = 8;
 		private static final int field_49471 = 7;
 		private final PlayerInfo playerInfo;

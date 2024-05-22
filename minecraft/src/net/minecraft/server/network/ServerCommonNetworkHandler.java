@@ -3,6 +3,7 @@ package net.minecraft.server.network;
 import com.mojang.authlib.GameProfile;
 import com.mojang.logging.LogUtils;
 import javax.annotation.Nullable;
+import net.minecraft.class_9812;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.PacketCallbacks;
@@ -59,7 +60,7 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 	}
 
 	@Override
-	public void onDisconnected(Text reason) {
+	public void onDisconnected(class_9812 arg) {
 		if (this.isHost()) {
 			LOGGER.info("Stopping singleplayer server as player logged out");
 			this.server.stop(false);
@@ -159,7 +160,11 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 	}
 
 	public void disconnect(Text reason) {
-		this.connection.send(new DisconnectS2CPacket(reason), PacketCallbacks.always(() -> this.connection.disconnect(reason)));
+		this.method_60673(new class_9812(reason));
+	}
+
+	public void method_60673(class_9812 arg) {
+		this.connection.send(new DisconnectS2CPacket(arg.reason()), PacketCallbacks.always(() -> this.connection.method_60924(arg)));
 		this.connection.tryDisableAutoRead();
 		this.server.submitAndJoin(this.connection::handleDisconnection);
 	}

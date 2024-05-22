@@ -17,7 +17,7 @@ public class ComplexRecipeJsonBuilder {
 	}
 
 	public void offerTo(RecipeExporter exporter, String id) {
-		this.offerTo(exporter, new Identifier(id));
+		this.offerTo(exporter, Identifier.method_60654(id));
 	}
 
 	public void offerTo(RecipeExporter exporter, Identifier id) {

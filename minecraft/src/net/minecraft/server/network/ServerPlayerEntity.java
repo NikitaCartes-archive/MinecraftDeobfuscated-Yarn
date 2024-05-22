@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.PlayerAdvancementTracker;
@@ -19,9 +18,7 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
@@ -156,7 +153,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOfferList;
-import net.minecraft.world.BlockLocating;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.TeleportTarget;
@@ -164,7 +160,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.source.BiomeAccess;
-import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.event.GameEvent;
 import org.slf4j.Logger;
 
@@ -175,10 +170,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private static final int field_46928 = 25;
 	public static final double field_47708 = 1.0;
 	private static final EntityAttributeModifier CREATIVE_BLOCK_INTERACTION_RANGE_MODIFIER_UUID = new EntityAttributeModifier(
-		UUID.fromString("736565d2-e1a7-403d-a3f8-1aeb3e302542"), "Creative block interaction range modifier", 0.5, EntityAttributeModifier.Operation.ADD_VALUE
+		Identifier.method_60656("creative_mode_block_range"), 0.5, EntityAttributeModifier.Operation.ADD_VALUE
 	);
 	private static final EntityAttributeModifier CREATIVE_ENTITY_INTERACTION_RANGE_MODIFIER_UUID = new EntityAttributeModifier(
-		UUID.fromString("98491ef6-97b1-4584-ae82-71a8cc85cf73"), "Creative entity interaction range modifier", 2.0, EntityAttributeModifier.Operation.ADD_VALUE
+		Identifier.method_60656("creative_mode_entity_range"), 2.0, EntityAttributeModifier.Operation.ADD_VALUE
 	);
 	public ServerPlayNetworkHandler networkHandler;
 	public final MinecraftServer server;
@@ -838,21 +833,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	@Nullable
-	@Override
-	public TeleportTarget getTeleportTarget(ServerWorld destination) {
-		TeleportTarget teleportTarget = super.getTeleportTarget(destination);
-		if (teleportTarget != null && this.getWorld().getRegistryKey() == World.OVERWORLD && teleportTarget.newDimension().getRegistryKey() == World.END) {
-			Vec3d vec3d = teleportTarget.pos().add(0.0, -1.0, 0.0);
-			this.createEndSpawnPlatform(teleportTarget.newDimension(), BlockPos.ofFloored(vec3d));
-			return new TeleportTarget(teleportTarget.newDimension(), vec3d, Vec3d.ZERO, 90.0F, 0.0F);
-		} else {
-			return this.getWorld().getRegistryKey() == World.END && teleportTarget.newDimension().getRegistryKey() == World.OVERWORLD
-				? this.getRespawnTarget(false)
-				: teleportTarget;
-		}
-	}
-
 	public void detachForDimensionChange() {
 		this.detach();
 		this.getServerWorld().removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
@@ -865,80 +845,54 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Nullable
 	@Override
-	public Entity moveToWorld(Entity.TeleportTargetSupplier teleportTargetSupplier) {
-		TeleportTarget teleportTarget = teleportTargetSupplier.get();
-		if (teleportTarget == null) {
-			return this;
+	public Entity moveToWorld(TeleportTarget teleportTarget) {
+		if (this.isRemoved()) {
+			return null;
 		} else {
 			if (teleportTarget.missingRespawnBlock()) {
 				this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.NO_RESPAWN_BLOCK, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
 			}
 
-			ServerWorld serverWorld = teleportTarget.newDimension();
-			this.inTeleportationState = true;
+			ServerWorld serverWorld = teleportTarget.newLevel();
 			ServerWorld serverWorld2 = this.getServerWorld();
 			RegistryKey<World> registryKey = serverWorld2.getRegistryKey();
-			WorldProperties worldProperties = serverWorld.getLevelProperties();
-			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.createCommonPlayerSpawnInfo(serverWorld), PlayerRespawnS2CPacket.KEEP_ALL));
-			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
-			PlayerManager playerManager = this.server.getPlayerManager();
-			playerManager.sendCommandTree(this);
-			serverWorld2.removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
-			this.unsetRemoved();
-			serverWorld2.getProfiler().push("moving");
-			if (registryKey == World.OVERWORLD && serverWorld.getRegistryKey() == World.NETHER) {
-				this.enteredNetherPos = this.getPos();
-			}
-
-			serverWorld2.getProfiler().pop();
-			serverWorld2.getProfiler().push("placing");
-			this.setServerWorld(serverWorld);
-			this.networkHandler.requestTeleport(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z, teleportTarget.yaw(), teleportTarget.pitch());
-			this.networkHandler.syncWithPlayerPosition();
-			serverWorld.onDimensionChanged(this);
-			serverWorld2.getProfiler().pop();
-			this.worldChanged(serverWorld2);
-			this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.getAbilities()));
-			playerManager.sendWorldInfo(this, serverWorld);
-			playerManager.sendPlayerStatus(this);
-			playerManager.sendStatusEffects(this);
-			this.networkHandler.sendPacket(new WorldEventS2CPacket(WorldEvents.TRAVEL_THROUGH_PORTAL, BlockPos.ORIGIN, 0, false));
-			this.syncedExperience = -1;
-			this.syncedHealth = -1.0F;
-			this.syncedFoodLevel = -1;
-			return this;
-		}
-	}
-
-	private void createEndSpawnPlatform(ServerWorld world, BlockPos centerPos) {
-		BlockPos.Mutable mutable = centerPos.mutableCopy();
-
-		for (int i = -2; i <= 2; i++) {
-			for (int j = -2; j <= 2; j++) {
-				for (int k = -1; k < 3; k++) {
-					BlockState blockState = k == -1 ? Blocks.OBSIDIAN.getDefaultState() : Blocks.AIR.getDefaultState();
-					world.setBlockState(mutable.set(centerPos).move(j, k, i), blockState);
+			if (serverWorld.getRegistryKey() == registryKey) {
+				this.networkHandler.requestTeleport(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z, teleportTarget.yaw(), teleportTarget.pitch());
+				this.networkHandler.syncWithPlayerPosition();
+				this.networkHandler.sendPacket(new WorldEventS2CPacket(WorldEvents.TRAVEL_THROUGH_PORTAL, BlockPos.ORIGIN, 0, false));
+				return this;
+			} else {
+				this.inTeleportationState = true;
+				WorldProperties worldProperties = serverWorld.getLevelProperties();
+				this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.createCommonPlayerSpawnInfo(serverWorld), PlayerRespawnS2CPacket.KEEP_ALL));
+				this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
+				PlayerManager playerManager = this.server.getPlayerManager();
+				playerManager.sendCommandTree(this);
+				serverWorld2.removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
+				this.unsetRemoved();
+				serverWorld2.getProfiler().push("moving");
+				if (registryKey == World.OVERWORLD && serverWorld.getRegistryKey() == World.NETHER) {
+					this.enteredNetherPos = this.getPos();
 				}
-			}
-		}
-	}
 
-	@Override
-	protected Optional<BlockLocating.Rectangle> getPortalRect(ServerWorld destWorld, BlockPos destPos, boolean destIsNether, WorldBorder worldBorder) {
-		Optional<BlockLocating.Rectangle> optional = super.getPortalRect(destWorld, destPos, destIsNether, worldBorder);
-		if (optional.isPresent()) {
-			return optional;
-		} else {
-			Direction.Axis axis = (Direction.Axis)this.getWorld()
-				.getBlockState(this.lastNetherPortalPosition)
-				.getOrEmpty(NetherPortalBlock.AXIS)
-				.orElse(Direction.Axis.X);
-			Optional<BlockLocating.Rectangle> optional2 = destWorld.getPortalForcer().createPortal(destPos, axis);
-			if (optional2.isEmpty()) {
-				LOGGER.error("Unable to create a portal, likely target out of worldborder");
+				serverWorld2.getProfiler().pop();
+				serverWorld2.getProfiler().push("placing");
+				this.setServerWorld(serverWorld);
+				this.networkHandler.requestTeleport(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z, teleportTarget.yaw(), teleportTarget.pitch());
+				this.networkHandler.syncWithPlayerPosition();
+				serverWorld.onDimensionChanged(this);
+				serverWorld2.getProfiler().pop();
+				this.worldChanged(serverWorld2);
+				this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.getAbilities()));
+				playerManager.sendWorldInfo(this, serverWorld);
+				playerManager.sendPlayerStatus(this);
+				playerManager.sendStatusEffects(this);
+				this.networkHandler.sendPacket(new WorldEventS2CPacket(WorldEvents.TRAVEL_THROUGH_PORTAL, BlockPos.ORIGIN, 0, false));
+				this.syncedExperience = -1;
+				this.syncedHealth = -1.0F;
+				this.syncedFoodLevel = -1;
+				return this;
 			}
-
-			return optional2;
 		}
 	}
 
@@ -1076,7 +1030,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			BlockState blockState = this.getWorld().getBlockState(blockPos);
 			if (this.spawnExtraParticlesOnFall && onGround && this.fallDistance > 0.0F) {
 				Vec3d vec3d = blockPos.toCenterPos().add(0.0, 0.5, 0.0);
-				int i = (int)(50.0F * this.fallDistance);
+				int i = (int)MathHelper.clamp(50.0F * this.fallDistance, 0.0F, 200.0F);
 				this.getServerWorld().spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), vec3d.x, vec3d.y, vec3d.z, i, 0.3F, 0.3F, 0.3F, 0.15F);
 				this.spawnExtraParticlesOnFall = false;
 			}
@@ -1090,7 +1044,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		super.onExplodedBy(entity);
 		this.currentExplosionImpactPos = this.getPos();
 		this.explodedBy = entity;
-		this.ignoreFallDamageFromCurrentExplosion = this.ignoreFallDamageFromCurrentExplosion || entity != null && entity.getType() == EntityType.WIND_CHARGE;
+		this.ignoreFallDamageFromCurrentExplosion = entity != null && entity.getType() == EntityType.WIND_CHARGE;
 	}
 
 	@Override
@@ -1375,6 +1329,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.interactionManager.setGameMode(oldPlayer.interactionManager.getGameMode(), oldPlayer.interactionManager.getPreviousGameMode());
 		this.sendAbilitiesUpdate();
 		this.getAttributes().setBaseFrom(oldPlayer.getAttributes());
+		this.setHealth(this.getMaxHealth());
 		if (alive) {
 			this.getInventory().clone(oldPlayer.getInventory());
 			this.setHealth(oldPlayer.getHealth());
@@ -1388,7 +1343,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.totalExperience = oldPlayer.totalExperience;
 			this.experienceProgress = oldPlayer.experienceProgress;
 			this.setScore(oldPlayer.getScore());
-			this.lastNetherPortalPosition = oldPlayer.lastNetherPortalPosition;
+			this.field_51994 = oldPlayer.field_51994;
 		} else if (this.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
 			this.getInventory().clone(oldPlayer.getInventory());
 			this.experienceLevel = oldPlayer.experienceLevel;
@@ -1716,7 +1671,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (targetWorld == this.getWorld()) {
 			this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
 		} else {
-			this.moveToWorld(() -> new TeleportTarget(targetWorld, new Vec3d(x, y, z), Vec3d.ZERO, yaw, pitch));
+			this.moveToWorld(new TeleportTarget(targetWorld, new Vec3d(x, y, z), Vec3d.ZERO, yaw, pitch));
 		}
 	}
 

@@ -50,6 +50,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -889,13 +890,8 @@ public class PandaEntity extends AnimalEntity {
 		private final PandaEntity panda;
 
 		public PandaEscapeDangerGoal(PandaEntity panda, double speed) {
-			super(panda, speed);
+			super(panda, speed, DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES);
 			this.panda = panda;
-		}
-
-		@Override
-		protected boolean isInDanger() {
-			return this.mob.shouldEscapePowderSnow() || this.mob.isOnFire();
 		}
 
 		@Override

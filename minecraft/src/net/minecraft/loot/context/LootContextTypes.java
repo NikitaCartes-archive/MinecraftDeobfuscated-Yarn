@@ -117,12 +117,19 @@ public class LootContextTypes {
 		"enchanted_entity",
 		builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.ENCHANTMENT_LEVEL).require(LootContextParameters.ORIGIN)
 	);
+	public static final LootContextType HIT_BLOCK = register(
+		"hit_block",
+		builder -> builder.require(LootContextParameters.THIS_ENTITY)
+				.require(LootContextParameters.ENCHANTMENT_LEVEL)
+				.require(LootContextParameters.ORIGIN)
+				.require(LootContextParameters.BLOCK_STATE)
+	);
 
 	private static LootContextType register(String name, Consumer<LootContextType.Builder> type) {
 		LootContextType.Builder builder = new LootContextType.Builder();
 		type.accept(builder);
 		LootContextType lootContextType = builder.build();
-		Identifier identifier = new Identifier(name);
+		Identifier identifier = Identifier.method_60656(name);
 		LootContextType lootContextType2 = MAP.put(identifier, lootContextType);
 		if (lootContextType2 != null) {
 			throw new IllegalStateException("Loot table parameter set " + identifier + " is already registered");

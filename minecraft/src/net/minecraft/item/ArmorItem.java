@@ -2,9 +2,7 @@ package net.minecraft.item;
 
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Supplier;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
@@ -22,22 +20,15 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
 public class ArmorItem extends Item implements Equipment {
-	private static final EnumMap<ArmorItem.Type, UUID> MODIFIERS = Util.make(new EnumMap(ArmorItem.Type.class), uuidMap -> {
-		uuidMap.put(ArmorItem.Type.BOOTS, UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"));
-		uuidMap.put(ArmorItem.Type.LEGGINGS, UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D"));
-		uuidMap.put(ArmorItem.Type.CHESTPLATE, UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E"));
-		uuidMap.put(ArmorItem.Type.HELMET, UUID.fromString("2AD3F246-FEE1-4E67-B886-69FD380BB150"));
-		uuidMap.put(ArmorItem.Type.BODY, UUID.fromString("C1C72771-8B8E-BA4A-ACE0-81A93C8928B2"));
-	});
 	public static final DispenserBehavior DISPENSER_BEHAVIOR = new ItemDispenserBehavior() {
 		@Override
 		protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
@@ -79,22 +70,20 @@ public class ArmorItem extends Item implements Equipment {
 				float f = material.value().toughness();
 				AttributeModifiersComponent.Builder builder = AttributeModifiersComponent.builder();
 				AttributeModifierSlot attributeModifierSlot = AttributeModifierSlot.forEquipmentSlot(type.getEquipmentSlot());
-				UUID uUID = (UUID)MODIFIERS.get(type);
+				Identifier identifier = Identifier.method_60656("armor." + type.getName());
 				builder.add(
-					EntityAttributes.GENERIC_ARMOR,
-					new EntityAttributeModifier(uUID, "Armor modifier", (double)i, EntityAttributeModifier.Operation.ADD_VALUE),
-					attributeModifierSlot
+					EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier(identifier, (double)i, EntityAttributeModifier.Operation.ADD_VALUE), attributeModifierSlot
 				);
 				builder.add(
 					EntityAttributes.GENERIC_ARMOR_TOUGHNESS,
-					new EntityAttributeModifier(uUID, "Armor toughness", (double)f, EntityAttributeModifier.Operation.ADD_VALUE),
+					new EntityAttributeModifier(identifier, (double)f, EntityAttributeModifier.Operation.ADD_VALUE),
 					attributeModifierSlot
 				);
 				float g = material.value().knockbackResistance();
 				if (g > 0.0F) {
 					builder.add(
 						EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE,
-						new EntityAttributeModifier(uUID, "Armor knockback resistance", (double)g, EntityAttributeModifier.Operation.ADD_VALUE),
+						new EntityAttributeModifier(identifier, (double)g, EntityAttributeModifier.Operation.ADD_VALUE),
 						attributeModifierSlot
 					);
 				}

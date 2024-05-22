@@ -27,9 +27,11 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9801;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -67,7 +69,7 @@ import org.slf4j.Logger;
 public class ParticleManager implements ResourceReloader {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final ResourceFinder FINDER = ResourceFinder.json("particles");
-	private static final Identifier PARTICLES_PATH = new Identifier("particles");
+	private static final Identifier PARTICLES_PATH = Identifier.method_60656("particles");
 	private static final int MAX_PARTICLE_COUNT = 16384;
 	private static final List<ParticleTextureSheet> PARTICLE_TEXTURE_SHEETS = ImmutableList.of(
 		ParticleTextureSheet.TERRAIN_SHEET,
@@ -440,26 +442,29 @@ public class ParticleManager implements ResourceReloader {
 		RenderSystem.enableDepthTest();
 
 		for (ParticleTextureSheet particleTextureSheet : PARTICLE_TEXTURE_SHEETS) {
-			Iterable<Particle> iterable = (Iterable<Particle>)this.particles.get(particleTextureSheet);
-			if (iterable != null) {
+			Queue<Particle> queue = (Queue<Particle>)this.particles.get(particleTextureSheet);
+			if (queue != null && !queue.isEmpty()) {
 				RenderSystem.setShader(GameRenderer::getParticleProgram);
 				Tessellator tessellator = Tessellator.getInstance();
-				BufferBuilder bufferBuilder = tessellator.getBuffer();
-				particleTextureSheet.begin(bufferBuilder, this.textureManager);
+				BufferBuilder bufferBuilder = particleTextureSheet.begin(tessellator, this.textureManager);
+				if (bufferBuilder != null) {
+					for (Particle particle : queue) {
+						try {
+							particle.buildGeometry(bufferBuilder, camera, tickDelta);
+						} catch (Throwable var14) {
+							CrashReport crashReport = CrashReport.create(var14, "Rendering Particle");
+							CrashReportSection crashReportSection = crashReport.addElement("Particle being rendered");
+							crashReportSection.add("Particle", particle::toString);
+							crashReportSection.add("Particle Type", particleTextureSheet::toString);
+							throw new CrashException(crashReport);
+						}
+					}
 
-				for (Particle particle : iterable) {
-					try {
-						particle.buildGeometry(bufferBuilder, camera, tickDelta);
-					} catch (Throwable var14) {
-						CrashReport crashReport = CrashReport.create(var14, "Rendering Particle");
-						CrashReportSection crashReportSection = crashReport.addElement("Particle being rendered");
-						crashReportSection.add("Particle", particle::toString);
-						crashReportSection.add("Particle Type", particleTextureSheet::toString);
-						throw new CrashException(crashReport);
+					class_9801 lv = bufferBuilder.method_60794();
+					if (lv != null) {
+						BufferRenderer.drawWithGlobalProgram(lv);
 					}
 				}
-
-				particleTextureSheet.draw(tessellator);
 			}
 		}
 

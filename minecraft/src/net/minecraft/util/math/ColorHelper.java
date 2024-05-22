@@ -40,6 +40,10 @@ public class ColorHelper {
 		public static int withAlpha(int alpha, int bgr) {
 			return alpha << 24 | bgr & 16777215;
 		}
+
+		public static int method_60675(int i) {
+			return i & -16711936 | (i & 0xFF0000) >> 16 | (i & 0xFF) << 16;
+		}
 	}
 
 	/**
@@ -121,6 +125,10 @@ public class ColorHelper {
 
 		public static int fromFloats(float a, float r, float g, float b) {
 			return getArgb(ColorHelper.channelFromFloat(a), ColorHelper.channelFromFloat(r), ColorHelper.channelFromFloat(g), ColorHelper.channelFromFloat(b));
+		}
+
+		public static int method_60676(int i, int j) {
+			return getArgb((getAlpha(i) + getAlpha(j)) / 2, (getRed(i) + getRed(j)) / 2, (getGreen(i) + getGreen(j)) / 2, (getBlue(i) + getBlue(j)) / 2);
 		}
 	}
 }

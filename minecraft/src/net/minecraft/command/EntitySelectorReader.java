@@ -40,6 +40,7 @@ public class EntitySelectorReader {
 	private static final char RANDOM_PLAYER = 'r';
 	private static final char SELF = 's';
 	private static final char ALL_ENTITIES = 'e';
+	private static final char field_52174 = 'n';
 	public static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.entity.invalid"));
 	public static final DynamicCommandExceptionType UNKNOWN_SELECTOR_EXCEPTION = new DynamicCommandExceptionType(
 		selectorType -> Text.stringifiedTranslatable("argument.entity.selector.unknown", selectorType)
@@ -217,16 +218,20 @@ public class EntitySelectorReader {
 				this.limit = 1;
 				this.includesNonPlayers = true;
 				this.senderOnly = true;
-			} else {
-				if (c != 'e') {
-					this.reader.setCursor(i);
-					throw UNKNOWN_SELECTOR_EXCEPTION.createWithContext(this.reader, "@" + c);
-				}
-
+			} else if (c == 'e') {
 				this.limit = Integer.MAX_VALUE;
 				this.includesNonPlayers = true;
 				this.sorter = EntitySelector.ARBITRARY;
 				this.predicate = Entity::isAlive;
+			} else {
+				if (c != 'n') {
+					this.reader.setCursor(i);
+					throw UNKNOWN_SELECTOR_EXCEPTION.createWithContext(this.reader, "@" + c);
+				}
+
+				this.limit = 1;
+				this.includesNonPlayers = true;
+				this.sorter = NEAREST;
 			}
 
 			this.suggestionProvider = this::suggestOpen;
@@ -464,6 +469,7 @@ public class EntitySelectorReader {
 		builder.suggest("@r", Text.translatable("argument.entity.selector.randomPlayer"));
 		builder.suggest("@s", Text.translatable("argument.entity.selector.self"));
 		builder.suggest("@e", Text.translatable("argument.entity.selector.allEntities"));
+		builder.suggest("@n", Text.translatable("argument.entity.selector.nearestEntity"));
 	}
 
 	private CompletableFuture<Suggestions> suggestSelector(SuggestionsBuilder builder, Consumer<SuggestionsBuilder> consumer) {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import net.minecraft.class_9790;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementEntry;
@@ -65,6 +66,7 @@ import net.minecraft.predicate.entity.LightningBoltPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.PlayerPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.predicate.item.ItemSubPredicateTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
@@ -153,7 +155,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				Items.MAP,
 				Text.translatable("advancements.adventure.root.title"),
 				Text.translatable("advancements.adventure.root.description"),
-				new Identifier("textures/gui/advancements/backgrounds/adventure.png"),
+				Identifier.method_60656("textures/gui/advancements/backgrounds/adventure.png"),
 				AdvancementFrame.TASK,
 				false,
 				false,
@@ -537,7 +539,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 					LocationPredicate.Builder.create()
 						.biome(RegistryEntryList.of(lookup.getWrapperOrThrow(RegistryKeys.BIOME).getOrThrow(BiomeKeys.MEADOW)))
 						.block(BlockPredicate.Builder.create().blocks(Blocks.JUKEBOX)),
-					ItemPredicate.Builder.create().tag(ItemTags.MUSIC_DISCS)
+					ItemPredicate.Builder.create().subPredicate(ItemSubPredicateTypes.JUKEBOX_PLAYABLE, class_9790.method_60732())
 				)
 			)
 			.build(exporter, "adventure/play_jukebox_in_meadows");
@@ -634,7 +636,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"pot_crafted_using_only_sherds",
 				RecipeCraftedCriterion.Conditions.create(
-					new Identifier("minecraft:decorated_pot"),
+					Identifier.method_60656("decorated_pot"),
 					List.of(
 						ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS),
 						ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS),
@@ -835,7 +837,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				true,
 				false
 			)
-			.criterion("crafter_crafted_crafter", RecipeCraftedCriterion.Conditions.createCrafterRecipeCrafted(new Identifier("minecraft:crafter")))
+			.criterion("crafter_crafted_crafter", RecipeCraftedCriterion.Conditions.createCrafterRecipeCrafted(Identifier.method_60656("crafter")))
 			.build(exporter, "adventure/crafters_crafting_crafters");
 		Advancement.Builder.create()
 			.parent(advancementEntry13)

@@ -19,6 +19,6 @@ public class BannerPatternTags {
 	}
 
 	private static TagKey<BannerPattern> of(String id) {
-		return TagKey.of(RegistryKeys.BANNER_PATTERN, new Identifier(id));
+		return TagKey.of(RegistryKeys.BANNER_PATTERN, Identifier.method_60656(id));
 	}
 }

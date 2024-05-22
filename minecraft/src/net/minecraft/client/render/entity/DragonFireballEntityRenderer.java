@@ -8,13 +8,13 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.DragonFireballEntity;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballEntity> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/enderdragon/dragon_fireball.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/enderdragon/dragon_fireball.png");
 	private static final RenderLayer LAYER = RenderLayer.getEntityCutoutNoCull(TEXTURE);
 
 	public DragonFireballEntityRenderer(EntityRendererFactory.Context context) {
@@ -29,7 +29,6 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 		matrixStack.push();
 		matrixStack.scale(2.0F, 2.0F, 2.0F);
 		matrixStack.multiply(this.dispatcher.getRotation());
-		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 		MatrixStack.Entry entry = matrixStack.peek();
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
 		produceVertex(vertexConsumer, entry, i, 0.0F, 0, 0, 1);
@@ -42,12 +41,11 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 
 	private static void produceVertex(VertexConsumer vertexConsumer, MatrixStack.Entry matrix, int light, float x, int z, int textureU, int textureV) {
 		vertexConsumer.vertex(matrix, x - 0.5F, (float)z - 0.25F, 0.0F)
-			.color(255, 255, 255, 255)
+			.color(Colors.WHITE)
 			.texture((float)textureU, (float)textureV)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.light(light)
-			.normal(matrix, 0.0F, 1.0F, 0.0F)
-			.next();
+			.method_60803(light)
+			.method_60831(matrix, 0.0F, 1.0F, 0.0F);
 	}
 
 	public Identifier getTexture(DragonFireballEntity dragonFireballEntity) {

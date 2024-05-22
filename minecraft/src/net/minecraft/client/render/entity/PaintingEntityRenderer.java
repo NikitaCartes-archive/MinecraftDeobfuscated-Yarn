@@ -13,6 +13,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -133,11 +134,10 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		MatrixStack.Entry matrix, VertexConsumer vertexConsumer, float x, float y, float u, float v, float z, int normalX, int normalY, int normalZ, int light
 	) {
 		vertexConsumer.vertex(matrix, x, y, z)
-			.color(255, 255, 255, 255)
+			.color(Colors.WHITE)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.light(light)
-			.normal(matrix, (float)normalX, (float)normalY, (float)normalZ)
-			.next();
+			.method_60803(light)
+			.method_60831(matrix, (float)normalX, (float)normalY, (float)normalZ);
 	}
 }

@@ -16,10 +16,10 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class RealmsNotificationsScreen extends RealmsScreen {
-	private static final Identifier UNSEEN_NOTIFICATION_ICON_TEXTURE = new Identifier("icon/unseen_notification");
-	private static final Identifier NEWS_ICON_TEXTURE = new Identifier("icon/news");
-	private static final Identifier INVITE_ICON_TEXTURE = new Identifier("icon/invite");
-	private static final Identifier TRIAL_AVAILABLE_ICON_TEXTURE = new Identifier("icon/trial_available");
+	private static final Identifier UNSEEN_NOTIFICATION_ICON_TEXTURE = Identifier.method_60656("icon/unseen_notification");
+	private static final Identifier NEWS_ICON_TEXTURE = Identifier.method_60656("icon/news");
+	private static final Identifier INVITE_ICON_TEXTURE = Identifier.method_60656("icon/invite");
+	private static final Identifier TRIAL_AVAILABLE_ICON_TEXTURE = Identifier.method_60656("icon/trial_available");
 	private final CompletableFuture<Boolean> validClient = RealmsAvailability.check().thenApply(info -> info.type() == RealmsAvailability.Type.SUCCESS);
 	@Nullable
 	private PeriodicRunnerFactory.RunnersManager periodicRunnersManager;

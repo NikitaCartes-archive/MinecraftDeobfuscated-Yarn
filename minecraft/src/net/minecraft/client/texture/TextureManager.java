@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class TextureManager implements ResourceReloader, TextureTickListener, AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final Identifier MISSING_IDENTIFIER = new Identifier("");
+	public static final Identifier MISSING_IDENTIFIER = Identifier.method_60656("");
 	private final Map<Identifier, AbstractTexture> textures = Maps.<Identifier, AbstractTexture>newHashMap();
 	private final Set<TextureTickListener> tickListeners = Sets.<TextureTickListener>newHashSet();
 	private final Map<String, Integer> dynamicIdCounters = Maps.<String, Integer>newHashMap();
@@ -130,7 +130,7 @@ public class TextureManager implements ResourceReloader, TextureTickListener, Au
 		}
 
 		this.dynamicIdCounters.put(prefix, integer);
-		Identifier identifier = new Identifier(String.format(Locale.ROOT, "dynamic/%s_%d", prefix, integer));
+		Identifier identifier = Identifier.method_60656(String.format(Locale.ROOT, "dynamic/%s_%d", prefix, integer));
 		this.registerTexture(identifier, texture);
 		return identifier;
 	}

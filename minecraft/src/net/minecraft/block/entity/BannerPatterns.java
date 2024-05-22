@@ -51,7 +51,7 @@ public class BannerPatterns {
 	public static final RegistryKey<BannerPattern> GUSTER = of("guster");
 
 	private static RegistryKey<BannerPattern> of(String id) {
-		return RegistryKey.of(RegistryKeys.BANNER_PATTERN, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.BANNER_PATTERN, Identifier.method_60656(id));
 	}
 
 	public static void bootstrap(Registerable<BannerPattern> registry) {

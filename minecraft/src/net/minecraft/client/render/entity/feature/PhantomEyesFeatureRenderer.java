@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class PhantomEyesFeatureRenderer<T extends PhantomEntity> extends EyesFeatureRenderer<T, PhantomEntityModel<T>> {
-	private static final RenderLayer SKIN = RenderLayer.getEyes(new Identifier("textures/entity/phantom_eyes.png"));
+	private static final RenderLayer SKIN = RenderLayer.getEyes(Identifier.method_60656("textures/entity/phantom_eyes.png"));
 
 	public PhantomEyesFeatureRenderer(FeatureRendererContext<T, PhantomEntityModel<T>> featureRendererContext) {
 		super(featureRendererContext);

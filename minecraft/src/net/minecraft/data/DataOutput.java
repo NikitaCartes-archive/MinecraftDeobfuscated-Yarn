@@ -1,6 +1,9 @@
 package net.minecraft.data;
 
 import java.nio.file.Path;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 
 public class DataOutput {
@@ -20,6 +23,14 @@ public class DataOutput {
 
 	public DataOutput.PathResolver getResolver(DataOutput.OutputType outputType, String directoryName) {
 		return new DataOutput.PathResolver(this, outputType, directoryName);
+	}
+
+	public DataOutput.PathResolver method_60917(RegistryKey<? extends Registry<?>> registryKey) {
+		return this.getResolver(DataOutput.OutputType.DATA_PACK, RegistryKeys.method_60915(registryKey));
+	}
+
+	public DataOutput.PathResolver method_60918(RegistryKey<? extends Registry<?>> registryKey) {
+		return this.getResolver(DataOutput.OutputType.DATA_PACK, RegistryKeys.method_60916(registryKey));
 	}
 
 	public static enum OutputType {

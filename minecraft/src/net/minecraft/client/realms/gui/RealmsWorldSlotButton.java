@@ -21,12 +21,12 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class RealmsWorldSlotButton extends ButtonWidget {
-	private static final Identifier SLOT_FRAME = new Identifier("widget/slot_frame");
-	private static final Identifier CHECKMARK = new Identifier("icon/checkmark");
-	public static final Identifier EMPTY_FRAME = new Identifier("textures/gui/realms/empty_frame.png");
-	public static final Identifier PANORAMA_0 = new Identifier("minecraft", "textures/gui/title/background/panorama_0.png");
-	public static final Identifier PANORAMA_2 = new Identifier("minecraft", "textures/gui/title/background/panorama_2.png");
-	public static final Identifier PANORAMA_3 = new Identifier("minecraft", "textures/gui/title/background/panorama_3.png");
+	private static final Identifier SLOT_FRAME = Identifier.method_60656("widget/slot_frame");
+	private static final Identifier CHECKMARK = Identifier.method_60656("icon/checkmark");
+	public static final Identifier EMPTY_FRAME = Identifier.method_60656("textures/gui/realms/empty_frame.png");
+	public static final Identifier PANORAMA_0 = Identifier.method_60656("textures/gui/title/background/panorama_0.png");
+	public static final Identifier PANORAMA_2 = Identifier.method_60656("textures/gui/title/background/panorama_2.png");
+	public static final Identifier PANORAMA_3 = Identifier.method_60656("textures/gui/title/background/panorama_3.png");
 	private static final Text ACTIVE_TOOLTIP = Text.translatable("mco.configure.world.slot.tooltip.active");
 	private static final Text MINIGAME_TOOLTIP = Text.translatable("mco.configure.world.slot.tooltip.minigame");
 	private static final Text TOOLTIP = Text.translatable("mco.configure.world.slot.tooltip");

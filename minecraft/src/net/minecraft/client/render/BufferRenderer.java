@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9801;
 import net.minecraft.client.gl.VertexBuffer;
 
 /**
@@ -31,7 +32,7 @@ public class BufferRenderer {
 	 * com.mojang.blaze3d.systems.RenderSystem#setShader
 	 * RenderSystem#setShader}
 	 */
-	public static void drawWithGlobalProgram(BufferBuilder.BuiltBuffer buffer) {
+	public static void drawWithGlobalProgram(class_9801 buffer) {
 		if (!RenderSystem.isOnRenderThreadOrInit()) {
 			RenderSystem.recordRenderCall(() -> drawWithGlobalProgramInternal(buffer));
 		} else {
@@ -39,11 +40,9 @@ public class BufferRenderer {
 		}
 	}
 
-	private static void drawWithGlobalProgramInternal(BufferBuilder.BuiltBuffer buffer) {
+	private static void drawWithGlobalProgramInternal(class_9801 buffer) {
 		VertexBuffer vertexBuffer = upload(buffer);
-		if (vertexBuffer != null) {
-			vertexBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
-		}
+		vertexBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
 	}
 
 	/**
@@ -54,24 +53,16 @@ public class BufferRenderer {
 	 * RenderSystem#setShader}. The caller of this method must manually bind a
 	 * shader program before calling this method.
 	 */
-	public static void draw(BufferBuilder.BuiltBuffer buffer) {
+	public static void draw(class_9801 buffer) {
 		VertexBuffer vertexBuffer = upload(buffer);
-		if (vertexBuffer != null) {
-			vertexBuffer.draw();
-		}
+		vertexBuffer.draw();
 	}
 
-	@Nullable
-	private static VertexBuffer upload(BufferBuilder.BuiltBuffer buffer) {
+	private static VertexBuffer upload(class_9801 buffer) {
 		RenderSystem.assertOnRenderThread();
-		if (buffer.isEmpty()) {
-			buffer.release();
-			return null;
-		} else {
-			VertexBuffer vertexBuffer = bind(buffer.getParameters().format());
-			vertexBuffer.upload(buffer);
-			return vertexBuffer;
-		}
+		VertexBuffer vertexBuffer = bind(buffer.method_60822().format());
+		vertexBuffer.upload(buffer);
+		return vertexBuffer;
 	}
 
 	private static VertexBuffer bind(VertexFormat vertexFormat) {

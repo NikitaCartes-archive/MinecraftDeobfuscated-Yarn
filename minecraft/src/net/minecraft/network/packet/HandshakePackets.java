@@ -9,6 +9,6 @@ public class HandshakePackets {
 	public static final PacketType<HandshakeC2SPacket> INTENTION = c2s("intention");
 
 	private static <T extends Packet<ServerHandshakePacketListener>> PacketType<T> c2s(String id) {
-		return new PacketType<>(NetworkSide.SERVERBOUND, new Identifier(id));
+		return new PacketType<>(NetworkSide.SERVERBOUND, Identifier.method_60656(id));
 	}
 }

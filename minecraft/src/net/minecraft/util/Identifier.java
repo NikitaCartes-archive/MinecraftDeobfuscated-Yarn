@@ -110,7 +110,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class Identifier implements Comparable<Identifier> {
 	public static final Codec<Identifier> CODEC = Codec.STRING.<Identifier>comapFlatMap(Identifier::validate, Identifier::toString).stable();
-	public static final PacketCodec<ByteBuf, Identifier> PACKET_CODEC = PacketCodecs.STRING.xmap(Identifier::new, Identifier::toString);
+	public static final PacketCodec<ByteBuf, Identifier> PACKET_CODEC = PacketCodecs.STRING.xmap(Identifier::method_60654, Identifier::toString);
 	public static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.id.invalid"));
 	public static final char NAMESPACE_SEPARATOR = ':';
 	public static final String DEFAULT_NAMESPACE = "minecraft";
@@ -123,28 +123,28 @@ public class Identifier implements Comparable<Identifier> {
 		this.path = path;
 	}
 
-	public Identifier(String namespace, String path) {
+	protected Identifier(String namespace, String path) {
 		this(validateNamespace(namespace, path), validatePath(namespace, path), null);
+	}
+
+	public static Identifier method_60655(String string, String string2) {
+		return new Identifier(string, string2);
 	}
 
 	private Identifier(String[] id) {
 		this(id[0], id[1]);
 	}
 
-	/**
-	 * <p>Takes a string of the form {@code <namespace>:<path>} or {@code <path>} which will use the default namespace, for example {@code minecraft:iron_ingot} or {@code iron_ingot}.
-	 * <p>The string will be split (on the {@code :}) into an identifier with the specified path and namespace.
-	 * Prefer using the {@link net.minecraft.util.Identifier#Identifier(java.lang.String, java.lang.String) Identifier(java.lang.String, java.lang.String)} constructor that takes the namespace and path as individual parameters to avoid mistakes.
-	 * <p>If there is no colon in the given string argument, the namespace will be set to {@value #DEFAULT_NAMESPACE}, and the path will be the given argument.
-	 * If the colon is the first character of the given string argument (i.e. the namespace is empty), the namespace will also be set to {@value #DEFAULT_NAMESPACE}, and the path will be the given argument without the initial colon.
-	 * @throws InvalidIdentifierException if the string cannot be parsed as an identifier.
-	 */
-	public Identifier(String id) {
-		this(split(id, ':'));
+	public static Identifier method_60654(String string) {
+		return splitOn(string, ':');
 	}
 
 	public static Identifier splitOn(String id, char delimiter) {
 		return new Identifier(split(id, delimiter));
+	}
+
+	public static Identifier method_60656(String string) {
+		return new Identifier("minecraft", string);
 	}
 
 	/**
@@ -155,7 +155,7 @@ public class Identifier implements Comparable<Identifier> {
 	@Nullable
 	public static Identifier tryParse(String id) {
 		try {
-			return new Identifier(id);
+			return method_60654(id);
 		} catch (InvalidIdentifierException var2) {
 			return null;
 		}
@@ -194,7 +194,7 @@ public class Identifier implements Comparable<Identifier> {
 
 	public static DataResult<Identifier> validate(String id) {
 		try {
-			return DataResult.success(new Identifier(id));
+			return DataResult.success(method_60654(id));
 		} catch (InvalidIdentifierException var2) {
 			return DataResult.error(() -> "Not a valid resource location: " + id + " " + var2.getMessage());
 		}
@@ -310,7 +310,7 @@ public class Identifier implements Comparable<Identifier> {
 		String string = readString(reader);
 
 		try {
-			return new Identifier(string);
+			return method_60654(string);
 		} catch (InvalidIdentifierException var4) {
 			reader.setCursor(i);
 			throw COMMAND_EXCEPTION.createWithContext(reader);
@@ -324,7 +324,7 @@ public class Identifier implements Comparable<Identifier> {
 			throw COMMAND_EXCEPTION.createWithContext(reader);
 		} else {
 			try {
-				return new Identifier(string);
+				return method_60654(string);
 			} catch (InvalidIdentifierException var4) {
 				reader.setCursor(i);
 				throw COMMAND_EXCEPTION.createWithContext(reader);
@@ -414,7 +414,7 @@ public class Identifier implements Comparable<Identifier> {
 
 	public static class Serializer implements JsonDeserializer<Identifier>, JsonSerializer<Identifier> {
 		public Identifier deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-			return new Identifier(JsonHelper.asString(jsonElement, "location"));
+			return Identifier.method_60654(JsonHelper.asString(jsonElement, "location"));
 		}
 
 		public JsonElement serialize(Identifier identifier, Type type, JsonSerializationContext jsonSerializationContext) {

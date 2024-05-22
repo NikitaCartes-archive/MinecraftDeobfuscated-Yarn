@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
@@ -113,6 +112,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.Util;
@@ -137,9 +137,10 @@ import org.slf4j.Logger;
 public abstract class LivingEntity extends Entity implements Attackable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String ACTIVE_EFFECTS_NBT_KEY = "active_effects";
-	private static final UUID POWDER_SNOW_SLOW_ID = UUID.fromString("1eaf83ff-7207-4596-b37a-d7a07b3ec4ce");
+	private static final Identifier POWDER_SNOW_SLOW_ID = Identifier.method_60656("powder_snow");
+	private static final Identifier field_51996 = Identifier.method_60656("sprinting");
 	private static final EntityAttributeModifier SPRINTING_SPEED_BOOST = new EntityAttributeModifier(
-		UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D"), "Sprinting speed boost", 0.3F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+		field_51996, 0.3F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
 	);
 	public static final int field_30069 = 2;
 	public static final int field_30070 = 4;
@@ -174,6 +175,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	public static final float BABY_SCALE_FACTOR = 0.5F;
 	public static final float field_47756 = 0.5F;
 	private static final float field_49972 = 0.21875F;
+	public static final String field_51995 = "attributes";
 	private final AttributeContainer attributes;
 	private final DamageTracker damageTracker = new DamageTracker(this);
 	private final Map<RegistryEntry<StatusEffect>, StatusEffectInstance> activeStatusEffects = Maps.<RegistryEntry<StatusEffect>, StatusEffectInstance>newHashMap();
@@ -504,9 +506,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				}
 
 				float f = -0.05F * this.getFreezingScale();
-				entityAttributeInstance.addTemporaryModifier(
-					new EntityAttributeModifier(POWDER_SNOW_SLOW_ID, "Powder snow slow", (double)f, EntityAttributeModifier.Operation.ADD_VALUE)
-				);
+				entityAttributeInstance.addTemporaryModifier(new EntityAttributeModifier(POWDER_SNOW_SLOW_ID, (double)f, EntityAttributeModifier.Operation.ADD_VALUE));
 			}
 		}
 	}
@@ -690,15 +690,19 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	@Override
 	public void remove(Entity.RemovalReason reason) {
 		if (reason == Entity.RemovalReason.KILLED || reason == Entity.RemovalReason.DISCARDED) {
-			for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
-				statusEffectInstance.onEntityRemoval(this, reason);
-			}
-
-			this.activeStatusEffects.clear();
+			this.method_60699(reason);
 		}
 
 		super.remove(reason);
 		this.brain.forgetAll();
+	}
+
+	protected void method_60699(Entity.RemovalReason removalReason) {
+		for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
+			statusEffectInstance.onEntityRemoval(this, removalReason);
+		}
+
+		this.activeStatusEffects.clear();
 	}
 
 	@Override
@@ -708,7 +712,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		nbt.putInt("HurtByTimestamp", this.lastAttackedTime);
 		nbt.putShort("DeathTime", (short)this.deathTime);
 		nbt.putFloat("AbsorptionAmount", this.getAbsorptionAmount());
-		nbt.put("Attributes", this.getAttributes().toNbt());
+		nbt.put("attributes", this.getAttributes().toNbt());
 		if (!this.activeStatusEffects.isEmpty()) {
 			NbtList nbtList = new NbtList();
 
@@ -732,8 +736,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		this.setAbsorptionAmountUnclamped(nbt.getFloat("AbsorptionAmount"));
-		if (nbt.contains("Attributes", NbtElement.LIST_TYPE) && this.getWorld() != null && !this.getWorld().isClient) {
-			this.getAttributes().readNbt(nbt.getList("Attributes", NbtElement.COMPOUND_TYPE));
+		if (nbt.contains("attributes", NbtElement.LIST_TYPE) && this.getWorld() != null && !this.getWorld().isClient) {
+			this.getAttributes().readNbt(nbt.getList("attributes", NbtElement.COMPOUND_TYPE));
 		}
 
 		if (nbt.contains("active_effects", NbtElement.LIST_TYPE)) {
@@ -3069,7 +3073,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	@Override
-	protected Vec3d positionInPortal(Direction.Axis portalAxis, BlockLocating.Rectangle portalRect) {
+	public Vec3d positionInPortal(Direction.Axis portalAxis, BlockLocating.Rectangle portalRect) {
 		return positionInPortal(super.positionInPortal(portalAxis, portalRect));
 	}
 

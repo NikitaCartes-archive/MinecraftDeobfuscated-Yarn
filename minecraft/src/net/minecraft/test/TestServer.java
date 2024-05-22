@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
+import net.minecraft.class_9813;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.Registry;
@@ -209,7 +210,7 @@ public class TestServer extends MinecraftServer {
 	@Override
 	public void setCrashReport(CrashReport report) {
 		super.setCrashReport(report);
-		LOGGER.error("Game test server crashed\n{}", report.asString());
+		LOGGER.error("Game test server crashed\n{}", report.method_60920(class_9813.MINECRAFT_CRASH_REPORT));
 		System.exit(1);
 	}
 

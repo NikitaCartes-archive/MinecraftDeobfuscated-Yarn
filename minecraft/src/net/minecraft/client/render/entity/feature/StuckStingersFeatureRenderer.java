@@ -11,13 +11,14 @@ import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class StuckStingersFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>> extends StuckObjectsFeatureRenderer<T, M> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/bee/bee_stinger.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/bee/bee_stinger.png");
 
 	public StuckStingersFeatureRenderer(LivingEntityRenderer<T, M> livingEntityRenderer) {
 		super(livingEntityRenderer);
@@ -60,11 +61,10 @@ public class StuckStingersFeatureRenderer<T extends LivingEntity, M extends Play
 
 	private static void produceVertex(VertexConsumer vertexConsumer, MatrixStack.Entry matrix, float x, int y, float u, float v, int light) {
 		vertexConsumer.vertex(matrix, x, (float)y, 0.0F)
-			.color(255, 255, 255, 255)
+			.color(Colors.WHITE)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.light(light)
-			.normal(matrix, 0.0F, 1.0F, 0.0F)
-			.next();
+			.method_60803(light)
+			.method_60831(matrix, 0.0F, 1.0F, 0.0F);
 	}
 }

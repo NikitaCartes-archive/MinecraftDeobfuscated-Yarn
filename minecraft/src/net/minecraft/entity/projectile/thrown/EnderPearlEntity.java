@@ -1,6 +1,5 @@
 package net.minecraft.entity.projectile.thrown;
 
-import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -9,13 +8,16 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class EnderPearlEntity extends ThrownItemEntity {
 	public EnderPearlEntity(EntityType<? extends EnderPearlEntity> entityType, World world) {
@@ -48,34 +50,29 @@ public class EnderPearlEntity extends ThrownItemEntity {
 				);
 		}
 
-		if (!this.getWorld().isClient && !this.isRemoved()) {
+		if (this.getWorld() instanceof ServerWorld serverWorld && !this.isRemoved()) {
 			Entity entity = this.getOwner();
 			if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
-				if (serverPlayerEntity.networkHandler.isConnectionOpen()
-					&& serverPlayerEntity.getWorld() == this.getWorld()
-					&& !serverPlayerEntity.isSleeping()
-					&& !serverPlayerEntity.isSpectator()
-					&& serverPlayerEntity.isAlive()) {
-					if (this.random.nextFloat() < 0.05F && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
-						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.getWorld());
+				if (serverPlayerEntity.networkHandler.isConnectionOpen() && serverPlayerEntity.canUsePortals()) {
+					if (this.random.nextFloat() < 0.05F && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
+						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(serverWorld);
 						if (endermiteEntity != null) {
 							endermiteEntity.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
-							this.getWorld().spawnEntity(endermiteEntity);
+							serverWorld.spawnEntity(endermiteEntity);
 						}
 					}
 
 					if (entity.hasVehicle()) {
-						serverPlayerEntity.requestTeleportAndDismount(this.getX(), this.getY(), this.getZ());
-					} else {
-						entity.requestTeleport(this.getX(), this.getY(), this.getZ());
+						this.detach();
 					}
 
+					entity.moveToWorld(new TeleportTarget(serverWorld, this.getPos(), entity.getVelocity(), entity.getYaw(), entity.getPitch()));
 					entity.onLanding();
 					entity.damage(this.getDamageSources().fall(), 5.0F);
-					this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_TELEPORT, SoundCategory.PLAYERS);
+					this.method_60729(serverWorld, this.getPos());
 				}
 			} else if (entity != null) {
-				entity.requestTeleport(this.getX(), this.getY(), this.getZ());
+				entity.moveToWorld(new TeleportTarget(serverWorld, this.getPos(), entity.getVelocity(), entity.getYaw(), entity.getPitch()));
 				entity.onLanding();
 			}
 
@@ -95,14 +92,15 @@ public class EnderPearlEntity extends ThrownItemEntity {
 
 	@Nullable
 	@Override
-	public Entity moveToWorld(Entity.TeleportTargetSupplier teleportTargetSupplier) {
-		return super.moveToWorld(() -> {
-			TeleportTarget teleportTarget = teleportTargetSupplier.get();
-			if (teleportTarget != null && this.getOwner() != null && this.getOwner().getWorld().getRegistryKey() != teleportTarget.newDimension().getRegistryKey()) {
-				this.setOwner(null);
-			}
+	public Entity moveToWorld(TeleportTarget teleportTarget) {
+		if (this.getWorld().getRegistryKey() != teleportTarget.newLevel().getRegistryKey()) {
+			this.method_60728();
+		}
 
-			return teleportTarget;
-		});
+		return super.moveToWorld(teleportTarget);
+	}
+
+	private void method_60729(World world, Vec3d vec3d) {
+		world.playSound(null, vec3d.x, vec3d.y, vec3d.z, SoundEvents.ENTITY_PLAYER_TELEPORT, SoundCategory.PLAYERS);
 	}
 }

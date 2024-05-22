@@ -5,6 +5,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9782;
+import net.minecraft.class_9807;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -14,6 +16,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.screen.ScreenTexts;
@@ -22,7 +25,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class GameMenuScreen extends Screen {
-	private static final Identifier DRAFT_REPORT_ICON_TEXTURE = new Identifier("icon/draft_report");
+	private static final Identifier DRAFT_REPORT_ICON_TEXTURE = Identifier.method_60656("icon/draft_report");
 	private static final int GRID_COLUMNS = 2;
 	private static final int BUTTONS_TOP_MARGIN = 50;
 	private static final int GRID_MARGIN = 4;
@@ -33,6 +36,8 @@ public class GameMenuScreen extends Screen {
 	private static final Text STATS_TEXT = Text.translatable("gui.stats");
 	private static final Text SEND_FEEDBACK_TEXT = Text.translatable("menu.sendFeedback");
 	private static final Text REPORT_BUGS_TEXT = Text.translatable("menu.reportBugs");
+	private static final Text field_52133 = Text.translatable("menu.feedback");
+	private static final Text field_52132 = Text.translatable("menu.server_links");
 	private static final Text OPTIONS_TEXT = Text.translatable("menu.options");
 	private static final Text SHARE_TO_LAN_TEXT = Text.translatable("menu.shareToLan");
 	private static final Text PLAYER_REPORTING_TEXT = Text.translatable("menu.playerReporting");
@@ -72,14 +77,14 @@ public class GameMenuScreen extends Screen {
 		}).width(204).build(), 2, gridWidget.copyPositioner().marginTop(50));
 		adder.add(this.createButton(ADVANCEMENTS_TEXT, () -> new AdvancementsScreen(this.client.player.networkHandler.getAdvancementHandler(), this)));
 		adder.add(this.createButton(STATS_TEXT, () -> new StatsScreen(this, this.client.player.getStatHandler())));
-		adder.add(
-			this.createUrlButton(
-				SEND_FEEDBACK_TEXT, SharedConstants.getGameVersion().isStable() ? "https://aka.ms/javafeedback?ref=game" : "https://aka.ms/snapshotfeedback?ref=game"
-			)
-		);
-		adder.add(this.createUrlButton(REPORT_BUGS_TEXT, "https://aka.ms/snapshotbugs?ref=game")).active = !SharedConstants.getGameVersion()
-			.getSaveVersion()
-			.isNotMainSeries();
+		class_9782 lv = this.client.player.networkHandler.method_60885();
+		if (lv.method_60657()) {
+			method_60873(this, adder);
+		} else {
+			adder.add(this.createButton(field_52133, () -> new GameMenuScreen.class_9804(this)));
+			adder.add(this.createButton(field_52132, () -> new class_9807(this, lv)));
+		}
+
 		adder.add(this.createButton(OPTIONS_TEXT, () -> new OptionsScreen(this, this.client.options)));
 		if (this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote()) {
 			adder.add(this.createButton(SHARE_TO_LAN_TEXT, () -> new OpenToLanScreen(this)));
@@ -95,6 +100,19 @@ public class GameMenuScreen extends Screen {
 		gridWidget.refreshPositions();
 		SimplePositioningWidget.setPos(gridWidget, 0, 0, this.width, this.height, 0.5F, 0.25F);
 		gridWidget.forEachChild(this::addDrawableChild);
+	}
+
+	static void method_60873(Screen screen, GridWidget.Adder adder) {
+		adder.add(
+			createUrlButton(
+				screen,
+				SEND_FEEDBACK_TEXT,
+				SharedConstants.getGameVersion().isStable() ? "https://aka.ms/javafeedback?ref=game" : "https://aka.ms/snapshotfeedback?ref=game"
+			)
+		);
+		adder.add(createUrlButton(screen, REPORT_BUGS_TEXT, "https://aka.ms/snapshotbugs?ref=game")).active = !SharedConstants.getGameVersion()
+			.getSaveVersion()
+			.isNotMainSeries();
 	}
 
 	private void disconnect() {
@@ -141,7 +159,41 @@ public class GameMenuScreen extends Screen {
 		return ButtonWidget.builder(text, button -> this.client.setScreen((Screen)screenSupplier.get())).width(98).build();
 	}
 
-	private ButtonWidget createUrlButton(Text text, String url) {
-		return ButtonWidget.builder(text, ConfirmLinkScreen.opening(this, url)).width(98).build();
+	private static ButtonWidget createUrlButton(Screen screen, Text text, String url) {
+		return ButtonWidget.builder(text, ConfirmLinkScreen.opening(screen, url)).width(98).build();
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class class_9804 extends Screen {
+		private static final Text field_52135 = Text.translatable("menu.feedback.title");
+		public final Screen field_52134;
+		private final ThreePartsLayoutWidget field_52136 = new ThreePartsLayoutWidget(this);
+
+		protected class_9804(Screen screen) {
+			super(field_52135);
+			this.field_52134 = screen;
+		}
+
+		@Override
+		protected void init() {
+			this.field_52136.addHeader(field_52135, this.textRenderer);
+			GridWidget gridWidget = this.field_52136.addBody(new GridWidget());
+			gridWidget.getMainPositioner().margin(4, 4, 4, 0);
+			GridWidget.Adder adder = gridWidget.createAdder(2);
+			GameMenuScreen.method_60873(this, adder);
+			this.field_52136.addFooter(ButtonWidget.builder(ScreenTexts.BACK, buttonWidget -> this.close()).width(200).build());
+			this.field_52136.forEachChild(this::addDrawableChild);
+			this.initTabNavigation();
+		}
+
+		@Override
+		protected void initTabNavigation() {
+			this.field_52136.refreshPositions();
+		}
+
+		@Override
+		public void close() {
+			this.client.setScreen(this.field_52134);
+		}
 	}
 }

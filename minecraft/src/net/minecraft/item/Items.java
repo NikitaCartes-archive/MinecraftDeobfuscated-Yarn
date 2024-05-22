@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import java.util.List;
 import java.util.function.UnaryOperator;
+import net.minecraft.class_9796;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.Sherds;
@@ -1727,61 +1728,61 @@ public class Items {
 		)
 	);
 	public static final Item MUSIC_DISC_13 = register(
-		"music_disc_13", new MusicDiscItem(1, SoundEvents.MUSIC_DISC_13, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 178)
+		"music_disc_13", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.field_52037))
 	);
 	public static final Item MUSIC_DISC_CAT = register(
-		"music_disc_cat", new MusicDiscItem(2, SoundEvents.MUSIC_DISC_CAT, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 185)
+		"music_disc_cat", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.CAT))
 	);
 	public static final Item MUSIC_DISC_BLOCKS = register(
-		"music_disc_blocks", new MusicDiscItem(3, SoundEvents.MUSIC_DISC_BLOCKS, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 345)
+		"music_disc_blocks", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.BLOCKS))
 	);
 	public static final Item MUSIC_DISC_CHIRP = register(
-		"music_disc_chirp", new MusicDiscItem(4, SoundEvents.MUSIC_DISC_CHIRP, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 185)
+		"music_disc_chirp", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.CHIRP))
 	);
 	public static final Item MUSIC_DISC_CREATOR = register(
-		"music_disc_creator", new MusicDiscItem(12, SoundEvents.MUSIC_DISC_CREATOR, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 176)
+		"music_disc_creator", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.CREATOR))
 	);
 	public static final Item MUSIC_DISC_CREATOR_MUSIC_BOX = register(
-		"music_disc_creator_music_box", new MusicDiscItem(11, SoundEvents.MUSIC_DISC_CREATOR_MUSIC_BOX, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 73)
+		"music_disc_creator_music_box", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.CREATOR_MUSIC_BOX))
 	);
 	public static final Item MUSIC_DISC_FAR = register(
-		"music_disc_far", new MusicDiscItem(5, SoundEvents.MUSIC_DISC_FAR, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 174)
+		"music_disc_far", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.FAR))
 	);
 	public static final Item MUSIC_DISC_MALL = register(
-		"music_disc_mall", new MusicDiscItem(6, SoundEvents.MUSIC_DISC_MALL, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 197)
+		"music_disc_mall", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.MALL))
 	);
 	public static final Item MUSIC_DISC_MELLOHI = register(
-		"music_disc_mellohi", new MusicDiscItem(7, SoundEvents.MUSIC_DISC_MELLOHI, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 96)
+		"music_disc_mellohi", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.MELLOHI))
 	);
 	public static final Item MUSIC_DISC_STAL = register(
-		"music_disc_stal", new MusicDiscItem(8, SoundEvents.MUSIC_DISC_STAL, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 150)
+		"music_disc_stal", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.STAL))
 	);
 	public static final Item MUSIC_DISC_STRAD = register(
-		"music_disc_strad", new MusicDiscItem(9, SoundEvents.MUSIC_DISC_STRAD, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 188)
+		"music_disc_strad", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.STRAD))
 	);
 	public static final Item MUSIC_DISC_WARD = register(
-		"music_disc_ward", new MusicDiscItem(10, SoundEvents.MUSIC_DISC_WARD, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 251)
+		"music_disc_ward", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.WARD))
 	);
 	public static final Item MUSIC_DISC_11 = register(
-		"music_disc_11", new MusicDiscItem(11, SoundEvents.MUSIC_DISC_11, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 71)
+		"music_disc_11", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.field_52047))
 	);
 	public static final Item MUSIC_DISC_WAIT = register(
-		"music_disc_wait", new MusicDiscItem(12, SoundEvents.MUSIC_DISC_WAIT, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 238)
+		"music_disc_wait", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.WAIT))
 	);
 	public static final Item MUSIC_DISC_OTHERSIDE = register(
-		"music_disc_otherside", new MusicDiscItem(14, SoundEvents.MUSIC_DISC_OTHERSIDE, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 195)
+		"music_disc_otherside", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.OTHERSIDE))
 	);
 	public static final Item MUSIC_DISC_RELIC = register(
-		"music_disc_relic", new MusicDiscItem(14, SoundEvents.MUSIC_DISC_RELIC, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 218)
+		"music_disc_relic", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.RELIC))
 	);
 	public static final Item MUSIC_DISC_5 = register(
-		"music_disc_5", new MusicDiscItem(15, SoundEvents.MUSIC_DISC_5, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 178)
+		"music_disc_5", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.field_52051))
 	);
 	public static final Item MUSIC_DISC_PIGSTEP = register(
-		"music_disc_pigstep", new MusicDiscItem(13, SoundEvents.MUSIC_DISC_PIGSTEP, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 149)
+		"music_disc_pigstep", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.PIGSTEP))
 	);
 	public static final Item MUSIC_DISC_PRECIPICE = register(
-		"music_disc_precipice", new MusicDiscItem(13, SoundEvents.MUSIC_DISC_PRECIPICE, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 299)
+		"music_disc_precipice", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).method_60745(class_9796.PRECIPICE))
 	);
 	public static final Item DISC_FRAGMENT_5 = register("disc_fragment_5", new DiscFragmentItem(new Item.Settings()));
 	public static final Item TRIDENT = register(
@@ -2014,7 +2015,7 @@ public class Items {
 	}
 
 	public static Item register(String id, Item item) {
-		return register(new Identifier(id), item);
+		return register(Identifier.method_60656(id), item);
 	}
 
 	public static Item register(Identifier id, Item item) {

@@ -27,6 +27,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.DebugInfoSender;
@@ -285,14 +286,10 @@ public class ArmadilloEntity extends AnimalEntity {
 				if (this.canRollUp()) {
 					this.startRolling();
 				}
-			} else if (this.shouldUnrollAndFlee()) {
+			} else if (source.isIn(DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES)) {
 				this.unroll();
 			}
 		}
-	}
-
-	public boolean shouldUnrollAndFlee() {
-		return this.isOnFire() || this.shouldEscapePowderSnow();
 	}
 
 	@Override
@@ -302,7 +299,7 @@ public class ArmadilloEntity extends AnimalEntity {
 			itemStack.damage(16, player, getSlotForHand(hand));
 			return ActionResult.success(this.getWorld().isClient);
 		} else {
-			return super.interactMob(player, hand);
+			return this.isNotIdle() ? ActionResult.FAIL : super.interactMob(player, hand);
 		}
 	}
 

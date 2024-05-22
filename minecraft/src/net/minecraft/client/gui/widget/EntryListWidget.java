@@ -27,10 +27,10 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extends ContainerWidget {
 	protected static final int field_45909 = 6;
-	private static final Identifier SCROLLER_TEXTURE = new Identifier("widget/scroller");
-	private static final Identifier SCROLLER_BACKGROUND_TEXTURE = new Identifier("widget/scroller_background");
-	private static final Identifier MENU_LIST_BACKGROUND_TEXTURE = new Identifier("textures/gui/menu_list_background.png");
-	private static final Identifier INWORLD_MENU_LIST_BACKGROUND_TEXTURE = new Identifier("textures/gui/inworld_menu_list_background.png");
+	private static final Identifier SCROLLER_TEXTURE = Identifier.method_60656("widget/scroller");
+	private static final Identifier SCROLLER_BACKGROUND_TEXTURE = Identifier.method_60656("widget/scroller_background");
+	private static final Identifier MENU_LIST_BACKGROUND_TEXTURE = Identifier.method_60656("textures/gui/menu_list_background.png");
+	private static final Identifier INWORLD_MENU_LIST_BACKGROUND_TEXTURE = Identifier.method_60656("textures/gui/inworld_menu_list_background.png");
 	protected final MinecraftClient client;
 	protected final int itemHeight;
 	private final List<E> children = new EntryListWidget.Entries();

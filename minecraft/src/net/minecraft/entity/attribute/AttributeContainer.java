@@ -7,7 +7,6 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
@@ -61,9 +60,9 @@ public class AttributeContainer {
 		return this.custom.get(attribute) != null || this.fallback.has(attribute);
 	}
 
-	public boolean hasModifierForAttribute(RegistryEntry<EntityAttribute> attribute, UUID uuid) {
+	public boolean hasModifierForAttribute(RegistryEntry<EntityAttribute> attribute, Identifier identifier) {
 		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
-		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(uuid) != null : this.fallback.hasModifier(attribute, uuid);
+		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(identifier) != null : this.fallback.hasModifier(attribute, identifier);
 	}
 
 	public double getValue(RegistryEntry<EntityAttribute> attribute) {
@@ -76,9 +75,9 @@ public class AttributeContainer {
 		return entityAttributeInstance != null ? entityAttributeInstance.getBaseValue() : this.fallback.getBaseValue(attribute);
 	}
 
-	public double getModifierValue(RegistryEntry<EntityAttribute> attribute, UUID uuid) {
+	public double getModifierValue(RegistryEntry<EntityAttribute> attribute, Identifier identifier) {
 		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
-		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(uuid).value() : this.fallback.getModifierValue(attribute, uuid);
+		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(identifier).value() : this.fallback.getModifierValue(attribute, identifier);
 	}
 
 	public void addTemporaryModifiers(Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiersMap) {
@@ -131,7 +130,7 @@ public class AttributeContainer {
 	public void readNbt(NbtList nbt) {
 		for (int i = 0; i < nbt.size(); i++) {
 			NbtCompound nbtCompound = nbt.getCompound(i);
-			String string = nbtCompound.getString("Name");
+			String string = nbtCompound.getString("id");
 			Identifier identifier = Identifier.tryParse(string);
 			if (identifier != null) {
 				Util.ifPresentOrElse(Registries.ATTRIBUTE.getEntry(identifier), attribute -> {

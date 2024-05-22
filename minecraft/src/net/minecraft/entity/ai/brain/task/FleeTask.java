@@ -2,6 +2,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
@@ -10,8 +11,11 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -23,25 +27,25 @@ public class FleeTask<E extends PathAwareEntity> extends MultiTickTask<E> {
 	private static final int MAX_RUN_TIME = 120;
 	private static final int HORIZONTAL_RANGE = 5;
 	private static final int VERTICAL_RANGE = 4;
-	private static final Predicate<PathAwareEntity> PANIC_PREDICATE = entity -> entity.getAttacker() != null
-			|| entity.shouldEscapePowderSnow()
-			|| entity.isOnFire();
 	private final float speed;
-	private final Predicate<E> predicate;
+	private final Function<PathAwareEntity, TagKey<DamageType>> field_52010;
 
 	public FleeTask(float speed) {
-		this(speed, PANIC_PREDICATE::test);
+		this(speed, pathAwareEntity -> DamageTypeTags.PANIC_CAUSES);
 	}
 
-	public FleeTask(float speed, Predicate<E> predicate) {
+	public FleeTask(float speed, Function<PathAwareEntity, TagKey<DamageType>> function) {
 		super(Map.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.REGISTERED, MemoryModuleType.HURT_BY, MemoryModuleState.REGISTERED), 100, 120);
 		this.speed = speed;
-		this.predicate = predicate;
+		this.field_52010 = function;
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, E pathAwareEntity) {
-		return this.predicate.test(pathAwareEntity)
-			&& (pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.HURT_BY) || pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.IS_PANICKING));
+		return (Boolean)pathAwareEntity.getBrain()
+				.getOptionalRegisteredMemory(MemoryModuleType.HURT_BY)
+				.map(damageSource -> damageSource.isIn((TagKey<DamageType>)this.field_52010.apply(pathAwareEntity)))
+				.orElse(false)
+			|| pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.IS_PANICKING);
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, E pathAwareEntity, long l) {

@@ -80,7 +80,6 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.ShaderProgram NO_PROGRAM = new RenderPhase.ShaderProgram();
 	protected static final RenderPhase.ShaderProgram POSITION_COLOR_LIGHTMAP_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getPositionColorLightmapProgram);
 	protected static final RenderPhase.ShaderProgram POSITION_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getPositionProgram);
-	protected static final RenderPhase.ShaderProgram POSITION_COLOR_TEXTURE_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getPositionColorTexProgram);
 	protected static final RenderPhase.ShaderProgram POSITION_TEXTURE_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getPositionTexProgram);
 	protected static final RenderPhase.ShaderProgram POSITION_COLOR_TEXTURE_LIGHTMAP_PROGRAM = new RenderPhase.ShaderProgram(
 		GameRenderer::getPositionColorTexLightmapProgram
@@ -129,11 +128,9 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.ShaderProgram LEASH_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeLeashProgram);
 	protected static final RenderPhase.ShaderProgram WATER_MASK_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeWaterMaskProgram);
 	protected static final RenderPhase.ShaderProgram OUTLINE_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeOutlineProgram);
-	protected static final RenderPhase.ShaderProgram ARMOR_GLINT_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeArmorGlintProgram);
 	protected static final RenderPhase.ShaderProgram ARMOR_ENTITY_GLINT_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeArmorEntityGlintProgram);
 	protected static final RenderPhase.ShaderProgram TRANSLUCENT_GLINT_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeGlintTranslucentProgram);
 	protected static final RenderPhase.ShaderProgram GLINT_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeGlintProgram);
-	protected static final RenderPhase.ShaderProgram DIRECT_GLINT_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeGlintDirectProgram);
 	protected static final RenderPhase.ShaderProgram ENTITY_GLINT_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeEntityGlintProgram);
 	protected static final RenderPhase.ShaderProgram DIRECT_ENTITY_GLINT_PROGRAM = new RenderPhase.ShaderProgram(
 		GameRenderer::getRenderTypeEntityGlintDirectProgram

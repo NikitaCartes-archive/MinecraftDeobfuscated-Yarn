@@ -170,6 +170,7 @@ public class ServerPlayerInteractionManager {
 						this.player,
 						EquipmentSlot.MAINHAND,
 						Vec3d.ofCenter(pos),
+						blockState,
 						item -> this.player.sendEquipmentBreakStatus(item, EquipmentSlot.MAINHAND)
 					);
 					blockState.onBlockBreakStart(this.world, pos, this.player);

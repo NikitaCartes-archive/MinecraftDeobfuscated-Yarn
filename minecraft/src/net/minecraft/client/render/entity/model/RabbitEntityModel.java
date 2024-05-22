@@ -167,20 +167,19 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {
 		if (this.child) {
 			float f = 1.5F;
 			matrices.push();
 			matrices.scale(0.56666666F, 0.56666666F, 0.56666666F);
 			matrices.translate(0.0F, 1.375F, 0.125F);
-			ImmutableList.of(this.head, this.leftEar, this.rightEar, this.nose)
-				.forEach(part -> part.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+			ImmutableList.of(this.head, this.leftEar, this.rightEar, this.nose).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, i));
 			matrices.pop();
 			matrices.push();
 			matrices.scale(0.4F, 0.4F, 0.4F);
 			matrices.translate(0.0F, 2.25F, 0.0F);
 			ImmutableList.of(this.leftHindLeg, this.rightHindLeg, this.leftHaunch, this.rightHaunch, this.body, this.leftFrontLeg, this.rightFrontLeg, this.tail)
-				.forEach(part -> part.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, i));
 			matrices.pop();
 		} else {
 			matrices.push();
@@ -200,7 +199,7 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 					this.tail,
 					this.nose
 				)
-				.forEach(part -> part.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, i));
 			matrices.pop();
 		}
 	}

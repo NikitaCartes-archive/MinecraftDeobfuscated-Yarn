@@ -10,6 +10,6 @@ public interface InstrumentTags {
 	TagKey<Instrument> GOAT_HORNS = of("goat_horns");
 
 	private static TagKey<Instrument> of(String id) {
-		return TagKey.of(RegistryKeys.INSTRUMENT, new Identifier(id));
+		return TagKey.of(RegistryKeys.INSTRUMENT, Identifier.method_60656(id));
 	}
 }

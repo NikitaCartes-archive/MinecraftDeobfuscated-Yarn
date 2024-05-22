@@ -2,7 +2,6 @@ package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
 import java.util.Optional;
-import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -40,6 +39,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -55,9 +55,9 @@ import net.minecraft.world.event.GameEvent;
 import org.joml.Vector3f;
 
 public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional<DyeColor>>, Monster {
-	private static final UUID COVERED_ARMOR_BONUS_ID = UUID.fromString("7E0292F2-9434-48D5-A29F-9583AF7DF27F");
+	private static final Identifier COVERED_ARMOR_BONUS_ID = Identifier.method_60656("covered");
 	private static final EntityAttributeModifier COVERED_ARMOR_BONUS = new EntityAttributeModifier(
-		COVERED_ARMOR_BONUS_ID, "Covered armor bonus", 20.0, EntityAttributeModifier.Operation.ADD_VALUE
+		COVERED_ARMOR_BONUS_ID, 20.0, EntityAttributeModifier.Operation.ADD_VALUE
 	);
 	protected static final TrackedData<Direction> ATTACHED_FACE = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.FACING);
 	protected static final TrackedData<Byte> PEEK_AMOUNT = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -485,7 +485,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 
 	void setPeekAmount(int peekAmount) {
 		if (!this.getWorld().isClient) {
-			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(COVERED_ARMOR_BONUS.uuid());
+			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(COVERED_ARMOR_BONUS_ID);
 			if (peekAmount == 0) {
 				this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addPersistentModifier(COVERED_ARMOR_BONUS);
 				this.playSound(SoundEvents.ENTITY_SHULKER_CLOSE, 1.0F, 1.0F);

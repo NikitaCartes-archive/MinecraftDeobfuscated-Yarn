@@ -1769,5 +1769,6 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.DOES_NOT_BLOCK_HOPPERS).addTag(BlockTags.BEEHIVES);
 		this.getOrCreateTagBuilder(BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS).add(Blocks.BARRIER, Blocks.BEDROCK);
 		this.getOrCreateTagBuilder(BlockTags.FIRE_ASPECT_LIGHTABLE).addTag(BlockTags.CANDLES).addTag(BlockTags.CANDLE_CAKES).addTag(BlockTags.CAMPFIRES);
+		this.getOrCreateTagBuilder(BlockTags.AIR).add(Blocks.AIR, Blocks.VOID_AIR, Blocks.CAVE_AIR);
 	}
 }

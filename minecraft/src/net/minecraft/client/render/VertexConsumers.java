@@ -47,9 +47,9 @@ public class VertexConsumers {
 		}
 
 		@Override
-		public VertexConsumer vertex(double x, double y, double z) {
-			this.first.vertex(x, y, z);
-			this.second.vertex(x, y, z);
+		public VertexConsumer vertex(float f, float g, float h) {
+			this.first.vertex(f, g, h);
+			this.second.vertex(f, g, h);
 			return this;
 		}
 
@@ -68,9 +68,9 @@ public class VertexConsumers {
 		}
 
 		@Override
-		public VertexConsumer overlay(int u, int v) {
-			this.first.overlay(u, v);
-			this.second.overlay(u, v);
+		public VertexConsumer method_60796(int i, int j) {
+			this.first.method_60796(i, j);
+			this.second.method_60796(i, j);
 			return this;
 		}
 
@@ -89,50 +89,15 @@ public class VertexConsumers {
 		}
 
 		@Override
-		public void vertex(
-			float x,
-			float y,
-			float z,
-			float red,
-			float green,
-			float blue,
-			float alpha,
-			float u,
-			float v,
-			int overlay,
-			int light,
-			float normalX,
-			float normalY,
-			float normalZ
-		) {
-			this.first.vertex(x, y, z, red, green, blue, alpha, u, v, overlay, light, normalX, normalY, normalZ);
-			this.second.vertex(x, y, z, red, green, blue, alpha, u, v, overlay, light, normalX, normalY, normalZ);
-		}
-
-		@Override
-		public void next() {
-			this.first.next();
-			this.second.next();
-		}
-
-		@Override
-		public void fixedColor(int red, int green, int blue, int alpha) {
-			this.first.fixedColor(red, green, blue, alpha);
-			this.second.fixedColor(red, green, blue, alpha);
-		}
-
-		@Override
-		public void unfixColor() {
-			this.first.unfixColor();
-			this.second.unfixColor();
+		public void vertex(float x, float y, float z, int i, float green, float blue, int j, int k, float v, float f, float g) {
+			this.first.vertex(x, y, z, i, green, blue, j, k, v, f, g);
+			this.second.vertex(x, y, z, i, green, blue, j, k, v, f, g);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class Union implements VertexConsumer {
-		private final VertexConsumer[] delegates;
-
-		public Union(VertexConsumer[] delegates) {
+	static record Union(VertexConsumer[] delegates) implements VertexConsumer {
+		Union(VertexConsumer[] delegates) {
 			for (int i = 0; i < delegates.length; i++) {
 				for (int j = i + 1; j < delegates.length; j++) {
 					if (delegates[i] == delegates[j]) {
@@ -151,8 +116,8 @@ public class VertexConsumers {
 		}
 
 		@Override
-		public VertexConsumer vertex(double x, double y, double z) {
-			this.delegate(vertexConsumer -> vertexConsumer.vertex(x, y, z));
+		public VertexConsumer vertex(float f, float g, float h) {
+			this.delegate(vertexConsumer -> vertexConsumer.vertex(f, g, h));
 			return this;
 		}
 
@@ -169,8 +134,8 @@ public class VertexConsumers {
 		}
 
 		@Override
-		public VertexConsumer overlay(int u, int v) {
-			this.delegate(vertexConsumer -> vertexConsumer.overlay(u, v));
+		public VertexConsumer method_60796(int i, int j) {
+			this.delegate(vertexConsumer -> vertexConsumer.method_60796(i, j));
 			return this;
 		}
 
@@ -187,38 +152,8 @@ public class VertexConsumers {
 		}
 
 		@Override
-		public void vertex(
-			float x,
-			float y,
-			float z,
-			float red,
-			float green,
-			float blue,
-			float alpha,
-			float u,
-			float v,
-			int overlay,
-			int light,
-			float normalX,
-			float normalY,
-			float normalZ
-		) {
-			this.delegate(vertexConsumer -> vertexConsumer.vertex(x, y, z, red, green, blue, alpha, u, v, overlay, light, normalX, normalY, normalZ));
-		}
-
-		@Override
-		public void next() {
-			this.delegate(VertexConsumer::next);
-		}
-
-		@Override
-		public void fixedColor(int red, int green, int blue, int alpha) {
-			this.delegate(vertexConsumer -> vertexConsumer.fixedColor(red, green, blue, alpha));
-		}
-
-		@Override
-		public void unfixColor() {
-			this.delegate(VertexConsumer::unfixColor);
+		public void vertex(float x, float y, float z, int i, float green, float blue, int j, int k, float v, float f, float g) {
+			this.delegate(vertexConsumer -> vertexConsumer.vertex(x, y, z, i, green, blue, j, k, v, f, g));
 		}
 	}
 }

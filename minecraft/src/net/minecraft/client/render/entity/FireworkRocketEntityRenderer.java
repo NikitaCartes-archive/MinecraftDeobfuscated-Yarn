@@ -24,7 +24,6 @@ public class FireworkRocketEntityRenderer extends EntityRenderer<FireworkRocketE
 	public void render(FireworkRocketEntity fireworkRocketEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.multiply(this.dispatcher.getRotation());
-		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 		if (fireworkRocketEntity.wasShotAtAngle()) {
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
 			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));

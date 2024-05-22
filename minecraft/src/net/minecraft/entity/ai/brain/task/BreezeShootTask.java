@@ -93,7 +93,7 @@ public class BreezeShootTask extends MultiTickTask<BreezeEntity> {
 				brain.remember(MemoryModuleType.BREEZE_SHOOT_RECOVER, Unit.INSTANCE, (long)RECOVER_EXPIRY);
 				if (isFacingTarget(breezeEntity, livingEntity)) {
 					double d = livingEntity.getX() - breezeEntity.getX();
-					double e = livingEntity.getBodyY(0.3) - breezeEntity.getBodyY(0.5);
+					double e = livingEntity.getBodyY(livingEntity.hasVehicle() ? 0.8 : 0.3) - breezeEntity.getBodyY(0.5);
 					double f = livingEntity.getZ() - breezeEntity.getZ();
 					BreezeWindChargeEntity breezeWindChargeEntity = new BreezeWindChargeEntity(breezeEntity, serverWorld);
 					breezeEntity.playSound(SoundEvents.ENTITY_BREEZE_SHOOT, 1.5F, 1.0F);

@@ -167,15 +167,15 @@ public class CamelEntityModel<T extends CamelEntity> extends SinglePartEntityMod
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {
 		if (this.child) {
 			matrices.push();
 			matrices.scale(0.45F, 0.45F, 0.45F);
 			matrices.translate(0.0F, 1.834375F, 0.0F);
-			this.getPart().render(matrices, vertices, light, overlay, red, green, blue, alpha);
+			this.getPart().render(matrices, vertices, light, overlay, i);
 			matrices.pop();
 		} else {
-			this.getPart().render(matrices, vertices, light, overlay, red, green, blue, alpha);
+			this.getPart().render(matrices, vertices, light, overlay, i);
 		}
 	}
 

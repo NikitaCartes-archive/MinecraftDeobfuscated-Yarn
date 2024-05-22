@@ -24,7 +24,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class AdvancementWidget {
-	private static final Identifier TITLE_BOX_TEXTURE = new Identifier("advancements/title_box");
+	private static final Identifier TITLE_BOX_TEXTURE = Identifier.method_60656("advancements/title_box");
 	private static final int field_32286 = 26;
 	private static final int field_32287 = 0;
 	private static final int field_32288 = 200;

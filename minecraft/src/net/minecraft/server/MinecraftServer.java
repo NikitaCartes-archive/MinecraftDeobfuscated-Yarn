@@ -16,7 +16,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.management.ManagementFactory;
@@ -52,6 +51,8 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9782;
+import net.minecraft.class_9813;
 import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
@@ -759,9 +760,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			LOGGER.error("Encountered an unexpected exception", var46);
 			CrashReport crashReport = createCrashReport(var46);
 			this.addSystemDetails(crashReport.getSystemDetailsSection());
-			File file = new File(new File(this.getRunDirectory(), "crash-reports"), "crash-" + Util.getFormattedCurrentTime() + "-server.txt");
-			if (crashReport.writeToFile(file)) {
-				LOGGER.error("This crash report has been saved to: {}", file.getAbsolutePath());
+			Path path = this.getRunDirectory().resolve("crash-reports").resolve("crash-" + Util.getFormattedCurrentTime() + "-server.txt");
+			if (crashReport.method_60919(path, class_9813.MINECRAFT_CRASH_REPORT)) {
+				LOGGER.error("This crash report has been saved to: {}", path.toAbsolutePath());
 			} else {
 				LOGGER.error("We were unable to save this crash report to disk.");
 			}
@@ -903,7 +904,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private Optional<ServerMetadata.Favicon> loadFavicon() {
-		Optional<Path> optional = Optional.of(this.getFile("server-icon.png").toPath())
+		Optional<Path> optional = Optional.of(this.getFile("server-icon.png"))
 			.filter(path -> Files.isRegularFile(path, new LinkOption[0]))
 			.or(() -> this.session.getIconFile().filter(path -> Files.isRegularFile(path, new LinkOption[0])));
 		return optional.flatMap(path -> {
@@ -925,8 +926,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.session.getIconFile();
 	}
 
-	public File getRunDirectory() {
-		return new File(".");
+	public Path getRunDirectory() {
+		return Path.of("");
 	}
 
 	public void setCrashReport(CrashReport report) {
@@ -1096,7 +1097,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.profiler.pop();
 	}
 
-	public boolean isNetherAllowed() {
+	public boolean method_60671(World world) {
 		return true;
 	}
 
@@ -1115,8 +1116,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	/**
 	 * @param path relative path from the run directory
 	 */
-	public File getFile(String path) {
-		return new File(this.getRunDirectory(), path);
+	public Path getFile(String path) {
+		return this.getRunDirectory().resolve(path);
 	}
 
 	public final ServerWorld getOverworld() {
@@ -2165,6 +2166,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public BrewingRecipeRegistry getBrewingRecipeRegistry() {
 		return this.brewingRecipeRegistry;
+	}
+
+	public class_9782 method_60672() {
+		return class_9782.field_51977;
 	}
 
 	static class DebugStart {

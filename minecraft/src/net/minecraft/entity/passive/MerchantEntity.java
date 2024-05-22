@@ -35,6 +35,7 @@ import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 
@@ -186,9 +187,9 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 
 	@Nullable
 	@Override
-	public Entity moveToWorld(Entity.TeleportTargetSupplier teleportTargetSupplier) {
+	public Entity moveToWorld(TeleportTarget teleportTarget) {
 		this.resetCustomer();
-		return super.moveToWorld(teleportTargetSupplier);
+		return super.moveToWorld(teleportTarget);
 	}
 
 	protected void resetCustomer() {

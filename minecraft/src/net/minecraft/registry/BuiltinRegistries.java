@@ -1,6 +1,7 @@
 package net.minecraft.registry;
 
 import java.util.List;
+import net.minecraft.class_9796;
 import net.minecraft.block.entity.BannerPatterns;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.provider.EnchantmentProviders;
@@ -58,7 +59,8 @@ public class BuiltinRegistries {
 		.addRegistry(RegistryKeys.DAMAGE_TYPE, DamageTypes::bootstrap)
 		.addRegistry(RegistryKeys.BANNER_PATTERN, BannerPatterns::bootstrap)
 		.addRegistry(RegistryKeys.ENCHANTMENT, Enchantments::bootstrap)
-		.addRegistry(RegistryKeys.ENCHANTMENT_PROVIDER, EnchantmentProviders::bootstrap);
+		.addRegistry(RegistryKeys.ENCHANTMENT_PROVIDER, EnchantmentProviders::bootstrap)
+		.addRegistry(RegistryKeys.JUKEBOX_SONG, class_9796::method_60765);
 
 	private static void validate(RegistryWrapper.WrapperLookup wrapperLookup) {
 		validate(wrapperLookup.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE), wrapperLookup.getWrapperOrThrow(RegistryKeys.BIOME));

@@ -19,16 +19,16 @@ import net.minecraft.village.VillagerData;
 
 @Environment(EnvType.CLIENT)
 public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
-	private static final Identifier OUT_OF_STOCK_TEXTURE = new Identifier("container/villager/out_of_stock");
-	private static final Identifier EXPERIENCE_BAR_BACKGROUND_TEXTURE = new Identifier("container/villager/experience_bar_background");
-	private static final Identifier EXPERIENCE_BAR_CURRENT_TEXTURE = new Identifier("container/villager/experience_bar_current");
-	private static final Identifier EXPERIENCE_BAR_RESULT_TEXTURE = new Identifier("container/villager/experience_bar_result");
-	private static final Identifier SCROLLER_TEXTURE = new Identifier("container/villager/scroller");
-	private static final Identifier SCROLLER_DISABLED_TEXTURE = new Identifier("container/villager/scroller_disabled");
-	private static final Identifier TRADE_ARROW_OUT_OF_STOCK_TEXTURE = new Identifier("container/villager/trade_arrow_out_of_stock");
-	private static final Identifier TRADE_ARROW_TEXTURE = new Identifier("container/villager/trade_arrow");
-	private static final Identifier DISCOUNT_STRIKETHROUGH_TEXTURE = new Identifier("container/villager/discount_strikethrough");
-	private static final Identifier TEXTURE = new Identifier("textures/gui/container/villager.png");
+	private static final Identifier OUT_OF_STOCK_TEXTURE = Identifier.method_60656("container/villager/out_of_stock");
+	private static final Identifier EXPERIENCE_BAR_BACKGROUND_TEXTURE = Identifier.method_60656("container/villager/experience_bar_background");
+	private static final Identifier EXPERIENCE_BAR_CURRENT_TEXTURE = Identifier.method_60656("container/villager/experience_bar_current");
+	private static final Identifier EXPERIENCE_BAR_RESULT_TEXTURE = Identifier.method_60656("container/villager/experience_bar_result");
+	private static final Identifier SCROLLER_TEXTURE = Identifier.method_60656("container/villager/scroller");
+	private static final Identifier SCROLLER_DISABLED_TEXTURE = Identifier.method_60656("container/villager/scroller_disabled");
+	private static final Identifier TRADE_ARROW_OUT_OF_STOCK_TEXTURE = Identifier.method_60656("container/villager/trade_arrow_out_of_stock");
+	private static final Identifier TRADE_ARROW_TEXTURE = Identifier.method_60656("container/villager/trade_arrow");
+	private static final Identifier DISCOUNT_STRIKETHROUGH_TEXTURE = Identifier.method_60656("container/villager/discount_strikethrough");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/villager.png");
 	private static final int TEXTURE_WIDTH = 512;
 	private static final int TEXTURE_HEIGHT = 256;
 	private static final int field_32356 = 99;

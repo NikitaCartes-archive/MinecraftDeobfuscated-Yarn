@@ -12,7 +12,7 @@ import org.apache.commons.lang3.math.Fraction;
 
 @Environment(EnvType.CLIENT)
 public class BundleTooltipComponent implements TooltipComponent {
-	private static final Identifier BACKGROUND_TEXTURE = new Identifier("container/bundle/background");
+	private static final Identifier BACKGROUND_TEXTURE = Identifier.method_60656("container/bundle/background");
 	private static final int field_32381 = 4;
 	private static final int field_32382 = 1;
 	private static final int WIDTH_PER_COLUMN = 18;
@@ -86,8 +86,8 @@ public class BundleTooltipComponent implements TooltipComponent {
 
 	@Environment(EnvType.CLIENT)
 	static enum SlotSprite {
-		BLOCKED_SLOT(new Identifier("container/bundle/blocked_slot"), 18, 20),
-		SLOT(new Identifier("container/bundle/slot"), 18, 20);
+		BLOCKED_SLOT(Identifier.method_60656("container/bundle/blocked_slot"), 18, 20),
+		SLOT(Identifier.method_60656("container/bundle/slot"), 18, 20);
 
 		public final Identifier texture;
 		public final int width;

@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public abstract class ZombieBaseEntityRenderer<T extends ZombieEntity, M extends ZombieEntityModel<T>> extends BipedEntityRenderer<T, M> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/zombie/zombie.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/zombie/zombie.png");
 
 	protected ZombieBaseEntityRenderer(EntityRendererFactory.Context ctx, M bodyModel, M legsArmorModel, M bodyArmorModel) {
 		super(ctx, bodyModel, 0.5F);

@@ -7,7 +7,7 @@ import net.minecraft.util.math.Vec3d;
  * Represents the position that an entity takes after being
  * {@linkplain net.minecraft.entity.Entity#moveToWorld moved between worlds}.
  */
-public record TeleportTarget(ServerWorld newDimension, Vec3d pos, Vec3d velocity, float yaw, float pitch, boolean missingRespawnBlock) {
+public record TeleportTarget(ServerWorld newLevel, Vec3d pos, Vec3d velocity, float yaw, float pitch, boolean missingRespawnBlock) {
 	public TeleportTarget(ServerWorld world, Vec3d pos, Vec3d velocity, float yaw, float pitch) {
 		this(world, pos, velocity, yaw, pitch, false);
 	}

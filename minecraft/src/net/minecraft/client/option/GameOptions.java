@@ -422,7 +422,10 @@ public class GameOptions {
 	);
 	private final SimpleOption<Boolean> invertYMouse = SimpleOption.ofBoolean("options.invertMouse", false);
 	private final SimpleOption<Boolean> discreteMouseScroll = SimpleOption.ofBoolean("options.discrete_mouse_scroll", false);
-	private final SimpleOption<Boolean> realmsNotifications = SimpleOption.ofBoolean("options.realmsNotifications", true);
+	private static final Text field_52127 = Text.translatable("options.realmsNotifications.tooltip");
+	private final SimpleOption<Boolean> realmsNotifications = SimpleOption.ofBoolean(
+		"options.realmsNotifications", SimpleOption.constantTooltip(field_52127), true
+	);
 	private static final Text ALLOW_SERVER_LISTING_TOOLTIP = Text.translatable("options.allowServerListing.tooltip");
 	private final SimpleOption<Boolean> allowServerListing = SimpleOption.ofBoolean(
 		"options.allowServerListing", SimpleOption.constantTooltip(ALLOW_SERVER_LISTING_TOOLTIP), true, value -> this.sendClientSettings()

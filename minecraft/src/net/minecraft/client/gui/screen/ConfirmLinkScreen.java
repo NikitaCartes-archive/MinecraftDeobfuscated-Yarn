@@ -64,6 +64,17 @@ public class ConfirmLinkScreen extends ConfirmScreen {
 		}
 	}
 
+	public static void method_60866(Screen screen, String string, boolean bl) {
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		minecraftClient.setScreen(new ConfirmLinkScreen(confirmed -> {
+			if (confirmed) {
+				Util.getOperatingSystem().open(string);
+			}
+
+			minecraftClient.setScreen(screen);
+		}, string, bl));
+	}
+
 	/**
 	 * Opens the confirmation screen to open {@code url}.
 	 * The link is always trusted.
@@ -71,14 +82,11 @@ public class ConfirmLinkScreen extends ConfirmScreen {
 	 * @see #opening
 	 */
 	public static void open(Screen parent, String url) {
-		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		minecraftClient.setScreen(new ConfirmLinkScreen(confirmed -> {
-			if (confirmed) {
-				Util.getOperatingSystem().open(url);
-			}
+		method_60866(parent, url, true);
+	}
 
-			minecraftClient.setScreen(parent);
-		}, url, true));
+	public static ButtonWidget.PressAction method_60867(Screen screen, String string, boolean bl) {
+		return buttonWidget -> method_60866(screen, string, bl);
 	}
 
 	/**
@@ -89,6 +97,6 @@ public class ConfirmLinkScreen extends ConfirmScreen {
 	 * @see #open
 	 */
 	public static ButtonWidget.PressAction opening(Screen parent, String url) {
-		return button -> open(parent, url);
+		return method_60867(parent, url, true);
 	}
 }

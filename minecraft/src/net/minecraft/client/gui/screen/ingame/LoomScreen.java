@@ -31,16 +31,16 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class LoomScreen extends HandledScreen<LoomScreenHandler> {
-	private static final Identifier BANNER_SLOT_TEXTURE = new Identifier("container/loom/banner_slot");
-	private static final Identifier DYE_SLOT_TEXTURE = new Identifier("container/loom/dye_slot");
-	private static final Identifier PATTERN_SLOT_TEXTURE = new Identifier("container/loom/pattern_slot");
-	private static final Identifier SCROLLER_TEXTURE = new Identifier("container/loom/scroller");
-	private static final Identifier SCROLLER_DISABLED_TEXTURE = new Identifier("container/loom/scroller_disabled");
-	private static final Identifier PATTERN_SELECTED_TEXTURE = new Identifier("container/loom/pattern_selected");
-	private static final Identifier PATTERN_HIGHLIGHTED_TEXTURE = new Identifier("container/loom/pattern_highlighted");
-	private static final Identifier PATTERN_TEXTURE = new Identifier("container/loom/pattern");
-	private static final Identifier ERROR_TEXTURE = new Identifier("container/loom/error");
-	private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
+	private static final Identifier BANNER_SLOT_TEXTURE = Identifier.method_60656("container/loom/banner_slot");
+	private static final Identifier DYE_SLOT_TEXTURE = Identifier.method_60656("container/loom/dye_slot");
+	private static final Identifier PATTERN_SLOT_TEXTURE = Identifier.method_60656("container/loom/pattern_slot");
+	private static final Identifier SCROLLER_TEXTURE = Identifier.method_60656("container/loom/scroller");
+	private static final Identifier SCROLLER_DISABLED_TEXTURE = Identifier.method_60656("container/loom/scroller_disabled");
+	private static final Identifier PATTERN_SELECTED_TEXTURE = Identifier.method_60656("container/loom/pattern_selected");
+	private static final Identifier PATTERN_HIGHLIGHTED_TEXTURE = Identifier.method_60656("container/loom/pattern_highlighted");
+	private static final Identifier PATTERN_TEXTURE = Identifier.method_60656("container/loom/pattern");
+	private static final Identifier ERROR_TEXTURE = Identifier.method_60656("container/loom/error");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/loom.png");
 	private static final int PATTERN_LIST_COLUMNS = 4;
 	private static final int PATTERN_LIST_ROWS = 4;
 	private static final int SCROLLBAR_WIDTH = 12;

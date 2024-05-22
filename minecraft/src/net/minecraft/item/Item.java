@@ -7,9 +7,11 @@ import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9791;
+import net.minecraft.class_9792;
+import net.minecraft.class_9793;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipData;
@@ -30,6 +32,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.map.MapState;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
@@ -43,6 +46,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.Unit;
@@ -84,8 +88,8 @@ import org.slf4j.Logger;
 public class Item implements ToggleableFeature, ItemConvertible {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Map<Block, Item> BLOCK_ITEMS = Maps.<Block, Item>newHashMap();
-	public static final UUID ATTACK_DAMAGE_MODIFIER_ID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
-	public static final UUID ATTACK_SPEED_MODIFIER_ID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
+	public static final Identifier ATTACK_DAMAGE_MODIFIER_ID = Identifier.method_60656("base_attack_damage");
+	public static final Identifier ATTACK_SPEED_MODIFIER_ID = Identifier.method_60656("base_attack_speed");
 	public static final int DEFAULT_MAX_COUNT = 64;
 	public static final int MAX_MAX_COUNT = 99;
 	public static final int ITEM_BAR_STEPS = 13;
@@ -731,6 +735,10 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		 */
 		public Item.Settings fireproof() {
 			return this.component(DataComponentTypes.FIRE_RESISTANT, Unit.INSTANCE);
+		}
+
+		public Item.Settings method_60745(RegistryKey<class_9793> registryKey) {
+			return this.component(DataComponentTypes.JUKEBOX_PLAYABLE, new class_9792(new class_9791<>(registryKey), true));
 		}
 
 		public Item.Settings requires(FeatureFlag... features) {

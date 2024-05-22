@@ -24,9 +24,9 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class GameModeSelectionScreen extends Screen {
-	static final Identifier SLOT_TEXTURE = new Identifier("gamemode_switcher/slot");
-	static final Identifier SELECTION_TEXTURE = new Identifier("gamemode_switcher/selection");
-	private static final Identifier TEXTURE = new Identifier("textures/gui/container/gamemode_switcher.png");
+	static final Identifier SLOT_TEXTURE = Identifier.method_60656("gamemode_switcher/slot");
+	static final Identifier SELECTION_TEXTURE = Identifier.method_60656("gamemode_switcher/selection");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/gamemode_switcher.png");
 	private static final int TEXTURE_WIDTH = 128;
 	private static final int TEXTURE_HEIGHT = 128;
 	private static final int BUTTON_SIZE = 26;

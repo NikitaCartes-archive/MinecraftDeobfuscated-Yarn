@@ -3,7 +3,6 @@ package net.minecraft.entity.mob;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
 import java.util.List;
-import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -43,6 +42,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -56,9 +56,9 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> DANCING = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final UUID BABY_SPEED_BOOST_ID = UUID.fromString("766bfa64-11f3-11ea-8d71-362b9e155667");
+	private static final Identifier BABY_SPEED_BOOST_ID = Identifier.method_60656("baby");
 	private static final EntityAttributeModifier BABY_SPEED_BOOST = new EntityAttributeModifier(
-		BABY_SPEED_BOOST_ID, "Baby speed boost", 0.2F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
+		BABY_SPEED_BOOST_ID, 0.2F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
 	);
 	private static final int field_30548 = 16;
 	private static final float field_30549 = 0.35F;

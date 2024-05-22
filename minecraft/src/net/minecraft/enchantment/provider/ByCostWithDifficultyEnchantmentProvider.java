@@ -16,11 +16,12 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 
 public record ByCostWithDifficultyEnchantmentProvider(RegistryEntryList<Enchantment> enchantments, int minCost, int maxCostSpan) implements EnchantmentProvider {
+	public static final int field_52056 = 10000;
 	public static final MapCodec<ByCostWithDifficultyEnchantmentProvider> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					RegistryCodecs.entryList(RegistryKeys.ENCHANTMENT).fieldOf("enchantments").forGetter(ByCostWithDifficultyEnchantmentProvider::enchantments),
-					Codecs.POSITIVE_INT.fieldOf("min_cost").forGetter(ByCostWithDifficultyEnchantmentProvider::minCost),
-					Codecs.NONNEGATIVE_INT.fieldOf("max_cost_span").forGetter(ByCostWithDifficultyEnchantmentProvider::maxCostSpan)
+					Codecs.rangedInt(1, 10000).fieldOf("min_cost").forGetter(ByCostWithDifficultyEnchantmentProvider::minCost),
+					Codecs.rangedInt(0, 10000).fieldOf("max_cost_span").forGetter(ByCostWithDifficultyEnchantmentProvider::maxCostSpan)
 				)
 				.apply(instance, ByCostWithDifficultyEnchantmentProvider::new)
 	);

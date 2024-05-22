@@ -1,6 +1,7 @@
 package net.minecraft.data.server.tag.vanilla;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.server.tag.TagProvider;
 import net.minecraft.registry.RegistryKeys;
@@ -191,7 +192,8 @@ public class VanillaBiomeTagProvider extends TagProvider<Biome> {
 			.add(BiomeKeys.DRIPSTONE_CAVES)
 			.add(BiomeKeys.LUSH_CAVES);
 		this.getOrCreateTagBuilder(BiomeTags.STRONGHOLD_HAS_STRUCTURE).addTag(BiomeTags.IS_OVERWORLD);
-		this.getOrCreateTagBuilder(BiomeTags.TRIAL_CHAMBERS_HAS_STRUCTURE).addTag(BiomeTags.IS_OVERWORLD);
+		TagProvider.ProvidedTagBuilder<Biome> providedTagBuilder3 = this.getOrCreateTagBuilder(BiomeTags.TRIAL_CHAMBERS_HAS_STRUCTURE);
+		MultiNoiseBiomeSourceParameterList.Preset.OVERWORLD.biomeStream().filter(Predicate.not(BiomeKeys.DEEP_DARK::equals)).forEach(providedTagBuilder3::add);
 		this.getOrCreateTagBuilder(BiomeTags.NETHER_FORTRESS_HAS_STRUCTURE).addTag(BiomeTags.IS_NETHER);
 		this.getOrCreateTagBuilder(BiomeTags.NETHER_FOSSIL_HAS_STRUCTURE).add(BiomeKeys.SOUL_SAND_VALLEY);
 		this.getOrCreateTagBuilder(BiomeTags.BASTION_REMNANT_HAS_STRUCTURE)

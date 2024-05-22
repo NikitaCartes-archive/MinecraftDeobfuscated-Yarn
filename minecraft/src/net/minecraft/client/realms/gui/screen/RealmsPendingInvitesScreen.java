@@ -26,10 +26,10 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsPendingInvitesScreen extends RealmsScreen {
-	static final Identifier ACCEPT_HIGHLIGHTED_ICON_TEXTURE = new Identifier("pending_invite/accept_highlighted");
-	static final Identifier ACCEPT_ICON_TEXTURE = new Identifier("pending_invite/accept");
-	static final Identifier REJECT_HIGHLIGHTED_ICON_TEXTURE = new Identifier("pending_invite/reject_highlighted");
-	static final Identifier REJECT_ICON_TEXTURE = new Identifier("pending_invite/reject");
+	static final Identifier ACCEPT_HIGHLIGHTED_ICON_TEXTURE = Identifier.method_60656("pending_invite/accept_highlighted");
+	static final Identifier ACCEPT_ICON_TEXTURE = Identifier.method_60656("pending_invite/accept");
+	static final Identifier REJECT_HIGHLIGHTED_ICON_TEXTURE = Identifier.method_60656("pending_invite/reject_highlighted");
+	static final Identifier REJECT_ICON_TEXTURE = Identifier.method_60656("pending_invite/reject");
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Text NO_PENDING_TEXT = Text.translatable("mco.invites.nopending");
 	static final Text ACCEPT_TEXT = Text.translatable("mco.invites.button.accept");

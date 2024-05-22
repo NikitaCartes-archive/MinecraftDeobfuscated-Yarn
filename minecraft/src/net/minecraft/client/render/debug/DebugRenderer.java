@@ -208,7 +208,7 @@ public class DebugRenderer {
 			matrices.push();
 			matrices.translate((float)(x - d), (float)(y - e) + 0.07F, (float)(z - f));
 			matrices.multiply(camera.getRotation());
-			matrices.scale(-size, -size, size);
+			matrices.scale(size, -size, size);
 			float g = center ? (float)(-textRenderer.getWidth(string)) / 2.0F : 0.0F;
 			g -= offset / size;
 			textRenderer.draw(

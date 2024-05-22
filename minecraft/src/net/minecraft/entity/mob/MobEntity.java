@@ -7,6 +7,7 @@ import com.mojang.datafixers.util.Either;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -39,6 +40,7 @@ import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -138,6 +140,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	public static final int field_38932 = 2;
 	public static final int field_35039 = 2;
 	private static final double ATTACK_RANGE = Math.sqrt(2.04F) - 0.6F;
+	protected static final Identifier field_51997 = Identifier.method_60656("random_spawn_bonus");
 	public int ambientSoundChance;
 	protected int experiencePoints;
 	protected LookControl lookControl;
@@ -552,7 +555,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 
 		this.setLeftHanded(nbt.getBoolean("LeftHanded"));
 		if (nbt.contains("DeathLootTable", NbtElement.STRING_TYPE)) {
-			this.lootTable = RegistryKey.of(RegistryKeys.LOOT_TABLE, new Identifier(nbt.getString("DeathLootTable")));
+			this.lootTable = RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.method_60654(nbt.getString("DeathLootTable")));
 			this.lootTableSeed = nbt.getLong("DeathLootTableSeed");
 		}
 
@@ -1205,10 +1208,15 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	@Nullable
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		Random random = world.getRandom();
-		this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
-			.addPersistentModifier(
-				new EntityAttributeModifier("Random spawn bonus", random.nextTriangular(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE)
+		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)Objects.requireNonNull(
+			this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
+		);
+		if (!entityAttributeInstance.hasModifier(field_51997)) {
+			entityAttributeInstance.addPersistentModifier(
+				new EntityAttributeModifier(field_51997, random.nextTriangular(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE)
 			);
+		}
+
 		this.setLeftHanded(random.nextFloat() < 0.05F);
 		return entityData;
 	}

@@ -12,10 +12,10 @@ public class CookiePackets {
 	public static final PacketType<CookieResponseC2SPacket> COOKIE_RESPONSE = c2s("cookie_response");
 
 	private static <T extends Packet<ClientCookieRequestPacketListener>> PacketType<T> s2c(String id) {
-		return new PacketType<>(NetworkSide.CLIENTBOUND, new Identifier(id));
+		return new PacketType<>(NetworkSide.CLIENTBOUND, Identifier.method_60656(id));
 	}
 
 	private static <T extends Packet<ServerCookieResponsePacketListener>> PacketType<T> c2s(String id) {
-		return new PacketType<>(NetworkSide.SERVERBOUND, new Identifier(id));
+		return new PacketType<>(NetworkSide.SERVERBOUND, Identifier.method_60656(id));
 	}
 }

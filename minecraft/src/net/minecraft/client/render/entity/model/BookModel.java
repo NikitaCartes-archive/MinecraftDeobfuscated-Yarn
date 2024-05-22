@@ -109,12 +109,12 @@ public class BookModel extends Model {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-		this.renderBook(matrices, vertices, light, overlay, red, green, blue, alpha);
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {
+		this.renderBook(matrices, vertices, light, overlay, i);
 	}
 
-	public void renderBook(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-		this.root.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+	public void renderBook(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {
+		this.root.render(matrices, vertices, light, overlay, i);
 	}
 
 	public void setPageAngles(float pageTurnAmount, float leftFlipAmount, float rightFlipAmount, float pageTurnSpeed) {

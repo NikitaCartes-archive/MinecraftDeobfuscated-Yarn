@@ -1,5 +1,7 @@
 package net.minecraft.network.listener;
 
+import net.minecraft.class_9814;
+import net.minecraft.class_9815;
 import net.minecraft.network.packet.s2c.common.CommonPingS2CPacket;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
@@ -28,4 +30,8 @@ public interface ClientCommonPacketListener extends ClientCookieRequestPacketLis
 	void onStoreCookie(StoreCookieS2CPacket packet);
 
 	void onServerTransfer(ServerTransferS2CPacket packet);
+
+	void method_60883(class_9814 arg);
+
+	void method_60884(class_9815 arg);
 }

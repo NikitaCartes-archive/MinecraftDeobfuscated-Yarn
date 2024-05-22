@@ -112,10 +112,10 @@ public class MapRenderer implements AutoCloseable {
 			float f = 0.0F;
 			Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.renderLayer);
-			vertexConsumer.vertex(matrix4f, 0.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 1.0F).light(light).next();
-			vertexConsumer.vertex(matrix4f, 128.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 1.0F).light(light).next();
-			vertexConsumer.vertex(matrix4f, 128.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 0.0F).light(light).next();
-			vertexConsumer.vertex(matrix4f, 0.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 0.0F).light(light).next();
+			vertexConsumer.vertex(matrix4f, 0.0F, 128.0F, -0.01F).color(Colors.WHITE).texture(0.0F, 1.0F).method_60803(light);
+			vertexConsumer.vertex(matrix4f, 128.0F, 128.0F, -0.01F).color(Colors.WHITE).texture(1.0F, 1.0F).method_60803(light);
+			vertexConsumer.vertex(matrix4f, 128.0F, 0.0F, -0.01F).color(Colors.WHITE).texture(1.0F, 0.0F).method_60803(light);
+			vertexConsumer.vertex(matrix4f, 0.0F, 0.0F, -0.01F).color(Colors.WHITE).texture(0.0F, 0.0F).method_60803(light);
 			int k = 0;
 
 			for (MapDecoration mapDecoration : this.state.getDecorations()) {
@@ -133,10 +133,10 @@ public class MapRenderer implements AutoCloseable {
 					float m = sprite.getMaxU();
 					float n = sprite.getMaxV();
 					VertexConsumer vertexConsumer2 = vertexConsumers.getBuffer(RenderLayer.getText(sprite.getAtlasId()));
-					vertexConsumer2.vertex(matrix4f2, -1.0F, 1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(h, l).light(light).next();
-					vertexConsumer2.vertex(matrix4f2, 1.0F, 1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(m, l).light(light).next();
-					vertexConsumer2.vertex(matrix4f2, 1.0F, -1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(m, n).light(light).next();
-					vertexConsumer2.vertex(matrix4f2, -1.0F, -1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(h, n).light(light).next();
+					vertexConsumer2.vertex(matrix4f2, -1.0F, 1.0F, (float)k * -0.001F).color(Colors.WHITE).texture(h, l).method_60803(light);
+					vertexConsumer2.vertex(matrix4f2, 1.0F, 1.0F, (float)k * -0.001F).color(Colors.WHITE).texture(m, l).method_60803(light);
+					vertexConsumer2.vertex(matrix4f2, 1.0F, -1.0F, (float)k * -0.001F).color(Colors.WHITE).texture(m, n).method_60803(light);
+					vertexConsumer2.vertex(matrix4f2, -1.0F, -1.0F, (float)k * -0.001F).color(Colors.WHITE).texture(h, n).method_60803(light);
 					matrices.pop();
 					if (mapDecoration.name().isPresent()) {
 						TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;

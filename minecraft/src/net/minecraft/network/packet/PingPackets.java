@@ -12,10 +12,10 @@ public class PingPackets {
 	public static final PacketType<QueryPingC2SPacket> PING_REQUEST = c2s("ping_request");
 
 	private static <T extends Packet<ClientPingResultPacketListener>> PacketType<T> s2c(String id) {
-		return new PacketType<>(NetworkSide.CLIENTBOUND, new Identifier(id));
+		return new PacketType<>(NetworkSide.CLIENTBOUND, Identifier.method_60656(id));
 	}
 
 	private static <T extends Packet<ServerQueryPingPacketListener>> PacketType<T> c2s(String id) {
-		return new PacketType<>(NetworkSide.SERVERBOUND, new Identifier(id));
+		return new PacketType<>(NetworkSide.SERVERBOUND, Identifier.method_60656(id));
 	}
 }

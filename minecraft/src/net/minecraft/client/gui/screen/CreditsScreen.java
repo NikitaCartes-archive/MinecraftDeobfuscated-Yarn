@@ -35,12 +35,15 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class CreditsScreen extends Screen {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/credits_vignette.png");
+	private static final Identifier VIGNETTE_TEXTURE = Identifier.method_60656("textures/misc/credits_vignette.png");
 	private static final Text SEPARATOR_LINE = Text.literal("============").formatted(Formatting.WHITE);
 	private static final String CENTERED_LINE_PREFIX = "           ";
 	private static final String OBFUSCATION_PLACEHOLDER = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
 	private static final float SPACE_BAR_SPEED_MULTIPLIER = 5.0F;
 	private static final float CTRL_KEY_SPEED_MULTIPLIER = 15.0F;
+	private static final Identifier field_52137 = Identifier.method_60656("texts/end.txt");
+	private static final Identifier field_52138 = Identifier.method_60656("texts/credits.json");
+	private static final Identifier field_52139 = Identifier.method_60656("texts/postcredits.txt");
 	private final boolean endCredits;
 	private final Runnable finishAction;
 	private float time;
@@ -129,21 +132,21 @@ public class CreditsScreen extends Screen {
 			this.credits = Lists.<OrderedText>newArrayList();
 			this.centeredLines = new IntOpenHashSet();
 			if (this.endCredits) {
-				this.load("texts/end.txt", this::readPoem);
+				this.load(field_52137, this::readPoem);
 			}
 
-			this.load("texts/credits.json", this::readCredits);
+			this.load(field_52138, this::readCredits);
 			if (this.endCredits) {
-				this.load("texts/postcredits.txt", this::readPoem);
+				this.load(field_52139, this::readPoem);
 			}
 
 			this.creditsHeight = this.credits.size() * 12;
 		}
 	}
 
-	private void load(String id, CreditsScreen.CreditsReader reader) {
+	private void load(Identifier identifier, CreditsScreen.CreditsReader reader) {
 		try {
-			Reader reader2 = this.client.getResourceManager().openAsReader(new Identifier(id));
+			Reader reader2 = this.client.getResourceManager().openAsReader(identifier);
 
 			try {
 				reader.read(reader2);
@@ -163,7 +166,7 @@ public class CreditsScreen extends Screen {
 				reader2.close();
 			}
 		} catch (Exception var8) {
-			LOGGER.error("Couldn't load credits", (Throwable)var8);
+			LOGGER.error("Couldn't load credits from file {}", identifier, var8);
 		}
 	}
 

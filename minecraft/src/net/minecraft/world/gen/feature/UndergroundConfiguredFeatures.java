@@ -101,24 +101,24 @@ public class UndergroundConfiguredFeatures {
 		RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = featureRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST);
 		ConfiguredFeatures.register(featureRegisterable, MONSTER_ROOM, Feature.MONSTER_ROOM);
 		List<Identifier> list = List.of(
-			new Identifier("fossil/spine_1"),
-			new Identifier("fossil/spine_2"),
-			new Identifier("fossil/spine_3"),
-			new Identifier("fossil/spine_4"),
-			new Identifier("fossil/skull_1"),
-			new Identifier("fossil/skull_2"),
-			new Identifier("fossil/skull_3"),
-			new Identifier("fossil/skull_4")
+			Identifier.method_60656("fossil/spine_1"),
+			Identifier.method_60656("fossil/spine_2"),
+			Identifier.method_60656("fossil/spine_3"),
+			Identifier.method_60656("fossil/spine_4"),
+			Identifier.method_60656("fossil/skull_1"),
+			Identifier.method_60656("fossil/skull_2"),
+			Identifier.method_60656("fossil/skull_3"),
+			Identifier.method_60656("fossil/skull_4")
 		);
 		List<Identifier> list2 = List.of(
-			new Identifier("fossil/spine_1_coal"),
-			new Identifier("fossil/spine_2_coal"),
-			new Identifier("fossil/spine_3_coal"),
-			new Identifier("fossil/spine_4_coal"),
-			new Identifier("fossil/skull_1_coal"),
-			new Identifier("fossil/skull_2_coal"),
-			new Identifier("fossil/skull_3_coal"),
-			new Identifier("fossil/skull_4_coal")
+			Identifier.method_60656("fossil/spine_1_coal"),
+			Identifier.method_60656("fossil/spine_2_coal"),
+			Identifier.method_60656("fossil/spine_3_coal"),
+			Identifier.method_60656("fossil/spine_4_coal"),
+			Identifier.method_60656("fossil/skull_1_coal"),
+			Identifier.method_60656("fossil/skull_2_coal"),
+			Identifier.method_60656("fossil/skull_3_coal"),
+			Identifier.method_60656("fossil/skull_4_coal")
 		);
 		RegistryEntry<StructureProcessorList> registryEntry = registryEntryLookup2.getOrThrow(StructureProcessorLists.FOSSIL_ROT);
 		ConfiguredFeatures.register(

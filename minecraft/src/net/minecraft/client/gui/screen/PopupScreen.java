@@ -23,7 +23,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class PopupScreen extends Screen {
-	private static final Identifier BACKGROUND_TEXTURE = new Identifier("popup/background");
+	private static final Identifier BACKGROUND_TEXTURE = Identifier.method_60656("popup/background");
 	private static final int VERTICAL_SPACING = 12;
 	private static final int MARGIN_WIDTH = 18;
 	private static final int BUTTON_HORIZONTAL_SPACING = 6;

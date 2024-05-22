@@ -29,10 +29,10 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsConfigureWorldScreen extends RealmsScreen {
-	private static final Identifier EXPIRED_STATUS_TEXTURE = new Identifier("realm_status/expired");
-	private static final Identifier EXPIRES_SOON_STATUS_TEXTURE = new Identifier("realm_status/expires_soon");
-	private static final Identifier OPEN_STATUS_TEXTURE = new Identifier("realm_status/open");
-	private static final Identifier CLOSED_STATUS_TEXTURE = new Identifier("realm_status/closed");
+	private static final Identifier EXPIRED_STATUS_TEXTURE = Identifier.method_60656("realm_status/expired");
+	private static final Identifier EXPIRES_SOON_STATUS_TEXTURE = Identifier.method_60656("realm_status/expires_soon");
+	private static final Identifier OPEN_STATUS_TEXTURE = Identifier.method_60656("realm_status/open");
+	private static final Identifier CLOSED_STATUS_TEXTURE = Identifier.method_60656("realm_status/closed");
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Text WORLDS_TITLE = Text.translatable("mco.configure.worlds.title");
 	private static final Text CONFIGURE_REALM_TITLE = Text.translatable("mco.configure.world.title");

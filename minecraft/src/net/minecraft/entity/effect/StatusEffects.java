@@ -16,34 +16,34 @@ public class StatusEffects {
 		"speed",
 		new StatusEffect(StatusEffectCategory.BENEFICIAL, 3402751)
 			.addAttributeModifier(
-				EntityAttributes.GENERIC_MOVEMENT_SPEED, "91AEAA56-376B-4498-935B-2F7F68070635", 0.2F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+				EntityAttributes.GENERIC_MOVEMENT_SPEED, Identifier.method_60656("effect.speed"), 0.2F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
 			)
 	);
 	public static final RegistryEntry<StatusEffect> SLOWNESS = register(
 		"slowness",
 		new StatusEffect(StatusEffectCategory.HARMFUL, 9154528)
 			.addAttributeModifier(
-				EntityAttributes.GENERIC_MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", -0.15F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+				EntityAttributes.GENERIC_MOVEMENT_SPEED, Identifier.method_60656("effect.slowness"), -0.15F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
 			)
 	);
 	public static final RegistryEntry<StatusEffect> HASTE = register(
 		"haste",
 		new StatusEffect(StatusEffectCategory.BENEFICIAL, 14270531)
 			.addAttributeModifier(
-				EntityAttributes.GENERIC_ATTACK_SPEED, "AF8B6E3F-3328-4C0A-AA36-5BA2BB9DBEF3", 0.1F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+				EntityAttributes.GENERIC_ATTACK_SPEED, Identifier.method_60656("effect.haste"), 0.1F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
 			)
 	);
 	public static final RegistryEntry<StatusEffect> MINING_FATIGUE = register(
 		"mining_fatigue",
 		new StatusEffect(StatusEffectCategory.HARMFUL, 4866583)
 			.addAttributeModifier(
-				EntityAttributes.GENERIC_ATTACK_SPEED, "55FCED67-E92A-486E-9800-B47F202C4386", -0.1F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+				EntityAttributes.GENERIC_ATTACK_SPEED, Identifier.method_60656("effect.minining_fatigue"), -0.1F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
 			)
 	);
 	public static final RegistryEntry<StatusEffect> STRENGTH = register(
 		"strength",
 		new StatusEffect(StatusEffectCategory.BENEFICIAL, 16762624)
-			.addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, "648D7064-6A60-4F59-8ABE-C2C23A6DD7A9", 3.0, EntityAttributeModifier.Operation.ADD_VALUE)
+			.addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, Identifier.method_60656("effect.strength"), 3.0, EntityAttributeModifier.Operation.ADD_VALUE)
 	);
 	public static final RegistryEntry<StatusEffect> INSTANT_HEALTH = register(
 		"instant_health", new InstantHealthOrDamageStatusEffect(StatusEffectCategory.BENEFICIAL, 16262179, false)
@@ -54,7 +54,9 @@ public class StatusEffects {
 	public static final RegistryEntry<StatusEffect> JUMP_BOOST = register(
 		"jump_boost",
 		new StatusEffect(StatusEffectCategory.BENEFICIAL, 16646020)
-			.addAttributeModifier(EntityAttributes.GENERIC_SAFE_FALL_DISTANCE, "C0105BF3-AEF8-46B0-9EBC-92943757CCBE", 1.0, EntityAttributeModifier.Operation.ADD_VALUE)
+			.addAttributeModifier(
+				EntityAttributes.GENERIC_SAFE_FALL_DISTANCE, Identifier.method_60656("effect.jump_boost"), 1.0, EntityAttributeModifier.Operation.ADD_VALUE
+			)
 	);
 	public static final RegistryEntry<StatusEffect> NAUSEA = register("nausea", new StatusEffect(StatusEffectCategory.HARMFUL, 5578058));
 	public static final RegistryEntry<StatusEffect> REGENERATION = register(
@@ -70,19 +72,21 @@ public class StatusEffects {
 	public static final RegistryEntry<StatusEffect> WEAKNESS = register(
 		"weakness",
 		new StatusEffect(StatusEffectCategory.HARMFUL, 4738376)
-			.addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, "22653B89-116E-49DC-9B6B-9971489B5BE5", -4.0, EntityAttributeModifier.Operation.ADD_VALUE)
+			.addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, Identifier.method_60656("effect.weakness"), -4.0, EntityAttributeModifier.Operation.ADD_VALUE)
 	);
 	public static final RegistryEntry<StatusEffect> POISON = register("poison", new PoisonStatusEffect(StatusEffectCategory.HARMFUL, 8889187));
 	public static final RegistryEntry<StatusEffect> WITHER = register("wither", new WitherStatusEffect(StatusEffectCategory.HARMFUL, 7561558));
 	public static final RegistryEntry<StatusEffect> HEALTH_BOOST = register(
 		"health_boost",
 		new StatusEffect(StatusEffectCategory.BENEFICIAL, 16284963)
-			.addAttributeModifier(EntityAttributes.GENERIC_MAX_HEALTH, "5D6F0BA2-1186-46AC-B896-C61C5CEE99CC", 4.0, EntityAttributeModifier.Operation.ADD_VALUE)
+			.addAttributeModifier(EntityAttributes.GENERIC_MAX_HEALTH, Identifier.method_60656("effect.health_boost"), 4.0, EntityAttributeModifier.Operation.ADD_VALUE)
 	);
 	public static final RegistryEntry<StatusEffect> ABSORPTION = register(
 		"absorption",
 		new AbsorptionStatusEffect(StatusEffectCategory.BENEFICIAL, 2445989)
-			.addAttributeModifier(EntityAttributes.GENERIC_MAX_ABSORPTION, "EAE29CF0-701E-4ED6-883A-96F798F3DAB5", 4.0, EntityAttributeModifier.Operation.ADD_VALUE)
+			.addAttributeModifier(
+				EntityAttributes.GENERIC_MAX_ABSORPTION, Identifier.method_60656("effect.absorption"), 4.0, EntityAttributeModifier.Operation.ADD_VALUE
+			)
 	);
 	public static final RegistryEntry<StatusEffect> SATURATION = register("saturation", new SaturationStatusEffect(StatusEffectCategory.BENEFICIAL, 16262179));
 	public static final RegistryEntry<StatusEffect> GLOWING = register("glowing", new StatusEffect(StatusEffectCategory.NEUTRAL, 9740385));
@@ -90,12 +94,12 @@ public class StatusEffects {
 	public static final RegistryEntry<StatusEffect> LUCK = register(
 		"luck",
 		new StatusEffect(StatusEffectCategory.BENEFICIAL, 5882118)
-			.addAttributeModifier(EntityAttributes.GENERIC_LUCK, "03C3C89D-7037-4B42-869F-B146BCB64D2E", 1.0, EntityAttributeModifier.Operation.ADD_VALUE)
+			.addAttributeModifier(EntityAttributes.GENERIC_LUCK, Identifier.method_60656("effect.luck"), 1.0, EntityAttributeModifier.Operation.ADD_VALUE)
 	);
 	public static final RegistryEntry<StatusEffect> UNLUCK = register(
 		"unluck",
 		new StatusEffect(StatusEffectCategory.HARMFUL, 12624973)
-			.addAttributeModifier(EntityAttributes.GENERIC_LUCK, "CC5AF142-2BD2-4215-B636-2605AED11727", -1.0, EntityAttributeModifier.Operation.ADD_VALUE)
+			.addAttributeModifier(EntityAttributes.GENERIC_LUCK, Identifier.method_60656("effect.unluck"), -1.0, EntityAttributeModifier.Operation.ADD_VALUE)
 	);
 	public static final RegistryEntry<StatusEffect> SLOW_FALLING = register("slow_falling", new StatusEffect(StatusEffectCategory.BENEFICIAL, 15978425));
 	public static final RegistryEntry<StatusEffect> CONDUIT_POWER = register("conduit_power", new StatusEffect(StatusEffectCategory.BENEFICIAL, 1950417));
@@ -123,7 +127,7 @@ public class StatusEffects {
 	);
 
 	private static RegistryEntry<StatusEffect> register(String id, StatusEffect statusEffect) {
-		return Registry.registerReference(Registries.STATUS_EFFECT, new Identifier(id), statusEffect);
+		return Registry.registerReference(Registries.STATUS_EFFECT, Identifier.method_60656(id), statusEffect);
 	}
 
 	public static RegistryEntry<StatusEffect> registerAndGetDefault(Registry<StatusEffect> registry) {

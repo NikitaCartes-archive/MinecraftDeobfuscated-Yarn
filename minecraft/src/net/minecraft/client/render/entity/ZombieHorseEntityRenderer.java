@@ -16,9 +16,9 @@ public class ZombieHorseEntityRenderer extends AbstractHorseEntityRenderer<Abstr
 	private static final Map<EntityType<?>, Identifier> TEXTURES = Maps.<EntityType<?>, Identifier>newHashMap(
 		ImmutableMap.of(
 			EntityType.ZOMBIE_HORSE,
-			new Identifier("textures/entity/horse/horse_zombie.png"),
+			Identifier.method_60656("textures/entity/horse/horse_zombie.png"),
 			EntityType.SKELETON_HORSE,
-			new Identifier("textures/entity/horse/horse_skeleton.png")
+			Identifier.method_60656("textures/entity/horse/horse_skeleton.png")
 		)
 	);
 

@@ -1,6 +1,7 @@
 package net.minecraft.client.particle;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
@@ -23,17 +24,12 @@ import net.minecraft.client.texture.TextureManager;
 public interface ParticleTextureSheet {
 	ParticleTextureSheet TERRAIN_SHEET = new ParticleTextureSheet() {
 		@Override
-		public void begin(BufferBuilder builder, TextureManager textureManager) {
+		public BufferBuilder begin(Tessellator tessellator, TextureManager textureManager) {
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.depthMask(true);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
-			builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
-		}
-
-		@Override
-		public void draw(Tessellator tessellator) {
-			tessellator.draw();
+			return tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		public String toString() {
@@ -42,17 +38,12 @@ public interface ParticleTextureSheet {
 	};
 	ParticleTextureSheet PARTICLE_SHEET_OPAQUE = new ParticleTextureSheet() {
 		@Override
-		public void begin(BufferBuilder builder, TextureManager textureManager) {
+		public BufferBuilder begin(Tessellator tessellator, TextureManager textureManager) {
 			RenderSystem.disableBlend();
 			RenderSystem.depthMask(true);
 			RenderSystem.setShader(GameRenderer::getParticleProgram);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
-			builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
-		}
-
-		@Override
-		public void draw(Tessellator tessellator) {
-			tessellator.draw();
+			return tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		public String toString() {
@@ -61,17 +52,12 @@ public interface ParticleTextureSheet {
 	};
 	ParticleTextureSheet PARTICLE_SHEET_TRANSLUCENT = new ParticleTextureSheet() {
 		@Override
-		public void begin(BufferBuilder builder, TextureManager textureManager) {
+		public BufferBuilder begin(Tessellator tessellator, TextureManager textureManager) {
 			RenderSystem.depthMask(true);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
-			builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
-		}
-
-		@Override
-		public void draw(Tessellator tessellator) {
-			tessellator.draw();
+			return tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		public String toString() {
@@ -80,16 +66,11 @@ public interface ParticleTextureSheet {
 	};
 	ParticleTextureSheet PARTICLE_SHEET_LIT = new ParticleTextureSheet() {
 		@Override
-		public void begin(BufferBuilder builder, TextureManager textureManager) {
+		public BufferBuilder begin(Tessellator tessellator, TextureManager textureManager) {
 			RenderSystem.disableBlend();
 			RenderSystem.depthMask(true);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
-			builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
-		}
-
-		@Override
-		public void draw(Tessellator tessellator) {
-			tessellator.draw();
+			return tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		public String toString() {
@@ -98,13 +79,10 @@ public interface ParticleTextureSheet {
 	};
 	ParticleTextureSheet CUSTOM = new ParticleTextureSheet() {
 		@Override
-		public void begin(BufferBuilder builder, TextureManager textureManager) {
+		public BufferBuilder begin(Tessellator tessellator, TextureManager textureManager) {
 			RenderSystem.depthMask(true);
 			RenderSystem.disableBlend();
-		}
-
-		@Override
-		public void draw(Tessellator tessellator) {
+			return tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		public String toString() {
@@ -112,12 +90,10 @@ public interface ParticleTextureSheet {
 		}
 	};
 	ParticleTextureSheet NO_RENDER = new ParticleTextureSheet() {
+		@Nullable
 		@Override
-		public void begin(BufferBuilder builder, TextureManager textureManager) {
-		}
-
-		@Override
-		public void draw(Tessellator tessellator) {
+		public BufferBuilder begin(Tessellator tessellator, TextureManager textureManager) {
+			return null;
 		}
 
 		public String toString() {
@@ -128,15 +104,8 @@ public interface ParticleTextureSheet {
 	/**
 	 * Called to set up OpenGL render state for drawing particles of a given type.
 	 * 
-	 * @param builder the buffer particles will draw to in {@link Particle#buildGeometry(VertexConsumer, Camera, float)}
 	 * @param textureManager texture loading context
 	 */
-	void begin(BufferBuilder builder, TextureManager textureManager);
-
-	/**
-	 * Called after all particles of a sheet have finished drawing.
-	 * 
-	 * @param tessellator the {@code Tessellator} all particles in this sheet drew to
-	 */
-	void draw(Tessellator tessellator);
+	@Nullable
+	BufferBuilder begin(Tessellator tessellator, TextureManager textureManager);
 }

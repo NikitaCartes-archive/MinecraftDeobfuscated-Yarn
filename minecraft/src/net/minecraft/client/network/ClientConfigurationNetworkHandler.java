@@ -7,6 +7,7 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9812;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.resource.ClientDataPackManager;
@@ -31,7 +32,6 @@ import net.minecraft.resource.LifecycledResourceManager;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
-import net.minecraft.text.Text;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -136,7 +136,9 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 						this.postDisconnectScreen,
 						this.serverCookies,
 						this.chatState,
-						this.strictErrorHandling
+						this.strictErrorHandling,
+						this.field_52154,
+						this.field_52155
 					)
 				)
 			);
@@ -150,8 +152,8 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 	}
 
 	@Override
-	public void onDisconnected(Text reason) {
-		super.onDisconnected(reason);
+	public void onDisconnected(class_9812 arg) {
+		super.onDisconnected(arg);
 		this.client.onDisconnected();
 	}
 }

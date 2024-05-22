@@ -57,11 +57,8 @@ public class BlockRenderManager implements SynchronousResourceReloader {
 		BlockState state, BlockPos pos, BlockRenderView world, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, Random random
 	) {
 		try {
-			BlockRenderType blockRenderType = state.getRenderType();
-			if (blockRenderType == BlockRenderType.MODEL) {
-				this.blockModelRenderer
-					.render(world, this.getModel(state), state, pos, matrices, vertexConsumer, cull, random, state.getRenderingSeed(pos), OverlayTexture.DEFAULT_UV);
-			}
+			this.blockModelRenderer
+				.render(world, this.getModel(state), state, pos, matrices, vertexConsumer, cull, random, state.getRenderingSeed(pos), OverlayTexture.DEFAULT_UV);
 		} catch (Throwable var11) {
 			CrashReport crashReport = CrashReport.create(var11, "Tesselating block in world");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");

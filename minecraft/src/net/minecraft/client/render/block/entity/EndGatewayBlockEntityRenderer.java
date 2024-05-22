@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer<EndGatewayBlockEntity> {
-	private static final Identifier BEAM_TEXTURE = new Identifier("textures/entity/end_gateway_beam.png");
+	private static final Identifier BEAM_TEXTURE = Identifier.method_60656("textures/entity/end_gateway_beam.png");
 
 	public EndGatewayBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
 		super(context);
@@ -26,9 +26,9 @@ public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer<
 			double d = endGatewayBlockEntity.isRecentlyGenerated() ? (double)endGatewayBlockEntity.getWorld().getTopY() : 50.0;
 			g = MathHelper.sin(g * (float) Math.PI);
 			int k = MathHelper.floor((double)g * d);
-			float[] fs = endGatewayBlockEntity.isRecentlyGenerated() ? DyeColor.MAGENTA.getColorComponents() : DyeColor.PURPLE.getColorComponents();
-			long l = endGatewayBlockEntity.getWorld().getTime();
-			BeaconBlockEntityRenderer.renderBeam(matrixStack, vertexConsumerProvider, BEAM_TEXTURE, f, g, l, -k, k * 2, fs, 0.15F, 0.175F);
+			int l = endGatewayBlockEntity.isRecentlyGenerated() ? DyeColor.MAGENTA.getColorComponents() : DyeColor.PURPLE.getColorComponents();
+			long m = endGatewayBlockEntity.getWorld().getTime();
+			BeaconBlockEntityRenderer.renderBeam(matrixStack, vertexConsumerProvider, BEAM_TEXTURE, f, g, m, -k, k * 2, l, 0.15F, 0.175F);
 		}
 
 		super.render(endGatewayBlockEntity, f, matrixStack, vertexConsumerProvider, i, j);

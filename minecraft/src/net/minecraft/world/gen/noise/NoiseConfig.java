@@ -51,8 +51,8 @@ public final class NoiseConfig {
 	) {
 		this.randomDeriver = chunkGeneratorSettings.getRandomProvider().create(seed).nextSplitter();
 		this.noiseParametersRegistry = noiseParametersLookup;
-		this.aquiferRandomDeriver = this.randomDeriver.split(new Identifier("aquifer")).nextSplitter();
-		this.oreRandomDeriver = this.randomDeriver.split(new Identifier("ore")).nextSplitter();
+		this.aquiferRandomDeriver = this.randomDeriver.split(Identifier.method_60656("aquifer")).nextSplitter();
+		this.oreRandomDeriver = this.randomDeriver.split(Identifier.method_60656("ore")).nextSplitter();
 		this.noises = new ConcurrentHashMap();
 		this.randomDerivers = new ConcurrentHashMap();
 		this.surfaceBuilder = new SurfaceBuilder(this, chunkGeneratorSettings.defaultBlock(), chunkGeneratorSettings.seaLevel(), this.randomDeriver);
@@ -99,7 +99,7 @@ public final class NoiseConfig {
 
 			private DensityFunction applyNotCached(DensityFunction densityFunction) {
 				if (densityFunction instanceof InterpolatedNoiseSampler interpolatedNoiseSampler) {
-					Random random = bl ? this.createRandom(0L) : NoiseConfig.this.randomDeriver.split(new Identifier("terrain"));
+					Random random = bl ? this.createRandom(0L) : NoiseConfig.this.randomDeriver.split(Identifier.method_60656("terrain"));
 					return interpolatedNoiseSampler.copyWithRandom(random);
 				} else {
 					return (DensityFunction)(densityFunction instanceof DensityFunctionTypes.EndIslands ? new DensityFunctionTypes.EndIslands(seed) : densityFunction);

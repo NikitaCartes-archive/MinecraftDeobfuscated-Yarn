@@ -6,7 +6,9 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -57,10 +59,10 @@ public class BreezeBrain {
 		MemoryModuleType.PATH
 	);
 
-	protected static Brain<?> create(Brain<BreezeEntity> brain) {
+	protected static Brain<?> create(BreezeEntity breezeEntity, Brain<BreezeEntity> brain) {
 		addCoreTasks(brain);
 		addIdleTasks(brain);
-		addFightTasks(brain);
+		addFightTasks(breezeEntity, brain);
 		brain.setCoreActivities(Set.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.FIGHT);
 		brain.resetPossibleActivities();
@@ -83,11 +85,11 @@ public class BreezeBrain {
 		);
 	}
 
-	private static void addFightTasks(Brain<BreezeEntity> brain) {
+	private static void addFightTasks(BreezeEntity breezeEntity, Brain<BreezeEntity> brain) {
 		brain.setTaskList(
 			Activity.FIGHT,
 			ImmutableList.of(
-				Pair.of(0, ForgetAttackTargetTask.create()),
+				Pair.of(0, ForgetAttackTargetTask.create((Predicate<LivingEntity>)(livingEntity -> !Sensor.testAttackableTargetPredicate(breezeEntity, livingEntity)))),
 				Pair.of(1, new BreezeShootTask()),
 				Pair.of(2, new BreezeJumpTask()),
 				Pair.of(3, new BreezeShootIfStuckTask()),

@@ -26,10 +26,10 @@ public class LoginPackets {
 	public static final PacketType<EnterConfigurationC2SPacket> LOGIN_ACKNOWLEDGED = c2s("login_acknowledged");
 
 	private static <T extends Packet<ClientLoginPacketListener>> PacketType<T> s2c(String id) {
-		return new PacketType<>(NetworkSide.CLIENTBOUND, new Identifier(id));
+		return new PacketType<>(NetworkSide.CLIENTBOUND, Identifier.method_60656(id));
 	}
 
 	private static <T extends Packet<ServerLoginPacketListener>> PacketType<T> c2s(String id) {
-		return new PacketType<>(NetworkSide.SERVERBOUND, new Identifier(id));
+		return new PacketType<>(NetworkSide.SERVERBOUND, Identifier.method_60656(id));
 	}
 }

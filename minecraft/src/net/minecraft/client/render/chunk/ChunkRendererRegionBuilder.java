@@ -6,7 +6,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.World;
@@ -17,33 +16,24 @@ public class ChunkRendererRegionBuilder {
 	private final Long2ObjectMap<ChunkRendererRegionBuilder.ClientChunk> chunks = new Long2ObjectOpenHashMap<>();
 
 	@Nullable
-	public ChunkRendererRegion build(World world, BlockPos startPos, BlockPos endPos, int offset) {
-		int i = ChunkSectionPos.getSectionCoord(startPos.getX() - offset);
-		int j = ChunkSectionPos.getSectionCoord(startPos.getZ() - offset);
-		int k = ChunkSectionPos.getSectionCoord(endPos.getX() + offset);
-		int l = ChunkSectionPos.getSectionCoord(endPos.getZ() + offset);
-		ChunkRendererRegionBuilder.ClientChunk[][] clientChunks = new ChunkRendererRegionBuilder.ClientChunk[k - i + 1][l - j + 1];
-
-		for (int m = i; m <= k; m++) {
-			for (int n = j; n <= l; n++) {
-				clientChunks[m - i][n - j] = this.chunks
-					.computeIfAbsent(
-						ChunkPos.toLong(m, n),
-						(Long2ObjectFunction<? extends ChunkRendererRegionBuilder.ClientChunk>)(pos -> new ChunkRendererRegionBuilder.ClientChunk(
-								world.getChunk(ChunkPos.getPackedX(pos), ChunkPos.getPackedZ(pos))
-							))
-					);
-			}
-		}
-
-		if (isEmptyBetween(startPos, endPos, i, j, clientChunks)) {
+	public ChunkRendererRegion build(World world, ChunkSectionPos chunkSectionPos) {
+		ChunkRendererRegionBuilder.ClientChunk clientChunk = this.method_60900(world, chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ());
+		if (clientChunk.getChunk().method_60791(chunkSectionPos.getSectionY())) {
 			return null;
 		} else {
-			RenderedChunk[][] renderedChunks = new RenderedChunk[k - i + 1][l - j + 1];
+			int i = chunkSectionPos.getSectionX() - 1;
+			int j = chunkSectionPos.getSectionZ() - 1;
+			int k = chunkSectionPos.getSectionX() + 1;
+			int l = chunkSectionPos.getSectionZ() + 1;
+			RenderedChunk[] renderedChunks = new RenderedChunk[9];
 
-			for (int n = i; n <= k; n++) {
-				for (int o = j; o <= l; o++) {
-					renderedChunks[n - i][o - j] = clientChunks[n - i][o - j].getRenderedChunk();
+			for (int m = j; m <= l; m++) {
+				for (int n = i; n <= k; n++) {
+					int o = ChunkRendererRegion.method_60899(i, j, n, m);
+					ChunkRendererRegionBuilder.ClientChunk clientChunk2 = n == chunkSectionPos.getSectionX() && m == chunkSectionPos.getSectionZ()
+						? clientChunk
+						: this.method_60900(world, n, m);
+					renderedChunks[o] = clientChunk2.getRenderedChunk();
 				}
 			}
 
@@ -51,22 +41,14 @@ public class ChunkRendererRegionBuilder {
 		}
 	}
 
-	private static boolean isEmptyBetween(BlockPos startPos, BlockPos endPos, int offsetX, int offsetZ, ChunkRendererRegionBuilder.ClientChunk[][] chunks) {
-		int i = ChunkSectionPos.getSectionCoord(startPos.getX());
-		int j = ChunkSectionPos.getSectionCoord(startPos.getZ());
-		int k = ChunkSectionPos.getSectionCoord(endPos.getX());
-		int l = ChunkSectionPos.getSectionCoord(endPos.getZ());
-
-		for (int m = i; m <= k; m++) {
-			for (int n = j; n <= l; n++) {
-				WorldChunk worldChunk = chunks[m - offsetX][n - offsetZ].getChunk();
-				if (!worldChunk.areSectionsEmptyBetween(startPos.getY(), endPos.getY())) {
-					return false;
-				}
-			}
-		}
-
-		return true;
+	private ChunkRendererRegionBuilder.ClientChunk method_60900(World world, int i, int j) {
+		return this.chunks
+			.computeIfAbsent(
+				ChunkPos.toLong(i, j),
+				(Long2ObjectFunction<? extends ChunkRendererRegionBuilder.ClientChunk>)(l -> new ChunkRendererRegionBuilder.ClientChunk(
+						world.getChunk(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l))
+					))
+			);
 	}
 
 	@Environment(EnvType.CLIENT)

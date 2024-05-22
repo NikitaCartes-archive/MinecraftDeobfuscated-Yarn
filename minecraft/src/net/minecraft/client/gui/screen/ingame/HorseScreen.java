@@ -13,11 +13,11 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class HorseScreen extends HandledScreen<HorseScreenHandler> {
-	private static final Identifier CHEST_SLOTS_TEXTURE = new Identifier("container/horse/chest_slots");
-	private static final Identifier SADDLE_SLOT_TEXTURE = new Identifier("container/horse/saddle_slot");
-	private static final Identifier LLAMA_ARMOR_SLOT_TEXTURE = new Identifier("container/horse/llama_armor_slot");
-	private static final Identifier ARMOR_SLOT_TEXTURE = new Identifier("container/horse/armor_slot");
-	private static final Identifier TEXTURE = new Identifier("textures/gui/container/horse.png");
+	private static final Identifier CHEST_SLOTS_TEXTURE = Identifier.method_60656("container/horse/chest_slots");
+	private static final Identifier SADDLE_SLOT_TEXTURE = Identifier.method_60656("container/horse/saddle_slot");
+	private static final Identifier LLAMA_ARMOR_SLOT_TEXTURE = Identifier.method_60656("container/horse/llama_armor_slot");
+	private static final Identifier ARMOR_SLOT_TEXTURE = Identifier.method_60656("container/horse/armor_slot");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/horse.png");
 	private final AbstractHorseEntity entity;
 	private float mouseX;
 	private float mouseY;

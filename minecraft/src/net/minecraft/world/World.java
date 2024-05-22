@@ -78,9 +78,9 @@ import net.minecraft.world.tick.TickManager;
 
 public abstract class World implements WorldAccess, AutoCloseable {
 	public static final Codec<RegistryKey<World>> CODEC = RegistryKey.createCodec(RegistryKeys.WORLD);
-	public static final RegistryKey<World> OVERWORLD = RegistryKey.of(RegistryKeys.WORLD, new Identifier("overworld"));
-	public static final RegistryKey<World> NETHER = RegistryKey.of(RegistryKeys.WORLD, new Identifier("the_nether"));
-	public static final RegistryKey<World> END = RegistryKey.of(RegistryKeys.WORLD, new Identifier("the_end"));
+	public static final RegistryKey<World> OVERWORLD = RegistryKey.of(RegistryKeys.WORLD, Identifier.method_60656("overworld"));
+	public static final RegistryKey<World> NETHER = RegistryKey.of(RegistryKeys.WORLD, Identifier.method_60656("the_nether"));
+	public static final RegistryKey<World> END = RegistryKey.of(RegistryKeys.WORLD, Identifier.method_60656("the_end"));
 	public static final int HORIZONTAL_LIMIT = 30000000;
 	public static final int MAX_UPDATE_DEPTH = 512;
 	public static final int field_30967 = 32;

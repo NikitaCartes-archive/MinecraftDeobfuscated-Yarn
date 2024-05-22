@@ -35,69 +35,69 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 
 		for (int j = -16; j <= 32; j += 16) {
 			for (int k = -16; k <= 32; k += 16) {
-				vertexConsumer.vertex(matrix4f, h + (float)j, f, i + (float)k).color(1.0F, 0.0F, 0.0F, 0.0F).next();
-				vertexConsumer.vertex(matrix4f, h + (float)j, f, i + (float)k).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-				vertexConsumer.vertex(matrix4f, h + (float)j, g, i + (float)k).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-				vertexConsumer.vertex(matrix4f, h + (float)j, g, i + (float)k).color(1.0F, 0.0F, 0.0F, 0.0F).next();
+				vertexConsumer.vertex(matrix4f, h + (float)j, f, i + (float)k).color(1.0F, 0.0F, 0.0F, 0.0F);
+				vertexConsumer.vertex(matrix4f, h + (float)j, f, i + (float)k).color(1.0F, 0.0F, 0.0F, 0.5F);
+				vertexConsumer.vertex(matrix4f, h + (float)j, g, i + (float)k).color(1.0F, 0.0F, 0.0F, 0.5F);
+				vertexConsumer.vertex(matrix4f, h + (float)j, g, i + (float)k).color(1.0F, 0.0F, 0.0F, 0.0F);
 			}
 		}
 
 		for (int j = 2; j < 16; j += 2) {
 			int k = j % 4 == 0 ? DARK_CYAN : YELLOW;
-			vertexConsumer.vertex(matrix4f, h + (float)j, f, i).color(1.0F, 1.0F, 0.0F, 0.0F).next();
-			vertexConsumer.vertex(matrix4f, h + (float)j, f, i).color(k).next();
-			vertexConsumer.vertex(matrix4f, h + (float)j, g, i).color(k).next();
-			vertexConsumer.vertex(matrix4f, h + (float)j, g, i).color(1.0F, 1.0F, 0.0F, 0.0F).next();
-			vertexConsumer.vertex(matrix4f, h + (float)j, f, i + 16.0F).color(1.0F, 1.0F, 0.0F, 0.0F).next();
-			vertexConsumer.vertex(matrix4f, h + (float)j, f, i + 16.0F).color(k).next();
-			vertexConsumer.vertex(matrix4f, h + (float)j, g, i + 16.0F).color(k).next();
-			vertexConsumer.vertex(matrix4f, h + (float)j, g, i + 16.0F).color(1.0F, 1.0F, 0.0F, 0.0F).next();
+			vertexConsumer.vertex(matrix4f, h + (float)j, f, i).color(1.0F, 1.0F, 0.0F, 0.0F);
+			vertexConsumer.vertex(matrix4f, h + (float)j, f, i).color(k);
+			vertexConsumer.vertex(matrix4f, h + (float)j, g, i).color(k);
+			vertexConsumer.vertex(matrix4f, h + (float)j, g, i).color(1.0F, 1.0F, 0.0F, 0.0F);
+			vertexConsumer.vertex(matrix4f, h + (float)j, f, i + 16.0F).color(1.0F, 1.0F, 0.0F, 0.0F);
+			vertexConsumer.vertex(matrix4f, h + (float)j, f, i + 16.0F).color(k);
+			vertexConsumer.vertex(matrix4f, h + (float)j, g, i + 16.0F).color(k);
+			vertexConsumer.vertex(matrix4f, h + (float)j, g, i + 16.0F).color(1.0F, 1.0F, 0.0F, 0.0F);
 		}
 
 		for (int j = 2; j < 16; j += 2) {
 			int k = j % 4 == 0 ? DARK_CYAN : YELLOW;
-			vertexConsumer.vertex(matrix4f, h, f, i + (float)j).color(1.0F, 1.0F, 0.0F, 0.0F).next();
-			vertexConsumer.vertex(matrix4f, h, f, i + (float)j).color(k).next();
-			vertexConsumer.vertex(matrix4f, h, g, i + (float)j).color(k).next();
-			vertexConsumer.vertex(matrix4f, h, g, i + (float)j).color(1.0F, 1.0F, 0.0F, 0.0F).next();
-			vertexConsumer.vertex(matrix4f, h + 16.0F, f, i + (float)j).color(1.0F, 1.0F, 0.0F, 0.0F).next();
-			vertexConsumer.vertex(matrix4f, h + 16.0F, f, i + (float)j).color(k).next();
-			vertexConsumer.vertex(matrix4f, h + 16.0F, g, i + (float)j).color(k).next();
-			vertexConsumer.vertex(matrix4f, h + 16.0F, g, i + (float)j).color(1.0F, 1.0F, 0.0F, 0.0F).next();
+			vertexConsumer.vertex(matrix4f, h, f, i + (float)j).color(1.0F, 1.0F, 0.0F, 0.0F);
+			vertexConsumer.vertex(matrix4f, h, f, i + (float)j).color(k);
+			vertexConsumer.vertex(matrix4f, h, g, i + (float)j).color(k);
+			vertexConsumer.vertex(matrix4f, h, g, i + (float)j).color(1.0F, 1.0F, 0.0F, 0.0F);
+			vertexConsumer.vertex(matrix4f, h + 16.0F, f, i + (float)j).color(1.0F, 1.0F, 0.0F, 0.0F);
+			vertexConsumer.vertex(matrix4f, h + 16.0F, f, i + (float)j).color(k);
+			vertexConsumer.vertex(matrix4f, h + 16.0F, g, i + (float)j).color(k);
+			vertexConsumer.vertex(matrix4f, h + 16.0F, g, i + (float)j).color(1.0F, 1.0F, 0.0F, 0.0F);
 		}
 
 		for (int j = this.client.world.getBottomY(); j <= this.client.world.getTopY(); j += 2) {
 			float l = (float)((double)j - cameraY);
 			int m = j % 8 == 0 ? DARK_CYAN : YELLOW;
-			vertexConsumer.vertex(matrix4f, h, l, i).color(1.0F, 1.0F, 0.0F, 0.0F).next();
-			vertexConsumer.vertex(matrix4f, h, l, i).color(m).next();
-			vertexConsumer.vertex(matrix4f, h, l, i + 16.0F).color(m).next();
-			vertexConsumer.vertex(matrix4f, h + 16.0F, l, i + 16.0F).color(m).next();
-			vertexConsumer.vertex(matrix4f, h + 16.0F, l, i).color(m).next();
-			vertexConsumer.vertex(matrix4f, h, l, i).color(m).next();
-			vertexConsumer.vertex(matrix4f, h, l, i).color(1.0F, 1.0F, 0.0F, 0.0F).next();
+			vertexConsumer.vertex(matrix4f, h, l, i).color(1.0F, 1.0F, 0.0F, 0.0F);
+			vertexConsumer.vertex(matrix4f, h, l, i).color(m);
+			vertexConsumer.vertex(matrix4f, h, l, i + 16.0F).color(m);
+			vertexConsumer.vertex(matrix4f, h + 16.0F, l, i + 16.0F).color(m);
+			vertexConsumer.vertex(matrix4f, h + 16.0F, l, i).color(m);
+			vertexConsumer.vertex(matrix4f, h, l, i).color(m);
+			vertexConsumer.vertex(matrix4f, h, l, i).color(1.0F, 1.0F, 0.0F, 0.0F);
 		}
 
 		vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getDebugLineStrip(2.0));
 
 		for (int j = 0; j <= 16; j += 16) {
 			for (int k = 0; k <= 16; k += 16) {
-				vertexConsumer.vertex(matrix4f, h + (float)j, f, i + (float)k).color(0.25F, 0.25F, 1.0F, 0.0F).next();
-				vertexConsumer.vertex(matrix4f, h + (float)j, f, i + (float)k).color(0.25F, 0.25F, 1.0F, 1.0F).next();
-				vertexConsumer.vertex(matrix4f, h + (float)j, g, i + (float)k).color(0.25F, 0.25F, 1.0F, 1.0F).next();
-				vertexConsumer.vertex(matrix4f, h + (float)j, g, i + (float)k).color(0.25F, 0.25F, 1.0F, 0.0F).next();
+				vertexConsumer.vertex(matrix4f, h + (float)j, f, i + (float)k).color(0.25F, 0.25F, 1.0F, 0.0F);
+				vertexConsumer.vertex(matrix4f, h + (float)j, f, i + (float)k).color(0.25F, 0.25F, 1.0F, 1.0F);
+				vertexConsumer.vertex(matrix4f, h + (float)j, g, i + (float)k).color(0.25F, 0.25F, 1.0F, 1.0F);
+				vertexConsumer.vertex(matrix4f, h + (float)j, g, i + (float)k).color(0.25F, 0.25F, 1.0F, 0.0F);
 			}
 		}
 
 		for (int j = this.client.world.getBottomY(); j <= this.client.world.getTopY(); j += 16) {
 			float l = (float)((double)j - cameraY);
-			vertexConsumer.vertex(matrix4f, h, l, i).color(0.25F, 0.25F, 1.0F, 0.0F).next();
-			vertexConsumer.vertex(matrix4f, h, l, i).color(0.25F, 0.25F, 1.0F, 1.0F).next();
-			vertexConsumer.vertex(matrix4f, h, l, i + 16.0F).color(0.25F, 0.25F, 1.0F, 1.0F).next();
-			vertexConsumer.vertex(matrix4f, h + 16.0F, l, i + 16.0F).color(0.25F, 0.25F, 1.0F, 1.0F).next();
-			vertexConsumer.vertex(matrix4f, h + 16.0F, l, i).color(0.25F, 0.25F, 1.0F, 1.0F).next();
-			vertexConsumer.vertex(matrix4f, h, l, i).color(0.25F, 0.25F, 1.0F, 1.0F).next();
-			vertexConsumer.vertex(matrix4f, h, l, i).color(0.25F, 0.25F, 1.0F, 0.0F).next();
+			vertexConsumer.vertex(matrix4f, h, l, i).color(0.25F, 0.25F, 1.0F, 0.0F);
+			vertexConsumer.vertex(matrix4f, h, l, i).color(0.25F, 0.25F, 1.0F, 1.0F);
+			vertexConsumer.vertex(matrix4f, h, l, i + 16.0F).color(0.25F, 0.25F, 1.0F, 1.0F);
+			vertexConsumer.vertex(matrix4f, h + 16.0F, l, i + 16.0F).color(0.25F, 0.25F, 1.0F, 1.0F);
+			vertexConsumer.vertex(matrix4f, h + 16.0F, l, i).color(0.25F, 0.25F, 1.0F, 1.0F);
+			vertexConsumer.vertex(matrix4f, h, l, i).color(0.25F, 0.25F, 1.0F, 1.0F);
+			vertexConsumer.vertex(matrix4f, h, l, i).color(0.25F, 0.25F, 1.0F, 0.0F);
 		}
 	}
 }

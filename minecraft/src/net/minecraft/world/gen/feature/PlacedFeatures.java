@@ -46,7 +46,7 @@ public class PlacedFeatures {
 	}
 
 	public static RegistryKey<PlacedFeature> of(String id) {
-		return RegistryKey.of(RegistryKeys.PLACED_FEATURE, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.PLACED_FEATURE, Identifier.method_60656(id));
 	}
 
 	public static void register(

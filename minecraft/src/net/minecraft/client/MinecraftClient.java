@@ -50,6 +50,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9801;
+import net.minecraft.class_9813;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -232,6 +234,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.path.SymlinkFinder;
@@ -304,10 +307,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final boolean IS_SYSTEM_MAC = Util.getOperatingSystem() == Util.OperatingSystem.OSX;
 	private static final int field_32145 = 10;
-	public static final Identifier DEFAULT_FONT_ID = new Identifier("default");
-	public static final Identifier UNICODE_FONT_ID = new Identifier("uniform");
-	public static final Identifier ALT_TEXT_RENDERER_ID = new Identifier("alt");
-	private static final Identifier REGIONAL_COMPLIANCIES_ID = new Identifier("regional_compliancies.json");
+	public static final Identifier DEFAULT_FONT_ID = Identifier.method_60656("default");
+	public static final Identifier UNICODE_FONT_ID = Identifier.method_60656("uniform");
+	public static final Identifier ALT_TEXT_RENDERER_ID = Identifier.method_60656("alt");
+	private static final Identifier REGIONAL_COMPLIANCIES_ID = Identifier.method_60656("regional_compliancies.json");
 	private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
 	private static final Text SOCIAL_INTERACTIONS_NOT_AVAILABLE = Text.translatable("multiplayer.socialInteractions.not_available");
 	/**
@@ -944,18 +947,18 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public static void printCrashReport(@Nullable MinecraftClient client, File runDirectory, CrashReport crashReport) {
-		File file = new File(runDirectory, "crash-reports");
-		File file2 = new File(file, "crash-" + Util.getFormattedCurrentTime() + "-client.txt");
-		Bootstrap.println(crashReport.asString());
+		Path path = runDirectory.toPath().resolve("crash-reports");
+		Path path2 = path.resolve("crash-" + Util.getFormattedCurrentTime() + "-client.txt");
+		Bootstrap.println(crashReport.method_60920(class_9813.MINECRAFT_CRASH_REPORT));
 		if (client != null) {
 			client.soundManager.stopAbruptly();
 		}
 
 		if (crashReport.getFile() != null) {
-			Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + crashReport.getFile());
+			Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + crashReport.getFile().toAbsolutePath());
 			System.exit(-1);
-		} else if (crashReport.writeToFile(file2)) {
-			Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + file2.getAbsolutePath());
+		} else if (crashReport.method_60919(path2, class_9813.MINECRAFT_CRASH_REPORT)) {
+			Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + path2.toAbsolutePath());
 			System.exit(-1);
 		} else {
 			Bootstrap.println("#@?@# Game crashed! Crash report could not be saved. #@?@#");
@@ -1583,62 +1586,54 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	private void drawProfilerResults(DrawContext context, ProfileResult profileResult) {
 		List<ProfilerTiming> list = profileResult.getTimings(this.openProfilerSection);
-		ProfilerTiming profilerTiming = (ProfilerTiming)list.remove(0);
+		ProfilerTiming profilerTiming = (ProfilerTiming)list.removeFirst();
 		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, IS_SYSTEM_MAC);
 		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 		Matrix4f matrix4f = new Matrix4f()
 			.setOrtho(0.0F, (float)this.window.getFramebufferWidth(), (float)this.window.getFramebufferHeight(), 0.0F, 1000.0F, 3000.0F);
 		RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_Z);
+		Tessellator tessellator = Tessellator.getInstance();
 		Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
 		matrix4fStack.pushMatrix();
 		matrix4fStack.translation(0.0F, 0.0F, -2000.0F);
 		RenderSystem.applyModelViewMatrix();
-		RenderSystem.lineWidth(1.0F);
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		int i = 160;
 		int j = this.window.getFramebufferWidth() - 160 - 10;
 		int k = this.window.getFramebufferHeight() - 320;
-		RenderSystem.enableBlend();
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		bufferBuilder.vertex((double)((float)j - 176.0F), (double)((float)k - 96.0F - 16.0F), 0.0).color(200, 0, 0, 0).next();
-		bufferBuilder.vertex((double)((float)j - 176.0F), (double)(k + 320), 0.0).color(200, 0, 0, 0).next();
-		bufferBuilder.vertex((double)((float)j + 176.0F), (double)(k + 320), 0.0).color(200, 0, 0, 0).next();
-		bufferBuilder.vertex((double)((float)j + 176.0F), (double)((float)k - 96.0F - 16.0F), 0.0).color(200, 0, 0, 0).next();
-		tessellator.draw();
-		RenderSystem.disableBlend();
 		double d = 0.0;
 
 		for (ProfilerTiming profilerTiming2 : list) {
 			int l = MathHelper.floor(profilerTiming2.parentSectionUsagePercentage / 4.0) + 1;
-			bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
-			int m = profilerTiming2.getColor();
-			int n = m >> 16 & 0xFF;
-			int o = m >> 8 & 0xFF;
-			int p = m & 0xFF;
-			bufferBuilder.vertex((double)j, (double)k, 0.0).color(n, o, p, 255).next();
+			BufferBuilder bufferBuilder = tessellator.method_60827(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
+			int m = ColorHelper.Argb.fullAlpha(profilerTiming2.getColor());
+			int n = ColorHelper.Argb.mixColor(m, -8355712);
+			bufferBuilder.vertex((float)j, (float)k, 0.0F).color(m);
 
-			for (int q = l; q >= 0; q--) {
-				float f = (float)((d + profilerTiming2.parentSectionUsagePercentage * (double)q / (double)l) * (float) (Math.PI * 2) / 100.0);
+			for (int o = l; o >= 0; o--) {
+				float f = (float)((d + profilerTiming2.parentSectionUsagePercentage * (double)o / (double)l) * (float) (Math.PI * 2) / 100.0);
 				float g = MathHelper.sin(f) * 160.0F;
 				float h = MathHelper.cos(f) * 160.0F * 0.5F;
-				bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h), 0.0).color(n, o, p, 255).next();
+				bufferBuilder.vertex((float)j + g, (float)k - h, 0.0F).color(m);
 			}
 
-			tessellator.draw();
-			bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
+			BufferRenderer.drawWithGlobalProgram(bufferBuilder.method_60800());
+			bufferBuilder = tessellator.method_60827(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
 
-			for (int q = l; q >= 0; q--) {
-				float f = (float)((d + profilerTiming2.parentSectionUsagePercentage * (double)q / (double)l) * (float) (Math.PI * 2) / 100.0);
+			for (int o = l; o >= 0; o--) {
+				float f = (float)((d + profilerTiming2.parentSectionUsagePercentage * (double)o / (double)l) * (float) (Math.PI * 2) / 100.0);
 				float g = MathHelper.sin(f) * 160.0F;
 				float h = MathHelper.cos(f) * 160.0F * 0.5F;
 				if (!(h > 0.0F)) {
-					bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h), 0.0).color(n >> 1, o >> 1, p >> 1, 255).next();
-					bufferBuilder.vertex((double)((float)j + g), (double)((float)k - h + 10.0F), 0.0).color(n >> 1, o >> 1, p >> 1, 255).next();
+					bufferBuilder.vertex((float)j + g, (float)k - h, 0.0F).color(n);
+					bufferBuilder.vertex((float)j + g, (float)k - h + 10.0F, 0.0F).color(n);
 				}
 			}
 
-			tessellator.draw();
+			class_9801 lv = bufferBuilder.method_60794();
+			if (lv != null) {
+				BufferRenderer.drawWithGlobalProgram(lv);
+			}
+
 			d += profilerTiming2.parentSectionUsagePercentage;
 		}
 
@@ -1656,26 +1651,26 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			string2 = string2 + string + " ";
 		}
 
-		int m = 16777215;
+		int p = 16777215;
 		context.drawTextWithShadow(this.textRenderer, string2, j - 160, k - 80 - 16, 16777215);
 		string2 = decimalFormat.format(profilerTiming.totalUsagePercentage) + "%";
 		context.drawTextWithShadow(this.textRenderer, string2, j + 160 - this.textRenderer.getWidth(string2), k - 80 - 16, 16777215);
 
-		for (int r = 0; r < list.size(); r++) {
-			ProfilerTiming profilerTiming3 = (ProfilerTiming)list.get(r);
+		for (int q = 0; q < list.size(); q++) {
+			ProfilerTiming profilerTiming3 = (ProfilerTiming)list.get(q);
 			StringBuilder stringBuilder = new StringBuilder();
 			if ("unspecified".equals(profilerTiming3.name)) {
 				stringBuilder.append("[?] ");
 			} else {
-				stringBuilder.append("[").append(r + 1).append("] ");
+				stringBuilder.append("[").append(q + 1).append("] ");
 			}
 
 			String string3 = stringBuilder.append(profilerTiming3.name).toString();
-			context.drawTextWithShadow(this.textRenderer, string3, j - 160, k + 80 + r * 8 + 20, profilerTiming3.getColor());
+			context.drawTextWithShadow(this.textRenderer, string3, j - 160, k + 80 + q * 8 + 20, profilerTiming3.getColor());
 			string3 = decimalFormat.format(profilerTiming3.parentSectionUsagePercentage) + "%";
-			context.drawTextWithShadow(this.textRenderer, string3, j + 160 - 50 - this.textRenderer.getWidth(string3), k + 80 + r * 8 + 20, profilerTiming3.getColor());
+			context.drawTextWithShadow(this.textRenderer, string3, j + 160 - 50 - this.textRenderer.getWidth(string3), k + 80 + q * 8 + 20, profilerTiming3.getColor());
 			string3 = decimalFormat.format(profilerTiming3.totalUsagePercentage) + "%";
-			context.drawTextWithShadow(this.textRenderer, string3, j + 160 - this.textRenderer.getWidth(string3), k + 80 + r * 8 + 20, profilerTiming3.getColor());
+			context.drawTextWithShadow(this.textRenderer, string3, j + 160 - this.textRenderer.getWidth(string3), k + 80 + q * 8 + 20, profilerTiming3.getColor());
 		}
 
 		matrix4fStack.popMatrix();
@@ -2509,11 +2504,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			"Window size",
 			(Supplier<String>)(() -> client != null ? client.window.getFramebufferWidth() + "x" + client.window.getFramebufferHeight() : "<not initialized>")
 		);
+		systemDetails.addSection("GFLW Platform", Window::method_60793);
 		systemDetails.addSection("GL Caps", RenderSystem::getCapsString);
 		systemDetails.addSection(
 			"GL debug messages", (Supplier<String>)(() -> GlDebug.isDebugMessageEnabled() ? String.join("\n", GlDebug.collectDebugMessages()) : "<disabled>")
 		);
-		systemDetails.addSection("Using VBOs", (Supplier<String>)(() -> "Yes"));
 		systemDetails.addSection("Is Modded", (Supplier<String>)(() -> getModStatus().getMessage()));
 		systemDetails.addSection("Universe", (Supplier<String>)(() -> client != null ? Long.toHexString(client.field_46550) : "404"));
 		systemDetails.addSection("Type", "Client (map_client.txt)");
@@ -2538,6 +2533,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		systemDetails.addSection("Locale", String.valueOf(Locale.getDefault()));
+		systemDetails.addSection("System encoding", (Supplier<String>)(() -> System.getProperty("sun.jnu.encoding", "<not set>")));
+		systemDetails.addSection("File encoding", (Supplier<String>)(() -> System.getProperty("file.encoding", "<not set>")));
 		systemDetails.addSection("CPU", GlDebugInfo::getCpuInfo);
 		return systemDetails;
 	}

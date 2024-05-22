@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -1165,7 +1164,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		private final AbstractBlock.ContextPredicate blockVisionPredicate;
 		private final AbstractBlock.ContextPredicate postProcessPredicate;
 		private final AbstractBlock.ContextPredicate emissiveLightingPredicate;
-		private final Optional<AbstractBlock.Offsetter> offsetter;
+		@Nullable
+		private final AbstractBlock.Offsetter offsetter;
 		private final boolean blockBreakParticles;
 		private final NoteBlockInstrument instrument;
 		private final boolean replaceable;
@@ -1408,12 +1408,13 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return Block.isFaceFullSquare(this.getCollisionShape(world, pos, ShapeContext.of(entity)), direction);
 		}
 
-		public Vec3d getModelOffset(BlockView world, BlockPos pos) {
-			return (Vec3d)this.offsetter.map(offsetter -> offsetter.evaluate(this.asBlockState(), world, pos)).orElse(Vec3d.ZERO);
+		public Vec3d getModelOffset(BlockView blockView, BlockPos blockPos) {
+			AbstractBlock.Offsetter offsetter = this.offsetter;
+			return offsetter != null ? offsetter.evaluate(this.asBlockState(), blockView, blockPos) : Vec3d.ZERO;
 		}
 
 		public boolean hasModelOffset() {
-			return this.offsetter.isPresent();
+			return this.offsetter != null;
 		}
 
 		public boolean onSyncedBlockEvent(World world, BlockPos pos, int type, int data) {
@@ -1736,7 +1737,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		AbstractBlock.ContextPredicate emissiveLightingPredicate = (state, world, pos) -> false;
 		boolean dynamicBounds;
 		FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
-		Optional<AbstractBlock.Offsetter> offsetter = Optional.empty();
+		@Nullable
+		AbstractBlock.Offsetter offsetter;
 
 		private Settings() {
 		}
@@ -1984,32 +1986,26 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		}
 
 		public AbstractBlock.Settings offset(AbstractBlock.OffsetType offsetType) {
-			switch (offsetType) {
-				case XZ:
-					this.offsetter = Optional.of((AbstractBlock.Offsetter)(state, world, pos) -> {
-						Block block = state.getBlock();
-						long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
-						float f = block.getMaxHorizontalModelOffset();
-						double d = MathHelper.clamp(((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
-						double e = MathHelper.clamp(((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
-						return new Vec3d(d, 0.0, e);
-					});
-					break;
-				case XYZ:
-					this.offsetter = Optional.of((AbstractBlock.Offsetter)(state, world, pos) -> {
-						Block block = state.getBlock();
-						long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
-						double d = ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * (double)block.getVerticalModelOffsetMultiplier();
-						float f = block.getMaxHorizontalModelOffset();
-						double e = MathHelper.clamp(((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
-						double g = MathHelper.clamp(((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
-						return new Vec3d(e, d, g);
-					});
-					break;
-				default:
-					this.offsetter = Optional.empty();
-			}
-
+			this.offsetter = switch (offsetType) {
+				case NONE -> null;
+				case XZ -> (state, world, pos) -> {
+				Block block = state.getBlock();
+				long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
+				float f = block.getMaxHorizontalModelOffset();
+				double d = MathHelper.clamp(((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
+				double e = MathHelper.clamp(((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
+				return new Vec3d(d, 0.0, e);
+			};
+				case XYZ -> (state, world, pos) -> {
+				Block block = state.getBlock();
+				long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
+				double d = ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * (double)block.getVerticalModelOffsetMultiplier();
+				float f = block.getMaxHorizontalModelOffset();
+				double e = MathHelper.clamp(((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
+				double g = MathHelper.clamp(((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
+				return new Vec3d(e, d, g);
+			};
+			};
 			return this;
 		}
 

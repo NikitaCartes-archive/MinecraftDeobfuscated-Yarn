@@ -43,6 +43,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9812;
 import net.minecraft.network.encryption.PacketDecryptor;
 import net.minecraft.network.encryption.PacketEncryptor;
 import net.minecraft.network.handler.DecoderHandler;
@@ -126,7 +127,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	@Nullable
 	private volatile PacketListener packetListener;
 	@Nullable
-	private Text disconnectReason;
+	private class_9812 field_52180;
 	private boolean encrypted;
 	private boolean disconnected;
 	private int packetsReceivedCounter;
@@ -136,7 +137,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	private int ticks;
 	private boolean errored;
 	@Nullable
-	private volatile Text pendingDisconnectionReason;
+	private volatile class_9812 pendingDisconnectionReason;
 	@Nullable
 	PacketSizeLogger packetSizeLogger;
 
@@ -150,7 +151,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		this.channel = context.channel();
 		this.address = this.channel.remoteAddress();
 		if (this.pendingDisconnectionReason != null) {
-			this.disconnect(this.pendingDisconnectionReason);
+			this.method_60924(this.pendingDisconnectionReason);
 		}
 	}
 
@@ -172,19 +173,27 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 					this.disconnect(Text.translatable("disconnect.timeout"));
 				} else {
 					Text text = Text.translatable("disconnect.genericReason", "Internal Exception: " + ex);
+					PacketListener packetListener = this.packetListener;
+					class_9812 lv;
+					if (packetListener != null) {
+						lv = packetListener.method_60881(text, ex);
+					} else {
+						lv = new class_9812(text);
+					}
+
 					if (bl) {
 						LOGGER.debug("Failed to sent packet", ex);
 						if (this.getOppositeSide() == NetworkSide.CLIENTBOUND) {
 							Packet<?> packet = (Packet<?>)(this.duringLogin ? new LoginDisconnectS2CPacket(text) : new DisconnectS2CPacket(text));
-							this.send(packet, PacketCallbacks.always(() -> this.disconnect(text)));
+							this.send(packet, PacketCallbacks.always(() -> this.method_60924(lv)));
 						} else {
-							this.disconnect(text);
+							this.method_60924(lv);
 						}
 
 						this.tryDisableAutoRead();
 					} else {
 						LOGGER.debug("Double fault", ex);
-						this.disconnect(text);
+						this.method_60924(lv);
 					}
 				}
 			}
@@ -449,13 +458,17 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	public void disconnect(Text disconnectReason) {
+		this.method_60924(new class_9812(disconnectReason));
+	}
+
+	public void method_60924(class_9812 arg) {
 		if (this.channel == null) {
-			this.pendingDisconnectionReason = disconnectReason;
+			this.pendingDisconnectionReason = arg;
 		}
 
 		if (this.isOpen()) {
 			this.channel.close().awaitUninterruptibly();
-			this.disconnectReason = disconnectReason;
+			this.field_52180 = arg;
 		}
 	}
 
@@ -597,8 +610,8 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	@Nullable
-	public Text getDisconnectReason() {
-		return this.disconnectReason;
+	public class_9812 method_60926() {
+		return this.field_52180;
 	}
 
 	public void tryDisableAutoRead() {
@@ -653,8 +666,8 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 				PacketListener packetListener = this.getPacketListener();
 				PacketListener packetListener2 = packetListener != null ? packetListener : this.prePlayStateListener;
 				if (packetListener2 != null) {
-					Text text = (Text)Objects.requireNonNullElseGet(this.getDisconnectReason(), () -> Text.translatable("multiplayer.disconnect.generic"));
-					packetListener2.onDisconnected(text);
+					class_9812 lv = (class_9812)Objects.requireNonNullElseGet(this.method_60926(), () -> new class_9812(Text.translatable("multiplayer.disconnect.generic")));
+					packetListener2.onDisconnected(lv);
 				}
 			}
 		}

@@ -69,7 +69,7 @@ public class BlockArgumentParser {
 	private final boolean allowSnbt;
 	private final Map<Property<?>, Comparable<?>> blockProperties = Maps.<Property<?>, Comparable<?>>newHashMap();
 	private final Map<String, String> tagProperties = Maps.<String, String>newHashMap();
-	private Identifier blockId = new Identifier("");
+	private Identifier blockId = Identifier.method_60656("");
 	@Nullable
 	private StateManager<Block, BlockState> stateFactory;
 	@Nullable

@@ -13,6 +13,6 @@ public class PointOfInterestTypeTags {
 	}
 
 	private static TagKey<PointOfInterestType> of(String id) {
-		return TagKey.of(RegistryKeys.POINT_OF_INTEREST_TYPE, new Identifier(id));
+		return TagKey.of(RegistryKeys.POINT_OF_INTEREST_TYPE, Identifier.method_60656(id));
 	}
 }

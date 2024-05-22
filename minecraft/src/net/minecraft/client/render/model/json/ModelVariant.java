@@ -107,7 +107,7 @@ public class ModelVariant implements ModelBakeSettings {
 		}
 
 		protected Identifier deserializeModel(JsonObject object) {
-			return new Identifier(JsonHelper.getString(object, "model"));
+			return Identifier.method_60654(JsonHelper.getString(object, "model"));
 		}
 
 		protected int deserializeWeight(JsonObject object) {

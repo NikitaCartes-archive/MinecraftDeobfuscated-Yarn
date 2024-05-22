@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_9812;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
@@ -453,7 +454,9 @@ public class ServerPlayNetworkHandler
 				}
 
 				this.player.getServerWorld().getChunkManager().updatePosition(this.player);
-				this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
+				Vec3d vec3d = new Vec3d(entity.getX() - d, entity.getY() - e, entity.getZ() - f);
+				this.player.setOnGround(vec3d);
+				this.player.increaseTravelMotionStats(vec3d.x, vec3d.y, vec3d.z);
 				this.vehicleFloating = m >= -0.03125 && !bl2 && !this.server.isFlightEnabled() && !entity.hasNoGravity() && this.isEntityOnAir(entity);
 				this.updatedRiddenX = entity.getX();
 				this.updatedRiddenY = entity.getY();
@@ -1139,10 +1142,10 @@ public class ServerPlayNetworkHandler
 	}
 
 	@Override
-	public void onDisconnected(Text reason) {
-		LOGGER.info("{} lost connection: {}", this.player.getName().getString(), reason.getString());
+	public void onDisconnected(class_9812 arg) {
+		LOGGER.info("{} lost connection: {}", this.player.getName().getString(), arg.reason().getString());
 		this.cleanUp();
-		super.onDisconnected(reason);
+		super.onDisconnected(arg);
 	}
 
 	private void cleanUp() {

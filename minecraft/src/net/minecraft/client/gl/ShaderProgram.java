@@ -24,6 +24,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.util.Window;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.util.Identifier;
@@ -31,6 +32,7 @@ import net.minecraft.util.InvalidHierarchicalFileException;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.PathUtil;
 import org.apache.commons.io.IOUtils;
+import org.joml.Matrix4f;
 import org.slf4j.Logger;
 
 /**
@@ -64,7 +66,6 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 	private final int glRef;
 	private final String name;
 	private boolean dirty;
-	private final GlBlendState blendState;
 	private final ShaderStage vertexShader;
 	private final ShaderStage fragmentShader;
 	private final VertexFormat format;
@@ -102,7 +103,7 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 	public ShaderProgram(ResourceFactory factory, String name, VertexFormat format) throws IOException {
 		this.name = name;
 		this.format = format;
-		Identifier identifier = new Identifier("shaders/core/" + name + ".json");
+		Identifier identifier = Identifier.method_60656("shaders/core/" + name + ".json");
 
 		try {
 			Reader reader = factory.openAsReader(identifier);
@@ -145,7 +146,6 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 					}
 				}
 
-				this.blendState = readBlendState(JsonHelper.getObject(jsonObject, "blend", null));
 				this.vertexShader = loadShader(factory, ShaderStage.Type.VERTEX, string);
 				this.fragmentShader = loadShader(factory, ShaderStage.Type.FRAGMENT, string2);
 				this.glRef = GlProgramManager.createProgram();
@@ -202,7 +202,7 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 		ShaderStage shaderStage2;
 		if (shaderStage == null) {
 			String string = "shaders/core/" + name + type.getFileExtension();
-			Resource resource = factory.getResourceOrThrow(new Identifier(string));
+			Resource resource = factory.getResourceOrThrow(Identifier.method_60656(string));
 			InputStream inputStream = resource.getInputStream();
 
 			try {
@@ -216,7 +216,7 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 						if (!this.visitedImports.add(name)) {
 							return null;
 						} else {
-							Identifier identifier = new Identifier(name);
+							Identifier identifier = Identifier.method_60654(name);
 
 							try {
 								Reader reader = factory.openAsReader(identifier);
@@ -270,64 +270,6 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 		return shaderStage2;
 	}
 
-	public static GlBlendState readBlendState(JsonObject json) {
-		if (json == null) {
-			return new GlBlendState();
-		} else {
-			int i = GlConst.GL_FUNC_ADD;
-			int j = 1;
-			int k = 0;
-			int l = 1;
-			int m = 0;
-			boolean bl = true;
-			boolean bl2 = false;
-			if (JsonHelper.hasString(json, "func")) {
-				i = GlBlendState.getModeFromString(json.get("func").getAsString());
-				if (i != GlConst.GL_FUNC_ADD) {
-					bl = false;
-				}
-			}
-
-			if (JsonHelper.hasString(json, "srcrgb")) {
-				j = GlBlendState.getFactorFromString(json.get("srcrgb").getAsString());
-				if (j != 1) {
-					bl = false;
-				}
-			}
-
-			if (JsonHelper.hasString(json, "dstrgb")) {
-				k = GlBlendState.getFactorFromString(json.get("dstrgb").getAsString());
-				if (k != 0) {
-					bl = false;
-				}
-			}
-
-			if (JsonHelper.hasString(json, "srcalpha")) {
-				l = GlBlendState.getFactorFromString(json.get("srcalpha").getAsString());
-				if (l != 1) {
-					bl = false;
-				}
-
-				bl2 = true;
-			}
-
-			if (JsonHelper.hasString(json, "dstalpha")) {
-				m = GlBlendState.getFactorFromString(json.get("dstalpha").getAsString());
-				if (m != 0) {
-					bl = false;
-				}
-
-				bl2 = true;
-			}
-
-			if (bl) {
-				return new GlBlendState();
-			} else {
-				return bl2 ? new GlBlendState(j, k, l, m, i) : new GlBlendState(j, k, i);
-			}
-		}
-	}
-
 	public void close() {
 		for (GlUniform glUniform : this.uniforms) {
 			glUniform.close();
@@ -357,7 +299,6 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 		RenderSystem.assertOnRenderThread();
 		this.dirty = false;
 		activeProgram = this;
-		this.blendState.enable();
 		if (this.glRef != activeProgramGlRef) {
 			GlProgramManager.useProgram(this.glRef);
 			activeProgramGlRef = this.glRef;
@@ -532,5 +473,62 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 	@Override
 	public int getGlRef() {
 		return this.glRef;
+	}
+
+	public void method_60897(VertexFormat.DrawMode drawMode, Matrix4f matrix4f, Matrix4f matrix4f2, Window window) {
+		for (int i = 0; i < 12; i++) {
+			int j = RenderSystem.getShaderTexture(i);
+			this.addSampler("Sampler" + i, j);
+		}
+
+		if (this.modelViewMat != null) {
+			this.modelViewMat.set(matrix4f);
+		}
+
+		if (this.projectionMat != null) {
+			this.projectionMat.set(matrix4f2);
+		}
+
+		if (this.colorModulator != null) {
+			this.colorModulator.set(RenderSystem.getShaderColor());
+		}
+
+		if (this.glintAlpha != null) {
+			this.glintAlpha.set(RenderSystem.getShaderGlintAlpha());
+		}
+
+		if (this.fogStart != null) {
+			this.fogStart.set(RenderSystem.getShaderFogStart());
+		}
+
+		if (this.fogEnd != null) {
+			this.fogEnd.set(RenderSystem.getShaderFogEnd());
+		}
+
+		if (this.fogColor != null) {
+			this.fogColor.set(RenderSystem.getShaderFogColor());
+		}
+
+		if (this.fogShape != null) {
+			this.fogShape.set(RenderSystem.getShaderFogShape().getId());
+		}
+
+		if (this.textureMat != null) {
+			this.textureMat.set(RenderSystem.getTextureMatrix());
+		}
+
+		if (this.gameTime != null) {
+			this.gameTime.set(RenderSystem.getShaderGameTime());
+		}
+
+		if (this.screenSize != null) {
+			this.screenSize.set((float)window.getFramebufferWidth(), (float)window.getFramebufferHeight());
+		}
+
+		if (this.lineWidth != null && (drawMode == VertexFormat.DrawMode.LINES || drawMode == VertexFormat.DrawMode.LINE_STRIP)) {
+			this.lineWidth.set(RenderSystem.getShaderLineWidth());
+		}
+
+		RenderSystem.setupShaderLights(this);
 	}
 }

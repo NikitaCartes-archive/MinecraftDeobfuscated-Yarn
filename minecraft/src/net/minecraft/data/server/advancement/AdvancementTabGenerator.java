@@ -16,6 +16,6 @@ public interface AdvancementTabGenerator {
 	 * <p>The returned advancement itself should not be exported.
 	 */
 	static AdvancementEntry reference(String id) {
-		return Advancement.Builder.create().build(new Identifier(id));
+		return Advancement.Builder.create().build(Identifier.method_60654(id));
 	}
 }

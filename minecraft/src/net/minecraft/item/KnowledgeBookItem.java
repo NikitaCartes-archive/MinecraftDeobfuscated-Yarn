@@ -25,8 +25,8 @@ public class KnowledgeBookItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		itemStack.decrementUnlessCreative(1, user);
 		List<Identifier> list = itemStack.getOrDefault(DataComponentTypes.RECIPES, List.of());
+		itemStack.decrementUnlessCreative(1, user);
 		if (list.isEmpty()) {
 			return TypedActionResult.fail(itemStack);
 		} else {

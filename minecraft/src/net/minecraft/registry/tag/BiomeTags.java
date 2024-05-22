@@ -80,6 +80,6 @@ public class BiomeTags {
 	}
 
 	private static TagKey<Biome> of(String id) {
-		return TagKey.of(RegistryKeys.BIOME, new Identifier(id));
+		return TagKey.of(RegistryKeys.BIOME, Identifier.method_60656(id));
 	}
 }

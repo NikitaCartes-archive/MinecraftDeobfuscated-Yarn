@@ -61,10 +61,10 @@ public record DyedColorComponent(int rgb, boolean showInTooltip) implements Tool
 			}
 
 			for (DyeItem dyeItem : dyes) {
-				float[] fs = dyeItem.getColor().getColorComponents();
-				int q = (int)(fs[0] * 255.0F);
-				int r = (int)(fs[1] * 255.0F);
-				int s = (int)(fs[2] * 255.0F);
+				int p = dyeItem.getColor().getColorComponents();
+				int q = ColorHelper.Argb.getRed(p);
+				int r = ColorHelper.Argb.getGreen(p);
+				int s = ColorHelper.Argb.getBlue(p);
 				l += Math.max(q, Math.max(r, s));
 				i += q;
 				j += r;

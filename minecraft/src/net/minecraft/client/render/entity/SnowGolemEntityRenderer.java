@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SnowGolemEntityRenderer extends MobEntityRenderer<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/snow_golem.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/snow_golem.png");
 
 	public SnowGolemEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new SnowGolemEntityModel<>(context.getPart(EntityModelLayers.SNOW_GOLEM)), 0.5F);

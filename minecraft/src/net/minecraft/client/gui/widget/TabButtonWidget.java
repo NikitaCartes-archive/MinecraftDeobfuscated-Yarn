@@ -19,10 +19,10 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class TabButtonWidget extends ClickableWidget {
 	private static final ButtonTextures TAB_BUTTON_TEXTURES = new ButtonTextures(
-		new Identifier("widget/tab_selected"),
-		new Identifier("widget/tab"),
-		new Identifier("widget/tab_selected_highlighted"),
-		new Identifier("widget/tab_highlighted")
+		Identifier.method_60656("widget/tab_selected"),
+		Identifier.method_60656("widget/tab"),
+		Identifier.method_60656("widget/tab_selected_highlighted"),
+		Identifier.method_60656("widget/tab_highlighted")
 	);
 	private static final int field_43063 = 3;
 	private static final int field_43064 = 1;

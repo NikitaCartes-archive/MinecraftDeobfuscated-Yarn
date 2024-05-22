@@ -45,8 +45,8 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ItemRenderer implements SynchronousResourceReloader {
-	public static final Identifier ENTITY_ENCHANTMENT_GLINT = new Identifier("textures/misc/enchanted_glint_entity.png");
-	public static final Identifier ITEM_ENCHANTMENT_GLINT = new Identifier("textures/misc/enchanted_glint_item.png");
+	public static final Identifier ENTITY_ENCHANTMENT_GLINT = Identifier.method_60656("textures/misc/enchanted_glint_entity.png");
+	public static final Identifier ITEM_ENCHANTMENT_GLINT = Identifier.method_60656("textures/misc/enchanted_glint_item.png");
 	private static final Set<Item> WITHOUT_MODELS = Sets.<Item>newHashSet(Items.AIR);
 	public static final int field_32937 = 8;
 	public static final int field_32938 = 8;
@@ -123,8 +123,8 @@ public class ItemRenderer implements SynchronousResourceReloader {
 			matrices.translate(-0.5F, -0.5F, -0.5F);
 			if (!model.isBuiltin() && (!stack.isOf(Items.TRIDENT) || bl)) {
 				boolean bl2;
-				if (renderMode != ModelTransformationMode.GUI && !renderMode.isFirstPerson() && stack.getItem() instanceof BlockItem) {
-					Block block = ((BlockItem)stack.getItem()).getBlock();
+				if (renderMode != ModelTransformationMode.GUI && !renderMode.isFirstPerson() && stack.getItem() instanceof BlockItem blockItem) {
+					Block block = blockItem.getBlock();
 					bl2 = !(block instanceof TranslucentBlock) && !(block instanceof StainedGlassPaneBlock);
 				} else {
 					bl2 = true;
@@ -140,11 +140,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 						MatrixUtil.scale(entry.getPositionMatrix(), 0.75F);
 					}
 
-					if (bl2) {
-						vertexConsumer = getDirectDynamicDisplayGlintConsumer(vertexConsumers, renderLayer, entry);
-					} else {
-						vertexConsumer = getDynamicDisplayGlintConsumer(vertexConsumers, renderLayer, entry);
-					}
+					vertexConsumer = getDynamicDisplayGlintConsumer(vertexConsumers, renderLayer, entry);
 				} else if (bl2) {
 					vertexConsumer = getDirectItemGlintConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
 				} else {
@@ -164,18 +160,12 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		return stack.isIn(ItemTags.COMPASSES) || stack.isOf(Items.CLOCK);
 	}
 
-	public static VertexConsumer getArmorGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, boolean solid, boolean glint) {
-		return glint
-			? VertexConsumers.union(provider.getBuffer(solid ? RenderLayer.getArmorGlint() : RenderLayer.getArmorEntityGlint()), provider.getBuffer(layer))
-			: provider.getBuffer(layer);
+	public static VertexConsumer getArmorGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, boolean solid) {
+		return solid ? VertexConsumers.union(provider.getBuffer(RenderLayer.getArmorEntityGlint()), provider.getBuffer(layer)) : provider.getBuffer(layer);
 	}
 
 	public static VertexConsumer getDynamicDisplayGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, MatrixStack.Entry entry) {
 		return VertexConsumers.union(new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getGlint()), entry, 0.0078125F), provider.getBuffer(layer));
-	}
-
-	public static VertexConsumer getDirectDynamicDisplayGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, MatrixStack.Entry entry) {
-		return VertexConsumers.union(new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getDirectGlint()), entry, 0.0078125F), provider.getBuffer(layer));
 	}
 
 	public static VertexConsumer getItemGlintConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {
@@ -190,7 +180,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 
 	public static VertexConsumer getDirectItemGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, boolean solid, boolean glint) {
 		return glint
-			? VertexConsumers.union(provider.getBuffer(solid ? RenderLayer.getDirectGlint() : RenderLayer.getDirectEntityGlint()), provider.getBuffer(layer))
+			? VertexConsumers.union(provider.getBuffer(solid ? RenderLayer.getGlint() : RenderLayer.getDirectEntityGlint()), provider.getBuffer(layer))
 			: provider.getBuffer(layer);
 	}
 

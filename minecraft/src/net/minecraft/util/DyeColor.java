@@ -11,6 +11,7 @@ import net.minecraft.block.MapColor;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.function.ValueLists;
+import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Contract;
 
 /**
@@ -43,7 +44,7 @@ public enum DyeColor implements StringIdentifiable {
 	private final int id;
 	private final String name;
 	private final MapColor mapColor;
-	private final float[] colorComponents;
+	private final int colorComponents;
 	private final int fireworkColor;
 	private final int signColor;
 
@@ -52,10 +53,7 @@ public enum DyeColor implements StringIdentifiable {
 		this.name = name;
 		this.mapColor = mapColor;
 		this.signColor = signColor;
-		int j = (color & 0xFF0000) >> 16;
-		int k = (color & 0xFF00) >> 8;
-		int l = (color & 0xFF) >> 0;
-		this.colorComponents = new float[]{(float)j / 255.0F, (float)k / 255.0F, (float)l / 255.0F};
+		this.colorComponents = ColorHelper.Argb.fullAlpha(color);
 		this.fireworkColor = fireworkColor;
 	}
 
@@ -78,7 +76,7 @@ public enum DyeColor implements StringIdentifiable {
 	 * 
 	 * <p>Each value of the array is between {@code 0.0} and {@code 255.0} (both inclusive).
 	 */
-	public float[] getColorComponents() {
+	public int getColorComponents() {
 		return this.colorComponents;
 	}
 

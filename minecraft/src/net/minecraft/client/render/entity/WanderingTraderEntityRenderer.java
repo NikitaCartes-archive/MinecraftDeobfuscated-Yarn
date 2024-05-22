@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class WanderingTraderEntityRenderer extends MobEntityRenderer<WanderingTraderEntity, VillagerResemblingModel<WanderingTraderEntity>> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/wandering_trader.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/wandering_trader.png");
 
 	public WanderingTraderEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new VillagerResemblingModel<>(context.getPart(EntityModelLayers.WANDERING_TRADER)), 0.5F);

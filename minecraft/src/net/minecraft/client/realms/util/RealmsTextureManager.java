@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 public class RealmsTextureManager {
 	private static final Map<String, RealmsTextureManager.RealmsTexture> TEXTURES = Maps.<String, RealmsTextureManager.RealmsTexture>newHashMap();
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Identifier ISLES = new Identifier("textures/gui/presets/isles.png");
+	private static final Identifier ISLES = Identifier.method_60656("textures/gui/presets/isles.png");
 
 	public static Identifier getTextureId(String id, @Nullable String image) {
 		return image == null ? ISLES : getTextureIdInternal(id, image);
@@ -38,7 +38,7 @@ public class RealmsTextureManager {
 				TEXTURES.put(id, new RealmsTextureManager.RealmsTexture(image, identifier));
 				return identifier;
 			} else {
-				Identifier identifier = new Identifier("realms", "dynamic/" + id);
+				Identifier identifier = Identifier.method_60655("realms", "dynamic/" + id);
 				MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(nativeImage));
 				TEXTURES.put(id, new RealmsTextureManager.RealmsTexture(image, identifier));
 				return identifier;

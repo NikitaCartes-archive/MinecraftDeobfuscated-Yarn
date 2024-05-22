@@ -97,7 +97,7 @@ public interface LootableInventory extends Inventory {
 	 */
 	default boolean readLootTable(NbtCompound nbt) {
 		if (nbt.contains("LootTable", NbtElement.STRING_TYPE)) {
-			this.setLootTable(RegistryKey.of(RegistryKeys.LOOT_TABLE, new Identifier(nbt.getString("LootTable"))));
+			this.setLootTable(RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.method_60654(nbt.getString("LootTable"))));
 			if (nbt.contains("LootTableSeed", NbtElement.LONG_TYPE)) {
 				this.setLootTableSeed(nbt.getLong("LootTableSeed"));
 			} else {

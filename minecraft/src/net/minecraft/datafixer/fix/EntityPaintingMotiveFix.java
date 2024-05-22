@@ -10,7 +10,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.util.Identifier;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class EntityPaintingMotiveFix extends ChoiceFix {
 	private static final Map<String, String> RENAMED_MOTIVES = DataFixUtils.make(Maps.<String, String>newHashMap(), map -> {
@@ -27,7 +27,7 @@ public class EntityPaintingMotiveFix extends ChoiceFix {
 		Optional<String> optional = dynamic.get("Motive").asString().result();
 		if (optional.isPresent()) {
 			String string = ((String)optional.get()).toLowerCase(Locale.ROOT);
-			return dynamic.set("Motive", dynamic.createString(new Identifier((String)RENAMED_MOTIVES.getOrDefault(string, string)).toString()));
+			return dynamic.set("Motive", dynamic.createString(IdentifierNormalizingSchema.normalize((String)RENAMED_MOTIVES.getOrDefault(string, string))));
 		} else {
 			return dynamic;
 		}

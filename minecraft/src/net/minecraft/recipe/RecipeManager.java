@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.input.RecipeInput;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.JsonDataLoader;
@@ -51,7 +52,7 @@ public class RecipeManager extends JsonDataLoader {
 	private boolean errored;
 
 	public RecipeManager(RegistryWrapper.WrapperLookup registryLookup) {
-		super(GSON, "recipes");
+		super(GSON, RegistryKeys.method_60915(RegistryKeys.RECIPE));
 		this.registryLookup = registryLookup;
 	}
 

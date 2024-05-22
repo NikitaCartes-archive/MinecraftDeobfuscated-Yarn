@@ -156,10 +156,10 @@ public class MemoryModuleType<U> {
 	}
 
 	private static <U> MemoryModuleType<U> register(String id, Codec<U> codec) {
-		return Registry.register(Registries.MEMORY_MODULE_TYPE, new Identifier(id), new MemoryModuleType<>(Optional.of(codec)));
+		return Registry.register(Registries.MEMORY_MODULE_TYPE, Identifier.method_60656(id), new MemoryModuleType<>(Optional.of(codec)));
 	}
 
 	private static <U> MemoryModuleType<U> register(String id) {
-		return Registry.register(Registries.MEMORY_MODULE_TYPE, new Identifier(id), new MemoryModuleType<>(Optional.empty()));
+		return Registry.register(Registries.MEMORY_MODULE_TYPE, Identifier.method_60656(id), new MemoryModuleType<>(Optional.empty()));
 	}
 }

@@ -38,7 +38,6 @@ public class OminousBottleItem extends Item {
 		if (!world.isClient) {
 			world.playSound(null, user.getBlockPos(), SoundEvents.ITEM_OMINOUS_BOTTLE_DISPOSE, user.getSoundCategory(), 1.0F, 1.0F);
 			Integer integer = stack.getOrDefault(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER, Integer.valueOf(0));
-			user.removeStatusEffect(StatusEffects.BAD_OMEN);
 			user.addStatusEffect(new StatusEffectInstance(StatusEffects.BAD_OMEN, 120000, integer, false, false, true));
 		}
 

@@ -9,6 +9,7 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9797;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
@@ -17,6 +18,7 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.gui.screen.ingame.BookEditScreen;
@@ -661,7 +663,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (!(this.client.currentScreen instanceof DownloadingTerrainScreen)) {
-			this.updateNausea();
+			this.method_60887(this.method_60886() == class_9797.class_9798.CONFUSION);
+			this.tickPortalCooldown();
 		}
 
 		boolean bl = this.input.jumping;
@@ -821,6 +824,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 	}
 
+	public class_9797.class_9798 method_60886() {
+		return this.field_51994 == null ? class_9797.class_9798.NONE : this.field_51994.method_60700();
+	}
+
 	@Override
 	protected void updatePostDeath() {
 		this.deathTime++;
@@ -829,11 +836,14 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 	}
 
-	private void updateNausea() {
+	private void method_60887(boolean bl) {
 		this.prevNauseaIntensity = this.nauseaIntensity;
 		float f = 0.0F;
-		if (this.inNetherPortal) {
-			if (this.client.currentScreen != null && !this.client.currentScreen.shouldPause() && !(this.client.currentScreen instanceof DeathScreen)) {
+		if (bl && this.field_51994 != null && this.field_51994.method_60709()) {
+			if (this.client.currentScreen != null
+				&& !this.client.currentScreen.shouldPause()
+				&& !(this.client.currentScreen instanceof DeathScreen)
+				&& !(this.client.currentScreen instanceof CreditsScreen)) {
 				if (this.client.currentScreen instanceof HandledScreen) {
 					this.closeHandledScreen();
 				}
@@ -846,7 +856,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 
 			f = 0.0125F;
-			this.inNetherPortal = false;
+			this.field_51994.method_60705(false);
 		} else if (this.hasStatusEffect(StatusEffects.NAUSEA) && !this.getStatusEffect(StatusEffects.NAUSEA).isDurationBelow(60)) {
 			f = 0.006666667F;
 		} else if (this.nauseaIntensity > 0.0F) {
@@ -854,7 +864,6 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		this.nauseaIntensity = MathHelper.clamp(this.nauseaIntensity + f, 0.0F, 1.0F);
-		this.tickPortalCooldown();
 	}
 
 	@Override

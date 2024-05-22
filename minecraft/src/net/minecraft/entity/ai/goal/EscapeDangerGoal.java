@@ -1,11 +1,15 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
@@ -18,10 +22,20 @@ public class EscapeDangerGoal extends Goal {
 	protected double targetY;
 	protected double targetZ;
 	protected boolean active;
+	private final Function<PathAwareEntity, TagKey<DamageType>> field_52011;
 
-	public EscapeDangerGoal(PathAwareEntity mob, double speed) {
+	public EscapeDangerGoal(PathAwareEntity pathAwareEntity, double d) {
+		this(pathAwareEntity, d, DamageTypeTags.PANIC_CAUSES);
+	}
+
+	public EscapeDangerGoal(PathAwareEntity pathAwareEntity, double d, TagKey<DamageType> tagKey) {
+		this(pathAwareEntity, d, pathAwareEntityx -> tagKey);
+	}
+
+	public EscapeDangerGoal(PathAwareEntity mob, double speed, Function<PathAwareEntity, TagKey<DamageType>> function) {
 		this.mob = mob;
 		this.speed = speed;
+		this.field_52011 = function;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
@@ -45,7 +59,7 @@ public class EscapeDangerGoal extends Goal {
 	}
 
 	protected boolean isInDanger() {
-		return this.mob.getAttacker() != null || this.mob.shouldEscapePowderSnow() || this.mob.isOnFire();
+		return this.mob.getRecentDamageSource() != null && this.mob.getRecentDamageSource().isIn((TagKey<DamageType>)this.field_52011.apply(this.mob));
 	}
 
 	protected boolean findTarget() {

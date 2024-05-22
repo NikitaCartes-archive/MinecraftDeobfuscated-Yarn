@@ -40,14 +40,16 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RecipeBookWidget implements RecipeGridAligner<Ingredient>, Drawable, Element, Selectable, RecipeDisplayListener {
-	public static final ButtonTextures BUTTON_TEXTURES = new ButtonTextures(new Identifier("recipe_book/button"), new Identifier("recipe_book/button_highlighted"));
-	private static final ButtonTextures FILTER_BUTTON_TEXTURES = new ButtonTextures(
-		new Identifier("recipe_book/filter_enabled"),
-		new Identifier("recipe_book/filter_disabled"),
-		new Identifier("recipe_book/filter_enabled_highlighted"),
-		new Identifier("recipe_book/filter_disabled_highlighted")
+	public static final ButtonTextures BUTTON_TEXTURES = new ButtonTextures(
+		Identifier.method_60656("recipe_book/button"), Identifier.method_60656("recipe_book/button_highlighted")
 	);
-	protected static final Identifier TEXTURE = new Identifier("textures/gui/recipe_book.png");
+	private static final ButtonTextures FILTER_BUTTON_TEXTURES = new ButtonTextures(
+		Identifier.method_60656("recipe_book/filter_enabled"),
+		Identifier.method_60656("recipe_book/filter_disabled"),
+		Identifier.method_60656("recipe_book/filter_enabled_highlighted"),
+		Identifier.method_60656("recipe_book/filter_disabled_highlighted")
+	);
+	protected static final Identifier TEXTURE = Identifier.method_60656("textures/gui/recipe_book.png");
 	private static final Text SEARCH_HINT_TEXT = Text.translatable("gui.recipebook.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
 	public static final int field_32408 = 147;
 	public static final int field_32409 = 166;

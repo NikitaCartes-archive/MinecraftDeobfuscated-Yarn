@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class VindicatorEntityRenderer extends IllagerEntityRenderer<VindicatorEntity> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/illager/vindicator.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/illager/vindicator.png");
 
 	public VindicatorEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new IllagerEntityModel<>(context.getPart(EntityModelLayers.VINDICATOR)), 0.5F);

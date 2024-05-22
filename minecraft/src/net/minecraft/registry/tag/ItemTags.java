@@ -100,7 +100,6 @@ public final class ItemTags {
 	public static final TagKey<Item> CHEST_BOATS = of("chest_boats");
 	public static final TagKey<Item> FISHES = of("fishes");
 	public static final TagKey<Item> SIGNS = of("signs");
-	public static final TagKey<Item> MUSIC_DISCS = of("music_discs");
 	public static final TagKey<Item> CREEPER_DROP_MUSIC_DISCS = of("creeper_drop_music_discs");
 	public static final TagKey<Item> COALS = of("coals");
 	public static final TagKey<Item> ARROWS = of("arrows");
@@ -158,6 +157,6 @@ public final class ItemTags {
 	}
 
 	private static TagKey<Item> of(String id) {
-		return TagKey.of(RegistryKeys.ITEM, new Identifier(id));
+		return TagKey.of(RegistryKeys.ITEM, Identifier.method_60656(id));
 	}
 }

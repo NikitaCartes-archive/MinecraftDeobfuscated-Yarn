@@ -1,5 +1,7 @@
 package net.minecraft.network.state;
 
+import net.minecraft.class_9814;
+import net.minecraft.class_9815;
 import net.minecraft.network.NetworkPhase;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.NetworkStateBuilder;
@@ -61,5 +63,7 @@ public class ConfigurationStates {
 				.add(ConfigPackets.UPDATE_ENABLED_FEATURES, FeaturesS2CPacket.CODEC)
 				.add(CommonPackets.UPDATE_TAGS, SynchronizeTagsS2CPacket.CODEC)
 				.add(ConfigPackets.SELECT_KNOWN_PACKS_S2C, SelectKnownPacksS2CPacket.CODEC)
+				.add(CommonPackets.CUSTOM_REPORT_DETAILS, class_9814.field_52185)
+				.add(CommonPackets.SERVER_LINKS, class_9815.field_52190)
 	);
 }

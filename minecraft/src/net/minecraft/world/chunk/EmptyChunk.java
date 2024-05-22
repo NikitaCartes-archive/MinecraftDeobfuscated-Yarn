@@ -71,6 +71,11 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
+	public boolean method_60791(int i) {
+		return true;
+	}
+
+	@Override
 	public ChunkLevelType getLevelType() {
 		return ChunkLevelType.FULL;
 	}

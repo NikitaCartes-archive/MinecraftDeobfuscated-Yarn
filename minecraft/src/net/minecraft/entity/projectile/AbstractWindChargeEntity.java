@@ -3,14 +3,17 @@ package net.minecraft.entity.projectile;
 import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -75,12 +78,16 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 		super.onEntityHit(entityHitResult);
 		if (!this.getWorld().isClient) {
 			LivingEntity livingEntity2 = this.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null;
-			Entity entity = (Entity)entityHitResult.getEntity().getPassengerNearestTo(entityHitResult.getPos()).orElse(entityHitResult.getEntity());
+			Entity entity = entityHitResult.getEntity();
 			if (livingEntity2 != null) {
 				livingEntity2.onAttacking(entity);
 			}
 
-			entity.damage(this.getDamageSources().windCharge(this, livingEntity2), 1.0F);
+			DamageSource damageSource = this.getDamageSources().windCharge(this, livingEntity2);
+			if (entity.damage(damageSource, 1.0F) && entity instanceof LivingEntity livingEntity3) {
+				EnchantmentHelper.onTargetDamaged((ServerWorld)this.getWorld(), livingEntity3, damageSource);
+			}
+
 			this.createExplosion();
 		}
 	}

@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class CraftingScreen extends HandledScreen<CraftingScreenHandler> implements RecipeBookProvider {
-	private static final Identifier TEXTURE = new Identifier("textures/gui/container/crafting_table.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/gui/container/crafting_table.png");
 	private final RecipeBookWidget recipeBook = new RecipeBookWidget();
 	private boolean narrow;
 

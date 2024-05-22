@@ -13,14 +13,14 @@ import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Arm;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEntity> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/fishing_hook.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/fishing_hook.png");
 	private static final RenderLayer LAYER = RenderLayer.getEntityCutout(TEXTURE);
 	private static final double field_33632 = 960.0;
 
@@ -35,7 +35,6 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			matrixStack.push();
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
 			matrixStack.multiply(this.dispatcher.getRotation());
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 			MatrixStack.Entry entry = matrixStack.peek();
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
 			vertex(vertexConsumer, entry, i, 0.0F, 0, 0, 1);
@@ -92,12 +91,11 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 
 	private static void vertex(VertexConsumer buffer, MatrixStack.Entry matrix, int light, float x, int y, int u, int v) {
 		buffer.vertex(matrix, x - 0.5F, (float)y - 0.5F, 0.0F)
-			.color(255, 255, 255, 255)
+			.color(Colors.WHITE)
 			.texture((float)u, (float)v)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.light(light)
-			.normal(matrix, 0.0F, 1.0F, 0.0F)
-			.next();
+			.method_60803(light)
+			.method_60831(matrix, 0.0F, 1.0F, 0.0F);
 	}
 
 	private static void renderFishingLine(float x, float y, float z, VertexConsumer buffer, MatrixStack.Entry matrices, float segmentStart, float segmentEnd) {
@@ -111,7 +109,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 		i /= l;
 		j /= l;
 		k /= l;
-		buffer.vertex(matrices, f, g, h).color(0, 0, 0, 255).normal(matrices, i, j, k).next();
+		buffer.vertex(matrices, f, g, h).color(Colors.BLACK).method_60831(matrices, i, j, k);
 	}
 
 	public Identifier getTexture(FishingBobberEntity fishingBobberEntity) {

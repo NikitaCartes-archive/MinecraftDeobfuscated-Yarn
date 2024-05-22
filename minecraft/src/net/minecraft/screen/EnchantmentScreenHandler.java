@@ -32,7 +32,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 
 public class EnchantmentScreenHandler extends ScreenHandler {
-	static final Identifier EMPTY_LAPIS_SLOT_TEXTURE = new Identifier("item/empty_slot_lapis_lazuli");
+	static final Identifier EMPTY_LAPIS_SLOT_TEXTURE = Identifier.method_60656("item/empty_slot_lapis_lazuli");
 	private final Inventory inventory = new SimpleInventory(2) {
 		@Override
 		public void markDirty() {

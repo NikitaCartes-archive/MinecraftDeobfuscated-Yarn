@@ -12,7 +12,7 @@ import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class CodEntityRenderer extends MobEntityRenderer<CodEntity, CodEntityModel<CodEntity>> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/fish/cod.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/fish/cod.png");
 
 	public CodEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new CodEntityModel<>(context.getPart(EntityModelLayers.COD)), 0.3F);

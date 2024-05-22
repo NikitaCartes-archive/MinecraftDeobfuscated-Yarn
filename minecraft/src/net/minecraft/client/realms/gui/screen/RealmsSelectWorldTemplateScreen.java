@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	static final Logger LOGGER = LogUtils.getLogger();
-	static final Identifier SLOT_FRAME_TEXTURE = new Identifier("widget/slot_frame");
+	static final Identifier SLOT_FRAME_TEXTURE = Identifier.method_60656("widget/slot_frame");
 	private static final Text SELECT_TEXT = Text.translatable("mco.template.button.select");
 	private static final Text TRAILER_TEXT = Text.translatable("mco.template.button.trailer");
 	private static final Text PUBLISHER_TEXT = Text.translatable("mco.template.button.publisher");
@@ -302,8 +302,10 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 
 	@Environment(EnvType.CLIENT)
 	class WorldTemplateObjectSelectionListEntry extends AlwaysSelectedEntryListWidget.Entry<RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionListEntry> {
-		private static final ButtonTextures LINK_TEXTURES = new ButtonTextures(new Identifier("icon/link"), new Identifier("icon/link_highlighted"));
-		private static final ButtonTextures VIDEO_LINK_TEXTURES = new ButtonTextures(new Identifier("icon/video_link"), new Identifier("icon/video_link_highlighted"));
+		private static final ButtonTextures LINK_TEXTURES = new ButtonTextures(Identifier.method_60656("icon/link"), Identifier.method_60656("icon/link_highlighted"));
+		private static final ButtonTextures VIDEO_LINK_TEXTURES = new ButtonTextures(
+			Identifier.method_60656("icon/video_link"), Identifier.method_60656("icon/video_link_highlighted")
+		);
 		private static final Text INFO_TOOLTIP_TEXT = Text.translatable("mco.template.info.tooltip");
 		private static final Text TRAILER_TOOLTIP_TEXT = Text.translatable("mco.template.trailer.tooltip");
 		public final WorldTemplate mTemplate;

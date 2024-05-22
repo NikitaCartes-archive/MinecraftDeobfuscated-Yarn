@@ -579,23 +579,25 @@ public final class ItemStack implements ComponentHolder {
 	 */
 	public void damage(int amount, ServerWorld world, @Nullable ServerPlayerEntity player, Consumer<Item> breakCallback) {
 		if (this.isDamageable()) {
-			if (amount > 0) {
-				amount = EnchantmentHelper.getItemDamage(world, this, amount);
-				if (amount <= 0) {
-					return;
+			if (player == null || !player.isInCreativeMode()) {
+				if (amount > 0) {
+					amount = EnchantmentHelper.getItemDamage(world, this, amount);
+					if (amount <= 0) {
+						return;
+					}
 				}
-			}
 
-			if (player != null && amount != 0) {
-				Criteria.ITEM_DURABILITY_CHANGED.trigger(player, this, this.getDamage() + amount);
-			}
+				if (player != null && amount != 0) {
+					Criteria.ITEM_DURABILITY_CHANGED.trigger(player, this, this.getDamage() + amount);
+				}
 
-			int i = this.getDamage() + amount;
-			this.setDamage(i);
-			if (i >= this.getMaxDamage()) {
-				Item item = this.getItem();
-				this.decrement(1);
-				breakCallback.accept(item);
+				int i = this.getDamage() + amount;
+				this.setDamage(i);
+				if (i >= this.getMaxDamage()) {
+					Item item = this.getItem();
+					this.decrement(1);
+					breakCallback.accept(item);
+				}
 			}
 		}
 	}
@@ -619,7 +621,7 @@ public final class ItemStack implements ComponentHolder {
 	 * @param slot the slot in which the stack is held
 	 */
 	public void damage(int amount, LivingEntity entity, EquipmentSlot slot) {
-		if (entity.getWorld() instanceof ServerWorld serverWorld && !entity.isInCreativeMode()) {
+		if (entity.getWorld() instanceof ServerWorld serverWorld) {
 			this.damage(
 				amount,
 				serverWorld,
@@ -1023,6 +1025,7 @@ public final class ItemStack implements ComponentHolder {
 				this.getItem().appendTooltip(this, context, list, type);
 			}
 
+			this.appendTooltip(DataComponentTypes.JUKEBOX_PLAYABLE, context, consumer, type);
 			this.appendTooltip(DataComponentTypes.TRIM, context, consumer, type);
 			this.appendTooltip(DataComponentTypes.STORED_ENCHANTMENTS, context, consumer, type);
 			this.appendTooltip(DataComponentTypes.ENCHANTMENTS, context, consumer, type);
@@ -1088,10 +1091,10 @@ public final class ItemStack implements ComponentHolder {
 		double d = modifier.value();
 		boolean bl = false;
 		if (player != null) {
-			if (modifier.uuid() == Item.ATTACK_DAMAGE_MODIFIER_ID) {
+			if (modifier.method_60718(Item.ATTACK_DAMAGE_MODIFIER_ID)) {
 				d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 				bl = true;
-			} else if (modifier.uuid() == Item.ATTACK_SPEED_MODIFIER_ID) {
+			} else if (modifier.method_60718(Item.ATTACK_SPEED_MODIFIER_ID)) {
 				d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED);
 				bl = true;
 			}

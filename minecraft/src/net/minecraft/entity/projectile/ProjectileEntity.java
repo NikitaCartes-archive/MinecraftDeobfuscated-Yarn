@@ -49,6 +49,11 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 		}
 	}
 
+	protected void method_60728() {
+		this.ownerUuid = null;
+		this.owner = null;
+	}
+
 	@Nullable
 	@Override
 	public Entity getOwner() {
@@ -202,9 +207,8 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 			Entity entity = entityHitResult.getEntity();
 			ProjectileDeflection projectileDeflection = entity.getProjectileDeflection(this);
 			if (projectileDeflection != ProjectileDeflection.NONE) {
-				if (entity != this.lastDeflectedEntity) {
+				if (entity != this.lastDeflectedEntity && this.deflect(projectileDeflection, entity, this.getOwner(), false)) {
 					this.lastDeflectedEntity = entity;
-					this.deflect(projectileDeflection, entity, this.getOwner(), false);
 				}
 
 				return projectileDeflection;
@@ -215,12 +219,14 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 		return ProjectileDeflection.NONE;
 	}
 
-	public void deflect(ProjectileDeflection deflection, @Nullable Entity deflector, @Nullable Entity owner, boolean fromAttack) {
+	public boolean deflect(ProjectileDeflection deflection, @Nullable Entity deflector, @Nullable Entity owner, boolean fromAttack) {
 		if (!this.getWorld().isClient) {
 			deflection.deflect(this, deflector, this.random);
 			this.setOwner(owner);
 			this.onDeflected(deflector, fromAttack);
 		}
+
+		return true;
 	}
 
 	protected void onDeflected(@Nullable Entity deflector, boolean fromAttack) {

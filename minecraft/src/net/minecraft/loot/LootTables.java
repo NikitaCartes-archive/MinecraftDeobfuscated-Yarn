@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 public class LootTables {
 	private static final Set<RegistryKey<LootTable>> LOOT_TABLES = new HashSet();
 	private static final Set<RegistryKey<LootTable>> LOOT_TABLES_READ_ONLY = Collections.unmodifiableSet(LOOT_TABLES);
-	public static final RegistryKey<LootTable> EMPTY = RegistryKey.of(RegistryKeys.LOOT_TABLE, new Identifier("empty"));
+	public static final RegistryKey<LootTable> EMPTY = RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.method_60656("empty"));
 	public static final RegistryKey<LootTable> SPAWN_BONUS_CHEST = register("chests/spawn_bonus_chest");
 	public static final RegistryKey<LootTable> END_CITY_TREASURE_CHEST = register("chests/end_city_treasure");
 	public static final RegistryKey<LootTable> SIMPLE_DUNGEON_CHEST = register("chests/simple_dungeon");
@@ -125,7 +125,7 @@ public class LootTables {
 	public static final RegistryKey<LootTable> OCEAN_RUIN_COLD_ARCHAEOLOGY = register("archaeology/ocean_ruin_cold");
 
 	private static RegistryKey<LootTable> register(String id) {
-		return registerLootTable(RegistryKey.of(RegistryKeys.LOOT_TABLE, new Identifier(id)));
+		return registerLootTable(RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.method_60656(id)));
 	}
 
 	private static RegistryKey<LootTable> registerLootTable(RegistryKey<LootTable> key) {

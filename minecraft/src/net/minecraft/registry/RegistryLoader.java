@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import net.minecraft.class_9793;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.provider.EnchantmentProvider;
@@ -89,7 +90,8 @@ public class RegistryLoader {
 		new RegistryLoader.Entry<>(RegistryKeys.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST, MultiNoiseBiomeSourceParameterList.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.BANNER_PATTERN, BannerPattern.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.ENCHANTMENT, Enchantment.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.ENCHANTMENT_PROVIDER, EnchantmentProvider.CODEC)
+		new RegistryLoader.Entry<>(RegistryKeys.ENCHANTMENT_PROVIDER, EnchantmentProvider.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.JUKEBOX_SONG, class_9793.field_52027)
 	);
 	public static final List<RegistryLoader.Entry<?>> DIMENSION_REGISTRIES = List.of(new RegistryLoader.Entry<>(RegistryKeys.DIMENSION, DimensionOptions.CODEC));
 	public static final List<RegistryLoader.Entry<?>> SYNCED_REGISTRIES = List.of(
@@ -102,7 +104,8 @@ public class RegistryLoader {
 		new RegistryLoader.Entry<>(RegistryKeys.DIMENSION_TYPE, DimensionType.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.DAMAGE_TYPE, DamageType.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.BANNER_PATTERN, BannerPattern.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.ENCHANTMENT, Enchantment.CODEC)
+		new RegistryLoader.Entry<>(RegistryKeys.ENCHANTMENT, Enchantment.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.JUKEBOX_SONG, class_9793.field_52027)
 	);
 
 	public static DynamicRegistryManager.Immutable loadFromResource(
@@ -191,10 +194,6 @@ public class RegistryLoader {
 		LOGGER.error("Registry loading errors:\n{}", stringWriter);
 	}
 
-	private static String getPath(Identifier id) {
-		return id.getPath();
-	}
-
 	private static <E> void parseAndAdd(
 		MutableRegistry<E> registry, Decoder<E> decoder, RegistryOps<JsonElement> ops, RegistryKey<E> key, Resource resource, RegistryEntryInfo entryInfo
 	) throws IOException {
@@ -229,7 +228,7 @@ public class RegistryLoader {
 		Decoder<E> elementDecoder,
 		Map<RegistryKey<?>, Exception> errors
 	) {
-		String string = getPath(registry.getKey().getValue());
+		String string = RegistryKeys.method_60915(registry.getKey());
 		ResourceFinder resourceFinder = ResourceFinder.json(string);
 		RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, infoGetter);
 
@@ -259,7 +258,7 @@ public class RegistryLoader {
 		if (list != null) {
 			RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, infoGetter);
 			RegistryOps<JsonElement> registryOps2 = RegistryOps.of(JsonOps.INSTANCE, infoGetter);
-			String string = getPath(registry.getKey().getValue());
+			String string = RegistryKeys.method_60915(registry.getKey());
 			ResourceFinder resourceFinder = ResourceFinder.json(string);
 
 			for (SerializableRegistries.SerializedRegistryEntry serializedRegistryEntry : list) {

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import net.minecraft.block.BlockState;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
@@ -338,10 +339,10 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 		);
 	}
 
-	public void onHitBlock(ServerWorld world, int level, EnchantmentEffectContext context, Entity enchantedEntity, Vec3d pos) {
+	public void onHitBlock(ServerWorld world, int level, EnchantmentEffectContext context, Entity enchantedEntity, Vec3d pos, BlockState blockState) {
 		applyEffects(
 			this.getEffect(EnchantmentEffectComponentTypes.HIT_BLOCK),
-			createEnchantedEntityLootContext(world, level, enchantedEntity, pos),
+			method_60768(world, level, enchantedEntity, pos, blockState),
 			effect -> effect.apply(world, level, context, enchantedEntity, pos)
 		);
 	}
@@ -418,6 +419,16 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 			.add(LootContextParameters.ENCHANTMENT_LEVEL, level)
 			.add(LootContextParameters.ORIGIN, pos)
 			.build(LootContextTypes.ENCHANTED_ENTITY);
+		return new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
+	}
+
+	private static LootContext method_60768(ServerWorld serverWorld, int i, Entity entity, Vec3d vec3d, BlockState blockState) {
+		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
+			.add(LootContextParameters.THIS_ENTITY, entity)
+			.add(LootContextParameters.ENCHANTMENT_LEVEL, i)
+			.add(LootContextParameters.ORIGIN, vec3d)
+			.add(LootContextParameters.BLOCK_STATE, blockState)
+			.build(LootContextTypes.HIT_BLOCK);
 		return new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
 	}
 

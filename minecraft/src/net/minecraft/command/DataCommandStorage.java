@@ -87,7 +87,7 @@ public class DataCommandStorage {
 		}
 
 		public Stream<Identifier> getIds(String namespace) {
-			return this.map.keySet().stream().map(key -> new Identifier(namespace, key));
+			return this.map.keySet().stream().map(key -> Identifier.method_60655(namespace, key));
 		}
 	}
 }

@@ -330,7 +330,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 				guiLight = JsonUnbakedModel.GuiLight.byName(JsonHelper.getString(jsonObject, "gui_light"));
 			}
 
-			Identifier identifier = string.isEmpty() ? null : new Identifier(string);
+			Identifier identifier = string.isEmpty() ? null : Identifier.method_60654(string);
 			return new JsonUnbakedModel(identifier, list, map, boolean_, guiLight, modelTransformation, list2);
 		}
 

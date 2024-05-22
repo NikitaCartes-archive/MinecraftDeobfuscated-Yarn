@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class RecipeToast implements Toast {
-	private static final Identifier TEXTURE = new Identifier("toast/recipe");
+	private static final Identifier TEXTURE = Identifier.method_60656("toast/recipe");
 	private static final long DEFAULT_DURATION_MS = 5000L;
 	private static final Text TITLE = Text.translatable("recipe.toast.title");
 	private static final Text DESCRIPTION = Text.translatable("recipe.toast.description");

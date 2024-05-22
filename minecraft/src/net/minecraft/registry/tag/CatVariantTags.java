@@ -12,6 +12,6 @@ public class CatVariantTags {
 	}
 
 	private static TagKey<CatVariant> of(String id) {
-		return TagKey.of(RegistryKeys.CAT_VARIANT, new Identifier(id));
+		return TagKey.of(RegistryKeys.CAT_VARIANT, Identifier.method_60656(id));
 	}
 }

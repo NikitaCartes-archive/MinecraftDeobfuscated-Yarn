@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ZoglinEntityRenderer extends MobEntityRenderer<ZoglinEntity, HoglinEntityModel<ZoglinEntity>> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/hoglin/zoglin.png");
+	private static final Identifier TEXTURE = Identifier.method_60656("textures/entity/hoglin/zoglin.png");
 
 	public ZoglinEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new HoglinEntityModel<>(context.getPart(EntityModelLayers.ZOGLIN)), 0.7F);

@@ -72,6 +72,6 @@ public class ArmorTrimMaterials {
 	}
 
 	private static RegistryKey<ArmorTrimMaterial> of(String id) {
-		return RegistryKey.of(RegistryKeys.TRIM_MATERIAL, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.TRIM_MATERIAL, Identifier.method_60656(id));
 	}
 }

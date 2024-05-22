@@ -4,17 +4,15 @@ import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.systems.VertexSorter;
+import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.Util;
-import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public abstract class Framebuffer {
@@ -231,31 +229,15 @@ public abstract class Framebuffer {
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		ShaderProgram shaderProgram = minecraftClient.gameRenderer.blitScreenProgram;
+		ShaderProgram shaderProgram = (ShaderProgram)Objects.requireNonNull(minecraftClient.gameRenderer.blitScreenProgram, "Blit shader not loaded");
 		shaderProgram.addSampler("DiffuseSampler", this.colorAttachment);
-		Matrix4f matrix4f = new Matrix4f().setOrtho(0.0F, (float)width, (float)height, 0.0F, 1000.0F, 3000.0F);
-		RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_Z);
-		if (shaderProgram.modelViewMat != null) {
-			shaderProgram.modelViewMat.set(new Matrix4f().translation(0.0F, 0.0F, -2000.0F));
-		}
-
-		if (shaderProgram.projectionMat != null) {
-			shaderProgram.projectionMat.set(matrix4f);
-		}
-
 		shaderProgram.bind();
-		float f = (float)width;
-		float g = (float)height;
-		float h = (float)this.viewportWidth / (float)this.textureWidth;
-		float i = (float)this.viewportHeight / (float)this.textureHeight;
-		Tessellator tessellator = RenderSystem.renderThreadTesselator();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-		bufferBuilder.vertex(0.0, (double)g, 0.0).texture(0.0F, 0.0F).color(255, 255, 255, 255).next();
-		bufferBuilder.vertex((double)f, (double)g, 0.0).texture(h, 0.0F).color(255, 255, 255, 255).next();
-		bufferBuilder.vertex((double)f, 0.0, 0.0).texture(h, i).color(255, 255, 255, 255).next();
-		bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0F, i).color(255, 255, 255, 255).next();
-		BufferRenderer.draw(bufferBuilder.end());
+		BufferBuilder bufferBuilder = RenderSystem.renderThreadTesselator().method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.BLIT_SCREEN);
+		bufferBuilder.vertex(0.0F, 0.0F, 0.0F);
+		bufferBuilder.vertex(1.0F, 0.0F, 0.0F);
+		bufferBuilder.vertex(1.0F, 1.0F, 0.0F);
+		bufferBuilder.vertex(0.0F, 1.0F, 0.0F);
+		BufferRenderer.draw(bufferBuilder.method_60800());
 		shaderProgram.unbind();
 		GlStateManager._depthMask(true);
 		GlStateManager._colorMask(true, true, true, true);

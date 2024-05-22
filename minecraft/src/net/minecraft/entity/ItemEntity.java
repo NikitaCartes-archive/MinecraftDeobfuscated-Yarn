@@ -25,6 +25,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -369,10 +370,10 @@ public class ItemEntity extends Entity implements Ownable {
 
 	@Nullable
 	@Override
-	public Entity moveToWorld(Entity.TeleportTargetSupplier teleportTargetSupplier) {
-		Entity entity = super.moveToWorld(teleportTargetSupplier);
-		if (!this.getWorld().isClient && entity instanceof ItemEntity) {
-			((ItemEntity)entity).tryMerge();
+	public Entity moveToWorld(TeleportTarget teleportTarget) {
+		Entity entity = super.moveToWorld(teleportTarget);
+		if (!this.getWorld().isClient && entity instanceof ItemEntity itemEntity) {
+			itemEntity.tryMerge();
 		}
 
 		return entity;

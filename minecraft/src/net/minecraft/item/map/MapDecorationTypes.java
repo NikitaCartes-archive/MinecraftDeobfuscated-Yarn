@@ -63,8 +63,8 @@ public class MapDecorationTypes {
 	private static RegistryEntry<MapDecorationType> register(
 		String id, String assetId, boolean showOnItemFrame, int mapColor, boolean trackCount, boolean explorationMapElement
 	) {
-		RegistryKey<MapDecorationType> registryKey = RegistryKey.of(RegistryKeys.MAP_DECORATION_TYPE, new Identifier(id));
-		MapDecorationType mapDecorationType = new MapDecorationType(new Identifier(assetId), showOnItemFrame, mapColor, explorationMapElement, trackCount);
+		RegistryKey<MapDecorationType> registryKey = RegistryKey.of(RegistryKeys.MAP_DECORATION_TYPE, Identifier.method_60656(id));
+		MapDecorationType mapDecorationType = new MapDecorationType(Identifier.method_60656(assetId), showOnItemFrame, mapColor, explorationMapElement, trackCount);
 		return Registry.registerReference(Registries.MAP_DECORATION_TYPE, registryKey, mapDecorationType);
 	}
 }

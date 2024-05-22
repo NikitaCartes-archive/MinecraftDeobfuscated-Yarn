@@ -96,7 +96,7 @@ public class StructureTestUtil {
 		world.setBlockState(pos, Blocks.STRUCTURE_BLOCK.getDefaultState());
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
 		structureBlockBlockEntity.setIgnoreEntities(false);
-		structureBlockBlockEntity.setTemplateName(new Identifier(testName));
+		structureBlockBlockEntity.setTemplateName(Identifier.method_60654(testName));
 		structureBlockBlockEntity.setSize(relativePos);
 		structureBlockBlockEntity.setMode(StructureBlockMode.SAVE);
 		structureBlockBlockEntity.setShowBoundingBox(true);
@@ -104,7 +104,7 @@ public class StructureTestUtil {
 
 	public static StructureBlockBlockEntity initStructure(GameTestState state, BlockPos pos, BlockRotation rotation, ServerWorld world) {
 		Vec3i vec3i = ((StructureTemplate)world.getStructureTemplateManager()
-				.getTemplate(new Identifier(state.getTemplateName()))
+				.getTemplate(Identifier.method_60654(state.getTemplateName()))
 				.orElseThrow(() -> new IllegalStateException("Missing test structure: " + state.getTemplateName())))
 			.getSize();
 		BlockBox blockBox = getStructureBlockBox(pos, vec3i, rotation);
@@ -216,7 +216,7 @@ public class StructureTestUtil {
 		structureBlockBlockEntity.setMode(StructureBlockMode.LOAD);
 		structureBlockBlockEntity.setRotation(rotation);
 		structureBlockBlockEntity.setIgnoreEntities(false);
-		structureBlockBlockEntity.setTemplateName(new Identifier(state.getTemplateName()));
+		structureBlockBlockEntity.setTemplateName(Identifier.method_60654(state.getTemplateName()));
 		structureBlockBlockEntity.setMetadata(state.getTemplatePath());
 		if (!structureBlockBlockEntity.loadStructure(world)) {
 			throw new RuntimeException("Failed to load structure info for test: " + state.getTemplatePath() + ". Structure name: " + state.getTemplateName());

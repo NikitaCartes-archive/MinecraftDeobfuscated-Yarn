@@ -70,6 +70,6 @@ public class ArmorTrimPatterns {
 	}
 
 	private static RegistryKey<ArmorTrimPattern> of(String id) {
-		return RegistryKey.of(RegistryKeys.TRIM_PATTERN, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.TRIM_PATTERN, Identifier.method_60656(id));
 	}
 }

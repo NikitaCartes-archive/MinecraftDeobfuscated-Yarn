@@ -32,6 +32,7 @@ public class EntityModelLayers {
 	public static final EntityModelLayer BOGGED_OUTER = register("bogged", "outer");
 	public static final EntityModelLayer BOOK = registerMain("book");
 	public static final EntityModelLayer BREEZE = registerMain("breeze");
+	public static final EntityModelLayer BREEZE_WIND = registerMain("breeze_wind");
 	public static final EntityModelLayer CAT = registerMain("cat");
 	public static final EntityModelLayer CAT_COLLAR = register("cat", "collar");
 	public static final EntityModelLayer CAMEL = registerMain("camel");
@@ -200,7 +201,7 @@ public class EntityModelLayers {
 	}
 
 	private static EntityModelLayer create(String id, String layer) {
-		return new EntityModelLayer(new Identifier("minecraft", id), layer);
+		return new EntityModelLayer(Identifier.method_60656(id), layer);
 	}
 
 	private static EntityModelLayer createInnerArmor(String id) {
