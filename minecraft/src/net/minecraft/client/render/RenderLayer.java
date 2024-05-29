@@ -551,6 +551,20 @@ public abstract class RenderLayer extends RenderPhase {
 			.target(WEATHER_TARGET)
 			.build(false)
 	);
+	private static final RenderLayer DRAGON_RAYS = of(
+		"dragon_rays",
+		VertexFormats.POSITION_COLOR,
+		VertexFormat.DrawMode.TRIANGLES,
+		1536,
+		false,
+		false,
+		RenderLayer.MultiPhaseParameters.builder()
+			.program(LIGHTNING_PROGRAM)
+			.writeMaskState(COLOR_MASK)
+			.transparency(LIGHTNING_TRANSPARENCY)
+			.target(WEATHER_TARGET)
+			.build(false)
+	);
 	private static final RenderLayer TRIPWIRE = of(
 		"tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 1536, true, true, getTripwirePhaseData()
 	);
@@ -651,6 +665,21 @@ public abstract class RenderLayer extends RenderPhase {
 		false,
 		true,
 		RenderLayer.MultiPhaseParameters.builder().program(COLOR_PROGRAM).transparency(TRANSLUCENT_TRANSPARENCY).cull(DISABLE_CULLING).build(false)
+	);
+	private static final RenderLayer.MultiPhase DEBUG_STRUCTURE_QUADS = of(
+		"debug_structure_quads",
+		VertexFormats.POSITION_COLOR,
+		VertexFormat.DrawMode.QUADS,
+		1536,
+		false,
+		true,
+		RenderLayer.MultiPhaseParameters.builder()
+			.program(COLOR_PROGRAM)
+			.transparency(TRANSLUCENT_TRANSPARENCY)
+			.cull(DISABLE_CULLING)
+			.depthTest(LEQUAL_DEPTH_TEST)
+			.writeMaskState(COLOR_MASK)
+			.build(false)
 	);
 	private static final RenderLayer.MultiPhase DEBUG_SECTION_QUADS = of(
 		"debug_section_quads",
@@ -970,6 +999,10 @@ public abstract class RenderLayer extends RenderPhase {
 		return LIGHTNING;
 	}
 
+	public static RenderLayer getDragonRays() {
+		return DRAGON_RAYS;
+	}
+
 	private static RenderLayer.MultiPhaseParameters getTripwirePhaseData() {
 		return RenderLayer.MultiPhaseParameters.builder()
 			.lightmap(ENABLE_LIGHTMAP)
@@ -1037,6 +1070,10 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer getDebugQuads() {
 		return DEBUG_QUADS;
+	}
+
+	public static RenderLayer getDebugStructureQuads() {
+		return DEBUG_STRUCTURE_QUADS;
 	}
 
 	public static RenderLayer getDebugSectionQuads() {

@@ -45,10 +45,6 @@ public class JukeboxManager {
 		}
 	}
 
-	public int getComparatorOutput() {
-		return this.song != null ? this.song.value().comparatorOutput() : 0;
-	}
-
 	public void startPlaying(WorldAccess world, RegistryEntry<JukeboxSong> song) {
 		this.song = song;
 		this.ticksSinceSongStarted = 0L;

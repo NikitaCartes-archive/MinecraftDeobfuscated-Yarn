@@ -104,7 +104,7 @@ public class FormCaravanGoal extends Goal {
 	@Override
 	public void tick() {
 		if (this.llama.isFollowing()) {
-			if (!(this.llama.getHoldingEntity() instanceof LeashKnotEntity)) {
+			if (!(this.llama.getLeashHolder() instanceof LeashKnotEntity)) {
 				LlamaEntity llamaEntity = this.llama.getFollowing();
 				double d = (double)this.llama.distanceTo(llamaEntity);
 				float f = 2.0F;

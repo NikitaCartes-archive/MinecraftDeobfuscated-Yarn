@@ -47,11 +47,13 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.GameEventTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.DebugInfoSender;
+import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -128,8 +130,8 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	}
 
 	@Override
-	public Packet<ClientPlayPacketListener> createSpawnPacket() {
-		return new EntitySpawnS2CPacket(this, this.isInPose(EntityPose.EMERGING) ? 1 : 0);
+	public Packet<ClientPlayPacketListener> createSpawnPacket(EntityTrackerEntry entityTrackerEntry) {
+		return new EntitySpawnS2CPacket(this, entityTrackerEntry, this.isInPose(EntityPose.EMERGING) ? 1 : 0);
 	}
 
 	@Override
@@ -410,31 +412,33 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
+		RegistryOps<NbtElement> registryOps = this.getRegistryManager().getOps(NbtOps.INSTANCE);
 		WardenAngerManager.createCodec(this::isValidTarget)
-			.encodeStart(NbtOps.INSTANCE, this.angerManager)
-			.resultOrPartial(LOGGER::error)
+			.encodeStart(registryOps, this.angerManager)
+			.resultOrPartial(string -> LOGGER.error("Failed to encode anger state for Warden: '{}'", string))
 			.ifPresent(angerNbt -> nbt.put("anger", angerNbt));
 		Vibrations.ListenerData.CODEC
-			.encodeStart(NbtOps.INSTANCE, this.vibrationListenerData)
-			.resultOrPartial(LOGGER::error)
+			.encodeStart(registryOps, this.vibrationListenerData)
+			.resultOrPartial(string -> LOGGER.error("Failed to encode vibration listener for Warden: '{}'", string))
 			.ifPresent(listenerData -> nbt.put("listener", listenerData));
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
+		RegistryOps<NbtElement> registryOps = this.getRegistryManager().getOps(NbtOps.INSTANCE);
 		if (nbt.contains("anger")) {
 			WardenAngerManager.createCodec(this::isValidTarget)
-				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("anger")))
-				.resultOrPartial(LOGGER::error)
+				.parse(registryOps, nbt.get("anger"))
+				.resultOrPartial(string -> LOGGER.error("Failed to parse anger state for Warden: '{}'", string))
 				.ifPresent(angerManager -> this.angerManager = angerManager);
 			this.updateAnger();
 		}
 
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
 			Vibrations.ListenerData.CODEC
-				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
-				.resultOrPartial(LOGGER::error)
+				.parse(registryOps, nbt.getCompound("listener"))
+				.resultOrPartial(string -> LOGGER.error("Failed to parse vibration listener for Warden: '{}'", string))
 				.ifPresent(listenerData -> this.vibrationListenerData = listenerData);
 		}
 	}

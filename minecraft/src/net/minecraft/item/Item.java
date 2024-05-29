@@ -419,7 +419,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	}
 
 	public String toString() {
-		return Registries.ITEM.getId(this).getPath();
+		return Registries.ITEM.getEntry(this).getIdAsString();
 	}
 
 	protected String getOrCreateTranslationKey() {

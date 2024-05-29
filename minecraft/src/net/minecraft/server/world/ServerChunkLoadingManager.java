@@ -200,7 +200,13 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 		this.ticketManager = new ServerChunkLoadingManager.TicketManager(executor, mainThreadExecutor);
 		this.persistentStateManagerFactory = persistentStateManagerFactory;
 		this.pointOfInterestStorage = new PointOfInterestStorage(
-			new StorageKey(session.getDirectoryName(), world.getRegistryKey(), "poi"), path.resolve("poi"), dataFixer, dsync, dynamicRegistryManager, world
+			new StorageKey(session.getDirectoryName(), world.getRegistryKey(), "poi"),
+			path.resolve("poi"),
+			dataFixer,
+			dsync,
+			dynamicRegistryManager,
+			world.getServer(),
+			world
 		);
 		this.setViewDistance(viewDistance);
 		this.generationContext = new ChunkGenerationContext(world, chunkGenerator, structureTemplateManager, this.lightingProvider, this.mainExecutor);
@@ -548,7 +554,7 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 			})).thenApplyAsync(nbt -> {
 			this.world.getProfiler().visit("chunkLoad");
 			if (nbt.isPresent()) {
-				Chunk chunk = ChunkSerializer.deserialize(this.world, this.pointOfInterestStorage, pos, (NbtCompound)nbt.get());
+				Chunk chunk = ChunkSerializer.deserialize(this.world, this.pointOfInterestStorage, this.getStorageKey(), pos, (NbtCompound)nbt.get());
 				this.mark(pos, chunk.getStatus().getChunkType());
 				return chunk;
 			} else {
@@ -567,8 +573,7 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 		boolean bl = throwable3 instanceof Error;
 		boolean bl2 = throwable3 instanceof IOException || throwable3 instanceof NbtException;
 		if (!bl && bl2) {
-			LOGGER.error("Couldn't load chunk {}", chunkPos, throwable3);
-			this.world.getServer().onChunkLoadFailure(chunkPos);
+			this.world.getServer().onChunkLoadFailure(throwable3, this.getStorageKey(), chunkPos);
 			return this.getProtoChunk(chunkPos);
 		} else {
 			CrashReport crashReport = CrashReport.create(throwable, "Exception loading chunk");
@@ -751,15 +756,14 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 
 				this.world.getProfiler().visit("chunkSave");
 				NbtCompound nbtCompound = ChunkSerializer.serialize(this.world, chunk);
-				this.setNbt(chunkPos, nbtCompound).exceptionallyAsync(throwable -> {
-					this.world.getServer().onChunkSaveFailure(chunkPos);
+				this.setNbt(chunkPos, nbtCompound).exceptionally(throwable -> {
+					this.world.getServer().onChunkSaveFailure(throwable, this.getStorageKey(), chunkPos);
 					return null;
-				}, this.mainThreadExecutor);
+				});
 				this.mark(chunkPos, chunkStatus.getChunkType());
 				return true;
 			} catch (Exception var5) {
-				LOGGER.error("Failed to save chunk {},{}", chunkPos.x, chunkPos.z, var5);
-				this.world.getServer().onChunkSaveFailure(chunkPos);
+				this.world.getServer().onChunkSaveFailure(var5, this.getStorageKey(), chunkPos);
 				return false;
 			}
 		}

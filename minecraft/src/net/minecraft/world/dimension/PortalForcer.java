@@ -11,6 +11,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.border.WorldBorder;
@@ -20,8 +21,8 @@ import net.minecraft.world.poi.PointOfInterestTypes;
 
 public class PortalForcer {
 	public static final int field_31810 = 3;
-	private static final int field_31811 = 128;
-	private static final int field_31812 = 16;
+	private static final int field_52248 = 16;
+	private static final int field_52249 = 128;
 	private static final int field_31813 = 5;
 	private static final int field_31814 = 4;
 	private static final int field_31815 = 3;
@@ -38,26 +39,17 @@ public class PortalForcer {
 		this.world = world;
 	}
 
-	public Optional<BlockLocating.Rectangle> getPortalRect(BlockPos pos, boolean destIsNether, WorldBorder worldBorder) {
+	public Optional<BlockPos> getPortalPos(BlockPos pos, boolean destIsNether, WorldBorder worldBorder) {
 		PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
 		int i = destIsNether ? 16 : 128;
 		pointOfInterestStorage.preloadChunks(this.world, pos, i);
-		Optional<PointOfInterest> optional = pointOfInterestStorage.getInSquare(
+		return pointOfInterestStorage.getInSquare(
 				poiType -> poiType.matchesKey(PointOfInterestTypes.NETHER_PORTAL), pos, i, PointOfInterestStorage.OccupationStatus.ANY
 			)
-			.filter(poi -> worldBorder.contains(poi.getPos()))
-			.sorted(Comparator.comparingDouble(poi -> poi.getPos().getSquaredDistance(pos)).thenComparingInt(poi -> poi.getPos().getY()))
-			.filter(poi -> this.world.getBlockState(poi.getPos()).contains(Properties.HORIZONTAL_AXIS))
-			.findFirst();
-		return optional.map(
-			poi -> {
-				BlockPos blockPos = poi.getPos();
-				BlockState blockState = this.world.getBlockState(blockPos);
-				return BlockLocating.getLargestRectangle(
-					blockPos, blockState.get(Properties.HORIZONTAL_AXIS), 21, Direction.Axis.Y, 21, posx -> this.world.getBlockState(posx) == blockState
-				);
-			}
-		);
+			.map(PointOfInterest::getPos)
+			.filter(worldBorder::contains)
+			.filter(blockPos -> this.world.getBlockState(blockPos).contains(Properties.HORIZONTAL_AXIS))
+			.min(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(pos)).thenComparingInt(Vec3i::getY));
 	}
 
 	public Optional<BlockLocating.Rectangle> createPortal(BlockPos pos, Direction.Axis axis) {

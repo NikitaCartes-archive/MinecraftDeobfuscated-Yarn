@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 import net.minecraft.SharedConstants;
+import net.minecraft.util.Urls;
 import org.slf4j.Logger;
 
 public class EulaReader {
@@ -64,7 +65,7 @@ public class EulaReader {
 				try {
 					Properties properties = new Properties();
 					properties.setProperty("eula", "false");
-					properties.store(outputStream, "By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).");
+					properties.store(outputStream, "By changing the setting below to TRUE you are indicating your agreement to our EULA (" + Urls.EULA + ").");
 				} catch (Throwable var5) {
 					if (outputStream != null) {
 						try {

@@ -204,7 +204,7 @@ public class CrossbowItem extends RangedWeaponItem {
 	public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
 		if (!world.isClient) {
 			CrossbowItem.LoadingSounds loadingSounds = this.getLoadingSounds(stack);
-			float f = (float)(stack.getMaxUseTime(user) - remainingUseTicks) / (float)getPullTime(user);
+			float f = (float)(stack.getMaxUseTime(user) - remainingUseTicks) / (float)getPullTime(stack, user);
 			if (f < 0.2F) {
 				this.charged = false;
 				this.loaded = false;
@@ -226,11 +226,11 @@ public class CrossbowItem extends RangedWeaponItem {
 
 	@Override
 	public int getMaxUseTime(ItemStack stack, LivingEntity user) {
-		return getPullTime(user) + 3;
+		return getPullTime(stack, user) + 3;
 	}
 
-	public static int getPullTime(LivingEntity user) {
-		float f = EnchantmentHelper.getCrossbowChargeTime(user, 1.25F);
+	public static int getPullTime(ItemStack stack, LivingEntity user) {
+		float f = EnchantmentHelper.getCrossbowChargeTime(stack, user, 1.25F);
 		return MathHelper.floor(f * 20.0F);
 	}
 
@@ -245,7 +245,7 @@ public class CrossbowItem extends RangedWeaponItem {
 	}
 
 	private static float getPullProgress(int useTicks, ItemStack stack, LivingEntity user) {
-		float f = (float)useTicks / (float)getPullTime(user);
+		float f = (float)useTicks / (float)getPullTime(stack, user);
 		if (f > 1.0F) {
 			f = 1.0F;
 		}

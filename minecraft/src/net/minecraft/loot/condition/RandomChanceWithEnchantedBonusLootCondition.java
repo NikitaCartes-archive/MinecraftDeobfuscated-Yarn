@@ -1,6 +1,7 @@
 package net.minecraft.loot.condition;
 
 import com.google.common.collect.ImmutableSet;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
@@ -17,10 +18,13 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 
-public record RandomChanceWithEnchantedBonusLootCondition(EnchantmentLevelBasedValue chance, RegistryEntry<Enchantment> enchantment) implements LootCondition {
+public record RandomChanceWithEnchantedBonusLootCondition(
+	float unenchantedChance, EnchantmentLevelBasedValue enchantedChance, RegistryEntry<Enchantment> enchantment
+) implements LootCondition {
 	public static final MapCodec<RandomChanceWithEnchantedBonusLootCondition> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					EnchantmentLevelBasedValue.CODEC.fieldOf("chance").forGetter(RandomChanceWithEnchantedBonusLootCondition::chance),
+					Codec.floatRange(0.0F, 1.0F).fieldOf("unenchanted_chance").forGetter(RandomChanceWithEnchantedBonusLootCondition::unenchantedChance),
+					EnchantmentLevelBasedValue.CODEC.fieldOf("enchanted_chance").forGetter(RandomChanceWithEnchantedBonusLootCondition::enchantedChance),
 					Enchantment.ENTRY_CODEC.fieldOf("enchantment").forGetter(RandomChanceWithEnchantedBonusLootCondition::enchantment)
 				)
 				.apply(instance, RandomChanceWithEnchantedBonusLootCondition::new)
@@ -38,20 +42,15 @@ public record RandomChanceWithEnchantedBonusLootCondition(EnchantmentLevelBasedV
 
 	public boolean test(LootContext lootContext) {
 		Entity entity = lootContext.get(LootContextParameters.ATTACKING_ENTITY);
-		int i;
-		if (entity instanceof LivingEntity livingEntity) {
-			i = EnchantmentHelper.getEquipmentLevel(this.enchantment, livingEntity);
-		} else {
-			i = 0;
-		}
-
-		return lootContext.getRandom().nextFloat() < this.chance.getValue(i);
+		int i = entity instanceof LivingEntity livingEntity ? EnchantmentHelper.getEquipmentLevel(this.enchantment, livingEntity) : 0;
+		float f = i > 0 ? this.enchantedChance.getValue(i) : this.unenchantedChance;
+		return lootContext.getRandom().nextFloat() < f;
 	}
 
 	public static LootCondition.Builder builder(RegistryWrapper.WrapperLookup registryLookup, float base, float perLevelAboveFirst) {
 		RegistryWrapper.Impl<Enchantment> impl = registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		return () -> new RandomChanceWithEnchantedBonusLootCondition(
-				new EnchantmentLevelBasedValue.Linear(base + perLevelAboveFirst, perLevelAboveFirst), impl.getOrThrow(Enchantments.LOOTING)
+				base, new EnchantmentLevelBasedValue.Linear(base + perLevelAboveFirst, perLevelAboveFirst), impl.getOrThrow(Enchantments.LOOTING)
 			);
 	}
 }

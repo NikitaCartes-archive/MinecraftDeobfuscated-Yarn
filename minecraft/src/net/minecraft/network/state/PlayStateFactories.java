@@ -190,7 +190,7 @@ import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
 
 public class PlayStateFactories {
-	public static final NetworkState.Factory<ServerPlayPacketListener, RegistryByteBuf> C2S = NetworkStateBuilder.c2sFactory(
+	public static final NetworkState.Factory<ServerPlayPacketListener, RegistryByteBuf> C2S = NetworkStateBuilder.c2s(
 		NetworkPhase.PLAY,
 		builder -> builder.add(PlayPackets.ACCEPT_TELEPORTATION, TeleportConfirmC2SPacket.CODEC)
 				.add(PlayPackets.BLOCK_ENTITY_TAG_QUERY, QueryBlockNbtC2SPacket.CODEC)
@@ -251,7 +251,7 @@ public class PlayStateFactories {
 				.add(PlayPackets.USE_ITEM_ON, PlayerInteractBlockC2SPacket.CODEC)
 				.add(PlayPackets.USE_ITEM, PlayerInteractItemC2SPacket.CODEC)
 	);
-	public static final NetworkState.Factory<ClientPlayPacketListener, RegistryByteBuf> S2C = NetworkStateBuilder.s2cFactory(
+	public static final NetworkState.Factory<ClientPlayPacketListener, RegistryByteBuf> S2C = NetworkStateBuilder.s2c(
 		NetworkPhase.PLAY,
 		builder -> builder.addBundle(PlayPackets.BUNDLE, BundleS2CPacket::new, new BundleDelimiterS2CPacket())
 				.add(PlayPackets.ADD_ENTITY, EntitySpawnS2CPacket.CODEC)

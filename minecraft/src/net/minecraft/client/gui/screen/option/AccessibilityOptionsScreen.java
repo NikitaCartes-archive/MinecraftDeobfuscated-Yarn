@@ -12,6 +12,7 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Urls;
 
 @Environment(EnvType.CLIENT)
 public class AccessibilityOptionsScreen extends GameOptionsScreen {
@@ -30,6 +31,7 @@ public class AccessibilityOptionsScreen extends GameOptionsScreen {
 			gameOptions.getChatLineSpacing(),
 			gameOptions.getChatDelay(),
 			gameOptions.getNotificationDisplayTime(),
+			gameOptions.getBobView(),
 			gameOptions.getSneakToggled(),
 			gameOptions.getSprintToggled(),
 			gameOptions.getDistortionEffectScale(),
@@ -69,7 +71,7 @@ public class AccessibilityOptionsScreen extends GameOptionsScreen {
 	protected void initFooter() {
 		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
 		directionalLayoutWidget.add(
-			ButtonWidget.builder(Text.translatable("options.accessibility.link"), ConfirmLinkScreen.opening(this, "https://aka.ms/MinecraftJavaAccessibility")).build()
+			ButtonWidget.builder(Text.translatable("options.accessibility.link"), ConfirmLinkScreen.opening(this, Urls.JAVA_ACCESSIBILITY)).build()
 		);
 		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent)).build());
 	}

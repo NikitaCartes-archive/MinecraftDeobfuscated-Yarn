@@ -223,7 +223,7 @@ public class ServerPlayNetworkHandler
 	@Nullable
 	private Vec3d requestedTeleportPos;
 	private int requestedTeleportId;
-	private int teleportRequestTick;
+	private int prevTeleportCheckTicks;
 	private boolean floating;
 	private int floatingTicks;
 	private boolean vehicleFloating;
@@ -398,7 +398,7 @@ public class ServerPlayNetworkHandler
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (isMovementInvalid(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch())) {
 			this.disconnect(Text.translatable("multiplayer.disconnect.invalid_vehicle_movement"));
-		} else {
+		} else if (!this.handlePendingTeleport()) {
 			Entity entity = this.player.getRootVehicle();
 			if (entity != this.player && entity.getControllingPassenger() == this.player && entity == this.topmostRiddenEntity) {
 				ServerWorld serverWorld = this.player.getServerWorld();
@@ -841,13 +841,7 @@ public class ServerPlayNetworkHandler
 					this.syncWithPlayerPosition();
 				}
 
-				if (this.requestedTeleportPos != null) {
-					if (this.ticks - this.teleportRequestTick > 20) {
-						this.teleportRequestTick = this.ticks;
-						this.requestTeleport(this.requestedTeleportPos.x, this.requestedTeleportPos.y, this.requestedTeleportPos.z, this.player.getYaw(), this.player.getPitch());
-					}
-				} else {
-					this.teleportRequestTick = this.ticks;
+				if (!this.handlePendingTeleport()) {
 					double d = clampHorizontal(packet.getX(this.player.getX()));
 					double e = clampVertical(packet.getY(this.player.getY()));
 					double f = clampHorizontal(packet.getZ(this.player.getZ()));
@@ -942,7 +936,7 @@ public class ServerPlayNetworkHandler
 								}
 
 								if (packet.isOnGround() || this.player.hasLandedInFluid() || this.player.isClimbing() || this.player.isSpectator() || bl || bl5) {
-									this.player.clearCurrentExplosion();
+									this.player.tryClearCurrentExplosion();
 								}
 
 								this.player.increaseTravelMotionStats(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k);
@@ -957,6 +951,20 @@ public class ServerPlayNetworkHandler
 					}
 				}
 			}
+		}
+	}
+
+	private boolean handlePendingTeleport() {
+		if (this.requestedTeleportPos != null) {
+			if (this.ticks - this.prevTeleportCheckTicks > 20) {
+				this.prevTeleportCheckTicks = this.ticks;
+				this.requestTeleport(this.requestedTeleportPos.x, this.requestedTeleportPos.y, this.requestedTeleportPos.z, this.player.getYaw(), this.player.getPitch());
+			}
+
+			return true;
+		} else {
+			this.prevTeleportCheckTicks = this.ticks;
+			return false;
 		}
 	}
 
@@ -989,7 +997,7 @@ public class ServerPlayNetworkHandler
 			this.requestedTeleportId = 0;
 		}
 
-		this.teleportRequestTick = this.ticks;
+		this.prevTeleportCheckTicks = this.ticks;
 		this.player.clearCurrentExplosion();
 		this.player.updatePositionAndAngles(x, y, z, yaw, pitch);
 		this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(x - d, y - e, z - f, yaw - g, pitch - h, flags, this.requestedTeleportId));

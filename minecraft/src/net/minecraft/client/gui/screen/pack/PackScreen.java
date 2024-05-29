@@ -109,9 +109,7 @@ public class PackScreen extends Screen {
 		this.availablePackList = this.addDrawableChild(new PackListWidget(this.client, this, 200, this.height - 66, AVAILABLE_TITLE));
 		this.selectedPackList = this.addDrawableChild(new PackListWidget(this.client, this, 200, this.height - 66, SELECTED_TITLE));
 		DirectionalLayoutWidget directionalLayoutWidget2 = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
-		directionalLayoutWidget2.add(
-			ButtonWidget.builder(OPEN_FOLDER, button -> Util.getOperatingSystem().open(this.file.toUri())).tooltip(Tooltip.of(FOLDER_INFO)).build()
-		);
+		directionalLayoutWidget2.add(ButtonWidget.builder(OPEN_FOLDER, button -> Util.getOperatingSystem().open(this.file)).tooltip(Tooltip.of(FOLDER_INFO)).build());
 		this.doneButton = directionalLayoutWidget2.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).build());
 		this.refresh();
 		this.layout.forEachChild(element -> {

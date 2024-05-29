@@ -8,6 +8,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Urls;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
@@ -25,7 +26,7 @@ public class DemoScreen extends Screen {
 		int i = -16;
 		this.addDrawableChild(ButtonWidget.builder(Text.translatable("demo.help.buy"), button -> {
 			button.active = false;
-			Util.getOperatingSystem().open("https://aka.ms/BuyMinecraftJava");
+			Util.getOperatingSystem().open(Urls.BUY_JAVA);
 		}).dimensions(this.width / 2 - 116, this.height / 2 + 62 + -16, 114, 20).build());
 		this.addDrawableChild(ButtonWidget.builder(Text.translatable("demo.help.later"), button -> {
 			this.client.setScreen(null);

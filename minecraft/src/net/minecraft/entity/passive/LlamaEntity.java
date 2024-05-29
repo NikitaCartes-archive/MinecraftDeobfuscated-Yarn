@@ -145,11 +145,6 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	}
 
 	@Override
-	protected int getInventorySize() {
-		return this.hasChest() ? 1 + 3 * this.getInventoryColumns() : super.getInventorySize();
-	}
-
-	@Override
 	public boolean isBreedingItem(ItemStack stack) {
 		return stack.isIn(ItemTags.LLAMA_FOOD);
 	}
@@ -280,7 +275,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 
 	@Override
 	public int getInventoryColumns() {
-		return this.getStrength();
+		return this.hasChest() ? this.getStrength() : 0;
 	}
 
 	@Override

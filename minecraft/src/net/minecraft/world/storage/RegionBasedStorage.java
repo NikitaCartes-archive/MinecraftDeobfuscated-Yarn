@@ -157,4 +157,8 @@ public final class RegionBasedStorage implements AutoCloseable {
 			regionFile.sync();
 		}
 	}
+
+	public StorageKey getStorageKey() {
+		return this.storageKey;
+	}
 }

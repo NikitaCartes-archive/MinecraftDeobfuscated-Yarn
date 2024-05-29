@@ -26,6 +26,14 @@ public class PathUtil {
 	private static final Pattern RESERVED_WINDOWS_NAMES = Pattern.compile(".*\\.|(?:COM|CLOCK\\$|CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\\..*)?", 2);
 	private static final Pattern VALID_FILE_NAME = Pattern.compile("[-._a-z0-9]+");
 
+	public static String replaceInvalidChars(String fileName) {
+		for (char c : SharedConstants.INVALID_CHARS_LEVEL_NAME) {
+			fileName = fileName.replace(c, '_');
+		}
+
+		return fileName.replaceAll("[./\"]", "_");
+	}
+
 	/**
 	 * {@return a filename, prefixed with {@code name}, that does not currently
 	 * exist inside {@code path}}
@@ -39,11 +47,7 @@ public class PathUtil {
 	 * not being a directory
 	 */
 	public static String getNextUniqueName(Path path, String name, String extension) throws IOException {
-		for (char c : SharedConstants.INVALID_CHARS_LEVEL_NAME) {
-			name = name.replace(c, '_');
-		}
-
-		name = name.replaceAll("[./\"]", "_");
+		name = replaceInvalidChars(name);
 		if (RESERVED_WINDOWS_NAMES.matcher(name).matches()) {
 			name = "_" + name + "_";
 		}

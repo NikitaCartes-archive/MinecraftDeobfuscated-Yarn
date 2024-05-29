@@ -176,8 +176,12 @@ public class JigsawBlockScreen extends Screen {
 		this.renderInGameBackground(context);
 	}
 
+	public static boolean isValidId(String id) {
+		return Identifier.tryParse(id) != null;
+	}
+
 	private void updateDoneButtonState() {
-		boolean bl = Identifier.isValid(this.nameField.getText()) && Identifier.isValid(this.targetField.getText()) && Identifier.isValid(this.poolField.getText());
+		boolean bl = isValidId(this.nameField.getText()) && isValidId(this.targetField.getText()) && isValidId(this.poolField.getText());
 		this.doneButton.active = bl;
 		this.generateButton.active = bl;
 	}

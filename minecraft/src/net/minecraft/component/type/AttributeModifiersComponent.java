@@ -131,8 +131,8 @@ public record AttributeModifiersComponent(List<AttributeModifiersComponent.Entry
 			AttributeModifiersComponent.Entry::new
 		);
 
-		public boolean matches(RegistryEntry<EntityAttribute> attribute, Identifier modifier) {
-			return attribute.equals(this.attribute) && modifier.equals(this.modifier);
+		public boolean matches(RegistryEntry<EntityAttribute> attribute, Identifier modifierId) {
+			return attribute.equals(this.attribute) && this.modifier.idMatches(modifierId);
 		}
 	}
 }

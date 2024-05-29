@@ -558,7 +558,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<RegistryE
 		private void dropMorningGifts() {
 			Random random = this.cat.getRandom();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
-			mutable.set(this.cat.isLeashed() ? this.cat.getHoldingEntity().getBlockPos() : this.cat.getBlockPos());
+			mutable.set(this.cat.isLeashed() ? this.cat.getLeashHolder().getBlockPos() : this.cat.getBlockPos());
 			this.cat
 				.teleport(
 					(double)(mutable.getX() + random.nextInt(11) - 5),

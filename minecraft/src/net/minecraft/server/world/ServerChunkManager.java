@@ -256,7 +256,7 @@ public class ServerChunkManager extends ChunkManager {
 	public LightSourceView getChunk(int chunkX, int chunkZ) {
 		long l = ChunkPos.toLong(chunkX, chunkZ);
 		ChunkHolder chunkHolder = this.getChunkHolder(l);
-		return chunkHolder == null ? null : chunkHolder.getUncheckedOrNull(ChunkStatus.INITIALIZE_LIGHT);
+		return chunkHolder == null ? null : chunkHolder.getUncheckedOrNull(ChunkStatus.INITIALIZE_LIGHT.getPrevious());
 	}
 
 	public World getWorld() {

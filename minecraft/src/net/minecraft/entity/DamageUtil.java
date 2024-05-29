@@ -2,6 +2,7 @@ package net.minecraft.entity;
 
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 
@@ -13,16 +14,14 @@ public class DamageUtil {
 	private static final int field_29966 = 4;
 
 	public static float getDamageLeft(LivingEntity armorWearer, float damageAmount, DamageSource damageSource, float armor, float armorToughness) {
+		float f = 2.0F + armorToughness / 4.0F;
+		float g = MathHelper.clamp(armor - damageAmount / f, armor * 0.2F, 20.0F);
+		float h = g / 25.0F;
+		ItemStack itemStack = damageSource.getWeaponStack();
 		float i;
-		label12: {
-			float f = 2.0F + armorToughness / 4.0F;
-			float g = MathHelper.clamp(armor - damageAmount / f, armor * 0.2F, 20.0F);
-			float h = g / 25.0F;
-			if (damageSource.getSource() instanceof LivingEntity livingEntity && livingEntity.getWorld() instanceof ServerWorld serverWorld) {
-				i = MathHelper.clamp(EnchantmentHelper.getArmorEffectiveness(serverWorld, livingEntity.getMainHandStack(), armorWearer, damageSource, h), 0.0F, 1.0F);
-				break label12;
-			}
-
+		if (itemStack != null && armorWearer.getWorld() instanceof ServerWorld serverWorld) {
+			i = MathHelper.clamp(EnchantmentHelper.getArmorEffectiveness(serverWorld, itemStack, armorWearer, damageSource, h), 0.0F, 1.0F);
+		} else {
 			i = h;
 		}
 

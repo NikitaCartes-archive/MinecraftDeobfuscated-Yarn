@@ -19,6 +19,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.structure.JigsawStructure;
 import org.slf4j.Logger;
 
 public class PoolStructurePiece extends StructurePiece {
@@ -29,6 +30,7 @@ public class PoolStructurePiece extends StructurePiece {
 	protected final BlockRotation rotation;
 	private final List<JigsawJunction> junctions = Lists.<JigsawJunction>newArrayList();
 	private final StructureTemplateManager structureTemplateManager;
+	private final StructureLiquidSettings liquidSettings;
 
 	public PoolStructurePiece(
 		StructureTemplateManager structureTemplateManager,
@@ -36,7 +38,8 @@ public class PoolStructurePiece extends StructurePiece {
 		BlockPos pos,
 		int groundLevelDelta,
 		BlockRotation rotation,
-		BlockBox boundingBox
+		BlockBox boundingBox,
+		StructureLiquidSettings liquidSettings
 	) {
 		super(StructurePieceType.JIGSAW, 0, boundingBox);
 		this.structureTemplateManager = structureTemplateManager;
@@ -44,6 +47,7 @@ public class PoolStructurePiece extends StructurePiece {
 		this.pos = pos;
 		this.groundLevelDelta = groundLevelDelta;
 		this.rotation = rotation;
+		this.liquidSettings = liquidSettings;
 	}
 
 	public PoolStructurePiece(StructureContext context, NbtCompound nbt) {
@@ -60,6 +64,10 @@ public class PoolStructurePiece extends StructurePiece {
 		NbtList nbtList = nbt.getList("junctions", NbtElement.COMPOUND_TYPE);
 		this.junctions.clear();
 		nbtList.forEach(junctionTag -> this.junctions.add(JigsawJunction.deserialize(new Dynamic<>(dynamicOps, junctionTag))));
+		this.liquidSettings = (StructureLiquidSettings)StructureLiquidSettings.codec
+			.parse(NbtOps.INSTANCE, nbt.get("liquid_settings"))
+			.result()
+			.orElse(JigsawStructure.DEFAULT_LIQUID_SETTINGS);
 	}
 
 	@Override
@@ -72,7 +80,7 @@ public class PoolStructurePiece extends StructurePiece {
 		StructurePoolElement.CODEC
 			.encodeStart(dynamicOps, this.poolElement)
 			.resultOrPartial(LOGGER::error)
-			.ifPresent(nbtElement -> nbt.put("pool_element", nbtElement));
+			.ifPresent(poolElement -> nbt.put("pool_element", poolElement));
 		nbt.putString("rotation", this.rotation.name());
 		NbtList nbtList = new NbtList();
 
@@ -81,6 +89,9 @@ public class PoolStructurePiece extends StructurePiece {
 		}
 
 		nbt.put("junctions", nbtList);
+		if (this.liquidSettings != JigsawStructure.DEFAULT_LIQUID_SETTINGS) {
+			nbt.put("liquid_settings", StructureLiquidSettings.codec.encodeStart(NbtOps.INSTANCE, this.liquidSettings).getOrThrow());
+		}
 	}
 
 	@Override
@@ -106,7 +117,19 @@ public class PoolStructurePiece extends StructurePiece {
 		boolean keepJigsaws
 	) {
 		this.poolElement
-			.generate(this.structureTemplateManager, world, structureAccessor, chunkGenerator, this.pos, pivot, this.rotation, boundingBox, random, keepJigsaws);
+			.generate(
+				this.structureTemplateManager,
+				world,
+				structureAccessor,
+				chunkGenerator,
+				this.pos,
+				pivot,
+				this.rotation,
+				boundingBox,
+				random,
+				this.liquidSettings,
+				keepJigsaws
+			);
 	}
 
 	@Override

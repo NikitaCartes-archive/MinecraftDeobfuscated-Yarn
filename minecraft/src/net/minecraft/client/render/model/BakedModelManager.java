@@ -64,7 +64,7 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE,
 		Identifier.ofVanilla("blocks")
 	);
-	private Map<Identifier, BakedModel> models;
+	private Map<ModelIdentifier, BakedModel> models;
 	private final SpriteAtlasManager atlasManager;
 	private final BlockModels blockModelCache;
 	private final BlockColors colorMap;
@@ -102,7 +102,7 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 	) {
 		prepareProfiler.startTick();
 		CompletableFuture<Map<Identifier, JsonUnbakedModel>> completableFuture = reloadModels(manager, prepareExecutor);
-		CompletableFuture<Map<Identifier, List<ModelLoader.SourceTrackedData>>> completableFuture2 = reloadBlockStates(manager, prepareExecutor);
+		CompletableFuture<Map<Identifier, List<BlockStatesLoader.SourceTrackedData>>> completableFuture2 = reloadBlockStates(manager, prepareExecutor);
 		CompletableFuture<ModelLoader> completableFuture3 = completableFuture.thenCombineAsync(
 			completableFuture2, (jsonUnbakedModels, blockStates) -> new ModelLoader(this.colorMap, prepareProfiler, jsonUnbakedModels, blockStates), prepareExecutor
 		);
@@ -167,16 +167,18 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 			);
 	}
 
-	private static CompletableFuture<Map<Identifier, List<ModelLoader.SourceTrackedData>>> reloadBlockStates(ResourceManager resourceManager, Executor executor) {
-		return CompletableFuture.supplyAsync(() -> ModelLoader.BLOCK_STATES_FINDER.findAllResources(resourceManager), executor)
+	private static CompletableFuture<Map<Identifier, List<BlockStatesLoader.SourceTrackedData>>> reloadBlockStates(
+		ResourceManager resourceManager, Executor executor
+	) {
+		return CompletableFuture.supplyAsync(() -> BlockStatesLoader.FINDER.findAllResources(resourceManager), executor)
 			.thenCompose(
 				blockStates -> {
-					List<CompletableFuture<Pair<Identifier, List<ModelLoader.SourceTrackedData>>>> list = new ArrayList(blockStates.size());
+					List<CompletableFuture<Pair<Identifier, List<BlockStatesLoader.SourceTrackedData>>>> list = new ArrayList(blockStates.size());
 
 					for (Entry<Identifier, List<Resource>> entry : blockStates.entrySet()) {
 						list.add(CompletableFuture.supplyAsync(() -> {
 							List<Resource> listx = (List<Resource>)entry.getValue();
-							List<ModelLoader.SourceTrackedData> list2 = new ArrayList(listx.size());
+							List<BlockStatesLoader.SourceTrackedData> list2 = new ArrayList(listx.size());
 
 							for (Resource resource : listx) {
 								try {
@@ -184,7 +186,7 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 
 									try {
 										JsonObject jsonObject = JsonHelper.deserialize(reader);
-										list2.add(new ModelLoader.SourceTrackedData(resource.getPackId(), jsonObject));
+										list2.add(new BlockStatesLoader.SourceTrackedData(resource.getPackId(), jsonObject));
 									} catch (Throwable var9) {
 										if (reader != null) {
 											try {
@@ -218,22 +220,22 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 	private BakedModelManager.BakingResult bake(Profiler profiler, Map<Identifier, SpriteAtlasManager.AtlasPreparation> preparations, ModelLoader modelLoader) {
 		profiler.push("load");
 		profiler.swap("baking");
-		Multimap<Identifier, SpriteIdentifier> multimap = HashMultimap.create();
-		modelLoader.bake((id, spriteId) -> {
+		Multimap<ModelIdentifier, SpriteIdentifier> multimap = HashMultimap.create();
+		modelLoader.bake((modelIdentifier, spriteId) -> {
 			SpriteAtlasManager.AtlasPreparation atlasPreparation = (SpriteAtlasManager.AtlasPreparation)preparations.get(spriteId.getAtlasId());
 			Sprite sprite = atlasPreparation.getSprite(spriteId.getTextureId());
 			if (sprite != null) {
 				return sprite;
 			} else {
-				multimap.put(id, spriteId);
+				multimap.put(modelIdentifier, spriteId);
 				return atlasPreparation.getMissingSprite();
 			}
 		});
 		multimap.asMap()
 			.forEach(
-				(modelId, spriteIds) -> LOGGER.warn(
+				(modelIdentifier, spriteIds) -> LOGGER.warn(
 						"Missing textures in model {}:\n{}",
-						modelId,
+						modelIdentifier,
 						spriteIds.stream()
 							.sorted(SpriteIdentifier.COMPARATOR)
 							.map(spriteIdentifier -> "    " + spriteIdentifier.getAtlasId() + ":" + spriteIdentifier.getTextureId())
@@ -241,8 +243,8 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 					)
 			);
 		profiler.swap("dispatch");
-		Map<Identifier, BakedModel> map = modelLoader.getBakedModelMap();
-		BakedModel bakedModel = (BakedModel)map.get(ModelLoader.MISSING_ID);
+		Map<ModelIdentifier, BakedModel> map = modelLoader.getBakedModelMap();
+		BakedModel bakedModel = (BakedModel)map.get(ModelLoader.MISSING_MODEL_ID);
 		Map<BlockState, BakedModel> map2 = new IdentityHashMap();
 
 		for (Block block : Registries.BLOCK) {

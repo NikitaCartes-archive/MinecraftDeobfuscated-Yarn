@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemSteerable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,13 +29,9 @@ public class OnAStickItem<T extends Entity & ItemSteerable> extends Item {
 		} else {
 			Entity entity = user.getControllingVehicle();
 			if (user.hasVehicle() && entity instanceof ItemSteerable itemSteerable && entity.getType() == this.target && itemSteerable.consumeOnAStickItem()) {
-				itemStack.damage(this.damagePerUse, user, LivingEntity.getSlotForHand(hand));
-				if (itemStack.isEmpty()) {
-					ItemStack itemStack2 = itemStack.copyComponentsToNewStackIgnoreEmpty(Items.FISHING_ROD, 1);
-					return TypedActionResult.success(itemStack2);
-				}
-
-				return TypedActionResult.success(itemStack);
+				EquipmentSlot equipmentSlot = LivingEntity.getSlotForHand(hand);
+				ItemStack itemStack2 = itemStack.damage(this.damagePerUse, Items.FISHING_ROD, user, equipmentSlot);
+				return TypedActionResult.success(itemStack2);
 			}
 
 			user.incrementStat(Stats.USED.getOrCreateStat(this));

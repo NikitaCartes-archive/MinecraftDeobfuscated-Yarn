@@ -20,7 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.function.Predicate;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
@@ -1509,7 +1511,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	protected float getKnockbackAgainst(Entity target, DamageSource damageSource) {
 		float f = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
 		return this.getWorld() instanceof ServerWorld serverWorld
-			? EnchantmentHelper.modifyKnockback(serverWorld, this.getMainHandStack(), target, damageSource, f)
+			? EnchantmentHelper.modifyKnockback(serverWorld, this.getWeaponStack(), target, damageSource, f)
 			: f;
 	}
 
@@ -1630,14 +1632,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	private boolean canEnterTrapdoor(BlockPos pos, BlockState state) {
-		if ((Boolean)state.get(TrapdoorBlock.OPEN)) {
+		if (!(Boolean)state.get(TrapdoorBlock.OPEN)) {
+			return false;
+		} else {
 			BlockState blockState = this.getWorld().getBlockState(pos.down());
-			if (blockState.isOf(Blocks.LADDER) && blockState.get(LadderBlock.FACING) == state.get(TrapdoorBlock.FACING)) {
-				return true;
-			}
+			return blockState.isOf(Blocks.LADDER) && blockState.get(LadderBlock.FACING) == state.get(TrapdoorBlock.FACING);
 		}
-
-		return false;
 	}
 
 	@Override
@@ -2013,6 +2013,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	public ItemStack getOffHandStack() {
 		return this.getEquippedStack(EquipmentSlot.OFFHAND);
+	}
+
+	@Nonnull
+	@Override
+	public ItemStack getWeaponStack() {
+		return this.getMainHandStack();
 	}
 
 	/**
@@ -2607,17 +2613,23 @@ public abstract class LivingEntity extends Entity implements Attackable {
 						EnchantmentHelper.removeLocationBasedEffects(itemStack, this, equipmentSlot);
 					});
 				}
+			}
+		}
 
-				if (!itemStack2.isEmpty()) {
-					itemStack2.applyAttributeModifiers(equipmentSlot, (attribute, modifier) -> {
-						EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(attribute);
+		if (map != null) {
+			for (Entry<EquipmentSlot, ItemStack> entry : map.entrySet()) {
+				EquipmentSlot equipmentSlot2 = (EquipmentSlot)entry.getKey();
+				ItemStack itemStack3 = (ItemStack)entry.getValue();
+				if (!itemStack3.isEmpty()) {
+					itemStack3.applyAttributeModifiers(equipmentSlot2, (registryEntry, entityAttributeModifier) -> {
+						EntityAttributeInstance entityAttributeInstance = this.attributes.getCustomInstance(registryEntry);
 						if (entityAttributeInstance != null) {
-							entityAttributeInstance.removeModifier(modifier.id());
-							entityAttributeInstance.addTemporaryModifier(modifier);
+							entityAttributeInstance.removeModifier(entityAttributeModifier.id());
+							entityAttributeInstance.addTemporaryModifier(entityAttributeModifier);
 						}
 
 						if (this.getWorld() instanceof ServerWorld serverWorld) {
-							EnchantmentHelper.applyLocationBasedEffects(serverWorld, itemStack2, this, equipmentSlot);
+							EnchantmentHelper.applyLocationBasedEffects(serverWorld, itemStack3, this, equipmentSlot2);
 						}
 					});
 				}
@@ -3204,6 +3216,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.prevBodyYaw = this.bodyYaw;
 	}
 
+	@Override
+	public float lerpYaw(float delta) {
+		return MathHelper.lerp(delta, this.prevBodyYaw, this.bodyYaw);
+	}
+
 	protected void spawnConsumptionEffects(ItemStack stack, int particleCount) {
 		if (!stack.isEmpty() && this.isUsingItem()) {
 			if (stack.getUseAction() == UseAction.DRINK) {
@@ -3644,7 +3661,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	public boolean disablesShield() {
-		return this.getMainHandStack().getItem() instanceof AxeItem;
+		return this.getWeaponStack().getItem() instanceof AxeItem;
 	}
 
 	@Override

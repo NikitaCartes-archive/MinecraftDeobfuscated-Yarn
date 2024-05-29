@@ -1,7 +1,7 @@
 package net.minecraft.client.render;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
-import java.util.SortedMap;
+import java.util.SequencedMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.chunk.BlockBufferAllocatorStorage;
@@ -20,7 +20,7 @@ public class BufferBuilderStorage {
 
 	public BufferBuilderStorage(int maxBlockBuildersPoolSize) {
 		this.blockBufferBuildersPool = BlockBufferBuilderPool.allocate(maxBlockBuildersPoolSize);
-		SortedMap<RenderLayer, BufferAllocator> sortedMap = Util.make(new Object2ObjectLinkedOpenHashMap<>(), map -> {
+		SequencedMap<RenderLayer, BufferAllocator> sequencedMap = Util.make(new Object2ObjectLinkedOpenHashMap<RenderLayer, BufferAllocator>(), map -> {
 			map.put(TexturedRenderLayers.getEntitySolid(), this.blockBufferBuilders.get(RenderLayer.getSolid()));
 			map.put(TexturedRenderLayers.getEntityCutout(), this.blockBufferBuilders.get(RenderLayer.getCutout()));
 			map.put(TexturedRenderLayers.getBannerPatterns(), this.blockBufferBuilders.get(RenderLayer.getCutoutMipped()));
@@ -40,7 +40,7 @@ public class BufferBuilderStorage {
 			ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.forEach(renderLayer -> assignBufferBuilder(map, renderLayer));
 		});
 		this.effectVertexConsumers = VertexConsumerProvider.immediate(new BufferAllocator(1536));
-		this.entityVertexConsumers = VertexConsumerProvider.immediate(sortedMap, new BufferAllocator(786432));
+		this.entityVertexConsumers = VertexConsumerProvider.immediate(sequencedMap, new BufferAllocator(786432));
 		this.outlineVertexConsumers = new OutlineVertexConsumerProvider(this.entityVertexConsumers);
 	}
 

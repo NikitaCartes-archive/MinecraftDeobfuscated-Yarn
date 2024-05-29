@@ -6,7 +6,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelElementTexture;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.AffineTransformations;
 import net.minecraft.util.math.Direction;
@@ -35,12 +34,11 @@ public class BakedQuadFactory {
 		Direction side,
 		ModelBakeSettings settings,
 		@Nullable net.minecraft.client.render.model.json.ModelRotation rotation,
-		boolean shade,
-		Identifier modelId
+		boolean shade
 	) {
-		ModelElementTexture modelElementTexture = face.textureData;
+		ModelElementTexture modelElementTexture = face.textureData();
 		if (settings.isUvLocked()) {
-			modelElementTexture = uvLock(face.textureData, side, settings.getRotation(), modelId);
+			modelElementTexture = uvLock(face.textureData(), side, settings.getRotation());
 		}
 
 		float[] fs = new float[modelElementTexture.uvs.length];
@@ -59,11 +57,11 @@ public class BakedQuadFactory {
 			this.encodeDirection(is, direction);
 		}
 
-		return new BakedQuad(is, face.tintIndex, direction, texture, shade);
+		return new BakedQuad(is, face.tintIndex(), direction, texture, shade);
 	}
 
-	public static ModelElementTexture uvLock(ModelElementTexture texture, Direction orientation, AffineTransformation rotation, Identifier modelId) {
-		Matrix4f matrix4f = AffineTransformations.uvLock(rotation, orientation, () -> "Unable to resolve UVLock for model: " + modelId).getMatrix();
+	public static ModelElementTexture uvLock(ModelElementTexture texture, Direction orientation, AffineTransformation rotation) {
+		Matrix4f matrix4f = AffineTransformations.uvLock(rotation, orientation).getMatrix();
 		float f = texture.getU(texture.getDirectionIndex(0));
 		float g = texture.getV(texture.getDirectionIndex(0));
 		Vector4f vector4f = matrix4f.transform(new Vector4f(f / 16.0F, g / 16.0F, 0.0F, 1.0F));

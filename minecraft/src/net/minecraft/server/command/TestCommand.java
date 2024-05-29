@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -32,6 +33,7 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.test.BatchListener;
+import net.minecraft.test.Batches;
 import net.minecraft.test.GameTestBatch;
 import net.minecraft.test.GameTestState;
 import net.minecraft.test.StructureBlockFinder;
@@ -174,6 +176,19 @@ public class TestCommand {
 				.then(testAttemptConfig(CommandManager.literal("runclosest"), RUNNERS::nearest))
 				.then(testAttemptConfig(CommandManager.literal("runthat"), RUNNERS::targeted))
 				.then(testAttemptAndPlacementConfig(CommandManager.literal("runfailed").then(argumentBuilder), RUNNERS::failed))
+				.then(
+					CommandManager.literal("verify")
+						.then(
+							CommandManager.argument("testName", TestFunctionArgumentType.testFunction()).executes(context -> RUNNERS.functionNamed(context, "testName").verify())
+						)
+				)
+				.then(
+					CommandManager.literal("verifyclass")
+						.then(
+							CommandManager.argument("testClassName", TestClassArgumentType.testClass())
+								.executes(context -> RUNNERS.in(context, TestClassArgumentType.getTestClass(context, "testClassName")).verify())
+						)
+				)
 				.then(
 					CommandManager.literal("locate")
 						.then(
@@ -539,7 +554,7 @@ public class TestCommand {
 					}
 				},
 				() -> TestCommand.sendMessage(serverWorld, "Could not find any structures to clear", Formatting.RED),
-				integer -> TestCommand.sendMessage(serverCommandSource, "Cleared " + integer + " structures")
+				count -> TestCommand.sendMessage(serverCommandSource, "Cleared " + count + " structures")
 			);
 			return 1;
 		}
@@ -570,6 +585,45 @@ public class TestCommand {
 			return mutableBoolean.getValue() ? 0 : 1;
 		}
 
+		int verify() {
+			TestCommand.stop();
+			ServerCommandSource serverCommandSource = this.finder.getCommandSource();
+			ServerWorld serverWorld = serverCommandSource.getWorld();
+			BlockPos blockPos = TestCommand.getStructurePos(serverCommandSource);
+			Collection<GameTestState> collection = Stream.concat(
+					TestCommand.stream(serverCommandSource, TestAttemptConfig.once(), this.finder),
+					TestCommand.stream(serverCommandSource, TestAttemptConfig.once(), this.finder, 0)
+				)
+				.toList();
+			int i = 10;
+			TestRunContext.clearDebugMarkers(serverWorld);
+			TestFunctions.clearFailedTestFunctions();
+			Collection<GameTestBatch> collection2 = new ArrayList();
+
+			for (GameTestState gameTestState : collection) {
+				for (BlockRotation blockRotation : BlockRotation.values()) {
+					Collection<GameTestState> collection3 = new ArrayList();
+
+					for (int j = 0; j < 100; j++) {
+						GameTestState gameTestState2 = new GameTestState(gameTestState.getTestFunction(), blockRotation, serverWorld, new TestAttemptConfig(1, true));
+						collection3.add(gameTestState2);
+					}
+
+					GameTestBatch gameTestBatch = Batches.create(collection3, gameTestState.getTestFunction().batchId(), (long)blockRotation.ordinal());
+					collection2.add(gameTestBatch);
+				}
+			}
+
+			TestStructurePlacer testStructurePlacer = new TestStructurePlacer(blockPos, 10, true);
+			TestRunContext testRunContext = TestRunContext.Builder.of(collection2, serverWorld)
+				.batcher(Batches.batcher(100))
+				.initialSpawner(testStructurePlacer)
+				.reuseSpawner(testStructurePlacer)
+				.stopAfterFailure(true)
+				.build();
+			return TestCommand.start(serverCommandSource, serverWorld, testRunContext);
+		}
+
 		public int start(TestAttemptConfig config, int rotationSteps, int testsPerRow) {
 			TestCommand.stop();
 			ServerCommandSource serverCommandSource = this.finder.getCommandSource();
@@ -587,7 +641,7 @@ public class TestCommand {
 				TestFunctions.clearFailedTestFunctions();
 				TestCommand.sendMessage(serverCommandSource, "Running " + collection.size() + " tests...");
 				TestRunContext testRunContext = TestRunContext.Builder.ofStates(collection, serverWorld)
-					.initialSpawner(new TestStructurePlacer(blockPos, testsPerRow))
+					.initialSpawner(new TestStructurePlacer(blockPos, testsPerRow, false))
 					.build();
 				return TestCommand.start(serverCommandSource, serverWorld, testRunContext);
 			}

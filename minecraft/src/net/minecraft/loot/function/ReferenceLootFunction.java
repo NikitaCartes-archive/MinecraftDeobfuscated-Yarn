@@ -34,7 +34,9 @@ public class ReferenceLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public void validate(LootTableReporter reporter) {
-		if (reporter.isInStack(this.name)) {
+		if (!reporter.canUseReferences()) {
+			reporter.report("Uses reference to " + this.name.getValue() + ", but references are not allowed");
+		} else if (reporter.isInStack(this.name)) {
 			reporter.report("Function " + this.name.getValue() + " is recursively called");
 		} else {
 			super.validate(reporter);

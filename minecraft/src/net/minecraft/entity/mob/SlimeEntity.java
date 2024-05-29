@@ -241,15 +241,12 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	protected void damage(LivingEntity target) {
-		if (this.isAlive()) {
-			int i = this.getSize();
-			if (this.squaredDistanceTo(target) < 0.6 * (double)i * 0.6 * (double)i && this.canSee(target)) {
-				DamageSource damageSource = this.getDamageSources().mobAttack(this);
-				if (target.damage(damageSource, this.getDamageAmount())) {
-					this.playSound(SoundEvents.ENTITY_SLIME_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-					if (this.getWorld() instanceof ServerWorld serverWorld) {
-						EnchantmentHelper.onTargetDamaged(serverWorld, target, damageSource);
-					}
+		if (this.isAlive() && this.isInAttackRange(target) && this.canSee(target)) {
+			DamageSource damageSource = this.getDamageSources().mobAttack(this);
+			if (target.damage(damageSource, this.getDamageAmount())) {
+				this.playSound(SoundEvents.ENTITY_SLIME_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+				if (this.getWorld() instanceof ServerWorld serverWorld) {
+					EnchantmentHelper.onTargetDamaged(serverWorld, target, damageSource);
 				}
 			}
 		}

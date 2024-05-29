@@ -1,7 +1,6 @@
 package net.minecraft.block.entity;
 
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.OptionalInt;
@@ -20,6 +19,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.GameEventTags;
@@ -84,10 +84,11 @@ public class SculkShriekerBlockEntity extends BlockEntity implements GameEventLi
 			this.warningLevel = nbt.getInt("warning_level");
 		}
 
+		RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
 			Vibrations.ListenerData.CODEC
-				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
-				.resultOrPartial(LOGGER::error)
+				.parse(registryOps, nbt.getCompound("listener"))
+				.resultOrPartial(string -> LOGGER.error("Failed to parse vibration listener for Sculk Shrieker: '{}'", string))
 				.ifPresent(vibrationListener -> this.vibrationListenerData = vibrationListener);
 		}
 	}
@@ -96,9 +97,10 @@ public class SculkShriekerBlockEntity extends BlockEntity implements GameEventLi
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
 		nbt.putInt("warning_level", this.warningLevel);
+		RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
 		Vibrations.ListenerData.CODEC
-			.encodeStart(NbtOps.INSTANCE, this.vibrationListenerData)
-			.resultOrPartial(LOGGER::error)
+			.encodeStart(registryOps, this.vibrationListenerData)
+			.resultOrPartial(string -> LOGGER.error("Failed to encode vibration listener for Sculk Shrieker: '{}'", string))
 			.ifPresent(nbtElement -> nbt.put("listener", nbtElement));
 	}
 

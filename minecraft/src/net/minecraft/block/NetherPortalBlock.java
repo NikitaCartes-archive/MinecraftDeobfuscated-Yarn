@@ -127,22 +127,34 @@ public class NetherPortalBlock extends Block implements Portal {
 	private TeleportTarget getOrCreateExitPortalTarget(
 		ServerWorld world, Entity entity, BlockPos pos, BlockPos scaledPos, boolean inNether, WorldBorder worldBorder
 	) {
-		Optional<BlockLocating.Rectangle> optional = world.getPortalForcer().getPortalRect(scaledPos, inNether, worldBorder);
-		if (optional.isEmpty()) {
+		Optional<BlockPos> optional = world.getPortalForcer().getPortalPos(scaledPos, inNether, worldBorder);
+		BlockLocating.Rectangle rectangle;
+		TeleportTarget.PostDimensionTransition postDimensionTransition;
+		if (optional.isPresent()) {
+			BlockPos blockPos = (BlockPos)optional.get();
+			BlockState blockState = world.getBlockState(blockPos);
+			rectangle = BlockLocating.getLargestRectangle(
+				blockPos, blockState.get(Properties.HORIZONTAL_AXIS), 21, Direction.Axis.Y, 21, posx -> world.getBlockState(posx) == blockState
+			);
+			postDimensionTransition = TeleportTarget.SEND_TRAVEL_THROUGH_PORTAL_PACKET.then(entityx -> entityx.addPortalChunkTicketAt(blockPos));
+		} else {
 			Direction.Axis axis = (Direction.Axis)entity.getWorld().getBlockState(pos).getOrEmpty(AXIS).orElse(Direction.Axis.X);
 			Optional<BlockLocating.Rectangle> optional2 = world.getPortalForcer().createPortal(scaledPos, axis);
 			if (optional2.isEmpty()) {
 				LOGGER.error("Unable to create a portal, likely target out of worldborder");
 				return null;
-			} else {
-				return getExitPortalTarget(entity, pos, (BlockLocating.Rectangle)optional2.get(), world);
 			}
-		} else {
-			return (TeleportTarget)optional.map(portalRectangle -> getExitPortalTarget(entity, pos, portalRectangle, world)).orElse(null);
+
+			rectangle = (BlockLocating.Rectangle)optional2.get();
+			postDimensionTransition = TeleportTarget.SEND_TRAVEL_THROUGH_PORTAL_PACKET.then(TeleportTarget.ADD_PORTAL_CHUNK_TICKET);
 		}
+
+		return getExitPortalTarget(entity, pos, rectangle, world, postDimensionTransition);
 	}
 
-	private static TeleportTarget getExitPortalTarget(Entity entity, BlockPos pos, BlockLocating.Rectangle exitPortalRectangle, ServerWorld world) {
+	private static TeleportTarget getExitPortalTarget(
+		Entity entity, BlockPos pos, BlockLocating.Rectangle exitPortalRectangle, ServerWorld world, TeleportTarget.PostDimensionTransition postDimensionTransition
+	) {
 		BlockState blockState = entity.getWorld().getBlockState(pos);
 		Direction.Axis axis;
 		Vec3d vec3d;
@@ -157,7 +169,7 @@ public class NetherPortalBlock extends Block implements Portal {
 			vec3d = new Vec3d(0.5, 0.0, 0.0);
 		}
 
-		return getExitPortalTarget(world, exitPortalRectangle, axis, vec3d, entity, entity.getVelocity(), entity.getYaw(), entity.getPitch());
+		return getExitPortalTarget(world, exitPortalRectangle, axis, vec3d, entity, entity.getVelocity(), entity.getYaw(), entity.getPitch(), postDimensionTransition);
 	}
 
 	private static TeleportTarget getExitPortalTarget(
@@ -168,7 +180,8 @@ public class NetherPortalBlock extends Block implements Portal {
 		Entity entity,
 		Vec3d velocity,
 		float yaw,
-		float pitch
+		float pitch,
+		TeleportTarget.PostDimensionTransition postDimensionTransition
 	) {
 		BlockPos blockPos = exitPortalRectangle.lowerLeft;
 		BlockState blockState = world.getBlockState(blockPos);
@@ -184,7 +197,7 @@ public class NetherPortalBlock extends Block implements Portal {
 		boolean bl = axis2 == Direction.Axis.X;
 		Vec3d vec3d2 = new Vec3d((double)blockPos.getX() + (bl ? f : h), (double)blockPos.getY() + g, (double)blockPos.getZ() + (bl ? h : f));
 		Vec3d vec3d3 = NetherPortal.findOpenPosition(vec3d2, world, entity, entityDimensions);
-		return new TeleportTarget(world, vec3d3, vec3d, yaw + (float)i, pitch);
+		return new TeleportTarget(world, vec3d3, vec3d, yaw + (float)i, pitch, postDimensionTransition);
 	}
 
 	@Override

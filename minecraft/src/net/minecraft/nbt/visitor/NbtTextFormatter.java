@@ -183,7 +183,7 @@ public class NbtTextFormatter implements NbtElementVisitor {
 		if (element.isEmpty()) {
 			this.result.append("[]");
 		} else if (this.depth >= 64) {
-			this.result.append("[" + ELLIPSIS + "]");
+			this.result.append("[").append(ELLIPSIS).append("]");
 		} else if (SINGLE_LINE_ELEMENT_TYPES.contains(element.getHeldType()) && element.size() <= 8) {
 			this.result.append("[");
 
@@ -213,7 +213,7 @@ public class NbtTextFormatter implements NbtElementVisitor {
 			}
 
 			if (element.size() > 128) {
-				this.result.append(string + ELLIPSIS);
+				this.result.append(string).append(ELLIPSIS);
 			}
 
 			if (!this.prefix.isEmpty()) {
@@ -229,7 +229,7 @@ public class NbtTextFormatter implements NbtElementVisitor {
 		if (compound.isEmpty()) {
 			this.result.append("{}");
 		} else if (this.depth >= 64) {
-			this.result.append("{" + ELLIPSIS + "}");
+			this.result.append("{").append(ELLIPSIS).append("}");
 		} else {
 			this.result.append("{");
 			Collection<String> collection = compound.getKeys();

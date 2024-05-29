@@ -73,6 +73,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.Leashable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TrackedPosition;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -82,7 +83,6 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.GuardianEntity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.SnifferEntity;
@@ -1011,9 +1011,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onEntityAttach(EntityAttachS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Entity entity = this.world.getEntityById(packet.getAttachedEntityId());
-		if (entity instanceof MobEntity) {
-			((MobEntity)entity).setHoldingEntityId(packet.getHoldingEntityId());
+		if (this.world.getEntityById(packet.getAttachedEntityId()) instanceof Leashable leashable) {
+			leashable.setUnresolvedLeashHolderId(packet.getHoldingEntityId());
 		}
 	}
 
@@ -1206,10 +1205,13 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		if (this.world.getEntityById(packet.getHorseId()) instanceof AbstractHorseEntity abstractHorseEntity) {
 			ClientPlayerEntity clientPlayerEntity = this.client.player;
-			SimpleInventory simpleInventory = new SimpleInventory(packet.getSlotCount());
-			HorseScreenHandler horseScreenHandler = new HorseScreenHandler(packet.getSyncId(), clientPlayerEntity.getInventory(), simpleInventory, abstractHorseEntity);
+			int i = packet.getSlotColumnCount();
+			SimpleInventory simpleInventory = new SimpleInventory(AbstractHorseEntity.getInventorySize(i));
+			HorseScreenHandler horseScreenHandler = new HorseScreenHandler(
+				packet.getSyncId(), clientPlayerEntity.getInventory(), simpleInventory, abstractHorseEntity, i
+			);
 			clientPlayerEntity.currentScreenHandler = horseScreenHandler;
-			this.client.setScreen(new HorseScreen(horseScreenHandler, clientPlayerEntity.getInventory(), abstractHorseEntity));
+			this.client.setScreen(new HorseScreen(horseScreenHandler, clientPlayerEntity.getInventory(), abstractHorseEntity, i));
 		}
 	}
 

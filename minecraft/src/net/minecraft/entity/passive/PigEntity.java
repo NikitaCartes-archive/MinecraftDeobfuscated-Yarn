@@ -166,10 +166,10 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	}
 
 	@Override
-	public void saddle(@Nullable SoundCategory sound) {
+	public void saddle(ItemStack stack, @Nullable SoundCategory soundCategory) {
 		this.saddledComponent.setSaddled(true);
-		if (sound != null) {
-			this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_PIG_SADDLE, sound, 0.5F, 1.0F);
+		if (soundCategory != null) {
+			this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_PIG_SADDLE, soundCategory, 0.5F, 1.0F);
 		}
 	}
 

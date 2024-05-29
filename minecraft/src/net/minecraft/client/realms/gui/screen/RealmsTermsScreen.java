@@ -14,6 +14,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
+import net.minecraft.util.Urls;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -71,8 +72,8 @@ public class RealmsTermsScreen extends RealmsScreen {
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (this.onLink) {
-			this.client.keyboard.setClipboard("https://aka.ms/MinecraftRealmsTerms");
-			Util.getOperatingSystem().open("https://aka.ms/MinecraftRealmsTerms");
+			this.client.keyboard.setClipboard(Urls.REALMS_TERMS.toString());
+			Util.getOperatingSystem().open(Urls.REALMS_TERMS);
 			return true;
 		} else {
 			return super.mouseClicked(mouseX, mouseY, button);

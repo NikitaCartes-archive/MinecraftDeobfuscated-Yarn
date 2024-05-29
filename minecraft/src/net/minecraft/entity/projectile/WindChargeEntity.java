@@ -18,7 +18,7 @@ import net.minecraft.world.explosion.ExplosionBehavior;
 
 public class WindChargeEntity extends AbstractWindChargeEntity {
 	private static final ExplosionBehavior EXPLOSION_BEHAVIOR = new AdvancedExplosionBehavior(
-		true, false, Optional.of(1.1F), Registries.BLOCK.getEntryList(BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS).map(Function.identity())
+		true, false, Optional.of(1.22F), Registries.BLOCK.getEntryList(BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS).map(Function.identity())
 	);
 	private static final float EXPLOSION_POWER = 1.2F;
 	private int deflectCooldown = 5;
@@ -49,15 +49,15 @@ public class WindChargeEntity extends AbstractWindChargeEntity {
 	}
 
 	@Override
-	protected void createExplosion() {
+	protected void createExplosion(Vec3d pos) {
 		this.getWorld()
 			.createExplosion(
 				this,
 				null,
 				EXPLOSION_BEHAVIOR,
-				this.getX(),
-				this.getY(),
-				this.getZ(),
+				pos.getX(),
+				pos.getY(),
+				pos.getZ(),
 				1.2F,
 				false,
 				World.ExplosionSourceType.TRIGGER,

@@ -66,10 +66,10 @@ public abstract class RangedWeaponItem extends Item {
 			if (!itemStack.isEmpty()) {
 				float k = h + i * (float)((j + 1) / 2) * g;
 				i = -i;
-				stack.damage(this.getWeaponStackDamage(itemStack), shooter, LivingEntity.getSlotForHand(hand));
 				ProjectileEntity projectileEntity = this.createArrowEntity(world, shooter, stack, itemStack, critical);
 				this.shoot(shooter, projectileEntity, j, speed, divergence, k, target);
 				world.spawnEntity(projectileEntity);
+				stack.damage(this.getWeaponStackDamage(itemStack), shooter, LivingEntity.getSlotForHand(hand));
 			}
 		}
 	}

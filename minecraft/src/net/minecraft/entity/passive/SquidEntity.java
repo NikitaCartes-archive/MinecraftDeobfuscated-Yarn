@@ -13,7 +13,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -89,8 +88,8 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public boolean canBeLeashedBy(PlayerEntity player) {
-		return !this.isLeashed();
+	public boolean canBeLeashed() {
+		return true;
 	}
 
 	@Override

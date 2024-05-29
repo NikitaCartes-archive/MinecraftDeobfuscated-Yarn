@@ -105,7 +105,7 @@ public class JukeboxBlock extends BlockWithEntity {
 
 	@Override
 	protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		return world.getBlockEntity(pos) instanceof JukeboxBlockEntity jukeboxBlockEntity ? jukeboxBlockEntity.getManager().getComparatorOutput() : 0;
+		return world.getBlockEntity(pos) instanceof JukeboxBlockEntity jukeboxBlockEntity ? jukeboxBlockEntity.getComparatorOutput() : 0;
 	}
 
 	@Override

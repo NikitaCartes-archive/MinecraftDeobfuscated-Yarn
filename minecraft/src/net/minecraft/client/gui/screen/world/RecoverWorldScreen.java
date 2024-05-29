@@ -26,6 +26,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Urls;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.slf4j.Logger;
 
@@ -65,9 +66,7 @@ public class RecoverWorldScreen extends Screen {
 		this.layout.add(this.messageWidget.setCentered(true));
 		this.layout.add(this.exceptionWidget);
 		DirectionalLayoutWidget directionalLayoutWidget = DirectionalLayoutWidget.horizontal().spacing(5);
-		directionalLayoutWidget.add(
-			ButtonWidget.builder(BUG_TRACKER_TEXT, ConfirmLinkScreen.opening(this, "https://aka.ms/snapshotbugs?ref=game")).size(120, 20).build()
-		);
+		directionalLayoutWidget.add(ButtonWidget.builder(BUG_TRACKER_TEXT, ConfirmLinkScreen.opening(this, Urls.SNAPSHOT_BUGS)).size(120, 20).build());
 		directionalLayoutWidget.add(
 				ButtonWidget.builder(RESTORE_TEXT, buttonWidget -> this.tryRestore(client)).size(120, 20).tooltip(bl ? null : Tooltip.of(NO_FALLBACK_TEXT)).build()
 			)

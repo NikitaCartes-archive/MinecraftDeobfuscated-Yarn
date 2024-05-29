@@ -9,7 +9,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
@@ -26,12 +25,7 @@ public class WindChargeItem extends Item implements ProjectileItem {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		if (!world.isClient()) {
-			Vec3d vec3d = user.getEyePos().add(user.getRotationVecClient().multiply(0.8F));
-			if (!world.getBlockState(BlockPos.ofFloored(vec3d)).isReplaceable()) {
-				vec3d = user.getEyePos().add(user.getRotationVecClient().multiply(0.05F));
-			}
-
-			WindChargeEntity windChargeEntity = new WindChargeEntity(user, world, vec3d.getX(), vec3d.getY(), vec3d.getZ());
+			WindChargeEntity windChargeEntity = new WindChargeEntity(user, world, user.getPos().getX(), user.getEyePos().getY(), user.getPos().getZ());
 			windChargeEntity.setVelocity(user, user.getPitch(), user.getYaw(), 0.0F, 1.5F, 1.0F);
 			world.spawnEntity(windChargeEntity);
 		}

@@ -19,6 +19,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Nullables;
+import net.minecraft.util.Urls;
 
 @Environment(EnvType.CLIENT)
 public class AbuseReportReasonScreen extends Screen {
@@ -53,7 +54,7 @@ public class AbuseReportReasonScreen extends Screen {
 		this.reasonList.setSelected(reasonEntry);
 		directionalLayoutWidget.add(EmptyWidget.ofHeight(this.getHeight()));
 		DirectionalLayoutWidget directionalLayoutWidget2 = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
-		directionalLayoutWidget2.add(ButtonWidget.builder(READ_INFO_TEXT, ConfirmLinkScreen.opening(this, "https://aka.ms/aboutjavareporting")).build());
+		directionalLayoutWidget2.add(ButtonWidget.builder(READ_INFO_TEXT, ConfirmLinkScreen.opening(this, Urls.ABOUT_JAVA_REPORTING)).build());
 		directionalLayoutWidget2.add(ButtonWidget.builder(ScreenTexts.DONE, button -> {
 			AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntryx = this.reasonList.getSelectedOrNull();
 			if (reasonEntryx != null) {

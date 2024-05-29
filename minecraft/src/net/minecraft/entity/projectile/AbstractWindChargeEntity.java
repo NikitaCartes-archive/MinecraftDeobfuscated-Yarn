@@ -19,6 +19,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.AdvancedExplosionBehavior;
 import net.minecraft.world.explosion.ExplosionBehavior;
@@ -27,6 +28,7 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 	public static final ExplosionBehavior EXPLOSION_BEHAVIOR = new AdvancedExplosionBehavior(
 		true, false, Optional.empty(), Registries.BLOCK.getEntryList(BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS).map(Function.identity())
 	);
+	public static final double field_52224 = 0.25;
 
 	public AbstractWindChargeEntity(EntityType<? extends AbstractWindChargeEntity> entityType, World world) {
 		super(entityType, world);
@@ -88,7 +90,7 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 				EnchantmentHelper.onTargetDamaged((ServerWorld)this.getWorld(), livingEntity3, damageSource);
 			}
 
-			this.createExplosion();
+			this.createExplosion(this.getPos());
 		}
 	}
 
@@ -96,13 +98,16 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 	public void addVelocity(double deltaX, double deltaY, double deltaZ) {
 	}
 
-	protected abstract void createExplosion();
+	protected abstract void createExplosion(Vec3d pos);
 
 	@Override
 	protected void onBlockHit(BlockHitResult blockHitResult) {
 		super.onBlockHit(blockHitResult);
 		if (!this.getWorld().isClient) {
-			this.createExplosion();
+			Vec3i vec3i = blockHitResult.getSide().getVector();
+			Vec3d vec3d = Vec3d.of(vec3i).multiply(0.25, 0.25, 0.25);
+			Vec3d vec3d2 = blockHitResult.getPos().add(vec3d);
+			this.createExplosion(vec3d2);
 			this.discard();
 		}
 	}
@@ -144,10 +149,15 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 	@Override
 	public void tick() {
 		if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getTopY() + 30) {
-			this.createExplosion();
+			this.createExplosion(this.getPos());
 			this.discard();
 		} else {
 			super.tick();
 		}
+	}
+
+	@Override
+	public boolean damage(DamageSource source, float amount) {
+		return false;
 	}
 }

@@ -112,7 +112,7 @@ public class ItemEnchantmentsComponent implements TooltipAppender {
 		return Collections.unmodifiableSet(this.enchantments.keySet());
 	}
 
-	public Set<Entry<RegistryEntry<Enchantment>>> getEnchantmentsMap() {
+	public Set<Entry<RegistryEntry<Enchantment>>> getEnchantmentEntries() {
 		return Collections.unmodifiableSet(this.enchantments.object2IntEntrySet());
 	}
 

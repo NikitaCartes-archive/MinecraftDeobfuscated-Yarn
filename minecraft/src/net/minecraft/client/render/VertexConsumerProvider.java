@@ -1,9 +1,10 @@
 package net.minecraft.client.render;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.objects.Object2ObjectSortedMaps;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SequencedMap;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,7 +20,7 @@ public interface VertexConsumerProvider {
 	 * buffer builder when a different render layer is requested}.
 	 */
 	static VertexConsumerProvider.Immediate immediate(BufferAllocator buffer) {
-		return immediate(ImmutableMap.of(), buffer);
+		return immediate(Object2ObjectSortedMaps.<RenderLayer, BufferAllocator>emptyMap(), buffer);
 	}
 
 	/**
@@ -34,7 +35,7 @@ public interface VertexConsumerProvider {
 	 * a later stage so the other things behind translucent objects are
 	 * visible.
 	 */
-	static VertexConsumerProvider.Immediate immediate(Map<RenderLayer, BufferAllocator> layerBuffers, BufferAllocator fallbackBuffer) {
+	static VertexConsumerProvider.Immediate immediate(SequencedMap<RenderLayer, BufferAllocator> layerBuffers, BufferAllocator fallbackBuffer) {
 		return new VertexConsumerProvider.Immediate(fallbackBuffer, layerBuffers);
 	}
 
@@ -62,14 +63,14 @@ public interface VertexConsumerProvider {
 	@Environment(EnvType.CLIENT)
 	public static class Immediate implements VertexConsumerProvider {
 		protected final BufferAllocator allocator;
-		protected final Map<RenderLayer, BufferAllocator> layerBuffers;
+		protected final SequencedMap<RenderLayer, BufferAllocator> layerBuffers;
 		protected final Map<RenderLayer, BufferBuilder> pending = new HashMap();
 		@Nullable
 		protected RenderLayer currentLayer;
 
-		protected Immediate(BufferAllocator allocator, Map<RenderLayer, BufferAllocator> layerBuffers) {
+		protected Immediate(BufferAllocator allocator, SequencedMap<RenderLayer, BufferAllocator> sequencedMap) {
 			this.allocator = allocator;
-			this.layerBuffers = layerBuffers;
+			this.layerBuffers = sequencedMap;
 		}
 
 		@Override
@@ -105,11 +106,10 @@ public interface VertexConsumerProvider {
 		 * specified in the constructor.
 		 */
 		public void drawCurrentLayer() {
-			if (this.currentLayer != null && !this.layerBuffers.containsKey(this.currentLayer)) {
+			if (this.currentLayer != null) {
 				this.draw(this.currentLayer);
+				this.currentLayer = null;
 			}
-
-			this.currentLayer = null;
 		}
 
 		/**
@@ -117,8 +117,11 @@ public interface VertexConsumerProvider {
 		 * specified in the constructor.
 		 */
 		public void draw() {
-			this.pending.forEach(this::draw);
-			this.pending.clear();
+			this.drawCurrentLayer();
+
+			for (RenderLayer renderLayer : this.layerBuffers.keySet()) {
+				this.draw(renderLayer);
+			}
 		}
 
 		/**

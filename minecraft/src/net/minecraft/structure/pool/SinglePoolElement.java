@@ -17,6 +17,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.structure.StructureLiquidSettings;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.StructureTemplateManager;
@@ -41,10 +42,11 @@ public class SinglePoolElement extends StructurePoolElement {
 		SinglePoolElement::encodeLocation, Identifier.CODEC.map(Either::left)
 	);
 	public static final MapCodec<SinglePoolElement> CODEC = RecordCodecBuilder.mapCodec(
-		instance -> instance.group(locationGetter(), processorsGetter(), projectionGetter()).apply(instance, SinglePoolElement::new)
+		instance -> instance.group(locationGetter(), processorsGetter(), projectionGetter(), overrideLiquidSettingsGetter()).apply(instance, SinglePoolElement::new)
 	);
 	protected final Either<Identifier, StructureTemplate> location;
 	protected final RegistryEntry<StructureProcessorList> processors;
+	protected final Optional<StructureLiquidSettings> overrideLiquidSettings;
 
 	private static <T> DataResult<T> encodeLocation(Either<Identifier, StructureTemplate> location, DynamicOps<T> ops, T prefix) {
 		Optional<Identifier> optional = location.left();
@@ -57,16 +59,24 @@ public class SinglePoolElement extends StructurePoolElement {
 		return StructureProcessorType.REGISTRY_CODEC.fieldOf("processors").forGetter(pool -> pool.processors);
 	}
 
+	protected static <E extends SinglePoolElement> RecordCodecBuilder<E, Optional<StructureLiquidSettings>> overrideLiquidSettingsGetter() {
+		return StructureLiquidSettings.codec.optionalFieldOf("override_liquid_settings").forGetter(pool -> pool.overrideLiquidSettings);
+	}
+
 	protected static <E extends SinglePoolElement> RecordCodecBuilder<E, Either<Identifier, StructureTemplate>> locationGetter() {
 		return LOCATION_CODEC.fieldOf("location").forGetter(pool -> pool.location);
 	}
 
 	protected SinglePoolElement(
-		Either<Identifier, StructureTemplate> location, RegistryEntry<StructureProcessorList> processors, StructurePool.Projection projection
+		Either<Identifier, StructureTemplate> location,
+		RegistryEntry<StructureProcessorList> processors,
+		StructurePool.Projection projection,
+		Optional<StructureLiquidSettings> overrideLiquidSettings
 	) {
 		super(projection);
 		this.location = location;
 		this.processors = processors;
+		this.overrideLiquidSettings = overrideLiquidSettings;
 	}
 
 	@Override
@@ -136,10 +146,11 @@ public class SinglePoolElement extends StructurePoolElement {
 		BlockRotation rotation,
 		BlockBox box,
 		Random random,
+		StructureLiquidSettings liquidSettings,
 		boolean keepJigsaws
 	) {
 		StructureTemplate structureTemplate = this.getStructure(structureTemplateManager);
-		StructurePlacementData structurePlacementData = this.createPlacementData(rotation, box, keepJigsaws);
+		StructurePlacementData structurePlacementData = this.createPlacementData(rotation, box, liquidSettings, keepJigsaws);
 		if (!structureTemplate.place(world, pos, pivot, structurePlacementData, random, 18)) {
 			return false;
 		} else {
@@ -153,7 +164,7 @@ public class SinglePoolElement extends StructurePoolElement {
 		}
 	}
 
-	protected StructurePlacementData createPlacementData(BlockRotation rotation, BlockBox box, boolean keepJigsaws) {
+	protected StructurePlacementData createPlacementData(BlockRotation rotation, BlockBox box, StructureLiquidSettings liquidSettings, boolean keepJigsaws) {
 		StructurePlacementData structurePlacementData = new StructurePlacementData();
 		structurePlacementData.setBoundingBox(box);
 		structurePlacementData.setRotation(rotation);
@@ -161,6 +172,7 @@ public class SinglePoolElement extends StructurePoolElement {
 		structurePlacementData.setIgnoreEntities(false);
 		structurePlacementData.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
 		structurePlacementData.setInitializeMobs(true);
+		structurePlacementData.setLiquidSettings((StructureLiquidSettings)this.overrideLiquidSettings.orElse(liquidSettings));
 		if (!keepJigsaws) {
 			structurePlacementData.addProcessor(JigsawReplacementStructureProcessor.INSTANCE);
 		}

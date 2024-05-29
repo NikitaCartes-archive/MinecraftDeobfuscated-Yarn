@@ -175,7 +175,7 @@ public class CrashReport {
 		}
 	}
 
-	public boolean writeToFIle(Path path, ReportType type) {
+	public boolean writeToFile(Path path, ReportType type) {
 		return this.writeToFile(path, type, List.of());
 	}
 

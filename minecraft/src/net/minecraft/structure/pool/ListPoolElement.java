@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.minecraft.structure.StructureLiquidSettings;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.BlockRotation;
@@ -76,10 +77,13 @@ public class ListPoolElement extends StructurePoolElement {
 		BlockRotation rotation,
 		BlockBox box,
 		Random random,
+		StructureLiquidSettings liquidSettings,
 		boolean keepJigsaws
 	) {
 		for (StructurePoolElement structurePoolElement : this.elements) {
-			if (!structurePoolElement.generate(structureTemplateManager, world, structureAccessor, chunkGenerator, pos, pivot, rotation, box, random, keepJigsaws)) {
+			if (!structurePoolElement.generate(
+				structureTemplateManager, world, structureAccessor, chunkGenerator, pos, pivot, rotation, box, random, liquidSettings, keepJigsaws
+			)) {
 				return false;
 			}
 		}

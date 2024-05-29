@@ -80,11 +80,11 @@ public class MultipartUnbakedModel implements UnbakedModel {
 
 	@Nullable
 	@Override
-	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
+	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer) {
 		MultipartBakedModel.Builder builder = new MultipartBakedModel.Builder();
 
 		for (MultipartModelComponent multipartModelComponent : this.getComponents()) {
-			BakedModel bakedModel = multipartModelComponent.getModel().bake(baker, textureGetter, rotationContainer, modelId);
+			BakedModel bakedModel = multipartModelComponent.getModel().bake(baker, textureGetter, rotationContainer);
 			if (bakedModel != null) {
 				builder.addComponent(multipartModelComponent.getPredicate(this.stateFactory), bakedModel);
 			}

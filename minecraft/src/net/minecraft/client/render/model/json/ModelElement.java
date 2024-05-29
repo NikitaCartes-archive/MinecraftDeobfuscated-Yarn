@@ -42,7 +42,7 @@ public class ModelElement {
 	private void initTextures() {
 		for (Entry<Direction, ModelElementFace> entry : this.faces.entrySet()) {
 			float[] fs = this.getRotatedMatrix((Direction)entry.getKey());
-			((ModelElementFace)entry.getValue()).textureData.setUvs(fs);
+			((ModelElementFace)entry.getValue()).textureData().setUvs(fs);
 		}
 	}
 

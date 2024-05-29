@@ -417,7 +417,7 @@ public class HeldItemRenderer {
 					matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float)i * 65.3F));
 					matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float)i * -9.785F));
 					float f = (float)item.getMaxUseTime(player) - ((float)player.getItemUseTimeLeft() - tickDelta + 1.0F);
-					float g = f / (float)CrossbowItem.getPullTime(player);
+					float g = f / (float)CrossbowItem.getPullTime(item, player);
 					if (g > 1.0F) {
 						g = 1.0F;
 					}

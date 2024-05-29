@@ -134,8 +134,7 @@ public interface DispenserBehavior {
 							entity -> !(entity instanceof Saddleable saddleable) ? false : !saddleable.isSaddled() && saddleable.canBeSaddled()
 						);
 					if (!list.isEmpty()) {
-						((Saddleable)list.get(0)).saddle(SoundCategory.BLOCKS);
-						stack.decrement(1);
+						((Saddleable)list.get(0)).saddle(stack.split(1), SoundCategory.BLOCKS);
 						this.setSuccess(true);
 						return stack;
 					} else {

@@ -2,6 +2,7 @@ package net.minecraft.client.session;
 
 import com.mojang.authlib.minecraft.BanDetails;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
+import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
 import net.fabricmc.api.EnvType;
@@ -12,6 +13,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Urls;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,36 +23,36 @@ public class Bans {
 	private static final Text PERMANENT_TITLE = Text.translatable("gui.banned.title.permanent").formatted(Formatting.BOLD);
 	public static final Text NAME_TITLE = Text.translatable("gui.banned.name.title").formatted(Formatting.BOLD);
 	private static final Text SKIN_TITLE = Text.translatable("gui.banned.skin.title").formatted(Formatting.BOLD);
-	private static final Text SKIN_DESCRIPTION = Text.translatable("gui.banned.skin.description", Text.literal("https://aka.ms/mcjavamoderation"));
+	private static final Text SKIN_DESCRIPTION = Text.translatable("gui.banned.skin.description", Text.of(Urls.JAVA_MODERATION));
 
 	public static ConfirmLinkScreen createBanScreen(BooleanConsumer callback, BanDetails banDetails) {
-		return new ConfirmLinkScreen(callback, getTitle(banDetails), getDescriptionText(banDetails), "https://aka.ms/mcjavamoderation", ScreenTexts.ACKNOWLEDGE, true);
+		return new ConfirmLinkScreen(callback, getTitle(banDetails), getDescriptionText(banDetails), Urls.JAVA_MODERATION, ScreenTexts.ACKNOWLEDGE, true);
 	}
 
 	public static ConfirmLinkScreen createSkinBanScreen(Runnable onClose) {
-		String string = "https://aka.ms/mcjavamoderation";
+		URI uRI = Urls.JAVA_MODERATION;
 		return new ConfirmLinkScreen(confirmed -> {
 			if (confirmed) {
-				Util.getOperatingSystem().open("https://aka.ms/mcjavamoderation");
+				Util.getOperatingSystem().open(uRI);
 			}
 
 			onClose.run();
-		}, SKIN_TITLE, SKIN_DESCRIPTION, "https://aka.ms/mcjavamoderation", ScreenTexts.ACKNOWLEDGE, true);
+		}, SKIN_TITLE, SKIN_DESCRIPTION, uRI, ScreenTexts.ACKNOWLEDGE, true);
 	}
 
 	public static ConfirmLinkScreen createUsernameBanScreen(String username, Runnable onClose) {
-		String string = "https://aka.ms/mcjavamoderation";
+		URI uRI = Urls.JAVA_MODERATION;
 		return new ConfirmLinkScreen(
 			confirmed -> {
 				if (confirmed) {
-					Util.getOperatingSystem().open("https://aka.ms/mcjavamoderation");
+					Util.getOperatingSystem().open(uRI);
 				}
 
 				onClose.run();
 			},
 			NAME_TITLE,
-			Text.translatable("gui.banned.name.description", Text.literal(username).formatted(Formatting.YELLOW), "https://aka.ms/mcjavamoderation"),
-			"https://aka.ms/mcjavamoderation",
+			Text.translatable("gui.banned.name.description", Text.literal(username).formatted(Formatting.YELLOW), Text.of(Urls.JAVA_MODERATION)),
+			uRI,
 			ScreenTexts.ACKNOWLEDGE,
 			true
 		);
@@ -61,7 +63,7 @@ public class Bans {
 	}
 
 	private static Text getDescriptionText(BanDetails banDetails) {
-		return Text.translatable("gui.banned.description", getReasonText(banDetails), getDurationText(banDetails), Text.literal("https://aka.ms/mcjavamoderation"));
+		return Text.translatable("gui.banned.description", getReasonText(banDetails), getDurationText(banDetails), Text.of(Urls.JAVA_MODERATION));
 	}
 
 	private static Text getReasonText(BanDetails banDetails) {

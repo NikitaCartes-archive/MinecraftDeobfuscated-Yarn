@@ -67,6 +67,13 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 		blockEntity.manager.tick(world, state);
 	}
 
+	public int getComparatorOutput() {
+		return (Integer)JukeboxSong.getSongEntryFromStack(this.world.getRegistryManager(), this.recordStack)
+			.map(RegistryEntry::value)
+			.map(JukeboxSong::comparatorOutput)
+			.orElse(0);
+	}
+
 	@Override
 	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);

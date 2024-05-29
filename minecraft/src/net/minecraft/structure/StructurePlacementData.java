@@ -19,7 +19,7 @@ public class StructurePlacementData {
 	private boolean ignoreEntities;
 	@Nullable
 	private BlockBox boundingBox;
-	private boolean placeFluids = true;
+	private StructureLiquidSettings liquidSettings = StructureLiquidSettings.APPLY_WATERLOGGING;
 	@Nullable
 	private Random random;
 	private int field_15575;
@@ -34,7 +34,7 @@ public class StructurePlacementData {
 		structurePlacementData.position = this.position;
 		structurePlacementData.ignoreEntities = this.ignoreEntities;
 		structurePlacementData.boundingBox = this.boundingBox;
-		structurePlacementData.placeFluids = this.placeFluids;
+		structurePlacementData.liquidSettings = this.liquidSettings;
 		structurePlacementData.random = this.random;
 		structurePlacementData.field_15575 = this.field_15575;
 		structurePlacementData.processors.addAll(this.processors);
@@ -73,8 +73,8 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData setPlaceFluids(boolean placeFluids) {
-		this.placeFluids = placeFluids;
+	public StructurePlacementData setLiquidSettings(StructureLiquidSettings liquidSettings) {
+		this.liquidSettings = liquidSettings;
 		return this;
 	}
 
@@ -135,8 +135,8 @@ public class StructurePlacementData {
 		return this.processors;
 	}
 
-	public boolean shouldPlaceFluids() {
-		return this.placeFluids;
+	public boolean shouldApplyWaterlogging() {
+		return this.liquidSettings == StructureLiquidSettings.APPLY_WATERLOGGING;
 	}
 
 	public StructureTemplate.PalettedBlockInfoList getRandomBlockInfos(List<StructureTemplate.PalettedBlockInfoList> infoLists, @Nullable BlockPos pos) {

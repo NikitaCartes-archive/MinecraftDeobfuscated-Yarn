@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.net.Proxy;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -76,6 +77,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	private SubscribableDebugSampleLog debugSampleLog;
 	@Nullable
 	private SampleSubscriptionTracker subscriptionTracker;
+	private final ServerLinks serverLinks;
 
 	public MinecraftDedicatedServer(
 		Thread serverThread,
@@ -91,6 +93,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		this.propertiesLoader = propertiesLoader;
 		this.rconCommandOutput = new RconCommandOutput(this);
 		this.filterer = TextFilterer.load(propertiesLoader.getPropertiesHandler().textFilteringConfig);
+		this.serverLinks = loadServerLinks(propertiesLoader);
 	}
 
 	@Override
@@ -624,7 +627,25 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	@Override
 	public ServerLinks getServerLinks() {
-		String string = this.propertiesLoader.getPropertiesHandler().bugReportLink;
-		return string.isEmpty() ? ServerLinks.EMPTY : new ServerLinks(List.of(ServerLinks.Known.BUG_REPORT.createEntry(string)));
+		return this.serverLinks;
+	}
+
+	private static ServerLinks loadServerLinks(ServerPropertiesLoader propertiesLoader) {
+		Optional<URI> optional = parseBugReportLink(propertiesLoader.getPropertiesHandler());
+		return (ServerLinks)optional.map(uri -> new ServerLinks(List.of(ServerLinks.Known.BUG_REPORT.createEntry(uri)))).orElse(ServerLinks.EMPTY);
+	}
+
+	private static Optional<URI> parseBugReportLink(ServerPropertiesHandler propertiesHandler) {
+		String string = propertiesHandler.bugReportLink;
+		if (string.isEmpty()) {
+			return Optional.empty();
+		} else {
+			try {
+				return Optional.of(Util.validateUri(string));
+			} catch (Exception var3) {
+				LOGGER.warn("Failed to parse bug link {}", string, var3);
+				return Optional.empty();
+			}
+		}
 	}
 }

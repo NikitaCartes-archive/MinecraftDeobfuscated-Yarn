@@ -1,7 +1,6 @@
 package net.minecraft.entity.mob;
 
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
 public abstract class AmbientEntity extends MobEntity {
@@ -10,7 +9,7 @@ public abstract class AmbientEntity extends MobEntity {
 	}
 
 	@Override
-	public boolean canBeLeashedBy(PlayerEntity player) {
+	public boolean canBeLeashed() {
 		return false;
 	}
 }

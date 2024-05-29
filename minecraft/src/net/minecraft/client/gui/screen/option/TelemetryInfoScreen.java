@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.screen.option;
 
-import java.nio.file.Path;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,6 +18,7 @@ import net.minecraft.client.option.SimpleOption;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
+import net.minecraft.util.Urls;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
@@ -114,16 +114,15 @@ public class TelemetryInfoScreen extends Screen {
 	}
 
 	private void openPrivacyStatementPage(ButtonWidget button) {
-		ConfirmLinkScreen.open(this, "http://go.microsoft.com/fwlink/?LinkId=521839");
+		ConfirmLinkScreen.open(this, Urls.PRIVACY_STATEMENT);
 	}
 
 	private void openFeedbackPage(ButtonWidget button) {
-		ConfirmLinkScreen.open(this, "https://aka.ms/javafeedback?ref=game");
+		ConfirmLinkScreen.open(this, Urls.JAVA_FEEDBACK);
 	}
 
 	private void openLogDirectory(ButtonWidget button) {
-		Path path = this.client.getTelemetryManager().getLogManager();
-		Util.getOperatingSystem().open(path.toUri());
+		Util.getOperatingSystem().open(this.client.getTelemetryManager().getLogManager());
 	}
 
 	@Override

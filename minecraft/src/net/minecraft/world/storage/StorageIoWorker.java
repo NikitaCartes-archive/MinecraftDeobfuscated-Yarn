@@ -239,6 +239,10 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 		}
 	}
 
+	public StorageKey getStorageKey() {
+		return this.storage.getStorageKey();
+	}
+
 	static enum Priority {
 		FOREGROUND,
 		BACKGROUND,

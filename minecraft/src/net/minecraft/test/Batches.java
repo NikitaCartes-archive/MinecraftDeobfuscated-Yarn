@@ -35,6 +35,10 @@ public class Batches {
 	}
 
 	public static TestRunContext.Batcher defaultBatcher() {
+		return batcher(50);
+	}
+
+	public static TestRunContext.Batcher batcher(int batchSize) {
 		return states -> {
 			Map<String, List<GameTestState>> map = (Map<String, List<GameTestState>>)states.stream()
 				.filter(Objects::nonNull)
@@ -42,12 +46,12 @@ public class Batches {
 			return map.entrySet().stream().flatMap(entry -> {
 				String string = (String)entry.getKey();
 				List<GameTestState> list = (List<GameTestState>)entry.getValue();
-				return Streams.mapWithIndex(Lists.partition(list, 50).stream(), (statesx, index) -> create(List.copyOf(statesx), string, index));
+				return Streams.mapWithIndex(Lists.partition(list, batchSize).stream(), (statesx, index) -> create(List.copyOf(statesx), string, index));
 			}).toList();
 		};
 	}
 
-	private static GameTestBatch create(List<GameTestState> states, String batchId, long index) {
+	public static GameTestBatch create(Collection<GameTestState> states, String batchId, long index) {
 		Consumer<ServerWorld> consumer = TestFunctions.getBeforeBatchConsumer(batchId);
 		Consumer<ServerWorld> consumer2 = TestFunctions.getAfterBatchConsumer(batchId);
 		return new GameTestBatch(batchId + ":" + index, states, consumer, consumer2);

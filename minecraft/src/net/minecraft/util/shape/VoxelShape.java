@@ -21,7 +21,7 @@ public abstract class VoxelShape {
 	@Nullable
 	private VoxelShape[] shapeCache;
 
-	VoxelShape(VoxelSet voxels) {
+	protected VoxelShape(VoxelSet voxels) {
 		this.voxels = voxels;
 	}
 

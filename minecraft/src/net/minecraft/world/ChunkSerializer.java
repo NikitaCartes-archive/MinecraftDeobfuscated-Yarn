@@ -60,6 +60,7 @@ import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.storage.StorageKey;
 import net.minecraft.world.tick.ChunkTickScheduler;
 import net.minecraft.world.tick.SimpleTickScheduler;
 import org.slf4j.Logger;
@@ -80,10 +81,11 @@ public class ChunkSerializer {
 	public static final String BLOCK_LIGHT_KEY = "BlockLight";
 	public static final String SKY_LIGHT_KEY = "SkyLight";
 
-	public static ProtoChunk deserialize(ServerWorld world, PointOfInterestStorage poiStorage, ChunkPos chunkPos, NbtCompound nbt) {
+	public static ProtoChunk deserialize(ServerWorld world, PointOfInterestStorage poiStorage, StorageKey key, ChunkPos chunkPos, NbtCompound nbt) {
 		ChunkPos chunkPos2 = new ChunkPos(nbt.getInt("xPos"), nbt.getInt("zPos"));
 		if (!Objects.equals(chunkPos, chunkPos2)) {
 			LOGGER.error("Chunk file at {} is in the wrong location; relocating. (Expected {}, got {})", chunkPos, chunkPos, chunkPos2);
+			world.getServer().onChunkMisplacement(chunkPos2, chunkPos, key);
 		}
 
 		UpgradeData upgradeData = nbt.contains("UpgradeData", NbtElement.COMPOUND_TYPE)
@@ -254,7 +256,7 @@ public class ChunkSerializer {
 	}
 
 	private static void logRecoverableError(ChunkPos chunkPos, int y, String message) {
-		LOGGER.error("Recoverable errors when loading section [" + chunkPos.x + ", " + y + ", " + chunkPos.z + "]: " + message);
+		LOGGER.error("Recoverable errors when loading section [{}, {}, {}]: {}", chunkPos.x, y, chunkPos.z, message);
 	}
 
 	private static Codec<ReadableContainer<RegistryEntry<Biome>>> createCodec(Registry<Biome> biomeRegistry) {

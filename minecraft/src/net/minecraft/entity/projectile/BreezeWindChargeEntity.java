@@ -4,6 +4,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.BreezeEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class BreezeWindChargeEntity extends AbstractWindChargeEntity {
@@ -18,15 +19,15 @@ public class BreezeWindChargeEntity extends AbstractWindChargeEntity {
 	}
 
 	@Override
-	protected void createExplosion() {
+	protected void createExplosion(Vec3d pos) {
 		this.getWorld()
 			.createExplosion(
 				this,
 				null,
 				EXPLOSION_BEHAVIOR,
-				this.getX(),
-				this.getY(),
-				this.getZ(),
+				pos.getX(),
+				pos.getY(),
+				pos.getZ(),
 				3.0F,
 				false,
 				World.ExplosionSourceType.TRIGGER,

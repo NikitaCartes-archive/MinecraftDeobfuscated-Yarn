@@ -17,6 +17,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -47,11 +48,6 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 			this.ownerUuid = entity.getUuid();
 			this.owner = entity;
 		}
-	}
-
-	protected void removeOwner() {
-		this.ownerUuid = null;
-		this.owner = null;
 	}
 
 	@Nullable
@@ -301,9 +297,9 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	}
 
 	@Override
-	public Packet<ClientPlayPacketListener> createSpawnPacket() {
+	public Packet<ClientPlayPacketListener> createSpawnPacket(EntityTrackerEntry entityTrackerEntry) {
 		Entity entity = this.getOwner();
-		return new EntitySpawnS2CPacket(this, entity == null ? 0 : entity.getId());
+		return new EntitySpawnS2CPacket(this, entityTrackerEntry, entity == null ? 0 : entity.getId());
 	}
 
 	@Override

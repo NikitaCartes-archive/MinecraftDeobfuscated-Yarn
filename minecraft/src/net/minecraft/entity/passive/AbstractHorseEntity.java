@@ -219,10 +219,12 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	protected void updateForLeashLength(float leashLength) {
-		if (leashLength > 6.0F && this.isEatingGrass()) {
+	public boolean shouldTickLeash(Entity leashHolder, float distance) {
+		if (distance > 6.0F && this.isEatingGrass()) {
 			this.setEatingGrass(false);
 		}
+
+		return true;
 	}
 
 	public boolean isEatingGrass() {
@@ -247,8 +249,8 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	public void saddle(@Nullable SoundCategory sound) {
-		this.items.setStack(0, new ItemStack(Items.SADDLE));
+	public void saddle(ItemStack stack, @Nullable SoundCategory soundCategory) {
+		this.items.setStack(0, stack);
 	}
 
 	public void equipHorseArmor(PlayerEntity player, ItemStack stack) {
@@ -317,8 +319,12 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		}
 	}
 
-	protected int getInventorySize() {
-		return 1;
+	public final int getInventorySize() {
+		return getInventorySize(this.getInventoryColumns());
+	}
+
+	public static int getInventorySize(int columns) {
+		return columns * 3 + 1;
 	}
 
 	protected void onChestedStatusChanged() {
@@ -1125,5 +1131,9 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	public final Inventory getInventory() {
 		return this.inventory;
+	}
+
+	public int getInventoryColumns() {
+		return 0;
 	}
 }

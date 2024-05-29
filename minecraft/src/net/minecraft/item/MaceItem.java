@@ -29,7 +29,7 @@ import net.minecraft.world.WorldEvents;
 
 public class MaceItem extends Item {
 	private static final int ATTACK_DAMAGE_MODIFIER_VALUE = 5;
-	private static final float ATTACK_SPEED_MODIFIER_VALUE = -3.5F;
+	private static final float ATTACK_SPEED_MODIFIER_VALUE = -3.4F;
 	public static final float MINING_SPEED_MULTIPLIER = 1.5F;
 	private static final float field_50141 = 5.0F;
 	public static final float KNOCKBACK_RANGE = 3.5F;
@@ -48,7 +48,7 @@ public class MaceItem extends Item {
 			)
 			.add(
 				EntityAttributes.GENERIC_ATTACK_SPEED,
-				new EntityAttributeModifier(BASE_ATTACK_SPEED_MODIFIER_ID, -3.5, EntityAttributeModifier.Operation.ADD_VALUE),
+				new EntityAttributeModifier(BASE_ATTACK_SPEED_MODIFIER_ID, -3.4F, EntityAttributeModifier.Operation.ADD_VALUE),
 				AttributeModifierSlot.MAINHAND
 			)
 			.build();
@@ -73,7 +73,7 @@ public class MaceItem extends Item {
 		if (attacker instanceof ServerPlayerEntity serverPlayerEntity && shouldDealAdditionalDamage(serverPlayerEntity)) {
 			ServerWorld serverWorld = (ServerWorld)attacker.getWorld();
 			serverPlayerEntity.currentExplosionImpactPos = serverPlayerEntity.getPos();
-			serverPlayerEntity.ignoreFallDamageFromCurrentExplosion = true;
+			serverPlayerEntity.setIgnoreFallDamageFromCurrentExplosion(true);
 			serverPlayerEntity.setVelocity(serverPlayerEntity.getVelocity().withAxis(Direction.Axis.Y, 0.01F));
 			serverPlayerEntity.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(serverPlayerEntity));
 			if (target.isOnGround()) {
@@ -130,7 +130,7 @@ public class MaceItem extends Item {
 				}
 
 				return livingEntity.getWorld() instanceof ServerWorld serverWorld
-					? i + EnchantmentHelper.getSmashDamagePerFallenBlock(serverWorld, livingEntity.getMainHandStack(), target, damageSource, 0.0F) * h
+					? i + EnchantmentHelper.getSmashDamagePerFallenBlock(serverWorld, livingEntity.getWeaponStack(), target, damageSource, 0.0F) * h
 					: i;
 			}
 		} else {

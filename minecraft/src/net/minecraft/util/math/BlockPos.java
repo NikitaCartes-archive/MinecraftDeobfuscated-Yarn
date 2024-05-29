@@ -142,6 +142,10 @@ public class BlockPos extends Vec3i {
 		return Vec3d.ofCenter(this);
 	}
 
+	public Vec3d toBottomCenterPos() {
+		return Vec3d.ofBottomCenter(this);
+	}
+
 	public BlockPos add(Vec3i vec3i) {
 		return this.add(vec3i.getX(), vec3i.getY(), vec3i.getZ());
 	}

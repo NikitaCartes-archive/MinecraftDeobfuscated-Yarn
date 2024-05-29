@@ -322,6 +322,7 @@ public class ZombieEntity extends HostileEntity {
 							EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS);
 							EntityAttributeModifier entityAttributeModifier = entityAttributeInstance.getModifier(REINFORCEMENT_CALLER_CHARGE_MODIFIER_ID);
 							double d = entityAttributeModifier != null ? entityAttributeModifier.value() : 0.0;
+							entityAttributeInstance.removeModifier(REINFORCEMENT_CALLER_CHARGE_MODIFIER_ID);
 							entityAttributeInstance.addPersistentModifier(
 								new EntityAttributeModifier(REINFORCEMENT_CALLER_CHARGE_MODIFIER_ID, d - 0.05, EntityAttributeModifier.Operation.ADD_VALUE)
 							);

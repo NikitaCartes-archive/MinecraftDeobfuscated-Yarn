@@ -48,4 +48,8 @@ public class ChunkPosKeyedStorage implements AutoCloseable {
 	public void close() throws IOException {
 		this.worker.close();
 	}
+
+	public StorageKey getStorageKey() {
+		return this.worker.getStorageKey();
+	}
 }

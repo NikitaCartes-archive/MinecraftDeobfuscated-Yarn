@@ -16,12 +16,11 @@ import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class LanguageOptionsScreen extends GameOptionsScreen {
-	private static final Text LANGUAGE_WARNING_TEXT = Text.translatable("options.languageAccuracyWarning").formatted(Formatting.GRAY);
+	private static final Text LANGUAGE_WARNING_TEXT = Text.translatable("options.languageAccuracyWarning").withColor(Colors.ALTERNATE_WHITE);
 	private static final int field_49497 = 53;
 	private LanguageOptionsScreen.LanguageSelectionListWidget languageSelectionList;
 	final LanguageManager languageManager;
@@ -112,7 +111,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			@Override
 			public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				context.drawCenteredTextWithShadow(
-					LanguageOptionsScreen.this.textRenderer, this.languageDefinition, LanguageSelectionListWidget.this.width / 2, y + 1, Colors.WHITE
+					LanguageOptionsScreen.this.textRenderer, this.languageDefinition, LanguageSelectionListWidget.this.width / 2, y + entryHeight / 2 - 9 / 2, Colors.WHITE
 				);
 			}
 

@@ -15,6 +15,7 @@ import com.mojang.brigadier.Message;
 import com.mojang.serialization.JsonOps;
 import java.io.StringReader;
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -298,6 +299,10 @@ public interface Text extends Message, StringVisitable {
 	 */
 	static Text of(ChunkPos pos) {
 		return literal(pos.toString());
+	}
+
+	static Text of(URI uri) {
+		return literal(uri.toString());
 	}
 
 	public static class Serialization {

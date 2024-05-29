@@ -102,7 +102,7 @@ class StructureTestListener implements TestListener {
 	}
 
 	public static void passTest(GameTestState test, String output) {
-		visualizeTest(test, Blocks.LIME_STAINED_GLASS);
+		placeAboveBeacon(test, Blocks.LIME_STAINED_GLASS);
 		finishPassedTest(test, output);
 	}
 
@@ -112,7 +112,7 @@ class StructureTestListener implements TestListener {
 	}
 
 	protected static void failTest(GameTestState test, Throwable output) {
-		visualizeTest(test, test.isRequired() ? Blocks.RED_STAINED_GLASS : Blocks.ORANGE_STAINED_GLASS);
+		placeAboveBeacon(test, test.isRequired() ? Blocks.RED_STAINED_GLASS : Blocks.ORANGE_STAINED_GLASS);
 		createTestOutputLectern(test, Util.getInnermostMessage(output));
 		finishFailedTest(test, output);
 	}
@@ -131,18 +131,30 @@ class StructureTestListener implements TestListener {
 
 	protected static void visualizeTest(GameTestState test, Block block) {
 		ServerWorld serverWorld = test.getWorld();
-		BlockPos blockPos = test.getPos();
-		BlockPos blockPos2 = new BlockPos(-1, -2, -1);
-		BlockPos blockPos3 = StructureTemplate.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, test.getRotation(), blockPos);
-		serverWorld.setBlockState(blockPos3, Blocks.BEACON.getDefaultState().rotate(test.getRotation()));
-		BlockPos blockPos4 = blockPos3.add(0, 1, 0);
-		serverWorld.setBlockState(blockPos4, block.getDefaultState());
+		BlockPos blockPos = getBeaconPos(test);
+		serverWorld.setBlockState(blockPos, Blocks.BEACON.getDefaultState().rotate(test.getRotation()));
+		placeAboveBeacon(test, block);
 
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
-				BlockPos blockPos5 = blockPos3.add(i, -1, j);
-				serverWorld.setBlockState(blockPos5, Blocks.IRON_BLOCK.getDefaultState());
+				BlockPos blockPos2 = blockPos.add(i, -1, j);
+				serverWorld.setBlockState(blockPos2, Blocks.IRON_BLOCK.getDefaultState());
 			}
+		}
+	}
+
+	private static BlockPos getBeaconPos(GameTestState state) {
+		BlockPos blockPos = state.getPos();
+		BlockPos blockPos2 = new BlockPos(-1, -2, -1);
+		return StructureTemplate.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, state.getRotation(), blockPos);
+	}
+
+	private static void placeAboveBeacon(GameTestState state, Block block) {
+		ServerWorld serverWorld = state.getWorld();
+		BlockPos blockPos = getBeaconPos(state);
+		if (serverWorld.getBlockState(blockPos).isOf(Blocks.BEACON)) {
+			BlockPos blockPos2 = blockPos.add(0, 1, 0);
+			serverWorld.setBlockState(blockPos2, block.getDefaultState());
 		}
 	}
 

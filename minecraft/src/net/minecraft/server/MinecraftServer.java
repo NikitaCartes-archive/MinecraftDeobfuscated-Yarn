@@ -22,6 +22,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.net.Proxy;
+import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -95,6 +96,7 @@ import net.minecraft.server.network.DemoServerPlayerInteractionManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.network.SpawnLocating;
+import net.minecraft.server.world.ChunkErrorHandler;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureTemplateManager;
@@ -103,6 +105,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ApiServices;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ModStatus;
+import net.minecraft.util.PathUtil;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TickDurationMonitor;
 import net.minecraft.util.TimeHelper;
@@ -110,8 +113,10 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.WinNativeModuleUtil;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ReportType;
 import net.minecraft.util.function.Finishable;
 import net.minecraft.util.math.BlockPos;
@@ -162,6 +167,7 @@ import net.minecraft.world.spawner.CatSpawner;
 import net.minecraft.world.spawner.PatrolSpawner;
 import net.minecraft.world.spawner.PhantomSpawner;
 import net.minecraft.world.spawner.SpecialSpawner;
+import net.minecraft.world.storage.StorageKey;
 import org.slf4j.Logger;
 
 /**
@@ -182,7 +188,7 @@ import org.slf4j.Logger;
  * @see net.minecraft.server.dedicated.MinecraftDedicatedServer
  * @see net.minecraft.server.integrated.IntegratedServer
  */
-public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask> implements QueryableServer, CommandOutput, AutoCloseable {
+public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask> implements QueryableServer, ChunkErrorHandler, CommandOutput, AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String VANILLA = "vanilla";
 	private static final float field_33212 = 0.8F;
@@ -760,7 +766,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			CrashReport crashReport = createCrashReport(var46);
 			this.addSystemDetails(crashReport.getSystemDetailsSection());
 			Path path = this.getRunDirectory().resolve("crash-reports").resolve("crash-" + Util.getFormattedCurrentTime() + "-server.txt");
-			if (crashReport.writeToFIle(path, ReportType.MINECRAFT_CRASH_REPORT)) {
+			if (crashReport.writeToFile(path, ReportType.MINECRAFT_CRASH_REPORT)) {
 				LOGGER.error("This crash report has been saved to: {}", path.toAbsolutePath());
 			} else {
 				LOGGER.error("We were unable to save this crash report to disk.");
@@ -2157,10 +2163,43 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return false;
 	}
 
-	public void onChunkLoadFailure(ChunkPos pos) {
+	private void writeChunkIoReport(CrashReport report, ChunkPos pos, StorageKey key) {
+		Util.getIoWorkerExecutor().execute(() -> {
+			try {
+				Path path = this.getPath("debug");
+				PathUtil.createDirectories(path);
+				String string = PathUtil.replaceInvalidChars(key.level());
+				Path path2 = path.resolve("chunk-" + string + "-" + Util.getFormattedCurrentTime() + "-server.txt");
+				FileStore fileStore = Files.getFileStore(path);
+				long l = fileStore.getUsableSpace();
+				if (l < 8192L) {
+					LOGGER.warn("Not storing chunk IO report due to low space on drive {}", fileStore.name());
+					return;
+				}
+
+				CrashReportSection crashReportSection = report.addElement("Chunk Info");
+				crashReportSection.add("Level", key::level);
+				crashReportSection.add("Dimension", (CrashCallable<String>)(() -> key.dimension().getValue().toString()));
+				crashReportSection.add("Storage", key::type);
+				crashReportSection.add("Position", pos::toString);
+				report.writeToFile(path2, ReportType.MINECRAFT_CHUNK_IO_ERROR_REPORT);
+				LOGGER.info("Saved details to {}", report.getFile());
+			} catch (Exception var11) {
+				LOGGER.warn("Failed to store chunk IO exception", (Throwable)var11);
+			}
+		});
 	}
 
-	public void onChunkSaveFailure(ChunkPos pos) {
+	@Override
+	public void onChunkLoadFailure(Throwable exception, StorageKey key, ChunkPos chunkPos) {
+		LOGGER.error("Failed to load chunk {},{}", chunkPos.x, chunkPos.z, exception);
+		this.writeChunkIoReport(CrashReport.create(exception, "Chunk load failure"), chunkPos, key);
+	}
+
+	@Override
+	public void onChunkSaveFailure(Throwable exception, StorageKey key, ChunkPos chunkPos) {
+		LOGGER.error("Failed to save chunk {},{}", chunkPos.x, chunkPos.z, exception);
+		this.writeChunkIoReport(CrashReport.create(exception, "Chunk save failure"), chunkPos, key);
 	}
 
 	public BrewingRecipeRegistry getBrewingRecipeRegistry() {

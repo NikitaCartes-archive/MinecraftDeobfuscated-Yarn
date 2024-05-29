@@ -25,6 +25,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryOps;
+import net.minecraft.server.world.ChunkErrorHandler;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -40,6 +41,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	private final Function<Runnable, Codec<R>> codecFactory;
 	private final Function<Runnable, R> factory;
 	private final DynamicRegistryManager registryManager;
+	private final ChunkErrorHandler errorHandler;
 	protected final HeightLimitView world;
 
 	public SerializingRegionBasedStorage(
@@ -47,12 +49,14 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		Function<Runnable, Codec<R>> codecFactory,
 		Function<Runnable, R> factory,
 		DynamicRegistryManager registryManager,
+		ChunkErrorHandler errorHandler,
 		HeightLimitView world
 	) {
 		this.storageAccess = storageAccess;
 		this.codecFactory = codecFactory;
 		this.factory = factory;
 		this.registryManager = registryManager;
+		this.errorHandler = errorHandler;
 		this.world = world;
 	}
 
@@ -121,6 +125,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		return this.storageAccess.read(pos).exceptionally(throwable -> {
 			if (throwable instanceof IOException iOException) {
 				LOGGER.error("Error reading chunk {} data from disk", pos, iOException);
+				this.errorHandler.onChunkLoadFailure(iOException, this.storageAccess.getStorageKey(), pos);
 				return Optional.empty();
 			} else {
 				throw new CompletionException(throwable);
@@ -162,7 +167,10 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		Dynamic<NbtElement> dynamic = this.serialize(pos, registryOps);
 		NbtElement nbtElement = dynamic.getValue();
 		if (nbtElement instanceof NbtCompound) {
-			this.storageAccess.set(pos, (NbtCompound)nbtElement);
+			this.storageAccess.set(pos, (NbtCompound)nbtElement).exceptionally(throwable -> {
+				this.errorHandler.onChunkSaveFailure(throwable, this.storageAccess.getStorageKey(), pos);
+				return null;
+			});
 		} else {
 			LOGGER.error("Expected compound tag, got {}", nbtElement);
 		}

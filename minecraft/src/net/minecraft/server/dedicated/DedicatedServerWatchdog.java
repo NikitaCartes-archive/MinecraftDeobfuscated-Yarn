@@ -75,7 +75,7 @@ public class DedicatedServerWatchdog implements Runnable {
 				);
 				Bootstrap.println("Crash report:\n" + crashReport.asString(ReportType.MINECRAFT_CRASH_REPORT));
 				Path path = this.server.getRunDirectory().resolve("crash-reports").resolve("crash-" + Util.getFormattedCurrentTime() + "-server.txt");
-				if (crashReport.writeToFIle(path, ReportType.MINECRAFT_CRASH_REPORT)) {
+				if (crashReport.writeToFile(path, ReportType.MINECRAFT_CRASH_REPORT)) {
 					LOGGER.error("This crash report has been saved to: {}", path.toAbsolutePath());
 				} else {
 					LOGGER.error("We were unable to save this crash report to disk.");

@@ -317,7 +317,7 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean canBeLeashedBy(PlayerEntity player) {
+	public boolean canBeLeashed() {
 		return false;
 	}
 

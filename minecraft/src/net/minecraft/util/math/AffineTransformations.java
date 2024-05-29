@@ -3,11 +3,9 @@ package net.minecraft.util.math;
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import java.util.Map;
-import java.util.function.Supplier;
 import net.minecraft.util.Util;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import org.slf4j.Logger;
 
 public class AffineTransformations {
@@ -40,12 +38,12 @@ public class AffineTransformations {
 		return new AffineTransformation(matrix4f);
 	}
 
-	public static AffineTransformation uvLock(AffineTransformation transformation, Direction dir, Supplier<String> warning) {
+	public static AffineTransformation uvLock(AffineTransformation transformation, Direction dir) {
 		Direction direction = Direction.transform(transformation.getMatrix(), dir);
 		AffineTransformation affineTransformation = transformation.invert();
 		if (affineTransformation == null) {
-			LOGGER.warn((String)warning.get());
-			return new AffineTransformation(null, null, new Vector3f(0.0F, 0.0F, 0.0F), null);
+			LOGGER.debug("Failed to invert transformation {}", transformation);
+			return AffineTransformation.identity();
 		} else {
 			AffineTransformation affineTransformation2 = ((AffineTransformation)INVERTED_DIRECTION_ROTATIONS.get(dir))
 				.multiply(affineTransformation)

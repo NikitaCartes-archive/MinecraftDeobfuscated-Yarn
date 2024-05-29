@@ -20,6 +20,7 @@ import net.minecraft.data.report.BiomeParametersProvider;
 import net.minecraft.data.report.BlockListProvider;
 import net.minecraft.data.report.CommandSyntaxProvider;
 import net.minecraft.data.report.ItemListProvider;
+import net.minecraft.data.report.PacketReportProvider;
 import net.minecraft.data.report.RegistryDumpProvider;
 import net.minecraft.data.server.DynamicRegistriesProvider;
 import net.minecraft.data.server.advancement.vanilla.VanillaAdvancementProviders;
@@ -155,6 +156,7 @@ public class Main {
 		pack3.addProvider(toFactory(BlockListProvider::new, completableFuture));
 		pack3.addProvider(toFactory(CommandSyntaxProvider::new, completableFuture));
 		pack3.addProvider(RegistryDumpProvider::new);
+		pack3.addProvider(PacketReportProvider::new);
 		pack3 = dataGenerator.createVanillaSubPack(includeServer, "bundle");
 		pack3.addProvider(toFactory(BundleRecipeProvider::new, completableFuture));
 		pack3.addProvider(outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.bundle.description"), FeatureSet.of(FeatureFlags.BUNDLE)));

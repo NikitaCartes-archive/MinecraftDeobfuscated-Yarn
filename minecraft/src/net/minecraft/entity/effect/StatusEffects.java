@@ -37,7 +37,7 @@ public class StatusEffects {
 		"mining_fatigue",
 		new StatusEffect(StatusEffectCategory.HARMFUL, 4866583)
 			.addAttributeModifier(
-				EntityAttributes.GENERIC_ATTACK_SPEED, Identifier.ofVanilla("effect.minining_fatigue"), -0.1F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+				EntityAttributes.GENERIC_ATTACK_SPEED, Identifier.ofVanilla("effect.mining_fatigue"), -0.1F, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
 			)
 	);
 	public static final RegistryEntry<StatusEffect> STRENGTH = register(

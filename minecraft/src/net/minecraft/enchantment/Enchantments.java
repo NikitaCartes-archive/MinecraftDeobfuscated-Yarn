@@ -5,10 +5,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.CandleBlock;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
-import net.minecraft.component.type.BlockStateComponent;
 import net.minecraft.enchantment.effect.AllOfEnchantmentEffects;
 import net.minecraft.enchantment.effect.AttributeEnchantmentEffect;
 import net.minecraft.enchantment.effect.DamageImmunityEnchantmentEffect;
@@ -20,7 +18,6 @@ import net.minecraft.enchantment.effect.entity.ExplodeEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.IgniteEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.PlaySoundEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.ReplaceDiscEnchantmentEffect;
-import net.minecraft.enchantment.effect.entity.SetBlockPropertiesEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.SpawnParticlesEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.SummonEntityEnchantmentEffect;
 import net.minecraft.enchantment.effect.value.AddEnchantmentEffect;
@@ -51,9 +48,7 @@ import net.minecraft.loot.condition.WeatherCheckLootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.provider.number.EnchantmentLevelLootNumberProvider;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.predicate.FluidPredicate;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.TagPredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityFlagsPredicate;
@@ -73,7 +68,6 @@ import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -689,22 +683,6 @@ public class Enchantments {
 					new IgniteEnchantmentEffect(EnchantmentLevelBasedValue.linear(4.0F)),
 					DamageSourcePropertiesLootCondition.builder(DamageSourcePredicate.Builder.create().isDirect(true))
 				)
-				.addEffect(
-					EnchantmentEffectComponentTypes.HIT_BLOCK,
-					AllOfEnchantmentEffects.allOf(
-						new SetBlockPropertiesEnchantmentEffect(BlockStateComponent.DEFAULT.with(CandleBlock.LIT, true), Vec3i.ZERO, Optional.of(GameEvent.BLOCK_CHANGE)),
-						new DamageItemEnchantmentEffect(EnchantmentLevelBasedValue.constant(1.0F))
-					),
-					LocationCheckLootCondition.builder(
-						LocationPredicate.Builder.create()
-							.block(
-								net.minecraft.predicate.BlockPredicate.Builder.create()
-									.tag(BlockTags.FIRE_ASPECT_LIGHTABLE)
-									.state(StatePredicate.Builder.create().exactMatch(Properties.LIT, false))
-							)
-							.fluid(FluidPredicate.Builder.create().fluid(Fluids.EMPTY))
-					)
-				)
 		);
 		register(
 			registry,
@@ -1174,7 +1152,7 @@ public class Enchantments {
 					new ExplodeEnchantmentEffect(
 						false,
 						Optional.empty(),
-						Optional.of(EnchantmentLevelBasedValue.linear(0.5F, 0.25F)),
+						Optional.of(EnchantmentLevelBasedValue.lookup(List.of(1.2F, 1.75F, 2.2F), EnchantmentLevelBasedValue.linear(1.5F, 0.35F))),
 						registryEntryLookup4.getOptional(BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS).map(Function.identity()),
 						Vec3d.ZERO,
 						EnchantmentLevelBasedValue.constant(3.5F),

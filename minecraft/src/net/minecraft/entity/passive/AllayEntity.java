@@ -47,6 +47,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.GameEventTags;
 import net.minecraft.registry.tag.TagKey;
@@ -461,9 +462,10 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		this.writeInventory(nbt, this.getRegistryManager());
+		RegistryOps<NbtElement> registryOps = this.getRegistryManager().getOps(NbtOps.INSTANCE);
 		Vibrations.ListenerData.CODEC
-			.encodeStart(NbtOps.INSTANCE, this.vibrationListenerData)
-			.resultOrPartial(LOGGER::error)
+			.encodeStart(registryOps, this.vibrationListenerData)
+			.resultOrPartial(string -> LOGGER.error("Failed to encode vibration listener for Allay: '{}'", string))
 			.ifPresent(nbtElement -> nbt.put("listener", nbtElement));
 		nbt.putLong("DuplicationCooldown", this.duplicationCooldown);
 		nbt.putBoolean("CanDuplicate", this.canDuplicate());
@@ -473,10 +475,11 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 		this.readInventory(nbt, this.getRegistryManager());
+		RegistryOps<NbtElement> registryOps = this.getRegistryManager().getOps(NbtOps.INSTANCE);
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
 			Vibrations.ListenerData.CODEC
-				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
-				.resultOrPartial(LOGGER::error)
+				.parse(registryOps, nbt.getCompound("listener"))
+				.resultOrPartial(string -> LOGGER.error("Failed to parse vibration listener for Allay: '{}'", string))
 				.ifPresent(listenerData -> this.vibrationListenerData = listenerData);
 		}
 

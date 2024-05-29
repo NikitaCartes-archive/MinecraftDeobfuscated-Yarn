@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.math.MathHelper;
@@ -15,15 +16,16 @@ public interface EnchantmentLevelBasedValue {
 		.dispatch(EnchantmentLevelBasedValue::getCodec, codec -> codec);
 	Codec<EnchantmentLevelBasedValue> CODEC = Codec.either(EnchantmentLevelBasedValue.Constant.CODEC, BASE_CODEC)
 		.xmap(
-			either -> either.map(value -> value, value -> value),
-			value -> value instanceof EnchantmentLevelBasedValue.Constant constant ? Either.left(constant) : Either.right(value)
+			either -> either.map(type -> type, type -> type),
+			type -> type instanceof EnchantmentLevelBasedValue.Constant constant ? Either.left(constant) : Either.right(type)
 		);
 
 	static MapCodec<? extends EnchantmentLevelBasedValue> registerAndGetDefault(Registry<MapCodec<? extends EnchantmentLevelBasedValue>> registry) {
 		Registry.register(registry, "clamped", EnchantmentLevelBasedValue.Clamped.CODEC);
 		Registry.register(registry, "fraction", EnchantmentLevelBasedValue.Fraction.CODEC);
 		Registry.register(registry, "levels_squared", EnchantmentLevelBasedValue.LevelsSquared.CODEC);
-		return Registry.register(registry, "linear", EnchantmentLevelBasedValue.Linear.CODEC);
+		Registry.register(registry, "linear", EnchantmentLevelBasedValue.Linear.CODEC);
+		return Registry.register(registry, "lookup", EnchantmentLevelBasedValue.Lookup.CODEC);
 	}
 
 	static EnchantmentLevelBasedValue.Constant constant(float value) {
@@ -36,6 +38,10 @@ public interface EnchantmentLevelBasedValue {
 
 	static EnchantmentLevelBasedValue.Linear linear(float base) {
 		return linear(base, base);
+	}
+
+	static EnchantmentLevelBasedValue.Lookup lookup(List<Float> values, EnchantmentLevelBasedValue fallback) {
+		return new EnchantmentLevelBasedValue.Lookup(values, fallback);
 	}
 
 	float getValue(int level);
@@ -52,9 +58,7 @@ public interface EnchantmentLevelBasedValue {
 						.apply(instance, EnchantmentLevelBasedValue.Clamped::new)
 			)
 			.validate(
-				value -> value.max <= value.min
-						? DataResult.error(() -> "Max must be larger than min, min: " + value.min + ", max: " + value.max)
-						: DataResult.success(value)
+				type -> type.max <= type.min ? DataResult.error(() -> "Max must be larger than min, min: " + type.min + ", max: " + type.max) : DataResult.success(type)
 			);
 
 		@Override
@@ -141,6 +145,26 @@ public interface EnchantmentLevelBasedValue {
 
 		@Override
 		public MapCodec<EnchantmentLevelBasedValue.Linear> getCodec() {
+			return CODEC;
+		}
+	}
+
+	public static record Lookup(List<Float> values, EnchantmentLevelBasedValue fallback) implements EnchantmentLevelBasedValue {
+		public static final MapCodec<EnchantmentLevelBasedValue.Lookup> CODEC = RecordCodecBuilder.mapCodec(
+			instance -> instance.group(
+						Codec.FLOAT.listOf().fieldOf("values").forGetter(EnchantmentLevelBasedValue.Lookup::values),
+						EnchantmentLevelBasedValue.CODEC.fieldOf("fallback").forGetter(EnchantmentLevelBasedValue.Lookup::fallback)
+					)
+					.apply(instance, EnchantmentLevelBasedValue.Lookup::new)
+		);
+
+		@Override
+		public float getValue(int level) {
+			return level <= this.values.size() ? (Float)this.values.get(level - 1) : this.fallback.getValue(level);
+		}
+
+		@Override
+		public MapCodec<EnchantmentLevelBasedValue.Lookup> getCodec() {
 			return CODEC;
 		}
 	}

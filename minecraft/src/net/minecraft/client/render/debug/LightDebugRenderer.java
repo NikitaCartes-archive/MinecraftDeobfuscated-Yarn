@@ -9,6 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
@@ -98,51 +99,7 @@ public class LightDebugRenderer implements DebugRenderer.Renderer {
 		float f = (float)((double)ChunkSectionPos.getBlockCoord(x) - cameraX);
 		float g = (float)((double)ChunkSectionPos.getBlockCoord(y) - cameraY);
 		float h = (float)((double)ChunkSectionPos.getBlockCoord(z) - cameraZ);
-		float i = f + 16.0F;
-		float j = g + 16.0F;
-		float k = h + 16.0F;
-		float l = color.x();
-		float m = color.y();
-		float n = color.z();
-		float o = color.w();
-		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-		switch (direction) {
-			case DOWN:
-				vertexConsumer.vertex(matrix4f, f, g, h).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, i, g, h).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, i, g, k).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, f, g, k).color(l, m, n, o);
-				break;
-			case UP:
-				vertexConsumer.vertex(matrix4f, f, j, h).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, f, j, k).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, i, j, k).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, i, j, h).color(l, m, n, o);
-				break;
-			case NORTH:
-				vertexConsumer.vertex(matrix4f, f, g, h).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, f, j, h).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, i, j, h).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, i, g, h).color(l, m, n, o);
-				break;
-			case SOUTH:
-				vertexConsumer.vertex(matrix4f, f, g, k).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, i, g, k).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, i, j, k).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, f, j, k).color(l, m, n, o);
-				break;
-			case WEST:
-				vertexConsumer.vertex(matrix4f, f, g, h).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, f, g, k).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, f, j, k).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, f, j, h).color(l, m, n, o);
-				break;
-			case EAST:
-				vertexConsumer.vertex(matrix4f, i, g, h).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, i, j, h).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, i, j, k).color(l, m, n, o);
-				vertexConsumer.vertex(matrix4f, i, g, k).color(l, m, n, o);
-		}
+		WorldRenderer.renderFilledBoxFace(matrices, vertexConsumer, direction, f, g, h, f + 16.0F, g + 16.0F, h + 16.0F, color.x(), color.y(), color.z(), color.w());
 	}
 
 	private static void drawEdge(

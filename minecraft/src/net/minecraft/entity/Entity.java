@@ -50,6 +50,7 @@ import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtDouble;
 import net.minecraft.nbt.NbtElement;
@@ -75,6 +76,7 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
@@ -114,6 +116,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
@@ -720,6 +723,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		}
 
 		this.firstUpdate = false;
+		if (!this.getWorld().isClient && this instanceof Leashable) {
+			Leashable.tickLeash((Entity)((Leashable)this));
+		}
+
 		this.getWorld().getProfiler().pop();
 	}
 
@@ -1364,6 +1371,13 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	protected void onBlockCollision(BlockState state) {
 	}
 
+	public BlockPos getWorldSpawnPos(ServerWorld world, BlockPos basePos) {
+		BlockPos blockPos = world.getSpawnPos();
+		Vec3d vec3d = blockPos.toCenterPos();
+		int i = world.getWorldChunk(blockPos).sampleHeightmap(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos.getX(), blockPos.getZ()) + 1;
+		return BlockPos.ofFloored(vec3d.x, (double)i, vec3d.z);
+	}
+
 	/**
 	 * Emits a game event originating from another entity at this entity's position.
 	 * 
@@ -1912,7 +1926,11 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * @see #refreshPositionAndAngles(double, double, double, float, float)
 	 */
 	public void refreshPositionAndAngles(BlockPos pos, float yaw, float pitch) {
-		this.refreshPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5, yaw, pitch);
+		this.refreshPositionAndAngles(pos.toBottomCenterPos(), yaw, pitch);
+	}
+
+	public void refreshPositionAndAngles(Vec3d pos, float yaw, float pitch) {
+		this.refreshPositionAndAngles(pos.x, pos.y, pos.z, yaw, pitch);
 	}
 
 	/**
@@ -2532,6 +2550,21 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * @param player the player
 	 */
 	public ActionResult interact(PlayerEntity player, Hand hand) {
+		if (this.isAlive() && this instanceof Leashable leashable) {
+			if (leashable.getLeashHolder() == player) {
+				leashable.detachLeash(true, !player.isInCreativeMode());
+				this.emitGameEvent(GameEvent.ENTITY_INTERACT, player);
+				return ActionResult.success(this.getWorld().isClient);
+			}
+
+			ItemStack itemStack = player.getStackInHand(hand);
+			if (itemStack.isOf(Items.LEAD) && leashable.canLeashAttachTo()) {
+				leashable.attachLeash(player, true);
+				itemStack.decrement(1);
+				return ActionResult.success(this.getWorld().isClient);
+			}
+		}
+
 		return ActionResult.PASS;
 	}
 
@@ -2913,11 +2946,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 					this.resetPortalCooldown();
 					TeleportTarget teleportTarget = this.portalManager.createTeleportTarget(serverWorld, this);
 					if (teleportTarget != null && serverWorld.getServer().isWorldAllowed(teleportTarget.world())) {
-						Entity entity = this.teleportTo(teleportTarget);
-						if (entity != null && entity.getWorld() instanceof ServerWorld serverWorld2) {
-							BlockPos blockPos = BlockPos.ofFloored(entity.pos);
-							serverWorld2.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);
-						}
+						this.teleportTo(teleportTarget);
 					}
 
 					serverWorld.getProfiler().pop();
@@ -3807,35 +3836,46 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			List<Entity> list2 = new ArrayList();
 
 			for (Entity entity : list) {
-				list2.add(entity.teleportTo(teleportTarget));
+				Entity entity2 = entity.teleportTo(teleportTarget);
+				if (entity2 != null) {
+					list2.add(entity2);
+				}
 			}
 
 			serverWorld.getProfiler().push("changeDimension");
-			Entity entity2 = serverWorld2.getRegistryKey() == serverWorld.getRegistryKey() ? this : this.getType().create(serverWorld2);
-			if (entity2 != null) {
-				if (this != entity2) {
-					entity2.copyFrom(this);
+			Entity entity3 = serverWorld2.getRegistryKey() == serverWorld.getRegistryKey() ? this : this.getType().create(serverWorld2);
+			if (entity3 != null) {
+				if (this != entity3) {
+					entity3.copyFrom(this);
 					this.removeFromDimension();
 				}
 
-				entity2.refreshPositionAndAngles(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z, teleportTarget.yaw(), entity2.getPitch());
-				entity2.setVelocity(teleportTarget.velocity());
-				if (this != entity2) {
-					serverWorld2.onDimensionChanged(entity2);
+				entity3.refreshPositionAndAngles(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z, teleportTarget.yaw(), entity3.getPitch());
+				entity3.setVelocity(teleportTarget.velocity());
+				if (this != entity3) {
+					serverWorld2.onDimensionChanged(entity3);
 				}
 
-				for (Entity entity3 : list2) {
-					entity3.startRiding(entity2, true);
+				for (Entity entity2 : list2) {
+					entity2.startRiding(entity3, true);
 				}
+
+				serverWorld.resetIdleTimeout();
+				serverWorld2.resetIdleTimeout();
+				teleportTarget.postDimensionTransition().onTransition(entity3);
 			}
 
-			serverWorld.resetIdleTimeout();
-			serverWorld2.resetIdleTimeout();
 			serverWorld.getProfiler().pop();
-			return entity2;
+			return entity3;
 		}
 
 		return null;
+	}
+
+	public void addPortalChunkTicketAt(BlockPos pos) {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			serverWorld.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(pos), 3, pos);
+		}
 	}
 
 	/**
@@ -3868,9 +3908,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * net.minecraft.entity.projectile.FishingBobberEntity} cannot use portals.
 	 */
 	public boolean canUsePortals() {
-		return !this.hasVehicle()
-			&& this.isAlive()
-			&& (!this.hasPassengers() || this.world.getGameRules().get(GameRules.ENTITIES_WITH_PASSENGERS_CAN_USE_PORTALS).get());
+		return !this.hasVehicle() && this.isAlive();
 	}
 
 	/**
@@ -4774,6 +4812,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		this.prevYaw = this.getYaw();
 	}
 
+	public float lerpYaw(float delta) {
+		return MathHelper.lerp(delta, this.prevYaw, this.yaw);
+	}
+
 	public boolean updateMovementInFluid(TagKey<Fluid> tag, double speed) {
 		if (this.isRegionUnloaded()) {
 			return false;
@@ -4827,7 +4869,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 				}
 
 				Vec3d vec3d3 = this.getVelocity();
-				vec3d = vec3d.multiply(speed * 1.0);
+				vec3d = vec3d.multiply(speed);
 				double f = 0.003;
 				if (Math.abs(vec3d3.x) < 0.003 && Math.abs(vec3d3.z) < 0.003 && vec3d.length() < 0.0045000000000000005) {
 					vec3d = vec3d.normalize().multiply(0.0045000000000000005);
@@ -4902,8 +4944,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * @apiNote Subclasses should return {@code new EntitySpawnS2CPacket(this)},
 	 * unless they use a custom spawning packet.
 	 */
-	public Packet<ClientPlayPacketListener> createSpawnPacket() {
-		return new EntitySpawnS2CPacket(this);
+	public Packet<ClientPlayPacketListener> createSpawnPacket(EntityTrackerEntry entityTrackerEntry) {
+		return new EntitySpawnS2CPacket(this, entityTrackerEntry);
 	}
 
 	/**
@@ -5313,6 +5355,11 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		}
 
 		return this.getVelocity();
+	}
+
+	@Nullable
+	public ItemStack getWeaponStack() {
+		return null;
 	}
 
 	/**

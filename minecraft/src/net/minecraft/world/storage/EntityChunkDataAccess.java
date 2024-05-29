@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.entity.Entity;
@@ -38,26 +39,34 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 
 	@Override
 	public CompletableFuture<ChunkDataList<Entity>> readChunkData(ChunkPos pos) {
-		return this.emptyChunks.contains(pos.toLong()) ? CompletableFuture.completedFuture(emptyDataList(pos)) : this.storage.read(pos).thenApplyAsync(nbt -> {
-			if (nbt.isEmpty()) {
-				this.emptyChunks.add(pos.toLong());
-				return emptyDataList(pos);
-			} else {
-				try {
-					ChunkPos chunkPos2 = getChunkPos((NbtCompound)nbt.get());
-					if (!Objects.equals(pos, chunkPos2)) {
-						LOGGER.error("Chunk file at {} is in the wrong location. (Expected {}, got {})", pos, pos, chunkPos2);
+		if (this.emptyChunks.contains(pos.toLong())) {
+			return CompletableFuture.completedFuture(emptyDataList(pos));
+		} else {
+			CompletableFuture<Optional<NbtCompound>> completableFuture = this.storage.read(pos);
+			this.handleLoadFailure(completableFuture, pos);
+			return completableFuture.thenApplyAsync(nbt -> {
+				if (nbt.isEmpty()) {
+					this.emptyChunks.add(pos.toLong());
+					return emptyDataList(pos);
+				} else {
+					try {
+						ChunkPos chunkPos2 = getChunkPos((NbtCompound)nbt.get());
+						if (!Objects.equals(pos, chunkPos2)) {
+							LOGGER.error("Chunk file at {} is in the wrong location. (Expected {}, got {})", pos, pos, chunkPos2);
+							this.world.getServer().onChunkMisplacement(chunkPos2, pos, this.storage.getStorageKey());
+						}
+					} catch (Exception var6) {
+						LOGGER.warn("Failed to parse chunk {} position info", pos, var6);
+						this.world.getServer().onChunkLoadFailure(var6, this.storage.getStorageKey(), pos);
 					}
-				} catch (Exception var6) {
-					LOGGER.warn("Failed to parse chunk {} position info", pos, var6);
-				}
 
-				NbtCompound nbtCompound = this.storage.update((NbtCompound)nbt.get(), -1);
-				NbtList nbtList = nbtCompound.getList("Entities", NbtElement.COMPOUND_TYPE);
-				List<Entity> list = (List<Entity>)EntityType.streamFromNbt(nbtList, this.world).collect(ImmutableList.toImmutableList());
-				return new ChunkDataList(pos, list);
-			}
-		}, this.taskExecutor::send);
+					NbtCompound nbtCompound = this.storage.update((NbtCompound)nbt.get(), -1);
+					NbtList nbtList = nbtCompound.getList("Entities", NbtElement.COMPOUND_TYPE);
+					List<Entity> list = (List<Entity>)EntityType.streamFromNbt(nbtList, this.world).collect(ImmutableList.toImmutableList());
+					return new ChunkDataList(pos, list);
+				}
+			}, this.taskExecutor::send);
+		}
 	}
 
 	private static ChunkPos getChunkPos(NbtCompound chunkNbt) {
@@ -78,7 +87,7 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 		ChunkPos chunkPos = dataList.getChunkPos();
 		if (dataList.isEmpty()) {
 			if (this.emptyChunks.add(chunkPos.toLong())) {
-				this.storage.set(chunkPos, null);
+				this.handleSaveFailure(this.storage.set(chunkPos, null), chunkPos);
 			}
 		} else {
 			NbtList nbtList = new NbtList();
@@ -91,12 +100,25 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 			NbtCompound nbtCompound = NbtHelper.putDataVersion(new NbtCompound());
 			nbtCompound.put("Entities", nbtList);
 			putChunkPos(nbtCompound, chunkPos);
-			this.storage.set(chunkPos, nbtCompound).exceptionally(ex -> {
-				LOGGER.error("Failed to store chunk {}", chunkPos, ex);
-				return null;
-			});
+			this.handleSaveFailure(this.storage.set(chunkPos, nbtCompound), chunkPos);
 			this.emptyChunks.remove(chunkPos.toLong());
 		}
+	}
+
+	private void handleSaveFailure(CompletableFuture<?> future, ChunkPos pos) {
+		future.exceptionally(throwable -> {
+			LOGGER.error("Failed to store entity chunk {}", pos, throwable);
+			this.world.getServer().onChunkSaveFailure(throwable, this.storage.getStorageKey(), pos);
+			return null;
+		});
+	}
+
+	private void handleLoadFailure(CompletableFuture<?> future, ChunkPos pos) {
+		future.exceptionally(throwable -> {
+			LOGGER.error("Failed to load entity chunk {}", pos, throwable);
+			this.world.getServer().onChunkLoadFailure(throwable, this.storage.getStorageKey(), pos);
+			return null;
+		});
 	}
 
 	@Override

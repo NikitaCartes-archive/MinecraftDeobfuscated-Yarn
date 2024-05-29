@@ -89,8 +89,8 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	@Override
-	public boolean canBeLeashedBy(PlayerEntity player) {
-		return !this.isLeashed();
+	public boolean canBeLeashed() {
+		return true;
 	}
 
 	public static DefaultAttributeContainer.Builder createHoglinAttributes() {

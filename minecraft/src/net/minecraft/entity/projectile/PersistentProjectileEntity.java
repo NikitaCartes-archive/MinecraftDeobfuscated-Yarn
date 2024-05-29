@@ -467,11 +467,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		);
 	}
 
-	/**
-	 * @return the weapon this projectile was shot from.
-	 */
-	@Nullable
-	protected ItemStack getWeaponStack() {
+	@Override
+	public ItemStack getWeaponStack() {
 		return this.weapon;
 	}
 

@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
+import net.minecraft.structure.StructureLiquidSettings;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.BlockRotation;
@@ -51,6 +52,7 @@ public class EmptyPoolElement extends StructurePoolElement {
 		BlockRotation rotation,
 		BlockBox box,
 		Random random,
+		StructureLiquidSettings liquidSettings,
 		boolean keepJigsaws
 	) {
 		return true;

@@ -1,9 +1,11 @@
 package net.minecraft.client.network;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -106,7 +108,7 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 		LOGGER.error("Failed to handle packet {}", packet, exception);
 		ClientCommonPacketListener.super.onPacketException(packet, exception);
 		Optional<Path> optional = this.savePacketErrorReport(packet, exception);
-		Optional<String> optional2 = this.serverLinks.getEntryFor(ServerLinks.Known.BUG_REPORT).map(ServerLinks.Entry::url);
+		Optional<URI> optional2 = this.serverLinks.getEntryFor(ServerLinks.Known.BUG_REPORT).map(ServerLinks.Entry::link);
 		if (this.strictErrorHandling) {
 			this.connection.disconnect(new DisconnectionInfo(Text.translatable("disconnect.packetError"), optional, optional2));
 		}
@@ -115,7 +117,7 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	@Override
 	public DisconnectionInfo createDisconnectionInfo(Text reason, Throwable exception) {
 		Optional<Path> optional = this.savePacketErrorReport(null, exception);
-		Optional<String> optional2 = this.serverLinks.getEntryFor(ServerLinks.Known.BUG_REPORT).map(ServerLinks.Entry::url);
+		Optional<URI> optional2 = this.serverLinks.getEntryFor(ServerLinks.Known.BUG_REPORT).map(ServerLinks.Entry::link);
 		return new DisconnectionInfo(reason, optional, optional2);
 	}
 
@@ -125,7 +127,7 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 		Path path = this.client.runDirectory.toPath().resolve("debug");
 		Path path2 = path.resolve("disconnect-" + Util.getFormattedCurrentTime() + "-client.txt");
 		Optional<ServerLinks.Entry> optional = this.serverLinks.getEntryFor(ServerLinks.Known.BUG_REPORT);
-		List<String> list = (List<String>)optional.map(bugReportEntry -> List.of("Server bug reporting link: " + bugReportEntry.url())).orElse(List.of());
+		List<String> list = (List<String>)optional.map(bugReportEntry -> List.of("Server bug reporting link: " + bugReportEntry.link())).orElse(List.of());
 		return crashReport.writeToFile(path2, ReportType.MINECRAFT_NETWORK_PROTOCOL_ERROR_REPORT, list) ? Optional.of(path2) : Optional.empty();
 	}
 
@@ -224,7 +226,19 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	@Override
 	public void onServerLinks(ServerLinksS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.serverLinks = packet.links();
+		List<ServerLinks.StringifiedEntry> list = packet.links();
+		Builder<ServerLinks.Entry> builder = ImmutableList.builderWithExpectedSize(list.size());
+
+		for (ServerLinks.StringifiedEntry stringifiedEntry : list) {
+			try {
+				URI uRI = Util.validateUri(stringifiedEntry.link());
+				builder.add(new ServerLinks.Entry(stringifiedEntry.type(), uRI));
+			} catch (Exception var7) {
+				LOGGER.warn("Received invalid link for type {}:{}", stringifiedEntry.type(), stringifiedEntry.link(), var7);
+			}
+		}
+
+		this.serverLinks = new ServerLinks(builder.build());
 	}
 
 	@Override

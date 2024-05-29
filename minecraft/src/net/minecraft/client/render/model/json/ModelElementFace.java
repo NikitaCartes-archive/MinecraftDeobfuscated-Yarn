@@ -13,19 +13,8 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
-public class ModelElementFace {
+public record ModelElementFace(@Nullable Direction cullFace, int tintIndex, String textureId, ModelElementTexture textureData) {
 	public static final int field_32789 = -1;
-	public final Direction cullFace;
-	public final int tintIndex;
-	public final String textureId;
-	public final ModelElementTexture textureData;
-
-	public ModelElementFace(@Nullable Direction cullFace, int tintIndex, String textureId, ModelElementTexture textureData) {
-		this.cullFace = cullFace;
-		this.tintIndex = tintIndex;
-		this.textureId = textureId;
-		this.textureData = textureData;
-	}
 
 	@Environment(EnvType.CLIENT)
 	protected static class Deserializer implements JsonDeserializer<ModelElementFace> {

@@ -29,7 +29,7 @@ public class CrossbowPosing {
 		modelPart.yaw = rightArmed ? -0.8F : 0.8F;
 		modelPart.pitch = -0.97079635F;
 		modelPart2.pitch = modelPart.pitch;
-		float f = (float)CrossbowItem.getPullTime(actor);
+		float f = (float)CrossbowItem.getPullTime(actor.getActiveItem(), actor);
 		float g = MathHelper.clamp((float)actor.getItemUseTime(), 0.0F, f);
 		float h = g / f;
 		modelPart2.yaw = MathHelper.lerp(h, 0.4F, 0.85F) * (float)(rightArmed ? 1 : -1);

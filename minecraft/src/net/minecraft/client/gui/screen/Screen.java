@@ -2,7 +2,6 @@ package net.minecraft.client.gui.screen;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.File;
@@ -11,8 +10,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
@@ -38,6 +35,8 @@ import net.minecraft.client.gui.screen.narration.ScreenNarrator;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
+import net.minecraft.client.gui.widget.CyclingButtonWidget;
+import net.minecraft.client.option.NarratorMode;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -60,7 +59,6 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public abstract class Screen extends AbstractParentElement implements Drawable {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Set<String> ALLOWED_PROTOCOLS = Sets.<String>newHashSet("http", "https");
 	private static final Text SCREEN_USAGE_TEXT = Text.translatable("narrator.screen.usage");
 	protected static final CubeMapRenderer PANORAMA_RENDERER = new CubeMapRenderer(Identifier.ofVanilla("textures/gui/title/background/panorama"));
 	protected static final RotatingCubeMapRenderer ROTATING_PANORAMA_RENDERER = new RotatingCubeMapRenderer(PANORAMA_RENDERER);
@@ -80,8 +78,6 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	public int height;
 	private final List<Drawable> drawables = Lists.<Drawable>newArrayList();
 	public TextRenderer textRenderer;
-	@Nullable
-	private URI clickedLink;
 	private static final long SCREEN_INIT_NARRATION_DELAY = TimeUnit.SECONDS.toMillis(2L);
 	private static final long NARRATOR_MODE_CHANGE_DELAY = SCREEN_INIT_NARRATION_DELAY;
 	private static final long MOUSE_MOVE_NARRATION_DELAY = 750L;
@@ -90,6 +86,8 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	private final ScreenNarrator narrator = new ScreenNarrator();
 	private long elementNarrationStartTime = Long.MIN_VALUE;
 	private long screenNarrationStartTime = Long.MAX_VALUE;
+	@Nullable
+	protected CyclingButtonWidget<NarratorMode> narratorToggleButton;
 	@Nullable
 	private Selectable selected;
 	@Nullable
@@ -277,38 +275,33 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 					}
 
 					try {
-						URI uRI = new URI(clickEvent.getValue());
-						String string = uRI.getScheme();
-						if (string == null) {
-							throw new URISyntaxException(clickEvent.getValue(), "Missing protocol");
-						}
-
-						if (!ALLOWED_PROTOCOLS.contains(string.toLowerCase(Locale.ROOT))) {
-							throw new URISyntaxException(clickEvent.getValue(), "Unsupported protocol: " + string.toLowerCase(Locale.ROOT));
-						}
-
+						URI uRI = Util.validateUri(clickEvent.getValue());
 						if (this.client.options.getChatLinksPrompt().getValue()) {
-							this.clickedLink = uRI;
-							this.client.setScreen(new ConfirmLinkScreen(this::confirmLink, clickEvent.getValue(), false));
+							this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
+								if (confirmed) {
+									Util.getOperatingSystem().open(uRI);
+								}
+
+								this.client.setScreen(this);
+							}, clickEvent.getValue(), false));
 						} else {
-							this.openLink(uRI);
+							Util.getOperatingSystem().open(uRI);
 						}
-					} catch (URISyntaxException var5) {
-						LOGGER.error("Can't open url for {}", clickEvent, var5);
+					} catch (URISyntaxException var4) {
+						LOGGER.error("Can't open url for {}", clickEvent, var4);
 					}
 				} else if (clickEvent.getAction() == ClickEvent.Action.OPEN_FILE) {
-					URI uRIx = new File(clickEvent.getValue()).toURI();
-					this.openLink(uRIx);
+					Util.getOperatingSystem().open(new File(clickEvent.getValue()));
 				} else if (clickEvent.getAction() == ClickEvent.Action.SUGGEST_COMMAND) {
 					this.insertText(StringHelper.stripInvalidChars(clickEvent.getValue()), true);
 				} else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-					String string2 = StringHelper.stripInvalidChars(clickEvent.getValue());
-					if (string2.startsWith("/")) {
-						if (!this.client.player.networkHandler.sendCommand(string2.substring(1))) {
-							LOGGER.error("Not allowed to run command with signed argument from click event: '{}'", string2);
+					String string = StringHelper.stripInvalidChars(clickEvent.getValue());
+					if (string.startsWith("/")) {
+						if (!this.client.player.networkHandler.sendCommand(string.substring(1))) {
+							LOGGER.error("Not allowed to run command with signed argument from click event: '{}'", string);
 						}
 					} else {
-						LOGGER.error("Failed to run command without '/' prefix from click event: '{}'", string2);
+						LOGGER.error("Failed to run command without '/' prefix from click event: '{}'", string);
 					}
 				} else if (clickEvent.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD) {
 					this.client.keyboard.setClipboard(clickEvent.getValue());
@@ -424,19 +417,6 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 	public boolean shouldPause() {
 		return true;
-	}
-
-	private void confirmLink(boolean open) {
-		if (open) {
-			this.openLink(this.clickedLink);
-		}
-
-		this.clickedLink = null;
-		this.client.setScreen(this);
-	}
-
-	private void openLink(URI link) {
-		Util.getOperatingSystem().open(link);
 	}
 
 	public static boolean hasControlDown() {
@@ -630,8 +610,14 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		return selectedElementNarrationData != null ? selectedElementNarrationData : selectedElementNarrationData2;
 	}
 
-	public void applyNarratorModeChangeDelay() {
-		this.setScreenNarrationDelay(NARRATOR_MODE_CHANGE_DELAY, false);
+	public void refreshNarrator(boolean previouslyDisabled) {
+		if (previouslyDisabled) {
+			this.setScreenNarrationDelay(NARRATOR_MODE_CHANGE_DELAY, false);
+		}
+
+		if (this.narratorToggleButton != null) {
+			this.narratorToggleButton.setValue(this.client.options.getNarrator().getValue());
+		}
 	}
 
 	protected void clearTooltip() {

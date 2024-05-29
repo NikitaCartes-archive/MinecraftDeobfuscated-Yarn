@@ -25,6 +25,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -210,44 +211,38 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 	private void finishConversion(ServerWorld world) {
 		VillagerEntity villagerEntity = this.convertTo(EntityType.VILLAGER, false);
+		if (villagerEntity != null) {
+			for (EquipmentSlot equipmentSlot : this.dropEquipment(
+				stack -> !EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)
+			)) {
+				StackReference stackReference = villagerEntity.getStackReference(equipmentSlot.getEntitySlotId() + 300);
+				stackReference.set(this.getEquippedStack(equipmentSlot));
+			}
 
-		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-			ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-			if (!itemStack.isEmpty()) {
-				if (EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)) {
-					villagerEntity.getStackReference(equipmentSlot.getEntitySlotId() + 300).set(itemStack);
-				} else {
-					double d = (double)this.getDropChance(equipmentSlot);
-					if (d > 1.0) {
-						this.dropStack(itemStack);
-					}
+			villagerEntity.setVillagerData(this.getVillagerData());
+			if (this.gossipData != null) {
+				villagerEntity.readGossipDataNbt(this.gossipData);
+			}
+
+			if (this.offerData != null) {
+				villagerEntity.setOffers(this.offerData.copy());
+			}
+
+			villagerEntity.setExperience(this.xp);
+			villagerEntity.initialize(world, world.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnReason.CONVERSION, null);
+			villagerEntity.reinitializeBrain(world);
+			if (this.converter != null) {
+				PlayerEntity playerEntity = world.getPlayerByUuid(this.converter);
+				if (playerEntity instanceof ServerPlayerEntity) {
+					Criteria.CURED_ZOMBIE_VILLAGER.trigger((ServerPlayerEntity)playerEntity, this, villagerEntity);
+					world.handleInteraction(EntityInteraction.ZOMBIE_VILLAGER_CURED, playerEntity, villagerEntity);
 				}
 			}
-		}
 
-		villagerEntity.setVillagerData(this.getVillagerData());
-		if (this.gossipData != null) {
-			villagerEntity.readGossipDataNbt(this.gossipData);
-		}
-
-		if (this.offerData != null) {
-			villagerEntity.setOffers(this.offerData.copy());
-		}
-
-		villagerEntity.setExperience(this.xp);
-		villagerEntity.initialize(world, world.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnReason.CONVERSION, null);
-		villagerEntity.reinitializeBrain(world);
-		if (this.converter != null) {
-			PlayerEntity playerEntity = world.getPlayerByUuid(this.converter);
-			if (playerEntity instanceof ServerPlayerEntity) {
-				Criteria.CURED_ZOMBIE_VILLAGER.trigger((ServerPlayerEntity)playerEntity, this, villagerEntity);
-				world.handleInteraction(EntityInteraction.ZOMBIE_VILLAGER_CURED, playerEntity, villagerEntity);
+			villagerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
+			if (!this.isSilent()) {
+				world.syncWorldEvent(null, WorldEvents.ZOMBIE_VILLAGER_CURED, this.getBlockPos(), 0);
 			}
-		}
-
-		villagerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-		if (!this.isSilent()) {
-			world.syncWorldEvent(null, WorldEvents.ZOMBIE_VILLAGER_CURED, this.getBlockPos(), 0);
 		}
 	}
 

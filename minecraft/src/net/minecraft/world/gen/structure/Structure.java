@@ -202,6 +202,9 @@ public abstract class Structure {
 	public static record Config(
 		RegistryEntryList<Biome> biomes, Map<SpawnGroup, StructureSpawns> spawnOverrides, GenerationStep.Feature step, StructureTerrainAdaptation terrainAdaptation
 	) {
+		static final Structure.Config DEFAULT = new Structure.Config(
+			RegistryEntryList.of(), Map.of(), GenerationStep.Feature.SURFACE_STRUCTURES, StructureTerrainAdaptation.NONE
+		);
 		public static final MapCodec<Structure.Config> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
 						RegistryCodecs.entryList(RegistryKeys.BIOME).fieldOf("biomes").forGetter(Structure.Config::biomes),
@@ -209,10 +212,47 @@ public abstract class Structure {
 							.fieldOf("spawn_overrides")
 							.forGetter(Structure.Config::spawnOverrides),
 						GenerationStep.Feature.CODEC.fieldOf("step").forGetter(Structure.Config::step),
-						StructureTerrainAdaptation.CODEC.optionalFieldOf("terrain_adaptation", StructureTerrainAdaptation.NONE).forGetter(Structure.Config::terrainAdaptation)
+						StructureTerrainAdaptation.CODEC.optionalFieldOf("terrain_adaptation", DEFAULT.terrainAdaptation).forGetter(Structure.Config::terrainAdaptation)
 					)
 					.apply(instance, Structure.Config::new)
 		);
+
+		public Config(RegistryEntryList<Biome> biomes) {
+			this(biomes, DEFAULT.spawnOverrides, DEFAULT.step, DEFAULT.terrainAdaptation);
+		}
+
+		public static class Builder {
+			private final RegistryEntryList<Biome> biomes;
+			private Map<SpawnGroup, StructureSpawns> spawnOverrides;
+			private GenerationStep.Feature step;
+			private StructureTerrainAdaptation terrainAdaptation;
+
+			public Builder(RegistryEntryList<Biome> biomes) {
+				this.spawnOverrides = Structure.Config.DEFAULT.spawnOverrides;
+				this.step = Structure.Config.DEFAULT.step;
+				this.terrainAdaptation = Structure.Config.DEFAULT.terrainAdaptation;
+				this.biomes = biomes;
+			}
+
+			public Structure.Config.Builder spawnOverrides(Map<SpawnGroup, StructureSpawns> spawnOverrides) {
+				this.spawnOverrides = spawnOverrides;
+				return this;
+			}
+
+			public Structure.Config.Builder step(GenerationStep.Feature step) {
+				this.step = step;
+				return this;
+			}
+
+			public Structure.Config.Builder terrainAdaptation(StructureTerrainAdaptation terrainAdaptation) {
+				this.terrainAdaptation = terrainAdaptation;
+				return this;
+			}
+
+			public Structure.Config build() {
+				return new Structure.Config(this.biomes, this.spawnOverrides, this.step, this.terrainAdaptation);
+			}
+		}
 	}
 
 	public static record Context(

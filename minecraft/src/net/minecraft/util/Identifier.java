@@ -19,7 +19,6 @@ import javax.annotation.Nullable;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * An identifier used to identify things. This is also known as "resource location",
@@ -110,7 +109,7 @@ import org.apache.commons.lang3.StringUtils;
  * net.minecraft.registry.RegistryKey} can be used. A registry key is a combination
  * of the registry's identifier and the object's identifier.
  */
-public class Identifier implements Comparable<Identifier> {
+public final class Identifier implements Comparable<Identifier> {
 	public static final Codec<Identifier> CODEC = Codec.STRING.<Identifier>comapFlatMap(Identifier::validate, Identifier::toString).stable();
 	public static final PacketCodec<ByteBuf, Identifier> PACKET_CODEC = PacketCodecs.STRING.xmap(Identifier::of, Identifier::toString);
 	public static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.id.invalid"));
@@ -120,33 +119,29 @@ public class Identifier implements Comparable<Identifier> {
 	private final String namespace;
 	private final String path;
 
-	protected Identifier(String namespace, String path, @Nullable Identifier.ExtraData extraData) {
+	private Identifier(String namespace, String path) {
+		assert isNamespaceValid(namespace);
+
+		assert isPathValid(path);
+
 		this.namespace = namespace;
 		this.path = path;
 	}
 
-	protected Identifier(String namespace, String path) {
-		this(validateNamespace(namespace, path), validatePath(namespace, path), null);
+	private static Identifier ofValidated(String namespace, String path) {
+		return new Identifier(validateNamespace(namespace, path), validatePath(namespace, path));
 	}
 
 	public static Identifier of(String namespace, String path) {
-		return new Identifier(namespace, path);
-	}
-
-	private Identifier(String[] id) {
-		this(id[0], id[1]);
+		return ofValidated(namespace, path);
 	}
 
 	public static Identifier of(String id) {
 		return splitOn(id, ':');
 	}
 
-	public static Identifier splitOn(String id, char delimiter) {
-		return new Identifier(split(id, delimiter));
-	}
-
 	public static Identifier ofVanilla(String path) {
-		return new Identifier("minecraft", path);
+		return new Identifier("minecraft", validatePath("minecraft", path));
 	}
 
 	/**
@@ -156,11 +151,7 @@ public class Identifier implements Comparable<Identifier> {
 	 */
 	@Nullable
 	public static Identifier tryParse(String id) {
-		try {
-			return of(id);
-		} catch (InvalidIdentifierException var2) {
-			return null;
-		}
+		return trySplitOn(id, ':');
 	}
 
 	/**
@@ -171,27 +162,40 @@ public class Identifier implements Comparable<Identifier> {
 	 */
 	@Nullable
 	public static Identifier tryParse(String namespace, String path) {
-		try {
-			return new Identifier(namespace, path);
-		} catch (InvalidIdentifierException var3) {
-			return null;
+		return isNamespaceValid(namespace) && isPathValid(path) ? new Identifier(namespace, path) : null;
+	}
+
+	public static Identifier splitOn(String id, char delimiter) {
+		int i = id.indexOf(delimiter);
+		if (i >= 0) {
+			String string = id.substring(i + 1);
+			if (i != 0) {
+				String string2 = id.substring(0, i);
+				return ofValidated(string2, string);
+			} else {
+				return ofVanilla(string);
+			}
+		} else {
+			return ofVanilla(id);
 		}
 	}
 
-	/**
-	 * Splits the {@code id} into an array of two strings at the first occurrence of {@code delimiter}, excluding the delimiter character, or uses {@value #DEFAULT_NAMESPACE} for the first string in the resulting array when the deliminator does not exist or is the first character.
-	 */
-	protected static String[] split(String id, char delimiter) {
-		String[] strings = new String[]{"minecraft", id};
+	@Nullable
+	public static Identifier trySplitOn(String id, char delimiter) {
 		int i = id.indexOf(delimiter);
 		if (i >= 0) {
-			strings[1] = id.substring(i + 1);
-			if (i >= 1) {
-				strings[0] = id.substring(0, i);
+			String string = id.substring(i + 1);
+			if (!isPathValid(string)) {
+				return null;
+			} else if (i != 0) {
+				String string2 = id.substring(0, i);
+				return isNamespaceValid(string2) ? new Identifier(string2, string) : null;
+			} else {
+				return new Identifier("minecraft", string);
 			}
+		} else {
+			return isPathValid(id) ? new Identifier("minecraft", id) : null;
 		}
-
-		return strings;
 	}
 
 	public static DataResult<Identifier> validate(String id) {
@@ -219,7 +223,7 @@ public class Identifier implements Comparable<Identifier> {
 	}
 
 	public Identifier withPath(String path) {
-		return new Identifier(this.namespace, validatePath(this.namespace, path), null);
+		return new Identifier(this.namespace, validatePath(this.namespace, path));
 	}
 
 	public Identifier withPath(UnaryOperator<String> pathFunction) {
@@ -391,27 +395,12 @@ public class Identifier implements Comparable<Identifier> {
 		return character == '_' || character == '-' || character >= 'a' && character <= 'z' || character >= '0' && character <= '9' || character == '.';
 	}
 
-	/**
-	 * {@return whether {@code id} can be parsed as an identifier}
-	 */
-	public static boolean isValid(String id) {
-		String[] strings = split(id, ':');
-		return isNamespaceValid(StringUtils.isEmpty(strings[0]) ? "minecraft" : strings[0]) && isPathValid(strings[1]);
-	}
-
 	private static String validatePath(String namespace, String path) {
 		if (!isPathValid(path)) {
 			throw new InvalidIdentifierException("Non [a-z0-9/._-] character in path of location: " + namespace + ":" + path);
 		} else {
 			return path;
 		}
-	}
-
-	/**
-	 * A piece of extra data that a subclass may attach to an identifier. This is
-	 * not used by {@link Identifier} itself.
-	 */
-	protected interface ExtraData {
 	}
 
 	public static class Serializer implements JsonDeserializer<Identifier>, JsonSerializer<Identifier> {

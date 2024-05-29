@@ -66,6 +66,11 @@ public class DamageSource {
 		return this.attacker;
 	}
 
+	@Nullable
+	public ItemStack getWeaponStack() {
+		return this.source != null ? this.source.getWeaponStack() : null;
+	}
+
 	public Text getDeathMessage(LivingEntity killed) {
 		String string = "death.attack." + this.getType().msgId();
 		if (this.attacker == null && this.source == null) {

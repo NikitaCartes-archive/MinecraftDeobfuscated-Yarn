@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.screen;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
+import java.net.URI;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -24,6 +25,14 @@ public class ConfirmLinkScreen extends ConfirmScreen {
 
 	public ConfirmLinkScreen(BooleanConsumer callback, Text title, String link, boolean linkTrusted) {
 		this(callback, title, getConfirmText(linkTrusted, link), link, linkTrusted ? ScreenTexts.CANCEL : ScreenTexts.NO, linkTrusted);
+	}
+
+	public ConfirmLinkScreen(BooleanConsumer callback, Text title, URI link, boolean linkTrusted) {
+		this(callback, title, link.toString(), linkTrusted);
+	}
+
+	public ConfirmLinkScreen(BooleanConsumer callback, Text title, Text message, URI link, Text noText, boolean linkTrusted) {
+		this(callback, title, message, link.toString(), noText, true);
 	}
 
 	public ConfirmLinkScreen(BooleanConsumer callback, Text title, Text message, String link, Text noText, boolean linkTrusted) {
@@ -75,6 +84,21 @@ public class ConfirmLinkScreen extends ConfirmScreen {
 		}, url, linkTrusted));
 	}
 
+	public static void open(Screen parent, URI uri, boolean linkTrusted) {
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		minecraftClient.setScreen(new ConfirmLinkScreen(confirmed -> {
+			if (confirmed) {
+				Util.getOperatingSystem().open(uri);
+			}
+
+			minecraftClient.setScreen(parent);
+		}, uri.toString(), linkTrusted));
+	}
+
+	public static void open(Screen parent, URI uri) {
+		open(parent, uri, true);
+	}
+
 	/**
 	 * Opens the confirmation screen to open {@code url}.
 	 * The link is always trusted.
@@ -85,8 +109,12 @@ public class ConfirmLinkScreen extends ConfirmScreen {
 		open(parent, url, true);
 	}
 
-	public static ButtonWidget.PressAction createOpenPressAction(Screen parent, String url, boolean linkTrusted) {
+	public static ButtonWidget.PressAction opening(Screen parent, String url, boolean linkTrusted) {
 		return button -> open(parent, url, linkTrusted);
+	}
+
+	public static ButtonWidget.PressAction opening(Screen parent, URI uri, boolean linkTrusted) {
+		return button -> open(parent, uri, linkTrusted);
 	}
 
 	/**
@@ -97,6 +125,10 @@ public class ConfirmLinkScreen extends ConfirmScreen {
 	 * @see #open
 	 */
 	public static ButtonWidget.PressAction opening(Screen parent, String url) {
-		return createOpenPressAction(parent, url, true);
+		return opening(parent, url, true);
+	}
+
+	public static ButtonWidget.PressAction opening(Screen parent, URI uri) {
+		return opening(parent, uri, true);
 	}
 }

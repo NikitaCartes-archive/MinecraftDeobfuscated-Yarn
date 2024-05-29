@@ -19,6 +19,7 @@ import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Urls;
 
 @Environment(EnvType.CLIENT)
 public class BuyRealmsScreen extends RealmsScreen {
@@ -65,14 +66,14 @@ public class BuyRealmsScreen extends RealmsScreen {
 		this.parent.resize(this.client, this.width, this.height);
 		if (this.trialAvailable) {
 			this.trialButton = this.addDrawableChild(
-				ButtonWidget.builder(Text.translatable("mco.selectServer.trial"), ConfirmLinkScreen.opening(this, "https://aka.ms/startjavarealmstrial"))
+				ButtonWidget.builder(Text.translatable("mco.selectServer.trial"), ConfirmLinkScreen.opening(this, Urls.JAVA_REALMS_TRIAL))
 					.dimensions(this.getRight() - 10 - 99, this.getBottom() - 10 - 4 - 40, 99, 20)
 					.build()
 			);
 		}
 
 		this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("mco.selectServer.buy"), ConfirmLinkScreen.opening(this, "https://aka.ms/BuyJavaRealms"))
+			ButtonWidget.builder(Text.translatable("mco.selectServer.buy"), ConfirmLinkScreen.opening(this, Urls.BUY_JAVA_REALMS))
 				.dimensions(this.getRight() - 10 - 99, this.getBottom() - 10 - 20, 99, 20)
 				.build()
 		);

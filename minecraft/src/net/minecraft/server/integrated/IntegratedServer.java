@@ -32,6 +32,7 @@ import net.minecraft.util.profiler.MultiValueDebugSampleLogImpl;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.level.storage.LevelStorage;
+import net.minecraft.world.storage.StorageKey;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -305,19 +306,21 @@ public class IntegratedServer extends MinecraftServer {
 
 	private void checkLowDiskSpaceWarning() {
 		if (this.session.shouldShowLowDiskSpaceWarning()) {
-			SystemToast.addLowDiskSpace(this.client);
+			this.client.execute(() -> SystemToast.addLowDiskSpace(this.client));
 		}
 	}
 
 	@Override
-	public void onChunkLoadFailure(ChunkPos pos) {
+	public void onChunkLoadFailure(Throwable exception, StorageKey key, ChunkPos chunkPos) {
+		super.onChunkLoadFailure(exception, key, chunkPos);
 		this.checkLowDiskSpaceWarning();
-		SystemToast.addChunkLoadFailure(this.client, pos);
+		this.client.execute(() -> SystemToast.addChunkLoadFailure(this.client, chunkPos));
 	}
 
 	@Override
-	public void onChunkSaveFailure(ChunkPos pos) {
+	public void onChunkSaveFailure(Throwable exception, StorageKey key, ChunkPos chunkPos) {
+		super.onChunkSaveFailure(exception, key, chunkPos);
 		this.checkLowDiskSpaceWarning();
-		SystemToast.addChunkSaveFailure(this.client, pos);
+		this.client.execute(() -> SystemToast.addChunkSaveFailure(this.client, chunkPos));
 	}
 }

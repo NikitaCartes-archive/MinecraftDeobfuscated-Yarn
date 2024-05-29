@@ -302,7 +302,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	}
 
 	@Override
-	public boolean canBeLeashedBy(PlayerEntity player) {
+	public boolean canBeLeashed() {
 		return true;
 	}
 

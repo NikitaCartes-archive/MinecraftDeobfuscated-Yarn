@@ -249,6 +249,10 @@ public interface VertexConsumer {
 		return this.vertex(vec.x(), vec.y(), vec.z());
 	}
 
+	default VertexConsumer vertex(MatrixStack.Entry matrix, Vector3f vec) {
+		return this.vertex(matrix, vec.x(), vec.y(), vec.z());
+	}
+
 	default VertexConsumer vertex(MatrixStack.Entry matrix, float x, float y, float z) {
 		return this.vertex(matrix.getPositionMatrix(), x, y, z);
 	}

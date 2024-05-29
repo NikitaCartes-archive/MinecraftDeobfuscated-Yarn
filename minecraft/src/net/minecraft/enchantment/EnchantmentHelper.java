@@ -123,7 +123,7 @@ public class EnchantmentHelper {
 	private static void forEachEnchantment(ItemStack stack, EnchantmentHelper.Consumer consumer) {
 		ItemEnchantmentsComponent itemEnchantmentsComponent = stack.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
 
-		for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
+		for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentEntries()) {
 			consumer.accept((RegistryEntry<Enchantment>)entry.getKey(), entry.getIntValue());
 		}
 	}
@@ -134,7 +134,7 @@ public class EnchantmentHelper {
 			if (itemEnchantmentsComponent != null && !itemEnchantmentsComponent.isEmpty()) {
 				EnchantmentEffectContext enchantmentEffectContext = new EnchantmentEffectContext(stack, slot, entity);
 
-				for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
+				for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentEntries()) {
 					RegistryEntry<Enchantment> registryEntry = (RegistryEntry<Enchantment>)entry.getKey();
 					if (registryEntry.value().slotMatches(slot)) {
 						contextAwareConsumer.accept(registryEntry, entry.getIntValue(), enchantmentEffectContext);
@@ -372,22 +372,22 @@ public class EnchantmentHelper {
 		return Math.max(0, mutableFloat.intValue());
 	}
 
-	public static float getCrossbowChargeTime(LivingEntity user, float baseCrossbowChargeTime) {
+	public static float getCrossbowChargeTime(ItemStack stack, LivingEntity user, float baseCrossbowChargeTime) {
 		MutableFloat mutableFloat = new MutableFloat(baseCrossbowChargeTime);
-		forEachEnchantment(user, (enchantment, level, context) -> enchantment.value().modifyCrossbowChargeTime(user.getRandom(), level, mutableFloat));
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().modifyCrossbowChargeTime(user.getRandom(), level, mutableFloat));
 		return Math.max(0.0F, mutableFloat.floatValue());
 	}
 
-	public static float getTridentSpinAttackStrength(LivingEntity user) {
+	public static float getTridentSpinAttackStrength(ItemStack stack, LivingEntity user) {
 		MutableFloat mutableFloat = new MutableFloat(0.0F);
-		forEachEnchantment(user, (enchantment, level, context) -> enchantment.value().modifyTridentSpinAttackStrength(user.getRandom(), level, mutableFloat));
+		forEachEnchantment(stack, (enchantment, level) -> enchantment.value().modifyTridentSpinAttackStrength(user.getRandom(), level, mutableFloat));
 		return mutableFloat.floatValue();
 	}
 
 	public static boolean hasAnyEnchantmentsIn(ItemStack stack, TagKey<Enchantment> tag) {
 		ItemEnchantmentsComponent itemEnchantmentsComponent = stack.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
 
-		for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
+		for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentEntries()) {
 			RegistryEntry<Enchantment> registryEntry = (RegistryEntry<Enchantment>)entry.getKey();
 			if (registryEntry.isIn(tag)) {
 				return true;
@@ -447,7 +447,7 @@ public class EnchantmentHelper {
 			if (stackPredicate.test(itemStack)) {
 				ItemEnchantmentsComponent itemEnchantmentsComponent = itemStack.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
 
-				for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
+				for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentEntries()) {
 					RegistryEntry<Enchantment> registryEntry = (RegistryEntry<Enchantment>)entry.getKey();
 					if (registryEntry.value().effects().contains(componentType) && registryEntry.value().slotMatches(equipmentSlot)) {
 						list.add(new EnchantmentEffectContext(itemStack, equipmentSlot, entity));

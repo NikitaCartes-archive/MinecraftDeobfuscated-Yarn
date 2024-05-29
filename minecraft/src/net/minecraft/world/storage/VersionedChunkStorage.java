@@ -126,4 +126,8 @@ public class VersionedChunkStorage implements AutoCloseable {
 	public NbtScannable getWorker() {
 		return this.worker;
 	}
+
+	protected StorageKey getStorageKey() {
+		return this.worker.getStorageKey();
+	}
 }

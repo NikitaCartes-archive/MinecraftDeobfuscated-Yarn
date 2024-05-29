@@ -93,7 +93,7 @@ public class EntitySelectorOptions {
 						reader.setSelectsName(true);
 					}
 
-					reader.setPredicate(entity -> entity.getName().getString().equals(string) != bl);
+					reader.addPredicate(entity -> entity.getName().getString().equals(string) != bl);
 				}
 			}, reader -> !reader.selectsName(), Text.translatable("argument.entity.options.name.description"));
 			putOption(
@@ -229,7 +229,7 @@ public class EntitySelectorOptions {
 						throw INVALID_MODE_EXCEPTION.createWithContext(reader.getReader(), string);
 					} else {
 						reader.setIncludesNonPlayers(false);
-						reader.setPredicate(entity -> {
+						reader.addPredicate(entity -> {
 							if (!(entity instanceof ServerPlayerEntity)) {
 								return false;
 							} else {
@@ -248,7 +248,7 @@ public class EntitySelectorOptions {
 			putOption("team", reader -> {
 				boolean bl = reader.readNegationCharacter();
 				String string = reader.getReader().readUnquotedString();
-				reader.setPredicate(entity -> {
+				reader.addPredicate(entity -> {
 					if (!(entity instanceof LivingEntity)) {
 						return false;
 					} else {
@@ -286,7 +286,7 @@ public class EntitySelectorOptions {
 
 					if (reader.readTagCharacter()) {
 						TagKey<EntityType<?>> tagKey = TagKey.of(RegistryKeys.ENTITY_TYPE, Identifier.fromCommandInput(reader.getReader()));
-						reader.setPredicate(entity -> entity.getType().isIn(tagKey) != bl);
+						reader.addPredicate(entity -> entity.getType().isIn(tagKey) != bl);
 					} else {
 						Identifier identifier = Identifier.fromCommandInput(reader.getReader());
 						EntityType<?> entityType = (EntityType<?>)Registries.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {
@@ -297,7 +297,7 @@ public class EntitySelectorOptions {
 							reader.setIncludesNonPlayers(false);
 						}
 
-						reader.setPredicate(entity -> Objects.equals(entityType, entity.getType()) != bl);
+						reader.addPredicate(entity -> Objects.equals(entityType, entity.getType()) != bl);
 						if (!bl) {
 							reader.setEntityType(entityType);
 						}
@@ -307,12 +307,12 @@ public class EntitySelectorOptions {
 			putOption("tag", reader -> {
 				boolean bl = reader.readNegationCharacter();
 				String string = reader.getReader().readUnquotedString();
-				reader.setPredicate(entity -> "".equals(string) ? entity.getCommandTags().isEmpty() != bl : entity.getCommandTags().contains(string) != bl);
+				reader.addPredicate(entity -> "".equals(string) ? entity.getCommandTags().isEmpty() != bl : entity.getCommandTags().contains(string) != bl);
 			}, reader -> true, Text.translatable("argument.entity.options.tag.description"));
 			putOption("nbt", reader -> {
 				boolean bl = reader.readNegationCharacter();
 				NbtCompound nbtCompound = new StringNbtReader(reader.getReader()).parseCompound();
-				reader.setPredicate(entity -> {
+				reader.addPredicate(entity -> {
 					NbtCompound nbtCompound2 = entity.writeNbt(new NbtCompound());
 					if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
 						ItemStack itemStack = serverPlayerEntity.getInventory().getMainHandStack();
@@ -346,7 +346,7 @@ public class EntitySelectorOptions {
 
 				stringReader.expect('}');
 				if (!map.isEmpty()) {
-					reader.setPredicate(entity -> {
+					reader.addPredicate(entity -> {
 						Scoreboard scoreboard = entity.getServer().getScoreboard();
 
 						for (Entry<String, NumberRange.IntRange> entry : map.entrySet()) {
@@ -429,7 +429,7 @@ public class EntitySelectorOptions {
 
 				stringReader.expect('}');
 				if (!map.isEmpty()) {
-					reader.setPredicate(entity -> {
+					reader.addPredicate(entity -> {
 						if (!(entity instanceof ServerPlayerEntity serverPlayerEntity)) {
 							return false;
 						} else {
@@ -456,7 +456,7 @@ public class EntitySelectorOptions {
 				reader -> {
 					boolean bl = reader.readNegationCharacter();
 					RegistryKey<LootCondition> registryKey = RegistryKey.of(RegistryKeys.PREDICATE, Identifier.fromCommandInput(reader.getReader()));
-					reader.setPredicate(
+					reader.addPredicate(
 						entity -> {
 							if (!(entity.getWorld() instanceof ServerWorld)) {
 								return false;

@@ -1,7 +1,6 @@
 package net.minecraft.screen;
 
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.passive.AbstractDonkeyEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -18,7 +17,7 @@ public class HorseScreenHandler extends ScreenHandler {
 	private static final int field_48835 = 1;
 	private static final int field_48836 = 2;
 
-	public HorseScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, AbstractHorseEntity entity) {
+	public HorseScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, AbstractHorseEntity entity, int slotColumnCount) {
 		super(null, syncId);
 		this.inventory = inventory;
 		this.horseArmorInventory = entity.getInventory();
@@ -48,10 +47,10 @@ public class HorseScreenHandler extends ScreenHandler {
 				return entity.canUseSlot(EquipmentSlot.BODY);
 			}
 		});
-		if (this.hasChest(entity)) {
+		if (slotColumnCount > 0) {
 			for (int k = 0; k < 3; k++) {
-				for (int l = 0; l < ((AbstractDonkeyEntity)entity).getInventoryColumns(); l++) {
-					this.addSlot(new Slot(inventory, 1 + l + k * ((AbstractDonkeyEntity)entity).getInventoryColumns(), 80 + l * 18, 18 + k * 18));
+				for (int l = 0; l < slotColumnCount; l++) {
+					this.addSlot(new Slot(inventory, 1 + l + k * slotColumnCount, 80 + l * 18, 18 + k * 18));
 				}
 			}
 		}
@@ -74,14 +73,6 @@ public class HorseScreenHandler extends ScreenHandler {
 			&& this.horseArmorInventory.canPlayerUse(player)
 			&& this.entity.isAlive()
 			&& player.canInteractWithEntity(this.entity, 4.0);
-	}
-
-	private boolean hasChest(AbstractHorseEntity horse) {
-		if (horse instanceof AbstractDonkeyEntity abstractDonkeyEntity && abstractDonkeyEntity.hasChest()) {
-			return true;
-		}
-
-		return false;
 	}
 
 	@Override

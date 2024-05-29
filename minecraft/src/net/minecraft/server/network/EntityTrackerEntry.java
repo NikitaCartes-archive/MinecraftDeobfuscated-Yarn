@@ -76,6 +76,7 @@ public class EntityTrackerEntry {
 		this.tickInterval = tickInterval;
 		this.alwaysUpdateVelocity = alwaysUpdateVelocity;
 		this.trackedPos.setPos(entity.getSyncedPos());
+		this.velocity = entity.getVelocity();
 		this.lastYaw = MathHelper.floor(entity.getYaw() * 256.0F / 360.0F);
 		this.lastPitch = MathHelper.floor(entity.getPitch() * 256.0F / 360.0F);
 		this.lastHeadYaw = MathHelper.floor(entity.getHeadYaw() * 256.0F / 360.0F);
@@ -145,32 +146,30 @@ public class EntityTrackerEntry {
 				boolean bl4 = Math.abs(i - this.lastYaw) >= 1 || Math.abs(j - this.lastPitch) >= 1;
 				boolean bl5 = false;
 				boolean bl6 = false;
-				if (this.trackingTick > 0 || this.entity instanceof PersistentProjectileEntity) {
-					long l = this.trackedPos.getDeltaX(vec3d);
-					long m = this.trackedPos.getDeltaY(vec3d);
-					long n = this.trackedPos.getDeltaZ(vec3d);
-					boolean bl7 = l < -32768L || l > 32767L || m < -32768L || m > 32767L || n < -32768L || n > 32767L;
-					if (bl7 || this.updatesWithoutVehicle > 400 || this.hadVehicle || this.lastOnGround != this.entity.isOnGround()) {
-						this.lastOnGround = this.entity.isOnGround();
-						this.updatesWithoutVehicle = 0;
-						packet2 = new EntityPositionS2CPacket(this.entity);
+				long l = this.trackedPos.getDeltaX(vec3d);
+				long m = this.trackedPos.getDeltaY(vec3d);
+				long n = this.trackedPos.getDeltaZ(vec3d);
+				boolean bl7 = l < -32768L || l > 32767L || m < -32768L || m > 32767L || n < -32768L || n > 32767L;
+				if (bl7 || this.updatesWithoutVehicle > 400 || this.hadVehicle || this.lastOnGround != this.entity.isOnGround()) {
+					this.lastOnGround = this.entity.isOnGround();
+					this.updatesWithoutVehicle = 0;
+					packet2 = new EntityPositionS2CPacket(this.entity);
+					bl5 = true;
+					bl6 = true;
+				} else if ((!bl3 || !bl4) && !(this.entity instanceof PersistentProjectileEntity)) {
+					if (bl3) {
+						packet2 = new EntityS2CPacket.MoveRelative(this.entity.getId(), (short)((int)l), (short)((int)m), (short)((int)n), this.entity.isOnGround());
 						bl5 = true;
-						bl6 = true;
-					} else if ((!bl3 || !bl4) && !(this.entity instanceof PersistentProjectileEntity)) {
-						if (bl3) {
-							packet2 = new EntityS2CPacket.MoveRelative(this.entity.getId(), (short)((int)l), (short)((int)m), (short)((int)n), this.entity.isOnGround());
-							bl5 = true;
-						} else if (bl4) {
-							packet2 = new EntityS2CPacket.Rotate(this.entity.getId(), (byte)i, (byte)j, this.entity.isOnGround());
-							bl6 = true;
-						}
-					} else {
-						packet2 = new EntityS2CPacket.RotateAndMoveRelative(
-							this.entity.getId(), (short)((int)l), (short)((int)m), (short)((int)n), (byte)i, (byte)j, this.entity.isOnGround()
-						);
-						bl5 = true;
+					} else if (bl4) {
+						packet2 = new EntityS2CPacket.Rotate(this.entity.getId(), (byte)i, (byte)j, this.entity.isOnGround());
 						bl6 = true;
 					}
+				} else {
+					packet2 = new EntityS2CPacket.RotateAndMoveRelative(
+						this.entity.getId(), (short)((int)l), (short)((int)m), (short)((int)n), (byte)i, (byte)j, this.entity.isOnGround()
+					);
+					bl5 = true;
+					bl6 = true;
 				}
 
 				if ((this.alwaysUpdateVelocity || this.entity.velocityDirty || this.entity instanceof LivingEntity && ((LivingEntity)this.entity).isFallFlying())
@@ -249,8 +248,7 @@ public class EntityTrackerEntry {
 			LOGGER.warn("Fetching packet for removed entity {}", this.entity);
 		}
 
-		Packet<ClientPlayPacketListener> packet = this.entity.createSpawnPacket();
-		this.lastHeadYaw = MathHelper.floor(this.entity.getHeadYaw() * 256.0F / 360.0F);
+		Packet<ClientPlayPacketListener> packet = this.entity.createSpawnPacket(this);
 		sender.accept(packet);
 		if (this.changedEntries != null) {
 			sender.accept(new EntityTrackerUpdateS2CPacket(this.entity.getId(), this.changedEntries));
@@ -268,7 +266,6 @@ public class EntityTrackerEntry {
 			}
 		}
 
-		this.velocity = this.entity.getVelocity();
 		if (bl && !(this.entity instanceof LivingEntity)) {
 			sender.accept(new EntityVelocityUpdateS2CPacket(this.entity.getId(), this.velocity));
 		}
@@ -297,8 +294,28 @@ public class EntityTrackerEntry {
 		}
 
 		if (this.entity instanceof MobEntity mobEntity && mobEntity.isLeashed()) {
-			sender.accept(new EntityAttachS2CPacket(mobEntity, mobEntity.getHoldingEntity()));
+			sender.accept(new EntityAttachS2CPacket(mobEntity, mobEntity.getLeashHolder()));
 		}
+	}
+
+	public Vec3d getPos() {
+		return this.trackedPos.getPos();
+	}
+
+	public Vec3d getVelocity() {
+		return this.velocity;
+	}
+
+	public float getPitch() {
+		return (float)this.lastPitch;
+	}
+
+	public float getYaw() {
+		return (float)this.lastYaw;
+	}
+
+	public float getHeadYaw() {
+		return (float)this.lastHeadYaw;
 	}
 
 	/**

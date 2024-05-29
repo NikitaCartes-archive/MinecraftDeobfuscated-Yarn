@@ -60,8 +60,12 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 	@Override
 	public void validate(LootTableReporter reporter) {
 		super.validate(reporter);
-		if (reporter.getDataLookup().getOptionalEntry(RegistryKeys.LOOT_TABLE, this.lootTable).isEmpty()) {
-			reporter.report("Missing loot table used for container: " + this.lootTable.getValue());
+		if (!reporter.canUseReferences()) {
+			reporter.report("Uses reference to " + this.lootTable.getValue() + ", but references are not allowed");
+		} else {
+			if (reporter.getDataLookup().getOptionalEntry(RegistryKeys.LOOT_TABLE, this.lootTable).isEmpty()) {
+				reporter.report("Missing loot table used for container: " + this.lootTable.getValue());
+			}
 		}
 	}
 

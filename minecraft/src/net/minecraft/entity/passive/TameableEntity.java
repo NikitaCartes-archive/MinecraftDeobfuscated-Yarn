@@ -91,8 +91,21 @@ public abstract class TameableEntity extends AnimalEntity implements Tameable {
 	}
 
 	@Override
-	public boolean canBeLeashedBy(PlayerEntity player) {
-		return !this.isLeashed();
+	public boolean canBeLeashed() {
+		return true;
+	}
+
+	@Override
+	public boolean shouldTickLeash(Entity leashHolder, float distance) {
+		if (this.isInSittingPose()) {
+			if (distance > 10.0F) {
+				this.detachLeash(true, true);
+			}
+
+			return false;
+		} else {
+			return super.shouldTickLeash(leashHolder, distance);
+		}
 	}
 
 	protected void showEmoteParticle(boolean positive) {

@@ -995,7 +995,7 @@ public class ExecuteCommand {
 			)
 			.then(
 				CommandManager.literal("leasher")
-					.fork(node, createEntityModifier(entity -> entity instanceof MobEntity mobEntity ? Optional.ofNullable(mobEntity.getHoldingEntity()) : Optional.empty()))
+					.fork(node, createEntityModifier(entity -> entity instanceof MobEntity mobEntity ? Optional.ofNullable(mobEntity.getLeashHolder()) : Optional.empty()))
 			)
 			.then(
 				CommandManager.literal("target")

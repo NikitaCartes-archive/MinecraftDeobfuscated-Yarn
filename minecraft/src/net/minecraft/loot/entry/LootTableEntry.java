@@ -49,6 +49,11 @@ public class LootTableEntry extends LeafEntry {
 		Optional<RegistryKey<LootTable>> optional = this.value.left();
 		if (optional.isPresent()) {
 			RegistryKey<LootTable> registryKey = (RegistryKey<LootTable>)optional.get();
+			if (!reporter.canUseReferences()) {
+				reporter.report("Uses reference to " + registryKey.getValue() + ", but references are not allowed");
+				return;
+			}
+
 			if (reporter.isInStack(registryKey)) {
 				reporter.report("Table " + registryKey.getValue() + " is recursively called");
 				return;

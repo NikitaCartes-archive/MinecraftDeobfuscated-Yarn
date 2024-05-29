@@ -1,7 +1,6 @@
 package net.minecraft.block.entity;
 
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Dynamic;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SculkSensorBlock;
@@ -9,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
@@ -45,10 +45,11 @@ public class SculkSensorBlockEntity extends BlockEntity implements GameEventList
 	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		this.lastVibrationFrequency = nbt.getInt("last_vibration_frequency");
+		RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
 			Vibrations.ListenerData.CODEC
-				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
-				.resultOrPartial(LOGGER::error)
+				.parse(registryOps, nbt.getCompound("listener"))
+				.resultOrPartial(string -> LOGGER.error("Failed to parse vibration listener for Sculk Sensor: '{}'", string))
 				.ifPresent(listener -> this.listenerData = listener);
 		}
 	}
@@ -57,9 +58,10 @@ public class SculkSensorBlockEntity extends BlockEntity implements GameEventList
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
 		nbt.putInt("last_vibration_frequency", this.lastVibrationFrequency);
+		RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
 		Vibrations.ListenerData.CODEC
-			.encodeStart(NbtOps.INSTANCE, this.listenerData)
-			.resultOrPartial(LOGGER::error)
+			.encodeStart(registryOps, this.listenerData)
+			.resultOrPartial(string -> LOGGER.error("Failed to encode vibration listener for Sculk Sensor: '{}'", string))
 			.ifPresent(listenerNbt -> nbt.put("listener", listenerNbt));
 	}
 

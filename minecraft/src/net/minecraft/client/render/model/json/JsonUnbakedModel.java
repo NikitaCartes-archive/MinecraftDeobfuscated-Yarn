@@ -201,29 +201,27 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	@Override
-	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
-		return this.bake(baker, this, textureGetter, rotationContainer, modelId, true);
+	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer) {
+		return this.bake(baker, this, textureGetter, rotationContainer, true);
 	}
 
-	public BakedModel bake(
-		Baker baker, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth
-	) {
+	public BakedModel bake(Baker baker, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, boolean bl) {
 		Sprite sprite = (Sprite)textureGetter.apply(this.resolveSprite("particle"));
 		if (this.getRootModel() == ModelLoader.BLOCK_ENTITY_MARKER) {
 			return new BuiltinBakedModel(this.getTransformations(), this.compileOverrides(baker, parent), sprite, this.getGuiLight().isSide());
 		} else {
-			BasicBakedModel.Builder builder = new BasicBakedModel.Builder(this, this.compileOverrides(baker, parent), hasDepth).setParticle(sprite);
+			BasicBakedModel.Builder builder = new BasicBakedModel.Builder(this, this.compileOverrides(baker, parent), bl).setParticle(sprite);
 
 			for (ModelElement modelElement : this.getElements()) {
 				for (Direction direction : modelElement.faces.keySet()) {
 					ModelElementFace modelElementFace = (ModelElementFace)modelElement.faces.get(direction);
-					Sprite sprite2 = (Sprite)textureGetter.apply(this.resolveSprite(modelElementFace.textureId));
-					if (modelElementFace.cullFace == null) {
-						builder.addQuad(createQuad(modelElement, modelElementFace, sprite2, direction, settings, id));
+					Sprite sprite2 = (Sprite)textureGetter.apply(this.resolveSprite(modelElementFace.textureId()));
+					if (modelElementFace.cullFace() == null) {
+						builder.addQuad(createQuad(modelElement, modelElementFace, sprite2, direction, settings));
 					} else {
 						builder.addQuad(
-							Direction.transform(settings.getRotation().getMatrix(), modelElementFace.cullFace),
-							createQuad(modelElement, modelElementFace, sprite2, direction, settings, id)
+							Direction.transform(settings.getRotation().getMatrix(), modelElementFace.cullFace()),
+							createQuad(modelElement, modelElementFace, sprite2, direction, settings)
 						);
 					}
 				}
@@ -233,10 +231,8 @@ public class JsonUnbakedModel implements UnbakedModel {
 		}
 	}
 
-	private static BakedQuad createQuad(
-		ModelElement element, ModelElementFace elementFace, Sprite sprite, Direction side, ModelBakeSettings settings, Identifier id
-	) {
-		return QUAD_FACTORY.bake(element.from, element.to, elementFace, sprite, side, settings, element.rotation, element.shade, id);
+	private static BakedQuad createQuad(ModelElement element, ModelElementFace elementFace, Sprite sprite, Direction side, ModelBakeSettings settings) {
+		return QUAD_FACTORY.bake(element.from, element.to, elementFace, sprite, side, settings, element.rotation, element.shade);
 	}
 
 	public boolean textureExists(String name) {

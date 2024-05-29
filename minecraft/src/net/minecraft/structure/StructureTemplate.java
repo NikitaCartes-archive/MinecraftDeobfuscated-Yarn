@@ -241,8 +241,8 @@ public class StructureTemplate {
 				&& this.size.getY() >= 1
 				&& this.size.getZ() >= 1) {
 				BlockBox blockBox = placementData.getBoundingBox();
-				List<BlockPos> list2 = Lists.<BlockPos>newArrayListWithCapacity(placementData.shouldPlaceFluids() ? list.size() : 0);
-				List<BlockPos> list3 = Lists.<BlockPos>newArrayListWithCapacity(placementData.shouldPlaceFluids() ? list.size() : 0);
+				List<BlockPos> list2 = Lists.<BlockPos>newArrayListWithCapacity(placementData.shouldApplyWaterlogging() ? list.size() : 0);
+				List<BlockPos> list3 = Lists.<BlockPos>newArrayListWithCapacity(placementData.shouldApplyWaterlogging() ? list.size() : 0);
 				List<Pair<BlockPos, NbtCompound>> list4 = Lists.<Pair<BlockPos, NbtCompound>>newArrayListWithCapacity(list.size());
 				int i = Integer.MAX_VALUE;
 				int j = Integer.MAX_VALUE;
@@ -254,7 +254,7 @@ public class StructureTemplate {
 				for (StructureTemplate.StructureBlockInfo structureBlockInfo : process(world, pos, pivot, placementData, list)) {
 					BlockPos blockPos = structureBlockInfo.pos;
 					if (blockBox == null || blockBox.contains(blockPos)) {
-						FluidState fluidState = placementData.shouldPlaceFluids() ? world.getFluidState(blockPos) : null;
+						FluidState fluidState = placementData.shouldApplyWaterlogging() ? world.getFluidState(blockPos) : null;
 						BlockState blockState = structureBlockInfo.state.mirror(placementData.getMirror()).rotate(placementData.getRotation());
 						if (structureBlockInfo.nbt != null) {
 							BlockEntity blockEntity = world.getBlockEntity(blockPos);

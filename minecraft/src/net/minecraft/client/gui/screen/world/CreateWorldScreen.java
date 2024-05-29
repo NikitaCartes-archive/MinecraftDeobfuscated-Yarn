@@ -418,7 +418,7 @@ public class CreateWorldScreen extends Screen {
 				Util.getMainWorkerExecutor(),
 				this.client
 			)
-			.thenApplyAsync(generatorOptionsHolder -> {
+			.thenApply(generatorOptionsHolder -> {
 				generatorOptionsHolder.initializeIndexedFeaturesLists();
 				return generatorOptionsHolder;
 			})

@@ -16,5 +16,5 @@ public interface UnbakedModel {
 	void setParents(Function<Identifier, UnbakedModel> modelLoader);
 
 	@Nullable
-	BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId);
+	BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer);
 }

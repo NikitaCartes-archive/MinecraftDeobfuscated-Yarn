@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.screen;
 
-import java.net.URI;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -51,14 +50,10 @@ public class DisconnectedScreen extends Screen {
 		this.grid.getMainPositioner().margin(2);
 		this.info
 			.bugReportLink()
-			.ifPresent(
-				bugReportLink -> this.grid
-						.add(ButtonWidget.builder(REPORT_TO_SERVER_TEXT, ConfirmLinkScreen.createOpenPressAction(this, bugReportLink, false)).width(200).build())
-			);
-		this.info.report().ifPresent(report -> {
-			URI uRI = report.getParent().toUri();
-			this.grid.add(ButtonWidget.builder(OPEN_REPORT_DIR_TEXT, button -> Util.getOperatingSystem().open(uRI)).width(200).build());
-		});
+			.ifPresent(uri -> this.grid.add(ButtonWidget.builder(REPORT_TO_SERVER_TEXT, ConfirmLinkScreen.opening(this, uri, false)).width(200).build()));
+		this.info
+			.report()
+			.ifPresent(path -> this.grid.add(ButtonWidget.builder(OPEN_REPORT_DIR_TEXT, button -> Util.getOperatingSystem().open(path.getParent())).width(200).build()));
 		ButtonWidget buttonWidget;
 		if (this.client.isMultiplayerEnabled()) {
 			buttonWidget = ButtonWidget.builder(this.buttonLabel, button -> this.client.setScreen(this.parent)).width(200).build();

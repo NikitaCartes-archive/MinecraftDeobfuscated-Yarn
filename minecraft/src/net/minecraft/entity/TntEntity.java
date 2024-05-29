@@ -62,6 +62,7 @@ public class TntEntity extends Entity implements Ownable {
 
 	@Override
 	public void tick() {
+		this.tickPortalTeleportation();
 		this.applyGravity();
 		this.move(MovementType.SELF, this.getVelocity());
 		this.setVelocity(this.getVelocity().multiply(0.98));

@@ -62,7 +62,7 @@ public class ServerLinksScreen extends Screen {
 		final ClickableWidget button;
 
 		LinksListEntry(Screen screen, ServerLinks.Entry link) {
-			this.button = ButtonWidget.builder(link.getText(), ConfirmLinkScreen.createOpenPressAction(screen, link.url(), false)).width(310).build();
+			this.button = ButtonWidget.builder(link.getText(), ConfirmLinkScreen.opening(screen, link.link(), false)).width(310).build();
 		}
 
 		@Override

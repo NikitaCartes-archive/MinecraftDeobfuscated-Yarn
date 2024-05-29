@@ -20,6 +20,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
@@ -102,6 +103,7 @@ public class TrialSpawnerData {
 		this.nextMobSpawnsAt = 0L;
 		this.cooldownEnd = 0L;
 		this.spawnedMobsAlive.clear();
+		this.spawnData = Optional.empty();
 	}
 
 	public boolean hasSpawnData(TrialSpawnerLogic logic, Random random) {
@@ -190,6 +192,10 @@ public class TrialSpawnerData {
 		this.spawnedMobsAlive.stream().map(world::getEntity).forEach(entity -> {
 			if (entity != null) {
 				world.syncWorldEvent(WorldEvents.TRIAL_SPAWNER_SPAWNS_MOB_AT_SPAWN_POS, entity.getBlockPos(), TrialSpawnerLogic.Type.NORMAL.getIndex());
+				if (entity instanceof MobEntity mobEntity) {
+					mobEntity.dropAllEquipment();
+				}
+
 				entity.remove(Entity.RemovalReason.DISCARDED);
 			}
 		});

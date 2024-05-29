@@ -10,6 +10,7 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.enums.Orientation;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.structure.StructureLiquidSettings;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.BlockRotation;
@@ -82,6 +83,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		BlockRotation rotation,
 		BlockBox box,
 		Random random,
+		StructureLiquidSettings liquidSettings,
 		boolean keepJigsaws
 	) {
 		return this.feature.value().generateUnregistered(world, chunkGenerator, random, pos);

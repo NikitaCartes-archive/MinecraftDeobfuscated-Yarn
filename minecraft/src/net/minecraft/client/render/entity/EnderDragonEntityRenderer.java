@@ -24,7 +24,8 @@ import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
-import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity> {
@@ -73,31 +74,42 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		if (enderDragonEntity.ticksSinceDeath > 0) {
 			float m = ((float)enderDragonEntity.ticksSinceDeath + g) / 200.0F;
 			float n = Math.min(m > 0.8F ? (m - 0.8F) / 0.2F : 0.0F, 1.0F);
+			int o = ColorHelper.Argb.fromFloats(1.0F - n, 1.0F, 1.0F, 1.0F);
+			int p = 16711935;
 			Random random = Random.create(432L);
-			VertexConsumer vertexConsumer4 = vertexConsumerProvider.getBuffer(RenderLayer.getLightning());
+			VertexConsumer vertexConsumer4 = vertexConsumerProvider.getBuffer(RenderLayer.getDragonRays());
 			matrixStack.push();
 			matrixStack.translate(0.0F, -1.0F, -2.0F);
+			Vector3f vector3f = new Vector3f();
+			Vector3f vector3f2 = new Vector3f();
+			Vector3f vector3f3 = new Vector3f();
+			Vector3f vector3f4 = new Vector3f();
+			Quaternionf quaternionf = new Quaternionf();
+			int q = MathHelper.floor((m + m * m) / 2.0F * 60.0F);
 
-			for (int o = 0; (float)o < (m + m * m) / 2.0F * 60.0F; o++) {
-				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(random.nextFloat() * 360.0F));
-				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(random.nextFloat() * 360.0F));
-				matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(random.nextFloat() * 360.0F));
-				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(random.nextFloat() * 360.0F));
-				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(random.nextFloat() * 360.0F));
-				matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(random.nextFloat() * 360.0F + m * 90.0F));
-				float p = random.nextFloat() * 20.0F + 5.0F + n * 10.0F;
-				float q = random.nextFloat() * 2.0F + 1.0F + n * 2.0F;
-				Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
-				int r = (int)(255.0F * (1.0F - n));
-				putDeathLightSourceVertex(vertexConsumer4, matrix4f, r);
-				putDeathLightNegativeXTerminalVertex(vertexConsumer4, matrix4f, p, q);
-				putDeathLightPositiveXTerminalVertex(vertexConsumer4, matrix4f, p, q);
-				putDeathLightSourceVertex(vertexConsumer4, matrix4f, r);
-				putDeathLightPositiveXTerminalVertex(vertexConsumer4, matrix4f, p, q);
-				putDeathLightPositiveZTerminalVertex(vertexConsumer4, matrix4f, p, q);
-				putDeathLightSourceVertex(vertexConsumer4, matrix4f, r);
-				putDeathLightPositiveZTerminalVertex(vertexConsumer4, matrix4f, p, q);
-				putDeathLightNegativeXTerminalVertex(vertexConsumer4, matrix4f, p, q);
+			for (int r = 0; r < q; r++) {
+				quaternionf.rotationXYZ(random.nextFloat() * (float) (Math.PI * 2), random.nextFloat() * (float) (Math.PI * 2), random.nextFloat() * (float) (Math.PI * 2))
+					.rotateXYZ(
+						random.nextFloat() * (float) (Math.PI * 2),
+						random.nextFloat() * (float) (Math.PI * 2),
+						random.nextFloat() * (float) (Math.PI * 2) + m * (float) (Math.PI / 2)
+					);
+				matrixStack.multiply(quaternionf);
+				float s = random.nextFloat() * 20.0F + 5.0F + n * 10.0F;
+				float t = random.nextFloat() * 2.0F + 1.0F + n * 2.0F;
+				vector3f2.set(-HALF_SQRT_3 * t, s, -0.5F * t);
+				vector3f3.set(HALF_SQRT_3 * t, s, -0.5F * t);
+				vector3f4.set(0.0F, s, t);
+				MatrixStack.Entry entry = matrixStack.peek();
+				vertexConsumer4.vertex(entry, vector3f).color(o);
+				vertexConsumer4.vertex(entry, vector3f2).color(16711935);
+				vertexConsumer4.vertex(entry, vector3f3).color(16711935);
+				vertexConsumer4.vertex(entry, vector3f).color(o);
+				vertexConsumer4.vertex(entry, vector3f3).color(16711935);
+				vertexConsumer4.vertex(entry, vector3f4).color(16711935);
+				vertexConsumer4.vertex(entry, vector3f).color(o);
+				vertexConsumer4.vertex(entry, vector3f4).color(16711935);
+				vertexConsumer4.vertex(entry, vector3f2).color(16711935);
 			}
 
 			matrixStack.pop();
@@ -108,30 +120,14 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 			matrixStack.push();
 			float m = (float)(enderDragonEntity.connectedCrystal.getX() - MathHelper.lerp((double)g, enderDragonEntity.prevX, enderDragonEntity.getX()));
 			float n = (float)(enderDragonEntity.connectedCrystal.getY() - MathHelper.lerp((double)g, enderDragonEntity.prevY, enderDragonEntity.getY()));
-			float s = (float)(enderDragonEntity.connectedCrystal.getZ() - MathHelper.lerp((double)g, enderDragonEntity.prevZ, enderDragonEntity.getZ()));
+			float u = (float)(enderDragonEntity.connectedCrystal.getZ() - MathHelper.lerp((double)g, enderDragonEntity.prevZ, enderDragonEntity.getZ()));
 			renderCrystalBeam(
-				m, n + EndCrystalEntityRenderer.getYOffset(enderDragonEntity.connectedCrystal, g), s, g, enderDragonEntity.age, matrixStack, vertexConsumerProvider, i
+				m, n + EndCrystalEntityRenderer.getYOffset(enderDragonEntity.connectedCrystal, g), u, g, enderDragonEntity.age, matrixStack, vertexConsumerProvider, i
 			);
 			matrixStack.pop();
 		}
 
 		super.render(enderDragonEntity, f, g, matrixStack, vertexConsumerProvider, i);
-	}
-
-	private static void putDeathLightSourceVertex(VertexConsumer buffer, Matrix4f matrix, int alpha) {
-		buffer.vertex(matrix, 0.0F, 0.0F, 0.0F).colorRgb(alpha);
-	}
-
-	private static void putDeathLightNegativeXTerminalVertex(VertexConsumer buffer, Matrix4f matrix, float radius, float width) {
-		buffer.vertex(matrix, -HALF_SQRT_3 * width, radius, -0.5F * width).color(16711935);
-	}
-
-	private static void putDeathLightPositiveXTerminalVertex(VertexConsumer buffer, Matrix4f matrix, float radius, float width) {
-		buffer.vertex(matrix, HALF_SQRT_3 * width, radius, -0.5F * width).color(16711935);
-	}
-
-	private static void putDeathLightPositiveZTerminalVertex(VertexConsumer buffer, Matrix4f matrix, float radius, float width) {
-		buffer.vertex(matrix, 0.0F, radius, 1.0F * width).color(16711935);
 	}
 
 	public static void renderCrystalBeam(

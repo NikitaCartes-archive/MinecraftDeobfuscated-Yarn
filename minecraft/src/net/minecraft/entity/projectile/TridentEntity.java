@@ -1,6 +1,5 @@
 package net.minecraft.entity.projectile;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -149,9 +148,8 @@ public class TridentEntity extends PersistentProjectileEntity {
 		);
 	}
 
-	@Nonnull
 	@Override
-	protected ItemStack getWeaponStack() {
+	public ItemStack getWeaponStack() {
 		return this.getItemStack();
 	}
 

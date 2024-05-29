@@ -24,7 +24,9 @@ public record ReferenceLootCondition(RegistryKey<LootCondition> id) implements L
 
 	@Override
 	public void validate(LootTableReporter reporter) {
-		if (reporter.isInStack(this.id)) {
+		if (!reporter.canUseReferences()) {
+			reporter.report("Uses reference to " + this.id.getValue() + ", but references are not allowed");
+		} else if (reporter.isInStack(this.id)) {
 			reporter.report("Condition " + this.id.getValue() + " is recursively called");
 		} else {
 			LootCondition.super.validate(reporter);

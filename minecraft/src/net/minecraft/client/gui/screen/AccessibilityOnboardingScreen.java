@@ -10,7 +10,6 @@ import net.minecraft.client.gui.LogoDrawer;
 import net.minecraft.client.gui.screen.option.AccessibilityOptionsScreen;
 import net.minecraft.client.gui.screen.option.LanguageOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.NarratedMultilineTextWidget;
@@ -33,8 +32,6 @@ public class AccessibilityOnboardingScreen extends Screen {
 	private final Runnable onClose;
 	@Nullable
 	private NarratedMultilineTextWidget textWidget;
-	@Nullable
-	private ClickableWidget narratorWidget;
 	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this, this.yMargin(), 33);
 
 	public AccessibilityOnboardingScreen(GameOptions gameOptions, Runnable onClose) {
@@ -50,9 +47,12 @@ public class AccessibilityOnboardingScreen extends Screen {
 		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addBody(DirectionalLayoutWidget.vertical());
 		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter().margin(4);
 		this.textWidget = directionalLayoutWidget.add(new NarratedMultilineTextWidget(this.width, this.title, this.textRenderer), positioner -> positioner.margin(8));
-		this.narratorWidget = this.gameOptions.getNarrator().createWidget(this.gameOptions);
-		this.narratorWidget.active = this.isNarratorUsable;
-		directionalLayoutWidget.add(this.narratorWidget);
+		if (this.gameOptions.getNarrator().createWidget(this.gameOptions) instanceof CyclingButtonWidget cyclingButtonWidget) {
+			this.narratorToggleButton = cyclingButtonWidget;
+			this.narratorToggleButton.active = this.isNarratorUsable;
+			directionalLayoutWidget.add(this.narratorToggleButton);
+		}
+
 		directionalLayoutWidget.add(
 			AccessibilityOnboardingButtons.createAccessibilityButton(150, button -> this.setScreen(new AccessibilityOptionsScreen(this, this.client.options)), false)
 		);
@@ -77,8 +77,8 @@ public class AccessibilityOnboardingScreen extends Screen {
 
 	@Override
 	protected void setInitialFocus() {
-		if (this.isNarratorUsable && this.narratorWidget != null) {
-			this.setInitialFocus(this.narratorWidget);
+		if (this.isNarratorUsable && this.narratorToggleButton != null) {
+			this.setInitialFocus(this.narratorToggleButton);
 		} else {
 			super.setInitialFocus();
 		}
@@ -124,12 +124,6 @@ public class AccessibilityOnboardingScreen extends Screen {
 				Narrator.getNarrator().say(NARRATOR_PROMPT.getString(), true);
 				this.narratorPrompted = true;
 			}
-		}
-	}
-
-	public void refreshNarratorOption() {
-		if (this.narratorWidget instanceof CyclingButtonWidget) {
-			((CyclingButtonWidget)this.narratorWidget).setValue(this.gameOptions.getNarrator().getValue());
 		}
 	}
 }

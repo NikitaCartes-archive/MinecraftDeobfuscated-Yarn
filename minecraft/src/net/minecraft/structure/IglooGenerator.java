@@ -65,7 +65,8 @@ public class IglooGenerator {
 				.setRotation(rotation)
 				.setMirror(BlockMirror.NONE)
 				.setPosition((BlockPos)IglooGenerator.OFFSETS.get(identifier))
-				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
+				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS)
+				.setLiquidSettings(StructureLiquidSettings.IGNORE_WATERLOGGING);
 		}
 
 		private static BlockPos getPosOffset(Identifier identifier, BlockPos pos, int yOffset) {

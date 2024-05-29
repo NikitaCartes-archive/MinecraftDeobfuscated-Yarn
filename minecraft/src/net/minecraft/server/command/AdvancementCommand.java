@@ -24,7 +24,7 @@ import net.minecraft.text.Text;
 public class AdvancementCommand {
 	private static final DynamicCommandExceptionType GENERIC_EXCEPTION = new DynamicCommandExceptionType(message -> (Text)message);
 	private static final Dynamic2CommandExceptionType CRITERION_NOT_FOUND_EXCEPTION = new Dynamic2CommandExceptionType(
-		(advancement, criterion) -> Text.translatable("commands.advancement.criterionNotFound", advancement, criterion)
+		(advancement, criterion) -> Text.stringifiedTranslatable("commands.advancement.criterionNotFound", advancement, criterion)
 	);
 	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
 		Collection<AdvancementEntry> collection = context.getSource().getServer().getAdvancementLoader().getAdvancements();

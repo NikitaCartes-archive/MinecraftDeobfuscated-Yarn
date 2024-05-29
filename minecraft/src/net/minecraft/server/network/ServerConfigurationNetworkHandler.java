@@ -70,7 +70,7 @@ public class ServerConfigurationNetworkHandler extends ServerCommonNetworkHandle
 		this.sendPacket(new CustomPayloadS2CPacket(new BrandCustomPayload(this.server.getServerModName())));
 		ServerLinks serverLinks = this.server.getServerLinks();
 		if (!serverLinks.isEmpty()) {
-			this.sendPacket(new ServerLinksS2CPacket(serverLinks));
+			this.sendPacket(new ServerLinksS2CPacket(serverLinks.getLinks()));
 		}
 
 		CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries = this.server.getCombinedDynamicRegistries();

@@ -212,7 +212,7 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 	}
 
 	@Override
-	public boolean canBeLeashedBy(PlayerEntity player) {
+	public boolean canBeLeashed() {
 		return false;
 	}
 

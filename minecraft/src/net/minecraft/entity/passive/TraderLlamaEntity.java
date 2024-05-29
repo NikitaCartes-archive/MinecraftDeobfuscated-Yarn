@@ -63,7 +63,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 
 	@Override
 	protected void putPlayerOnBack(PlayerEntity player) {
-		Entity entity = this.getHoldingEntity();
+		Entity entity = this.getLeashHolder();
 		if (!(entity instanceof WanderingTraderEntity)) {
 			super.putPlayerOnBack(player);
 		}
@@ -79,7 +79,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 
 	private void tryDespawn() {
 		if (this.canDespawn()) {
-			this.despawnDelay = this.heldByTrader() ? ((WanderingTraderEntity)this.getHoldingEntity()).getDespawnDelay() - 1 : this.despawnDelay - 1;
+			this.despawnDelay = this.heldByTrader() ? ((WanderingTraderEntity)this.getLeashHolder()).getDespawnDelay() - 1 : this.despawnDelay - 1;
 			if (this.despawnDelay <= 0) {
 				this.detachLeash(true, false);
 				this.discard();
@@ -92,7 +92,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 	}
 
 	private boolean heldByTrader() {
-		return this.getHoldingEntity() instanceof WanderingTraderEntity;
+		return this.getLeashHolder() instanceof WanderingTraderEntity;
 	}
 
 	private boolean leashedByPlayer() {
@@ -128,7 +128,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 		public boolean canStart() {
 			if (!this.llama.isLeashed()) {
 				return false;
-			} else if (!(this.llama.getHoldingEntity() instanceof WanderingTraderEntity wanderingTraderEntity)) {
+			} else if (!(this.llama.getLeashHolder() instanceof WanderingTraderEntity wanderingTraderEntity)) {
 				return false;
 			} else {
 				this.offender = wanderingTraderEntity.getAttacker();
@@ -140,7 +140,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 		@Override
 		public void start() {
 			this.mob.setTarget(this.offender);
-			Entity entity = this.llama.getHoldingEntity();
+			Entity entity = this.llama.getLeashHolder();
 			if (entity instanceof WanderingTraderEntity) {
 				this.traderLastAttackedTime = ((WanderingTraderEntity)entity).getLastAttackedTime();
 			}

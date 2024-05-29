@@ -47,4 +47,8 @@ public class TrackedPosition {
 	public void setPos(Vec3d pos) {
 		this.pos = pos;
 	}
+
+	public Vec3d getPos() {
+		return this.pos;
+	}
 }

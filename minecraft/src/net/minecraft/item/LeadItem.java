@@ -2,8 +2,9 @@ package net.minecraft.item;
 
 import java.util.List;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.Leashable;
 import net.minecraft.entity.decoration.LeashKnotEntity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.ActionResult;
@@ -41,15 +42,21 @@ public class LeadItem extends Item {
 		int j = pos.getY();
 		int k = pos.getZ();
 		Box box = new Box((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0);
-		List<MobEntity> list = world.getEntitiesByClass(MobEntity.class, box, entity -> entity.getHoldingEntity() == player);
+		List<Entity> list = world.getEntitiesByClass(Entity.class, box, entityx -> {
+			if (entityx instanceof Leashable leashable && leashable.getLeashHolder() == player) {
+				return true;
+			}
 
-		for (MobEntity mobEntity : list) {
+			return false;
+		});
+
+		for (Entity entity : list) {
 			if (leashKnotEntity == null) {
 				leashKnotEntity = LeashKnotEntity.getOrCreate(world, pos);
 				leashKnotEntity.onPlace();
 			}
 
-			mobEntity.attachLeash(leashKnotEntity, true);
+			((Leashable)entity).attachLeash(leashKnotEntity, true);
 		}
 
 		if (!list.isEmpty()) {

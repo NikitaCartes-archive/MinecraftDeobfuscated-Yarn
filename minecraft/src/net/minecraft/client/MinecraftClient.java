@@ -221,6 +221,7 @@ import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TickDurationMonitor;
 import net.minecraft.util.TimeHelper;
 import net.minecraft.util.Unit;
+import net.minecraft.util.Urls;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.ZipCompressor;
@@ -621,7 +622,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		} catch (OutOfMemoryError var12) {
 			TinyFileDialogs.tinyfd_messageBox(
 				"Minecraft",
-				"Oh no! The game was unable to allocate memory off-heap while trying to start. You may try to free some memory by closing other applications on your computer, check that your system meets the minimum requirements, and try again. If the problem persists, please visit: https://aka.ms/Minecraft-Support",
+				"Oh no! The game was unable to allocate memory off-heap while trying to start. You may try to free some memory by closing other applications on your computer, check that your system meets the minimum requirements, and try again. If the problem persists, please visit: "
+					+ Urls.MINECRAFT_SUPPORT,
 				"ok",
 				"error",
 				true
@@ -758,7 +760,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		if (banDetails != null) {
 			list.add((Function)onClose -> Bans.createBanScreen(confirmed -> {
 					if (confirmed) {
-						Util.getOperatingSystem().open("https://aka.ms/mcjavamoderation");
+						Util.getOperatingSystem().open(Urls.JAVA_MODERATION);
 					}
 
 					onClose.run();
@@ -957,7 +959,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		if (crashReport.getFile() != null) {
 			Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + crashReport.getFile().toAbsolutePath());
 			System.exit(-1);
-		} else if (crashReport.writeToFIle(path2, ReportType.MINECRAFT_CRASH_REPORT)) {
+		} else if (crashReport.writeToFile(path2, ReportType.MINECRAFT_CRASH_REPORT)) {
 			Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + path2.toAbsolutePath());
 			System.exit(-1);
 		} else {
@@ -1067,11 +1069,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				this.inGameHud.setCanShowChatDisabledScreen(false);
 				this.setScreen(new ConfirmLinkScreen(confirmed -> {
 					if (confirmed) {
-						Util.getOperatingSystem().open("https://aka.ms/JavaAccountSettings");
+						Util.getOperatingSystem().open(Urls.JAVA_ACCOUNT_SETTINGS);
 					}
 
 					this.setScreen(null);
-				}, MinecraftClient.ChatRestriction.MORE_INFO_TEXT, "https://aka.ms/JavaAccountSettings", true));
+				}, MinecraftClient.ChatRestriction.MORE_INFO_TEXT, Urls.JAVA_ACCOUNT_SETTINGS, true));
 			} else {
 				Text text2 = chatRestriction.getDescription();
 				this.inGameHud.setOverlayMessage(text2, false);

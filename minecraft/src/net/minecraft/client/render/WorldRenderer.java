@@ -2279,6 +2279,61 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		vertexConsumer.vertex(matrix4f, maxX, maxY, maxZ).color(red, green, blue, alpha);
 	}
 
+	public static void renderFilledBoxFace(
+		MatrixStack matrices,
+		VertexConsumer vertexConsumer,
+		Direction face,
+		float minX,
+		float minY,
+		float minZ,
+		float maxX,
+		float maxY,
+		float maxZ,
+		float red,
+		float green,
+		float blue,
+		float alpha
+	) {
+		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+		switch (face) {
+			case DOWN:
+				vertexConsumer.vertex(matrix4f, minX, minY, minZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, maxX, minY, minZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, maxX, minY, maxZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, minX, minY, maxZ).color(red, green, blue, alpha);
+				break;
+			case UP:
+				vertexConsumer.vertex(matrix4f, minX, maxY, minZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, minX, maxY, maxZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, maxX, maxY, maxZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, maxX, maxY, minZ).color(red, green, blue, alpha);
+				break;
+			case NORTH:
+				vertexConsumer.vertex(matrix4f, minX, minY, minZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, minX, maxY, minZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, maxX, maxY, minZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, maxX, minY, minZ).color(red, green, blue, alpha);
+				break;
+			case SOUTH:
+				vertexConsumer.vertex(matrix4f, minX, minY, maxZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, maxX, minY, maxZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, maxX, maxY, maxZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, minX, maxY, maxZ).color(red, green, blue, alpha);
+				break;
+			case WEST:
+				vertexConsumer.vertex(matrix4f, minX, minY, minZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, minX, minY, maxZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, minX, maxY, maxZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, minX, maxY, minZ).color(red, green, blue, alpha);
+				break;
+			case EAST:
+				vertexConsumer.vertex(matrix4f, maxX, minY, minZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, maxX, maxY, minZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, maxX, maxY, maxZ).color(red, green, blue, alpha);
+				vertexConsumer.vertex(matrix4f, maxX, minY, maxZ).color(red, green, blue, alpha);
+		}
+	}
+
 	public void updateBlock(BlockView world, BlockPos pos, BlockState oldState, BlockState newState, int flags) {
 		this.scheduleSectionRender(pos, (flags & 8) != 0);
 	}

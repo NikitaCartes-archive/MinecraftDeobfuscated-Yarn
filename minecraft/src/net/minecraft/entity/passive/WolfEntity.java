@@ -658,8 +658,8 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	}
 
 	@Override
-	public boolean canBeLeashedBy(PlayerEntity player) {
-		return !this.hasAngerTime() && super.canBeLeashedBy(player);
+	public boolean canBeLeashed() {
+		return !this.hasAngerTime();
 	}
 
 	@Override

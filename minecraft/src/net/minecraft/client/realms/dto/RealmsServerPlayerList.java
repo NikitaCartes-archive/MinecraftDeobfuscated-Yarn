@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsServerPlayerList extends ValueObject {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public Map<Long, List<ProfileResult>> serverIdToPlayers;
+	public Map<Long, List<ProfileResult>> serverIdToPlayers = Map.of();
 
 	public static RealmsServerPlayerList parse(String json) {
 		RealmsServerPlayerList realmsServerPlayerList = new RealmsServerPlayerList();

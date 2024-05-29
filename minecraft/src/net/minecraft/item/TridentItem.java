@@ -79,7 +79,7 @@ public class TridentItem extends Item implements ProjectileItem {
 		if (user instanceof PlayerEntity playerEntity) {
 			int i = this.getMaxUseTime(stack, user) - remainingUseTicks;
 			if (i >= 10) {
-				float f = EnchantmentHelper.getTridentSpinAttackStrength(playerEntity);
+				float f = EnchantmentHelper.getTridentSpinAttackStrength(stack, playerEntity);
 				if (!(f > 0.0F) || playerEntity.isTouchingWaterOrRain()) {
 					RegistryEntry<SoundEvent> registryEntry = (RegistryEntry<SoundEvent>)EnchantmentHelper.getEffect(stack, EnchantmentEffectComponentTypes.TRIDENT_SOUND)
 						.orElse(SoundEvents.ITEM_TRIDENT_THROW);
@@ -130,7 +130,7 @@ public class TridentItem extends Item implements ProjectileItem {
 		ItemStack itemStack = user.getStackInHand(hand);
 		if (itemStack.getDamage() >= itemStack.getMaxDamage() - 1) {
 			return TypedActionResult.fail(itemStack);
-		} else if (EnchantmentHelper.getTridentSpinAttackStrength(user) > 0.0F && !user.isTouchingWaterOrRain()) {
+		} else if (EnchantmentHelper.getTridentSpinAttackStrength(itemStack, user) > 0.0F && !user.isTouchingWaterOrRain()) {
 			return TypedActionResult.fail(itemStack);
 		} else {
 			user.setCurrentHand(hand);

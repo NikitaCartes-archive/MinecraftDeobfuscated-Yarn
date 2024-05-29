@@ -280,7 +280,7 @@ public class AttributeCommand {
 
 	private static int executeModifierRemove(ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, Identifier id) throws CommandSyntaxException {
 		EntityAttributeInstance entityAttributeInstance = getAttributeInstance(target, attribute);
-		if (entityAttributeInstance.tryRemoveModifier(id)) {
+		if (entityAttributeInstance.removeModifier(id)) {
 			source.sendFeedback(() -> Text.translatable("commands.attribute.modifier.remove.success", Text.of(id), getName(attribute), target.getName()), false);
 			return 1;
 		} else {

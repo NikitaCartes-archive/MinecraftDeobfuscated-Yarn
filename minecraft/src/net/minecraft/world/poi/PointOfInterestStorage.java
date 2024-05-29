@@ -22,6 +22,7 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.PointOfInterestTypeTags;
+import net.minecraft.server.world.ChunkErrorHandler;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
@@ -44,13 +45,20 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	private final LongSet preloadedChunks = new LongOpenHashSet();
 
 	public PointOfInterestStorage(
-		StorageKey storageKey, Path directory, DataFixer dataFixer, boolean dsync, DynamicRegistryManager registryManager, HeightLimitView world
+		StorageKey storageKey,
+		Path directory,
+		DataFixer dataFixer,
+		boolean dsync,
+		DynamicRegistryManager registryManager,
+		ChunkErrorHandler errorHandler,
+		HeightLimitView world
 	) {
 		super(
 			new ChunkPosKeyedStorage(storageKey, directory, dataFixer, dsync, DataFixTypes.POI_CHUNK),
 			PointOfInterestSet::createCodec,
 			PointOfInterestSet::new,
 			registryManager,
+			errorHandler,
 			world
 		);
 		this.pointOfInterestDistanceTracker = new PointOfInterestStorage.PointOfInterestDistanceTracker();

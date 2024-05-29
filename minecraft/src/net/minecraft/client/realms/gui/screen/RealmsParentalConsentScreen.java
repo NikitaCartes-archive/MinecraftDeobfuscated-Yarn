@@ -13,6 +13,7 @@ import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Urls;
 
 @Environment(EnvType.CLIENT)
 public class RealmsParentalConsentScreen extends RealmsScreen {
@@ -35,7 +36,7 @@ public class RealmsParentalConsentScreen extends RealmsScreen {
 		this.layout.add(this.privacyInfoWidget);
 		DirectionalLayoutWidget directionalLayoutWidget = this.layout.add(DirectionalLayoutWidget.horizontal().spacing(8));
 		Text text = Text.translatable("mco.account.privacy.info.button");
-		directionalLayoutWidget.add(ButtonWidget.builder(text, ConfirmLinkScreen.opening(this, "https://aka.ms/MinecraftGDPR")).build());
+		directionalLayoutWidget.add(ButtonWidget.builder(text, ConfirmLinkScreen.opening(this, Urls.GDPR)).build());
 		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).build());
 		this.layout.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);

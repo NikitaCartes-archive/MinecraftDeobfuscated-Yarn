@@ -162,14 +162,7 @@ public class StructureTestUtil {
 		BlockPos.stream(blockBox).forEach(pos -> resetBlock(i, pos, world));
 		world.getBlockTickScheduler().clearNextTicks(blockBox);
 		world.clearUpdatesInArea(blockBox);
-		Box box = new Box(
-			(double)blockBox.getMinX(),
-			(double)blockBox.getMinY(),
-			(double)blockBox.getMinZ(),
-			(double)blockBox.getMaxX(),
-			(double)blockBox.getMaxY(),
-			(double)blockBox.getMaxZ()
-		);
+		Box box = Box.from(blockBox);
 		List<Entity> list = world.getEntitiesByClass(Entity.class, box, entity -> !(entity instanceof PlayerEntity));
 		list.forEach(Entity::discard);
 	}

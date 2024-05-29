@@ -39,7 +39,7 @@ public record EnchantmentPredicate(Optional<RegistryEntryList<Enchantment>> ench
 
 			return false;
 		} else if (this.levels != NumberRange.IntRange.ANY) {
-			for (Entry<RegistryEntry<Enchantment>> entry : enchantmentsComponent.getEnchantmentsMap()) {
+			for (Entry<RegistryEntry<Enchantment>> entry : enchantmentsComponent.getEnchantmentEntries()) {
 				if (this.levels.test(entry.getIntValue())) {
 					return true;
 				}

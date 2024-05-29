@@ -31,6 +31,7 @@ public class TestRunContext {
 	GameTestBatch currentBatch;
 	private final TestRunContext.TestStructureSpawner reuseSpawner;
 	private final TestRunContext.TestStructureSpawner initialSpawner;
+	final boolean stopAfterFailure;
 
 	protected TestRunContext(
 		TestRunContext.Batcher batcher,
@@ -38,7 +39,8 @@ public class TestRunContext {
 		ServerWorld world,
 		TestManager manager,
 		TestRunContext.TestStructureSpawner reuseSpawner,
-		TestRunContext.TestStructureSpawner initialSpawner
+		TestRunContext.TestStructureSpawner initialSpawner,
+		boolean stopAfterFailure
 	) {
 		this.world = world;
 		this.manager = manager;
@@ -46,6 +48,7 @@ public class TestRunContext {
 		this.reuseSpawner = reuseSpawner;
 		this.initialSpawner = initialSpawner;
 		this.batches = ImmutableList.copyOf(batches);
+		this.stopAfterFailure = stopAfterFailure;
 		this.states = (List<GameTestState>)this.batches.stream().flatMap(batch -> batch.states().stream()).collect(Util.toArrayList());
 		manager.setRunContext(this);
 		this.states.forEach(state -> state.addListener(new StructureTestListener()));
@@ -82,6 +85,8 @@ public class TestRunContext {
 			this.onFinish();
 		} else {
 			this.currentBatch = (GameTestBatch)this.batches.get(batchIndex);
+			this.reuseSpawner.onBatch(this.world);
+			this.initialSpawner.onBatch(this.world);
 			Collection<GameTestState> collection = this.prepareStructures(this.currentBatch.states());
 			String string = this.currentBatch.id();
 			LOGGER.info("Running test batch '{}' ({} tests)...", string, collection.size());
@@ -111,7 +116,14 @@ public class TestRunContext {
 
 				@Override
 				public void onFailed(GameTestState test, TestRunContext context) {
-					this.onFinished();
+					if (TestRunContext.this.stopAfterFailure) {
+						TestRunContext.this.currentBatch.afterBatchFunction().accept(TestRunContext.this.world);
+						LongSet longSet = new LongArraySet(TestRunContext.this.world.getForcedChunks());
+						longSet.forEach(chunkPos -> TestRunContext.this.world.setChunkForced(ChunkPos.getPackedX(chunkPos), ChunkPos.getPackedZ(chunkPos), false));
+						TestManager.INSTANCE.clear();
+					} else {
+						this.onFinished();
+					}
 				}
 
 				@Override
@@ -158,10 +170,11 @@ public class TestRunContext {
 	public static class Builder {
 		private final ServerWorld world;
 		private final TestManager manager = TestManager.INSTANCE;
-		private final TestRunContext.Batcher batcher = Batches.defaultBatcher();
-		private final TestRunContext.TestStructureSpawner reuseSpawner = TestRunContext.TestStructureSpawner.REUSE;
+		private TestRunContext.Batcher batcher = Batches.defaultBatcher();
+		private TestRunContext.TestStructureSpawner reuseSpawner = TestRunContext.TestStructureSpawner.REUSE;
 		private TestRunContext.TestStructureSpawner initialSpawner = TestRunContext.TestStructureSpawner.NOOP;
 		private final Collection<GameTestBatch> batches;
+		private boolean stopAfterFailure = false;
 
 		private Builder(Collection<GameTestBatch> batches, ServerWorld world) {
 			this.batches = batches;
@@ -176,13 +189,28 @@ public class TestRunContext {
 			return of(Batches.defaultBatcher().batch(states), world);
 		}
 
+		public TestRunContext.Builder stopAfterFailure(boolean stopAfterFailure) {
+			this.stopAfterFailure = stopAfterFailure;
+			return this;
+		}
+
 		public TestRunContext.Builder initialSpawner(TestRunContext.TestStructureSpawner initialSpawner) {
 			this.initialSpawner = initialSpawner;
 			return this;
 		}
 
+		public TestRunContext.Builder reuseSpawner(TestStructurePlacer reuseSpawner) {
+			this.reuseSpawner = reuseSpawner;
+			return this;
+		}
+
+		public TestRunContext.Builder batcher(TestRunContext.Batcher batcher) {
+			this.batcher = batcher;
+			return this;
+		}
+
 		public TestRunContext build() {
-			return new TestRunContext(this.batcher, this.batches, this.world, this.manager, this.reuseSpawner, this.initialSpawner);
+			return new TestRunContext(this.batcher, this.batches, this.world, this.manager, this.reuseSpawner, this.initialSpawner, this.stopAfterFailure);
 		}
 	}
 
@@ -191,5 +219,8 @@ public class TestRunContext {
 		TestRunContext.TestStructureSpawner NOOP = oldState -> Optional.empty();
 
 		Optional<GameTestState> spawnStructure(GameTestState oldState);
+
+		default void onBatch(ServerWorld world) {
+		}
 	}
 }

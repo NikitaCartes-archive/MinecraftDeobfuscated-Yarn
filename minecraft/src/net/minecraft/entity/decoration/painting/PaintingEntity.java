@@ -24,6 +24,7 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.PaintingVariantTags;
+import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -177,7 +178,7 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 	}
 
 	@Override
-	public Packet<ClientPlayPacketListener> createSpawnPacket() {
+	public Packet<ClientPlayPacketListener> createSpawnPacket(EntityTrackerEntry entityTrackerEntry) {
 		return new EntitySpawnS2CPacket(this, this.facing.getId(), this.getAttachedBlockPos());
 	}
 

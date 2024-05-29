@@ -191,7 +191,7 @@ public class SystemToast implements Toast {
 		show(
 			client.getToastManager(),
 			SystemToast.Type.CHUNK_LOAD_FAILURE,
-			Text.translatable("chunk.toast.loadFailure", pos).formatted(Formatting.RED),
+			Text.translatable("chunk.toast.loadFailure", Text.of(pos)).formatted(Formatting.RED),
 			Text.translatable("chunk.toast.checkLog")
 		);
 	}
@@ -200,7 +200,7 @@ public class SystemToast implements Toast {
 		show(
 			client.getToastManager(),
 			SystemToast.Type.CHUNK_SAVE_FAILURE,
-			Text.translatable("chunk.toast.saveFailure", pos).formatted(Formatting.RED),
+			Text.translatable("chunk.toast.saveFailure", Text.of(pos)).formatted(Formatting.RED),
 			Text.translatable("chunk.toast.checkLog")
 		);
 	}

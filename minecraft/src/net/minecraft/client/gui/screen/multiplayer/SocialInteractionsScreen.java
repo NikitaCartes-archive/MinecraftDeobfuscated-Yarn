@@ -26,6 +26,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Urls;
 
 @Environment(EnvType.CLIENT)
 public class SocialInteractionsScreen extends Screen {
@@ -128,7 +129,7 @@ public class SocialInteractionsScreen extends Screen {
 		this.addDrawableChild(this.searchBox);
 		this.addSelectableChild(this.playerList);
 		this.blockingButton = this.addDrawableChild(
-			ButtonWidget.builder(BLOCKING_TEXT, ConfirmLinkScreen.opening(this, "https://aka.ms/javablocking"))
+			ButtonWidget.builder(BLOCKING_TEXT, ConfirmLinkScreen.opening(this, Urls.JAVA_BLOCKING))
 				.dimensions(this.width / 2 - 100, 64 + this.getScreenHeight(), 200, 20)
 				.build()
 		);

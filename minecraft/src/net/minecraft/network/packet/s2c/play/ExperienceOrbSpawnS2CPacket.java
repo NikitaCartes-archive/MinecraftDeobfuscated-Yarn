@@ -7,6 +7,8 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
+import net.minecraft.server.network.EntityTrackerEntry;
+import net.minecraft.util.math.Vec3d;
 
 public class ExperienceOrbSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<PacketByteBuf, ExperienceOrbSpawnS2CPacket> CODEC = Packet.createCodec(
@@ -18,12 +20,13 @@ public class ExperienceOrbSpawnS2CPacket implements Packet<ClientPlayPacketListe
 	private final double z;
 	private final int experience;
 
-	public ExperienceOrbSpawnS2CPacket(ExperienceOrbEntity experienceOrbEntity) {
-		this.id = experienceOrbEntity.getId();
-		this.x = experienceOrbEntity.getX();
-		this.y = experienceOrbEntity.getY();
-		this.z = experienceOrbEntity.getZ();
-		this.experience = experienceOrbEntity.getExperienceAmount();
+	public ExperienceOrbSpawnS2CPacket(ExperienceOrbEntity orb, EntityTrackerEntry entry) {
+		this.id = orb.getId();
+		Vec3d vec3d = entry.getPos();
+		this.x = vec3d.getX();
+		this.y = vec3d.getY();
+		this.z = vec3d.getZ();
+		this.experience = orb.getExperienceAmount();
 	}
 
 	private ExperienceOrbSpawnS2CPacket(PacketByteBuf buf) {

@@ -8,6 +8,7 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.EndGatewayBlockEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
@@ -98,9 +99,15 @@ public class EndGatewayBlock extends BlockWithEntity implements Portal {
 	public TeleportTarget createTeleportTarget(ServerWorld world, Entity entity, BlockPos pos) {
 		if (world.getBlockEntity(pos) instanceof EndGatewayBlockEntity endGatewayBlockEntity) {
 			Vec3d vec3d = endGatewayBlockEntity.getOrCreateExitPortalPos(world, pos);
-			return vec3d != null ? new TeleportTarget(world, vec3d, entity.getVelocity(), entity.getYaw(), entity.getPitch()) : null;
+			return vec3d != null
+				? new TeleportTarget(world, vec3d, getTeleportVelocity(entity), entity.getYaw(), entity.getPitch(), TeleportTarget.ADD_PORTAL_CHUNK_TICKET)
+				: null;
 		} else {
 			return null;
 		}
+	}
+
+	private static Vec3d getTeleportVelocity(Entity entity) {
+		return entity instanceof EnderPearlEntity ? new Vec3d(0.0, -1.0, 0.0) : entity.getVelocity();
 	}
 }

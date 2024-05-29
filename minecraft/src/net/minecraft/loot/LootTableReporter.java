@@ -1,6 +1,7 @@
 package net.minecraft.loot;
 
 import com.google.common.collect.ImmutableSet;
+import java.util.Optional;
 import java.util.Set;
 import net.minecraft.loot.context.LootContextAware;
 import net.minecraft.loot.context.LootContextType;
@@ -11,15 +12,19 @@ import net.minecraft.util.ErrorReporter;
 public class LootTableReporter {
 	private final ErrorReporter errorReporter;
 	private final LootContextType contextType;
-	private final RegistryEntryLookup.RegistryLookup dataLookup;
+	private final Optional<RegistryEntryLookup.RegistryLookup> dataLookup;
 	private final Set<RegistryKey<?>> referenceStack;
 
 	public LootTableReporter(ErrorReporter errorReporter, LootContextType contextType, RegistryEntryLookup.RegistryLookup dataLookup) {
-		this(errorReporter, contextType, dataLookup, Set.of());
+		this(errorReporter, contextType, Optional.of(dataLookup), Set.of());
+	}
+
+	public LootTableReporter(ErrorReporter errorReporter, LootContextType contextType) {
+		this(errorReporter, contextType, Optional.empty(), Set.of());
 	}
 
 	private LootTableReporter(
-		ErrorReporter errorReporter, LootContextType contextType, RegistryEntryLookup.RegistryLookup dataLookup, Set<RegistryKey<?>> referenceStack
+		ErrorReporter errorReporter, LootContextType contextType, Optional<RegistryEntryLookup.RegistryLookup> dataLookup, Set<RegistryKey<?>> referenceStack
 	) {
 		this.errorReporter = errorReporter;
 		this.contextType = contextType;
@@ -49,7 +54,11 @@ public class LootTableReporter {
 	}
 
 	public RegistryEntryLookup.RegistryLookup getDataLookup() {
-		return this.dataLookup;
+		return (RegistryEntryLookup.RegistryLookup)this.dataLookup.orElseThrow(() -> new UnsupportedOperationException("References not allowed"));
+	}
+
+	public boolean canUseReferences() {
+		return this.dataLookup.isPresent();
 	}
 
 	public LootTableReporter withContextType(LootContextType contextType) {

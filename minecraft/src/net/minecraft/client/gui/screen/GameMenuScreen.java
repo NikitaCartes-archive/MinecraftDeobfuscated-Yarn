@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.screen;
 
+import java.net.URI;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -21,6 +22,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.ServerLinks;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Urls;
 
 @Environment(EnvType.CLIENT)
 public class GameMenuScreen extends Screen {
@@ -102,14 +104,8 @@ public class GameMenuScreen extends Screen {
 	}
 
 	static void addFeedbackAndBugsButtons(Screen parentScreen, GridWidget.Adder gridAdder) {
-		gridAdder.add(
-			createUrlButton(
-				parentScreen,
-				SEND_FEEDBACK_TEXT,
-				SharedConstants.getGameVersion().isStable() ? "https://aka.ms/javafeedback?ref=game" : "https://aka.ms/snapshotfeedback?ref=game"
-			)
-		);
-		gridAdder.add(createUrlButton(parentScreen, REPORT_BUGS_TEXT, "https://aka.ms/snapshotbugs?ref=game")).active = !SharedConstants.getGameVersion()
+		gridAdder.add(createUrlButton(parentScreen, SEND_FEEDBACK_TEXT, SharedConstants.getGameVersion().isStable() ? Urls.JAVA_FEEDBACK : Urls.SNAPSHOT_FEEDBACK));
+		gridAdder.add(createUrlButton(parentScreen, REPORT_BUGS_TEXT, Urls.SNAPSHOT_BUGS)).active = !SharedConstants.getGameVersion()
 			.getSaveVersion()
 			.isNotMainSeries();
 	}
@@ -158,8 +154,8 @@ public class GameMenuScreen extends Screen {
 		return ButtonWidget.builder(text, button -> this.client.setScreen((Screen)screenSupplier.get())).width(98).build();
 	}
 
-	private static ButtonWidget createUrlButton(Screen parent, Text text, String url) {
-		return ButtonWidget.builder(text, ConfirmLinkScreen.opening(parent, url)).width(98).build();
+	private static ButtonWidget createUrlButton(Screen parent, Text text, URI uri) {
+		return ButtonWidget.builder(text, ConfirmLinkScreen.opening(parent, uri)).width(98).build();
 	}
 
 	@Environment(EnvType.CLIENT)

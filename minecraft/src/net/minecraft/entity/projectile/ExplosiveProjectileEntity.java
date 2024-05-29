@@ -13,6 +13,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
@@ -155,11 +156,22 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public Packet<ClientPlayPacketListener> createSpawnPacket() {
+	public Packet<ClientPlayPacketListener> createSpawnPacket(EntityTrackerEntry entityTrackerEntry) {
 		Entity entity = this.getOwner();
 		int i = entity == null ? 0 : entity.getId();
+		Vec3d vec3d = entityTrackerEntry.getPos();
 		return new EntitySpawnS2CPacket(
-			this.getId(), this.getUuid(), this.getX(), this.getY(), this.getZ(), this.getPitch(), this.getYaw(), this.getType(), i, this.getVelocity(), 0.0
+			this.getId(),
+			this.getUuid(),
+			vec3d.getX(),
+			vec3d.getY(),
+			vec3d.getZ(),
+			entityTrackerEntry.getPitch(),
+			entityTrackerEntry.getYaw(),
+			this.getType(),
+			i,
+			entityTrackerEntry.getVelocity(),
+			0.0
 		);
 	}
 

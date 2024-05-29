@@ -15,6 +15,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PoolStructurePiece;
+import net.minecraft.structure.StructureLiquidSettings;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructureTemplate;
@@ -58,7 +59,8 @@ public class StructurePoolBasedGenerator {
 		Optional<Heightmap.Type> projectStartToHeightmap,
 		int maxDistanceFromCenter,
 		StructurePoolAliasLookup aliasLookup,
-		DimensionPadding dimensionPadding
+		DimensionPadding dimensionPadding,
+		StructureLiquidSettings liquidSettings
 	) {
 		DynamicRegistryManager dynamicRegistryManager = context.dynamicRegistryManager();
 		ChunkGenerator chunkGenerator = context.chunkGenerator();
@@ -98,7 +100,8 @@ public class StructurePoolBasedGenerator {
 				blockPos2,
 				structurePoolElement.getGroundLevelDelta(),
 				blockRotation,
-				structurePoolElement.getBoundingBox(structureTemplateManager, blockPos2, blockRotation)
+				structurePoolElement.getBoundingBox(structureTemplateManager, blockPos2, blockRotation),
+				liquidSettings
 			);
 			BlockBox blockBox = poolStructurePiece.getBoundingBox();
 			int i = (blockBox.getMaxX() + blockBox.getMinX()) / 2;
@@ -141,7 +144,8 @@ public class StructurePoolBasedGenerator {
 								poolStructurePiece,
 								list,
 								voxelShape,
-								aliasLookup
+								aliasLookup,
+								liquidSettings
 							);
 							list.forEach(collector::addPiece);
 						}
@@ -182,12 +186,15 @@ public class StructurePoolBasedGenerator {
 		PoolStructurePiece firstPiece,
 		List<PoolStructurePiece> pieces,
 		VoxelShape pieceShape,
-		StructurePoolAliasLookup aliasLookup
+		StructurePoolAliasLookup aliasLookup,
+		StructureLiquidSettings liquidSettings
 	) {
 		StructurePoolBasedGenerator.StructurePoolGenerator structurePoolGenerator = new StructurePoolBasedGenerator.StructurePoolGenerator(
 			structurePoolRegistry, maxSize, chunkGenerator, structureTemplateManager, pieces, random
 		);
-		structurePoolGenerator.generatePiece(firstPiece, new MutableObject<>(pieceShape), 0, modifyBoundingBox, heightLimitView, noiseConfig, aliasLookup);
+		structurePoolGenerator.generatePiece(
+			firstPiece, new MutableObject<>(pieceShape), 0, modifyBoundingBox, heightLimitView, noiseConfig, aliasLookup, liquidSettings
+		);
 
 		while (structurePoolGenerator.structurePieces.hasNext()) {
 			StructurePoolBasedGenerator.ShapedPoolStructurePiece shapedPoolStructurePiece = structurePoolGenerator.structurePieces.next();
@@ -198,7 +205,8 @@ public class StructurePoolBasedGenerator {
 				modifyBoundingBox,
 				heightLimitView,
 				noiseConfig,
-				aliasLookup
+				aliasLookup,
+				liquidSettings
 			);
 		}
 	}
@@ -220,7 +228,17 @@ public class StructurePoolBasedGenerator {
 			biome -> true
 		);
 		Optional<Structure.StructurePosition> optional = generate(
-			context, structurePool, Optional.of(id), size, pos, false, Optional.empty(), 128, StructurePoolAliasLookup.EMPTY, JigsawStructure.DEFAULT_DIMENSION_PADDING
+			context,
+			structurePool,
+			Optional.of(id),
+			size,
+			pos,
+			false,
+			Optional.empty(),
+			128,
+			StructurePoolAliasLookup.EMPTY,
+			JigsawStructure.DEFAULT_DIMENSION_PADDING,
+			JigsawStructure.DEFAULT_LIQUID_SETTINGS
 		);
 		if (optional.isPresent()) {
 			StructurePiecesCollector structurePiecesCollector = ((Structure.StructurePosition)optional.get()).generate();
@@ -272,7 +290,8 @@ public class StructurePoolBasedGenerator {
 			boolean modifyBoundingBox,
 			HeightLimitView world,
 			NoiseConfig noiseConfig,
-			StructurePoolAliasLookup aliasLookup
+			StructurePoolAliasLookup aliasLookup,
+			StructureLiquidSettings liquidSettings
 		) {
 			StructurePoolElement structurePoolElement = piece.getPoolElement();
 			BlockPos blockPos = piece.getPos();
@@ -393,7 +412,7 @@ public class StructurePoolBasedGenerator {
 												}
 
 												PoolStructurePiece poolStructurePiece = new PoolStructurePiece(
-													this.structureTemplateManager, structurePoolElement2, blockPos6, t, blockRotation2, blockBox4
+													this.structureTemplateManager, structurePoolElement2, blockPos6, t, blockRotation2, blockBox4, liquidSettings
 												);
 												int u;
 												if (bl) {

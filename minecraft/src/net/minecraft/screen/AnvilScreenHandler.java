@@ -167,7 +167,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 					boolean bl2 = false;
 					boolean bl3 = false;
 
-					for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
+					for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentEntries()) {
 						RegistryEntry<Enchantment> registryEntry = (RegistryEntry<Enchantment>)entry.getKey();
 						int q = builder.getLevel(registryEntry);
 						int r = entry.getIntValue();

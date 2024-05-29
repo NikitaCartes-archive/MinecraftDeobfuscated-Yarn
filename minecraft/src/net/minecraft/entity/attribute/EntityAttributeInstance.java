@@ -118,22 +118,13 @@ public class EntityAttributeInstance {
 		this.removeModifier(modifier.id());
 	}
 
-	public void removeModifier(Identifier id) {
+	public boolean removeModifier(Identifier id) {
 		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.idToModifiers.remove(id);
-		if (entityAttributeModifier != null) {
-			this.getModifiers(entityAttributeModifier.operation()).remove(id);
-			this.persistentModifiers.remove(id);
-			this.onUpdate();
-		}
-	}
-
-	public boolean tryRemoveModifier(Identifier id) {
-		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.persistentModifiers.remove(id);
 		if (entityAttributeModifier == null) {
 			return false;
 		} else {
-			this.getModifiers(entityAttributeModifier.operation()).remove(entityAttributeModifier.id());
-			this.idToModifiers.remove(id);
+			this.getModifiers(entityAttributeModifier.operation()).remove(id);
+			this.persistentModifiers.remove(id);
 			this.onUpdate();
 			return true;
 		}

@@ -14,6 +14,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -78,7 +79,7 @@ public class LeashKnotEntity extends BlockAttachedEntity {
 				);
 
 			for (MobEntity mobEntity : list) {
-				if (mobEntity.getHoldingEntity() == player) {
+				if (mobEntity.getLeashHolder() == player) {
 					mobEntity.attachLeash(this, true);
 					bl = true;
 				}
@@ -89,7 +90,7 @@ public class LeashKnotEntity extends BlockAttachedEntity {
 				this.discard();
 				if (player.getAbilities().creativeMode) {
 					for (MobEntity mobEntity2 : list) {
-						if (mobEntity2.isLeashed() && mobEntity2.getHoldingEntity() == this) {
+						if (mobEntity2.isLeashed() && mobEntity2.getLeashHolder() == this) {
 							mobEntity2.detachLeash(true, false);
 							bl2 = true;
 						}
@@ -133,7 +134,7 @@ public class LeashKnotEntity extends BlockAttachedEntity {
 	}
 
 	@Override
-	public Packet<ClientPlayPacketListener> createSpawnPacket() {
+	public Packet<ClientPlayPacketListener> createSpawnPacket(EntityTrackerEntry entityTrackerEntry) {
 		return new EntitySpawnS2CPacket(this, 0, this.getAttachedBlockPos());
 	}
 

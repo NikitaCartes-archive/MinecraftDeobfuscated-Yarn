@@ -630,6 +630,20 @@ public final class ItemStack implements ComponentHolder {
 		}
 	}
 
+	public ItemStack damage(int amount, ItemConvertible itemAfterBreaking, LivingEntity entity, EquipmentSlot slot) {
+		this.damage(amount, entity, slot);
+		if (this.isEmpty()) {
+			ItemStack itemStack = this.copyComponentsToNewStackIgnoreEmpty(itemAfterBreaking, this.getCount());
+			if (itemStack.isDamageable()) {
+				itemStack.setDamage(0);
+			}
+
+			return itemStack;
+		} else {
+			return this;
+		}
+	}
+
 	public boolean isItemBarVisible() {
 		return this.getItem().isItemBarVisible(this);
 	}
@@ -760,7 +774,7 @@ public final class ItemStack implements ComponentHolder {
 	 * @param count the item count of the resultant stack
 	 * @param item the item of the resultant stack
 	 */
-	public ItemStack copyComponentsToNewStackIgnoreEmpty(ItemConvertible item, int count) {
+	private ItemStack copyComponentsToNewStackIgnoreEmpty(ItemConvertible item, int count) {
 		return new ItemStack(item.asItem().getRegistryEntry(), count, this.components.getChanges());
 	}
 

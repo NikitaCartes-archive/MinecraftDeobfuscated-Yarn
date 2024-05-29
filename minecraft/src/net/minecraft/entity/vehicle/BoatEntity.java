@@ -13,6 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.Leashable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.VariantHolder;
@@ -53,7 +54,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class BoatEntity extends VehicleEntity implements VariantHolder<BoatEntity.Type> {
+public class BoatEntity extends VehicleEntity implements Leashable, VariantHolder<BoatEntity.Type> {
 	private static final TrackedData<Integer> BOAT_TYPE = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> LEFT_PADDLE_MOVING = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> RIGHT_PADDLE_MOVING = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -91,6 +92,8 @@ public class BoatEntity extends VehicleEntity implements VariantHolder<BoatEntit
 	private float bubbleWobbleStrength;
 	private float bubbleWobble;
 	private float lastBubbleWobble;
+	@Nullable
+	private Leashable.LeashData leashData;
 
 	public BoatEntity(EntityType<? extends BoatEntity> entityType, World world) {
 		super(entityType, world);
@@ -423,6 +426,22 @@ public class BoatEntity extends VehicleEntity implements VariantHolder<BoatEntit
 		return this.isPaddleMoving(paddle) ? MathHelper.clampedLerp(this.paddlePhases[paddle] - (float) (Math.PI / 8), this.paddlePhases[paddle], tickDelta) : 0.0F;
 	}
 
+	@Nullable
+	@Override
+	public Leashable.LeashData getLeashData() {
+		return this.leashData;
+	}
+
+	@Override
+	public void setLeashData(@Nullable Leashable.LeashData leashData) {
+		this.leashData = leashData;
+	}
+
+	@Override
+	public Vec3d getLeashOffset() {
+		return new Vec3d(0.0, (double)(0.88F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.64F));
+	}
+
 	private BoatEntity.Location checkLocation() {
 		BoatEntity.Location location = this.getUnderWaterLocation();
 		if (location != null) {
@@ -729,11 +748,13 @@ public class BoatEntity extends VehicleEntity implements VariantHolder<BoatEntit
 
 	@Override
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		this.writeLeashDataToNbt(nbt, this.leashData);
 		nbt.putString("Type", this.getVariant().asString());
 	}
 
 	@Override
 	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		this.leashData = this.readLeashDataFromNbt(nbt);
 		if (nbt.contains("Type", NbtElement.STRING_TYPE)) {
 			this.setVariant(BoatEntity.Type.getType(nbt.getString("Type")));
 		}
@@ -741,7 +762,10 @@ public class BoatEntity extends VehicleEntity implements VariantHolder<BoatEntit
 
 	@Override
 	public ActionResult interact(PlayerEntity player, Hand hand) {
-		if (player.shouldCancelInteraction()) {
+		ActionResult actionResult = super.interact(player, hand);
+		if (actionResult != ActionResult.PASS) {
+			return actionResult;
+		} else if (player.shouldCancelInteraction()) {
 			return ActionResult.PASS;
 		} else if (this.ticksUnderwater < 60.0F) {
 			if (!this.getWorld().isClient) {

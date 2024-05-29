@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Predicate;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -126,6 +127,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public static final float field_30649 = 0.6F;
 	public static final float field_30650 = 0.6F;
 	public static final float DEFAULT_EYE_HEIGHT = 1.62F;
+	private static final int field_52222 = 40;
 	public static final Vec3d VEHICLE_ATTACHMENT_POS = new Vec3d(0.0, 0.6, 0.0);
 	public static final EntityDimensions STANDING_DIMENSIONS = EntityDimensions.changing(0.6F, 1.8F)
 		.withEyeHeight(1.62F)
@@ -187,7 +189,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	public Vec3d currentExplosionImpactPos;
 	@Nullable
 	public Entity explodedBy;
-	public boolean ignoreFallDamageFromCurrentExplosion;
+	private boolean ignoreFallDamageFromCurrentExplosion;
+	private int currentExplosionResetGraceTime;
 
 	public PlayerEntity(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
 		super(EntityType.PLAYER, world);
@@ -310,6 +313,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.updateTurtleHelmet();
 		this.itemCooldownManager.update();
 		this.updatePose();
+		if (this.currentExplosionResetGraceTime > 0) {
+			this.currentExplosionResetGraceTime--;
+		}
 	}
 
 	@Override
@@ -632,8 +638,10 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	private ItemStack getWeaponStack() {
-		return this.isUsingRiptide() && this.riptideStack != null ? this.riptideStack : this.getMainHandStack();
+	@Nonnull
+	@Override
+	public ItemStack getWeaponStack() {
+		return this.isUsingRiptide() && this.riptideStack != null ? this.riptideStack : super.getWeaponStack();
 	}
 
 	@Override
@@ -824,6 +832,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		this.ignoreFallDamageFromCurrentExplosion = nbt.getBoolean("ignore_fall_damage_from_current_explosion");
+		this.currentExplosionResetGraceTime = nbt.getInt("current_impulse_context_reset_grace_time");
 	}
 
 	@Override
@@ -857,6 +866,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		nbt.putBoolean("ignore_fall_damage_from_current_explosion", this.ignoreFallDamageFromCurrentExplosion);
+		nbt.putInt("current_impulse_context_reset_grace_time", this.currentExplosionResetGraceTime);
 	}
 
 	@Override
@@ -1108,14 +1118,14 @@ public abstract class PlayerEntity extends LivingEntity {
 			double h = Math.signum(d) * 0.05;
 
 			double i;
-			for (i = Math.signum(e) * 0.05; d != 0.0 && this.method_59818(d, 0.0, f); d -= h) {
+			for (i = Math.signum(e) * 0.05; d != 0.0 && this.isSpaceAroundPlayerEmpty(d, 0.0, f); d -= h) {
 				if (Math.abs(d) <= 0.05) {
 					d = 0.0;
 					break;
 				}
 			}
 
-			while (e != 0.0 && this.method_59818(0.0, e, f)) {
+			while (e != 0.0 && this.isSpaceAroundPlayerEmpty(0.0, e, f)) {
 				if (Math.abs(e) <= 0.05) {
 					e = 0.0;
 					break;
@@ -1124,7 +1134,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				e -= i;
 			}
 
-			while (d != 0.0 && e != 0.0 && this.method_59818(d, e, f)) {
+			while (d != 0.0 && e != 0.0 && this.isSpaceAroundPlayerEmpty(d, e, f)) {
 				if (Math.abs(d) <= 0.05) {
 					d = 0.0;
 				} else {
@@ -1145,12 +1155,13 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	private boolean method_30263(float f) {
-		return this.isOnGround() || this.fallDistance < f && !this.method_59818(0.0, 0.0, f - this.fallDistance);
+		return this.isOnGround() || this.fallDistance < f && !this.isSpaceAroundPlayerEmpty(0.0, 0.0, f - this.fallDistance);
 	}
 
-	private boolean method_59818(double d, double e, float f) {
+	private boolean isSpaceAroundPlayerEmpty(double offsetX, double offsetZ, float f) {
 		Box box = this.getBoundingBox();
-		return this.getWorld().isSpaceEmpty(this, new Box(box.minX + d, box.minY - (double)f - 1.0E-5F, box.minZ + e, box.maxX + d, box.minY, box.maxZ + e));
+		return this.getWorld()
+			.isSpaceEmpty(this, new Box(box.minX + offsetX, box.minY - (double)f - 1.0E-5F, box.minZ + offsetZ, box.maxX + offsetX, box.minY, box.maxZ + offsetZ));
 	}
 
 	public void attack(Entity target) {
@@ -1195,7 +1206,7 @@ public abstract class PlayerEntity extends LivingEntity {
 						f *= 1.5F;
 					}
 
-					float j = f + g;
+					float i = f + g;
 					boolean bl4 = false;
 					double d = (double)(this.horizontalSpeed - this.prevHorizontalSpeed);
 					if (bl && !bl3 && !bl2 && this.isOnGround() && d < (double)this.getMovementSpeed()) {
@@ -1205,27 +1216,27 @@ public abstract class PlayerEntity extends LivingEntity {
 						}
 					}
 
-					float k = 0.0F;
+					float j = 0.0F;
 					if (target instanceof LivingEntity livingEntity) {
-						k = livingEntity.getHealth();
+						j = livingEntity.getHealth();
 					}
 
 					Vec3d vec3d = target.getVelocity();
-					boolean bl5 = target.damage(damageSource, j);
+					boolean bl5 = target.damage(damageSource, i);
 					if (bl5) {
-						float l = this.getKnockbackAgainst(target, damageSource) + (bl2 ? 1.0F : 0.0F);
-						if (l > 0.0F) {
+						float k = this.getKnockbackAgainst(target, damageSource) + (bl2 ? 1.0F : 0.0F);
+						if (k > 0.0F) {
 							if (target instanceof LivingEntity livingEntity2) {
 								livingEntity2.takeKnockback(
-									(double)(l * 0.5F),
+									(double)(k * 0.5F),
 									(double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)),
 									(double)(-MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)))
 								);
 							} else {
 								target.addVelocity(
-									(double)(-MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)) * l * 0.5F),
+									(double)(-MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)) * k * 0.5F),
 									0.1,
-									(double)(MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)) * l * 0.5F)
+									(double)(MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)) * k * 0.5F)
 								);
 							}
 
@@ -1234,7 +1245,7 @@ public abstract class PlayerEntity extends LivingEntity {
 						}
 
 						if (bl4) {
-							float m = 1.0F + (float)this.getAttributeValue(EntityAttributes.PLAYER_SWEEPING_DAMAGE_RATIO) * f;
+							float l = 1.0F + (float)this.getAttributeValue(EntityAttributes.PLAYER_SWEEPING_DAMAGE_RATIO) * f;
 
 							for (LivingEntity livingEntity3 : this.getWorld().getNonSpectatingEntities(LivingEntity.class, target.getBoundingBox().expand(1.0, 0.25, 1.0))) {
 								if (livingEntity3 != this
@@ -1242,11 +1253,11 @@ public abstract class PlayerEntity extends LivingEntity {
 									&& !this.isTeammate(livingEntity3)
 									&& (!(livingEntity3 instanceof ArmorStandEntity) || !((ArmorStandEntity)livingEntity3).isMarker())
 									&& this.squaredDistanceTo(livingEntity3) < 9.0) {
-									float n = this.getDamageAgainst(livingEntity3, m, damageSource) * h;
+									float m = this.getDamageAgainst(livingEntity3, l, damageSource) * h;
 									livingEntity3.takeKnockback(
 										0.4F, (double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)))
 									);
-									livingEntity3.damage(damageSource, n);
+									livingEntity3.damage(damageSource, m);
 									if (this.getWorld() instanceof ServerWorld serverWorld) {
 										EnchantmentHelper.onTargetDamaged(serverWorld, livingEntity3, damageSource);
 									}
@@ -1310,12 +1321,12 @@ public abstract class PlayerEntity extends LivingEntity {
 						}
 
 						if (target instanceof LivingEntity) {
-							float o = k - ((LivingEntity)target).getHealth();
-							this.increaseStat(Stats.DAMAGE_DEALT, Math.round(o * 10.0F));
-							if (this.getWorld() instanceof ServerWorld && o > 2.0F) {
-								int p = (int)((double)o * 0.5);
+							float n = j - ((LivingEntity)target).getHealth();
+							this.increaseStat(Stats.DAMAGE_DEALT, Math.round(n * 10.0F));
+							if (this.getWorld() instanceof ServerWorld && n > 2.0F) {
+								int o = (int)((double)n * 0.5);
 								((ServerWorld)this.getWorld())
-									.spawnParticles(ParticleTypes.DAMAGE_INDICATOR, target.getX(), target.getBodyY(0.5), target.getZ(), p, 0.1, 0.0, 0.1, 0.2);
+									.spawnParticles(ParticleTypes.DAMAGE_INDICATOR, target.getX(), target.getBodyY(0.5), target.getZ(), o, 0.1, 0.0, 0.1, 0.2);
 							}
 						}
 
@@ -1570,7 +1581,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 			if (this.ignoreFallDamageFromCurrentExplosion && this.currentExplosionImpactPos != null) {
 				double d = this.currentExplosionImpactPos.y;
-				this.clearCurrentExplosion();
+				this.tryClearCurrentExplosion();
 				return d < this.getY() ? false : super.handleFallDamage((float)(d - this.getY()), damageMultiplier, damageSource);
 			} else {
 				return super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
@@ -1643,7 +1654,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			super.slowMovement(state, multiplier);
 		}
 
-		this.clearCurrentExplosion();
+		this.tryClearCurrentExplosion();
 	}
 
 	public void addExperience(int experience) {
@@ -2093,7 +2104,9 @@ public abstract class PlayerEntity extends LivingEntity {
 				return ((ItemStack)optional.get()).copy();
 			}
 
-			this.getInventory().insertStack(((ItemStack)optional.get()).copy());
+			if (!this.getWorld().isClient()) {
+				this.getInventory().insertStack(((ItemStack)optional.get()).copy());
+			}
 		}
 
 		return itemStack;
@@ -2218,7 +2231,23 @@ public abstract class PlayerEntity extends LivingEntity {
 		return new Box(pos).squaredMagnitude(this.getEyePos()) < d * d;
 	}
 
+	public void setIgnoreFallDamageFromCurrentExplosion(boolean ignoreFallDamageFromCurrentExplosion) {
+		this.ignoreFallDamageFromCurrentExplosion = ignoreFallDamageFromCurrentExplosion;
+		if (ignoreFallDamageFromCurrentExplosion) {
+			this.currentExplosionResetGraceTime = 40;
+		} else {
+			this.currentExplosionResetGraceTime = 0;
+		}
+	}
+
+	public void tryClearCurrentExplosion() {
+		if (this.currentExplosionResetGraceTime == 0) {
+			this.clearCurrentExplosion();
+		}
+	}
+
 	public void clearCurrentExplosion() {
+		this.currentExplosionResetGraceTime = 0;
 		this.explodedBy = null;
 		this.currentExplosionImpactPos = null;
 		this.ignoreFallDamageFromCurrentExplosion = false;

@@ -54,10 +54,10 @@ public class ItemRenderer implements SynchronousResourceReloader {
 	public static final float COMPASS_WITH_GLINT_GUI_MODEL_MULTIPLIER = 0.5F;
 	public static final float COMPASS_WITH_GLINT_FIRST_PERSON_MODEL_MULTIPLIER = 0.75F;
 	public static final float field_41120 = 0.0078125F;
-	private static final ModelIdentifier TRIDENT = ModelIdentifier.ofVanilla("trident", "inventory");
-	public static final ModelIdentifier TRIDENT_IN_HAND = ModelIdentifier.ofVanilla("trident_in_hand", "inventory");
-	private static final ModelIdentifier SPYGLASS = ModelIdentifier.ofVanilla("spyglass", "inventory");
-	public static final ModelIdentifier SPYGLASS_IN_HAND = ModelIdentifier.ofVanilla("spyglass_in_hand", "inventory");
+	private static final ModelIdentifier TRIDENT = ModelIdentifier.ofInventoryVariant(Identifier.ofVanilla("trident"));
+	public static final ModelIdentifier TRIDENT_IN_HAND = ModelIdentifier.ofInventoryVariant(Identifier.ofVanilla("trident_in_hand"));
+	private static final ModelIdentifier SPYGLASS = ModelIdentifier.ofInventoryVariant(Identifier.ofVanilla("spyglass"));
+	public static final ModelIdentifier SPYGLASS_IN_HAND = ModelIdentifier.ofInventoryVariant(Identifier.ofVanilla("spyglass_in_hand"));
 	private final MinecraftClient client;
 	private final ItemModels models;
 	private final TextureManager textureManager;
@@ -74,7 +74,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 
 		for (Item item : Registries.ITEM) {
 			if (!WITHOUT_MODELS.contains(item)) {
-				this.models.putModel(item, new ModelIdentifier(Registries.ITEM.getId(item), "inventory"));
+				this.models.putModel(item, ModelIdentifier.ofInventoryVariant(Registries.ITEM.getId(item)));
 			}
 		}
 

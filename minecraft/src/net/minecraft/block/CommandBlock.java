@@ -145,10 +145,8 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 					commandBlockBlockEntity.setAuto(this.auto);
 				}
 
-				if (commandBlockBlockEntity.getCommandBlockType() == CommandBlockBlockEntity.Type.SEQUENCE) {
-					boolean bl = world.isReceivingRedstonePower(pos);
-					commandBlockBlockEntity.setPowered(bl);
-				}
+				boolean bl = world.isReceivingRedstonePower(pos);
+				commandBlockBlockEntity.setPowered(bl);
 			}
 		}
 	}

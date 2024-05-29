@@ -857,6 +857,10 @@ public class TestContext {
 		return StructureTemplate.transformAround(pos.subtract(vec3d), BlockMirror.NONE, this.test.getRotation(), this.test.getPos());
 	}
 
+	public BlockRotation getRotation() {
+		return this.test.getRotation();
+	}
+
 	public void assertTrue(boolean condition, String message) {
 		if (!condition) {
 			throw new GameTestException(message);

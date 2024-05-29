@@ -5,7 +5,7 @@ import it.unimi.dsi.fastutil.doubles.AbstractDoubleList;
 public class FractionalDoubleList extends AbstractDoubleList {
 	private final int sectionCount;
 
-	FractionalDoubleList(int sectionCount) {
+	public FractionalDoubleList(int sectionCount) {
 		if (sectionCount <= 0) {
 			throw new IllegalArgumentException("Need at least 1 part");
 		} else {

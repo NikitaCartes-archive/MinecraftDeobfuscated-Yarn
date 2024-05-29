@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +24,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -84,7 +86,7 @@ public class EntitySelectorReader {
 	private Double dz;
 	private FloatRangeArgument pitchRange = FloatRangeArgument.ANY;
 	private FloatRangeArgument yawRange = FloatRangeArgument.ANY;
-	private Predicate<Entity> predicate = entity -> true;
+	private final List<Predicate<Entity>> predicates = new ArrayList();
 	private BiConsumer<Vec3d, List<? extends Entity>> sorter = EntitySelector.ARBITRARY;
 	private boolean senderOnly;
 	@Nullable
@@ -141,7 +143,7 @@ public class EntitySelectorReader {
 			this.limit,
 			this.includesNonPlayers,
 			this.localWorldOnly,
-			this.predicate,
+			Util.allOf(this.predicates),
 			this.distance,
 			function,
 			box,
@@ -169,16 +171,16 @@ public class EntitySelectorReader {
 
 	private void buildPredicate() {
 		if (this.pitchRange != FloatRangeArgument.ANY) {
-			this.predicate = this.predicate.and(this.rotationPredicate(this.pitchRange, Entity::getPitch));
+			this.predicates.add(this.rotationPredicate(this.pitchRange, Entity::getPitch));
 		}
 
 		if (this.yawRange != FloatRangeArgument.ANY) {
-			this.predicate = this.predicate.and(this.rotationPredicate(this.yawRange, Entity::getYaw));
+			this.predicates.add(this.rotationPredicate(this.yawRange, Entity::getYaw));
 		}
 
 		if (!this.levelRange.isDummy()) {
-			this.predicate = this.predicate
-				.and(entity -> !(entity instanceof ServerPlayerEntity) ? false : this.levelRange.test(((ServerPlayerEntity)entity).experienceLevel));
+			this.predicates
+				.add((Predicate)entity -> !(entity instanceof ServerPlayerEntity) ? false : this.levelRange.test(((ServerPlayerEntity)entity).experienceLevel));
 		}
 	}
 
@@ -199,39 +201,53 @@ public class EntitySelectorReader {
 		} else {
 			int i = this.reader.getCursor();
 			char c = this.reader.read();
-			if (c == 'p') {
-				this.limit = 1;
-				this.includesNonPlayers = false;
-				this.sorter = NEAREST;
-				this.setEntityType(EntityType.PLAYER);
-			} else if (c == 'a') {
-				this.limit = Integer.MAX_VALUE;
-				this.includesNonPlayers = false;
-				this.sorter = EntitySelector.ARBITRARY;
-				this.setEntityType(EntityType.PLAYER);
-			} else if (c == 'r') {
-				this.limit = 1;
-				this.includesNonPlayers = false;
-				this.sorter = RANDOM;
-				this.setEntityType(EntityType.PLAYER);
-			} else if (c == 's') {
-				this.limit = 1;
-				this.includesNonPlayers = true;
-				this.senderOnly = true;
-			} else if (c == 'e') {
-				this.limit = Integer.MAX_VALUE;
-				this.includesNonPlayers = true;
-				this.sorter = EntitySelector.ARBITRARY;
-				this.predicate = Entity::isAlive;
-			} else {
-				if (c != 'n') {
+
+			if (switch (c) {
+				case 'a' -> {
+					this.limit = Integer.MAX_VALUE;
+					this.includesNonPlayers = false;
+					this.sorter = EntitySelector.ARBITRARY;
+					this.setEntityType(EntityType.PLAYER);
+					yield false;
+				}
+				default -> {
 					this.reader.setCursor(i);
 					throw UNKNOWN_SELECTOR_EXCEPTION.createWithContext(this.reader, "@" + c);
 				}
-
-				this.limit = 1;
-				this.includesNonPlayers = true;
-				this.sorter = NEAREST;
+				case 'e' -> {
+					this.limit = Integer.MAX_VALUE;
+					this.includesNonPlayers = true;
+					this.sorter = EntitySelector.ARBITRARY;
+					yield true;
+				}
+				case 'n' -> {
+					this.limit = 1;
+					this.includesNonPlayers = true;
+					this.sorter = NEAREST;
+					yield true;
+				}
+				case 'p' -> {
+					this.limit = 1;
+					this.includesNonPlayers = false;
+					this.sorter = NEAREST;
+					this.setEntityType(EntityType.PLAYER);
+					yield false;
+				}
+				case 'r' -> {
+					this.limit = 1;
+					this.includesNonPlayers = false;
+					this.sorter = RANDOM;
+					this.setEntityType(EntityType.PLAYER);
+					yield false;
+				}
+				case 's' -> {
+					this.limit = 1;
+					this.includesNonPlayers = true;
+					this.senderOnly = true;
+					yield false;
+				}
+			}) {
+				this.predicates.add(Entity::isAlive);
 			}
 
 			this.suggestionProvider = this::suggestOpen;
@@ -335,8 +351,8 @@ public class EntitySelectorReader {
 		return this.reader;
 	}
 
-	public void setPredicate(Predicate<Entity> predicate) {
-		this.predicate = this.predicate.and(predicate);
+	public void addPredicate(Predicate<Entity> predicate) {
+		this.predicates.add(predicate);
 	}
 
 	public void setLocalWorldOnly() {

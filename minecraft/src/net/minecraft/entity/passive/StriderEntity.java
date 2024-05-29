@@ -143,10 +143,10 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	@Override
-	public void saddle(@Nullable SoundCategory sound) {
+	public void saddle(ItemStack stack, @Nullable SoundCategory soundCategory) {
 		this.saddledComponent.setSaddled(true);
-		if (sound != null) {
-			this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_STRIDER_SADDLE, sound, 0.5F, 1.0F);
+		if (soundCategory != null) {
+			this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_STRIDER_SADDLE, soundCategory, 0.5F, 1.0F);
 		}
 	}
 
@@ -468,7 +468,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 				if (mobEntity != null) {
 					entityData = this.initializeRider(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(random), false));
 					mobEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
-					this.saddle(null);
+					this.saddle(new ItemStack(Items.SADDLE), null);
 				}
 			} else if (random.nextInt(10) == 0) {
 				PassiveEntity passiveEntity = EntityType.STRIDER.create(world.toServerWorld());

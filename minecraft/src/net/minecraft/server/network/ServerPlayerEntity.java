@@ -98,7 +98,6 @@ import net.minecraft.network.packet.s2c.play.ServerMetadataS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
-import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -157,7 +156,6 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.event.GameEvent;
@@ -292,16 +290,18 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.server = server;
 		this.statHandler = server.getPlayerManager().createStatHandler(this);
 		this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
-		this.moveToSpawn(world);
+		this.refreshPositionAndAngles(this.getWorldSpawnPos(world, world.getSpawnPos()), 0.0F, 0.0F);
 		this.setClientOptions(clientOptions);
 		this.field_49777 = null;
 	}
 
-	private void moveToSpawn(ServerWorld world) {
-		BlockPos blockPos = world.getSpawnPos();
+	@Override
+	public BlockPos getWorldSpawnPos(ServerWorld world, BlockPos basePos) {
+		Box box = this.getBoundingBox().offset(this.getBoundingBox().getCenter().multiply(-1.0));
+		BlockPos blockPos = basePos;
 		if (world.getDimension().hasSkyLight() && world.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE) {
 			int i = Math.max(0, this.server.getSpawnRadius(world));
-			int j = MathHelper.floor(world.getWorldBorder().getDistanceInsideBorder((double)blockPos.getX(), (double)blockPos.getZ()));
+			int j = MathHelper.floor(world.getWorldBorder().getDistanceInsideBorder((double)basePos.getX(), (double)basePos.getZ()));
 			if (j < i) {
 				i = j;
 			}
@@ -320,21 +320,20 @@ public class ServerPlayerEntity extends PlayerEntity {
 				int q = (o + n * p) % k;
 				int r = q % (i * 2 + 1);
 				int s = q / (i * 2 + 1);
-				BlockPos blockPos2 = SpawnLocating.findOverworldSpawn(world, blockPos.getX() + r - i, blockPos.getZ() + s - i);
-				if (blockPos2 != null) {
-					this.refreshPositionAndAngles(blockPos2, 0.0F, 0.0F);
-					if (world.isSpaceEmpty(this)) {
-						break;
-					}
+				blockPos = SpawnLocating.findOverworldSpawn(world, basePos.getX() + r - i, basePos.getZ() + s - i);
+				if (blockPos != null && world.isSpaceEmpty(this, box.offset(blockPos))) {
+					return blockPos;
 				}
 			}
-		} else {
-			this.refreshPositionAndAngles(blockPos, 0.0F, 0.0F);
 
-			while (!world.isSpaceEmpty(this) && this.getY() < (double)(world.getTopY() - 1)) {
-				this.setPosition(this.getX(), this.getY() + 1.0, this.getZ());
-			}
+			blockPos = basePos;
 		}
+
+		while (!world.isSpaceEmpty(this, box.offset(blockPos)) && this.getY() < (double)(world.getTopY() - 1)) {
+			blockPos = BlockPos.ofFloored(blockPos.toCenterPos().add(0.0, 1.0, 0.0));
+		}
+
+		return blockPos;
 	}
 
 	private int calculateSpawnOffsetMultiplier(int horizontalSpawnArea) {
@@ -786,7 +785,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		return this.server.isPvpEnabled();
 	}
 
-	public TeleportTarget getRespawnTarget(boolean alive) {
+	public TeleportTarget getRespawnTarget(boolean alive, TeleportTarget.PostDimensionTransition postDimensionTransition) {
 		BlockPos blockPos = this.getSpawnPointPosition();
 		float f = this.getSpawnAngle();
 		boolean bl = this.isSpawnForced();
@@ -795,12 +794,12 @@ public class ServerPlayerEntity extends PlayerEntity {
 			Optional<ServerPlayerEntity.RespawnPos> optional = findRespawnPosition(serverWorld, blockPos, f, bl, alive);
 			if (optional.isPresent()) {
 				ServerPlayerEntity.RespawnPos respawnPos = (ServerPlayerEntity.RespawnPos)optional.get();
-				return new TeleportTarget(serverWorld, respawnPos.pos(), Vec3d.ZERO, respawnPos.yaw(), 0.0F);
+				return new TeleportTarget(serverWorld, respawnPos.pos(), Vec3d.ZERO, respawnPos.yaw(), 0.0F, postDimensionTransition);
 			} else {
-				return TeleportTarget.missingSpawnBlock(this.server.getOverworld());
+				return TeleportTarget.missingSpawnBlock(this.server.getOverworld(), this, postDimensionTransition);
 			}
 		} else {
-			return new TeleportTarget(this.server.getOverworld());
+			return new TeleportTarget(this.server.getOverworld(), this, postDimensionTransition);
 		}
 	}
 
@@ -859,7 +858,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			if (serverWorld.getRegistryKey() == registryKey) {
 				this.networkHandler.requestTeleport(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z, teleportTarget.yaw(), teleportTarget.pitch());
 				this.networkHandler.syncWithPlayerPosition();
-				this.networkHandler.sendPacket(new WorldEventS2CPacket(WorldEvents.TRAVEL_THROUGH_PORTAL, BlockPos.ORIGIN, 0, false));
+				teleportTarget.postDimensionTransition().onTransition(this);
 				return this;
 			} else {
 				this.inTeleportationState = true;
@@ -887,7 +886,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 				playerManager.sendWorldInfo(this, serverWorld);
 				playerManager.sendPlayerStatus(this);
 				playerManager.sendStatusEffects(this);
-				this.networkHandler.sendPacket(new WorldEventS2CPacket(WorldEvents.TRAVEL_THROUGH_PORTAL, BlockPos.ORIGIN, 0, false));
+				teleportTarget.postDimensionTransition().onTransition(this);
 				this.syncedExperience = -1;
 				this.syncedHealth = -1.0F;
 				this.syncedFoodLevel = -1;
@@ -1044,7 +1043,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		super.onExplodedBy(entity);
 		this.currentExplosionImpactPos = this.getPos();
 		this.explodedBy = entity;
-		this.ignoreFallDamageFromCurrentExplosion = entity != null && entity.getType() == EntityType.WIND_CHARGE;
+		this.setIgnoreFallDamageFromCurrentExplosion(entity != null && entity.getType() == EntityType.WIND_CHARGE);
 	}
 
 	@Override
@@ -1102,8 +1101,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 
 		this.incrementScreenHandlerSyncId();
-		this.networkHandler.sendPacket(new OpenHorseScreenS2CPacket(this.screenHandlerSyncId, inventory.size(), horse.getId()));
-		this.currentScreenHandler = new HorseScreenHandler(this.screenHandlerSyncId, this.getInventory(), inventory, horse);
+		int i = horse.getInventoryColumns();
+		this.networkHandler.sendPacket(new OpenHorseScreenS2CPacket(this.screenHandlerSyncId, i, horse.getId()));
+		this.currentScreenHandler = new HorseScreenHandler(this.screenHandlerSyncId, this.getInventory(), inventory, horse, i);
 		this.onScreenHandlerOpened(this.currentScreenHandler);
 	}
 
@@ -1671,7 +1671,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (targetWorld == this.getWorld()) {
 			this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
 		} else {
-			this.teleportTo(new TeleportTarget(targetWorld, new Vec3d(x, y, z), Vec3d.ZERO, yaw, pitch));
+			this.teleportTo(new TeleportTarget(targetWorld, new Vec3d(x, y, z), Vec3d.ZERO, yaw, pitch, TeleportTarget.NO_OP));
 		}
 	}
 
@@ -1959,7 +1959,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	protected float getDamageAgainst(Entity target, float baseDamage, DamageSource damageSource) {
-		return EnchantmentHelper.getDamage(this.getServerWorld(), this.getMainHandStack(), target, damageSource, baseDamage);
+		return EnchantmentHelper.getDamage(this.getServerWorld(), this.getWeaponStack(), target, damageSource, baseDamage);
 	}
 
 	@Override

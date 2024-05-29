@@ -34,6 +34,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Urls;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
 
@@ -177,7 +178,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 											if (RealmsSelectWorldTemplateScreen.this.templateList.isEmpty()) {
 												String string = I18n.translate("mco.template.select.none", "%link");
 												TextRenderingUtils.LineSegment lineSegment = TextRenderingUtils.LineSegment.link(
-													I18n.translate("mco.template.select.none.linkTitle"), "https://aka.ms/MinecraftRealmsContentCreator"
+													I18n.translate("mco.template.select.none.linkTitle"), Urls.REALMS_CONTENT_CREATOR.toString()
 												);
 												RealmsSelectWorldTemplateScreen.this.noTemplatesMessage = TextRenderingUtils.decompose(string, lineSegment);
 											}

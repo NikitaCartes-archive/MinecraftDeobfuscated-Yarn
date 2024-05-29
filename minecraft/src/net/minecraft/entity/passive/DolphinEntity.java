@@ -358,7 +358,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public boolean canBeLeashedBy(PlayerEntity player) {
+	public boolean canBeLeashed() {
 		return true;
 	}
 

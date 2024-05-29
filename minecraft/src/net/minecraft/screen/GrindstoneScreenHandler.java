@@ -95,7 +95,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 				int i = 0;
 				ItemEnchantmentsComponent itemEnchantmentsComponent = EnchantmentHelper.getEnchantments(stack);
 
-				for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
+				for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentEntries()) {
 					RegistryEntry<Enchantment> registryEntry = (RegistryEntry<Enchantment>)entry.getKey();
 					int j = entry.getIntValue();
 					if (!registryEntry.isIn(EnchantmentTags.CURSE)) {
@@ -180,7 +180,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 		EnchantmentHelper.apply(target, components -> {
 			ItemEnchantmentsComponent itemEnchantmentsComponent = EnchantmentHelper.getEnchantments(source);
 
-			for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentsMap()) {
+			for (Entry<RegistryEntry<Enchantment>> entry : itemEnchantmentsComponent.getEnchantmentEntries()) {
 				RegistryEntry<Enchantment> registryEntry = (RegistryEntry<Enchantment>)entry.getKey();
 				if (!registryEntry.isIn(EnchantmentTags.CURSE) || components.getLevel(registryEntry) == 0) {
 					components.add(registryEntry, entry.getIntValue());

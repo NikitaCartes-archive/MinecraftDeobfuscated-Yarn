@@ -64,6 +64,7 @@ public class TestServer extends MinecraftServer {
 		gameRules.get(GameRules.DO_MOB_SPAWNING).set(false, null);
 		gameRules.get(GameRules.DO_WEATHER_CYCLE).set(false, null);
 		gameRules.get(GameRules.RANDOM_TICK_SPEED).set(0, null);
+		gameRules.get(GameRules.DO_FIRE_TICK).set(false, null);
 	});
 	private static final GeneratorOptions TEST_LEVEL = new GeneratorOptions(0L, false, false);
 	@Nullable
@@ -216,7 +217,7 @@ public class TestServer extends MinecraftServer {
 
 	private void runTestBatches(ServerWorld world) {
 		BlockPos blockPos = new BlockPos(world.random.nextBetween(-14999992, 14999992), -59, world.random.nextBetween(-14999992, 14999992));
-		TestRunContext testRunContext = TestRunContext.Builder.of(this.batches, world).initialSpawner(new TestStructurePlacer(blockPos, 8)).build();
+		TestRunContext testRunContext = TestRunContext.Builder.of(this.batches, world).initialSpawner(new TestStructurePlacer(blockPos, 8, false)).build();
 		Collection<GameTestState> collection = testRunContext.getStates();
 		this.testSet = new TestSet(collection);
 		LOGGER.info("{} tests are now running at position {}!", this.testSet.getTestCount(), blockPos.toShortString());

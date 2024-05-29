@@ -26,7 +26,6 @@ import net.minecraft.world.World;
 
 public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 	private static final TrackedData<Boolean> CHEST = DataTracker.registerData(AbstractDonkeyEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	public static final int field_30412 = 15;
 	private final EntityDimensions babyBaseDimensions;
 
 	protected AbstractDonkeyEntity(EntityType<? extends AbstractDonkeyEntity> entityType, World world) {
@@ -58,11 +57,6 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 
 	public void setHasChest(boolean hasChest) {
 		this.dataTracker.set(CHEST, hasChest);
-	}
-
-	@Override
-	protected int getInventorySize() {
-		return this.hasChest() ? 16 : super.getInventorySize();
 	}
 
 	@Override
@@ -191,7 +185,8 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 		this.playSound(SoundEvents.ENTITY_DONKEY_CHEST, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 	}
 
+	@Override
 	public int getInventoryColumns() {
-		return 5;
+		return this.hasChest() ? 5 : 0;
 	}
 }

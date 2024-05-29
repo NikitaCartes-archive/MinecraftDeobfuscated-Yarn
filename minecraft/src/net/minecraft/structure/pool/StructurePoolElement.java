@@ -4,11 +4,13 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.structure.StructureLiquidSettings;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.structure.processor.StructureProcessorList;
@@ -58,6 +60,7 @@ public abstract class StructurePoolElement {
 		BlockRotation rotation,
 		BlockBox box,
 		Random random,
+		StructureLiquidSettings liquidSettings,
 		boolean keepJigsaws
 	);
 
@@ -91,21 +94,31 @@ public abstract class StructurePoolElement {
 	}
 
 	public static Function<StructurePool.Projection, LegacySinglePoolElement> ofLegacySingle(String id) {
-		return projection -> new LegacySinglePoolElement(Either.left(Identifier.of(id)), EMPTY_PROCESSORS, projection);
+		return projection -> new LegacySinglePoolElement(Either.left(Identifier.of(id)), EMPTY_PROCESSORS, projection, Optional.empty());
 	}
 
 	public static Function<StructurePool.Projection, LegacySinglePoolElement> ofProcessedLegacySingle(
 		String id, RegistryEntry<StructureProcessorList> processorListEntry
 	) {
-		return projection -> new LegacySinglePoolElement(Either.left(Identifier.of(id)), processorListEntry, projection);
+		return projection -> new LegacySinglePoolElement(Either.left(Identifier.of(id)), processorListEntry, projection, Optional.empty());
 	}
 
 	public static Function<StructurePool.Projection, SinglePoolElement> ofSingle(String id) {
-		return projection -> new SinglePoolElement(Either.left(Identifier.of(id)), EMPTY_PROCESSORS, projection);
+		return projection -> new SinglePoolElement(Either.left(Identifier.of(id)), EMPTY_PROCESSORS, projection, Optional.empty());
 	}
 
 	public static Function<StructurePool.Projection, SinglePoolElement> ofProcessedSingle(String id, RegistryEntry<StructureProcessorList> processorListEntry) {
-		return projection -> new SinglePoolElement(Either.left(Identifier.of(id)), processorListEntry, projection);
+		return projection -> new SinglePoolElement(Either.left(Identifier.of(id)), processorListEntry, projection, Optional.empty());
+	}
+
+	public static Function<StructurePool.Projection, SinglePoolElement> ofSingle(String id, StructureLiquidSettings liquidSettings) {
+		return projection -> new SinglePoolElement(Either.left(Identifier.of(id)), EMPTY_PROCESSORS, projection, Optional.of(liquidSettings));
+	}
+
+	public static Function<StructurePool.Projection, SinglePoolElement> ofProcessedSingle(
+		String id, RegistryEntry<StructureProcessorList> processorListEntry, StructureLiquidSettings liquidSettings
+	) {
+		return projection -> new SinglePoolElement(Either.left(Identifier.of(id)), processorListEntry, projection, Optional.of(liquidSettings));
 	}
 
 	public static Function<StructurePool.Projection, FeaturePoolElement> ofFeature(RegistryEntry<PlacedFeature> placedFeatureEntry) {

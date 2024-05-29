@@ -17,9 +17,8 @@ public class SaddleItem extends Item {
 	public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
 		if (entity instanceof Saddleable saddleable && entity.isAlive() && !saddleable.isSaddled() && saddleable.canBeSaddled()) {
 			if (!user.getWorld().isClient) {
-				saddleable.saddle(SoundCategory.NEUTRAL);
+				saddleable.saddle(stack.split(1), SoundCategory.NEUTRAL);
 				entity.getWorld().emitGameEvent(entity, GameEvent.EQUIP, entity.getPos());
-				stack.decrement(1);
 			}
 
 			return ActionResult.success(user.getWorld().isClient);

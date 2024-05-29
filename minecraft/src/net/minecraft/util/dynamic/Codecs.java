@@ -96,7 +96,7 @@ public class Codecs {
 		.listOf()
 		.comapFlatMap(
 			list -> Util.decodeFixedLengthList(list, 4)
-					.map(listx -> new Quaternionf((Float)listx.get(0), (Float)listx.get(1), (Float)listx.get(2), (Float)listx.get(3))),
+					.map(listx -> new Quaternionf((Float)listx.get(0), (Float)listx.get(1), (Float)listx.get(2), (Float)listx.get(3)).normalize()),
 			quaternion -> List.of(quaternion.x, quaternion.y, quaternion.z, quaternion.w)
 		);
 	public static final Codec<AxisAngle4f> AXIS_ANGLE4F = RecordCodecBuilder.create(

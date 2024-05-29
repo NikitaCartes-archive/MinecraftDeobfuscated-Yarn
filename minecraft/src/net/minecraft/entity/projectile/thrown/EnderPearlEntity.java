@@ -17,7 +17,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 public class EnderPearlEntity extends ThrownItemEntity {
 	public EnderPearlEntity(EntityType<? extends EnderPearlEntity> entityType, World world) {
@@ -52,31 +51,46 @@ public class EnderPearlEntity extends ThrownItemEntity {
 
 		if (this.getWorld() instanceof ServerWorld serverWorld && !this.isRemoved()) {
 			Entity entity = this.getOwner();
-			if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
-				if (serverPlayerEntity.networkHandler.isConnectionOpen() && serverPlayerEntity.canUsePortals()) {
-					if (this.random.nextFloat() < 0.05F && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
-						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(serverWorld);
-						if (endermiteEntity != null) {
-							endermiteEntity.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
-							serverWorld.spawnEntity(endermiteEntity);
+			if (entity != null && canTeleportEntityTo(entity, serverWorld)) {
+				if (entity.hasVehicle()) {
+					this.detach();
+				}
+
+				if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
+					if (serverPlayerEntity.networkHandler.isConnectionOpen()) {
+						if (this.random.nextFloat() < 0.05F && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
+							EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(serverWorld);
+							if (endermiteEntity != null) {
+								endermiteEntity.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
+								serverWorld.spawnEntity(endermiteEntity);
+							}
 						}
-					}
 
-					if (entity.hasVehicle()) {
-						this.detach();
+						entity.teleportTo(new TeleportTarget(serverWorld, this.getPos(), entity.getVelocity(), entity.getYaw(), entity.getPitch(), TeleportTarget.NO_OP));
+						entity.onLanding();
+						entity.damage(this.getDamageSources().fall(), 5.0F);
+						this.playTeleportSound(serverWorld, this.getPos());
 					}
-
-					entity.teleportTo(new TeleportTarget(serverWorld, this.getPos(), entity.getVelocity(), entity.getYaw(), entity.getPitch()));
+				} else {
+					entity.teleportTo(new TeleportTarget(serverWorld, this.getPos(), entity.getVelocity(), entity.getYaw(), entity.getPitch(), TeleportTarget.NO_OP));
 					entity.onLanding();
-					entity.damage(this.getDamageSources().fall(), 5.0F);
 					this.playTeleportSound(serverWorld, this.getPos());
 				}
-			} else if (entity != null) {
-				entity.teleportTo(new TeleportTarget(serverWorld, this.getPos(), entity.getVelocity(), entity.getYaw(), entity.getPitch()));
-				entity.onLanding();
+
+				this.discard();
+				return;
 			}
 
 			this.discard();
+			return;
+		}
+	}
+
+	private static boolean canTeleportEntityTo(Entity entity, World world) {
+		if (entity.getWorld().getRegistryKey() == world.getRegistryKey()) {
+			return !(entity instanceof LivingEntity livingEntity) ? entity.isAlive() : livingEntity.isAlive() && !livingEntity.isSleeping();
+		} else {
+			return entity.canUsePortals();
 		}
 	}
 
@@ -88,16 +102,6 @@ public class EnderPearlEntity extends ThrownItemEntity {
 		} else {
 			super.tick();
 		}
-	}
-
-	@Nullable
-	@Override
-	public Entity teleportTo(TeleportTarget teleportTarget) {
-		if (this.getWorld().getRegistryKey() != teleportTarget.world().getRegistryKey()) {
-			this.removeOwner();
-		}
-
-		return super.teleportTo(teleportTarget);
 	}
 
 	private void playTeleportSound(World world, Vec3d pos) {

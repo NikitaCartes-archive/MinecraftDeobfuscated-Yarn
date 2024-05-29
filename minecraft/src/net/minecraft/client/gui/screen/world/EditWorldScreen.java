@@ -80,7 +80,7 @@ public class EditWorldScreen extends Screen {
 			buttonWidgetx.active = false;
 		}).width(200).build()).active = session.getIconFile().filter(path -> Files.isRegularFile(path, new LinkOption[0])).isPresent();
 		this.layout
-			.add(ButtonWidget.builder(OPEN_FOLDER_TEXT, button -> Util.getOperatingSystem().open(session.getDirectory(WorldSavePath.ROOT).toFile())).width(200).build());
+			.add(ButtonWidget.builder(OPEN_FOLDER_TEXT, button -> Util.getOperatingSystem().open(session.getDirectory(WorldSavePath.ROOT))).width(200).build());
 		this.layout.add(ButtonWidget.builder(BACKUP_TEXT, button -> {
 			boolean bl = backupLevel(session);
 			this.callback.accept(!bl);
@@ -95,7 +95,7 @@ public class EditWorldScreen extends Screen {
 				throw new RuntimeException(var5x);
 			}
 
-			Util.getOperatingSystem().open(path.toFile());
+			Util.getOperatingSystem().open(path);
 		}).width(200).build());
 		this.layout.add(ButtonWidget.builder(OPTIMIZE_TEXT, button -> client.setScreen(new BackupPromptScreen(() -> client.setScreen(this), (backup, eraseCache) -> {
 				if (backup) {

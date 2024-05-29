@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.passive.AbstractDonkeyEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -19,12 +18,14 @@ public class HorseScreen extends HandledScreen<HorseScreenHandler> {
 	private static final Identifier ARMOR_SLOT_TEXTURE = Identifier.ofVanilla("container/horse/armor_slot");
 	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/gui/container/horse.png");
 	private final AbstractHorseEntity entity;
+	private final int slotColumnCount;
 	private float mouseX;
 	private float mouseY;
 
-	public HorseScreen(HorseScreenHandler handler, PlayerInventory inventory, AbstractHorseEntity entity) {
+	public HorseScreen(HorseScreenHandler handler, PlayerInventory inventory, AbstractHorseEntity entity, int slotColumnCount) {
 		super(handler, inventory, entity.getDisplayName());
 		this.entity = entity;
+		this.slotColumnCount = slotColumnCount;
 	}
 
 	@Override
@@ -32,8 +33,8 @@ public class HorseScreen extends HandledScreen<HorseScreenHandler> {
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
 		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		if (this.entity instanceof AbstractDonkeyEntity abstractDonkeyEntity && abstractDonkeyEntity.hasChest()) {
-			context.drawGuiTexture(CHEST_SLOTS_TEXTURE, 90, 54, 0, 0, i + 79, j + 17, abstractDonkeyEntity.getInventoryColumns() * 18, 54);
+		if (this.slotColumnCount > 0) {
+			context.drawGuiTexture(CHEST_SLOTS_TEXTURE, 90, 54, 0, 0, i + 79, j + 17, this.slotColumnCount * 18, 54);
 		}
 
 		if (this.entity.canBeSaddled()) {

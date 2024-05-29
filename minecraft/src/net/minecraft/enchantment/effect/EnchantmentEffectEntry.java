@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
+import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextType;
@@ -15,7 +16,8 @@ public record EnchantmentEffectEntry<T>(T effect, Optional<LootCondition> requir
 			.validate(
 				condition -> {
 					ErrorReporter.Impl impl = new ErrorReporter.Impl();
-					lootContextType.validate(impl, condition);
+					LootTableReporter lootTableReporter = new LootTableReporter(impl, lootContextType);
+					condition.validate(lootTableReporter);
 					return (DataResult)impl.getErrorsAsString()
 						.map(errors -> DataResult.error(() -> "Validation error in enchantment effect condition: " + errors))
 						.orElseGet(() -> DataResult.success(condition));

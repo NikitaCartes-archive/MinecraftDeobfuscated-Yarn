@@ -13,11 +13,9 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.navigation.GuiNavigationType;
-import net.minecraft.client.gui.screen.AccessibilityOnboardingScreen;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.option.ChatOptionsScreen;
 import net.minecraft.client.gui.screen.option.KeybindsScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -393,16 +391,8 @@ public class Keyboard {
 						boolean bl3 = this.client.options.getNarrator().getValue() == NarratorMode.OFF;
 						this.client.options.getNarrator().setValue(NarratorMode.byId(this.client.options.getNarrator().getValue().getId() + 1));
 						this.client.options.write();
-						if (screen instanceof AccessibilityOnboardingScreen accessibilityOnboardingScreen) {
-							accessibilityOnboardingScreen.refreshNarratorOption();
-						}
-
-						if (screen instanceof ChatOptionsScreen chatOptionsScreen) {
-							chatOptionsScreen.refreshNarratorOption();
-						}
-
-						if (bl3 && screen != null) {
-							screen.applyNarratorModeChangeDelay();
+						if (screen != null) {
+							screen.refreshNarrator(bl3);
 						}
 					}
 
@@ -426,19 +416,19 @@ public class Keyboard {
 			}
 
 			InputUtil.Key key2;
-			boolean bl3x;
+			boolean bl3;
 			boolean var10000;
-			label191: {
+			label180: {
 				key2 = InputUtil.fromKeyCode(key, scancode);
-				bl3x = this.client.currentScreen == null;
-				label151:
-				if (!bl3x) {
+				bl3 = this.client.currentScreen == null;
+				label141:
+				if (!bl3) {
 					if (this.client.currentScreen instanceof GameMenuScreen gameMenuScreen && !gameMenuScreen.shouldShowMenu()) {
-						break label151;
+						break label141;
 					}
 
 					var10000 = false;
-					break label191;
+					break label180;
 				}
 
 				var10000 = true;
@@ -477,7 +467,7 @@ public class Keyboard {
 					}
 				}
 
-				if (bl3x) {
+				if (bl3) {
 					if (bl5) {
 						KeyBinding.setKeyPressed(key2, false);
 					} else {

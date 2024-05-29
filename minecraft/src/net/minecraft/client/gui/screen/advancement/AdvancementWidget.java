@@ -61,18 +61,27 @@ public class AdvancementWidget {
 		this.title = Language.getInstance().reorder(client.textRenderer.trimToWidth(display.getTitle(), 163));
 		this.x = MathHelper.floor(display.getX() * 28.0F);
 		this.y = MathHelper.floor(display.getY() * 27.0F);
-		int i = advancement.getAdvancement().requirements().getLength();
-		int j = String.valueOf(i).length();
-		int k = i > 1 ? client.textRenderer.getWidth("  ") + client.textRenderer.getWidth("0") * j * 2 + client.textRenderer.getWidth("/") : 0;
-		int l = 29 + client.textRenderer.getWidth(this.title) + k;
+		int i = this.getProgressWidth();
+		int j = 29 + client.textRenderer.getWidth(this.title) + i;
 		this.description = Language.getInstance()
-			.reorder(this.wrapDescription(Texts.setStyleIfAbsent(display.getDescription().copy(), Style.EMPTY.withColor(display.getFrame().getTitleFormat())), l));
+			.reorder(this.wrapDescription(Texts.setStyleIfAbsent(display.getDescription().copy(), Style.EMPTY.withColor(display.getFrame().getTitleFormat())), j));
 
 		for (OrderedText orderedText : this.description) {
-			l = Math.max(l, client.textRenderer.getWidth(orderedText));
+			j = Math.max(j, client.textRenderer.getWidth(orderedText));
 		}
 
-		this.width = l + 3 + 5;
+		this.width = j + 3 + 5;
+	}
+
+	private int getProgressWidth() {
+		int i = this.advancement.getAdvancement().requirements().getLength();
+		if (i <= 1) {
+			return 0;
+		} else {
+			int j = 8;
+			Text text = Text.translatable("advancements.progress", i, i);
+			return this.client.textRenderer.getWidth(text) + 8;
+		}
 	}
 
 	private static float getMaxWidth(TextHandler textHandler, List<StringVisitable> lines) {

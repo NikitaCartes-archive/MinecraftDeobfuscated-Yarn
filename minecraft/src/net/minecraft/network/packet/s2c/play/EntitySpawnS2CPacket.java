@@ -11,6 +11,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -37,23 +38,23 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final byte headYaw;
 	private final int entityData;
 
-	public EntitySpawnS2CPacket(Entity entity) {
-		this(entity, 0);
+	public EntitySpawnS2CPacket(Entity entity, EntityTrackerEntry entityTrackerEntry) {
+		this(entity, entityTrackerEntry, 0);
 	}
 
-	public EntitySpawnS2CPacket(Entity entity, int entityData) {
+	public EntitySpawnS2CPacket(Entity entity, EntityTrackerEntry entityTrackerEntry, int entityData) {
 		this(
 			entity.getId(),
 			entity.getUuid(),
-			entity.getX(),
-			entity.getY(),
-			entity.getZ(),
-			entity.getPitch(),
-			entity.getYaw(),
+			entityTrackerEntry.getPos().getX(),
+			entityTrackerEntry.getPos().getY(),
+			entityTrackerEntry.getPos().getZ(),
+			entityTrackerEntry.getPitch(),
+			entityTrackerEntry.getYaw(),
 			entity.getType(),
 			entityData,
-			entity.getVelocity(),
-			(double)entity.getHeadYaw()
+			entityTrackerEntry.getVelocity(),
+			(double)entityTrackerEntry.getHeadYaw()
 		);
 	}
 

@@ -142,8 +142,8 @@ public enum TrialSpawnerState implements StringIdentifiable {
 					trialSpawnerData.nextMobSpawnsAt = 0L;
 					yield ACTIVE;
 				} else if (trialSpawnerData.isCooldownOver(world)) {
-					trialSpawnerData.cooldownEnd = 0L;
 					logic.setNotOminous(world, pos);
+					trialSpawnerData.reset();
 					yield WAITING_FOR_PLAYERS;
 				} else {
 					yield this;

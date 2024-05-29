@@ -12,24 +12,24 @@ public class OpenHorseScreenS2CPacket implements Packet<ClientPlayPacketListener
 		OpenHorseScreenS2CPacket::write, OpenHorseScreenS2CPacket::new
 	);
 	private final int syncId;
-	private final int slotCount;
+	private final int slotColumnCount;
 	private final int horseId;
 
-	public OpenHorseScreenS2CPacket(int syncId, int slotCount, int horseId) {
+	public OpenHorseScreenS2CPacket(int syncId, int slotColumnCount, int horseId) {
 		this.syncId = syncId;
-		this.slotCount = slotCount;
+		this.slotColumnCount = slotColumnCount;
 		this.horseId = horseId;
 	}
 
 	private OpenHorseScreenS2CPacket(PacketByteBuf buf) {
 		this.syncId = buf.readUnsignedByte();
-		this.slotCount = buf.readVarInt();
+		this.slotColumnCount = buf.readVarInt();
 		this.horseId = buf.readInt();
 	}
 
 	private void write(PacketByteBuf buf) {
 		buf.writeByte(this.syncId);
-		buf.writeVarInt(this.slotCount);
+		buf.writeVarInt(this.slotColumnCount);
 		buf.writeInt(this.horseId);
 	}
 
@@ -46,8 +46,8 @@ public class OpenHorseScreenS2CPacket implements Packet<ClientPlayPacketListener
 		return this.syncId;
 	}
 
-	public int getSlotCount() {
-		return this.slotCount;
+	public int getSlotColumnCount() {
+		return this.slotColumnCount;
 	}
 
 	public int getHorseId() {

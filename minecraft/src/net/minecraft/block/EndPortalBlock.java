@@ -17,7 +17,6 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.Heightmap;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
@@ -68,19 +67,21 @@ public class EndPortalBlock extends BlockWithEntity implements Portal {
 		ServerWorld serverWorld = world.getServer().getWorld(registryKey);
 		boolean bl = registryKey == World.END;
 		BlockPos blockPos = bl ? ServerWorld.END_SPAWN_POS : serverWorld.getSpawnPos();
-		Vec3d vec3d = new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
+		Vec3d vec3d = blockPos.toBottomCenterPos();
 		if (bl) {
 			this.createEndSpawnPlatform(serverWorld, BlockPos.ofFloored(vec3d).down());
+			if (entity instanceof ServerPlayerEntity) {
+				vec3d = vec3d.subtract(0.0, 1.0, 0.0);
+			}
 		} else {
 			if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
-				return serverPlayerEntity.getRespawnTarget(false);
+				return serverPlayerEntity.getRespawnTarget(false, TeleportTarget.NO_OP);
 			}
 
-			int i = serverWorld.getWorldChunk(blockPos).sampleHeightmap(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos.getX(), blockPos.getZ()) + 1;
-			vec3d = new Vec3d(vec3d.x, (double)i, vec3d.z);
+			vec3d = entity.getWorldSpawnPos(serverWorld, blockPos).toBottomCenterPos();
 		}
 
-		return new TeleportTarget(serverWorld, vec3d, entity.getVelocity(), entity.getYaw(), entity.getPitch());
+		return new TeleportTarget(serverWorld, vec3d, entity.getVelocity(), entity.getYaw(), entity.getPitch(), TeleportTarget.ADD_PORTAL_CHUNK_TICKET);
 	}
 
 	private void createEndSpawnPlatform(ServerWorld world, BlockPos pos) {
@@ -89,8 +90,12 @@ public class EndPortalBlock extends BlockWithEntity implements Portal {
 		for (int i = -2; i <= 2; i++) {
 			for (int j = -2; j <= 2; j++) {
 				for (int k = -1; k < 3; k++) {
-					BlockState blockState = k == -1 ? Blocks.OBSIDIAN.getDefaultState() : Blocks.AIR.getDefaultState();
-					world.setBlockState(mutable.set(pos).move(j, k, i), blockState);
+					BlockPos blockPos = mutable.set(pos).move(j, k, i);
+					Block block = k == -1 ? Blocks.OBSIDIAN : Blocks.AIR;
+					if (!world.getBlockState(blockPos).isOf(block)) {
+						world.breakBlock(blockPos, true, null);
+						world.setBlockState(blockPos, block.getDefaultState());
+					}
 				}
 			}
 		}

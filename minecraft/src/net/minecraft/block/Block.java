@@ -710,7 +710,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	public String toString() {
-		return "Block{" + Registries.BLOCK.getId(this) + "}";
+		return "Block{" + Registries.BLOCK.getEntry(this).getIdAsString() + "}";
 	}
 
 	/**
