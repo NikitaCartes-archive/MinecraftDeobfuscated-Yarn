@@ -114,7 +114,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 				return ItemStack.EMPTY;
 			}
 
-			slot2.onTakeItem(player, itemStack2);
+			slot2.onTakeItem(player, itemStack);
 		}
 
 		return itemStack;

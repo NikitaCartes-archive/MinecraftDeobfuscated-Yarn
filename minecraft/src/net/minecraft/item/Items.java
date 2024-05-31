@@ -123,7 +123,7 @@ public class Items {
 	public static final Item RAW_IRON_BLOCK = register(Blocks.RAW_IRON_BLOCK);
 	public static final Item RAW_COPPER_BLOCK = register(Blocks.RAW_COPPER_BLOCK);
 	public static final Item RAW_GOLD_BLOCK = register(Blocks.RAW_GOLD_BLOCK);
-	public static final Item HEAVY_CORE = register(Blocks.HEAVY_CORE);
+	public static final Item HEAVY_CORE = register(new BlockItem(Blocks.HEAVY_CORE, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item AMETHYST_BLOCK = register(Blocks.AMETHYST_BLOCK);
 	public static final Item BUDDING_AMETHYST = register(Blocks.BUDDING_AMETHYST);
 	public static final Item IRON_BLOCK = register(Blocks.IRON_BLOCK);
@@ -1490,6 +1490,7 @@ public class Items {
 		"mace",
 		new MaceItem(
 			new Item.Settings()
+				.rarity(Rarity.EPIC)
 				.maxDamage(500)
 				.component(DataComponentTypes.TOOL, MaceItem.createToolComponent())
 				.attributeModifiers(MaceItem.createAttributeModifiers())
@@ -1789,6 +1790,7 @@ public class Items {
 		"trident",
 		new TridentItem(
 			new Item.Settings()
+				.rarity(Rarity.EPIC)
 				.maxDamage(250)
 				.attributeModifiers(TridentItem.createAttributeModifiers())
 				.component(DataComponentTypes.TOOL, TridentItem.createToolComponent())
@@ -1827,13 +1829,13 @@ public class Items {
 		"globe_banner_pattern", new BannerPatternItem(BannerPatternTags.GLOBE_PATTERN_ITEM, new Item.Settings().maxCount(1))
 	);
 	public static final Item PIGLIN_BANNER_PATTERN = register(
-		"piglin_banner_pattern", new BannerPatternItem(BannerPatternTags.PIGLIN_PATTERN_ITEM, new Item.Settings().maxCount(1))
+		"piglin_banner_pattern", new BannerPatternItem(BannerPatternTags.PIGLIN_PATTERN_ITEM, new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON))
 	);
 	public static final Item FLOW_BANNER_PATTERN = register(
-		"flow_banner_pattern", new BannerPatternItem(BannerPatternTags.FLOW_PATTERN_ITEM, new Item.Settings().maxCount(1))
+		"flow_banner_pattern", new BannerPatternItem(BannerPatternTags.FLOW_PATTERN_ITEM, new Item.Settings().maxCount(1).rarity(Rarity.RARE))
 	);
 	public static final Item GUSTER_BANNER_PATTERN = register(
-		"guster_banner_pattern", new BannerPatternItem(BannerPatternTags.GUSTER_PATTERN_ITEM, new Item.Settings().maxCount(1))
+		"guster_banner_pattern", new BannerPatternItem(BannerPatternTags.GUSTER_PATTERN_ITEM, new Item.Settings().maxCount(1).rarity(Rarity.RARE))
 	);
 	public static final Item GOAT_HORN = register("goat_horn", new GoatHornItem(new Item.Settings().maxCount(1), InstrumentTags.GOAT_HORNS));
 	public static final Item COMPOSTER = register(Blocks.COMPOSTER);

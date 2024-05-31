@@ -60,15 +60,15 @@ public class PortalForcer {
 		BlockPos blockPos2 = null;
 		WorldBorder worldBorder = this.world.getWorldBorder();
 		int i = Math.min(this.world.getTopY(), this.world.getBottomY() + this.world.getLogicalHeight()) - 1;
+		int j = 1;
 		BlockPos.Mutable mutable = pos.mutableCopy();
 
 		for (BlockPos.Mutable mutable2 : BlockPos.iterateInSquare(pos, 16, Direction.EAST, Direction.SOUTH)) {
-			int j = Math.min(i, this.world.getTopY(Heightmap.Type.MOTION_BLOCKING, mutable2.getX(), mutable2.getZ()));
-			int k = 1;
+			int k = Math.min(i, this.world.getTopY(Heightmap.Type.MOTION_BLOCKING, mutable2.getX(), mutable2.getZ()));
 			if (worldBorder.contains(mutable2) && worldBorder.contains(mutable2.move(direction, 1))) {
 				mutable2.move(direction.getOpposite(), 1);
 
-				for (int l = j; l >= this.world.getBottomY(); l--) {
+				for (int l = k; l >= this.world.getBottomY(); l--) {
 					mutable2.setY(l);
 					if (this.isBlockStateValid(mutable2)) {
 						int m = l;
@@ -112,27 +112,25 @@ public class PortalForcer {
 				return Optional.empty();
 			}
 
-			blockPos = new BlockPos(pos.getX(), MathHelper.clamp(pos.getY(), o, p), pos.getZ()).toImmutable();
+			blockPos = new BlockPos(pos.getX() - direction.getOffsetX() * 1, MathHelper.clamp(pos.getY(), o, p), pos.getZ() - direction.getOffsetZ() * 1).toImmutable();
+			blockPos = worldBorder.clamp(blockPos);
 			Direction direction2 = direction.rotateYClockwise();
-			if (!worldBorder.contains(blockPos)) {
-				return Optional.empty();
-			}
 
-			for (int k = -1; k < 2; k++) {
-				for (int lx = 0; lx < 2; lx++) {
-					for (int m = -1; m < 3; m++) {
-						BlockState blockState = m < 0 ? Blocks.OBSIDIAN.getDefaultState() : Blocks.AIR.getDefaultState();
-						mutable.set(blockPos, lx * direction.getOffsetX() + k * direction2.getOffsetX(), m, lx * direction.getOffsetZ() + k * direction2.getOffsetZ());
+			for (int lx = -1; lx < 2; lx++) {
+				for (int m = 0; m < 2; m++) {
+					for (int n = -1; n < 3; n++) {
+						BlockState blockState = n < 0 ? Blocks.OBSIDIAN.getDefaultState() : Blocks.AIR.getDefaultState();
+						mutable.set(blockPos, m * direction.getOffsetX() + lx * direction2.getOffsetX(), n, m * direction.getOffsetZ() + lx * direction2.getOffsetZ());
 						this.world.setBlockState(mutable, blockState);
 					}
 				}
 			}
 		}
 
-		for (int ox = -1; ox < 3; ox++) {
-			for (int px = -1; px < 4; px++) {
-				if (ox == -1 || ox == 2 || px == -1 || px == 3) {
-					mutable.set(blockPos, ox * direction.getOffsetX(), px, ox * direction.getOffsetZ());
+		for (int o = -1; o < 3; o++) {
+			for (int p = -1; p < 4; p++) {
+				if (o == -1 || o == 2 || p == -1 || p == 3) {
+					mutable.set(blockPos, o * direction.getOffsetX(), p, o * direction.getOffsetZ());
 					this.world.setBlockState(mutable, Blocks.OBSIDIAN.getDefaultState(), Block.NOTIFY_ALL);
 				}
 			}
@@ -140,9 +138,9 @@ public class PortalForcer {
 
 		BlockState blockState2 = Blocks.NETHER_PORTAL.getDefaultState().with(NetherPortalBlock.AXIS, axis);
 
-		for (int pxx = 0; pxx < 2; pxx++) {
-			for (int j = 0; j < 3; j++) {
-				mutable.set(blockPos, pxx * direction.getOffsetX(), j, pxx * direction.getOffsetZ());
+		for (int px = 0; px < 2; px++) {
+			for (int k = 0; k < 3; k++) {
+				mutable.set(blockPos, px * direction.getOffsetX(), k, px * direction.getOffsetZ());
 				this.world.setBlockState(mutable, blockState2, Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
 			}
 		}

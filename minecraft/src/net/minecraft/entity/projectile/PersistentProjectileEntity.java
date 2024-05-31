@@ -90,6 +90,10 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 		this.setPosition(x, y, z);
 		if (weapon != null && world instanceof ServerWorld serverWorld) {
+			if (weapon.isEmpty()) {
+				throw new IllegalArgumentException("Invalid weapon firing an arrow");
+			}
+
 			this.weapon = weapon.copy();
 			int i = EnchantmentHelper.getProjectilePiercing(serverWorld, weapon, this.stack);
 			if (i > 0) {

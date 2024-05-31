@@ -11,14 +11,19 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TaskScreen;
 import net.minecraft.client.gui.screen.WarningScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CheckboxWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.EditBoxWidget;
 import net.minecraft.client.gui.widget.LayoutWidget;
+import net.minecraft.client.gui.widget.SimplePositioningWidget;
+import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.session.report.AbuseReport;
 import net.minecraft.client.session.report.AbuseReportContext;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Nullables;
 import net.minecraft.util.TextifiedException;
 import org.slf4j.Logger;
 
@@ -35,13 +40,18 @@ public abstract class ReportScreen<B extends AbuseReport.Builder<?>> extends Scr
 	private static final Text DESCRIBE_TEXT = Text.translatable("gui.abuseReport.describe");
 	protected static final Text MORE_COMMENTS_TEXT = Text.translatable("gui.abuseReport.more_comments");
 	private static final Text COMMENTS_TEXT = Text.translatable("gui.abuseReport.comments");
+	private static final Text ATTESTATION_TEXT = Text.translatable("gui.abuseReport.attestation");
+	protected static final int field_52303 = 120;
 	protected static final int field_46016 = 20;
 	protected static final int field_46017 = 280;
 	protected static final int field_46018 = 8;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	protected final Screen parent;
 	protected final AbuseReportContext context;
+	protected final DirectionalLayoutWidget layout = DirectionalLayoutWidget.vertical().spacing(8);
 	protected B reportBuilder;
+	private CheckboxWidget checkbox;
+	protected ButtonWidget sendButton;
 
 	protected ReportScreen(Text title, Screen parent, AbuseReportContext context, B reportBuilder) {
 		super(title);
@@ -57,6 +67,48 @@ public abstract class ReportScreen<B extends AbuseReport.Builder<?>> extends Scr
 		editBoxWidget.setMaxLength(abuseReportLimits.maxOpinionCommentsLength());
 		editBoxWidget.setChangeListener(changeListener);
 		return editBoxWidget;
+	}
+
+	@Override
+	protected void init() {
+		this.layout.getMainPositioner().alignHorizontalCenter();
+		this.addTitle();
+		this.addContent();
+		this.addAttestationCheckboxAndSendButton();
+		this.onChange();
+		this.layout.forEachChild(child -> {
+			ClickableWidget var10000 = this.addDrawableChild(child);
+		});
+		this.initTabNavigation();
+	}
+
+	protected void addTitle() {
+		this.layout.add(new TextWidget(this.title, this.textRenderer));
+	}
+
+	protected abstract void addContent();
+
+	protected void addAttestationCheckboxAndSendButton() {
+		this.checkbox = this.layout
+			.add(CheckboxWidget.builder(ATTESTATION_TEXT, this.textRenderer).checked(this.reportBuilder.isAttested()).maxWidth(280).callback((checkbox, attested) -> {
+				this.reportBuilder.setAttested(attested);
+				this.onChange();
+			}).build());
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.add(DirectionalLayoutWidget.horizontal().spacing(8));
+		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).width(120).build());
+		this.sendButton = directionalLayoutWidget.add(ButtonWidget.builder(SEND_TEXT, button -> this.trySend()).width(120).build());
+	}
+
+	protected void onChange() {
+		AbuseReport.ValidationError validationError = this.reportBuilder.validate();
+		this.sendButton.active = validationError == null && this.checkbox.isChecked();
+		this.sendButton.setTooltip(Nullables.map(validationError, AbuseReport.ValidationError::createTooltip));
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		this.layout.refreshPositions();
+		SimplePositioningWidget.setPos(this.layout, this.getNavigationFocus());
 	}
 
 	protected void trySend() {
@@ -146,12 +198,12 @@ public abstract class ReportScreen<B extends AbuseReport.Builder<?>> extends Scr
 			DirectionalLayoutWidget directionalLayoutWidget = DirectionalLayoutWidget.vertical().spacing(8);
 			directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
 			DirectionalLayoutWidget directionalLayoutWidget2 = directionalLayoutWidget.add(DirectionalLayoutWidget.horizontal().spacing(8));
-			directionalLayoutWidget2.add(ButtonWidget.builder(RETURN_BUTTON_TEXT, buttonWidget -> this.close()).build());
-			directionalLayoutWidget2.add(ButtonWidget.builder(DRAFT_BUTTON_TEXT, buttonWidget -> {
+			directionalLayoutWidget2.add(ButtonWidget.builder(RETURN_BUTTON_TEXT, button -> this.close()).build());
+			directionalLayoutWidget2.add(ButtonWidget.builder(DRAFT_BUTTON_TEXT, button -> {
 				ReportScreen.this.saveDraft();
 				this.client.setScreen(ReportScreen.this.parent);
 			}).build());
-			directionalLayoutWidget.add(ButtonWidget.builder(DISCARD_BUTTON_TEXT, buttonWidget -> {
+			directionalLayoutWidget.add(ButtonWidget.builder(DISCARD_BUTTON_TEXT, button -> {
 				ReportScreen.this.resetDraft();
 				this.client.setScreen(ReportScreen.this.parent);
 			}).build());

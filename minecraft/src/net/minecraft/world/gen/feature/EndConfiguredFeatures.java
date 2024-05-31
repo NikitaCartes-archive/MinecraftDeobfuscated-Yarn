@@ -6,6 +6,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 
 public class EndConfiguredFeatures {
+	public static final RegistryKey<ConfiguredFeature<?, ?>> END_PLATFORM = ConfiguredFeatures.of("end_platform");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> END_SPIKE = ConfiguredFeatures.of("end_spike");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> END_GATEWAY_RETURN = ConfiguredFeatures.of("end_gateway_return");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> END_GATEWAY_DELAYED = ConfiguredFeatures.of("end_gateway_delayed");
@@ -13,6 +14,7 @@ public class EndConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> END_ISLAND = ConfiguredFeatures.of("end_island");
 
 	public static void bootstrap(Registerable<ConfiguredFeature<?, ?>> featureRegisterable) {
+		ConfiguredFeatures.register(featureRegisterable, END_PLATFORM, Feature.END_PLATFORM);
 		ConfiguredFeatures.register(featureRegisterable, END_SPIKE, Feature.END_SPIKE, new EndSpikeFeatureConfig(false, ImmutableList.of(), null));
 		ConfiguredFeatures.register(
 			featureRegisterable, END_GATEWAY_RETURN, Feature.END_GATEWAY, EndGatewayFeatureConfig.createConfig(ServerWorld.END_SPAWN_POS, true)

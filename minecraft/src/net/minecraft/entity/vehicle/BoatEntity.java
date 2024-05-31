@@ -779,6 +779,15 @@ public class BoatEntity extends VehicleEntity implements Leashable, VariantHolde
 	}
 
 	@Override
+	public void remove(Entity.RemovalReason reason) {
+		if (!this.getWorld().isClient && reason.shouldDestroy() && this.isLeashed()) {
+			this.detachLeash(true, true);
+		}
+
+		super.remove(reason);
+	}
+
+	@Override
 	protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
 		this.fallVelocity = this.getVelocity().y;
 		if (!this.hasVehicle()) {

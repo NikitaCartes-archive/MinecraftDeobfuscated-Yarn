@@ -1192,6 +1192,11 @@ public class GameOptions {
 		return this.soundDevice;
 	}
 
+	public void setAccessibilityOnboarded() {
+		this.onboardAccessibility = false;
+		this.write();
+	}
+
 	public GameOptions(MinecraftClient client, File optionsFile) {
 		this.client = client;
 		this.optionsFile = new File(optionsFile, "options.txt");

@@ -34,7 +34,7 @@ public class TelemetryInfoScreen extends Screen {
 	private final Screen parent;
 	private final GameOptions options;
 	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(
-		this, 16 + 9 * 5 + 20, OPTIONAL_TELEMETRY_ENABLED_BY_API ? 33 + CheckboxWidget.getSize(MinecraftClient.getInstance().textRenderer) : 33
+		this, 16 + 9 * 5 + 20, OPTIONAL_TELEMETRY_ENABLED_BY_API ? 33 + CheckboxWidget.getCheckboxSize(MinecraftClient.getInstance().textRenderer) : 33
 	);
 	@Nullable
 	private TelemetryEventWidget telemetryEventWidget;

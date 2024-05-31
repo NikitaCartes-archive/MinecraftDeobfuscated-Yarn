@@ -92,7 +92,7 @@ public interface Leashable {
 
 			if (entity.age > 100) {
 				entity.dropItem(Items.LEAD);
-				leashData.unresolvedLeashData = null;
+				entity.setLeashData(null);
 			}
 		}
 	}

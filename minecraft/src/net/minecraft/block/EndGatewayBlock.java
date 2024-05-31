@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import com.mojang.logging.LogUtils;
 import com.mojang.serialization.MapCodec;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
@@ -19,12 +18,9 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import org.slf4j.Logger;
 
 public class EndGatewayBlock extends BlockWithEntity implements Portal {
 	public static final MapCodec<EndGatewayBlock> CODEC = createCodec(EndGatewayBlock::new);
-	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final int field_52059 = 10;
 
 	@Override
 	public MapCodec<EndGatewayBlock> getCodec() {
@@ -85,7 +81,7 @@ public class EndGatewayBlock extends BlockWithEntity implements Portal {
 
 	@Override
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (entity.canUsePortals()
+		if (entity.canUsePortals(false)
 			&& !world.isClient
 			&& world.getBlockEntity(pos) instanceof EndGatewayBlockEntity endGatewayBlockEntity
 			&& !endGatewayBlockEntity.needsCooldownBeforeTeleporting()) {

@@ -906,7 +906,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public boolean canUsePortals() {
+	public boolean canUsePortals(boolean allowVehicles) {
 		return false;
 	}
 

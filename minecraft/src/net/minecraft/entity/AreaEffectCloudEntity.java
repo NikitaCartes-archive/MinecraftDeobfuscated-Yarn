@@ -217,7 +217,9 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 					List<LivingEntity> list2 = this.getWorld().getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox());
 					if (!list2.isEmpty()) {
 						for (LivingEntity livingEntity : list2) {
-							if (!this.affectedEntities.containsKey(livingEntity) && livingEntity.isAffectedBySplashPotions()) {
+							if (!this.affectedEntities.containsKey(livingEntity)
+								&& livingEntity.isAffectedBySplashPotions()
+								&& !list.stream().noneMatch(livingEntity::canHaveStatusEffect)) {
 								double m = livingEntity.getX() - this.getX();
 								double n = livingEntity.getZ() - this.getZ();
 								double o = m * m + n * n;

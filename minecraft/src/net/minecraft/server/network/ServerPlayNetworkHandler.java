@@ -927,9 +927,9 @@ public class ServerPlayNetworkHandler
 									&& !bl5
 									&& this.isEntityOnAir(this.player);
 								this.player.getServerWorld().getChunkManager().updatePosition(this.player);
-								this.player.handleFall(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k, packet.isOnGround());
 								Vec3d vec3d = new Vec3d(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k);
 								this.player.setOnGround(packet.isOnGround(), vec3d);
+								this.player.handleFall(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k, packet.isOnGround());
 								this.player.setOnGround(vec3d);
 								if (bl2) {
 									this.player.onLanding();

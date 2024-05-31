@@ -25,7 +25,7 @@ public class MultilineTextWidget extends AbstractTextWidget {
 		super(x, y, 0, 0, message, textRenderer);
 		this.cacheKeyToText = Util.cachedMapper(
 			cacheKey -> cacheKey.maxRows.isPresent()
-					? MultilineText.create(textRenderer, cacheKey.message, cacheKey.maxWidth, cacheKey.maxRows.getAsInt())
+					? MultilineText.create(textRenderer, cacheKey.maxWidth, cacheKey.maxRows.getAsInt(), cacheKey.message)
 					: MultilineText.create(textRenderer, cacheKey.message, cacheKey.maxWidth)
 		);
 		this.active = false;

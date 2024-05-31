@@ -533,7 +533,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public boolean canUsePortals() {
+	public boolean canUsePortals(boolean allowVehicles) {
 		return false;
 	}
 

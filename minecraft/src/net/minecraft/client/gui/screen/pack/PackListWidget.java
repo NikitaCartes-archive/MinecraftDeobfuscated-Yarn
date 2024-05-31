@@ -134,7 +134,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 		}
 
 		private static MultilineText createMultilineText(MinecraftClient client, Text text) {
-			return MultilineText.create(client.textRenderer, text, 157, 2);
+			return MultilineText.create(client.textRenderer, 157, 2, text);
 		}
 
 		@Override

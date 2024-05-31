@@ -8,7 +8,6 @@ import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Colors;
@@ -19,7 +18,7 @@ public class DialogScreen extends Screen {
 	private static final int BUTTON_MARGIN = 5;
 	private static final int BUTTON_HEIGHT = 20;
 	private final Text narrationMessage;
-	private final StringVisitable message;
+	private final List<Text> message;
 	private final ImmutableList<DialogScreen.ChoiceButton> choiceButtons;
 	private MultilineText lines = MultilineText.EMPTY;
 	private int linesY;
@@ -27,7 +26,7 @@ public class DialogScreen extends Screen {
 
 	public DialogScreen(Text title, List<Text> messages, ImmutableList<DialogScreen.ChoiceButton> choiceButtons) {
 		super(title);
-		this.message = StringVisitable.concat(messages);
+		this.message = messages;
 		this.narrationMessage = ScreenTexts.joinSentences(title, Texts.join(messages, ScreenTexts.EMPTY));
 		this.choiceButtons = choiceButtons;
 	}
@@ -45,7 +44,7 @@ public class DialogScreen extends Screen {
 
 		int i = 5 + this.buttonWidth + 5;
 		int j = i * this.choiceButtons.size();
-		this.lines = MultilineText.create(this.textRenderer, this.message, j);
+		this.lines = MultilineText.create(this.textRenderer, j, (Text[])this.message.toArray(new Text[0]));
 		int k = this.lines.count() * 9;
 		this.linesY = (int)((double)this.height / 2.0 - (double)k / 2.0);
 		int l = this.linesY + k + 9 * 2;

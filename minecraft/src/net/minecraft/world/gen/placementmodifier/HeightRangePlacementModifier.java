@@ -13,7 +13,7 @@ import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
 public class HeightRangePlacementModifier extends PlacementModifier {
 	public static final MapCodec<HeightRangePlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.mapCodec(
-		instance -> instance.group(HeightProvider.CODEC.fieldOf("height").forGetter(heightRangePlacementModifier -> heightRangePlacementModifier.height))
+		instance -> instance.group(HeightProvider.CODEC.fieldOf("height").forGetter(placementModifier -> placementModifier.height))
 				.apply(instance, HeightRangePlacementModifier::new)
 	);
 	private final HeightProvider height;

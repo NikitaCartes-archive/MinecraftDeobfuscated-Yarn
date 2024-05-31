@@ -36,7 +36,7 @@ public abstract class ThrownEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public boolean canUsePortals() {
+	public boolean canUsePortals(boolean allowVehicles) {
 		return true;
 	}
 

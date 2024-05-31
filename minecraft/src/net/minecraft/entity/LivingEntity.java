@@ -3425,8 +3425,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	@Override
-	public boolean canUsePortals() {
-		return super.canUsePortals() && !this.isSleeping();
+	public boolean canUsePortals(boolean allowVehicles) {
+		return super.canUsePortals(allowVehicles) && !this.isSleeping();
 	}
 
 	public Optional<BlockPos> getSleepingPosition() {

@@ -19,6 +19,7 @@ public abstract class AbuseReport {
 	protected String opinionComments = "";
 	@Nullable
 	protected AbuseReportReason reason;
+	protected boolean attested;
 
 	public AbuseReport(UUID reportId, Instant currentTime, UUID reportedPlayerUuid) {
 		this.reportId = reportId;
@@ -56,6 +57,10 @@ public abstract class AbuseReport {
 			return this.report.opinionComments;
 		}
 
+		public boolean isAttested() {
+			return this.getReport().attested;
+		}
+
 		public void setOpinionComments(String opinionComments) {
 			this.report.opinionComments = opinionComments;
 		}
@@ -69,10 +74,16 @@ public abstract class AbuseReport {
 			this.report.reason = reason;
 		}
 
+		public void setAttested(boolean attested) {
+			this.report.attested = attested;
+		}
+
 		public abstract boolean hasEnoughInfo();
 
 		@Nullable
-		public abstract AbuseReport.ValidationError validate();
+		public AbuseReport.ValidationError validate() {
+			return !this.getReport().attested ? AbuseReport.ValidationError.NOT_ATTESTED : null;
+		}
 
 		public abstract Either<AbuseReport.ReportWithId, AbuseReport.ValidationError> build(AbuseReportContext context);
 	}
@@ -93,6 +104,7 @@ public abstract class AbuseReport {
 		public static final AbuseReport.ValidationError COMMENTS_TOO_LONG = new AbuseReport.ValidationError(
 			Text.translatable("gui.abuseReport.send.comment_too_long")
 		);
+		public static final AbuseReport.ValidationError NOT_ATTESTED = new AbuseReport.ValidationError(Text.translatable("gui.abuseReport.send.not_attested"));
 
 		public Tooltip createTooltip() {
 			return Tooltip.of(this.message);

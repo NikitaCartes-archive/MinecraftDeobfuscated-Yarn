@@ -2941,12 +2941,16 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		if (this.getWorld() instanceof ServerWorld serverWorld) {
 			this.tickPortalCooldown();
 			if (this.portalManager != null) {
-				if (this.portalManager.tick(serverWorld, this, this.canUsePortals())) {
+				if (this.portalManager.tick(serverWorld, this, this.canUsePortals(false))) {
 					serverWorld.getProfiler().push("portal");
 					this.resetPortalCooldown();
 					TeleportTarget teleportTarget = this.portalManager.createTeleportTarget(serverWorld, this);
-					if (teleportTarget != null && serverWorld.getServer().isWorldAllowed(teleportTarget.world())) {
-						this.teleportTo(teleportTarget);
+					if (teleportTarget != null) {
+						ServerWorld serverWorld2 = teleportTarget.world();
+						if (serverWorld.getServer().isWorldAllowed(serverWorld2)
+							&& (serverWorld2.getRegistryKey() == serverWorld.getRegistryKey() || this.canTeleportBetween(serverWorld, serverWorld2))) {
+							this.teleportTo(teleportTarget);
+						}
 					}
 
 					serverWorld.getProfiler().pop();
@@ -3889,6 +3893,9 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 */
 	protected void removeFromDimension() {
 		this.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
+		if (this instanceof Leashable leashable) {
+			leashable.detachLeash(true, false);
+		}
 	}
 
 	/**
@@ -3907,8 +3914,12 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * {@link net.minecraft.entity.boss.WitherEntity}, and {@link
 	 * net.minecraft.entity.projectile.FishingBobberEntity} cannot use portals.
 	 */
-	public boolean canUsePortals() {
-		return !this.hasVehicle() && this.isAlive();
+	public boolean canUsePortals(boolean allowVehicles) {
+		return (allowVehicles || !this.hasVehicle()) && this.isAlive();
+	}
+
+	public boolean canTeleportBetween(World from, World to) {
+		return true;
 	}
 
 	/**

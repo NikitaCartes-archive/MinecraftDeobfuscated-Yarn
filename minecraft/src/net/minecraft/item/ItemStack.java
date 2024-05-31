@@ -633,7 +633,7 @@ public final class ItemStack implements ComponentHolder {
 	public ItemStack damage(int amount, ItemConvertible itemAfterBreaking, LivingEntity entity, EquipmentSlot slot) {
 		this.damage(amount, entity, slot);
 		if (this.isEmpty()) {
-			ItemStack itemStack = this.copyComponentsToNewStackIgnoreEmpty(itemAfterBreaking, this.getCount());
+			ItemStack itemStack = this.copyComponentsToNewStackIgnoreEmpty(itemAfterBreaking, 1);
 			if (itemStack.isDamageable()) {
 				itemStack.setDamage(0);
 			}

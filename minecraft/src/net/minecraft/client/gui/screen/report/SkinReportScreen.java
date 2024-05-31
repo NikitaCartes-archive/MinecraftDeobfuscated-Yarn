@@ -6,31 +6,22 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.EditBoxWidget;
 import net.minecraft.client.gui.widget.LayoutWidgets;
 import net.minecraft.client.gui.widget.PlayerSkinWidget;
-import net.minecraft.client.gui.widget.SimplePositioningWidget;
-import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.client.session.report.AbuseReport;
 import net.minecraft.client.session.report.AbuseReportContext;
 import net.minecraft.client.session.report.AbuseReportReason;
 import net.minecraft.client.session.report.SkinAbuseReport;
 import net.minecraft.client.util.SkinTextures;
-import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.Nullables;
 
 @Environment(EnvType.CLIENT)
 public class SkinReportScreen extends ReportScreen<SkinAbuseReport.Builder> {
-	private static final int BOTTOM_BUTTON_WIDTH = 120;
 	private static final int SKIN_WIDGET_WIDTH = 85;
 	private static final int REASON_BUTTON_AND_COMMENTS_BOX_WIDTH = 178;
 	private static final Text TITLE_TEXT = Text.translatable("gui.abuseReport.skin.title");
-	private final DirectionalLayoutWidget layout = DirectionalLayoutWidget.vertical().spacing(8);
 	private EditBoxWidget commentsBox;
-	private ButtonWidget sendButton;
 	private ButtonWidget selectReasonButton;
 
 	private SkinReportScreen(Screen parent, AbuseReportContext context, SkinAbuseReport.Builder reportBuilder) {
@@ -46,9 +37,7 @@ public class SkinReportScreen extends ReportScreen<SkinAbuseReport.Builder> {
 	}
 
 	@Override
-	protected void init() {
-		this.layout.getMainPositioner().alignHorizontalCenter();
-		this.layout.add(new TextWidget(this.title, this.textRenderer));
+	protected void addContent() {
 		DirectionalLayoutWidget directionalLayoutWidget = this.layout.add(DirectionalLayoutWidget.horizontal().spacing(8));
 		directionalLayoutWidget.getMainPositioner().alignVerticalCenter();
 		directionalLayoutWidget.add(new PlayerSkinWidget(85, 120, this.client.getEntityModelLoader(), this.reportBuilder.getReport().getSkinSupplier()));
@@ -62,30 +51,17 @@ public class SkinReportScreen extends ReportScreen<SkinAbuseReport.Builder> {
 			.width(178)
 			.build();
 		directionalLayoutWidget2.add(LayoutWidgets.createLabeledWidget(this.textRenderer, this.selectReasonButton, OBSERVED_WHAT_TEXT));
-		this.commentsBox = this.createCommentsBox(178, 9 * 8, opinionComments -> {
-			this.reportBuilder.setOpinionComments(opinionComments);
+		this.commentsBox = this.createCommentsBox(178, 9 * 8, comments -> {
+			this.reportBuilder.setOpinionComments(comments);
 			this.onChange();
 		});
 		directionalLayoutWidget2.add(
 			LayoutWidgets.createLabeledWidget(this.textRenderer, this.commentsBox, MORE_COMMENTS_TEXT, positioner -> positioner.marginBottom(12))
 		);
-		DirectionalLayoutWidget directionalLayoutWidget3 = this.layout.add(DirectionalLayoutWidget.horizontal().spacing(8));
-		directionalLayoutWidget3.add(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).width(120).build());
-		this.sendButton = directionalLayoutWidget3.add(ButtonWidget.builder(SEND_TEXT, button -> this.trySend()).width(120).build());
-		this.layout.forEachChild(child -> {
-			ClickableWidget var10000 = this.addDrawableChild(child);
-		});
-		this.initTabNavigation();
-		this.onChange();
 	}
 
 	@Override
-	protected void initTabNavigation() {
-		this.layout.refreshPositions();
-		SimplePositioningWidget.setPos(this.layout, this.getNavigationFocus());
-	}
-
-	private void onChange() {
+	protected void onChange() {
 		AbuseReportReason abuseReportReason = this.reportBuilder.getReason();
 		if (abuseReportReason != null) {
 			this.selectReasonButton.setMessage(abuseReportReason.getText());
@@ -93,9 +69,7 @@ public class SkinReportScreen extends ReportScreen<SkinAbuseReport.Builder> {
 			this.selectReasonButton.setMessage(SELECT_REASON_TEXT);
 		}
 
-		AbuseReport.ValidationError validationError = this.reportBuilder.validate();
-		this.sendButton.active = validationError == null;
-		this.sendButton.setTooltip(Nullables.map(validationError, AbuseReport.ValidationError::createTooltip));
+		super.onChange();
 	}
 
 	@Override

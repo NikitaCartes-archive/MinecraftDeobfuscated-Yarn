@@ -607,6 +607,18 @@ public class Box {
 		return new Vec3d(MathHelper.lerp(0.5, this.minX, this.maxX), MathHelper.lerp(0.5, this.minY, this.maxY), MathHelper.lerp(0.5, this.minZ, this.maxZ));
 	}
 
+	public Vec3d getBottomCenter() {
+		return new Vec3d(MathHelper.lerp(0.5, this.minX, this.maxX), this.minY, MathHelper.lerp(0.5, this.minZ, this.maxZ));
+	}
+
+	public Vec3d getMinPos() {
+		return new Vec3d(this.minX, this.minY, this.minZ);
+	}
+
+	public Vec3d getMaxPos() {
+		return new Vec3d(this.maxX, this.maxY, this.maxZ);
+	}
+
 	public static Box of(Vec3d center, double dx, double dy, double dz) {
 		return new Box(center.x - dx / 2.0, center.y - dy / 2.0, center.z - dz / 2.0, center.x + dx / 2.0, center.y + dy / 2.0, center.z + dz / 2.0);
 	}

@@ -98,7 +98,11 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.WARPED_DOOR,
 				Blocks.MANGROVE_DOOR,
 				Blocks.BAMBOO_DOOR,
-				Blocks.CHERRY_DOOR,
+				Blocks.CHERRY_DOOR
+			);
+		this.getOrCreateTagBuilder(BlockTags.MOB_INTERACTABLE_DOORS)
+			.addTag(BlockTags.WOODEN_DOORS)
+			.add(
 				Blocks.COPPER_DOOR,
 				Blocks.EXPOSED_COPPER_DOOR,
 				Blocks.WEATHERED_COPPER_DOOR,
@@ -153,7 +157,6 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.DOORS)
 			.addTag(BlockTags.WOODEN_DOORS)
 			.add(
-				Blocks.IRON_DOOR,
 				Blocks.COPPER_DOOR,
 				Blocks.EXPOSED_COPPER_DOOR,
 				Blocks.WEATHERED_COPPER_DOOR,
@@ -161,7 +164,8 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.WAXED_COPPER_DOOR,
 				Blocks.WAXED_EXPOSED_COPPER_DOOR,
 				Blocks.WAXED_WEATHERED_COPPER_DOOR,
-				Blocks.WAXED_OXIDIZED_COPPER_DOOR
+				Blocks.WAXED_OXIDIZED_COPPER_DOOR,
+				Blocks.IRON_DOOR
 			);
 		this.getOrCreateTagBuilder(BlockTags.SAPLINGS)
 			.add(
@@ -1569,7 +1573,15 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.WAXED_COPPER_TRAPDOOR,
 				Blocks.WAXED_EXPOSED_COPPER_TRAPDOOR,
 				Blocks.WAXED_WEATHERED_COPPER_TRAPDOOR,
-				Blocks.WAXED_OXIDIZED_COPPER_TRAPDOOR
+				Blocks.WAXED_OXIDIZED_COPPER_TRAPDOOR,
+				Blocks.COPPER_DOOR,
+				Blocks.EXPOSED_COPPER_DOOR,
+				Blocks.WEATHERED_COPPER_DOOR,
+				Blocks.OXIDIZED_COPPER_DOOR,
+				Blocks.WAXED_COPPER_DOOR,
+				Blocks.WAXED_EXPOSED_COPPER_DOOR,
+				Blocks.WAXED_WEATHERED_COPPER_DOOR,
+				Blocks.WAXED_OXIDIZED_COPPER_DOOR
 			);
 		this.getOrCreateTagBuilder(BlockTags.INCORRECT_FOR_NETHERITE_TOOL);
 		this.getOrCreateTagBuilder(BlockTags.INCORRECT_FOR_DIAMOND_TOOL);

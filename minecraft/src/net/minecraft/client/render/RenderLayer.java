@@ -558,12 +558,16 @@ public abstract class RenderLayer extends RenderPhase {
 		1536,
 		false,
 		false,
-		RenderLayer.MultiPhaseParameters.builder()
-			.program(LIGHTNING_PROGRAM)
-			.writeMaskState(COLOR_MASK)
-			.transparency(LIGHTNING_TRANSPARENCY)
-			.target(WEATHER_TARGET)
-			.build(false)
+		RenderLayer.MultiPhaseParameters.builder().program(LIGHTNING_PROGRAM).writeMaskState(COLOR_MASK).transparency(LIGHTNING_TRANSPARENCY).build(false)
+	);
+	private static final RenderLayer DRAGON_RAYS_DEPTH = of(
+		"dragon_rays_depth",
+		VertexFormats.POSITION,
+		VertexFormat.DrawMode.TRIANGLES,
+		1536,
+		false,
+		false,
+		RenderLayer.MultiPhaseParameters.builder().program(RenderPhase.POSITION_PROGRAM).writeMaskState(DEPTH_MASK).build(false)
 	);
 	private static final RenderLayer TRIPWIRE = of(
 		"tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 1536, true, true, getTripwirePhaseData()
@@ -1001,6 +1005,10 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer getDragonRays() {
 		return DRAGON_RAYS;
+	}
+
+	public static RenderLayer getDragonRaysDepth() {
+		return DRAGON_RAYS_DEPTH;
 	}
 
 	private static RenderLayer.MultiPhaseParameters getTripwirePhaseData() {

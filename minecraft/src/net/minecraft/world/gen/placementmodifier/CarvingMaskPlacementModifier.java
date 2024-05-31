@@ -11,7 +11,7 @@ import net.minecraft.world.gen.feature.FeaturePlacementContext;
 public class CarvingMaskPlacementModifier extends PlacementModifier {
 	public static final MapCodec<CarvingMaskPlacementModifier> MODIFIER_CODEC = GenerationStep.Carver.CODEC
 		.fieldOf("step")
-		.xmap(CarvingMaskPlacementModifier::new, config -> config.step);
+		.xmap(CarvingMaskPlacementModifier::new, placementModifier -> placementModifier.step);
 	private final GenerationStep.Carver step;
 
 	private CarvingMaskPlacementModifier(GenerationStep.Carver step) {

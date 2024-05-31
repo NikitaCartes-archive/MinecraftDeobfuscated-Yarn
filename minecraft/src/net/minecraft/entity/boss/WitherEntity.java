@@ -538,7 +538,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	}
 
 	@Override
-	public boolean canUsePortals() {
+	public boolean canUsePortals(boolean allowVehicles) {
 		return false;
 	}
 

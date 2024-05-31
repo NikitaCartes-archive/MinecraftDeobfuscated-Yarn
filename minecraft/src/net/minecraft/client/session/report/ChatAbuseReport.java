@@ -47,6 +47,7 @@ public class ChatAbuseReport extends AbuseReport {
 		chatAbuseReport.selectedMessages.addAll(this.selectedMessages);
 		chatAbuseReport.opinionComments = this.opinionComments;
 		chatAbuseReport.reason = this.reason;
+		chatAbuseReport.attested = this.attested;
 		return chatAbuseReport;
 	}
 
@@ -92,7 +93,7 @@ public class ChatAbuseReport extends AbuseReport {
 			} else if (this.report.reason == null) {
 				return AbuseReport.ValidationError.NO_REASON;
 			} else {
-				return this.report.opinionComments.length() > this.limits.maxOpinionCommentsLength() ? AbuseReport.ValidationError.COMMENTS_TOO_LONG : null;
+				return this.report.opinionComments.length() > this.limits.maxOpinionCommentsLength() ? AbuseReport.ValidationError.COMMENTS_TOO_LONG : super.validate();
 			}
 		}
 

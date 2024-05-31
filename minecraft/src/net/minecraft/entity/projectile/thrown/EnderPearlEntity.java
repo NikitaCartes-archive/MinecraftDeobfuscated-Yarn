@@ -53,7 +53,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 			Entity entity = this.getOwner();
 			if (entity != null && canTeleportEntityTo(entity, serverWorld)) {
 				if (entity.hasVehicle()) {
-					this.detach();
+					entity.detach();
 				}
 
 				if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
@@ -90,7 +90,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 		if (entity.getWorld().getRegistryKey() == world.getRegistryKey()) {
 			return !(entity instanceof LivingEntity livingEntity) ? entity.isAlive() : livingEntity.isAlive() && !livingEntity.isSleeping();
 		} else {
-			return entity.canUsePortals();
+			return entity.canUsePortals(true);
 		}
 	}
 
@@ -106,5 +106,12 @@ public class EnderPearlEntity extends ThrownItemEntity {
 
 	private void playTeleportSound(World world, Vec3d pos) {
 		world.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ENTITY_PLAYER_TELEPORT, SoundCategory.PLAYERS);
+	}
+
+	@Override
+	public boolean canTeleportBetween(World from, World to) {
+		return from.getRegistryKey() == World.END && this.getOwner() instanceof ServerPlayerEntity serverPlayerEntity
+			? super.canTeleportBetween(from, to) && serverPlayerEntity.seenCredits
+			: super.canTeleportBetween(from, to);
 	}
 }

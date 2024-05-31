@@ -32,6 +32,7 @@ public class SkinAbuseReport extends AbuseReport {
 		SkinAbuseReport skinAbuseReport = new SkinAbuseReport(this.reportId, this.currentTime, this.reportedPlayerUuid, this.skinSupplier);
 		skinAbuseReport.opinionComments = this.opinionComments;
 		skinAbuseReport.reason = this.reason;
+		skinAbuseReport.attested = this.attested;
 		return skinAbuseReport;
 	}
 
@@ -61,7 +62,7 @@ public class SkinAbuseReport extends AbuseReport {
 			if (this.report.reason == null) {
 				return AbuseReport.ValidationError.NO_REASON;
 			} else {
-				return this.report.opinionComments.length() > this.limits.maxOpinionCommentsLength() ? AbuseReport.ValidationError.COMMENTS_TOO_LONG : null;
+				return this.report.opinionComments.length() > this.limits.maxOpinionCommentsLength() ? AbuseReport.ValidationError.COMMENTS_TOO_LONG : super.validate();
 			}
 		}
 

@@ -2,7 +2,6 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EndGatewayBlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
@@ -28,10 +27,8 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 				BlockPos blockPos3 = blockPos2.toImmutable();
 				this.setBlockState(structureWorldAccess, blockPos3, Blocks.END_GATEWAY.getDefaultState());
 				endGatewayFeatureConfig.getExitPos().ifPresent(pos -> {
-					BlockEntity blockEntity = structureWorldAccess.getBlockEntity(blockPos3);
-					if (blockEntity instanceof EndGatewayBlockEntity endGatewayBlockEntity) {
+					if (structureWorldAccess.getBlockEntity(blockPos3) instanceof EndGatewayBlockEntity endGatewayBlockEntity) {
 						endGatewayBlockEntity.setExitPortalPos(pos, endGatewayFeatureConfig.isExact());
-						blockEntity.markDirty();
 					}
 				});
 			} else if (bl2) {

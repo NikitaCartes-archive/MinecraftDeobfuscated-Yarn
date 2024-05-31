@@ -90,16 +90,18 @@ public class AccessibilityOnboardingScreen extends Screen {
 
 	@Override
 	public void close() {
-		this.saveAndRun(this.onClose);
+		this.saveAndRun(true, this.onClose);
 	}
 
 	private void setScreen(Screen screen) {
-		this.saveAndRun(() -> this.client.setScreen(screen));
+		this.saveAndRun(false, () -> this.client.setScreen(screen));
 	}
 
-	private void saveAndRun(Runnable callback) {
-		this.gameOptions.onboardAccessibility = false;
-		this.gameOptions.write();
+	private void saveAndRun(boolean dontShowAgain, Runnable callback) {
+		if (dontShowAgain) {
+			this.gameOptions.setAccessibilityOnboarded();
+		}
+
 		Narrator.getNarrator().clear();
 		callback.run();
 	}

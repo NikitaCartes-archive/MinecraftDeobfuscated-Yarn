@@ -13,6 +13,7 @@ public final class BlockTags {
 	public static final TagKey<Block> BUTTONS = of("buttons");
 	public static final TagKey<Block> WOOL_CARPETS = of("wool_carpets");
 	public static final TagKey<Block> WOODEN_DOORS = of("wooden_doors");
+	public static final TagKey<Block> MOB_INTERACTABLE_DOORS = of("mob_interactable_doors");
 	public static final TagKey<Block> WOODEN_STAIRS = of("wooden_stairs");
 	public static final TagKey<Block> WOODEN_SLABS = of("wooden_slabs");
 	public static final TagKey<Block> WOODEN_FENCES = of("wooden_fences");

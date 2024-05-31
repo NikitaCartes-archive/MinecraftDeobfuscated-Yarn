@@ -95,7 +95,7 @@ public class NetherPortalBlock extends Block implements Portal {
 
 	@Override
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (entity.canUsePortals()) {
+		if (entity.canUsePortals(false)) {
 			entity.tryUsePortal(this, pos);
 		}
 	}

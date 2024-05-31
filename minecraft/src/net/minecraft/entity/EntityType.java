@@ -328,6 +328,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public static final EntityType<EndCrystalEntity> END_CRYSTAL = register(
 		"end_crystal",
 		EntityType.Builder.<EndCrystalEntity>create(EndCrystalEntity::new, SpawnGroup.MISC)
+			.makeFireImmune()
 			.dimensions(2.0F, 2.0F)
 			.maxTrackingRange(16)
 			.trackingTickInterval(Integer.MAX_VALUE)

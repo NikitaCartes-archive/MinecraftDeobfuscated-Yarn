@@ -1572,7 +1572,6 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	@Override
 	protected void removeFromDimension() {
 		super.removeFromDimension();
-		this.detachLeash(true, false);
 		this.getEquippedItems().forEach(stack -> {
 			if (!stack.isEmpty()) {
 				stack.setCount(0);

@@ -11,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 
@@ -29,33 +30,45 @@ public class WorldBorder {
 	public static final WorldBorder.Properties DEFAULT_BORDER = new WorldBorder.Properties(0.0, 0.0, 0.2, 5.0, 5, 15, 5.999997E7F, 0L, 0.0);
 
 	public boolean contains(BlockPos pos) {
-		return (double)(pos.getX() + 1) > this.getBoundWest()
-			&& (double)pos.getX() < this.getBoundEast()
-			&& (double)(pos.getZ() + 1) > this.getBoundNorth()
-			&& (double)pos.getZ() < this.getBoundSouth();
+		return this.contains((double)pos.getX(), (double)pos.getZ());
 	}
 
-	public boolean contains(ChunkPos pos) {
-		return (double)pos.getEndX() > this.getBoundWest()
-			&& (double)pos.getStartX() < this.getBoundEast()
-			&& (double)pos.getEndZ() > this.getBoundNorth()
-			&& (double)pos.getStartZ() < this.getBoundSouth();
+	public boolean contains(Vec3d pos) {
+		return this.contains(pos.x, pos.z);
 	}
 
-	public boolean contains(double x, double z) {
-		return x > this.getBoundWest() && x < this.getBoundEast() && z > this.getBoundNorth() && z < this.getBoundSouth();
-	}
-
-	public boolean contains(double x, double z, double margin) {
-		return x > this.getBoundWest() - margin && x < this.getBoundEast() + margin && z > this.getBoundNorth() - margin && z < this.getBoundSouth() + margin;
+	public boolean contains(ChunkPos chunkPos) {
+		return this.contains((double)chunkPos.getStartX(), (double)chunkPos.getStartZ()) && this.contains((double)chunkPos.getEndX(), (double)chunkPos.getEndZ());
 	}
 
 	public boolean contains(Box box) {
-		return box.maxX > this.getBoundWest() && box.minX < this.getBoundEast() && box.maxZ > this.getBoundNorth() && box.minZ < this.getBoundSouth();
+		return this.contains(box.minX, box.minZ, box.maxX - 1.0E-5F, box.maxZ - 1.0E-5F);
+	}
+
+	private boolean contains(double minX, double minZ, double maxX, double maxZ) {
+		return this.contains(minX, minZ) && this.contains(maxX, maxZ);
+	}
+
+	public boolean contains(double x, double z) {
+		return this.contains(x, z, 0.0);
+	}
+
+	public boolean contains(double x, double z, double margin) {
+		return x >= this.getBoundWest() - margin && x < this.getBoundEast() + margin && z >= this.getBoundNorth() - margin && z < this.getBoundSouth() + margin;
+	}
+
+	public BlockPos clamp(BlockPos pos) {
+		return this.clamp((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
+	}
+
+	public BlockPos clamp(Vec3d pos) {
+		return this.clamp(pos.getX(), pos.getY(), pos.getZ());
 	}
 
 	public BlockPos clamp(double x, double y, double z) {
-		return BlockPos.ofFloored(MathHelper.clamp(x, this.getBoundWest(), this.getBoundEast()), y, MathHelper.clamp(z, this.getBoundNorth(), this.getBoundSouth()));
+		return BlockPos.ofFloored(
+			MathHelper.clamp(x, this.getBoundWest(), this.getBoundEast() - 1.0), y, MathHelper.clamp(z, this.getBoundNorth(), this.getBoundSouth() - 1.0)
+		);
 	}
 
 	public double getDistanceInsideBorder(Entity entity) {

@@ -29,7 +29,8 @@ public class TheEndBiomeCreator {
 
 	public static Biome createTheEnd(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup)
-			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, EndPlacedFeatures.END_SPIKE);
+			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, EndPlacedFeatures.END_SPIKE)
+			.feature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, EndPlacedFeatures.END_PLATFORM);
 		return createEndBiome(lookupBackedBuilder);
 	}
 

@@ -61,9 +61,9 @@ public record SpawnParticlesEnchantmentEffect(
 		float g = user.getHeight();
 		world.spawnParticles(
 			this.particle,
-			this.horizontalPosition.getPosition(pos.getX(), f, random),
-			this.verticalPosition.getPosition(pos.getY(), g, random),
-			this.horizontalPosition.getPosition(pos.getZ(), f, random),
+			this.horizontalPosition.getPosition(pos.getX(), pos.getX(), f, random),
+			this.verticalPosition.getPosition(pos.getY(), pos.getY() + (double)(g / 2.0F), g, random),
+			this.horizontalPosition.getPosition(pos.getZ(), pos.getZ(), f, random),
 			0,
 			this.horizontalVelocity.getVelocity(vec3d.getX(), random),
 			this.verticalVelocity.getVelocity(vec3d.getY(), random),
@@ -92,14 +92,16 @@ public record SpawnParticlesEnchantmentEffect(
 						: DataResult.success(source)
 			);
 
-		public double getPosition(double entityPosition, float boundingBoxSize, Random random) {
-			return this.type.getCoordinate(entityPosition, boundingBoxSize * this.scale, random) + (double)this.offset;
+		public double getPosition(double entityPosition, double boundingBoxCenter, float boundingBoxSize, Random random) {
+			return this.type.getCoordinate(entityPosition, boundingBoxCenter, boundingBoxSize * this.scale, random) + (double)this.offset;
 		}
 	}
 
 	public static enum PositionSourceType implements StringIdentifiable {
-		ENTITY_POSITION("entity_position", (entityPosition, boundingBoxSize, random) -> entityPosition),
-		BOUNDING_BOX("in_bounding_box", (entityPosition, boundingBoxSize, random) -> entityPosition + (random.nextDouble() - 0.5) * (double)boundingBoxSize);
+		ENTITY_POSITION("entity_position", (entityPosition, boundingBoxCenter, boundingBoxSize, random) -> entityPosition),
+		BOUNDING_BOX(
+			"in_bounding_box", (entityPosition, boundingBoxCenter, boundingBoxSize, random) -> boundingBoxCenter + (random.nextDouble() - 0.5) * (double)boundingBoxSize
+		);
 
 		public static final Codec<SpawnParticlesEnchantmentEffect.PositionSourceType> CODEC = StringIdentifiable.createCodec(
 			SpawnParticlesEnchantmentEffect.PositionSourceType::values
@@ -112,8 +114,8 @@ public record SpawnParticlesEnchantmentEffect(
 			this.coordinateSource = coordinateSource;
 		}
 
-		public double getCoordinate(double entityPosition, float boundingBoxSize, Random random) {
-			return this.coordinateSource.getCoordinate(entityPosition, boundingBoxSize, random);
+		public double getCoordinate(double entityPosition, double boundingBoxCenter, float boundingBoxSize, Random random) {
+			return this.coordinateSource.getCoordinate(entityPosition, boundingBoxCenter, boundingBoxSize, random);
 		}
 
 		@Override
@@ -123,7 +125,7 @@ public record SpawnParticlesEnchantmentEffect(
 
 		@FunctionalInterface
 		interface CoordinateSource {
-			double getCoordinate(double entityPosition, float boundingBoxSize, Random random);
+			double getCoordinate(double entityPosition, double boundingBoxCenter, float boundingBoxSize, Random random);
 		}
 	}
 

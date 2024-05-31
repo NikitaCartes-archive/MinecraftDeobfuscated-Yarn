@@ -70,6 +70,9 @@ public abstract class RangedWeaponItem extends Item {
 				this.shoot(shooter, projectileEntity, j, speed, divergence, k, target);
 				world.spawnEntity(projectileEntity);
 				stack.damage(this.getWeaponStackDamage(itemStack), shooter, LivingEntity.getSlotForHand(hand));
+				if (stack.isEmpty()) {
+					break;
+				}
 			}
 		}
 	}

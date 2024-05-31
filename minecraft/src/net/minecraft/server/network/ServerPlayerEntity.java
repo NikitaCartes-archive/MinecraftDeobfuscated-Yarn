@@ -27,6 +27,7 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -290,14 +291,14 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.server = server;
 		this.statHandler = server.getPlayerManager().createStatHandler(this);
 		this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
-		this.refreshPositionAndAngles(this.getWorldSpawnPos(world, world.getSpawnPos()), 0.0F, 0.0F);
+		this.refreshPositionAndAngles(this.getWorldSpawnPos(world, world.getSpawnPos()).toBottomCenterPos(), 0.0F, 0.0F);
 		this.setClientOptions(clientOptions);
 		this.field_49777 = null;
 	}
 
 	@Override
 	public BlockPos getWorldSpawnPos(ServerWorld world, BlockPos basePos) {
-		Box box = this.getBoundingBox().offset(this.getBoundingBox().getCenter().multiply(-1.0));
+		Box box = this.getDimensions(EntityPose.STANDING).getBoxAt(Vec3d.ZERO);
 		BlockPos blockPos = basePos;
 		if (world.getDimension().hasSkyLight() && world.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE) {
 			int i = Math.max(0, this.server.getSpawnRadius(world));
@@ -321,7 +322,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 				int r = q % (i * 2 + 1);
 				int s = q / (i * 2 + 1);
 				blockPos = SpawnLocating.findOverworldSpawn(world, basePos.getX() + r - i, basePos.getZ() + s - i);
-				if (blockPos != null && world.isSpaceEmpty(this, box.offset(blockPos))) {
+				if (blockPos != null && world.isSpaceEmpty(this, box.offset(blockPos.toBottomCenterPos()))) {
 					return blockPos;
 				}
 			}
@@ -329,8 +330,12 @@ public class ServerPlayerEntity extends PlayerEntity {
 			blockPos = basePos;
 		}
 
-		while (!world.isSpaceEmpty(this, box.offset(blockPos)) && this.getY() < (double)(world.getTopY() - 1)) {
-			blockPos = BlockPos.ofFloored(blockPos.toCenterPos().add(0.0, 1.0, 0.0));
+		while (!world.isSpaceEmpty(this, box.offset(blockPos.toBottomCenterPos())) && blockPos.getY() < world.getTopY() - 1) {
+			blockPos = blockPos.up();
+		}
+
+		while (world.isSpaceEmpty(this, box.offset(blockPos.down().toBottomCenterPos())) && blockPos.getY() > world.getBottomY() + 1) {
+			blockPos = blockPos.down();
 		}
 
 		return blockPos;

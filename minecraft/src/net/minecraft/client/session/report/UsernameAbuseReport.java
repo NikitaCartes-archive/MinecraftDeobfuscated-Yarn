@@ -28,6 +28,7 @@ public class UsernameAbuseReport extends AbuseReport {
 	public UsernameAbuseReport copy() {
 		UsernameAbuseReport usernameAbuseReport = new UsernameAbuseReport(this.reportId, this.currentTime, this.reportedPlayerUuid, this.username);
 		usernameAbuseReport.opinionComments = this.opinionComments;
+		usernameAbuseReport.attested = this.attested;
 		return usernameAbuseReport;
 	}
 
@@ -54,7 +55,7 @@ public class UsernameAbuseReport extends AbuseReport {
 		@Nullable
 		@Override
 		public AbuseReport.ValidationError validate() {
-			return this.report.opinionComments.length() > this.limits.maxOpinionCommentsLength() ? AbuseReport.ValidationError.COMMENTS_TOO_LONG : null;
+			return this.report.opinionComments.length() > this.limits.maxOpinionCommentsLength() ? AbuseReport.ValidationError.COMMENTS_TOO_LONG : super.validate();
 		}
 
 		@Override

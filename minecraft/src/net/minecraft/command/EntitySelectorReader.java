@@ -24,7 +24,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -143,7 +142,7 @@ public class EntitySelectorReader {
 			this.limit,
 			this.includesNonPlayers,
 			this.localWorldOnly,
-			Util.allOf(this.predicates),
+			List.copyOf(this.predicates),
 			this.distance,
 			function,
 			box,

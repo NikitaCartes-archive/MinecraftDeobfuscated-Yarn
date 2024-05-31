@@ -12,8 +12,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.MultilineText;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.LogoDrawer;
@@ -60,8 +58,6 @@ public class TitleScreen extends Screen {
 	private float backgroundAlpha = 1.0F;
 	private boolean doBackgroundFade;
 	private long backgroundFadeStart;
-	@Nullable
-	private TitleScreen.DeprecationNotice deprecationNotice;
 	private final LogoDrawer logoDrawer;
 
 	public TitleScreen() {
@@ -286,10 +282,6 @@ public class TitleScreen extends Screen {
 		if ((i & -67108864) != 0) {
 			super.render(context, mouseX, mouseY, delta);
 			this.logoDrawer.draw(context, this.width, f);
-			if (this.deprecationNotice != null) {
-				this.deprecationNotice.render(context, i);
-			}
-
 			if (this.splashText != null && !this.client.options.getHideSplashTexts().getValue()) {
 				this.splashText.render(context, this.width, this.textRenderer, i);
 			}
@@ -363,13 +355,5 @@ public class TitleScreen extends Screen {
 		}
 
 		this.client.setScreen(this);
-	}
-
-	@Environment(EnvType.CLIENT)
-	static record DeprecationNotice(TextRenderer textRenderer, MultilineText label, int x, int y) {
-		public void render(DrawContext context, int color) {
-			this.label.fillBackground(context, this.x, this.y, 9, 2, 2097152 | Math.min(color, 1426063360));
-			this.label.drawCenterWithShadow(context, this.x, this.y, 9, 16777215 | color);
-		}
 	}
 }

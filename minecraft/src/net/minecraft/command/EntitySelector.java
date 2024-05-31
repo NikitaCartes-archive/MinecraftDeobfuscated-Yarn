@@ -1,8 +1,7 @@
 package net.minecraft.command;
 
-import com.google.common.collect.Lists;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import java.util.Collections;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -13,12 +12,14 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.TypeFilter;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
@@ -39,7 +40,7 @@ public class EntitySelector {
 	private final int limit;
 	private final boolean includesNonPlayers;
 	private final boolean localWorldOnly;
-	private final Predicate<Entity> basePredicate;
+	private final List<Predicate<Entity>> predicates;
 	private final NumberRange.DoubleRange distance;
 	private final Function<Vec3d, Vec3d> positionOffset;
 	@Nullable
@@ -57,7 +58,7 @@ public class EntitySelector {
 		int count,
 		boolean includesNonPlayers,
 		boolean localWorldOnly,
-		Predicate<Entity> basePredicate,
+		List<Predicate<Entity>> predicates,
 		NumberRange.DoubleRange distance,
 		Function<Vec3d, Vec3d> positionOffset,
 		@Nullable Box box,
@@ -71,7 +72,7 @@ public class EntitySelector {
 		this.limit = count;
 		this.includesNonPlayers = includesNonPlayers;
 		this.localWorldOnly = localWorldOnly;
-		this.basePredicate = basePredicate;
+		this.predicates = predicates;
 		this.distance = distance;
 		this.positionOffset = positionOffset;
 		this.box = box;
@@ -122,39 +123,38 @@ public class EntitySelector {
 	}
 
 	public List<? extends Entity> getEntities(ServerCommandSource source) throws CommandSyntaxException {
-		return this.getUnfilteredEntities(source).stream().filter(entity -> entity.getType().isEnabled(source.getEnabledFeatures())).toList();
-	}
-
-	private List<? extends Entity> getUnfilteredEntities(ServerCommandSource source) throws CommandSyntaxException {
 		this.checkSourcePermission(source);
 		if (!this.includesNonPlayers) {
 			return this.getPlayers(source);
 		} else if (this.playerName != null) {
 			ServerPlayerEntity serverPlayerEntity = source.getServer().getPlayerManager().getPlayer(this.playerName);
-			return (List<? extends Entity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.newArrayList(serverPlayerEntity));
+			return serverPlayerEntity == null ? List.of() : List.of(serverPlayerEntity);
 		} else if (this.uuid != null) {
 			for (ServerWorld serverWorld : source.getServer().getWorlds()) {
 				Entity entity = serverWorld.getEntity(this.uuid);
 				if (entity != null) {
-					return Lists.newArrayList(entity);
+					if (entity.getType().isEnabled(source.getEnabledFeatures())) {
+						return List.of(entity);
+					}
+					break;
 				}
 			}
 
-			return Collections.emptyList();
+			return List.of();
 		} else {
 			Vec3d vec3d = (Vec3d)this.positionOffset.apply(source.getPosition());
-			Predicate<Entity> predicate = this.getPositionPredicate(vec3d);
+			Box box = this.getOffsetBox(vec3d);
 			if (this.senderOnly) {
-				return (List<? extends Entity>)(source.getEntity() != null && predicate.test(source.getEntity())
-					? Lists.newArrayList(source.getEntity())
-					: Collections.emptyList());
+				Predicate<Entity> predicate = this.getPositionPredicate(vec3d, box, null);
+				return source.getEntity() != null && predicate.test(source.getEntity()) ? List.of(source.getEntity()) : List.of();
 			} else {
-				List<Entity> list = Lists.<Entity>newArrayList();
+				Predicate<Entity> predicate = this.getPositionPredicate(vec3d, box, source.getEnabledFeatures());
+				List<Entity> list = new ObjectArrayList<>();
 				if (this.isLocalWorldOnly()) {
-					this.appendEntitiesFromWorld(list, source.getWorld(), vec3d, predicate);
+					this.appendEntitiesFromWorld(list, source.getWorld(), box, predicate);
 				} else {
 					for (ServerWorld serverWorld2 : source.getServer().getWorlds()) {
-						this.appendEntitiesFromWorld(list, serverWorld2, vec3d, predicate);
+						this.appendEntitiesFromWorld(list, serverWorld2, box, predicate);
 					}
 				}
 
@@ -163,11 +163,11 @@ public class EntitySelector {
 		}
 	}
 
-	private void appendEntitiesFromWorld(List<Entity> entities, ServerWorld world, Vec3d pos, Predicate<Entity> predicate) {
+	private void appendEntitiesFromWorld(List<Entity> entities, ServerWorld world, @Nullable Box box, Predicate<Entity> predicate) {
 		int i = this.getAppendLimit();
 		if (entities.size() < i) {
-			if (this.box != null) {
-				world.collectEntitiesByType(this.entityFilter, this.box.offset(pos), predicate, entities, i);
+			if (box != null) {
+				world.collectEntitiesByType(this.entityFilter, box, predicate, entities, i);
 			} else {
 				world.collectEntitiesByType(this.entityFilter, predicate, entities, i);
 			}
@@ -192,26 +192,27 @@ public class EntitySelector {
 		this.checkSourcePermission(source);
 		if (this.playerName != null) {
 			ServerPlayerEntity serverPlayerEntity = source.getServer().getPlayerManager().getPlayer(this.playerName);
-			return (List<ServerPlayerEntity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.<ServerPlayerEntity>newArrayList(serverPlayerEntity));
+			return serverPlayerEntity == null ? List.of() : List.of(serverPlayerEntity);
 		} else if (this.uuid != null) {
 			ServerPlayerEntity serverPlayerEntity = source.getServer().getPlayerManager().getPlayer(this.uuid);
-			return (List<ServerPlayerEntity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.<ServerPlayerEntity>newArrayList(serverPlayerEntity));
+			return serverPlayerEntity == null ? List.of() : List.of(serverPlayerEntity);
 		} else {
 			Vec3d vec3d = (Vec3d)this.positionOffset.apply(source.getPosition());
-			Predicate<Entity> predicate = this.getPositionPredicate(vec3d);
+			Box box = this.getOffsetBox(vec3d);
+			Predicate<Entity> predicate = this.getPositionPredicate(vec3d, box, null);
 			if (this.senderOnly) {
 				if (source.getEntity() instanceof ServerPlayerEntity serverPlayerEntity2 && predicate.test(serverPlayerEntity2)) {
-					return Lists.<ServerPlayerEntity>newArrayList(serverPlayerEntity2);
+					return List.of(serverPlayerEntity2);
 				}
 
-				return Collections.emptyList();
+				return List.of();
 			} else {
 				int i = this.getAppendLimit();
 				List<ServerPlayerEntity> list;
 				if (this.isLocalWorldOnly()) {
 					list = source.getWorld().getPlayers(predicate, i);
 				} else {
-					list = Lists.<ServerPlayerEntity>newArrayList();
+					list = new ObjectArrayList<>();
 
 					for (ServerPlayerEntity serverPlayerEntity3 : source.getServer().getPlayerManager().getPlayerList()) {
 						if (predicate.test(serverPlayerEntity3)) {
@@ -228,18 +229,38 @@ public class EntitySelector {
 		}
 	}
 
-	private Predicate<Entity> getPositionPredicate(Vec3d pos) {
-		Predicate<Entity> predicate = this.basePredicate;
-		if (this.box != null) {
-			Box box = this.box.offset(pos);
-			predicate = predicate.and(entity -> box.intersects(entity.getBoundingBox()));
+	@Nullable
+	private Box getOffsetBox(Vec3d offset) {
+		return this.box != null ? this.box.offset(offset) : null;
+	}
+
+	private Predicate<Entity> getPositionPredicate(Vec3d pos, @Nullable Box box, @Nullable FeatureSet enabledFeatures) {
+		boolean bl = enabledFeatures != null;
+		boolean bl2 = box != null;
+		boolean bl3 = !this.distance.isDummy();
+		int i = (bl ? 1 : 0) + (bl2 ? 1 : 0) + (bl3 ? 1 : 0);
+		List<Predicate<Entity>> list;
+		if (i == 0) {
+			list = this.predicates;
+		} else {
+			List<Predicate<Entity>> list2 = new ObjectArrayList<>(this.predicates.size() + i);
+			list2.addAll(this.predicates);
+			if (bl) {
+				list2.add((Predicate)entity -> entity.getType().isEnabled(enabledFeatures));
+			}
+
+			if (bl2) {
+				list2.add((Predicate)entity -> box.intersects(entity.getBoundingBox()));
+			}
+
+			if (bl3) {
+				list2.add((Predicate)entity -> this.distance.testSqrt(entity.squaredDistanceTo(pos)));
+			}
+
+			list = list2;
 		}
 
-		if (!this.distance.isDummy()) {
-			predicate = predicate.and(entity -> this.distance.testSqrt(entity.squaredDistanceTo(pos)));
-		}
-
-		return predicate;
+		return Util.allOf(list);
 	}
 
 	private <T extends Entity> List<T> getEntities(Vec3d pos, List<T> entities) {

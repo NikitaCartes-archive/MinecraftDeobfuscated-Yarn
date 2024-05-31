@@ -73,6 +73,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DiskFeatureConfig> DISK = register("disk", new DiskFeature(DiskFeatureConfig.CODEC));
 	public static final Feature<LakeFeature.Config> LAKE = register("lake", new LakeFeature(LakeFeature.Config.CODEC));
 	public static final Feature<OreFeatureConfig> ORE = register("ore", new OreFeature(OreFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> END_PLATFORM = register("end_platform", new EndPlatformFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<EndSpikeFeatureConfig> END_SPIKE = register("end_spike", new EndSpikeFeature(EndSpikeFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> END_ISLAND = register("end_island", new EndIslandFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<EndGatewayFeatureConfig> END_GATEWAY = register("end_gateway", new EndGatewayFeature(EndGatewayFeatureConfig.CODEC));
