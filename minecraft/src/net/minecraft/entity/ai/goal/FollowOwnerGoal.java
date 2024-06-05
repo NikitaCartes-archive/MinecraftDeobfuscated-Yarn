@@ -72,10 +72,14 @@ public class FollowOwnerGoal extends Goal {
 
 	@Override
 	public void tick() {
-		this.tameable.getLookControl().lookAt(this.owner, 10.0F, (float)this.tameable.getMaxLookPitchChange());
+		boolean bl = this.tameable.shouldTryTeleportToOwner();
+		if (!bl) {
+			this.tameable.getLookControl().lookAt(this.owner, 10.0F, (float)this.tameable.getMaxLookPitchChange());
+		}
+
 		if (--this.updateCountdownTicks <= 0) {
 			this.updateCountdownTicks = this.getTickCount(10);
-			if (this.tameable.shouldTryTeleportToOwner()) {
+			if (bl) {
 				this.tameable.tryTeleportToOwner();
 			} else {
 				this.navigation.startMovingTo(this.owner, this.speed);

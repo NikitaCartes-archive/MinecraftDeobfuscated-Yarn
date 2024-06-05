@@ -326,7 +326,7 @@ public class SnifferEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void jump() {
+	public void jump() {
 		super.jump();
 		double d = this.moveControl.getSpeed();
 		if (d > 0.0) {

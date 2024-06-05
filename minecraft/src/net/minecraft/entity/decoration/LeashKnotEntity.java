@@ -4,11 +4,12 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.Leashable;
 import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.LeadItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -72,15 +73,14 @@ public class LeashKnotEntity extends BlockAttachedEntity {
 			return ActionResult.SUCCESS;
 		} else {
 			boolean bl = false;
-			double d = 7.0;
-			List<MobEntity> list = this.getWorld()
-				.getNonSpectatingEntities(
-					MobEntity.class, new Box(this.getX() - 7.0, this.getY() - 7.0, this.getZ() - 7.0, this.getX() + 7.0, this.getY() + 7.0, this.getZ() + 7.0)
-				);
+			List<Leashable> list = LeadItem.method_61166(this.getWorld(), this.getAttachedBlockPos(), leashablex -> {
+				Entity entity = leashablex.getLeashHolder();
+				return entity == player || entity == this;
+			});
 
-			for (MobEntity mobEntity : list) {
-				if (mobEntity.getLeashHolder() == player) {
-					mobEntity.attachLeash(this, true);
+			for (Leashable leashable : list) {
+				if (leashable.getLeashHolder() == player) {
+					leashable.attachLeash(this, true);
 					bl = true;
 				}
 			}
@@ -89,9 +89,9 @@ public class LeashKnotEntity extends BlockAttachedEntity {
 			if (!bl) {
 				this.discard();
 				if (player.getAbilities().creativeMode) {
-					for (MobEntity mobEntity2 : list) {
-						if (mobEntity2.isLeashed() && mobEntity2.getLeashHolder() == this) {
-							mobEntity2.detachLeash(true, false);
+					for (Leashable leashable2 : list) {
+						if (leashable2.isLeashed() && leashable2.getLeashHolder() == this) {
+							leashable2.detachLeash(true, false);
 							bl2 = true;
 						}
 					}

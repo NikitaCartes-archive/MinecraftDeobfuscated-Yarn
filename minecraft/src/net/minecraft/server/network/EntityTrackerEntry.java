@@ -15,12 +15,12 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.Leashable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TrackedPosition;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.decoration.ItemFrameEntity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.FilledMapItem;
@@ -60,7 +60,7 @@ public class EntityTrackerEntry {
 	private int lastYaw;
 	private int lastPitch;
 	private int lastHeadYaw;
-	private Vec3d velocity = Vec3d.ZERO;
+	private Vec3d velocity;
 	private int trackingTick;
 	private int updatesWithoutVehicle;
 	private List<Entity> lastPassengers = Collections.emptyList();
@@ -293,8 +293,8 @@ public class EntityTrackerEntry {
 			sender.accept(new EntityPassengersSetS2CPacket(this.entity.getVehicle()));
 		}
 
-		if (this.entity instanceof MobEntity mobEntity && mobEntity.isLeashed()) {
-			sender.accept(new EntityAttachS2CPacket(mobEntity, mobEntity.getLeashHolder()));
+		if (this.entity instanceof Leashable leashable && leashable.isLeashed()) {
+			sender.accept(new EntityAttachS2CPacket(this.entity, leashable.getLeashHolder()));
 		}
 	}
 
@@ -307,15 +307,15 @@ public class EntityTrackerEntry {
 	}
 
 	public float getPitch() {
-		return (float)this.lastPitch;
+		return (float)(this.lastPitch * 360) / 256.0F;
 	}
 
 	public float getYaw() {
-		return (float)this.lastYaw;
+		return (float)(this.lastYaw * 360) / 256.0F;
 	}
 
 	public float getHeadYaw() {
-		return (float)this.lastHeadYaw;
+		return (float)(this.lastHeadYaw * 360) / 256.0F;
 	}
 
 	/**

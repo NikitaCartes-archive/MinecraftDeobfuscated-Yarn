@@ -104,6 +104,12 @@ public class EntityAttributeInstance {
 		this.addModifier(modifier);
 	}
 
+	public void method_61163(EntityAttributeModifier entityAttributeModifier) {
+		this.removeModifier(entityAttributeModifier.id());
+		this.addModifier(entityAttributeModifier);
+		this.persistentModifiers.put(entityAttributeModifier.id(), entityAttributeModifier);
+	}
+
 	public void addPersistentModifier(EntityAttributeModifier modifier) {
 		this.addModifier(modifier);
 		this.persistentModifiers.put(modifier.id(), modifier);

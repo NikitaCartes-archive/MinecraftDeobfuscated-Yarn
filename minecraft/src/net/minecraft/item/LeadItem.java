@@ -1,6 +1,7 @@
 package net.minecraft.item;
 
 import java.util.List;
+import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.Leashable;
@@ -37,26 +38,15 @@ public class LeadItem extends Item {
 
 	public static ActionResult attachHeldMobsToBlock(PlayerEntity player, World world, BlockPos pos) {
 		LeashKnotEntity leashKnotEntity = null;
-		double d = 7.0;
-		int i = pos.getX();
-		int j = pos.getY();
-		int k = pos.getZ();
-		Box box = new Box((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0);
-		List<Entity> list = world.getEntitiesByClass(Entity.class, box, entityx -> {
-			if (entityx instanceof Leashable leashable && leashable.getLeashHolder() == player) {
-				return true;
-			}
+		List<Leashable> list = method_61166(world, pos, leashablex -> leashablex.getLeashHolder() == player);
 
-			return false;
-		});
-
-		for (Entity entity : list) {
+		for (Leashable leashable : list) {
 			if (leashKnotEntity == null) {
 				leashKnotEntity = LeashKnotEntity.getOrCreate(world, pos);
 				leashKnotEntity.onPlace();
 			}
 
-			((Leashable)entity).attachLeash(leashKnotEntity, true);
+			leashable.attachLeash(leashKnotEntity, true);
 		}
 
 		if (!list.isEmpty()) {
@@ -65,5 +55,20 @@ public class LeadItem extends Item {
 		} else {
 			return ActionResult.PASS;
 		}
+	}
+
+	public static List<Leashable> method_61166(World world, BlockPos blockPos, Predicate<Leashable> predicate) {
+		double d = 7.0;
+		int i = blockPos.getX();
+		int j = blockPos.getY();
+		int k = blockPos.getZ();
+		Box box = new Box((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0);
+		return world.getEntitiesByClass(Entity.class, box, entity -> {
+			if (entity instanceof Leashable leashable && predicate.test(leashable)) {
+				return true;
+			}
+
+			return false;
+		}).stream().map(Leashable.class::cast).toList();
 	}
 }

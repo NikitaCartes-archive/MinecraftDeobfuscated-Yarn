@@ -211,7 +211,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	private void removeFromFrame(ItemStack stack) {
-		MapIdComponent mapIdComponent = this.getMapId();
+		MapIdComponent mapIdComponent = this.getMapId(stack);
 		if (mapIdComponent != null) {
 			MapState mapState = FilledMapItem.getMapState(mapIdComponent, this.getWorld());
 			if (mapState != null) {
@@ -228,8 +228,8 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Nullable
-	public MapIdComponent getMapId() {
-		return this.getHeldItemStack().get(DataComponentTypes.MAP_ID);
+	public MapIdComponent getMapId(ItemStack itemStack) {
+		return itemStack.get(DataComponentTypes.MAP_ID);
 	}
 
 	public boolean containsMap() {

@@ -426,9 +426,10 @@ public class ItemStackComponentizationFix extends DataFix {
 	}
 
 	private static void fixAttributeModifiers(ItemStackComponentizationFix.StackData data, Dynamic<?> dynamic, int hideFlags) {
-		List<? extends Dynamic<?>> list = data.getAndRemove("AttributeModifiers").asList(ItemStackComponentizationFix::fixAttributeModifier);
-		boolean bl = (hideFlags & 2) != 0;
-		if (!list.isEmpty() || bl) {
+		OptionalDynamic<?> optionalDynamic = data.getAndRemove("AttributeModifiers");
+		if (!optionalDynamic.result().isEmpty()) {
+			boolean bl = (hideFlags & 2) != 0;
+			List<? extends Dynamic<?>> list = optionalDynamic.asList(ItemStackComponentizationFix::fixAttributeModifier);
 			Dynamic<?> dynamic2 = dynamic.emptyMap().set("modifiers", dynamic.createList(list.stream()));
 			if (bl) {
 				dynamic2 = dynamic2.set("show_in_tooltip", dynamic.createBoolean(false));

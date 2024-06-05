@@ -1,5 +1,6 @@
 package net.minecraft.entity;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -2168,7 +2169,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return this.hasStatusEffect(StatusEffects.JUMP_BOOST) ? 0.1F * ((float)this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1.0F) : 0.0F;
 	}
 
-	protected void jump() {
+	@VisibleForTesting
+	public void jump() {
 		float f = this.getJumpVelocity();
 		if (!(f <= 1.0E-5F)) {
 			Vec3d vec3d = this.getVelocity();

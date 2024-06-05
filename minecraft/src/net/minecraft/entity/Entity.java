@@ -1221,7 +1221,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			for (float g : fs) {
 				Vec3d vec3d2 = adjustMovementForCollisions(new Vec3d(movement.x, (double)g, movement.z), box2, list2);
 				if (vec3d2.horizontalLengthSquared() > vec3d.horizontalLengthSquared()) {
-					return vec3d2;
+					double d = box.minY - box2.minY;
+					return vec3d2.add(0.0, -d, 0.0);
 				}
 			}
 		}

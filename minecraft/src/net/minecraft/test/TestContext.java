@@ -708,6 +708,12 @@ public class TestContext {
 		this.addInstantFinalTask(() -> this.expectEntityWithData(pos, type, entityDataGetter, data));
 	}
 
+	public void method_61173(Entity entity, Box box, String string) {
+		if (!box.contains(this.getRelative(entity.getPos()))) {
+			this.throwGameTestException(string);
+		}
+	}
+
 	public <E extends Entity> void testEntity(E entity, Predicate<E> predicate, String testName) {
 		if (!predicate.test(entity)) {
 			throw new GameTestException("Entity " + entity + " failed " + testName + " test");

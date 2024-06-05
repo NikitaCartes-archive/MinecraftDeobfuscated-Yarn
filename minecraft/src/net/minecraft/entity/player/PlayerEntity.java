@@ -1579,13 +1579,24 @@ public abstract class PlayerEntity extends LivingEntity {
 				this.increaseStat(Stats.FALL_ONE_CM, (int)Math.round((double)fallDistance * 100.0));
 			}
 
+			boolean bl;
 			if (this.ignoreFallDamageFromCurrentExplosion && this.currentExplosionImpactPos != null) {
 				double d = this.currentExplosionImpactPos.y;
 				this.tryClearCurrentExplosion();
-				return d < this.getY() ? false : super.handleFallDamage((float)(d - this.getY()), damageMultiplier, damageSource);
+				if (d < this.getY()) {
+					return false;
+				}
+
+				bl = super.handleFallDamage((float)(d - this.getY()), damageMultiplier, damageSource);
 			} else {
-				return super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
+				bl = super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
 			}
+
+			if (bl) {
+				this.clearCurrentExplosion();
+			}
+
+			return bl;
 		}
 	}
 
@@ -2238,6 +2249,10 @@ public abstract class PlayerEntity extends LivingEntity {
 		} else {
 			this.currentExplosionResetGraceTime = 0;
 		}
+	}
+
+	public boolean method_61165() {
+		return this.ignoreFallDamageFromCurrentExplosion;
 	}
 
 	public void tryClearCurrentExplosion() {

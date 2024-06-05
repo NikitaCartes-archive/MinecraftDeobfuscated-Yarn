@@ -327,7 +327,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	protected void jump() {
+	public void jump() {
 		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(vec3d.x, (double)this.getJumpVelocity(), vec3d.z);
 		this.velocityDirty = true;

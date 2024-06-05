@@ -72,7 +72,14 @@ public class MaceItem extends Item {
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 		if (attacker instanceof ServerPlayerEntity serverPlayerEntity && shouldDealAdditionalDamage(serverPlayerEntity)) {
 			ServerWorld serverWorld = (ServerWorld)attacker.getWorld();
-			serverPlayerEntity.currentExplosionImpactPos = serverPlayerEntity.getPos();
+			if (serverPlayerEntity.method_61165() && serverPlayerEntity.currentExplosionImpactPos != null) {
+				if (serverPlayerEntity.currentExplosionImpactPos.y > serverPlayerEntity.getPos().y) {
+					serverPlayerEntity.currentExplosionImpactPos = serverPlayerEntity.getPos();
+				}
+			} else {
+				serverPlayerEntity.currentExplosionImpactPos = serverPlayerEntity.getPos();
+			}
+
 			serverPlayerEntity.setIgnoreFallDamageFromCurrentExplosion(true);
 			serverPlayerEntity.setVelocity(serverPlayerEntity.getVelocity().withAxis(Direction.Axis.Y, 0.01F));
 			serverPlayerEntity.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(serverPlayerEntity));

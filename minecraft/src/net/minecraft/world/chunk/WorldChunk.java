@@ -381,7 +381,24 @@ public class WorldChunk extends Chunk {
 	@Override
 	public void setBlockEntity(BlockEntity blockEntity) {
 		BlockPos blockPos = blockEntity.getPos();
-		if (this.getBlockState(blockPos).hasBlockEntity()) {
+		BlockState blockState = this.getBlockState(blockPos);
+		if (!blockState.hasBlockEntity()) {
+			LOGGER.warn("Trying to set block entity {} at position {}, but state {} does not allow it", blockEntity, blockPos, blockState);
+		} else {
+			BlockState blockState2 = blockEntity.getCachedState();
+			if (blockState != blockState2) {
+				if (!blockEntity.getType().supports(blockState)) {
+					LOGGER.warn("Trying to set block entity {} at position {}, but state {} does not allow it", blockEntity, blockPos, blockState);
+					return;
+				}
+
+				if (blockState.getBlock() != blockState2.getBlock()) {
+					LOGGER.warn("Block state mismatch on block entity {} in position {}, {} != {}, updating", blockEntity, blockPos, blockState, blockState2);
+				}
+
+				blockEntity.setCachedState(blockState);
+			}
+
 			blockEntity.setWorld(this.world);
 			blockEntity.cancelRemoval();
 			BlockEntity blockEntity2 = (BlockEntity)this.blockEntities.put(blockPos.toImmutable(), blockEntity);

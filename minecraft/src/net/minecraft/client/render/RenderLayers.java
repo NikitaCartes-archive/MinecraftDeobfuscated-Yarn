@@ -274,7 +274,6 @@ public class RenderLayers {
 		map.put(Blocks.SPORE_BLOSSOM, renderLayer3);
 		map.put(Blocks.FLOWERING_AZALEA, renderLayer3);
 		map.put(Blocks.AZALEA, renderLayer3);
-		map.put(Blocks.MOSS_CARPET, renderLayer3);
 		map.put(Blocks.PINK_PETALS, renderLayer3);
 		map.put(Blocks.BIG_DRIPLEAF, renderLayer3);
 		map.put(Blocks.BIG_DRIPLEAF_STEM, renderLayer3);

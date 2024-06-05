@@ -50,6 +50,7 @@ public class MapState extends PersistentState {
 	private static final int SIZE_HALF = 64;
 	public static final int MAX_SCALE = 4;
 	public static final int MAX_DECORATIONS = 256;
+	private static final String field_52316 = "frame-";
 	/**
 	 * The scaled center coordinate of the map state on the X axis.
 	 * <p>
@@ -164,7 +165,7 @@ public class MapState extends PersistentState {
 				mapState.addDecoration(
 					MapDecorationTypes.FRAME,
 					null,
-					"frame-" + mapFrameMarker.getEntityId(),
+					method_61169(mapFrameMarker.getEntityId()),
 					(double)mapFrameMarker.getPos().getX(),
 					(double)mapFrameMarker.getPos().getZ(),
 					(double)mapFrameMarker.getRotation(),
@@ -268,14 +269,14 @@ public class MapState extends PersistentState {
 			BlockPos blockPos = itemFrameEntity.getAttachedBlockPos();
 			MapFrameMarker mapFrameMarker = (MapFrameMarker)this.frames.get(MapFrameMarker.getKey(blockPos));
 			if (mapFrameMarker != null && itemFrameEntity.getId() != mapFrameMarker.getEntityId() && this.frames.containsKey(mapFrameMarker.getKey())) {
-				this.removeDecoration("frame-" + mapFrameMarker.getEntityId());
+				this.removeDecoration(method_61169(mapFrameMarker.getEntityId()));
 			}
 
 			MapFrameMarker mapFrameMarker2 = new MapFrameMarker(blockPos, itemFrameEntity.getHorizontalFacing().getHorizontal() * 90, itemFrameEntity.getId());
 			this.addDecoration(
 				MapDecorationTypes.FRAME,
 				player.getWorld(),
-				"frame-" + itemFrameEntity.getId(),
+				method_61169(itemFrameEntity.getId()),
 				(double)blockPos.getX(),
 				(double)blockPos.getZ(),
 				(double)(itemFrameEntity.getHorizontalFacing().getHorizontal() * 90),
@@ -457,7 +458,7 @@ public class MapState extends PersistentState {
 	}
 
 	public void removeFrame(BlockPos pos, int id) {
-		this.removeDecoration("frame-" + id);
+		this.removeDecoration(method_61169(id));
 		this.frames.remove(MapFrameMarker.getKey(pos));
 	}
 
@@ -510,6 +511,10 @@ public class MapState extends PersistentState {
 
 	public boolean decorationCountNotLessThan(int decorationCount) {
 		return this.decorationCount >= decorationCount;
+	}
+
+	private static String method_61169(int i) {
+		return "frame-" + i;
 	}
 
 	public class PlayerUpdateTracker {

@@ -15,6 +15,8 @@ import net.minecraft.util.math.BlockPos;
 
 public interface Leashable {
 	String LEASH_NBT_KEY = "leash";
+	double field_52314 = 10.0;
+	double field_52315 = 6.0;
 
 	@Nullable
 	Leashable.LeashData getLeashData();
@@ -61,17 +63,19 @@ public interface Leashable {
 	default void writeLeashDataToNbt(NbtCompound nbt, @Nullable Leashable.LeashData leashData) {
 		if (leashData != null) {
 			Either<UUID, BlockPos> either = leashData.unresolvedLeashData;
-			if (leashData.leashHolder instanceof LivingEntity) {
-				either = Either.left(leashData.leashHolder.getUuid());
-			} else if (leashData.leashHolder instanceof LeashKnotEntity leashKnotEntity) {
+			if (leashData.leashHolder instanceof LeashKnotEntity leashKnotEntity) {
 				either = Either.right(leashKnotEntity.getAttachedBlockPos());
+			} else if (leashData.leashHolder != null) {
+				either = Either.left(leashData.leashHolder.getUuid());
 			}
 
-			nbt.put("leash", either.map(uuid -> {
-				NbtCompound nbtCompound = new NbtCompound();
-				nbtCompound.putUuid("UUID", uuid);
-				return nbtCompound;
-			}, NbtHelper::fromBlockPos));
+			if (either != null) {
+				nbt.put("leash", either.map(uuid -> {
+					NbtCompound nbtCompound = new NbtCompound();
+					nbtCompound.putUuid("UUID", uuid);
+					return nbtCompound;
+				}, NbtHelper::fromBlockPos));
+			}
 		}
 	}
 
@@ -133,13 +137,10 @@ public interface Leashable {
 					return;
 				}
 
-				if (f > 10.0F) {
+				if ((double)f > 10.0) {
 					entity.detachLeash();
-				} else if (f > 6.0F) {
-					double d = (entity2.getX() - entity.getX()) / (double)f;
-					double e = (entity2.getY() - entity.getY()) / (double)f;
-					double g = (entity2.getZ() - entity.getZ()) / (double)f;
-					entity.setVelocity(entity.getVelocity().add(Math.copySign(d * d * 0.4, d), Math.copySign(e * e * 0.4, e), Math.copySign(g * g * 0.4, g)));
+				} else if ((double)f > 6.0) {
+					entity.method_61162(entity2, f);
 					entity.limitFallDistance();
 				} else {
 					entity.onShortLeashTick(entity2);
@@ -157,6 +158,17 @@ public interface Leashable {
 	}
 
 	default void onShortLeashTick(Entity entity) {
+	}
+
+	default void method_61162(Entity entity, float f) {
+		method_61161((Entity)this, entity, f);
+	}
+
+	private static <E extends Entity & Leashable> void method_61161(E entity, Entity entity2, float f) {
+		double d = (entity2.getX() - entity.getX()) / (double)f;
+		double e = (entity2.getY() - entity.getY()) / (double)f;
+		double g = (entity2.getZ() - entity.getZ()) / (double)f;
+		entity.setVelocity(entity.getVelocity().add(Math.copySign(d * d * 0.4, d), Math.copySign(e * e * 0.4, e), Math.copySign(g * g * 0.4, g)));
 	}
 
 	default void attachLeash(Entity leashHolder, boolean sendPacket) {

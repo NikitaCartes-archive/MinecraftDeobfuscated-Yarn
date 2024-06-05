@@ -21,6 +21,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.BlockRenderManager;
+import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -37,6 +38,8 @@ import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
+import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
@@ -165,7 +168,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 			}
 
 			if (this.renderHitboxes && !entity.isInvisible() && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
-				renderHitbox(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), entity, tickDelta);
+				renderHitbox(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), entity, tickDelta, 1.0F, 1.0F, 1.0F);
 			}
 
 			matrices.pop();
@@ -182,20 +185,46 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		}
 	}
 
-	private static void renderHitbox(MatrixStack matrices, VertexConsumer vertices, Entity entity, float tickDelta) {
+	private static void method_61170(MatrixStack matrixStack, Entity entity, VertexConsumerProvider vertexConsumerProvider) {
+		Entity entity2 = method_61172(entity);
+		if (entity2 == null) {
+			DebugRenderer.drawString(matrixStack, vertexConsumerProvider, "Missing", entity.getX(), entity.getBoundingBox().maxY + 1.5, entity.getZ(), Colors.RED);
+		} else {
+			matrixStack.push();
+			matrixStack.translate(entity2.getX() - entity.getX(), entity2.getY() - entity.getY(), entity2.getZ() - entity.getZ());
+			renderHitbox(matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getLines()), entity2, 1.0F, 0.0F, 1.0F, 0.0F);
+			method_61171(matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getLines()), new Vector3f(), entity2.getVelocity(), -256);
+			matrixStack.pop();
+		}
+	}
+
+	@Nullable
+	private static Entity method_61172(Entity entity) {
+		IntegratedServer integratedServer = MinecraftClient.getInstance().getServer();
+		if (integratedServer != null) {
+			ServerWorld serverWorld = integratedServer.getWorld(entity.getWorld().getRegistryKey());
+			if (serverWorld != null) {
+				return serverWorld.getEntityById(entity.getId());
+			}
+		}
+
+		return null;
+	}
+
+	private static void renderHitbox(MatrixStack matrices, VertexConsumer vertices, Entity entity, float tickDelta, float f, float g, float h) {
 		Box box = entity.getBoundingBox().offset(-entity.getX(), -entity.getY(), -entity.getZ());
-		WorldRenderer.drawBox(matrices, vertices, box, 1.0F, 1.0F, 1.0F, 1.0F);
+		WorldRenderer.drawBox(matrices, vertices, box, f, g, h, 1.0F);
 		if (entity instanceof EnderDragonEntity) {
 			double d = -MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());
 			double e = -MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.getY());
-			double f = -MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
+			double i = -MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
 
 			for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
 				matrices.push();
-				double g = d + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderX, enderDragonPart.getX());
-				double h = e + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderY, enderDragonPart.getY());
-				double i = f + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderZ, enderDragonPart.getZ());
-				matrices.translate(g, h, i);
+				double j = d + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderX, enderDragonPart.getX());
+				double k = e + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderY, enderDragonPart.getY());
+				double l = i + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderZ, enderDragonPart.getZ());
+				matrices.translate(j, k, l);
 				WorldRenderer.drawBox(
 					matrices,
 					vertices,
@@ -210,7 +239,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		}
 
 		if (entity instanceof LivingEntity) {
-			float j = 0.01F;
+			float m = 0.01F;
 			WorldRenderer.drawBox(
 				matrices,
 				vertices,
@@ -229,20 +258,23 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 
 		Entity entity2 = entity.getVehicle();
 		if (entity2 != null) {
-			float k = Math.min(entity2.getWidth(), entity.getWidth()) / 2.0F;
-			float l = 0.0625F;
+			float n = Math.min(entity2.getWidth(), entity.getWidth()) / 2.0F;
+			float o = 0.0625F;
 			Vec3d vec3d = entity2.getPassengerRidingPos(entity).subtract(entity.getPos());
 			WorldRenderer.drawBox(
-				matrices, vertices, vec3d.x - (double)k, vec3d.y, vec3d.z - (double)k, vec3d.x + (double)k, vec3d.y + 0.0625, vec3d.z + (double)k, 1.0F, 1.0F, 0.0F, 1.0F
+				matrices, vertices, vec3d.x - (double)n, vec3d.y, vec3d.z - (double)n, vec3d.x + (double)n, vec3d.y + 0.0625, vec3d.z + (double)n, 1.0F, 1.0F, 0.0F, 1.0F
 			);
 		}
 
-		Vec3d vec3d2 = entity.getRotationVec(tickDelta);
-		MatrixStack.Entry entry = matrices.peek();
-		vertices.vertex(entry, 0.0F, entity.getStandingEyeHeight(), 0.0F).color(-16776961).normal(entry, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z);
-		vertices.vertex(entry, (float)(vec3d2.x * 2.0), (float)((double)entity.getStandingEyeHeight() + vec3d2.y * 2.0), (float)(vec3d2.z * 2.0))
-			.color(0, 0, 255, 255)
-			.normal(entry, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z);
+		method_61171(matrices, vertices, new Vector3f(0.0F, entity.getStandingEyeHeight(), 0.0F), entity.getRotationVec(tickDelta).multiply(2.0), -16776961);
+	}
+
+	private static void method_61171(MatrixStack matrixStack, VertexConsumer vertexConsumer, Vector3f vector3f, Vec3d vec3d, int i) {
+		MatrixStack.Entry entry = matrixStack.peek();
+		vertexConsumer.vertex(entry, vector3f).color(i).normal(entry, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z);
+		vertexConsumer.vertex(entry, (float)((double)vector3f.x() + vec3d.x), (float)((double)vector3f.y() + vec3d.y), (float)((double)vector3f.z() + vec3d.z))
+			.color(i)
+			.normal(entry, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z);
 	}
 
 	private void renderFire(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity, Quaternionf rotation) {

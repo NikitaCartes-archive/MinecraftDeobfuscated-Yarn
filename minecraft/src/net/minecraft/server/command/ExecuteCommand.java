@@ -69,11 +69,11 @@ import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.Attackable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.Leashable;
 import net.minecraft.entity.Ownable;
 import net.minecraft.entity.Tameable;
 import net.minecraft.entity.Targeter;
 import net.minecraft.entity.boss.CommandBossBar;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SlotRange;
 import net.minecraft.inventory.StackReference;
@@ -995,7 +995,7 @@ public class ExecuteCommand {
 			)
 			.then(
 				CommandManager.literal("leasher")
-					.fork(node, createEntityModifier(entity -> entity instanceof MobEntity mobEntity ? Optional.ofNullable(mobEntity.getLeashHolder()) : Optional.empty()))
+					.fork(node, createEntityModifier(entity -> entity instanceof Leashable leashable ? Optional.ofNullable(leashable.getLeashHolder()) : Optional.empty()))
 			)
 			.then(
 				CommandManager.literal("target")

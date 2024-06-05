@@ -116,11 +116,15 @@ public class NetherPortalBlock extends Block implements Portal {
 	public TeleportTarget createTeleportTarget(ServerWorld world, Entity entity, BlockPos pos) {
 		RegistryKey<World> registryKey = world.getRegistryKey() == World.NETHER ? World.OVERWORLD : World.NETHER;
 		ServerWorld serverWorld = world.getServer().getWorld(registryKey);
-		boolean bl = serverWorld.getRegistryKey() == World.NETHER;
-		WorldBorder worldBorder = serverWorld.getWorldBorder();
-		double d = DimensionType.getCoordinateScaleFactor(world.getDimension(), serverWorld.getDimension());
-		BlockPos blockPos = worldBorder.clamp(entity.getX() * d, entity.getY(), entity.getZ() * d);
-		return this.getOrCreateExitPortalTarget(serverWorld, entity, pos, blockPos, bl, worldBorder);
+		if (serverWorld == null) {
+			return null;
+		} else {
+			boolean bl = serverWorld.getRegistryKey() == World.NETHER;
+			WorldBorder worldBorder = serverWorld.getWorldBorder();
+			double d = DimensionType.getCoordinateScaleFactor(world.getDimension(), serverWorld.getDimension());
+			BlockPos blockPos = worldBorder.clamp(entity.getX() * d, entity.getY(), entity.getZ() * d);
+			return this.getOrCreateExitPortalTarget(serverWorld, entity, pos, blockPos, bl, worldBorder);
+		}
 	}
 
 	@Nullable

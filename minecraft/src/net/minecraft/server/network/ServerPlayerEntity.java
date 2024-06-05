@@ -482,7 +482,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	protected void onBlockCollision(BlockState state) {
+	public void onBlockCollision(BlockState state) {
 		Criteria.ENTER_BLOCK.trigger(this, state);
 	}
 

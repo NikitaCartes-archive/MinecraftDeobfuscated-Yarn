@@ -1,5 +1,7 @@
 package net.minecraft.entity.projectile.thrown;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -113,5 +115,13 @@ public class EnderPearlEntity extends ThrownItemEntity {
 		return from.getRegistryKey() == World.END && this.getOwner() instanceof ServerPlayerEntity serverPlayerEntity
 			? super.canTeleportBetween(from, to) && serverPlayerEntity.seenCredits
 			: super.canTeleportBetween(from, to);
+	}
+
+	@Override
+	protected void onBlockCollision(BlockState state) {
+		super.onBlockCollision(state);
+		if (state.isOf(Blocks.END_GATEWAY) && this.getOwner() instanceof ServerPlayerEntity serverPlayerEntity) {
+			serverPlayerEntity.onBlockCollision(state);
+		}
 	}
 }

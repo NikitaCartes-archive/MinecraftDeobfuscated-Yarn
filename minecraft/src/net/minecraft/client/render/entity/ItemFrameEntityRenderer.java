@@ -86,7 +86,7 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 		}
 
 		if (!itemStack.isEmpty()) {
-			MapIdComponent mapIdComponent = itemFrameEntity.getMapId();
+			MapIdComponent mapIdComponent = itemFrameEntity.getMapId(itemStack);
 			if (bl) {
 				matrixStack.translate(0.0F, 0.0F, 0.5F);
 			} else {
