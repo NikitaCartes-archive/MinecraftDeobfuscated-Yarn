@@ -70,6 +70,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 
 						entity.teleportTo(new TeleportTarget(serverWorld, this.getPos(), entity.getVelocity(), entity.getYaw(), entity.getPitch(), TeleportTarget.NO_OP));
 						entity.onLanding();
+						serverPlayerEntity.clearCurrentExplosion();
 						entity.damage(this.getDamageSources().fall(), 5.0F);
 						this.playTeleportSound(serverWorld, this.getPos());
 					}

@@ -511,20 +511,22 @@ public class ZombieEntity extends HostileEntity {
 	protected void applyAttributeModifiers(float chanceMultiplier) {
 		this.initAttributes();
 		this.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)
-			.method_61163(new EntityAttributeModifier(RANDOM_SPAWN_BONUS_MODIFIER_ID, this.random.nextDouble() * 0.05F, EntityAttributeModifier.Operation.ADD_VALUE));
+			.overwritePersistentModifier(
+				new EntityAttributeModifier(RANDOM_SPAWN_BONUS_MODIFIER_ID, this.random.nextDouble() * 0.05F, EntityAttributeModifier.Operation.ADD_VALUE)
+			);
 		double d = this.random.nextDouble() * 1.5 * (double)chanceMultiplier;
 		if (d > 1.0) {
 			this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
-				.method_61163(new EntityAttributeModifier(ZOMBIE_RANDOM_SPAWN_BONUS_MODIFIER_ID, d, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+				.overwritePersistentModifier(new EntityAttributeModifier(ZOMBIE_RANDOM_SPAWN_BONUS_MODIFIER_ID, d, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
 		}
 
 		if (this.random.nextFloat() < chanceMultiplier * 0.05F) {
 			this.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
-				.method_61163(
+				.overwritePersistentModifier(
 					new EntityAttributeModifier(LEADER_ZOMBIE_BONUS_MODIFIER_ID, this.random.nextDouble() * 0.25 + 0.5, EntityAttributeModifier.Operation.ADD_VALUE)
 				);
 			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)
-				.method_61163(
+				.overwritePersistentModifier(
 					new EntityAttributeModifier(LEADER_ZOMBIE_BONUS_MODIFIER_ID, this.random.nextDouble() * 3.0 + 1.0, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
 				);
 			this.setCanBreakDoors(this.shouldBreakDoors());

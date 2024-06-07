@@ -17,7 +17,7 @@ import net.minecraft.enchantment.effect.entity.DamageItemEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.ExplodeEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.IgniteEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.PlaySoundEnchantmentEffect;
-import net.minecraft.enchantment.effect.entity.ReplaceDiscEnchantmentEffect;
+import net.minecraft.enchantment.effect.entity.ReplaceDiskEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.SpawnParticlesEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.SummonEntityEnchantmentEffect;
 import net.minecraft.enchantment.effect.value.AddEnchantmentEffect;
@@ -179,7 +179,7 @@ public class Enchantments {
 					new AttributeEnchantmentEffect(
 						Identifier.ofVanilla("enchantment.fire_protection"),
 						EntityAttributes.GENERIC_BURNING_TIME,
-						EnchantmentLevelBasedValue.linear(-0.15F),
+						EnchantmentLevelBasedValue.linear(-0.0375F),
 						EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
 					)
 				)
@@ -237,7 +237,7 @@ public class Enchantments {
 					new AttributeEnchantmentEffect(
 						Identifier.ofVanilla("enchantment.blast_protection"),
 						EntityAttributes.GENERIC_EXPLOSION_KNOCKBACK_RESISTANCE,
-						EnchantmentLevelBasedValue.linear(0.15F),
+						EnchantmentLevelBasedValue.linear(0.0375F),
 						EntityAttributeModifier.Operation.ADD_VALUE
 					)
 				)
@@ -394,7 +394,7 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.LOCATION_CHANGED,
-					new ReplaceDiscEnchantmentEffect(
+					new ReplaceDiskEnchantmentEffect(
 						new EnchantmentLevelBasedValue.Clamped(EnchantmentLevelBasedValue.linear(3.0F, 1.0F), 0.0F, 16.0F),
 						EnchantmentLevelBasedValue.constant(1.0F),
 						new Vec3i(0, -1, 0),
@@ -568,7 +568,7 @@ public class Enchantments {
 			SHARPNESS,
 			Enchantment.builder(
 					Enchantment.definition(
-						registryEntryLookup3.getOrThrow(ItemTags.WEAPON_ENCHANTABLE),
+						registryEntryLookup3.getOrThrow(ItemTags.SHARP_WEAPON_ENCHANTABLE),
 						registryEntryLookup3.getOrThrow(ItemTags.SWORD_ENCHANTABLE),
 						10,
 						5,

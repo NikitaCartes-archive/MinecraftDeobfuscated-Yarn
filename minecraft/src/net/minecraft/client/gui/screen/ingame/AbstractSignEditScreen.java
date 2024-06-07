@@ -198,7 +198,7 @@ public abstract class AbstractSignEditScreen extends Screen {
 					int t = this.textRenderer.getWidth(string.substring(0, r)) - this.textRenderer.getWidth(string) / 2;
 					int u = Math.min(s, t);
 					int v = Math.max(s, t);
-					context.fill(RenderLayer.getGuiTextHighlight(), u, m, v, m + this.blockEntity.getTextLineHeight(), -16776961);
+					context.fill(RenderLayer.getGuiTextHighlight(), u, m, v, m + this.blockEntity.getTextLineHeight(), Colors.BLUE);
 				}
 			}
 		}

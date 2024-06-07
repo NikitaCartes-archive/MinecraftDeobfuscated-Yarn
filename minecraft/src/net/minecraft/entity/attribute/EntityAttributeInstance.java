@@ -104,10 +104,10 @@ public class EntityAttributeInstance {
 		this.addModifier(modifier);
 	}
 
-	public void method_61163(EntityAttributeModifier entityAttributeModifier) {
-		this.removeModifier(entityAttributeModifier.id());
-		this.addModifier(entityAttributeModifier);
-		this.persistentModifiers.put(entityAttributeModifier.id(), entityAttributeModifier);
+	public void overwritePersistentModifier(EntityAttributeModifier modifier) {
+		this.removeModifier(modifier.id());
+		this.addModifier(modifier);
+		this.persistentModifiers.put(modifier.id(), modifier);
 	}
 
 	public void addPersistentModifier(EntityAttributeModifier modifier) {

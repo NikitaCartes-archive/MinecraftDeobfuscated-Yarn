@@ -72,7 +72,7 @@ public class MaceItem extends Item {
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 		if (attacker instanceof ServerPlayerEntity serverPlayerEntity && shouldDealAdditionalDamage(serverPlayerEntity)) {
 			ServerWorld serverWorld = (ServerWorld)attacker.getWorld();
-			if (serverPlayerEntity.method_61165() && serverPlayerEntity.currentExplosionImpactPos != null) {
+			if (serverPlayerEntity.shouldIgnoreFallDamageFromCurrentExplosion() && serverPlayerEntity.currentExplosionImpactPos != null) {
 				if (serverPlayerEntity.currentExplosionImpactPos.y > serverPlayerEntity.getPos().y) {
 					serverPlayerEntity.currentExplosionImpactPos = serverPlayerEntity.getPos();
 				}
@@ -111,6 +111,9 @@ public class MaceItem extends Item {
 	@Override
 	public void postDamageEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 		stack.damage(1, attacker, EquipmentSlot.MAINHAND);
+		if (shouldDealAdditionalDamage(attacker)) {
+			attacker.onLanding();
+		}
 	}
 
 	@Override

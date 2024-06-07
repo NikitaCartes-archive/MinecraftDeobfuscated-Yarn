@@ -81,7 +81,7 @@ public class TridentItem extends Item implements ProjectileItem {
 			if (i >= 10) {
 				float f = EnchantmentHelper.getTridentSpinAttackStrength(stack, playerEntity);
 				if (!(f > 0.0F) || playerEntity.isTouchingWaterOrRain()) {
-					if (!method_61168(stack)) {
+					if (!isAboutToBreak(stack)) {
 						RegistryEntry<SoundEvent> registryEntry = (RegistryEntry<SoundEvent>)EnchantmentHelper.getEffect(stack, EnchantmentEffectComponentTypes.TRIDENT_SOUND)
 							.orElse(SoundEvents.ITEM_TRIDENT_THROW);
 						if (!world.isClient) {
@@ -130,7 +130,7 @@ public class TridentItem extends Item implements ProjectileItem {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		if (method_61168(itemStack)) {
+		if (isAboutToBreak(itemStack)) {
 			return TypedActionResult.fail(itemStack);
 		} else if (EnchantmentHelper.getTridentSpinAttackStrength(itemStack, user) > 0.0F && !user.isTouchingWaterOrRain()) {
 			return TypedActionResult.fail(itemStack);
@@ -140,8 +140,8 @@ public class TridentItem extends Item implements ProjectileItem {
 		}
 	}
 
-	private static boolean method_61168(ItemStack itemStack) {
-		return itemStack.getDamage() >= itemStack.getMaxDamage() - 1;
+	private static boolean isAboutToBreak(ItemStack stack) {
+		return stack.getDamage() >= stack.getMaxDamage() - 1;
 	}
 
 	@Override

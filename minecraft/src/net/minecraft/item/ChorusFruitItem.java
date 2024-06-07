@@ -53,6 +53,7 @@ public class ChorusFruitItem extends Item {
 			}
 
 			if (user instanceof PlayerEntity playerEntity) {
+				playerEntity.clearCurrentExplosion();
 				playerEntity.getItemCooldownManager().set(this, 20);
 			}
 		}

@@ -708,9 +708,9 @@ public class TestContext {
 		this.addInstantFinalTask(() -> this.expectEntityWithData(pos, type, entityDataGetter, data));
 	}
 
-	public void method_61173(Entity entity, Box box, String string) {
+	public void expectEntityIn(Entity entity, Box box, String message) {
 		if (!box.contains(this.getRelative(entity.getPos()))) {
-			this.throwGameTestException(string);
+			this.throwGameTestException(message);
 		}
 	}
 

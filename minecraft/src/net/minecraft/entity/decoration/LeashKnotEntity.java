@@ -73,9 +73,9 @@ public class LeashKnotEntity extends BlockAttachedEntity {
 			return ActionResult.SUCCESS;
 		} else {
 			boolean bl = false;
-			List<Leashable> list = LeadItem.method_61166(this.getWorld(), this.getAttachedBlockPos(), leashablex -> {
-				Entity entity = leashablex.getLeashHolder();
-				return entity == player || entity == this;
+			List<Leashable> list = LeadItem.collectLeashablesAround(this.getWorld(), this.getAttachedBlockPos(), entity -> {
+				Entity entity2 = entity.getLeashHolder();
+				return entity2 == player || entity2 == this;
 			});
 
 			for (Leashable leashable : list) {

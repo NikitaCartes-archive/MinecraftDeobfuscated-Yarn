@@ -426,7 +426,7 @@ public class BookEditScreen extends Screen {
 			int j = rect2i.getY();
 			int k = i + rect2i.getWidth();
 			int l = j + rect2i.getHeight();
-			context.fill(RenderLayer.getGuiTextHighlight(), i, j, k, l, -16776961);
+			context.fill(RenderLayer.getGuiTextHighlight(), i, j, k, l, Colors.BLUE);
 		}
 	}
 

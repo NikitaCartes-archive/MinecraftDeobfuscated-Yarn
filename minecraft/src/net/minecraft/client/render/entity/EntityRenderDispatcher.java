@@ -185,21 +185,21 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		}
 	}
 
-	private static void method_61170(MatrixStack matrixStack, Entity entity, VertexConsumerProvider vertexConsumerProvider) {
-		Entity entity2 = method_61172(entity);
+	private static void renderServerSideHitbox(MatrixStack matrices, Entity entity, VertexConsumerProvider vertexConsumers) {
+		Entity entity2 = getIntegratedServerEntity(entity);
 		if (entity2 == null) {
-			DebugRenderer.drawString(matrixStack, vertexConsumerProvider, "Missing", entity.getX(), entity.getBoundingBox().maxY + 1.5, entity.getZ(), Colors.RED);
+			DebugRenderer.drawString(matrices, vertexConsumers, "Missing", entity.getX(), entity.getBoundingBox().maxY + 1.5, entity.getZ(), Colors.RED);
 		} else {
-			matrixStack.push();
-			matrixStack.translate(entity2.getX() - entity.getX(), entity2.getY() - entity.getY(), entity2.getZ() - entity.getZ());
-			renderHitbox(matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getLines()), entity2, 1.0F, 0.0F, 1.0F, 0.0F);
-			method_61171(matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getLines()), new Vector3f(), entity2.getVelocity(), -256);
-			matrixStack.pop();
+			matrices.push();
+			matrices.translate(entity2.getX() - entity.getX(), entity2.getY() - entity.getY(), entity2.getZ() - entity.getZ());
+			renderHitbox(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), entity2, 1.0F, 0.0F, 1.0F, 0.0F);
+			drawVector(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), new Vector3f(), entity2.getVelocity(), -256);
+			matrices.pop();
 		}
 	}
 
 	@Nullable
-	private static Entity method_61172(Entity entity) {
+	private static Entity getIntegratedServerEntity(Entity entity) {
 		IntegratedServer integratedServer = MinecraftClient.getInstance().getServer();
 		if (integratedServer != null) {
 			ServerWorld serverWorld = integratedServer.getWorld(entity.getWorld().getRegistryKey());
@@ -211,20 +211,20 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		return null;
 	}
 
-	private static void renderHitbox(MatrixStack matrices, VertexConsumer vertices, Entity entity, float tickDelta, float f, float g, float h) {
+	private static void renderHitbox(MatrixStack matrices, VertexConsumer vertices, Entity entity, float tickDelta, float red, float green, float blue) {
 		Box box = entity.getBoundingBox().offset(-entity.getX(), -entity.getY(), -entity.getZ());
-		WorldRenderer.drawBox(matrices, vertices, box, f, g, h, 1.0F);
+		WorldRenderer.drawBox(matrices, vertices, box, red, green, blue, 1.0F);
 		if (entity instanceof EnderDragonEntity) {
 			double d = -MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());
 			double e = -MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.getY());
-			double i = -MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
+			double f = -MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
 
 			for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
 				matrices.push();
-				double j = d + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderX, enderDragonPart.getX());
-				double k = e + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderY, enderDragonPart.getY());
-				double l = i + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderZ, enderDragonPart.getZ());
-				matrices.translate(j, k, l);
+				double g = d + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderX, enderDragonPart.getX());
+				double h = e + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderY, enderDragonPart.getY());
+				double i = f + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderZ, enderDragonPart.getZ());
+				matrices.translate(g, h, i);
 				WorldRenderer.drawBox(
 					matrices,
 					vertices,
@@ -239,7 +239,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		}
 
 		if (entity instanceof LivingEntity) {
-			float m = 0.01F;
+			float j = 0.01F;
 			WorldRenderer.drawBox(
 				matrices,
 				vertices,
@@ -258,23 +258,23 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 
 		Entity entity2 = entity.getVehicle();
 		if (entity2 != null) {
-			float n = Math.min(entity2.getWidth(), entity.getWidth()) / 2.0F;
-			float o = 0.0625F;
+			float k = Math.min(entity2.getWidth(), entity.getWidth()) / 2.0F;
+			float l = 0.0625F;
 			Vec3d vec3d = entity2.getPassengerRidingPos(entity).subtract(entity.getPos());
 			WorldRenderer.drawBox(
-				matrices, vertices, vec3d.x - (double)n, vec3d.y, vec3d.z - (double)n, vec3d.x + (double)n, vec3d.y + 0.0625, vec3d.z + (double)n, 1.0F, 1.0F, 0.0F, 1.0F
+				matrices, vertices, vec3d.x - (double)k, vec3d.y, vec3d.z - (double)k, vec3d.x + (double)k, vec3d.y + 0.0625, vec3d.z + (double)k, 1.0F, 1.0F, 0.0F, 1.0F
 			);
 		}
 
-		method_61171(matrices, vertices, new Vector3f(0.0F, entity.getStandingEyeHeight(), 0.0F), entity.getRotationVec(tickDelta).multiply(2.0), -16776961);
+		drawVector(matrices, vertices, new Vector3f(0.0F, entity.getStandingEyeHeight(), 0.0F), entity.getRotationVec(tickDelta).multiply(2.0), -16776961);
 	}
 
-	private static void method_61171(MatrixStack matrixStack, VertexConsumer vertexConsumer, Vector3f vector3f, Vec3d vec3d, int i) {
-		MatrixStack.Entry entry = matrixStack.peek();
-		vertexConsumer.vertex(entry, vector3f).color(i).normal(entry, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z);
-		vertexConsumer.vertex(entry, (float)((double)vector3f.x() + vec3d.x), (float)((double)vector3f.y() + vec3d.y), (float)((double)vector3f.z() + vec3d.z))
-			.color(i)
-			.normal(entry, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z);
+	private static void drawVector(MatrixStack matrices, VertexConsumer vertexConsumers, Vector3f offset, Vec3d vec, int color) {
+		MatrixStack.Entry entry = matrices.peek();
+		vertexConsumers.vertex(entry, offset).color(color).normal(entry, (float)vec.x, (float)vec.y, (float)vec.z);
+		vertexConsumers.vertex(entry, (float)((double)offset.x() + vec.x), (float)((double)offset.y() + vec.y), (float)((double)offset.z() + vec.z))
+			.color(color)
+			.normal(entry, (float)vec.x, (float)vec.y, (float)vec.z);
 	}
 
 	private void renderFire(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity, Quaternionf rotation) {

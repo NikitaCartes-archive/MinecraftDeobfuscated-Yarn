@@ -29,8 +29,14 @@ public class Colors {
 	 * Represents the color red, {@code 0xFFFF0000}.
 	 */
 	public static final int RED = -65536;
-	public static final int field_52312 = -16711936;
-	public static final int field_52313 = -16776961;
+	/**
+	 * Represents the color green, {@code 0xFF00FF00}.
+	 */
+	public static final int GREEN = -16711936;
+	/**
+	 * Represents the color blue, {@code 0xFF0000FF}.
+	 */
+	public static final int BLUE = -16776961;
 	/**
 	 * Represents the color light red, {@code 0xFFDF5050}.
 	 */

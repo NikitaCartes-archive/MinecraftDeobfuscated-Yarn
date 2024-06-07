@@ -451,7 +451,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 			x1 = this.getX() + this.width;
 		}
 
-		context.fill(RenderLayer.getGuiTextHighlight(), x1, y1, x2, y2, -16776961);
+		context.fill(RenderLayer.getGuiTextHighlight(), x1, y1, x2, y2, Colors.BLUE);
 	}
 
 	public void setMaxLength(int maxLength) {

@@ -140,7 +140,7 @@ public interface Leashable {
 				if ((double)f > 10.0) {
 					entity.detachLeash();
 				} else if ((double)f > 6.0) {
-					entity.method_61162(entity2, f);
+					entity.applyLeashElasticity(entity2, f);
 					entity.limitFallDistance();
 				} else {
 					entity.onShortLeashTick(entity2);
@@ -160,15 +160,15 @@ public interface Leashable {
 	default void onShortLeashTick(Entity entity) {
 	}
 
-	default void method_61162(Entity entity, float f) {
-		method_61161((Entity)this, entity, f);
+	default void applyLeashElasticity(Entity leashHolder, float distance) {
+		applyLeashElasticity((Entity)this, leashHolder, distance);
 	}
 
-	private static <E extends Entity & Leashable> void method_61161(E entity, Entity entity2, float f) {
-		double d = (entity2.getX() - entity.getX()) / (double)f;
-		double e = (entity2.getY() - entity.getY()) / (double)f;
-		double g = (entity2.getZ() - entity.getZ()) / (double)f;
-		entity.setVelocity(entity.getVelocity().add(Math.copySign(d * d * 0.4, d), Math.copySign(e * e * 0.4, e), Math.copySign(g * g * 0.4, g)));
+	private static <E extends Entity & Leashable> void applyLeashElasticity(E entity, Entity leashHolder, float distance) {
+		double d = (leashHolder.getX() - entity.getX()) / (double)distance;
+		double e = (leashHolder.getY() - entity.getY()) / (double)distance;
+		double f = (leashHolder.getZ() - entity.getZ()) / (double)distance;
+		entity.setVelocity(entity.getVelocity().add(Math.copySign(d * d * 0.4, d), Math.copySign(e * e * 0.4, e), Math.copySign(f * f * 0.4, f)));
 	}
 
 	default void attachLeash(Entity leashHolder, boolean sendPacket) {

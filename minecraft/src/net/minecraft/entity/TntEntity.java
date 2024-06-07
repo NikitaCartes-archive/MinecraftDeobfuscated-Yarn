@@ -1,17 +1,24 @@
 package net.minecraft.entity;
 
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.explosion.ExplosionBehavior;
 
 public class TntEntity extends Entity implements Ownable {
 	private static final TrackedData<Integer> FUSE = DataTracker.registerData(TntEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -19,8 +26,20 @@ public class TntEntity extends Entity implements Ownable {
 	private static final int DEFAULT_FUSE = 80;
 	private static final String BLOCK_STATE_NBT_KEY = "block_state";
 	public static final String FUSE_NBT_KEY = "fuse";
+	private static final ExplosionBehavior TELEPORTED_EXPLOSION_BEHAVIOR = new ExplosionBehavior() {
+		@Override
+		public boolean canDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float power) {
+			return state.isOf(Blocks.NETHER_PORTAL) ? false : super.canDestroyBlock(explosion, world, pos, state, power);
+		}
+
+		@Override
+		public Optional<Float> getBlastResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState) {
+			return blockState.isOf(Blocks.NETHER_PORTAL) ? Optional.empty() : super.getBlastResistance(explosion, world, pos, blockState, fluidState);
+		}
+	};
 	@Nullable
 	private LivingEntity causingEntity;
+	private boolean teleported;
 
 	public TntEntity(EntityType<? extends TntEntity> entityType, World world) {
 		super(entityType, world);
@@ -87,7 +106,18 @@ public class TntEntity extends Entity implements Ownable {
 
 	private void explode() {
 		float f = 4.0F;
-		this.getWorld().createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), 4.0F, World.ExplosionSourceType.TNT);
+		this.getWorld()
+			.createExplosion(
+				this,
+				Explosion.createDamageSource(this.getWorld(), this),
+				this.teleported ? TELEPORTED_EXPLOSION_BEHAVIOR : null,
+				this.getX(),
+				this.getBodyY(0.0625),
+				this.getZ(),
+				4.0F,
+				false,
+				World.ExplosionSourceType.TNT
+			);
 	}
 
 	@Override
@@ -131,5 +161,20 @@ public class TntEntity extends Entity implements Ownable {
 
 	public BlockState getBlockState() {
 		return this.dataTracker.get(BLOCK_STATE);
+	}
+
+	private void setTeleported(boolean teleported) {
+		this.teleported = teleported;
+	}
+
+	@Nullable
+	@Override
+	public Entity teleportTo(TeleportTarget teleportTarget) {
+		Entity entity = super.teleportTo(teleportTarget);
+		if (entity instanceof TntEntity tntEntity) {
+			tntEntity.setTeleported(true);
+		}
+
+		return entity;
 	}
 }

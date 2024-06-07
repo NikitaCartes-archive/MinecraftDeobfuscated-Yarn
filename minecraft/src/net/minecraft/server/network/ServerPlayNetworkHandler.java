@@ -998,7 +998,6 @@ public class ServerPlayNetworkHandler
 		}
 
 		this.prevTeleportCheckTicks = this.ticks;
-		this.player.clearCurrentExplosion();
 		this.player.updatePositionAndAngles(x, y, z, yaw, pitch);
 		this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(x - d, y - e, z - f, yaw - g, pitch - h, flags, this.requestedTeleportId));
 	}

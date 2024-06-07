@@ -10,6 +10,7 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.s2c.custom.DebugGoalSelectorCustomPayload;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
@@ -48,7 +49,7 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 					double d = (double)blockPos2.getX() + 0.5;
 					double e = (double)blockPos2.getY() + 2.0 + (double)i * 0.25;
 					double f = (double)blockPos2.getZ() + 0.5;
-					int j = goal.isRunning() ? -16711936 : -3355444;
+					int j = goal.isRunning() ? Colors.GREEN : -3355444;
 					DebugRenderer.drawString(matrices, vertexConsumers, goal.name(), d, e, f, j);
 				}
 			}

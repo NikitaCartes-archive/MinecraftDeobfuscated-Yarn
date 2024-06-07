@@ -38,7 +38,7 @@ public class LeadItem extends Item {
 
 	public static ActionResult attachHeldMobsToBlock(PlayerEntity player, World world, BlockPos pos) {
 		LeashKnotEntity leashKnotEntity = null;
-		List<Leashable> list = method_61166(world, pos, leashablex -> leashablex.getLeashHolder() == player);
+		List<Leashable> list = collectLeashablesAround(world, pos, entity -> entity.getLeashHolder() == player);
 
 		for (Leashable leashable : list) {
 			if (leashKnotEntity == null) {
@@ -57,11 +57,11 @@ public class LeadItem extends Item {
 		}
 	}
 
-	public static List<Leashable> method_61166(World world, BlockPos blockPos, Predicate<Leashable> predicate) {
+	public static List<Leashable> collectLeashablesAround(World world, BlockPos pos, Predicate<Leashable> predicate) {
 		double d = 7.0;
-		int i = blockPos.getX();
-		int j = blockPos.getY();
-		int k = blockPos.getZ();
+		int i = pos.getX();
+		int j = pos.getY();
+		int k = pos.getZ();
 		Box box = new Box((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0);
 		return world.getEntitiesByClass(Entity.class, box, entity -> {
 			if (entity instanceof Leashable leashable && predicate.test(leashable)) {

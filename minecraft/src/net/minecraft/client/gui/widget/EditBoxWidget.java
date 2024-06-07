@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 
@@ -224,7 +225,7 @@ public class EditBoxWidget extends ScrollableWidget {
 	}
 
 	private void drawSelection(DrawContext context, int left, int top, int right, int bottom) {
-		context.fill(RenderLayer.getGuiTextHighlight(), left, top, right, bottom, -16776961);
+		context.fill(RenderLayer.getGuiTextHighlight(), left, top, right, bottom, Colors.BLUE);
 	}
 
 	private void onCursorChange() {

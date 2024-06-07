@@ -11,7 +11,7 @@ import net.minecraft.enchantment.effect.entity.ExplodeEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.IgniteEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.PlaySoundEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.ReplaceBlockEnchantmentEffect;
-import net.minecraft.enchantment.effect.entity.ReplaceDiscEnchantmentEffect;
+import net.minecraft.enchantment.effect.entity.ReplaceDiskEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.RunFunctionEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.SetBlockPropertiesEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.SpawnParticlesEnchantmentEffect;
@@ -37,7 +37,7 @@ public interface EnchantmentLocationBasedEffect {
 		Registry.register(registry, "ignite", IgniteEnchantmentEffect.CODEC);
 		Registry.register(registry, "play_sound", PlaySoundEnchantmentEffect.CODEC);
 		Registry.register(registry, "replace_block", ReplaceBlockEnchantmentEffect.CODEC);
-		Registry.register(registry, "replace_disk", ReplaceDiscEnchantmentEffect.CODEC);
+		Registry.register(registry, "replace_disk", ReplaceDiskEnchantmentEffect.CODEC);
 		Registry.register(registry, "run_function", RunFunctionEnchantmentEffect.CODEC);
 		Registry.register(registry, "set_block_properties", SetBlockPropertiesEnchantmentEffect.CODEC);
 		Registry.register(registry, "spawn_particles", SpawnParticlesEnchantmentEffect.CODEC);

@@ -146,8 +146,8 @@ public class GLX {
 			}
 
 			if (drawY) {
-				bufferBuilder.vertex(0.0F, 0.0F, 0.0F).color(-16711936).normal(0.0F, 1.0F, 0.0F);
-				bufferBuilder.vertex(0.0F, (float)size, 0.0F).color(-16711936).normal(0.0F, 1.0F, 0.0F);
+				bufferBuilder.vertex(0.0F, 0.0F, 0.0F).color(Colors.GREEN).normal(0.0F, 1.0F, 0.0F);
+				bufferBuilder.vertex(0.0F, (float)size, 0.0F).color(Colors.GREEN).normal(0.0F, 1.0F, 0.0F);
 			}
 
 			if (drawZ) {

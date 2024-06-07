@@ -443,8 +443,8 @@ public class BoatEntity extends VehicleEntity implements Leashable, VariantHolde
 	}
 
 	@Override
-	public void method_61162(Entity entity, float f) {
-		Vec3d vec3d = entity.getPos().subtract(this.getPos()).normalize().multiply((double)f - 6.0);
+	public void applyLeashElasticity(Entity leashHolder, float distance) {
+		Vec3d vec3d = leashHolder.getPos().subtract(this.getPos()).normalize().multiply((double)distance - 6.0);
 		Vec3d vec3d2 = this.getVelocity();
 		boolean bl = vec3d2.dotProduct(vec3d) > 0.0;
 		this.setVelocity(vec3d2.add(vec3d.multiply(bl ? 0.15F : 0.2F)));

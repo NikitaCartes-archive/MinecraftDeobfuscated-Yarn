@@ -18,7 +18,7 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
-public record ReplaceDiscEnchantmentEffect(
+public record ReplaceDiskEnchantmentEffect(
 	EnchantmentLevelBasedValue radius,
 	EnchantmentLevelBasedValue height,
 	Vec3i offset,
@@ -26,16 +26,16 @@ public record ReplaceDiscEnchantmentEffect(
 	BlockStateProvider blockState,
 	Optional<RegistryEntry<GameEvent>> triggerGameEvent
 ) implements EnchantmentEntityEffect {
-	public static final MapCodec<ReplaceDiscEnchantmentEffect> CODEC = RecordCodecBuilder.mapCodec(
+	public static final MapCodec<ReplaceDiskEnchantmentEffect> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					EnchantmentLevelBasedValue.CODEC.fieldOf("radius").forGetter(ReplaceDiscEnchantmentEffect::radius),
-					EnchantmentLevelBasedValue.CODEC.fieldOf("height").forGetter(ReplaceDiscEnchantmentEffect::height),
-					Vec3i.CODEC.optionalFieldOf("offset", Vec3i.ZERO).forGetter(ReplaceDiscEnchantmentEffect::offset),
-					BlockPredicate.BASE_CODEC.optionalFieldOf("predicate").forGetter(ReplaceDiscEnchantmentEffect::predicate),
-					BlockStateProvider.TYPE_CODEC.fieldOf("block_state").forGetter(ReplaceDiscEnchantmentEffect::blockState),
-					GameEvent.CODEC.optionalFieldOf("trigger_game_event").forGetter(ReplaceDiscEnchantmentEffect::triggerGameEvent)
+					EnchantmentLevelBasedValue.CODEC.fieldOf("radius").forGetter(ReplaceDiskEnchantmentEffect::radius),
+					EnchantmentLevelBasedValue.CODEC.fieldOf("height").forGetter(ReplaceDiskEnchantmentEffect::height),
+					Vec3i.CODEC.optionalFieldOf("offset", Vec3i.ZERO).forGetter(ReplaceDiskEnchantmentEffect::offset),
+					BlockPredicate.BASE_CODEC.optionalFieldOf("predicate").forGetter(ReplaceDiskEnchantmentEffect::predicate),
+					BlockStateProvider.TYPE_CODEC.fieldOf("block_state").forGetter(ReplaceDiskEnchantmentEffect::blockState),
+					GameEvent.CODEC.optionalFieldOf("trigger_game_event").forGetter(ReplaceDiskEnchantmentEffect::triggerGameEvent)
 				)
-				.apply(instance, ReplaceDiscEnchantmentEffect::new)
+				.apply(instance, ReplaceDiskEnchantmentEffect::new)
 	);
 
 	@Override
@@ -55,7 +55,7 @@ public record ReplaceDiscEnchantmentEffect(
 	}
 
 	@Override
-	public MapCodec<ReplaceDiscEnchantmentEffect> getCodec() {
+	public MapCodec<ReplaceDiskEnchantmentEffect> getCodec() {
 		return CODEC;
 	}
 }

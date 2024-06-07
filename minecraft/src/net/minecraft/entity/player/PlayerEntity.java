@@ -1587,7 +1587,8 @@ public abstract class PlayerEntity extends LivingEntity {
 					return false;
 				}
 
-				bl = super.handleFallDamage((float)(d - this.getY()), damageMultiplier, damageSource);
+				float f = Math.min(fallDistance, (float)(d - this.getY()));
+				bl = super.handleFallDamage(f, damageMultiplier, damageSource);
 			} else {
 				bl = super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
 			}
@@ -2251,7 +2252,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	public boolean method_61165() {
+	public boolean shouldIgnoreFallDamageFromCurrentExplosion() {
 		return this.ignoreFallDamageFromCurrentExplosion;
 	}
 
