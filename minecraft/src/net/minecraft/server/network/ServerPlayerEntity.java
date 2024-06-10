@@ -1903,6 +1903,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public boolean startRiding(Entity entity, boolean force) {
 		if (super.startRiding(entity, force)) {
+			this.setOnGround(Vec3d.ZERO);
 			entity.updatePassengerPosition(this);
 			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
 			if (entity instanceof LivingEntity livingEntity) {
@@ -1955,7 +1956,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public Vec3d getMovement() {
-		return this.movement;
+		Entity entity = this.getVehicle();
+		return entity != null && entity.getControllingPassenger() != this ? entity.getMovement() : this.movement;
 	}
 
 	public void setOnGround(Vec3d movement) {

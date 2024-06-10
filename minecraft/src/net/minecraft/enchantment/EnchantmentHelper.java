@@ -199,7 +199,7 @@ public class EnchantmentHelper {
 
 	public static void onTargetDamaged(ServerWorld world, Entity target, DamageSource damageSource) {
 		if (damageSource.getAttacker() instanceof LivingEntity livingEntity) {
-			onTargetDamaged(world, target, damageSource, livingEntity.getMainHandStack());
+			onTargetDamaged(world, target, damageSource, livingEntity.getWeaponStack());
 		} else {
 			onTargetDamaged(world, target, damageSource, null);
 		}

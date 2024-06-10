@@ -2553,14 +2553,20 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	public ActionResult interact(PlayerEntity player, Hand hand) {
 		if (this.isAlive() && this instanceof Leashable leashable) {
 			if (leashable.getLeashHolder() == player) {
-				leashable.detachLeash(true, !player.isInCreativeMode());
-				this.emitGameEvent(GameEvent.ENTITY_INTERACT, player);
+				if (!this.getWorld().isClient()) {
+					leashable.detachLeash(true, !player.isInCreativeMode());
+					this.emitGameEvent(GameEvent.ENTITY_INTERACT, player);
+				}
+
 				return ActionResult.success(this.getWorld().isClient);
 			}
 
 			ItemStack itemStack = player.getStackInHand(hand);
 			if (itemStack.isOf(Items.LEAD) && leashable.canLeashAttachTo()) {
-				leashable.attachLeash(player, true);
+				if (!this.getWorld().isClient()) {
+					leashable.attachLeash(player, true);
+				}
+
 				itemStack.decrement(1);
 				return ActionResult.success(this.getWorld().isClient);
 			}

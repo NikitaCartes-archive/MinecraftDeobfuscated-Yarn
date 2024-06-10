@@ -179,7 +179,7 @@ public class Enchantments {
 					new AttributeEnchantmentEffect(
 						Identifier.ofVanilla("enchantment.fire_protection"),
 						EntityAttributes.GENERIC_BURNING_TIME,
-						EnchantmentLevelBasedValue.linear(-0.0375F),
+						EnchantmentLevelBasedValue.linear(-0.15F),
 						EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
 					)
 				)
@@ -237,7 +237,7 @@ public class Enchantments {
 					new AttributeEnchantmentEffect(
 						Identifier.ofVanilla("enchantment.blast_protection"),
 						EntityAttributes.GENERIC_EXPLOSION_KNOCKBACK_RESISTANCE,
-						EnchantmentLevelBasedValue.linear(0.0375F),
+						EnchantmentLevelBasedValue.linear(0.15F),
 						EntityAttributeModifier.Operation.ADD_VALUE
 					)
 				)
