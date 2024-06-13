@@ -21,12 +21,12 @@ import net.minecraft.entity.ai.brain.task.BreezeShootTask;
 import net.minecraft.entity.ai.brain.task.BreezeSlideTowardsTargetTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
-import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Unit;
@@ -105,7 +105,7 @@ public class BreezeBrain {
 		breeze.getBrain().resetPossibleActivities(ImmutableList.of(Activity.FIGHT, Activity.IDLE));
 	}
 
-	public static class SlideAroundTask extends WanderAroundTask {
+	public static class SlideAroundTask extends MoveToTargetTask {
 		@VisibleForTesting
 		public SlideAroundTask(int i, int j) {
 			super(i, j);

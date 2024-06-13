@@ -576,7 +576,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 		this.darkSkyBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
 		this.darkSkyBuffer.bind();
-		this.darkSkyBuffer.upload(renderSky(Tessellator.getInstance(), -16.0F));
+		this.darkSkyBuffer.upload(buildSkyBuffer(Tessellator.getInstance(), -16.0F));
 		VertexBuffer.unbind();
 	}
 
@@ -587,11 +587,11 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 		this.lightSkyBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
 		this.lightSkyBuffer.bind();
-		this.lightSkyBuffer.upload(renderSky(Tessellator.getInstance(), 16.0F));
+		this.lightSkyBuffer.upload(buildSkyBuffer(Tessellator.getInstance(), 16.0F));
 		VertexBuffer.unbind();
 	}
 
-	private static BuiltBuffer renderSky(Tessellator tessellator, float f) {
+	private static BuiltBuffer buildSkyBuffer(Tessellator tessellator, float f) {
 		float g = Math.signum(f) * 512.0F;
 		float h = 512.0F;
 		BufferBuilder bufferBuilder = tessellator.begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION);
@@ -611,11 +611,11 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 		this.starsBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
 		this.starsBuffer.bind();
-		this.starsBuffer.upload(this.renderStars(Tessellator.getInstance()));
+		this.starsBuffer.upload(this.buildStarsBuffer(Tessellator.getInstance()));
 		VertexBuffer.unbind();
 	}
 
-	private BuiltBuffer renderStars(Tessellator tessellator) {
+	private BuiltBuffer buildStarsBuffer(Tessellator tessellator) {
 		Random random = Random.create(10842L);
 		int i = 1500;
 		float f = 100.0F;
@@ -1662,7 +1662,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 				this.cloudsBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
 				this.cloudsBuffer.bind();
-				this.cloudsBuffer.upload(this.renderClouds(Tessellator.getInstance(), i, j, k, vec3d));
+				this.cloudsBuffer.upload(this.buildCloudsBuffer(Tessellator.getInstance(), i, j, k, vec3d));
 				VertexBuffer.unbind();
 			}
 
@@ -1690,7 +1690,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 	}
 
-	private BuiltBuffer renderClouds(Tessellator tessellator, double x, double y, double z, Vec3d color) {
+	private BuiltBuffer buildCloudsBuffer(Tessellator tessellator, double x, double y, double z, Vec3d color) {
 		float f = 4.0F;
 		float g = 0.00390625F;
 		int i = 8;

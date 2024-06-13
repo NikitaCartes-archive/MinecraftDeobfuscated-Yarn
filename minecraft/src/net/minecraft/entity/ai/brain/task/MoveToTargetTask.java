@@ -17,7 +17,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-public class WanderAroundTask extends MultiTickTask<MobEntity> {
+public class MoveToTargetTask extends MultiTickTask<MobEntity> {
 	private static final int MAX_UPDATE_COUNTDOWN = 40;
 	private int pathUpdateCountdownTicks;
 	@Nullable
@@ -26,11 +26,11 @@ public class WanderAroundTask extends MultiTickTask<MobEntity> {
 	private BlockPos lookTargetPos;
 	private float speed;
 
-	public WanderAroundTask() {
+	public MoveToTargetTask() {
 		this(150, 250);
 	}
 
-	public WanderAroundTask(int minRunTime, int maxRunTime) {
+	public MoveToTargetTask(int minRunTime, int maxRunTime) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
@@ -70,7 +70,7 @@ public class WanderAroundTask extends MultiTickTask<MobEntity> {
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		if (this.path != null && this.lookTargetPos != null) {
 			Optional<WalkTarget> optional = mobEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.WALK_TARGET);
-			boolean bl = (Boolean)optional.map(WanderAroundTask::isTargetSpectator).orElse(false);
+			boolean bl = (Boolean)optional.map(MoveToTargetTask::isTargetSpectator).orElse(false);
 			EntityNavigation entityNavigation = mobEntity.getNavigation();
 			return !entityNavigation.isIdle() && optional.isPresent() && !this.hasReached(mobEntity, (WalkTarget)optional.get()) && !bl;
 		} else {

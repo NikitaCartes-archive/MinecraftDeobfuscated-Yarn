@@ -361,7 +361,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	}
 
 	@Override
-	public boolean shouldTickLeash(Entity leashHolder, float distance) {
+	public boolean beforeLeashTick(Entity leashHolder, float distance) {
 		if (distance > 6.0F && this.isSitting() && !this.isChangingPose() && this.canChangePose()) {
 			this.startStanding();
 		}

@@ -36,6 +36,7 @@ import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
 import net.minecraft.entity.ai.brain.task.MemoryTransferTask;
+import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.OpenDoorsTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.RangedApproachTask;
@@ -52,7 +53,6 @@ import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkToNearestVisibleWantedItemTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsPosTask;
-import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.ai.brain.task.WantNewItemTask;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
@@ -140,7 +140,7 @@ public class PiglinBrain {
 			0,
 			ImmutableList.of(
 				new LookAroundTask(45, 90),
-				new WanderAroundTask(),
+				new MoveToTargetTask(),
 				OpenDoorsTask.create(),
 				goToNemesisTask(),
 				makeFleeFromZombifiedPiglinTask(),

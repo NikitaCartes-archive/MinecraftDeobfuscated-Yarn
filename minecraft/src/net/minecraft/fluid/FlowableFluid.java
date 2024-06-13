@@ -260,7 +260,10 @@ public abstract class FlowableFluid extends Fluid {
 		return (short)((i + 128 & 0xFF) << 8 | j + 128 & 0xFF);
 	}
 
-	protected int getFlowSpeedBetween(
+	/**
+	 * Finds the distance to the closest hole the fluid can flow down into starting with the direction specified.
+	 */
+	protected int getMinFlowDownDistance(
 		WorldView world,
 		BlockPos pos,
 		int i,
@@ -292,8 +295,8 @@ public abstract class FlowableFluid extends Fluid {
 						return i;
 					}
 
-					if (i < this.getFlowSpeed(world)) {
-						int k = this.getFlowSpeedBetween(world, blockPos, i + 1, direction2.getOpposite(), blockState, fromPos, stateCache, flowDownCache);
+					if (i < this.getMaxFlowDistance(world)) {
+						int k = this.getMinFlowDownDistance(world, blockPos, i + 1, direction2.getOpposite(), blockState, fromPos, stateCache, flowDownCache);
 						if (k < j) {
 							j = k;
 						}
@@ -325,7 +328,10 @@ public abstract class FlowableFluid extends Fluid {
 		return state.getFluid().matchesType(this) && state.isStill();
 	}
 
-	protected abstract int getFlowSpeed(WorldView world);
+	/**
+	 * {@return the maximum horizontal distance to check for holes the fluid can flow down into}
+	 */
+	protected abstract int getMaxFlowDistance(WorldView world);
 
 	private int countNeighboringSources(WorldView world, BlockPos pos) {
 		int i = 0;
@@ -367,7 +373,7 @@ public abstract class FlowableFluid extends Fluid {
 				if (bl) {
 					j = 0;
 				} else {
-					j = this.getFlowSpeedBetween(world, blockPos, 1, direction.getOpposite(), blockState, pos, short2ObjectMap, short2BooleanMap);
+					j = this.getMinFlowDownDistance(world, blockPos, 1, direction.getOpposite(), blockState, pos, short2ObjectMap, short2BooleanMap);
 				}
 
 				if (j < i) {

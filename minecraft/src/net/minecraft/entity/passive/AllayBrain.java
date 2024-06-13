@@ -19,6 +19,7 @@ import net.minecraft.entity.ai.brain.task.GiveInventoryToLookTargetTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
 import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
+import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
@@ -26,7 +27,6 @@ import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkToNearestVisibleWantedItemTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsLookTargetTask;
-import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -65,7 +65,7 @@ public class AllayBrain {
 				new StayAboveWaterTask(0.8F),
 				new FleeTask<>(2.5F),
 				new LookAroundTask(45, 90),
-				new WanderAroundTask(),
+				new MoveToTargetTask(),
 				new TemptationCooldownTask(MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS),
 				new TemptationCooldownTask(MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS)
 			)

@@ -8,11 +8,11 @@ public interface Tameable {
 	@Nullable
 	UUID getOwnerUuid();
 
-	EntityView method_48926();
+	EntityView getWorld();
 
 	@Nullable
 	default LivingEntity getOwner() {
 		UUID uUID = this.getOwnerUuid();
-		return uUID == null ? null : this.method_48926().getPlayerByUuid(uUID);
+		return uUID == null ? null : this.getWorld().getPlayerByUuid(uUID);
 	}
 }

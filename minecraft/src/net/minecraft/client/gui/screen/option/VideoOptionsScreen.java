@@ -80,7 +80,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		if (monitor == null) {
 			j = -1;
 		} else {
-			Optional<VideoMode> optional = window.getVideoMode();
+			Optional<VideoMode> optional = window.getFullscreenVideoMode();
 			j = (Integer)optional.map(monitor::findClosestVideoModeIndex).orElse(-1);
 		}
 
@@ -110,7 +110,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 			j,
 			value -> {
 				if (monitor != null) {
-					window.setVideoMode(value == -1 ? Optional.empty() : Optional.of(monitor.getVideoMode(value)));
+					window.setFullscreenVideoMode(value == -1 ? Optional.empty() : Optional.of(monitor.getVideoMode(value)));
 				}
 			}
 		);
@@ -121,7 +121,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	public void close() {
-		this.client.getWindow().applyVideoMode();
+		this.client.getWindow().applyFullscreenVideoMode();
 		super.close();
 	}
 

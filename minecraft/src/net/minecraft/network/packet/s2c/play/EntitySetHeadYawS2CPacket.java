@@ -13,21 +13,21 @@ public class EntitySetHeadYawS2CPacket implements Packet<ClientPlayPacketListene
 	public static final PacketCodec<PacketByteBuf, EntitySetHeadYawS2CPacket> CODEC = Packet.createCodec(
 		EntitySetHeadYawS2CPacket::write, EntitySetHeadYawS2CPacket::new
 	);
-	private final int entity;
+	private final int entityId;
 	private final byte headYaw;
 
 	public EntitySetHeadYawS2CPacket(Entity entity, byte headYaw) {
-		this.entity = entity.getId();
+		this.entityId = entity.getId();
 		this.headYaw = headYaw;
 	}
 
 	private EntitySetHeadYawS2CPacket(PacketByteBuf buf) {
-		this.entity = buf.readVarInt();
+		this.entityId = buf.readVarInt();
 		this.headYaw = buf.readByte();
 	}
 
 	private void write(PacketByteBuf buf) {
-		buf.writeVarInt(this.entity);
+		buf.writeVarInt(this.entityId);
 		buf.writeByte(this.headYaw);
 	}
 
@@ -41,7 +41,7 @@ public class EntitySetHeadYawS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	public Entity getEntity(World world) {
-		return world.getEntityById(this.entity);
+		return world.getEntityById(this.entityId);
 	}
 
 	public byte getHeadYaw() {

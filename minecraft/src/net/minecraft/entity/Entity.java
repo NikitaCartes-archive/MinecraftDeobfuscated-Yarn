@@ -5160,7 +5160,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * can override this to initialize additional fields.
 	 */
 	public void onSpawnPacket(EntitySpawnS2CPacket packet) {
-		int i = packet.getId();
+		int i = packet.getEntityId();
 		double d = packet.getX();
 		double e = packet.getY();
 		double f = packet.getZ();

@@ -96,7 +96,7 @@ public abstract class TameableEntity extends AnimalEntity implements Tameable {
 	}
 
 	@Override
-	public boolean shouldTickLeash(Entity leashHolder, float distance) {
+	public boolean beforeLeashTick(Entity leashHolder, float distance) {
 		if (this.isInSittingPose()) {
 			if (distance > 10.0F) {
 				this.detachLeash(true, true);
@@ -104,7 +104,7 @@ public abstract class TameableEntity extends AnimalEntity implements Tameable {
 
 			return false;
 		} else {
-			return super.shouldTickLeash(leashHolder, distance);
+			return super.beforeLeashTick(leashHolder, distance);
 		}
 	}
 

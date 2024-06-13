@@ -45,7 +45,7 @@ public final class Window implements AutoCloseable {
 	private int windowedY;
 	private int windowedWidth;
 	private int windowedHeight;
-	private Optional<VideoMode> videoMode;
+	private Optional<VideoMode> fullscreenVideoMode;
 	private boolean fullscreen;
 	private boolean currentFullscreen;
 	private int x;
@@ -58,22 +58,22 @@ public final class Window implements AutoCloseable {
 	private int scaledHeight;
 	private double scaleFactor;
 	private String phase = "";
-	private boolean videoModeDirty;
+	private boolean fullscreenVideoModeDirty;
 	private int framerateLimit;
 	private boolean vsync;
 
-	public Window(WindowEventHandler eventHandler, MonitorTracker monitorTracker, WindowSettings settings, @Nullable String videoMode, String title) {
+	public Window(WindowEventHandler eventHandler, MonitorTracker monitorTracker, WindowSettings settings, @Nullable String fullscreenVideoMode, String title) {
 		this.monitorTracker = monitorTracker;
 		this.throwOnGlError();
 		this.setPhase("Pre startup");
 		this.eventHandler = eventHandler;
-		Optional<VideoMode> optional = VideoMode.fromString(videoMode);
+		Optional<VideoMode> optional = VideoMode.fromString(fullscreenVideoMode);
 		if (optional.isPresent()) {
-			this.videoMode = optional;
+			this.fullscreenVideoMode = optional;
 		} else if (settings.fullscreenWidth.isPresent() && settings.fullscreenHeight.isPresent()) {
-			this.videoMode = Optional.of(new VideoMode(settings.fullscreenWidth.getAsInt(), settings.fullscreenHeight.getAsInt(), 8, 8, 8, 60));
+			this.fullscreenVideoMode = Optional.of(new VideoMode(settings.fullscreenWidth.getAsInt(), settings.fullscreenHeight.getAsInt(), 8, 8, 8, 60));
 		} else {
-			this.videoMode = Optional.empty();
+			this.fullscreenVideoMode = Optional.empty();
 		}
 
 		this.currentFullscreen = this.fullscreen = settings.fullscreen;
@@ -89,9 +89,9 @@ public final class Window implements AutoCloseable {
 		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, 1);
 		this.handle = GLFW.glfwCreateWindow(this.width, this.height, title, this.fullscreen && monitor != null ? monitor.getHandle() : 0L, 0L);
 		if (monitor != null) {
-			VideoMode videoMode2 = monitor.findClosestVideoMode(this.fullscreen ? this.videoMode : Optional.empty());
-			this.windowedX = this.x = monitor.getViewportX() + videoMode2.getWidth() / 2 - this.width / 2;
-			this.windowedY = this.y = monitor.getViewportY() + videoMode2.getHeight() / 2 - this.height / 2;
+			VideoMode videoMode = monitor.findClosestVideoMode(this.fullscreen ? this.fullscreenVideoMode : Optional.empty());
+			this.windowedX = this.x = monitor.getViewportX() + videoMode.getWidth() / 2 - this.width / 2;
+			this.windowedY = this.y = monitor.getViewportY() + videoMode.getHeight() / 2 - this.height / 2;
 		} else {
 			int[] is = new int[1];
 			int[] js = new int[1];
@@ -291,21 +291,21 @@ public final class Window implements AutoCloseable {
 		}
 	}
 
-	public Optional<VideoMode> getVideoMode() {
-		return this.videoMode;
+	public Optional<VideoMode> getFullscreenVideoMode() {
+		return this.fullscreenVideoMode;
 	}
 
-	public void setVideoMode(Optional<VideoMode> videoMode) {
-		boolean bl = !videoMode.equals(this.videoMode);
-		this.videoMode = videoMode;
+	public void setFullscreenVideoMode(Optional<VideoMode> fullscreenVideoMode) {
+		boolean bl = !fullscreenVideoMode.equals(this.fullscreenVideoMode);
+		this.fullscreenVideoMode = fullscreenVideoMode;
 		if (bl) {
-			this.videoModeDirty = true;
+			this.fullscreenVideoModeDirty = true;
 		}
 	}
 
-	public void applyVideoMode() {
-		if (this.fullscreen && this.videoModeDirty) {
-			this.videoModeDirty = false;
+	public void applyFullscreenVideoMode() {
+		if (this.fullscreen && this.fullscreenVideoModeDirty) {
+			this.fullscreenVideoModeDirty = false;
 			this.updateWindowRegion();
 			this.eventHandler.onResolutionChanged();
 		}
@@ -323,7 +323,7 @@ public final class Window implements AutoCloseable {
 					MacWindowUtil.toggleFullscreen(this.handle);
 				}
 
-				VideoMode videoMode = monitor.findClosestVideoMode(this.videoMode);
+				VideoMode videoMode = monitor.findClosestVideoMode(this.fullscreenVideoMode);
 				if (!bl) {
 					this.windowedX = this.x;
 					this.windowedY = this.y;

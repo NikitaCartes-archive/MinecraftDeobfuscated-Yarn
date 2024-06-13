@@ -219,7 +219,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	public boolean shouldTickLeash(Entity leashHolder, float distance) {
+	public boolean beforeLeashTick(Entity leashHolder, float distance) {
 		if (distance > 6.0F && this.isEatingGrass()) {
 			this.setEatingGrass(false);
 		}

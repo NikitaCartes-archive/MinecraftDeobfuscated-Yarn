@@ -34,7 +34,7 @@ public class VillagerTaskListProvider {
 			Pair.of(0, StartRaidTask.create()),
 			Pair.of(0, ForgetCompletedPointOfInterestTask.create(profession.heldWorkstation(), MemoryModuleType.JOB_SITE)),
 			Pair.of(0, ForgetCompletedPointOfInterestTask.create(profession.acquirableWorkstation(), MemoryModuleType.POTENTIAL_JOB_SITE)),
-			Pair.of(1, new WanderAroundTask()),
+			Pair.of(1, new MoveToTargetTask()),
 			Pair.of(2, WorkStationCompetitionTask.create()),
 			Pair.of(3, new FollowCustomerTask(speed)),
 			Pair.of(5, WalkToNearestVisibleWantedItemTask.create(speed, false, 4)),
@@ -87,7 +87,7 @@ public class VillagerTaskListProvider {
 
 	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createPlayTasks(float speed) {
 		return ImmutableList.of(
-			Pair.of(0, new WanderAroundTask(80, 120)),
+			Pair.of(0, new MoveToTargetTask(80, 120)),
 			createFreeFollowTask(),
 			Pair.of(5, PlayWithVillagerBabiesTask.create()),
 			Pair.of(

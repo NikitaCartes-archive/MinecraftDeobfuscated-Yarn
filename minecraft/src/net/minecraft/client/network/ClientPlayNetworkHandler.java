@@ -512,14 +512,14 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		entity.updateTrackedPosition(d, e, f);
 		entity.setYaw(0.0F);
 		entity.setPitch(0.0F);
-		entity.setId(packet.getId());
+		entity.setId(packet.getEntityId());
 		this.world.addEntity(entity);
 	}
 
 	@Override
 	public void onEntityVelocityUpdate(EntityVelocityUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Entity entity = this.world.getEntityById(packet.getId());
+		Entity entity = this.world.getEntityById(packet.getEntityId());
 		if (entity != null) {
 			entity.setVelocityClient(packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ());
 		}
@@ -537,7 +537,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onEntityPosition(EntityPositionS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Entity entity = this.world.getEntityById(packet.getId());
+		Entity entity = this.world.getEntityById(packet.getEntityId());
 		if (entity != null) {
 			double d = packet.getX();
 			double e = packet.getY();
@@ -936,7 +936,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onEntityAnimation(EntityAnimationS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Entity entity = this.world.getEntityById(packet.getId());
+		Entity entity = this.world.getEntityById(packet.getEntityId());
 		if (entity != null) {
 			if (packet.getAnimationId() == 0) {
 				LivingEntity livingEntity = (LivingEntity)entity;
@@ -981,7 +981,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onEntityPassengersSet(EntityPassengersSetS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Entity entity = this.world.getEntityById(packet.getId());
+		Entity entity = this.world.getEntityById(packet.getEntityId());
 		if (entity == null) {
 			LOGGER.warn("Received passengers for unknown entity");
 		} else {
@@ -1308,7 +1308,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onEntityEquipmentUpdate(EntityEquipmentUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		if (this.world.getEntityById(packet.getId()) instanceof LivingEntity livingEntity) {
+		if (this.world.getEntityById(packet.getEntityId()) instanceof LivingEntity livingEntity) {
 			packet.getEquipmentList().forEach(pair -> livingEntity.equipStack((EquipmentSlot)pair.getFirst(), (ItemStack)pair.getSecond()));
 		}
 	}

@@ -24,7 +24,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	 * in the velocity vector sent by this packet.
 	 */
 	private static final double MAX_ABSOLUTE_VELOCITY = 3.9;
-	private final int id;
+	private final int entityId;
 	private final UUID uuid;
 	private final EntityType<?> entityType;
 	private final double x;
@@ -75,9 +75,9 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public EntitySpawnS2CPacket(
-		int id, UUID uuid, double x, double y, double z, float pitch, float yaw, EntityType<?> entityType, int entityData, Vec3d velocity, double headYaw
+		int entityId, UUID uuid, double x, double y, double z, float pitch, float yaw, EntityType<?> entityType, int entityData, Vec3d velocity, double headYaw
 	) {
-		this.id = id;
+		this.entityId = entityId;
 		this.uuid = uuid;
 		this.x = x;
 		this.y = y;
@@ -93,7 +93,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	private EntitySpawnS2CPacket(RegistryByteBuf buf) {
-		this.id = buf.readVarInt();
+		this.entityId = buf.readVarInt();
 		this.uuid = buf.readUuid();
 		this.entityType = PacketCodecs.registryValue(RegistryKeys.ENTITY_TYPE).decode(buf);
 		this.x = buf.readDouble();
@@ -109,7 +109,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	private void write(RegistryByteBuf buf) {
-		buf.writeVarInt(this.id);
+		buf.writeVarInt(this.entityId);
 		buf.writeUuid(this.uuid);
 		PacketCodecs.registryValue(RegistryKeys.ENTITY_TYPE).encode(buf, this.entityType);
 		buf.writeDouble(this.x);
@@ -133,8 +133,8 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onEntitySpawn(this);
 	}
 
-	public int getId() {
-		return this.id;
+	public int getEntityId() {
+		return this.entityId;
 	}
 
 	public UUID getUuid() {

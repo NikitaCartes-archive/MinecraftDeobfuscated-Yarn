@@ -20,6 +20,7 @@ import net.minecraft.entity.ai.brain.task.LookAroundTask;
 import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
+import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.PacifyTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.RangedApproachTask;
@@ -28,7 +29,6 @@ import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
-import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -65,7 +65,7 @@ public class HoglinBrain {
 	}
 
 	private static void addCoreTasks(Brain<HoglinEntity> brain) {
-		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask()));
+		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new MoveToTargetTask()));
 	}
 
 	private static void addIdleTasks(Brain<HoglinEntity> brain) {

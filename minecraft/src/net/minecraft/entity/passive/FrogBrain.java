@@ -27,6 +27,7 @@ import net.minecraft.entity.ai.brain.task.LongJumpTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
 import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
+import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.TaskTriggerer;
@@ -35,7 +36,6 @@ import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
 import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsLandTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsWaterTask;
-import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.PathContext;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -84,7 +84,7 @@ public class FrogBrain {
 			ImmutableList.of(
 				new FleeTask<>(2.0F),
 				new LookAroundTask(45, 90),
-				new WanderAroundTask(),
+				new MoveToTargetTask(),
 				new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS),
 				new TemptationCooldownTask(MemoryModuleType.LONG_JUMP_COOLING_DOWN)
 			)

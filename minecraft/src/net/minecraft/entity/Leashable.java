@@ -15,8 +15,8 @@ import net.minecraft.util.math.BlockPos;
 
 public interface Leashable {
 	String LEASH_NBT_KEY = "leash";
-	double field_52314 = 10.0;
-	double field_52315 = 6.0;
+	double MAX_LEASH_LENGTH = 10.0;
+	double SHORT_LEASH_LENGTH = 6.0;
 
 	@Nullable
 	Leashable.LeashData getLeashData();
@@ -133,7 +133,7 @@ public interface Leashable {
 			Entity entity2 = entity.getLeashHolder();
 			if (entity2 != null && entity2.getWorld() == entity.getWorld()) {
 				float f = entity.distanceTo(entity2);
-				if (!entity.shouldTickLeash(entity2, f)) {
+				if (!entity.beforeLeashTick(entity2, f)) {
 					return;
 				}
 
@@ -149,7 +149,15 @@ public interface Leashable {
 		}
 	}
 
-	default boolean shouldTickLeash(Entity leashHolder, float distance) {
+	/**
+	 * Called before the default leash-ticking logic.
+	 * Subclasses can override this to add their own logic to it.
+	 * <p>
+	 * {@return whether the default logic should run after this.}
+	 * 
+	 * @see Leashable#tickLeash
+	 */
+	default boolean beforeLeashTick(Entity leashHolder, float distance) {
 		return true;
 	}
 

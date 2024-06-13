@@ -3656,7 +3656,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.headYaw = packet.getHeadYaw();
 		this.prevBodyYaw = this.bodyYaw;
 		this.prevHeadYaw = this.headYaw;
-		this.setId(packet.getId());
+		this.setId(packet.getEntityId());
 		this.setUuid(packet.getUuid());
 		this.updatePositionAndAngles(d, e, f, g, h);
 		this.setVelocity(packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ());

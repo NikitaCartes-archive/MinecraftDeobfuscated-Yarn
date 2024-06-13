@@ -1561,8 +1561,8 @@ public class GameOptions {
 						}
 					}
 				);
-				if (this.client.getWindow().getVideoMode().isPresent()) {
-					printWriter.println("fullscreenResolution:" + ((VideoMode)this.client.getWindow().getVideoMode().get()).asString());
+				if (this.client.getWindow().getFullscreenVideoMode().isPresent()) {
+					printWriter.println("fullscreenResolution:" + ((VideoMode)this.client.getWindow().getFullscreenVideoMode().get()).asString());
 				}
 			} catch (Throwable var5) {
 				try {

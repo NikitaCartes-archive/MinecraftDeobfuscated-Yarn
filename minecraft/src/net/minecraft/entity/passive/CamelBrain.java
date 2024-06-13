@@ -17,6 +17,7 @@ import net.minecraft.entity.ai.brain.task.FleeTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
 import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
+import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.brain.task.RandomLookAroundTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
@@ -27,7 +28,6 @@ import net.minecraft.entity.ai.brain.task.TemptTask;
 import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
-import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
@@ -85,7 +85,7 @@ public class CamelBrain {
 				new StayAboveWaterTask(0.8F),
 				new CamelBrain.CamelWalkTask(4.0F),
 				new LookAroundTask(45, 90),
-				new WanderAroundTask(),
+				new MoveToTargetTask(),
 				new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS),
 				new TemptationCooldownTask(MemoryModuleType.GAZE_COOLDOWN_TICKS)
 			)

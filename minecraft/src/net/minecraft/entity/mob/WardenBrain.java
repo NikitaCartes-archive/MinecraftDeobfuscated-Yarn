@@ -23,6 +23,7 @@ import net.minecraft.entity.ai.brain.task.LookAroundTask;
 import net.minecraft.entity.ai.brain.task.LookAtDisturbanceTask;
 import net.minecraft.entity.ai.brain.task.LookAtMobTask;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
+import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.RangedApproachTask;
 import net.minecraft.entity.ai.brain.task.RoarTask;
@@ -35,7 +36,6 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsPosTask;
-import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
@@ -115,7 +115,7 @@ public class WardenBrain {
 
 	private static void addCoreActivities(Brain<WardenEntity> brain) {
 		brain.setTaskList(
-			Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), LookAtDisturbanceTask.create(), new LookAroundTask(45, 90), new WanderAroundTask())
+			Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), LookAtDisturbanceTask.create(), new LookAroundTask(45, 90), new MoveToTargetTask())
 		);
 	}
 

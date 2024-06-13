@@ -70,7 +70,7 @@ public abstract class PathAwareEntity extends MobEntity {
 	}
 
 	@Override
-	public boolean shouldTickLeash(Entity leashHolder, float distance) {
+	public boolean beforeLeashTick(Entity leashHolder, float distance) {
 		this.setPositionTarget(leashHolder.getBlockPos(), 5);
 		return true;
 	}

@@ -17,21 +17,21 @@ public class EntityAnimationS2CPacket implements Packet<ClientPlayPacketListener
 	public static final int SWING_OFF_HAND = 3;
 	public static final int CRIT = 4;
 	public static final int ENCHANTED_HIT = 5;
-	private final int id;
+	private final int entityId;
 	private final int animationId;
 
 	public EntityAnimationS2CPacket(Entity entity, int animationId) {
-		this.id = entity.getId();
+		this.entityId = entity.getId();
 		this.animationId = animationId;
 	}
 
 	private EntityAnimationS2CPacket(PacketByteBuf buf) {
-		this.id = buf.readVarInt();
+		this.entityId = buf.readVarInt();
 		this.animationId = buf.readUnsignedByte();
 	}
 
 	private void write(PacketByteBuf buf) {
-		buf.writeVarInt(this.id);
+		buf.writeVarInt(this.entityId);
 		buf.writeByte(this.animationId);
 	}
 
@@ -44,8 +44,8 @@ public class EntityAnimationS2CPacket implements Packet<ClientPlayPacketListener
 		clientPlayPacketListener.onEntityAnimation(this);
 	}
 
-	public int getId() {
-		return this.id;
+	public int getEntityId() {
+		return this.entityId;
 	}
 
 	public int getAnimationId() {

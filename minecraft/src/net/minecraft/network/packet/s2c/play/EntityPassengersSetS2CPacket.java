@@ -13,11 +13,11 @@ public class EntityPassengersSetS2CPacket implements Packet<ClientPlayPacketList
 	public static final PacketCodec<PacketByteBuf, EntityPassengersSetS2CPacket> CODEC = Packet.createCodec(
 		EntityPassengersSetS2CPacket::write, EntityPassengersSetS2CPacket::new
 	);
-	private final int id;
+	private final int entityId;
 	private final int[] passengerIds;
 
 	public EntityPassengersSetS2CPacket(Entity entity) {
-		this.id = entity.getId();
+		this.entityId = entity.getId();
 		List<Entity> list = entity.getPassengerList();
 		this.passengerIds = new int[list.size()];
 
@@ -27,12 +27,12 @@ public class EntityPassengersSetS2CPacket implements Packet<ClientPlayPacketList
 	}
 
 	private EntityPassengersSetS2CPacket(PacketByteBuf buf) {
-		this.id = buf.readVarInt();
+		this.entityId = buf.readVarInt();
 		this.passengerIds = buf.readIntArray();
 	}
 
 	private void write(PacketByteBuf buf) {
-		buf.writeVarInt(this.id);
+		buf.writeVarInt(this.entityId);
 		buf.writeIntArray(this.passengerIds);
 	}
 
@@ -49,7 +49,7 @@ public class EntityPassengersSetS2CPacket implements Packet<ClientPlayPacketList
 		return this.passengerIds;
 	}
 
-	public int getId() {
-		return this.id;
+	public int getEntityId() {
+		return this.entityId;
 	}
 }

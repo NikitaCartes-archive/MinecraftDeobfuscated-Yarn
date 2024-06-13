@@ -24,6 +24,7 @@ import net.minecraft.entity.ai.brain.task.FleeTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
 import net.minecraft.entity.ai.brain.task.LookAtMobTask;
+import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
@@ -31,7 +32,6 @@ import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.TemptTask;
 import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
-import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.ItemTags;
@@ -96,7 +96,7 @@ public class SnifferBrain {
 				SnifferBrain.stopDiggingOrSniffing(snifferEntity);
 				super.run(serverWorld, snifferEntity, l);
 			}
-		}, new WanderAroundTask(500, 700), new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)));
+		}, new MoveToTargetTask(500, 700), new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)));
 	}
 
 	private static void addSniffActivities(Brain<SnifferEntity> brain) {

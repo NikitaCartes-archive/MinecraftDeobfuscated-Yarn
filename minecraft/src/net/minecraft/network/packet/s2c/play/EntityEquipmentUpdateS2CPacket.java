@@ -17,16 +17,16 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 		EntityEquipmentUpdateS2CPacket::write, EntityEquipmentUpdateS2CPacket::new
 	);
 	private static final byte field_33342 = -128;
-	private final int id;
+	private final int entityId;
 	private final List<Pair<EquipmentSlot, ItemStack>> equipmentList;
 
-	public EntityEquipmentUpdateS2CPacket(int id, List<Pair<EquipmentSlot, ItemStack>> equipmentList) {
-		this.id = id;
+	public EntityEquipmentUpdateS2CPacket(int entityId, List<Pair<EquipmentSlot, ItemStack>> equipmentList) {
+		this.entityId = entityId;
 		this.equipmentList = equipmentList;
 	}
 
 	private EntityEquipmentUpdateS2CPacket(RegistryByteBuf buf) {
-		this.id = buf.readVarInt();
+		this.entityId = buf.readVarInt();
 		EquipmentSlot[] equipmentSlots = EquipmentSlot.values();
 		this.equipmentList = Lists.<Pair<EquipmentSlot, ItemStack>>newArrayList();
 
@@ -40,7 +40,7 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 	}
 
 	private void write(RegistryByteBuf buf) {
-		buf.writeVarInt(this.id);
+		buf.writeVarInt(this.entityId);
 		int i = this.equipmentList.size();
 
 		for (int j = 0; j < i; j++) {
@@ -62,8 +62,8 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 		clientPlayPacketListener.onEntityEquipmentUpdate(this);
 	}
 
-	public int getId() {
-		return this.id;
+	public int getEntityId() {
+		return this.entityId;
 	}
 
 	public List<Pair<EquipmentSlot, ItemStack>> getEquipmentList() {

@@ -135,7 +135,7 @@ public abstract class LavaFluid extends FlowableFluid {
 	}
 
 	@Override
-	public int getFlowSpeed(WorldView world) {
+	public int getMaxFlowDistance(WorldView world) {
 		return world.getDimension().ultrawarm() ? 4 : 2;
 	}
 

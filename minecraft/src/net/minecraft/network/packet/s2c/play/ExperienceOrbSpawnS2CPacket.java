@@ -14,14 +14,14 @@ public class ExperienceOrbSpawnS2CPacket implements Packet<ClientPlayPacketListe
 	public static final PacketCodec<PacketByteBuf, ExperienceOrbSpawnS2CPacket> CODEC = Packet.createCodec(
 		ExperienceOrbSpawnS2CPacket::write, ExperienceOrbSpawnS2CPacket::new
 	);
-	private final int id;
+	private final int entityId;
 	private final double x;
 	private final double y;
 	private final double z;
 	private final int experience;
 
 	public ExperienceOrbSpawnS2CPacket(ExperienceOrbEntity orb, EntityTrackerEntry entry) {
-		this.id = orb.getId();
+		this.entityId = orb.getId();
 		Vec3d vec3d = entry.getPos();
 		this.x = vec3d.getX();
 		this.y = vec3d.getY();
@@ -30,7 +30,7 @@ public class ExperienceOrbSpawnS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	private ExperienceOrbSpawnS2CPacket(PacketByteBuf buf) {
-		this.id = buf.readVarInt();
+		this.entityId = buf.readVarInt();
 		this.x = buf.readDouble();
 		this.y = buf.readDouble();
 		this.z = buf.readDouble();
@@ -38,7 +38,7 @@ public class ExperienceOrbSpawnS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	private void write(PacketByteBuf buf) {
-		buf.writeVarInt(this.id);
+		buf.writeVarInt(this.entityId);
 		buf.writeDouble(this.x);
 		buf.writeDouble(this.y);
 		buf.writeDouble(this.z);
@@ -54,8 +54,8 @@ public class ExperienceOrbSpawnS2CPacket implements Packet<ClientPlayPacketListe
 		clientPlayPacketListener.onExperienceOrbSpawn(this);
 	}
 
-	public int getId() {
-		return this.id;
+	public int getEntityId() {
+		return this.entityId;
 	}
 
 	public double getX() {

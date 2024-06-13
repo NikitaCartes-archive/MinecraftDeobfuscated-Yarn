@@ -13,7 +13,7 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 	public static final PacketCodec<PacketByteBuf, EntityPositionS2CPacket> CODEC = Packet.createCodec(
 		EntityPositionS2CPacket::write, EntityPositionS2CPacket::new
 	);
-	private final int id;
+	private final int entityId;
 	private final double x;
 	private final double y;
 	private final double z;
@@ -22,7 +22,7 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 	private final boolean onGround;
 
 	public EntityPositionS2CPacket(Entity entity) {
-		this.id = entity.getId();
+		this.entityId = entity.getId();
 		Vec3d vec3d = entity.getSyncedPos();
 		this.x = vec3d.x;
 		this.y = vec3d.y;
@@ -33,7 +33,7 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	private EntityPositionS2CPacket(PacketByteBuf buf) {
-		this.id = buf.readVarInt();
+		this.entityId = buf.readVarInt();
 		this.x = buf.readDouble();
 		this.y = buf.readDouble();
 		this.z = buf.readDouble();
@@ -43,7 +43,7 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	private void write(PacketByteBuf buf) {
-		buf.writeVarInt(this.id);
+		buf.writeVarInt(this.entityId);
 		buf.writeDouble(this.x);
 		buf.writeDouble(this.y);
 		buf.writeDouble(this.z);
@@ -61,8 +61,8 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 		clientPlayPacketListener.onEntityPosition(this);
 	}
 
-	public int getId() {
-		return this.id;
+	public int getEntityId() {
+		return this.entityId;
 	}
 
 	public double getX() {

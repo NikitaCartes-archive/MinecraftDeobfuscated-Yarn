@@ -12,21 +12,21 @@ import net.minecraft.world.World;
 
 public class EntityStatusS2CPacket implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<PacketByteBuf, EntityStatusS2CPacket> CODEC = Packet.createCodec(EntityStatusS2CPacket::write, EntityStatusS2CPacket::new);
-	private final int id;
+	private final int entityId;
 	private final byte status;
 
 	public EntityStatusS2CPacket(Entity entity, byte status) {
-		this.id = entity.getId();
+		this.entityId = entity.getId();
 		this.status = status;
 	}
 
 	private EntityStatusS2CPacket(PacketByteBuf buf) {
-		this.id = buf.readInt();
+		this.entityId = buf.readInt();
 		this.status = buf.readByte();
 	}
 
 	private void write(PacketByteBuf buf) {
-		buf.writeInt(this.id);
+		buf.writeInt(this.entityId);
 		buf.writeByte(this.status);
 	}
 
@@ -41,7 +41,7 @@ public class EntityStatusS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Nullable
 	public Entity getEntity(World world) {
-		return world.getEntityById(this.id);
+		return world.getEntityById(this.entityId);
 	}
 
 	public byte getStatus() {

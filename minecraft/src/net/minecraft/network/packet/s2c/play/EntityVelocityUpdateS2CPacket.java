@@ -21,7 +21,7 @@ public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketLis
 	public static final PacketCodec<PacketByteBuf, EntityVelocityUpdateS2CPacket> CODEC = Packet.createCodec(
 		EntityVelocityUpdateS2CPacket::write, EntityVelocityUpdateS2CPacket::new
 	);
-	private final int id;
+	private final int entityId;
 	private final int velocityX;
 	private final int velocityY;
 	private final int velocityZ;
@@ -30,8 +30,8 @@ public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketLis
 		this(entity.getId(), entity.getVelocity());
 	}
 
-	public EntityVelocityUpdateS2CPacket(int id, Vec3d velocity) {
-		this.id = id;
+	public EntityVelocityUpdateS2CPacket(int entityId, Vec3d velocity) {
+		this.entityId = entityId;
 		double d = 3.9;
 		double e = MathHelper.clamp(velocity.x, -3.9, 3.9);
 		double f = MathHelper.clamp(velocity.y, -3.9, 3.9);
@@ -42,14 +42,14 @@ public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketLis
 	}
 
 	private EntityVelocityUpdateS2CPacket(PacketByteBuf buf) {
-		this.id = buf.readVarInt();
+		this.entityId = buf.readVarInt();
 		this.velocityX = buf.readShort();
 		this.velocityY = buf.readShort();
 		this.velocityZ = buf.readShort();
 	}
 
 	private void write(PacketByteBuf buf) {
-		buf.writeVarInt(this.id);
+		buf.writeVarInt(this.entityId);
 		buf.writeShort(this.velocityX);
 		buf.writeShort(this.velocityY);
 		buf.writeShort(this.velocityZ);
@@ -64,8 +64,8 @@ public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketLis
 		clientPlayPacketListener.onEntityVelocityUpdate(this);
 	}
 
-	public int getId() {
-		return this.id;
+	public int getEntityId() {
+		return this.entityId;
 	}
 
 	public double getVelocityX() {

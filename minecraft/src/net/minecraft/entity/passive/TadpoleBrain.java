@@ -15,11 +15,11 @@ import net.minecraft.entity.ai.brain.task.FleeTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
 import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
+import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.ai.brain.task.TemptTask;
 import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
-import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public class TadpoleBrain {
@@ -41,7 +41,7 @@ public class TadpoleBrain {
 			Activity.CORE,
 			0,
 			ImmutableList.of(
-				new FleeTask<>(2.0F), new LookAroundTask(45, 90), new WanderAroundTask(), new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)
+				new FleeTask<>(2.0F), new LookAroundTask(45, 90), new MoveToTargetTask(), new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)
 			)
 		);
 	}
