@@ -28,7 +28,7 @@ public record EntityNbtDataSource(String rawSelector, @Nullable EntitySelector s
 	@Nullable
 	private static EntitySelector parseSelector(String rawSelector) {
 		try {
-			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(rawSelector));
+			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(rawSelector), true);
 			return entitySelectorReader.read();
 		} catch (CommandSyntaxException var2) {
 			return null;

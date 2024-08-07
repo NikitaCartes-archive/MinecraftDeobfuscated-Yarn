@@ -32,7 +32,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
 		StringReader stringReader = new StringReader(builder.getInput());
 		stringReader.setCursor(builder.getStart());
-		EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
+		EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader, EntitySelectorReader.shouldAllowAtSelectors(context.getSource()));
 
 		try {
 			entitySelectorReader.read();
@@ -80,22 +80,30 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 	}
 
 	public ScoreHolderArgumentType.ScoreHolders parse(StringReader stringReader) throws CommandSyntaxException {
-		if (stringReader.canRead() && stringReader.peek() == '@') {
-			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
+		return this.parse(stringReader, true);
+	}
+
+	public <S> ScoreHolderArgumentType.ScoreHolders parse(StringReader stringReader, S object) throws CommandSyntaxException {
+		return this.parse(stringReader, EntitySelectorReader.shouldAllowAtSelectors(object));
+	}
+
+	private ScoreHolderArgumentType.ScoreHolders parse(StringReader reader, boolean allowAtSelectors) throws CommandSyntaxException {
+		if (reader.canRead() && reader.peek() == '@') {
+			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(reader, allowAtSelectors);
 			EntitySelector entitySelector = entitySelectorReader.read();
 			if (!this.multiple && entitySelector.getLimit() > 1) {
-				throw EntityArgumentType.TOO_MANY_ENTITIES_EXCEPTION.createWithContext(stringReader);
+				throw EntityArgumentType.TOO_MANY_ENTITIES_EXCEPTION.createWithContext(reader);
 			} else {
 				return new ScoreHolderArgumentType.SelectorScoreHolders(entitySelector);
 			}
 		} else {
-			int i = stringReader.getCursor();
+			int i = reader.getCursor();
 
-			while (stringReader.canRead() && stringReader.peek() != ' ') {
-				stringReader.skip();
+			while (reader.canRead() && reader.peek() != ' ') {
+				reader.skip();
 			}
 
-			String string = stringReader.getString().substring(i, stringReader.getCursor());
+			String string = reader.getString().substring(i, reader.getCursor());
 			if (string.equals("*")) {
 				return (source, players) -> {
 					Collection<ScoreHolder> collection = (Collection<ScoreHolder>)players.get();
@@ -139,7 +147,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 								return scoreHolder != null ? List.of(scoreHolder) : list;
 							}
 						};
-					} catch (IllegalArgumentException var6) {
+					} catch (IllegalArgumentException var7) {
 						return (source, holders) -> {
 							MinecraftServer minecraftServer = source.getServer();
 							ServerPlayerEntity serverPlayerEntity = minecraftServer.getPlayerManager().getPlayer(string);

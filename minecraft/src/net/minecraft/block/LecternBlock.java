@@ -213,11 +213,10 @@ public class LecternBlock extends BlockWithEntity {
 				this.dropBook(state, world, pos);
 			}
 
+			super.onStateReplaced(state, world, pos, newState, moved);
 			if ((Boolean)state.get(POWERED)) {
 				world.updateNeighborsAlways(pos.down(), this);
 			}
-
-			super.onStateReplaced(state, world, pos, newState, moved);
 		}
 	}
 

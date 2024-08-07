@@ -187,19 +187,28 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 	@Override
 	protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!state.isOf(newState.getBlock())) {
-			if (world.getBlockEntity(pos) instanceof ChiseledBookshelfBlockEntity chiseledBookshelfBlockEntity && !chiseledBookshelfBlockEntity.isEmpty()) {
-				for (int i = 0; i < 6; i++) {
-					ItemStack itemStack = chiseledBookshelfBlockEntity.getStack(i);
-					if (!itemStack.isEmpty()) {
-						ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack);
+			boolean bl;
+			label32: {
+				if (world.getBlockEntity(pos) instanceof ChiseledBookshelfBlockEntity chiseledBookshelfBlockEntity && !chiseledBookshelfBlockEntity.isEmpty()) {
+					for (int i = 0; i < 6; i++) {
+						ItemStack itemStack = chiseledBookshelfBlockEntity.getStack(i);
+						if (!itemStack.isEmpty()) {
+							ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack);
+						}
 					}
+
+					chiseledBookshelfBlockEntity.clear();
+					bl = true;
+					break label32;
 				}
 
-				chiseledBookshelfBlockEntity.clear();
-				world.updateComparators(pos, this);
+				bl = false;
 			}
 
 			super.onStateReplaced(state, world, pos, newState, moved);
+			if (bl) {
+				world.updateComparators(pos, this);
+			}
 		}
 	}
 

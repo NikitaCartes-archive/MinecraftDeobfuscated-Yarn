@@ -36,7 +36,7 @@ public class ScoreTextContent implements TextContent {
 	@Nullable
 	private static EntitySelector parseEntitySelector(String name) {
 		try {
-			return new EntitySelectorReader(new StringReader(name)).read();
+			return new EntitySelectorReader(new StringReader(name), true).read();
 		} catch (CommandSyntaxException var2) {
 			return null;
 		}

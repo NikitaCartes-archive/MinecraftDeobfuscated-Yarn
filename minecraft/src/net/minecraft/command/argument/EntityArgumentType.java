@@ -99,20 +99,28 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 	}
 
 	public EntitySelector parse(StringReader stringReader) throws CommandSyntaxException {
+		return this.parse(stringReader, true);
+	}
+
+	public <S> EntitySelector parse(StringReader stringReader, S object) throws CommandSyntaxException {
+		return this.parse(stringReader, EntitySelectorReader.shouldAllowAtSelectors(object));
+	}
+
+	private EntitySelector parse(StringReader reader, boolean allowAtSelectors) throws CommandSyntaxException {
 		int i = 0;
-		EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
+		EntitySelectorReader entitySelectorReader = new EntitySelectorReader(reader, allowAtSelectors);
 		EntitySelector entitySelector = entitySelectorReader.read();
 		if (entitySelector.getLimit() > 1 && this.singleTarget) {
 			if (this.playersOnly) {
-				stringReader.setCursor(0);
-				throw TOO_MANY_PLAYERS_EXCEPTION.createWithContext(stringReader);
+				reader.setCursor(0);
+				throw TOO_MANY_PLAYERS_EXCEPTION.createWithContext(reader);
 			} else {
-				stringReader.setCursor(0);
-				throw TOO_MANY_ENTITIES_EXCEPTION.createWithContext(stringReader);
+				reader.setCursor(0);
+				throw TOO_MANY_ENTITIES_EXCEPTION.createWithContext(reader);
 			}
 		} else if (entitySelector.includesNonPlayers() && this.playersOnly && !entitySelector.isSenderOnly()) {
-			stringReader.setCursor(0);
-			throw PLAYER_SELECTOR_HAS_ENTITIES_EXCEPTION.createWithContext(stringReader);
+			reader.setCursor(0);
+			throw PLAYER_SELECTOR_HAS_ENTITIES_EXCEPTION.createWithContext(reader);
 		} else {
 			return entitySelector;
 		}
@@ -123,7 +131,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 		if (context.getSource() instanceof CommandSource commandSource) {
 			StringReader stringReader = new StringReader(builder.getInput());
 			stringReader.setCursor(builder.getStart());
-			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader, commandSource.hasPermissionLevel(2));
+			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader, EntitySelectorReader.shouldAllowAtSelectors(commandSource));
 
 			try {
 				entitySelectorReader.read();

@@ -172,11 +172,10 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!state.isOf(newState.getBlock())) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
+			super.onStateReplaced(state, world, pos, newState, moved);
 			if (blockEntity instanceof ShulkerBoxBlockEntity) {
 				world.updateComparators(pos, state.getBlock());
 			}
-
-			super.onStateReplaced(state, world, pos, newState, moved);
 		}
 	}
 

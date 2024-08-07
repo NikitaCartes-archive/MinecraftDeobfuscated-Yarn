@@ -35,23 +35,31 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 		return new GameProfileArgumentType();
 	}
 
+	public <S> GameProfileArgumentType.GameProfileArgument parse(StringReader stringReader, S object) throws CommandSyntaxException {
+		return parse(stringReader, EntitySelectorReader.shouldAllowAtSelectors(object));
+	}
+
 	public GameProfileArgumentType.GameProfileArgument parse(StringReader stringReader) throws CommandSyntaxException {
-		if (stringReader.canRead() && stringReader.peek() == '@') {
-			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
+		return parse(stringReader, true);
+	}
+
+	private static GameProfileArgumentType.GameProfileArgument parse(StringReader reader, boolean allowAtSelectors) throws CommandSyntaxException {
+		if (reader.canRead() && reader.peek() == '@') {
+			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(reader, allowAtSelectors);
 			EntitySelector entitySelector = entitySelectorReader.read();
 			if (entitySelector.includesNonPlayers()) {
-				throw EntityArgumentType.PLAYER_SELECTOR_HAS_ENTITIES_EXCEPTION.createWithContext(stringReader);
+				throw EntityArgumentType.PLAYER_SELECTOR_HAS_ENTITIES_EXCEPTION.createWithContext(reader);
 			} else {
 				return new GameProfileArgumentType.SelectorBacked(entitySelector);
 			}
 		} else {
-			int i = stringReader.getCursor();
+			int i = reader.getCursor();
 
-			while (stringReader.canRead() && stringReader.peek() != ' ') {
-				stringReader.skip();
+			while (reader.canRead() && reader.peek() != ' ') {
+				reader.skip();
 			}
 
-			String string = stringReader.getString().substring(i, stringReader.getCursor());
+			String string = reader.getString().substring(i, reader.getCursor());
 			return source -> {
 				Optional<GameProfile> optional = source.getServer().getUserCache().findByName(string);
 				return Collections.singleton((GameProfile)optional.orElseThrow(UNKNOWN_PLAYER_EXCEPTION::create));
@@ -61,19 +69,17 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		if (context.getSource() instanceof CommandSource) {
+		if (context.getSource() instanceof CommandSource commandSource) {
 			StringReader stringReader = new StringReader(builder.getInput());
 			stringReader.setCursor(builder.getStart());
-			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
+			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader, EntitySelectorReader.shouldAllowAtSelectors(commandSource));
 
 			try {
 				entitySelectorReader.read();
-			} catch (CommandSyntaxException var6) {
+			} catch (CommandSyntaxException var7) {
 			}
 
-			return entitySelectorReader.listSuggestions(
-				builder, builderx -> CommandSource.suggestMatching(((CommandSource)context.getSource()).getPlayerNames(), builderx)
-			);
+			return entitySelectorReader.listSuggestions(builder, builderx -> CommandSource.suggestMatching(commandSource.getPlayerNames(), builderx));
 		} else {
 			return Suggestions.empty();
 		}

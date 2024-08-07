@@ -290,6 +290,11 @@ public class WorldChunk extends Chunk {
 
 					if (state.hasBlockEntity()) {
 						BlockEntity blockEntity = this.getBlockEntity(pos, WorldChunk.CreationType.CHECK);
+						if (blockEntity != null && !blockEntity.supports(state)) {
+							this.removeBlockEntity(pos);
+							blockEntity = null;
+						}
+
 						if (blockEntity == null) {
 							blockEntity = ((BlockEntityProvider)block).createBlockEntity(pos, state);
 							if (blockEntity != null) {

@@ -109,13 +109,17 @@ public class EntitySelectorReader {
 	private boolean selectsAdvancements;
 	private boolean usesAt;
 
-	public EntitySelectorReader(StringReader reader) {
-		this(reader, true);
-	}
-
 	public EntitySelectorReader(StringReader reader, boolean atAllowed) {
 		this.reader = reader;
 		this.atAllowed = atAllowed;
+	}
+
+	public static <S> boolean shouldAllowAtSelectors(S source) {
+		if (source instanceof CommandSource commandSource && commandSource.hasPermissionLevel(2)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public EntitySelector build() {

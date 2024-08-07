@@ -40,7 +40,7 @@ public class SelectorTextContent implements TextContent {
 		EntitySelector entitySelector = null;
 
 		try {
-			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(pattern));
+			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(pattern), true);
 			entitySelector = entitySelectorReader.read();
 		} catch (CommandSyntaxException var3) {
 			LOGGER.warn("Invalid selector component: {}: {}", pattern, var3.getMessage());

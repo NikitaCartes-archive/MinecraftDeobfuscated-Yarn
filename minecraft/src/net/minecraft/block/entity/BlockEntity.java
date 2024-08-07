@@ -21,7 +21,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -78,7 +77,18 @@ public abstract class BlockEntity {
 	public BlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
 		this.type = type;
 		this.pos = pos.toImmutable();
+		this.validateSupports(state);
 		this.cachedState = state;
+	}
+
+	private void validateSupports(BlockState state) {
+		if (!this.supports(state)) {
+			throw new IllegalStateException("Invalid block entity " + this.getNameForReport() + " state at " + this.pos + ", got " + state);
+		}
+	}
+
+	public boolean supports(BlockState state) {
+		return this.type.supports(state);
 	}
 
 	/**
@@ -409,13 +419,15 @@ public abstract class BlockEntity {
 	}
 
 	public void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.add(
-			"Name", (CrashCallable<String>)(() -> Registries.BLOCK_ENTITY_TYPE.getId(this.getType()) + " // " + this.getClass().getCanonicalName())
-		);
+		crashReportSection.add("Name", this::getNameForReport);
 		if (this.world != null) {
 			CrashReportSection.addBlockInfo(crashReportSection, this.world, this.pos, this.getCachedState());
 			CrashReportSection.addBlockInfo(crashReportSection, this.world, this.pos, this.world.getBlockState(this.pos));
 		}
+	}
+
+	private String getNameForReport() {
+		return Registries.BLOCK_ENTITY_TYPE.getId(this.getType()) + " // " + this.getClass().getCanonicalName();
 	}
 
 	/**
@@ -437,6 +449,7 @@ public abstract class BlockEntity {
 
 	@Deprecated
 	public void setCachedState(BlockState state) {
+		this.validateSupports(state);
 		this.cachedState = state;
 	}
 

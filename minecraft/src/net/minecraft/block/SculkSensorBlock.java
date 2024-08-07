@@ -122,11 +122,10 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 	@Override
 	protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!state.isOf(newState.getBlock())) {
+			super.onStateReplaced(state, world, pos, newState, moved);
 			if (getPhase(state) == SculkSensorPhase.ACTIVE) {
 				updateNeighbors(world, pos, state);
 			}
-
-			super.onStateReplaced(state, world, pos, newState, moved);
 		}
 	}
 

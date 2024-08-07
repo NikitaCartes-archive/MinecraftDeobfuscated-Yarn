@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import javax.annotation.Nullable;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.network.message.MessageDecorator;
@@ -77,6 +78,10 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 		return MessageArgumentType.MessageFormat.parse(stringReader, true);
 	}
 
+	public <S> MessageArgumentType.MessageFormat parse(StringReader stringReader, @Nullable S object) throws CommandSyntaxException {
+		return MessageArgumentType.MessageFormat.parse(stringReader, EntitySelectorReader.shouldAllowAtSelectors(object));
+	}
+
 	@Override
 	public Collection<String> getExamples() {
 		return EXAMPLES;
@@ -85,7 +90,7 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 	public static record MessageFormat(String contents, MessageArgumentType.MessageSelector[] selectors) {
 
 		Text format(ServerCommandSource source) throws CommandSyntaxException {
-			return this.format(source, source.hasPermissionLevel(2));
+			return this.format(source, EntitySelectorReader.shouldAllowAtSelectors(source));
 		}
 
 		public Text format(ServerCommandSource source, boolean canUseSelectors) throws CommandSyntaxException {
@@ -113,12 +118,12 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 			}
 		}
 
-		public static MessageArgumentType.MessageFormat parse(StringReader reader, boolean canUseSelectors) throws CommandSyntaxException {
+		public static MessageArgumentType.MessageFormat parse(StringReader reader, boolean allowAtSelectors) throws CommandSyntaxException {
 			if (reader.getRemainingLength() > 256) {
 				throw MessageArgumentType.MESSAGE_TOO_LONG_EXCEPTION.create(reader.getRemainingLength(), 256);
 			} else {
 				String string = reader.getRemaining();
-				if (!canUseSelectors) {
+				if (!allowAtSelectors) {
 					reader.setCursor(reader.getTotalLength());
 					return new MessageArgumentType.MessageFormat(string, new MessageArgumentType.MessageSelector[0]);
 				} else {
@@ -137,7 +142,7 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 								j = reader.getCursor();
 
 								try {
-									EntitySelectorReader entitySelectorReader = new EntitySelectorReader(reader);
+									EntitySelectorReader entitySelectorReader = new EntitySelectorReader(reader, true);
 									entitySelector = entitySelectorReader.read();
 									break;
 								} catch (CommandSyntaxException var8) {
