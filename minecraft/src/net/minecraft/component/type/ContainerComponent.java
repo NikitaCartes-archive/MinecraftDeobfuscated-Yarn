@@ -13,9 +13,15 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.collection.DefaultedList;
 
+/**
+ * A component that stores a list of item stacks.
+ */
 public final class ContainerComponent {
 	private static final int ALL_SLOTS_EMPTY = -1;
 	private static final int MAX_SLOTS = 256;
+	/**
+	 * An empty container component.
+	 */
 	public static final ContainerComponent DEFAULT = new ContainerComponent(DefaultedList.of());
 	public static final Codec<ContainerComponent> CODEC = ContainerComponent.Slot.CODEC
 		.sizeLimitedListOf(256)
@@ -62,8 +68,17 @@ public final class ContainerComponent {
 		}
 	}
 
+	/**
+	 * Creates a container component from a list of item stacks.
+	 * The stacks are copied into the component, which will contain copies of all stacks
+	 * up to the last non-empty stack.
+	 * 
+	 * @return the created component
+	 * 
+	 * @param stacks the list of stacks to copy
+	 */
 	public static ContainerComponent fromStacks(List<ItemStack> stacks) {
-		int i = findFirstNonEmptyIndex(stacks);
+		int i = findLastNonEmptyIndex(stacks);
 		if (i == -1) {
 			return DEFAULT;
 		} else {
@@ -77,7 +92,7 @@ public final class ContainerComponent {
 		}
 	}
 
-	private static int findFirstNonEmptyIndex(List<ItemStack> stacks) {
+	private static int findLastNonEmptyIndex(List<ItemStack> stacks) {
 		for (int i = stacks.size() - 1; i >= 0; i--) {
 			if (!((ItemStack)stacks.get(i)).isEmpty()) {
 				return i;
@@ -100,6 +115,14 @@ public final class ContainerComponent {
 		return list;
 	}
 
+	/**
+	 * Copies the contents of this component to a list of item stacks.
+	 * 
+	 * <p>If the list has a larger size than this component, the remaining slots
+	 * will be filled with empty stacks.
+	 * 
+	 * @param stacks the target list of item stacks
+	 */
 	public void copyTo(DefaultedList<ItemStack> stacks) {
 		for (int i = 0; i < stacks.size(); i++) {
 			ItemStack itemStack = i < this.stacks.size() ? this.stacks.get(i) : ItemStack.EMPTY;
@@ -107,22 +130,43 @@ public final class ContainerComponent {
 		}
 	}
 
+	/**
+	 * {@return a copy of the first contained stack in this component}
+	 * 
+	 * <p>If this component is empty, returns an empty stack.
+	 */
 	public ItemStack copyFirstStack() {
 		return this.stacks.isEmpty() ? ItemStack.EMPTY : this.stacks.get(0).copy();
 	}
 
+	/**
+	 * {@return a stream over copies of this component's stored item stacks}
+	 */
 	public Stream<ItemStack> stream() {
 		return this.stacks.stream().map(ItemStack::copy);
 	}
 
+	/**
+	 * {@return a stream over copies of this component's non-empty item stacks}
+	 */
 	public Stream<ItemStack> streamNonEmpty() {
 		return this.stacks.stream().filter(stack -> !stack.isEmpty()).map(ItemStack::copy);
 	}
 
+	/**
+	 * {@return an iterable over this component's non-empty item stacks}
+	 * 
+	 * <p>The stacks should not be modified to keep this component immutable.
+	 * Use {@link #iterateNonEmptyCopy} or the stream methods for getting freely modifiable
+	 * copies of the stacks.
+	 */
 	public Iterable<ItemStack> iterateNonEmpty() {
 		return Iterables.filter(this.stacks, stack -> !stack.isEmpty());
 	}
 
+	/**
+	 * {@return an iterable over copies of this component's non-empty item stacks}
+	 */
 	public Iterable<ItemStack> iterateNonEmptyCopy() {
 		return Iterables.transform(this.iterateNonEmpty(), ItemStack::copy);
 	}
