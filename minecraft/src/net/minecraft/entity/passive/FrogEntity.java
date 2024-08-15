@@ -49,6 +49,7 @@ import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -229,13 +230,18 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<RegistryEn
 			f = Math.min(posDelta * 25.0F, 1.0F);
 		}
 
-		this.limbAnimator.updateLimbs(f, 0.4F);
+		this.limbAnimator.updateLimbs(f, 0.4F, this.isBaby() ? 3.0F : 1.0F);
+	}
+
+	@Override
+	public void playEatSound() {
+		this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_FROG_EAT, SoundCategory.NEUTRAL, 2.0F, 1.0F);
 	}
 
 	@Nullable
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-		FrogEntity frogEntity = EntityType.FROG.create(world);
+		FrogEntity frogEntity = EntityType.FROG.create(world, SpawnReason.BREEDING);
 		if (frogEntity != null) {
 			FrogBrain.coolDownLongJump(frogEntity, world.getRandom());
 		}
@@ -274,11 +280,11 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<RegistryEn
 	}
 
 	public static DefaultAttributeContainer.Builder createFrogAttributes() {
-		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1.0)
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 10.0)
-			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
+		return AnimalEntity.createAnimalAttributes()
+			.add(EntityAttributes.MOVEMENT_SPEED, 1.0)
+			.add(EntityAttributes.MAX_HEALTH, 10.0)
+			.add(EntityAttributes.ATTACK_DAMAGE, 10.0)
+			.add(EntityAttributes.STEP_HEIGHT, 1.0);
 	}
 
 	@Nullable

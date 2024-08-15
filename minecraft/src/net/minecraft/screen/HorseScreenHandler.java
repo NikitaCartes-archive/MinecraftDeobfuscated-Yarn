@@ -22,9 +22,7 @@ public class HorseScreenHandler extends ScreenHandler {
 		this.inventory = inventory;
 		this.horseArmorInventory = entity.getInventory();
 		this.entity = entity;
-		int i = 3;
 		inventory.onOpen(playerInventory.player);
-		int j = -18;
 		this.addSlot(new Slot(inventory, 0, 8, 18) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
@@ -48,22 +46,14 @@ public class HorseScreenHandler extends ScreenHandler {
 			}
 		});
 		if (slotColumnCount > 0) {
-			for (int k = 0; k < 3; k++) {
-				for (int l = 0; l < slotColumnCount; l++) {
-					this.addSlot(new Slot(inventory, 1 + l + k * slotColumnCount, 80 + l * 18, 18 + k * 18));
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < slotColumnCount; j++) {
+					this.addSlot(new Slot(inventory, 1 + j + i * slotColumnCount, 80 + j * 18, 18 + i * 18));
 				}
 			}
 		}
 
-		for (int k = 0; k < 3; k++) {
-			for (int l = 0; l < 9; l++) {
-				this.addSlot(new Slot(playerInventory, l + k * 9 + 9, 8 + l * 18, 102 + k * 18 + -18));
-			}
-		}
-
-		for (int k = 0; k < 9; k++) {
-			this.addSlot(new Slot(playerInventory, k, 8 + k * 18, 142));
-		}
+		this.addPlayerSlots(playerInventory, 8, 84);
 	}
 
 	@Override

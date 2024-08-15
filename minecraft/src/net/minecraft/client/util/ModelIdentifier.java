@@ -15,10 +15,6 @@ public record ModelIdentifier(Identifier id, String variant) {
 		this.variant = variant;
 	}
 
-	public static ModelIdentifier ofVanilla(String path, String variant) {
-		return new ModelIdentifier(Identifier.ofVanilla(path), variant);
-	}
-
 	public static ModelIdentifier ofInventoryVariant(Identifier id) {
 		return new ModelIdentifier(id, "inventory");
 	}

@@ -11,6 +11,7 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SaddledComponent;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
@@ -25,7 +26,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -68,7 +68,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	}
 
 	public static DefaultAttributeContainer.Builder createPigAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25);
+		return AnimalEntity.createAnimalAttributes().add(EntityAttributes.MAX_HEALTH, 10.0).add(EntityAttributes.MOVEMENT_SPEED, 0.25);
 	}
 
 	@Nullable
@@ -135,12 +135,12 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 				player.startRiding(this);
 			}
 
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			ActionResult actionResult = super.interactMob(player, hand);
 			if (!actionResult.isAccepted()) {
 				ItemStack itemStack = player.getStackInHand(hand);
-				return itemStack.isOf(Items.SADDLE) ? itemStack.useOnEntity(player, this, hand) : ActionResult.PASS;
+				return (ActionResult)(itemStack.isOf(Items.SADDLE) ? itemStack.useOnEntity(player, this, hand) : ActionResult.PASS);
 			} else {
 				return actionResult;
 			}
@@ -206,7 +206,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	@Override
 	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
-			ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(world);
+			ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(world, SpawnReason.CONVERSION);
 			if (zombifiedPiglinEntity != null) {
 				zombifiedPiglinEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
 				zombifiedPiglinEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
@@ -243,7 +243,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 
 	@Override
 	protected float getSaddledSpeed(PlayerEntity controllingPlayer) {
-		return (float)(this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * 0.225 * (double)this.saddledComponent.getMovementSpeedMultiplier());
+		return (float)(this.getAttributeValue(EntityAttributes.MOVEMENT_SPEED) * 0.225 * (double)this.saddledComponent.getMovementSpeedMultiplier());
 	}
 
 	@Override
@@ -253,7 +253,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 
 	@Nullable
 	public PigEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		return EntityType.PIG.create(serverWorld);
+		return EntityType.PIG.create(serverWorld, SpawnReason.BREEDING);
 	}
 
 	@Override

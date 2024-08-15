@@ -3,6 +3,7 @@ package net.minecraft.network.packet.c2s.common;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.message.ChatVisibility;
+import net.minecraft.particle.ParticlesMode;
 import net.minecraft.util.Arm;
 
 public record SyncedClientOptions(
@@ -13,7 +14,8 @@ public record SyncedClientOptions(
 	int playerModelParts,
 	Arm mainArm,
 	boolean filtersText,
-	boolean allowsServerListing
+	boolean allowsServerListing,
+	ParticlesMode particleStatus
 ) {
 	public static final int MAX_LANGUAGE_CODE_LENGTH = 16;
 
@@ -26,7 +28,8 @@ public record SyncedClientOptions(
 			buf.readUnsignedByte(),
 			buf.readEnumConstant(Arm.class),
 			buf.readBoolean(),
-			buf.readBoolean()
+			buf.readBoolean(),
+			buf.readEnumConstant(ParticlesMode.class)
 		);
 	}
 
@@ -39,9 +42,10 @@ public record SyncedClientOptions(
 		buf.writeEnumConstant(this.mainArm);
 		buf.writeBoolean(this.filtersText);
 		buf.writeBoolean(this.allowsServerListing);
+		buf.writeEnumConstant(this.particleStatus);
 	}
 
 	public static SyncedClientOptions createDefault() {
-		return new SyncedClientOptions("en_us", 2, ChatVisibility.FULL, true, 0, PlayerEntity.DEFAULT_MAIN_ARM, false, false);
+		return new SyncedClientOptions("en_us", 2, ChatVisibility.FULL, true, 0, PlayerEntity.DEFAULT_MAIN_ARM, false, false, ParticlesMode.ALL);
 	}
 }

@@ -50,12 +50,26 @@ public abstract class EntityNavigation {
 	private float rangeMultiplier = 1.0F;
 	private final PathNodeNavigator pathNodeNavigator;
 	private boolean nearPathStartPos;
+	private float maxFollowRange = 16.0F;
 
 	public EntityNavigation(MobEntity entity, World world) {
 		this.entity = entity;
 		this.world = world;
-		int i = MathHelper.floor(entity.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE) * 16.0);
-		this.pathNodeNavigator = this.createPathNodeNavigator(i);
+		this.pathNodeNavigator = this.createPathNodeNavigator(MathHelper.floor(entity.getAttributeBaseValue(EntityAttributes.FOLLOW_RANGE) * 16.0));
+	}
+
+	public void updateRange() {
+		int i = MathHelper.floor(this.getMaxFollowRange() * 16.0F);
+		this.pathNodeNavigator.setRange(i);
+	}
+
+	public void setMaxFollowRange(float maxFollowRange) {
+		this.maxFollowRange = maxFollowRange;
+		this.updateRange();
+	}
+
+	private float getMaxFollowRange() {
+		return Math.max((float)this.entity.getAttributeValue(EntityAttributes.FOLLOW_RANGE), this.maxFollowRange);
 	}
 
 	public void resetRangeMultiplier() {
@@ -122,7 +136,7 @@ public abstract class EntityNavigation {
 
 	@Nullable
 	protected Path findPathTo(Set<BlockPos> positions, int range, boolean useHeadPos, int distance) {
-		return this.findPathToAny(positions, range, useHeadPos, distance, (float)this.entity.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE));
+		return this.findPathToAny(positions, range, useHeadPos, distance, this.getMaxFollowRange());
 	}
 
 	@Nullable
@@ -378,7 +392,7 @@ public abstract class EntityNavigation {
 
 	public boolean isValidPosition(BlockPos pos) {
 		BlockPos blockPos = pos.down();
-		return this.world.getBlockState(blockPos).isOpaqueFullCube(this.world, blockPos);
+		return this.world.getBlockState(blockPos).isOpaqueFullCube();
 	}
 
 	public PathNodeMaker getNodeMaker() {

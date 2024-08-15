@@ -10,7 +10,7 @@ import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.animation.BatAnimations;
-import net.minecraft.entity.passive.BatEntity;
+import net.minecraft.client.render.entity.state.BatEntityRenderState;
 
 /**
  * Represents the model of a {@linkplain BatEntity}.
@@ -49,7 +49,7 @@ import net.minecraft.entity.passive.BatEntity;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class BatEntityModel extends SinglePartEntityModel<BatEntity> {
+public class BatEntityModel extends EntityModel<BatEntityRenderState> {
 	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart body;
@@ -111,14 +111,14 @@ public class BatEntityModel extends SinglePartEntityModel<BatEntity> {
 		return this.root;
 	}
 
-	public void setAngles(BatEntity batEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(BatEntityRenderState batEntityRenderState) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		if (batEntity.isRoosting()) {
-			this.setRoostingHeadAngles(i);
+		if (batEntityRenderState.roosting) {
+			this.setRoostingHeadAngles(batEntityRenderState.yawDegrees);
 		}
 
-		this.updateAnimation(batEntity.flyingAnimationState, BatAnimations.FLYING, h, 1.0F);
-		this.updateAnimation(batEntity.roostingAnimationState, BatAnimations.ROOSTING, h, 1.0F);
+		this.animate(batEntityRenderState.flyingAnimationState, BatAnimations.FLYING, batEntityRenderState.age, 1.0F);
+		this.animate(batEntityRenderState.roostingAnimationState, BatAnimations.ROOSTING, batEntityRenderState.age, 1.0F);
 	}
 
 	private void setRoostingHeadAngles(float yaw) {

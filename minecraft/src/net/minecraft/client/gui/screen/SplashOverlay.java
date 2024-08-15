@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.screen;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,9 +27,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SplashOverlay extends Overlay {
-	static final Identifier LOGO = Identifier.ofVanilla("textures/gui/title/mojangstudios.png");
-	private static final int MOJANG_RED = ColorHelper.Argb.getArgb(255, 239, 50, 61);
-	private static final int MONOCHROME_BLACK = ColorHelper.Argb.getArgb(255, 0, 0, 0);
+	public static final Identifier LOGO = Identifier.ofVanilla("textures/gui/title/mojangstudios.png");
+	private static final int MOJANG_RED = ColorHelper.getArgb(255, 239, 50, 61);
+	private static final int MONOCHROME_BLACK = ColorHelper.getArgb(255, 0, 0, 0);
 	private static final IntSupplier BRAND_ARGB = () -> MinecraftClient.getInstance().options.getMonochromeLogo().getValue() ? MONOCHROME_BLACK : MOJANG_RED;
 	private static final int field_32251 = 240;
 	private static final float LOGO_RIGHT_HALF_V = 60.0F;
@@ -97,7 +96,7 @@ public class SplashOverlay extends Overlay {
 			float n = (float)(k >> 8 & 0xFF) / 255.0F;
 			float o = (float)(k & 0xFF) / 255.0F;
 			GlStateManager._clearColor(m, n, o, 1.0F);
-			GlStateManager._clear(16384, MinecraftClient.IS_SYSTEM_MAC);
+			GlStateManager._clear(16384);
 			h = 1.0F;
 		}
 
@@ -107,23 +106,14 @@ public class SplashOverlay extends Overlay {
 		int q = (int)(d * 0.5);
 		double e = d * 4.0;
 		int r = (int)(e * 0.5);
-		RenderSystem.disableDepthTest();
-		RenderSystem.depthMask(false);
-		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(770, 1);
-		context.setShaderColor(1.0F, 1.0F, 1.0F, h);
-		context.drawTexture(LOGO, k - r, p - q, r, (int)d, -0.0625F, 0.0F, 120, 60, 120, 120);
-		context.drawTexture(LOGO, k, p - q, r, (int)d, 0.0625F, 60.0F, 120, 60, 120, 120);
-		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.defaultBlendFunc();
-		RenderSystem.disableBlend();
-		RenderSystem.depthMask(true);
-		RenderSystem.enableDepthTest();
-		int s = (int)((double)context.getScaledWindowHeight() * 0.8325);
-		float t = this.reload.getProgress();
-		this.progress = MathHelper.clamp(this.progress * 0.95F + t * 0.050000012F, 0.0F, 1.0F);
+		int s = ColorHelper.getWhite(h);
+		context.drawTexture(identifier -> RenderLayer.getMojangLogo(), LOGO, k - r, p - q, -0.0625F, 0.0F, r, (int)d, 120, 60, 120, 120, s);
+		context.drawTexture(identifier -> RenderLayer.getMojangLogo(), LOGO, k, p - q, 0.0625F, 60.0F, r, (int)d, 120, 60, 120, 120, s);
+		int t = (int)((double)context.getScaledWindowHeight() * 0.8325);
+		float u = this.reload.getProgress();
+		this.progress = MathHelper.clamp(this.progress * 0.95F + u * 0.050000012F, 0.0F, 1.0F);
 		if (f < 1.0F) {
-			this.renderProgressBar(context, i / 2 - r, s - 5, i / 2 + r, s + 5, 1.0F - MathHelper.clamp(f, 0.0F, 1.0F));
+			this.renderProgressBar(context, i / 2 - r, t - 5, i / 2 + r, t + 5, 1.0F - MathHelper.clamp(f, 0.0F, 1.0F));
 		}
 
 		if (f >= 2.0F) {
@@ -134,8 +124,8 @@ public class SplashOverlay extends Overlay {
 			try {
 				this.reload.throwException();
 				this.exceptionHandler.accept(Optional.empty());
-			} catch (Throwable var23) {
-				this.exceptionHandler.accept(Optional.of(var23));
+			} catch (Throwable var24) {
+				this.exceptionHandler.accept(Optional.of(var24));
 			}
 
 			this.reloadCompleteTime = Util.getMeasuringTimeMs();
@@ -148,7 +138,7 @@ public class SplashOverlay extends Overlay {
 	private void renderProgressBar(DrawContext drawContext, int minX, int minY, int maxX, int maxY, float opacity) {
 		int i = MathHelper.ceil((float)(maxX - minX - 2) * this.progress);
 		int j = Math.round(opacity * 255.0F);
-		int k = ColorHelper.Argb.getArgb(j, 255, 255, 255);
+		int k = ColorHelper.getArgb(j, 255, 255, 255);
 		drawContext.fill(minX + 2, minY + 2, minX + i, maxY - 2, k);
 		drawContext.fill(minX + 1, minY, maxX - 1, minY + 1, k);
 		drawContext.fill(minX + 1, maxY, maxX - 1, maxY - 1, k);

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -16,8 +17,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 
 public class TemptationsSensor extends Sensor<PathAwareEntity> {
-	public static final int MAX_DISTANCE = 10;
-	private static final TargetPredicate TEMPTER_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(10.0).ignoreVisibility();
+	private static final TargetPredicate TEMPTER_PREDICATE = TargetPredicate.createNonAttackable().ignoreVisibility();
 	private final Predicate<ItemStack> predicate;
 
 	public TemptationsSensor(Predicate<ItemStack> predicate) {
@@ -26,13 +26,14 @@ public class TemptationsSensor extends Sensor<PathAwareEntity> {
 
 	protected void sense(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
 		Brain<?> brain = pathAwareEntity.getBrain();
+		TargetPredicate targetPredicate = TEMPTER_PREDICATE.copy()
+			.setBaseMaxDistance((double)((float)pathAwareEntity.getAttributeValue(EntityAttributes.TEMPT_RANGE)));
 		List<PlayerEntity> list = (List<PlayerEntity>)serverWorld.getPlayers()
 			.stream()
 			.filter(EntityPredicates.EXCEPT_SPECTATOR)
-			.filter(player -> TEMPTER_PREDICATE.test(pathAwareEntity, player))
-			.filter(player -> pathAwareEntity.isInRange(player, 10.0))
+			.filter(player -> targetPredicate.test(pathAwareEntity, player))
 			.filter(this::test)
-			.filter(serverPlayerEntity -> !pathAwareEntity.hasPassenger(serverPlayerEntity))
+			.filter(player -> !pathAwareEntity.hasPassenger(player))
 			.sorted(Comparator.comparingDouble(pathAwareEntity::squaredDistanceTo))
 			.collect(Collectors.toList());
 		if (!list.isEmpty()) {

@@ -31,8 +31,11 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.ContainerComponent;
+import net.minecraft.component.type.EnchantableComponent;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.component.type.MapIdComponent;
+import net.minecraft.component.type.RepairableComponent;
+import net.minecraft.component.type.WrittenBookContentComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -79,7 +82,7 @@ import net.minecraft.util.ClickType;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.collection.DefaultedList;
@@ -207,7 +210,6 @@ public final class ItemStack implements ComponentHolder {
 	public static final PacketCodec<RegistryByteBuf, List<ItemStack>> OPTIONAL_LIST_PACKET_CODEC = OPTIONAL_PACKET_CODEC.collect(
 		PacketCodecs.toCollection(DefaultedList::ofSize)
 	);
-	public static final PacketCodec<RegistryByteBuf, List<ItemStack>> LIST_PACKET_CODEC = PACKET_CODEC.collect(PacketCodecs.toCollection(DefaultedList::ofSize));
 	private static final Logger LOGGER = LogUtils.getLogger();
 	/**
 	 * The empty item stack that holds no item.
@@ -270,6 +272,10 @@ public final class ItemStack implements ComponentHolder {
 	@Override
 	public ComponentMap getComponents() {
 		return (ComponentMap)(!this.isEmpty() ? this.components : ComponentMap.EMPTY);
+	}
+
+	public void clearComponentChanges() {
+		this.components.clearChanges();
 	}
 
 	public ComponentMap getDefaultComponents() {
@@ -453,7 +459,7 @@ public final class ItemStack implements ComponentHolder {
 		} else {
 			Item item = this.getItem();
 			ActionResult actionResult = item.useOnBlock(context);
-			if (playerEntity != null && actionResult.shouldIncrementStat()) {
+			if (playerEntity != null && actionResult instanceof ActionResult.Success success && success.shouldIncrementStat()) {
 				playerEntity.incrementStat(Stats.USED.getOrCreateStat(item));
 			}
 
@@ -465,7 +471,7 @@ public final class ItemStack implements ComponentHolder {
 		return this.getItem().getMiningSpeed(this, state);
 	}
 
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		return this.getItem().use(world, user, hand);
 	}
 
@@ -563,6 +569,10 @@ public final class ItemStack implements ComponentHolder {
 		return this.getOrDefault(DataComponentTypes.MAX_DAMAGE, Integer.valueOf(0));
 	}
 
+	public boolean shouldBreak() {
+		return this.isDamageable() && this.getDamage() >= this.getMaxDamage();
+	}
+
 	/**
 	 * Damages this item stack. This method should be used when a non-entity, such as a
 	 * dispenser, damages the stack. This does not damage {@linkplain #isDamageable non-damageable}
@@ -574,31 +584,47 @@ public final class ItemStack implements ComponentHolder {
 	 * <p>When the item "breaks", that is, the stack's damage is equal to or above
 	 * {@linkplain #getMaxDamage the maximum damage}, {@code breakCallback} is run.
 	 * Note that this method automatically decrements the stack size.
-	 * 
-	 * @param player the player that damaged the stack, or {@code null} if no player is involved
 	 */
 	public void damage(int amount, ServerWorld world, @Nullable ServerPlayerEntity player, Consumer<Item> breakCallback) {
-		if (this.isDamageable()) {
-			if (player == null || !player.isInCreativeMode()) {
-				if (amount > 0) {
-					amount = EnchantmentHelper.getItemDamage(world, this, amount);
-					if (amount <= 0) {
-						return;
-					}
-				}
+		int i = this.damage(amount, world, player);
+		if (i > 0) {
+			this.onDurabilityChange(this.getDamage() + i, player, breakCallback);
+		}
+	}
 
-				if (player != null && amount != 0) {
-					Criteria.ITEM_DURABILITY_CHANGED.trigger(player, this, this.getDamage() + amount);
-				}
+	private int damage(int amount, ServerWorld world, @Nullable ServerPlayerEntity player) {
+		if (!this.isDamageable()) {
+			return 0;
+		} else if (player != null && player.isInCreativeMode()) {
+			return 0;
+		} else {
+			return amount > 0 ? EnchantmentHelper.getItemDamage(world, this, amount) : amount;
+		}
+	}
 
-				int i = this.getDamage() + amount;
-				this.setDamage(i);
-				if (i >= this.getMaxDamage()) {
-					Item item = this.getItem();
-					this.decrement(1);
-					breakCallback.accept(item);
-				}
+	private void onDurabilityChange(int damage, @Nullable ServerPlayerEntity player, Consumer<Item> breakCallback) {
+		if (player != null) {
+			Criteria.ITEM_DURABILITY_CHANGED.trigger(player, this, damage);
+		}
+
+		this.setDamage(damage);
+		if (this.shouldBreak()) {
+			Item item = this.getItem();
+			this.decrement(1);
+			breakCallback.accept(item);
+		}
+	}
+
+	public void damage(int amount, PlayerEntity player) {
+		if (player instanceof ServerPlayerEntity serverPlayerEntity) {
+			int i = this.damage(amount, serverPlayerEntity.getServerWorld(), serverPlayerEntity);
+			if (i <= 0) {
+				return;
 			}
+
+			int j = Math.min(this.getDamage() + i, this.getMaxDamage() - 1);
+			this.onDurabilityChange(j, serverPlayerEntity, item -> {
+			});
 		}
 	}
 
@@ -670,18 +696,21 @@ public final class ItemStack implements ComponentHolder {
 		return this.getItem().onClicked(this, stack, slot, clickType, player, cursorStackReference);
 	}
 
-	public boolean postHit(LivingEntity target, PlayerEntity player) {
+	public boolean postHit(LivingEntity target, LivingEntity user) {
 		Item item = this.getItem();
-		if (item.postHit(this, target, player)) {
-			player.incrementStat(Stats.USED.getOrCreateStat(item));
+		if (item.postHit(this, target, user)) {
+			if (user instanceof PlayerEntity playerEntity) {
+				playerEntity.incrementStat(Stats.USED.getOrCreateStat(item));
+			}
+
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public void postDamageEntity(LivingEntity target, PlayerEntity player) {
-		this.getItem().postDamageEntity(this, target, player);
+	public void postDamageEntity(LivingEntity target, LivingEntity user) {
+		this.getItem().postDamageEntity(this, target, user);
 	}
 
 	public void postMine(World world, BlockState state, BlockPos pos, PlayerEntity miner) {
@@ -997,6 +1026,14 @@ public final class ItemStack implements ComponentHolder {
 	 * {@return the custom name of the stack if it exists, or the item's name}
 	 */
 	public Text getName() {
+		WrittenBookContentComponent writtenBookContentComponent = this.get(DataComponentTypes.WRITTEN_BOOK_CONTENT);
+		if (writtenBookContentComponent != null) {
+			String string = writtenBookContentComponent.title().raw();
+			if (!StringHelper.isBlank(string)) {
+				return Text.literal(string);
+			}
+		}
+
 		Text text = this.get(DataComponentTypes.CUSTOM_NAME);
 		if (text != null) {
 			return text;
@@ -1105,10 +1142,10 @@ public final class ItemStack implements ComponentHolder {
 		boolean bl = false;
 		if (player != null) {
 			if (modifier.idMatches(Item.BASE_ATTACK_DAMAGE_MODIFIER_ID)) {
-				d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+				d += player.getAttributeBaseValue(EntityAttributes.ATTACK_DAMAGE);
 				bl = true;
 			} else if (modifier.idMatches(Item.BASE_ATTACK_SPEED_MODIFIER_ID)) {
-				d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED);
+				d += player.getAttributeBaseValue(EntityAttributes.ATTACK_SPEED);
 				bl = true;
 			}
 		}
@@ -1117,7 +1154,7 @@ public final class ItemStack implements ComponentHolder {
 		if (modifier.operation() == EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
 			|| modifier.operation() == EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL) {
 			e = d * 100.0;
-		} else if (attribute.matches(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)) {
+		} else if (attribute.matches(EntityAttributes.KNOCKBACK_RESISTANCE)) {
 			e = d * 10.0;
 		} else {
 			e = d;
@@ -1180,7 +1217,9 @@ public final class ItemStack implements ComponentHolder {
 	 * <p>This is not used for other methods of enchanting like anvils.
 	 */
 	public boolean isEnchantable() {
-		if (!this.getItem().isEnchantable(this)) {
+		if (!this.contains(DataComponentTypes.ENCHANTABLE)) {
+			return false;
+		} else if (!this.getItem().isEnchantable(this)) {
 			return false;
 		} else {
 			ItemEnchantmentsComponent itemEnchantmentsComponent = this.get(DataComponentTypes.ENCHANTMENTS);
@@ -1409,5 +1448,15 @@ public final class ItemStack implements ComponentHolder {
 
 	public boolean takesDamageFrom(DamageSource source) {
 		return !this.contains(DataComponentTypes.FIRE_RESISTANT) || !source.isIn(DamageTypeTags.IS_FIRE);
+	}
+
+	public boolean canRepairWith(ItemStack ingredient) {
+		RepairableComponent repairableComponent = this.get(DataComponentTypes.REPAIRABLE);
+		return repairableComponent != null ? repairableComponent.matches(ingredient) : this.getItem().canRepair(this, ingredient);
+	}
+
+	public int getEnchantability() {
+		EnchantableComponent enchantableComponent = this.get(DataComponentTypes.ENCHANTABLE);
+		return enchantableComponent != null ? enchantableComponent.value() : this.getItem().getEnchantability();
 	}
 }

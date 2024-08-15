@@ -9,13 +9,12 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.LlamaEntityModel;
+import net.minecraft.client.render.entity.state.LlamaEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.passive.LlamaEntity;
-import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntity, LlamaEntityModel<LlamaEntity>> {
+public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntityRenderState, LlamaEntityModel> {
 	private static final Identifier[] LLAMA_DECOR = new Identifier[]{
 		Identifier.ofVanilla("textures/entity/llama/decor/white.png"),
 		Identifier.ofVanilla("textures/entity/llama/decor/orange.png"),
@@ -35,31 +34,32 @@ public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntity, Llam
 		Identifier.ofVanilla("textures/entity/llama/decor/black.png")
 	};
 	private static final Identifier TRADER_LLAMA_DECOR = Identifier.ofVanilla("textures/entity/llama/decor/trader_llama.png");
-	private final LlamaEntityModel<LlamaEntity> model;
+	private final LlamaEntityModel model;
+	private final LlamaEntityModel babyModel;
 
-	public LlamaDecorFeatureRenderer(FeatureRendererContext<LlamaEntity, LlamaEntityModel<LlamaEntity>> context, EntityModelLoader loader) {
+	public LlamaDecorFeatureRenderer(FeatureRendererContext<LlamaEntityRenderState, LlamaEntityModel> context, EntityModelLoader loader) {
 		super(context);
-		this.model = new LlamaEntityModel<>(loader.getModelPart(EntityModelLayers.LLAMA_DECOR));
+		this.model = new LlamaEntityModel(loader.getModelPart(EntityModelLayers.LLAMA_DECOR));
+		this.babyModel = new LlamaEntityModel(loader.getModelPart(EntityModelLayers.LLAMA_BABY_DECOR));
 	}
 
 	public void render(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, LlamaEntity llamaEntity, float f, float g, float h, float j, float k, float l
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, LlamaEntityRenderState llamaEntityRenderState, float f, float g
 	) {
-		DyeColor dyeColor = llamaEntity.getCarpetColor();
 		Identifier identifier;
-		if (dyeColor != null) {
-			identifier = LLAMA_DECOR[dyeColor.getId()];
+		if (llamaEntityRenderState.carpetColor != null) {
+			identifier = LLAMA_DECOR[llamaEntityRenderState.carpetColor.getId()];
 		} else {
-			if (!llamaEntity.isTrader()) {
+			if (!llamaEntityRenderState.trader) {
 				return;
 			}
 
 			identifier = TRADER_LLAMA_DECOR;
 		}
 
-		this.getContextModel().copyStateTo(this.model);
-		this.model.setAngles(llamaEntity, f, g, j, k, l);
+		LlamaEntityModel llamaEntityModel = llamaEntityRenderState.baby ? this.babyModel : this.model;
+		llamaEntityModel.setAngles(llamaEntityRenderState);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(identifier));
-		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
+		llamaEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 	}
 }

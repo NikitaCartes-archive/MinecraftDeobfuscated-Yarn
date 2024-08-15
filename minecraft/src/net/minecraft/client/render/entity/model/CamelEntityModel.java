@@ -9,18 +9,15 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.animation.CamelAnimations;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.passive.CamelEntity;
+import net.minecraft.client.render.entity.state.CamelEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class CamelEntityModel<T extends CamelEntity> extends SinglePartEntityModel<T> {
+public class CamelEntityModel extends EntityModel<CamelEntityRenderState> {
 	private static final float LIMB_ANGLE_SCALE = 2.0F;
 	private static final float LIMB_DISTANCE_SCALE = 2.5F;
-	private static final float field_43083 = 0.45F;
-	private static final float field_43084 = 29.35F;
+	public static final ModelTransformer BABY_TRANSFORMER = ModelTransformer.scaling(0.45F);
 	private static final String SADDLE = "saddle";
 	private static final String BRIDLE = "bridle";
 	private static final String REINS = "reins";
@@ -128,34 +125,33 @@ public class CamelEntityModel<T extends CamelEntity> extends SinglePartEntityMod
 		return TexturedModelData.of(modelData, 128, 128);
 	}
 
-	public void setAngles(T camelEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(CamelEntityRenderState camelEntityRenderState) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		this.setHeadAngles(camelEntity, i, j, h);
-		this.updateVisibleParts(camelEntity);
-		this.animateMovement(CamelAnimations.WALKING, f, g, 2.0F, 2.5F);
-		this.updateAnimation(camelEntity.sittingTransitionAnimationState, CamelAnimations.SITTING_TRANSITION, h, 1.0F);
-		this.updateAnimation(camelEntity.sittingAnimationState, CamelAnimations.SITTING, h, 1.0F);
-		this.updateAnimation(camelEntity.standingTransitionAnimationState, CamelAnimations.STANDING_TRANSITION, h, 1.0F);
-		this.updateAnimation(camelEntity.idlingAnimationState, CamelAnimations.IDLING, h, 1.0F);
-		this.updateAnimation(camelEntity.dashingAnimationState, CamelAnimations.DASHING, h, 1.0F);
+		this.setHeadAngles(camelEntityRenderState, camelEntityRenderState.yawDegrees, camelEntityRenderState.pitch);
+		this.updateVisibleParts(camelEntityRenderState);
+		this.animateWalking(CamelAnimations.WALKING, camelEntityRenderState.limbFrequency, camelEntityRenderState.limbAmplitudeMultiplier, 2.0F, 2.5F);
+		this.animate(camelEntityRenderState.sittingTransitionAnimationState, CamelAnimations.SITTING_TRANSITION, camelEntityRenderState.age, 1.0F);
+		this.animate(camelEntityRenderState.sittingAnimationState, CamelAnimations.SITTING, camelEntityRenderState.age, 1.0F);
+		this.animate(camelEntityRenderState.standingTransitionAnimationState, CamelAnimations.STANDING_TRANSITION, camelEntityRenderState.age, 1.0F);
+		this.animate(camelEntityRenderState.idlingAnimationState, CamelAnimations.IDLING, camelEntityRenderState.age, 1.0F);
+		this.animate(camelEntityRenderState.dashingAnimationState, CamelAnimations.DASHING, camelEntityRenderState.age, 1.0F);
 	}
 
-	private void setHeadAngles(T entity, float headYaw, float headPitch, float animationProgress) {
+	private void setHeadAngles(CamelEntityRenderState state, float headYaw, float headPitch) {
 		headYaw = MathHelper.clamp(headYaw, -30.0F, 30.0F);
 		headPitch = MathHelper.clamp(headPitch, -25.0F, 45.0F);
-		if (entity.getJumpCooldown() > 0) {
-			float f = animationProgress - (float)entity.age;
-			float g = 45.0F * ((float)entity.getJumpCooldown() - f) / 55.0F;
-			headPitch = MathHelper.clamp(headPitch + g, -25.0F, 70.0F);
+		if (state.jumpCooldown > 0.0F) {
+			float f = 45.0F * state.jumpCooldown / 55.0F;
+			headPitch = MathHelper.clamp(headPitch + f, -25.0F, 70.0F);
 		}
 
 		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
 		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
 	}
 
-	private void updateVisibleParts(T camel) {
-		boolean bl = camel.isSaddled();
-		boolean bl2 = camel.hasPassengers();
+	private void updateVisibleParts(CamelEntityRenderState state) {
+		boolean bl = state.saddled;
+		boolean bl2 = state.hasPassengers;
 
 		for (ModelPart modelPart : this.saddleAndBridle) {
 			modelPart.visible = bl;
@@ -163,19 +159,6 @@ public class CamelEntityModel<T extends CamelEntity> extends SinglePartEntityMod
 
 		for (ModelPart modelPart : this.reins) {
 			modelPart.visible = bl2 && bl;
-		}
-	}
-
-	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-		if (this.child) {
-			matrices.push();
-			matrices.scale(0.45F, 0.45F, 0.45F);
-			matrices.translate(0.0F, 1.834375F, 0.0F);
-			this.getPart().render(matrices, vertices, light, overlay, color);
-			matrices.pop();
-		} else {
-			this.getPart().render(matrices, vertices, light, overlay, color);
 		}
 	}
 

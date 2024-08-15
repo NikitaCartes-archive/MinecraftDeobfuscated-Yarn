@@ -86,10 +86,9 @@ public class GuardianEntity extends HostileEntity {
 
 	public static DefaultAttributeContainer.Builder createGuardianAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.5)
-			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 16.0)
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0);
+			.add(EntityAttributes.ATTACK_DAMAGE, 6.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.5)
+			.add(EntityAttributes.MAX_HEALTH, 30.0);
 	}
 
 	@Override
@@ -452,7 +451,7 @@ public class GuardianEntity extends HostileEntity {
 				float h = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 180.0F / (float)Math.PI) - 90.0F;
 				this.guardian.setYaw(this.wrapDegrees(this.guardian.getYaw(), h, 90.0F));
 				this.guardian.bodyYaw = this.guardian.getYaw();
-				float i = (float)(this.speed * this.guardian.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+				float i = (float)(this.speed * this.guardian.getAttributeValue(EntityAttributes.MOVEMENT_SPEED));
 				float j = MathHelper.lerp(0.125F, this.guardian.getMovementSpeed(), i);
 				this.guardian.setMovementSpeed(j);
 				double k = Math.sin((double)(this.guardian.age + this.guardian.getId()) * 0.5) * 0.05;

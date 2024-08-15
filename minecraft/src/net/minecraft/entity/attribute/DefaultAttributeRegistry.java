@@ -186,6 +186,6 @@ public class DefaultAttributeRegistry {
 			.filter(entityType -> entityType.getSpawnGroup() != SpawnGroup.MISC)
 			.filter(entityType -> !hasDefinitionFor(entityType))
 			.map(Registries.ENTITY_TYPE::getId)
-			.forEach(id -> Util.error("Entity " + id + " has no attributes"));
+			.forEach(id -> Util.logErrorOrPause("Entity " + id + " has no attributes"));
 	}
 }

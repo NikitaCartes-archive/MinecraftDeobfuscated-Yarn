@@ -102,7 +102,7 @@ public class CatSpawner implements SpecialSpawner {
 	 * @return the number of cats spawned
 	 */
 	private int spawn(BlockPos pos, ServerWorld world) {
-		CatEntity catEntity = EntityType.CAT.create(world);
+		CatEntity catEntity = EntityType.CAT.create(world, SpawnReason.NATURAL);
 		if (catEntity == null) {
 			return 0;
 		} else {

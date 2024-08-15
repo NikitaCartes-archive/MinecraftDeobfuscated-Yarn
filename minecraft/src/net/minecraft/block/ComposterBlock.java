@@ -23,7 +23,6 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.Util;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -232,7 +231,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		int i = (Integer)state.get(LEVEL);
 		if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(stack.getItem())) {
 			if (i < 7 && !world.isClient) {
@@ -242,7 +241,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 				stack.decrementUnlessCreative(1, player);
 			}
 
-			return ItemActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
 		}
@@ -253,7 +252,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		int i = (Integer)state.get(LEVEL);
 		if (i == 8) {
 			emptyFullComposter(player, state, world, pos);
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return ActionResult.PASS;
 		}

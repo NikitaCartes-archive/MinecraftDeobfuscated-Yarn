@@ -6,10 +6,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.recipebook.AbstractCraftingRecipeBookWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,13 +26,14 @@ import org.joml.Vector3f;
 public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler> implements RecipeBookProvider {
 	private float mouseX;
 	private float mouseY;
-	private final RecipeBookWidget recipeBook = new RecipeBookWidget();
+	private final RecipeBookWidget<?> recipeBook;
 	private boolean narrow;
 	private boolean mouseDown;
 
 	public InventoryScreen(PlayerEntity player) {
 		super(player.playerScreenHandler, player.getInventory(), Text.translatable("container.crafting"));
 		this.titleX = 97;
+		this.recipeBook = new AbstractCraftingRecipeBookWidget(player.playerScreenHandler);
 	}
 
 	@Override
@@ -59,7 +62,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		} else {
 			super.init();
 			this.narrow = this.width < 379;
-			this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, this.handler);
+			this.recipeBook.initialize(this.width, this.height, this.client, this.narrow);
 			this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
 			this.addDrawableChild(new TexturedButtonWidget(this.x + 104, this.height / 2 - 22, 20, 18, RecipeBookWidget.BUTTON_TEXTURES, button -> {
 				this.recipeBook.toggleOpen();
@@ -84,11 +87,11 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		} else {
 			super.render(context, mouseX, mouseY, delta);
 			this.recipeBook.render(context, mouseX, mouseY, delta);
-			this.recipeBook.drawGhostSlots(context, this.x, this.y, false, delta);
+			this.recipeBook.drawGhostSlots(context, this.x, this.y, false);
 		}
 
 		this.drawMouseoverTooltip(context, mouseX, mouseY);
-		this.recipeBook.drawTooltip(context, this.x, this.y, mouseX, mouseY);
+		this.recipeBook.drawTooltip(context, mouseX, mouseY, this.focusedSlot);
 		this.mouseX = (float)mouseX;
 		this.mouseY = (float)mouseY;
 	}
@@ -97,7 +100,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 		int i = this.x;
 		int j = this.y;
-		context.drawTexture(BACKGROUND_TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		context.drawTexture(RenderLayer::getGuiTextured, BACKGROUND_TEXTURE, i, j, 0.0F, 0.0F, this.backgroundWidth, this.backgroundHeight, 256, 256);
 		drawEntity(context, i + 26, j + 8, i + 75, j + 78, 30, 0.0625F, this.mouseX, this.mouseY, this.client.player);
 	}
 
@@ -140,6 +143,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		context.getMatrices().scale(size, size, -size);
 		context.getMatrices().translate(vector3f.x, vector3f.y, vector3f.z);
 		context.getMatrices().multiply(quaternionf);
+		context.draw();
 		DiffuseLighting.method_34742();
 		EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
 		if (quaternionf2 != null) {
@@ -147,7 +151,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		}
 
 		entityRenderDispatcher.setRenderShadows(false);
-		RenderSystem.runAsFancy(() -> entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, context.getMatrices(), context.getVertexConsumers(), 15728880));
+		RenderSystem.runAsFancy(() -> entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 1.0F, context.getMatrices(), context.getVertexConsumers(), 15728880));
 		context.draw();
 		entityRenderDispatcher.setRenderShadows(true);
 		context.getMatrices().pop();
@@ -201,7 +205,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	@Override
 	protected void onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType) {
 		super.onMouseClick(slot, slotId, button, actionType);
-		this.recipeBook.slotClicked(slot);
+		this.recipeBook.onMouseClick(slot);
 	}
 
 	@Override

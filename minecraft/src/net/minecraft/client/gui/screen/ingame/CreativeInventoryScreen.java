@@ -20,6 +20,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.HotbarStorage;
 import net.minecraft.client.option.HotbarStorageEntry;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchProvider;
 import net.minecraft.client.util.InputUtil;
@@ -37,6 +38,7 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenHandler;
@@ -397,6 +399,9 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			} else {
 				return super.keyPressed(keyCode, scanCode, modifiers);
 			}
+		} else if (super.submenuKeyPressed(keyCode, scanCode)) {
+			this.ignoreTypedCharacter = true;
+			return true;
 		} else {
 			boolean bl = !this.isCreativeInventorySlot(this.focusedSlot) || this.focusedSlot.hasStack();
 			boolean bl2 = InputUtil.fromKeyCode(keyCode, scanCode).toInt().isPresent();
@@ -462,7 +467,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			predicate = idx -> idx.getNamespace().contains(string) && idx.getPath().contains(string2);
 		}
 
-		Registries.ITEM.streamTags().filter(tag -> predicate.test(tag.id())).forEach(this.searchResultTags::add);
+		Registries.ITEM.streamTags().map(RegistryEntryList.Named::getTag).filter(tag -> predicate.test(tag.id())).forEach(this.searchResultTags::add);
 	}
 
 	@Override
@@ -616,7 +621,9 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-		if (!this.hasScrollbar()) {
+		if (super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)) {
+			return true;
+		} else if (!this.hasScrollbar()) {
 			return false;
 		} else {
 			this.scrollPosition = this.handler.getScrollPosition(this.scrollPosition, verticalAmount);
@@ -718,14 +725,14 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			}
 		}
 
-		context.drawTexture(selectedTab.getTexture(), this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		context.drawTexture(RenderLayer::getGuiTextured, selectedTab.getTexture(), this.x, this.y, 0.0F, 0.0F, this.backgroundWidth, this.backgroundHeight, 256, 256);
 		this.searchBox.render(context, mouseX, mouseY, delta);
 		int i = this.x + 175;
 		int j = this.y + 18;
 		int k = j + 112;
 		if (selectedTab.hasScrollbar()) {
 			Identifier identifier = this.hasScrollbar() ? SCROLLER_TEXTURE : SCROLLER_DISABLED_TEXTURE;
-			context.drawGuiTexture(identifier, i, j + (int)((float)(k - j - 17) * this.scrollPosition), 12, 15);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, i, j + (int)((float)(k - j - 17) * this.scrollPosition), 12, 15);
 		}
 
 		this.renderTabIcon(context, selectedTab);
@@ -786,7 +793,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			identifiers = bl ? TAB_BOTTOM_SELECTED_TEXTURES : TAB_BOTTOM_UNSELECTED_TEXTURES;
 		}
 
-		context.drawGuiTexture(identifiers[MathHelper.clamp(i, 0, identifiers.length)], j, k, 26, 32);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, identifiers[MathHelper.clamp(i, 0, identifiers.length)], j, k, 26, 32);
 		context.getMatrices().push();
 		context.getMatrices().translate(0.0F, 0.0F, 100.0F);
 		j += 5;
@@ -843,10 +850,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				}
 			}
 
-			for (int i = 0; i < 9; i++) {
-				this.addSlot(new Slot(playerInventory, i, 9 + i * 18, 112));
-			}
-
+			this.addPlayerHotbarSlots(playerInventory, 9, 112);
 			this.scrollItems(0.0F);
 		}
 

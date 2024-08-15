@@ -16,11 +16,11 @@ public class CloseScreenS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	private CloseScreenS2CPacket(PacketByteBuf buf) {
-		this.syncId = buf.readUnsignedByte();
+		this.syncId = buf.readSyncId();
 	}
 
 	private void write(PacketByteBuf buf) {
-		buf.writeByte(this.syncId);
+		buf.writeSyncId(this.syncId);
 	}
 
 	@Override

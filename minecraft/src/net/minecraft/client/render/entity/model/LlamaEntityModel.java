@@ -1,6 +1,7 @@
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Map.Entry;
+import java.util.function.UnaryOperator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Dilation;
@@ -10,9 +11,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.passive.AbstractDonkeyEntity;
+import net.minecraft.client.render.entity.state.LlamaEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -52,9 +51,10 @@ import net.minecraft.util.math.MathHelper;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends EntityModel<T> {
+public class LlamaEntityModel extends EntityModel<LlamaEntityRenderState> {
+	public static final ModelTransformer BABY_TRANSFORMER = LlamaEntityModel::transformBaby;
+	private final ModelPart root;
 	private final ModelPart head;
-	private final ModelPart body;
 	private final ModelPart rightHindLeg;
 	private final ModelPart leftHindLeg;
 	private final ModelPart rightFrontLeg;
@@ -63,8 +63,8 @@ public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends EntityMode
 	private final ModelPart leftChest;
 
 	public LlamaEntityModel(ModelPart root) {
+		this.root = root;
 		this.head = root.getChild(EntityModelPartNames.HEAD);
-		this.body = root.getChild(EntityModelPartNames.BODY);
 		this.rightChest = root.getChild(EntityModelPartNames.RIGHT_CHEST);
 		this.leftChest = root.getChild(EntityModelPartNames.LEFT_CHEST);
 		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
@@ -114,43 +114,45 @@ public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends EntityMode
 		return TexturedModelData.of(modelData, 128, 64);
 	}
 
-	public void setAngles(T abstractDonkeyEntity, float f, float g, float h, float i, float j) {
-		this.head.pitch = j * (float) (Math.PI / 180.0);
-		this.head.yaw = i * (float) (Math.PI / 180.0);
-		this.rightHindLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
-		this.leftHindLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
-		this.rightFrontLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
-		this.leftFrontLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
-		boolean bl = !abstractDonkeyEntity.isBaby() && abstractDonkeyEntity.hasChest();
-		this.rightChest.visible = bl;
-		this.leftChest.visible = bl;
+	private static ModelData transformBaby(ModelData modelData) {
+		float f = 2.0F;
+		float g = 0.7F;
+		float h = 1.1F;
+		UnaryOperator<ModelTransform> unaryOperator = modelTransform -> modelTransform.addPivot(0.0F, 21.0F, 3.52F).scaled(0.71428573F, 0.64935064F, 0.7936508F);
+		UnaryOperator<ModelTransform> unaryOperator2 = modelTransform -> modelTransform.addPivot(0.0F, 33.0F, 0.0F).scaled(0.625F, 0.45454544F, 0.45454544F);
+		UnaryOperator<ModelTransform> unaryOperator3 = modelTransform -> modelTransform.addPivot(0.0F, 33.0F, 0.0F).scaled(0.45454544F, 0.41322312F, 0.45454544F);
+		ModelData modelData2 = new ModelData();
+
+		for (Entry<String, ModelPartData> entry : modelData.getRoot().getChildren()) {
+			String string = (String)entry.getKey();
+			ModelPartData modelPartData = (ModelPartData)entry.getValue();
+
+			UnaryOperator<ModelTransform> unaryOperator4 = switch (string) {
+				case "head" -> unaryOperator;
+				case "body" -> unaryOperator2;
+				default -> unaryOperator3;
+			};
+			modelData2.getRoot().addChild(string, modelPartData.applyTransformer(unaryOperator4));
+		}
+
+		return modelData2;
+	}
+
+	public void setAngles(LlamaEntityRenderState llamaEntityRenderState) {
+		this.head.pitch = llamaEntityRenderState.pitch * (float) (Math.PI / 180.0);
+		this.head.yaw = llamaEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
+		float f = llamaEntityRenderState.limbAmplitudeMultiplier;
+		float g = llamaEntityRenderState.limbFrequency;
+		this.rightHindLeg.pitch = MathHelper.cos(g * 0.6662F) * 1.4F * f;
+		this.leftHindLeg.pitch = MathHelper.cos(g * 0.6662F + (float) Math.PI) * 1.4F * f;
+		this.rightFrontLeg.pitch = MathHelper.cos(g * 0.6662F + (float) Math.PI) * 1.4F * f;
+		this.leftFrontLeg.pitch = MathHelper.cos(g * 0.6662F) * 1.4F * f;
+		this.rightChest.visible = llamaEntityRenderState.hasChest;
+		this.leftChest.visible = llamaEntityRenderState.hasChest;
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-		if (this.child) {
-			float f = 2.0F;
-			matrices.push();
-			float g = 0.7F;
-			matrices.scale(0.71428573F, 0.64935064F, 0.7936508F);
-			matrices.translate(0.0F, 1.3125F, 0.22F);
-			this.head.render(matrices, vertices, light, overlay, color);
-			matrices.pop();
-			matrices.push();
-			float h = 1.1F;
-			matrices.scale(0.625F, 0.45454544F, 0.45454544F);
-			matrices.translate(0.0F, 2.0625F, 0.0F);
-			this.body.render(matrices, vertices, light, overlay, color);
-			matrices.pop();
-			matrices.push();
-			matrices.scale(0.45454544F, 0.41322312F, 0.45454544F);
-			matrices.translate(0.0F, 2.0625F, 0.0F);
-			ImmutableList.of(this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest)
-				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, color));
-			matrices.pop();
-		} else {
-			ImmutableList.of(this.head, this.body, this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest)
-				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, color));
-		}
+	public ModelPart getPart() {
+		return this.root;
 	}
 }

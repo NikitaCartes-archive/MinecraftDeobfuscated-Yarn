@@ -6,9 +6,7 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -35,7 +33,7 @@ public class BreezeBrain {
 	public static final float field_47283 = 0.6F;
 	public static final float field_47284 = 4.0F;
 	public static final float field_47285 = 8.0F;
-	public static final float field_47286 = 20.0F;
+	public static final float field_47286 = 24.0F;
 	static final List<SensorType<? extends Sensor<? super BreezeEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.HURT_BY, SensorType.NEAREST_PLAYERS, SensorType.BREEZE_ATTACK_ENTITY_SENSOR
 	);
@@ -58,6 +56,7 @@ public class BreezeBrain {
 		MemoryModuleType.HURT_BY_ENTITY,
 		MemoryModuleType.PATH
 	);
+	private static final int TIME_BEFORE_FORGETTING_TARGET = 100;
 
 	protected static Brain<?> create(BreezeEntity breeze, Brain<BreezeEntity> brain) {
 		addCoreTasks(brain);
@@ -89,7 +88,7 @@ public class BreezeBrain {
 		brain.setTaskList(
 			Activity.FIGHT,
 			ImmutableList.of(
-				Pair.of(0, ForgetAttackTargetTask.create((Predicate<LivingEntity>)(livingEntity -> !Sensor.testAttackableTargetPredicate(breeze, livingEntity)))),
+				Pair.of(0, ForgetAttackTargetTask.create(Sensor.hasTargetBeenAttackableRecently(breeze, 100).negate())),
 				Pair.of(1, new BreezeShootTask()),
 				Pair.of(2, new BreezeJumpTask()),
 				Pair.of(3, new BreezeShootIfStuckTask()),

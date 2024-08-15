@@ -17,7 +17,7 @@ import net.minecraft.util.dynamic.Codecs;
 public record MessageLink(int index, UUID sender, UUID sessionId) {
 	public static final Codec<MessageLink> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.NONNEGATIVE_INT.fieldOf("index").forGetter(MessageLink::index),
+					Codecs.NON_NEGATIVE_INT.fieldOf("index").forGetter(MessageLink::index),
 					Uuids.INT_STREAM_CODEC.fieldOf("sender").forGetter(MessageLink::sender),
 					Uuids.INT_STREAM_CODEC.fieldOf("session_id").forGetter(MessageLink::sessionId)
 				)

@@ -2,6 +2,7 @@ package net.minecraft.item.map;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import io.netty.buffer.ByteBuf;
@@ -95,7 +96,6 @@ public class MapState extends PersistentState {
 		this.showDecorations = showDecorations;
 		this.unlimitedTracking = unlimitedTracking;
 		this.locked = locked;
-		this.markDirty();
 	}
 
 	/**
@@ -182,7 +182,7 @@ public class MapState extends PersistentState {
 		Identifier.CODEC
 			.encodeStart(NbtOps.INSTANCE, this.dimension.getValue())
 			.resultOrPartial(LOGGER::error)
-			.ifPresent(nbtElement -> nbt.put("dimension", nbtElement));
+			.ifPresent(dimension -> nbt.put("dimension", dimension));
 		nbt.putInt("xCenter", this.centerX);
 		nbt.putInt("zCenter", this.centerZ);
 		nbt.putByte("scale", this.scale);
@@ -208,7 +208,6 @@ public class MapState extends PersistentState {
 		mapState.decorations.putAll(this.decorations);
 		mapState.decorationCount = this.decorationCount;
 		System.arraycopy(this.colors, 0, mapState.colors, 0, this.colors.length);
-		mapState.markDirty();
 		return mapState;
 	}
 
@@ -318,65 +317,82 @@ public class MapState extends PersistentState {
 		int i = 1 << this.scale;
 		float f = (float)(x - (double)this.centerX) / (float)i;
 		float g = (float)(z - (double)this.centerZ) / (float)i;
-		byte b = (byte)((int)((double)(f * 2.0F) + 0.5));
-		byte c = (byte)((int)((double)(g * 2.0F) + 0.5));
-		int j = 63;
-		byte d;
-		if (f >= -63.0F && g >= -63.0F && f <= 63.0F && g <= 63.0F) {
-			rotation += rotation < 0.0 ? -8.0 : 8.0;
-			d = (byte)((int)(rotation * 16.0 / 360.0));
-			if (this.dimension == World.NETHER && world != null) {
-				int k = (int)(world.getLevelProperties().getTimeOfDay() / 10L);
-				d = (byte)(k * k * 34187121 + k * 121 >> 15 & 15);
-			}
+		MapState.Marker marker = this.getMarker(type, world, rotation, f, g);
+		if (marker == null) {
+			this.removeDecoration(key);
 		} else {
-			if (!type.matches(MapDecorationTypes.PLAYER)) {
-				this.removeDecoration(key);
-				return;
-			}
-
-			int k = 320;
-			if (Math.abs(f) < 320.0F && Math.abs(g) < 320.0F) {
-				type = MapDecorationTypes.PLAYER_OFF_MAP;
-			} else {
-				if (!this.unlimitedTracking) {
-					this.removeDecoration(key);
-					return;
+			MapDecoration mapDecoration = new MapDecoration(marker.type(), marker.x(), marker.y(), marker.rot(), Optional.ofNullable(text));
+			MapDecoration mapDecoration2 = (MapDecoration)this.decorations.put(key, mapDecoration);
+			if (!mapDecoration.equals(mapDecoration2)) {
+				if (mapDecoration2 != null && mapDecoration2.type().value().trackCount()) {
+					this.decorationCount--;
 				}
 
-				type = MapDecorationTypes.PLAYER_OFF_LIMITS;
-			}
+				if (marker.type().value().trackCount()) {
+					this.decorationCount++;
+				}
 
-			d = 0;
-			if (f <= -63.0F) {
-				b = -128;
-			}
-
-			if (g <= -63.0F) {
-				c = -128;
-			}
-
-			if (f >= 63.0F) {
-				b = 127;
-			}
-
-			if (g >= 63.0F) {
-				c = 127;
+				this.markDecorationsDirty();
 			}
 		}
+	}
 
-		MapDecoration mapDecoration = new MapDecoration(type, b, c, d, Optional.ofNullable(text));
-		MapDecoration mapDecoration2 = (MapDecoration)this.decorations.put(key, mapDecoration);
-		if (!mapDecoration.equals(mapDecoration2)) {
-			if (mapDecoration2 != null && mapDecoration2.type().value().trackCount()) {
-				this.decorationCount--;
-			}
+	@Nullable
+	private MapState.Marker getMarker(RegistryEntry<MapDecorationType> type, @Nullable WorldAccess world, double rotation, float dx, float dz) {
+		byte b = offsetToMarkerPosition(dx);
+		byte c = offsetToMarkerPosition(dz);
+		if (type.matches(MapDecorationTypes.PLAYER)) {
+			Pair<RegistryEntry<MapDecorationType>, Byte> pair = this.getPlayerMarkerAndRotation(type, world, rotation, dx, dz);
+			return pair == null ? null : new MapState.Marker(pair.getFirst(), b, c, pair.getSecond());
+		} else {
+			return !isInBounds(dx, dz) && !this.unlimitedTracking ? null : new MapState.Marker(type, b, c, this.getPlayerMarkerRotation(world, rotation));
+		}
+	}
 
-			if (type.value().trackCount()) {
-				this.decorationCount++;
-			}
+	@Nullable
+	private Pair<RegistryEntry<MapDecorationType>, Byte> getPlayerMarkerAndRotation(
+		RegistryEntry<MapDecorationType> type, @Nullable WorldAccess world, double rotation, float dx, float dz
+	) {
+		if (isInBounds(dx, dz)) {
+			return Pair.of(type, this.getPlayerMarkerRotation(world, rotation));
+		} else {
+			RegistryEntry<MapDecorationType> registryEntry = this.getPlayerMarker(dx, dz);
+			return registryEntry == null ? null : Pair.of(registryEntry, (byte)0);
+		}
+	}
 
-			this.markDecorationsDirty();
+	private byte getPlayerMarkerRotation(@Nullable WorldAccess world, double rotation) {
+		if (this.dimension == World.NETHER && world != null) {
+			int i = (int)(world.getLevelProperties().getTimeOfDay() / 10L);
+			return (byte)(i * i * 34187121 + i * 121 >> 15 & 15);
+		} else {
+			double d = rotation < 0.0 ? rotation - 8.0 : rotation + 8.0;
+			return (byte)((int)(d * 16.0 / 360.0));
+		}
+	}
+
+	private static boolean isInBounds(float dx, float dz) {
+		int i = 63;
+		return dx >= -63.0F && dz >= -63.0F && dx <= 63.0F && dz <= 63.0F;
+	}
+
+	@Nullable
+	private RegistryEntry<MapDecorationType> getPlayerMarker(float dx, float dz) {
+		int i = 320;
+		boolean bl = Math.abs(dx) < 320.0F && Math.abs(dz) < 320.0F;
+		if (bl) {
+			return MapDecorationTypes.PLAYER_OFF_MAP;
+		} else {
+			return this.unlimitedTracking ? MapDecorationTypes.PLAYER_OFF_LIMITS : null;
+		}
+	}
+
+	private static byte offsetToMarkerPosition(float d) {
+		int i = 63;
+		if (d <= -63.0F) {
+			return -128;
+		} else {
+			return d >= 63.0F ? 127 : (byte)((int)((double)(d * 2.0F) + 0.5));
 		}
 	}
 
@@ -460,6 +476,7 @@ public class MapState extends PersistentState {
 	public void removeFrame(BlockPos pos, int id) {
 		this.removeDecoration(getFrameDecorationKey(id));
 		this.frames.remove(MapFrameMarker.getKey(pos));
+		this.markDirty();
 	}
 
 	/**
@@ -515,6 +532,9 @@ public class MapState extends PersistentState {
 
 	private static String getFrameDecorationKey(int id) {
 		return "frame-" + id;
+	}
+
+	static record Marker(RegistryEntry<MapDecorationType> type, byte x, byte y, byte rot) {
 	}
 
 	public class PlayerUpdateTracker {

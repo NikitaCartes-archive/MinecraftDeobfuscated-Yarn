@@ -11,6 +11,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.AdvancedExplosionBehavior;
@@ -21,6 +22,7 @@ public class WindChargeEntity extends AbstractWindChargeEntity {
 		true, false, Optional.of(1.22F), Registries.BLOCK.getEntryList(BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS).map(Function.identity())
 	);
 	private static final float EXPLOSION_POWER = 1.2F;
+	private static final float MAX_RENDER_DISTANCE_WHEN_NEWLY_SPAWNED = MathHelper.square(3.5F);
 	private int deflectCooldown = 5;
 
 	public WindChargeEntity(EntityType<? extends AbstractWindChargeEntity> entityType, World world) {
@@ -65,5 +67,10 @@ public class WindChargeEntity extends AbstractWindChargeEntity {
 				ParticleTypes.GUST_EMITTER_LARGE,
 				SoundEvents.ENTITY_WIND_CHARGE_WIND_BURST
 			);
+	}
+
+	@Override
+	public boolean shouldRender(double distance) {
+		return this.age < 2 && distance < (double)MAX_RENDER_DISTANCE_WHEN_NEWLY_SPAWNED ? false : super.shouldRender(distance);
 	}
 }

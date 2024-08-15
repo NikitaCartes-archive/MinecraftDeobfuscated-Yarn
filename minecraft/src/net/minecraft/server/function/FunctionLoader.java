@@ -8,7 +8,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -57,7 +56,7 @@ public class FunctionLoader implements ResourceReloader {
 	private static final ResourceFinder FINDER = new ResourceFinder(RegistryKeys.getPath(FUNCTION_REGISTRY_KEY), ".mcfunction");
 	private volatile Map<Identifier, CommandFunction<ServerCommandSource>> functions = ImmutableMap.of();
 	private final TagGroupLoader<CommandFunction<ServerCommandSource>> tagLoader = new TagGroupLoader<>(this::get, RegistryKeys.getTagPath(FUNCTION_REGISTRY_KEY));
-	private volatile Map<Identifier, Collection<CommandFunction<ServerCommandSource>>> tags = Map.of();
+	private volatile Map<Identifier, List<CommandFunction<ServerCommandSource>>> tags = Map.of();
 	private final int level;
 	private final CommandDispatcher<ServerCommandSource> commandDispatcher;
 
@@ -69,8 +68,8 @@ public class FunctionLoader implements ResourceReloader {
 		return this.functions;
 	}
 
-	public Collection<CommandFunction<ServerCommandSource>> getTagOrEmpty(Identifier id) {
-		return (Collection<CommandFunction<ServerCommandSource>>)this.tags.getOrDefault(id, List.of());
+	public List<CommandFunction<ServerCommandSource>> getTagOrEmpty(Identifier id) {
+		return (List<CommandFunction<ServerCommandSource>>)this.tags.getOrDefault(id, List.of());
 	}
 
 	public Iterable<Identifier> getTags() {

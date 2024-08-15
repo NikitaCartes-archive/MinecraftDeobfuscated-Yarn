@@ -1,6 +1,5 @@
 package net.minecraft.client.realms.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,11 +12,13 @@ import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.util.RealmsTextureManager;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class RealmsWorldSlotButton extends ButtonWidget {
@@ -99,26 +100,22 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 				identifier = EMPTY_FRAME;
 			}
 
+			int k = -1;
 			if (this.state.isCurrentlyActiveSlot) {
-				context.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
+				k = ColorHelper.fromFloats(1.0F, 0.56F, 0.56F, 0.56F);
 			}
 
-			context.drawTexture(identifier, i + 3, j + 3, 0.0F, 0.0F, 74, 74, 74, 74);
-			boolean bl2 = bl && this.state.action != RealmsWorldSlotButton.Action.NOTHING;
-			if (bl2) {
-				context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+			context.drawTexture(RenderLayer::getGuiTextured, identifier, i + 3, j + 3, 0.0F, 0.0F, 74, 74, 74, 74, 74, 74, k);
+			if (bl && this.state.action != RealmsWorldSlotButton.Action.NOTHING) {
+				context.drawGuiTexture(RenderLayer::getGuiTextured, SLOT_FRAME, i, j, 80, 80);
 			} else if (this.state.isCurrentlyActiveSlot) {
-				context.setShaderColor(0.8F, 0.8F, 0.8F, 1.0F);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, SLOT_FRAME, i, j, 80, 80, ColorHelper.fromFloats(1.0F, 0.8F, 0.8F, 0.8F));
 			} else {
-				context.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, SLOT_FRAME, i, j, 80, 80, ColorHelper.fromFloats(1.0F, 0.56F, 0.56F, 0.56F));
 			}
 
-			context.drawGuiTexture(SLOT_FRAME, i, j, 80, 80);
-			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			if (this.state.isCurrentlyActiveSlot) {
-				RenderSystem.enableBlend();
-				context.drawGuiTexture(CHECKMARK, i + 67, j + 4, 9, 8);
-				RenderSystem.disableBlend();
+				context.drawGuiTexture(RenderLayer::getGuiTextured, CHECKMARK, i + 67, j + 4, 9, 8);
 			}
 
 			TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;

@@ -1,7 +1,5 @@
 package net.minecraft.client.tutorial;
 
-import com.google.common.collect.Lists;
-import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -9,7 +7,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -24,12 +21,9 @@ public class TutorialManager {
 	private final MinecraftClient client;
 	@Nullable
 	private TutorialStepHandler currentHandler;
-	private final List<TutorialManager.Entry> entries = Lists.<TutorialManager.Entry>newArrayList();
-	private final BundleTutorial bundleTutorial;
 
 	public TutorialManager(MinecraftClient client, GameOptions options) {
 		this.client = client;
-		this.bundleTutorial = new BundleTutorial(this, options);
 	}
 
 	public void onMovement(Input input) {
@@ -83,31 +77,7 @@ public class TutorialManager {
 		this.currentHandler = this.client.options.tutorialStep.createHandler(this);
 	}
 
-	/**
-	 * Adds an active tutorial entry to this manager and the corresponding toast
-	 * to the client's toast manager.
-	 * 
-	 * @param ticks the time the toast will last, in client ticks
-	 * @param toast the tutorial toast
-	 */
-	public void add(TutorialToast toast, int ticks) {
-		this.entries.add(new TutorialManager.Entry(toast, ticks));
-		this.client.getToastManager().add(toast);
-	}
-
-	/**
-	 * Removes an active tutorial from this manager if it's present and hides
-	 * the toast.
-	 * 
-	 * @param toast the tutorial toast
-	 */
-	public void remove(TutorialToast toast) {
-		this.entries.removeIf(entry -> entry.toast == toast);
-		toast.hide();
-	}
-
 	public void tick() {
-		this.entries.removeIf(TutorialManager.Entry::tick);
 		if (this.currentHandler != null) {
 			if (this.client.world != null) {
 				this.currentHandler.tick();
@@ -150,33 +120,5 @@ public class TutorialManager {
 	 * @see net.minecraft.client.network.ClientPlayerEntity#onPickupSlotClick(ItemStack, ItemStack, ClickType)
 	 */
 	public void onPickupSlotClick(ItemStack cursorStack, ItemStack slotStack, ClickType clickType) {
-		this.bundleTutorial.onPickupSlotClick(cursorStack, slotStack, clickType);
-	}
-
-	@Environment(EnvType.CLIENT)
-	static final class Entry {
-		final TutorialToast toast;
-		private final int expiry;
-		private int age;
-
-		Entry(TutorialToast toast, int expiry) {
-			this.toast = toast;
-			this.expiry = expiry;
-		}
-
-		/**
-		 * Ticks this entry on a client tick.
-		 * 
-		 * @return {@code true} if this entry should no longer tick
-		 */
-		private boolean tick() {
-			this.toast.setProgress(Math.min((float)(++this.age) / (float)this.expiry, 1.0F));
-			if (this.age > this.expiry) {
-				this.toast.hide();
-				return true;
-			} else {
-				return false;
-			}
-		}
 	}
 }

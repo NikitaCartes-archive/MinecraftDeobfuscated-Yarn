@@ -40,7 +40,7 @@ public abstract class FishEntity extends WaterCreatureEntity implements Bucketab
 	}
 
 	public static DefaultAttributeContainer.Builder createFishAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 3.0);
+		return MobEntity.createMobAttributes().add(EntityAttributes.MAX_HEALTH, 3.0);
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public abstract class FishEntity extends WaterCreatureEntity implements Bucketab
 
 	@Override
 	public void travel(Vec3d movementInput) {
-		if (this.canMoveVoluntarily() && this.isTouchingWater()) {
+		if (this.isLogicalSideForUpdatingMovement() && this.isTouchingWater()) {
 			this.updateVelocity(0.01F, movementInput);
 			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
@@ -177,7 +177,7 @@ public abstract class FishEntity extends WaterCreatureEntity implements Bucketab
 			}
 
 			if (this.state == MoveControl.State.MOVE_TO && !this.fish.getNavigation().isIdle()) {
-				float f = (float)(this.speed * this.fish.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+				float f = (float)(this.speed * this.fish.getAttributeValue(EntityAttributes.MOVEMENT_SPEED));
 				this.fish.setMovementSpeed(MathHelper.lerp(0.125F, this.fish.getMovementSpeed(), f));
 				double d = this.targetX - this.fish.getX();
 				double e = this.targetY - this.fish.getY();

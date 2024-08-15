@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -12,6 +11,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.tab.Tab;
 import net.minecraft.client.gui.tab.TabManager;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -40,9 +40,9 @@ public class TabButtonWidget extends ClickableWidget {
 
 	@Override
 	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-		RenderSystem.enableBlend();
-		context.drawGuiTexture(TAB_BUTTON_TEXTURES.get(this.isCurrentTab(), this.isSelected()), this.getX(), this.getY(), this.width, this.height);
-		RenderSystem.disableBlend();
+		context.drawGuiTexture(
+			RenderLayer::getGuiTextured, TAB_BUTTON_TEXTURES.get(this.isCurrentTab(), this.isSelected()), this.getX(), this.getY(), this.width, this.height
+		);
 		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 		int i = this.active ? -1 : -6250336;
 		this.drawMessage(context, textRenderer, i);

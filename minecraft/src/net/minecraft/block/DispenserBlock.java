@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
@@ -37,6 +38,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.event.GameEvent;
 import org.slf4j.Logger;
 
@@ -69,21 +71,12 @@ public class DispenserBlock extends BlockWithEntity {
 
 	@Override
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (world.isClient) {
-			return ActionResult.SUCCESS;
-		} else {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof DispenserBlockEntity) {
-				player.openHandledScreen((DispenserBlockEntity)blockEntity);
-				if (blockEntity instanceof DropperBlockEntity) {
-					player.incrementStat(Stats.INSPECT_DROPPER);
-				} else {
-					player.incrementStat(Stats.INSPECT_DISPENSER);
-				}
-			}
-
-			return ActionResult.CONSUME;
+		if (!world.isClient && world.getBlockEntity(pos) instanceof DispenserBlockEntity dispenserBlockEntity) {
+			player.openHandledScreen(dispenserBlockEntity);
+			player.incrementStat(dispenserBlockEntity instanceof DropperBlockEntity ? Stats.INSPECT_DROPPER : Stats.INSPECT_DISPENSER);
 		}
+
+		return ActionResult.SUCCESS;
 	}
 
 	protected void dispense(ServerWorld world, BlockState state, BlockPos pos) {
@@ -111,7 +104,7 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		boolean bl = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
 		boolean bl2 = (Boolean)state.get(TRIGGERED);
 		if (bl && !bl2) {

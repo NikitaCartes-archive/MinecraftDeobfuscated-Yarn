@@ -20,6 +20,7 @@ import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
@@ -30,6 +31,7 @@ import net.minecraft.world.gen.structure.StructureKeys;
 public class VanillaEndTabAdvancementGenerator implements AdvancementTabGenerator {
 	@Override
 	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<AdvancementEntry> exporter) {
+		RegistryEntryLookup<EntityType<?>> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.ENTITY_TYPE);
 		AdvancementEntry advancementEntry = Advancement.Builder.create()
 			.display(
 				Blocks.END_STONE,
@@ -55,7 +57,9 @@ public class VanillaEndTabAdvancementGenerator implements AdvancementTabGenerato
 				true,
 				false
 			)
-			.criterion("killed_dragon", OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(EntityType.ENDER_DRAGON)))
+			.criterion(
+				"killed_dragon", OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.ENDER_DRAGON))
+			)
 			.build(exporter, "end/kill_dragon");
 		AdvancementEntry advancementEntry3 = Advancement.Builder.create()
 			.parent(advancementEntry2)
@@ -83,7 +87,7 @@ public class VanillaEndTabAdvancementGenerator implements AdvancementTabGenerato
 				true,
 				false
 			)
-			.criterion("summoned_dragon", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.ENDER_DRAGON)))
+			.criterion("summoned_dragon", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.ENDER_DRAGON)))
 			.build(exporter, "end/respawn_dragon");
 		AdvancementEntry advancementEntry4 = Advancement.Builder.create()
 			.parent(advancementEntry3)

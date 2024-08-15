@@ -15,6 +15,7 @@ import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.EmptyWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.session.report.AbuseReportReason;
+import net.minecraft.client.session.report.AbuseReportType;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -37,12 +38,16 @@ public class AbuseReportReasonScreen extends Screen {
 	AbuseReportReason reason;
 	private final Consumer<AbuseReportReason> reasonConsumer;
 	final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
+	final AbuseReportType field_52852;
 
-	public AbuseReportReasonScreen(@Nullable Screen parent, @Nullable AbuseReportReason reason, Consumer<AbuseReportReason> reasonConsumer) {
+	public AbuseReportReasonScreen(
+		@Nullable Screen parent, @Nullable AbuseReportReason reason, AbuseReportType abuseReportType, Consumer<AbuseReportReason> consumer
+	) {
 		super(TITLE_TEXT);
 		this.parent = parent;
 		this.reason = reason;
-		this.reasonConsumer = reasonConsumer;
+		this.reasonConsumer = consumer;
+		this.field_52852 = abuseReportType;
 	}
 
 	@Override
@@ -137,7 +142,9 @@ public class AbuseReportReasonScreen extends Screen {
 			);
 
 			for (AbuseReportReason abuseReportReason : AbuseReportReason.values()) {
-				this.addEntry(new AbuseReportReasonScreen.ReasonListWidget.ReasonEntry(abuseReportReason));
+				if (!AbuseReportReason.method_62164(AbuseReportReasonScreen.this.field_52852).contains(abuseReportReason)) {
+					this.addEntry(new AbuseReportReasonScreen.ReasonListWidget.ReasonEntry(abuseReportReason));
+				}
 			}
 		}
 

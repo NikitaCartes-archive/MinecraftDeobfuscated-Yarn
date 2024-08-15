@@ -261,7 +261,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 
 	@Override
 	public boolean shouldDrawSide(Direction direction) {
-		return Block.shouldDrawSide(this.getCachedState(), this.world, this.getPos(), direction, this.getPos().offset(direction));
+		return Block.shouldDrawSide(this.getCachedState(), this.world.getBlockState(this.getPos().offset(direction)), direction);
 	}
 
 	public int getDrawnSidesCount() {

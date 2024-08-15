@@ -22,12 +22,12 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.event.GameEvent;
 
 public class NoteBlock extends Block {
@@ -74,7 +74,7 @@ public class NoteBlock extends Block {
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		boolean bl = world.isReceivingRedstonePower(pos);
 		if (bl != (Boolean)state.get(POWERED)) {
 			if (bl) {
@@ -93,23 +93,22 @@ public class NoteBlock extends Block {
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		return stack.isIn(ItemTags.NOTEBLOCK_TOP_INSTRUMENTS) && hit.getSide() == Direction.UP
-			? ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION
-			: super.onUseWithItem(stack, state, world, pos, player, hand, hit);
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		return (ActionResult)(stack.isIn(ItemTags.NOTEBLOCK_TOP_INSTRUMENTS) && hit.getSide() == Direction.UP
+			? ActionResult.PASS
+			: super.onUseWithItem(stack, state, world, pos, player, hand, hit));
 	}
 
 	@Override
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (world.isClient) {
-			return ActionResult.SUCCESS;
-		} else {
+		if (!world.isClient) {
 			state = state.cycle(NOTE);
 			world.setBlockState(pos, state, Block.NOTIFY_ALL);
 			this.playNote(player, state, world, pos);
 			player.incrementStat(Stats.TUNE_NOTEBLOCK);
-			return ActionResult.CONSUME;
 		}
+
+		return ActionResult.SUCCESS;
 	}
 
 	@Override

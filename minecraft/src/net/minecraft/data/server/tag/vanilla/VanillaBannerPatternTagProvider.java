@@ -48,10 +48,8 @@ public class VanillaBannerPatternTagProvider extends TagProvider<BannerPattern> 
 				BannerPatterns.HALF_VERTICAL_RIGHT,
 				BannerPatterns.HALF_HORIZONTAL_BOTTOM,
 				BannerPatterns.BORDER,
-				BannerPatterns.CURLY_BORDER,
 				BannerPatterns.GRADIENT,
-				BannerPatterns.GRADIENT_UP,
-				BannerPatterns.BRICKS
+				BannerPatterns.GRADIENT_UP
 			);
 		this.getOrCreateTagBuilder(BannerPatternTags.FLOWER_PATTERN_ITEM).add(BannerPatterns.FLOWER);
 		this.getOrCreateTagBuilder(BannerPatternTags.CREEPER_PATTERN_ITEM).add(BannerPatterns.CREEPER);
@@ -61,5 +59,7 @@ public class VanillaBannerPatternTagProvider extends TagProvider<BannerPattern> 
 		this.getOrCreateTagBuilder(BannerPatternTags.PIGLIN_PATTERN_ITEM).add(BannerPatterns.PIGLIN);
 		this.getOrCreateTagBuilder(BannerPatternTags.FLOW_PATTERN_ITEM).add(BannerPatterns.FLOW);
 		this.getOrCreateTagBuilder(BannerPatternTags.GUSTER_PATTERN_ITEM).add(BannerPatterns.GUSTER);
+		this.getOrCreateTagBuilder(BannerPatternTags.FIELD_MASONED_PATTERN_ITEM).add(BannerPatterns.BRICKS);
+		this.getOrCreateTagBuilder(BannerPatternTags.BORDURE_INDENTED_PATTERN_ITEM).add(BannerPatterns.CURLY_BORDER);
 	}
 }

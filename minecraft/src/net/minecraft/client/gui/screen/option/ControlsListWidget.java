@@ -152,7 +152,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 				)
 				.build();
 			this.resetButton = ButtonWidget.builder(RESET_TEXT, button -> {
-				ControlsListWidget.this.client.options.setKeyCode(binding, binding.getDefaultKey());
+				binding.setBoundKey(binding.getDefaultKey());
 				ControlsListWidget.this.update();
 			}).dimensions(0, 0, 50, 20).narrationSupplier(textSupplier -> Text.translatable("narrator.controls.reset", bindingName)).build();
 			this.update();

@@ -52,7 +52,6 @@ public class CubeMapRenderer {
 			matrix4fStack.translate(f, g, 0.0F);
 			matrix4fStack.rotateX(x * (float) (Math.PI / 180.0));
 			matrix4fStack.rotateY(y * (float) (Math.PI / 180.0));
-			RenderSystem.applyModelViewMatrix();
 
 			for (int k = 0; k < 6; k++) {
 				RenderSystem.setShaderTexture(0, this.faces[k]);
@@ -110,7 +109,6 @@ public class CubeMapRenderer {
 		RenderSystem.colorMask(true, true, true, true);
 		RenderSystem.restoreProjectionMatrix();
 		matrix4fStack.popMatrix();
-		RenderSystem.applyModelViewMatrix();
 		RenderSystem.depthMask(true);
 		RenderSystem.enableCull();
 		RenderSystem.enableDepthTest();

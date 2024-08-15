@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Dilation;
@@ -9,11 +9,12 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
-import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.client.render.entity.state.WolfEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T> {
+public class WolfEntityModel extends EntityModel<WolfEntityRenderState> {
+	public static final ModelTransformer BABY_TRANSFORMER = new BabyModelTransformer(Set.of("head"));
 	/**
 	 * The key of the real head model part, whose value is {@value}.
 	 */
@@ -26,6 +27,7 @@ public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T
 	 * The key of the real tail model part, whose value is {@value}.
 	 */
 	private static final String REAL_TAIL = "real_tail";
+	private final ModelPart root;
 	/**
 	 * The main bone used to animate the head. Contains {@link #realHead} as one of its children.
 	 */
@@ -45,6 +47,7 @@ public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T
 	private static final int field_32580 = 8;
 
 	public WolfEntityModel(ModelPart root) {
+		this.root = root;
 		this.head = root.getChild(EntityModelPartNames.HEAD);
 		this.realHead = this.head.getChild("real_head");
 		this.torso = root.getChild(EntityModelPartNames.BODY);
@@ -97,63 +100,62 @@ public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T
 		return modelData;
 	}
 
-	@Override
-	protected Iterable<ModelPart> getHeadParts() {
-		return ImmutableList.<ModelPart>of(this.head);
-	}
-
-	@Override
-	protected Iterable<ModelPart> getBodyParts() {
-		return ImmutableList.<ModelPart>of(this.torso, this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg, this.tail, this.neck);
-	}
-
-	public void animateModel(T wolfEntity, float f, float g, float h) {
-		if (wolfEntity.hasAngerTime()) {
+	public void setAngles(WolfEntityRenderState wolfEntityRenderState) {
+		this.torso.resetTransform();
+		this.neck.resetTransform();
+		this.tail.resetTransform();
+		this.rightHindLeg.resetTransform();
+		this.leftHindLeg.resetTransform();
+		this.rightFrontLeg.resetTransform();
+		this.leftFrontLeg.resetTransform();
+		float f = wolfEntityRenderState.limbFrequency;
+		float g = wolfEntityRenderState.limbAmplitudeMultiplier;
+		if (wolfEntityRenderState.angerTime) {
 			this.tail.yaw = 0.0F;
 		} else {
 			this.tail.yaw = MathHelper.cos(f * 0.6662F) * 1.4F * g;
 		}
 
-		if (wolfEntity.isInSittingPose()) {
-			this.neck.setPivot(-1.0F, 16.0F, -3.0F);
+		if (wolfEntityRenderState.inSittingPose) {
+			float h = wolfEntityRenderState.ageScale;
+			this.neck.pivotY += 2.0F * h;
 			this.neck.pitch = (float) (Math.PI * 2.0 / 5.0);
 			this.neck.yaw = 0.0F;
-			this.torso.setPivot(0.0F, 18.0F, 0.0F);
+			this.torso.pivotY += 4.0F * h;
+			this.torso.pivotZ -= 2.0F * h;
 			this.torso.pitch = (float) (Math.PI / 4);
-			this.tail.setPivot(-1.0F, 21.0F, 6.0F);
-			this.rightHindLeg.setPivot(-2.5F, 22.7F, 2.0F);
+			this.tail.pivotY += 9.0F * h;
+			this.tail.pivotZ -= 2.0F * h;
+			this.rightHindLeg.pivotY += 6.7F * h;
+			this.rightHindLeg.pivotZ -= 5.0F * h;
 			this.rightHindLeg.pitch = (float) (Math.PI * 3.0 / 2.0);
-			this.leftHindLeg.setPivot(0.5F, 22.7F, 2.0F);
+			this.leftHindLeg.pivotY += 6.7F * h;
+			this.leftHindLeg.pivotZ -= 5.0F * h;
 			this.leftHindLeg.pitch = (float) (Math.PI * 3.0 / 2.0);
 			this.rightFrontLeg.pitch = 5.811947F;
-			this.rightFrontLeg.setPivot(-2.49F, 17.0F, -4.0F);
+			this.rightFrontLeg.pivotX += 0.01F * h;
+			this.rightFrontLeg.pivotY += 1.0F * h;
 			this.leftFrontLeg.pitch = 5.811947F;
-			this.leftFrontLeg.setPivot(0.51F, 17.0F, -4.0F);
+			this.leftFrontLeg.pivotX -= 0.01F * h;
+			this.leftFrontLeg.pivotY += 1.0F * h;
 		} else {
-			this.torso.setPivot(0.0F, 14.0F, 2.0F);
-			this.torso.pitch = (float) (Math.PI / 2);
-			this.neck.setPivot(-1.0F, 14.0F, -3.0F);
-			this.neck.pitch = this.torso.pitch;
-			this.tail.setPivot(-1.0F, 12.0F, 8.0F);
-			this.rightHindLeg.setPivot(-2.5F, 16.0F, 7.0F);
-			this.leftHindLeg.setPivot(0.5F, 16.0F, 7.0F);
-			this.rightFrontLeg.setPivot(-2.5F, 16.0F, -4.0F);
-			this.leftFrontLeg.setPivot(0.5F, 16.0F, -4.0F);
 			this.rightHindLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
 			this.leftHindLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
 			this.rightFrontLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
 			this.leftFrontLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
 		}
 
-		this.realHead.roll = wolfEntity.getBegAnimationProgress(h) + wolfEntity.getShakeAnimationProgress(h, 0.0F);
-		this.neck.roll = wolfEntity.getShakeAnimationProgress(h, -0.08F);
-		this.torso.roll = wolfEntity.getShakeAnimationProgress(h, -0.16F);
-		this.realTail.roll = wolfEntity.getShakeAnimationProgress(h, -0.2F);
+		this.realHead.roll = wolfEntityRenderState.begAnimationProgress + wolfEntityRenderState.getRoll(0.0F);
+		this.neck.roll = wolfEntityRenderState.getRoll(-0.08F);
+		this.torso.roll = wolfEntityRenderState.getRoll(-0.16F);
+		this.realTail.roll = wolfEntityRenderState.getRoll(-0.2F);
+		this.head.pitch = wolfEntityRenderState.pitch * (float) (Math.PI / 180.0);
+		this.head.yaw = wolfEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
+		this.tail.pitch = wolfEntityRenderState.tailAngle;
 	}
 
-	public void setAngles(T wolfEntity, float f, float g, float h, float i, float j) {
-		this.head.pitch = j * (float) (Math.PI / 180.0);
-		this.head.yaw = i * (float) (Math.PI / 180.0);
-		this.tail.pitch = h;
+	@Override
+	public ModelPart getPart() {
+		return this.root;
 	}
 }

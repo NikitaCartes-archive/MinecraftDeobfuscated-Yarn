@@ -91,8 +91,8 @@ public class OptionsScreen extends Screen {
 		adder.add(this.createButton(CREDITS_AND_ATTRIBUTION_TEXT, () -> new CreditsAndAttributionScreen(this)));
 		this.layout.addBody(gridWidget);
 		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).width(200).build());
-		this.layout.forEachChild(element -> {
-			ClickableWidget var10000 = this.addDrawableChild(element);
+		this.layout.forEachChild(child -> {
+			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
 		this.initTabNavigation();
 	}

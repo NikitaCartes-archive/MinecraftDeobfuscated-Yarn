@@ -14,7 +14,7 @@ import net.minecraft.text.TextCodecs;
 
 public class OpenScreenS2CPacket implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, OpenScreenS2CPacket> CODEC = PacketCodec.tuple(
-		PacketCodecs.VAR_INT,
+		PacketCodecs.SYNC_ID,
 		OpenScreenS2CPacket::getSyncId,
 		PacketCodecs.registryValue(RegistryKeys.SCREEN_HANDLER),
 		OpenScreenS2CPacket::getScreenHandlerType,

@@ -3,6 +3,7 @@ package net.minecraft.client.gui.widget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.screen.ScreenTexts;
@@ -33,7 +34,7 @@ public class PageTurnWidget extends ButtonWidget {
 			identifier = this.isSelected() ? PAGE_BACKWARD_HIGHLIGHTED_TEXTURE : PAGE_BACKWARD_TEXTURE;
 		}
 
-		context.drawGuiTexture(identifier, this.getX(), this.getY(), 23, 13);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, this.getX(), this.getY(), 23, 13);
 	}
 
 	@Override

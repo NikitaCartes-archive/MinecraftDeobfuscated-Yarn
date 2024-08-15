@@ -20,12 +20,12 @@ public class SnowballEntity extends ThrownItemEntity {
 		super(entityType, world);
 	}
 
-	public SnowballEntity(World world, LivingEntity owner) {
-		super(EntityType.SNOWBALL, owner, world);
+	public SnowballEntity(World world, LivingEntity owner, ItemStack stack) {
+		super(EntityType.SNOWBALL, owner, world, stack);
 	}
 
-	public SnowballEntity(World world, double x, double y, double z) {
-		super(EntityType.SNOWBALL, x, y, z, world);
+	public SnowballEntity(World world, double x, double y, double z, ItemStack stack) {
+		super(EntityType.SNOWBALL, x, y, z, world, stack);
 	}
 
 	@Override

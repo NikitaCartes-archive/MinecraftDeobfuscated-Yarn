@@ -9,14 +9,14 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
+import net.minecraft.client.render.entity.state.HorseEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.HorseMarking;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
-public class HorseMarkingFeatureRenderer extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
+public class HorseMarkingFeatureRenderer extends FeatureRenderer<HorseEntityRenderState, HorseEntityModel> {
 	private static final Map<HorseMarking, Identifier> TEXTURES = Util.make(Maps.newEnumMap(HorseMarking.class), textures -> {
 		textures.put(HorseMarking.NONE, null);
 		textures.put(HorseMarking.WHITE, Identifier.ofVanilla("textures/entity/horse/horse_markings_white.png"));
@@ -25,17 +25,17 @@ public class HorseMarkingFeatureRenderer extends FeatureRenderer<HorseEntity, Ho
 		textures.put(HorseMarking.BLACK_DOTS, Identifier.ofVanilla("textures/entity/horse/horse_markings_blackdots.png"));
 	});
 
-	public HorseMarkingFeatureRenderer(FeatureRendererContext<HorseEntity, HorseEntityModel<HorseEntity>> featureRendererContext) {
+	public HorseMarkingFeatureRenderer(FeatureRendererContext<HorseEntityRenderState, HorseEntityModel> featureRendererContext) {
 		super(featureRendererContext);
 	}
 
 	public void render(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, HorseEntityRenderState horseEntityRenderState, float f, float g
 	) {
-		Identifier identifier = (Identifier)TEXTURES.get(horseEntity.getMarking());
-		if (identifier != null && !horseEntity.isInvisible()) {
+		Identifier identifier = (Identifier)TEXTURES.get(horseEntityRenderState.marking);
+		if (identifier != null && !horseEntityRenderState.invisible) {
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(identifier));
-			this.getContextModel().render(matrixStack, vertexConsumer, i, LivingEntityRenderer.getOverlay(horseEntity, 0.0F));
+			this.getContextModel().render(matrixStack, vertexConsumer, i, LivingEntityRenderer.getOverlay(horseEntityRenderState, 0.0F));
 		}
 	}
 }

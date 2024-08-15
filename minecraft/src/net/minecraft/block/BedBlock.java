@@ -78,7 +78,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	@Override
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (world.isClient) {
-			return ActionResult.CONSUME;
+			return ActionResult.SUCCESS_SERVER;
 		} else {
 			if (state.get(PART) != BedPart.HEAD) {
 				pos = pos.offset(state.get(FACING));
@@ -97,20 +97,20 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 				Vec3d vec3d = pos.toCenterPos();
 				world.createExplosion(null, world.getDamageSources().badRespawnPoint(vec3d), null, vec3d, 5.0F, true, World.ExplosionSourceType.BLOCK);
-				return ActionResult.SUCCESS;
+				return ActionResult.SUCCESS_SERVER;
 			} else if ((Boolean)state.get(OCCUPIED)) {
 				if (!this.wakeVillager(world, pos)) {
 					player.sendMessage(Text.translatable("block.minecraft.bed.occupied"), true);
 				}
 
-				return ActionResult.SUCCESS;
+				return ActionResult.SUCCESS_SERVER;
 			} else {
 				player.trySleep(pos).ifLeft(reason -> {
 					if (reason.getMessage() != null) {
 						player.sendMessage(reason.getMessage(), true);
 					}
 				});
-				return ActionResult.SUCCESS;
+				return ActionResult.SUCCESS_SERVER;
 			}
 		}
 	}

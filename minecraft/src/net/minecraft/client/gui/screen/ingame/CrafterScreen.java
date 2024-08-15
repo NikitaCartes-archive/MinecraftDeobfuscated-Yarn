@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen.ingame;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -82,7 +83,7 @@ public class CrafterScreen extends HandledScreen<CrafterScreenHandler> {
 	}
 
 	private void drawDisabledSlot(DrawContext context, CrafterInputSlot slot) {
-		context.drawGuiTexture(DISABLED_SLOT_TEXTURE, slot.x - 1, slot.y - 1, 18, 18);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, DISABLED_SLOT_TEXTURE, slot.x - 1, slot.y - 1, 18, 18);
 	}
 
 	@Override
@@ -109,13 +110,13 @@ public class CrafterScreen extends HandledScreen<CrafterScreenHandler> {
 			identifier = UNPOWERED_REDSTONE_TEXTURE;
 		}
 
-		context.drawGuiTexture(identifier, i, j, 16, 16);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, i, j, 16, 16);
 	}
 
 	@Override
 	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
-		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, i, j, 0.0F, 0.0F, this.backgroundWidth, this.backgroundHeight, 256, 256);
 	}
 }

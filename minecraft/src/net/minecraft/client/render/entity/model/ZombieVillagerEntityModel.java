@@ -9,10 +9,10 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.client.render.entity.state.ZombieVillagerRenderState;
 
 @Environment(EnvType.CLIENT)
-public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEntityModel<T> implements ModelWithHat {
+public class ZombieVillagerEntityModel<S extends ZombieVillagerRenderState> extends BipedEntityModel<S> implements ModelWithHat {
 	private final ModelPart hatRim = this.hat.getChild(EntityModelPartNames.HAT_RIM);
 
 	public ZombieVillagerEntityModel(ModelPart modelPart) {
@@ -22,15 +22,15 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = BipedEntityModel.getModelData(Dilation.NONE, 0.0F);
 		ModelPartData modelPartData = modelData.getRoot();
-		modelPartData.addChild(
+		ModelPartData modelPartData2 = modelPartData.addChild(
 			EntityModelPartNames.HEAD,
 			new ModelPartBuilder().uv(0, 0).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F).uv(24, 0).cuboid(-1.0F, -3.0F, -6.0F, 2.0F, 4.0F, 2.0F),
 			ModelTransform.NONE
 		);
-		ModelPartData modelPartData2 = modelPartData.addChild(
+		ModelPartData modelPartData3 = modelPartData2.addChild(
 			EntityModelPartNames.HAT, ModelPartBuilder.create().uv(32, 0).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, new Dilation(0.5F)), ModelTransform.NONE
 		);
-		modelPartData2.addChild(
+		modelPartData3.addChild(
 			EntityModelPartNames.HAT_RIM,
 			ModelPartBuilder.create().uv(30, 47).cuboid(-8.0F, -8.0F, -6.0F, 16.0F, 16.0F, 1.0F),
 			ModelTransform.rotation((float) (-Math.PI / 2), 0.0F, 0.0F)
@@ -66,7 +66,7 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 	public static TexturedModelData getArmorTexturedModelData(Dilation dilation) {
 		ModelData modelData = BipedEntityModel.getModelData(dilation, 0.0F);
 		ModelPartData modelPartData = modelData.getRoot();
-		modelPartData.addChild(
+		ModelPartData modelPartData2 = modelPartData.addChild(
 			EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 8.0F, 8.0F, dilation), ModelTransform.NONE
 		);
 		modelPartData.addChild(
@@ -82,13 +82,14 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 			ModelPartBuilder.create().uv(0, 16).mirrored().cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation.add(0.1F)),
 			ModelTransform.pivot(2.0F, 12.0F, 0.0F)
 		);
-		modelPartData.getChild(EntityModelPartNames.HAT).addChild(EntityModelPartNames.HAT_RIM, ModelPartBuilder.create(), ModelTransform.NONE);
+		modelPartData2.getChild(EntityModelPartNames.HAT).addChild(EntityModelPartNames.HAT_RIM, ModelPartBuilder.create(), ModelTransform.NONE);
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 
-	public void setAngles(T zombieEntity, float f, float g, float h, float i, float j) {
-		super.setAngles(zombieEntity, f, g, h, i, j);
-		CrossbowPosing.meleeAttack(this.leftArm, this.rightArm, zombieEntity.isAttacking(), this.handSwingProgress, h);
+	public void setAngles(S zombieVillagerRenderState) {
+		super.setAngles(zombieVillagerRenderState);
+		float f = zombieVillagerRenderState.handSwingProgress;
+		CrossbowPosing.meleeAttack(this.leftArm, this.rightArm, zombieVillagerRenderState.attacking, f, zombieVillagerRenderState.age);
 	}
 
 	@Override

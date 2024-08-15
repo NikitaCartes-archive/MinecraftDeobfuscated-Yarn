@@ -141,6 +141,10 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 			Vec3d vec3d3 = this.getVelocity();
 			this.move(MovementType.SELF, vec3d3);
+			if (!this.getWorld().isClient()) {
+				this.tickBlockCollision();
+			}
+
 			this.setVelocity(vec3d3);
 		}
 

@@ -49,14 +49,7 @@ public interface AquiferSampler {
 
 	boolean needsFluidTick();
 
-	public static final class FluidLevel {
-		final int y;
-		final BlockState state;
-
-		public FluidLevel(int y, BlockState state) {
-			this.y = y;
-			this.state = state;
-		}
+	public static record FluidLevel(int y, BlockState state) {
 
 		public BlockState getBlockState(int y) {
 			return y < this.y ? this.state : Blocks.AIR.getDefaultState();
@@ -161,72 +154,89 @@ public interface AquiferSampler {
 					int o = Integer.MAX_VALUE;
 					int p = Integer.MAX_VALUE;
 					int q = Integer.MAX_VALUE;
-					long r = 0L;
+					int r = Integer.MAX_VALUE;
 					long s = 0L;
 					long t = 0L;
+					long u = 0L;
+					long v = 0L;
 
-					for (int u = 0; u <= 1; u++) {
-						for (int v = -1; v <= 1; v++) {
-							for (int w = 0; w <= 1; w++) {
-								int x = l + u;
-								int y = m + v;
-								int z = n + w;
-								int aa = this.index(x, y, z);
-								long ab = this.blockPositions[aa];
-								long ac;
-								if (ab != Long.MAX_VALUE) {
-									ac = ab;
+					for (int w = 0; w <= 1; w++) {
+						for (int x = -1; x <= 1; x++) {
+							for (int y = 0; y <= 1; y++) {
+								int z = l + w;
+								int aa = m + x;
+								int ab = n + y;
+								int ac = this.index(z, aa, ab);
+								long ad = this.blockPositions[ac];
+								long ae;
+								if (ad != Long.MAX_VALUE) {
+									ae = ad;
 								} else {
-									Random random = this.randomDeriver.split(x, y, z);
-									ac = BlockPos.asLong(x * 16 + random.nextInt(10), y * 12 + random.nextInt(9), z * 16 + random.nextInt(10));
-									this.blockPositions[aa] = ac;
+									Random random = this.randomDeriver.split(z, aa, ab);
+									ae = BlockPos.asLong(z * 16 + random.nextInt(10), aa * 12 + random.nextInt(9), ab * 16 + random.nextInt(10));
+									this.blockPositions[ac] = ae;
 								}
 
-								int ad = BlockPos.unpackLongX(ac) - i;
-								int ae = BlockPos.unpackLongY(ac) - j;
-								int af = BlockPos.unpackLongZ(ac) - k;
-								int ag = ad * ad + ae * ae + af * af;
-								if (o >= ag) {
+								int af = BlockPos.unpackLongX(ae) - i;
+								int ag = BlockPos.unpackLongY(ae) - j;
+								int ah = BlockPos.unpackLongZ(ae) - k;
+								int ai = af * af + ag * ag + ah * ah;
+								if (o >= ai) {
+									v = u;
+									u = t;
 									t = s;
-									s = r;
-									r = ac;
+									s = ae;
+									r = q;
 									q = p;
 									p = o;
-									o = ag;
-								} else if (p >= ag) {
-									t = s;
-									s = ac;
+									o = ai;
+								} else if (p >= ai) {
+									v = u;
+									u = t;
+									t = ae;
+									r = q;
 									q = p;
-									p = ag;
-								} else if (q >= ag) {
-									t = ac;
-									q = ag;
+									p = ai;
+								} else if (q >= ai) {
+									v = u;
+									u = ae;
+									r = q;
+									q = ai;
+								} else if (r >= ai) {
+									v = ae;
+									r = ai;
 								}
 							}
 						}
 					}
 
-					AquiferSampler.FluidLevel fluidLevel2 = this.getWaterLevel(r);
+					AquiferSampler.FluidLevel fluidLevel2 = this.getWaterLevel(s);
 					double d = maxDistance(o, p);
 					BlockState blockState = fluidLevel2.getBlockState(j);
 					if (d <= 0.0) {
-						this.needsFluidTick = d >= NEEDS_FLUID_TICK_DISTANCE_THRESHOLD;
+						if (d >= NEEDS_FLUID_TICK_DISTANCE_THRESHOLD) {
+							AquiferSampler.FluidLevel fluidLevel3 = this.getWaterLevel(t);
+							this.needsFluidTick = !fluidLevel2.equals(fluidLevel3);
+						} else {
+							this.needsFluidTick = false;
+						}
+
 						return blockState;
 					} else if (blockState.isOf(Blocks.WATER) && this.fluidLevelSampler.getFluidLevel(i, j - 1, k).getBlockState(j - 1).isOf(Blocks.LAVA)) {
 						this.needsFluidTick = true;
 						return blockState;
 					} else {
 						MutableDouble mutableDouble = new MutableDouble(Double.NaN);
-						AquiferSampler.FluidLevel fluidLevel3 = this.getWaterLevel(s);
-						double e = d * this.calculateDensity(pos, mutableDouble, fluidLevel2, fluidLevel3);
+						AquiferSampler.FluidLevel fluidLevel4 = this.getWaterLevel(t);
+						double e = d * this.calculateDensity(pos, mutableDouble, fluidLevel2, fluidLevel4);
 						if (density + e > 0.0) {
 							this.needsFluidTick = false;
 							return null;
 						} else {
-							AquiferSampler.FluidLevel fluidLevel4 = this.getWaterLevel(t);
+							AquiferSampler.FluidLevel fluidLevel5 = this.getWaterLevel(u);
 							double f = maxDistance(o, q);
 							if (f > 0.0) {
-								double g = d * f * this.calculateDensity(pos, mutableDouble, fluidLevel2, fluidLevel4);
+								double g = d * f * this.calculateDensity(pos, mutableDouble, fluidLevel2, fluidLevel5);
 								if (density + g > 0.0) {
 									this.needsFluidTick = false;
 									return null;
@@ -235,14 +245,24 @@ public interface AquiferSampler {
 
 							double g = maxDistance(p, q);
 							if (g > 0.0) {
-								double h = d * g * this.calculateDensity(pos, mutableDouble, fluidLevel3, fluidLevel4);
+								double h = d * g * this.calculateDensity(pos, mutableDouble, fluidLevel4, fluidLevel5);
 								if (density + h > 0.0) {
 									this.needsFluidTick = false;
 									return null;
 								}
 							}
 
-							this.needsFluidTick = true;
+							boolean bl = !fluidLevel2.equals(fluidLevel4);
+							boolean bl2 = g >= NEEDS_FLUID_TICK_DISTANCE_THRESHOLD && !fluidLevel4.equals(fluidLevel5);
+							boolean bl3 = f >= NEEDS_FLUID_TICK_DISTANCE_THRESHOLD && !fluidLevel2.equals(fluidLevel5);
+							if (!bl && !bl2 && !bl3) {
+								this.needsFluidTick = f >= NEEDS_FLUID_TICK_DISTANCE_THRESHOLD
+									&& maxDistance(o, r) >= NEEDS_FLUID_TICK_DISTANCE_THRESHOLD
+									&& !fluidLevel2.equals(this.getWaterLevel(v));
+							} else {
+								this.needsFluidTick = true;
+							}
+
 							return blockState;
 						}
 					}

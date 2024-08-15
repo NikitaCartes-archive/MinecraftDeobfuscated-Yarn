@@ -25,8 +25,8 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -63,10 +63,10 @@ public record JukeboxPlayableComponent(RegistryPair<JukeboxSong> song, boolean s
 		return new JukeboxPlayableComponent(this.song, showInTooltip);
 	}
 
-	public static ItemActionResult tryPlayStack(World world, BlockPos pos, ItemStack stack, PlayerEntity player) {
+	public static ActionResult tryPlayStack(World world, BlockPos pos, ItemStack stack, PlayerEntity player) {
 		JukeboxPlayableComponent jukeboxPlayableComponent = stack.get(DataComponentTypes.JUKEBOX_PLAYABLE);
 		if (jukeboxPlayableComponent == null) {
-			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 		} else {
 			BlockState blockState = world.getBlockState(pos);
 			if (blockState.isOf(Blocks.JUKEBOX) && !(Boolean)blockState.get(JukeboxBlock.HAS_RECORD)) {
@@ -80,9 +80,9 @@ public record JukeboxPlayableComponent(RegistryPair<JukeboxSong> song, boolean s
 					player.incrementStat(Stats.PLAY_RECORD);
 				}
 
-				return ItemActionResult.success(world.isClient);
+				return ActionResult.SUCCESS;
 			} else {
-				return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 			}
 		}
 	}

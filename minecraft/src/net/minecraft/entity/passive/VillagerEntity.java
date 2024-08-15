@@ -11,7 +11,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -101,9 +100,6 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	public static final int field_30602 = 12;
 	public static final Map<Item, Integer> ITEM_FOOD_VALUES = ImmutableMap.of(Items.BREAD, 4, Items.POTATO, 1, Items.CARROT, 1, Items.BEETROOT, 1);
 	private static final int field_30604 = 2;
-	private static final Set<Item> GATHERABLE_ITEMS = ImmutableSet.of(
-		Items.BREAD, Items.POTATO, Items.CARROT, Items.WHEAT, Items.WHEAT_SEEDS, Items.BEETROOT, Items.BEETROOT_SEEDS, Items.TORCHFLOWER_SEEDS, Items.PITCHER_POD
-	);
 	private static final int field_30605 = 10;
 	private static final int field_30606 = 1200;
 	private static final int field_30607 = 24000;
@@ -189,6 +185,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		super(entityType, world);
 		((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
 		this.getNavigation().setCanSwim(true);
+		this.getNavigation().setMaxFollowRange(48.0F);
 		this.setCanPickUpLoot(true);
 		this.setVillagerData(this.getVillagerData().withType(type).withProfession(VillagerProfession.NONE));
 	}
@@ -258,7 +255,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	public static DefaultAttributeContainer.Builder createVillagerAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.5).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48.0);
+		return MobEntity.createMobAttributes().add(EntityAttributes.MOVEMENT_SPEED, 0.5);
 	}
 
 	public boolean isNatural() {
@@ -323,7 +320,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			return super.interactMob(player, hand);
 		} else if (this.isBaby()) {
 			this.sayNo();
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			if (!this.getWorld().isClient) {
 				boolean bl = this.getOffers().isEmpty();
@@ -342,7 +339,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 				this.beginTradeWith(player);
 			}
 
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		}
 	}
 
@@ -816,7 +813,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
 			LOGGER.info("Villager {} was struck by lightning {}.", this, lightning);
-			WitchEntity witchEntity = EntityType.WITCH.create(world);
+			WitchEntity witchEntity = EntityType.WITCH.create(world, SpawnReason.CONVERSION);
 			if (witchEntity != null) {
 				witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
 				witchEntity.initialize(world, world.getLocalDifficulty(witchEntity.getBlockPos()), SpawnReason.CONVERSION, null);
@@ -846,7 +843,8 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	@Override
 	public boolean canGather(ItemStack stack) {
 		Item item = stack.getItem();
-		return (GATHERABLE_ITEMS.contains(item) || this.getVillagerData().getProfession().gatherableItems().contains(item)) && this.getInventory().canInsert(stack);
+		return (stack.isIn(ItemTags.VILLAGER_PICKS_UP) || this.getVillagerData().getProfession().gatherableItems().contains(item))
+			&& this.getInventory().canInsert(stack);
 	}
 
 	public boolean wantsToStartBreeding() {

@@ -15,9 +15,9 @@ public class WhiteAshParticle extends AscendingParticle {
 		ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, float scaleMultiplier, SpriteProvider spriteProvider
 	) {
 		super(world, x, y, z, 0.1F, -0.1F, 0.1F, velocityX, velocityY, velocityZ, scaleMultiplier, spriteProvider, 0.0F, 20, 0.0125F, false);
-		this.red = (float)ColorHelper.Argb.getRed(12235202) / 255.0F;
-		this.green = (float)ColorHelper.Argb.getGreen(12235202) / 255.0F;
-		this.blue = (float)ColorHelper.Argb.getBlue(12235202) / 255.0F;
+		this.red = (float)ColorHelper.getRed(12235202) / 255.0F;
+		this.green = (float)ColorHelper.getGreen(12235202) / 255.0F;
+		this.blue = (float)ColorHelper.getBlue(12235202) / 255.0F;
 	}
 
 	@Environment(EnvType.CLIENT)

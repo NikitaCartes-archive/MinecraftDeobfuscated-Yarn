@@ -1,8 +1,7 @@
 package net.minecraft.world.tick;
 
-import java.util.function.Function;
-import net.minecraft.nbt.NbtElement;
+import java.util.List;
 
 public interface SerializableTickScheduler<T> {
-	NbtElement toNbt(long time, Function<T, String> typeToNameFunction);
+	List<Tick<T>> collectTicks(long time);
 }

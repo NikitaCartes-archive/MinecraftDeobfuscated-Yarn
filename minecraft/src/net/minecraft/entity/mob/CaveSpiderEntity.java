@@ -22,7 +22,7 @@ public class CaveSpiderEntity extends SpiderEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createCaveSpiderAttributes() {
-		return SpiderEntity.createSpiderAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 12.0);
+		return SpiderEntity.createSpiderAttributes().add(EntityAttributes.MAX_HEALTH, 12.0);
 	}
 
 	@Override

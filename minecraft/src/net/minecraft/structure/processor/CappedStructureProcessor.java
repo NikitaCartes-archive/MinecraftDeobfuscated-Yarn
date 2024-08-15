@@ -46,7 +46,7 @@ public class CappedStructureProcessor extends StructureProcessor {
 	) {
 		if (this.limit.getMax() != 0 && !currentBlockInfos.isEmpty()) {
 			if (originalBlockInfos.size() != currentBlockInfos.size()) {
-				Util.error(
+				Util.logErrorOrPause(
 					"Original block info list not in sync with processed list, skipping processing. Original size: "
 						+ originalBlockInfos.size()
 						+ ", Processed size: "

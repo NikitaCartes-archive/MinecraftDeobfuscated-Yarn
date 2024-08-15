@@ -10,12 +10,15 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.navigation.GuiNavigationType;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.Scroller;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Smoother;
+import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWDropCallback;
 import org.slf4j.Logger;
@@ -38,17 +41,18 @@ public class Mouse {
 	private final Smoother cursorYSmoother = new Smoother();
 	private double cursorDeltaX;
 	private double cursorDeltaY;
-	private double eventDeltaHorizontalWheel;
-	private double eventDeltaVerticalWheel;
+	private final Scroller scroller;
 	private double lastTickTime = Double.MIN_VALUE;
 	private boolean cursorLocked;
 
 	public Mouse(MinecraftClient client) {
 		this.client = client;
+		this.scroller = new Scroller();
 	}
 
 	private void onMouseButton(long window, int button, int action, int mods) {
 		if (window == this.client.getWindow().getHandle()) {
+			this.client.getInactivityFpsLimiter().onInput();
 			if (this.client.currentScreen != null) {
 				this.client.setNavigationType(GuiNavigationType.MOUSE);
 			}
@@ -131,6 +135,7 @@ public class Mouse {
 	 */
 	private void onMouseScroll(long window, double horizontal, double vertical) {
 		if (window == MinecraftClient.getInstance().getWindow().getHandle()) {
+			this.client.getInactivityFpsLimiter().onInput();
 			boolean bl = this.client.options.getDiscreteMouseScroll().getValue();
 			double d = this.client.options.getMouseWheelSensitivity().getValue();
 			double e = (bl ? Math.signum(horizontal) : horizontal) * d;
@@ -142,34 +147,22 @@ public class Mouse {
 					this.client.currentScreen.mouseScrolled(g, h, e, f);
 					this.client.currentScreen.applyMousePressScrollNarratorDelay();
 				} else if (this.client.player != null) {
-					if (this.eventDeltaHorizontalWheel != 0.0 && Math.signum(e) != Math.signum(this.eventDeltaHorizontalWheel)) {
-						this.eventDeltaHorizontalWheel = 0.0;
-					}
-
-					if (this.eventDeltaVerticalWheel != 0.0 && Math.signum(f) != Math.signum(this.eventDeltaVerticalWheel)) {
-						this.eventDeltaVerticalWheel = 0.0;
-					}
-
-					this.eventDeltaHorizontalWheel += e;
-					this.eventDeltaVerticalWheel += f;
-					int i = (int)this.eventDeltaHorizontalWheel;
-					int j = (int)this.eventDeltaVerticalWheel;
-					if (i == 0 && j == 0) {
+					Vector2i vector2i = this.scroller.update(e, f);
+					if (vector2i.x == 0 && vector2i.y == 0) {
 						return;
 					}
 
-					this.eventDeltaHorizontalWheel -= (double)i;
-					this.eventDeltaVerticalWheel -= (double)j;
-					int k = j == 0 ? -i : j;
+					int i = vector2i.y == 0 ? -vector2i.x : vector2i.y;
 					if (this.client.player.isSpectator()) {
 						if (this.client.inGameHud.getSpectatorHud().isOpen()) {
-							this.client.inGameHud.getSpectatorHud().cycleSlot(-k);
+							this.client.inGameHud.getSpectatorHud().cycleSlot(-i);
 						} else {
-							float l = MathHelper.clamp(this.client.player.getAbilities().getFlySpeed() + (float)j * 0.005F, 0.0F, 0.2F);
-							this.client.player.getAbilities().setFlySpeed(l);
+							float j = MathHelper.clamp(this.client.player.getAbilities().getFlySpeed() + (float)vector2i.y * 0.005F, 0.0F, 0.2F);
+							this.client.player.getAbilities().setFlySpeed(j);
 						}
 					} else {
-						this.client.player.getInventory().scrollInHotbar((double)k);
+						PlayerInventory playerInventory = this.client.player.getInventory();
+						playerInventory.setSelectedSlot(Scroller.scrollCycling((double)i, playerInventory.selectedSlot, PlayerInventory.getHotbarSize()));
 					}
 				}
 			}
@@ -177,6 +170,7 @@ public class Mouse {
 	}
 
 	private void onFilesDropped(long window, List<Path> paths, int invalidFilesCount) {
+		this.client.getInactivityFpsLimiter().onInput();
 		if (this.client.currentScreen != null) {
 			this.client.currentScreen.filesDragged(paths);
 		}
@@ -239,7 +233,12 @@ public class Mouse {
 		this.lastTickTime = d;
 		if (this.client.isWindowFocused()) {
 			Screen screen = this.client.currentScreen;
-			if (screen != null && this.client.getOverlay() == null && (this.cursorDeltaX != 0.0 || this.cursorDeltaY != 0.0)) {
+			boolean bl = this.cursorDeltaX != 0.0 || this.cursorDeltaY != 0.0;
+			if (bl) {
+				this.client.getInactivityFpsLimiter().onInput();
+			}
+
+			if (screen != null && this.client.getOverlay() == null && bl) {
 				double f = this.x * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
 				double g = this.y * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
 				Screen.wrapScreenError(() -> screen.mouseMoved(f, g), "mouseMoved event handler", screen.getClass().getCanonicalName());

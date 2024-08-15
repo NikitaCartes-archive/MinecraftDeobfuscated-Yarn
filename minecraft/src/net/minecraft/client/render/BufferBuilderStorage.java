@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.chunk.BlockBufferAllocatorStorage;
 import net.minecraft.client.render.chunk.BlockBufferBuilderPool;
-import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.ModelBaker;
 import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.util.Util;
 
@@ -37,11 +37,15 @@ public class BufferBuilderStorage {
 			assignBufferBuilder(map, RenderLayer.getEntityGlint());
 			assignBufferBuilder(map, RenderLayer.getDirectEntityGlint());
 			assignBufferBuilder(map, RenderLayer.getWaterMask());
-			ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.forEach(renderLayer -> assignBufferBuilder(map, renderLayer));
 		});
-		this.effectVertexConsumers = VertexConsumerProvider.immediate(new BufferAllocator(1536));
 		this.entityVertexConsumers = VertexConsumerProvider.immediate(sequencedMap, new BufferAllocator(786432));
 		this.outlineVertexConsumers = new OutlineVertexConsumerProvider(this.entityVertexConsumers);
+		SequencedMap<RenderLayer, BufferAllocator> sequencedMap2 = Util.make(
+			new Object2ObjectLinkedOpenHashMap<RenderLayer, BufferAllocator>(),
+			object2ObjectLinkedOpenHashMap -> ModelBaker.BLOCK_DESTRUCTION_RENDER_LAYERS
+					.forEach(renderLayer -> assignBufferBuilder(object2ObjectLinkedOpenHashMap, renderLayer))
+		);
+		this.effectVertexConsumers = VertexConsumerProvider.immediate(sequencedMap2, new BufferAllocator(0));
 	}
 
 	private static void assignBufferBuilder(Object2ObjectLinkedOpenHashMap<RenderLayer, BufferAllocator> builderStorage, RenderLayer layer) {

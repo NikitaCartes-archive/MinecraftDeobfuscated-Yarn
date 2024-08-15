@@ -1,6 +1,5 @@
 package net.minecraft.client.render.model;
 
-import java.util.Collection;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -11,10 +10,21 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public interface UnbakedModel {
-	Collection<Identifier> getModelDependencies();
-
-	void setParents(Function<Identifier, UnbakedModel> modelLoader);
+	void resolve(UnbakedModel.Resolver resolver, UnbakedModel.ModelType currentlyResolvingType);
 
 	@Nullable
 	BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer);
+
+	@Environment(EnvType.CLIENT)
+	public static enum ModelType {
+		TOP,
+		OVERRIDE;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public interface Resolver {
+		UnbakedModel resolve(Identifier id);
+
+		UnbakedModel resolveOverride(Identifier id);
+	}
 }

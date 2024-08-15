@@ -83,7 +83,7 @@ public class EnchantCommand {
 							itemStack.addEnchantment(enchantment, level);
 							i++;
 						} else if (targets.size() == 1) {
-							throw FAILED_INCOMPATIBLE_EXCEPTION.create(itemStack.getItem().getName(itemStack).getString());
+							throw FAILED_INCOMPATIBLE_EXCEPTION.create(itemStack.getName().getString());
 						}
 					} else if (targets.size() == 1) {
 						throw FAILED_ITEMLESS_EXCEPTION.create(livingEntity.getName().getString());

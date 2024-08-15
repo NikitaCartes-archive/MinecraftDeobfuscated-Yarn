@@ -3,9 +3,6 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.item.CrossbowItem;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 
@@ -23,27 +20,26 @@ public class CrossbowPosing {
 		modelPart2.pitch = -1.5F + head.pitch;
 	}
 
-	public static void charge(ModelPart holdingArm, ModelPart pullingArm, LivingEntity actor, boolean rightArmed) {
-		ModelPart modelPart = rightArmed ? holdingArm : pullingArm;
-		ModelPart modelPart2 = rightArmed ? pullingArm : holdingArm;
-		modelPart.yaw = rightArmed ? -0.8F : 0.8F;
+	public static void charge(ModelPart holdingArm, ModelPart pullingArm, float f, int i, boolean bl) {
+		ModelPart modelPart = bl ? holdingArm : pullingArm;
+		ModelPart modelPart2 = bl ? pullingArm : holdingArm;
+		modelPart.yaw = bl ? -0.8F : 0.8F;
 		modelPart.pitch = -0.97079635F;
 		modelPart2.pitch = modelPart.pitch;
-		float f = (float)CrossbowItem.getPullTime(actor.getActiveItem(), actor);
-		float g = MathHelper.clamp((float)actor.getItemUseTime(), 0.0F, f);
+		float g = MathHelper.clamp((float)i, 0.0F, f);
 		float h = g / f;
-		modelPart2.yaw = MathHelper.lerp(h, 0.4F, 0.85F) * (float)(rightArmed ? 1 : -1);
+		modelPart2.yaw = MathHelper.lerp(h, 0.4F, 0.85F) * (float)(bl ? 1 : -1);
 		modelPart2.pitch = MathHelper.lerp(h, modelPart2.pitch, (float) (-Math.PI / 2));
 	}
 
-	public static <T extends MobEntity> void meleeAttack(ModelPart leftArm, ModelPart rightArm, T actor, float swingProgress, float animationProgress) {
+	public static void meleeAttack(ModelPart leftArm, ModelPart rightArm, Arm arm, float swingProgress, float animationProgress) {
 		float f = MathHelper.sin(swingProgress * (float) Math.PI);
 		float g = MathHelper.sin((1.0F - (1.0F - swingProgress) * (1.0F - swingProgress)) * (float) Math.PI);
 		leftArm.roll = 0.0F;
 		rightArm.roll = 0.0F;
 		leftArm.yaw = (float) (Math.PI / 20);
 		rightArm.yaw = (float) (-Math.PI / 20);
-		if (actor.getMainArm() == Arm.RIGHT) {
+		if (arm == Arm.RIGHT) {
 			leftArm.pitch = -1.8849558F + MathHelper.cos(animationProgress * 0.09F) * 0.15F;
 			rightArm.pitch = -0.0F + MathHelper.cos(animationProgress * 0.19F) * 0.5F;
 			leftArm.pitch += f * 2.2F - g * 0.4F;

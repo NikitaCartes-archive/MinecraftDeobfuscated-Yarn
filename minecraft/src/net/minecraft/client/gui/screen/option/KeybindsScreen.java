@@ -60,7 +60,7 @@ public class KeybindsScreen extends GameOptionsScreen {
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (this.selectedKeyBinding != null) {
-			this.gameOptions.setKeyCode(this.selectedKeyBinding, InputUtil.Type.MOUSE.createFromCode(button));
+			this.selectedKeyBinding.setBoundKey(InputUtil.Type.MOUSE.createFromCode(button));
 			this.selectedKeyBinding = null;
 			this.controlsList.update();
 			return true;
@@ -73,9 +73,9 @@ public class KeybindsScreen extends GameOptionsScreen {
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (this.selectedKeyBinding != null) {
 			if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-				this.gameOptions.setKeyCode(this.selectedKeyBinding, InputUtil.UNKNOWN_KEY);
+				this.selectedKeyBinding.setBoundKey(InputUtil.UNKNOWN_KEY);
 			} else {
-				this.gameOptions.setKeyCode(this.selectedKeyBinding, InputUtil.fromKeyCode(keyCode, scanCode));
+				this.selectedKeyBinding.setBoundKey(InputUtil.fromKeyCode(keyCode, scanCode));
 			}
 
 			this.selectedKeyBinding = null;

@@ -9,8 +9,8 @@ import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -30,11 +30,11 @@ public class PumpkinBlock extends Block {
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (!stack.isOf(Items.SHEARS)) {
 			return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
 		} else if (world.isClient) {
-			return ItemActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			Direction direction = hit.getSide();
 			Direction direction2 = direction.getAxis() == Direction.Axis.Y ? player.getHorizontalFacing().getOpposite() : direction;
@@ -54,7 +54,7 @@ public class PumpkinBlock extends Block {
 			stack.damage(1, player, LivingEntity.getSlotForHand(hand));
 			world.emitGameEvent(player, GameEvent.SHEAR, pos);
 			player.incrementStat(Stats.USED.getOrCreateStat(Items.SHEARS));
-			return ItemActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		}
 	}
 }

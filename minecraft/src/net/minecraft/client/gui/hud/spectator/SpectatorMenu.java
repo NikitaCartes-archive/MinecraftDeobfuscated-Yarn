@@ -6,9 +6,11 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class SpectatorMenu {
@@ -34,7 +36,7 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public void renderIcon(DrawContext context, float brightness, int alpha) {
+		public void renderIcon(DrawContext context, float brightness, float f) {
 		}
 
 		@Override
@@ -135,11 +137,12 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public void renderIcon(DrawContext context, float brightness, int alpha) {
+		public void renderIcon(DrawContext context, float brightness, float f) {
+			int i = ColorHelper.fromFloats(f, brightness, brightness, brightness);
 			if (this.direction < 0) {
-				context.drawGuiTexture(SpectatorMenu.SCROLL_LEFT_TEXTURE, 0, 0, 16, 16);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, SpectatorMenu.SCROLL_LEFT_TEXTURE, 0, 0, 16, 16, i);
 			} else {
-				context.drawGuiTexture(SpectatorMenu.SCROLL_RIGHT_TEXTURE, 0, 0, 16, 16);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, SpectatorMenu.SCROLL_RIGHT_TEXTURE, 0, 0, 16, 16, i);
 			}
 		}
 
@@ -162,8 +165,8 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public void renderIcon(DrawContext context, float brightness, int alpha) {
-			context.drawGuiTexture(SpectatorMenu.CLOSE_TEXTURE, 0, 0, 16, 16);
+		public void renderIcon(DrawContext context, float brightness, float f) {
+			context.drawGuiTexture(RenderLayer::getGuiTextured, SpectatorMenu.CLOSE_TEXTURE, 0, 0, 16, 16, ColorHelper.fromFloats(f, brightness, brightness, brightness));
 		}
 
 		@Override

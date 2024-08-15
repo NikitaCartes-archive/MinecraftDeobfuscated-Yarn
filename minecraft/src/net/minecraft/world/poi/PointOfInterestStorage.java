@@ -38,7 +38,7 @@ import net.minecraft.world.storage.ChunkPosKeyedStorage;
 import net.minecraft.world.storage.SerializingRegionBasedStorage;
 import net.minecraft.world.storage.StorageKey;
 
-public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointOfInterestSet> {
+public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointOfInterestSet, PointOfInterestSet.Serialized> {
 	public static final int field_30265 = 6;
 	public static final int field_30266 = 1;
 	private final PointOfInterestStorage.PointOfInterestDistanceTracker pointOfInterestDistanceTracker;
@@ -55,7 +55,9 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	) {
 		super(
 			new ChunkPosKeyedStorage(storageKey, directory, dataFixer, dsync, DataFixTypes.POI_CHUNK),
-			PointOfInterestSet::createCodec,
+			PointOfInterestSet.Serialized.CODEC,
+			PointOfInterestSet::toSerialized,
+			PointOfInterestSet.Serialized::toPointOfInterestSet,
 			PointOfInterestSet::new,
 			registryManager,
 			errorHandler,
@@ -105,9 +107,9 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	) {
 		return IntStream.range(this.world.getBottomSectionCoord(), this.world.getTopSectionCoord())
 			.boxed()
-			.map(integer -> this.get(ChunkSectionPos.from(chunkPos, integer).asLong()))
+			.map(coord -> this.get(ChunkSectionPos.from(chunkPos, coord).asLong()))
 			.filter(Optional::isPresent)
-			.flatMap(optional -> ((PointOfInterestSet)optional.get()).get(typePredicate, occupationStatus));
+			.flatMap(poiSet -> ((PointOfInterestSet)poiSet.get()).get(typePredicate, occupationStatus));
 	}
 
 	public Stream<BlockPos> getPositions(
@@ -158,7 +160,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	) {
 		return this.getInCircle(typePredicate, pos, radius, occupationStatus)
 			.map(PointOfInterest::getPos)
-			.min(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(pos)));
+			.min(Comparator.comparingDouble(poiPos -> poiPos.getSquaredDistance(pos)));
 	}
 
 	public Optional<Pair<RegistryEntry<PointOfInterestType>, BlockPos>> getNearestTypeAndPosition(
@@ -179,14 +181,14 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		return this.getInCircle(typePredicate, pos, radius, occupationStatus)
 			.map(PointOfInterest::getPos)
 			.filter(posPredicate)
-			.min(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(pos)));
+			.min(Comparator.comparingDouble(poiPos -> poiPos.getSquaredDistance(pos)));
 	}
 
 	public Optional<BlockPos> getPosition(
-		Predicate<RegistryEntry<PointOfInterestType>> typePredicate, BiPredicate<RegistryEntry<PointOfInterestType>, BlockPos> biPredicate, BlockPos pos, int radius
+		Predicate<RegistryEntry<PointOfInterestType>> typePredicate, BiPredicate<RegistryEntry<PointOfInterestType>, BlockPos> posPredicate, BlockPos pos, int radius
 	) {
 		return this.getInCircle(typePredicate, pos, radius, PointOfInterestStorage.OccupationStatus.HAS_SPACE)
-			.filter(poi -> biPredicate.test(poi.getType(), poi.getPos()))
+			.filter(poi -> posPredicate.test(poi.getType(), poi.getPos()))
 			.findFirst()
 			.map(poi -> {
 				poi.reserveTicket();
@@ -209,7 +211,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	public boolean releaseTicket(BlockPos pos) {
 		return (Boolean)this.get(ChunkSectionPos.toLong(pos))
 			.map(poiSet -> poiSet.releaseTicket(pos))
-			.orElseThrow(() -> Util.throwOrPause(new IllegalStateException("POI never registered at " + pos)));
+			.orElseThrow(() -> Util.getFatalOrPause(new IllegalStateException("POI never registered at " + pos)));
 	}
 
 	public boolean test(BlockPos pos, Predicate<RegistryEntry<PointOfInterestType>> predicate) {

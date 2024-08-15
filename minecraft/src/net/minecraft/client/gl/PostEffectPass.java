@@ -1,38 +1,35 @@
 package net.minecraft.client.gl;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.function.IntSupplier;
+import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9916;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.FrameGraphBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.util.Handle;
 import net.minecraft.resource.ResourceFactory;
+import net.minecraft.util.Identifier;
 import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class PostEffectPass implements AutoCloseable {
 	private final JsonEffectShaderProgram program;
-	public final Framebuffer input;
-	public final Framebuffer output;
-	private final List<IntSupplier> samplerValues = Lists.<IntSupplier>newArrayList();
-	private final List<String> samplerNames = Lists.<String>newArrayList();
-	private final List<Integer> samplerWidths = Lists.<Integer>newArrayList();
-	private final List<Integer> samplerHeights = Lists.<Integer>newArrayList();
-	private Matrix4f projectionMatrix;
-	private final int texFilter;
+	public final Identifier id;
+	private final List<PostEffectPass.Sampler> samplers = new ArrayList();
 
-	public PostEffectPass(ResourceFactory resourceFactory, String programName, Framebuffer input, Framebuffer output, boolean linear) throws IOException {
+	public PostEffectPass(ResourceFactory resourceFactory, String programName, Identifier id) throws IOException {
 		this.program = new JsonEffectShaderProgram(resourceFactory, programName);
-		this.input = input;
-		this.output = output;
-		this.texFilter = linear ? 9729 : 9728;
+		this.id = id;
 	}
 
 	public void close() {
@@ -43,58 +40,57 @@ public class PostEffectPass implements AutoCloseable {
 		return this.program.getName();
 	}
 
-	public void addAuxTarget(String name, IntSupplier valueSupplier, int width, int height) {
-		this.samplerNames.add(this.samplerNames.size(), name);
-		this.samplerValues.add(this.samplerValues.size(), valueSupplier);
-		this.samplerWidths.add(this.samplerWidths.size(), width);
-		this.samplerHeights.add(this.samplerHeights.size(), height);
+	public void addSampler(PostEffectPass.Sampler sampler) {
+		this.samplers.add(sampler);
 	}
 
-	public void setProjectionMatrix(Matrix4f projectionMatrix) {
-		this.projectionMatrix = projectionMatrix;
-	}
+	public void method_62255(FrameGraphBuilder frameGraphBuilder, Map<Identifier, Handle<Framebuffer>> map, Matrix4f matrix4f, float timeSeconds) {
+		class_9916 lv = frameGraphBuilder.createStageNode(this.getName());
 
-	public void render(float time) {
-		this.input.endWrite();
-		float f = (float)this.output.textureWidth;
-		float g = (float)this.output.textureHeight;
-		RenderSystem.viewport(0, 0, (int)f, (int)g);
-		this.program.bindSampler("DiffuseSampler", this.input::getColorAttachment);
-
-		for (int i = 0; i < this.samplerValues.size(); i++) {
-			this.program.bindSampler((String)this.samplerNames.get(i), (IntSupplier)this.samplerValues.get(i));
-			this.program
-				.getUniformByNameOrDummy("AuxSize" + i)
-				.set((float)((Integer)this.samplerWidths.get(i)).intValue(), (float)((Integer)this.samplerHeights.get(i)).intValue());
+		for (PostEffectPass.Sampler sampler : this.samplers) {
+			sampler.method_62259(lv, map);
 		}
 
-		this.program.getUniformByNameOrDummy("ProjMat").set(this.projectionMatrix);
-		this.program.getUniformByNameOrDummy("InSize").set((float)this.input.textureWidth, (float)this.input.textureHeight);
-		this.program.getUniformByNameOrDummy("OutSize").set(f, g);
-		this.program.getUniformByNameOrDummy("Time").set(time);
-		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		this.program
-			.getUniformByNameOrDummy("ScreenSize")
-			.set((float)minecraftClient.getWindow().getFramebufferWidth(), (float)minecraftClient.getWindow().getFramebufferHeight());
-		this.program.enable();
-		this.output.clear(MinecraftClient.IS_SYSTEM_MAC);
-		this.output.beginWrite(false);
-		RenderSystem.depthFunc(519);
-		BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
-		bufferBuilder.vertex(0.0F, 0.0F, 500.0F);
-		bufferBuilder.vertex(f, 0.0F, 500.0F);
-		bufferBuilder.vertex(f, g, 500.0F);
-		bufferBuilder.vertex(0.0F, g, 500.0F);
-		BufferRenderer.draw(bufferBuilder.end());
-		RenderSystem.depthFunc(515);
-		this.program.disable();
-		this.output.endWrite();
-		this.input.endRead();
+		Handle<Framebuffer> handle = (Handle<Framebuffer>)map.computeIfPresent(this.id, (id, handlex) -> lv.method_61933(handlex));
+		if (handle == null) {
+			throw new IllegalStateException("Missing handle for target " + this.id);
+		} else {
+			lv.method_61929(
+				() -> {
+					Framebuffer framebuffer = handle.get();
+					RenderSystem.viewport(0, 0, framebuffer.textureWidth, framebuffer.textureHeight);
 
-		for (Object object : this.samplerValues) {
-			if (object instanceof Framebuffer) {
-				((Framebuffer)object).endRead();
-			}
+					for (PostEffectPass.Sampler samplerx : this.samplers) {
+						samplerx.bind(this.program, map);
+					}
+
+					this.program.getUniformByNameOrDummy("ProjMat").set(matrix4f);
+					this.program.getUniformByNameOrDummy("OutSize").set((float)framebuffer.textureWidth, (float)framebuffer.textureHeight);
+					this.program.getUniformByNameOrDummy("Time").set(timeSeconds);
+					MinecraftClient minecraftClient = MinecraftClient.getInstance();
+					this.program
+						.getUniformByNameOrDummy("ScreenSize")
+						.set((float)minecraftClient.getWindow().getFramebufferWidth(), (float)minecraftClient.getWindow().getFramebufferHeight());
+					this.program.enable();
+					framebuffer.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+					framebuffer.clear();
+					framebuffer.beginWrite(false);
+					RenderSystem.depthFunc(519);
+					BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
+					bufferBuilder.vertex(0.0F, 0.0F, 500.0F);
+					bufferBuilder.vertex((float)framebuffer.textureWidth, 0.0F, 500.0F);
+					bufferBuilder.vertex((float)framebuffer.textureWidth, (float)framebuffer.textureHeight, 500.0F);
+					bufferBuilder.vertex(0.0F, (float)framebuffer.textureHeight, 500.0F);
+					BufferRenderer.draw(bufferBuilder.end());
+					RenderSystem.depthFunc(515);
+					this.program.disable();
+					framebuffer.endWrite();
+
+					for (PostEffectPass.Sampler sampler2 : this.samplers) {
+						sampler2.method_62261(map);
+					}
+				}
+			);
 		}
 	}
 
@@ -102,7 +98,59 @@ public class PostEffectPass implements AutoCloseable {
 		return this.program;
 	}
 
-	public int getTexFilter() {
-		return this.texFilter;
+	@Environment(EnvType.CLIENT)
+	public interface Sampler {
+		void method_62259(class_9916 arg, Map<Identifier, Handle<Framebuffer>> internalTargets);
+
+		void bind(JsonEffectShaderProgram program, Map<Identifier, Handle<Framebuffer>> internalTargets);
+
+		default void method_62261(Map<Identifier, Handle<Framebuffer>> internalTargets) {
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static record TargetSampler(String samplerName, Identifier targetId, boolean depthBuffer, boolean bilinear) implements PostEffectPass.Sampler {
+		private Handle<Framebuffer> getTarget(Map<Identifier, Handle<Framebuffer>> internalTargets) {
+			Handle<Framebuffer> handle = (Handle<Framebuffer>)internalTargets.get(this.targetId);
+			if (handle == null) {
+				throw new IllegalStateException("Missing handle for target " + this.targetId);
+			} else {
+				return handle;
+			}
+		}
+
+		@Override
+		public void method_62259(class_9916 arg, Map<Identifier, Handle<Framebuffer>> internalTargets) {
+			arg.method_61928(this.getTarget(internalTargets));
+		}
+
+		@Override
+		public void bind(JsonEffectShaderProgram program, Map<Identifier, Handle<Framebuffer>> internalTargets) {
+			Handle<Framebuffer> handle = this.getTarget(internalTargets);
+			Framebuffer framebuffer = handle.get();
+			framebuffer.setTexFilter(this.bilinear ? 9729 : 9728);
+			program.bindSampler(this.samplerName + "Sampler", this.depthBuffer ? framebuffer::getDepthAttachment : framebuffer::getColorAttachment);
+			program.getUniformByNameOrDummy(this.samplerName + "Size").set((float)framebuffer.textureWidth, (float)framebuffer.textureHeight);
+		}
+
+		@Override
+		public void method_62261(Map<Identifier, Handle<Framebuffer>> internalTargets) {
+			if (this.bilinear) {
+				this.getTarget(internalTargets).get().setTexFilter(9728);
+			}
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static record TextureSampler(String samplerName, AbstractTexture texture, int width, int height) implements PostEffectPass.Sampler {
+		@Override
+		public void method_62259(class_9916 arg, Map<Identifier, Handle<Framebuffer>> internalTargets) {
+		}
+
+		@Override
+		public void bind(JsonEffectShaderProgram program, Map<Identifier, Handle<Framebuffer>> internalTargets) {
+			program.bindSampler(this.samplerName + "Sampler", this.texture::getGlId);
+			program.getUniformByNameOrDummy(this.samplerName + "Size").set((float)this.width, (float)this.height);
+		}
 	}
 }

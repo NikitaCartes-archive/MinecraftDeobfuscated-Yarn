@@ -102,7 +102,7 @@ public class LeashKnotEntity extends BlockAttachedEntity {
 				this.emitGameEvent(GameEvent.BLOCK_ATTACH, player);
 			}
 
-			return ActionResult.CONSUME;
+			return ActionResult.SUCCESS;
 		}
 	}
 

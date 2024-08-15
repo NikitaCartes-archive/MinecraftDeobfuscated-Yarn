@@ -8,11 +8,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
@@ -30,39 +30,41 @@ public class FireworkRocketItem extends Item implements ProjectileItem {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		World world = context.getWorld();
-		if (!world.isClient) {
+		if (world instanceof ServerWorld serverWorld) {
 			ItemStack itemStack = context.getStack();
 			Vec3d vec3d = context.getHitPos();
 			Direction direction = context.getSide();
-			FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(
-				world,
-				context.getPlayer(),
-				vec3d.x + (double)direction.getOffsetX() * 0.15,
-				vec3d.y + (double)direction.getOffsetY() * 0.15,
-				vec3d.z + (double)direction.getOffsetZ() * 0.15,
+			ProjectileEntity.spawn(
+				new FireworkRocketEntity(
+					world,
+					context.getPlayer(),
+					vec3d.x + (double)direction.getOffsetX() * 0.15,
+					vec3d.y + (double)direction.getOffsetY() * 0.15,
+					vec3d.z + (double)direction.getOffsetZ() * 0.15,
+					itemStack
+				),
+				serverWorld,
 				itemStack
 			);
-			world.spawnEntity(fireworkRocketEntity);
 			itemStack.decrement(1);
 		}
 
-		return ActionResult.success(world.isClient);
+		return ActionResult.SUCCESS;
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		if (user.isFallFlying()) {
 			ItemStack itemStack = user.getStackInHand(hand);
-			if (!world.isClient) {
-				FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(world, itemStack, user);
-				world.spawnEntity(fireworkRocketEntity);
+			if (world instanceof ServerWorld serverWorld) {
+				ProjectileEntity.spawn(new FireworkRocketEntity(world, itemStack, user), serverWorld, itemStack);
 				itemStack.decrementUnlessCreative(1, user);
 				user.incrementStat(Stats.USED.getOrCreateStat(this));
 			}
 
-			return TypedActionResult.success(user.getStackInHand(hand), world.isClient());
+			return ActionResult.SUCCESS;
 		} else {
-			return TypedActionResult.pass(user.getStackInHand(hand));
+			return ActionResult.PASS;
 		}
 	}
 

@@ -66,7 +66,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-		return EntityType.POLAR_BEAR.create(world);
+		return EntityType.POLAR_BEAR.create(world, SpawnReason.BREEDING);
 	}
 
 	@Override
@@ -93,11 +93,11 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 	}
 
 	public static DefaultAttributeContainer.Builder createPolarBearAttributes() {
-		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0)
-			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 20.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
+		return AnimalEntity.createAnimalAttributes()
+			.add(EntityAttributes.MAX_HEALTH, 30.0)
+			.add(EntityAttributes.FOLLOW_RANGE, 20.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.25)
+			.add(EntityAttributes.ATTACK_DAMAGE, 6.0);
 	}
 
 	public static boolean canSpawn(EntityType<PolarBearEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

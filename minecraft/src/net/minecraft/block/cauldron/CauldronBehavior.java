@@ -14,18 +14,20 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BannerPatternsComponent;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -94,104 +96,19 @@ public interface CauldronBehavior {
 	 * @see #createMap
 	 */
 	CauldronBehavior.CauldronBehaviorMap POWDER_SNOW_CAULDRON_BEHAVIOR = createMap("powder_snow");
-	/**
-	 * A behavior that fills cauldrons with water.
-	 * 
-	 * @see #fillCauldron
-	 */
-	CauldronBehavior FILL_WITH_WATER = (state, world, pos, player, hand, stack) -> fillCauldron(
-			world, pos, player, hand, stack, Blocks.WATER_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, Integer.valueOf(3)), SoundEvents.ITEM_BUCKET_EMPTY
-		);
-	/**
-	 * A behavior that fills cauldrons with lava.
-	 * 
-	 * @see #fillCauldron
-	 */
-	CauldronBehavior FILL_WITH_LAVA = (state, world, pos, player, hand, stack) -> fillCauldron(
-			world, pos, player, hand, stack, Blocks.LAVA_CAULDRON.getDefaultState(), SoundEvents.ITEM_BUCKET_EMPTY_LAVA
-		);
-	/**
-	 * A behavior that fills cauldrons with powder snow.
-	 * 
-	 * @see #fillCauldron
-	 */
-	CauldronBehavior FILL_WITH_POWDER_SNOW = (state, world, pos, player, hand, stack) -> fillCauldron(
-			world,
-			pos,
-			player,
-			hand,
-			stack,
-			Blocks.POWDER_SNOW_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, Integer.valueOf(3)),
-			SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW
-		);
-	/**
-	 * A behavior that cleans dyed shulker boxes.
-	 */
-	CauldronBehavior CLEAN_SHULKER_BOX = (state, world, pos, player, hand, stack) -> {
-		Block block = Block.getBlockFromItem(stack.getItem());
-		if (!(block instanceof ShulkerBoxBlock)) {
-			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-		} else {
-			if (!world.isClient) {
-				ItemStack itemStack = stack.copyComponentsToNewStack(Blocks.SHULKER_BOX, 1);
-				player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, itemStack, false));
-				player.incrementStat(Stats.CLEAN_SHULKER_BOX);
-				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
-			}
-
-			return ItemActionResult.success(world.isClient);
-		}
-	};
-	/**
-	 * A behavior that cleans banners with patterns.
-	 */
-	CauldronBehavior CLEAN_BANNER = (state, world, pos, player, hand, stack) -> {
-		BannerPatternsComponent bannerPatternsComponent = stack.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT);
-		if (bannerPatternsComponent.layers().isEmpty()) {
-			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-		} else {
-			if (!world.isClient) {
-				ItemStack itemStack = stack.copyWithCount(1);
-				itemStack.set(DataComponentTypes.BANNER_PATTERNS, bannerPatternsComponent.withoutTopLayer());
-				player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, itemStack, false));
-				player.incrementStat(Stats.CLEAN_BANNER);
-				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
-			}
-
-			return ItemActionResult.success(world.isClient);
-		}
-	};
-	/**
-	 * A behavior that cleans dyeable items.
-	 */
-	CauldronBehavior CLEAN_DYEABLE_ITEM = (state, world, pos, player, hand, stack) -> {
-		if (!stack.isIn(ItemTags.DYEABLE)) {
-			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-		} else if (!stack.contains(DataComponentTypes.DYED_COLOR)) {
-			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-		} else {
-			if (!world.isClient) {
-				stack.remove(DataComponentTypes.DYED_COLOR);
-				player.incrementStat(Stats.CLEAN_ARMOR);
-				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
-			}
-
-			return ItemActionResult.success(world.isClient);
-		}
-	};
 
 	/**
 	 * Creates a mutable map from {@linkplain Item items} to their
 	 * corresponding cauldron behaviors.
 	 * 
 	 * <p>The default return value in the map is a cauldron behavior
-	 * that returns {@link ItemActionResult#PASS_TO_DEFAULT_BLOCK_INTERACTION} for all items.
+	 * that returns {@link ActionResult#PASS_TO_DEFAULT_BLOCK_ACTION} for all items.
 	 * 
 	 * @return the created map
 	 */
 	static CauldronBehavior.CauldronBehaviorMap createMap(String name) {
 		Object2ObjectOpenHashMap<Item, CauldronBehavior> object2ObjectOpenHashMap = new Object2ObjectOpenHashMap<>();
-		object2ObjectOpenHashMap.defaultReturnValue((state, world, pos, player, hand, stack) -> ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
+		object2ObjectOpenHashMap.defaultReturnValue((state, world, pos, player, hand, stack) -> ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION);
 		CauldronBehavior.CauldronBehaviorMap cauldronBehaviorMap = new CauldronBehavior.CauldronBehaviorMap(name, object2ObjectOpenHashMap);
 		BEHAVIOR_MAPS.put(name, cauldronBehaviorMap);
 		return cauldronBehaviorMap;
@@ -200,17 +117,17 @@ public interface CauldronBehavior {
 	/**
 	 * Called when a player interacts with a cauldron.
 	 * 
-	 * @return a {@linkplain ItemActionResult#isAccepted successful} action result if this behavior succeeds,
-	 * {@link ItemActionResult#PASS_TO_DEFAULT_BLOCK_INTERACTION} otherwise
+	 * @return a {@linkplain ActionResult#isAccepted successful} action result if this behavior succeeds,
+	 * {@link ActionResult#PASS_TO_DEFAULT_BLOCK_ACTION} otherwise
 	 * 
-	 * @param pos the cauldron's position
+	 * @param state the current cauldron block state
 	 * @param player the interacting player
 	 * @param hand the hand interacting with the cauldron
-	 * @param stack the stack in the player's hand
-	 * @param state the current cauldron block state
 	 * @param world the world where the cauldron is located
+	 * @param pos the cauldron's position
+	 * @param stack the stack in the player's hand
 	 */
-	ItemActionResult interact(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack);
+	ActionResult interact(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack);
 
 	/**
 	 * Registers the vanilla cauldron behaviors.
@@ -231,9 +148,9 @@ public interface CauldronBehavior {
 					world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
 				}
 
-				return ItemActionResult.success(world.isClient);
+				return ActionResult.SUCCESS;
 			} else {
-				return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 			}
 		});
 		Map<Item, CauldronBehavior> map2 = WATER_CAULDRON_BEHAVIOR.map();
@@ -263,11 +180,11 @@ public interface CauldronBehavior {
 				world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
 			}
 
-			return ItemActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		});
 		map2.put(Items.POTION, (CauldronBehavior)(state, world, pos, player, hand, stack) -> {
 			if ((Integer)state.get(LeveledCauldronBlock.LEVEL) == 3) {
-				return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 			} else {
 				PotionContentsComponent potionContentsComponent = stack.get(DataComponentTypes.POTION_CONTENTS);
 				if (potionContentsComponent != null && potionContentsComponent.matches(Potions.WATER)) {
@@ -280,50 +197,50 @@ public interface CauldronBehavior {
 						world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
 					}
 
-					return ItemActionResult.success(world.isClient);
+					return ActionResult.SUCCESS;
 				} else {
-					return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+					return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 				}
 			}
 		});
-		map2.put(Items.LEATHER_BOOTS, CLEAN_DYEABLE_ITEM);
-		map2.put(Items.LEATHER_LEGGINGS, CLEAN_DYEABLE_ITEM);
-		map2.put(Items.LEATHER_CHESTPLATE, CLEAN_DYEABLE_ITEM);
-		map2.put(Items.LEATHER_HELMET, CLEAN_DYEABLE_ITEM);
-		map2.put(Items.LEATHER_HORSE_ARMOR, CLEAN_DYEABLE_ITEM);
-		map2.put(Items.WOLF_ARMOR, CLEAN_DYEABLE_ITEM);
-		map2.put(Items.WHITE_BANNER, CLEAN_BANNER);
-		map2.put(Items.GRAY_BANNER, CLEAN_BANNER);
-		map2.put(Items.BLACK_BANNER, CLEAN_BANNER);
-		map2.put(Items.BLUE_BANNER, CLEAN_BANNER);
-		map2.put(Items.BROWN_BANNER, CLEAN_BANNER);
-		map2.put(Items.CYAN_BANNER, CLEAN_BANNER);
-		map2.put(Items.GREEN_BANNER, CLEAN_BANNER);
-		map2.put(Items.LIGHT_BLUE_BANNER, CLEAN_BANNER);
-		map2.put(Items.LIGHT_GRAY_BANNER, CLEAN_BANNER);
-		map2.put(Items.LIME_BANNER, CLEAN_BANNER);
-		map2.put(Items.MAGENTA_BANNER, CLEAN_BANNER);
-		map2.put(Items.ORANGE_BANNER, CLEAN_BANNER);
-		map2.put(Items.PINK_BANNER, CLEAN_BANNER);
-		map2.put(Items.PURPLE_BANNER, CLEAN_BANNER);
-		map2.put(Items.RED_BANNER, CLEAN_BANNER);
-		map2.put(Items.YELLOW_BANNER, CLEAN_BANNER);
-		map2.put(Items.WHITE_SHULKER_BOX, CLEAN_SHULKER_BOX);
-		map2.put(Items.GRAY_SHULKER_BOX, CLEAN_SHULKER_BOX);
-		map2.put(Items.BLACK_SHULKER_BOX, CLEAN_SHULKER_BOX);
-		map2.put(Items.BLUE_SHULKER_BOX, CLEAN_SHULKER_BOX);
-		map2.put(Items.BROWN_SHULKER_BOX, CLEAN_SHULKER_BOX);
-		map2.put(Items.CYAN_SHULKER_BOX, CLEAN_SHULKER_BOX);
-		map2.put(Items.GREEN_SHULKER_BOX, CLEAN_SHULKER_BOX);
-		map2.put(Items.LIGHT_BLUE_SHULKER_BOX, CLEAN_SHULKER_BOX);
-		map2.put(Items.LIGHT_GRAY_SHULKER_BOX, CLEAN_SHULKER_BOX);
-		map2.put(Items.LIME_SHULKER_BOX, CLEAN_SHULKER_BOX);
-		map2.put(Items.MAGENTA_SHULKER_BOX, CLEAN_SHULKER_BOX);
-		map2.put(Items.ORANGE_SHULKER_BOX, CLEAN_SHULKER_BOX);
-		map2.put(Items.PINK_SHULKER_BOX, CLEAN_SHULKER_BOX);
-		map2.put(Items.PURPLE_SHULKER_BOX, CLEAN_SHULKER_BOX);
-		map2.put(Items.RED_SHULKER_BOX, CLEAN_SHULKER_BOX);
-		map2.put(Items.YELLOW_SHULKER_BOX, CLEAN_SHULKER_BOX);
+		map2.put(Items.LEATHER_BOOTS, CauldronBehavior::cleanArmor);
+		map2.put(Items.LEATHER_LEGGINGS, CauldronBehavior::cleanArmor);
+		map2.put(Items.LEATHER_CHESTPLATE, CauldronBehavior::cleanArmor);
+		map2.put(Items.LEATHER_HELMET, CauldronBehavior::cleanArmor);
+		map2.put(Items.LEATHER_HORSE_ARMOR, CauldronBehavior::cleanArmor);
+		map2.put(Items.WOLF_ARMOR, CauldronBehavior::cleanArmor);
+		map2.put(Items.WHITE_BANNER, CauldronBehavior::cleanBanner);
+		map2.put(Items.GRAY_BANNER, CauldronBehavior::cleanBanner);
+		map2.put(Items.BLACK_BANNER, CauldronBehavior::cleanBanner);
+		map2.put(Items.BLUE_BANNER, CauldronBehavior::cleanBanner);
+		map2.put(Items.BROWN_BANNER, CauldronBehavior::cleanBanner);
+		map2.put(Items.CYAN_BANNER, CauldronBehavior::cleanBanner);
+		map2.put(Items.GREEN_BANNER, CauldronBehavior::cleanBanner);
+		map2.put(Items.LIGHT_BLUE_BANNER, CauldronBehavior::cleanBanner);
+		map2.put(Items.LIGHT_GRAY_BANNER, CauldronBehavior::cleanBanner);
+		map2.put(Items.LIME_BANNER, CauldronBehavior::cleanBanner);
+		map2.put(Items.MAGENTA_BANNER, CauldronBehavior::cleanBanner);
+		map2.put(Items.ORANGE_BANNER, CauldronBehavior::cleanBanner);
+		map2.put(Items.PINK_BANNER, CauldronBehavior::cleanBanner);
+		map2.put(Items.PURPLE_BANNER, CauldronBehavior::cleanBanner);
+		map2.put(Items.RED_BANNER, CauldronBehavior::cleanBanner);
+		map2.put(Items.YELLOW_BANNER, CauldronBehavior::cleanBanner);
+		map2.put(Items.WHITE_SHULKER_BOX, CauldronBehavior::cleanShulkerBox);
+		map2.put(Items.GRAY_SHULKER_BOX, CauldronBehavior::cleanShulkerBox);
+		map2.put(Items.BLACK_SHULKER_BOX, CauldronBehavior::cleanShulkerBox);
+		map2.put(Items.BLUE_SHULKER_BOX, CauldronBehavior::cleanShulkerBox);
+		map2.put(Items.BROWN_SHULKER_BOX, CauldronBehavior::cleanShulkerBox);
+		map2.put(Items.CYAN_SHULKER_BOX, CauldronBehavior::cleanShulkerBox);
+		map2.put(Items.GREEN_SHULKER_BOX, CauldronBehavior::cleanShulkerBox);
+		map2.put(Items.LIGHT_BLUE_SHULKER_BOX, CauldronBehavior::cleanShulkerBox);
+		map2.put(Items.LIGHT_GRAY_SHULKER_BOX, CauldronBehavior::cleanShulkerBox);
+		map2.put(Items.LIME_SHULKER_BOX, CauldronBehavior::cleanShulkerBox);
+		map2.put(Items.MAGENTA_SHULKER_BOX, CauldronBehavior::cleanShulkerBox);
+		map2.put(Items.ORANGE_SHULKER_BOX, CauldronBehavior::cleanShulkerBox);
+		map2.put(Items.PINK_SHULKER_BOX, CauldronBehavior::cleanShulkerBox);
+		map2.put(Items.PURPLE_SHULKER_BOX, CauldronBehavior::cleanShulkerBox);
+		map2.put(Items.RED_SHULKER_BOX, CauldronBehavior::cleanShulkerBox);
+		map2.put(Items.YELLOW_SHULKER_BOX, CauldronBehavior::cleanShulkerBox);
 		Map<Item, CauldronBehavior> map3 = LAVA_CAULDRON_BEHAVIOR.map();
 		map3.put(
 			Items.BUCKET,
@@ -354,27 +271,27 @@ public interface CauldronBehavior {
 	 * Registers the behavior for filled buckets in the specified behavior map.
 	 */
 	static void registerBucketBehavior(Map<Item, CauldronBehavior> behavior) {
-		behavior.put(Items.LAVA_BUCKET, FILL_WITH_LAVA);
-		behavior.put(Items.WATER_BUCKET, FILL_WITH_WATER);
-		behavior.put(Items.POWDER_SNOW_BUCKET, FILL_WITH_POWDER_SNOW);
+		behavior.put(Items.LAVA_BUCKET, CauldronBehavior::tryFillWithLava);
+		behavior.put(Items.WATER_BUCKET, CauldronBehavior::tryFillWithWater);
+		behavior.put(Items.POWDER_SNOW_BUCKET, CauldronBehavior::tryFillWithPowderSnow);
 	}
 
 	/**
 	 * Empties a cauldron if it's full.
 	 * 
-	 * @return a {@linkplain ItemActionResult#isAccepted successful} action result if emptied, {@link ItemActionResult#PASS_TO_DEFAULT_BLOCK_INTERACTION} otherwise
+	 * @return a {@linkplain ActionResult#isAccepted successful} action result if emptied, {@link ActionResult#PASS_TO_DEFAULT_BLOCK_ACTION} otherwise
 	 * 
-	 * @param output the item stack that replaces the interaction stack when the cauldron is emptied
-	 * @param fullPredicate a predicate used to check if the cauldron can be emptied into the output stack
-	 * @param hand the hand interacting with the cauldron
-	 * @param stack the stack in the player's hand
 	 * @param soundEvent the sound produced by emptying
-	 * @param pos the cauldron's position
+	 * @param fullPredicate a predicate used to check if the cauldron can be emptied into the output stack
+	 * @param output the item stack that replaces the interaction stack when the cauldron is emptied
+	 * @param stack the stack in the player's hand
+	 * @param hand the hand interacting with the cauldron
 	 * @param player the interacting player
-	 * @param state the cauldron block state
+	 * @param pos the cauldron's position
 	 * @param world the world where the cauldron is located
+	 * @param state the cauldron block state
 	 */
-	static ItemActionResult emptyCauldron(
+	static ActionResult emptyCauldron(
 		BlockState state,
 		World world,
 		BlockPos pos,
@@ -386,7 +303,7 @@ public interface CauldronBehavior {
 		SoundEvent soundEvent
 	) {
 		if (!fullPredicate.test(state)) {
-			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 		} else {
 			if (!world.isClient) {
 				Item item = stack.getItem();
@@ -398,7 +315,7 @@ public interface CauldronBehavior {
 				world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
 			}
 
-			return ItemActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		}
 	}
 
@@ -408,17 +325,17 @@ public interface CauldronBehavior {
 	 * <p>The filled bucket stack will be replaced by an empty bucket in the player's
 	 * inventory.
 	 * 
-	 * @return a {@linkplain ItemActionResult#isAccepted successful} action result
+	 * @return a {@linkplain ActionResult#isAccepted successful} action result
 	 * 
-	 * @param soundEvent the sound produced by filling
-	 * @param state the filled cauldron state
-	 * @param stack the filled bucket stack in the player's hand
-	 * @param hand the hand interacting with the cauldron
-	 * @param player the interacting player
 	 * @param pos the cauldron's position
 	 * @param world the world where the cauldron is located
+	 * @param soundEvent the sound produced by filling
+	 * @param hand the hand interacting with the cauldron
+	 * @param player the interacting player
+	 * @param state the filled cauldron state
+	 * @param stack the filled bucket stack in the player's hand
 	 */
-	static ItemActionResult fillCauldron(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, BlockState state, SoundEvent soundEvent) {
+	static ActionResult fillCauldron(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, BlockState state, SoundEvent soundEvent) {
 		if (!world.isClient) {
 			Item item = stack.getItem();
 			player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.BUCKET)));
@@ -429,7 +346,95 @@ public interface CauldronBehavior {
 			world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
 		}
 
-		return ItemActionResult.success(world.isClient);
+		return ActionResult.SUCCESS;
+	}
+
+	private static ActionResult tryFillWithWater(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack) {
+		return (ActionResult)(isUnderwater(world, pos)
+			? ActionResult.SUCCESS
+			: fillCauldron(
+				world,
+				pos,
+				player,
+				hand,
+				stack,
+				Blocks.WATER_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, Integer.valueOf(3)),
+				SoundEvents.ITEM_BUCKET_EMPTY
+			));
+	}
+
+	private static ActionResult tryFillWithLava(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack) {
+		return (ActionResult)(isUnderwater(world, pos)
+			? ActionResult.SUCCESS
+			: fillCauldron(world, pos, player, hand, stack, Blocks.LAVA_CAULDRON.getDefaultState(), SoundEvents.ITEM_BUCKET_EMPTY_LAVA));
+	}
+
+	private static ActionResult tryFillWithPowderSnow(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack) {
+		return (ActionResult)(isUnderwater(world, pos)
+			? ActionResult.SUCCESS
+			: fillCauldron(
+				world,
+				pos,
+				player,
+				hand,
+				stack,
+				Blocks.POWDER_SNOW_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, Integer.valueOf(3)),
+				SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW
+			));
+	}
+
+	private static ActionResult cleanShulkerBox(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack) {
+		Block block = Block.getBlockFromItem(stack.getItem());
+		if (!(block instanceof ShulkerBoxBlock)) {
+			return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
+		} else {
+			if (!world.isClient) {
+				ItemStack itemStack = stack.copyComponentsToNewStack(Blocks.SHULKER_BOX, 1);
+				player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, itemStack, false));
+				player.incrementStat(Stats.CLEAN_SHULKER_BOX);
+				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
+			}
+
+			return ActionResult.SUCCESS;
+		}
+	}
+
+	private static ActionResult cleanBanner(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack) {
+		BannerPatternsComponent bannerPatternsComponent = stack.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT);
+		if (bannerPatternsComponent.layers().isEmpty()) {
+			return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
+		} else {
+			if (!world.isClient) {
+				ItemStack itemStack = stack.copyWithCount(1);
+				itemStack.set(DataComponentTypes.BANNER_PATTERNS, bannerPatternsComponent.withoutTopLayer());
+				player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, itemStack, false));
+				player.incrementStat(Stats.CLEAN_BANNER);
+				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
+			}
+
+			return ActionResult.SUCCESS;
+		}
+	}
+
+	private static ActionResult cleanArmor(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack) {
+		if (!stack.isIn(ItemTags.DYEABLE)) {
+			return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
+		} else if (!stack.contains(DataComponentTypes.DYED_COLOR)) {
+			return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
+		} else {
+			if (!world.isClient) {
+				stack.remove(DataComponentTypes.DYED_COLOR);
+				player.incrementStat(Stats.CLEAN_ARMOR);
+				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
+			}
+
+			return ActionResult.SUCCESS;
+		}
+	}
+
+	private static boolean isUnderwater(World world, BlockPos pos) {
+		FluidState fluidState = world.getFluidState(pos.up());
+		return fluidState.isIn(FluidTags.WATER);
 	}
 
 	public static record CauldronBehaviorMap(String name, Map<Item, CauldronBehavior> map) {

@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -34,8 +32,8 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class CreditsScreen extends Screen {
-	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Identifier VIGNETTE_TEXTURE = Identifier.ofVanilla("textures/misc/credits_vignette.png");
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Text SEPARATOR_LINE = Text.literal("============").formatted(Formatting.WHITE);
 	private static final String CENTERED_LINE_PREFIX = "           ";
 	private static final String OBFUSCATION_PLACEHOLDER = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
@@ -284,11 +282,7 @@ public class CreditsScreen extends Screen {
 	}
 
 	private void renderVignette(DrawContext context) {
-		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
-		context.drawTexture(VIGNETTE_TEXTURE, 0, 0, 0, 0.0F, 0.0F, this.width, this.height, this.width, this.height);
-		RenderSystem.disableBlend();
-		RenderSystem.defaultBlendFunc();
+		context.drawTexture(RenderLayer::getVignette, VIGNETTE_TEXTURE, 0, 0, 0.0F, 0.0F, this.width, this.height, this.width, this.height);
 	}
 
 	@Override

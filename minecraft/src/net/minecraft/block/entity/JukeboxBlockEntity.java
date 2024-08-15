@@ -16,13 +16,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class JukeboxBlockEntity extends BlockEntity implements Clearable, SingleStackInventory.SingleStackBlockEntityInventory {
+public class JukeboxBlockEntity extends BlockEntity implements SingleStackInventory.SingleStackBlockEntityInventory {
 	public static final String RECORD_ITEM_NBT_KEY = "RecordItem";
 	public static final String TICKS_SINCE_SONG_STARTED_NBT_KEY = "ticks_since_song_started";
 	private ItemStack recordStack = ItemStack.EMPTY;

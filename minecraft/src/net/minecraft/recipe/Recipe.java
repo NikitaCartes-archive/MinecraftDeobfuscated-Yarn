@@ -96,15 +96,6 @@ public interface Recipe<T extends RecipeInput> {
 	}
 
 	/**
-	 * {@return the ingredients accepted as inputs for this recipe} Used by the recipe book
-	 * when displaying a ghost form of this recipe on the crafting grid as well as for
-	 * previewing the possible inputs in the book itself.
-	 */
-	default DefaultedList<Ingredient> getIngredients() {
-		return DefaultedList.of();
-	}
-
-	/**
 	 * {@return whether this recipe is ignored by the recipe book} If a recipe
 	 * is ignored by the recipe book, it will be never displayed. In addition,
 	 * it won't be restricted by the {@link net.minecraft.world.GameRules#DO_LIMITED_CRAFTING
@@ -153,12 +144,5 @@ public interface Recipe<T extends RecipeInput> {
 	 */
 	RecipeType<?> getType();
 
-	/**
-	 * {@return whether this recipe has no ingredient or has any empty ingredient}
-	 * The recipe book uses this to ignore recipes for display.
-	 */
-	default boolean isEmpty() {
-		DefaultedList<Ingredient> defaultedList = this.getIngredients();
-		return defaultedList.isEmpty() || defaultedList.stream().anyMatch(ingredient -> ingredient.getMatchingStacks().length == 0);
-	}
+	IngredientPlacement getIngredientPlacement();
 }

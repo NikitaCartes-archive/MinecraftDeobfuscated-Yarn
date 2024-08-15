@@ -11,6 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.model.BakedModel;
@@ -23,7 +24,6 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockRenderView;
 
@@ -53,8 +53,7 @@ public class BlockModelRenderer {
 		int overlay
 	) {
 		boolean bl = MinecraftClient.isAmbientOcclusionEnabled() && state.getLuminance() == 0 && model.useAmbientOcclusion();
-		Vec3d vec3d = state.getModelOffset(world, pos);
-		matrices.translate(vec3d.x, vec3d.y, vec3d.z);
+		matrices.translate(state.getModelOffset(pos));
 
 		try {
 			if (bl) {
@@ -62,8 +61,8 @@ public class BlockModelRenderer {
 			} else {
 				this.renderFlat(world, model, state, pos, matrices, vertexConsumer, cull, random, seed, overlay);
 			}
-		} catch (Throwable var17) {
-			CrashReport crashReport = CrashReport.create(var17, "Tesselating block model");
+		} catch (Throwable var16) {
+			CrashReport crashReport = CrashReport.create(var16, "Tesselating block model");
 			CrashReportSection crashReportSection = crashReport.addElement("Block model being tesselated");
 			CrashReportSection.addBlockInfo(crashReportSection, world, pos, state);
 			crashReportSection.add("Using AO", bl);
@@ -93,7 +92,7 @@ public class BlockModelRenderer {
 			List<BakedQuad> list = model.getQuads(state, direction, random);
 			if (!list.isEmpty()) {
 				mutable.set(pos, direction);
-				if (!cull || Block.shouldDrawSide(state, world, pos, direction, mutable)) {
+				if (!cull || Block.shouldDrawSide(state, world.getBlockState(mutable), direction)) {
 					this.renderQuadsSmooth(world, state, pos, matrices, vertexConsumer, list, fs, bitSet, ambientOcclusionCalculator, overlay);
 				}
 			}
@@ -126,7 +125,7 @@ public class BlockModelRenderer {
 			List<BakedQuad> list = model.getQuads(state, direction, random);
 			if (!list.isEmpty()) {
 				mutable.set(pos, direction);
-				if (!cull || Block.shouldDrawSide(state, world, pos, direction, mutable)) {
+				if (!cull || Block.shouldDrawSide(state, world.getBlockState(mutable), direction)) {
 					int i = WorldRenderer.getLightmapCoordinates(world, state, mutable);
 					this.renderQuadsFlat(world, state, pos, i, overlay, false, matrices, vertexConsumer, list, bitSet);
 				}
@@ -154,7 +153,7 @@ public class BlockModelRenderer {
 	) {
 		for (BakedQuad bakedQuad : quads) {
 			this.getQuadDimensions(world, state, pos, bakedQuad.getVertexData(), bakedQuad.getFace(), box, flags);
-			ambientOcclusionCalculator.apply(world, state, pos, bakedQuad.getFace(), box, flags, bakedQuad.hasShade());
+			ambientOcclusionCalculator.apply(world, state, pos, box, flags, bakedQuad);
 			this.renderQuad(
 				world,
 				state,
@@ -289,14 +288,19 @@ public class BlockModelRenderer {
 		BitSet flags
 	) {
 		for (BakedQuad bakedQuad : quads) {
+			int i = light;
 			if (useWorldLight) {
 				this.getQuadDimensions(world, state, pos, bakedQuad.getVertexData(), bakedQuad.getFace(), null, flags);
 				BlockPos blockPos = flags.get(0) ? pos.offset(bakedQuad.getFace()) : pos;
-				light = WorldRenderer.getLightmapCoordinates(world, state, blockPos);
+				i = WorldRenderer.getLightmapCoordinates(world, state, blockPos);
+			}
+
+			if (bakedQuad.isEmissive()) {
+				i = LightmapTextureManager.applyEmission(i, bakedQuad.getLightEmission());
 			}
 
 			float f = world.getBrightness(bakedQuad.getFace(), bakedQuad.hasShade());
-			this.renderQuad(world, state, pos, vertexConsumer, matrices.peek(), bakedQuad, f, f, f, f, light, light, light, light, overlay);
+			this.renderQuad(world, state, pos, vertexConsumer, matrices.peek(), bakedQuad, f, f, f, f, i, i, i, i, overlay);
 		}
 	}
 
@@ -360,8 +364,9 @@ public class BlockModelRenderer {
 		public AmbientOcclusionCalculator() {
 		}
 
-		public void apply(BlockRenderView world, BlockState state, BlockPos pos, Direction direction, float[] box, BitSet flags, boolean shaded) {
-			BlockPos blockPos = flags.get(0) ? pos.offset(direction) : pos;
+		public void apply(BlockRenderView world, BlockState state, BlockPos pos, float[] fs, BitSet bitSet, BakedQuad quad) {
+			Direction direction = quad.getFace();
+			BlockPos blockPos = bitSet.get(0) ? pos.offset(direction) : pos;
 			BlockModelRenderer.NeighborData neighborData = BlockModelRenderer.NeighborData.getData(direction);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 			BlockModelRenderer.BrightnessCache brightnessCache = (BlockModelRenderer.BrightnessCache)BlockModelRenderer.BRIGHTNESS_CACHE.get();
@@ -382,13 +387,13 @@ public class BlockModelRenderer {
 			int l = brightnessCache.getInt(blockState4, world, mutable);
 			float m = brightnessCache.getFloat(blockState4, world, mutable);
 			BlockState blockState5 = world.getBlockState(mutable.set(blockPos, neighborData.faces[0]).move(direction));
-			boolean bl = !blockState5.shouldBlockVision(world, mutable) || blockState5.getOpacity(world, mutable) == 0;
+			boolean bl = !blockState5.shouldBlockVision(world, mutable) || blockState5.getOpacity() == 0;
 			BlockState blockState6 = world.getBlockState(mutable.set(blockPos, neighborData.faces[1]).move(direction));
-			boolean bl2 = !blockState6.shouldBlockVision(world, mutable) || blockState6.getOpacity(world, mutable) == 0;
+			boolean bl2 = !blockState6.shouldBlockVision(world, mutable) || blockState6.getOpacity() == 0;
 			BlockState blockState7 = world.getBlockState(mutable.set(blockPos, neighborData.faces[2]).move(direction));
-			boolean bl3 = !blockState7.shouldBlockVision(world, mutable) || blockState7.getOpacity(world, mutable) == 0;
+			boolean bl3 = !blockState7.shouldBlockVision(world, mutable) || blockState7.getOpacity() == 0;
 			BlockState blockState8 = world.getBlockState(mutable.set(blockPos, neighborData.faces[3]).move(direction));
-			boolean bl4 = !blockState8.shouldBlockVision(world, mutable) || blockState8.getOpacity(world, mutable) == 0;
+			boolean bl4 = !blockState8.shouldBlockVision(world, mutable) || blockState8.getOpacity() == 0;
 			float n;
 			int o;
 			if (!bl3 && !bl) {
@@ -440,35 +445,35 @@ public class BlockModelRenderer {
 			int v = brightnessCache.getInt(state, world, pos);
 			mutable.set(pos, direction);
 			BlockState blockState10 = world.getBlockState(mutable);
-			if (flags.get(0) || !blockState10.isOpaqueFullCube(world, mutable)) {
+			if (bitSet.get(0) || !blockState10.isOpaqueFullCube()) {
 				v = brightnessCache.getInt(blockState10, world, mutable);
 			}
 
-			float w = flags.get(0)
+			float w = bitSet.get(0)
 				? brightnessCache.getFloat(world.getBlockState(blockPos), world, blockPos)
 				: brightnessCache.getFloat(world.getBlockState(pos), world, pos);
 			BlockModelRenderer.Translation translation = BlockModelRenderer.Translation.getTranslations(direction);
-			if (flags.get(1) && neighborData.nonCubicWeight) {
+			if (bitSet.get(1) && neighborData.nonCubicWeight) {
 				float x = (m + f + p + w) * 0.25F;
 				float y = (h + f + n + w) * 0.25F;
 				float z = (h + g + r + w) * 0.25F;
 				float aa = (m + g + t + w) * 0.25F;
-				float ab = box[neighborData.field_4192[0].shape] * box[neighborData.field_4192[1].shape];
-				float ac = box[neighborData.field_4192[2].shape] * box[neighborData.field_4192[3].shape];
-				float ad = box[neighborData.field_4192[4].shape] * box[neighborData.field_4192[5].shape];
-				float ae = box[neighborData.field_4192[6].shape] * box[neighborData.field_4192[7].shape];
-				float af = box[neighborData.field_4185[0].shape] * box[neighborData.field_4185[1].shape];
-				float ag = box[neighborData.field_4185[2].shape] * box[neighborData.field_4185[3].shape];
-				float ah = box[neighborData.field_4185[4].shape] * box[neighborData.field_4185[5].shape];
-				float ai = box[neighborData.field_4185[6].shape] * box[neighborData.field_4185[7].shape];
-				float aj = box[neighborData.field_4180[0].shape] * box[neighborData.field_4180[1].shape];
-				float ak = box[neighborData.field_4180[2].shape] * box[neighborData.field_4180[3].shape];
-				float al = box[neighborData.field_4180[4].shape] * box[neighborData.field_4180[5].shape];
-				float am = box[neighborData.field_4180[6].shape] * box[neighborData.field_4180[7].shape];
-				float an = box[neighborData.field_4188[0].shape] * box[neighborData.field_4188[1].shape];
-				float ao = box[neighborData.field_4188[2].shape] * box[neighborData.field_4188[3].shape];
-				float ap = box[neighborData.field_4188[4].shape] * box[neighborData.field_4188[5].shape];
-				float aq = box[neighborData.field_4188[6].shape] * box[neighborData.field_4188[7].shape];
+				float ab = fs[neighborData.field_4192[0].shape] * fs[neighborData.field_4192[1].shape];
+				float ac = fs[neighborData.field_4192[2].shape] * fs[neighborData.field_4192[3].shape];
+				float ad = fs[neighborData.field_4192[4].shape] * fs[neighborData.field_4192[5].shape];
+				float ae = fs[neighborData.field_4192[6].shape] * fs[neighborData.field_4192[7].shape];
+				float af = fs[neighborData.field_4185[0].shape] * fs[neighborData.field_4185[1].shape];
+				float ag = fs[neighborData.field_4185[2].shape] * fs[neighborData.field_4185[3].shape];
+				float ah = fs[neighborData.field_4185[4].shape] * fs[neighborData.field_4185[5].shape];
+				float ai = fs[neighborData.field_4185[6].shape] * fs[neighborData.field_4185[7].shape];
+				float aj = fs[neighborData.field_4180[0].shape] * fs[neighborData.field_4180[1].shape];
+				float ak = fs[neighborData.field_4180[2].shape] * fs[neighborData.field_4180[3].shape];
+				float al = fs[neighborData.field_4180[4].shape] * fs[neighborData.field_4180[5].shape];
+				float am = fs[neighborData.field_4180[6].shape] * fs[neighborData.field_4180[7].shape];
+				float an = fs[neighborData.field_4188[0].shape] * fs[neighborData.field_4188[1].shape];
+				float ao = fs[neighborData.field_4188[2].shape] * fs[neighborData.field_4188[3].shape];
+				float ap = fs[neighborData.field_4188[4].shape] * fs[neighborData.field_4188[5].shape];
+				float aq = fs[neighborData.field_4188[6].shape] * fs[neighborData.field_4188[7].shape];
 				this.brightness[translation.firstCorner] = x * ab + y * ac + z * ad + aa * ae;
 				this.brightness[translation.secondCorner] = x * af + y * ag + z * ah + aa * ai;
 				this.brightness[translation.thirdCorner] = x * aj + y * ak + z * al + aa * am;
@@ -496,10 +501,18 @@ public class BlockModelRenderer {
 				this.brightness[translation.fourthCorner] = aa;
 			}
 
-			float x = world.getBrightness(direction, shaded);
+			if (quad.isEmissive()) {
+				int av = quad.getLightEmission();
 
-			for (int av = 0; av < this.brightness.length; av++) {
-				this.brightness[av] = this.brightness[av] * x;
+				for (int aw = 0; aw < this.light.length; aw++) {
+					this.light[aw] = LightmapTextureManager.applyEmission(this.light[aw], av);
+				}
+			}
+
+			float x = world.getBrightness(direction, quad.hasShade());
+
+			for (int aw = 0; aw < this.brightness.length; aw++) {
+				this.brightness[aw] = this.brightness[aw] * x;
 			}
 		}
 

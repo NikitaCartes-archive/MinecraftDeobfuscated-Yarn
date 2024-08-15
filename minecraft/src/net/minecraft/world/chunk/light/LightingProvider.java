@@ -11,6 +11,7 @@ import net.minecraft.world.chunk.ChunkProvider;
 
 public class LightingProvider implements LightingView {
 	public static final int field_31714 = 1;
+	public static final LightingProvider DEFAULT = new LightingProvider();
 	protected final HeightLimitView world;
 	@Nullable
 	private final ChunkLightProvider<?, ?> blockLightProvider;
@@ -21,6 +22,12 @@ public class LightingProvider implements LightingView {
 		this.world = chunkProvider.getWorld();
 		this.blockLightProvider = hasBlockLight ? new ChunkBlockLightProvider(chunkProvider) : null;
 		this.skyLightProvider = hasSkyLight ? new ChunkSkyLightProvider(chunkProvider) : null;
+	}
+
+	private LightingProvider() {
+		this.world = HeightLimitView.create(0, 0);
+		this.blockLightProvider = null;
+		this.skyLightProvider = null;
 	}
 
 	@Override

@@ -49,4 +49,8 @@ public record OrderedTick<T>(T type, BlockPos pos, long triggerTick, TickPriorit
 	public static <T> OrderedTick<T> create(T type, BlockPos pos) {
 		return new OrderedTick<>(type, pos, 0L, TickPriority.NORMAL, 0L);
 	}
+
+	public Tick<T> toTick(long time) {
+		return new Tick<>(this.type, this.pos, (int)(this.triggerTick - time), this.priority);
+	}
 }

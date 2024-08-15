@@ -37,6 +37,7 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Angerable;
@@ -97,10 +98,12 @@ import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacke
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ServerMetadataS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.SetCursorItemS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.ParticlesMode;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.Registries;
@@ -140,6 +143,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -191,6 +195,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private int syncedExperience = -99999999;
 	private int joinInvulnerabilityTicks = 60;
 	private ChatVisibility clientChatVisibility = ChatVisibility.FULL;
+	private ParticlesMode particlesMode = ParticlesMode.ALL;
 	private boolean clientChatColorsEnabled = true;
 	private long lastActionTime = Util.getMeasuringTimeMs();
 	@Nullable
@@ -250,7 +255,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 		@Override
 		public void updateCursorStack(ScreenHandler handler, ItemStack stack) {
-			ServerPlayerEntity.this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, handler.nextRevision(), -1, stack));
+			ServerPlayerEntity.this.networkHandler.sendPacket(new SetCursorItemS2CPacket(stack.copy()));
 		}
 
 		@Override
@@ -321,24 +326,43 @@ public class ServerPlayerEntity extends PlayerEntity {
 				int q = (o + n * p) % k;
 				int r = q % (i * 2 + 1);
 				int s = q / (i * 2 + 1);
-				blockPos = SpawnLocating.findOverworldSpawn(world, basePos.getX() + r - i, basePos.getZ() + s - i);
-				if (blockPos != null && world.isSpaceEmpty(this, box.offset(blockPos.toBottomCenterPos()))) {
-					return blockPos;
+				int t = basePos.getX() + r - i;
+				int u = basePos.getZ() + s - i;
+
+				try {
+					blockPos = SpawnLocating.findOverworldSpawn(world, t, u);
+					if (blockPos != null && this.canSpawnIn(world, box.offset(blockPos.toBottomCenterPos()))) {
+						return blockPos;
+					}
+				} catch (Exception var25) {
+					int v = p;
+					int w = i;
+					CrashReport crashReport = CrashReport.create(var25, "Searching for spawn");
+					CrashReportSection crashReportSection = crashReport.addElement("Spawn Lookup");
+					crashReportSection.add("Origin", basePos::toString);
+					crashReportSection.add("Radius", (CrashCallable<String>)(() -> Integer.toString(w)));
+					crashReportSection.add("Candidate", (CrashCallable<String>)(() -> "[" + t + "," + u + "]"));
+					crashReportSection.add("Progress", (CrashCallable<String>)(() -> v + " out of " + k));
+					throw new CrashException(crashReport);
 				}
 			}
 
 			blockPos = basePos;
 		}
 
-		while (!world.isSpaceEmpty(this, box.offset(blockPos.toBottomCenterPos())) && blockPos.getY() < world.getTopY() - 1) {
+		while (!this.canSpawnIn(world, box.offset(blockPos.toBottomCenterPos())) && blockPos.getY() < world.getTopY() - 1) {
 			blockPos = blockPos.up();
 		}
 
-		while (world.isSpaceEmpty(this, box.offset(blockPos.down().toBottomCenterPos())) && blockPos.getY() > world.getBottomY() + 1) {
+		while (this.canSpawnIn(world, box.offset(blockPos.down().toBottomCenterPos())) && blockPos.getY() > world.getBottomY() + 1) {
 			blockPos = blockPos.down();
 		}
 
 		return blockPos;
+	}
+
+	private boolean canSpawnIn(ServerWorld world, Box box) {
+		return world.isSpaceEmpty(this, box, true);
 	}
 
 	private int calculateSpawnOffsetMultiplier(int horizontalSpawnArea) {
@@ -531,7 +555,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	private void updateCreativeInteractionRangeModifiers() {
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE);
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.BLOCK_INTERACTION_RANGE);
 		if (entityAttributeInstance != null) {
 			if (this.isCreative()) {
 				entityAttributeInstance.updateModifier(CREATIVE_BLOCK_INTERACTION_RANGE_MODIFIER);
@@ -540,7 +564,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			}
 		}
 
-		EntityAttributeInstance entityAttributeInstance2 = this.getAttributeInstance(EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE);
+		EntityAttributeInstance entityAttributeInstance2 = this.getAttributeInstance(EntityAttributes.ENTITY_INTERACTION_RANGE);
 		if (entityAttributeInstance2 != null) {
 			if (this.isCreative()) {
 				entityAttributeInstance2.updateModifier(CREATIVE_ENTITY_INTERACTION_RANGE_MODIFIER);
@@ -815,7 +839,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		Block block = blockState.getBlock();
 		if (block instanceof RespawnAnchorBlock && (spawnForced || (Integer)blockState.get(RespawnAnchorBlock.CHARGES) > 0) && RespawnAnchorBlock.isNether(world)) {
 			Optional<Vec3d> optional = RespawnAnchorBlock.findRespawnPosition(EntityType.PLAYER, world, pos);
-			if (!spawnForced && !alive && optional.isPresent()) {
+			if (!spawnForced && alive && optional.isPresent()) {
 				world.setBlockState(
 					pos, blockState.with(RespawnAnchorBlock.CHARGES, Integer.valueOf((Integer)blockState.get(RespawnAnchorBlock.CHARGES) - 1)), Block.NOTIFY_ALL
 				);
@@ -848,8 +872,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Nullable
-	@Override
-	public Entity teleportTo(TeleportTarget teleportTarget) {
+	public PlayerEntity teleportTo(TeleportTarget teleportTarget) {
 		if (this.isRemoved()) {
 			return null;
 		} else {
@@ -860,6 +883,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			ServerWorld serverWorld = teleportTarget.world();
 			ServerWorld serverWorld2 = this.getServerWorld();
 			RegistryKey<World> registryKey = serverWorld2.getRegistryKey();
+			this.setPosition(teleportTarget);
 			if (serverWorld.getRegistryKey() == registryKey) {
 				this.networkHandler.requestTeleport(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z, teleportTarget.yaw(), teleportTarget.pitch());
 				this.networkHandler.syncWithPlayerPosition();
@@ -887,6 +911,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 				serverWorld.onDimensionChanged(this);
 				serverWorld2.getProfiler().pop();
 				this.worldChanged(serverWorld2);
+				this.clearActiveItem();
 				this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.getAbilities()));
 				playerManager.sendWorldInfo(this, serverWorld);
 				playerManager.sendPlayerStatus(this);
@@ -1013,7 +1038,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public boolean isInvulnerableTo(DamageSource damageSource) {
-		return super.isInvulnerableTo(damageSource) || this.isInTeleportationState();
+		return super.isInvulnerableTo(damageSource) || this.isInTeleportationState() && !damageSource.isOf(DamageTypes.ENDER_PEARL);
 	}
 
 	@Override
@@ -1141,30 +1166,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.currentScreenHandler = this.playerScreenHandler;
 	}
 
-	public void updateInput(float sidewaysSpeed, float forwardSpeed, boolean jumping, boolean sneaking) {
-		if (this.hasVehicle()) {
-			if (sidewaysSpeed >= -1.0F && sidewaysSpeed <= 1.0F) {
-				this.sidewaysSpeed = sidewaysSpeed;
-			}
-
-			if (forwardSpeed >= -1.0F && forwardSpeed <= 1.0F) {
-				this.forwardSpeed = forwardSpeed;
-			}
-
-			this.jumping = jumping;
-			this.setSneaking(sneaking);
-		}
-	}
-
-	@Override
-	public void travel(Vec3d movementInput) {
-		double d = this.getX();
-		double e = this.getY();
-		double f = this.getZ();
-		super.travel(movementInput);
-		this.increaseTravelMotionStats(this.getX() - d, this.getY() - e, this.getZ() - f);
-	}
-
 	@Override
 	public void tickRiding() {
 		double d = this.getX();
@@ -1282,6 +1283,17 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
+	public void jump() {
+		super.jump();
+		this.incrementStat(Stats.JUMP);
+		if (this.isSprinting()) {
+			this.addExhaustion(0.2F);
+		} else {
+			this.addExhaustion(0.05F);
+		}
+	}
+
+	@Override
 	public void addExperience(int experience) {
 		super.addExperience(experience);
 		this.syncedExperience = -1;
@@ -1333,10 +1345,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.session = oldPlayer.session;
 		this.interactionManager.setGameMode(oldPlayer.interactionManager.getGameMode(), oldPlayer.interactionManager.getPreviousGameMode());
 		this.sendAbilitiesUpdate();
-		this.getAttributes().setBaseFrom(oldPlayer.getAttributes());
-		this.setHealth(this.getMaxHealth());
 		if (alive) {
-			this.getInventory().clone(oldPlayer.getInventory());
+			this.getAttributes().setBaseFrom(oldPlayer.getAttributes());
+			this.getAttributes().addPersistentModifiersFrom(oldPlayer.getAttributes());
 			this.setHealth(oldPlayer.getHealth());
 			this.hungerManager = oldPlayer.hungerManager;
 
@@ -1344,17 +1355,22 @@ public class ServerPlayerEntity extends PlayerEntity {
 				this.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
 			}
 
-			this.experienceLevel = oldPlayer.experienceLevel;
-			this.totalExperience = oldPlayer.totalExperience;
-			this.experienceProgress = oldPlayer.experienceProgress;
-			this.setScore(oldPlayer.getScore());
-			this.portalManager = oldPlayer.portalManager;
-		} else if (this.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
 			this.getInventory().clone(oldPlayer.getInventory());
 			this.experienceLevel = oldPlayer.experienceLevel;
 			this.totalExperience = oldPlayer.totalExperience;
 			this.experienceProgress = oldPlayer.experienceProgress;
 			this.setScore(oldPlayer.getScore());
+			this.portalManager = oldPlayer.portalManager;
+		} else {
+			this.getAttributes().setBaseFrom(oldPlayer.getAttributes());
+			this.setHealth(this.getMaxHealth());
+			if (this.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
+				this.getInventory().clone(oldPlayer.getInventory());
+				this.experienceLevel = oldPlayer.experienceLevel;
+				this.totalExperience = oldPlayer.totalExperience;
+				this.experienceProgress = oldPlayer.experienceProgress;
+				this.setScore(oldPlayer.getScore());
+			}
 		}
 
 		this.enchantmentTableSeed = oldPlayer.enchantmentTableSeed;
@@ -1413,20 +1429,14 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public boolean teleport(ServerWorld world, double destX, double destY, double destZ, Set<PositionFlag> flags, float yaw, float pitch) {
+	public boolean teleport(ServerWorld world, double destX, double destY, double destZ, Set<PositionFlag> flags, float yaw, float pitch, boolean resetCamera) {
 		ChunkPos chunkPos = new ChunkPos(BlockPos.ofFloored(destX, destY, destZ));
 		world.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, this.getId());
-		this.stopRiding();
 		if (this.isSleeping()) {
 			this.wakeUp(true, true);
 		}
 
-		if (world == this.getWorld()) {
-			this.networkHandler.requestTeleport(destX, destY, destZ, yaw, pitch, flags);
-		} else {
-			this.teleport(world, destX, destY, destZ, yaw, pitch);
-		}
-
+		this.teleport(world, destX, destY, destZ, yaw, pitch, resetCamera);
 		this.setHeadYaw(yaw);
 		return true;
 	}
@@ -1543,6 +1553,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.clientChatColorsEnabled = clientOptions.chatColorsEnabled();
 		this.filterText = clientOptions.filtersText();
 		this.allowServerListing = clientOptions.allowsServerListing();
+		this.particlesMode = clientOptions.particleStatus();
 		this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)clientOptions.playerModelParts());
 		this.getDataTracker().set(MAIN_ARM, (byte)clientOptions.mainArm().getId());
 	}
@@ -1551,7 +1562,15 @@ public class ServerPlayerEntity extends PlayerEntity {
 		int i = this.getDataTracker().get(PLAYER_MODEL_PARTS);
 		Arm arm = (Arm)Arm.BY_ID.apply(this.getDataTracker().get(MAIN_ARM));
 		return new SyncedClientOptions(
-			this.language, this.viewDistance, this.clientChatVisibility, this.clientChatColorsEnabled, i, arm, this.filterText, this.allowServerListing
+			this.language,
+			this.viewDistance,
+			this.clientChatVisibility,
+			this.clientChatColorsEnabled,
+			i,
+			arm,
+			this.filterText,
+			this.allowServerListing,
+			this.particlesMode
 		);
 	}
 
@@ -1615,7 +1634,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.cameraEntity = (Entity)(entity == null ? this : entity);
 		if (entity2 != this.cameraEntity) {
 			if (this.cameraEntity.getWorld() instanceof ServerWorld serverWorld) {
-				this.teleport(serverWorld, this.cameraEntity.getX(), this.cameraEntity.getY(), this.cameraEntity.getZ(), Set.of(), this.getYaw(), this.getPitch());
+				this.teleport(serverWorld, this.cameraEntity.getX(), this.cameraEntity.getY(), this.cameraEntity.getZ(), Set.of(), this.getYaw(), this.getPitch(), false);
 			}
 
 			if (entity != null) {
@@ -1652,6 +1671,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 		return null;
 	}
 
+	public int getPlayerListOrder() {
+		return 0;
+	}
+
 	@Override
 	public void swingHand(Hand hand) {
 		super.swingHand(hand);
@@ -1670,14 +1693,13 @@ public class ServerPlayerEntity extends PlayerEntity {
 		return this.advancementTracker;
 	}
 
-	public void teleport(ServerWorld targetWorld, double x, double y, double z, float yaw, float pitch) {
-		this.setCameraEntity(this);
-		this.stopRiding();
-		if (targetWorld == this.getWorld()) {
-			this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
-		} else {
-			this.teleportTo(new TeleportTarget(targetWorld, new Vec3d(x, y, z), Vec3d.ZERO, yaw, pitch, TeleportTarget.NO_OP));
+	public void teleport(ServerWorld world, double x, double y, double z, float yaw, float pitch, boolean resetCamera) {
+		if (resetCamera) {
+			this.setCameraEntity(this);
 		}
+
+		this.stopRiding();
+		this.teleportTo(new TeleportTarget(world, new Vec3d(x, y, z), Vec3d.ZERO, yaw, pitch, TeleportTarget.NO_OP));
 	}
 
 	@Nullable
@@ -1773,7 +1795,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public ItemEntity dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership) {
-		ItemEntity itemEntity = super.dropItem(stack, throwRandomly, retainOwnership);
+		ItemEntity itemEntity = this.dropPlayerItem(stack, throwRandomly, retainOwnership);
 		if (itemEntity == null) {
 			return null;
 		} else {
@@ -1785,6 +1807,41 @@ public class ServerPlayerEntity extends PlayerEntity {
 				}
 
 				this.incrementStat(Stats.DROP);
+			}
+
+			return itemEntity;
+		}
+	}
+
+	@Nullable
+	private ItemEntity dropPlayerItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership) {
+		if (stack.isEmpty()) {
+			return null;
+		} else {
+			double d = this.getEyeY() - 0.3F;
+			ItemEntity itemEntity = new ItemEntity(this.getWorld(), this.getX(), d, this.getZ(), stack);
+			itemEntity.setPickupDelay(40);
+			if (retainOwnership) {
+				itemEntity.setThrower(this);
+			}
+
+			if (throwRandomly) {
+				float f = this.random.nextFloat() * 0.5F;
+				float g = this.random.nextFloat() * (float) (Math.PI * 2);
+				itemEntity.setVelocity((double)(-MathHelper.sin(g) * f), 0.2F, (double)(MathHelper.cos(g) * f));
+			} else {
+				float f = 0.3F;
+				float g = MathHelper.sin(this.getPitch() * (float) (Math.PI / 180.0));
+				float h = MathHelper.cos(this.getPitch() * (float) (Math.PI / 180.0));
+				float i = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0));
+				float j = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0));
+				float k = this.random.nextFloat() * (float) (Math.PI * 2);
+				float l = 0.02F * this.random.nextFloat();
+				itemEntity.setVelocity(
+					(double)(-i * h * 0.3F) + Math.cos((double)k) * (double)l,
+					(double)(-g * 0.3F + 0.1F + (this.random.nextFloat() - this.random.nextFloat()) * 0.1F),
+					(double)(j * h * 0.3F) + Math.sin((double)k) * (double)l
+				);
 			}
 
 			return itemEntity;
@@ -1903,7 +1960,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public boolean startRiding(Entity entity, boolean force) {
 		if (super.startRiding(entity, force)) {
-			this.setOnGround(Vec3d.ZERO);
 			entity.updatePassengerPosition(this);
 			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
 			if (entity instanceof LivingEntity livingEntity) {
@@ -1937,7 +1993,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 			world.isDebugWorld(),
 			world.isFlat(),
 			this.getLastDeathPos(),
-			this.getPortalCooldown()
+			this.getPortalCooldown(),
+			world.getSeaLevel()
 		);
 	}
 
@@ -1960,7 +2017,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		return entity != null && entity.getControllingPassenger() != this ? entity.getMovement() : this.movement;
 	}
 
-	public void setOnGround(Vec3d movement) {
+	public void setMovement(Vec3d movement) {
 		this.movement = movement;
 	}
 

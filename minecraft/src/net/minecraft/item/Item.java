@@ -16,9 +16,11 @@ import net.minecraft.component.ComponentMap;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.type.EnchantableComponent;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.component.type.JukeboxPlayableComponent;
 import net.minecraft.component.type.MapIdComponent;
+import net.minecraft.component.type.RepairableComponent;
 import net.minecraft.component.type.ToolComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -31,10 +33,13 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryPair;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -48,7 +53,6 @@ import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.Util;
@@ -223,7 +227,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * Called when the player uses (or starts using) the item.
 	 * The use action, by default, is bound to the right mouse button.
 	 * This method checks the player's hunger when the item is a food, and will
-	 * {@linkplain TypedActionResult#pass pass} in all other cases by default.
+	 * {@linkplain ActionResult#PASS pass} in all other cases by default.
 	 * 
 	 * <p>If the item {@linkplain #getMaxUseTime can be used for multiple ticks}, then
 	 * this will only be called when the player starts using it. After that,
@@ -240,18 +244,18 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * @param user the player who used the item
 	 * @param hand the hand used
 	 */
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		FoodComponent foodComponent = itemStack.get(DataComponentTypes.FOOD);
 		if (foodComponent != null) {
 			if (user.canConsume(foodComponent.canAlwaysEat())) {
 				user.setCurrentHand(hand);
-				return TypedActionResult.consume(itemStack);
+				return ActionResult.CONSUME;
 			} else {
-				return TypedActionResult.fail(itemStack);
+				return ActionResult.FAIL;
 			}
 		} else {
-			return TypedActionResult.pass(user.getStackInHand(hand));
+			return ActionResult.PASS;
 		}
 	}
 
@@ -580,6 +584,9 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * 
 	 * <p>If the value of this method is 0, the item cannot be enchanted using an enchanting table.
 	 */
+	@Deprecated(
+		forRemoval = true
+	)
 	public int getEnchantability() {
 		return 0;
 	}
@@ -590,6 +597,9 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * <p>This only handles repairing using the ingredient such as diamonds, and does
 	 * not handle combining tools or armor.
 	 */
+	@Deprecated(
+		forRemoval = true
+	)
 	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
 		return false;
 	}
@@ -739,6 +749,19 @@ public class Item implements ToggleableFeature, ItemConvertible {
 
 		public Item.Settings jukeboxPlayable(RegistryKey<JukeboxSong> songKey) {
 			return this.component(DataComponentTypes.JUKEBOX_PLAYABLE, new JukeboxPlayableComponent(new RegistryPair<>(songKey), true));
+		}
+
+		public Item.Settings enchantable(int enchantability) {
+			return this.component(DataComponentTypes.ENCHANTABLE, new EnchantableComponent(enchantability));
+		}
+
+		public Item.Settings repairable(Item repairIngredient) {
+			return this.component(DataComponentTypes.REPAIRABLE, new RepairableComponent(RegistryEntryList.of(repairIngredient.getRegistryEntry())));
+		}
+
+		public Item.Settings repairable(TagKey<Item> repairIngredientsTag) {
+			RegistryEntryLookup<Item> registryEntryLookup = Registries.createEntryLookup(Registries.ITEM);
+			return this.component(DataComponentTypes.REPAIRABLE, new RepairableComponent(registryEntryLookup.getOrThrow(repairIngredientsTag)));
 		}
 
 		public Item.Settings requires(FeatureFlag... features) {

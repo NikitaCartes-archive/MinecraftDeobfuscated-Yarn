@@ -12,6 +12,7 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
@@ -59,11 +60,13 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 			return Criteria.TICK.create(new TickCriterion.Conditions(Optional.empty()));
 		}
 
-		public static AdvancementCriterion<TickCriterion.Conditions> createLocation(Block block, Item item) {
+		public static AdvancementCriterion<TickCriterion.Conditions> createLocation(
+			RegistryEntryLookup<Block> blockRegistry, RegistryEntryLookup<Item> itemRegistry, Block steppingOn, Item boots
+		) {
 			return createLocation(
 				EntityPredicate.Builder.create()
-					.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(item)))
-					.steppingOn(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(block)))
+					.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(itemRegistry, boots)))
+					.steppingOn(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(blockRegistry, steppingOn)))
 			);
 		}
 	}

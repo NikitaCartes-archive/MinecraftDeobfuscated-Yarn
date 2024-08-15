@@ -202,7 +202,7 @@ public class Main {
 												serverPropertiesHandler.hardcore,
 												serverPropertiesHandler.difficulty,
 												false,
-												new GameRules(),
+												new GameRules(context.dataConfiguration().enabledFeatures()),
 												context.dataConfiguration()
 											);
 											generatorOptions = optionSet.has(optionSpec4)
@@ -212,7 +212,7 @@ public class Main {
 										}
 
 										DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = dimensionOptionsRegistryHolder.toConfig(registry);
-										Lifecycle lifecycle = dimensionsConfig.getLifecycle().add(context.worldGenRegistryManager().getRegistryLifecycle());
+										Lifecycle lifecycle = dimensionsConfig.getLifecycle().add(context.worldGenRegistryManager().getLifecycle());
 										return new SaveLoading.LoadContext<>(
 											new LevelProperties(levelInfo, generatorOptions, dimensionsConfig.specialWorldProperty(), lifecycle), dimensionsConfig.toDynamicRegistryManager()
 										);
@@ -303,28 +303,30 @@ public class Main {
 		boolean recreateRegionFiles
 	) {
 		LOGGER.info("Forcing world upgrade!");
-		WorldUpdater worldUpdater = new WorldUpdater(session, dataFixer, dynamicRegistryManager, eraseCache, recreateRegionFiles);
-		Text text = null;
 
-		while (!worldUpdater.isDone()) {
-			Text text2 = worldUpdater.getStatus();
-			if (text != text2) {
-				text = text2;
-				LOGGER.info(worldUpdater.getStatus().getString());
-			}
+		try (WorldUpdater worldUpdater = new WorldUpdater(session, dataFixer, dynamicRegistryManager, eraseCache, recreateRegionFiles)) {
+			Text text = null;
 
-			int i = worldUpdater.getTotalChunkCount();
-			if (i > 0) {
-				int j = worldUpdater.getUpgradedChunkCount() + worldUpdater.getSkippedChunkCount();
-				LOGGER.info("{}% completed ({} / {} chunks)...", MathHelper.floor((float)j / (float)i * 100.0F), j, i);
-			}
+			while (!worldUpdater.isDone()) {
+				Text text2 = worldUpdater.getStatus();
+				if (text != text2) {
+					text = text2;
+					LOGGER.info(worldUpdater.getStatus().getString());
+				}
 
-			if (!continueCheck.getAsBoolean()) {
-				worldUpdater.cancel();
-			} else {
-				try {
-					Thread.sleep(1000L);
-				} catch (InterruptedException var11) {
+				int i = worldUpdater.getTotalChunkCount();
+				if (i > 0) {
+					int j = worldUpdater.getUpgradedChunkCount() + worldUpdater.getSkippedChunkCount();
+					LOGGER.info("{}% completed ({} / {} chunks)...", MathHelper.floor((float)j / (float)i * 100.0F), j, i);
+				}
+
+				if (!continueCheck.getAsBoolean()) {
+					worldUpdater.cancel();
+				} else {
+					try {
+						Thread.sleep(1000L);
+					} catch (InterruptedException var12) {
+					}
 				}
 			}
 		}

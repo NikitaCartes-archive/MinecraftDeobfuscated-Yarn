@@ -32,6 +32,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.block.WireOrientation;
 
 public class FluidBlock extends Block implements FluidDrainable {
 	private static final Codec<FlowableFluid> FLUID_CODEC = Registries.FLUID
@@ -88,7 +89,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+	protected boolean isTransparent(BlockState state) {
 		return false;
 	}
 
@@ -142,7 +143,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		if (this.receiveNeighborFluids(world, pos, state)) {
 			world.scheduleFluidTick(pos, state.getFluidState().getFluid(), this.fluid.getTickRate(world));
 		}

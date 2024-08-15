@@ -102,7 +102,7 @@ public class BeaconBlockEntityRenderer implements BlockEntityRenderer<BeaconBloc
 		renderBeamLayer(
 			matrices,
 			vertexConsumers.getBuffer(RenderLayer.getBeaconBeam(textureId, true)),
-			ColorHelper.Argb.withAlpha(32, color),
+			ColorHelper.withAlpha(32, color),
 			yOffset,
 			i,
 			j,

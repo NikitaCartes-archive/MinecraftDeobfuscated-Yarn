@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.screen;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -11,6 +10,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.item.ItemStack;
@@ -75,10 +75,9 @@ public class GameModeSelectionScreen extends Screen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (!this.checkForClose()) {
 			context.getMatrices().push();
-			RenderSystem.enableBlend();
 			int i = this.width / 2 - 62;
 			int j = this.height / 2 - 31 - 27;
-			context.drawTexture(TEXTURE, i, j, 0.0F, 0.0F, 125, 75, 128, 128);
+			context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, i, j, 0.0F, 0.0F, 125, 75, 128, 128);
 			context.getMatrices().pop();
 			super.render(context, mouseX, mouseY, delta);
 			context.drawCenteredTextWithShadow(this.textRenderer, this.gameMode.getText(), this.width / 2, this.height / 2 - 31 - 20, Colors.WHITE);
@@ -178,11 +177,11 @@ public class GameModeSelectionScreen extends Screen {
 		}
 
 		private void drawBackground(DrawContext context) {
-			context.drawGuiTexture(GameModeSelectionScreen.SLOT_TEXTURE, this.getX(), this.getY(), 26, 26);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, GameModeSelectionScreen.SLOT_TEXTURE, this.getX(), this.getY(), 26, 26);
 		}
 
 		private void drawSelectionBox(DrawContext context) {
-			context.drawGuiTexture(GameModeSelectionScreen.SELECTION_TEXTURE, this.getX(), this.getY(), 26, 26);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, GameModeSelectionScreen.SELECTION_TEXTURE, this.getX(), this.getY(), 26, 26);
 		}
 	}
 

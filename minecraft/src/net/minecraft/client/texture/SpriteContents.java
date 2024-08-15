@@ -1,7 +1,6 @@
 package net.minecraft.client.texture;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -20,6 +19,7 @@ import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.math.ColorHelper;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -171,7 +171,7 @@ public class SpriteContents implements TextureStitcher.Stitchable, AutoCloseable
 			j = y + this.animation.getFrameY(frame) * this.height;
 		}
 
-		return (this.image.getColor(i, j) >> 24 & 0xFF) == 0;
+		return ColorHelper.getAlpha(this.image.getColorArgb(i, j)) == 0;
 	}
 
 	public void upload(int x, int y) {
@@ -258,11 +258,7 @@ public class SpriteContents implements TextureStitcher.Stitchable, AutoCloseable
 					this.animation.upload(x, y, j);
 				}
 			} else if (this.interpolation != null) {
-				if (!RenderSystem.isOnRenderThread()) {
-					RenderSystem.recordRenderCall(() -> this.interpolation.apply(x, y, this));
-				} else {
-					this.interpolation.apply(x, y, this);
-				}
+				this.interpolation.apply(x, y, this);
 			}
 		}
 
@@ -295,7 +291,7 @@ public class SpriteContents implements TextureStitcher.Stitchable, AutoCloseable
 			SpriteContents.Animation animation = animator.animation;
 			List<SpriteContents.AnimationFrame> list = animation.frames;
 			SpriteContents.AnimationFrame animationFrame = (SpriteContents.AnimationFrame)list.get(animator.frame);
-			double d = 1.0 - (double)animator.currentTime / (double)animationFrame.time;
+			float f = (float)animator.currentTime / (float)animationFrame.time;
 			int i = animationFrame.index;
 			int j = ((SpriteContents.AnimationFrame)list.get((animator.frame + 1) % list.size())).index;
 			if (i != j) {
@@ -307,10 +303,7 @@ public class SpriteContents implements TextureStitcher.Stitchable, AutoCloseable
 						for (int o = 0; o < l; o++) {
 							int p = this.getPixelColor(animation, i, k, o, n);
 							int q = this.getPixelColor(animation, j, k, o, n);
-							int r = this.lerp(d, p >> 16 & 0xFF, q >> 16 & 0xFF);
-							int s = this.lerp(d, p >> 8 & 0xFF, q >> 8 & 0xFF);
-							int t = this.lerp(d, p & 0xFF, q & 0xFF);
-							this.images[k].setColor(o, n, p & 0xFF000000 | r << 16 | s << 8 | t);
+							this.images[k].setColorArgb(o, n, ColorHelper.lerp(f, p, q));
 						}
 					}
 				}
@@ -324,17 +317,9 @@ public class SpriteContents implements TextureStitcher.Stitchable, AutoCloseable
 		 */
 		private int getPixelColor(SpriteContents.Animation animation, int frameIndex, int layer, int x, int y) {
 			return SpriteContents.this.mipmapLevelsImages[layer]
-				.getColor(
+				.getColorArgb(
 					x + (animation.getFrameX(frameIndex) * SpriteContents.this.width >> layer), y + (animation.getFrameY(frameIndex) * SpriteContents.this.height >> layer)
 				);
-		}
-
-		/**
-		 * Purely mathematical single-value linear interpolation.
-		 * {@code lerp(0, a, b) == b}, {@code lerp(1, a, b) == a}.
-		 */
-		private int lerp(double delta, int to, int from) {
-			return (int)(delta * (double)to + (1.0 - delta) * (double)from);
 		}
 
 		public void close() {

@@ -31,7 +31,7 @@ public class MaceItem extends Item {
 	private static final int ATTACK_DAMAGE_MODIFIER_VALUE = 5;
 	private static final float ATTACK_SPEED_MODIFIER_VALUE = -3.4F;
 	public static final float MINING_SPEED_MULTIPLIER = 1.5F;
-	private static final float field_50141 = 5.0F;
+	private static final float HEAVY_SMASH_SOUND_FALL_DISTANCE_THRESHOLD = 5.0F;
 	public static final float KNOCKBACK_RANGE = 3.5F;
 	private static final float KNOCKBACK_POWER = 0.7F;
 
@@ -42,12 +42,12 @@ public class MaceItem extends Item {
 	public static AttributeModifiersComponent createAttributeModifiers() {
 		return AttributeModifiersComponent.builder()
 			.add(
-				EntityAttributes.GENERIC_ATTACK_DAMAGE,
+				EntityAttributes.ATTACK_DAMAGE,
 				new EntityAttributeModifier(BASE_ATTACK_DAMAGE_MODIFIER_ID, 5.0, EntityAttributeModifier.Operation.ADD_VALUE),
 				AttributeModifierSlot.MAINHAND
 			)
 			.add(
-				EntityAttributes.GENERIC_ATTACK_SPEED,
+				EntityAttributes.ATTACK_SPEED,
 				new EntityAttributeModifier(BASE_ATTACK_SPEED_MODIFIER_ID, -3.4F, EntityAttributeModifier.Operation.ADD_VALUE),
 				AttributeModifierSlot.MAINHAND
 			)
@@ -64,48 +64,39 @@ public class MaceItem extends Item {
 	}
 
 	@Override
-	public int getEnchantability() {
-		return 15;
-	}
-
-	@Override
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-		if (attacker instanceof ServerPlayerEntity serverPlayerEntity && shouldDealAdditionalDamage(serverPlayerEntity)) {
+		if (shouldDealAdditionalDamage(attacker)) {
 			ServerWorld serverWorld = (ServerWorld)attacker.getWorld();
-			if (serverPlayerEntity.shouldIgnoreFallDamageFromCurrentExplosion() && serverPlayerEntity.currentExplosionImpactPos != null) {
-				if (serverPlayerEntity.currentExplosionImpactPos.y > serverPlayerEntity.getPos().y) {
-					serverPlayerEntity.currentExplosionImpactPos = serverPlayerEntity.getPos();
-				}
-			} else {
-				serverPlayerEntity.currentExplosionImpactPos = serverPlayerEntity.getPos();
+			attacker.setVelocity(attacker.getVelocity().withAxis(Direction.Axis.Y, 0.01F));
+			if (attacker instanceof ServerPlayerEntity serverPlayerEntity) {
+				serverPlayerEntity.currentExplosionImpactPos = this.getCurrentExplosionImpactPos(serverPlayerEntity);
+				serverPlayerEntity.setIgnoreFallDamageFromCurrentExplosion(true);
+				serverPlayerEntity.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(serverPlayerEntity));
 			}
 
-			serverPlayerEntity.setIgnoreFallDamageFromCurrentExplosion(true);
-			serverPlayerEntity.setVelocity(serverPlayerEntity.getVelocity().withAxis(Direction.Axis.Y, 0.01F));
-			serverPlayerEntity.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(serverPlayerEntity));
 			if (target.isOnGround()) {
-				serverPlayerEntity.setSpawnExtraParticlesOnFall(true);
-				SoundEvent soundEvent = serverPlayerEntity.fallDistance > 5.0F ? SoundEvents.ITEM_MACE_SMASH_GROUND_HEAVY : SoundEvents.ITEM_MACE_SMASH_GROUND;
-				serverWorld.playSound(
-					null, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), soundEvent, serverPlayerEntity.getSoundCategory(), 1.0F, 1.0F
-				);
+				if (attacker instanceof ServerPlayerEntity serverPlayerEntity) {
+					serverPlayerEntity.setSpawnExtraParticlesOnFall(true);
+				}
+
+				SoundEvent soundEvent = attacker.fallDistance > 5.0F ? SoundEvents.ITEM_MACE_SMASH_GROUND_HEAVY : SoundEvents.ITEM_MACE_SMASH_GROUND;
+				serverWorld.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), soundEvent, attacker.getSoundCategory(), 1.0F, 1.0F);
 			} else {
-				serverWorld.playSound(
-					null,
-					serverPlayerEntity.getX(),
-					serverPlayerEntity.getY(),
-					serverPlayerEntity.getZ(),
-					SoundEvents.ITEM_MACE_SMASH_AIR,
-					serverPlayerEntity.getSoundCategory(),
-					1.0F,
-					1.0F
-				);
+				serverWorld.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), SoundEvents.ITEM_MACE_SMASH_AIR, attacker.getSoundCategory(), 1.0F, 1.0F);
 			}
 
-			knockbackNearbyEntities(serverWorld, serverPlayerEntity, target);
+			knockbackNearbyEntities(serverWorld, attacker, target);
 		}
 
 		return true;
+	}
+
+	private Vec3d getCurrentExplosionImpactPos(ServerPlayerEntity player) {
+		return player.shouldIgnoreFallDamageFromCurrentExplosion()
+				&& player.currentExplosionImpactPos != null
+				&& player.currentExplosionImpactPos.y <= player.getPos().y
+			? player.currentExplosionImpactPos
+			: player.getPos();
 	}
 
 	@Override
@@ -114,11 +105,6 @@ public class MaceItem extends Item {
 		if (shouldDealAdditionalDamage(attacker)) {
 			attacker.onLanding();
 		}
-	}
-
-	@Override
-	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-		return ingredient.isOf(Items.BREEZE_ROD);
 	}
 
 	@Override
@@ -148,11 +134,11 @@ public class MaceItem extends Item {
 		}
 	}
 
-	private static void knockbackNearbyEntities(World world, PlayerEntity player, Entity attacked) {
+	private static void knockbackNearbyEntities(World world, Entity attacker, Entity attacked) {
 		world.syncWorldEvent(WorldEvents.SMASH_ATTACK, attacked.getSteppingPos(), 750);
-		world.getEntitiesByClass(LivingEntity.class, attacked.getBoundingBox().expand(3.5), getKnockbackPredicate(player, attacked)).forEach(entity -> {
+		world.getEntitiesByClass(LivingEntity.class, attacked.getBoundingBox().expand(3.5), getKnockbackPredicate(attacker, attacked)).forEach(entity -> {
 			Vec3d vec3d = entity.getPos().subtract(attacked.getPos());
-			double d = getKnockback(player, entity, vec3d);
+			double d = getKnockback(attacker, entity, vec3d);
 			Vec3d vec3d2 = vec3d.normalize().multiply(d);
 			if (d > 0.0) {
 				entity.addVelocity(vec3d2.x, 0.7F, vec3d2.z);
@@ -163,7 +149,7 @@ public class MaceItem extends Item {
 		});
 	}
 
-	private static Predicate<LivingEntity> getKnockbackPredicate(PlayerEntity player, Entity attacked) {
+	private static Predicate<LivingEntity> getKnockbackPredicate(Entity attacker, Entity attacked) {
 		return entity -> {
 			boolean bl;
 			boolean bl2;
@@ -171,9 +157,9 @@ public class MaceItem extends Item {
 			boolean var10000;
 			label62: {
 				bl = !entity.isSpectator();
-				bl2 = entity != player && entity != attacked;
-				bl3 = !player.isTeammate(entity);
-				if (entity instanceof TameableEntity tameableEntity && tameableEntity.isTamed() && player.getUuid().equals(tameableEntity.getOwnerUuid())) {
+				bl2 = entity != attacker && entity != attacked;
+				bl3 = !attacker.isTeammate(entity);
+				if (entity instanceof TameableEntity tameableEntity && tameableEntity.isTamed() && attacker.getUuid().equals(tameableEntity.getOwnerUuid())) {
 					var10000 = true;
 					break label62;
 				}
@@ -198,11 +184,11 @@ public class MaceItem extends Item {
 		};
 	}
 
-	private static double getKnockback(PlayerEntity player, LivingEntity attacked, Vec3d distance) {
+	private static double getKnockback(Entity attacker, LivingEntity attacked, Vec3d distance) {
 		return (3.5 - distance.length())
 			* 0.7F
-			* (double)(player.fallDistance > 5.0F ? 2 : 1)
-			* (1.0 - attacked.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
+			* (double)(attacker.fallDistance > 5.0F ? 2 : 1)
+			* (1.0 - attacked.getAttributeValue(EntityAttributes.KNOCKBACK_RESISTANCE));
 	}
 
 	public static boolean shouldDealAdditionalDamage(LivingEntity attacker) {

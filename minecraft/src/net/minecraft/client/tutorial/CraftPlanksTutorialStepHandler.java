@@ -1,5 +1,6 @@
 package net.minecraft.client.tutorial;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -19,6 +20,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 	private static final Text TITLE = Text.translatable("tutorial.craft_planks.title");
 	private static final Text DESCRIPTION = Text.translatable("tutorial.craft_planks.description");
 	private final TutorialManager manager;
+	@Nullable
 	private TutorialToast toast;
 	private int ticks;
 

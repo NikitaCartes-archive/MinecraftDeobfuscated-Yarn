@@ -4,18 +4,19 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.state.FlyingItemEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FlyingItemEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
-public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> extends EntityRenderer<T> {
-	private static final float MIN_DISTANCE = 12.25F;
+public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> extends EntityRenderer<T, FlyingItemEntityRenderState> {
 	private final ItemRenderer itemRenderer;
 	private final float scale;
 	private final boolean lit;
@@ -36,23 +37,40 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 		return this.lit ? 15 : super.getBlockLight(entity, pos);
 	}
 
-	@Override
-	public void render(T entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-		if (entity.age >= 2 || !(this.dispatcher.camera.getFocusedEntity().squaredDistanceTo(entity) < 12.25)) {
-			matrices.push();
-			matrices.scale(this.scale, this.scale, this.scale);
-			matrices.multiply(this.dispatcher.getRotation());
+	public void render(FlyingItemEntityRenderState flyingItemEntityRenderState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+		matrixStack.push();
+		matrixStack.scale(this.scale, this.scale, this.scale);
+		matrixStack.multiply(this.dispatcher.getRotation());
+		if (flyingItemEntityRenderState.model != null) {
 			this.itemRenderer
 				.renderItem(
-					entity.getStack(), ModelTransformationMode.GROUND, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, entity.getWorld(), entity.getId()
+					flyingItemEntityRenderState.stack,
+					ModelTransformationMode.GROUND,
+					false,
+					matrixStack,
+					vertexConsumerProvider,
+					i,
+					OverlayTexture.DEFAULT_UV,
+					flyingItemEntityRenderState.model
 				);
-			matrices.pop();
-			super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
 		}
+
+		matrixStack.pop();
+		super.render(flyingItemEntityRenderState, matrixStack, vertexConsumerProvider, i);
 	}
 
-	@Override
-	public Identifier getTexture(Entity entity) {
+	public FlyingItemEntityRenderState getRenderState() {
+		return new FlyingItemEntityRenderState();
+	}
+
+	public void updateRenderState(T entity, FlyingItemEntityRenderState flyingItemEntityRenderState, float f) {
+		super.updateRenderState(entity, flyingItemEntityRenderState, f);
+		ItemStack itemStack = entity.getStack();
+		flyingItemEntityRenderState.model = !itemStack.isEmpty() ? this.itemRenderer.getModel(itemStack, entity.getWorld(), null, entity.getId()) : null;
+		flyingItemEntityRenderState.stack = itemStack;
+	}
+
+	public Identifier getTexture(FlyingItemEntityRenderState flyingItemEntityRenderState) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 }

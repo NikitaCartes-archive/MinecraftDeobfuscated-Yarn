@@ -30,20 +30,19 @@ public class ResourceTexture extends AbstractTexture {
 		textureData.checkException();
 		TextureResourceMetadata textureResourceMetadata = textureData.getMetadata();
 		boolean bl;
-		boolean bl2;
 		if (textureResourceMetadata != null) {
-			bl = textureResourceMetadata.shouldBlur();
-			bl2 = textureResourceMetadata.shouldClamp();
+			this.bilinear = textureResourceMetadata.shouldBlur();
+			bl = textureResourceMetadata.shouldClamp();
 		} else {
+			this.bilinear = false;
 			bl = false;
-			bl2 = false;
 		}
 
 		NativeImage nativeImage = textureData.getImage();
 		if (!RenderSystem.isOnRenderThreadOrInit()) {
-			RenderSystem.recordRenderCall(() -> this.upload(nativeImage, bl, bl2));
+			RenderSystem.recordRenderCall(() -> this.upload(nativeImage, this.bilinear, bl));
 		} else {
-			this.upload(nativeImage, bl, bl2);
+			this.upload(nativeImage, this.bilinear, bl);
 		}
 	}
 

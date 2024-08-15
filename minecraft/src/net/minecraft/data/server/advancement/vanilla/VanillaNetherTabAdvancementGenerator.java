@@ -21,12 +21,14 @@ import net.minecraft.advancement.criterion.SummonedEntityCriterion;
 import net.minecraft.advancement.criterion.ThrownItemPickedUpByEntityCriterion;
 import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.advancement.criterion.TravelCriterion;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.data.server.advancement.AdvancementTabGenerator;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.PiglinBrain;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTables;
 import net.minecraft.loot.condition.EntityPropertiesLootCondition;
@@ -44,6 +46,7 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -55,35 +58,11 @@ import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterList;
 import net.minecraft.world.gen.structure.StructureKeys;
 
 public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGenerator {
-	private static final LootContextPredicate PIGLIN_DISTRACTION_PREDICATE = LootContextPredicate.create(
-		EntityPropertiesLootCondition.builder(
-				LootContext.EntityTarget.THIS,
-				EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().head(ItemPredicate.Builder.create().items(Items.GOLDEN_HELMET)))
-			)
-			.invert()
-			.build(),
-		EntityPropertiesLootCondition.builder(
-				LootContext.EntityTarget.THIS,
-				EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().chest(ItemPredicate.Builder.create().items(Items.GOLDEN_CHESTPLATE)))
-			)
-			.invert()
-			.build(),
-		EntityPropertiesLootCondition.builder(
-				LootContext.EntityTarget.THIS,
-				EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().legs(ItemPredicate.Builder.create().items(Items.GOLDEN_LEGGINGS)))
-			)
-			.invert()
-			.build(),
-		EntityPropertiesLootCondition.builder(
-				LootContext.EntityTarget.THIS,
-				EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(Items.GOLDEN_BOOTS)))
-			)
-			.invert()
-			.build()
-	);
-
 	@Override
 	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<AdvancementEntry> exporter) {
+		RegistryEntryLookup<EntityType<?>> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.ENTITY_TYPE);
+		RegistryEntryLookup<Item> registryEntryLookup2 = lookup.getWrapperOrThrow(RegistryKeys.ITEM);
+		RegistryEntryLookup<Block> registryEntryLookup3 = lookup.getWrapperOrThrow(RegistryKeys.BLOCK);
 		AdvancementEntry advancementEntry = Advancement.Builder.create()
 			.display(
 				Blocks.RED_NETHER_BRICKS,
@@ -113,10 +92,10 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion(
 				"killed_ghast",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
-					EntityPredicate.Builder.create().type(EntityType.GHAST),
+					EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.GHAST),
 					DamageSourcePredicate.Builder.create()
 						.tag(TagPredicate.expected(DamageTypeTags.IS_PROJECTILE))
-						.directEntity(EntityPredicate.Builder.create().type(EntityType.FIREBALL))
+						.directEntity(EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.FIREBALL))
 				)
 			)
 			.build(exporter, "nether/return_to_sender");
@@ -170,7 +149,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion(
 				"killed_ghast",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
-					EntityPredicate.Builder.create().type(EntityType.GHAST).location(LocationPredicate.Builder.createDimension(World.OVERWORLD))
+					EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.GHAST).location(LocationPredicate.Builder.createDimension(World.OVERWORLD))
 				)
 			)
 			.build(exporter, "nether/uneasy_alliance");
@@ -200,7 +179,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				true,
 				false
 			)
-			.criterion("summoned", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.WITHER)))
+			.criterion("summoned", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.WITHER)))
 			.build(exporter, "nether/summon_wither");
 		AdvancementEntry advancementEntry6 = Advancement.Builder.create()
 			.parent(advancementEntry3)
@@ -395,7 +374,8 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion(
 				"use_lodestone",
 				ItemCriterion.Conditions.createItemUsedOnBlock(
-					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(Blocks.LODESTONE)), ItemPredicate.Builder.create().items(Items.COMPASS)
+					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(registryEntryLookup3, Blocks.LODESTONE)),
+					ItemPredicate.Builder.create().items(registryEntryLookup2, Items.COMPASS)
 				)
 			)
 			.build(exporter, "nether/use_lodestone");
@@ -429,8 +409,12 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				"charge_respawn_anchor",
 				ItemCriterion.Conditions.createItemUsedOnBlock(
 					LocationPredicate.Builder.create()
-						.block(BlockPredicate.Builder.create().blocks(Blocks.RESPAWN_ANCHOR).state(StatePredicate.Builder.create().exactMatch(RespawnAnchorBlock.CHARGES, 4))),
-					ItemPredicate.Builder.create().items(Blocks.GLOWSTONE)
+						.block(
+							BlockPredicate.Builder.create()
+								.blocks(registryEntryLookup3, Blocks.RESPAWN_ANCHOR)
+								.state(StatePredicate.Builder.create().exactMatch(RespawnAnchorBlock.CHARGES, 4))
+						),
+					ItemPredicate.Builder.create().items(registryEntryLookup2, Blocks.GLOWSTONE)
 				)
 			)
 			.build(exporter, "nether/charge_respawn_anchor");
@@ -450,9 +434,11 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				"used_warped_fungus_on_a_stick",
 				ItemDurabilityChangedCriterion.Conditions.create(
 					Optional.of(
-						EntityPredicate.contextPredicateFromEntityPredicate(EntityPredicate.Builder.create().vehicle(EntityPredicate.Builder.create().type(EntityType.STRIDER)))
+						EntityPredicate.contextPredicateFromEntityPredicate(
+							EntityPredicate.Builder.create().vehicle(EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.STRIDER))
+						)
 					),
-					Optional.of(ItemPredicate.Builder.create().items(Items.WARPED_FUNGUS_ON_A_STICK).build()),
+					Optional.of(ItemPredicate.Builder.create().items(registryEntryLookup2, Items.WARPED_FUNGUS_ON_A_STICK).build()),
 					NumberRange.IntRange.ANY
 				)
 			)
@@ -474,7 +460,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				TravelCriterion.Conditions.rideEntityInLava(
 					EntityPredicate.Builder.create()
 						.location(LocationPredicate.Builder.createDimension(World.OVERWORLD))
-						.vehicle(EntityPredicate.Builder.create().type(EntityType.STRIDER)),
+						.vehicle(EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.STRIDER)),
 					DistancePredicate.horizontal(NumberRange.DoubleRange.atLeast(50.0))
 				)
 			)
@@ -532,6 +518,36 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion("loot_bastion_hoglin_stable", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.BASTION_HOGLIN_STABLE_CHEST))
 			.criterion("loot_bastion_bridge", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.BASTION_BRIDGE_CHEST))
 			.build(exporter, "nether/loot_bastion");
+		LootContextPredicate lootContextPredicate = LootContextPredicate.create(
+			EntityPropertiesLootCondition.builder(
+					LootContext.EntityTarget.THIS,
+					EntityPredicate.Builder.create()
+						.equipment(EntityEquipmentPredicate.Builder.create().head(ItemPredicate.Builder.create().items(registryEntryLookup2, Items.GOLDEN_HELMET)))
+				)
+				.invert()
+				.build(),
+			EntityPropertiesLootCondition.builder(
+					LootContext.EntityTarget.THIS,
+					EntityPredicate.Builder.create()
+						.equipment(EntityEquipmentPredicate.Builder.create().chest(ItemPredicate.Builder.create().items(registryEntryLookup2, Items.GOLDEN_CHESTPLATE)))
+				)
+				.invert()
+				.build(),
+			EntityPropertiesLootCondition.builder(
+					LootContext.EntityTarget.THIS,
+					EntityPredicate.Builder.create()
+						.equipment(EntityEquipmentPredicate.Builder.create().legs(ItemPredicate.Builder.create().items(registryEntryLookup2, Items.GOLDEN_LEGGINGS)))
+				)
+				.invert()
+				.build(),
+			EntityPropertiesLootCondition.builder(
+					LootContext.EntityTarget.THIS,
+					EntityPredicate.Builder.create()
+						.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(registryEntryLookup2, Items.GOLDEN_BOOTS)))
+				)
+				.invert()
+				.build()
+		);
 		Advancement.Builder.create()
 			.parent(advancementEntry)
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR)
@@ -548,11 +564,11 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion(
 				"distract_piglin",
 				ThrownItemPickedUpByEntityCriterion.Conditions.createThrownItemPickedUpByEntity(
-					PIGLIN_DISTRACTION_PREDICATE,
-					Optional.of(ItemPredicate.Builder.create().tag(ItemTags.PIGLIN_LOVED).build()),
+					lootContextPredicate,
+					Optional.of(ItemPredicate.Builder.create().tag(registryEntryLookup2, ItemTags.PIGLIN_LOVED).build()),
 					Optional.of(
 						EntityPredicate.contextPredicateFromEntityPredicate(
-							EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false))
+							EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false))
 						)
 					)
 				)
@@ -560,11 +576,11 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion(
 				"distract_piglin_directly",
 				PlayerInteractedWithEntityCriterion.Conditions.create(
-					Optional.of(PIGLIN_DISTRACTION_PREDICATE),
-					ItemPredicate.Builder.create().items(PiglinBrain.BARTERING_ITEM),
+					Optional.of(lootContextPredicate),
+					ItemPredicate.Builder.create().items(registryEntryLookup2, PiglinBrain.BARTERING_ITEM),
 					Optional.of(
 						EntityPredicate.contextPredicateFromEntityPredicate(
-							EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false))
+							EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false))
 						)
 					)
 				)

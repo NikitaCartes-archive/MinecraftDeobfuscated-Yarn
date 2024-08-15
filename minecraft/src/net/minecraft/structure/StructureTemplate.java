@@ -460,7 +460,7 @@ public class StructureTemplate {
 
 	private static Optional<Entity> getEntity(ServerWorldAccess world, NbtCompound nbt) {
 		try {
-			return EntityType.getEntityFromNbt(nbt, world.toServerWorld());
+			return EntityType.getEntityFromNbt(nbt, world.toServerWorld(), SpawnReason.STRUCTURE);
 		} catch (Exception var3) {
 			return Optional.empty();
 		}

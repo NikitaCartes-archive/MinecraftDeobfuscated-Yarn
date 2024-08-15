@@ -43,7 +43,7 @@ public class BoneMealItem extends Item {
 				world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos, 15);
 			}
 
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			BlockState blockState = world.getBlockState(blockPos);
 			boolean bl = blockState.isSideSolidFullSquare(world, blockPos, context.getSide());
@@ -53,7 +53,7 @@ public class BoneMealItem extends Item {
 					world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos2, 15);
 				}
 
-				return ActionResult.success(world.isClient);
+				return ActionResult.SUCCESS;
 			} else {
 				return ActionResult.PASS;
 			}

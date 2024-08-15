@@ -156,7 +156,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 					this.setConverting(player.getUuid(), this.random.nextInt(2401) + 3600);
 				}
 
-				return ActionResult.SUCCESS;
+				return ActionResult.SUCCESS_SERVER;
 			} else {
 				return ActionResult.CONSUME;
 			}

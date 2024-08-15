@@ -29,6 +29,7 @@ public class DamageSources {
 	private final DamageSource starve;
 	private final DamageSource cactus;
 	private final DamageSource fall;
+	private final DamageSource enderPearl;
 	private final DamageSource flyIntoWall;
 	private final DamageSource outOfWorld;
 	private final DamageSource generic;
@@ -56,6 +57,7 @@ public class DamageSources {
 		this.starve = this.create(DamageTypes.STARVE);
 		this.cactus = this.create(DamageTypes.CACTUS);
 		this.fall = this.create(DamageTypes.FALL);
+		this.enderPearl = this.create(DamageTypes.ENDER_PEARL);
 		this.flyIntoWall = this.create(DamageTypes.FLY_INTO_WALL);
 		this.outOfWorld = this.create(DamageTypes.OUT_OF_WORLD);
 		this.generic = this.create(DamageTypes.GENERIC);
@@ -128,6 +130,10 @@ public class DamageSources {
 
 	public DamageSource fall() {
 		return this.fall;
+	}
+
+	public DamageSource enderPearl() {
+		return this.enderPearl;
 	}
 
 	public DamageSource flyIntoWall() {
@@ -264,5 +270,9 @@ public class DamageSources {
 
 	public DamageSource genericKill() {
 		return this.genericKill;
+	}
+
+	public DamageSource maceSmash(Entity attacker) {
+		return this.create(DamageTypes.MACE_SMASH, attacker);
 	}
 }

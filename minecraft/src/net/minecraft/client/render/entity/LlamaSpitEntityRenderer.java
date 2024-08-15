@@ -7,35 +7,45 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.LlamaSpitEntityModel;
+import net.minecraft.client.render.entity.state.LlamaSpitEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
-public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity> {
+public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity, LlamaSpitEntityRenderState> {
 	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/llama/spit.png");
-	private final LlamaSpitEntityModel<LlamaSpitEntity> model;
+	private final LlamaSpitEntityModel model;
 
 	public LlamaSpitEntityRenderer(EntityRendererFactory.Context context) {
 		super(context);
-		this.model = new LlamaSpitEntityModel<>(context.getPart(EntityModelLayers.LLAMA_SPIT));
+		this.model = new LlamaSpitEntityModel(context.getPart(EntityModelLayers.LLAMA_SPIT));
 	}
 
-	public void render(LlamaSpitEntity llamaSpitEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(LlamaSpitEntityRenderState llamaSpitEntityRenderState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.translate(0.0F, 0.15F, 0.0F);
-		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(g, llamaSpitEntity.prevYaw, llamaSpitEntity.getYaw()) - 90.0F));
-		matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.lerp(g, llamaSpitEntity.prevPitch, llamaSpitEntity.getPitch())));
-		this.model.setAngles(llamaSpitEntity, g, 0.0F, -0.1F, 0.0F, 0.0F);
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(llamaSpitEntityRenderState.yaw - 90.0F));
+		matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(llamaSpitEntityRenderState.pitch));
+		this.model.setAngles(llamaSpitEntityRenderState);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(TEXTURE));
 		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 		matrixStack.pop();
-		super.render(llamaSpitEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		super.render(llamaSpitEntityRenderState, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier getTexture(LlamaSpitEntity llamaSpitEntity) {
+	public Identifier getTexture(LlamaSpitEntityRenderState llamaSpitEntityRenderState) {
 		return TEXTURE;
+	}
+
+	public LlamaSpitEntityRenderState getRenderState() {
+		return new LlamaSpitEntityRenderState();
+	}
+
+	public void updateRenderState(LlamaSpitEntity llamaSpitEntity, LlamaSpitEntityRenderState llamaSpitEntityRenderState, float f) {
+		super.updateRenderState(llamaSpitEntity, llamaSpitEntityRenderState, f);
+		llamaSpitEntityRenderState.pitch = llamaSpitEntity.getLerpedPitch(f);
+		llamaSpitEntityRenderState.yaw = llamaSpitEntity.getLerpedYaw(f);
 	}
 }

@@ -48,7 +48,7 @@ public class FireChargeItem extends Item implements ProjectileItem {
 
 		if (bl) {
 			context.getStack().decrement(1);
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return ActionResult.FAIL;
 		}

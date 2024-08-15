@@ -1,8 +1,9 @@
 package net.minecraft.world.tick;
 
 import it.unimi.dsi.fastutil.Hash.Strategy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
@@ -31,17 +32,20 @@ public record Tick<T>(T type, BlockPos pos, int delay, TickPriority priority) {
 		}
 	};
 
-	public static <T> void tick(NbtList tickList, Function<String, Optional<T>> nameToTypeFunction, ChunkPos pos, Consumer<Tick<T>> tickConsumer) {
+	public static <T> List<Tick<T>> tick(NbtList tickList, Function<String, Optional<T>> nameToTypeFunction, ChunkPos pos) {
+		List<Tick<T>> list = new ArrayList(tickList.size());
 		long l = pos.toLong();
 
 		for (int i = 0; i < tickList.size(); i++) {
 			NbtCompound nbtCompound = tickList.getCompound(i);
 			fromNbt(nbtCompound, nameToTypeFunction).ifPresent(tick -> {
 				if (ChunkPos.toLong(tick.pos()) == l) {
-					tickConsumer.accept(tick);
+					list.add(tick);
 				}
 			});
 		}
+
+		return list;
 	}
 
 	public static <T> Optional<Tick<T>> fromNbt(NbtCompound nbt, Function<String, Optional<T>> nameToType) {
@@ -60,10 +64,6 @@ public record Tick<T>(T type, BlockPos pos, int delay, TickPriority priority) {
 		nbtCompound.putInt("t", delay);
 		nbtCompound.putInt("p", priority.getIndex());
 		return nbtCompound;
-	}
-
-	public static <T> NbtCompound orderedTickToNbt(OrderedTick<T> orderedTick, Function<T, String> typeToNameFunction, long delay) {
-		return toNbt((String)typeToNameFunction.apply(orderedTick.type()), orderedTick.pos(), (int)(orderedTick.triggerTick() - delay), orderedTick.priority());
 	}
 
 	public NbtCompound toNbt(Function<T, String> typeToNameFunction) {

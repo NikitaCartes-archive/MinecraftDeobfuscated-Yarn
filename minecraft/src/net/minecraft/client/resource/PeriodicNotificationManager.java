@@ -100,7 +100,7 @@ public class PeriodicNotificationManager
 		if (list.isEmpty()) {
 			this.cancelTimer();
 		} else if (list.stream().anyMatch(entry -> entry.period == 0L)) {
-			Util.error("A periodic notification in " + this.id + " has a period of zero minutes");
+			Util.logErrorOrPause("A periodic notification in " + this.id + " has a period of zero minutes");
 			this.cancelTimer();
 		} else {
 			long l = this.getMinDelay(list);

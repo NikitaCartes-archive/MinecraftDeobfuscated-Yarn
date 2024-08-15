@@ -28,6 +28,7 @@ public interface ParticleTextureSheet {
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.depthMask(true);
+			RenderSystem.setShader(GameRenderer::getParticleProgram);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
 			return tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
@@ -54,6 +55,7 @@ public interface ParticleTextureSheet {
 		@Override
 		public BufferBuilder begin(Tessellator tessellator, TextureManager textureManager) {
 			RenderSystem.depthMask(true);
+			RenderSystem.setShader(GameRenderer::getParticleProgram);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
@@ -62,19 +64,6 @@ public interface ParticleTextureSheet {
 
 		public String toString() {
 			return "PARTICLE_SHEET_TRANSLUCENT";
-		}
-	};
-	ParticleTextureSheet PARTICLE_SHEET_LIT = new ParticleTextureSheet() {
-		@Override
-		public BufferBuilder begin(Tessellator tessellator, TextureManager textureManager) {
-			RenderSystem.disableBlend();
-			RenderSystem.depthMask(true);
-			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
-			return tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
-		}
-
-		public String toString() {
-			return "PARTICLE_SHEET_LIT";
 		}
 	};
 	ParticleTextureSheet CUSTOM = new ParticleTextureSheet() {

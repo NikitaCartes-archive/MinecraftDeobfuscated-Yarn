@@ -88,7 +88,7 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createSpiderAttributes() {
-		return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 16.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F);
+		return HostileEntity.createHostileAttributes().add(EntityAttributes.MAX_HEALTH, 16.0).add(EntityAttributes.MOVEMENT_SPEED, 0.3F);
 	}
 
 	@Override
@@ -149,7 +149,7 @@ public class SpiderEntity extends HostileEntity {
 		entityData = super.initialize(world, difficulty, spawnReason, entityData);
 		Random random = world.getRandom();
 		if (random.nextInt(100) == 0) {
-			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.getWorld());
+			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.getWorld(), SpawnReason.JOCKEY);
 			if (skeletonEntity != null) {
 				skeletonEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
 				skeletonEntity.initialize(world, difficulty, spawnReason, null);

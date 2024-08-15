@@ -222,9 +222,10 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 			if (hitResult.getType() != HitResult.Type.MISS) {
 				this.hitOrDeflect(hitResult);
 			}
+
+			this.tickBlockCollision();
 		}
 
-		this.checkBlockCollision();
 		Vec3d vec3d = this.getVelocity();
 		this.setPosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
 		ProjectileUtil.setRotationFromVelocity(this, 0.5F);

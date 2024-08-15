@@ -17,6 +17,7 @@ import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.predicate.NbtPredicate;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -173,9 +174,7 @@ public record EntityPredicate(
 	public static class Builder {
 		private Optional<EntityTypePredicate> type = Optional.empty();
 		private Optional<DistancePredicate> distance = Optional.empty();
-		private Optional<DistancePredicate> field_51572 = Optional.empty();
 		private Optional<MovementPredicate> movement = Optional.empty();
-		private Optional<EntityPredicate.PositionalPredicates> positional = Optional.empty();
 		private Optional<LocationPredicate> location = Optional.empty();
 		private Optional<LocationPredicate> steppingOn = Optional.empty();
 		private Optional<LocationPredicate> movementAffectedBy = Optional.empty();
@@ -195,13 +194,13 @@ public record EntityPredicate(
 			return new EntityPredicate.Builder();
 		}
 
-		public EntityPredicate.Builder type(EntityType<?> type) {
-			this.type = Optional.of(EntityTypePredicate.create(type));
+		public EntityPredicate.Builder type(RegistryEntryLookup<EntityType<?>> entityTypeRegistry, EntityType<?> type) {
+			this.type = Optional.of(EntityTypePredicate.create(entityTypeRegistry, type));
 			return this;
 		}
 
-		public EntityPredicate.Builder type(TagKey<EntityType<?>> tag) {
-			this.type = Optional.of(EntityTypePredicate.create(tag));
+		public EntityPredicate.Builder type(RegistryEntryLookup<EntityType<?>> entityTypeRegistry, TagKey<EntityType<?>> tag) {
+			this.type = Optional.of(EntityTypePredicate.create(entityTypeRegistry, tag));
 			return this;
 		}
 

@@ -42,7 +42,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryChangedListener;
@@ -106,6 +105,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	private static final int EATING_FLAG = 64;
 	public static final int field_30416 = 0;
 	public static final int field_30418 = 1;
+	public static final int field_52488 = 3;
 	private int eatingGrassTicks;
 	private int eatingTicks;
 	private int angryTicks;
@@ -422,13 +422,13 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	public static DefaultAttributeContainer.Builder createBaseHorseAttributes() {
-		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_JUMP_STRENGTH, 0.7)
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 53.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.225F)
-			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0)
-			.add(EntityAttributes.GENERIC_SAFE_FALL_DISTANCE, 6.0)
-			.add(EntityAttributes.GENERIC_FALL_DAMAGE_MULTIPLIER, 0.5);
+		return AnimalEntity.createAnimalAttributes()
+			.add(EntityAttributes.JUMP_STRENGTH, 0.7)
+			.add(EntityAttributes.MAX_HEALTH, 53.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.225F)
+			.add(EntityAttributes.STEP_HEIGHT, 1.0)
+			.add(EntityAttributes.SAFE_FALL_DISTANCE, 6.0)
+			.add(EntityAttributes.FALL_DAMAGE_MULTIPLIER, 0.5);
 	}
 
 	@Override
@@ -463,11 +463,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 			stack.decrementUnlessCreative(1, player);
 		}
 
-		if (this.getWorld().isClient) {
-			return ActionResult.CONSUME;
-		} else {
-			return bl ? ActionResult.SUCCESS : ActionResult.PASS;
-		}
+		return (ActionResult)(!bl && !this.getWorld().isClient ? ActionResult.PASS : ActionResult.SUCCESS_SERVER);
 	}
 
 	protected boolean receiveFood(PlayerEntity player, ItemStack item) {
@@ -689,7 +685,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 			return super.interactMob(player, hand);
 		} else if (this.isTame() && player.shouldCancelInteraction()) {
 			this.openInventory(player);
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			ItemStack itemStack = player.getStackInHand(hand);
 			if (!itemStack.isEmpty()) {
@@ -700,12 +696,12 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 				if (this.canUseSlot(EquipmentSlot.BODY) && this.isHorseArmor(itemStack) && !this.isWearingBodyArmor()) {
 					this.equipHorseArmor(player, itemStack);
-					return ActionResult.success(this.getWorld().isClient);
+					return ActionResult.SUCCESS;
 				}
 			}
 
 			this.putPlayerOnBack(player);
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		}
 	}
 
@@ -801,7 +797,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	@Override
 	protected float getSaddledSpeed(PlayerEntity controllingPlayer) {
-		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+		return (float)this.getAttributeValue(EntityAttributes.MOVEMENT_SPEED);
 	}
 
 	protected void jump(float strength, Vec3d movementInput) {
@@ -882,9 +878,9 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	protected void setChildAttributes(PassiveEntity other, AbstractHorseEntity child) {
-		this.setChildAttribute(other, child, EntityAttributes.GENERIC_MAX_HEALTH, (double)MIN_HEALTH_BONUS, (double)MAX_HEALTH_BONUS);
-		this.setChildAttribute(other, child, EntityAttributes.GENERIC_JUMP_STRENGTH, (double)MIN_JUMP_STRENGTH_BONUS, (double)MAX_JUMP_STRENGTH_BONUS);
-		this.setChildAttribute(other, child, EntityAttributes.GENERIC_MOVEMENT_SPEED, (double)MIN_MOVEMENT_SPEED_BONUS, (double)MAX_MOVEMENT_SPEED_BONUS);
+		this.setChildAttribute(other, child, EntityAttributes.MAX_HEALTH, (double)MIN_HEALTH_BONUS, (double)MAX_HEALTH_BONUS);
+		this.setChildAttribute(other, child, EntityAttributes.JUMP_STRENGTH, (double)MIN_JUMP_STRENGTH_BONUS, (double)MAX_JUMP_STRENGTH_BONUS);
+		this.setChildAttribute(other, child, EntityAttributes.MOVEMENT_SPEED, (double)MIN_MOVEMENT_SPEED_BONUS, (double)MAX_MOVEMENT_SPEED_BONUS);
 	}
 
 	private void setChildAttribute(PassiveEntity other, AbstractHorseEntity child, RegistryEntry<EntityAttribute> attribute, double min, double max) {

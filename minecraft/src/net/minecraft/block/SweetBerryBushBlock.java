@@ -15,7 +15,6 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -88,12 +87,10 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		int i = (Integer)state.get(AGE);
 		boolean bl = i == 3;
-		return !bl && stack.isOf(Items.BONE_MEAL)
-			? ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION
-			: super.onUseWithItem(stack, state, world, pos, player, hand, hit);
+		return (ActionResult)(!bl && stack.isOf(Items.BONE_MEAL) ? ActionResult.PASS : super.onUseWithItem(stack, state, world, pos, player, hand, hit));
 	}
 
 	@Override
@@ -107,7 +104,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 			BlockState blockState = state.with(AGE, Integer.valueOf(1));
 			world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
 			world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, blockState));
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return super.onUse(state, world, pos, player, hit);
 		}

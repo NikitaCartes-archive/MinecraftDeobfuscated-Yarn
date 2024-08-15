@@ -97,7 +97,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 		ParticleEffect particleEffect = this.dataTracker.get(PARTICLE_ID);
 		if (particleEffect instanceof EntityEffectParticleEffect entityEffectParticleEffect) {
 			int i = this.potionContentsComponent.equals(PotionContentsComponent.DEFAULT) ? 0 : this.potionContentsComponent.getColor();
-			this.dataTracker.set(PARTICLE_ID, EntityEffectParticleEffect.create(entityEffectParticleEffect.getType(), ColorHelper.Argb.fullAlpha(i)));
+			this.dataTracker.set(PARTICLE_ID, EntityEffectParticleEffect.create(entityEffectParticleEffect.getType(), ColorHelper.fullAlpha(i)));
 		}
 	}
 

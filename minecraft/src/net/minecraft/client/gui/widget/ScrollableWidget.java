@@ -1,12 +1,10 @@
 package net.minecraft.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.ButtonTextures;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -16,7 +14,7 @@ import org.lwjgl.glfw.GLFW;
  * A widget that can be focused and vertically scrolled.
  */
 @Environment(EnvType.CLIENT)
-public abstract class ScrollableWidget extends ClickableWidget implements Drawable, Element {
+public abstract class ScrollableWidget extends ClickableWidget {
 	private static final ButtonTextures TEXT_FIELD_TEXTURES = new ButtonTextures(
 		Identifier.ofVanilla("widget/text_field"), Identifier.ofVanilla("widget/text_field_highlighted")
 	);
@@ -167,16 +165,14 @@ public abstract class ScrollableWidget extends ClickableWidget implements Drawab
 
 	protected void drawBox(DrawContext context, int x, int y, int width, int height) {
 		Identifier identifier = TEXT_FIELD_TEXTURES.get(this.isNarratable(), this.isFocused());
-		context.drawGuiTexture(identifier, x, y, width, height);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, x, y, width, height);
 	}
 
 	private void drawScrollbar(DrawContext context) {
 		int i = this.getScrollbarThumbHeight();
 		int j = this.getX() + this.width;
 		int k = Math.max(this.getY(), (int)this.scrollY * (this.height - i) / this.getMaxScrollY() + this.getY());
-		RenderSystem.enableBlend();
-		context.drawGuiTexture(SCROLLER_TEXTURE, j, k, 8, i);
-		RenderSystem.disableBlend();
+		context.drawGuiTexture(RenderLayer::getGuiTextured, SCROLLER_TEXTURE, j, k, 8, i);
 	}
 
 	protected boolean isVisible(int top, int bottom) {

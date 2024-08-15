@@ -7,6 +7,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.MapRenderState;
+import net.minecraft.client.render.MapRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -107,6 +109,7 @@ public class HeldItemRenderer {
 	private static final float field_32733 = 0.2F;
 	private static final float field_32734 = 0.1F;
 	private final MinecraftClient client;
+	private final MapRenderState field_53067 = new MapRenderState();
 	private ItemStack mainHand = ItemStack.EMPTY;
 	private ItemStack offHand = ItemStack.EMPTY;
 	private float equipProgressMainHand;
@@ -162,10 +165,11 @@ public class HeldItemRenderer {
 		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(45.0F));
 		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(f * -41.0F));
 		matrices.translate(f * 0.3F, -1.1F, 0.45F);
+		Identifier identifier = this.client.player.getSkinTextures().texture();
 		if (arm == Arm.RIGHT) {
-			playerEntityRenderer.renderRightArm(matrices, vertexConsumers, light, this.client.player);
+			playerEntityRenderer.renderRightArm(matrices, vertexConsumers, light, identifier);
 		} else {
-			playerEntityRenderer.renderLeftArm(matrices, vertexConsumers, light, this.client.player);
+			playerEntityRenderer.renderLeftArm(matrices, vertexConsumers, light, identifier);
 		}
 
 		matrices.pop();
@@ -236,7 +240,9 @@ public class HeldItemRenderer {
 		vertexConsumer.vertex(matrix4f, 135.0F, -7.0F, 0.0F).color(Colors.WHITE).texture(1.0F, 0.0F).light(swingProgress);
 		vertexConsumer.vertex(matrix4f, -7.0F, -7.0F, 0.0F).color(Colors.WHITE).texture(0.0F, 0.0F).light(swingProgress);
 		if (mapState != null) {
-			this.client.gameRenderer.getMapRenderer().draw(matrices, vertexConsumers, mapIdComponent, mapState, false, swingProgress);
+			MapRenderer mapRenderer = this.client.getMapRenderer();
+			mapRenderer.update(mapIdComponent, mapState, this.field_53067);
+			mapRenderer.draw(this.field_53067, matrices, vertexConsumers, false, swingProgress);
 		}
 	}
 
@@ -261,10 +267,11 @@ public class HeldItemRenderer {
 		matrices.translate(f * 5.6F, 0.0F, 0.0F);
 		PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.entityRenderDispatcher
 			.<AbstractClientPlayerEntity>getRenderer(abstractClientPlayerEntity);
+		Identifier identifier = abstractClientPlayerEntity.getSkinTextures().texture();
 		if (bl) {
-			playerEntityRenderer.renderRightArm(matrices, vertexConsumers, light, abstractClientPlayerEntity);
+			playerEntityRenderer.renderRightArm(matrices, vertexConsumers, light, identifier);
 		} else {
-			playerEntityRenderer.renderLeftArm(matrices, vertexConsumers, light, abstractClientPlayerEntity);
+			playerEntityRenderer.renderLeftArm(matrices, vertexConsumers, light, identifier);
 		}
 	}
 
@@ -328,7 +335,7 @@ public class HeldItemRenderer {
 	public void renderItem(float tickDelta, MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, ClientPlayerEntity player, int light) {
 		float f = player.getHandSwingProgress(tickDelta);
 		Hand hand = MoreObjects.firstNonNull(player.preferredHand, Hand.MAIN_HAND);
-		float g = MathHelper.lerp(tickDelta, player.prevPitch, player.getPitch());
+		float g = player.getLerpedPitch(tickDelta);
 		HeldItemRenderer.HandRenderType handRenderType = getHandRenderType(player);
 		float h = MathHelper.lerp(tickDelta, player.lastRenderPitch, player.renderPitch);
 		float i = MathHelper.lerp(tickDelta, player.lastRenderYaw, player.renderYaw);

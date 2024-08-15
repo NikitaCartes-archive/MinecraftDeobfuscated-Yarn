@@ -22,7 +22,7 @@ public class OrderedTextTooltipComponent implements TooltipComponent {
 	}
 
 	@Override
-	public int getHeight() {
+	public int getHeight(TextRenderer textRenderer) {
 		return 10;
 	}
 

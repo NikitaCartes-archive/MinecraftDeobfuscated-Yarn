@@ -38,6 +38,7 @@ public interface DamageTypeTags {
 	TagKey<DamageType> BURN_FROM_STEPPING = of("burn_from_stepping");
 	TagKey<DamageType> PANIC_CAUSES = of("panic_causes");
 	TagKey<DamageType> PANIC_ENVIRONMENTAL_CAUSES = of("panic_environmental_causes");
+	TagKey<DamageType> MACE_SMASH = of("mace_smash");
 
 	private static TagKey<DamageType> of(String id) {
 		return TagKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.ofVanilla(id));

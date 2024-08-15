@@ -71,6 +71,8 @@ import org.slf4j.Logger;
 public class TestCommand {
 	public static final int field_33180 = 15;
 	public static final int field_33181 = 200;
+	public static final int field_53735 = 10;
+	public static final int field_53736 = 100;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_33178 = 200;
 	private static final int field_33179 = 1024;
@@ -595,7 +597,6 @@ public class TestCommand {
 					TestCommand.stream(serverCommandSource, TestAttemptConfig.once(), this.finder, 0)
 				)
 				.toList();
-			int i = 10;
 			TestRunContext.clearDebugMarkers(serverWorld);
 			TestFunctions.clearFailedTestFunctions();
 			Collection<GameTestBatch> collection2 = new ArrayList();
@@ -604,7 +605,7 @@ public class TestCommand {
 				for (BlockRotation blockRotation : BlockRotation.values()) {
 					Collection<GameTestState> collection3 = new ArrayList();
 
-					for (int j = 0; j < 100; j++) {
+					for (int i = 0; i < 100; i++) {
 						GameTestState gameTestState2 = new GameTestState(gameTestState.getTestFunction(), blockRotation, serverWorld, new TestAttemptConfig(1, true));
 						collection3.add(gameTestState2);
 					}

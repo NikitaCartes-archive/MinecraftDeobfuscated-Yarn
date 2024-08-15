@@ -97,17 +97,17 @@ public class StructureTestUtil {
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
 		structureBlockBlockEntity.setIgnoreEntities(false);
 		structureBlockBlockEntity.setTemplateName(Identifier.of(testName));
+		structureBlockBlockEntity.setMetadata(testName);
 		structureBlockBlockEntity.setSize(relativePos);
 		structureBlockBlockEntity.setMode(StructureBlockMode.SAVE);
 		structureBlockBlockEntity.setShowBoundingBox(true);
 	}
 
-	public static StructureBlockBlockEntity initStructure(GameTestState state, BlockPos pos, BlockRotation rotation, ServerWorld world) {
+	public static BlockPos getPlacementPos(GameTestState state, BlockPos pos, BlockRotation rotation, ServerWorld world) {
 		Vec3i vec3i = ((StructureTemplate)world.getStructureTemplateManager()
 				.getTemplate(Identifier.of(state.getTemplateName()))
 				.orElseThrow(() -> new IllegalStateException("Missing test structure: " + state.getTemplateName())))
 			.getSize();
-		BlockBox blockBox = getStructureBlockBox(pos, vec3i, rotation);
 		BlockPos blockPos;
 		if (rotation == BlockRotation.NONE) {
 			blockPos = pos;
@@ -123,6 +123,16 @@ public class StructureTestUtil {
 			blockPos = pos.add(0, 0, vec3i.getX() - 1);
 		}
 
+		return blockPos;
+	}
+
+	public static StructureBlockBlockEntity initStructure(GameTestState state, BlockPos pos, BlockRotation rotation, ServerWorld world) {
+		Vec3i vec3i = ((StructureTemplate)world.getStructureTemplateManager()
+				.getTemplate(Identifier.of(state.getTemplateName()))
+				.orElseThrow(() -> new IllegalStateException("Missing test structure: " + state.getTemplateName())))
+			.getSize();
+		BlockBox blockBox = getStructureBlockBox(pos, vec3i, rotation);
+		BlockPos blockPos = getPlacementPos(state, pos, rotation, world);
 		forceLoadNearbyChunks(blockBox, world);
 		clearArea(blockBox, world);
 		return placeStructureTemplate(state, blockPos.down(), rotation, world);

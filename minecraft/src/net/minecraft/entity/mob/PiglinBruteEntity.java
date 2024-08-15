@@ -31,6 +31,7 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 	private static final int MAX_HEALTH = 50;
 	private static final float MOVEMENT_SPEED = 0.35F;
 	private static final int ATTACK_DAMAGE = 7;
+	private static final double FOLLOW_RANGE = 12.0;
 	protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinBruteEntity>>> SENSOR_TYPES = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.HURT_BY, SensorType.PIGLIN_BRUTE_SPECIFIC_SENSOR
 	);
@@ -63,9 +64,10 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 
 	public static DefaultAttributeContainer.Builder createPiglinBruteAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 50.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35F)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 7.0);
+			.add(EntityAttributes.MAX_HEALTH, 50.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.35F)
+			.add(EntityAttributes.ATTACK_DAMAGE, 7.0)
+			.add(EntityAttributes.FOLLOW_RANGE, 12.0);
 	}
 
 	@Nullable

@@ -2,6 +2,7 @@ package net.minecraft.data.server.recipe;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementRequirements;
@@ -50,7 +51,9 @@ public class SmithingTransformRecipeJsonBuilder {
 			.rewards(AdvancementRewards.Builder.recipe(recipeId))
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
 		this.criteria.forEach(builder::criterion);
-		SmithingTransformRecipe smithingTransformRecipe = new SmithingTransformRecipe(this.template, this.base, this.addition, new ItemStack(this.result));
+		SmithingTransformRecipe smithingTransformRecipe = new SmithingTransformRecipe(
+			Optional.of(this.template), Optional.of(this.base), Optional.of(this.addition), new ItemStack(this.result)
+		);
 		exporter.accept(recipeId, smithingTransformRecipe, builder.build(recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/")));
 	}
 

@@ -9,40 +9,42 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
+import net.minecraft.client.render.entity.state.HorseEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.type.DyedColorComponent;
-import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.item.AnimalArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
-public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
-	private final HorseEntityModel<HorseEntity> model;
+public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntityRenderState, HorseEntityModel> {
+	private final HorseEntityModel model;
+	private final HorseEntityModel babyModel;
 
-	public HorseArmorFeatureRenderer(FeatureRendererContext<HorseEntity, HorseEntityModel<HorseEntity>> context, EntityModelLoader loader) {
+	public HorseArmorFeatureRenderer(FeatureRendererContext<HorseEntityRenderState, HorseEntityModel> context, EntityModelLoader loader) {
 		super(context);
-		this.model = new HorseEntityModel<>(loader.getModelPart(EntityModelLayers.HORSE_ARMOR));
+		this.model = new HorseEntityModel(loader.getModelPart(EntityModelLayers.HORSE_ARMOR));
+		this.babyModel = new HorseEntityModel(loader.getModelPart(EntityModelLayers.HORSE_ARMOR_BABY));
 	}
 
 	public void render(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, HorseEntityRenderState horseEntityRenderState, float f, float g
 	) {
-		ItemStack itemStack = horseEntity.getBodyArmor();
+		ItemStack itemStack = horseEntityRenderState.armor;
 		if (itemStack.getItem() instanceof AnimalArmorItem animalArmorItem && animalArmorItem.getType() == AnimalArmorItem.Type.EQUESTRIAN) {
-			this.getContextModel().copyStateTo(this.model);
-			this.model.animateModel(horseEntity, f, g, h);
-			this.model.setAngles(horseEntity, f, g, j, k, l);
-			int m;
+			HorseEntityModel horseEntityModel = horseEntityRenderState.baby ? this.babyModel : this.model;
+			horseEntityModel.setAngles(horseEntityRenderState);
+			int j;
 			if (itemStack.isIn(ItemTags.DYEABLE)) {
-				m = ColorHelper.Argb.fullAlpha(DyedColorComponent.getColor(itemStack, -6265536));
+				j = ColorHelper.fullAlpha(DyedColorComponent.getColor(itemStack, -6265536));
 			} else {
-				m = -1;
+				j = Colors.WHITE;
 			}
 
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(animalArmorItem.getEntityTexture()));
-			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, m);
+			horseEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, j);
 			return;
 		}
 	}

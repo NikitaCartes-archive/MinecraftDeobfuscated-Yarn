@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import javax.annotation.Nullable;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -16,6 +17,8 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.block.OrientationHelper;
+import net.minecraft.world.block.WireOrientation;
 
 public class RedstoneTorchBlock extends AbstractTorchBlock {
 	public static final MapCodec<RedstoneTorchBlock> CODEC = createCodec(RedstoneTorchBlock::new);
@@ -38,17 +41,21 @@ public class RedstoneTorchBlock extends AbstractTorchBlock {
 
 	@Override
 	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+		this.method_61749(world, pos, state);
+	}
+
+	private void method_61749(World world, BlockPos blockPos, BlockState blockState) {
+		WireOrientation wireOrientation = this.method_61748(world, blockState);
+
 		for (Direction direction : Direction.values()) {
-			world.updateNeighborsAlways(pos.offset(direction), this);
+			world.updateNeighborsAlways(blockPos.offset(direction), this, OrientationHelper.withFrontNullable(wireOrientation, direction));
 		}
 	}
 
 	@Override
 	protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!moved) {
-			for (Direction direction : Direction.values()) {
-				world.updateNeighborsAlways(pos.offset(direction), this);
-			}
+			this.method_61749(world, pos, state);
 		}
 	}
 
@@ -84,7 +91,7 @@ public class RedstoneTorchBlock extends AbstractTorchBlock {
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		if ((Boolean)state.get(LIT) == this.shouldUnpower(world, pos, state) && !world.getBlockTickScheduler().isTicking(pos, this)) {
 			world.scheduleBlockTick(pos, this, 2);
 		}
@@ -132,6 +139,11 @@ public class RedstoneTorchBlock extends AbstractTorchBlock {
 		}
 
 		return false;
+	}
+
+	@Nullable
+	protected WireOrientation method_61748(World world, BlockState blockState) {
+		return OrientationHelper.getEmissionOrientation(world, null, Direction.UP);
 	}
 
 	public static class BurnoutEntry {

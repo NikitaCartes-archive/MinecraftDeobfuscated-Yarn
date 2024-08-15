@@ -64,7 +64,7 @@ public class ActiveTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 	}
 
 	protected Box getSearchBox(double distance) {
-		return this.mob.getBoundingBox().expand(distance, 4.0, distance);
+		return this.mob.getBoundingBox().expand(distance, distance, distance);
 	}
 
 	protected void findClosestTarget() {
@@ -73,14 +73,14 @@ public class ActiveTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 				.getWorld()
 				.getClosestEntity(
 					this.mob.getWorld().getEntitiesByClass(this.targetClass, this.getSearchBox(this.getFollowRange()), livingEntity -> true),
-					this.targetPredicate,
+					this.getAndUpdateTargetPredicate(),
 					this.mob,
 					this.mob.getX(),
 					this.mob.getEyeY(),
 					this.mob.getZ()
 				);
 		} else {
-			this.targetEntity = this.mob.getWorld().getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
+			this.targetEntity = this.mob.getWorld().getClosestPlayer(this.getAndUpdateTargetPredicate(), this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
 		}
 	}
 
@@ -92,5 +92,9 @@ public class ActiveTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 
 	public void setTargetEntity(@Nullable LivingEntity targetEntity) {
 		this.targetEntity = targetEntity;
+	}
+
+	private TargetPredicate getAndUpdateTargetPredicate() {
+		return this.targetPredicate.setBaseMaxDistance(this.getFollowRange());
 	}
 }

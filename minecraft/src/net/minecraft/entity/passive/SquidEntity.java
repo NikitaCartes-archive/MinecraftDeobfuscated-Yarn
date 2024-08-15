@@ -2,17 +2,18 @@ package net.minecraft.entity.passive;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -23,9 +24,12 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
-public class SquidEntity extends WaterCreatureEntity {
+public class SquidEntity extends WaterAnimalEntity {
 	public float tiltAngle;
 	public float prevTiltAngle;
 	public float rollAngle;
@@ -65,7 +69,7 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createSquidAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0);
+		return MobEntity.createMobAttributes().add(EntityAttributes.MAX_HEALTH, 10.0);
 	}
 
 	@Override
@@ -100,6 +104,12 @@ public class SquidEntity extends WaterCreatureEntity {
 	@Override
 	protected Entity.MoveEffect getMoveEffect() {
 		return Entity.MoveEffect.EVENTS;
+	}
+
+	@Nullable
+	@Override
+	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+		return EntityType.SQUID.create(world, SpawnReason.BREEDING);
 	}
 
 	@Override
@@ -208,7 +218,9 @@ public class SquidEntity extends WaterCreatureEntity {
 
 	@Override
 	public void travel(Vec3d movementInput) {
-		this.move(MovementType.SELF, this.getVelocity());
+		if (this.isLogicalSideForUpdatingMovement()) {
+			this.move(MovementType.SELF, this.getVelocity());
+		}
 	}
 
 	@Override
@@ -231,6 +243,16 @@ public class SquidEntity extends WaterCreatureEntity {
 
 	public boolean hasSwimmingVector() {
 		return this.swimX != 0.0F || this.swimY != 0.0F || this.swimZ != 0.0F;
+	}
+
+	@Nullable
+	@Override
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
+		if (this.random.nextFloat() > 0.95F) {
+			this.setBaby(true);
+		}
+
+		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
 	class EscapeAttackerGoal extends Goal {

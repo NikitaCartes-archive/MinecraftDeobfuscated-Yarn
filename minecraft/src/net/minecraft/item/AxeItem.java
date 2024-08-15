@@ -50,8 +50,8 @@ public class AxeItem extends MiningToolItem {
 		.put(Blocks.BAMBOO_BLOCK, Blocks.STRIPPED_BAMBOO_BLOCK)
 		.build();
 
-	public AxeItem(ToolMaterial toolMaterial, Item.Settings settings) {
-		super(toolMaterial, BlockTags.AXE_MINEABLE, settings);
+	public AxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Item.Settings settings) {
+		super(material, BlockTags.AXE_MINEABLE, attackDamage, attackSpeed, settings);
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class AxeItem extends MiningToolItem {
 					itemStack.damage(1, playerEntity, LivingEntity.getSlotForHand(context.getHand()));
 				}
 
-				return ActionResult.success(world.isClient);
+				return ActionResult.SUCCESS;
 			}
 		}
 	}

@@ -19,6 +19,7 @@ import net.minecraft.registry.MutableRegistry;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.SimpleRegistry;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryInfo;
@@ -67,18 +68,18 @@ public record DimensionOptionsRegistryHolder(Map<RegistryKey<DimensionOptions>, 
 		return Stream.concat(VANILLA_KEYS.stream(), otherKeys.filter(key -> !VANILLA_KEYS.contains(key)));
 	}
 
-	public DimensionOptionsRegistryHolder with(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator) {
-		Registry<DimensionType> registry = dynamicRegistryManager.get(RegistryKeys.DIMENSION_TYPE);
-		Map<RegistryKey<DimensionOptions>, DimensionOptions> map = createRegistry(registry, this.dimensions, chunkGenerator);
+	public DimensionOptionsRegistryHolder with(RegistryWrapper.WrapperLookup registryLookup, ChunkGenerator chunkGenerator) {
+		RegistryWrapper<DimensionType> registryWrapper = registryLookup.getWrapperOrThrow(RegistryKeys.DIMENSION_TYPE);
+		Map<RegistryKey<DimensionOptions>, DimensionOptions> map = createRegistry(registryWrapper, this.dimensions, chunkGenerator);
 		return new DimensionOptionsRegistryHolder(map);
 	}
 
 	public static Map<RegistryKey<DimensionOptions>, DimensionOptions> createRegistry(
-		Registry<DimensionType> dynamicRegistry, Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensionOptions, ChunkGenerator chunkGenerator
+		RegistryWrapper<DimensionType> dimensionTypeRegistry, Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensionOptions, ChunkGenerator chunkGenerator
 	) {
 		DimensionOptions dimensionOptions2 = (DimensionOptions)dimensionOptions.get(DimensionOptions.OVERWORLD);
 		RegistryEntry<DimensionType> registryEntry = (RegistryEntry<DimensionType>)(dimensionOptions2 == null
-			? dynamicRegistry.entryOf(DimensionTypes.OVERWORLD)
+			? dimensionTypeRegistry.getOrThrow(DimensionTypes.OVERWORLD)
 			: dimensionOptions2.dimensionTypeEntry());
 		return createRegistry(dimensionOptions, registryEntry, chunkGenerator);
 	}

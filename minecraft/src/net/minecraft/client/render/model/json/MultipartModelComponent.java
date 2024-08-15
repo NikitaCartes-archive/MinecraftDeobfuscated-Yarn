@@ -25,15 +25,9 @@ public class MultipartModelComponent {
 	private final MultipartModelSelector selector;
 	private final WeightedUnbakedModel model;
 
-	public MultipartModelComponent(MultipartModelSelector selector, WeightedUnbakedModel model) {
-		if (selector == null) {
-			throw new IllegalArgumentException("Missing condition for selector");
-		} else if (model == null) {
-			throw new IllegalArgumentException("Missing variant for selector");
-		} else {
-			this.selector = selector;
-			this.model = model;
-		}
+	public MultipartModelComponent(MultipartModelSelector multipartModelSelector, WeightedUnbakedModel weightedUnbakedModel) {
+		this.selector = multipartModelSelector;
+		this.model = weightedUnbakedModel;
 	}
 
 	public WeightedUnbakedModel getModel() {
@@ -42,14 +36,6 @@ public class MultipartModelComponent {
 
 	public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateFactory) {
 		return this.selector.getPredicate(stateFactory);
-	}
-
-	public boolean equals(Object o) {
-		return this == o;
-	}
-
-	public int hashCode() {
-		return System.identityHashCode(this);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -47,8 +47,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.InteractionObserver;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Npc;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeTypeCache;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
@@ -57,11 +57,10 @@ import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SkeletonHorseEntity;
-import net.minecraft.entity.mob.WaterCreatureEntity;
-import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.FuelRegistry;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
@@ -135,6 +134,8 @@ import net.minecraft.world.StructureLocator;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.block.OrientationHelper;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
@@ -149,6 +150,7 @@ import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.event.listener.GameEventDispatchManager;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
+import net.minecraft.world.explosion.ExplosionImpl;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.structure.Structure;
@@ -354,6 +356,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			this.getWorldBorder().tick();
 			profiler.swap("weather");
 			this.tickWeather();
+			profiler.pop();
 		}
 
 		int i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
@@ -374,7 +377,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			this.tickTime();
 		}
 
-		profiler.swap("tickPending");
+		profiler.push("tickPending");
 		if (!this.isDebugWorld() && bl) {
 			long l = this.getTime();
 			profiler.push("blockTicks");
@@ -413,13 +416,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 			this.entityList.forEach(entity -> {
 				if (!entity.isRemoved()) {
-					if (this.shouldCancelSpawn(entity)) {
-						entity.discard();
-					} else if (!tickManager.shouldSkipTick(entity)) {
+					if (!tickManager.shouldSkipTick(entity)) {
 						profiler.push("checkDespawn");
 						entity.checkDespawn();
 						profiler.pop();
-						if (this.chunkManager.chunkLoadingManager.getTicketManager().shouldTickEntities(entity.getChunkPos().toLong())) {
+						if (entity instanceof ServerPlayerEntity || this.chunkManager.chunkLoadingManager.getTicketManager().shouldTickEntities(entity.getChunkPos().toLong())) {
 							Entity entity2 = entity.getVehicle();
 							if (entity2 != null) {
 								if (!entity2.isRemoved() && entity2.hasPassenger(entity)) {
@@ -454,7 +455,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		if (this.shouldTickTime) {
 			long l = this.properties.getTime() + 1L;
 			this.worldProperties.setTime(l);
+			this.getProfiler().push("scheduledFunctions");
 			this.worldProperties.getScheduledEvents().processEvents(this.server, l);
+			this.getProfiler().pop();
 			if (this.properties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
 				this.setTimeOfDay(this.properties.getTimeOfDay() + 1L);
 			}
@@ -482,12 +485,6 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 	}
 
-	private boolean shouldCancelSpawn(Entity entity) {
-		return this.server.shouldSpawnAnimals() || !(entity instanceof AnimalEntity) && !(entity instanceof WaterCreatureEntity)
-			? !this.server.shouldSpawnNpcs() && entity instanceof Npc
-			: true;
-	}
-
 	private void wakeSleepingPlayers() {
 		this.sleepManager.clearSleeping();
 		((List)this.players.stream().filter(LivingEntity::isSleeping).collect(Collectors.toList())).forEach(player -> player.wakeUp(false, false));
@@ -508,7 +505,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 					&& this.random.nextDouble() < (double)localDifficulty.getLocalDifficulty() * 0.01
 					&& !this.getBlockState(blockPos.down()).isOf(Blocks.LIGHTNING_ROD);
 				if (bl2) {
-					SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this);
+					SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this, SpawnReason.EVENT);
 					if (skeletonHorseEntity != null) {
 						skeletonHorseEntity.setTrapped(true);
 						skeletonHorseEntity.setBreedingAge(0);
@@ -517,7 +514,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 					}
 				}
 
-				LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this);
+				LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this, SpawnReason.EVENT);
 				if (lightningEntity != null) {
 					lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
 					lightningEntity.setCosmetic(bl2);
@@ -591,7 +588,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				}
 			}
 
-			Biome.Precipitation precipitation = biome.getPrecipitation(blockPos2);
+			Biome.Precipitation precipitation = biome.getPrecipitation(blockPos2, this.getSeaLevel());
 			if (precipitation != Biome.Precipitation.NONE) {
 				BlockState blockState3 = this.getBlockState(blockPos2);
 				blockState3.getBlock().precipitationTick(blockState3, this, blockPos2, precipitation);
@@ -774,9 +771,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	private void tickFluid(BlockPos pos, Fluid fluid) {
-		FluidState fluidState = this.getFluidState(pos);
+		BlockState blockState = this.getBlockState(pos);
+		FluidState fluidState = blockState.getFluidState();
 		if (fluidState.isOf(fluid)) {
-			fluidState.onScheduledTick(this, pos);
+			fluidState.onScheduledTick(this, pos, blockState);
 		}
 	}
 
@@ -838,7 +836,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				progressListener.setTitle(Text.translatable("menu.savingLevel"));
 			}
 
-			this.saveLevel();
+			this.savePersistentState(flush);
 			if (progressListener != null) {
 				progressListener.setTask(Text.translatable("menu.savingChunks"));
 			}
@@ -852,12 +850,17 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 	}
 
-	private void saveLevel() {
+	private void savePersistentState(boolean flush) {
 		if (this.enderDragonFight != null) {
 			this.server.getSaveProperties().setDragonFight(this.enderDragonFight.toData());
 		}
 
-		this.getChunkManager().getPersistentStateManager().save();
+		PersistentStateManager persistentStateManager = this.getChunkManager().getPersistentStateManager();
+		if (flush) {
+			persistentStateManager.save();
+		} else {
+			persistentStateManager.startSaving();
+		}
 	}
 
 	/**
@@ -1102,7 +1105,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	public void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags) {
 		if (this.duringListenerUpdate) {
 			String string = "recursive call to sendBlockUpdated";
-			Util.error("recursive call to sendBlockUpdated", new IllegalStateException("recursive call to sendBlockUpdated"));
+			Util.logErrorOrPause("recursive call to sendBlockUpdated", new IllegalStateException("recursive call to sendBlockUpdated"));
 		}
 
 		this.getChunkManager().markForUpdate(pos);
@@ -1132,23 +1135,28 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Override
-	public void updateNeighborsAlways(BlockPos pos, Block sourceBlock) {
-		this.neighborUpdater.updateNeighbors(pos, sourceBlock, null);
+	public void updateNeighborsAlways(BlockPos pos, Block block) {
+		this.updateNeighborsAlways(pos, block, OrientationHelper.getEmissionOrientation(this, null, null));
 	}
 
 	@Override
-	public void updateNeighborsExcept(BlockPos pos, Block sourceBlock, Direction direction) {
-		this.neighborUpdater.updateNeighbors(pos, sourceBlock, direction);
+	public void updateNeighborsAlways(BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation) {
+		this.neighborUpdater.updateNeighbors(pos, sourceBlock, null, orientation);
 	}
 
 	@Override
-	public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos sourcePos) {
-		this.neighborUpdater.updateNeighbor(pos, sourceBlock, sourcePos);
+	public void updateNeighborsExcept(BlockPos pos, Block sourceBlock, Direction direction, @Nullable WireOrientation orientation) {
+		this.neighborUpdater.updateNeighbors(pos, sourceBlock, direction, orientation);
 	}
 
 	@Override
-	public void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-		this.neighborUpdater.updateNeighbor(state, pos, sourceBlock, sourcePos, notify);
+	public void updateNeighbor(BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation) {
+		this.neighborUpdater.updateNeighbor(pos, sourceBlock, orientation);
+	}
+
+	@Override
+	public void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation, boolean notify) {
+		this.neighborUpdater.updateNeighbor(state, pos, sourceBlock, orientation, notify);
 	}
 
 	@Override
@@ -1166,7 +1174,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Override
-	public Explosion createExplosion(
+	public void createExplosion(
 		@Nullable Entity entity,
 		@Nullable DamageSource damageSource,
 		@Nullable ExplosionBehavior behavior,
@@ -1176,38 +1184,34 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		float power,
 		boolean createFire,
 		World.ExplosionSourceType explosionSourceType,
-		ParticleEffect particle,
-		ParticleEffect emitterParticle,
+		ParticleEffect smallParticle,
+		ParticleEffect largeParticle,
 		RegistryEntry<SoundEvent> soundEvent
 	) {
-		Explosion explosion = this.createExplosion(
-			entity, damageSource, behavior, x, y, z, power, createFire, explosionSourceType, false, particle, emitterParticle, soundEvent
-		);
-		if (!explosion.shouldDestroy()) {
-			explosion.clearAffectedBlocks();
-		}
+		Explosion.DestructionType destructionType = switch (explosionSourceType) {
+			case NONE -> Explosion.DestructionType.KEEP;
+			case BLOCK -> this.getDestructionType(GameRules.BLOCK_EXPLOSION_DROP_DECAY);
+			case MOB -> this.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
+			? this.getDestructionType(GameRules.MOB_EXPLOSION_DROP_DECAY)
+			: Explosion.DestructionType.KEEP;
+			case TNT -> this.getDestructionType(GameRules.TNT_EXPLOSION_DROP_DECAY);
+			case TRIGGER -> Explosion.DestructionType.TRIGGER_BLOCK;
+		};
+		Vec3d vec3d = new Vec3d(x, y, z);
+		ExplosionImpl explosionImpl = new ExplosionImpl(this, entity, damageSource, behavior, vec3d, power, createFire, destructionType);
+		explosionImpl.explode();
+		ParticleEffect particleEffect = explosionImpl.isSmall() ? smallParticle : largeParticle;
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
-			if (serverPlayerEntity.squaredDistanceTo(x, y, z) < 4096.0) {
-				serverPlayerEntity.networkHandler
-					.sendPacket(
-						new ExplosionS2CPacket(
-							x,
-							y,
-							z,
-							power,
-							explosion.getAffectedBlocks(),
-							(Vec3d)explosion.getAffectedPlayers().get(serverPlayerEntity),
-							explosion.getDestructionType(),
-							explosion.getParticle(),
-							explosion.getEmitterParticle(),
-							explosion.getSoundEvent()
-						)
-					);
+			if (serverPlayerEntity.squaredDistanceTo(vec3d) < 4096.0) {
+				Optional<Vec3d> optional = Optional.ofNullable((Vec3d)explosionImpl.getKnockbackByPlayer().get(serverPlayerEntity));
+				serverPlayerEntity.networkHandler.sendPacket(new ExplosionS2CPacket(vec3d, optional, particleEffect, soundEvent));
 			}
 		}
+	}
 
-		return explosion;
+	private Explosion.DestructionType getDestructionType(GameRules.Key<GameRules.BooleanRule> decayRule) {
+		return this.getGameRules().getBoolean(decayRule) ? Explosion.DestructionType.DESTROY_WITH_DECAY : Explosion.DestructionType.DESTROY;
 	}
 
 	@Override
@@ -1908,6 +1912,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		return this.server.getBrewingRecipeRegistry();
 	}
 
+	@Override
+	public FuelRegistry getFuelRegistry() {
+		return this.server.getFuelRegistry();
+	}
+
 	public Random getOrCreateRandom(Identifier id) {
 		return this.randomSequences.getOrCreate(id);
 	}
@@ -1921,6 +1930,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		CrashReportSection crashReportSection = super.addDetailsToCrashReport(report);
 		crashReportSection.add("Loaded entity count", (CrashCallable<String>)(() -> String.valueOf(this.entityManager.getIndexSize())));
 		return crashReportSection;
+	}
+
+	@Override
+	public int getSeaLevel() {
+		return this.chunkManager.getChunkGenerator().getSeaLevel();
 	}
 
 	final class ServerEntityHandler implements EntityHandler<Entity> {
@@ -1949,7 +1963,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			if (entity instanceof MobEntity mobEntity) {
 				if (ServerWorld.this.duringListenerUpdate) {
 					String string = "onTrackingStart called during navigation iteration";
-					Util.error("onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration"));
+					Util.logErrorOrPause("onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration"));
 				}
 
 				ServerWorld.this.loadedMobs.add(mobEntity);
@@ -1974,7 +1988,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			if (entity instanceof MobEntity mobEntity) {
 				if (ServerWorld.this.duringListenerUpdate) {
 					String string = "onTrackingStart called during navigation iteration";
-					Util.error("onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration"));
+					Util.logErrorOrPause("onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration"));
 				}
 
 				ServerWorld.this.loadedMobs.remove(mobEntity);

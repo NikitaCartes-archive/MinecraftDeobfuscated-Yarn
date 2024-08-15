@@ -19,10 +19,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.DataPackSettings;
@@ -48,8 +48,6 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final boolean onlineMode = this.parseBoolean("online-mode", true);
 	public final boolean preventProxyConnections = this.parseBoolean("prevent-proxy-connections", false);
 	public final String serverIp = this.getString("server-ip", "");
-	public final boolean spawnAnimals = this.parseBoolean("spawn-animals", true);
-	public final boolean spawnNpcs = this.parseBoolean("spawn-npcs", true);
 	public final boolean pvp = this.parseBoolean("pvp", true);
 	public final boolean allowFlight = this.parseBoolean("allow-flight", false);
 	public final String motd = this.getString("motd", "A Minecraft Server");
@@ -94,12 +92,14 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		"entity-broadcast-range-percentage", percentage -> MathHelper.clamp(percentage, 10, 1000), 100
 	);
 	public final String textFilteringConfig = this.getString("text-filtering-config", "");
+	public final int textFilteringVersion = this.getInt("text-filtering-version", 0);
 	public final Optional<MinecraftServer.ServerResourcePackProperties> serverResourcePackProperties;
 	public final DataPackSettings dataPackSettings;
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Integer> playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Boolean> whiteList = this.booleanAccessor("white-list", false);
 	public final boolean enforceSecureProfile = this.parseBoolean("enforce-secure-profile", true);
 	public final boolean logIps = this.parseBoolean("log-ips", true);
+	public final int pauseWhenEmptySeconds = this.getInt("pause-when-empty-seconds", 60);
 	private final ServerPropertiesHandler.WorldGenProperties worldGenProperties;
 	public final GeneratorOptions generatorOptions;
 	public boolean acceptsTransfers = this.parseBoolean("accepts-transfers", false);
@@ -198,8 +198,8 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		return new DataPackSettings(list, list2);
 	}
 
-	public DimensionOptionsRegistryHolder createDimensionsRegistryHolder(DynamicRegistryManager dynamicRegistry) {
-		return this.worldGenProperties.createDimensionsRegistryHolder(dynamicRegistry);
+	public DimensionOptionsRegistryHolder createDimensionsRegistryHolder(RegistryWrapper.WrapperLookup registryLookup) {
+		return this.worldGenProperties.createDimensionsRegistryHolder(registryLookup);
 	}
 
 	static record WorldGenProperties(JsonObject generatorSettings, String levelType) {
@@ -207,27 +207,27 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 			"default", WorldPresets.DEFAULT, "largebiomes", WorldPresets.LARGE_BIOMES
 		);
 
-		public DimensionOptionsRegistryHolder createDimensionsRegistryHolder(DynamicRegistryManager dynamicRegistryManager) {
-			Registry<WorldPreset> registry = dynamicRegistryManager.get(RegistryKeys.WORLD_PRESET);
-			RegistryEntry.Reference<WorldPreset> reference = (RegistryEntry.Reference<WorldPreset>)registry.getEntry(WorldPresets.DEFAULT)
-				.or(() -> registry.streamEntries().findAny())
+		public DimensionOptionsRegistryHolder createDimensionsRegistryHolder(RegistryWrapper.WrapperLookup registryLookup) {
+			RegistryWrapper<WorldPreset> registryWrapper = registryLookup.getWrapperOrThrow(RegistryKeys.WORLD_PRESET);
+			RegistryEntry.Reference<WorldPreset> reference = (RegistryEntry.Reference<WorldPreset>)registryWrapper.getOptional(WorldPresets.DEFAULT)
+				.or(() -> registryWrapper.streamEntries().findAny())
 				.orElseThrow(() -> new IllegalStateException("Invalid datapack contents: can't find default preset"));
 			RegistryEntry<WorldPreset> registryEntry = (RegistryEntry<WorldPreset>)Optional.ofNullable(Identifier.tryParse(this.levelType))
 				.map(levelTypeId -> RegistryKey.of(RegistryKeys.WORLD_PRESET, levelTypeId))
 				.or(() -> Optional.ofNullable((RegistryKey)LEVEL_TYPE_TO_PRESET_KEY.get(this.levelType)))
-				.flatMap(registry::getEntry)
+				.flatMap(registryWrapper::getOptional)
 				.orElseGet(() -> {
 					ServerPropertiesHandler.LOGGER.warn("Failed to parse level-type {}, defaulting to {}", this.levelType, reference.registryKey().getValue());
 					return reference;
 				});
 			DimensionOptionsRegistryHolder dimensionOptionsRegistryHolder = registryEntry.value().createDimensionsRegistryHolder();
 			if (registryEntry.matchesKey(WorldPresets.FLAT)) {
-				RegistryOps<JsonElement> registryOps = dynamicRegistryManager.getOps(JsonOps.INSTANCE);
+				RegistryOps<JsonElement> registryOps = registryLookup.getOps(JsonOps.INSTANCE);
 				Optional<FlatChunkGeneratorConfig> optional = FlatChunkGeneratorConfig.CODEC
 					.parse(new Dynamic<>(registryOps, this.generatorSettings()))
 					.resultOrPartial(ServerPropertiesHandler.LOGGER::error);
 				if (optional.isPresent()) {
-					return dimensionOptionsRegistryHolder.with(dynamicRegistryManager, new FlatChunkGenerator((FlatChunkGeneratorConfig)optional.get()));
+					return dimensionOptionsRegistryHolder.with(registryLookup, new FlatChunkGenerator((FlatChunkGeneratorConfig)optional.get()));
 				}
 			}
 

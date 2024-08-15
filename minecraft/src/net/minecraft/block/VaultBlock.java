@@ -16,10 +16,10 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -44,20 +44,21 @@ public class VaultBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if (stack.isEmpty() || state.get(VAULT_STATE) != VaultState.ACTIVE) {
-			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-		} else if (world instanceof ServerWorld serverWorld) {
-			if (serverWorld.getBlockEntity(pos) instanceof VaultBlockEntity vaultBlockEntity) {
+	public ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if (!stack.isEmpty() && state.get(VAULT_STATE) == VaultState.ACTIVE) {
+			if (world instanceof ServerWorld serverWorld) {
+				if (!(serverWorld.getBlockEntity(pos) instanceof VaultBlockEntity vaultBlockEntity)) {
+					return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
+				}
+
 				VaultBlockEntity.Server.tryUnlock(
 					serverWorld, pos, state, vaultBlockEntity.getConfig(), vaultBlockEntity.getServerData(), vaultBlockEntity.getSharedData(), player, stack
 				);
-				return ItemActionResult.SUCCESS;
-			} else {
-				return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 			}
+
+			return ActionResult.SUCCESS_SERVER;
 		} else {
-			return ItemActionResult.CONSUME;
+			return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 		}
 	}
 

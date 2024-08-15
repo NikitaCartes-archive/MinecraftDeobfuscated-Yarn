@@ -54,7 +54,7 @@ public class MobSpawnerBlockEntityRenderer implements BlockEntityRenderer<MobSpa
 		matrices.translate(0.0F, -0.2F, 0.0F);
 		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-30.0F));
 		matrices.scale(f, f, f);
-		entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, tickDelta, matrices, vertexConsumers, light);
+		entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, tickDelta, matrices, vertexConsumers, light);
 		matrices.pop();
 	}
 }

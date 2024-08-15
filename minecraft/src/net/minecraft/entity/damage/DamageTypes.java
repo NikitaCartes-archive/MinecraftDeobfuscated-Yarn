@@ -18,6 +18,7 @@ public interface DamageTypes {
 	RegistryKey<DamageType> STARVE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.ofVanilla("starve"));
 	RegistryKey<DamageType> CACTUS = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.ofVanilla("cactus"));
 	RegistryKey<DamageType> FALL = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.ofVanilla("fall"));
+	RegistryKey<DamageType> ENDER_PEARL = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.ofVanilla("ender_pearl"));
 	RegistryKey<DamageType> FLY_INTO_WALL = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.ofVanilla("fly_into_wall"));
 	RegistryKey<DamageType> OUT_OF_WORLD = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.ofVanilla("out_of_world"));
 	RegistryKey<DamageType> GENERIC = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.ofVanilla("generic"));
@@ -53,6 +54,7 @@ public interface DamageTypes {
 	RegistryKey<DamageType> BAD_RESPAWN_POINT = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.ofVanilla("bad_respawn_point"));
 	RegistryKey<DamageType> OUTSIDE_BORDER = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.ofVanilla("outside_border"));
 	RegistryKey<DamageType> GENERIC_KILL = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.ofVanilla("generic_kill"));
+	RegistryKey<DamageType> MACE_SMASH = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.ofVanilla("mace_smash"));
 
 	static void bootstrap(Registerable<DamageType> damageTypeRegisterable) {
 		damageTypeRegisterable.register(IN_FIRE, new DamageType("inFire", 0.1F, DamageEffects.BURNING));
@@ -68,6 +70,9 @@ public interface DamageTypes {
 		damageTypeRegisterable.register(CACTUS, new DamageType("cactus", 0.1F));
 		damageTypeRegisterable.register(
 			FALL, new DamageType("fall", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER, 0.0F, DamageEffects.HURT, DeathMessageType.FALL_VARIANTS)
+		);
+		damageTypeRegisterable.register(
+			ENDER_PEARL, new DamageType("fall", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER, 0.0F, DamageEffects.HURT, DeathMessageType.FALL_VARIANTS)
 		);
 		damageTypeRegisterable.register(FLY_INTO_WALL, new DamageType("flyIntoWall", 0.0F));
 		damageTypeRegisterable.register(OUT_OF_WORLD, new DamageType("outOfWorld", 0.0F));
@@ -106,5 +111,6 @@ public interface DamageTypes {
 		damageTypeRegisterable.register(OUTSIDE_BORDER, new DamageType("outsideBorder", 0.0F));
 		damageTypeRegisterable.register(GENERIC_KILL, new DamageType("genericKill", 0.0F));
 		damageTypeRegisterable.register(WIND_CHARGE, new DamageType("mob", 0.1F));
+		damageTypeRegisterable.register(MACE_SMASH, new DamageType("mace_smash", 0.1F));
 	}
 }

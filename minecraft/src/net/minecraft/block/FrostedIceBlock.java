@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
+import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -13,6 +14,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.block.WireOrientation;
 
 public class FrostedIceBlock extends IceBlock {
 	public static final MapCodec<FrostedIceBlock> CODEC = createCodec(FrostedIceBlock::new);
@@ -39,7 +41,7 @@ public class FrostedIceBlock extends IceBlock {
 	@Override
 	protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if ((random.nextInt(3) == 0 || this.canMelt(world, pos, 4))
-			&& world.getLightLevel(pos) > 11 - (Integer)state.get(AGE) - state.getOpacity(world, pos)
+			&& world.getLightLevel(pos) > 11 - (Integer)state.get(AGE) - state.getOpacity()
 			&& this.increaseAge(state, world, pos)) {
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -67,12 +69,12 @@ public class FrostedIceBlock extends IceBlock {
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		if (sourceBlock.getDefaultState().isOf(this) && this.canMelt(world, pos, 2)) {
 			this.melt(state, world, pos);
 		}
 
-		super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
+		super.neighborUpdate(state, world, pos, sourceBlock, wireOrientation, notify);
 	}
 
 	private boolean canMelt(BlockView world, BlockPos pos, int maxNeighbors) {

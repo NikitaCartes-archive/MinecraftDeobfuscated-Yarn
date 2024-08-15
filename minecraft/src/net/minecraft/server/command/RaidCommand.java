@@ -87,13 +87,13 @@ public class RaidCommand {
 
 	private static int executeSpawnLeader(ServerCommandSource source) {
 		source.sendFeedback(() -> Text.literal("Spawned a raid captain"), false);
-		RaiderEntity raiderEntity = EntityType.PILLAGER.create(source.getWorld());
+		RaiderEntity raiderEntity = EntityType.PILLAGER.create(source.getWorld(), SpawnReason.COMMAND);
 		if (raiderEntity == null) {
 			source.sendError(Text.literal("Pillager failed to spawn"));
 			return 0;
 		} else {
 			raiderEntity.setPatrolLeader(true);
-			raiderEntity.equipStack(EquipmentSlot.HEAD, Raid.getOminousBanner(source.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
+			raiderEntity.equipStack(EquipmentSlot.HEAD, Raid.createOminousBanner(source.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
 			raiderEntity.setPosition(source.getPosition().x, source.getPosition().y, source.getPosition().z);
 			raiderEntity.initialize(source.getWorld(), source.getWorld().getLocalDifficulty(BlockPos.ofFloored(source.getPosition())), SpawnReason.COMMAND, null);
 			source.getWorld().spawnEntityAndPassengers(raiderEntity);

@@ -11,12 +11,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameMode;
 
@@ -57,8 +58,8 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	}
 
 	@Override
-	public void renderIcon(DrawContext context, float brightness, int alpha) {
-		context.drawGuiTexture(TEXTURE, 0, 0, 16, 16);
+	public void renderIcon(DrawContext context, float brightness, float f) {
+		context.drawGuiTexture(RenderLayer::getGuiTextured, TEXTURE, 0, 0, 16, 16, ColorHelper.fromFloats(f, brightness, brightness, brightness));
 	}
 
 	@Override
@@ -108,18 +109,16 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 		}
 
 		@Override
-		public void renderIcon(DrawContext context, float brightness, int alpha) {
+		public void renderIcon(DrawContext context, float brightness, float f) {
 			Integer integer = this.team.getColor().getColorValue();
 			if (integer != null) {
-				float f = (float)(integer >> 16 & 0xFF) / 255.0F;
-				float g = (float)(integer >> 8 & 0xFF) / 255.0F;
-				float h = (float)(integer & 0xFF) / 255.0F;
-				context.fill(1, 1, 15, 15, MathHelper.packRgb(f * brightness, g * brightness, h * brightness) | alpha << 24);
+				float g = (float)(integer >> 16 & 0xFF) / 255.0F;
+				float h = (float)(integer >> 8 & 0xFF) / 255.0F;
+				float i = (float)(integer & 0xFF) / 255.0F;
+				context.fill(1, 1, 15, 15, ColorHelper.fromFloats(f, g * brightness, h * brightness, i * brightness));
 			}
 
-			context.setShaderColor(brightness, brightness, brightness, (float)alpha / 255.0F);
-			PlayerSkinDrawer.draw(context, (SkinTextures)this.skinTexturesSupplier.get(), 2, 2, 12);
-			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+			PlayerSkinDrawer.draw(context, (SkinTextures)this.skinTexturesSupplier.get(), 2, 2, 12, ColorHelper.fromFloats(f, brightness, brightness, brightness));
 		}
 
 		@Override

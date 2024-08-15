@@ -8,7 +8,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.render.entity.state.GhastEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
@@ -55,7 +55,7 @@ import net.minecraft.util.math.random.Random;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class GhastEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+public class GhastEntityModel extends EntityModel<GhastEntityRenderState> {
 	private final ModelPart root;
 	private final ModelPart[] tentacles = new ModelPart[9];
 
@@ -88,13 +88,12 @@ public class GhastEntityModel<T extends Entity> extends SinglePartEntityModel<T>
 			);
 		}
 
-		return TexturedModelData.of(modelData, 64, 32);
+		return TexturedModelData.of(modelData, 64, 32).transform(ModelTransformer.scaling(4.5F));
 	}
 
-	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+	public void setAngles(GhastEntityRenderState ghastEntityRenderState) {
 		for (int i = 0; i < this.tentacles.length; i++) {
-			this.tentacles[i].pitch = 0.2F * MathHelper.sin(animationProgress * 0.3F + (float)i) + 0.4F;
+			this.tentacles[i].pitch = 0.2F * MathHelper.sin(ghastEntityRenderState.age * 0.3F + (float)i) + 0.4F;
 		}
 	}
 

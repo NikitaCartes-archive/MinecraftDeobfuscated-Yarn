@@ -27,11 +27,11 @@ public class ExplosionBehavior {
 		return 1.0F;
 	}
 
-	public float calculateDamage(Explosion explosion, Entity entity) {
+	public float calculateDamage(Explosion explosion, Entity entity, float amount) {
 		float f = explosion.getPower() * 2.0F;
 		Vec3d vec3d = explosion.getPosition();
 		double d = Math.sqrt(entity.squaredDistanceTo(vec3d)) / (double)f;
-		double e = (1.0 - d) * (double)Explosion.getExposure(vec3d, entity);
+		double e = (1.0 - d) * (double)amount;
 		return (float)((e * e + e) / 2.0 * 7.0 * (double)f + 1.0);
 	}
 }

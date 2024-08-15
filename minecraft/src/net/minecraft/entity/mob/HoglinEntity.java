@@ -46,7 +46,6 @@ import net.minecraft.world.WorldView;
 
 public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(HoglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final float field_30525 = 0.2F;
 	private static final int MAX_HEALTH = 40;
 	private static final float MOVEMENT_SPEED = 0.3F;
 	private static final int ATTACK_KNOCKBACK = 1;
@@ -95,11 +94,11 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 
 	public static DefaultAttributeContainer.Builder createHoglinAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.6F)
-			.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.0)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
+			.add(EntityAttributes.MAX_HEALTH, 40.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.KNOCKBACK_RESISTANCE, 0.6F)
+			.add(EntityAttributes.ATTACK_KNOCKBACK, 1.0)
+			.add(EntityAttributes.ATTACK_DAMAGE, 6.0);
 	}
 
 	@Override
@@ -181,10 +180,10 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	protected void onGrowUp() {
 		if (this.isBaby()) {
 			this.experiencePoints = 3;
-			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(0.5);
+			this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(0.5);
 		} else {
 			this.experiencePoints = 5;
-			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(6.0);
+			this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
 		}
 	}
 
@@ -317,7 +316,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-		HoglinEntity hoglinEntity = EntityType.HOGLIN.create(world);
+		HoglinEntity hoglinEntity = EntityType.HOGLIN.create(world, SpawnReason.BREEDING);
 		if (hoglinEntity != null) {
 			hoglinEntity.setPersistent();
 		}

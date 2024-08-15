@@ -2,7 +2,6 @@ package net.minecraft.client.gui.screen.report;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.report.AbuseReportLimits;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -21,6 +20,7 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.input.KeyCodes;
 import net.minecraft.client.network.message.MessageTrustStatus;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.session.report.AbuseReportContext;
 import net.minecraft.client.session.report.ChatAbuseReport;
 import net.minecraft.client.session.report.MessagesListAdder;
@@ -323,9 +323,7 @@ public class ChatSelectionScreen extends Screen {
 
 			private void drawCheckmark(DrawContext context, int y, int x, int entryHeight) {
 				int j = y + (entryHeight - 8) / 2;
-				RenderSystem.enableBlend();
-				context.drawGuiTexture(ChatSelectionScreen.CHECKMARK_ICON_TEXTURE, x, j, 9, 8);
-				RenderSystem.disableBlend();
+				context.drawGuiTexture(RenderLayer::getGuiTextured, ChatSelectionScreen.CHECKMARK_ICON_TEXTURE, x, j, 9, 8);
 			}
 
 			private int getTextWidth() {
@@ -419,7 +417,6 @@ public class ChatSelectionScreen extends Screen {
 
 		@Environment(EnvType.CLIENT)
 		public class TextEntry extends ChatSelectionScreen.SelectionListWidget.Entry {
-			private static final int TEXT_COLOR = -6250336;
 			private final Text text;
 
 			public TextEntry(final Text text) {

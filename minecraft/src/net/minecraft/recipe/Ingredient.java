@@ -1,195 +1,93 @@
 package net.minecraft.recipe;
 
-import com.google.common.collect.Lists;
-import com.mojang.datafixers.util.Either;
+import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntComparators;
-import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.registry.Registries;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.entry.RegistryEntryListCodec;
+import net.minecraft.util.dynamic.Codecs;
 
 public final class Ingredient implements Predicate<ItemStack> {
-	public static final Ingredient EMPTY = new Ingredient(Stream.empty());
-	public static final PacketCodec<RegistryByteBuf, Ingredient> PACKET_CODEC = ItemStack.LIST_PACKET_CODEC
-		.xmap(list -> ofEntries(list.stream().map(Ingredient.StackEntry::new)), ingredient -> Arrays.asList(ingredient.getMatchingStacks()));
-	private final Ingredient.Entry[] entries;
+	public static final PacketCodec<RegistryByteBuf, Ingredient> PACKET_CODEC = PacketCodecs.registryEntryList(RegistryKeys.ITEM)
+		.xmap(Ingredient::new, ingredient -> ingredient.entries);
+	public static final PacketCodec<RegistryByteBuf, Optional<Ingredient>> OPTIONAL_PACKET_CODEC = PacketCodecs.registryEntryList(RegistryKeys.ITEM)
+		.xmap(
+			entries -> entries.size() == 0 ? Optional.empty() : Optional.of(new Ingredient(entries)),
+			optional -> (RegistryEntryList)optional.map(ingredient -> ingredient.entries).orElse(RegistryEntryList.of())
+		);
+	public static final Codec<RegistryEntryList<Item>> ENTRIES_CODEC = RegistryEntryListCodec.create(RegistryKeys.ITEM, ItemStack.ITEM_CODEC, false);
+	public static final Codec<Ingredient> CODEC = Codecs.nonEmptyEntryList(ENTRIES_CODEC).xmap(Ingredient::new, ingredient -> ingredient.entries);
+	private final RegistryEntryList<Item> entries;
 	@Nullable
-	private ItemStack[] matchingStacks;
-	@Nullable
-	private IntList ids;
-	public static final Codec<Ingredient> ALLOW_EMPTY_CODEC = createCodec(true);
-	public static final Codec<Ingredient> DISALLOW_EMPTY_CODEC = createCodec(false);
+	private List<RegistryEntry<Item>> matchingStacks;
 
-	private Ingredient(Stream<? extends Ingredient.Entry> entries) {
-		this.entries = (Ingredient.Entry[])entries.toArray(Ingredient.Entry[]::new);
-	}
-
-	private Ingredient(Ingredient.Entry[] entries) {
+	private Ingredient(RegistryEntryList<Item> entries) {
+		entries.getStorage().ifRight(list -> {
+			if (list.isEmpty()) {
+				throw new UnsupportedOperationException("Ingredients can't be empty");
+			} else if (list.contains(Items.AIR.getRegistryEntry())) {
+				throw new UnsupportedOperationException("Ingredient can't contain air");
+			}
+		});
 		this.entries = entries;
 	}
 
-	public ItemStack[] getMatchingStacks() {
+	public static boolean matches(Optional<Ingredient> ingredient, ItemStack stack) {
+		return (Boolean)ingredient.map(ingredient2 -> ingredient2.test(stack)).orElseGet(stack::isEmpty);
+	}
+
+	public List<RegistryEntry<Item>> getMatchingStacks() {
 		if (this.matchingStacks == null) {
-			this.matchingStacks = (ItemStack[])Arrays.stream(this.entries).flatMap(entry -> entry.getStacks().stream()).distinct().toArray(ItemStack[]::new);
+			this.matchingStacks = ImmutableList.copyOf(this.entries);
 		}
 
 		return this.matchingStacks;
 	}
 
-	public boolean test(@Nullable ItemStack itemStack) {
-		if (itemStack == null) {
-			return false;
-		} else if (this.isEmpty()) {
-			return itemStack.isEmpty();
-		} else {
-			for (ItemStack itemStack2 : this.getMatchingStacks()) {
-				if (itemStack2.isOf(itemStack.getItem())) {
-					return true;
-				}
+	public boolean test(ItemStack itemStack) {
+		List<RegistryEntry<Item>> list = this.getMatchingStacks();
+
+		for (int i = 0; i < list.size(); i++) {
+			if (itemStack.itemMatches((RegistryEntry<Item>)list.get(i))) {
+				return true;
 			}
-
-			return false;
-		}
-	}
-
-	public IntList getMatchingItemIds() {
-		if (this.ids == null) {
-			ItemStack[] itemStacks = this.getMatchingStacks();
-			this.ids = new IntArrayList(itemStacks.length);
-
-			for (ItemStack itemStack : itemStacks) {
-				this.ids.add(RecipeMatcher.getItemId(itemStack));
-			}
-
-			this.ids.sort(IntComparators.NATURAL_COMPARATOR);
 		}
 
-		return this.ids;
-	}
-
-	public boolean isEmpty() {
-		return this.entries.length == 0;
+		return false;
 	}
 
 	public boolean equals(Object o) {
-		return o instanceof Ingredient ingredient ? Arrays.equals(this.entries, ingredient.entries) : false;
+		return o instanceof Ingredient ingredient ? Objects.equals(this.entries, ingredient.entries) : false;
 	}
 
-	private static Ingredient ofEntries(Stream<? extends Ingredient.Entry> entries) {
-		Ingredient ingredient = new Ingredient(entries);
-		return ingredient.isEmpty() ? EMPTY : ingredient;
-	}
-
-	public static Ingredient empty() {
-		return EMPTY;
+	public static Ingredient ofItem(ItemConvertible item) {
+		return new Ingredient(RegistryEntryList.of(item.asItem().getRegistryEntry()));
 	}
 
 	public static Ingredient ofItems(ItemConvertible... items) {
-		return ofStacks(Arrays.stream(items).map(ItemStack::new));
+		return ofItems(Arrays.stream(items));
 	}
 
-	public static Ingredient ofStacks(ItemStack... stacks) {
-		return ofStacks(Arrays.stream(stacks));
+	public static Ingredient ofItems(Stream<? extends ItemConvertible> stacks) {
+		return new Ingredient(RegistryEntryList.of(stacks.map(item -> item.asItem().getRegistryEntry()).toList()));
 	}
 
-	public static Ingredient ofStacks(Stream<ItemStack> stacks) {
-		return ofEntries(stacks.filter(stack -> !stack.isEmpty()).map(Ingredient.StackEntry::new));
-	}
-
-	public static Ingredient fromTag(TagKey<Item> tag) {
-		return ofEntries(Stream.of(new Ingredient.TagEntry(tag)));
-	}
-
-	private static Codec<Ingredient> createCodec(boolean allowEmpty) {
-		Codec<Ingredient.Entry[]> codec = Codec.list(Ingredient.Entry.CODEC)
-			.comapFlatMap(
-				entries -> !allowEmpty && entries.size() < 1
-						? DataResult.error(() -> "Item array cannot be empty, at least one item must be defined")
-						: DataResult.success((Ingredient.Entry[])entries.toArray(new Ingredient.Entry[0])),
-				List::of
-			);
-		return Codec.either(codec, Ingredient.Entry.CODEC)
-			.flatComapMap(
-				either -> either.map(Ingredient::new, entry -> new Ingredient(new Ingredient.Entry[]{entry})),
-				ingredient -> {
-					if (ingredient.entries.length == 1) {
-						return DataResult.success(Either.right(ingredient.entries[0]));
-					} else {
-						return ingredient.entries.length == 0 && !allowEmpty
-							? DataResult.error(() -> "Item array cannot be empty, at least one item must be defined")
-							: DataResult.success(Either.left(ingredient.entries));
-					}
-				}
-			);
-	}
-
-	interface Entry {
-		Codec<Ingredient.Entry> CODEC = Codec.xor(Ingredient.StackEntry.CODEC, Ingredient.TagEntry.CODEC)
-			.xmap(either -> either.map(stackEntry -> stackEntry, tagEntry -> tagEntry), entry -> {
-				if (entry instanceof Ingredient.TagEntry tagEntry) {
-					return Either.right(tagEntry);
-				} else if (entry instanceof Ingredient.StackEntry stackEntry) {
-					return Either.left(stackEntry);
-				} else {
-					throw new UnsupportedOperationException("This is neither an item value nor a tag value.");
-				}
-			});
-
-		Collection<ItemStack> getStacks();
-	}
-
-	static record StackEntry(ItemStack stack) implements Ingredient.Entry {
-		static final Codec<Ingredient.StackEntry> CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(ItemStack.REGISTRY_ENTRY_CODEC.fieldOf("item").forGetter(entry -> entry.stack)).apply(instance, Ingredient.StackEntry::new)
-		);
-
-		public boolean equals(Object o) {
-			return !(o instanceof Ingredient.StackEntry stackEntry)
-				? false
-				: stackEntry.stack.getItem().equals(this.stack.getItem()) && stackEntry.stack.getCount() == this.stack.getCount();
-		}
-
-		@Override
-		public Collection<ItemStack> getStacks() {
-			return Collections.singleton(this.stack);
-		}
-	}
-
-	static record TagEntry(TagKey<Item> tag) implements Ingredient.Entry {
-		static final Codec<Ingredient.TagEntry> CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(TagKey.unprefixedCodec(RegistryKeys.ITEM).fieldOf("tag").forGetter(entry -> entry.tag)).apply(instance, Ingredient.TagEntry::new)
-		);
-
-		public boolean equals(Object o) {
-			return o instanceof Ingredient.TagEntry tagEntry ? tagEntry.tag.id().equals(this.tag.id()) : false;
-		}
-
-		@Override
-		public Collection<ItemStack> getStacks() {
-			List<ItemStack> list = Lists.<ItemStack>newArrayList();
-
-			for (RegistryEntry<Item> registryEntry : Registries.ITEM.iterateEntries(this.tag)) {
-				list.add(new ItemStack(registryEntry));
-			}
-
-			return list;
-		}
+	public static Ingredient fromTag(RegistryEntryList<Item> tag) {
+		return new Ingredient(tag);
 	}
 }

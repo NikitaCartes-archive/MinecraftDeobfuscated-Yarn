@@ -7,41 +7,34 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
+import net.minecraft.client.render.entity.state.SaddleableRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.Saddleable;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class SaddleFeatureRenderer<T extends Entity & Saddleable, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
+public class SaddleFeatureRenderer<S extends LivingEntityRenderState & SaddleableRenderState, M extends EntityModel<? super S>> extends FeatureRenderer<S, M> {
 	private final Identifier texture;
 	private final M model;
+	private final M babyModel;
 
-	public SaddleFeatureRenderer(FeatureRendererContext<T, M> context, M model, Identifier texture) {
+	public SaddleFeatureRenderer(FeatureRendererContext<S, M> context, M model, M babyModel, Identifier texture) {
 		super(context);
 		this.model = model;
+		this.babyModel = babyModel;
 		this.texture = texture;
 	}
 
-	@Override
-	public void render(
-		MatrixStack matrices,
-		VertexConsumerProvider vertexConsumers,
-		int light,
-		T entity,
-		float limbAngle,
-		float limbDistance,
-		float tickDelta,
-		float animationProgress,
-		float headYaw,
-		float headPitch
-	) {
-		if (entity.isSaddled()) {
-			this.getContextModel().copyStateTo(this.model);
-			this.model.animateModel(entity, limbAngle, limbDistance, tickDelta);
-			this.model.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
-			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(this.texture));
-			this.model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
+	public SaddleFeatureRenderer(FeatureRendererContext<S, M> context, M model, Identifier texture) {
+		this(context, model, model, texture);
+	}
+
+	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, S livingEntityRenderState, float f, float g) {
+		if (livingEntityRenderState.isSaddled()) {
+			M entityModel = livingEntityRenderState.baby ? this.babyModel : this.model;
+			entityModel.setAngles(livingEntityRenderState);
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(this.texture));
+			entityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 		}
 	}
 }

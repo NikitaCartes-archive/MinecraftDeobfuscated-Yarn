@@ -10,11 +10,13 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import java.util.Collection;
+import java.util.Optional;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.TimeArgumentType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.CommandFunction;
+import net.minecraft.server.function.Macro;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.timer.FunctionTagTimerCallback;
@@ -26,6 +28,7 @@ public class ScheduleCommand {
 	private static final DynamicCommandExceptionType CLEARED_FAILURE_EXCEPTION = new DynamicCommandExceptionType(
 		eventName -> Text.stringifiedTranslatable("commands.schedule.cleared.failure", eventName)
 	);
+	private static final SimpleCommandExceptionType MACRO_EXCEPTION = new SimpleCommandExceptionType(Text.stringifiedTranslatable("commands.schedule.macro"));
 	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(
 			context.getSource().getServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().getEventNames(), builder
 		);
@@ -88,7 +91,12 @@ public class ScheduleCommand {
 			long l = source.getWorld().getTime() + (long)time;
 			Identifier identifier = function.getFirst();
 			Timer<MinecraftServer> timer = source.getServer().getSaveProperties().getMainWorldProperties().getScheduledEvents();
-			function.getSecond().ifLeft(function2 -> {
+			Optional<CommandFunction<ServerCommandSource>> optional = function.getSecond().left();
+			if (optional.isPresent()) {
+				if (optional.get() instanceof Macro) {
+					throw MACRO_EXCEPTION.create();
+				}
+
 				String string = identifier.toString();
 				if (replace) {
 					timer.remove(string);
@@ -96,7 +104,7 @@ public class ScheduleCommand {
 
 				timer.setEvent(string, l, new FunctionTimerCallback(identifier));
 				source.sendFeedback(() -> Text.translatable("commands.schedule.created.function", Text.of(identifier), time, l), true);
-			}).ifRight(functions -> {
+			} else {
 				String string = "#" + identifier;
 				if (replace) {
 					timer.remove(string);
@@ -104,7 +112,8 @@ public class ScheduleCommand {
 
 				timer.setEvent(string, l, new FunctionTagTimerCallback(identifier));
 				source.sendFeedback(() -> Text.translatable("commands.schedule.created.tag", Text.of(identifier), time, l), true);
-			});
+			}
+
 			return Math.floorMod(l, Integer.MAX_VALUE);
 		}
 	}

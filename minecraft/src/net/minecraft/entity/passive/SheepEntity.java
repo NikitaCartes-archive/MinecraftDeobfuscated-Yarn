@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
@@ -29,10 +28,8 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeItem;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
@@ -50,7 +47,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
@@ -63,24 +59,6 @@ import net.minecraft.world.event.GameEvent;
 public class SheepEntity extends AnimalEntity implements Shearable {
 	private static final int MAX_GRASS_TIMER = 40;
 	private static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private static final Map<DyeColor, ItemConvertible> DROPS = Util.make(Maps.newEnumMap(DyeColor.class), map -> {
-		map.put(DyeColor.WHITE, Blocks.WHITE_WOOL);
-		map.put(DyeColor.ORANGE, Blocks.ORANGE_WOOL);
-		map.put(DyeColor.MAGENTA, Blocks.MAGENTA_WOOL);
-		map.put(DyeColor.LIGHT_BLUE, Blocks.LIGHT_BLUE_WOOL);
-		map.put(DyeColor.YELLOW, Blocks.YELLOW_WOOL);
-		map.put(DyeColor.LIME, Blocks.LIME_WOOL);
-		map.put(DyeColor.PINK, Blocks.PINK_WOOL);
-		map.put(DyeColor.GRAY, Blocks.GRAY_WOOL);
-		map.put(DyeColor.LIGHT_GRAY, Blocks.LIGHT_GRAY_WOOL);
-		map.put(DyeColor.CYAN, Blocks.CYAN_WOOL);
-		map.put(DyeColor.PURPLE, Blocks.PURPLE_WOOL);
-		map.put(DyeColor.BLUE, Blocks.BLUE_WOOL);
-		map.put(DyeColor.BROWN, Blocks.BROWN_WOOL);
-		map.put(DyeColor.GREEN, Blocks.GREEN_WOOL);
-		map.put(DyeColor.RED, Blocks.RED_WOOL);
-		map.put(DyeColor.BLACK, Blocks.BLACK_WOOL);
-	});
 	private static final Map<DyeColor, Integer> COLORS = Maps.newEnumMap(
 		(Map)Arrays.stream(DyeColor.values()).collect(Collectors.toMap(color -> color, SheepEntity::getDyedColor))
 	);
@@ -93,11 +71,11 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		} else {
 			int i = color.getEntityColor();
 			float f = 0.75F;
-			return ColorHelper.Argb.getArgb(
+			return ColorHelper.getArgb(
 				255,
-				MathHelper.floor((float)ColorHelper.Argb.getRed(i) * 0.75F),
-				MathHelper.floor((float)ColorHelper.Argb.getGreen(i) * 0.75F),
-				MathHelper.floor((float)ColorHelper.Argb.getBlue(i) * 0.75F)
+				MathHelper.floor((float)ColorHelper.getRed(i) * 0.75F),
+				MathHelper.floor((float)ColorHelper.getGreen(i) * 0.75F),
+				MathHelper.floor((float)ColorHelper.getBlue(i) * 0.75F)
 			);
 		}
 	}
@@ -145,7 +123,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	}
 
 	public static DefaultAttributeContainer.Builder createSheepAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 8.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.23F);
+		return AnimalEntity.createAnimalAttributes().add(EntityAttributes.MAX_HEALTH, 8.0).add(EntityAttributes.MOVEMENT_SPEED, 0.23F);
 	}
 
 	@Override
@@ -156,28 +134,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 
 	@Override
 	public RegistryKey<LootTable> getLootTableId() {
-		if (this.isSheared()) {
-			return this.getType().getLootTableId();
-		} else {
-			return switch (this.getColor()) {
-				case WHITE -> LootTables.WHITE_SHEEP_ENTITY;
-				case ORANGE -> LootTables.ORANGE_SHEEP_ENTITY;
-				case MAGENTA -> LootTables.MAGENTA_SHEEP_ENTITY;
-				case LIGHT_BLUE -> LootTables.LIGHT_BLUE_SHEEP_ENTITY;
-				case YELLOW -> LootTables.YELLOW_SHEEP_ENTITY;
-				case LIME -> LootTables.LIME_SHEEP_ENTITY;
-				case PINK -> LootTables.PINK_SHEEP_ENTITY;
-				case GRAY -> LootTables.GRAY_SHEEP_ENTITY;
-				case LIGHT_GRAY -> LootTables.LIGHT_GRAY_SHEEP_ENTITY;
-				case CYAN -> LootTables.CYAN_SHEEP_ENTITY;
-				case PURPLE -> LootTables.PURPLE_SHEEP_ENTITY;
-				case BLUE -> LootTables.BLUE_SHEEP_ENTITY;
-				case BROWN -> LootTables.BROWN_SHEEP_ENTITY;
-				case GREEN -> LootTables.GREEN_SHEEP_ENTITY;
-				case RED -> LootTables.RED_SHEEP_ENTITY;
-				case BLACK -> LootTables.BLACK_SHEEP_ENTITY;
-			};
-		}
+		return this.isSheared() ? this.getType().getLootTableId() : (RegistryKey)LootTables.SHEEP_DROPS_FROM_DYE_COLOR.get(this.getColor());
 	}
 
 	@Override
@@ -216,7 +173,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 				this.sheared(SoundCategory.PLAYERS);
 				this.emitGameEvent(GameEvent.SHEAR, player);
 				itemStack.damage(1, player, getSlotForHand(hand));
-				return ActionResult.SUCCESS;
+				return ActionResult.SUCCESS_SERVER;
 			} else {
 				return ActionResult.CONSUME;
 			}
@@ -229,21 +186,24 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	public void sheared(SoundCategory shearedSoundCategory) {
 		this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_SHEEP_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
 		this.setSheared(true);
-		int i = 1 + this.random.nextInt(3);
-
-		for (int j = 0; j < i; j++) {
-			ItemEntity itemEntity = this.dropItem((ItemConvertible)DROPS.get(this.getColor()), 1);
-			if (itemEntity != null) {
-				itemEntity.setVelocity(
-					itemEntity.getVelocity()
-						.add(
-							(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.1F),
-							(double)(this.random.nextFloat() * 0.05F),
-							(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.1F)
-						)
-				);
+		this.forEachShearedItem(
+			(RegistryKey<LootTable>)LootTables.SHEEP_SHEARING_FROM_DYE_COLOR.get(this.getColor()),
+			stack -> {
+				for (int i = 0; i < stack.getCount(); i++) {
+					ItemEntity itemEntity = this.dropStack(stack.copyWithCount(1), 1.0F);
+					if (itemEntity != null) {
+						itemEntity.setVelocity(
+							itemEntity.getVelocity()
+								.add(
+									(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.1F),
+									(double)(this.random.nextFloat() * 0.05F),
+									(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.1F)
+								)
+						);
+					}
+				}
 			}
-		}
+		);
 	}
 
 	@Override
@@ -324,7 +284,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 
 	@Nullable
 	public SheepEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		SheepEntity sheepEntity = EntityType.SHEEP.create(serverWorld);
+		SheepEntity sheepEntity = EntityType.SHEEP.create(serverWorld, SpawnReason.BREEDING);
 		if (sheepEntity != null) {
 			sheepEntity.setColor(this.getChildColor(this, (SheepEntity)passiveEntity));
 		}

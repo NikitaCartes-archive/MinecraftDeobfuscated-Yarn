@@ -562,7 +562,7 @@ public class NbtIo {
 			try {
 				super.writeUTF(string);
 			} catch (UTFDataFormatException var3) {
-				Util.error("Failed to write NBT String", var3);
+				Util.logErrorOrPause("Failed to write NBT String", var3);
 				super.writeUTF("");
 			}
 		}

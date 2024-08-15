@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -11,8 +10,10 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.option.SimpleOption;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class CheckboxWidget extends PressableWidget {
@@ -81,10 +82,7 @@ public class CheckboxWidget extends PressableWidget {
 	@Override
 	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		RenderSystem.enableDepthTest();
 		TextRenderer textRenderer = minecraftClient.textRenderer;
-		context.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-		RenderSystem.enableBlend();
 		Identifier identifier;
 		if (this.checked) {
 			identifier = this.isFocused() ? SELECTED_HIGHLIGHTED_TEXTURE : SELECTED_TEXTURE;
@@ -93,7 +91,7 @@ public class CheckboxWidget extends PressableWidget {
 		}
 
 		int i = getCheckboxSize(textRenderer);
-		context.drawGuiTexture(identifier, this.getX(), this.getY(), i, i);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, this.getX(), this.getY(), i, i, ColorHelper.getWhite(this.alpha));
 		int j = this.getX() + i + 4;
 		int k = this.getY() + i / 2 - this.textWidget.getHeight() / 2;
 		this.textWidget.setPosition(j, k);

@@ -84,7 +84,6 @@ public class FeatureUpdater {
 			ChunkUpdateState chunkUpdateState = (ChunkUpdateState)this.updateStates.get(string);
 			if (chunkUpdateState != null && chunkUpdateState.isRemaining(chunkPos)) {
 				chunkUpdateState.markResolved(chunkPos);
-				chunkUpdateState.markDirty();
 			}
 		}
 	}
@@ -199,9 +198,7 @@ public class FeatureUpdater {
 
 				String string5 = string + "_index";
 				ChunkUpdateState chunkUpdateState = persistentStateManager.getOrCreate(ChunkUpdateState.getPersistentStateType(), string5);
-				if (!chunkUpdateState.getAll().isEmpty()) {
-					this.updateStates.put(string, chunkUpdateState);
-				} else {
+				if (chunkUpdateState.getAll().isEmpty()) {
 					ChunkUpdateState chunkUpdateState2 = new ChunkUpdateState();
 					this.updateStates.put(string, chunkUpdateState2);
 
@@ -209,8 +206,8 @@ public class FeatureUpdater {
 						NbtCompound nbtCompound3 = nbtCompound.getCompound(string6);
 						chunkUpdateState2.add(ChunkPos.toLong(nbtCompound3.getInt("ChunkX"), nbtCompound3.getInt("ChunkZ")));
 					}
-
-					chunkUpdateState2.markDirty();
+				} else {
+					this.updateStates.put(string, chunkUpdateState);
 				}
 			}
 		}

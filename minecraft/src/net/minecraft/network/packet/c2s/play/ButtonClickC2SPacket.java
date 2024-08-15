@@ -10,7 +10,7 @@ import net.minecraft.network.packet.PlayPackets;
 
 public record ButtonClickC2SPacket(int syncId, int buttonId) implements Packet<ServerPlayPacketListener> {
 	public static final PacketCodec<PacketByteBuf, ButtonClickC2SPacket> CODEC = PacketCodec.tuple(
-		PacketCodecs.VAR_INT, ButtonClickC2SPacket::syncId, PacketCodecs.VAR_INT, ButtonClickC2SPacket::buttonId, ButtonClickC2SPacket::new
+		PacketCodecs.SYNC_ID, ButtonClickC2SPacket::syncId, PacketCodecs.VAR_INT, ButtonClickC2SPacket::buttonId, ButtonClickC2SPacket::new
 	);
 
 	@Override

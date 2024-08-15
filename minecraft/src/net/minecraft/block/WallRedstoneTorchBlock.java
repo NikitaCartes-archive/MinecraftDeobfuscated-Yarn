@@ -17,6 +17,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.block.OrientationHelper;
+import net.minecraft.world.block.WireOrientation;
 
 public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 	public static final MapCodec<WallRedstoneTorchBlock> CODEC = createCodec(WallRedstoneTorchBlock::new);
@@ -98,5 +100,11 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(FACING, LIT);
+	}
+
+	@Nullable
+	@Override
+	protected WireOrientation method_61748(World world, BlockState blockState) {
+		return OrientationHelper.getEmissionOrientation(world, ((Direction)blockState.get(FACING)).getOpposite(), Direction.UP);
 	}
 }

@@ -115,6 +115,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private float lastYaw;
 	private float lastPitch;
 	private boolean lastOnGround;
+	private boolean field_53040;
 	private boolean inSneakingPose;
 	private boolean lastSneaking;
 	private boolean lastSprinting;
@@ -206,8 +207,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public void tick() {
 		if (this.getWorld().isPosLoaded(this.getBlockX(), this.getBlockZ())) {
 			super.tick();
+			this.method_62165();
 			if (this.hasVehicle()) {
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.getYaw(), this.getPitch(), this.isOnGround()));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.getYaw(), this.getPitch(), this.isOnGround(), this.horizontalCollision));
 				this.networkHandler.sendPacket(new PlayerInputC2SPacket(this.sidewaysSpeed, this.forwardSpeed, this.input.jumping, this.input.sneaking));
 				Entity entity = this.getRootVehicle();
 				if (entity != this && entity.isLogicalSideForUpdatingMovement()) {
@@ -240,13 +242,6 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	private void sendMovementPackets() {
 		this.sendSprintingPacket();
-		boolean bl = this.isSneaking();
-		if (bl != this.lastSneaking) {
-			ClientCommandC2SPacket.Mode mode = bl ? ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY : ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY;
-			this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, mode));
-			this.lastSneaking = bl;
-		}
-
 		if (this.isCamera()) {
 			double d = this.getX() - this.lastX;
 			double e = this.getY() - this.lastBaseY;
@@ -254,36 +249,46 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			double g = (double)(this.getYaw() - this.lastYaw);
 			double h = (double)(this.getPitch() - this.lastPitch);
 			this.ticksSinceLastPositionPacketSent++;
-			boolean bl2 = MathHelper.squaredMagnitude(d, e, f) > MathHelper.square(2.0E-4) || this.ticksSinceLastPositionPacketSent >= 20;
-			boolean bl3 = g != 0.0 || h != 0.0;
-			if (this.hasVehicle()) {
-				Vec3d vec3d = this.getVelocity();
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(vec3d.x, -999.0, vec3d.z, this.getYaw(), this.getPitch(), this.isOnGround()));
-				bl2 = false;
-			} else if (bl2 && bl3) {
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch(), this.isOnGround()));
+			boolean bl = MathHelper.squaredMagnitude(d, e, f) > MathHelper.square(2.0E-4) || this.ticksSinceLastPositionPacketSent >= 20;
+			boolean bl2 = g != 0.0 || h != 0.0;
+			if (bl && bl2) {
+				this.networkHandler
+					.sendPacket(
+						new PlayerMoveC2SPacket.Full(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch(), this.isOnGround(), this.horizontalCollision)
+					);
+			} else if (bl) {
+				this.networkHandler
+					.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(this.getX(), this.getY(), this.getZ(), this.isOnGround(), this.horizontalCollision));
 			} else if (bl2) {
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(this.getX(), this.getY(), this.getZ(), this.isOnGround()));
-			} else if (bl3) {
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.getYaw(), this.getPitch(), this.isOnGround()));
-			} else if (this.lastOnGround != this.isOnGround()) {
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(this.isOnGround()));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.getYaw(), this.getPitch(), this.isOnGround(), this.horizontalCollision));
+			} else if (this.lastOnGround != this.isOnGround() || this.field_53040 != this.horizontalCollision) {
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(this.isOnGround(), this.horizontalCollision));
 			}
 
-			if (bl2) {
+			if (bl) {
 				this.lastX = this.getX();
 				this.lastBaseY = this.getY();
 				this.lastZ = this.getZ();
 				this.ticksSinceLastPositionPacketSent = 0;
 			}
 
-			if (bl3) {
+			if (bl2) {
 				this.lastYaw = this.getYaw();
 				this.lastPitch = this.getPitch();
 			}
 
 			this.lastOnGround = this.isOnGround();
+			this.field_53040 = this.horizontalCollision;
 			this.autoJumpEnabled = this.client.options.getAutoJump().getValue();
+		}
+	}
+
+	private void method_62165() {
+		boolean bl = this.isSneaking();
+		if (bl != this.lastSneaking) {
+			ClientCommandC2SPacket.Mode mode = bl ? ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY : ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY;
+			this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, mode));
+			this.lastSneaking = bl;
 		}
 	}
 
@@ -676,7 +681,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			&& !this.hasVehicle()
 			&& this.canChangeIntoPose(EntityPose.CROUCHING)
 			&& (this.isSneaking() || !this.isSleeping() && !this.canChangeIntoPose(EntityPose.STANDING));
-		float f = (float)this.getAttributeValue(EntityAttributes.PLAYER_SNEAKING_SPEED);
+		float f = (float)this.getAttributeValue(EntityAttributes.SNEAKING_SPEED);
 		this.input.tick(this.shouldSlowDown(), f);
 		this.client.getTutorialManager().onMovement(this.input);
 		if (this.isUsingItem() && !this.hasVehicle()) {
@@ -896,11 +901,19 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		double d = this.getX();
 		double e = this.getZ();
 		super.move(movementType, movement);
-		this.autoJump((float)(this.getX() - d), (float)(this.getZ() - e));
+		float f = (float)(this.getX() - d);
+		float g = (float)(this.getZ() - e);
+		this.autoJump(f, g);
+		this.field_53039 = this.field_53039 + MathHelper.hypot(f, g) * 0.6F;
 	}
 
 	public boolean isAutoJumpEnabled() {
 		return this.autoJumpEnabled;
+	}
+
+	@Override
+	public boolean shouldRotateWithMinecart() {
+		return this.client.options.getRotateWithMinecart().getValue();
 	}
 
 	protected void autoJump(float dx, float dz) {
@@ -1131,5 +1144,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Override
 	public float getBodyYaw() {
 		return this.getYaw();
+	}
+
+	@Override
+	public void dropCreativeStack(ItemStack stack) {
+		this.client.interactionManager.dropCreativeStack(stack);
 	}
 }

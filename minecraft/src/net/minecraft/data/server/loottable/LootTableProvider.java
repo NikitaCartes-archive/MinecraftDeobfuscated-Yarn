@@ -65,7 +65,7 @@ public class LootTableProvider implements DataProvider {
 					Identifier identifier = getId(lootTable);
 					Identifier identifier2 = (Identifier)map.put(RandomSequence.createSeed(identifier), identifier);
 					if (identifier2 != null) {
-						Util.error("Loot table random sequence seed collision on " + identifier2 + " and " + lootTable.getValue());
+						Util.logErrorOrPause("Loot table random sequence seed collision on " + identifier2 + " and " + lootTable.getValue());
 					}
 
 					builder.randomSequenceId(identifier);

@@ -33,7 +33,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 	@Nullable
 	@Override
 	protected LlamaEntity createChild() {
-		return EntityType.TRADER_LLAMA.create(this.getWorld());
+		return EntityType.TRADER_LLAMA.create(this.getWorld(), SpawnReason.BREEDING);
 	}
 
 	@Override

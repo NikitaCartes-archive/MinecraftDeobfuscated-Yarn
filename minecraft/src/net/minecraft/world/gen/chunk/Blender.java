@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableMap.Builder;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FluidState;
@@ -27,7 +26,6 @@ import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ProtoChunk;
-import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.noise.BuiltinNoiseParameters;
@@ -121,7 +119,7 @@ public class Blender {
 				.forEach(
 					(chunkPos, data) -> data.acceptHeights(
 							BiomeCoords.fromChunk(ChunkPos.getPackedX(chunkPos)), BiomeCoords.fromChunk(ChunkPos.getPackedZ(chunkPos)), (biomeX, biomeZ, height) -> {
-								double dx = MathHelper.hypot((double)(i - biomeX), (double)(j - biomeZ));
+								double dx = (double)MathHelper.hypot((float)(i - biomeX), (float)(j - biomeZ));
 								if (!(dx > (double)BLENDING_BIOME_DISTANCE_THRESHOLD)) {
 									if (dx < mutableDouble3.doubleValue()) {
 										mutableDouble3.setValue(dx);
@@ -241,7 +239,7 @@ public class Blender {
 			.forEach(
 				(chunkPos, data) -> data.acceptBiomes(
 						BiomeCoords.fromChunk(ChunkPos.getPackedX(chunkPos)), y, BiomeCoords.fromChunk(ChunkPos.getPackedZ(chunkPos)), (biomeX, biomeZ, biome) -> {
-							double dx = MathHelper.hypot((double)(x - biomeX), (double)(z - biomeZ));
+							double dx = (double)MathHelper.hypot((float)(x - biomeX), (float)(z - biomeZ));
 							if (!(dx > (double)BLENDING_BIOME_DISTANCE_THRESHOLD)) {
 								if (dx < mutableDouble.doubleValue()) {
 									mutableObject.setValue(biome);
@@ -335,7 +333,7 @@ public class Blender {
 				double f = (double)offsetZ + 0.5 + OFFSET_NOISE.sample((double)offsetZ, (double)offsetX, (double)y) * 4.0;
 				return distanceFunction.getDistance(d, e, f) < 4.0;
 			};
-			Stream.of(GenerationStep.Carver.values()).map(chunk::getOrCreateCarvingMask).forEach(mask -> mask.setMaskPredicate(maskPredicate));
+			chunk.getOrCreateCarvingMask().setMaskPredicate(maskPredicate);
 		}
 	}
 

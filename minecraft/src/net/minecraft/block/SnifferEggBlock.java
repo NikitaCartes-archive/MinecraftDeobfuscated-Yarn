@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.passive.SnifferEntity;
 import net.minecraft.registry.tag.BlockTags;
@@ -66,7 +67,7 @@ public class SnifferEggBlock extends Block {
 		} else {
 			world.playSound(null, pos, SoundEvents.BLOCK_SNIFFER_EGG_HATCH, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
 			world.breakBlock(pos, false);
-			SnifferEntity snifferEntity = EntityType.SNIFFER.create(world);
+			SnifferEntity snifferEntity = EntityType.SNIFFER.create(world, SpawnReason.BREEDING);
 			if (snifferEntity != null) {
 				Vec3d vec3d = pos.toCenterPos();
 				snifferEntity.setBaby(true);

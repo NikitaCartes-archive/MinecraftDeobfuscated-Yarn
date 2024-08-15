@@ -14,6 +14,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
@@ -24,8 +25,10 @@ public class TntEntity extends Entity implements Ownable {
 	private static final TrackedData<Integer> FUSE = DataTracker.registerData(TntEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<BlockState> BLOCK_STATE = DataTracker.registerData(TntEntity.class, TrackedDataHandlerRegistry.BLOCK_STATE);
 	private static final int DEFAULT_FUSE = 80;
+	private static final float DEFAULT_EXPLOSION_POWER = 4.0F;
 	private static final String BLOCK_STATE_NBT_KEY = "block_state";
-	public static final String FUSE_NBT_KEY = "fuse";
+	private static final String FUSE_NBT_KEY = "fuse";
+	private static final String EXPLOSION_POWER_NBT_KEY = "explosion_power";
 	private static final ExplosionBehavior TELEPORTED_EXPLOSION_BEHAVIOR = new ExplosionBehavior() {
 		@Override
 		public boolean canDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float power) {
@@ -40,6 +43,7 @@ public class TntEntity extends Entity implements Ownable {
 	@Nullable
 	private LivingEntity causingEntity;
 	private boolean teleported;
+	private float explosionPower = 4.0F;
 
 	public TntEntity(EntityType<? extends TntEntity> entityType, World world) {
 		super(entityType, world);
@@ -84,6 +88,10 @@ public class TntEntity extends Entity implements Ownable {
 		this.tickPortalTeleportation();
 		this.applyGravity();
 		this.move(MovementType.SELF, this.getVelocity());
+		if (!this.getWorld().isClient()) {
+			this.tickBlockCollision();
+		}
+
 		this.setVelocity(this.getVelocity().multiply(0.98));
 		if (this.isOnGround()) {
 			this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));
@@ -105,7 +113,6 @@ public class TntEntity extends Entity implements Ownable {
 	}
 
 	private void explode() {
-		float f = 4.0F;
 		this.getWorld()
 			.createExplosion(
 				this,
@@ -114,7 +121,7 @@ public class TntEntity extends Entity implements Ownable {
 				this.getX(),
 				this.getBodyY(0.0625),
 				this.getZ(),
-				4.0F,
+				this.explosionPower,
 				false,
 				World.ExplosionSourceType.TNT
 			);
@@ -124,6 +131,9 @@ public class TntEntity extends Entity implements Ownable {
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
 		nbt.putShort("fuse", (short)this.getFuse());
 		nbt.put("block_state", NbtHelper.fromBlockState(this.getBlockState()));
+		if (this.explosionPower != 4.0F) {
+			nbt.putFloat("explosion_power", this.explosionPower);
+		}
 	}
 
 	@Override
@@ -131,6 +141,10 @@ public class TntEntity extends Entity implements Ownable {
 		this.setFuse(nbt.getShort("fuse"));
 		if (nbt.contains("block_state", NbtElement.COMPOUND_TYPE)) {
 			this.setBlockState(NbtHelper.toBlockState(this.getWorld().createCommandRegistryWrapper(RegistryKeys.BLOCK), nbt.getCompound("block_state")));
+		}
+
+		if (nbt.contains("explosion_power", NbtElement.NUMBER_TYPE)) {
+			this.explosionPower = MathHelper.clamp(nbt.getFloat("explosion_power"), 0.0F, 128.0F);
 		}
 	}
 

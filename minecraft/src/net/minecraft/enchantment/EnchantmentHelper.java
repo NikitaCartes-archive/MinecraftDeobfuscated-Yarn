@@ -26,7 +26,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -118,6 +118,12 @@ public class EnchantmentHelper {
 		} else {
 			return baseMobExperience;
 		}
+	}
+
+	public static ItemStack getEnchantedBookWith(EnchantmentLevelEntry entry) {
+		ItemStack itemStack = new ItemStack(Items.ENCHANTED_BOOK);
+		itemStack.addEnchantment(entry.enchantment, entry.level);
+		return itemStack;
 	}
 
 	private static void forEachEnchantment(ItemStack stack, EnchantmentHelper.Consumer consumer) {
@@ -281,12 +287,10 @@ public class EnchantmentHelper {
 		return Math.max(0, mutableFloat.intValue());
 	}
 
-	public static void onProjectileSpawned(
-		ServerWorld world, ItemStack weaponStack, PersistentProjectileEntity projectileEntity, java.util.function.Consumer<Item> onBreak
-	) {
-		LivingEntity livingEntity2 = projectileEntity.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null;
+	public static void onProjectileSpawned(ServerWorld world, ItemStack weaponStack, ProjectileEntity projectile, java.util.function.Consumer<Item> onBreak) {
+		LivingEntity livingEntity2 = projectile.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null;
 		EnchantmentEffectContext enchantmentEffectContext = new EnchantmentEffectContext(weaponStack, null, livingEntity2, onBreak);
-		forEachEnchantment(weaponStack, (enchantment, level) -> enchantment.value().onProjectileSpawned(world, level, enchantmentEffectContext, projectileEntity));
+		forEachEnchantment(weaponStack, (enchantment, level) -> enchantment.value().onProjectileSpawned(world, level, enchantmentEffectContext, projectile));
 	}
 
 	public static void onHitBlock(
@@ -408,7 +412,7 @@ public class EnchantmentHelper {
 	}
 
 	public static <T> Optional<T> getEffect(ItemStack stack, ComponentType<List<T>> componentType) {
-		Pair<List<T>, Integer> pair = getEffectListAndLevel(stack, componentType);
+		Pair<List<T>, Integer> pair = getHighestLevelEffect(stack, componentType);
 		if (pair != null) {
 			List<T> list = pair.getFirst();
 			int i = pair.getSecond();
@@ -419,7 +423,7 @@ public class EnchantmentHelper {
 	}
 
 	@Nullable
-	public static <T> Pair<T, Integer> getEffectListAndLevel(ItemStack stack, ComponentType<T> componentType) {
+	public static <T> Pair<T, Integer> getHighestLevelEffect(ItemStack stack, ComponentType<T> componentType) {
 		MutableObject<Pair<T, Integer>> mutableObject = new MutableObject<>();
 		forEachEnchantment(stack, (enchantment, level) -> {
 			if (mutableObject.getValue() == null || mutableObject.getValue().getSecond() < level) {
@@ -469,20 +473,18 @@ public class EnchantmentHelper {
 	 * @param slotIndex the index of the enchanting option
 	 */
 	public static int calculateRequiredExperienceLevel(Random random, int slotIndex, int bookshelfCount, ItemStack stack) {
-		Item item = stack.getItem();
-		int i = item.getEnchantability();
-		if (i <= 0) {
+		if (stack.getEnchantability() <= 0) {
 			return 0;
 		} else {
 			if (bookshelfCount > 15) {
 				bookshelfCount = 15;
 			}
 
-			int j = random.nextInt(8) + 1 + (bookshelfCount >> 1) + random.nextInt(bookshelfCount + 1);
+			int i = random.nextInt(8) + 1 + (bookshelfCount >> 1) + random.nextInt(bookshelfCount + 1);
 			if (slotIndex == 0) {
-				return Math.max(j / 3, 1);
+				return Math.max(i / 3, 1);
 			} else {
-				return slotIndex == 1 ? j * 2 / 3 + 1 : Math.max(j, bookshelfCount * 2);
+				return slotIndex == 1 ? i * 2 / 3 + 1 : Math.max(i, bookshelfCount * 2);
 			}
 		}
 	}
@@ -522,8 +524,7 @@ public class EnchantmentHelper {
 		Random random, ItemStack stack, int level, Stream<RegistryEntry<Enchantment>> possibleEnchantments
 	) {
 		List<EnchantmentLevelEntry> list = Lists.<EnchantmentLevelEntry>newArrayList();
-		Item item = stack.getItem();
-		int i = item.getEnchantability();
+		int i = stack.getEnchantability();
 		if (i <= 0) {
 			return list;
 		} else {

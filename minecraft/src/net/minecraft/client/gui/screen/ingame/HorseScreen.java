@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen.ingame;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
@@ -32,20 +33,20 @@ public class HorseScreen extends HandledScreen<HorseScreenHandler> {
 	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
-		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, i, j, 0.0F, 0.0F, this.backgroundWidth, this.backgroundHeight, 256, 256);
 		if (this.slotColumnCount > 0) {
-			context.drawGuiTexture(CHEST_SLOTS_TEXTURE, 90, 54, 0, 0, i + 79, j + 17, this.slotColumnCount * 18, 54);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, CHEST_SLOTS_TEXTURE, 90, 54, 0, 0, i + 79, j + 17, this.slotColumnCount * 18, 54);
 		}
 
 		if (this.entity.canBeSaddled()) {
-			context.drawGuiTexture(SADDLE_SLOT_TEXTURE, i + 7, j + 35 - 18, 18, 18);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, SADDLE_SLOT_TEXTURE, i + 7, j + 35 - 18, 18, 18);
 		}
 
 		if (this.entity.canUseSlot(EquipmentSlot.BODY)) {
 			if (this.entity instanceof LlamaEntity) {
-				context.drawGuiTexture(LLAMA_ARMOR_SLOT_TEXTURE, i + 7, j + 35, 18, 18);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, LLAMA_ARMOR_SLOT_TEXTURE, i + 7, j + 35, 18, 18);
 			} else {
-				context.drawGuiTexture(ARMOR_SLOT_TEXTURE, i + 7, j + 35, 18, 18);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, ARMOR_SLOT_TEXTURE, i + 7, j + 35, 18, 18);
 			}
 		}
 

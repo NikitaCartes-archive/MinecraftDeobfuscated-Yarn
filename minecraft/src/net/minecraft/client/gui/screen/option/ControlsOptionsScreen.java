@@ -24,9 +24,8 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 	protected void addOptions() {
 		this.body
 			.addWidgetEntry(
-				ButtonWidget.builder(Text.translatable("options.mouse_settings"), buttonWidget -> this.client.setScreen(new MouseOptionsScreen(this, this.gameOptions)))
-					.build(),
-				ButtonWidget.builder(Text.translatable("controls.keybinds"), buttonWidget -> this.client.setScreen(new KeybindsScreen(this, this.gameOptions))).build()
+				ButtonWidget.builder(Text.translatable("options.mouse_settings"), button -> this.client.setScreen(new MouseOptionsScreen(this, this.gameOptions))).build(),
+				ButtonWidget.builder(Text.translatable("controls.keybinds"), button -> this.client.setScreen(new KeybindsScreen(this, this.gameOptions))).build()
 			);
 		this.body.addAll(getOptions(this.gameOptions));
 	}

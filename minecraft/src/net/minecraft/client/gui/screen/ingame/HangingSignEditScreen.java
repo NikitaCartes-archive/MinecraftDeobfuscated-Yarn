@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.joml.Vector3f;
@@ -27,10 +28,10 @@ public class HangingSignEditScreen extends AbstractSignEditScreen {
 	}
 
 	@Override
-	protected void renderSignBackground(DrawContext context, BlockState state) {
+	protected void renderSignBackground(DrawContext context) {
 		context.getMatrices().translate(0.0F, -13.0F, 0.0F);
 		context.getMatrices().scale(4.5F, 4.5F, 1.0F);
-		context.drawTexture(this.texture, -8, -8, 0.0F, 0.0F, 16, 16, 16, 16);
+		context.drawTexture(RenderLayer::getGuiTextured, this.texture, -8, -8, 0.0F, 0.0F, 16, 16, 16, 16);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -52,6 +53,6 @@ public class MuleEntity extends AbstractDonkeyEntity {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-		return EntityType.MULE.create(world);
+		return EntityType.MULE.create(world, SpawnReason.BREEDING);
 	}
 }

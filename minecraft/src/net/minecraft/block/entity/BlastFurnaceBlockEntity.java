@@ -2,6 +2,7 @@ package net.minecraft.block.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.FuelRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.screen.BlastFurnaceScreenHandler;
@@ -20,8 +21,8 @@ public class BlastFurnaceBlockEntity extends AbstractFurnaceBlockEntity {
 	}
 
 	@Override
-	protected int getFuelTime(ItemStack fuel) {
-		return super.getFuelTime(fuel) / 2;
+	protected int getFuelTime(FuelRegistry fuelRegistry, ItemStack itemStack) {
+		return super.getFuelTime(fuelRegistry, itemStack) / 2;
 	}
 
 	@Override

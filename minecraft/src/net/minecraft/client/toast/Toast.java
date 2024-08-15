@@ -2,6 +2,7 @@ package net.minecraft.client.toast;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
@@ -12,9 +13,14 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public interface Toast {
 	Object TYPE = new Object();
+	int BASE_WIDTH = 160;
 	int BASE_HEIGHT = 32;
 
-	Toast.Visibility draw(DrawContext context, ToastManager manager, long startTime);
+	Toast.Visibility getVisibility();
+
+	void update(ToastManager manager, long time);
+
+	void draw(DrawContext context, TextRenderer textRenderer, long startTime);
 
 	default Object getType() {
 		return TYPE;

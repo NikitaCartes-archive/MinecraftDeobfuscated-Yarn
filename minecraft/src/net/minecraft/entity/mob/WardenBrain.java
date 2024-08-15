@@ -174,7 +174,7 @@ public class WardenBrain {
 			ImmutableList.of(
 				RESET_DIG_COOLDOWN_TASK,
 				ForgetAttackTargetTask.create(entity -> !warden.getAngriness().isAngry() || !warden.isValidTarget(entity), WardenBrain::removeDeadSuspect, false),
-				LookAtMobTask.create(entity -> isTargeting(warden, entity), (float)warden.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE)),
+				LookAtMobTask.create(entity -> isTargeting(warden, entity), (float)warden.getAttributeValue(EntityAttributes.FOLLOW_RANGE)),
 				RangedApproachTask.create(1.2F),
 				new SonicBoomTask(),
 				MeleeAttackTask.create(18)

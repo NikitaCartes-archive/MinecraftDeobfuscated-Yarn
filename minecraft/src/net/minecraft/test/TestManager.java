@@ -28,7 +28,7 @@ public class TestManager {
 
 	public void setRunContext(TestRunContext runContext) {
 		if (this.runContext != null) {
-			Util.error("The runner was already set in GameTestTicker");
+			Util.logErrorOrPause("The runner was already set in GameTestTicker");
 		}
 
 		this.runContext = runContext;

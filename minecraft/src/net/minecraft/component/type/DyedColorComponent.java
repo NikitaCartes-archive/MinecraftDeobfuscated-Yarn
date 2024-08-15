@@ -35,7 +35,7 @@ public record DyedColorComponent(int rgb, boolean showInTooltip) implements Tool
 
 	public static int getColor(ItemStack stack, int defaultColor) {
 		DyedColorComponent dyedColorComponent = stack.get(DataComponentTypes.DYED_COLOR);
-		return dyedColorComponent != null ? ColorHelper.Argb.fullAlpha(dyedColorComponent.rgb()) : defaultColor;
+		return dyedColorComponent != null ? ColorHelper.fullAlpha(dyedColorComponent.rgb()) : defaultColor;
 	}
 
 	public static ItemStack setColor(ItemStack stack, List<DyeItem> dyes) {
@@ -50,9 +50,9 @@ public record DyedColorComponent(int rgb, boolean showInTooltip) implements Tool
 			int m = 0;
 			DyedColorComponent dyedColorComponent = itemStack.get(DataComponentTypes.DYED_COLOR);
 			if (dyedColorComponent != null) {
-				int n = ColorHelper.Argb.getRed(dyedColorComponent.rgb());
-				int o = ColorHelper.Argb.getGreen(dyedColorComponent.rgb());
-				int p = ColorHelper.Argb.getBlue(dyedColorComponent.rgb());
+				int n = ColorHelper.getRed(dyedColorComponent.rgb());
+				int o = ColorHelper.getGreen(dyedColorComponent.rgb());
+				int p = ColorHelper.getBlue(dyedColorComponent.rgb());
 				l += Math.max(n, Math.max(o, p));
 				i += n;
 				j += o;
@@ -62,9 +62,9 @@ public record DyedColorComponent(int rgb, boolean showInTooltip) implements Tool
 
 			for (DyeItem dyeItem : dyes) {
 				int p = dyeItem.getColor().getEntityColor();
-				int q = ColorHelper.Argb.getRed(p);
-				int r = ColorHelper.Argb.getGreen(p);
-				int s = ColorHelper.Argb.getBlue(p);
+				int q = ColorHelper.getRed(p);
+				int r = ColorHelper.getGreen(p);
+				int s = ColorHelper.getBlue(p);
 				l += Math.max(q, Math.max(r, s));
 				i += q;
 				j += r;
@@ -80,7 +80,7 @@ public record DyedColorComponent(int rgb, boolean showInTooltip) implements Tool
 			n = (int)((float)n * f / g);
 			o = (int)((float)o * f / g);
 			p = (int)((float)p * f / g);
-			int s = ColorHelper.Argb.getArgb(0, n, o, p);
+			int s = ColorHelper.getArgb(0, n, o, p);
 			boolean bl = dyedColorComponent == null || dyedColorComponent.showInTooltip();
 			itemStack.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(s, bl));
 			return itemStack;

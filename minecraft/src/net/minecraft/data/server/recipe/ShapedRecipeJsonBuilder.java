@@ -19,10 +19,12 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RawShapedRecipe;
 import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 public class ShapedRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
+	private final RegistryEntryLookup<Item> registryLookup;
 	private final RecipeCategory category;
 	private final Item output;
 	private final int count;
@@ -33,26 +35,27 @@ public class ShapedRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	private String group;
 	private boolean showNotification = true;
 
-	public ShapedRecipeJsonBuilder(RecipeCategory category, ItemConvertible output, int count) {
+	private ShapedRecipeJsonBuilder(RegistryEntryLookup<Item> registryLookup, RecipeCategory category, ItemConvertible output, int count) {
+		this.registryLookup = registryLookup;
 		this.category = category;
 		this.output = output.asItem();
 		this.count = count;
 	}
 
-	public static ShapedRecipeJsonBuilder create(RecipeCategory category, ItemConvertible output) {
-		return create(category, output, 1);
+	public static ShapedRecipeJsonBuilder create(RegistryEntryLookup<Item> registryLookup, RecipeCategory category, ItemConvertible output) {
+		return create(registryLookup, category, output, 1);
 	}
 
-	public static ShapedRecipeJsonBuilder create(RecipeCategory category, ItemConvertible output, int count) {
-		return new ShapedRecipeJsonBuilder(category, output, count);
+	public static ShapedRecipeJsonBuilder create(RegistryEntryLookup<Item> registryLookup, RecipeCategory category, ItemConvertible output, int count) {
+		return new ShapedRecipeJsonBuilder(registryLookup, category, output, count);
 	}
 
 	public ShapedRecipeJsonBuilder input(Character c, TagKey<Item> tag) {
-		return this.input(c, Ingredient.fromTag(tag));
+		return this.input(c, Ingredient.fromTag(this.registryLookup.getOrThrow(tag)));
 	}
 
-	public ShapedRecipeJsonBuilder input(Character c, ItemConvertible itemProvider) {
-		return this.input(c, Ingredient.ofItems(itemProvider));
+	public ShapedRecipeJsonBuilder input(Character c, ItemConvertible item) {
+		return this.input(c, Ingredient.ofItem(item));
 	}
 
 	public ShapedRecipeJsonBuilder input(Character c, Ingredient ingredient) {

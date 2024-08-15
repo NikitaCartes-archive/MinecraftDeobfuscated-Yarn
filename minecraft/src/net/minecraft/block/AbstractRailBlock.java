@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
+import javax.annotation.Nullable;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -16,6 +17,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.block.WireOrientation;
 
 public abstract class AbstractRailBlock extends Block implements Waterloggable {
 	protected static final VoxelShape STRAIGHT_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
@@ -64,14 +66,14 @@ public abstract class AbstractRailBlock extends Block implements Waterloggable {
 	protected BlockState updateCurves(BlockState state, World world, BlockPos pos, boolean notify) {
 		state = this.updateBlockState(world, pos, state, true);
 		if (this.forbidCurves) {
-			world.updateNeighbor(state, pos, this, pos, notify);
+			world.updateNeighbor(state, pos, this, null, notify);
 		}
 
 		return state;
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		if (!world.isClient && world.getBlockState(pos).isOf(this)) {
 			RailShape railShape = state.get(this.getShapeProperty());
 			if (shouldDropRail(pos, world, railShape)) {

@@ -1,18 +1,15 @@
 package net.minecraft.entity.passive;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
-import net.minecraft.entity.AngledModelEntity;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -38,7 +35,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
@@ -52,17 +48,18 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.InterpolatedFlipFlop;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import org.joml.Vector3f;
 
 /**
  * Represents an axolotl, the cutest predator.
@@ -97,8 +94,9 @@ import org.joml.Vector3f;
  * </table>
  * </div>
  */
-public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, VariantHolder<AxolotlEntity.Variant>, Bucketable {
+public class AxolotlEntity extends AnimalEntity implements VariantHolder<AxolotlEntity.Variant>, Bucketable {
 	public static final int PLAY_DEAD_TICKS = 200;
+	private static final int field_52482 = 10;
 	protected static final ImmutableList<? extends SensorType<? extends Sensor<? super AxolotlEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY, SensorType.AXOLOTL_ATTACKABLES, SensorType.AXOLOTL_TEMPTATIONS
 	);
@@ -133,7 +131,10 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	public static final String VARIANT_KEY = "Variant";
 	private static final int HYDRATION_BY_POTION = 1800;
 	private static final int MAX_REGENERATION_BUFF_DURATION = 2400;
-	private final Map<String, Vector3f> modelAngles = Maps.<String, Vector3f>newHashMap();
+	public final InterpolatedFlipFlop playingDeadFf = new InterpolatedFlipFlop(10, MathHelper::easeInOutSine);
+	public final InterpolatedFlipFlop inWaterFf = new InterpolatedFlipFlop(10, MathHelper::easeInOutSine);
+	public final InterpolatedFlipFlop onGroundFf = new InterpolatedFlipFlop(10, MathHelper::easeInOutSine);
+	public final InterpolatedFlipFlop isMovingFf = new InterpolatedFlipFlop(10, MathHelper::easeInOutSine);
 	private static final int BUFF_DURATION = 100;
 
 	public AxolotlEntity(EntityType<? extends AxolotlEntity> entityType, World world) {
@@ -141,11 +142,6 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 		this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
 		this.moveControl = new AxolotlEntity.AxolotlMoveControl(this);
 		this.lookControl = new AxolotlEntity.AxolotlLookControl(this, 20);
-	}
-
-	@Override
-	public Map<String, Vector3f> getModelAngles() {
-		return this.modelAngles;
 	}
 
 	@Override
@@ -213,6 +209,29 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 		if (!this.isAiDisabled()) {
 			this.tickAir(i);
 		}
+
+		if (this.getWorld().isClient()) {
+			this.tickClient();
+		}
+	}
+
+	private void tickClient() {
+		AxolotlEntity.State state;
+		if (this.isPlayingDead()) {
+			state = AxolotlEntity.State.PLAYING_DEAD;
+		} else if (this.isInsideWaterOrBubbleColumn()) {
+			state = AxolotlEntity.State.IN_WATER;
+		} else if (this.isOnGround()) {
+			state = AxolotlEntity.State.ON_GROUND;
+		} else {
+			state = AxolotlEntity.State.IN_AIR;
+		}
+
+		this.playingDeadFf.tick(state == AxolotlEntity.State.PLAYING_DEAD);
+		this.inWaterFf.tick(state == AxolotlEntity.State.IN_WATER);
+		this.onGroundFf.tick(state == AxolotlEntity.State.ON_GROUND);
+		boolean bl = this.limbAnimator.isLimbMoving() || this.getPitch() != this.prevPitch || this.getYaw() != this.prevYaw;
+		this.isMovingFf.tick(bl);
 	}
 
 	protected void tickAir(int air) {
@@ -280,7 +299,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	@Nullable
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-		AxolotlEntity axolotlEntity = EntityType.AXOLOTL.create(world);
+		AxolotlEntity axolotlEntity = EntityType.AXOLOTL.create(world, SpawnReason.BREEDING);
 		if (axolotlEntity != null) {
 			AxolotlEntity.Variant variant;
 			if (shouldBabyBeDifferent(this.random)) {
@@ -321,11 +340,11 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	}
 
 	public static DefaultAttributeContainer.Builder createAxolotlAttributes() {
-		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 14.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1.0)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0)
-			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
+		return AnimalEntity.createAnimalAttributes()
+			.add(EntityAttributes.MAX_HEALTH, 14.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 1.0)
+			.add(EntityAttributes.ATTACK_DAMAGE, 2.0)
+			.add(EntityAttributes.STEP_HEIGHT, 1.0);
 	}
 
 	@Override
@@ -567,6 +586,13 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 				super.tick();
 			}
 		}
+	}
+
+	public static enum State {
+		PLAYING_DEAD,
+		IN_WATER,
+		ON_GROUND,
+		IN_AIR;
 	}
 
 	public static enum Variant implements StringIdentifiable {

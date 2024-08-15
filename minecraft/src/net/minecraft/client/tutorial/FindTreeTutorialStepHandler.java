@@ -1,5 +1,6 @@
 package net.minecraft.client.tutorial;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -23,6 +24,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 	private static final Text TITLE = Text.translatable("tutorial.find_tree.title");
 	private static final Text DESCRIPTION = Text.translatable("tutorial.find_tree.description");
 	private final TutorialManager manager;
+	@Nullable
 	private TutorialToast toast;
 	private int ticks;
 

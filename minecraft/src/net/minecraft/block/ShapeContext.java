@@ -12,7 +12,11 @@ public interface ShapeContext {
 	}
 
 	static ShapeContext of(Entity entity) {
-		return new EntityShapeContext(entity);
+		return new EntityShapeContext(entity, false);
+	}
+
+	static ShapeContext of(Entity entity, boolean collidesWithFluid) {
+		return new EntityShapeContext(entity, collidesWithFluid);
 	}
 
 	boolean isDescending();

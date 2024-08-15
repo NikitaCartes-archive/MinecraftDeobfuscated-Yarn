@@ -23,6 +23,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -99,8 +100,6 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			if (i > 0) {
 				this.setPierceLevel((byte)i);
 			}
-
-			EnchantmentHelper.onProjectileSpawned(serverWorld, weapon, this, item -> this.weapon = null);
 		}
 	}
 
@@ -200,7 +199,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			Vec3d vec3d3 = this.getPos();
 			Vec3d vec3d2 = vec3d3.add(vec3d);
 			HitResult hitResult = this.getWorld()
-				.raycast(new RaycastContext(vec3d3, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this));
+				.getWorldBorderCollisions(new RaycastContext(vec3d3, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this));
 			if (hitResult.getType() != HitResult.Type.MISS) {
 				vec3d2 = hitResult.getPos();
 			}
@@ -277,7 +276,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			}
 
 			this.setPosition(h, j, k);
-			this.checkBlockCollision();
+			if (!this.getWorld().isClient()) {
+				this.tickBlockCollision();
+			}
 		}
 	}
 
@@ -320,6 +321,11 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		if (this.piercedEntities != null) {
 			this.piercedEntities.clear();
 		}
+	}
+
+	@Override
+	protected void onBroken(Item item) {
+		this.weapon = null;
 	}
 
 	@Override
@@ -427,7 +433,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				: 0.0F
 		);
 		if (d > 0.0) {
-			double e = Math.max(0.0, 1.0 - target.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
+			double e = Math.max(0.0, 1.0 - target.getAttributeValue(EntityAttributes.KNOCKBACK_RESISTANCE));
 			Vec3d vec3d = this.getVelocity().multiply(1.0, 0.0, 1.0).normalize().multiply(d * 0.6 * e);
 			if (vec3d.lengthSquared() > 0.0) {
 				target.addVelocity(vec3d.x, 0.1, vec3d.z);

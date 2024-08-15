@@ -22,6 +22,7 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
@@ -30,7 +31,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
@@ -40,7 +40,7 @@ import net.minecraft.world.World;
 public class IllusionerEntity extends SpellcastingIllagerEntity implements RangedAttackMob {
 	private static final int field_30473 = 4;
 	private static final int field_30471 = 3;
-	private static final int field_30472 = 3;
+	public static final int field_30472 = 3;
 	private int mirrorSpellTimer;
 	private final Vec3d[][] mirrorCopyOffsets;
 
@@ -74,20 +74,15 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 
 	public static DefaultAttributeContainer.Builder createIllusionerAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.5)
-			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 18.0)
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 32.0);
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.5)
+			.add(EntityAttributes.FOLLOW_RANGE, 18.0)
+			.add(EntityAttributes.MAX_HEALTH, 32.0);
 	}
 
 	@Override
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
 		return super.initialize(world, difficulty, spawnReason, entityData);
-	}
-
-	@Override
-	public Box getVisibilityBoundingBox() {
-		return this.getBoundingBox().expand(3.0, 0.0, 3.0);
 	}
 
 	@Override
@@ -183,9 +178,13 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 		double e = target.getBodyY(0.3333333333333333) - persistentProjectileEntity.getY();
 		double f = target.getZ() - this.getZ();
 		double g = Math.sqrt(d * d + f * f);
-		persistentProjectileEntity.setVelocity(d, e + g * 0.2F, f, 1.6F, (float)(14 - this.getWorld().getDifficulty().getId() * 4));
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			ProjectileEntity.spawnWithVelocity(
+				persistentProjectileEntity, serverWorld, itemStack2, d, e + g * 0.2F, f, 1.6F, (float)(14 - serverWorld.getDifficulty().getId() * 4)
+			);
+		}
+
 		this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-		this.getWorld().spawnEntity(persistentProjectileEntity);
 	}
 
 	@Override

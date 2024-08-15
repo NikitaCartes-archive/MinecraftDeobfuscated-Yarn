@@ -22,16 +22,16 @@ public abstract class IntProvider {
 	}
 
 	public static <T extends IntProvider> Codec<T> createValidatingCodec(int min, int max, Codec<T> providerCodec) {
-		return providerCodec.validate(provider -> method_58612(min, max, provider));
+		return providerCodec.validate(provider -> validateProvider(min, max, provider));
 	}
 
-	private static <T extends IntProvider> DataResult<T> method_58612(int i, int j, T intProvider) {
-		if (intProvider.getMin() < i) {
-			return DataResult.error(() -> "Value provider too low: " + i + " [" + intProvider.getMin() + "-" + intProvider.getMax() + "]");
+	private static <T extends IntProvider> DataResult<T> validateProvider(int min, int max, T provider) {
+		if (provider.getMin() < min) {
+			return DataResult.error(() -> "Value provider too low: " + min + " [" + provider.getMin() + "-" + provider.getMax() + "]");
 		} else {
-			return intProvider.getMax() > j
-				? DataResult.error(() -> "Value provider too high: " + j + " [" + intProvider.getMin() + "-" + intProvider.getMax() + "]")
-				: DataResult.success(intProvider);
+			return provider.getMax() > max
+				? DataResult.error(() -> "Value provider too high: " + max + " [" + provider.getMin() + "-" + provider.getMax() + "]")
+				: DataResult.success(provider);
 		}
 	}
 

@@ -7,11 +7,10 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
@@ -46,15 +45,9 @@ public class ShieldItem extends Item implements Equipment {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		ItemStack itemStack = user.getStackInHand(hand);
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		user.setCurrentHand(hand);
-		return TypedActionResult.consume(itemStack);
-	}
-
-	@Override
-	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-		return ingredient.isIn(ItemTags.PLANKS) || super.canRepair(stack, ingredient);
+		return ActionResult.CONSUME;
 	}
 
 	@Override

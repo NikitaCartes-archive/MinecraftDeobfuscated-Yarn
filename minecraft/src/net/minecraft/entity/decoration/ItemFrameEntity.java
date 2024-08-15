@@ -216,7 +216,6 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			MapState mapState = FilledMapItem.getMapState(mapIdComponent, this.getWorld());
 			if (mapState != null) {
 				mapState.removeFrame(this.attachedBlockPos, this.getId());
-				mapState.setDirty(true);
 			}
 		}
 
@@ -345,29 +344,27 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		boolean bl2 = !itemStack.isEmpty();
 		if (this.fixed) {
 			return ActionResult.PASS;
-		} else if (!this.getWorld().isClient) {
-			if (!bl) {
-				if (bl2 && !this.isRemoved()) {
-					if (itemStack.isOf(Items.FILLED_MAP)) {
-						MapState mapState = FilledMapItem.getMapState(itemStack, this.getWorld());
-						if (mapState != null && mapState.decorationCountNotLessThan(256)) {
-							return ActionResult.FAIL;
-						}
+		} else if (!bl) {
+			if (bl2 && !this.isRemoved()) {
+				if (itemStack.isOf(Items.FILLED_MAP)) {
+					MapState mapState = FilledMapItem.getMapState(itemStack, this.getWorld());
+					if (mapState != null && mapState.decorationCountNotLessThan(256)) {
+						return ActionResult.FAIL;
 					}
-
-					this.setHeldItemStack(itemStack);
-					this.emitGameEvent(GameEvent.BLOCK_CHANGE, player);
-					itemStack.decrementUnlessCreative(1, player);
 				}
-			} else {
-				this.playSound(this.getRotateItemSound(), 1.0F, 1.0F);
-				this.setRotation(this.getRotation() + 1);
-				this.emitGameEvent(GameEvent.BLOCK_CHANGE, player);
-			}
 
-			return ActionResult.CONSUME;
+				this.setHeldItemStack(itemStack);
+				this.emitGameEvent(GameEvent.BLOCK_CHANGE, player);
+				itemStack.decrementUnlessCreative(1, player);
+				return ActionResult.SUCCESS;
+			} else {
+				return ActionResult.PASS;
+			}
 		} else {
-			return !bl && !bl2 ? ActionResult.PASS : ActionResult.SUCCESS;
+			this.playSound(this.getRotateItemSound(), 1.0F, 1.0F);
+			this.setRotation(this.getRotation() + 1);
+			this.emitGameEvent(GameEvent.BLOCK_CHANGE, player);
+			return ActionResult.SUCCESS;
 		}
 	}
 

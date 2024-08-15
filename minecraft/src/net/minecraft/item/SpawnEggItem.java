@@ -25,7 +25,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -53,7 +52,7 @@ public class SpawnEggItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		World world = context.getWorld();
-		if (!(world instanceof ServerWorld)) {
+		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
 			ItemStack itemStack = context.getStack();
@@ -66,7 +65,7 @@ public class SpawnEggItem extends Item {
 				world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
 				world.emitGameEvent(context.getPlayer(), GameEvent.BLOCK_CHANGE, blockPos);
 				itemStack.decrement(1);
-				return ActionResult.CONSUME;
+				return ActionResult.SUCCESS;
 			} else {
 				BlockPos blockPos2;
 				if (blockState.getCollisionShape(world, blockPos).isEmpty()) {
@@ -90,36 +89,36 @@ public class SpawnEggItem extends Item {
 					world.emitGameEvent(context.getPlayer(), GameEvent.ENTITY_PLACE, blockPos);
 				}
 
-				return ActionResult.CONSUME;
+				return ActionResult.SUCCESS;
 			}
 		}
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
 		if (blockHitResult.getType() != HitResult.Type.BLOCK) {
-			return TypedActionResult.pass(itemStack);
-		} else if (!(world instanceof ServerWorld)) {
-			return TypedActionResult.success(itemStack);
+			return ActionResult.PASS;
+		} else if (world.isClient) {
+			return ActionResult.SUCCESS;
 		} else {
 			BlockPos blockPos = blockHitResult.getBlockPos();
 			if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
-				return TypedActionResult.pass(itemStack);
+				return ActionResult.PASS;
 			} else if (world.canPlayerModifyAt(user, blockPos) && user.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
 				EntityType<?> entityType = this.getEntityType(itemStack);
 				Entity entity = entityType.spawnFromItemStack((ServerWorld)world, itemStack, user, blockPos, SpawnReason.SPAWN_EGG, false, false);
 				if (entity == null) {
-					return TypedActionResult.pass(itemStack);
+					return ActionResult.PASS;
 				} else {
 					itemStack.decrementUnlessCreative(1, user);
 					user.incrementStat(Stats.USED.getOrCreateStat(this));
 					world.emitGameEvent(user, GameEvent.ENTITY_PLACE, entity.getPos());
-					return TypedActionResult.consume(itemStack);
+					return ActionResult.SUCCESS;
 				}
 			} else {
-				return TypedActionResult.fail(itemStack);
+				return ActionResult.FAIL;
 			}
 		}
 	}
@@ -168,7 +167,7 @@ public class SpawnEggItem extends Item {
 			if (entity instanceof PassiveEntity) {
 				mobEntity = ((PassiveEntity)entity).createChild(world, (PassiveEntity)entity);
 			} else {
-				mobEntity = entityType.create(world);
+				mobEntity = entityType.create(world, SpawnReason.SPAWN_EGG);
 			}
 
 			if (mobEntity == null) {

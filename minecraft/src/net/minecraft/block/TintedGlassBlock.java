@@ -1,8 +1,6 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
 
 public class TintedGlassBlock extends TransparentBlock {
 	public static final MapCodec<TintedGlassBlock> CODEC = createCodec(TintedGlassBlock::new);
@@ -17,12 +15,12 @@ public class TintedGlassBlock extends TransparentBlock {
 	}
 
 	@Override
-	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+	protected boolean isTransparent(BlockState state) {
 		return false;
 	}
 
 	@Override
-	protected int getOpacity(BlockState state, BlockView world, BlockPos pos) {
-		return world.getMaxLightLevel();
+	protected int getOpacity(BlockState state) {
+		return 15;
 	}
 }

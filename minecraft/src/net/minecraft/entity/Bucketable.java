@@ -99,7 +99,7 @@ public interface Bucketable {
 			}
 
 			entity.discard();
-			return Optional.of(ActionResult.success(world.isClient));
+			return Optional.of(ActionResult.SUCCESS);
 		} else {
 			return Optional.empty();
 		}

@@ -23,6 +23,8 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.entity.vehicle.ExperimentalMinecartController;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
@@ -39,6 +41,7 @@ import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.MoveMinecartAlongTrackS2CPacket;
 import net.minecraft.network.packet.s2c.play.ProjectilePowerS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
@@ -136,85 +139,93 @@ public class EntityTrackerEntry {
 				this.syncEntityData();
 				this.hadVehicle = true;
 			} else {
-				this.updatesWithoutVehicle++;
-				int i = MathHelper.floor(this.entity.getYaw() * 256.0F / 360.0F);
-				int j = MathHelper.floor(this.entity.getPitch() * 256.0F / 360.0F);
-				Vec3d vec3d = this.entity.getSyncedPos();
-				boolean bl2 = this.trackedPos.subtract(vec3d).lengthSquared() >= 7.6293945E-6F;
-				Packet<?> packet2 = null;
-				boolean bl3 = bl2 || this.trackingTick % 60 == 0;
-				boolean bl4 = Math.abs(i - this.lastYaw) >= 1 || Math.abs(j - this.lastPitch) >= 1;
-				boolean bl5 = false;
-				boolean bl6 = false;
-				long l = this.trackedPos.getDeltaX(vec3d);
-				long m = this.trackedPos.getDeltaY(vec3d);
-				long n = this.trackedPos.getDeltaZ(vec3d);
-				boolean bl7 = l < -32768L || l > 32767L || m < -32768L || m > 32767L || n < -32768L || n > 32767L;
-				if (bl7 || this.updatesWithoutVehicle > 400 || this.hadVehicle || this.lastOnGround != this.entity.isOnGround()) {
-					this.lastOnGround = this.entity.isOnGround();
-					this.updatesWithoutVehicle = 0;
-					packet2 = new EntityPositionS2CPacket(this.entity);
-					bl5 = true;
-					bl6 = true;
-				} else if ((!bl3 || !bl4) && !(this.entity instanceof PersistentProjectileEntity)) {
-					if (bl3) {
-						packet2 = new EntityS2CPacket.MoveRelative(this.entity.getId(), (short)((int)l), (short)((int)m), (short)((int)n), this.entity.isOnGround());
+				label205: {
+					if (this.entity instanceof AbstractMinecartEntity abstractMinecartEntity
+						&& abstractMinecartEntity.getController() instanceof ExperimentalMinecartController experimentalMinecartController) {
+						this.tickExperimentalMinecart(experimentalMinecartController);
+						break label205;
+					}
+
+					this.updatesWithoutVehicle++;
+					int i = MathHelper.floor(this.entity.getYaw() * 256.0F / 360.0F);
+					int j = MathHelper.floor(this.entity.getPitch() * 256.0F / 360.0F);
+					Vec3d vec3d = this.entity.getSyncedPos();
+					boolean bl2 = this.trackedPos.subtract(vec3d).lengthSquared() >= 7.6293945E-6F;
+					Packet<?> packet = null;
+					boolean bl3 = bl2 || this.trackingTick % 60 == 0;
+					boolean bl4 = Math.abs(i - this.lastYaw) >= 1 || Math.abs(j - this.lastPitch) >= 1;
+					boolean bl5 = false;
+					boolean bl6 = false;
+					long l = this.trackedPos.getDeltaX(vec3d);
+					long m = this.trackedPos.getDeltaY(vec3d);
+					long n = this.trackedPos.getDeltaZ(vec3d);
+					boolean bl7 = l < -32768L || l > 32767L || m < -32768L || m > 32767L || n < -32768L || n > 32767L;
+					if (bl7 || this.updatesWithoutVehicle > 400 || this.hadVehicle || this.lastOnGround != this.entity.isOnGround()) {
+						this.lastOnGround = this.entity.isOnGround();
+						this.updatesWithoutVehicle = 0;
+						packet = new EntityPositionS2CPacket(this.entity);
 						bl5 = true;
-					} else if (bl4) {
-						packet2 = new EntityS2CPacket.Rotate(this.entity.getId(), (byte)i, (byte)j, this.entity.isOnGround());
+						bl6 = true;
+					} else if ((!bl3 || !bl4) && !(this.entity instanceof PersistentProjectileEntity)) {
+						if (bl3) {
+							packet = new EntityS2CPacket.MoveRelative(this.entity.getId(), (short)((int)l), (short)((int)m), (short)((int)n), this.entity.isOnGround());
+							bl5 = true;
+						} else if (bl4) {
+							packet = new EntityS2CPacket.Rotate(this.entity.getId(), (byte)i, (byte)j, this.entity.isOnGround());
+							bl6 = true;
+						}
+					} else {
+						packet = new EntityS2CPacket.RotateAndMoveRelative(
+							this.entity.getId(), (short)((int)l), (short)((int)m), (short)((int)n), (byte)i, (byte)j, this.entity.isOnGround()
+						);
+						bl5 = true;
 						bl6 = true;
 					}
-				} else {
-					packet2 = new EntityS2CPacket.RotateAndMoveRelative(
-						this.entity.getId(), (short)((int)l), (short)((int)m), (short)((int)n), (byte)i, (byte)j, this.entity.isOnGround()
-					);
-					bl5 = true;
-					bl6 = true;
-				}
 
-				if ((this.alwaysUpdateVelocity || this.entity.velocityDirty || this.entity instanceof LivingEntity && ((LivingEntity)this.entity).isFallFlying())
-					&& this.trackingTick > 0) {
-					Vec3d vec3d2 = this.entity.getVelocity();
-					double d = vec3d2.squaredDistanceTo(this.velocity);
-					if (d > 1.0E-7 || d > 0.0 && vec3d2.lengthSquared() == 0.0) {
-						this.velocity = vec3d2;
-						if (this.entity instanceof ExplosiveProjectileEntity explosiveProjectileEntity) {
-							this.receiver
-								.accept(
-									new BundleS2CPacket(
-										List.of(
-											new EntityVelocityUpdateS2CPacket(this.entity.getId(), this.velocity),
-											new ProjectilePowerS2CPacket(explosiveProjectileEntity.getId(), explosiveProjectileEntity.accelerationPower)
+					if ((this.alwaysUpdateVelocity || this.entity.velocityDirty || this.entity instanceof LivingEntity && ((LivingEntity)this.entity).isFallFlying())
+						&& this.trackingTick > 0) {
+						Vec3d vec3d2 = this.entity.getVelocity();
+						double d = vec3d2.squaredDistanceTo(this.velocity);
+						if (d > 1.0E-7 || d > 0.0 && vec3d2.lengthSquared() == 0.0) {
+							this.velocity = vec3d2;
+							if (this.entity instanceof ExplosiveProjectileEntity explosiveProjectileEntity) {
+								this.receiver
+									.accept(
+										new BundleS2CPacket(
+											List.of(
+												new EntityVelocityUpdateS2CPacket(this.entity.getId(), this.velocity),
+												new ProjectilePowerS2CPacket(explosiveProjectileEntity.getId(), explosiveProjectileEntity.accelerationPower)
+											)
 										)
-									)
-								);
-						} else {
-							this.receiver.accept(new EntityVelocityUpdateS2CPacket(this.entity.getId(), this.velocity));
+									);
+							} else {
+								this.receiver.accept(new EntityVelocityUpdateS2CPacket(this.entity.getId(), this.velocity));
+							}
 						}
 					}
-				}
 
-				if (packet2 != null) {
-					this.receiver.accept(packet2);
-				}
+					if (packet != null) {
+						this.receiver.accept(packet);
+					}
 
-				this.syncEntityData();
-				if (bl5) {
-					this.trackedPos.setPos(vec3d);
-				}
+					this.syncEntityData();
+					if (bl5) {
+						this.trackedPos.setPos(vec3d);
+					}
 
-				if (bl6) {
-					this.lastYaw = i;
-					this.lastPitch = j;
-				}
+					if (bl6) {
+						this.lastYaw = i;
+						this.lastPitch = j;
+					}
 
-				this.hadVehicle = false;
+					this.hadVehicle = false;
+				}
 			}
 
-			int ix = MathHelper.floor(this.entity.getHeadYaw() * 256.0F / 360.0F);
-			if (Math.abs(ix - this.lastHeadYaw) >= 1) {
-				this.receiver.accept(new EntitySetHeadYawS2CPacket(this.entity, (byte)ix));
-				this.lastHeadYaw = ix;
+			int k = MathHelper.floor(this.entity.getHeadYaw() * 256.0F / 360.0F);
+			if (Math.abs(k - this.lastHeadYaw) >= 1) {
+				this.receiver.accept(new EntitySetHeadYawS2CPacket(this.entity, (byte)k));
+				this.lastHeadYaw = k;
 			}
 
 			this.entity.velocityDirty = false;
@@ -225,6 +236,36 @@ public class EntityTrackerEntry {
 			this.entity.velocityModified = false;
 			this.sendSyncPacket(new EntityVelocityUpdateS2CPacket(this.entity));
 		}
+	}
+
+	private void tickExperimentalMinecart(ExperimentalMinecartController controller) {
+		this.syncEntityData();
+		int i = MathHelper.floor(this.entity.getYaw() * 256.0F / 360.0F);
+		int j = MathHelper.floor(this.entity.getPitch() * 256.0F / 360.0F);
+		if (controller.lerpSteps.isEmpty()) {
+			Vec3d vec3d = this.entity.getVelocity();
+			double d = vec3d.squaredDistanceTo(this.velocity);
+			Vec3d vec3d2 = this.entity.getSyncedPos();
+			boolean bl = this.trackedPos.subtract(vec3d2).lengthSquared() >= 7.6293945E-6F;
+			boolean bl2 = bl || this.trackingTick % 60 == 0;
+			boolean bl3 = Math.abs(i - this.lastYaw) >= 1 || Math.abs(j - this.lastPitch) >= 1;
+			if (bl2 || bl3 || d > 1.0E-7) {
+				this.receiver
+					.accept(
+						new MoveMinecartAlongTrackS2CPacket(
+							this.entity.getId(),
+							List.of(new ExperimentalMinecartController.Step(this.entity.getPos(), this.entity.getVelocity(), this.entity.getYaw(), this.entity.getPitch(), 1.0F))
+						)
+					);
+			}
+		} else {
+			this.receiver.accept(new MoveMinecartAlongTrackS2CPacket(this.entity.getId(), List.copyOf(controller.lerpSteps)));
+			controller.lerpSteps.clear();
+		}
+
+		this.lastYaw = i;
+		this.lastPitch = j;
+		this.trackedPos.setPos(this.entity.getPos());
 	}
 
 	private static Stream<Entity> streamChangedPassengers(List<Entity> passengers, List<Entity> lastPassengers) {

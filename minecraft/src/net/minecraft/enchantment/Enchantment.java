@@ -441,44 +441,51 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 	}
 
 	public void applyLocationBasedEffects(ServerWorld world, int level, EnchantmentEffectContext context, LivingEntity user) {
-		if (context.slot() != null && !this.slotMatches(context.slot())) {
-			Set<EnchantmentLocationBasedEffect> set = (Set<EnchantmentLocationBasedEffect>)user.getLocationBasedEnchantmentEffects().remove(this);
-			if (set != null) {
-				set.forEach(effect -> effect.remove(context, user, user.getPos(), level));
-			}
-		} else {
-			Set<EnchantmentLocationBasedEffect> set = (Set<EnchantmentLocationBasedEffect>)user.getLocationBasedEnchantmentEffects().get(this);
+		EquipmentSlot equipmentSlot = context.slot();
+		if (equipmentSlot != null) {
+			Map<Enchantment, Set<EnchantmentLocationBasedEffect>> map = user.getLocationBasedEnchantmentEffects(equipmentSlot);
+			if (!this.slotMatches(equipmentSlot)) {
+				Set<EnchantmentLocationBasedEffect> set = (Set<EnchantmentLocationBasedEffect>)map.remove(this);
+				if (set != null) {
+					set.forEach(effect -> effect.remove(context, user, user.getPos(), level));
+				}
+			} else {
+				Set<EnchantmentLocationBasedEffect> set = (Set<EnchantmentLocationBasedEffect>)map.get(this);
 
-			for (EnchantmentEffectEntry<EnchantmentLocationBasedEffect> enchantmentEffectEntry : this.getEffect(EnchantmentEffectComponentTypes.LOCATION_CHANGED)) {
-				EnchantmentLocationBasedEffect enchantmentLocationBasedEffect = enchantmentEffectEntry.effect();
-				boolean bl = set != null && set.contains(enchantmentLocationBasedEffect);
-				if (enchantmentEffectEntry.test(createEnchantedLocationLootContext(world, level, user, bl))) {
-					if (!bl) {
-						if (set == null) {
-							set = new ObjectArraySet<>();
-							user.getLocationBasedEnchantmentEffects().put(this, set);
+				for (EnchantmentEffectEntry<EnchantmentLocationBasedEffect> enchantmentEffectEntry : this.getEffect(EnchantmentEffectComponentTypes.LOCATION_CHANGED)) {
+					EnchantmentLocationBasedEffect enchantmentLocationBasedEffect = enchantmentEffectEntry.effect();
+					boolean bl = set != null && set.contains(enchantmentLocationBasedEffect);
+					if (enchantmentEffectEntry.test(createEnchantedLocationLootContext(world, level, user, bl))) {
+						if (!bl) {
+							if (set == null) {
+								set = new ObjectArraySet<>();
+								map.put(this, set);
+							}
+
+							set.add(enchantmentLocationBasedEffect);
 						}
 
-						set.add(enchantmentLocationBasedEffect);
+						enchantmentLocationBasedEffect.apply(world, level, context, user, user.getPos(), !bl);
+					} else if (set != null && set.remove(enchantmentLocationBasedEffect)) {
+						enchantmentLocationBasedEffect.remove(context, user, user.getPos(), level);
 					}
-
-					enchantmentLocationBasedEffect.apply(world, level, context, user, user.getPos(), !bl);
-				} else if (set != null && set.remove(enchantmentLocationBasedEffect)) {
-					enchantmentLocationBasedEffect.remove(context, user, user.getPos(), level);
 				}
-			}
 
-			if (set != null && set.isEmpty()) {
-				user.getLocationBasedEnchantmentEffects().remove(this);
+				if (set != null && set.isEmpty()) {
+					map.remove(this);
+				}
 			}
 		}
 	}
 
 	public void removeLocationBasedEffects(int level, EnchantmentEffectContext context, LivingEntity user) {
-		Set<EnchantmentLocationBasedEffect> set = (Set<EnchantmentLocationBasedEffect>)user.getLocationBasedEnchantmentEffects().remove(this);
-		if (set != null) {
-			for (EnchantmentLocationBasedEffect enchantmentLocationBasedEffect : set) {
-				enchantmentLocationBasedEffect.remove(context, user, user.getPos(), level);
+		EquipmentSlot equipmentSlot = context.slot();
+		if (equipmentSlot != null) {
+			Set<EnchantmentLocationBasedEffect> set = (Set<EnchantmentLocationBasedEffect>)user.getLocationBasedEnchantmentEffects(equipmentSlot).remove(this);
+			if (set != null) {
+				for (EnchantmentLocationBasedEffect enchantmentLocationBasedEffect : set) {
+					enchantmentLocationBasedEffect.remove(context, user, user.getPos(), level);
+				}
 			}
 		}
 	}
@@ -589,7 +596,7 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 						Codecs.rangedInt(1, 255).fieldOf("max_level").forGetter(Enchantment.Definition::maxLevel),
 						Enchantment.Cost.CODEC.fieldOf("min_cost").forGetter(Enchantment.Definition::minCost),
 						Enchantment.Cost.CODEC.fieldOf("max_cost").forGetter(Enchantment.Definition::maxCost),
-						Codecs.NONNEGATIVE_INT.fieldOf("anvil_cost").forGetter(Enchantment.Definition::anvilCost),
+						Codecs.NON_NEGATIVE_INT.fieldOf("anvil_cost").forGetter(Enchantment.Definition::anvilCost),
 						AttributeModifierSlot.CODEC.listOf().fieldOf("slots").forGetter(Enchantment.Definition::slots)
 					)
 					.apply(instance, Enchantment.Definition::new)

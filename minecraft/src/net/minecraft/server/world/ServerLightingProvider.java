@@ -52,7 +52,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 
 	@Override
 	public int doLightUpdates() {
-		throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Ran automatically on a different thread!"));
+		throw (UnsupportedOperationException)Util.getFatalOrPause(new UnsupportedOperationException("Ran automatically on a different thread!"));
 	}
 
 	@Override

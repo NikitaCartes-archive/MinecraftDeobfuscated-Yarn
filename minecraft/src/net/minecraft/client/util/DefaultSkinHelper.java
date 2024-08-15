@@ -30,7 +30,11 @@ public class DefaultSkinHelper {
 	};
 
 	public static Identifier getTexture() {
-		return SKINS[6].texture();
+		return getSteve().texture();
+	}
+
+	public static SkinTextures getSteve() {
+		return SKINS[6];
 	}
 
 	public static SkinTextures getSkinTextures(UUID uuid) {

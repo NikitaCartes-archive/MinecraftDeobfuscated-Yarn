@@ -3,6 +3,7 @@ package net.minecraft.world.chunk;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import java.util.EnumSet;
@@ -80,6 +81,18 @@ public class UpgradeData {
 
 		addNeighborTicks(nbt, "neighbor_block_ticks", id -> Registries.BLOCK.getOrEmpty(Identifier.tryParse(id)).or(() -> Optional.of(Blocks.AIR)), this.blockTicks);
 		addNeighborTicks(nbt, "neighbor_fluid_ticks", id -> Registries.FLUID.getOrEmpty(Identifier.tryParse(id)).or(() -> Optional.of(Fluids.EMPTY)), this.fluidTicks);
+	}
+
+	private UpgradeData(UpgradeData data) {
+		this.sidesToUpgrade.addAll(data.sidesToUpgrade);
+		this.blockTicks.addAll(data.blockTicks);
+		this.fluidTicks.addAll(data.fluidTicks);
+		this.centerIndicesToUpgrade = new int[data.centerIndicesToUpgrade.length][];
+
+		for (int i = 0; i < data.centerIndicesToUpgrade.length; i++) {
+			int[] is = data.centerIndicesToUpgrade[i];
+			this.centerIndicesToUpgrade[i] = is != null ? IntArrays.copy(is) : null;
+		}
 	}
 
 	private static <T> void addNeighborTicks(NbtCompound nbt, String key, Function<String, Optional<T>> nameToType, List<Tick<T>> ticks) {
@@ -237,6 +250,10 @@ public class UpgradeData {
 		}
 
 		return nbtCompound;
+	}
+
+	public UpgradeData copy() {
+		return this == NO_UPGRADE_DATA ? NO_UPGRADE_DATA : new UpgradeData(this);
 	}
 
 	static enum BuiltinLogic implements UpgradeData.Logic {

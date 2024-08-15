@@ -1,8 +1,11 @@
 package net.minecraft.entity.decoration.painting;
 
+import java.util.Optional;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public class PaintingVariants {
@@ -77,16 +80,16 @@ public class PaintingVariants {
 		register(registry, STAGE, 2, 2);
 		register(registry, VOID, 2, 2);
 		register(registry, SKULL_AND_ROSES, 2, 2);
-		register(registry, WITHER, 2, 2);
+		register(registry, WITHER, 2, 2, false);
 		register(registry, FIGHTERS, 4, 2);
 		register(registry, POINTER, 4, 4);
 		register(registry, PIGSCENE, 4, 4);
 		register(registry, BURNING_SKULL, 4, 4);
 		register(registry, SKELETON, 4, 3);
-		register(registry, EARTH, 2, 2);
-		register(registry, WIND, 2, 2);
-		register(registry, WATER, 2, 2);
-		register(registry, FIRE, 2, 2);
+		register(registry, EARTH, 2, 2, false);
+		register(registry, WIND, 2, 2, false);
+		register(registry, WATER, 2, 2, false);
+		register(registry, FIRE, 2, 2, false);
 		register(registry, DONKEY_KONG, 4, 3);
 		register(registry, BAROQUE, 2, 2);
 		register(registry, HUMBLE, 2, 2);
@@ -111,7 +114,20 @@ public class PaintingVariants {
 	}
 
 	private static void register(Registerable<PaintingVariant> registry, RegistryKey<PaintingVariant> key, int width, int height) {
-		registry.register(key, new PaintingVariant(width, height, key.getValue()));
+		register(registry, key, width, height, true);
+	}
+
+	private static void register(Registerable<PaintingVariant> registry, RegistryKey<PaintingVariant> key, int width, int height, boolean hasAuthor) {
+		registry.register(
+			key,
+			new PaintingVariant(
+				width,
+				height,
+				key.getValue(),
+				Optional.of(Text.translatable(key.getValue().toTranslationKey("painting", "title")).formatted(Formatting.YELLOW)),
+				hasAuthor ? Optional.of(Text.translatable(key.getValue().toTranslationKey("painting", "author")).formatted(Formatting.GRAY)) : Optional.empty()
+			)
+		);
 	}
 
 	private static RegistryKey<PaintingVariant> of(String id) {

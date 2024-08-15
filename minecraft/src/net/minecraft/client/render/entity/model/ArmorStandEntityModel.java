@@ -1,7 +1,5 @@
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Dilation;
@@ -11,10 +9,9 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.entity.state.ArmorStandEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.util.Arm;
-import net.minecraft.util.math.MathHelper;
 
 /**
  * Represents the model of an {@linkplain ArmorStandEntity}.
@@ -71,32 +68,24 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 		return TexturedModelData.of(modelData, 64, 64);
 	}
 
-	public void animateModel(ArmorStandEntity armorStandEntity, float f, float g, float h) {
+	@Override
+	public void setAngles(ArmorStandEntityRenderState armorStandEntityRenderState) {
 		this.basePlate.pitch = 0.0F;
-		this.basePlate.yaw = (float) (Math.PI / 180.0) * -MathHelper.lerpAngleDegrees(h, armorStandEntity.prevYaw, armorStandEntity.getYaw());
+		this.basePlate.yaw = (float) (Math.PI / 180.0) * -armorStandEntityRenderState.yaw;
 		this.basePlate.roll = 0.0F;
-	}
-
-	@Override
-	public void setAngles(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j) {
-		super.setAngles(armorStandEntity, f, g, h, i, j);
-		this.leftArm.visible = armorStandEntity.shouldShowArms();
-		this.rightArm.visible = armorStandEntity.shouldShowArms();
-		this.basePlate.visible = !armorStandEntity.shouldHideBasePlate();
-		this.rightBodyStick.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
-		this.rightBodyStick.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
-		this.rightBodyStick.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
-		this.leftBodyStick.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
-		this.leftBodyStick.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
-		this.leftBodyStick.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
-		this.shoulderStick.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
-		this.shoulderStick.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
-		this.shoulderStick.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
-	}
-
-	@Override
-	protected Iterable<ModelPart> getBodyParts() {
-		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.rightBodyStick, this.leftBodyStick, this.shoulderStick, this.basePlate));
+		super.setAngles(armorStandEntityRenderState);
+		this.leftArm.visible = armorStandEntityRenderState.showArms;
+		this.rightArm.visible = armorStandEntityRenderState.showArms;
+		this.basePlate.visible = armorStandEntityRenderState.hideBasePlate;
+		this.rightBodyStick.pitch = (float) (Math.PI / 180.0) * armorStandEntityRenderState.bodyRotation.getPitch();
+		this.rightBodyStick.yaw = (float) (Math.PI / 180.0) * armorStandEntityRenderState.bodyRotation.getYaw();
+		this.rightBodyStick.roll = (float) (Math.PI / 180.0) * armorStandEntityRenderState.bodyRotation.getRoll();
+		this.leftBodyStick.pitch = (float) (Math.PI / 180.0) * armorStandEntityRenderState.bodyRotation.getPitch();
+		this.leftBodyStick.yaw = (float) (Math.PI / 180.0) * armorStandEntityRenderState.bodyRotation.getYaw();
+		this.leftBodyStick.roll = (float) (Math.PI / 180.0) * armorStandEntityRenderState.bodyRotation.getRoll();
+		this.shoulderStick.pitch = (float) (Math.PI / 180.0) * armorStandEntityRenderState.bodyRotation.getPitch();
+		this.shoulderStick.yaw = (float) (Math.PI / 180.0) * armorStandEntityRenderState.bodyRotation.getYaw();
+		this.shoulderStick.roll = (float) (Math.PI / 180.0) * armorStandEntityRenderState.bodyRotation.getRoll();
 	}
 
 	@Override

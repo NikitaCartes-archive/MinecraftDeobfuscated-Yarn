@@ -10,6 +10,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.PageTurnWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.WritableBookContentComponent;
@@ -29,6 +30,8 @@ public class BookScreen extends Screen {
 	public static final int field_32328 = 16;
 	public static final int field_32329 = 36;
 	public static final int field_32330 = 30;
+	private static final int field_52807 = 256;
+	private static final int field_52808 = 256;
 	public static final BookScreen.Contents EMPTY_PROVIDER = new BookScreen.Contents(List.of());
 	public static final Identifier BOOK_TEXTURE = Identifier.ofVanilla("textures/gui/book.png");
 	protected static final int MAX_TEXT_WIDTH = 114;
@@ -172,7 +175,7 @@ public class BookScreen extends Screen {
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 		this.renderInGameBackground(context);
-		context.drawTexture(BOOK_TEXTURE, (this.width - 192) / 2, 2, 0, 0, 192, 192);
+		context.drawTexture(RenderLayer::getGuiTextured, BOOK_TEXTURE, (this.width - 192) / 2, 2, 0.0F, 0.0F, 192, 192, 256, 256);
 	}
 
 	@Override

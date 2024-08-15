@@ -2,17 +2,10 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.Dilation;
-import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.ModelPartBuilder;
-import net.minecraft.client.model.ModelPartData;
-import net.minecraft.client.model.ModelTransform;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.mob.AbstractPiglinEntity;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.client.render.entity.state.PiglinEntityRenderState;
 import net.minecraft.entity.mob.PiglinActivity;
-import net.minecraft.entity.mob.PiglinEntity;
+import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -76,124 +69,76 @@ import net.minecraft.util.math.MathHelper;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T> {
-	public final ModelPart rightEar = this.head.getChild(EntityModelPartNames.RIGHT_EAR);
-	private final ModelPart leftEar = this.head.getChild(EntityModelPartNames.LEFT_EAR);
-	private final ModelTransform bodyRotation = this.body.getTransform();
-	private final ModelTransform headRotation = this.head.getTransform();
-	private final ModelTransform leftArmRotation = this.leftArm.getTransform();
-	private final ModelTransform rightArmRotation = this.rightArm.getTransform();
-
+public class PiglinEntityModel extends PiglinBaseEntityModel<PiglinEntityRenderState> {
 	public PiglinEntityModel(ModelPart modelPart) {
-		super(modelPart, false);
+		super(modelPart);
 	}
 
-	public static ModelData getModelData(Dilation dilation) {
-		ModelData modelData = PlayerEntityModel.getTexturedModelData(dilation, false);
-		ModelPartData modelPartData = modelData.getRoot();
-		modelPartData.addChild(
-			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(16, 16).cuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, dilation), ModelTransform.NONE
-		);
-		addHead(dilation, modelData);
-		modelPartData.addChild(EntityModelPartNames.HAT, ModelPartBuilder.create(), ModelTransform.NONE);
-		return modelData;
-	}
-
-	public static void addHead(Dilation dilation, ModelData baseModelData) {
-		ModelPartData modelPartData = baseModelData.getRoot();
-		ModelPartData modelPartData2 = modelPartData.addChild(
-			EntityModelPartNames.HEAD,
-			ModelPartBuilder.create()
-				.uv(0, 0)
-				.cuboid(-5.0F, -8.0F, -4.0F, 10.0F, 8.0F, 8.0F, dilation)
-				.uv(31, 1)
-				.cuboid(-2.0F, -4.0F, -5.0F, 4.0F, 4.0F, 1.0F, dilation)
-				.uv(2, 4)
-				.cuboid(2.0F, -2.0F, -5.0F, 1.0F, 2.0F, 1.0F, dilation)
-				.uv(2, 0)
-				.cuboid(-3.0F, -2.0F, -5.0F, 1.0F, 2.0F, 1.0F, dilation),
-			ModelTransform.NONE
-		);
-		modelPartData2.addChild(
-			EntityModelPartNames.LEFT_EAR,
-			ModelPartBuilder.create().uv(51, 6).cuboid(0.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F, dilation),
-			ModelTransform.of(4.5F, -6.0F, 0.0F, 0.0F, 0.0F, (float) (-Math.PI / 6))
-		);
-		modelPartData2.addChild(
-			EntityModelPartNames.RIGHT_EAR,
-			ModelPartBuilder.create().uv(39, 6).cuboid(-1.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F, dilation),
-			ModelTransform.of(-4.5F, -6.0F, 0.0F, 0.0F, 0.0F, (float) (Math.PI / 6))
-		);
-	}
-
-	public void setAngles(T mobEntity, float f, float g, float h, float i, float j) {
-		this.body.setTransform(this.bodyRotation);
-		this.head.setTransform(this.headRotation);
-		this.leftArm.setTransform(this.leftArmRotation);
-		this.rightArm.setTransform(this.rightArmRotation);
-		super.setAngles(mobEntity, f, g, h, i, j);
-		float k = (float) (Math.PI / 6);
-		float l = h * 0.1F + f * 0.5F;
-		float m = 0.08F + g * 0.4F;
-		this.leftEar.roll = (float) (-Math.PI / 6) - MathHelper.cos(l * 1.2F) * m;
-		this.rightEar.roll = (float) (Math.PI / 6) + MathHelper.cos(l) * m;
-		if (mobEntity instanceof AbstractPiglinEntity abstractPiglinEntity) {
-			PiglinActivity piglinActivity = abstractPiglinEntity.getActivity();
-			if (piglinActivity == PiglinActivity.DANCING) {
-				float n = h / 60.0F;
-				this.rightEar.roll = (float) (Math.PI / 6) + (float) (Math.PI / 180.0) * MathHelper.sin(n * 30.0F) * 10.0F;
-				this.leftEar.roll = (float) (-Math.PI / 6) - (float) (Math.PI / 180.0) * MathHelper.cos(n * 30.0F) * 10.0F;
-				this.head.pivotX = MathHelper.sin(n * 10.0F);
-				this.head.pivotY = MathHelper.sin(n * 40.0F) + 0.4F;
-				this.rightArm.roll = (float) (Math.PI / 180.0) * (70.0F + MathHelper.cos(n * 40.0F) * 10.0F);
-				this.leftArm.roll = this.rightArm.roll * -1.0F;
-				this.rightArm.pivotY = MathHelper.sin(n * 40.0F) * 0.5F + 1.5F;
-				this.leftArm.pivotY = MathHelper.sin(n * 40.0F) * 0.5F + 1.5F;
-				this.body.pivotY = MathHelper.sin(n * 40.0F) * 0.35F;
-			} else if (piglinActivity == PiglinActivity.ATTACKING_WITH_MELEE_WEAPON && this.handSwingProgress == 0.0F) {
-				this.rotateMainArm(mobEntity);
-			} else if (piglinActivity == PiglinActivity.CROSSBOW_HOLD) {
-				CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, !mobEntity.isLeftHanded());
-			} else if (piglinActivity == PiglinActivity.CROSSBOW_CHARGE) {
-				CrossbowPosing.charge(this.rightArm, this.leftArm, mobEntity, !mobEntity.isLeftHanded());
-			} else if (piglinActivity == PiglinActivity.ADMIRING_ITEM) {
-				this.head.pitch = 0.5F;
-				this.head.yaw = 0.0F;
-				if (mobEntity.isLeftHanded()) {
-					this.rightArm.yaw = -0.5F;
-					this.rightArm.pitch = -0.9F;
-				} else {
-					this.leftArm.yaw = 0.5F;
-					this.leftArm.pitch = -0.9F;
-				}
+	public void setAngles(PiglinEntityRenderState piglinEntityRenderState) {
+		super.setAngles(piglinEntityRenderState);
+		float f = (float) (Math.PI / 6);
+		float g = piglinEntityRenderState.handSwingProgress;
+		PiglinActivity piglinActivity = piglinEntityRenderState.activity;
+		if (piglinActivity == PiglinActivity.DANCING) {
+			float h = piglinEntityRenderState.age / 60.0F;
+			this.rightEar.roll = (float) (Math.PI / 6) + (float) (Math.PI / 180.0) * MathHelper.sin(h * 30.0F) * 10.0F;
+			this.leftEar.roll = (float) (-Math.PI / 6) - (float) (Math.PI / 180.0) * MathHelper.cos(h * 30.0F) * 10.0F;
+			this.head.pivotX = this.head.pivotX + MathHelper.sin(h * 10.0F);
+			this.head.pivotY = this.head.pivotY + MathHelper.sin(h * 40.0F) + 0.4F;
+			this.rightArm.roll = (float) (Math.PI / 180.0) * (70.0F + MathHelper.cos(h * 40.0F) * 10.0F);
+			this.leftArm.roll = this.rightArm.roll * -1.0F;
+			this.rightArm.pivotY = this.rightArm.pivotY + (MathHelper.sin(h * 40.0F) * 0.5F - 0.5F);
+			this.leftArm.pivotY = this.leftArm.pivotY + MathHelper.sin(h * 40.0F) * 0.5F + 0.5F;
+			this.body.pivotY = this.body.pivotY + MathHelper.sin(h * 40.0F) * 0.35F;
+		} else if (piglinActivity == PiglinActivity.ATTACKING_WITH_MELEE_WEAPON && g == 0.0F) {
+			this.rotateMainArm(piglinEntityRenderState);
+		} else if (piglinActivity == PiglinActivity.CROSSBOW_HOLD) {
+			CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, piglinEntityRenderState.mainArm == Arm.RIGHT);
+		} else if (piglinActivity == PiglinActivity.CROSSBOW_CHARGE) {
+			CrossbowPosing.charge(
+				this.rightArm,
+				this.leftArm,
+				piglinEntityRenderState.piglinCrossbowPullTime,
+				piglinEntityRenderState.itemUseTime,
+				piglinEntityRenderState.mainArm == Arm.RIGHT
+			);
+		} else if (piglinActivity == PiglinActivity.ADMIRING_ITEM) {
+			this.head.pitch = 0.5F;
+			this.head.yaw = 0.0F;
+			if (piglinEntityRenderState.mainArm == Arm.LEFT) {
+				this.rightArm.yaw = -0.5F;
+				this.rightArm.pitch = -0.9F;
+			} else {
+				this.leftArm.yaw = 0.5F;
+				this.leftArm.pitch = -0.9F;
 			}
-		} else if (mobEntity.getType() == EntityType.ZOMBIFIED_PIGLIN) {
-			CrossbowPosing.meleeAttack(this.leftArm, this.rightArm, mobEntity.isAttacking(), this.handSwingProgress, h);
 		}
-
-		this.leftPants.copyTransform(this.leftLeg);
-		this.rightPants.copyTransform(this.rightLeg);
-		this.leftSleeve.copyTransform(this.leftArm);
-		this.rightSleeve.copyTransform(this.rightArm);
-		this.jacket.copyTransform(this.body);
-		this.hat.copyTransform(this.head);
 	}
 
-	protected void animateArms(T mobEntity, float f) {
-		if (this.handSwingProgress > 0.0F
-			&& mobEntity instanceof PiglinEntity
-			&& ((PiglinEntity)mobEntity).getActivity() == PiglinActivity.ATTACKING_WITH_MELEE_WEAPON) {
-			CrossbowPosing.meleeAttack(this.rightArm, this.leftArm, mobEntity, this.handSwingProgress, f);
+	protected void animateArms(PiglinEntityRenderState piglinEntityRenderState, float f) {
+		float g = piglinEntityRenderState.handSwingProgress;
+		if (g > 0.0F && piglinEntityRenderState.activity == PiglinActivity.ATTACKING_WITH_MELEE_WEAPON) {
+			CrossbowPosing.meleeAttack(this.rightArm, this.leftArm, piglinEntityRenderState.mainArm, g, piglinEntityRenderState.age);
 		} else {
-			super.animateArms(mobEntity, f);
+			super.animateArms(piglinEntityRenderState, f);
 		}
 	}
 
-	private void rotateMainArm(T entity) {
-		if (entity.isLeftHanded()) {
+	private void rotateMainArm(PiglinEntityRenderState state) {
+		if (state.mainArm == Arm.LEFT) {
 			this.leftArm.pitch = -1.8F;
 		} else {
 			this.rightArm.pitch = -1.8F;
 		}
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		this.leftSleeve.visible = visible;
+		this.rightSleeve.visible = visible;
+		this.leftPants.visible = visible;
+		this.rightPants.visible = visible;
+		this.jacket.visible = visible;
 	}
 }

@@ -25,7 +25,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.border.WorldBorder;
 
-public class ChunkCache implements BlockView, CollisionView {
+public class ChunkCache implements CollisionView {
 	protected final int minX;
 	protected final int minZ;
 	protected final Chunk[][] chunks;

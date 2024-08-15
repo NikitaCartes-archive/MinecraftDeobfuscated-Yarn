@@ -66,7 +66,7 @@ public interface ListOperation {
 	public static record Insert(int offset) implements ListOperation {
 		private static final Logger LOGGER = LogUtils.getLogger();
 		public static final MapCodec<ListOperation.Insert> CODEC = RecordCodecBuilder.mapCodec(
-			instance -> instance.group(Codecs.NONNEGATIVE_INT.optionalFieldOf("offset", 0).forGetter(ListOperation.Insert::offset))
+			instance -> instance.group(Codecs.NON_NEGATIVE_INT.optionalFieldOf("offset", 0).forGetter(ListOperation.Insert::offset))
 					.apply(instance, ListOperation.Insert::new)
 		);
 
@@ -141,8 +141,8 @@ public interface ListOperation {
 		private static final Logger LOGGER = LogUtils.getLogger();
 		public static final MapCodec<ListOperation.ReplaceSection> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
-						Codecs.NONNEGATIVE_INT.optionalFieldOf("offset", 0).forGetter(ListOperation.ReplaceSection::offset),
-						Codecs.NONNEGATIVE_INT.optionalFieldOf("size").forGetter(ListOperation.ReplaceSection::size)
+						Codecs.NON_NEGATIVE_INT.optionalFieldOf("offset", 0).forGetter(ListOperation.ReplaceSection::offset),
+						Codecs.NON_NEGATIVE_INT.optionalFieldOf("size").forGetter(ListOperation.ReplaceSection::size)
 					)
 					.apply(instance, ListOperation.ReplaceSection::new)
 		);

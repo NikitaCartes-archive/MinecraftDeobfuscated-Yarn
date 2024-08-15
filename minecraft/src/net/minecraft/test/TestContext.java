@@ -26,6 +26,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -47,10 +48,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.structure.StructureTemplate;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -119,7 +120,7 @@ public class TestContext {
 
 	public <E extends Entity> E spawnEntity(EntityType<E> type, Vec3d pos) {
 		ServerWorld serverWorld = this.getWorld();
-		E entity = type.create(serverWorld);
+		E entity = type.create(serverWorld, SpawnReason.STRUCTURE);
 		if (entity == null) {
 			throw new NullPointerException("Failed to create entity " + type.getRegistryEntry().registryKey().getValue());
 		} else {
@@ -232,9 +233,9 @@ public class TestContext {
 		BlockPos blockPos = this.getAbsolutePos(pos);
 		BlockState blockState = this.getWorld().getBlockState(blockPos);
 		Hand hand = Hand.MAIN_HAND;
-		ItemActionResult itemActionResult = blockState.onUseWithItem(player.getStackInHand(hand), this.getWorld(), player, hand, result);
-		if (!itemActionResult.isAccepted()) {
-			if (itemActionResult != ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION || !blockState.onUse(this.getWorld(), player, result).isAccepted()) {
+		ActionResult actionResult = blockState.onUseWithItem(player.getStackInHand(hand), this.getWorld(), player, hand, result);
+		if (!actionResult.isAccepted()) {
+			if (!(actionResult instanceof ActionResult.PassToDefaultBlockAction) || !blockState.onUse(this.getWorld(), player, result).isAccepted()) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(player, hand, result);
 				player.getStackInHand(hand).useOnBlock(itemUsageContext);
 			}
@@ -437,11 +438,12 @@ public class TestContext {
 		}
 	}
 
-	public void expectEntityInside(EntityType<?> type, Vec3d pos1, Vec3d pos2) {
-		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, new Box(pos1, pos2), Entity::isAlive);
+	public void expectEntityInside(EntityType<?> type, Box box) {
+		Box box2 = this.getAbsolute(box);
+		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, box2, Entity::isAlive);
 		if (list.isEmpty()) {
 			throw new PositionedException(
-				"Expected " + type.getUntranslatedName() + " between ", BlockPos.ofFloored(pos1), BlockPos.ofFloored(pos2), this.test.getTick()
+				"Expected " + type.getUntranslatedName(), BlockPos.ofFloored(box2.getCenter()), BlockPos.ofFloored(box.getCenter()), this.test.getTick()
 			);
 		}
 	}
@@ -578,11 +580,12 @@ public class TestContext {
 		}
 	}
 
-	public void dontExpectEntityBetween(EntityType<?> type, Vec3d pos1, Vec3d pos2) {
-		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, new Box(pos1, pos2), Entity::isAlive);
+	public void dontExpectEntityBetween(EntityType<?> type, Box box) {
+		Box box2 = this.getAbsolute(box);
+		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, box2, Entity::isAlive);
 		if (!list.isEmpty()) {
 			throw new PositionedException(
-				"Did not expect " + type.getUntranslatedName() + " between ", BlockPos.ofFloored(pos1), BlockPos.ofFloored(pos2), this.test.getTick()
+				"Did not expect " + type.getUntranslatedName(), BlockPos.ofFloored(box2.getCenter()), BlockPos.ofFloored(box.getCenter()), this.test.getTick()
 			);
 		}
 	}
@@ -853,6 +856,18 @@ public class TestContext {
 		return blockPos2.subtract(blockPos);
 	}
 
+	public Box getAbsolute(Box box) {
+		Vec3d vec3d = this.getAbsolute(box.getMinPos());
+		Vec3d vec3d2 = this.getAbsolute(box.getMaxPos());
+		return new Box(vec3d, vec3d2);
+	}
+
+	public Box getRelative(Box box) {
+		Vec3d vec3d = this.getRelative(box.getMinPos());
+		Vec3d vec3d2 = this.getRelative(box.getMaxPos());
+		return new Box(vec3d, vec3d2);
+	}
+
 	public Vec3d getAbsolute(Vec3d pos) {
 		Vec3d vec3d = Vec3d.of(this.test.getPos());
 		return StructureTemplate.transformAround(vec3d.add(pos), BlockMirror.NONE, this.test.getRotation(), this.test.getPos());
@@ -895,11 +910,18 @@ public class TestContext {
 
 	private Box getRelativeTestBox() {
 		Box box = this.test.getBoundingBox();
-		return box.offset(BlockPos.ORIGIN.subtract(this.getAbsolutePos(BlockPos.ORIGIN)));
+		BlockRotation blockRotation = this.test.getRotation();
+		switch (blockRotation) {
+			case COUNTERCLOCKWISE_90:
+			case CLOCKWISE_90:
+				return new Box(0.0, 0.0, 0.0, box.getLengthZ(), box.getLengthY(), box.getLengthX());
+			default:
+				return new Box(0.0, 0.0, 0.0, box.getLengthX(), box.getLengthY(), box.getLengthZ());
+		}
 	}
 
 	public void forEachRelativePos(Consumer<BlockPos> posConsumer) {
-		Box box = this.getRelativeTestBox().shrink(1.0, 1.0, 1.0);
+		Box box = this.getRelativeTestBox().shrink(1.0, -1.0, 1.0);
 		BlockPos.Mutable.stream(box).forEach(posConsumer);
 	}
 

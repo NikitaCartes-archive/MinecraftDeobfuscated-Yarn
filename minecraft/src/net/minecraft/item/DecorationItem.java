@@ -54,7 +54,7 @@ public class DecorationItem extends Item {
 				abstractDecorationEntity = new ItemFrameEntity(world, blockPos2, direction);
 			} else {
 				if (this.entityType != EntityType.GLOW_ITEM_FRAME) {
-					return ActionResult.success(world.isClient);
+					return ActionResult.SUCCESS;
 				}
 
 				abstractDecorationEntity = new GlowItemFrameEntity(world, blockPos2, direction);
@@ -73,7 +73,7 @@ public class DecorationItem extends Item {
 				}
 
 				itemStack.decrement(1);
-				return ActionResult.success(world.isClient);
+				return ActionResult.SUCCESS;
 			} else {
 				return ActionResult.CONSUME;
 			}
@@ -92,10 +92,8 @@ public class DecorationItem extends Item {
 			NbtComponent nbtComponent = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
 			if (!nbtComponent.isEmpty()) {
 				nbtComponent.get(wrapperLookup.getOps(NbtOps.INSTANCE), PaintingEntity.VARIANT_MAP_CODEC).result().ifPresentOrElse(variant -> {
-					variant.getKey().ifPresent(key -> {
-						tooltip.add(Text.translatable(key.getValue().toTranslationKey("painting", "title")).formatted(Formatting.YELLOW));
-						tooltip.add(Text.translatable(key.getValue().toTranslationKey("painting", "author")).formatted(Formatting.GRAY));
-					});
+					((PaintingVariant)variant.value()).title().ifPresent(tooltip::add);
+					((PaintingVariant)variant.value()).author().ifPresent(tooltip::add);
 					tooltip.add(Text.translatable("painting.dimensions", ((PaintingVariant)variant.value()).width(), ((PaintingVariant)variant.value()).height()));
 				}, () -> tooltip.add(RANDOM_TEXT));
 			} else if (type.isCreative()) {

@@ -162,8 +162,8 @@ public class WorldChunk extends Chunk {
 	}
 
 	@Override
-	public Chunk.TickSchedulers getTickSchedulers() {
-		return new Chunk.TickSchedulers(this.blockTickScheduler, this.fluidTickScheduler);
+	public Chunk.TickSchedulers getTickSchedulers(long time) {
+		return new Chunk.TickSchedulers(this.blockTickScheduler.collectTicks(time), this.fluidTickScheduler.collectTicks(time));
 	}
 
 	@Override
@@ -265,7 +265,7 @@ public class WorldChunk extends Chunk {
 					this.world.getChunkManager().getLightingProvider().setSectionStatus(pos, bl2);
 				}
 
-				if (ChunkLightProvider.needsLightUpdate(this, pos, blockState, state)) {
+				if (ChunkLightProvider.needsLightUpdate(blockState, state)) {
 					Profiler profiler = this.world.getProfiler();
 					profiler.push("updateSkyLightSources");
 					this.chunkSkyLight.isSkyLightAccessible(this, j, i, l);
@@ -291,6 +291,7 @@ public class WorldChunk extends Chunk {
 					if (state.hasBlockEntity()) {
 						BlockEntity blockEntity = this.getBlockEntity(pos, WorldChunk.CreationType.CHECK);
 						if (blockEntity != null && !blockEntity.supports(state)) {
+							LOGGER.warn("Found mismatched block entity @ {}: type = {}, state = {}", pos, blockEntity.getType().getRegistryEntry().registryKey().getValue(), state);
 							this.removeBlockEntity(pos);
 							blockEntity = null;
 						}
@@ -533,12 +534,14 @@ public class WorldChunk extends Chunk {
 					BlockState blockState = this.getBlockState(blockPos);
 					FluidState fluidState = blockState.getFluidState();
 					if (!fluidState.isEmpty()) {
-						fluidState.onScheduledTick(this.world, blockPos);
+						fluidState.onScheduledTick(this.world, blockPos, blockState);
 					}
 
 					if (!(blockState.getBlock() instanceof FluidBlock)) {
 						BlockState blockState2 = Block.postProcessState(blockState, this.world, blockPos);
-						this.world.setBlockState(blockPos, blockState2, Block.NO_REDRAW | Block.FORCE_STATE);
+						if (blockState2 != blockState) {
+							this.world.setBlockState(blockPos, blockState2, Block.NO_REDRAW | Block.FORCE_STATE);
+						}
 					}
 				}
 

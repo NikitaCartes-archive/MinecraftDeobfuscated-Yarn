@@ -288,7 +288,7 @@ public class OceanRuinGenerator {
 						.setLootTable(this.large ? LootTables.UNDERWATER_RUIN_BIG_CHEST : LootTables.UNDERWATER_RUIN_SMALL_CHEST, random.nextLong());
 				}
 			} else if ("drowned".equals(metadata)) {
-				DrownedEntity drownedEntity = EntityType.DROWNED.create(world.toServerWorld());
+				DrownedEntity drownedEntity = EntityType.DROWNED.create(world.toServerWorld(), SpawnReason.STRUCTURE);
 				if (drownedEntity != null) {
 					drownedEntity.setPersistent();
 					drownedEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);

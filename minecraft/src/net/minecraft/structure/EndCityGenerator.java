@@ -3,6 +3,7 @@ package net.minecraft.structure;
 import com.google.common.collect.Lists;
 import java.util.List;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.inventory.LootableInventory;
@@ -309,7 +310,7 @@ public class EndCityGenerator {
 				}
 			} else if (boundingBox.contains(pos) && World.isValid(pos)) {
 				if (metadata.startsWith("Sentry")) {
-					ShulkerEntity shulkerEntity = EntityType.SHULKER.create(world.toServerWorld());
+					ShulkerEntity shulkerEntity = EntityType.SHULKER.create(world.toServerWorld(), SpawnReason.STRUCTURE);
 					if (shulkerEntity != null) {
 						shulkerEntity.setPosition((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5);
 						world.spawnEntity(shulkerEntity);

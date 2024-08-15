@@ -137,7 +137,8 @@ public class RuinedPortalStructure extends Structure {
 										BiomeCoords.fromBlock(blockPos4.getY()),
 										BiomeCoords.fromBlock(blockPos4.getZ()),
 										noiseConfig.getMultiNoiseSampler()
-									)
+									),
+								chunkGenerator.getSeaLevel()
 							);
 						}
 
@@ -160,8 +161,8 @@ public class RuinedPortalStructure extends Structure {
 		}
 	}
 
-	private static boolean isColdAt(BlockPos pos, RegistryEntry<Biome> biome) {
-		return biome.value().isCold(pos);
+	private static boolean isColdAt(BlockPos pos, RegistryEntry<Biome> biome, int seaLevel) {
+		return biome.value().isCold(pos, seaLevel);
 	}
 
 	private static int getFloorHeight(

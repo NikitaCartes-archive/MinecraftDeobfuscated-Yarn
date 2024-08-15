@@ -1,7 +1,6 @@
 package net.minecraft.registry;
 
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -9,7 +8,6 @@ import com.mojang.serialization.Keyable;
 import com.mojang.serialization.Lifecycle;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -20,6 +18,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryInfo;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.entry.RegistryEntryOwner;
+import net.minecraft.registry.tag.TagGroupLoader;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.IndexedIterable;
@@ -397,18 +396,7 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 		return this.getEntryList(tag).flatMap(entryList -> entryList.getRandom(random));
 	}
 
-	RegistryEntryList.Named<T> getOrCreateEntryList(TagKey<T> tag);
-
-	Stream<Pair<TagKey<T>, RegistryEntryList.Named<T>>> streamTagsAndEntries();
-
-	/**
-	 * {@return a stream of all tag keys known to this registry}
-	 */
-	Stream<TagKey<T>> streamTags();
-
-	void clearTags();
-
-	void populateTags(Map<TagKey<T>, List<RegistryEntry<T>>> tagEntries);
+	Stream<RegistryEntryList.Named<T>> streamTags();
 
 	default IndexedIterable<RegistryEntry<T>> getIndexedEntries() {
 		return new IndexedIterable<RegistryEntry<T>>() {
@@ -440,26 +428,13 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 	 */
 	RegistryWrapper.Impl<T> getReadOnlyWrapper();
 
-	/**
-	 * {@return a registry wrapper that creates and stores a new registry entry list
-	 * when handling an unknown tag key}
-	 */
-	default RegistryWrapper.Impl<T> getTagCreatingWrapper() {
-		return new RegistryWrapper.Impl.Delegating<T>() {
-			@Override
-			public RegistryWrapper.Impl<T> getBase() {
-				return Registry.this.getReadOnlyWrapper();
-			}
+	Registry.PendingTagLoad<T> startTagReload(TagGroupLoader.RegistryTags<T> tags);
 
-			@Override
-			public Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> tag) {
-				return Optional.of(this.getOrThrow(tag));
-			}
+	public interface PendingTagLoad<T> {
+		RegistryKey<? extends Registry<? extends T>> getKey();
 
-			@Override
-			public RegistryEntryList.Named<T> getOrThrow(TagKey<T> tag) {
-				return Registry.this.getOrCreateEntryList(tag);
-			}
-		};
+		RegistryWrapper.Impl<T> getLookup();
+
+		void apply();
 	}
 }

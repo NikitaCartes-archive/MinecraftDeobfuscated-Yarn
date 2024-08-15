@@ -45,6 +45,8 @@ public class RecipeManager extends JsonDataLoader {
 	private final RegistryWrapper.WrapperLookup registryLookup;
 	private Multimap<RecipeType<?>, RecipeEntry<?>> recipesByType = ImmutableMultimap.of();
 	private Map<Identifier, RecipeEntry<?>> recipesById = ImmutableMap.of();
+	@Nullable
+	private List<RecipeEntry<?>> usableValues;
 	/**
 	 * This isn't quite indicating an errored state; its value is only set to
 	 * {@code false} and is never {@code true}, and isn't used anywhere.
@@ -77,7 +79,17 @@ public class RecipeManager extends JsonDataLoader {
 
 		this.recipesByType = builder.build();
 		this.recipesById = builder2.build();
+		this.usableValues = null;
 		LOGGER.info("Loaded {} recipes", this.recipesByType.size());
+	}
+
+	public void warnEmptyIngredients() {
+		this.recipesById.values().forEach(recipe -> {
+			Recipe<?> recipe2 = recipe.value();
+			if (!recipe2.isIgnoredInRecipeBook() && recipe2.getIngredientPlacement().hasNoPlacement()) {
+				LOGGER.warn("Recipe {} can't be placed due to empty ingredients and will be ignored", recipe.id());
+			}
+		});
 	}
 
 	/**
@@ -214,6 +226,14 @@ public class RecipeManager extends JsonDataLoader {
 		return this.recipesByType.values();
 	}
 
+	public Collection<RecipeEntry<?>> syncedValues() {
+		if (this.usableValues == null) {
+			this.usableValues = this.sortedValues().stream().filter(recipe -> !recipe.value().getIngredientPlacement().hasNoPlacement()).toList();
+		}
+
+		return this.usableValues;
+	}
+
 	/**
 	 * {@return all recipes in this manager}
 	 * 
@@ -275,6 +295,7 @@ public class RecipeManager extends JsonDataLoader {
 
 		this.recipesByType = builder.build();
 		this.recipesById = builder2.build();
+		this.usableValues = null;
 	}
 
 	/**

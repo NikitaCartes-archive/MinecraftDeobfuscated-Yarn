@@ -1,13 +1,11 @@
 package net.minecraft.client.realms.gui.screen;
 
-import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
@@ -16,6 +14,7 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ScrollableTextWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -111,7 +110,9 @@ public class BuyRealmsScreen extends RealmsScreen {
 		int i = 8;
 		context.getMatrices().push();
 		context.getMatrices().translate(0.0F, 0.0F, 110.0F);
-		context.drawGuiTexture(TRIAL_AVAILABLE_TEXTURE, button.getX() + button.getWidth() - 8 - 4, button.getY() + button.getHeight() / 2 - 4, 8, 8);
+		context.drawGuiTexture(
+			RenderLayer::getGuiTextured, TRIAL_AVAILABLE_TEXTURE, button.getX() + button.getWidth() - 8 - 4, button.getY() + button.getHeight() / 2 - 4, 8, 8
+		);
 		context.getMatrices().pop();
 	}
 
@@ -119,12 +120,14 @@ public class BuyRealmsScreen extends RealmsScreen {
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 		this.parent.render(context, -1, -1, delta);
 		context.draw();
-		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
+		RenderSystem.clear(256);
 		this.clearTooltip();
 		this.renderInGameBackground(context);
-		context.drawGuiTexture(POPUP_BACKGROUND_TEXTURE, this.getLeft(), this.getTop(), 320, 172);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, POPUP_BACKGROUND_TEXTURE, this.getLeft(), this.getTop(), 320, 172);
 		if (!realmsImages.isEmpty()) {
-			context.drawTexture((Identifier)realmsImages.get(this.realmsImageIndex), this.getLeft() + 10, this.getTop() + 10, 0, 0.0F, 0.0F, 195, 152, 195, 152);
+			context.drawTexture(
+				RenderLayer::getGuiTextured, (Identifier)realmsImages.get(this.realmsImageIndex), this.getLeft() + 10, this.getTop() + 10, 0.0F, 0.0F, 195, 152, 195, 152
+			);
 		}
 	}
 

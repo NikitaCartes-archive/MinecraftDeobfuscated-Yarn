@@ -328,4 +328,28 @@ public class EntityModelPartNames {
 	 * The key of a bone model part, whose value is {@value}.
 	 */
 	public static final String BONE = "bone";
+	/**
+	 * The key of a left paddle model part, whose value is {@value}.
+	 */
+	public static final String LEFT_PADDLE = "left_paddle";
+	/**
+	 * The key of a right paddle model part, whose value is {@value}.
+	 */
+	public static final String RIGHT_PADDLE = "right_paddle";
+	/**
+	 * The key of a bottom model part, whose value is {@value}.
+	 */
+	public static final String BOTTOM = "bottom";
+	/**
+	 * The key of a chest bottom model part, whose value is {@value}.
+	 */
+	public static final String CHEST_BOTTOM = "chest_bottom";
+	/**
+	 * The key of a chest lid model part, whose value is {@value}.
+	 */
+	public static final String CHEST_LID = "chest_lid";
+	/**
+	 * The key of a chest lock model part, whose value is {@value}.
+	 */
+	public static final String CHEST_LOCK = "chest_lock";
 }

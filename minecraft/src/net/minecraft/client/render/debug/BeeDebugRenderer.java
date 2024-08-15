@@ -47,13 +47,9 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 	private static final int TARGET_ENTITY_RANGE = 8;
 	private static final int field_32858 = 20;
 	private static final float DEFAULT_DRAWN_STRING_SIZE = 0.02F;
-	private static final int WHITE = -1;
-	private static final int YELLOW = -256;
 	private static final int ORANGE = -23296;
-	private static final int GREEN = -16711936;
 	private static final int GRAY = -3355444;
 	private static final int PINK = -98404;
-	private static final int RED = -65536;
 	private final MinecraftClient client;
 	private final Map<BlockPos, BeeDebugRenderer.Hive> hives = new HashMap();
 	private final Map<UUID, DebugBeeCustomPayload.Bee> bees = new HashMap();
@@ -236,7 +232,7 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		if (bee.travelTicks() > 0) {
-			int j = bee.travelTicks() < 600 ? -3355444 : -23296;
+			int j = bee.travelTicks() < 2400 ? -3355444 : -23296;
 			drawString(matrices, vertexConsumers, bee.pos(), i++, "Travelling: " + bee.travelTicks() + " ticks", j, 0.02F);
 		}
 	}

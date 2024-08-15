@@ -50,7 +50,7 @@ public class LightBlock extends Block implements Waterloggable {
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (!world.isClient && player.isCreativeLevelTwoOp()) {
 			world.setBlockState(pos, state.cycle(LEVEL_15), Block.NOTIFY_LISTENERS);
-			return ActionResult.SUCCESS;
+			return ActionResult.SUCCESS_SERVER;
 		} else {
 			return ActionResult.CONSUME;
 		}
@@ -62,7 +62,7 @@ public class LightBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+	protected boolean isTransparent(BlockState state) {
 		return state.getFluidState().isEmpty();
 	}
 

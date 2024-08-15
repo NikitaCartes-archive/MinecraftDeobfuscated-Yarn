@@ -10,12 +10,12 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.animation.ArmadilloAnimations;
-import net.minecraft.entity.passive.ArmadilloEntity;
+import net.minecraft.client.render.entity.state.ArmadilloEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class ArmadilloEntityModel extends SinglePartEntityModelWithChildTransform<ArmadilloEntity> {
-	private static final float field_47858 = 16.02F;
+public class ArmadilloEntityModel extends EntityModel<ArmadilloEntityRenderState> {
+	public static final ModelTransformer BABY_TRANSFORMER = ModelTransformer.scaling(0.6F);
 	private static final float field_47860 = 25.0F;
 	private static final float field_47861 = 22.5F;
 	private static final float field_47862 = 16.5F;
@@ -32,7 +32,6 @@ public class ArmadilloEntityModel extends SinglePartEntityModelWithChildTransfor
 	private final ModelPart tail;
 
 	public ArmadilloEntityModel(ModelPart root) {
-		super(0.6F, 16.02F);
 		this.root = root;
 		this.body = root.getChild(EntityModelPartNames.BODY);
 		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
@@ -110,9 +109,9 @@ public class ArmadilloEntityModel extends SinglePartEntityModelWithChildTransfor
 		return this.root;
 	}
 
-	public void setAngles(ArmadilloEntity armadilloEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(ArmadilloEntityRenderState armadilloEntityRenderState) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		if (armadilloEntity.isRolledUp()) {
+		if (armadilloEntityRenderState.rolledUp) {
 			this.body.hidden = true;
 			this.leftHindLeg.visible = false;
 			this.rightHindLeg.visible = false;
@@ -124,13 +123,13 @@ public class ArmadilloEntityModel extends SinglePartEntityModelWithChildTransfor
 			this.rightHindLeg.visible = true;
 			this.tail.visible = true;
 			this.cube.visible = false;
-			this.head.pitch = MathHelper.clamp(j, -22.5F, 25.0F) * (float) (Math.PI / 180.0);
-			this.head.yaw = MathHelper.clamp(i, -32.5F, 32.5F) * (float) (Math.PI / 180.0);
+			this.head.pitch = MathHelper.clamp(armadilloEntityRenderState.pitch, -22.5F, 25.0F) * (float) (Math.PI / 180.0);
+			this.head.yaw = MathHelper.clamp(armadilloEntityRenderState.yawDegrees, -32.5F, 32.5F) * (float) (Math.PI / 180.0);
 		}
 
-		this.animateMovement(ArmadilloAnimations.IDLE, f, g, 16.5F, 2.5F);
-		this.updateAnimation(armadilloEntity.unrollingAnimationState, ArmadilloAnimations.UNROLLING, h, 1.0F);
-		this.updateAnimation(armadilloEntity.rollingAnimationState, ArmadilloAnimations.ROLLING, h, 1.0F);
-		this.updateAnimation(armadilloEntity.scaredAnimationState, ArmadilloAnimations.SCARED, h, 1.0F);
+		this.animateWalking(ArmadilloAnimations.IDLE, armadilloEntityRenderState.limbFrequency, armadilloEntityRenderState.limbAmplitudeMultiplier, 16.5F, 2.5F);
+		this.animate(armadilloEntityRenderState.unrollingAnimationState, ArmadilloAnimations.UNROLLING, armadilloEntityRenderState.age, 1.0F);
+		this.animate(armadilloEntityRenderState.rollingAnimationState, ArmadilloAnimations.ROLLING, armadilloEntityRenderState.age, 1.0F);
+		this.animate(armadilloEntityRenderState.scaredAnimationState, ArmadilloAnimations.SCARED, armadilloEntityRenderState.age, 1.0F);
 	}
 }

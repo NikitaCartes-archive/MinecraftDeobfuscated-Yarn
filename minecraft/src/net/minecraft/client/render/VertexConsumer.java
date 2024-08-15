@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Vec3i;
 import org.joml.Matrix4f;
@@ -137,7 +138,7 @@ public interface VertexConsumer {
 	 * @return this consumer, for chaining
 	 */
 	default VertexConsumer color(int argb) {
-		return this.color(ColorHelper.Argb.getRed(argb), ColorHelper.Argb.getGreen(argb), ColorHelper.Argb.getBlue(argb), ColorHelper.Argb.getAlpha(argb));
+		return this.color(ColorHelper.getRed(argb), ColorHelper.getGreen(argb), ColorHelper.getBlue(argb), ColorHelper.getAlpha(argb));
 	}
 
 	/**
@@ -151,7 +152,7 @@ public interface VertexConsumer {
 	 * @return this consumer, for chaining
 	 */
 	default VertexConsumer colorRgb(int rgb) {
-		return this.color(ColorHelper.Argb.withAlpha(rgb, -1));
+		return this.color(ColorHelper.withAlpha(rgb, Colors.WHITE));
 	}
 
 	/**
@@ -235,7 +236,7 @@ public interface VertexConsumer {
 					t = brightnesses[m] * blue * 255.0F;
 				}
 
-				int u = ColorHelper.Argb.getArgb(l, (int)r, (int)s, (int)t);
+				int u = ColorHelper.getArgb(l, (int)r, (int)s, (int)t);
 				int v = is[m];
 				float q = byteBuffer.getFloat(16);
 				float w = byteBuffer.getFloat(20);
@@ -278,5 +279,9 @@ public interface VertexConsumer {
 	default VertexConsumer normal(MatrixStack.Entry matrix, float x, float y, float z) {
 		Vector3f vector3f = matrix.transformNormal(x, y, z, new Vector3f());
 		return this.normal(vector3f.x(), vector3f.y(), vector3f.z());
+	}
+
+	default VertexConsumer method_61959(MatrixStack.Entry entry, Vector3f vector3f) {
+		return this.normal(entry, vector3f.x(), vector3f.y(), vector3f.z());
 	}
 }

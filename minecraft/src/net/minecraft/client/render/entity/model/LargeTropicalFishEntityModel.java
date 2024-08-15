@@ -9,11 +9,11 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.render.entity.state.TropicalFishEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class LargeTropicalFishEntityModel<T extends Entity> extends TintableCompositeModel<T> {
+public class LargeTropicalFishEntityModel extends EntityModel<TropicalFishEntityRenderState> {
 	private final ModelPart root;
 	private final ModelPart tail;
 
@@ -64,13 +64,8 @@ public class LargeTropicalFishEntityModel<T extends Entity> extends TintableComp
 		return this.root;
 	}
 
-	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		float f = 1.0F;
-		if (!entity.isTouchingWater()) {
-			f = 1.5F;
-		}
-
-		this.tail.yaw = -f * 0.45F * MathHelper.sin(0.6F * animationProgress);
+	public void setAngles(TropicalFishEntityRenderState tropicalFishEntityRenderState) {
+		float f = tropicalFishEntityRenderState.touchingWater ? 1.0F : 1.5F;
+		this.tail.yaw = -f * 0.45F * MathHelper.sin(0.6F * tropicalFishEntityRenderState.age);
 	}
 }

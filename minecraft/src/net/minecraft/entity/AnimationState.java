@@ -1,34 +1,31 @@
 package net.minecraft.entity;
 
 import java.util.function.Consumer;
-import net.minecraft.util.math.MathHelper;
 
 public class AnimationState {
-	private static final long STOPPED = Long.MAX_VALUE;
-	private long updatedAt = Long.MAX_VALUE;
-	private long timeRunning;
+	private static final int STOPPED = Integer.MIN_VALUE;
+	private int startTick = Integer.MIN_VALUE;
 
-	public void start(int age) {
-		this.updatedAt = (long)age * 1000L / 20L;
-		this.timeRunning = 0L;
+	public void start(int tick) {
+		this.startTick = tick;
 	}
 
-	public void startIfNotRunning(int age) {
+	public void startIfNotRunning(int tick) {
 		if (!this.isRunning()) {
-			this.start(age);
+			this.start(tick);
 		}
 	}
 
-	public void setRunning(boolean running, int age) {
+	public void setRunning(boolean running, int tick) {
 		if (running) {
-			this.startIfNotRunning(age);
+			this.startIfNotRunning(tick);
 		} else {
 			this.stop();
 		}
 	}
 
 	public void stop() {
-		this.updatedAt = Long.MAX_VALUE;
+		this.startTick = Integer.MIN_VALUE;
 	}
 
 	public void run(Consumer<AnimationState> consumer) {
@@ -37,25 +34,22 @@ public class AnimationState {
 		}
 	}
 
-	public void update(float animationProgress, float speedMultiplier) {
+	public void skip(int ticks, float speedMultiplier) {
 		if (this.isRunning()) {
-			long l = MathHelper.lfloor((double)(animationProgress * 1000.0F / 20.0F));
-			this.timeRunning = this.timeRunning + (long)((float)(l - this.updatedAt) * speedMultiplier);
-			this.updatedAt = l;
+			this.startTick -= (int)((float)ticks * speedMultiplier);
 		}
 	}
 
-	public void skip(int seconds, float speedMultiplier) {
-		if (this.isRunning()) {
-			this.timeRunning += (long)((float)(seconds * 1000) * speedMultiplier) / 20L;
-		}
-	}
-
-	public long getTimeRunning() {
-		return this.timeRunning;
+	public long getTimeInMilliseconds(float age) {
+		float f = age - (float)this.startTick;
+		return (long)(f * 50.0F);
 	}
 
 	public boolean isRunning() {
-		return this.updatedAt != Long.MAX_VALUE;
+		return this.startTick != Integer.MIN_VALUE;
+	}
+
+	public void copyFrom(AnimationState state) {
+		this.startTick = state.startTick;
 	}
 }

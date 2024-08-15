@@ -199,11 +199,11 @@ public class MaterialRules {
 			return new BiomePredicate();
 		}
 
-		public boolean equals(Object object) {
-			if (this == object) {
+		public boolean equals(Object o) {
+			if (this == o) {
 				return true;
 			} else {
-				return object instanceof MaterialRules.BiomeMaterialCondition biomeMaterialCondition ? this.biomes.equals(biomeMaterialCondition.biomes) : false;
+				return o instanceof MaterialRules.BiomeMaterialCondition biomeMaterialCondition ? this.biomes.equals(biomeMaterialCondition.biomes) : false;
 			}
 		}
 
@@ -441,7 +441,7 @@ public class MaterialRules {
 			Chunk chunk,
 			ChunkNoiseSampler chunkNoiseSampler,
 			Function<BlockPos, RegistryEntry<Biome>> posToBiome,
-			Registry<Biome> registry,
+			Registry<Biome> biomeRegistry,
 			HeightContext heightContext
 		) {
 			this.surfaceBuilder = surfaceBuilder;
@@ -476,6 +476,10 @@ public class MaterialRules {
 			}
 
 			return this.secondaryDepth;
+		}
+
+		public int getSeaLevel() {
+			return this.surfaceBuilder.getSeaLevel();
 		}
 
 		private static int blockToChunkCoord(int blockCoord) {
@@ -524,7 +528,7 @@ public class MaterialRules {
 			@Override
 			protected boolean test() {
 				return ((Biome)((RegistryEntry)this.context.biomeSupplier.get()).value())
-					.isCold(this.context.pos.set(this.context.blockX, this.context.blockY, this.context.blockZ));
+					.isCold(this.context.pos.set(this.context.blockX, this.context.blockY, this.context.blockZ), this.context.getSeaLevel());
 			}
 		}
 

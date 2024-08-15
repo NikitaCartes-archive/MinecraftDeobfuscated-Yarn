@@ -102,7 +102,7 @@ public class PatrolSpawner implements SpecialSpawner {
 		} else if (!PatrolEntity.canSpawn(EntityType.PILLAGER, world, SpawnReason.PATROL, pos, random)) {
 			return false;
 		} else {
-			PatrolEntity patrolEntity = EntityType.PILLAGER.create(world);
+			PatrolEntity patrolEntity = EntityType.PILLAGER.create(world, SpawnReason.PATROL);
 			if (patrolEntity != null) {
 				if (captain) {
 					patrolEntity.setPatrolLeader(true);

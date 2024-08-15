@@ -8,6 +8,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.PistonBlockEntity;
 import net.minecraft.block.enums.PistonType;
@@ -33,6 +34,8 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.RedstoneView;
 import net.minecraft.world.World;
+import net.minecraft.world.block.OrientationHelper;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.event.GameEvent;
 
 public class PistonBlock extends FacingBlock {
@@ -94,7 +97,7 @@ public class PistonBlock extends FacingBlock {
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		if (!world.isClient) {
 			this.tryMove(world, pos, state);
 		}
@@ -265,13 +268,13 @@ public class PistonBlock extends FacingBlock {
 		}
 	}
 
-	private boolean move(World world, BlockPos pos, Direction dir, boolean retract) {
+	private boolean move(World world, BlockPos pos, Direction dir, boolean extend) {
 		BlockPos blockPos = pos.offset(dir);
-		if (!retract && world.getBlockState(blockPos).isOf(Blocks.PISTON_HEAD)) {
+		if (!extend && world.getBlockState(blockPos).isOf(Blocks.PISTON_HEAD)) {
 			world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.NO_REDRAW | Block.FORCE_STATE);
 		}
 
-		PistonHandler pistonHandler = new PistonHandler(world, pos, dir, retract);
+		PistonHandler pistonHandler = new PistonHandler(world, pos, dir, extend);
 		if (!pistonHandler.calculatePush()) {
 			return false;
 		} else {
@@ -287,7 +290,7 @@ public class PistonBlock extends FacingBlock {
 
 			List<BlockPos> list3 = pistonHandler.getBrokenBlocks();
 			BlockState[] blockStates = new BlockState[list.size() + list3.size()];
-			Direction direction = retract ? dir : dir.getOpposite();
+			Direction direction = extend ? dir : dir.getOpposite();
 			int i = 0;
 
 			for (int j = list3.size() - 1; j >= 0; j--) {
@@ -311,11 +314,11 @@ public class PistonBlock extends FacingBlock {
 				map.remove(blockPos3);
 				BlockState blockState3 = Blocks.MOVING_PISTON.getDefaultState().with(FACING, dir);
 				world.setBlockState(blockPos3, blockState3, Block.NO_REDRAW | Block.MOVED);
-				world.addBlockEntity(PistonExtensionBlock.createBlockEntityPiston(blockPos3, blockState3, (BlockState)list2.get(j), dir, retract, false));
+				world.addBlockEntity(PistonExtensionBlock.createBlockEntityPiston(blockPos3, blockState3, (BlockState)list2.get(j), dir, extend, false));
 				blockStates[i++] = blockState2;
 			}
 
-			if (retract) {
+			if (extend) {
 				PistonType pistonType = this.sticky ? PistonType.STICKY : PistonType.DEFAULT;
 				BlockState blockState4 = Blocks.PISTON_HEAD.getDefaultState().with(PistonHeadBlock.FACING, dir).with(PistonHeadBlock.TYPE, pistonType);
 				BlockState blockState2 = Blocks.MOVING_PISTON
@@ -341,21 +344,22 @@ public class PistonBlock extends FacingBlock {
 				blockState5.prepare(world, blockPos5, 2);
 			}
 
+			WireOrientation wireOrientation = OrientationHelper.getEmissionOrientation(world, pistonHandler.getMotionDirection(), null);
 			i = 0;
 
 			for (int k = list3.size() - 1; k >= 0; k--) {
-				BlockState blockState2 = blockStates[i++];
-				BlockPos blockPos5 = (BlockPos)list3.get(k);
-				blockState2.prepare(world, blockPos5, 2);
-				world.updateNeighborsAlways(blockPos5, blockState2.getBlock());
+				BlockState blockState3 = blockStates[i++];
+				BlockPos blockPos6 = (BlockPos)list3.get(k);
+				blockState3.prepare(world, blockPos6, 2);
+				world.updateNeighborsAlways(blockPos6, blockState3.getBlock(), wireOrientation);
 			}
 
 			for (int k = list.size() - 1; k >= 0; k--) {
-				world.updateNeighborsAlways((BlockPos)list.get(k), blockStates[i++].getBlock());
+				world.updateNeighborsAlways((BlockPos)list.get(k), blockStates[i++].getBlock(), wireOrientation);
 			}
 
-			if (retract) {
-				world.updateNeighborsAlways(blockPos, Blocks.PISTON_HEAD);
+			if (extend) {
+				world.updateNeighborsAlways(blockPos, Blocks.PISTON_HEAD, wireOrientation);
 			}
 
 			return true;

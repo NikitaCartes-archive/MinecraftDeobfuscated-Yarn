@@ -25,6 +25,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
@@ -102,7 +103,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	}
 
 	public static DefaultAttributeContainer.Builder createWitchAttributes() {
-		return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 26.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25);
+		return HostileEntity.createHostileAttributes().add(EntityAttributes.MAX_HEALTH, 26.0).add(EntityAttributes.MOVEMENT_SPEED, 0.25);
 	}
 
 	@Override
@@ -126,7 +127,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 					}
 
 					this.emitGameEvent(GameEvent.DRINK);
-					this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).removeModifier(DRINKING_SPEED_PENALTY_MODIFIER.id());
+					this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).removeModifier(DRINKING_SPEED_PENALTY_MODIFIER.id());
 				}
 			} else {
 				RegistryEntry<Potion> registryEntry = null;
@@ -156,7 +157,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 							);
 					}
 
-					EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+					EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 					entityAttributeInstance.removeModifier(DRINKING_SPEED_PENALTY_MODIFIER_ID);
 					entityAttributeInstance.addTemporaryModifier(DRINKING_SPEED_PENALTY_MODIFIER);
 				}
@@ -234,18 +235,17 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 				registryEntry = Potions.WEAKNESS;
 			}
 
-			PotionEntity potionEntity = new PotionEntity(this.getWorld(), this);
-			potionEntity.setItem(PotionContentsComponent.createStack(Items.SPLASH_POTION, registryEntry));
-			potionEntity.setPitch(potionEntity.getPitch() - -20.0F);
-			potionEntity.setVelocity(d, e + g * 0.2, f, 0.75F, 8.0F);
+			if (this.getWorld() instanceof ServerWorld serverWorld) {
+				ItemStack itemStack = PotionContentsComponent.createStack(Items.SPLASH_POTION, registryEntry);
+				ProjectileEntity.spawnWithVelocity(PotionEntity::new, serverWorld, itemStack, this, d, e + g * 0.2, f, 0.75F, 8.0F);
+			}
+
 			if (!this.isSilent()) {
 				this.getWorld()
 					.playSound(
 						null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F
 					);
 			}
-
-			this.getWorld().spawnEntity(potionEntity);
 		}
 	}
 

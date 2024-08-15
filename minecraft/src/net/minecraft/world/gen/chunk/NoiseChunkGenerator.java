@@ -42,7 +42,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.StructureWeightSampler;
@@ -275,15 +274,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public void carve(
-		ChunkRegion chunkRegion,
-		long seed,
-		NoiseConfig noiseConfig,
-		BiomeAccess biomeAccess,
-		StructureAccessor structureAccessor,
-		Chunk chunk,
-		GenerationStep.Carver carverStep
-	) {
+	public void carve(ChunkRegion chunkRegion, long seed, NoiseConfig noiseConfig, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk) {
 		BiomeAccess biomeAccess2 = biomeAccess.withSource(
 			(biomeX, biomeY, biomeZ) -> this.biomeSource.getBiome(biomeX, biomeY, biomeZ, noiseConfig.getMultiNoiseSampler())
 		);
@@ -297,7 +288,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		CarverContext carverContext = new CarverContext(
 			this, chunkRegion.getRegistryManager(), chunk.getHeightLimitView(), chunkNoiseSampler, noiseConfig, this.settings.value().surfaceRule()
 		);
-		CarvingMask carvingMask = ((ProtoChunk)chunk).getOrCreateCarvingMask(carverStep);
+		CarvingMask carvingMask = ((ProtoChunk)chunk).getOrCreateCarvingMask();
 
 		for (int j = -8; j <= 8; j++) {
 			for (int k = -8; k <= 8; k++) {
@@ -309,7 +300,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 								.getBiome(BiomeCoords.fromBlock(chunkPos2.getStartX()), 0, BiomeCoords.fromBlock(chunkPos2.getStartZ()), noiseConfig.getMultiNoiseSampler())
 						)
 				);
-				Iterable<RegistryEntry<ConfiguredCarver<?>>> iterable = generationSettings.getCarversForStep(carverStep);
+				Iterable<RegistryEntry<ConfiguredCarver<?>>> iterable = generationSettings.getCarversForStep();
 				int l = 0;
 
 				for (RegistryEntry<ConfiguredCarver<?>> registryEntry : iterable) {

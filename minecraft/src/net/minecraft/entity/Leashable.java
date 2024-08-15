@@ -12,6 +12,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 
 public interface Leashable {
 	String LEASH_NBT_KEY = "leash";
@@ -127,7 +128,7 @@ public interface Leashable {
 
 		if (leashData != null && leashData.leashHolder != null) {
 			if (!entity.isAlive() || !leashData.leashHolder.isAlive()) {
-				detachLeash(entity, true, true);
+				detachLeash(entity, true, entity.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS));
 			}
 
 			Entity entity2 = entity.getLeashHolder();

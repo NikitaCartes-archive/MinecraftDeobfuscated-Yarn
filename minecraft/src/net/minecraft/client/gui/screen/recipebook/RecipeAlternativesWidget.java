@@ -1,24 +1,22 @@
 package net.minecraft.client.gui.screen.recipebook;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeGridAligner;
-import net.minecraft.screen.AbstractFurnaceScreenHandler;
-import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -26,14 +24,6 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class RecipeAlternativesWidget implements Drawable, Element {
 	private static final Identifier OVERLAY_RECIPE_TEXTURE = Identifier.ofVanilla("recipe_book/overlay_recipe");
-	static final Identifier FURNACE_OVERLAY_HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("recipe_book/furnace_overlay_highlighted");
-	static final Identifier FURNACE_OVERLAY_TEXTURE = Identifier.ofVanilla("recipe_book/furnace_overlay");
-	static final Identifier CRAFTING_OVERLAY_HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("recipe_book/crafting_overlay_highlighted");
-	static final Identifier CRAFTING_OVERLAY_TEXTURE = Identifier.ofVanilla("recipe_book/crafting_overlay");
-	static final Identifier FURNACE_OVERLAY_DISABLED_HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("recipe_book/furnace_overlay_disabled_highlighted");
-	static final Identifier FURNACE_OVERLAY_DISABLED_TEXTURE = Identifier.ofVanilla("recipe_book/furnace_overlay_disabled");
-	static final Identifier CRAFTING_OVERLAY_DISABLED_HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("recipe_book/crafting_overlay_disabled_highlighted");
-	static final Identifier CRAFTING_OVERLAY_DISABLED_TEXTURE = Identifier.ofVanilla("recipe_book/crafting_overlay_disabled");
 	private static final int field_32406 = 4;
 	private static final int field_32407 = 5;
 	private static final float field_33739 = 0.375F;
@@ -42,25 +32,23 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 	private boolean visible;
 	private int buttonX;
 	private int buttonY;
-	private MinecraftClient client;
 	private RecipeResultCollection resultCollection;
 	@Nullable
 	private RecipeEntry<?> lastClickedRecipe;
-	float time;
-	boolean furnace;
+	final CurrentIndexProvider currentIndexProvider;
+	private final boolean furnace;
+
+	public RecipeAlternativesWidget(CurrentIndexProvider currentIndexProvider, boolean furnace) {
+		this.currentIndexProvider = currentIndexProvider;
+		this.furnace = furnace;
+	}
 
 	public void showAlternativesForResult(
-		MinecraftClient client, RecipeResultCollection results, int buttonX, int buttonY, int areaCenterX, int areaCenterY, float delta
+		RecipeResultCollection resultCollection, boolean bl, int buttonX, int buttonY, int areaCenterX, int areaCenterY, float delta
 	) {
-		this.client = client;
-		this.resultCollection = results;
-		if (client.player.currentScreenHandler instanceof AbstractFurnaceScreenHandler) {
-			this.furnace = true;
-		}
-
-		boolean bl = client.player.getRecipeBook().isFilteringCraftable((AbstractRecipeScreenHandler<?, ?>)client.player.currentScreenHandler);
-		List<RecipeEntry<?>> list = results.getRecipes(true);
-		List<RecipeEntry<?>> list2 = bl ? Collections.emptyList() : results.getRecipes(false);
+		this.resultCollection = resultCollection;
+		List<RecipeEntry<?>> list = resultCollection.method_62050(RecipeResultCollection.RecipeFilterMode.CRAFTABLE);
+		List<RecipeEntry<?>> list2 = bl ? Collections.emptyList() : resultCollection.method_62050(RecipeResultCollection.RecipeFilterMode.NOT_CRAFTABLE);
 		int i = list.size();
 		int j = i + list2.size();
 		int k = j <= 16 ? 4 : 5;
@@ -96,7 +84,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 			if (this.furnace) {
 				this.alternativeButtons.add(new RecipeAlternativesWidget.FurnaceAlternativeButtonWidget(q, r, recipeEntry, bl2));
 			} else {
-				this.alternativeButtons.add(new RecipeAlternativesWidget.AlternativeButtonWidget(q, r, recipeEntry, bl2));
+				this.alternativeButtons.add(new RecipeAlternativesWidget.CraftingAlternativeButtonWidget(q, r, recipeEntry, bl2));
 			}
 		}
 
@@ -136,16 +124,13 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.visible) {
-			this.time += delta;
-			RenderSystem.enableBlend();
 			context.getMatrices().push();
 			context.getMatrices().translate(0.0F, 0.0F, 1000.0F);
 			int i = this.alternativeButtons.size() <= 16 ? 4 : 5;
 			int j = Math.min(this.alternativeButtons.size(), i);
 			int k = MathHelper.ceil((float)this.alternativeButtons.size() / (float)i);
 			int l = 4;
-			context.drawGuiTexture(OVERLAY_RECIPE_TEXTURE, this.buttonX, this.buttonY, j * 25 + 8, k * 25 + 8);
-			RenderSystem.disableBlend();
+			context.drawGuiTexture(RenderLayer::getGuiTextured, OVERLAY_RECIPE_TEXTURE, this.buttonX, this.buttonY, j * 25 + 8, k * 25 + 8);
 
 			for (RecipeAlternativesWidget.AlternativeButtonWidget alternativeButtonWidget : this.alternativeButtons) {
 				alternativeButtonWidget.render(context, mouseX, mouseY, delta);
@@ -173,99 +158,128 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class AlternativeButtonWidget extends ClickableWidget implements RecipeGridAligner<Ingredient> {
+	abstract class AlternativeButtonWidget extends ClickableWidget {
 		final RecipeEntry<?> recipe;
 		private final boolean craftable;
-		protected final List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> slots = Lists.<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot>newArrayList();
+		private final List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> inputSlots;
 
-		public AlternativeButtonWidget(final int x, final int y, final RecipeEntry<?> recipe, final boolean craftable) {
-			super(x, y, 200, 20, ScreenTexts.EMPTY);
-			this.width = 24;
-			this.height = 24;
+		public AlternativeButtonWidget(
+			final int x,
+			final int y,
+			final RecipeEntry<?> recipe,
+			final boolean craftable,
+			final List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> inputSlots
+		) {
+			super(x, y, 24, 24, ScreenTexts.EMPTY);
+			this.inputSlots = inputSlots;
 			this.recipe = recipe;
 			this.craftable = craftable;
-			this.alignRecipe(recipe);
 		}
 
-		protected void alignRecipe(RecipeEntry<?> recipe) {
-			this.alignRecipeToGrid(3, 3, -1, recipe, recipe.value().getIngredients().iterator(), 0);
+		protected static RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot method_62040(int i, int j, List<ItemStack> list) {
+			return new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(3 + i * 7, 3 + j * 7, list);
 		}
+
+		protected abstract Identifier getOverlayTexture(boolean enabled);
 
 		@Override
 		public void appendClickableNarrations(NarrationMessageBuilder builder) {
 			this.appendDefaultNarrations(builder);
 		}
 
-		public void acceptAlignedInput(Ingredient ingredient, int i, int j, int k, int l) {
-			ItemStack[] itemStacks = ingredient.getMatchingStacks();
-			if (itemStacks.length != 0) {
-				this.slots.add(new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(3 + k * 7, 3 + l * 7, itemStacks));
-			}
-		}
-
 		@Override
 		public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-			Identifier identifier;
-			if (this.craftable) {
-				if (RecipeAlternativesWidget.this.furnace) {
-					identifier = this.isSelected() ? RecipeAlternativesWidget.FURNACE_OVERLAY_HIGHLIGHTED_TEXTURE : RecipeAlternativesWidget.FURNACE_OVERLAY_TEXTURE;
-				} else {
-					identifier = this.isSelected() ? RecipeAlternativesWidget.CRAFTING_OVERLAY_HIGHLIGHTED_TEXTURE : RecipeAlternativesWidget.CRAFTING_OVERLAY_TEXTURE;
-				}
-			} else if (RecipeAlternativesWidget.this.furnace) {
-				identifier = this.isSelected()
-					? RecipeAlternativesWidget.FURNACE_OVERLAY_DISABLED_HIGHLIGHTED_TEXTURE
-					: RecipeAlternativesWidget.FURNACE_OVERLAY_DISABLED_TEXTURE;
-			} else {
-				identifier = this.isSelected()
-					? RecipeAlternativesWidget.CRAFTING_OVERLAY_DISABLED_HIGHLIGHTED_TEXTURE
-					: RecipeAlternativesWidget.CRAFTING_OVERLAY_DISABLED_TEXTURE;
-			}
+			context.drawGuiTexture(RenderLayer::getGuiTextured, this.getOverlayTexture(this.craftable), this.getX(), this.getY(), this.width, this.height);
+			float f = (float)(this.getX() + 2);
+			float g = (float)(this.getY() + 2);
+			float h = 150.0F;
 
-			context.drawGuiTexture(identifier, this.getX(), this.getY(), this.width, this.height);
-			context.getMatrices().push();
-			context.getMatrices().translate((double)(this.getX() + 2), (double)(this.getY() + 2), 150.0);
-
-			for (RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot inputSlot : this.slots) {
+			for (RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot inputSlot : this.inputSlots) {
 				context.getMatrices().push();
-				context.getMatrices().translate((double)inputSlot.y, (double)inputSlot.x, 0.0);
+				context.getMatrices().translate(f + (float)inputSlot.y, g + (float)inputSlot.x, 150.0F);
 				context.getMatrices().scale(0.375F, 0.375F, 1.0F);
-				context.getMatrices().translate(-8.0, -8.0, 0.0);
-				if (inputSlot.stacks.length > 0) {
-					context.drawItem(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], 0, 0);
-				}
-
+				context.getMatrices().translate(-8.0F, -8.0F, 0.0F);
+				context.drawItem(inputSlot.method_62041(RecipeAlternativesWidget.this.currentIndexProvider.currentIndex()), 0, 0);
 				context.getMatrices().pop();
 			}
-
-			context.getMatrices().pop();
 		}
 
 		@Environment(EnvType.CLIENT)
-		protected class InputSlot {
-			public final ItemStack[] stacks;
-			public final int y;
-			public final int x;
+		protected static record InputSlot(int y, int x, List<ItemStack> stacks) {
 
-			public InputSlot(final int y, final int x, final ItemStack[] stacks) {
-				this.y = y;
-				this.x = x;
-				this.stacks = stacks;
+			public InputSlot(int y, int x, List<ItemStack> stacks) {
+				if (stacks.isEmpty()) {
+					throw new IllegalArgumentException("Ingredient list must be non-empty");
+				} else {
+					this.y = y;
+					this.x = x;
+					this.stacks = stacks;
+				}
+			}
+
+			public ItemStack method_62041(int i) {
+				return (ItemStack)this.stacks.get(i % this.stacks.size());
+			}
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	class CraftingAlternativeButtonWidget extends RecipeAlternativesWidget.AlternativeButtonWidget {
+		private static final Identifier CRAFTING_OVERLAY = Identifier.ofVanilla("recipe_book/crafting_overlay");
+		private static final Identifier CRAFTING_OVERLAY_HIGHLIGHTED = Identifier.ofVanilla("recipe_book/crafting_overlay_highlighted");
+		private static final Identifier CRAFTING_OVERLAY_DISABLED = Identifier.ofVanilla("recipe_book/crafting_overlay_disabled");
+		private static final Identifier CRAFTING_OVERLAY_DISABLED_HIGHLIGHTED = Identifier.ofVanilla("recipe_book/crafting_overlay_disabled_highlighted");
+
+		public CraftingAlternativeButtonWidget(final int x, final int y, final RecipeEntry<?> entry, final boolean craftable) {
+			super(x, y, entry, craftable, method_62036(entry));
+		}
+
+		private static List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> method_62036(RecipeEntry<?> recipeEntry) {
+			List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> list = new ArrayList();
+			RecipeGridAligner.alignRecipeToGrid(
+				3,
+				3,
+				recipeEntry,
+				recipeEntry.value().getIngredientPlacement().getPlacementSlots(),
+				(optional, i, j, k) -> optional.ifPresent(placementSlot -> list.add(method_62040(j, k, placementSlot.possibleItems())))
+			);
+			return list;
+		}
+
+		@Override
+		protected Identifier getOverlayTexture(boolean enabled) {
+			if (enabled) {
+				return this.isSelected() ? CRAFTING_OVERLAY_HIGHLIGHTED : CRAFTING_OVERLAY;
+			} else {
+				return this.isSelected() ? CRAFTING_OVERLAY_DISABLED_HIGHLIGHTED : CRAFTING_OVERLAY_DISABLED;
 			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	class FurnaceAlternativeButtonWidget extends RecipeAlternativesWidget.AlternativeButtonWidget {
-		public FurnaceAlternativeButtonWidget(final int i, final int j, final RecipeEntry<?> recipeEntry, final boolean bl) {
-			super(i, j, recipeEntry, bl);
+		private static final Identifier FURNACE_OVERLAY = Identifier.ofVanilla("recipe_book/furnace_overlay");
+		private static final Identifier FURNACE_OVERLAY_HIGHLIGHTED = Identifier.ofVanilla("recipe_book/furnace_overlay_highlighted");
+		private static final Identifier FURNACE_OVERLAY_DISABLED = Identifier.ofVanilla("recipe_book/furnace_overlay_disabled");
+		private static final Identifier FURNACE_OVERLAY_DISABLED_HIGHLIGHTED = Identifier.ofVanilla("recipe_book/furnace_overlay_disabled_highlighted");
+
+		public FurnaceAlternativeButtonWidget(final int x, final int y, final RecipeEntry<?> entry, final boolean craftable) {
+			super(x, y, entry, craftable, alignRecipe(entry));
+		}
+
+		private static List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> alignRecipe(RecipeEntry<?> entry) {
+			return (List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot>)((Optional)entry.value().getIngredientPlacement().getPlacementSlots().getFirst())
+				.map(placementSlot -> List.of(method_62040(1, 1, placementSlot.possibleItems())))
+				.orElse(List.of());
 		}
 
 		@Override
-		protected void alignRecipe(RecipeEntry<?> recipe) {
-			Ingredient ingredient = recipe.value().getIngredients().get(0);
-			ItemStack[] itemStacks = ingredient.getMatchingStacks();
-			this.slots.add(new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(10, 10, itemStacks));
+		protected Identifier getOverlayTexture(boolean enabled) {
+			if (enabled) {
+				return this.isSelected() ? FURNACE_OVERLAY_HIGHLIGHTED : FURNACE_OVERLAY;
+			} else {
+				return this.isSelected() ? FURNACE_OVERLAY_DISABLED_HIGHLIGHTED : FURNACE_OVERLAY_DISABLED;
+			}
 		}
 	}
 }

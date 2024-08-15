@@ -539,7 +539,7 @@ public class PiglinBrain {
 			swapItemWithOffHand(piglin, itemStack2);
 			setAdmiringItem(piglin);
 			stopWalking(piglin);
-			return ActionResult.CONSUME;
+			return ActionResult.SUCCESS;
 		} else {
 			return ActionResult.PASS;
 		}

@@ -1,20 +1,23 @@
 package net.minecraft.client.render;
 
-import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
+import java.io.IOException;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.gl.ShaderProgram;
+import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.util.Identifier;
+import net.minecraft.resource.ResourceFactory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.dimension.DimensionType;
 import org.joml.Vector3f;
+import org.slf4j.Logger;
 
 /**
  * The lightmap texture manager maintains a texture containing the RGBA overlay for each of the 16&times;16 sky and block light combinations.
@@ -39,9 +42,11 @@ public class LightmapTextureManager implements AutoCloseable {
 	 * This is equivalent to a {@code 0} sky light and {@code 15} block light.
 	 */
 	public static final int MAX_BLOCK_LIGHT_COORDINATE = 240;
-	private final NativeImageBackedTexture texture;
-	private final NativeImage image;
-	private final Identifier textureIdentifier;
+	private static final int field_53098 = 16;
+	private static final Logger field_53099 = LogUtils.getLogger();
+	@Nullable
+	private ShaderProgram shaderProgram;
+	private final SimpleFramebuffer lightmapFramebuffer;
 	private boolean dirty;
 	private float flickerIntensity;
 	private final GameRenderer renderer;
@@ -50,21 +55,32 @@ public class LightmapTextureManager implements AutoCloseable {
 	public LightmapTextureManager(GameRenderer renderer, MinecraftClient client) {
 		this.renderer = renderer;
 		this.client = client;
-		this.texture = new NativeImageBackedTexture(16, 16, false);
-		this.textureIdentifier = this.client.getTextureManager().registerDynamicTexture("light_map", this.texture);
-		this.image = this.texture.getImage();
+		this.lightmapFramebuffer = new SimpleFramebuffer(16, 16, false);
+		this.lightmapFramebuffer.setTexFilter(9729);
+		this.lightmapFramebuffer.setClearColor(1.0F, 1.0F, 1.0F, 1.0F);
+		this.lightmapFramebuffer.clear();
+	}
 
-		for (int i = 0; i < 16; i++) {
-			for (int j = 0; j < 16; j++) {
-				this.image.setColor(j, i, -1);
-			}
+	public void loadShaderProgram(ResourceFactory resourceFactory) {
+		if (this.shaderProgram != null) {
+			this.shaderProgram.close();
 		}
 
-		this.texture.upload();
+		try {
+			this.shaderProgram = new ShaderProgram(resourceFactory, "lightmap", VertexFormats.BLIT_SCREEN);
+		} catch (IOException var3) {
+			field_53099.error("Failed to load lightmap shader", (Throwable)var3);
+			this.shaderProgram = null;
+		}
 	}
 
 	public void close() {
-		this.texture.close();
+		if (this.shaderProgram != null) {
+			this.shaderProgram.close();
+			this.shaderProgram = null;
+		}
+
+		this.lightmapFramebuffer.delete();
 	}
 
 	public void tick() {
@@ -78,10 +94,7 @@ public class LightmapTextureManager implements AutoCloseable {
 	}
 
 	public void enable() {
-		RenderSystem.setShaderTexture(2, this.textureIdentifier);
-		this.client.getTextureManager().bindTexture(this.textureIdentifier);
-		RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_LINEAR);
-		RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_LINEAR);
+		RenderSystem.setShaderTexture(2, this.lightmapFramebuffer.getColorAttachment());
 	}
 
 	private float getDarknessFactor(float delta) {
@@ -95,7 +108,7 @@ public class LightmapTextureManager implements AutoCloseable {
 	}
 
 	public void update(float delta) {
-		if (this.dirty) {
+		if (this.dirty && this.shaderProgram != null) {
 			this.dirty = false;
 			this.client.getProfiler().push("lightTex");
 			ClientWorld clientWorld = this.client.world;
@@ -123,94 +136,41 @@ public class LightmapTextureManager implements AutoCloseable {
 
 				Vector3f vector3f = new Vector3f(f, f, 1.0F).lerp(new Vector3f(1.0F, 1.0F, 1.0F), 0.35F);
 				float m = this.flickerIntensity + 1.5F;
-				Vector3f vector3f2 = new Vector3f();
-
-				for (int n = 0; n < 16; n++) {
-					for (int o = 0; o < 16; o++) {
-						float p = getBrightness(clientWorld.getDimension(), n) * g;
-						float q = getBrightness(clientWorld.getDimension(), o) * m;
-						float s = q * ((q * 0.6F + 0.4F) * 0.6F + 0.4F);
-						float t = q * (q * q * 0.6F + 0.4F);
-						vector3f2.set(q, s, t);
-						boolean bl = clientWorld.getDimensionEffects().shouldBrightenLighting();
-						if (bl) {
-							vector3f2.lerp(new Vector3f(0.99F, 1.12F, 1.0F), 0.25F);
-							clamp(vector3f2);
-						} else {
-							Vector3f vector3f3 = new Vector3f(vector3f).mul(p);
-							vector3f2.add(vector3f3);
-							vector3f2.lerp(new Vector3f(0.75F, 0.75F, 0.75F), 0.04F);
-							if (this.renderer.getSkyDarkness(delta) > 0.0F) {
-								float u = this.renderer.getSkyDarkness(delta);
-								Vector3f vector3f4 = new Vector3f(vector3f2).mul(0.7F, 0.6F, 0.6F);
-								vector3f2.lerp(vector3f4, u);
-							}
-						}
-
-						if (l > 0.0F) {
-							float v = Math.max(vector3f2.x(), Math.max(vector3f2.y(), vector3f2.z()));
-							if (v < 1.0F) {
-								float u = 1.0F / v;
-								Vector3f vector3f4 = new Vector3f(vector3f2).mul(u);
-								vector3f2.lerp(vector3f4, l);
-							}
-						}
-
-						if (!bl) {
-							if (j > 0.0F) {
-								vector3f2.add(-j, -j, -j);
-							}
-
-							clamp(vector3f2);
-						}
-
-						float v = this.client.options.getGamma().getValue().floatValue();
-						Vector3f vector3f5 = new Vector3f(this.easeOutQuart(vector3f2.x), this.easeOutQuart(vector3f2.y), this.easeOutQuart(vector3f2.z));
-						vector3f2.lerp(vector3f5, Math.max(0.0F, v - i));
-						vector3f2.lerp(new Vector3f(0.75F, 0.75F, 0.75F), 0.04F);
-						clamp(vector3f2);
-						vector3f2.mul(255.0F);
-						int w = 255;
-						int x = (int)vector3f2.x();
-						int y = (int)vector3f2.y();
-						int z = (int)vector3f2.z();
-						this.image.setColor(o, n, 0xFF000000 | z << 16 | y << 8 | x);
-					}
-				}
-
-				this.texture.upload();
+				float n = clientWorld.getDimension().ambientLight();
+				boolean bl = clientWorld.getDimensionEffects().shouldBrightenLighting();
+				float o = this.client.options.getGamma().getValue().floatValue();
+				this.shaderProgram.getUniformOrDefault("AmbientLightFactor").set(n);
+				this.shaderProgram.getUniformOrDefault("SkyFactor").set(g);
+				this.shaderProgram.getUniformOrDefault("BlockFactor").set(m);
+				this.shaderProgram.getUniformOrDefault("UseBrightLightmap").set(bl ? 1 : 0);
+				this.shaderProgram.getUniformOrDefault("SkyLightColor").set(vector3f);
+				this.shaderProgram.getUniformOrDefault("NightVisionFactor").set(l);
+				this.shaderProgram.getUniformOrDefault("DarknessScale").set(j);
+				this.shaderProgram.getUniformOrDefault("DarkenWorldFactor").set(this.renderer.getSkyDarkness(delta));
+				this.shaderProgram.getUniformOrDefault("BrightnessFactor").set(Math.max(0.0F, o - i));
+				this.shaderProgram.bind();
+				this.lightmapFramebuffer.beginWrite(true);
+				BufferBuilder bufferBuilder = RenderSystem.renderThreadTesselator().begin(VertexFormat.DrawMode.QUADS, VertexFormats.BLIT_SCREEN);
+				bufferBuilder.vertex(0.0F, 0.0F, 0.0F);
+				bufferBuilder.vertex(1.0F, 0.0F, 0.0F);
+				bufferBuilder.vertex(1.0F, 1.0F, 0.0F);
+				bufferBuilder.vertex(0.0F, 1.0F, 0.0F);
+				BufferRenderer.draw(bufferBuilder.end());
+				this.shaderProgram.unbind();
+				this.lightmapFramebuffer.endWrite();
 				this.client.getProfiler().pop();
 			}
 		}
 	}
 
-	/**
-	 * Clamps each component of {@code vec} between {@code 0.0f} and {@code 1.0f}.
-	 */
-	private static void clamp(Vector3f vec) {
-		vec.set(MathHelper.clamp(vec.x, 0.0F, 1.0F), MathHelper.clamp(vec.y, 0.0F, 1.0F), MathHelper.clamp(vec.z, 0.0F, 1.0F));
-	}
-
-	/**
-	 * Represents an easing function.
-	 * <p>
-	 * In this class, it's also used to brighten colors,
-	 * then the result is used to lerp between the normal and brightened color
-	 * with the gamma value.
-	 * 
-	 * @see <a href="https://easings.net/#easeOutQuart">https://easings.net/#easeOutQuart</a>
-	 * 
-	 * @param x represents the absolute progress of the animation in the bounds of 0 (beginning of the animation) and 1 (end of animation)
-	 */
-	private float easeOutQuart(float x) {
-		float f = 1.0F - x;
-		return 1.0F - f * f * f * f;
-	}
-
 	public static float getBrightness(DimensionType type, int lightLevel) {
+		return getBrightness(type.ambientLight(), lightLevel);
+	}
+
+	public static float getBrightness(float ambientLight, int lightLevel) {
 		float f = (float)lightLevel / 15.0F;
 		float g = f / (4.0F - 3.0F * f);
-		return MathHelper.lerp(type.ambientLight(), g, 1.0F);
+		return MathHelper.lerp(ambientLight, g, 1.0F);
 	}
 
 	public static int pack(int block, int sky) {
@@ -218,10 +178,16 @@ public class LightmapTextureManager implements AutoCloseable {
 	}
 
 	public static int getBlockLightCoordinates(int light) {
-		return light >> 4 & (MAX_BLOCK_LIGHT_COORDINATE | 65295);
+		return light >>> 4 & 15;
 	}
 
 	public static int getSkyLightCoordinates(int light) {
-		return light >> 20 & (MAX_BLOCK_LIGHT_COORDINATE | 65295);
+		return light >>> 20 & 15;
+	}
+
+	public static int applyEmission(int light, int lightEmission) {
+		int i = Math.max(getSkyLightCoordinates(light), lightEmission);
+		int j = Math.max(getBlockLightCoordinates(light), lightEmission);
+		return pack(j, i);
 	}
 }

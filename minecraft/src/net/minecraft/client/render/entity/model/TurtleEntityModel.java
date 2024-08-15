@@ -1,7 +1,6 @@
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
+import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelData;
@@ -10,25 +9,24 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.passive.TurtleEntity;
+import net.minecraft.client.render.entity.state.TurtleEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityModel<T> {
+public class TurtleEntityModel extends QuadrupedEntityModel<TurtleEntityRenderState> {
 	/**
 	 * The key of the model part of the belly side of the turtle's shell, whose value is {@value}.
 	 */
 	private static final String EGG_BELLY = "egg_belly";
+	public static final ModelTransformer BABY_TRANSFORMER = new BabyModelTransformer(true, 120.0F, 0.0F, 9.0F, 6.0F, 120.0F, Set.of("head"));
 	/**
 	 * The belly side of the turtle's shell.
 	 */
 	private final ModelPart plastron;
 
-	public TurtleEntityModel(ModelPart root) {
-		super(root, true, 120.0F, 0.0F, 9.0F, 6.0F, 120);
-		this.plastron = root.getChild("egg_belly");
+	public TurtleEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.plastron = modelPart.getChild("egg_belly");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -75,13 +73,10 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 		return TexturedModelData.of(modelData, 128, 64);
 	}
 
-	@Override
-	protected Iterable<ModelPart> getBodyParts() {
-		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.plastron));
-	}
-
-	public void setAngles(T turtleEntity, float f, float g, float h, float i, float j) {
-		super.setAngles(turtleEntity, f, g, h, i, j);
+	public void setAngles(TurtleEntityRenderState turtleEntityRenderState) {
+		super.setAngles(turtleEntityRenderState);
+		float f = turtleEntityRenderState.limbFrequency;
+		float g = turtleEntityRenderState.limbAmplitudeMultiplier;
 		this.rightHindLeg.pitch = MathHelper.cos(f * 0.6662F * 0.6F) * 0.5F * g;
 		this.leftHindLeg.pitch = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;
 		this.rightFrontLeg.roll = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;
@@ -92,13 +87,13 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 		this.leftFrontLeg.yaw = 0.0F;
 		this.rightHindLeg.yaw = 0.0F;
 		this.leftHindLeg.yaw = 0.0F;
-		if (!turtleEntity.isTouchingWater() && turtleEntity.isOnGround()) {
-			float k = turtleEntity.isDiggingSand() ? 4.0F : 1.0F;
-			float l = turtleEntity.isDiggingSand() ? 2.0F : 1.0F;
-			float m = 5.0F;
-			this.rightFrontLeg.yaw = MathHelper.cos(k * f * 5.0F + (float) Math.PI) * 8.0F * g * l;
+		if (turtleEntityRenderState.onLand) {
+			float h = turtleEntityRenderState.diggingSand ? 4.0F : 1.0F;
+			float i = turtleEntityRenderState.diggingSand ? 2.0F : 1.0F;
+			float j = 5.0F;
+			this.rightFrontLeg.yaw = MathHelper.cos(h * f * 5.0F + (float) Math.PI) * 8.0F * g * i;
 			this.rightFrontLeg.roll = 0.0F;
-			this.leftFrontLeg.yaw = MathHelper.cos(k * f * 5.0F) * 8.0F * g * l;
+			this.leftFrontLeg.yaw = MathHelper.cos(h * f * 5.0F) * 8.0F * g * i;
 			this.leftFrontLeg.roll = 0.0F;
 			this.rightHindLeg.yaw = MathHelper.cos(f * 5.0F + (float) Math.PI) * 3.0F * g;
 			this.rightHindLeg.pitch = 0.0F;
@@ -106,20 +101,10 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 			this.leftHindLeg.pitch = 0.0F;
 		}
 
-		this.plastron.visible = !this.child && turtleEntity.hasEgg();
-	}
-
-	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-		boolean bl = this.plastron.visible;
-		if (bl) {
-			matrices.push();
-			matrices.translate(0.0F, -0.08F, 0.0F);
-		}
-
-		super.render(matrices, vertices, light, overlay, color);
-		if (bl) {
-			matrices.pop();
+		this.plastron.visible = turtleEntityRenderState.hasEgg;
+		this.root.resetTransform();
+		if (this.plastron.visible) {
+			this.root.pivotY--;
 		}
 	}
 }

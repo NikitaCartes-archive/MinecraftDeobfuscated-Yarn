@@ -19,7 +19,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -68,11 +67,11 @@ public class ArmadilloEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-		return EntityType.ARMADILLO.create(world);
+		return EntityType.ARMADILLO.create(world, SpawnReason.BREEDING);
 	}
 
 	public static DefaultAttributeContainer.Builder createArmadilloAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 12.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.14);
+		return AnimalEntity.createAnimalAttributes().add(EntityAttributes.MAX_HEALTH, 12.0).add(EntityAttributes.MOVEMENT_SPEED, 0.14);
 	}
 
 	@Override
@@ -297,19 +296,10 @@ public class ArmadilloEntity extends AnimalEntity {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.isOf(Items.BRUSH) && this.brushScute()) {
 			itemStack.damage(16, player, getSlotForHand(hand));
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
-			return this.isNotIdle() ? ActionResult.FAIL : super.interactMob(player, hand);
+			return (ActionResult)(this.isNotIdle() ? ActionResult.FAIL : super.interactMob(player, hand));
 		}
-	}
-
-	@Override
-	public void growUp(int age, boolean overGrow) {
-		if (this.isBaby() && overGrow) {
-			this.playSound(SoundEvents.ENTITY_ARMADILLO_EAT);
-		}
-
-		super.growUp(age, overGrow);
 	}
 
 	public boolean brushScute() {
@@ -328,24 +318,18 @@ public class ArmadilloEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void lovePlayer(@Nullable PlayerEntity player) {
-		super.lovePlayer(player);
-		this.playSound(SoundEvents.ENTITY_ARMADILLO_EAT);
-	}
-
-	@Override
 	public boolean canEat() {
 		return super.canEat() && !this.isNotIdle();
 	}
 
 	@Override
-	public SoundEvent getEatSound(ItemStack stack) {
-		return SoundEvents.ENTITY_ARMADILLO_EAT;
+	protected SoundEvent getAmbientSound() {
+		return this.isNotIdle() ? null : SoundEvents.ENTITY_ARMADILLO_AMBIENT;
 	}
 
 	@Override
-	protected SoundEvent getAmbientSound() {
-		return this.isNotIdle() ? null : SoundEvents.ENTITY_ARMADILLO_AMBIENT;
+	protected void playEatSound() {
+		this.playSound(SoundEvents.ENTITY_ARMADILLO_EAT);
 	}
 
 	@Override

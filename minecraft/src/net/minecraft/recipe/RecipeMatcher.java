@@ -1,343 +1,383 @@
 package net.minecraft.recipe;
 
-import com.google.common.collect.Lists;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 
 /**
  * Matching class that matches a recipe to its required resources.
  * This specifically does not check patterns (See {@link ShapedRecipe} for that).
  */
-public class RecipeMatcher {
-	private static final int field_30653 = 0;
-	public final Int2IntMap inputs = new Int2IntOpenHashMap();
+public class RecipeMatcher<T> {
+	public final Reference2IntOpenHashMap<T> available = new Reference2IntOpenHashMap<>();
 
-	/**
-	 * Adds a full item stack to the pool of available resources.
-	 * 
-	 * <p>This is equivalent to calling {@code addInput(stack, Item.DEFAULT_MAX_COUNT)}.
-	 */
-	public void addUnenchantedInput(ItemStack stack) {
-		if (!stack.isDamaged() && !stack.hasEnchantments() && !stack.contains(DataComponentTypes.CUSTOM_NAME)) {
-			this.addInput(stack);
-		}
+	boolean hasAny(T input) {
+		return this.available.getInt(input) > 0;
 	}
 
-	/**
-	 * Adds a full item stack to the pool of available resources.
-	 * 
-	 * <p>This is equivalent to calling {@code addInput(stack, Item.DEFAULT_MAX_COUNT)}.
-	 */
-	public void addInput(ItemStack stack) {
-		this.addInput(stack, stack.getMaxCount());
-	}
-
-	/**
-	 * Adds an item stack to the pool of available resources.
-	 */
-	public void addInput(ItemStack stack, int maxCount) {
-		if (!stack.isEmpty()) {
-			int i = getItemId(stack);
-			int j = Math.min(maxCount, stack.getCount());
-			this.addInput(i, j);
-		}
-	}
-
-	public static int getItemId(ItemStack stack) {
-		return Registries.ITEM.getRawId(stack.getItem());
-	}
-
-	/**
-	 * Determines whether a raw item id is present in the pool of crafting resources.
-	 */
-	boolean contains(int itemId) {
-		return this.inputs.get(itemId) > 0;
+	boolean hasAtLeast(T input, int minimum) {
+		return this.available.getInt(input) >= minimum;
 	}
 
 	/**
 	 * Consumes a resource from the pool of available items.
 	 * 
-	 * @param itemId the raw id of the item being consumed
 	 * @param count the number of times that item must be consumed
 	 */
-	int consume(int itemId, int count) {
-		int i = this.inputs.get(itemId);
-		if (i >= count) {
-			this.inputs.put(itemId, i - count);
-			return itemId;
-		} else {
-			return 0;
+	void consume(T input, int count) {
+		int i = this.available.addTo(input, -count);
+		if (i < count) {
+			throw new IllegalStateException("Took " + count + " items, but only had " + i);
 		}
 	}
 
 	/**
 	 * Adds an input to be used for recipe matching.
 	 * 
-	 * @param itemId the raw ID of the item to match
 	 * @param count the item's count
 	 */
-	void addInput(int itemId, int count) {
-		this.inputs.put(itemId, this.inputs.get(itemId) + count);
+	void addInput(T input, int count) {
+		this.available.addTo(input, count);
 	}
 
-	/**
-	 * Attempts to match the recipe against the collected inputs.
-	 * Assumes only one output is required.
-	 * 
-	 * @param recipe the recipe to match against
-	 * @param output optional output list of item ids that were matched whilst evaluating the recipe conditions
-	 */
-	public boolean match(Recipe<?> recipe, @Nullable IntList output) {
-		return this.match(recipe, output, 1);
+	public boolean match(List<RecipeMatcher.RawIngredient<T>> ingredients, int quantity, @Nullable RecipeMatcher.ItemCallback<T> itemCallback) {
+		return new RecipeMatcher.Matcher(ingredients).match(quantity, itemCallback);
 	}
 
-	/**
-	 * Attempts to match the recipe against the collected inputs. Will only succeed if there has been enough
-	 * resources gathered to produce the requested number of outputs.
-	 * 
-	 * @param multiplier the number of expected outputs
-	 * @param output optional output list of item ids that were matched whilst evaluating the recipe conditions
-	 * @param recipe the recipe to match against
-	 */
-	public boolean match(Recipe<?> recipe, @Nullable IntList output, int multiplier) {
-		return new RecipeMatcher.Matcher(recipe).match(multiplier, output);
-	}
-
-	/**
-	 * Determines the number of crafts that can be produced for a recipe using the
-	 * collected resources available to this crafter.
-	 * 
-	 * @param output optional output list of item ids that were matched whilst evaluating the recipe conditions
-	 */
-	public int countCrafts(RecipeEntry<?> recipe, @Nullable IntList output) {
-		return this.countCrafts(recipe, Integer.MAX_VALUE, output);
-	}
-
-	/**
-	 * Determines the number of crafts that can be produced for a recipe using the
-	 * collected resources available to this crafter.
-	 * 
-	 * @param output optional output list of item ids that were matched whilst evaluating the recipe conditions
-	 */
-	public int countCrafts(RecipeEntry<?> recipe, int limit, @Nullable IntList output) {
-		return new RecipeMatcher.Matcher(recipe.value()).countCrafts(limit, output);
-	}
-
-	public static ItemStack getStackFromId(int itemId) {
-		return itemId == 0 ? ItemStack.EMPTY : new ItemStack(Item.byRawId(itemId));
+	public int countCrafts(List<RecipeMatcher.RawIngredient<T>> ingredients, int max, @Nullable RecipeMatcher.ItemCallback<T> itemCallback) {
+		return new RecipeMatcher.Matcher(ingredients).countCrafts(max, itemCallback);
 	}
 
 	public void clear() {
-		this.inputs.clear();
+		this.available.clear();
+	}
+
+	public void add(T input, int count) {
+		this.addInput(input, count);
+	}
+
+	@FunctionalInterface
+	public interface ItemCallback<T> {
+		void accept(T item);
 	}
 
 	class Matcher {
-		private final Recipe<?> recipe;
-		private final List<Ingredient> ingredients = Lists.<Ingredient>newArrayList();
+		private final List<RecipeMatcher.RawIngredient<T>> ingredients;
 		private final int totalIngredients;
-		private final int[] requiredItems;
+		private final List<T> requiredItems;
 		private final int totalRequiredItems;
-		private final BitSet requirementsMatrix;
+		private final BitSet bits;
 		private final IntList ingredientItemLookup = new IntArrayList();
 
-		public Matcher(final Recipe<?> recipe) {
-			this.recipe = recipe;
-			this.ingredients.addAll(recipe.getIngredients());
-			this.ingredients.removeIf(Ingredient::isEmpty);
+		public Matcher(final List<RecipeMatcher.RawIngredient<T>> ingredients) {
+			this.ingredients = ingredients;
 			this.totalIngredients = this.ingredients.size();
 			this.requiredItems = this.createItemRequirementList();
-			this.totalRequiredItems = this.requiredItems.length;
-			this.requirementsMatrix = new BitSet(
-				this.totalIngredients + this.totalRequiredItems + this.totalIngredients + this.totalIngredients * this.totalRequiredItems
+			this.totalRequiredItems = this.requiredItems.size();
+			this.bits = new BitSet(
+				this.getVisitedIngredientIndexCount()
+					+ this.getVisitedItemIndexCount()
+					+ this.getRequirementIndexCount()
+					+ this.getItemMatchIndexCount()
+					+ this.getMissingIndexCount()
 			);
+			this.initItemMatch();
+		}
 
-			for (int i = 0; i < this.ingredients.size(); i++) {
-				IntList intList = ((Ingredient)this.ingredients.get(i)).getMatchingItemIds();
+		private void initItemMatch() {
+			for (int i = 0; i < this.totalIngredients; i++) {
+				List<T> list = ((RecipeMatcher.RawIngredient)this.ingredients.get(i)).allowedItems();
 
 				for (int j = 0; j < this.totalRequiredItems; j++) {
-					if (intList.contains(this.requiredItems[j])) {
-						this.requirementsMatrix.set(this.getRequirementIndex(true, j, i));
+					if (list.contains(this.requiredItems.get(j))) {
+						this.setMatch(j, i);
 					}
 				}
 			}
 		}
 
-		public boolean match(int multiplier, @Nullable IntList output) {
-			if (multiplier <= 0) {
+		public boolean match(int quantity, @Nullable RecipeMatcher.ItemCallback<T> itemCallback) {
+			if (quantity <= 0) {
 				return true;
 			} else {
-				int i;
-				for (i = 0; this.checkRequirements(multiplier); i++) {
-					RecipeMatcher.this.consume(this.requiredItems[this.ingredientItemLookup.getInt(0)], multiplier);
-					int j = this.ingredientItemLookup.size() - 1;
-					this.unfulfillRequirement(this.ingredientItemLookup.getInt(j));
+				int i = 0;
 
-					for (int k = 0; k < j; k++) {
-						this.flipRequirement((k & 1) == 0, this.ingredientItemLookup.get(k), this.ingredientItemLookup.get(k + 1));
-					}
+				while (true) {
+					IntList intList = this.tryFindIngredientItemLookup(quantity);
+					if (intList == null) {
+						boolean bl = i == this.totalIngredients;
+						boolean bl2 = bl && itemCallback != null;
+						this.clearVisited();
+						this.clearRequirements();
 
-					this.ingredientItemLookup.clear();
-					this.requirementsMatrix.clear(0, this.totalIngredients + this.totalRequiredItems);
-				}
-
-				boolean bl = i == this.totalIngredients;
-				boolean bl2 = bl && output != null;
-				if (bl2) {
-					output.clear();
-				}
-
-				this.requirementsMatrix.clear(0, this.totalIngredients + this.totalRequiredItems + this.totalIngredients);
-				int l = 0;
-
-				for (Ingredient ingredient : this.recipe.getIngredients()) {
-					if (bl2 && ingredient.isEmpty()) {
-						output.add(0);
-					} else {
-						for (int m = 0; m < this.totalRequiredItems; m++) {
-							if (this.checkRequirement(false, l, m)) {
-								this.flipRequirement(true, m, l);
-								RecipeMatcher.this.addInput(this.requiredItems[m], multiplier);
-								if (bl2) {
-									output.add(this.requiredItems[m]);
+						for (int k = 0; k < this.totalIngredients; k++) {
+							for (int l = 0; l < this.totalRequiredItems; l++) {
+								if (this.isMissing(l, k)) {
+									this.markNotMissing(l, k);
+									RecipeMatcher.this.addInput((T)this.requiredItems.get(l), quantity);
+									if (bl2) {
+										itemCallback.accept((T)this.requiredItems.get(l));
+									}
+									break;
 								}
 							}
 						}
 
-						l++;
+						assert this.bits.get(this.getMissingIndexOffset(), this.getMissingIndexOffset() + this.getMissingIndexCount()).isEmpty();
+
+						return bl;
+					}
+
+					int j = intList.getInt(0);
+					RecipeMatcher.this.consume((T)this.requiredItems.get(j), quantity);
+					int k = intList.size() - 1;
+					this.unfulfillRequirement(intList.getInt(k));
+					i++;
+
+					for (int lx = 0; lx < intList.size() - 1; lx++) {
+						if (isItem(lx)) {
+							int m = intList.getInt(lx);
+							int n = intList.getInt(lx + 1);
+							this.markMissing(m, n);
+						} else {
+							int m = intList.getInt(lx + 1);
+							int n = intList.getInt(lx);
+							this.markNotMissing(m, n);
+						}
 					}
 				}
-
-				return bl;
 			}
 		}
 
-		private int[] createItemRequirementList() {
-			IntCollection intCollection = new IntAVLTreeSet();
-
-			for (Ingredient ingredient : this.ingredients) {
-				intCollection.addAll(ingredient.getMatchingItemIds());
-			}
-
-			IntIterator intIterator = intCollection.iterator();
-
-			while (intIterator.hasNext()) {
-				if (!RecipeMatcher.this.contains(intIterator.nextInt())) {
-					intIterator.remove();
-				}
-			}
-
-			return intCollection.toIntArray();
+		private static boolean isItem(int index) {
+			return (index & 1) == 0;
 		}
 
-		private boolean checkRequirements(int multiplier) {
-			int i = this.totalRequiredItems;
+		private List<T> createItemRequirementList() {
+			Set<T> set = new ReferenceOpenHashSet<>();
 
-			for (int j = 0; j < i; j++) {
-				if (RecipeMatcher.this.inputs.get(this.requiredItems[j]) >= multiplier) {
-					this.addRequirement(false, j);
+			for (RecipeMatcher.RawIngredient<T> rawIngredient : this.ingredients) {
+				set.addAll(rawIngredient.allowedItems());
+			}
 
-					while (!this.ingredientItemLookup.isEmpty()) {
-						int k = this.ingredientItemLookup.size();
-						boolean bl = (k & 1) == 1;
-						int l = this.ingredientItemLookup.getInt(k - 1);
-						if (!bl && !this.getRequirement(l)) {
-							break;
-						}
+			set.removeIf(item -> !RecipeMatcher.this.hasAny((T)item));
+			return List.copyOf(set);
+		}
 
-						int m = bl ? this.totalIngredients : i;
-						int n = 0;
+		@Nullable
+		private IntList tryFindIngredientItemLookup(int min) {
+			this.clearVisited();
 
-						while (true) {
-							if (n < m) {
-								if (this.isRequirementUnfulfilled(bl, n) || !this.needsRequirement(bl, l, n) || !this.checkRequirement(bl, l, n)) {
-									n++;
-									continue;
-								}
-
-								this.addRequirement(bl, n);
-							}
-
-							n = this.ingredientItemLookup.size();
-							if (n == k) {
-								this.ingredientItemLookup.removeInt(n - 1);
-							}
-							break;
-						}
-					}
-
-					if (!this.ingredientItemLookup.isEmpty()) {
-						return true;
+			for (int i = 0; i < this.totalRequiredItems; i++) {
+				if (RecipeMatcher.this.hasAtLeast((T)this.requiredItems.get(i), min)) {
+					IntList intList = this.findIngredientItemLookup(i);
+					if (intList != null) {
+						return intList;
 					}
 				}
 			}
 
-			return false;
+			return null;
+		}
+
+		@Nullable
+		private IntList findIngredientItemLookup(int itemIndex) {
+			this.ingredientItemLookup.clear();
+			this.markItemVisited(itemIndex);
+			this.ingredientItemLookup.add(itemIndex);
+
+			while (!this.ingredientItemLookup.isEmpty()) {
+				int i = this.ingredientItemLookup.size();
+				if (isItem(i - 1)) {
+					int j = this.ingredientItemLookup.getInt(i - 1);
+
+					for (int k = 0; k < this.totalIngredients; k++) {
+						if (!this.hasVisitedIngredient(k) && this.matches(j, k) && !this.isMissing(j, k)) {
+							this.markIngredientVisited(k);
+							this.ingredientItemLookup.add(k);
+							break;
+						}
+					}
+				} else {
+					int j = this.ingredientItemLookup.getInt(i - 1);
+					if (!this.getRequirement(j)) {
+						return this.ingredientItemLookup;
+					}
+
+					for (int kx = 0; kx < this.totalRequiredItems; kx++) {
+						if (!this.isRequirementUnfulfilled(kx) && this.isMissing(kx, j)) {
+							assert this.matches(kx, j);
+
+							this.markItemVisited(kx);
+							this.ingredientItemLookup.add(kx);
+							break;
+						}
+					}
+				}
+
+				int j = this.ingredientItemLookup.size();
+				if (j == i) {
+					this.ingredientItemLookup.removeInt(j - 1);
+				}
+			}
+
+			return null;
+		}
+
+		private int getVisitedIngredientIndexOffset() {
+			return 0;
+		}
+
+		private int getVisitedIngredientIndexCount() {
+			return this.totalIngredients;
+		}
+
+		private int getVisitedItemIndexOffset() {
+			return this.getVisitedIngredientIndexOffset() + this.getVisitedIngredientIndexCount();
+		}
+
+		private int getVisitedItemIndexCount() {
+			return this.totalRequiredItems;
+		}
+
+		private int getRequirementIndexOffset() {
+			return this.getVisitedItemIndexOffset() + this.getVisitedItemIndexCount();
+		}
+
+		private int getRequirementIndexCount() {
+			return this.totalIngredients;
+		}
+
+		private int getItemMatchIndexOffset() {
+			return this.getRequirementIndexOffset() + this.getRequirementIndexCount();
+		}
+
+		private int getItemMatchIndexCount() {
+			return this.totalIngredients * this.totalRequiredItems;
+		}
+
+		private int getMissingIndexOffset() {
+			return this.getItemMatchIndexOffset() + this.getItemMatchIndexCount();
+		}
+
+		private int getMissingIndexCount() {
+			return this.totalIngredients * this.totalRequiredItems;
 		}
 
 		private boolean getRequirement(int itemId) {
-			return this.requirementsMatrix.get(this.getRequirementIndex(itemId));
+			return this.bits.get(this.getRequirementIndex(itemId));
 		}
 
 		private void unfulfillRequirement(int itemId) {
-			this.requirementsMatrix.set(this.getRequirementIndex(itemId));
+			this.bits.set(this.getRequirementIndex(itemId));
 		}
 
 		private int getRequirementIndex(int itemId) {
-			return this.totalIngredients + this.totalRequiredItems + itemId;
+			assert itemId >= 0 && itemId < this.totalIngredients;
+
+			return this.getRequirementIndexOffset() + itemId;
 		}
 
-		private boolean needsRequirement(boolean reversed, int itemIndex, int ingredientIndex) {
-			return this.requirementsMatrix.get(this.getRequirementIndex(reversed, itemIndex, ingredientIndex));
+		private void clearRequirements() {
+			this.clear(this.getRequirementIndexOffset(), this.getRequirementIndexCount());
 		}
 
-		private boolean checkRequirement(boolean reversed, int itemIndex, int ingredientIndex) {
-			return reversed != this.requirementsMatrix.get(1 + this.getRequirementIndex(reversed, itemIndex, ingredientIndex));
+		private void setMatch(int itemIndex, int ingredientIndex) {
+			this.bits.set(this.getMatchIndex(itemIndex, ingredientIndex));
 		}
 
-		private void flipRequirement(boolean reversed, int itemIndex, int ingredientIndex) {
-			this.requirementsMatrix.flip(1 + this.getRequirementIndex(reversed, itemIndex, ingredientIndex));
+		private boolean matches(int itemIndex, int ingredientIndex) {
+			return this.bits.get(this.getMatchIndex(itemIndex, ingredientIndex));
 		}
 
-		private int getRequirementIndex(boolean reversed, int itemIndex, int ingredientIndex) {
-			int i = reversed ? itemIndex * this.totalIngredients + ingredientIndex : ingredientIndex * this.totalIngredients + itemIndex;
-			return this.totalIngredients + this.totalRequiredItems + this.totalIngredients + 2 * i;
+		private int getMatchIndex(int itemIndex, int ingredientIndex) {
+			assert itemIndex >= 0 && itemIndex < this.totalRequiredItems;
+
+			assert ingredientIndex >= 0 && ingredientIndex < this.totalIngredients;
+
+			return this.getItemMatchIndexOffset() + itemIndex * this.totalIngredients + ingredientIndex;
 		}
 
-		private void addRequirement(boolean reversed, int itemId) {
-			this.requirementsMatrix.set(this.getRequirementIndex(reversed, itemId));
-			this.ingredientItemLookup.add(itemId);
+		private boolean isMissing(int itemIndex, int ingredientIndex) {
+			return this.bits.get(this.getMissingIndex(itemIndex, ingredientIndex));
 		}
 
-		private boolean isRequirementUnfulfilled(boolean reversed, int itemId) {
-			return this.requirementsMatrix.get(this.getRequirementIndex(reversed, itemId));
+		private void markMissing(int itemIndex, int ingredientIndex) {
+			int i = this.getMissingIndex(itemIndex, ingredientIndex);
+
+			assert !this.bits.get(i);
+
+			this.bits.set(i);
 		}
 
-		private int getRequirementIndex(boolean reversed, int itemId) {
-			return (reversed ? 0 : this.totalIngredients) + itemId;
+		private void markNotMissing(int itemIndex, int ingredientIndex) {
+			int i = this.getMissingIndex(itemIndex, ingredientIndex);
+
+			assert this.bits.get(i);
+
+			this.bits.clear(i);
 		}
 
-		public int countCrafts(int minimum, @Nullable IntList output) {
+		private int getMissingIndex(int itemIndex, int ingredientIndex) {
+			assert itemIndex >= 0 && itemIndex < this.totalRequiredItems;
+
+			assert ingredientIndex >= 0 && ingredientIndex < this.totalIngredients;
+
+			return this.getMissingIndexOffset() + itemIndex * this.totalIngredients + ingredientIndex;
+		}
+
+		private void markIngredientVisited(int index) {
+			this.bits.set(this.getVisitedIngredientIndex(index));
+		}
+
+		private boolean hasVisitedIngredient(int index) {
+			return this.bits.get(this.getVisitedIngredientIndex(index));
+		}
+
+		private int getVisitedIngredientIndex(int index) {
+			assert index >= 0 && index < this.totalIngredients;
+
+			return this.getVisitedIngredientIndexOffset() + index;
+		}
+
+		private void markItemVisited(int index) {
+			this.bits.set(this.getVisitedItemIndex(index));
+		}
+
+		private boolean isRequirementUnfulfilled(int index) {
+			return this.bits.get(this.getVisitedItemIndex(index));
+		}
+
+		private int getVisitedItemIndex(int index) {
+			assert index >= 0 && index < this.totalRequiredItems;
+
+			return this.getVisitedItemIndexOffset() + index;
+		}
+
+		private void clearVisited() {
+			this.clear(this.getVisitedIngredientIndexOffset(), this.getVisitedIngredientIndexCount());
+			this.clear(this.getVisitedItemIndexOffset(), this.getVisitedItemIndexCount());
+		}
+
+		private void clear(int start, int offset) {
+			this.bits.clear(start, start + offset);
+		}
+
+		public int countCrafts(int max, @Nullable RecipeMatcher.ItemCallback<T> itemCallback) {
 			int i = 0;
-			int j = Math.min(minimum, this.getMaximumCrafts()) + 1;
+			int j = Math.min(max, this.getMaximumCrafts()) + 1;
 
 			while (true) {
 				int k = (i + j) / 2;
 				if (this.match(k, null)) {
 					if (j - i <= 1) {
 						if (k > 0) {
-							this.match(k, output);
+							this.match(k, itemCallback);
 						}
 
 						return k;
@@ -353,11 +393,11 @@ public class RecipeMatcher {
 		private int getMaximumCrafts() {
 			int i = Integer.MAX_VALUE;
 
-			for (Ingredient ingredient : this.ingredients) {
+			for (RecipeMatcher.RawIngredient<T> rawIngredient : this.ingredients) {
 				int j = 0;
 
-				for (int k : ingredient.getMatchingItemIds()) {
-					j = Math.max(j, RecipeMatcher.this.inputs.get(k));
+				for (T object : rawIngredient.allowedItems()) {
+					j = Math.max(j, RecipeMatcher.this.available.getInt(object));
 				}
 
 				if (i > 0) {
@@ -366,6 +406,16 @@ public class RecipeMatcher {
 			}
 
 			return i;
+		}
+	}
+
+	public static record RawIngredient<T>(List<T> allowedItems) {
+		public RawIngredient(List<T> allowedItems) {
+			if (allowedItems.isEmpty()) {
+				throw new IllegalArgumentException("Ingredients can't be empty");
+			} else {
+				this.allowedItems = allowedItems;
+			}
 		}
 	}
 }

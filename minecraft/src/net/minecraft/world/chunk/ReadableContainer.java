@@ -31,6 +31,8 @@ public interface ReadableContainer<T> {
 
 	void count(PalettedContainer.Counter<T> counter);
 
+	PalettedContainer<T> copy();
+
 	PalettedContainer<T> slice();
 
 	ReadableContainer.Serialized<T> serialize(IndexedIterable<T> idList, PalettedContainer.PaletteProvider paletteProvider);

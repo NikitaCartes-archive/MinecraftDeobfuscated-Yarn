@@ -12,9 +12,6 @@ import net.minecraft.util.profiler.log.MultiValueDebugSampleLog;
 
 @Environment(EnvType.CLIENT)
 public class RenderingChart extends DebugChart {
-	private static final int field_45926 = -65536;
-	private static final int field_45927 = -256;
-	private static final int field_45928 = -16711936;
 	private static final int field_45929 = 30;
 	private static final double field_45930 = 33.333333333333336;
 

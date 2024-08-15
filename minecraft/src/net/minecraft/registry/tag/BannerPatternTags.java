@@ -14,6 +14,8 @@ public class BannerPatternTags {
 	public static final TagKey<BannerPattern> PIGLIN_PATTERN_ITEM = of("pattern_item/piglin");
 	public static final TagKey<BannerPattern> FLOW_PATTERN_ITEM = of("pattern_item/flow");
 	public static final TagKey<BannerPattern> GUSTER_PATTERN_ITEM = of("pattern_item/guster");
+	public static final TagKey<BannerPattern> FIELD_MASONED_PATTERN_ITEM = of("pattern_item/field_masoned");
+	public static final TagKey<BannerPattern> BORDURE_INDENTED_PATTERN_ITEM = of("pattern_item/bordure_indented");
 
 	private BannerPatternTags() {
 	}

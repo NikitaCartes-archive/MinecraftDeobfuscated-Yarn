@@ -1,6 +1,6 @@
 package net.minecraft.client.render.model;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -71,7 +71,7 @@ public class WeightedBakedModel implements BakedModel {
 
 	@Environment(EnvType.CLIENT)
 	public static class Builder {
-		private final List<Weighted.Present<BakedModel>> models = Lists.<Weighted.Present<BakedModel>>newArrayList();
+		private final ImmutableList.Builder<Weighted.Present<BakedModel>> models = ImmutableList.builder();
 
 		public WeightedBakedModel.Builder add(@Nullable BakedModel model, int weight) {
 			if (model != null) {
@@ -83,10 +83,11 @@ public class WeightedBakedModel implements BakedModel {
 
 		@Nullable
 		public BakedModel build() {
-			if (this.models.isEmpty()) {
+			List<Weighted.Present<BakedModel>> list = this.models.build();
+			if (list.isEmpty()) {
 				return null;
 			} else {
-				return (BakedModel)(this.models.size() == 1 ? (BakedModel)((Weighted.Present)this.models.get(0)).data() : new WeightedBakedModel(this.models));
+				return (BakedModel)(list.size() == 1 ? (BakedModel)((Weighted.Present)list.getFirst()).data() : new WeightedBakedModel(list));
 			}
 		}
 	}

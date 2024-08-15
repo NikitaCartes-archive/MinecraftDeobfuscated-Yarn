@@ -9,8 +9,8 @@ import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.BedPart;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelData;
-import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
@@ -29,12 +29,12 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class BedBlockEntityRenderer implements BlockEntityRenderer<BedBlockEntity> {
-	private final ModelPart bedHead;
-	private final ModelPart bedFoot;
+	private final Model bedHead;
+	private final Model bedFoot;
 
 	public BedBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-		this.bedHead = ctx.getLayerModelPart(EntityModelLayers.BED_HEAD);
-		this.bedFoot = ctx.getLayerModelPart(EntityModelLayers.BED_FOOT);
+		this.bedHead = new Model.SinglePartModel(ctx.getLayerModelPart(EntityModelLayers.BED_HEAD), RenderLayer::getEntitySolid);
+		this.bedFoot = new Model.SinglePartModel(ctx.getLayerModelPart(EntityModelLayers.BED_FOOT), RenderLayer::getEntitySolid);
 	}
 
 	public static TexturedModelData getHeadTexturedModelData() {
@@ -106,7 +106,7 @@ public class BedBlockEntityRenderer implements BlockEntityRenderer<BedBlockEntit
 	private void renderPart(
 		MatrixStack matrices,
 		VertexConsumerProvider vertexConsumers,
-		ModelPart part,
+		Model model,
 		Direction direction,
 		SpriteIdentifier sprite,
 		int light,
@@ -120,7 +120,7 @@ public class BedBlockEntityRenderer implements BlockEntityRenderer<BedBlockEntit
 		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F + direction.asRotation()));
 		matrices.translate(-0.5F, -0.5F, -0.5F);
 		VertexConsumer vertexConsumer = sprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid);
-		part.render(matrices, vertexConsumer, light, overlay);
+		model.render(matrices, vertexConsumer, light, overlay);
 		matrices.pop();
 	}
 }

@@ -37,7 +37,7 @@ public abstract class VoxelShape {
 
 	public Box getBoundingBox() {
 		if (this.isEmpty()) {
-			throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("No bounds for empty shape."));
+			throw (UnsupportedOperationException)Util.getFatalOrPause(new UnsupportedOperationException("No bounds for empty shape."));
 		} else {
 			return new Box(
 				this.getMin(Direction.Axis.X),
@@ -216,16 +216,35 @@ public abstract class VoxelShape {
 		}
 	}
 
-	private VoxelShape getUncachedFace(Direction direction) {
-		Direction.Axis axis = direction.getAxis();
-		DoubleList doubleList = this.getPointPositions(axis);
-		if (doubleList.size() == 2 && DoubleMath.fuzzyEquals(doubleList.getDouble(0), 0.0, 1.0E-7) && DoubleMath.fuzzyEquals(doubleList.getDouble(1), 1.0, 1.0E-7)) {
+	private VoxelShape getUncachedFace(Direction facing) {
+		Direction.Axis axis = facing.getAxis();
+		if (this.isSquare(axis)) {
 			return this;
 		} else {
-			Direction.AxisDirection axisDirection = direction.getDirection();
+			Direction.AxisDirection axisDirection = facing.getDirection();
 			int i = this.getCoordIndex(axis, axisDirection == Direction.AxisDirection.POSITIVE ? 0.9999999 : 1.0E-7);
-			return new SlicedVoxelShape(this, axis, i);
+			SlicedVoxelShape slicedVoxelShape = new SlicedVoxelShape(this, axis, i);
+			if (slicedVoxelShape.isEmpty()) {
+				return VoxelShapes.empty();
+			} else {
+				return (VoxelShape)(slicedVoxelShape.isCube() ? VoxelShapes.fullCube() : slicedVoxelShape);
+			}
 		}
+	}
+
+	protected boolean isCube() {
+		for (Direction.Axis axis : Direction.Axis.VALUES) {
+			if (!this.isSquare(axis)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private boolean isSquare(Direction.Axis axis) {
+		DoubleList doubleList = this.getPointPositions(axis);
+		return doubleList.size() == 2 && DoubleMath.fuzzyEquals(doubleList.getDouble(0), 0.0, 1.0E-7) && DoubleMath.fuzzyEquals(doubleList.getDouble(1), 1.0, 1.0E-7);
 	}
 
 	public double calculateMaxDistance(Direction.Axis axis, Box box, double maxDist) {

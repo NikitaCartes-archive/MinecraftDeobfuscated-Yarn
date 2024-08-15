@@ -13,7 +13,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.RecipeMatcher;
+import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.CrafterScreenHandler;
 import net.minecraft.screen.PropertyDelegate;
@@ -202,9 +202,9 @@ public class CrafterBlockEntity extends LootableContainerBlockEntity implements 
 	}
 
 	@Override
-	public void provideRecipeInputs(RecipeMatcher finder) {
+	public void provideRecipeInputs(RecipeFinder finder) {
 		for (ItemStack itemStack : this.inputStacks) {
-			finder.addUnenchantedInput(itemStack);
+			finder.addInputIfUsable(itemStack);
 		}
 	}
 

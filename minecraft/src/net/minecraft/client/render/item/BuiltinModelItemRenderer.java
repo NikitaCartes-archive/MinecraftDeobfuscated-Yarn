@@ -35,7 +35,7 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.ShieldEntityModel;
 import net.minecraft.client.render.entity.model.TridentEntityModel;
-import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.ModelBaker;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
@@ -140,10 +140,10 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 				boolean bl = !bannerPatternsComponent.layers().isEmpty() || dyeColor2 != null;
 				matrices.push();
 				matrices.scale(1.0F, -1.0F, -1.0F);
-				SpriteIdentifier spriteIdentifier = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;
+				SpriteIdentifier spriteIdentifier = bl ? ModelBaker.SHIELD_BASE : ModelBaker.SHIELD_BASE_NO_PATTERN;
 				VertexConsumer vertexConsumer = spriteIdentifier.getSprite()
 					.getTextureSpecificVertexConsumer(
-						ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), true, stack.hasGlint())
+						ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), false, stack.hasGlint())
 					);
 				this.modelShield.getHandle().render(matrices, vertexConsumer, light, overlay);
 				if (bl) {
@@ -157,7 +157,8 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 						false,
 						(DyeColor)Objects.requireNonNullElse(dyeColor2, DyeColor.WHITE),
 						bannerPatternsComponent,
-						stack.hasGlint()
+						stack.hasGlint(),
+						false
 					);
 				} else {
 					this.modelShield.getPlate().render(matrices, vertexConsumer, light, overlay);

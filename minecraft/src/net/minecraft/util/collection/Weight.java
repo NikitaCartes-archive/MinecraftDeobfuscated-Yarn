@@ -31,7 +31,7 @@ public class Weight {
 
 	private static void validate(int weight) {
 		if (weight < 0) {
-			throw (IllegalArgumentException)Util.throwOrPause(new IllegalArgumentException("Weight should be >= 0"));
+			throw (IllegalArgumentException)Util.getFatalOrPause(new IllegalArgumentException("Weight should be >= 0"));
 		} else {
 			if (weight == 0 && SharedConstants.isDevelopment) {
 				LOGGER.warn("Found 0 weight, make sure this is intentional!");

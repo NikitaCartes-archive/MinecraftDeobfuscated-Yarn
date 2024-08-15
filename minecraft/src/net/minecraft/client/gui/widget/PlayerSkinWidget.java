@@ -83,20 +83,18 @@ public class PlayerSkinWidget extends ClickableWidget {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static record Models(PlayerEntityModel<?> wideModel, PlayerEntityModel<?> slimModel) {
+	static record Models(PlayerEntityModel wideModel, PlayerEntityModel slimModel) {
 		public static PlayerSkinWidget.Models create(EntityModelLoader entityModelLoader) {
-			PlayerEntityModel<?> playerEntityModel = new PlayerEntityModel(entityModelLoader.getModelPart(EntityModelLayers.PLAYER), false);
-			PlayerEntityModel<?> playerEntityModel2 = new PlayerEntityModel(entityModelLoader.getModelPart(EntityModelLayers.PLAYER_SLIM), true);
-			playerEntityModel.child = false;
-			playerEntityModel2.child = false;
+			PlayerEntityModel playerEntityModel = new PlayerEntityModel(entityModelLoader.getModelPart(EntityModelLayers.PLAYER), false);
+			PlayerEntityModel playerEntityModel2 = new PlayerEntityModel(entityModelLoader.getModelPart(EntityModelLayers.PLAYER_SLIM), true);
 			return new PlayerSkinWidget.Models(playerEntityModel, playerEntityModel2);
 		}
 
 		public void draw(DrawContext context, SkinTextures skinTextures) {
 			context.getMatrices().push();
 			context.getMatrices().scale(1.0F, 1.0F, -1.0F);
-			context.getMatrices().translate(0.0F, -1.5F, 0.0F);
-			PlayerEntityModel<?> playerEntityModel = skinTextures.model() == SkinTextures.Model.SLIM ? this.slimModel : this.wideModel;
+			context.getMatrices().translate(0.0F, -1.501F, 0.0F);
+			PlayerEntityModel playerEntityModel = skinTextures.model() == SkinTextures.Model.SLIM ? this.slimModel : this.wideModel;
 			RenderLayer renderLayer = playerEntityModel.getLayer(skinTextures.texture());
 			playerEntityModel.render(context.getMatrices(), context.getVertexConsumers().getBuffer(renderLayer), 15728880, OverlayTexture.DEFAULT_UV);
 			context.getMatrices().pop();

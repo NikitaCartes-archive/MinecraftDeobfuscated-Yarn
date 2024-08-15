@@ -1222,7 +1222,7 @@ public class Blocks {
 				.instrument(NoteBlockInstrument.BASEDRUM)
 				.requiresTool()
 				.strength(5.0F)
-				.sounds(BlockSoundGroup.METAL)
+				.sounds(BlockSoundGroup.SPAWNER)
 				.nonOpaque()
 		)
 	);
@@ -6141,7 +6141,13 @@ public class Blocks {
 	public static final Block POWDER_SNOW = register(
 		"powder_snow",
 		new PowderSnowBlock(
-			AbstractBlock.Settings.create().mapColor(MapColor.WHITE).strength(0.25F).sounds(BlockSoundGroup.POWDER_SNOW).dynamicBounds().solidBlock(Blocks::never)
+			AbstractBlock.Settings.create()
+				.mapColor(MapColor.WHITE)
+				.strength(0.25F)
+				.sounds(BlockSoundGroup.POWDER_SNOW)
+				.dynamicBounds()
+				.nonOpaque()
+				.solidBlock(Blocks::never)
 		)
 	);
 	public static final Block SCULK_SENSOR = register(
@@ -6950,10 +6956,6 @@ public class Blocks {
 
 	public static Block register(RegistryKey<Block> key, Block block) {
 		return Registry.register(Registries.BLOCK, key, block);
-	}
-
-	public static void refreshShapeCache() {
-		Block.STATE_IDS.forEach(AbstractBlock.AbstractBlockState::initShapeCache);
 	}
 
 	static {

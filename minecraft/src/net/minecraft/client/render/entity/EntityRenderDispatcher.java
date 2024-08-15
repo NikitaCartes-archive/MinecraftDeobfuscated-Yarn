@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9974;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -14,18 +15,19 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.MapRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.ModelBaker;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.SkinTextures;
@@ -62,14 +64,15 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	private static final RenderLayer SHADOW_LAYER = RenderLayer.getEntityShadow(Identifier.ofVanilla("textures/misc/shadow.png"));
 	private static final float field_43377 = 32.0F;
 	private static final float field_43378 = 0.5F;
-	private Map<EntityType<?>, EntityRenderer<?>> renderers = ImmutableMap.of();
-	private Map<SkinTextures.Model, EntityRenderer<? extends PlayerEntity>> modelRenderers = Map.of();
+	private Map<EntityType<?>, EntityRenderer<?, ?>> renderers = ImmutableMap.of();
+	private Map<SkinTextures.Model, EntityRenderer<? extends PlayerEntity, ?>> modelRenderers = Map.of();
 	public final TextureManager textureManager;
 	private World world;
 	public Camera camera;
 	private Quaternionf rotation;
 	public Entity targetedEntity;
 	private final ItemRenderer itemRenderer;
+	private final MapRenderer field_53188;
 	private final BlockRenderManager blockRenderManager;
 	private final HeldItemRenderer heldItemRenderer;
 	private final TextRenderer textRenderer;
@@ -86,27 +89,29 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		MinecraftClient client,
 		TextureManager textureManager,
 		ItemRenderer itemRenderer,
+		MapRenderer mapRenderer,
 		BlockRenderManager blockRenderManager,
 		TextRenderer textRenderer,
 		GameOptions gameOptions,
-		EntityModelLoader modelLoader
+		EntityModelLoader entityModelLoader
 	) {
 		this.textureManager = textureManager;
 		this.itemRenderer = itemRenderer;
+		this.field_53188 = mapRenderer;
 		this.heldItemRenderer = new HeldItemRenderer(client, this, itemRenderer);
 		this.blockRenderManager = blockRenderManager;
 		this.textRenderer = textRenderer;
 		this.gameOptions = gameOptions;
-		this.modelLoader = modelLoader;
+		this.modelLoader = entityModelLoader;
 	}
 
-	public <T extends Entity> EntityRenderer<? super T> getRenderer(T entity) {
+	public <T extends Entity> EntityRenderer<? super T, ?> getRenderer(T entity) {
 		if (entity instanceof AbstractClientPlayerEntity abstractClientPlayerEntity) {
 			SkinTextures.Model model = abstractClientPlayerEntity.getSkinTextures().model();
-			EntityRenderer<? extends PlayerEntity> entityRenderer = (EntityRenderer<? extends PlayerEntity>)this.modelRenderers.get(model);
-			return (EntityRenderer<? super T>)(entityRenderer != null ? entityRenderer : (EntityRenderer)this.modelRenderers.get(SkinTextures.Model.WIDE));
+			EntityRenderer<? extends PlayerEntity, ?> entityRenderer = (EntityRenderer<? extends PlayerEntity, ?>)this.modelRenderers.get(model);
+			return (EntityRenderer<? super T, ?>)(entityRenderer != null ? entityRenderer : (EntityRenderer)this.modelRenderers.get(SkinTextures.Model.WIDE));
 		} else {
-			return (EntityRenderer<? super T>)this.renderers.get(entity.getType());
+			return (EntityRenderer<? super T, ?>)this.renderers.get(entity.getType());
 		}
 	}
 
@@ -134,40 +139,61 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	}
 
 	public <E extends Entity> boolean shouldRender(E entity, Frustum frustum, double x, double y, double z) {
-		EntityRenderer<? super E> entityRenderer = this.getRenderer(entity);
+		EntityRenderer<? super E, ?> entityRenderer = this.getRenderer(entity);
 		return entityRenderer.shouldRender(entity, frustum, x, y, z);
 	}
 
 	public <E extends Entity> void render(
-		E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light
+		E entity, double x, double y, double z, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light
 	) {
-		EntityRenderer<? super E> entityRenderer = this.getRenderer(entity);
+		EntityRenderer<? super E, ?> entityRenderer = this.getRenderer(entity);
+		this.render(entity, x, y, z, tickDelta, matrices, vertexConsumers, light, entityRenderer);
+	}
 
+	private <E extends Entity, S extends EntityRenderState> void render(
+		E entity,
+		double x,
+		double y,
+		double z,
+		float tickDelta,
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		int light,
+		EntityRenderer<? super E, S> renderer
+	) {
 		try {
-			Vec3d vec3d = entityRenderer.getPositionOffset(entity, tickDelta);
+			S entityRenderState = renderer.getAndUpdateRenderState(entity, tickDelta);
+			Vec3d vec3d = renderer.getPositionOffset(entityRenderState);
 			double d = x + vec3d.getX();
 			double e = y + vec3d.getY();
 			double f = z + vec3d.getZ();
 			matrices.push();
 			matrices.translate(d, e, f);
-			entityRenderer.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
-			if (entity.doesRenderOnFire()) {
-				this.renderFire(matrices, vertexConsumers, entity, MathHelper.rotateAround(MathHelper.Y_AXIS, this.rotation, new Quaternionf()));
+			renderer.render(entityRenderState, matrices, vertexConsumers, light);
+			if (entityRenderState.onFire) {
+				this.renderFire(matrices, vertexConsumers, entityRenderState, MathHelper.rotateAround(MathHelper.Y_AXIS, this.rotation, new Quaternionf()));
 			}
 
-			matrices.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
-			if (this.gameOptions.getEntityShadows().getValue() && this.renderShadows && !entity.isInvisible()) {
-				float g = entityRenderer.getShadowRadius(entity);
+			if (entity instanceof PlayerEntity) {
+				matrices.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
+			}
+
+			if (this.gameOptions.getEntityShadows().getValue() && this.renderShadows && !entityRenderState.invisible) {
+				float g = renderer.getShadowRadius(entityRenderState);
 				if (g > 0.0F) {
-					double h = this.getSquaredDistanceToCamera(entity.getX(), entity.getY(), entity.getZ());
-					float i = (float)((1.0 - h / 256.0) * (double)entityRenderer.shadowOpacity);
+					double h = entityRenderState.squaredDistanceToCamera;
+					float i = (float)((1.0 - h / 256.0) * (double)renderer.shadowOpacity);
 					if (i > 0.0F) {
-						renderShadow(matrices, vertexConsumers, entity, i, tickDelta, this.world, Math.min(g, 32.0F));
+						renderShadow(matrices, vertexConsumers, entityRenderState, i, tickDelta, this.world, Math.min(g, 32.0F));
 					}
 				}
 			}
 
-			if (this.renderHitboxes && !entity.isInvisible() && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
+			if (!(entity instanceof PlayerEntity)) {
+				matrices.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
+			}
+
+			if (this.renderHitboxes && !entityRenderState.invisible && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
 				renderHitbox(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), entity, tickDelta, 1.0F, 1.0F, 1.0F);
 			}
 
@@ -177,9 +203,8 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 			CrashReportSection crashReportSection = crashReport.addElement("Entity being rendered");
 			entity.populateCrashReport(crashReportSection);
 			CrashReportSection crashReportSection2 = crashReport.addElement("Renderer details");
-			crashReportSection2.add("Assigned renderer", entityRenderer);
+			crashReportSection2.add("Assigned renderer", renderer);
 			crashReportSection2.add("Location", CrashReportSection.createPositionString(this.world, x, y, z));
-			crashReportSection2.add("Rotation", yaw);
 			crashReportSection2.add("Delta", tickDelta);
 			throw new CrashException(crashReport);
 		}
@@ -193,7 +218,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 			matrices.push();
 			matrices.translate(entity2.getX() - entity.getX(), entity2.getY() - entity.getY(), entity2.getZ() - entity.getZ());
 			renderHitbox(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), entity2, 1.0F, 0.0F, 1.0F, 0.0F);
-			drawVector(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), new Vector3f(), entity2.getVelocity(), -256);
+			class_9974.method_62298(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), new Vector3f(), entity2.getVelocity(), -256);
 			matrices.pop();
 		}
 	}
@@ -213,7 +238,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 
 	private static void renderHitbox(MatrixStack matrices, VertexConsumer vertices, Entity entity, float tickDelta, float red, float green, float blue) {
 		Box box = entity.getBoundingBox().offset(-entity.getX(), -entity.getY(), -entity.getZ());
-		WorldRenderer.drawBox(matrices, vertices, box, red, green, blue, 1.0F);
+		class_9974.method_62295(matrices, vertices, box, red, green, blue, 1.0F);
 		if (entity instanceof EnderDragonEntity) {
 			double d = -MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());
 			double e = -MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.getY());
@@ -225,7 +250,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 				double h = e + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderY, enderDragonPart.getY());
 				double i = f + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderZ, enderDragonPart.getZ());
 				matrices.translate(g, h, i);
-				WorldRenderer.drawBox(
+				class_9974.method_62295(
 					matrices,
 					vertices,
 					enderDragonPart.getBoundingBox().offset(-enderDragonPart.getX(), -enderDragonPart.getY(), -enderDragonPart.getZ()),
@@ -240,7 +265,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 
 		if (entity instanceof LivingEntity) {
 			float j = 0.01F;
-			WorldRenderer.drawBox(
+			class_9974.method_62292(
 				matrices,
 				vertices,
 				box.minX,
@@ -261,31 +286,25 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 			float k = Math.min(entity2.getWidth(), entity.getWidth()) / 2.0F;
 			float l = 0.0625F;
 			Vec3d vec3d = entity2.getPassengerRidingPos(entity).subtract(entity.getPos());
-			WorldRenderer.drawBox(
+			class_9974.method_62292(
 				matrices, vertices, vec3d.x - (double)k, vec3d.y, vec3d.z - (double)k, vec3d.x + (double)k, vec3d.y + 0.0625, vec3d.z + (double)k, 1.0F, 1.0F, 0.0F, 1.0F
 			);
 		}
 
-		drawVector(matrices, vertices, new Vector3f(0.0F, entity.getStandingEyeHeight(), 0.0F), entity.getRotationVec(tickDelta).multiply(2.0), -16776961);
+		class_9974.method_62298(
+			matrices, vertices, new Vector3f(0.0F, entity.getStandingEyeHeight(), 0.0F), entity.getRotationVec(tickDelta).multiply(2.0), -16776961
+		);
 	}
 
-	private static void drawVector(MatrixStack matrices, VertexConsumer vertexConsumers, Vector3f offset, Vec3d vec, int color) {
-		MatrixStack.Entry entry = matrices.peek();
-		vertexConsumers.vertex(entry, offset).color(color).normal(entry, (float)vec.x, (float)vec.y, (float)vec.z);
-		vertexConsumers.vertex(entry, (float)((double)offset.x() + vec.x), (float)((double)offset.y() + vec.y), (float)((double)offset.z() + vec.z))
-			.color(color)
-			.normal(entry, (float)vec.x, (float)vec.y, (float)vec.z);
-	}
-
-	private void renderFire(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity, Quaternionf rotation) {
-		Sprite sprite = ModelLoader.FIRE_0.getSprite();
-		Sprite sprite2 = ModelLoader.FIRE_1.getSprite();
+	private void renderFire(MatrixStack matrices, VertexConsumerProvider vertexConsumers, EntityRenderState renderState, Quaternionf rotation) {
+		Sprite sprite = ModelBaker.FIRE_0.getSprite();
+		Sprite sprite2 = ModelBaker.FIRE_1.getSprite();
 		matrices.push();
-		float f = entity.getWidth() * 1.4F;
+		float f = renderState.width * 1.4F;
 		matrices.scale(f, f, f);
 		float g = 0.5F;
 		float h = 0.0F;
-		float i = entity.getHeight() / f;
+		float i = renderState.height / f;
 		float j = 0.0F;
 		matrices.multiply(rotation);
 		matrices.translate(0.0F, 0.0F, 0.3F - (float)((int)i) * 0.02F);
@@ -328,18 +347,15 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	}
 
 	private static void renderShadow(
-		MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity, float opacity, float tickDelta, WorldView world, float radius
+		MatrixStack matrices, VertexConsumerProvider vertexConsumers, EntityRenderState renderState, float opacity, float tickDelta, WorldView world, float radius
 	) {
-		double d = MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());
-		double e = MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.getY());
-		double f = MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
-		float g = Math.min(opacity / 0.5F, radius);
-		int i = MathHelper.floor(d - (double)radius);
-		int j = MathHelper.floor(d + (double)radius);
-		int k = MathHelper.floor(e - (double)g);
-		int l = MathHelper.floor(e);
-		int m = MathHelper.floor(f - (double)radius);
-		int n = MathHelper.floor(f + (double)radius);
+		float f = Math.min(opacity / 0.5F, radius);
+		int i = MathHelper.floor(renderState.x - (double)radius);
+		int j = MathHelper.floor(renderState.x + (double)radius);
+		int k = MathHelper.floor(renderState.y - (double)f);
+		int l = MathHelper.floor(renderState.y);
+		int m = MathHelper.floor(renderState.z - (double)radius);
+		int n = MathHelper.floor(renderState.z + (double)radius);
 		MatrixStack.Entry entry = matrices.peek();
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(SHADOW_LAYER);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -351,8 +367,8 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 
 				for (int q = k; q <= l; q++) {
 					mutable.setY(q);
-					float h = opacity - (float)(e - (double)mutable.getY()) * 0.5F;
-					renderShadowPart(entry, vertexConsumer, chunk, world, mutable, d, e, f, radius, h);
+					float g = opacity - (float)(renderState.y - (double)mutable.getY()) * 0.5F;
+					renderShadowPart(entry, vertexConsumer, chunk, world, mutable, renderState.x, renderState.y, renderState.z, radius, g);
 				}
 			}
 		}
@@ -374,7 +390,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 							g = 1.0F;
 						}
 
-						int i = ColorHelper.Argb.getArgb(MathHelper.floor(g * 255.0F), 255, 255, 255);
+						int i = ColorHelper.getArgb(MathHelper.floor(g * 255.0F), 255, 255, 255);
 						Box box = voxelShape.getBoundingBox();
 						double d = (double)pos.getX() + box.minX;
 						double e = (double)pos.getX() + box.maxX;
@@ -431,7 +447,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	@Override
 	public void reload(ResourceManager manager) {
 		EntityRendererFactory.Context context = new EntityRendererFactory.Context(
-			this, this.itemRenderer, this.blockRenderManager, this.heldItemRenderer, manager, this.modelLoader, this.textRenderer
+			this, this.itemRenderer, this.field_53188, this.blockRenderManager, manager, this.modelLoader, this.textRenderer
 		);
 		this.renderers = EntityRenderers.reloadEntityRenderers(context);
 		this.modelRenderers = EntityRenderers.reloadPlayerRenderers(context);

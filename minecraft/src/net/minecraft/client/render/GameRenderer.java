@@ -3,8 +3,6 @@ package net.minecraft.client.render;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonSyntaxException;
-import com.mojang.blaze3d.platform.GlConst;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.systems.VertexSorter;
 import com.mojang.datafixers.util.Pair;
@@ -20,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -35,9 +34,11 @@ import net.minecraft.client.gl.ShaderStage;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameOverlayRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.util.Pool;
 import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
@@ -51,6 +52,7 @@ import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.Resource;
@@ -85,7 +87,6 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class GameRenderer implements AutoCloseable {
-	private static final Identifier NAUSEA_OVERLAY = Identifier.ofVanilla("textures/misc/nausea.png");
 	private static final Identifier BLUR_PROCESSOR = Identifier.ofVanilla("shaders/post/blur.json");
 	public static final int field_49904 = 10;
 	static final Logger LOGGER = LogUtils.getLogger();
@@ -103,7 +104,6 @@ public class GameRenderer implements AutoCloseable {
 	private final Random random = Random.create();
 	private float viewDistance;
 	public final HeldItemRenderer firstPersonRenderer;
-	private final MapRenderer mapRenderer;
 	private final BufferBuilderStorage buffers;
 	private int ticks;
 	private float fovMultiplier;
@@ -127,6 +127,7 @@ public class GameRenderer implements AutoCloseable {
 	private int floatingItemTimeLeft;
 	private float floatingItemWidth;
 	private float floatingItemHeight;
+	private final Pool field_53066 = new Pool(3);
 	@Nullable
 	PostEffectProcessor postProcessor;
 	@Nullable
@@ -255,7 +256,6 @@ public class GameRenderer implements AutoCloseable {
 		this.client = client;
 		this.resourceManager = resourceManager;
 		this.firstPersonRenderer = heldItemRenderer;
-		this.mapRenderer = new MapRenderer(client.getTextureManager(), client.getMapDecorationsAtlasManager());
 		this.lightmapTextureManager = new LightmapTextureManager(this, client);
 		this.buffers = buffers;
 		this.postProcessor = null;
@@ -263,8 +263,8 @@ public class GameRenderer implements AutoCloseable {
 
 	public void close() {
 		this.lightmapTextureManager.close();
-		this.mapRenderer.close();
 		this.overlayTexture.close();
+		this.field_53066.close();
 		this.disablePostProcessor();
 		this.clearPrograms();
 		if (this.blurPostProcessor != null) {
@@ -325,8 +325,7 @@ public class GameRenderer implements AutoCloseable {
 		}
 
 		try {
-			this.postProcessor = new PostEffectProcessor(this.client.getTextureManager(), this.resourceManager, this.client.getFramebuffer(), id);
-			this.postProcessor.setupDimensions(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
+			this.postProcessor = PostEffectProcessor.parseEffect(this.resourceManager, this.client.getTextureManager(), id, Set.of(PostEffectProcessor.MAIN));
 			this.postProcessorEnabled = true;
 		} catch (IOException var3) {
 			LOGGER.warn("Failed to load shader: {}", id, var3);
@@ -343,8 +342,7 @@ public class GameRenderer implements AutoCloseable {
 		}
 
 		try {
-			this.blurPostProcessor = new PostEffectProcessor(this.client.getTextureManager(), resourceFactory, this.client.getFramebuffer(), BLUR_PROCESSOR);
-			this.blurPostProcessor.setupDimensions(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
+			this.blurPostProcessor = PostEffectProcessor.parseEffect(resourceFactory, this.client.getTextureManager(), BLUR_PROCESSOR, Set.of(PostEffectProcessor.MAIN));
 		} catch (IOException var3) {
 			LOGGER.warn("Failed to load shader: {}", BLUR_PROCESSOR, var3);
 		} catch (JsonSyntaxException var4) {
@@ -352,11 +350,11 @@ public class GameRenderer implements AutoCloseable {
 		}
 	}
 
-	public void renderBlur(float delta) {
+	public void renderBlur() {
 		float f = (float)this.client.options.getMenuBackgroundBlurrinessValue();
 		if (this.blurPostProcessor != null && f >= 1.0F) {
 			this.blurPostProcessor.setUniforms("Radius", f);
-			this.blurPostProcessor.render(delta);
+			this.blurPostProcessor.render(this.client.getFramebuffer(), this.field_53066, this.client.getRenderTickCounter());
 		}
 	}
 
@@ -647,9 +645,7 @@ public class GameRenderer implements AutoCloseable {
 			);
 			list2.add(Pair.of(new ShaderProgram(factory, "rendertype_end_portal", VertexFormats.POSITION), program -> renderTypeEndPortalProgram = program));
 			list2.add(Pair.of(new ShaderProgram(factory, "rendertype_end_gateway", VertexFormats.POSITION), program -> renderTypeEndGatewayProgram = program));
-			list2.add(
-				Pair.of(new ShaderProgram(factory, "rendertype_clouds", VertexFormats.POSITION_TEXTURE_COLOR_NORMAL), program -> renderTypeCloudsProgram = program)
-			);
+			list2.add(Pair.of(new ShaderProgram(factory, "rendertype_clouds", VertexFormats.POSITION_COLOR), program -> renderTypeCloudsProgram = program));
 			list2.add(Pair.of(new ShaderProgram(factory, "rendertype_lines", VertexFormats.LINES), program -> renderTypeLinesProgram = program));
 			list2.add(
 				Pair.of(
@@ -685,6 +681,7 @@ public class GameRenderer implements AutoCloseable {
 			this.programs.put(shaderProgram.getName(), shaderProgram);
 			((Consumer)pair.getSecond()).accept(shaderProgram);
 		});
+		this.lightmapTextureManager.loadShaderProgram(factory);
 	}
 
 	private void clearPrograms() {
@@ -709,7 +706,7 @@ public class GameRenderer implements AutoCloseable {
 		this.firstPersonRenderer.updateHeldItems();
 		this.ticks++;
 		if (this.client.world.getTickManager().shouldTick()) {
-			this.client.worldRenderer.tickRainSplashing(this.camera);
+			this.client.worldRenderer.method_62209(this.camera);
 			this.lastSkyDarkness = this.skyDarkness;
 			if (this.client.inGameHud.getBossBarHud().shouldDarkenSky()) {
 				this.skyDarkness += 0.05F;
@@ -735,14 +732,7 @@ public class GameRenderer implements AutoCloseable {
 	}
 
 	public void onResized(int width, int height) {
-		if (this.postProcessor != null) {
-			this.postProcessor.setupDimensions(width, height);
-		}
-
-		if (this.blurPostProcessor != null) {
-			this.blurPostProcessor.setupDimensions(width, height);
-		}
-
+		this.field_53066.clear();
 		this.client.worldRenderer.onResized(width, height);
 	}
 
@@ -776,7 +766,7 @@ public class GameRenderer implements AutoCloseable {
 		Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
 		float g = 1.0F;
 		Box box = camera.getBoundingBox().stretch(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
-		EntityHitResult entityHitResult = ProjectileUtil.raycast(camera, vec3d, vec3d3, box, entity -> !entity.isSpectator() && entity.canHit(), e);
+		EntityHitResult entityHitResult = ProjectileUtil.raycast(camera, vec3d, vec3d3, box, EntityPredicates.CAN_HIT, e);
 		return entityHitResult != null && entityHitResult.getPos().squaredDistanceTo(vec3d) < f
 			? ensureTargetInRange(entityHitResult, vec3d, entityInteractionRange)
 			: ensureTargetInRange(hitResult, vec3d, blockInteractionRange);
@@ -794,43 +784,43 @@ public class GameRenderer implements AutoCloseable {
 	}
 
 	private void updateFovMultiplier() {
-		float f = 1.0F;
+		float g;
 		if (this.client.getCameraEntity() instanceof AbstractClientPlayerEntity abstractClientPlayerEntity) {
-			f = abstractClientPlayerEntity.getFovMultiplier();
+			GameOptions gameOptions = this.client.options;
+			boolean bl = gameOptions.getPerspective().isFirstPerson();
+			float f = gameOptions.getFovEffectScale().getValue().floatValue();
+			g = MathHelper.lerp(f, 1.0F, abstractClientPlayerEntity.getFovMultiplier(bl));
+		} else {
+			g = 1.0F;
 		}
 
 		this.lastFovMultiplier = this.fovMultiplier;
-		this.fovMultiplier = this.fovMultiplier + (f - this.fovMultiplier) * 0.5F;
-		if (this.fovMultiplier > 1.5F) {
-			this.fovMultiplier = 1.5F;
-		}
-
-		if (this.fovMultiplier < 0.1F) {
-			this.fovMultiplier = 0.1F;
-		}
+		this.fovMultiplier = this.fovMultiplier + (g - this.fovMultiplier) * 0.5F;
+		this.fovMultiplier = MathHelper.clamp(this.fovMultiplier, 0.1F, 1.5F);
 	}
 
-	private double getFov(Camera camera, float tickDelta, boolean changingFov) {
+	private float getFov(Camera camera, float tickDelta, boolean changingFov) {
 		if (this.renderingPanorama) {
-			return 90.0;
+			return 90.0F;
 		} else {
-			double d = 70.0;
+			float f = 70.0F;
 			if (changingFov) {
-				d = (double)this.client.options.getFov().getValue().intValue();
-				d *= (double)MathHelper.lerp(tickDelta, this.lastFovMultiplier, this.fovMultiplier);
+				f = (float)this.client.options.getFov().getValue().intValue();
+				f *= MathHelper.lerp(tickDelta, this.lastFovMultiplier, this.fovMultiplier);
 			}
 
-			if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isDead()) {
-				float f = Math.min((float)((LivingEntity)camera.getFocusedEntity()).deathTime + tickDelta, 20.0F);
-				d /= (double)((1.0F - 500.0F / (f + 500.0F)) * 2.0F + 1.0F);
+			if (camera.getFocusedEntity() instanceof LivingEntity livingEntity && livingEntity.isDead()) {
+				float g = Math.min((float)livingEntity.deathTime + tickDelta, 20.0F);
+				f /= (1.0F - 500.0F / (g + 500.0F)) * 2.0F + 1.0F;
 			}
 
 			CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
 			if (cameraSubmersionType == CameraSubmersionType.LAVA || cameraSubmersionType == CameraSubmersionType.WATER) {
-				d *= MathHelper.lerp(this.client.options.getFovEffectScale().getValue(), 1.0, 0.85714287F);
+				float g = this.client.options.getFovEffectScale().getValue().floatValue();
+				f *= MathHelper.lerp(g, 1.0F, 0.85714287F);
 			}
 
-			return d;
+			return f;
 		}
 	}
 
@@ -857,11 +847,10 @@ public class GameRenderer implements AutoCloseable {
 	}
 
 	private void bobView(MatrixStack matrices, float tickDelta) {
-		if (this.client.getCameraEntity() instanceof PlayerEntity) {
-			PlayerEntity playerEntity = (PlayerEntity)this.client.getCameraEntity();
-			float f = playerEntity.horizontalSpeed - playerEntity.prevHorizontalSpeed;
-			float g = -(playerEntity.horizontalSpeed + f * tickDelta);
-			float h = MathHelper.lerp(tickDelta, playerEntity.prevStrideDistance, playerEntity.strideDistance);
+		if (this.client.getCameraEntity() instanceof AbstractClientPlayerEntity abstractClientPlayerEntity) {
+			float var7 = abstractClientPlayerEntity.field_53039 - abstractClientPlayerEntity.field_53038;
+			float g = -(abstractClientPlayerEntity.field_53039 + var7 * tickDelta);
+			float h = MathHelper.lerp(tickDelta, abstractClientPlayerEntity.prevStrideDistance, abstractClientPlayerEntity.strideDistance);
 			matrices.translate(MathHelper.sin(g * (float) Math.PI) * h * 0.5F, -Math.abs(MathHelper.cos(g * (float) Math.PI) * h), 0.0F);
 			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.sin(g * (float) Math.PI) * h * 3.0F));
 			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(Math.abs(MathHelper.cos(g * (float) Math.PI - 0.2F) * h) * 5.0F));
@@ -880,13 +869,13 @@ public class GameRenderer implements AutoCloseable {
 
 	private void renderHand(Camera camera, float tickDelta, Matrix4f matrix4f) {
 		if (!this.renderingPanorama) {
-			this.loadProjectionMatrix(this.getBasicProjectionMatrix(this.getFov(camera, tickDelta, false)));
+			Matrix4f matrix4f2 = this.getBasicProjectionMatrix(this.getFov(camera, tickDelta, false));
+			RenderSystem.setProjectionMatrix(matrix4f2, VertexSorter.BY_DISTANCE);
 			MatrixStack matrixStack = new MatrixStack();
 			matrixStack.push();
 			matrixStack.multiplyPositionMatrix(matrix4f.invert(new Matrix4f()));
 			Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
 			matrix4fStack.pushMatrix().mul(matrix4f);
-			RenderSystem.applyModelViewMatrix();
 			this.tiltViewWhenHurt(matrixStack, tickDelta);
 			if (this.client.options.getBobView().getValue()) {
 				this.bobView(matrixStack, tickDelta);
@@ -910,7 +899,6 @@ public class GameRenderer implements AutoCloseable {
 			}
 
 			matrix4fStack.popMatrix();
-			RenderSystem.applyModelViewMatrix();
 			matrixStack.pop();
 			if (this.client.options.getPerspective().isFirstPerson() && !bl) {
 				InGameOverlayRenderer.renderOverlays(this.client, matrixStack);
@@ -918,11 +906,7 @@ public class GameRenderer implements AutoCloseable {
 		}
 	}
 
-	public void loadProjectionMatrix(Matrix4f projectionMatrix) {
-		RenderSystem.setProjectionMatrix(projectionMatrix, VertexSorter.BY_DISTANCE);
-	}
-
-	public Matrix4f getBasicProjectionMatrix(double fov) {
+	public Matrix4f getBasicProjectionMatrix(float f) {
 		Matrix4f matrix4f = new Matrix4f();
 		if (this.zoom != 1.0F) {
 			matrix4f.translate(this.zoomX, -this.zoomY, 0.0F);
@@ -930,7 +914,7 @@ public class GameRenderer implements AutoCloseable {
 		}
 
 		return matrix4f.perspective(
-			(float)(fov * (float) (Math.PI / 180.0)),
+			f * (float) (Math.PI / 180.0),
 			(float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(),
 			0.05F,
 			this.getFarPlaneDistance()
@@ -973,14 +957,14 @@ public class GameRenderer implements AutoCloseable {
 					RenderSystem.disableBlend();
 					RenderSystem.disableDepthTest();
 					RenderSystem.resetTextureMatrix();
-					this.postProcessor.render(tickCounter.getLastFrameDuration());
+					this.postProcessor.render(this.client.getFramebuffer(), this.field_53066, tickCounter);
 				}
 
 				this.client.getFramebuffer().beginWrite(true);
 			}
 
 			Window window = this.client.getWindow();
-			RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
+			RenderSystem.clear(256);
 			Matrix4f matrix4f = new Matrix4f()
 				.setOrtho(
 					0.0F,
@@ -994,31 +978,23 @@ public class GameRenderer implements AutoCloseable {
 			Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
 			matrix4fStack.pushMatrix();
 			matrix4fStack.translation(0.0F, 0.0F, -11000.0F);
-			RenderSystem.applyModelViewMatrix();
 			DiffuseLighting.enableGuiDepthLighting();
 			DrawContext drawContext = new DrawContext(this.client, this.buffers.getEntityVertexConsumers());
 			if (bl && tick && this.client.world != null) {
 				this.client.getProfiler().swap("gui");
-				if (this.client.player != null) {
-					float f = MathHelper.lerp(tickCounter.getTickDelta(false), this.client.player.prevNauseaIntensity, this.client.player.nauseaIntensity);
-					float g = this.client.options.getDistortionEffectScale().getValue().floatValue();
-					if (f > 0.0F && this.client.player.hasStatusEffect(StatusEffects.NAUSEA) && g < 1.0F) {
-						this.renderNausea(drawContext, f * (1.0F - g));
-					}
-				}
-
 				if (!this.client.options.hudHidden) {
 					this.renderFloatingItem(drawContext, tickCounter.getTickDelta(false));
 				}
 
 				this.client.inGameHud.render(drawContext, tickCounter);
-				RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
+				drawContext.draw();
+				RenderSystem.clear(256);
 				this.client.getProfiler().pop();
 			}
 
 			if (this.client.getOverlay() != null) {
 				try {
-					this.client.getOverlay().render(drawContext, i, j, tickCounter.getLastDuration());
+					this.client.getOverlay().render(drawContext, i, j, tickCounter.getLastFrameDuration());
 				} catch (Throwable var15) {
 					CrashReport crashReport = CrashReport.create(var15, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
@@ -1027,7 +1003,7 @@ public class GameRenderer implements AutoCloseable {
 				}
 			} else if (bl && this.client.currentScreen != null) {
 				try {
-					this.client.currentScreen.renderWithTooltip(drawContext, i, j, tickCounter.getLastDuration());
+					this.client.currentScreen.renderWithTooltip(drawContext, i, j, tickCounter.getLastFrameDuration());
 				} catch (Throwable var14) {
 					CrashReport crashReport = CrashReport.create(var14, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
@@ -1075,7 +1051,7 @@ public class GameRenderer implements AutoCloseable {
 
 			drawContext.draw();
 			matrix4fStack.popMatrix();
-			RenderSystem.applyModelViewMatrix();
+			this.field_53066.decrementLifespan();
 		}
 	}
 
@@ -1152,8 +1128,8 @@ public class GameRenderer implements AutoCloseable {
 		}
 	}
 
-	public void renderWorld(RenderTickCounter tickCounter) {
-		float f = tickCounter.getTickDelta(true);
+	public void renderWorld(RenderTickCounter renderTickCounter) {
+		float f = renderTickCounter.getTickDelta(true);
 		this.lightmapTextureManager.update(f);
 		if (this.client.getCameraEntity() == null) {
 			this.client.setCameraEntity(this.client.player);
@@ -1168,8 +1144,8 @@ public class GameRenderer implements AutoCloseable {
 		float g = this.client.world.getTickManager().shouldSkipTick(entity) ? 1.0F : f;
 		camera.update(this.client.world, entity, !this.client.options.getPerspective().isFirstPerson(), this.client.options.getPerspective().isFrontView(), g);
 		this.viewDistance = (float)(this.client.options.getClampedViewDistance() * 16);
-		double d = this.getFov(camera, f, true);
-		Matrix4f matrix4f = this.getBasicProjectionMatrix(d);
+		float h = this.getFov(camera, f, true);
+		Matrix4f matrix4f = this.getBasicProjectionMatrix(h);
 		MatrixStack matrixStack = new MatrixStack();
 		this.tiltViewWhenHurt(matrixStack, camera.getLastTickDelta());
 		if (this.client.options.getBobView().getValue()) {
@@ -1177,30 +1153,31 @@ public class GameRenderer implements AutoCloseable {
 		}
 
 		matrix4f.mul(matrixStack.peek().getPositionMatrix());
-		float h = this.client.options.getDistortionEffectScale().getValue().floatValue();
-		float i = MathHelper.lerp(f, this.client.player.prevNauseaIntensity, this.client.player.nauseaIntensity) * h * h;
-		if (i > 0.0F) {
-			int j = this.client.player.hasStatusEffect(StatusEffects.NAUSEA) ? 7 : 20;
-			float k = 5.0F / (i * i + 5.0F) - i * 0.04F;
-			k *= k;
+		float i = this.client.options.getDistortionEffectScale().getValue().floatValue();
+		float j = MathHelper.lerp(f, this.client.player.prevNauseaIntensity, this.client.player.nauseaIntensity) * i * i;
+		if (j > 0.0F) {
+			int k = this.client.player.hasStatusEffect(StatusEffects.NAUSEA) ? 7 : 20;
+			float l = 5.0F / (j * j + 5.0F) - j * 0.04F;
+			l *= l;
 			Vector3f vector3f = new Vector3f(0.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F);
-			float l = ((float)this.ticks + f) * (float)j * (float) (Math.PI / 180.0);
-			matrix4f.rotate(l, vector3f);
-			matrix4f.scale(1.0F / k, 1.0F, 1.0F);
-			matrix4f.rotate(-l, vector3f);
+			float m = ((float)this.ticks + f) * (float)k * (float) (Math.PI / 180.0);
+			matrix4f.rotate(m, vector3f);
+			matrix4f.scale(1.0F / l, 1.0F, 1.0F);
+			matrix4f.rotate(-m, vector3f);
 		}
 
-		this.loadProjectionMatrix(matrix4f);
+		float n = Math.max(h, (float)this.client.options.getFov().getValue().intValue());
+		Matrix4f matrix4f2 = this.getBasicProjectionMatrix(n);
+		RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_DISTANCE);
 		Quaternionf quaternionf = camera.getRotation().conjugate(new Quaternionf());
-		Matrix4f matrix4f2 = new Matrix4f().rotation(quaternionf);
-		this.client
-			.worldRenderer
-			.setupFrustum(camera.getPos(), matrix4f2, this.getBasicProjectionMatrix(Math.max(d, (double)this.client.options.getFov().getValue().intValue())));
-		this.client.worldRenderer.render(tickCounter, bl, camera, this, this.lightmapTextureManager, matrix4f2, matrix4f);
+		Matrix4f matrix4f3 = new Matrix4f().rotation(quaternionf);
+		this.client.worldRenderer.setupFrustum(camera.getPos(), matrix4f3, matrix4f2);
+		this.client.getFramebuffer().beginWrite(true);
+		this.client.worldRenderer.render(this.field_53066, renderTickCounter, bl, camera, this, this.lightmapTextureManager, matrix4f3, matrix4f);
 		this.client.getProfiler().swap("hand");
 		if (this.renderHand) {
-			RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
-			this.renderHand(camera, f, matrix4f2);
+			RenderSystem.clear(256);
+			this.renderHand(camera, f, matrix4f3);
 		}
 
 		this.client.getProfiler().pop();
@@ -1208,13 +1185,9 @@ public class GameRenderer implements AutoCloseable {
 
 	public void reset() {
 		this.floatingItem = null;
-		this.mapRenderer.clearStateTextures();
+		this.client.getMapTextureManager().clear();
 		this.camera.reset();
 		this.hasWorldIcon = false;
-	}
-
-	public MapRenderer getMapRenderer() {
-		return this.mapRenderer;
 	}
 
 	public void showFloatingItem(ItemStack floatingItem) {
@@ -1246,40 +1219,13 @@ public class GameRenderer implements AutoCloseable {
 			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(900.0F * MathHelper.abs(MathHelper.sin(k))));
 			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(6.0F * MathHelper.cos(f * 8.0F)));
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(6.0F * MathHelper.cos(f * 8.0F)));
-			context.draw(
-				() -> this.client
-						.getItemRenderer()
-						.renderItem(
-							this.floatingItem, ModelTransformationMode.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, context.getVertexConsumers(), this.client.world, 0
-						)
-			);
+			this.client
+				.getItemRenderer()
+				.renderItem(
+					this.floatingItem, ModelTransformationMode.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, context.getVertexConsumers(), this.client.world, 0
+				);
 			matrixStack.pop();
 		}
-	}
-
-	private void renderNausea(DrawContext context, float distortionStrength) {
-		int i = context.getScaledWindowWidth();
-		int j = context.getScaledWindowHeight();
-		context.getMatrices().push();
-		float f = MathHelper.lerp(distortionStrength, 2.0F, 1.0F);
-		context.getMatrices().translate((float)i / 2.0F, (float)j / 2.0F, 0.0F);
-		context.getMatrices().scale(f, f, f);
-		context.getMatrices().translate((float)(-i) / 2.0F, (float)(-j) / 2.0F, 0.0F);
-		float g = 0.2F * distortionStrength;
-		float h = 0.4F * distortionStrength;
-		float k = 0.2F * distortionStrength;
-		RenderSystem.disableDepthTest();
-		RenderSystem.depthMask(false);
-		RenderSystem.enableBlend();
-		RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
-		context.setShaderColor(g, h, k, 1.0F);
-		context.drawTexture(NAUSEA_OVERLAY, 0, 0, -90, 0.0F, 0.0F, i, j, i, j);
-		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.defaultBlendFunc();
-		RenderSystem.disableBlend();
-		RenderSystem.depthMask(true);
-		RenderSystem.enableDepthTest();
-		context.getMatrices().pop();
 	}
 
 	public MinecraftClient getClient() {

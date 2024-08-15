@@ -10,14 +10,14 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.entity.state.AllayEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
-public class AllayEntityModel extends SinglePartEntityModel<AllayEntity> implements ModelWithArms {
+public class AllayEntityModel extends EntityModel<AllayEntityRenderState> implements ModelWithArms {
 	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart body;
@@ -86,45 +86,46 @@ public class AllayEntityModel extends SinglePartEntityModel<AllayEntity> impleme
 		return TexturedModelData.of(modelData, 32, 32);
 	}
 
-	public void setAngles(AllayEntity allayEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(AllayEntityRenderState allayEntityRenderState) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		float k = h * 20.0F * (float) (Math.PI / 180.0) + f;
-		float l = MathHelper.cos(k) * (float) Math.PI * 0.15F + g;
-		float m = h - (float)allayEntity.age;
-		float n = h * 9.0F * (float) (Math.PI / 180.0);
-		float o = Math.min(g / 0.3F, 1.0F);
-		float p = 1.0F - o;
-		float q = allayEntity.method_43397(m);
-		if (allayEntity.isDancing()) {
-			float r = h * 8.0F * (float) (Math.PI / 180.0) + g;
-			float s = MathHelper.cos(r) * 16.0F * (float) (Math.PI / 180.0);
-			float t = allayEntity.method_44368(m);
-			float u = MathHelper.cos(r) * 14.0F * (float) (Math.PI / 180.0);
-			float v = MathHelper.cos(r) * 30.0F * (float) (Math.PI / 180.0);
-			this.root.yaw = allayEntity.isSpinning() ? (float) (Math.PI * 4) * t : this.root.yaw;
-			this.root.roll = s * (1.0F - t);
-			this.head.yaw = v * (1.0F - t);
-			this.head.roll = u * (1.0F - t);
+		float f = allayEntityRenderState.limbAmplitudeMultiplier;
+		float g = allayEntityRenderState.limbFrequency;
+		float h = allayEntityRenderState.age * 20.0F * (float) (Math.PI / 180.0) + g;
+		float i = MathHelper.cos(h) * (float) Math.PI * 0.15F + f;
+		float j = allayEntityRenderState.age * 9.0F * (float) (Math.PI / 180.0);
+		float k = Math.min(f / 0.3F, 1.0F);
+		float l = 1.0F - k;
+		float m = allayEntityRenderState.itemHoldAnimationTicks;
+		if (allayEntityRenderState.dancing) {
+			float n = allayEntityRenderState.age * 8.0F * (float) (Math.PI / 180.0) + f;
+			float o = MathHelper.cos(n) * 16.0F * (float) (Math.PI / 180.0);
+			float p = allayEntityRenderState.spinningAnimationTicks;
+			float q = MathHelper.cos(n) * 14.0F * (float) (Math.PI / 180.0);
+			float r = MathHelper.cos(n) * 30.0F * (float) (Math.PI / 180.0);
+			this.root.yaw = allayEntityRenderState.spinning ? (float) (Math.PI * 4) * p : this.root.yaw;
+			this.root.roll = o * (1.0F - p);
+			this.head.yaw = r * (1.0F - p);
+			this.head.roll = q * (1.0F - p);
 		} else {
-			this.head.pitch = j * (float) (Math.PI / 180.0);
-			this.head.yaw = i * (float) (Math.PI / 180.0);
+			this.head.pitch = allayEntityRenderState.pitch * (float) (Math.PI / 180.0);
+			this.head.yaw = allayEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		}
 
-		this.rightWing.pitch = 0.43633232F * (1.0F - o);
-		this.rightWing.yaw = (float) (-Math.PI / 4) + l;
-		this.leftWing.pitch = 0.43633232F * (1.0F - o);
-		this.leftWing.yaw = (float) (Math.PI / 4) - l;
-		this.body.pitch = o * (float) (Math.PI / 4);
-		float r = q * MathHelper.lerp(o, (float) (-Math.PI / 3), -1.134464F);
-		this.root.pivotY = this.root.pivotY + (float)Math.cos((double)n) * 0.25F * p;
-		this.rightArm.pitch = r;
-		this.leftArm.pitch = r;
-		float s = p * (1.0F - q);
-		float t = 0.43633232F - MathHelper.cos(n + (float) (Math.PI * 3.0 / 2.0)) * (float) Math.PI * 0.075F * s;
-		this.leftArm.roll = -t;
-		this.rightArm.roll = t;
-		this.rightArm.yaw = 0.27925268F * q;
-		this.leftArm.yaw = -0.27925268F * q;
+		this.rightWing.pitch = 0.43633232F * (1.0F - k);
+		this.rightWing.yaw = (float) (-Math.PI / 4) + i;
+		this.leftWing.pitch = 0.43633232F * (1.0F - k);
+		this.leftWing.yaw = (float) (Math.PI / 4) - i;
+		this.body.pitch = k * (float) (Math.PI / 4);
+		float n = m * MathHelper.lerp(k, (float) (-Math.PI / 3), -1.134464F);
+		this.root.pivotY = this.root.pivotY + (float)Math.cos((double)j) * 0.25F * l;
+		this.rightArm.pitch = n;
+		this.leftArm.pitch = n;
+		float o = l * (1.0F - m);
+		float p = 0.43633232F - MathHelper.cos(j + (float) (Math.PI * 3.0 / 2.0)) * (float) Math.PI * 0.075F * o;
+		this.leftArm.roll = -p;
+		this.rightArm.roll = p;
+		this.rightArm.yaw = 0.27925268F * m;
+		this.leftArm.yaw = -0.27925268F * m;
 	}
 
 	@Override

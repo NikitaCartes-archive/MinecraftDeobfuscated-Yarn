@@ -2,6 +2,7 @@ package net.minecraft.data.server.recipe;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementRequirements;
@@ -42,7 +43,7 @@ public class SmithingTrimRecipeJsonBuilder {
 			.rewards(AdvancementRewards.Builder.recipe(recipeId))
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
 		this.criteria.forEach(builder::criterion);
-		SmithingTrimRecipe smithingTrimRecipe = new SmithingTrimRecipe(this.template, this.base, this.addition);
+		SmithingTrimRecipe smithingTrimRecipe = new SmithingTrimRecipe(Optional.of(this.template), Optional.of(this.base), Optional.of(this.addition));
 		exporter.accept(recipeId, smithingTrimRecipe, builder.build(recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/")));
 	}
 

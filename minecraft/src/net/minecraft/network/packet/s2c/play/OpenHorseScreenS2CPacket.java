@@ -22,13 +22,13 @@ public class OpenHorseScreenS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	private OpenHorseScreenS2CPacket(PacketByteBuf buf) {
-		this.syncId = buf.readUnsignedByte();
+		this.syncId = buf.readSyncId();
 		this.slotColumnCount = buf.readVarInt();
 		this.horseId = buf.readInt();
 	}
 
 	private void write(PacketByteBuf buf) {
-		buf.writeByte(this.syncId);
+		buf.writeSyncId(this.syncId);
 		buf.writeVarInt(this.slotColumnCount);
 		buf.writeInt(this.horseId);
 	}

@@ -9,9 +9,6 @@ import net.minecraft.util.profiler.log.MultiValueDebugSampleLog;
 
 @Environment(EnvType.CLIENT)
 public class PingChart extends DebugChart {
-	private static final int field_45931 = -65536;
-	private static final int field_45932 = -256;
-	private static final int field_45933 = -16711936;
 	private static final int field_45934 = 500;
 
 	public PingChart(TextRenderer textRenderer, MultiValueDebugSampleLog multiValueDebugSampleLog) {

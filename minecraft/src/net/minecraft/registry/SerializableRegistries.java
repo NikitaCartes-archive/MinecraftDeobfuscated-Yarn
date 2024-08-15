@@ -16,7 +16,7 @@ import net.minecraft.registry.entry.RegistryEntryInfo;
 import net.minecraft.util.Identifier;
 
 public class SerializableRegistries {
-	public static final Set<RegistryKey<? extends Registry<?>>> SYNCED_REGISTRIES = (Set<RegistryKey<? extends Registry<?>>>)RegistryLoader.SYNCED_REGISTRIES
+	private static final Set<RegistryKey<? extends Registry<?>>> SYNCED_REGISTRIES = (Set<RegistryKey<? extends Registry<?>>>)RegistryLoader.SYNCED_REGISTRIES
 		.stream()
 		.map(RegistryLoader.Entry::key)
 		.collect(Collectors.toUnmodifiableSet());
@@ -64,7 +64,7 @@ public class SerializableRegistries {
 	}
 
 	private static Stream<DynamicRegistryManager.Entry<?>> stream(DynamicRegistryManager dynamicRegistryManager) {
-		return dynamicRegistryManager.streamAllRegistries().filter(registry -> SYNCED_REGISTRIES.contains(registry.key()));
+		return dynamicRegistryManager.streamAllRegistries().filter(registry -> isSynced(registry.key()));
 	}
 
 	public static Stream<DynamicRegistryManager.Entry<?>> streamDynamicEntries(CombinedDynamicRegistries<ServerDynamicRegistryType> combinedRegistries) {
@@ -75,6 +75,10 @@ public class SerializableRegistries {
 		Stream<DynamicRegistryManager.Entry<?>> stream = combinedRegistries.get(ServerDynamicRegistryType.STATIC).streamAllRegistries();
 		Stream<DynamicRegistryManager.Entry<?>> stream2 = streamDynamicEntries(combinedRegistries);
 		return Stream.concat(stream2, stream);
+	}
+
+	public static boolean isSynced(RegistryKey<? extends Registry<?>> key) {
+		return SYNCED_REGISTRIES.contains(key);
 	}
 
 	public static record SerializedRegistryEntry(Identifier id, Optional<NbtElement> data) {

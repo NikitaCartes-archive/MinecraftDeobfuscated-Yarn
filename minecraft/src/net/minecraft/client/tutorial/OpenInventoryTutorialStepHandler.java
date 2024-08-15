@@ -1,5 +1,6 @@
 package net.minecraft.client.tutorial;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.toast.TutorialToast;
@@ -11,6 +12,7 @@ public class OpenInventoryTutorialStepHandler implements TutorialStepHandler {
 	private static final Text TITLE = Text.translatable("tutorial.open_inventory.title");
 	private static final Text DESCRIPTION = Text.translatable("tutorial.open_inventory.description", TutorialManager.keyToText("inventory"));
 	private final TutorialManager manager;
+	@Nullable
 	private TutorialToast toast;
 	private int ticks;
 

@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.shorts.ShortList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -38,7 +39,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureHolder;
@@ -55,13 +55,13 @@ import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.tick.BasicTickScheduler;
-import net.minecraft.world.tick.SerializableTickScheduler;
+import net.minecraft.world.tick.Tick;
 import org.slf4j.Logger;
 
 /**
  * Represents a scoped, modifiable view of biomes, block states, fluid states and block entities.
  */
-public abstract class Chunk implements BlockView, BiomeAccess.Storage, LightSourceView, StructureHolder {
+public abstract class Chunk implements BiomeAccess.Storage, LightSourceView, StructureHolder {
 	public static final int MISSING_SECTION = -1;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final LongSet EMPTY_STRUCTURE_REFERENCES = new LongOpenHashSet();
@@ -304,8 +304,8 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, LightSour
 		return this.postProcessingLists;
 	}
 
-	public void markBlockForPostProcessing(short packedPos, int index) {
-		getList(this.getPostProcessingLists(), index).add(packedPos);
+	public void markBlocksForPostProcessing(ShortList packedPositions, int index) {
+		getList(this.getPostProcessingLists(), index).addAll(packedPositions);
 	}
 
 	public void addPendingBlockEntityNbt(NbtCompound nbt) {
@@ -351,7 +351,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, LightSour
 
 	public abstract BasicTickScheduler<Fluid> getFluidTickScheduler();
 
-	public abstract Chunk.TickSchedulers getTickSchedulers();
+	public abstract Chunk.TickSchedulers getTickSchedulers(long time);
 
 	public UpgradeData getUpgradeData() {
 		return this.upgradeData;
@@ -364,10 +364,6 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, LightSour
 	@Nullable
 	public BlendingData getBlendingData() {
 		return this.blendingData;
-	}
-
-	public void setBlendingData(BlendingData blendingData) {
-		this.blendingData = blendingData;
 	}
 
 	public long getInhabitedTime() {
@@ -481,6 +477,6 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, LightSour
 		return this.chunkSkyLight;
 	}
 
-	public static record TickSchedulers(SerializableTickScheduler<Block> blocks, SerializableTickScheduler<Fluid> fluids) {
+	public static record TickSchedulers(List<Tick<Block>> blocks, List<Tick<Fluid>> fluids) {
 	}
 }

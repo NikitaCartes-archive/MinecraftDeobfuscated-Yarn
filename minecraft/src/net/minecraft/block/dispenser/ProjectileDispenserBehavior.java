@@ -5,10 +5,10 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ProjectileItem;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
-import net.minecraft.world.World;
 
 /**
  * A dispenser behavior that spawns a projectile with velocity in front of the dispenser.
@@ -28,20 +28,19 @@ public class ProjectileDispenserBehavior extends ItemDispenserBehavior {
 
 	@Override
 	public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-		World world = pointer.world();
+		ServerWorld serverWorld = pointer.world();
 		Direction direction = pointer.state().get(DispenserBlock.FACING);
 		Position position = this.projectileSettings.positionFunction().getDispensePosition(pointer, direction);
-		ProjectileEntity projectileEntity = this.projectile.createEntity(world, position, stack, direction);
-		this.projectile
-			.initializeProjectile(
-				projectileEntity,
-				(double)direction.getOffsetX(),
-				(double)direction.getOffsetY(),
-				(double)direction.getOffsetZ(),
-				this.projectileSettings.power(),
-				this.projectileSettings.uncertainty()
-			);
-		world.spawnEntity(projectileEntity);
+		ProjectileEntity.spawnWithVelocity(
+			this.projectile.createEntity(serverWorld, position, stack, direction),
+			serverWorld,
+			stack,
+			(double)direction.getOffsetX(),
+			(double)direction.getOffsetY(),
+			(double)direction.getOffsetZ(),
+			this.projectileSettings.power(),
+			this.projectileSettings.uncertainty()
+		);
 		stack.decrement(1);
 		return stack;
 	}

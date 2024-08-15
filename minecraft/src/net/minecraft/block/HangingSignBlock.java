@@ -23,10 +23,10 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -72,9 +72,9 @@ public class HangingSignBlock extends AbstractSignBlock {
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.getBlockEntity(pos) instanceof SignBlockEntity signBlockEntity && this.shouldTryAttaching(player, hit, signBlockEntity, stack)) {
-			return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+			return ActionResult.PASS;
 		}
 
 		return super.onUseWithItem(stack, state, world, pos, player, hand, hit);

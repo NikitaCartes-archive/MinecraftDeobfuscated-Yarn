@@ -136,6 +136,7 @@ public class FallingBlockEntity extends Entity {
 			this.timeFalling++;
 			this.applyGravity();
 			this.move(MovementType.SELF, this.getVelocity());
+			this.tickBlockCollision();
 			this.tickPortalTeleportation();
 			if (!this.getWorld().isClient && (this.isAlive() || this.shouldDupe)) {
 				BlockPos blockPos = this.getBlockPos();

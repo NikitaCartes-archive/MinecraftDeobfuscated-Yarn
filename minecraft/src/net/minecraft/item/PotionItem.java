@@ -21,7 +21,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -112,7 +111,7 @@ public class PotionItem extends Item {
 			world.playSound(null, blockPos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			world.emitGameEvent(null, GameEvent.FLUID_PLACE, blockPos);
 			world.setBlockState(blockPos, Blocks.MUD.getDefaultState());
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return ActionResult.PASS;
 		}
@@ -129,7 +128,7 @@ public class PotionItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		return ItemUsage.consumeHeldItem(world, user, hand);
 	}
 

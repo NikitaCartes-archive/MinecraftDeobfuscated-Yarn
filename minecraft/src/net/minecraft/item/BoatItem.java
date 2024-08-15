@@ -1,7 +1,6 @@
 package net.minecraft.item;
 
 import java.util.List;
-import java.util.function.Predicate;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,8 +9,8 @@ import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -20,7 +19,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class BoatItem extends Item {
-	private static final Predicate<Entity> RIDERS = EntityPredicates.EXCEPT_SPECTATOR.and(Entity::canHit);
 	private final BoatEntity.Type type;
 	private final boolean chest;
 
@@ -31,22 +29,22 @@ public class BoatItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.ANY);
 		if (hitResult.getType() == HitResult.Type.MISS) {
-			return TypedActionResult.pass(itemStack);
+			return ActionResult.PASS;
 		} else {
 			Vec3d vec3d = user.getRotationVec(1.0F);
 			double d = 5.0;
-			List<Entity> list = world.getOtherEntities(user, user.getBoundingBox().stretch(vec3d.multiply(5.0)).expand(1.0), RIDERS);
+			List<Entity> list = world.getOtherEntities(user, user.getBoundingBox().stretch(vec3d.multiply(5.0)).expand(1.0), EntityPredicates.CAN_HIT);
 			if (!list.isEmpty()) {
 				Vec3d vec3d2 = user.getEyePos();
 
 				for (Entity entity : list) {
 					Box box = entity.getBoundingBox().expand((double)entity.getTargetingMargin());
 					if (box.contains(vec3d2)) {
-						return TypedActionResult.pass(itemStack);
+						return ActionResult.PASS;
 					}
 				}
 			}
@@ -56,7 +54,7 @@ public class BoatItem extends Item {
 				boatEntity.setVariant(this.type);
 				boatEntity.setYaw(user.getYaw());
 				if (!world.isSpaceEmpty(boatEntity, boatEntity.getBoundingBox())) {
-					return TypedActionResult.fail(itemStack);
+					return ActionResult.FAIL;
 				} else {
 					if (!world.isClient) {
 						world.spawnEntity(boatEntity);
@@ -65,10 +63,10 @@ public class BoatItem extends Item {
 					}
 
 					user.incrementStat(Stats.USED.getOrCreateStat(this));
-					return TypedActionResult.success(itemStack, world.isClient());
+					return ActionResult.SUCCESS;
 				}
 			} else {
-				return TypedActionResult.pass(itemStack);
+				return ActionResult.PASS;
 			}
 		}
 	}

@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,6 +105,10 @@ public class SimulationDistanceLevelPropagator extends ChunkPosDistanceLevelProp
 		} else {
 			this.levels.put(id, (byte)level);
 		}
+	}
+
+	public LongSet getTrackedChunks() {
+		return this.levels.keySet();
 	}
 
 	public void updateLevels() {

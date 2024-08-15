@@ -142,15 +142,19 @@ public class Slot {
 		if (!stack.isEmpty() && this.canInsert(stack)) {
 			ItemStack itemStack = this.getStack();
 			int i = Math.min(Math.min(count, stack.getCount()), this.getMaxItemCount(stack) - itemStack.getCount());
-			if (itemStack.isEmpty()) {
-				this.setStack(stack.split(i));
-			} else if (ItemStack.areItemsAndComponentsEqual(itemStack, stack)) {
-				stack.decrement(i);
-				itemStack.increment(i);
-				this.setStack(itemStack);
-			}
+			if (i <= 0) {
+				return stack;
+			} else {
+				if (itemStack.isEmpty()) {
+					this.setStack(stack.split(i));
+				} else if (ItemStack.areItemsAndComponentsEqual(itemStack, stack)) {
+					stack.decrement(i);
+					itemStack.increment(i);
+					this.setStack(itemStack);
+				}
 
-			return stack;
+				return stack;
+			}
 		} else {
 			return stack;
 		}

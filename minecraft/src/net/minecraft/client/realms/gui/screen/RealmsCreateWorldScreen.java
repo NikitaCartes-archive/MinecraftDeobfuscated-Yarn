@@ -27,10 +27,12 @@ import net.minecraft.client.realms.task.ResettingNormalWorldTask;
 import net.minecraft.client.realms.task.ResettingWorldTemplateTask;
 import net.minecraft.client.realms.task.SwitchSlotTask;
 import net.minecraft.client.realms.task.WorldCreationTask;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -266,17 +268,17 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 		@Override
 		public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 			boolean bl = this.isSelected();
+			int i = -1;
 			if (bl) {
-				context.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
+				i = ColorHelper.fromFloats(1.0F, 0.56F, 0.56F, 0.56F);
 			}
 
-			int i = this.getX();
-			int j = this.getY();
-			context.drawTexture(this.image, i + 2, j + 2, 0.0F, 0.0F, 56, 56, 56, 56);
-			context.drawGuiTexture(TEXTURE, i, j, 60, 60);
-			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			int k = bl ? Colors.LIGHT_GRAY : Colors.WHITE;
-			context.drawCenteredTextWithShadow(RealmsCreateWorldScreen.this.textRenderer, this.getMessage(), i + 28, j - 14, k);
+			int j = this.getX();
+			int k = this.getY();
+			context.drawTexture(RenderLayer::getGuiTextured, this.image, j + 2, k + 2, 0.0F, 0.0F, 56, 56, 56, 56, 56, 56, i);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, TEXTURE, j, k, 60, 60, i);
+			int l = bl ? Colors.LIGHT_GRAY : Colors.WHITE;
+			context.drawCenteredTextWithShadow(RealmsCreateWorldScreen.this.textRenderer, this.getMessage(), j + 28, k - 14, l);
 		}
 	}
 }

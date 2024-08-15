@@ -972,6 +972,10 @@ public class PacketByteBuf extends ByteBuf {
 		buf.writeFloat(quaternion.w);
 	}
 
+	public static Vec3d readVec3d(ByteBuf buf) {
+		return new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
+	}
+
 	/**
 	 * Reads a {@link Vec3d} from this buf. A {@link Vec3d} is represented
 	 * by four {@code double}s.
@@ -979,7 +983,13 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #writeVec3d(Vec3d)
 	 */
 	public Vec3d readVec3d() {
-		return new Vec3d(this.readDouble(), this.readDouble(), this.readDouble());
+		return readVec3d(this);
+	}
+
+	public static void writeVec3d(ByteBuf buf, Vec3d vec) {
+		buf.writeDouble(vec.getX());
+		buf.writeDouble(vec.getY());
+		buf.writeDouble(vec.getZ());
 	}
 
 	/**
@@ -989,9 +999,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #readVec3d()
 	 */
 	public void writeVec3d(Vec3d vec) {
-		this.writeDouble(vec.getX());
-		this.writeDouble(vec.getY());
-		this.writeDouble(vec.getZ());
+		writeVec3d(this, vec);
 	}
 
 	/**
@@ -1529,6 +1537,22 @@ public class PacketByteBuf extends ByteBuf {
 			byte[] bs = bitSet.toByteArray();
 			this.writeBytes(Arrays.copyOf(bs, MathHelper.ceilDiv(size, 8)));
 		}
+	}
+
+	public static int readSyncId(ByteBuf buf) {
+		return VarInts.read(buf);
+	}
+
+	public int readSyncId() {
+		return readSyncId(this.parent);
+	}
+
+	public static void writeSyncId(ByteBuf buf, int syncId) {
+		VarInts.write(buf, syncId);
+	}
+
+	public void writeSyncId(int syncId) {
+		writeSyncId(this.parent, syncId);
 	}
 
 	@Override

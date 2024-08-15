@@ -3,6 +3,7 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.SquidEntityModel;
+import net.minecraft.client.render.entity.state.SquidEntityRenderState;
 import net.minecraft.entity.passive.GlowSquidEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -12,11 +13,12 @@ import net.minecraft.util.math.MathHelper;
 public class GlowSquidEntityRenderer extends SquidEntityRenderer<GlowSquidEntity> {
 	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/squid/glow_squid.png");
 
-	public GlowSquidEntityRenderer(EntityRendererFactory.Context context, SquidEntityModel<GlowSquidEntity> squidEntityModel) {
-		super(context, squidEntityModel);
+	public GlowSquidEntityRenderer(EntityRendererFactory.Context context, SquidEntityModel squidEntityModel, SquidEntityModel squidEntityModel2) {
+		super(context, squidEntityModel, squidEntityModel2);
 	}
 
-	public Identifier getTexture(GlowSquidEntity glowSquidEntity) {
+	@Override
+	public Identifier getTexture(SquidEntityRenderState squidEntityRenderState) {
 		return TEXTURE;
 	}
 

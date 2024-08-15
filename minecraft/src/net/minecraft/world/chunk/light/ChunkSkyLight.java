@@ -60,7 +60,7 @@ public class ChunkSkyLight {
 			} else {
 				for (int k = 15; k >= 0; k--) {
 					BlockState blockState2 = chunkSection.getBlockState(localX, k, localZ);
-					if (faceBlocksLight(chunk, mutable, blockState, mutable2, blockState2)) {
+					if (faceBlocksLight(blockState, blockState2)) {
 						return mutable.getY();
 					}
 
@@ -99,7 +99,7 @@ public class ChunkSkyLight {
 		BlockView blockView, int packedIndex, int value, BlockPos upperPos, BlockState upperState, BlockPos lowerPos, BlockState lowerState
 	) {
 		int i = upperPos.getY();
-		if (faceBlocksLight(blockView, upperPos, upperState, lowerPos, lowerState)) {
+		if (faceBlocksLight(upperState, lowerState)) {
 			if (i > value) {
 				this.set(packedIndex, i);
 				return true;
@@ -119,7 +119,7 @@ public class ChunkSkyLight {
 
 		while (mutable2.getY() >= this.minY) {
 			BlockState blockState3 = blockView.getBlockState(mutable2);
-			if (faceBlocksLight(blockView, mutable, blockState2, mutable2, blockState3)) {
+			if (faceBlocksLight(blockState2, blockState3)) {
 				return mutable.getY();
 			}
 
@@ -131,12 +131,12 @@ public class ChunkSkyLight {
 		return this.minY;
 	}
 
-	private static boolean faceBlocksLight(BlockView blockView, BlockPos upperPos, BlockState upperState, BlockPos lowerPos, BlockState lowerState) {
-		if (lowerState.getOpacity(blockView, lowerPos) != 0) {
+	private static boolean faceBlocksLight(BlockState upper, BlockState lower) {
+		if (lower.getOpacity() != 0) {
 			return true;
 		} else {
-			VoxelShape voxelShape = ChunkLightProvider.getOpaqueShape(blockView, upperPos, upperState, Direction.DOWN);
-			VoxelShape voxelShape2 = ChunkLightProvider.getOpaqueShape(blockView, lowerPos, lowerState, Direction.UP);
+			VoxelShape voxelShape = ChunkLightProvider.getOpaqueShape(upper, Direction.DOWN);
+			VoxelShape voxelShape2 = ChunkLightProvider.getOpaqueShape(lower, Direction.UP);
 			return VoxelShapes.unionCoversFullCube(voxelShape, voxelShape2);
 		}
 	}

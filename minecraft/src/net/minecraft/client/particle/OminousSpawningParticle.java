@@ -63,9 +63,9 @@ public class OminousSpawningParticle extends SpriteBillboardParticle {
 			this.x = this.startX + this.velocityX * (double)g;
 			this.y = this.startY + this.velocityY * (double)g;
 			this.z = this.startZ + this.velocityZ * (double)g;
-			int i = ColorHelper.Argb.lerp(f, this.fromColor, this.toColor);
-			this.setColor((float)ColorHelper.Argb.getRed(i) / 255.0F, (float)ColorHelper.Argb.getGreen(i) / 255.0F, (float)ColorHelper.Argb.getBlue(i) / 255.0F);
-			this.setAlpha((float)ColorHelper.Argb.getAlpha(i) / 255.0F);
+			int i = ColorHelper.lerp(f, this.fromColor, this.toColor);
+			this.setColor((float)ColorHelper.getRed(i) / 255.0F, (float)ColorHelper.getGreen(i) / 255.0F, (float)ColorHelper.getBlue(i) / 255.0F);
+			this.setAlpha((float)ColorHelper.getAlpha(i) / 255.0F);
 		}
 	}
 

@@ -16,12 +16,9 @@ public abstract class AbstractTexture implements AutoCloseable {
 	public static final int DEFAULT_ID = -1;
 	protected int glId = -1;
 	protected boolean bilinear;
-	protected boolean mipmap;
 
 	public void setFilter(boolean bilinear, boolean mipmap) {
 		RenderSystem.assertOnRenderThreadOrInit();
-		this.bilinear = bilinear;
-		this.mipmap = mipmap;
 		int i;
 		int j;
 		if (bilinear) {
@@ -58,6 +55,10 @@ public abstract class AbstractTexture implements AutoCloseable {
 			TextureUtil.releaseTextureId(this.glId);
 			this.glId = -1;
 		}
+	}
+
+	public boolean isBilinear() {
+		return this.bilinear;
 	}
 
 	public abstract void load(ResourceManager manager) throws IOException;

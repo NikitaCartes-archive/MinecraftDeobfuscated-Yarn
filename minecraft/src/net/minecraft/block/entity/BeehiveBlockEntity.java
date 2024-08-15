@@ -18,6 +18,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -392,7 +393,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 		public Entity loadEntity(World world, BlockPos pos) {
 			NbtCompound nbtCompound = this.entityData.copyNbt();
 			BeehiveBlockEntity.IRRELEVANT_BEE_NBT_KEYS.forEach(nbtCompound::remove);
-			Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, world, entityx -> entityx);
+			Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, world, SpawnReason.LOAD, entityx -> entityx);
 			if (entity != null && entity.getType().isIn(EntityTypeTags.BEEHIVE_INHABITORS)) {
 				entity.setNoGravity(true);
 				if (entity instanceof BeeEntity beeEntity) {

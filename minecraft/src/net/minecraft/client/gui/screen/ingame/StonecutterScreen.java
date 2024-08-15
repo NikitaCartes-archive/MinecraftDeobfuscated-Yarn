@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.recipe.RecipeEntry;
@@ -53,10 +54,10 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 		int i = this.x;
 		int j = this.y;
-		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, i, j, 0.0F, 0.0F, this.backgroundWidth, this.backgroundHeight, 256, 256);
 		int k = (int)(41.0F * this.scrollAmount);
 		Identifier identifier = this.shouldScroll() ? SCROLLER_TEXTURE : SCROLLER_DISABLED_TEXTURE;
-		context.drawGuiTexture(identifier, i + 119, j + 15 + k, 12, 15);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, i + 119, j + 15 + k, 12, 15);
 		int l = this.x + 52;
 		int m = this.y + 14;
 		int n = this.scrollOffset + 12;
@@ -65,8 +66,8 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 	}
 
 	@Override
-	protected void drawMouseoverTooltip(DrawContext context, int x, int y) {
-		super.drawMouseoverTooltip(context, x, y);
+	protected void drawMouseoverTooltip(DrawContext drawContext, int x, int y) {
+		super.drawMouseoverTooltip(drawContext, x, y);
 		if (this.canCraft) {
 			int i = this.x + 52;
 			int j = this.y + 14;
@@ -78,7 +79,7 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 				int n = i + m % 4 * 16;
 				int o = j + m / 4 * 18 + 2;
 				if (x >= n && x < n + 16 && y >= o && y < o + 18) {
-					context.drawItemTooltip(
+					drawContext.drawItemTooltip(
 						this.textRenderer, ((StonecuttingRecipe)((RecipeEntry)list.get(l)).value()).getResult(this.client.world.getRegistryManager()), x, y
 					);
 				}
@@ -101,7 +102,7 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 				identifier = RECIPE_TEXTURE;
 			}
 
-			context.drawGuiTexture(identifier, k, m - 1, 16, 18);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, k, m - 1, 16, 18);
 		}
 	}
 

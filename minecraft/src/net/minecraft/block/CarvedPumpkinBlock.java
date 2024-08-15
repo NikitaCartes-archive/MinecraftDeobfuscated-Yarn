@@ -9,6 +9,7 @@ import net.minecraft.block.pattern.BlockPatternBuilder;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -60,14 +61,14 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 	private void trySpawnEntity(World world, BlockPos pos) {
 		BlockPattern.Result result = this.getSnowGolemPattern().searchAround(world, pos);
 		if (result != null) {
-			SnowGolemEntity snowGolemEntity = EntityType.SNOW_GOLEM.create(world);
+			SnowGolemEntity snowGolemEntity = EntityType.SNOW_GOLEM.create(world, SpawnReason.TRIGGERED);
 			if (snowGolemEntity != null) {
 				spawnEntity(world, result, snowGolemEntity, result.translate(0, 2, 0).getBlockPos());
 			}
 		} else {
 			BlockPattern.Result result2 = this.getIronGolemPattern().searchAround(world, pos);
 			if (result2 != null) {
-				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(world);
+				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(world, SpawnReason.TRIGGERED);
 				if (ironGolemEntity != null) {
 					ironGolemEntity.setPlayerCreated(true);
 					spawnEntity(world, result2, ironGolemEntity, result2.translate(1, 2, 0).getBlockPos());

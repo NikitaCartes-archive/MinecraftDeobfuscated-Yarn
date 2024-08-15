@@ -9,7 +9,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.BuddingAmethystBlock;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -60,7 +59,7 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 			int q = geodeFeatureConfig.outerWallDistance.get(random);
 			BlockPos blockPos2 = blockPos.add(o, p, q);
 			BlockState blockState = structureWorldAccess.getBlockState(blockPos2);
-			if (blockState.isAir() || blockState.isIn(BlockTags.GEODE_INVALID_BLOCKS)) {
+			if (blockState.isAir() || blockState.isIn(geodeLayerConfig.invalidBlocks)) {
 				if (++m > geodeFeatureConfig.invalidBlocksThreshold) {
 					return false;
 				}

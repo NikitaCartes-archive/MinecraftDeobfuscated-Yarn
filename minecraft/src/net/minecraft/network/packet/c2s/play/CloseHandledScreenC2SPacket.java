@@ -18,11 +18,11 @@ public class CloseHandledScreenC2SPacket implements Packet<ServerPlayPacketListe
 	}
 
 	private CloseHandledScreenC2SPacket(PacketByteBuf buf) {
-		this.syncId = buf.readByte();
+		this.syncId = buf.readSyncId();
 	}
 
 	private void write(PacketByteBuf buf) {
-		buf.writeByte(this.syncId);
+		buf.writeSyncId(this.syncId);
 	}
 
 	@Override

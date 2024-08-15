@@ -10,6 +10,7 @@ import net.minecraft.item.ProjectileItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Direction;
@@ -67,29 +68,40 @@ public class OminousItemSpawnerEntity extends Entity {
 	}
 
 	private void spawnItem() {
-		World world = this.getWorld();
-		ItemStack itemStack = this.getItem();
-		if (!itemStack.isEmpty()) {
-			Entity entity;
-			if (itemStack.getItem() instanceof ProjectileItem projectileItem) {
-				Direction direction = Direction.DOWN;
-				ProjectileEntity projectileEntity = projectileItem.createEntity(world, this.getPos(), itemStack, direction);
-				projectileEntity.setOwner(this);
-				ProjectileItem.Settings settings = projectileItem.getProjectileSettings();
-				projectileItem.initializeProjectile(
-					projectileEntity, (double)direction.getOffsetX(), (double)direction.getOffsetY(), (double)direction.getOffsetZ(), settings.power(), settings.uncertainty()
-				);
-				settings.overrideDispenseEvent().ifPresent(event -> world.syncWorldEvent(event, this.getBlockPos(), 0));
-				entity = projectileEntity;
-			} else {
-				entity = new ItemEntity(world, this.getX(), this.getY(), this.getZ(), itemStack);
-			}
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			ItemStack itemStack = this.getItem();
+			if (!itemStack.isEmpty()) {
+				Entity entity;
+				if (itemStack.getItem() instanceof ProjectileItem projectileItem) {
+					entity = this.spawnProjectile(serverWorld, projectileItem, itemStack);
+				} else {
+					entity = new ItemEntity(serverWorld, this.getX(), this.getY(), this.getZ(), itemStack);
+					serverWorld.spawnEntity(entity);
+				}
 
-			world.spawnEntity(entity);
-			world.syncWorldEvent(WorldEvents.OMINOUS_ITEM_SPAWNER_SPAWNS_ITEM, this.getBlockPos(), 1);
-			world.emitGameEvent(entity, GameEvent.ENTITY_PLACE, this.getPos());
-			this.setItem(ItemStack.EMPTY);
+				serverWorld.syncWorldEvent(WorldEvents.OMINOUS_ITEM_SPAWNER_SPAWNS_ITEM, this.getBlockPos(), 1);
+				serverWorld.emitGameEvent(entity, GameEvent.ENTITY_PLACE, this.getPos());
+				this.setItem(ItemStack.EMPTY);
+			}
 		}
+	}
+
+	private Entity spawnProjectile(ServerWorld world, ProjectileItem item, ItemStack stack) {
+		ProjectileItem.Settings settings = item.getProjectileSettings();
+		settings.overrideDispenseEvent().ifPresent(dispenseEvent -> world.syncWorldEvent(dispenseEvent, this.getBlockPos(), 0));
+		Direction direction = Direction.DOWN;
+		ProjectileEntity projectileEntity = ProjectileEntity.spawnWithVelocity(
+			item.createEntity(world, this.getPos(), stack, direction),
+			world,
+			stack,
+			(double)direction.getOffsetX(),
+			(double)direction.getOffsetY(),
+			(double)direction.getOffsetZ(),
+			settings.power(),
+			settings.uncertainty()
+		);
+		projectileEntity.setOwner(this);
+		return projectileEntity;
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.SilverfishEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -52,7 +53,7 @@ public class InfestedBlock extends Block {
 	}
 
 	private void spawnSilverfish(ServerWorld world, BlockPos pos) {
-		SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(world);
+		SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(world, SpawnReason.TRIGGERED);
 		if (silverfishEntity != null) {
 			silverfishEntity.refreshPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5, 0.0F, 0.0F);
 			world.spawnEntity(silverfishEntity);

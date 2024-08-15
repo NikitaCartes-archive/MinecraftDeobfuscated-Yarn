@@ -69,12 +69,12 @@ public class VillagerXpRebuildFix extends DataFix {
 	private static Typed<?> fixLevel(Typed<?> villagerTyped, int level) {
 		return villagerTyped.update(
 			DSL.remainderFinder(),
-			villagerdynamic -> villagerdynamic.update("VillagerData", villagerDataDynamic -> villagerDataDynamic.set("level", villagerDataDynamic.createInt(level)))
+			villager -> villager.update("VillagerData", villagerDataDynamic -> villagerDataDynamic.set("level", villagerDataDynamic.createInt(level)))
 		);
 	}
 
 	private static Typed<?> fixXp(Typed<?> villagerTyped, int level) {
 		int i = levelToXp(level);
-		return villagerTyped.update(DSL.remainderFinder(), villagerDynamic -> villagerDynamic.set("Xp", villagerDynamic.createInt(i)));
+		return villagerTyped.update(DSL.remainderFinder(), villager -> villager.set("Xp", villager.createInt(i)));
 	}
 }

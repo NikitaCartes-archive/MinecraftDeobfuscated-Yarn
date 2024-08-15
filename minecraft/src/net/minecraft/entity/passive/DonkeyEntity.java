@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -57,7 +58,7 @@ public class DonkeyEntity extends AbstractDonkeyEntity {
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
 		EntityType<? extends AbstractHorseEntity> entityType = entity instanceof HorseEntity ? EntityType.MULE : EntityType.DONKEY;
-		AbstractHorseEntity abstractHorseEntity = entityType.create(world);
+		AbstractHorseEntity abstractHorseEntity = entityType.create(world, SpawnReason.BREEDING);
 		if (abstractHorseEntity != null) {
 			this.setChildAttributes(entity, abstractHorseEntity);
 		}

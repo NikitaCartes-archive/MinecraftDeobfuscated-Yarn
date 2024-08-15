@@ -8,7 +8,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.render.entity.state.MinecartEntityRenderState;
 
 /**
  * Represents the model of a minecart-like entity.
@@ -38,7 +38,7 @@ import net.minecraft.entity.Entity;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class MinecartEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+public class MinecartEntityModel extends EntityModel<MinecartEntityRenderState> {
 	private final ModelPart root;
 
 	public MinecartEntityModel(ModelPart root) {
@@ -53,7 +53,7 @@ public class MinecartEntityModel<T extends Entity> extends SinglePartEntityModel
 		int k = 16;
 		int l = 4;
 		modelPartData.addChild(
-			"bottom",
+			EntityModelPartNames.BOTTOM,
 			ModelPartBuilder.create().uv(0, 10).cuboid(-10.0F, -8.0F, -1.0F, 20.0F, 16.0F, 2.0F),
 			ModelTransform.of(0.0F, 4.0F, 0.0F, (float) (Math.PI / 2), 0.0F, 0.0F)
 		);
@@ -74,8 +74,7 @@ public class MinecartEntityModel<T extends Entity> extends SinglePartEntityModel
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 
-	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+	public void setAngles(MinecartEntityRenderState minecartEntityRenderState) {
 	}
 
 	@Override

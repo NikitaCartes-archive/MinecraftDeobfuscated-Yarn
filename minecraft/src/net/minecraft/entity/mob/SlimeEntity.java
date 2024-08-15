@@ -88,9 +88,9 @@ public class SlimeEntity extends MobEntity implements Monster {
 		this.dataTracker.set(SLIME_SIZE, i);
 		this.refreshPosition();
 		this.calculateDimensions();
-		this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue((double)(i * i));
-		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * (float)i));
-		this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue((double)i);
+		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue((double)(i * i));
+		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * (float)i));
+		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue((double)i);
 		if (heal) {
 			this.setHealth(this.getMaxHealth());
 		}
@@ -131,8 +131,8 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	@Override
 	public void tick() {
-		this.stretch = this.stretch + (this.targetStretch - this.stretch) * 0.5F;
 		this.lastStretch = this.stretch;
+		this.stretch = this.stretch + (this.targetStretch - this.stretch) * 0.5F;
 		super.tick();
 		if (this.isOnGround() && !this.onGroundLastTick) {
 			float f = this.getDimensions(this.getPose()).width() * 2.0F;
@@ -206,7 +206,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 			for (int l = 0; l < k; l++) {
 				float h = ((float)(l % 2) - 0.5F) * g;
 				float m = ((float)(l / 2) - 0.5F) * g;
-				SlimeEntity slimeEntity = this.getType().create(this.getWorld());
+				SlimeEntity slimeEntity = this.getType().create(this.getWorld(), SpawnReason.TRIGGERED);
 				if (slimeEntity != null) {
 					if (this.isPersistent()) {
 						slimeEntity.setPersistent();
@@ -262,7 +262,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	protected float getDamageAmount() {
-		return (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+		return (float)this.getAttributeValue(EntityAttributes.ATTACK_DAMAGE);
 	}
 
 	@Override
@@ -280,36 +280,32 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	public static boolean canSpawn(EntityType<SlimeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		if (SpawnReason.isAnySpawner(spawnReason)) {
-			return canMobSpawn(type, world, spawnReason, pos, random);
-		} else {
-			if (world.getDifficulty() != Difficulty.PEACEFUL) {
-				if (spawnReason == SpawnReason.SPAWNER) {
-					return canMobSpawn(type, world, spawnReason, pos, random);
-				}
-
-				if (world.getBiome(pos).isIn(BiomeTags.ALLOWS_SURFACE_SLIME_SPAWNS)
-					&& pos.getY() > 50
-					&& pos.getY() < 70
-					&& random.nextFloat() < 0.5F
-					&& random.nextFloat() < world.getMoonSize()
-					&& world.getLightLevel(pos) <= random.nextInt(8)) {
-					return canMobSpawn(type, world, spawnReason, pos, random);
-				}
-
-				if (!(world instanceof StructureWorldAccess)) {
-					return false;
-				}
-
-				ChunkPos chunkPos = new ChunkPos(pos);
-				boolean bl = ChunkRandom.getSlimeRandom(chunkPos.x, chunkPos.z, ((StructureWorldAccess)world).getSeed(), 987234911L).nextInt(10) == 0;
-				if (random.nextInt(10) == 0 && bl && pos.getY() < 40) {
-					return canMobSpawn(type, world, spawnReason, pos, random);
-				}
+		if (world.getDifficulty() != Difficulty.PEACEFUL) {
+			if (SpawnReason.isAnySpawner(spawnReason)) {
+				return canMobSpawn(type, world, spawnReason, pos, random);
 			}
 
-			return false;
+			if (world.getBiome(pos).isIn(BiomeTags.ALLOWS_SURFACE_SLIME_SPAWNS)
+				&& pos.getY() > 50
+				&& pos.getY() < 70
+				&& random.nextFloat() < 0.5F
+				&& random.nextFloat() < world.getMoonSize()
+				&& world.getLightLevel(pos) <= random.nextInt(8)) {
+				return canMobSpawn(type, world, spawnReason, pos, random);
+			}
+
+			if (!(world instanceof StructureWorldAccess)) {
+				return false;
+			}
+
+			ChunkPos chunkPos = new ChunkPos(pos);
+			boolean bl = ChunkRandom.getSlimeRandom(chunkPos.x, chunkPos.z, ((StructureWorldAccess)world).getSeed(), 987234911L).nextInt(10) == 0;
+			if (random.nextInt(10) == 0 && bl && pos.getY() < 40) {
+				return canMobSpawn(type, world, spawnReason, pos, random);
+			}
 		}
+
+		return false;
 	}
 
 	@Override
@@ -497,7 +493,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 			} else {
 				this.state = MoveControl.State.WAIT;
 				if (this.entity.isOnGround()) {
-					this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
+					this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.MOVEMENT_SPEED)));
 					if (this.ticksUntilJump-- <= 0) {
 						this.ticksUntilJump = this.slime.getTicksUntilNextJump();
 						if (this.jumpOften) {
@@ -514,7 +510,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 						this.entity.setMovementSpeed(0.0F);
 					}
 				} else {
-					this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
+					this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.MOVEMENT_SPEED)));
 				}
 			}
 		}

@@ -2,7 +2,6 @@ package net.minecraft.client.gui.hud;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collection;
 import java.util.Comparator;
@@ -107,6 +106,7 @@ public class InGameHud {
 	private static final Identifier VEHICLE_FULL_HEART_TEXTURE = Identifier.ofVanilla("hud/heart/vehicle_full");
 	private static final Identifier VEHICLE_HALF_HEART_TEXTURE = Identifier.ofVanilla("hud/heart/vehicle_half");
 	private static final Identifier VIGNETTE_TEXTURE = Identifier.ofVanilla("textures/misc/vignette.png");
+	public static final Identifier NAUSEA_TEXTURE = Identifier.ofVanilla("textures/misc/nausea.png");
 	private static final Identifier PUMPKIN_BLUR = Identifier.ofVanilla("textures/misc/pumpkinblur.png");
 	private static final Identifier SPYGLASS_SCOPE = Identifier.ofVanilla("textures/misc/spyglass_scope.png");
 	private static final Identifier POWDER_SNOW_OUTLINE = Identifier.ofVanilla("textures/misc/powder_snow_outline.png");
@@ -123,6 +123,8 @@ public class InGameHud {
 	private static final int field_33942 = 9;
 	private static final int field_33943 = 8;
 	private static final float field_35431 = 0.2F;
+	private static final int field_52769 = 5;
+	private static final int field_52770 = 5;
 	private final Random random = Random.create();
 	private final MinecraftClient client;
 	private final ChatHud chatHud;
@@ -199,9 +201,7 @@ public class InGameHud {
 	}
 
 	public void render(DrawContext context, RenderTickCounter tickCounter) {
-		RenderSystem.enableDepthTest();
 		this.layeredDrawer.render(context, tickCounter);
-		RenderSystem.disableDepthTest();
 	}
 
 	private void renderMiscOverlays(DrawContext context, RenderTickCounter tickCounter) {
@@ -228,8 +228,16 @@ public class InGameHud {
 		}
 
 		float g = MathHelper.lerp(tickCounter.getTickDelta(false), this.client.player.prevNauseaIntensity, this.client.player.nauseaIntensity);
-		if (g > 0.0F && !this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
-			this.renderPortalOverlay(context, g);
+		if (g > 0.0F) {
+			if (!this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
+				this.renderPortalOverlay(context, g);
+			} else {
+				float h = this.client.options.getDistortionEffectScale().getValue().floatValue();
+				if (h < 1.0F) {
+					float i = g * (1.0F - h);
+					this.renderNauseaOverlay(context, i);
+				}
+			}
 		}
 	}
 
@@ -265,7 +273,7 @@ public class InGameHud {
 				if (this.overlayTinted) {
 					j = MathHelper.hsvToArgb(f / 50.0F, 0.7F, 0.6F, i);
 				} else {
-					j = ColorHelper.Argb.withAlpha(i, -1);
+					j = ColorHelper.withAlpha(i, Colors.WHITE);
 				}
 
 				int k = textRenderer.getWidth(this.overlayMessage);
@@ -299,7 +307,7 @@ public class InGameHud {
 				context.getMatrices().push();
 				context.getMatrices().scale(4.0F, 4.0F, 4.0F);
 				int j = textRenderer.getWidth(this.title);
-				int k = ColorHelper.Argb.withAlpha(i, -1);
+				int k = ColorHelper.withAlpha(i, Colors.WHITE);
 				context.drawTextWithBackground(textRenderer, this.title, -j / 2, -10, j, k);
 				context.getMatrices().pop();
 				if (this.subtitle != null) {
@@ -359,7 +367,6 @@ public class InGameHud {
 		GameOptions gameOptions = this.client.options;
 		if (gameOptions.getPerspective().isFirstPerson()) {
 			if (this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR || this.shouldRenderSpectatorCrosshair(this.client.crosshairTarget)) {
-				RenderSystem.enableBlend();
 				if (this.debugHud.shouldShowDebugHud() && !this.client.player.hasReducedDebugInfo() && !gameOptions.getReducedDebugInfo().getValue()) {
 					Camera camera = this.client.gameRenderer.getCamera();
 					Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
@@ -369,16 +376,13 @@ public class InGameHud {
 					matrix4fStack.rotateX(-camera.getPitch() * (float) (Math.PI / 180.0));
 					matrix4fStack.rotateY(camera.getYaw() * (float) (Math.PI / 180.0));
 					matrix4fStack.scale(-1.0F, -1.0F, -1.0F);
-					RenderSystem.applyModelViewMatrix();
 					RenderSystem.renderCrosshair(10);
 					matrix4fStack.popMatrix();
-					RenderSystem.applyModelViewMatrix();
 				} else {
-					RenderSystem.blendFuncSeparate(
-						GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
-					);
 					int i = 15;
-					context.drawGuiTexture(CROSSHAIR_TEXTURE, (context.getScaledWindowWidth() - 15) / 2, (context.getScaledWindowHeight() - 15) / 2, 15, 15);
+					context.drawGuiTexture(
+						RenderLayer::getCrosshair, CROSSHAIR_TEXTURE, (context.getScaledWindowWidth() - 15) / 2, (context.getScaledWindowHeight() - 15) / 2, 15, 15
+					);
 					if (this.client.options.getAttackIndicator().getValue() == AttackIndicator.CROSSHAIR) {
 						float f = this.client.player.getAttackCooldownProgress(0.0F);
 						boolean bl = false;
@@ -390,18 +394,14 @@ public class InGameHud {
 						int j = context.getScaledWindowHeight() / 2 - 7 + 16;
 						int k = context.getScaledWindowWidth() / 2 - 8;
 						if (bl) {
-							context.drawGuiTexture(CROSSHAIR_ATTACK_INDICATOR_FULL_TEXTURE, k, j, 16, 16);
+							context.drawGuiTexture(RenderLayer::getCrosshair, CROSSHAIR_ATTACK_INDICATOR_FULL_TEXTURE, k, j, 16, 16);
 						} else if (f < 1.0F) {
 							int l = (int)(f * 17.0F);
-							context.drawGuiTexture(CROSSHAIR_ATTACK_INDICATOR_BACKGROUND_TEXTURE, k, j, 16, 4);
-							context.drawGuiTexture(CROSSHAIR_ATTACK_INDICATOR_PROGRESS_TEXTURE, 16, 4, 0, 0, k, j, l, 4);
+							context.drawGuiTexture(RenderLayer::getCrosshair, CROSSHAIR_ATTACK_INDICATOR_BACKGROUND_TEXTURE, k, j, 16, 4);
+							context.drawGuiTexture(RenderLayer::getCrosshair, CROSSHAIR_ATTACK_INDICATOR_PROGRESS_TEXTURE, 16, 4, 0, 0, k, j, l, 4);
 						}
 					}
-
-					RenderSystem.defaultBlendFunc();
 				}
-
-				RenderSystem.disableBlend();
 			}
 		}
 	}
@@ -427,7 +427,6 @@ public class InGameHud {
 				return;
 			}
 
-			RenderSystem.enableBlend();
 			int i = 0;
 			int j = 0;
 			StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
@@ -453,14 +452,15 @@ public class InGameHud {
 
 					float f = 1.0F;
 					if (statusEffectInstance.isAmbient()) {
-						context.drawGuiTexture(EFFECT_BACKGROUND_AMBIENT_TEXTURE, k, l, 24, 24);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, EFFECT_BACKGROUND_AMBIENT_TEXTURE, k, l, 24, 24);
 					} else {
-						context.drawGuiTexture(EFFECT_BACKGROUND_TEXTURE, k, l, 24, 24);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, EFFECT_BACKGROUND_TEXTURE, k, l, 24, 24);
 						if (statusEffectInstance.isDurationBelow(200)) {
 							int m = statusEffectInstance.getDuration();
 							int n = 10 - m / 20;
 							f = MathHelper.clamp((float)m / 10.0F / 5.0F * 0.5F, 0.0F, 0.5F)
 								+ MathHelper.cos((float)m * (float) Math.PI / 5.0F) * MathHelper.clamp((float)n / 10.0F * 0.25F, 0.0F, 0.25F);
+							f = MathHelper.clamp(f, 0.0F, 1.0F);
 						}
 					}
 
@@ -469,15 +469,13 @@ public class InGameHud {
 					int o = l;
 					float g = f;
 					list.add((Runnable)() -> {
-						context.setShaderColor(1.0F, 1.0F, 1.0F, g);
-						context.drawSprite(n + 3, o + 3, 0, 18, 18, sprite);
-						context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+						int kx = ColorHelper.getWhite(g);
+						context.drawSprite(RenderLayer::getGuiTextured, sprite, n + 3, o + 3, 18, 18, kx);
 					});
 				}
 			}
 
 			list.forEach(Runnable::run);
-			RenderSystem.disableBlend();
 		}
 	}
 
@@ -516,23 +514,26 @@ public class InGameHud {
 			int i = context.getScaledWindowWidth() / 2;
 			int j = 182;
 			int k = 91;
-			RenderSystem.enableBlend();
 			context.getMatrices().push();
 			context.getMatrices().translate(0.0F, 0.0F, -90.0F);
-			context.drawGuiTexture(HOTBAR_TEXTURE, i - 91, context.getScaledWindowHeight() - 22, 182, 22);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, HOTBAR_TEXTURE, i - 91, context.getScaledWindowHeight() - 22, 182, 22);
 			context.drawGuiTexture(
-				HOTBAR_SELECTION_TEXTURE, i - 91 - 1 + playerEntity.getInventory().selectedSlot * 20, context.getScaledWindowHeight() - 22 - 1, 24, 23
+				RenderLayer::getGuiTextured,
+				HOTBAR_SELECTION_TEXTURE,
+				i - 91 - 1 + playerEntity.getInventory().selectedSlot * 20,
+				context.getScaledWindowHeight() - 22 - 1,
+				24,
+				23
 			);
 			if (!itemStack.isEmpty()) {
 				if (arm == Arm.LEFT) {
-					context.drawGuiTexture(HOTBAR_OFFHAND_LEFT_TEXTURE, i - 91 - 29, context.getScaledWindowHeight() - 23, 29, 24);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, HOTBAR_OFFHAND_LEFT_TEXTURE, i - 91 - 29, context.getScaledWindowHeight() - 23, 29, 24);
 				} else {
-					context.drawGuiTexture(HOTBAR_OFFHAND_RIGHT_TEXTURE, i + 91, context.getScaledWindowHeight() - 23, 29, 24);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, HOTBAR_OFFHAND_RIGHT_TEXTURE, i + 91, context.getScaledWindowHeight() - 23, 29, 24);
 				}
 			}
 
 			context.getMatrices().pop();
-			RenderSystem.disableBlend();
 			int l = 1;
 
 			for (int m = 0; m < 9; m++) {
@@ -551,7 +552,6 @@ public class InGameHud {
 			}
 
 			if (this.client.options.getAttackIndicator().getValue() == AttackIndicator.HOTBAR) {
-				RenderSystem.enableBlend();
 				float f = this.client.player.getAttackCooldownProgress(0.0F);
 				if (f < 1.0F) {
 					int n = context.getScaledWindowHeight() - 20;
@@ -561,11 +561,9 @@ public class InGameHud {
 					}
 
 					int p = (int)(f * 19.0F);
-					context.drawGuiTexture(HOTBAR_ATTACK_INDICATOR_BACKGROUND_TEXTURE, o, n, 18, 18);
-					context.drawGuiTexture(HOTBAR_ATTACK_INDICATOR_PROGRESS_TEXTURE, 18, 18, 0, 18 - p, o, n + 18 - p, 18, p);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, HOTBAR_ATTACK_INDICATOR_BACKGROUND_TEXTURE, o, n, 18, 18);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, HOTBAR_ATTACK_INDICATOR_PROGRESS_TEXTURE, 18, 18, 0, 18 - p, o, n + 18 - p, 18, p);
 				}
-
-				RenderSystem.disableBlend();
 			}
 		}
 	}
@@ -576,15 +574,13 @@ public class InGameHud {
 		int i = 182;
 		int j = (int)(f * 183.0F);
 		int k = context.getScaledWindowHeight() - 32 + 3;
-		RenderSystem.enableBlend();
-		context.drawGuiTexture(JUMP_BAR_BACKGROUND_TEXTURE, x, k, 182, 5);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, JUMP_BAR_BACKGROUND_TEXTURE, x, k, 182, 5);
 		if (mount.getJumpCooldown() > 0) {
-			context.drawGuiTexture(JUMP_BAR_COOLDOWN_TEXTURE, x, k, 182, 5);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, JUMP_BAR_COOLDOWN_TEXTURE, x, k, 182, 5);
 		} else if (j > 0) {
-			context.drawGuiTexture(JUMP_BAR_PROGRESS_TEXTURE, 182, 5, 0, 0, x, k, j, 5);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, JUMP_BAR_PROGRESS_TEXTURE, 182, 5, 0, 0, x, k, j, 5);
 		}
 
-		RenderSystem.disableBlend();
 		this.client.getProfiler().pop();
 	}
 
@@ -595,13 +591,10 @@ public class InGameHud {
 			int j = 182;
 			int k = (int)(this.client.player.experienceProgress * 183.0F);
 			int l = context.getScaledWindowHeight() - 32 + 3;
-			RenderSystem.enableBlend();
-			context.drawGuiTexture(EXPERIENCE_BAR_BACKGROUND_TEXTURE, x, l, 182, 5);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, EXPERIENCE_BAR_BACKGROUND_TEXTURE, x, l, 182, 5);
 			if (k > 0) {
-				context.drawGuiTexture(EXPERIENCE_BAR_PROGRESS_TEXTURE, 182, 5, 0, 0, x, l, k, 5);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, EXPERIENCE_BAR_PROGRESS_TEXTURE, 182, 5, 0, 0, x, l, k, 5);
 			}
-
-			RenderSystem.disableBlend();
 		}
 
 		this.client.getProfiler().pop();
@@ -648,7 +641,7 @@ public class InGameHud {
 			}
 
 			if (l > 0) {
-				context.drawTextWithBackground(this.getTextRenderer(), mutableText, j, k, i, ColorHelper.Argb.withAlpha(l, -1));
+				context.drawTextWithBackground(this.getTextRenderer(), mutableText, j, k, i, ColorHelper.withAlpha(l, Colors.WHITE));
 			}
 		}
 
@@ -675,7 +668,7 @@ public class InGameHud {
 		}
 	}
 
-	private void renderScoreboardSidebar(DrawContext context, ScoreboardObjective objective) {
+	private void renderScoreboardSidebar(DrawContext drawContext, ScoreboardObjective objective) {
 		Scoreboard scoreboard = objective.getScoreboard();
 		NumberFormat numberFormat = objective.getNumberFormatOr(StyledNumberFormat.RED);
 
@@ -706,28 +699,25 @@ public class InGameHud {
 			j = Math.max(j, this.getTextRenderer().getWidth(sidebarEntry.name) + (sidebarEntry.scoreWidth > 0 ? k + sidebarEntry.scoreWidth : 0));
 		}
 
-		int l = j;
-		context.draw(() -> {
-			int kx = sidebarEntrys.length;
-			int lx = kx * 9;
-			int m = context.getScaledWindowHeight() / 2 + lx / 3;
-			int n = 3;
-			int o = context.getScaledWindowWidth() - l - 3;
-			int p = context.getScaledWindowWidth() - 3 + 2;
-			int q = this.client.options.getTextBackgroundColor(0.3F);
-			int r = this.client.options.getTextBackgroundColor(0.4F);
-			int s = m - kx * 9;
-			context.fill(o - 2, s - 9 - 1, p, s - 1, r);
-			context.fill(o - 2, s - 1, p, m, q);
-			context.drawText(this.getTextRenderer(), text, o + l / 2 - i / 2, s - 9, Colors.WHITE, false);
+		int m = sidebarEntrys.length;
+		int n = m * 9;
+		int o = drawContext.getScaledWindowHeight() / 2 + n / 3;
+		int p = 3;
+		int q = drawContext.getScaledWindowWidth() - j - 3;
+		int r = drawContext.getScaledWindowWidth() - 3 + 2;
+		int s = this.client.options.getTextBackgroundColor(0.3F);
+		int t = this.client.options.getTextBackgroundColor(0.4F);
+		int u = o - m * 9;
+		drawContext.fill(q - 2, u - 9 - 1, r, u - 1, t);
+		drawContext.fill(q - 2, u - 1, r, o, s);
+		drawContext.drawText(this.getTextRenderer(), text, q + j / 2 - i / 2, u - 9, Colors.WHITE, false);
 
-			for (int t = 0; t < kx; t++) {
-				SidebarEntry sidebarEntryx = sidebarEntrys[t];
-				int u = m - (kx - t) * 9;
-				context.drawText(this.getTextRenderer(), sidebarEntryx.name, o, u, Colors.WHITE, false);
-				context.drawText(this.getTextRenderer(), sidebarEntryx.score, p - sidebarEntryx.scoreWidth, u, Colors.WHITE, false);
-			}
-		});
+		for (int v = 0; v < m; v++) {
+			SidebarEntry sidebarEntry2 = sidebarEntrys[v];
+			int w = o - (m - v) * 9;
+			drawContext.drawText(this.getTextRenderer(), sidebarEntry2.name, q, w, Colors.WHITE, false);
+			drawContext.drawText(this.getTextRenderer(), sidebarEntry2.score, r - sidebarEntry2.scoreWidth, w, Colors.WHITE, false);
+		}
 	}
 
 	@Nullable
@@ -788,7 +778,6 @@ public class InGameHud {
 			}
 
 			if (l - this.lastHealthCheckTime > 1000L) {
-				this.lastHealthValue = i;
 				this.renderHealthValue = i;
 				this.lastHealthCheckTime = l;
 			}
@@ -799,7 +788,7 @@ public class InGameHud {
 			int k = context.getScaledWindowWidth() / 2 - 91;
 			int m = context.getScaledWindowWidth() / 2 + 91;
 			int n = context.getScaledWindowHeight() - 39;
-			float f = Math.max((float)playerEntity.getAttributeValue(EntityAttributes.GENERIC_MAX_HEALTH), (float)Math.max(j, i));
+			float f = Math.max((float)playerEntity.getAttributeValue(EntityAttributes.MAX_HEALTH), (float)Math.max(j, i));
 			int o = MathHelper.ceil(playerEntity.getAbsorptionAmount());
 			int p = MathHelper.ceil((f + (float)o) / 2.0F / 10.0F);
 			int q = Math.max(10 - (p - 2), 3);
@@ -829,17 +818,14 @@ public class InGameHud {
 				r -= w * 10;
 				int x = MathHelper.ceil((double)(v - 2) * 10.0 / (double)u);
 				int y = MathHelper.ceil((double)v * 10.0 / (double)u) - x;
-				RenderSystem.enableBlend();
 
 				for (int z = 0; z < x + y; z++) {
 					if (z < x) {
-						context.drawGuiTexture(AIR_TEXTURE, m - z * 8 - 9, r, 9, 9);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, AIR_TEXTURE, m - z * 8 - 9, r, 9, 9);
 					} else {
-						context.drawGuiTexture(AIR_BURSTING_TEXTURE, m - z * 8 - 9, r, 9, 9);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, AIR_BURSTING_TEXTURE, m - z * 8 - 9, r, 9, 9);
 					}
 				}
-
-				RenderSystem.disableBlend();
 			}
 
 			this.client.getProfiler().pop();
@@ -849,25 +835,22 @@ public class InGameHud {
 	private static void renderArmor(DrawContext context, PlayerEntity player, int i, int j, int k, int x) {
 		int l = player.getArmor();
 		if (l > 0) {
-			RenderSystem.enableBlend();
 			int m = i - (j - 1) * k - 10;
 
 			for (int n = 0; n < 10; n++) {
 				int o = x + n * 8;
 				if (n * 2 + 1 < l) {
-					context.drawGuiTexture(ARMOR_FULL_TEXTURE, o, m, 9, 9);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, ARMOR_FULL_TEXTURE, o, m, 9, 9);
 				}
 
 				if (n * 2 + 1 == l) {
-					context.drawGuiTexture(ARMOR_HALF_TEXTURE, o, m, 9, 9);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, ARMOR_HALF_TEXTURE, o, m, 9, 9);
 				}
 
 				if (n * 2 + 1 > l) {
-					context.drawGuiTexture(ARMOR_EMPTY_TEXTURE, o, m, 9, 9);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, ARMOR_EMPTY_TEXTURE, o, m, 9, 9);
 				}
 			}
-
-			RenderSystem.disableBlend();
 		}
 	}
 
@@ -927,15 +910,12 @@ public class InGameHud {
 	}
 
 	private void drawHeart(DrawContext context, InGameHud.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half) {
-		RenderSystem.enableBlend();
-		context.drawGuiTexture(type.getTexture(hardcore, half, blinking), x, y, 9, 9);
-		RenderSystem.disableBlend();
+		context.drawGuiTexture(RenderLayer::getGuiTextured, type.getTexture(hardcore, half, blinking), x, y, 9, 9);
 	}
 
 	private void renderFood(DrawContext context, PlayerEntity player, int top, int right) {
 		HungerManager hungerManager = player.getHungerManager();
 		int i = hungerManager.getFoodLevel();
-		RenderSystem.enableBlend();
 
 		for (int j = 0; j < 10; j++) {
 			int k = top;
@@ -957,17 +937,15 @@ public class InGameHud {
 			}
 
 			int l = right - j * 8 - 9;
-			context.drawGuiTexture(identifier, l, k, 9, 9);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, l, k, 9, 9);
 			if (j * 2 + 1 < i) {
-				context.drawGuiTexture(identifier3, l, k, 9, 9);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, identifier3, l, k, 9, 9);
 			}
 
 			if (j * 2 + 1 == i) {
-				context.drawGuiTexture(identifier2, l, k, 9, 9);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, identifier2, l, k, 9, 9);
 			}
 		}
-
-		RenderSystem.disableBlend();
 	}
 
 	private void renderMountHealth(DrawContext context) {
@@ -980,55 +958,44 @@ public class InGameHud {
 				int k = context.getScaledWindowHeight() - 39;
 				int l = context.getScaledWindowWidth() / 2 + 91;
 				int m = k;
-				int n = 0;
-				RenderSystem.enableBlend();
 
-				while (i > 0) {
+				for (int n = 0; i > 0; n += 20) {
 					int o = Math.min(i, 10);
 					i -= o;
 
 					for (int p = 0; p < o; p++) {
 						int q = l - p * 8 - 9;
-						context.drawGuiTexture(VEHICLE_CONTAINER_HEART_TEXTURE, q, m, 9, 9);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, VEHICLE_CONTAINER_HEART_TEXTURE, q, m, 9, 9);
 						if (p * 2 + 1 + n < j) {
-							context.drawGuiTexture(VEHICLE_FULL_HEART_TEXTURE, q, m, 9, 9);
+							context.drawGuiTexture(RenderLayer::getGuiTextured, VEHICLE_FULL_HEART_TEXTURE, q, m, 9, 9);
 						}
 
 						if (p * 2 + 1 + n == j) {
-							context.drawGuiTexture(VEHICLE_HALF_HEART_TEXTURE, q, m, 9, 9);
+							context.drawGuiTexture(RenderLayer::getGuiTextured, VEHICLE_HALF_HEART_TEXTURE, q, m, 9, 9);
 						}
 					}
 
 					m -= 10;
-					n += 20;
 				}
-
-				RenderSystem.disableBlend();
 			}
 		}
 	}
 
 	private void renderOverlay(DrawContext context, Identifier texture, float opacity) {
-		RenderSystem.disableDepthTest();
-		RenderSystem.depthMask(false);
-		RenderSystem.enableBlend();
-		context.setShaderColor(1.0F, 1.0F, 1.0F, opacity);
+		int i = ColorHelper.getWhite(opacity);
 		context.drawTexture(
+			RenderLayer::getGuiTexturedOverlay,
 			texture,
 			0,
 			0,
-			-90,
 			0.0F,
 			0.0F,
 			context.getScaledWindowWidth(),
 			context.getScaledWindowHeight(),
 			context.getScaledWindowWidth(),
-			context.getScaledWindowHeight()
+			context.getScaledWindowHeight(),
+			i
 		);
-		RenderSystem.disableBlend();
-		RenderSystem.depthMask(true);
-		RenderSystem.enableDepthTest();
-		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	private void renderSpyglassOverlay(DrawContext context, float scale) {
@@ -1040,9 +1007,7 @@ public class InGameHud {
 		int l = (context.getScaledWindowHeight() - j) / 2;
 		int m = k + i;
 		int n = l + j;
-		RenderSystem.enableBlend();
-		context.drawTexture(SPYGLASS_SCOPE, k, l, -90, 0.0F, 0.0F, i, j, i, j);
-		RenderSystem.disableBlend();
+		context.drawTexture(RenderLayer::getGuiTextured, SPYGLASS_SCOPE, k, l, 0.0F, 0.0F, i, j, i, j);
 		context.fill(RenderLayer.getGuiOverlay(), 0, n, context.getScaledWindowWidth(), context.getScaledWindowHeight(), -90, Colors.BLACK);
 		context.fill(RenderLayer.getGuiOverlay(), 0, 0, context.getScaledWindowWidth(), l, -90, Colors.BLACK);
 		context.fill(RenderLayer.getGuiOverlay(), 0, l, k, n, -90, Colors.BLACK);
@@ -1070,38 +1035,29 @@ public class InGameHud {
 			}
 		}
 
-		RenderSystem.disableDepthTest();
-		RenderSystem.depthMask(false);
-		RenderSystem.enableBlend();
-		RenderSystem.blendFuncSeparate(
-			GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
-		);
+		int i;
 		if (f > 0.0F) {
 			f = MathHelper.clamp(f, 0.0F, 1.0F);
-			context.setShaderColor(0.0F, f, f, 1.0F);
+			i = ColorHelper.fromFloats(1.0F, 0.0F, f, f);
 		} else {
-			float g = this.vignetteDarkness;
-			g = MathHelper.clamp(g, 0.0F, 1.0F);
-			context.setShaderColor(g, g, g, 1.0F);
+			float h = this.vignetteDarkness;
+			h = MathHelper.clamp(h, 0.0F, 1.0F);
+			i = ColorHelper.fromFloats(1.0F, h, h, h);
 		}
 
 		context.drawTexture(
+			RenderLayer::getVignette,
 			VIGNETTE_TEXTURE,
 			0,
 			0,
-			-90,
 			0.0F,
 			0.0F,
 			context.getScaledWindowWidth(),
 			context.getScaledWindowHeight(),
 			context.getScaledWindowWidth(),
-			context.getScaledWindowHeight()
+			context.getScaledWindowHeight(),
+			i
 		);
-		RenderSystem.depthMask(true);
-		RenderSystem.enableDepthTest();
-		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.defaultBlendFunc();
-		RenderSystem.disableBlend();
 	}
 
 	private void renderPortalOverlay(DrawContext context, float nauseaStrength) {
@@ -1111,16 +1067,24 @@ public class InGameHud {
 			nauseaStrength = nauseaStrength * 0.8F + 0.2F;
 		}
 
-		RenderSystem.disableDepthTest();
-		RenderSystem.depthMask(false);
-		RenderSystem.enableBlend();
-		context.setShaderColor(1.0F, 1.0F, 1.0F, nauseaStrength);
+		int i = ColorHelper.getWhite(nauseaStrength);
 		Sprite sprite = this.client.getBlockRenderManager().getModels().getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
-		context.drawSprite(0, 0, -90, context.getScaledWindowWidth(), context.getScaledWindowHeight(), sprite);
-		RenderSystem.disableBlend();
-		RenderSystem.depthMask(true);
-		RenderSystem.enableDepthTest();
-		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		context.drawSprite(RenderLayer::getGuiTexturedOverlay, sprite, 0, 0, context.getScaledWindowWidth(), context.getScaledWindowHeight(), i);
+	}
+
+	private void renderNauseaOverlay(DrawContext context, float nauseaStrength) {
+		int i = context.getScaledWindowWidth();
+		int j = context.getScaledWindowHeight();
+		context.getMatrices().push();
+		float f = MathHelper.lerp(nauseaStrength, 2.0F, 1.0F);
+		context.getMatrices().translate((float)i / 2.0F, (float)j / 2.0F, 0.0F);
+		context.getMatrices().scale(f, f, f);
+		context.getMatrices().translate((float)(-i) / 2.0F, (float)(-j) / 2.0F, 0.0F);
+		float g = 0.2F * nauseaStrength;
+		float h = 0.4F * nauseaStrength;
+		float k = 0.2F * nauseaStrength;
+		context.drawTexture(identifier -> RenderLayer.getGuiNauseaOverlay(), NAUSEA_TEXTURE, 0, 0, 0.0F, 0.0F, i, j, i, j, ColorHelper.fromFloats(1.0F, g, h, k));
+		context.getMatrices().pop();
 	}
 
 	private void renderHotbarItem(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed) {
@@ -1294,9 +1258,9 @@ public class InGameHud {
 			if (i > 8) {
 				TextRenderer textRenderer = this.getTextRenderer();
 				int j = textRenderer.getWidth(SAVING_LEVEL_TEXT);
-				int k = ColorHelper.Argb.withAlpha(i, -1);
-				int l = context.getScaledWindowWidth() - j - 2;
-				int m = context.getScaledWindowHeight() - 35;
+				int k = ColorHelper.withAlpha(i, Colors.WHITE);
+				int l = context.getScaledWindowWidth() - j - 5;
+				int m = context.getScaledWindowHeight() - 9 - 5;
 				context.drawTextWithBackground(textRenderer, SAVING_LEVEL_TEXT, l, m, j, k);
 			}
 		}

@@ -23,6 +23,7 @@ import net.minecraft.advancement.criterion.PlayerInteractedWithEntityCriterion;
 import net.minecraft.advancement.criterion.StartedRidingCriterion;
 import net.minecraft.advancement.criterion.TameAnimalCriterion;
 import net.minecraft.advancement.criterion.ThrownItemPickedUpByEntityCriterion;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.data.server.advancement.AdvancementTabGenerator;
@@ -46,6 +47,7 @@ import net.minecraft.predicate.item.EnchantmentsPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.predicate.item.ItemSubPredicateTypes;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
@@ -130,6 +132,9 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 
 	@Override
 	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<AdvancementEntry> exporter) {
+		RegistryEntryLookup<EntityType<?>> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.ENTITY_TYPE);
+		RegistryEntryLookup<Item> registryEntryLookup2 = lookup.getWrapperOrThrow(RegistryKeys.ITEM);
+		RegistryEntryLookup<Block> registryEntryLookup3 = lookup.getWrapperOrThrow(RegistryKeys.BLOCK);
 		RegistryWrapper.Impl<Enchantment> impl = lookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		AdvancementEntry advancementEntry = Advancement.Builder.create()
 			.display(
@@ -180,8 +185,8 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR)
 			.criterion("bred", BredAnimalsCriterion.Conditions.any())
 			.build(exporter, "husbandry/breed_an_animal");
-		createBreedAllAnimalsAdvancement(advancementEntry3, exporter, BREEDABLE_ANIMALS.stream(), EGG_LAYING_ANIMALS.stream());
-		requireFoodItemsEaten(Advancement.Builder.create())
+		createBreedAllAnimalsAdvancement(advancementEntry3, exporter, registryEntryLookup, BREEDABLE_ANIMALS.stream(), EGG_LAYING_ANIMALS.stream());
+		requireFoodItemsEaten(Advancement.Builder.create(), registryEntryLookup2)
 			.parent(advancementEntry2)
 			.display(
 				Items.APPLE,
@@ -224,7 +229,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.criterion("tamed_animal", TameAnimalCriterion.Conditions.any())
 			.build(exporter, "husbandry/tame_an_animal");
-		AdvancementEntry advancementEntry5 = requireListedFishCaught(Advancement.Builder.create())
+		AdvancementEntry advancementEntry5 = requireListedFishCaught(Advancement.Builder.create(), registryEntryLookup2)
 			.parent(advancementEntry)
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR)
 			.display(
@@ -238,7 +243,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 				false
 			)
 			.build(exporter, "husbandry/fishy_business");
-		AdvancementEntry advancementEntry6 = requireListedFishBucketsFilled(Advancement.Builder.create())
+		AdvancementEntry advancementEntry6 = requireListedFishBucketsFilled(Advancement.Builder.create(), registryEntryLookup2)
 			.parent(advancementEntry5)
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR)
 			.display(
@@ -256,7 +261,8 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.parent(advancementEntry6)
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR)
 			.criterion(
-				Registries.ITEM.getId(Items.AXOLOTL_BUCKET).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(Items.AXOLOTL_BUCKET))
+				Registries.ITEM.getId(Items.AXOLOTL_BUCKET).getPath(),
+				FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(registryEntryLookup2, Items.AXOLOTL_BUCKET))
 			)
 			.display(
 				Items.AXOLOTL_BUCKET,
@@ -271,7 +277,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.build(exporter, "husbandry/axolotl_in_a_bucket");
 		Advancement.Builder.create()
 			.parent(advancementEntry7)
-			.criterion("kill_axolotl_target", EffectsChangedCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.AXOLOTL)))
+			.criterion("kill_axolotl_target", EffectsChangedCriterion.Conditions.create(EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.AXOLOTL)))
 			.display(
 				Items.TROPICAL_FISH_BUCKET,
 				Text.translatable("advancements.husbandry.kill_axolotl_target.title"),
@@ -316,8 +322,8 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"safely_harvest_honey",
 				ItemCriterion.Conditions.createItemUsedOnBlock(
-					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().tag(BlockTags.BEEHIVES)).smokey(true),
-					ItemPredicate.Builder.create().items(Items.GLASS_BOTTLE)
+					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().tag(registryEntryLookup3, BlockTags.BEEHIVES)).smokey(true),
+					ItemPredicate.Builder.create().items(registryEntryLookup2, Items.GLASS_BOTTLE)
 				)
 			)
 			.display(
@@ -346,8 +352,9 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"wax_on",
 				ItemCriterion.Conditions.createItemUsedOnBlock(
-					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(((BiMap)HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get()).keySet())),
-					ItemPredicate.Builder.create().items(Items.HONEYCOMB)
+					LocationPredicate.Builder.create()
+						.block(BlockPredicate.Builder.create().blocks(registryEntryLookup3, ((BiMap)HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get()).keySet())),
+					ItemPredicate.Builder.create().items(registryEntryLookup2, Items.HONEYCOMB)
 				)
 			)
 			.build(exporter, "husbandry/wax_on");
@@ -366,15 +373,17 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"wax_off",
 				ItemCriterion.Conditions.createItemUsedOnBlock(
-					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(((BiMap)HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get()).keySet())),
-					ItemPredicate.Builder.create().items(AXE_ITEMS)
+					LocationPredicate.Builder.create()
+						.block(BlockPredicate.Builder.create().blocks(registryEntryLookup3, ((BiMap)HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get()).keySet())),
+					ItemPredicate.Builder.create().items(registryEntryLookup2, AXE_ITEMS)
 				)
 			)
 			.build(exporter, "husbandry/wax_off");
 		AdvancementEntry advancementEntry10 = Advancement.Builder.create()
 			.parent(advancementEntry)
 			.criterion(
-				Registries.ITEM.getId(Items.TADPOLE_BUCKET).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(Items.TADPOLE_BUCKET))
+				Registries.ITEM.getId(Items.TADPOLE_BUCKET).getPath(),
+				FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(registryEntryLookup2, Items.TADPOLE_BUCKET))
 			)
 			.display(
 				Items.TADPOLE_BUCKET,
@@ -387,7 +396,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 				false
 			)
 			.build(exporter, "husbandry/tadpole_in_a_bucket");
-		AdvancementEntry advancementEntry11 = requireAllFrogsOnLeads(Advancement.Builder.create())
+		AdvancementEntry advancementEntry11 = requireAllFrogsOnLeads(registryEntryLookup, registryEntryLookup2, Advancement.Builder.create())
 			.parent(advancementEntry10)
 			.display(
 				Items.LEAD,
@@ -455,7 +464,11 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 				"ride_a_boat_with_a_goat",
 				StartedRidingCriterion.Conditions.create(
 					EntityPredicate.Builder.create()
-						.vehicle(EntityPredicate.Builder.create().type(EntityType.BOAT).passenger(EntityPredicate.Builder.create().type(EntityType.GOAT)))
+						.vehicle(
+							EntityPredicate.Builder.create()
+								.type(registryEntryLookup, EntityType.BOAT)
+								.passenger(EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.GOAT))
+						)
 				)
 			)
 			.build(exporter, "husbandry/ride_a_boat_with_a_goat");
@@ -474,8 +487,8 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"make_a_sign_glow",
 				ItemCriterion.Conditions.createItemUsedOnBlock(
-					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().tag(BlockTags.ALL_SIGNS)),
-					ItemPredicate.Builder.create().items(Items.GLOW_INK_SAC)
+					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().tag(registryEntryLookup3, BlockTags.ALL_SIGNS)),
+					ItemPredicate.Builder.create().items(registryEntryLookup2, Items.GLOW_INK_SAC)
 				)
 			)
 			.build(exporter, "husbandry/make_a_sign_glow");
@@ -496,7 +509,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 				ThrownItemPickedUpByEntityCriterion.Conditions.createThrownItemPickedUpByPlayer(
 					Optional.empty(),
 					Optional.empty(),
-					Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(EntityPredicate.Builder.create().type(EntityType.ALLAY)))
+					Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.ALLAY)))
 				)
 			)
 			.build(exporter, "husbandry/allay_deliver_item_to_player");
@@ -515,7 +528,8 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"allay_deliver_cake_to_note_block",
 				ItemCriterion.Conditions.createAllayDropItemOnBlock(
-					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(Blocks.NOTE_BLOCK)), ItemPredicate.Builder.create().items(Items.CAKE)
+					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(registryEntryLookup3, Blocks.NOTE_BLOCK)),
+					ItemPredicate.Builder.create().items(registryEntryLookup2, Items.CAKE)
 				)
 			)
 			.build(exporter, "husbandry/allay_deliver_cake_to_note_block");
@@ -548,10 +562,10 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"feed_snifflet",
 				PlayerInteractedWithEntityCriterion.Conditions.create(
-					ItemPredicate.Builder.create().tag(ItemTags.SNIFFER_FOOD),
+					ItemPredicate.Builder.create().tag(registryEntryLookup2, ItemTags.SNIFFER_FOOD),
 					Optional.of(
 						EntityPredicate.contextPredicateFromEntityPredicate(
-							EntityPredicate.Builder.create().type(EntityType.SNIFFER).flags(EntityFlagsPredicate.Builder.create().isBaby(true))
+							EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.SNIFFER).flags(EntityFlagsPredicate.Builder.create().isBaby(true))
 						)
 					)
 				)
@@ -588,8 +602,8 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"remove_wolf_armor",
 				PlayerInteractedWithEntityCriterion.Conditions.create(
-					ItemPredicate.Builder.create().items(Items.SHEARS),
-					Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(EntityPredicate.Builder.create().type(EntityType.WOLF)))
+					ItemPredicate.Builder.create().items(registryEntryLookup2, Items.SHEARS),
+					Optional.of(EntityPredicate.contextPredicateFromEntityPredicate(EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.WOLF)))
 				)
 			)
 			.build(exporter, "husbandry/remove_wolf_armor");
@@ -608,14 +622,18 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"repair_wolf_armor",
 				PlayerInteractedWithEntityCriterion.Conditions.create(
-					ItemPredicate.Builder.create().items(Items.ARMADILLO_SCUTE),
+					ItemPredicate.Builder.create().items(registryEntryLookup2, Items.ARMADILLO_SCUTE),
 					Optional.of(
 						EntityPredicate.contextPredicateFromEntityPredicate(
 							EntityPredicate.Builder.create()
-								.type(EntityType.WOLF)
+								.type(registryEntryLookup, EntityType.WOLF)
 								.equipment(
 									EntityEquipmentPredicate.Builder.create()
-										.body(ItemPredicate.Builder.create().items(Items.WOLF_ARMOR).component(ComponentPredicate.builder().add(DataComponentTypes.DAMAGE, 0).build()))
+										.body(
+											ItemPredicate.Builder.create()
+												.items(registryEntryLookup2, Items.WOLF_ARMOR)
+												.component(ComponentPredicate.builder().add(DataComponentTypes.DAMAGE, 0).build())
+										)
 								)
 						)
 					)
@@ -625,9 +643,13 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 	}
 
 	public static AdvancementEntry createBreedAllAnimalsAdvancement(
-		AdvancementEntry parent, Consumer<AdvancementEntry> exporter, Stream<EntityType<?>> breedableAnimals, Stream<EntityType<?>> eggLayingAnimals
+		AdvancementEntry parent,
+		Consumer<AdvancementEntry> exporter,
+		RegistryEntryLookup<EntityType<?>> registryEntryLookup,
+		Stream<EntityType<?>> stream,
+		Stream<EntityType<?>> stream2
 	) {
-		return requireListedAnimalsBred(Advancement.Builder.create(), breedableAnimals, eggLayingAnimals)
+		return requireListedAnimalsBred(Advancement.Builder.create(), stream, registryEntryLookup, stream2)
 			.parent(parent)
 			.display(
 				Items.GOLDEN_CARROT,
@@ -643,17 +665,19 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.build(exporter, "husbandry/bred_all_animals");
 	}
 
-	private static Advancement.Builder requireAllFrogsOnLeads(Advancement.Builder builder) {
+	private static Advancement.Builder requireAllFrogsOnLeads(
+		RegistryEntryLookup<EntityType<?>> registryEntryLookup, RegistryEntryLookup<Item> registryEntryLookup2, Advancement.Builder builder
+	) {
 		Registries.FROG_VARIANT
 			.streamEntries()
 			.forEach(
-				variant -> builder.criterion(
-						variant.registryKey().getValue().toString(),
+				reference -> builder.criterion(
+						reference.registryKey().getValue().toString(),
 						PlayerInteractedWithEntityCriterion.Conditions.create(
-							ItemPredicate.Builder.create().items(Items.LEAD),
+							ItemPredicate.Builder.create().items(registryEntryLookup2, Items.LEAD),
 							Optional.of(
 								EntityPredicate.contextPredicateFromEntityPredicate(
-									EntityPredicate.Builder.create().type(EntityType.FROG).typeSpecific(EntitySubPredicateTypes.frogVariant(variant))
+									EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.FROG).typeSpecific(EntitySubPredicateTypes.frogVariant(reference))
 								)
 							)
 						)
@@ -662,44 +686,55 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 		return builder;
 	}
 
-	private static Advancement.Builder requireFoodItemsEaten(Advancement.Builder builder) {
+	private static Advancement.Builder requireFoodItemsEaten(Advancement.Builder builder, RegistryEntryLookup<Item> registryEntryLookup) {
 		for (Item item : FOOD_ITEMS) {
-			builder.criterion(Registries.ITEM.getId(item).getPath(), ConsumeItemCriterion.Conditions.item(item));
+			builder.criterion(Registries.ITEM.getId(item).getPath(), ConsumeItemCriterion.Conditions.item(registryEntryLookup, item));
 		}
 
 		return builder;
 	}
 
 	private static Advancement.Builder requireListedAnimalsBred(
-		Advancement.Builder advancementBuilder, Stream<EntityType<?>> breedableAnimals, Stream<EntityType<?>> eggLayingAnimals
+		Advancement.Builder advancementBuilder,
+		Stream<EntityType<?>> breedableAnimals,
+		RegistryEntryLookup<EntityType<?>> registryEntryLookup,
+		Stream<EntityType<?>> stream
 	) {
 		breedableAnimals.forEach(
-			type -> advancementBuilder.criterion(EntityType.getId(type).toString(), BredAnimalsCriterion.Conditions.create(EntityPredicate.Builder.create().type(type)))
+			entityType -> advancementBuilder.criterion(
+					EntityType.getId(entityType).toString(), BredAnimalsCriterion.Conditions.create(EntityPredicate.Builder.create().type(registryEntryLookup, entityType))
+				)
 		);
-		eggLayingAnimals.forEach(
-			type -> advancementBuilder.criterion(
-					EntityType.getId(type).toString(),
+		stream.forEach(
+			entityType -> advancementBuilder.criterion(
+					EntityType.getId(entityType).toString(),
 					BredAnimalsCriterion.Conditions.create(
-						Optional.of(EntityPredicate.Builder.create().type(type).build()), Optional.of(EntityPredicate.Builder.create().type(type).build()), Optional.empty()
+						Optional.of(EntityPredicate.Builder.create().type(registryEntryLookup, entityType).build()),
+						Optional.of(EntityPredicate.Builder.create().type(registryEntryLookup, entityType).build()),
+						Optional.empty()
 					)
 				)
 		);
 		return advancementBuilder;
 	}
 
-	private static Advancement.Builder requireListedFishBucketsFilled(Advancement.Builder builder) {
+	private static Advancement.Builder requireListedFishBucketsFilled(Advancement.Builder builder, RegistryEntryLookup<Item> registryEntryLookup) {
 		for (Item item : FISH_BUCKET_ITEMS) {
-			builder.criterion(Registries.ITEM.getId(item).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(item)));
+			builder.criterion(
+				Registries.ITEM.getId(item).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(registryEntryLookup, item))
+			);
 		}
 
 		return builder;
 	}
 
-	private static Advancement.Builder requireListedFishCaught(Advancement.Builder builder) {
+	private static Advancement.Builder requireListedFishCaught(Advancement.Builder builder, RegistryEntryLookup<Item> registryEntryLookup) {
 		for (Item item : FISH_ITEMS) {
 			builder.criterion(
 				Registries.ITEM.getId(item).getPath(),
-				FishingRodHookedCriterion.Conditions.create(Optional.empty(), Optional.empty(), Optional.of(ItemPredicate.Builder.create().items(item).build()))
+				FishingRodHookedCriterion.Conditions.create(
+					Optional.empty(), Optional.empty(), Optional.of(ItemPredicate.Builder.create().items(registryEntryLookup, item).build())
+				)
 			);
 		}
 

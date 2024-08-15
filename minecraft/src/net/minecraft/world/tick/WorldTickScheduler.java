@@ -74,7 +74,7 @@ public class WorldTickScheduler<T> implements QueryableTickScheduler<T> {
 		long l = ChunkPos.toLong(orderedTick.pos());
 		ChunkTickScheduler<T> chunkTickScheduler = this.chunkTickSchedulers.get(l);
 		if (chunkTickScheduler == null) {
-			Util.throwOrPause((T)(new IllegalStateException("Trying to schedule tick in not loaded position " + orderedTick.pos())));
+			Util.logErrorOrPause("Trying to schedule tick in not loaded position " + orderedTick.pos());
 		} else {
 			chunkTickScheduler.scheduleTick(orderedTick);
 		}

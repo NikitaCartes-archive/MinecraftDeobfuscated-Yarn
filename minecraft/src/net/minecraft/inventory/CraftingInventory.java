@@ -3,7 +3,7 @@ package net.minecraft.inventory;
 import java.util.List;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeMatcher;
+import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -20,7 +20,7 @@ public class CraftingInventory implements RecipeInputInventory {
 		this(handler, width, height, DefaultedList.ofSize(width * height, ItemStack.EMPTY));
 	}
 
-	public CraftingInventory(ScreenHandler handler, int width, int height, DefaultedList<ItemStack> stacks) {
+	private CraftingInventory(ScreenHandler handler, int width, int height, DefaultedList<ItemStack> stacks) {
 		this.stacks = stacks;
 		this.handler = handler;
 		this.width = width;
@@ -99,9 +99,9 @@ public class CraftingInventory implements RecipeInputInventory {
 	}
 
 	@Override
-	public void provideRecipeInputs(RecipeMatcher finder) {
+	public void provideRecipeInputs(RecipeFinder finder) {
 		for (ItemStack itemStack : this.stacks) {
-			finder.addUnenchantedInput(itemStack);
+			finder.addInputIfUsable(itemStack);
 		}
 	}
 }

@@ -333,6 +333,7 @@ public class Keyboard {
 
 	public void onKey(long window, int key, int scancode, int action, int modifiers) {
 		if (window == this.client.getWindow().getHandle()) {
+			this.client.getInactivityFpsLimiter().onInput();
 			boolean bl = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3);
 			if (this.debugCrashStartTime > 0L) {
 				if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_C) || !bl) {
@@ -463,7 +464,7 @@ public class Keyboard {
 					}
 
 					if (this.client.getDebugHud().shouldShowRenderingChart() && !bl && key >= GLFW.GLFW_KEY_0 && key <= GLFW.GLFW_KEY_9) {
-						this.client.handleProfilerKeyPress(key - GLFW.GLFW_KEY_0);
+						this.client.getDebugHud().method_61981().method_61987(key - GLFW.GLFW_KEY_0);
 					}
 				}
 

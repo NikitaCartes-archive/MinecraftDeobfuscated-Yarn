@@ -104,6 +104,10 @@ public class ExperienceOrbEntity extends Entity {
 		}
 
 		this.move(MovementType.SELF, this.getVelocity());
+		if (!this.getWorld().isClient()) {
+			this.tickBlockCollision();
+		}
+
 		float f = 0.98F;
 		if (this.isOnGround()) {
 			f = this.getWorld().getBlockState(this.getVelocityAffectingPos()).getBlock().getSlipperiness() * 0.98F;

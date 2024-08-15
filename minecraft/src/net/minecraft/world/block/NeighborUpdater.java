@@ -19,14 +19,14 @@ public interface NeighborUpdater {
 
 	void replaceWithStateForNeighborUpdate(Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int flags, int maxUpdateDepth);
 
-	void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos sourcePos);
+	void updateNeighbor(BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation);
 
-	void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify);
+	void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation, boolean notify);
 
-	default void updateNeighbors(BlockPos pos, Block sourceBlock, @Nullable Direction except) {
+	default void updateNeighbors(BlockPos pos, Block sourceBlock, @Nullable Direction except, @Nullable WireOrientation orientation) {
 		for (Direction direction : UPDATE_ORDER) {
 			if (direction != except) {
-				this.updateNeighbor(pos.offset(direction), sourceBlock, pos);
+				this.updateNeighbor(pos.offset(direction), sourceBlock, null);
 			}
 		}
 	}
@@ -39,9 +39,9 @@ public interface NeighborUpdater {
 		Block.replace(blockState, blockState2, world, pos, flags, maxUpdateDepth);
 	}
 
-	static void tryNeighborUpdate(World world, BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	static void tryNeighborUpdate(World world, BlockState state, BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation, boolean notify) {
 		try {
-			state.neighborUpdate(world, pos, sourceBlock, sourcePos, notify);
+			state.neighborUpdate(world, pos, sourceBlock, orientation, notify);
 		} catch (Throwable var9) {
 			CrashReport crashReport = CrashReport.create(var9, "Exception while updating neighbours");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being updated");

@@ -33,6 +33,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
@@ -186,9 +187,9 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 
 	public static DefaultAttributeContainer.Builder createPiglinAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 16.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35F)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0);
+			.add(EntityAttributes.MAX_HEALTH, 16.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.35F)
+			.add(EntityAttributes.ATTACK_DAMAGE, 5.0);
 	}
 
 	public static boolean canSpawn(EntityType<PiglinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
@@ -263,7 +264,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 			return PiglinBrain.playerInteract(this, player, hand);
 		} else {
 			boolean bl = PiglinBrain.isWillingToTrade(this, player.getStackInHand(hand)) && this.getActivity() != PiglinActivity.ADMIRING_ITEM;
-			return bl ? ActionResult.SUCCESS : ActionResult.PASS;
+			return (ActionResult)(bl ? ActionResult.SUCCESS : ActionResult.PASS);
 		}
 	}
 
@@ -276,7 +277,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	public void setBaby(boolean baby) {
 		this.getDataTracker().set(BABY, baby);
 		if (!this.getWorld().isClient) {
-			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 			entityAttributeInstance.removeModifier(BABY_SPEED_BOOST.id());
 			if (baby) {
 				entityAttributeInstance.addTemporaryModifier(BABY_SPEED_BOOST);
@@ -348,7 +349,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 		} else if (this.isCharging()) {
 			return PiglinActivity.CROSSBOW_CHARGE;
 		} else {
-			return this.isAttacking() && this.isHolding(Items.CROSSBOW) ? PiglinActivity.CROSSBOW_HOLD : PiglinActivity.DEFAULT;
+			return this.isHolding(Items.CROSSBOW) && CrossbowItem.isCharged(this.getWeaponStack()) ? PiglinActivity.CROSSBOW_HOLD : PiglinActivity.DEFAULT;
 		}
 	}
 

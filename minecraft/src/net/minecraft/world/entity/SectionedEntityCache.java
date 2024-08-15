@@ -28,6 +28,8 @@ import net.minecraft.util.math.ChunkSectionPos;
  * @see EntityTrackingSection
  */
 public class SectionedEntityCache<T extends EntityLike> {
+	public static final int field_52653 = 2;
+	public static final int field_52654 = 4;
 	private final Class<T> entityClass;
 	private final Long2ObjectFunction<EntityTrackingStatus> posToStatus;
 	private final Long2ObjectMap<EntityTrackingSection<T>> trackingSections = new Long2ObjectOpenHashMap<>();
@@ -42,25 +44,24 @@ public class SectionedEntityCache<T extends EntityLike> {
 	 * Runs the given action on each collection of entities in the chunk sections within the given box.
 	 */
 	public void forEachInBox(Box box, LazyIterationConsumer<EntityTrackingSection<T>> consumer) {
-		int i = 2;
-		int j = ChunkSectionPos.getSectionCoord(box.minX - 2.0);
-		int k = ChunkSectionPos.getSectionCoord(box.minY - 4.0);
-		int l = ChunkSectionPos.getSectionCoord(box.minZ - 2.0);
-		int m = ChunkSectionPos.getSectionCoord(box.maxX + 2.0);
-		int n = ChunkSectionPos.getSectionCoord(box.maxY + 0.0);
-		int o = ChunkSectionPos.getSectionCoord(box.maxZ + 2.0);
+		int i = ChunkSectionPos.getSectionCoord(box.minX - 2.0);
+		int j = ChunkSectionPos.getSectionCoord(box.minY - 4.0);
+		int k = ChunkSectionPos.getSectionCoord(box.minZ - 2.0);
+		int l = ChunkSectionPos.getSectionCoord(box.maxX + 2.0);
+		int m = ChunkSectionPos.getSectionCoord(box.maxY + 0.0);
+		int n = ChunkSectionPos.getSectionCoord(box.maxZ + 2.0);
 
-		for (int p = j; p <= m; p++) {
-			long q = ChunkSectionPos.asLong(p, 0, 0);
-			long r = ChunkSectionPos.asLong(p, -1, -1);
-			LongIterator longIterator = this.trackedPositions.subSet(q, r + 1L).iterator();
+		for (int o = i; o <= l; o++) {
+			long p = ChunkSectionPos.asLong(o, 0, 0);
+			long q = ChunkSectionPos.asLong(o, -1, -1);
+			LongIterator longIterator = this.trackedPositions.subSet(p, q + 1L).iterator();
 
 			while (longIterator.hasNext()) {
-				long s = longIterator.nextLong();
-				int t = ChunkSectionPos.unpackY(s);
-				int u = ChunkSectionPos.unpackZ(s);
-				if (t >= k && t <= n && u >= l && u <= o) {
-					EntityTrackingSection<T> entityTrackingSection = this.trackingSections.get(s);
+				long r = longIterator.nextLong();
+				int s = ChunkSectionPos.unpackY(r);
+				int t = ChunkSectionPos.unpackZ(r);
+				if (s >= j && s <= m && t >= k && t <= n) {
+					EntityTrackingSection<T> entityTrackingSection = this.trackingSections.get(r);
 					if (entityTrackingSection != null
 						&& !entityTrackingSection.isEmpty()
 						&& entityTrackingSection.getStatus().shouldTrack()

@@ -122,7 +122,7 @@ public final class VoxelShapes {
 
 	public static VoxelShape combine(VoxelShape one, VoxelShape two, BooleanBiFunction function) {
 		if (function.apply(false, false)) {
-			throw (IllegalArgumentException)Util.throwOrPause(new IllegalArgumentException());
+			throw (IllegalArgumentException)Util.getFatalOrPause(new IllegalArgumentException());
 		} else if (one == two) {
 			return function.apply(true, true) ? one : empty();
 		} else {
@@ -148,7 +148,7 @@ public final class VoxelShapes {
 
 	public static boolean matchesAnywhere(VoxelShape shape1, VoxelShape shape2, BooleanBiFunction predicate) {
 		if (predicate.apply(false, false)) {
-			throw (IllegalArgumentException)Util.throwOrPause(new IllegalArgumentException());
+			throw (IllegalArgumentException)Util.getFatalOrPause(new IllegalArgumentException());
 		} else {
 			boolean bl = shape1.isEmpty();
 			boolean bl2 = shape2.isEmpty();
@@ -220,25 +220,6 @@ public final class VoxelShapes {
 				&& !matchesAnywhere(
 					new SlicedVoxelShape(voxelShape, axis, voxelShape.voxels.getSize(axis) - 1), new SlicedVoxelShape(voxelShape2, axis, 0), booleanBiFunction
 				);
-		}
-	}
-
-	public static VoxelShape extrudeFace(VoxelShape shape, Direction direction) {
-		if (shape == fullCube()) {
-			return fullCube();
-		} else {
-			Direction.Axis axis = direction.getAxis();
-			boolean bl;
-			int i;
-			if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-				bl = DoubleMath.fuzzyEquals(shape.getMax(axis), 1.0, 1.0E-7);
-				i = shape.voxels.getSize(axis) - 1;
-			} else {
-				bl = DoubleMath.fuzzyEquals(shape.getMin(axis), 0.0, 1.0E-7);
-				i = 0;
-			}
-
-			return (VoxelShape)(!bl ? empty() : new SlicedVoxelShape(shape, axis, i));
 		}
 	}
 

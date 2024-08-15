@@ -27,7 +27,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -37,6 +36,8 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.block.OrientationHelper;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.event.GameEvent;
 
 public class LecternBlock extends BlockWithEntity {
@@ -93,7 +94,7 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+	protected VoxelShape getCullingShape(BlockState state) {
 		return BASE_SHAPE;
 	}
 
@@ -198,7 +199,8 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	private static void updateNeighborAlways(World world, BlockPos pos, BlockState state) {
-		world.updateNeighborsAlways(pos.down(), state.getBlock());
+		WireOrientation wireOrientation = OrientationHelper.getEmissionOrientation(world, ((Direction)state.get(FACING)).getOpposite(), Direction.UP);
+		world.updateNeighborsAlways(pos.down(), state.getBlock(), wireOrientation);
 	}
 
 	@Override
@@ -215,7 +217,7 @@ public class LecternBlock extends BlockWithEntity {
 
 			super.onStateReplaced(state, world, pos, newState, moved);
 			if ((Boolean)state.get(POWERED)) {
-				world.updateNeighborsAlways(pos.down(), this);
+				updateNeighborAlways(world, pos, state);
 			}
 		}
 	}
@@ -268,13 +270,13 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if ((Boolean)state.get(HAS_BOOK)) {
-			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 		} else if (stack.isIn(ItemTags.LECTERN_BOOKS)) {
-			return putBookIfAbsent(player, world, pos, state, stack) ? ItemActionResult.success(world.isClient) : ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+			return (ActionResult)(putBookIfAbsent(player, world, pos, state, stack) ? ActionResult.SUCCESS : ActionResult.PASS);
 		} else {
-			return stack.isEmpty() && hand == Hand.MAIN_HAND ? ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION : ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return (ActionResult)(stack.isEmpty() && hand == Hand.MAIN_HAND ? ActionResult.PASS : ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION);
 		}
 	}
 
@@ -285,7 +287,7 @@ public class LecternBlock extends BlockWithEntity {
 				this.openScreen(world, pos, player);
 			}
 
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return ActionResult.CONSUME;
 		}

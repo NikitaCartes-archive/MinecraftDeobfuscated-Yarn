@@ -4,22 +4,28 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.EndermiteEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.entity.mob.EndermiteEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class EndermiteEntityRenderer extends MobEntityRenderer<EndermiteEntity, EndermiteEntityModel<EndermiteEntity>> {
+public class EndermiteEntityRenderer extends MobEntityRenderer<EndermiteEntity, LivingEntityRenderState, EndermiteEntityModel> {
 	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/endermite.png");
 
 	public EndermiteEntityRenderer(EntityRendererFactory.Context context) {
-		super(context, new EndermiteEntityModel<>(context.getPart(EntityModelLayers.ENDERMITE)), 0.3F);
+		super(context, new EndermiteEntityModel(context.getPart(EntityModelLayers.ENDERMITE)), 0.3F);
 	}
 
-	protected float getLyingAngle(EndermiteEntity endermiteEntity) {
+	@Override
+	protected float method_3919() {
 		return 180.0F;
 	}
 
-	public Identifier getTexture(EndermiteEntity endermiteEntity) {
+	public Identifier getTexture(LivingEntityRenderState livingEntityRenderState) {
 		return TEXTURE;
+	}
+
+	public LivingEntityRenderState getRenderState() {
+		return new LivingEntityRenderState();
 	}
 }

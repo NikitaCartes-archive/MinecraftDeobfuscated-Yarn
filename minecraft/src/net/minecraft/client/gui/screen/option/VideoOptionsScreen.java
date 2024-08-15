@@ -41,7 +41,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 			gameOptions.getAo(),
 			gameOptions.getMaxFps(),
 			gameOptions.getEnableVsync(),
-			gameOptions.getBobView(),
+			gameOptions.getInactivityFpsLimit(),
 			gameOptions.getGuiScale(),
 			gameOptions.getAttackIndicator(),
 			gameOptions.getGamma(),
@@ -56,7 +56,8 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 			gameOptions.getShowAutosaveIndicator(),
 			gameOptions.getGlintSpeed(),
 			gameOptions.getGlintStrength(),
-			gameOptions.getMenuBackgroundBlurriness()
+			gameOptions.getMenuBackgroundBlurriness(),
+			gameOptions.getBobView()
 		};
 	}
 

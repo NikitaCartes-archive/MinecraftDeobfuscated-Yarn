@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
+import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -16,6 +17,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.RedstoneView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.block.OrientationHelper;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.tick.TickPriority;
 
 public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
@@ -75,7 +78,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		if (state.canPlaceAt(world, pos)) {
 			this.updatePowered(world, pos, state);
 		} else {
@@ -167,8 +170,9 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 	protected void updateTarget(World world, BlockPos pos, BlockState state) {
 		Direction direction = state.get(FACING);
 		BlockPos blockPos = pos.offset(direction.getOpposite());
-		world.updateNeighbor(blockPos, this, pos);
-		world.updateNeighborsExcept(blockPos, this, direction);
+		WireOrientation wireOrientation = OrientationHelper.getEmissionOrientation(world, direction.getOpposite(), Direction.UP);
+		world.updateNeighbor(blockPos, this, wireOrientation);
+		world.updateNeighborsExcept(blockPos, this, direction, wireOrientation);
 	}
 
 	protected boolean getSideInputFromGatesOnly() {

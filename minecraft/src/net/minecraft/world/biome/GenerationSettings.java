@@ -2,25 +2,19 @@ package net.minecraft.world.biome;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
@@ -31,14 +25,11 @@ import org.slf4j.Logger;
 
 public class GenerationSettings {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final GenerationSettings INSTANCE = new GenerationSettings(ImmutableMap.of(), ImmutableList.of());
+	public static final GenerationSettings INSTANCE = new GenerationSettings(RegistryEntryList.of(), List.of());
 	public static final MapCodec<GenerationSettings> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Codec.simpleMap(
-							GenerationStep.Carver.CODEC,
-							ConfiguredCarver.LIST_CODEC.promotePartial(Util.addPrefix("Carver: ", LOGGER::error)),
-							StringIdentifiable.toKeyable(GenerationStep.Carver.values())
-						)
+					ConfiguredCarver.LIST_CODEC
+						.promotePartial(Util.addPrefix("Carver: ", LOGGER::error))
 						.fieldOf("carvers")
 						.forGetter(generationSettings -> generationSettings.carvers),
 					PlacedFeature.LISTS_CODEC
@@ -48,12 +39,12 @@ public class GenerationSettings {
 				)
 				.apply(instance, GenerationSettings::new)
 	);
-	private final Map<GenerationStep.Carver, RegistryEntryList<ConfiguredCarver<?>>> carvers;
+	private final RegistryEntryList<ConfiguredCarver<?>> carvers;
 	private final List<RegistryEntryList<PlacedFeature>> features;
 	private final Supplier<List<ConfiguredFeature<?, ?>>> flowerFeatures;
 	private final Supplier<Set<PlacedFeature>> allowedFeatures;
 
-	GenerationSettings(Map<GenerationStep.Carver, RegistryEntryList<ConfiguredCarver<?>>> carvers, List<RegistryEntryList<PlacedFeature>> features) {
+	GenerationSettings(RegistryEntryList<ConfiguredCarver<?>> carvers, List<RegistryEntryList<PlacedFeature>> features) {
 		this.carvers = carvers;
 		this.features = features;
 		this.flowerFeatures = Suppliers.memoize(
@@ -69,8 +60,8 @@ public class GenerationSettings {
 		);
 	}
 
-	public Iterable<RegistryEntry<ConfiguredCarver<?>>> getCarversForStep(GenerationStep.Carver carverStep) {
-		return (Iterable<RegistryEntry<ConfiguredCarver<?>>>)Objects.requireNonNullElseGet((Iterable)this.carvers.get(carverStep), List::of);
+	public Iterable<RegistryEntry<ConfiguredCarver<?>>> getCarversForStep() {
+		return this.carvers;
 	}
 
 	public List<ConfiguredFeature<?, ?>> getFlowerFeatures() {
@@ -90,8 +81,8 @@ public class GenerationSettings {
 	}
 
 	public static class Builder {
-		private final Map<GenerationStep.Carver, List<RegistryEntry<ConfiguredCarver<?>>>> carverStepsToCarvers = Maps.<GenerationStep.Carver, List<RegistryEntry<ConfiguredCarver<?>>>>newLinkedHashMap();
-		private final List<List<RegistryEntry<PlacedFeature>>> indexedFeaturesList = Lists.<List<RegistryEntry<PlacedFeature>>>newArrayList();
+		private final List<RegistryEntry<ConfiguredCarver<?>>> carverStepsToCarvers = new ArrayList();
+		private final List<List<RegistryEntry<PlacedFeature>>> indexedFeaturesList = new ArrayList();
 
 		public GenerationSettings.Builder feature(GenerationStep.Feature featureStep, RegistryEntry<PlacedFeature> featureEntry) {
 			return this.addFeature(featureStep.ordinal(), featureEntry);
@@ -103,8 +94,8 @@ public class GenerationSettings {
 			return this;
 		}
 
-		public GenerationSettings.Builder carver(GenerationStep.Carver carverStep, RegistryEntry<ConfiguredCarver<?>> carverEntry) {
-			((List)this.carverStepsToCarvers.computeIfAbsent(carverStep, step -> Lists.newArrayList())).add(carverEntry);
+		public GenerationSettings.Builder carver(RegistryEntry<ConfiguredCarver<?>> carverEntry) {
+			this.carverStepsToCarvers.add(carverEntry);
 			return this;
 		}
 
@@ -116,10 +107,7 @@ public class GenerationSettings {
 
 		public GenerationSettings build() {
 			return new GenerationSettings(
-				(Map<GenerationStep.Carver, RegistryEntryList<ConfiguredCarver<?>>>)this.carverStepsToCarvers
-					.entrySet()
-					.stream()
-					.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> RegistryEntryList.of((List)entry.getValue()))),
+				RegistryEntryList.of(this.carverStepsToCarvers),
 				(List<RegistryEntryList<PlacedFeature>>)this.indexedFeaturesList.stream().map(RegistryEntryList::of).collect(ImmutableList.toImmutableList())
 			);
 		}
@@ -139,8 +127,8 @@ public class GenerationSettings {
 			return this;
 		}
 
-		public GenerationSettings.LookupBackedBuilder carver(GenerationStep.Carver carverStep, RegistryKey<ConfiguredCarver<?>> carverKey) {
-			this.carver(carverStep, this.configuredCarverLookup.getOrThrow(carverKey));
+		public GenerationSettings.LookupBackedBuilder carver(RegistryKey<ConfiguredCarver<?>> carverKey) {
+			this.carver(this.configuredCarverLookup.getOrThrow(carverKey));
 			return this;
 		}
 	}

@@ -2,8 +2,6 @@ package net.minecraft.item;
 
 import java.util.List;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.item.trim.ArmorTrimPattern;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -18,7 +16,7 @@ public class SmithingTemplateItem extends Item {
 		.formatted(TITLE_FORMATTING);
 	private static final Text APPLIES_TO_TEXT = Text.translatable(Util.createTranslationKey("item", Identifier.ofVanilla("smithing_template.applies_to")))
 		.formatted(TITLE_FORMATTING);
-	private static final Text NETHERITE_UPGRADE_TEXT = Text.translatable(Util.createTranslationKey("upgrade", Identifier.ofVanilla("netherite_upgrade")))
+	private static final Text SMITHING_TEMPLATE_TEXT = Text.translatable(Util.createTranslationKey("item", Identifier.ofVanilla("smithing_template")))
 		.formatted(TITLE_FORMATTING);
 	private static final Text ARMOR_TRIM_APPLIES_TO_TEXT = Text.translatable(
 			Util.createTranslationKey("item", Identifier.ofVanilla("smithing_template.armor_trim.applies_to"))
@@ -66,41 +64,35 @@ public class SmithingTemplateItem extends Item {
 	private static final Identifier EMPTY_SLOT_AMETHYST_SHARD_TEXTURE = Identifier.ofVanilla("item/empty_slot_amethyst_shard");
 	private final Text appliesToText;
 	private final Text ingredientsText;
-	private final Text titleText;
 	private final Text baseSlotDescriptionText;
 	private final Text additionsSlotDescriptionText;
 	private final List<Identifier> emptyBaseSlotTextures;
 	private final List<Identifier> emptyAdditionsSlotTextures;
 
 	public SmithingTemplateItem(
+		Item.Settings settings,
 		Text appliesToText,
 		Text ingredientsText,
-		Text titleText,
 		Text baseSlotDescriptionText,
 		Text additionsSlotDescriptionText,
 		List<Identifier> emptyBaseSlotTextures,
 		List<Identifier> emptyAdditionsSlotTextures,
 		FeatureFlag... requiredFeatures
 	) {
-		super(new Item.Settings().requires(requiredFeatures));
+		super(settings.requires(requiredFeatures));
 		this.appliesToText = appliesToText;
 		this.ingredientsText = ingredientsText;
-		this.titleText = titleText;
 		this.baseSlotDescriptionText = baseSlotDescriptionText;
 		this.additionsSlotDescriptionText = additionsSlotDescriptionText;
 		this.emptyBaseSlotTextures = emptyBaseSlotTextures;
 		this.emptyAdditionsSlotTextures = emptyAdditionsSlotTextures;
 	}
 
-	public static SmithingTemplateItem of(RegistryKey<ArmorTrimPattern> trimPattern, FeatureFlag... requiredFeatures) {
-		return of(trimPattern.getValue(), requiredFeatures);
-	}
-
-	public static SmithingTemplateItem of(Identifier trimPatternIn, FeatureFlag... requiredFeatures) {
+	public static SmithingTemplateItem of(Item.Settings settings, FeatureFlag... requiredFeatures) {
 		return new SmithingTemplateItem(
+			settings,
 			ARMOR_TRIM_APPLIES_TO_TEXT,
 			ARMOR_TRIM_INGREDIENTS_TEXT,
-			Text.translatable(Util.createTranslationKey("trim_pattern", trimPatternIn)).formatted(TITLE_FORMATTING),
 			ARMOR_TRIM_BASE_SLOT_DESCRIPTION_TEXT,
 			ARMOR_TRIM_ADDITIONS_SLOT_DESCRIPTION_TEXT,
 			getArmorTrimEmptyBaseSlotTextures(),
@@ -109,11 +101,11 @@ public class SmithingTemplateItem extends Item {
 		);
 	}
 
-	public static SmithingTemplateItem createNetheriteUpgrade() {
+	public static SmithingTemplateItem createNetheriteUpgrade(Item.Settings settings) {
 		return new SmithingTemplateItem(
+			settings,
 			NETHERITE_UPGRADE_APPLIES_TO_TEXT,
 			NETHERITE_UPGRADE_INGREDIENTS_TEXT,
-			NETHERITE_UPGRADE_TEXT,
 			NETHERITE_UPGRADE_BASE_SLOT_DESCRIPTION_TEXT,
 			NETHERITE_UPGRADE_ADDITIONS_SLOT_DESCRIPTION_TEXT,
 			getNetheriteUpgradeEmptyBaseSlotTextures(),
@@ -158,7 +150,7 @@ public class SmithingTemplateItem extends Item {
 	@Override
 	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 		super.appendTooltip(stack, context, tooltip, type);
-		tooltip.add(this.titleText);
+		tooltip.add(SMITHING_TEMPLATE_TEXT);
 		tooltip.add(ScreenTexts.EMPTY);
 		tooltip.add(APPLIES_TO_TEXT);
 		tooltip.add(ScreenTexts.space().append(this.appliesToText));

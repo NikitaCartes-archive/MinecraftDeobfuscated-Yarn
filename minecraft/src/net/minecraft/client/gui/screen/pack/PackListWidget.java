@@ -8,6 +8,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
@@ -150,7 +151,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 				context.fill(x - 1, y - 1, i, y + entryHeight + 1, -8978432);
 			}
 
-			context.drawTexture(this.pack.getIconId(), x, y, 0.0F, 0.0F, 32, 32, 32, 32);
+			context.drawTexture(RenderLayer::getGuiTextured, this.pack.getIconId(), x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			OrderedText orderedText = this.displayName;
 			MultilineText multilineText = this.description;
 			if (this.isSelectable()
@@ -165,32 +166,32 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 
 				if (this.pack.canBeEnabled()) {
 					if (j < 32) {
-						context.drawGuiTexture(PackListWidget.SELECT_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, PackListWidget.SELECT_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 					} else {
-						context.drawGuiTexture(PackListWidget.SELECT_TEXTURE, x, y, 32, 32);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, PackListWidget.SELECT_TEXTURE, x, y, 32, 32);
 					}
 				} else {
 					if (this.pack.canBeDisabled()) {
 						if (j < 16) {
-							context.drawGuiTexture(PackListWidget.UNSELECT_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
+							context.drawGuiTexture(RenderLayer::getGuiTextured, PackListWidget.UNSELECT_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 						} else {
-							context.drawGuiTexture(PackListWidget.UNSELECT_TEXTURE, x, y, 32, 32);
+							context.drawGuiTexture(RenderLayer::getGuiTextured, PackListWidget.UNSELECT_TEXTURE, x, y, 32, 32);
 						}
 					}
 
 					if (this.pack.canMoveTowardStart()) {
 						if (j < 32 && j > 16 && k < 16) {
-							context.drawGuiTexture(PackListWidget.MOVE_UP_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
+							context.drawGuiTexture(RenderLayer::getGuiTextured, PackListWidget.MOVE_UP_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 						} else {
-							context.drawGuiTexture(PackListWidget.MOVE_UP_TEXTURE, x, y, 32, 32);
+							context.drawGuiTexture(RenderLayer::getGuiTextured, PackListWidget.MOVE_UP_TEXTURE, x, y, 32, 32);
 						}
 					}
 
 					if (this.pack.canMoveTowardEnd()) {
 						if (j < 32 && j > 16 && k > 16) {
-							context.drawGuiTexture(PackListWidget.MOVE_DOWN_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
+							context.drawGuiTexture(RenderLayer::getGuiTextured, PackListWidget.MOVE_DOWN_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 						} else {
-							context.drawGuiTexture(PackListWidget.MOVE_DOWN_TEXTURE, x, y, 32, 32);
+							context.drawGuiTexture(RenderLayer::getGuiTextured, PackListWidget.MOVE_DOWN_TEXTURE, x, y, 32, 32);
 						}
 					}
 				}

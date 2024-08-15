@@ -10,6 +10,7 @@ import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCommand {
@@ -34,10 +35,8 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 	}
 
 	@Override
-	public void renderIcon(DrawContext context, float brightness, int alpha) {
-		context.setShaderColor(1.0F, 1.0F, 1.0F, (float)alpha / 255.0F);
-		PlayerSkinDrawer.draw(context, (SkinTextures)this.skinTexturesSupplier.get(), 2, 2, 12);
-		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+	public void renderIcon(DrawContext context, float brightness, float f) {
+		PlayerSkinDrawer.draw(context, (SkinTextures)this.skinTexturesSupplier.get(), 2, 2, 12, ColorHelper.getWhite(f));
 	}
 
 	@Override

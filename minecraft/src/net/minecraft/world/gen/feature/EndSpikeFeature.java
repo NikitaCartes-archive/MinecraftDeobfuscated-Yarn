@@ -15,6 +15,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FireBlock;
 import net.minecraft.block.PaneBlock;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -107,7 +108,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			}
 		}
 
-		EndCrystalEntity endCrystalEntity = EntityType.END_CRYSTAL.create(world.toServerWorld());
+		EndCrystalEntity endCrystalEntity = EntityType.END_CRYSTAL.create(world.toServerWorld(), SpawnReason.STRUCTURE);
 		if (endCrystalEntity != null) {
 			endCrystalEntity.setBeamTarget(config.getPos());
 			endCrystalEntity.setInvulnerable(config.isCrystalInvulnerable());

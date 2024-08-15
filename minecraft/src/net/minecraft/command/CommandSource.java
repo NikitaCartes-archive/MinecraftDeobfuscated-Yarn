@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -59,7 +58,7 @@ public interface CommandSource {
 
 	default void suggestIdentifiers(Registry<?> registry, CommandSource.SuggestedIdType suggestedIdType, SuggestionsBuilder builder) {
 		if (suggestedIdType.canSuggestTags()) {
-			suggestIdentifiers(registry.streamTags().map(TagKey::id), builder, "#");
+			suggestIdentifiers(registry.streamTags().map(tag -> tag.getTag().id()), builder, "#");
 		}
 
 		if (suggestedIdType.canSuggestElements()) {

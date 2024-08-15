@@ -21,7 +21,7 @@ public record FluidPredicate(Optional<RegistryEntryList<Fluid>> fluids, Optional
 	);
 
 	public boolean test(ServerWorld world, BlockPos pos) {
-		if (!world.canSetBlock(pos)) {
+		if (!world.isPosLoaded(pos)) {
 			return false;
 		} else {
 			FluidState fluidState = world.getFluidState(pos);

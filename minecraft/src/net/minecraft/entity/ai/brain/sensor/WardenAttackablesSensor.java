@@ -38,14 +38,4 @@ public class WardenAttackablesSensor extends NearestLivingEntitiesSensor<WardenE
 			.filter(targetPredicate)
 			.findFirst();
 	}
-
-	@Override
-	protected int getHorizontalExpansion() {
-		return 24;
-	}
-
-	@Override
-	protected int getHeightExpansion() {
-		return 24;
-	}
 }

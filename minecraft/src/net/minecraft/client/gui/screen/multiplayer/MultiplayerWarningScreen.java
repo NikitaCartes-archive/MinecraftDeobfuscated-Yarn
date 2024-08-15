@@ -27,7 +27,7 @@ public class MultiplayerWarningScreen extends WarningScreen {
 	@Override
 	protected LayoutWidget getLayout() {
 		DirectionalLayoutWidget directionalLayoutWidget = DirectionalLayoutWidget.horizontal().spacing(8);
-		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.PROCEED, buttonWidget -> {
+		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.PROCEED, button -> {
 			if (this.checkbox.isChecked()) {
 				this.client.options.skipMultiplayerWarning = true;
 				this.client.options.write();
@@ -35,7 +35,7 @@ public class MultiplayerWarningScreen extends WarningScreen {
 
 			this.client.setScreen(new MultiplayerScreen(this.parent));
 		}).build());
-		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.BACK, buttonWidget -> this.close()).build());
+		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).build());
 		return directionalLayoutWidget;
 	}
 

@@ -114,7 +114,7 @@ public class BiMapPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public Palette<T> copy() {
-		return new BiMapPalette<>(this.idList, this.indexBits, this.listener, this.map.copy());
+	public Palette<T> copy(PaletteResizeListener<T> resizeListener) {
+		return new BiMapPalette<>(this.idList, this.indexBits, resizeListener, this.map.copy());
 	}
 }

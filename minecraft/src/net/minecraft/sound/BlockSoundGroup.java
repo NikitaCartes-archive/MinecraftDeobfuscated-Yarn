@@ -958,6 +958,15 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_COBWEB_HIT,
 		SoundEvents.BLOCK_COBWEB_FALL
 	);
+	public static final BlockSoundGroup SPAWNER = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SPAWNER_BREAK,
+		SoundEvents.BLOCK_SPAWNER_STEP,
+		SoundEvents.BLOCK_SPAWNER_PLACE,
+		SoundEvents.BLOCK_SPAWNER_HIT,
+		SoundEvents.BLOCK_SPAWNER_FALL
+	);
 	public final float volume;
 	public final float pitch;
 	private final SoundEvent breakSound;

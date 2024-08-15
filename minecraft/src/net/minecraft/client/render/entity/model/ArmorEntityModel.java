@@ -8,10 +8,10 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 
 @Environment(EnvType.CLIENT)
-public class ArmorEntityModel<T extends LivingEntity> extends BipedEntityModel<T> {
+public class ArmorEntityModel<S extends BipedEntityRenderState> extends BipedEntityModel<S> {
 	public ArmorEntityModel(ModelPart modelPart) {
 		super(modelPart);
 	}

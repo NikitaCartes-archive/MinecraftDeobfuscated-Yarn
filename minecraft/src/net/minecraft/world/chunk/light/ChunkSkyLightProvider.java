@@ -149,13 +149,13 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 					if (k > j) {
 						this.field_44746.set(m);
 						BlockState blockState2 = this.getStateForLighting(this.field_44746);
-						int n = lightLevel - this.getOpacity(blockState2, this.field_44746);
+						int n = lightLevel - this.getOpacity(blockState2);
 						if (n > j) {
 							if (blockState == null) {
 								blockState = ChunkLightProvider.class_8531.isTrivial(l) ? Blocks.AIR.getDefaultState() : this.getStateForLighting(this.field_44746.set(blockPos));
 							}
 
-							if (!this.shapesCoverFullCube(blockPos, blockState, m, blockState2, direction)) {
+							if (!this.shapesCoverFullCube(blockState, blockState2, direction)) {
 								this.lightStorage.set(m, n);
 								if (n > 1) {
 									this.method_51566(m, ChunkLightProvider.class_8531.method_51574(n, isTrivialForLighting(blockState2), direction.getOpposite()));

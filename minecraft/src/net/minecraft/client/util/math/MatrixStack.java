@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MatrixUtil;
+import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -45,6 +46,10 @@ public class MatrixStack {
 	public void translate(float x, float y, float z) {
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
 		entry.positionMatrix.translate(x, y, z);
+	}
+
+	public void translate(Vec3d vec) {
+		this.translate(vec.x, vec.y, vec.z);
 	}
 
 	/**

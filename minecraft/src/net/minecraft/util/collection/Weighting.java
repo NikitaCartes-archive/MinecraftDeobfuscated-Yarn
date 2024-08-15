@@ -25,7 +25,7 @@ public class Weighting {
 
 	public static <T extends Weighted> Optional<T> getRandom(Random random, List<T> pool, int totalWeight) {
 		if (totalWeight < 0) {
-			throw (IllegalArgumentException)Util.throwOrPause((T)(new IllegalArgumentException("Negative total weight in getRandomItem")));
+			throw (IllegalArgumentException)Util.getFatalOrPause((T)(new IllegalArgumentException("Negative total weight in getRandomItem")));
 		} else if (totalWeight == 0) {
 			return Optional.empty();
 		} else {

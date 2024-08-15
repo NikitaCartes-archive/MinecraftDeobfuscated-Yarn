@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -60,7 +61,7 @@ public record MessageIndicator(int indicatorColor, @Nullable MessageIndicator.Ic
 		}
 
 		public void draw(DrawContext context, int x, int y) {
-			context.drawGuiTexture(this.texture, x, y, this.width, this.height);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, this.texture, x, y, this.width, this.height);
 		}
 	}
 }

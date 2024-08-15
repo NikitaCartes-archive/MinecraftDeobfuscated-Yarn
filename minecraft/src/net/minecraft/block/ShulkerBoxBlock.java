@@ -100,21 +100,13 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (world.isClient) {
-			return ActionResult.SUCCESS;
-		} else if (player.isSpectator()) {
-			return ActionResult.CONSUME;
-		} else if (world.getBlockEntity(pos) instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
-			if (canOpen(state, world, pos, shulkerBoxBlockEntity)) {
-				player.openHandledScreen(shulkerBoxBlockEntity);
-				player.incrementStat(Stats.OPEN_SHULKER_BOX);
-				PiglinBrain.onGuardedBlockInteracted(player, true);
-			}
-
-			return ActionResult.CONSUME;
-		} else {
-			return ActionResult.PASS;
+		if (!world.isClient && world.getBlockEntity(pos) instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity && canOpen(state, world, pos, shulkerBoxBlockEntity)) {
+			player.openHandledScreen(shulkerBoxBlockEntity);
+			player.incrementStat(Stats.OPEN_SHULKER_BOX);
+			PiglinBrain.onGuardedBlockInteracted(player, true);
 		}
+
+		return ActionResult.SUCCESS;
 	}
 
 	private static boolean canOpen(BlockState state, World world, BlockPos pos, ShulkerBoxBlockEntity entity) {
@@ -218,7 +210,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+	protected boolean isTransparent(BlockState state) {
 		return false;
 	}
 

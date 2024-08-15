@@ -118,14 +118,14 @@ public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Op
 			if (statusEffectInstance.shouldShowParticles()) {
 				int m = statusEffectInstance.getEffectType().value().getColor();
 				int n = statusEffectInstance.getAmplifier() + 1;
-				i += n * ColorHelper.Argb.getRed(m);
-				j += n * ColorHelper.Argb.getGreen(m);
-				k += n * ColorHelper.Argb.getBlue(m);
+				i += n * ColorHelper.getRed(m);
+				j += n * ColorHelper.getGreen(m);
+				k += n * ColorHelper.getBlue(m);
 				l += n;
 			}
 		}
 
-		return l == 0 ? OptionalInt.empty() : OptionalInt.of(ColorHelper.Argb.getArgb(i / l, j / l, k / l));
+		return l == 0 ? OptionalInt.empty() : OptionalInt.of(ColorHelper.getArgb(i / l, j / l, k / l));
 	}
 
 	public boolean hasEffects() {

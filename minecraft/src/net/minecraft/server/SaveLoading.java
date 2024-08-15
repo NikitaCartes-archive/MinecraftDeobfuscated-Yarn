@@ -5,10 +5,14 @@ import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.stream.Stream;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryLoader;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.ServerDynamicRegistryType;
+import net.minecraft.registry.tag.TagGroupLoader;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.LifecycledResourceManager;
 import net.minecraft.resource.LifecycledResourceManagerImpl;
@@ -33,21 +37,26 @@ public class SaveLoading {
 			Pair<DataConfiguration, LifecycledResourceManager> pair = serverConfig.dataPacks.load();
 			LifecycledResourceManager lifecycledResourceManager = pair.getSecond();
 			CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries = ServerDynamicRegistryType.createCombinedDynamicRegistries();
-			CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries2 = withRegistriesLoaded(
-				lifecycledResourceManager, combinedDynamicRegistries, ServerDynamicRegistryType.WORLDGEN, RegistryLoader.DYNAMIC_REGISTRIES
+			List<Registry.PendingTagLoad<?>> list = TagGroupLoader.startReload(
+				lifecycledResourceManager, combinedDynamicRegistries.get(ServerDynamicRegistryType.STATIC)
 			);
-			DynamicRegistryManager.Immutable immutable = combinedDynamicRegistries2.getPrecedingRegistryManagers(ServerDynamicRegistryType.DIMENSIONS);
-			DynamicRegistryManager.Immutable immutable2 = RegistryLoader.loadFromResource(lifecycledResourceManager, immutable, RegistryLoader.DIMENSION_REGISTRIES);
+			DynamicRegistryManager.Immutable immutable = combinedDynamicRegistries.getPrecedingRegistryManagers(ServerDynamicRegistryType.WORLDGEN);
+			List<RegistryWrapper.Impl<?>> list2 = TagGroupLoader.collectRegistries(immutable, list);
+			DynamicRegistryManager.Immutable immutable2 = RegistryLoader.loadFromResource(lifecycledResourceManager, list2, RegistryLoader.DYNAMIC_REGISTRIES);
+			List<RegistryWrapper.Impl<?>> list3 = Stream.concat(list2.stream(), immutable2.stream()).toList();
+			DynamicRegistryManager.Immutable immutable3 = RegistryLoader.loadFromResource(lifecycledResourceManager, list3, RegistryLoader.DIMENSION_REGISTRIES);
 			DataConfiguration dataConfiguration = pair.getFirst();
+			RegistryWrapper.WrapperLookup wrapperLookup = RegistryWrapper.WrapperLookup.of(list3.stream());
 			SaveLoading.LoadContext<D> loadContext = loadContextSupplier.get(
-				new SaveLoading.LoadContextSupplierContext(lifecycledResourceManager, dataConfiguration, immutable, immutable2)
+				new SaveLoading.LoadContextSupplierContext(lifecycledResourceManager, dataConfiguration, wrapperLookup, immutable3)
 			);
-			CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries3 = combinedDynamicRegistries2.with(
-				ServerDynamicRegistryType.DIMENSIONS, loadContext.dimensionsRegistryManager
+			CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries2 = combinedDynamicRegistries.with(
+				ServerDynamicRegistryType.WORLDGEN, immutable2, loadContext.dimensionsRegistryManager
 			);
 			return DataPackContents.reload(
 					lifecycledResourceManager,
-					combinedDynamicRegistries3,
+					combinedDynamicRegistries2,
+					list,
 					dataConfiguration.enabledFeatures(),
 					serverConfig.commandEnvironment(),
 					serverConfig.functionPermissionLevel(),
@@ -60,32 +69,12 @@ public class SaveLoading {
 					}
 				})
 				.thenApplyAsync(dataPackContents -> {
-					dataPackContents.refresh();
-					return saveApplierFactory.create(lifecycledResourceManager, dataPackContents, combinedDynamicRegistries3, loadContext.extraData);
+					dataPackContents.applyPendingTagLoads();
+					return saveApplierFactory.create(lifecycledResourceManager, dataPackContents, combinedDynamicRegistries2, loadContext.extraData);
 				}, applyExecutor);
-		} catch (Exception var14) {
-			return CompletableFuture.failedFuture(var14);
+		} catch (Exception var18) {
+			return CompletableFuture.failedFuture(var18);
 		}
-	}
-
-	private static DynamicRegistryManager.Immutable loadDynamicRegistryManager(
-		ResourceManager resourceManager,
-		CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries,
-		ServerDynamicRegistryType type,
-		List<RegistryLoader.Entry<?>> entries
-	) {
-		DynamicRegistryManager.Immutable immutable = combinedDynamicRegistries.getPrecedingRegistryManagers(type);
-		return RegistryLoader.loadFromResource(resourceManager, immutable, entries);
-	}
-
-	private static CombinedDynamicRegistries<ServerDynamicRegistryType> withRegistriesLoaded(
-		ResourceManager resourceManager,
-		CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries,
-		ServerDynamicRegistryType type,
-		List<RegistryLoader.Entry<?>> entries
-	) {
-		DynamicRegistryManager.Immutable immutable = loadDynamicRegistryManager(resourceManager, combinedDynamicRegistries, type, entries);
-		return combinedDynamicRegistries.with(type, immutable);
 	}
 
 	public static record DataPacks(ResourcePackManager manager, DataConfiguration initialDataConfig, boolean safeMode, boolean initMode) {
@@ -108,7 +97,7 @@ public class SaveLoading {
 	public static record LoadContextSupplierContext(
 		ResourceManager resourceManager,
 		DataConfiguration dataConfiguration,
-		DynamicRegistryManager.Immutable worldGenRegistryManager,
+		RegistryWrapper.WrapperLookup worldGenRegistryManager,
 		DynamicRegistryManager.Immutable dimensionsRegistryManager
 	) {
 	}

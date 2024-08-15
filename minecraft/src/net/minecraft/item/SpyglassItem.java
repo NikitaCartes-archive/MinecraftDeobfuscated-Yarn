@@ -4,8 +4,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
@@ -28,7 +28,7 @@ public class SpyglassItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		user.playSound(SoundEvents.ITEM_SPYGLASS_USE, 1.0F, 1.0F);
 		user.incrementStat(Stats.USED.getOrCreateStat(this));
 		return ItemUsage.consumeHeldItem(world, user, hand);

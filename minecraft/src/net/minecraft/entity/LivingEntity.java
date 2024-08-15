@@ -16,12 +16,14 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,6 +62,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.ElytraFlightController;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -126,6 +129,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
@@ -205,6 +210,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	public float prevBodyYaw;
 	public float headYaw;
 	public float prevHeadYaw;
+	public final ElytraFlightController elytraFlightController = new ElytraFlightController(this);
 	@Nullable
 	protected PlayerEntity attackingPlayer;
 	protected int playerHitTimer;
@@ -255,7 +261,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	private float lastLeaningPitch;
 	protected Brain<?> brain;
 	private boolean experienceDroppingDisabled;
-	private final Reference2ObjectMap<Enchantment, Set<EnchantmentLocationBasedEffect>> locationBasedEnchantmentEffects = new Reference2ObjectArrayMap<>();
+	private final EnumMap<EquipmentSlot, Reference2ObjectMap<Enchantment, Set<EnchantmentLocationBasedEffect>>> locationBasedEnchantmentEffects = new EnumMap(
+		EquipmentSlot.class
+	);
 	protected float prevScale = 1.0F;
 
 	protected LivingEntity(EntityType<? extends LivingEntity> entityType, World world) {
@@ -306,24 +314,24 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	public static DefaultAttributeContainer.Builder createLivingAttributes() {
 		return DefaultAttributeContainer.builder()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH)
-			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED)
-			.add(EntityAttributes.GENERIC_ARMOR)
-			.add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS)
-			.add(EntityAttributes.GENERIC_MAX_ABSORPTION)
-			.add(EntityAttributes.GENERIC_STEP_HEIGHT)
-			.add(EntityAttributes.GENERIC_SCALE)
-			.add(EntityAttributes.GENERIC_GRAVITY)
-			.add(EntityAttributes.GENERIC_SAFE_FALL_DISTANCE)
-			.add(EntityAttributes.GENERIC_FALL_DAMAGE_MULTIPLIER)
-			.add(EntityAttributes.GENERIC_JUMP_STRENGTH)
-			.add(EntityAttributes.GENERIC_OXYGEN_BONUS)
-			.add(EntityAttributes.GENERIC_BURNING_TIME)
-			.add(EntityAttributes.GENERIC_EXPLOSION_KNOCKBACK_RESISTANCE)
-			.add(EntityAttributes.GENERIC_WATER_MOVEMENT_EFFICIENCY)
-			.add(EntityAttributes.GENERIC_MOVEMENT_EFFICIENCY)
-			.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
+			.add(EntityAttributes.MAX_HEALTH)
+			.add(EntityAttributes.KNOCKBACK_RESISTANCE)
+			.add(EntityAttributes.MOVEMENT_SPEED)
+			.add(EntityAttributes.ARMOR)
+			.add(EntityAttributes.ARMOR_TOUGHNESS)
+			.add(EntityAttributes.MAX_ABSORPTION)
+			.add(EntityAttributes.STEP_HEIGHT)
+			.add(EntityAttributes.SCALE)
+			.add(EntityAttributes.GRAVITY)
+			.add(EntityAttributes.SAFE_FALL_DISTANCE)
+			.add(EntityAttributes.FALL_DAMAGE_MULTIPLIER)
+			.add(EntityAttributes.JUMP_STRENGTH)
+			.add(EntityAttributes.OXYGEN_BONUS)
+			.add(EntityAttributes.BURNING_TIME)
+			.add(EntityAttributes.EXPLOSION_KNOCKBACK_RESISTANCE)
+			.add(EntityAttributes.WATER_MOVEMENT_EFFICIENCY)
+			.add(EntityAttributes.MOVEMENT_EFFICIENCY)
+			.add(EntityAttributes.ATTACK_KNOCKBACK);
 	}
 
 	@Override
@@ -334,7 +342,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 		if (this.getWorld() instanceof ServerWorld serverWorld && onGround && this.fallDistance > 0.0F) {
 			this.applyMovementEffects(serverWorld, landedPosition);
-			double d = this.getAttributeValue(EntityAttributes.GENERIC_SAFE_FALL_DISTANCE);
+			double d = this.getAttributeValue(EntityAttributes.SAFE_FALL_DISTANCE);
 			if ((double)this.fallDistance > d && !state.isAir()) {
 				double e = this.getX();
 				double f = this.getY();
@@ -487,11 +495,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	@Override
 	protected float getVelocityMultiplier() {
-		return MathHelper.lerp((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_EFFICIENCY), super.getVelocityMultiplier(), 1.0F);
+		return MathHelper.lerp((float)this.getAttributeValue(EntityAttributes.MOVEMENT_EFFICIENCY), super.getVelocityMultiplier(), 1.0F);
 	}
 
 	protected void removePowderSnowSlow() {
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 		if (entityAttributeInstance != null) {
 			if (entityAttributeInstance.getModifier(POWDER_SNOW_SPEED_MODIFIER_ID) != null) {
 				entityAttributeInstance.removeModifier(POWDER_SNOW_SPEED_MODIFIER_ID);
@@ -503,7 +511,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		if (!this.getLandingBlockState().isAir()) {
 			int i = this.getFrozenTicks();
 			if (i > 0) {
-				EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+				EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 				if (entityAttributeInstance == null) {
 					return;
 				}
@@ -528,9 +536,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return this.isBaby() ? 0.5F : 1.0F;
 	}
 
-	public float getScale() {
+	public final float getScale() {
 		AttributeContainer attributeContainer = this.getAttributes();
-		return attributeContainer == null ? 1.0F : this.clampScale((float)attributeContainer.getValue(EntityAttributes.GENERIC_SCALE));
+		return attributeContainer == null ? 1.0F : this.clampScale((float)attributeContainer.getValue(EntityAttributes.SCALE));
 	}
 
 	protected float clampScale(float scale) {
@@ -570,7 +578,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	protected int getNextAirUnderwater(int air) {
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_OXYGEN_BONUS);
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.OXYGEN_BONUS);
 		double d;
 		if (entityAttributeInstance != null) {
 			d = entityAttributeInstance.getValue();
@@ -1130,13 +1138,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		set.clear();
 	}
 
-	private void updateAttribute(RegistryEntry<EntityAttribute> attribute) {
-		if (attribute.matches(EntityAttributes.GENERIC_MAX_HEALTH)) {
+	protected void updateAttribute(RegistryEntry<EntityAttribute> attribute) {
+		if (attribute.matches(EntityAttributes.MAX_HEALTH)) {
 			float f = this.getMaxHealth();
 			if (this.getHealth() > f) {
 				this.setHealth(f);
 			}
-		} else if (attribute.matches(EntityAttributes.GENERIC_MAX_ABSORPTION)) {
+		} else if (attribute.matches(EntityAttributes.MAX_ABSORPTION)) {
 			float f = this.getMaxAbsorption();
 			if (this.getAbsorptionAmount() > f) {
 				this.setAbsorptionAmount(f);
@@ -1186,6 +1194,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			}
 
 			this.despawnCounter = 0;
+			if (amount < 0.0F) {
+				amount = 0.0F;
+			}
+
 			float f = amount;
 			boolean bl = false;
 			float g = 0.0F;
@@ -1210,6 +1222,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			}
 
 			this.limbAnimator.setSpeed(1.5F);
+			if (Float.isNaN(amount) || Float.isInfinite(amount)) {
+				amount = Float.MAX_VALUE;
+			}
+
 			boolean bl2 = true;
 			if ((float)this.timeUntilRegen > 10.0F && !source.isIn(DamageTypeTags.BYPASSES_COOLDOWN)) {
 				if (amount <= this.lastDamageTaken) {
@@ -1510,7 +1526,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	protected float getKnockbackAgainst(Entity target, DamageSource damageSource) {
-		float f = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
+		float f = (float)this.getAttributeValue(EntityAttributes.ATTACK_KNOCKBACK);
 		return this.getWorld() instanceof ServerWorld serverWorld
 			? EnchantmentHelper.modifyKnockback(serverWorld, this.getWeaponStack(), target, damageSource, f)
 			: f;
@@ -1533,8 +1549,22 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		lootTable.generateLoot(lootContextParameterSet, this.getLootTableSeed(), this::dropStack);
 	}
 
+	protected void forEachShearedItem(RegistryKey<LootTable> lootTable, Consumer<ItemStack> action) {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			LootTable lootTable2 = serverWorld.getServer().getReloadableRegistries().getLootTable(lootTable);
+			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
+				.add(LootContextParameters.ORIGIN, this.getPos())
+				.add(LootContextParameters.THIS_ENTITY, this)
+				.build(LootContextTypes.SHEARING);
+
+			for (ItemStack itemStack : lootTable2.generateLoot(lootContextParameterSet)) {
+				action.accept(itemStack);
+			}
+		}
+	}
+
 	public void takeKnockback(double strength, double x, double z) {
-		strength *= 1.0 - this.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
+		strength *= 1.0 - this.getAttributeValue(EntityAttributes.KNOCKBACK_RESISTANCE);
 		if (!(strength <= 0.0)) {
 			this.velocityDirty = true;
 			Vec3d vec3d = this.getVelocity();
@@ -1594,8 +1624,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
-	public Map<Enchantment, Set<EnchantmentLocationBasedEffect>> getLocationBasedEnchantmentEffects() {
-		return this.locationBasedEnchantmentEffects;
+	public Map<Enchantment, Set<EnchantmentLocationBasedEffect>> getLocationBasedEnchantmentEffects(EquipmentSlot equipmentSlot) {
+		return (Map<Enchantment, Set<EnchantmentLocationBasedEffect>>)this.locationBasedEnchantmentEffects
+			.computeIfAbsent(equipmentSlot, equipmentSlotx -> new Reference2ObjectArrayMap());
 	}
 
 	public LivingEntity.FallSounds getFallSounds() {
@@ -1673,9 +1704,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		if (this.getType().isIn(EntityTypeTags.FALL_DAMAGE_IMMUNE)) {
 			return 0;
 		} else {
-			float f = (float)this.getAttributeValue(EntityAttributes.GENERIC_SAFE_FALL_DISTANCE);
+			float f = (float)this.getAttributeValue(EntityAttributes.SAFE_FALL_DISTANCE);
 			float g = fallDistance - f;
-			return MathHelper.ceil((double)(g * damageMultiplier) * this.getAttributeValue(EntityAttributes.GENERIC_FALL_DAMAGE_MULTIPLIER));
+			return MathHelper.ceil((double)(g * damageMultiplier) * this.getAttributeValue(EntityAttributes.FALL_DAMAGE_MULTIPLIER));
 		}
 	}
 
@@ -1699,7 +1730,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	public int getArmor() {
-		return MathHelper.floor(this.getAttributeValue(EntityAttributes.GENERIC_ARMOR));
+		return MathHelper.floor(this.getAttributeValue(EntityAttributes.ARMOR));
 	}
 
 	protected void damageArmor(DamageSource source, float amount) {
@@ -1727,7 +1758,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	protected float applyArmorToDamage(DamageSource source, float amount) {
 		if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
 			this.damageArmor(source, amount);
-			amount = DamageUtil.getDamageLeft(this, amount, source, (float)this.getArmor(), (float)this.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
+			amount = DamageUtil.getDamageLeft(this, amount, source, (float)this.getArmor(), (float)this.getAttributeValue(EntityAttributes.ARMOR_TOUGHNESS));
 		}
 
 		return amount;
@@ -1817,11 +1848,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	public final float getMaxHealth() {
-		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MAX_HEALTH);
+		return (float)this.getAttributeValue(EntityAttributes.MAX_HEALTH);
 	}
 
 	public final float getMaxAbsorption() {
-		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MAX_ABSORPTION);
+		return (float)this.getAttributeValue(EntityAttributes.MAX_ABSORPTION);
 	}
 
 	public final int getStuckArrowCount() {
@@ -2016,6 +2047,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return this.getEquippedStack(EquipmentSlot.OFFHAND);
 	}
 
+	public ItemStack getStackInArm(Arm arm) {
+		return this.getMainArm() == arm ? this.getMainHandStack() : this.getOffHandStack();
+	}
+
 	@Nonnull
 	@Override
 	public ItemStack getWeaponStack() {
@@ -2111,7 +2146,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	@Override
 	public void setSprinting(boolean sprinting) {
 		super.setSprinting(sprinting);
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 		entityAttributeInstance.removeModifier(SPRINTING_SPEED_BOOST.id());
 		if (sprinting) {
 			entityAttributeInstance.addTemporaryModifier(SPRINTING_SPEED_BOOST);
@@ -2146,6 +2181,16 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		} else {
 			double d = Math.max(this.getY(), vehicle.getY());
 			vec3d = new Vec3d(this.getX(), d, this.getZ());
+			boolean bl = this.getWidth() <= 4.0F && this.getHeight() <= 4.0F;
+			if (bl) {
+				double e = (double)this.getHeight() / 2.0;
+				Vec3d vec3d2 = vec3d.add(0.0, e, 0.0);
+				VoxelShape voxelShape = VoxelShapes.cuboid(Box.of(vec3d2, (double)this.getWidth(), (double)this.getHeight(), (double)this.getWidth()));
+				vec3d = (Vec3d)this.getWorld()
+					.findClosestCollision(this, voxelShape, vec3d2, (double)this.getWidth(), (double)this.getHeight(), (double)this.getWidth())
+					.map(vec3dx -> vec3dx.add(0.0, -e, 0.0))
+					.orElse(vec3d);
+			}
 		}
 
 		this.requestTeleportAndDismount(vec3d.x, vec3d.y, vec3d.z);
@@ -2161,8 +2206,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	protected float getJumpVelocity(float strength) {
-		return (float)this.getAttributeValue(EntityAttributes.GENERIC_JUMP_STRENGTH) * strength * this.getJumpVelocityMultiplier()
-			+ this.getJumpBoostVelocityModifier();
+		return (float)this.getAttributeValue(EntityAttributes.JUMP_STRENGTH) * strength * this.getJumpVelocityMultiplier() + this.getJumpBoostVelocityModifier();
 	}
 
 	public float getJumpBoostVelocityModifier() {
@@ -2174,7 +2218,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		float f = this.getJumpVelocity();
 		if (!(f <= 1.0E-5F)) {
 			Vec3d vec3d = this.getVelocity();
-			this.setVelocity(vec3d.x, (double)f, vec3d.z);
+			this.setVelocity(vec3d.x, Math.max((double)f, vec3d.y), vec3d.z);
 			if (this.isSprinting()) {
 				float g = this.getYaw() * (float) (Math.PI / 180.0);
 				this.addVelocityInternal(new Vec3d((double)(-MathHelper.sin(g)) * 0.2, 0.0, (double)MathHelper.cos(g) * 0.2));
@@ -2202,7 +2246,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	@Override
 	protected double getGravity() {
-		return this.getAttributeValue(EntityAttributes.GENERIC_GRAVITY);
+		return this.getAttributeValue(EntityAttributes.GRAVITY);
+	}
+
+	protected double getEffectiveGravity() {
+		boolean bl = this.getVelocity().y <= 0.0;
+		return bl && this.hasStatusEffect(StatusEffects.SLOW_FALLING) ? Math.min(this.getFinalGravity(), 0.01) : this.getFinalGravity();
 	}
 
 	/**
@@ -2216,129 +2265,139 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 */
 	public void travel(Vec3d movementInput) {
 		if (this.isLogicalSideForUpdatingMovement()) {
-			double d = this.getFinalGravity();
-			boolean bl = this.getVelocity().y <= 0.0;
-			if (bl && this.hasStatusEffect(StatusEffects.SLOW_FALLING)) {
-				d = Math.min(d, 0.01);
+			FluidState fluidState = this.getWorld().getFluidState(this.getBlockPos());
+			if ((this.isTouchingWater() || this.isInLava()) && this.shouldSwimInFluids() && !this.canWalkOnFluid(fluidState)) {
+				this.travelInFluid(movementInput);
+			} else if (this.isFallFlying()) {
+				this.travelFallFlying();
+			} else {
+				this.travelMidAir(movementInput);
+			}
+		}
+	}
+
+	private void travelMidAir(Vec3d movementInput) {
+		BlockPos blockPos = this.getVelocityAffectingPos();
+		float f = this.isOnGround() ? this.getWorld().getBlockState(blockPos).getBlock().getSlipperiness() : 1.0F;
+		float g = f * 0.91F;
+		Vec3d vec3d = this.applyMovementInput(movementInput, f);
+		double d = vec3d.y;
+		StatusEffectInstance statusEffectInstance = this.getStatusEffect(StatusEffects.LEVITATION);
+		if (statusEffectInstance != null) {
+			d += (0.05 * (double)(statusEffectInstance.getAmplifier() + 1) - vec3d.y) * 0.2;
+		} else if (!this.getWorld().isClient || this.getWorld().isChunkLoaded(blockPos)) {
+			d -= this.getEffectiveGravity();
+		} else if (this.getY() > (double)this.getWorld().getBottomY()) {
+			d = -0.1;
+		} else {
+			d = 0.0;
+		}
+
+		if (this.hasNoDrag()) {
+			this.setVelocity(vec3d.x, d, vec3d.z);
+		} else {
+			float h = this instanceof Flutterer ? g : 0.98F;
+			this.setVelocity(vec3d.x * (double)g, d * (double)h, vec3d.z * (double)g);
+		}
+	}
+
+	private void travelInFluid(Vec3d movementInput) {
+		boolean bl = this.getVelocity().y <= 0.0;
+		double d = this.getY();
+		double e = this.getEffectiveGravity();
+		if (this.isTouchingWater()) {
+			float f = this.isSprinting() ? 0.9F : this.getBaseMovementSpeedMultiplier();
+			float g = 0.02F;
+			float h = (float)this.getAttributeValue(EntityAttributes.WATER_MOVEMENT_EFFICIENCY);
+			if (!this.isOnGround()) {
+				h *= 0.5F;
 			}
 
-			FluidState fluidState = this.getWorld().getFluidState(this.getBlockPos());
-			if (this.isTouchingWater() && this.shouldSwimInFluids() && !this.canWalkOnFluid(fluidState)) {
-				double e = this.getY();
-				float f = this.isSprinting() ? 0.9F : this.getBaseMovementSpeedMultiplier();
-				float g = 0.02F;
-				float h = (float)this.getAttributeValue(EntityAttributes.GENERIC_WATER_MOVEMENT_EFFICIENCY);
-				if (!this.isOnGround()) {
-					h *= 0.5F;
-				}
+			if (h > 0.0F) {
+				f += (0.54600006F - f) * h;
+				g += (this.getMovementSpeed() - g) * h;
+			}
 
-				if (h > 0.0F) {
-					f += (0.54600006F - f) * h;
-					g += (this.getMovementSpeed() - g) * h;
-				}
+			if (this.hasStatusEffect(StatusEffects.DOLPHINS_GRACE)) {
+				f = 0.96F;
+			}
 
-				if (this.hasStatusEffect(StatusEffects.DOLPHINS_GRACE)) {
-					f = 0.96F;
-				}
+			this.updateVelocity(g, movementInput);
+			this.move(MovementType.SELF, this.getVelocity());
+			Vec3d vec3d = this.getVelocity();
+			if (this.horizontalCollision && this.isClimbing()) {
+				vec3d = new Vec3d(vec3d.x, 0.2, vec3d.z);
+			}
 
-				this.updateVelocity(g, movementInput);
-				this.move(MovementType.SELF, this.getVelocity());
-				Vec3d vec3d = this.getVelocity();
-				if (this.horizontalCollision && this.isClimbing()) {
-					vec3d = new Vec3d(vec3d.x, 0.2, vec3d.z);
-				}
-
-				this.setVelocity(vec3d.multiply((double)f, 0.8F, (double)f));
-				Vec3d vec3d2 = this.applyFluidMovingSpeed(d, bl, this.getVelocity());
+			vec3d = vec3d.multiply((double)f, 0.8F, (double)f);
+			this.setVelocity(this.applyFluidMovingSpeed(e, bl, vec3d));
+		} else {
+			this.updateVelocity(0.02F, movementInput);
+			this.move(MovementType.SELF, this.getVelocity());
+			if (this.getFluidHeight(FluidTags.LAVA) <= this.getSwimHeight()) {
+				this.setVelocity(this.getVelocity().multiply(0.5, 0.8F, 0.5));
+				Vec3d vec3d2 = this.applyFluidMovingSpeed(e, bl, this.getVelocity());
 				this.setVelocity(vec3d2);
-				if (this.horizontalCollision && this.doesNotCollide(vec3d2.x, vec3d2.y + 0.6F - this.getY() + e, vec3d2.z)) {
-					this.setVelocity(vec3d2.x, 0.3F, vec3d2.z);
-				}
-			} else if (this.isInLava() && this.shouldSwimInFluids() && !this.canWalkOnFluid(fluidState)) {
-				double ex = this.getY();
-				this.updateVelocity(0.02F, movementInput);
-				this.move(MovementType.SELF, this.getVelocity());
-				if (this.getFluidHeight(FluidTags.LAVA) <= this.getSwimHeight()) {
-					this.setVelocity(this.getVelocity().multiply(0.5, 0.8F, 0.5));
-					Vec3d vec3d3 = this.applyFluidMovingSpeed(d, bl, this.getVelocity());
-					this.setVelocity(vec3d3);
-				} else {
-					this.setVelocity(this.getVelocity().multiply(0.5));
-				}
-
-				if (d != 0.0) {
-					this.setVelocity(this.getVelocity().add(0.0, -d / 4.0, 0.0));
-				}
-
-				Vec3d vec3d3 = this.getVelocity();
-				if (this.horizontalCollision && this.doesNotCollide(vec3d3.x, vec3d3.y + 0.6F - this.getY() + ex, vec3d3.z)) {
-					this.setVelocity(vec3d3.x, 0.3F, vec3d3.z);
-				}
-			} else if (this.isFallFlying()) {
-				this.limitFallDistance();
-				Vec3d vec3d4 = this.getVelocity();
-				Vec3d vec3d5 = this.getRotationVector();
-				float fx = this.getPitch() * (float) (Math.PI / 180.0);
-				double i = Math.sqrt(vec3d5.x * vec3d5.x + vec3d5.z * vec3d5.z);
-				double j = vec3d4.horizontalLength();
-				double k = vec3d5.length();
-				double l = Math.cos((double)fx);
-				l = l * l * Math.min(1.0, k / 0.4);
-				vec3d4 = this.getVelocity().add(0.0, d * (-1.0 + l * 0.75), 0.0);
-				if (vec3d4.y < 0.0 && i > 0.0) {
-					double m = vec3d4.y * -0.1 * l;
-					vec3d4 = vec3d4.add(vec3d5.x * m / i, m, vec3d5.z * m / i);
-				}
-
-				if (fx < 0.0F && i > 0.0) {
-					double m = j * (double)(-MathHelper.sin(fx)) * 0.04;
-					vec3d4 = vec3d4.add(-vec3d5.x * m / i, m * 3.2, -vec3d5.z * m / i);
-				}
-
-				if (i > 0.0) {
-					vec3d4 = vec3d4.add((vec3d5.x / i * j - vec3d4.x) * 0.1, 0.0, (vec3d5.z / i * j - vec3d4.z) * 0.1);
-				}
-
-				this.setVelocity(vec3d4.multiply(0.99F, 0.98F, 0.99F));
-				this.move(MovementType.SELF, this.getVelocity());
-				if (this.horizontalCollision && !this.getWorld().isClient) {
-					double m = this.getVelocity().horizontalLength();
-					double n = j - m;
-					float o = (float)(n * 10.0 - 3.0);
-					if (o > 0.0F) {
-						this.playSound(this.getFallSound((int)o), 1.0F, 1.0F);
-						this.damage(this.getDamageSources().flyIntoWall(), o);
-					}
-				}
-
-				if (this.isOnGround() && !this.getWorld().isClient) {
-					this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, false);
-				}
 			} else {
-				BlockPos blockPos = this.getVelocityAffectingPos();
-				float p = this.getWorld().getBlockState(blockPos).getBlock().getSlipperiness();
-				float fxx = this.isOnGround() ? p * 0.91F : 0.91F;
-				Vec3d vec3d6 = this.applyMovementInput(movementInput, p);
-				double q = vec3d6.y;
-				if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
-					q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
-				} else if (!this.getWorld().isClient || this.getWorld().isChunkLoaded(blockPos)) {
-					q -= d;
-				} else if (this.getY() > (double)this.getWorld().getBottomY()) {
-					q = -0.1;
-				} else {
-					q = 0.0;
-				}
+				this.setVelocity(this.getVelocity().multiply(0.5));
+			}
 
-				if (this.hasNoDrag()) {
-					this.setVelocity(vec3d6.x, q, vec3d6.z);
-				} else {
-					this.setVelocity(vec3d6.x * (double)fxx, this instanceof Flutterer ? q * (double)fxx : q * 0.98F, vec3d6.z * (double)fxx);
-				}
+			if (e != 0.0) {
+				this.setVelocity(this.getVelocity().add(0.0, -e / 4.0, 0.0));
 			}
 		}
 
-		this.updateLimbs(this instanceof Flutterer);
+		Vec3d vec3d2 = this.getVelocity();
+		if (this.horizontalCollision && this.doesNotCollide(vec3d2.x, vec3d2.y + 0.6F - this.getY() + d, vec3d2.z)) {
+			this.setVelocity(vec3d2.x, 0.3F, vec3d2.z);
+		}
+	}
+
+	private void travelFallFlying() {
+		Vec3d vec3d = this.getVelocity();
+		double d = vec3d.horizontalLength();
+		this.setVelocity(this.calcFallFlyingVelocity(vec3d));
+		this.move(MovementType.SELF, this.getVelocity());
+		if (!this.getWorld().isClient) {
+			double e = this.getVelocity().horizontalLength();
+			this.checkFallFlyingCollision(d, e);
+		}
+	}
+
+	private Vec3d calcFallFlyingVelocity(Vec3d oldVelocity) {
+		Vec3d vec3d = this.getRotationVector();
+		float f = this.getPitch() * (float) (Math.PI / 180.0);
+		double d = Math.sqrt(vec3d.x * vec3d.x + vec3d.z * vec3d.z);
+		double e = oldVelocity.horizontalLength();
+		double g = this.getEffectiveGravity();
+		double h = MathHelper.square(Math.cos((double)f));
+		oldVelocity = oldVelocity.add(0.0, g * (-1.0 + h * 0.75), 0.0);
+		if (oldVelocity.y < 0.0 && d > 0.0) {
+			double i = oldVelocity.y * -0.1 * h;
+			oldVelocity = oldVelocity.add(vec3d.x * i / d, i, vec3d.z * i / d);
+		}
+
+		if (f < 0.0F && d > 0.0) {
+			double i = e * (double)(-MathHelper.sin(f)) * 0.04;
+			oldVelocity = oldVelocity.add(-vec3d.x * i / d, i * 3.2, -vec3d.z * i / d);
+		}
+
+		if (d > 0.0) {
+			oldVelocity = oldVelocity.add((vec3d.x / d * e - oldVelocity.x) * 0.1, 0.0, (vec3d.z / d * e - oldVelocity.z) * 0.1);
+		}
+
+		return oldVelocity.multiply(0.99F, 0.98F, 0.99F);
+	}
+
+	private void checkFallFlyingCollision(double oldSpeed, double newSpeed) {
+		if (this.horizontalCollision) {
+			double d = oldSpeed - newSpeed;
+			float f = (float)(d * 10.0 - 3.0);
+			if (f > 0.0F) {
+				this.playSound(this.getFallSound((int)f), 1.0F, 1.0F);
+				this.damage(this.getDamageSources().flyIntoWall(), f);
+			}
+		}
 	}
 
 	private void travelControlled(PlayerEntity controllingPlayer, Vec3d movementInput) {
@@ -2348,9 +2407,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			this.setMovementSpeed(this.getSaddledSpeed(controllingPlayer));
 			this.travel(vec3d);
 		} else {
-			this.updateLimbs(false);
 			this.setVelocity(Vec3d.ZERO);
-			this.tryCheckBlockCollision();
 		}
 	}
 
@@ -2367,15 +2424,19 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	public void updateLimbs(boolean flutter) {
 		float f = (float)MathHelper.magnitude(this.getX() - this.prevX, flutter ? this.getY() - this.prevY : 0.0, this.getZ() - this.prevZ);
-		this.updateLimbs(f);
+		if (!this.hasVehicle() && this.isAlive()) {
+			this.updateLimbs(f);
+		} else {
+			this.limbAnimator.reset();
+		}
 	}
 
 	protected void updateLimbs(float posDelta) {
 		float f = Math.min(posDelta * 4.0F, 1.0F);
-		this.limbAnimator.updateLimbs(f, 0.4F);
+		this.limbAnimator.updateLimbs(f, 0.4F, this.isBaby() ? 3.0F : 1.0F);
 	}
 
-	public Vec3d applyMovementInput(Vec3d movementInput, float slipperiness) {
+	private Vec3d applyMovementInput(Vec3d movementInput, float slipperiness) {
 		this.updateVelocity(this.getMovementSpeed(slipperiness), movementInput);
 		this.setVelocity(this.applyClimbingSpeed(this.getVelocity()));
 		this.move(MovementType.SELF, this.getVelocity());
@@ -2568,6 +2629,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			this.prevScale = l;
 			this.calculateDimensions();
 		}
+
+		this.elytraFlightController.update();
 	}
 
 	/**
@@ -2606,14 +2669,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				map.put(equipmentSlot, itemStack2);
 				AttributeContainer attributeContainer = this.getAttributes();
 				if (!itemStack.isEmpty()) {
-					itemStack.applyAttributeModifiers(equipmentSlot, (attribute, modifier) -> {
-						EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(attribute);
-						if (entityAttributeInstance != null) {
-							entityAttributeInstance.removeModifier(modifier);
-						}
-
-						EnchantmentHelper.removeLocationBasedEffects(itemStack, this, equipmentSlot);
-					});
+					this.onEquipmentRemoved(itemStack, equipmentSlot, attributeContainer);
 				}
 			}
 		}
@@ -2622,18 +2678,17 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			for (Entry<EquipmentSlot, ItemStack> entry : map.entrySet()) {
 				EquipmentSlot equipmentSlot2 = (EquipmentSlot)entry.getKey();
 				ItemStack itemStack3 = (ItemStack)entry.getValue();
-				if (!itemStack3.isEmpty()) {
+				if (!itemStack3.isEmpty() && !itemStack3.shouldBreak()) {
 					itemStack3.applyAttributeModifiers(equipmentSlot2, (registryEntry, entityAttributeModifier) -> {
 						EntityAttributeInstance entityAttributeInstance = this.attributes.getCustomInstance(registryEntry);
 						if (entityAttributeInstance != null) {
 							entityAttributeInstance.removeModifier(entityAttributeModifier.id());
 							entityAttributeInstance.addTemporaryModifier(entityAttributeModifier);
 						}
-
-						if (this.getWorld() instanceof ServerWorld serverWorld) {
-							EnchantmentHelper.applyLocationBasedEffects(serverWorld, itemStack3, this, equipmentSlot2);
-						}
 					});
+					if (this.getWorld() instanceof ServerWorld serverWorld) {
+						EnchantmentHelper.applyLocationBasedEffects(serverWorld, itemStack3, this, equipmentSlot2);
+					}
 				}
 			}
 		}
@@ -2809,22 +2864,30 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.getWorld().getProfiler().push("travel");
 		this.sidewaysSpeed *= 0.98F;
 		this.forwardSpeed *= 0.98F;
-		this.tickFallFlying();
+		if (this.isFallFlying()) {
+			this.tickFallFlying();
+		}
+
 		Box box = this.getBoundingBox();
 		Vec3d vec3d2 = new Vec3d((double)this.sidewaysSpeed, (double)this.upwardSpeed, (double)this.forwardSpeed);
 		if (this.hasStatusEffect(StatusEffects.SLOW_FALLING) || this.hasStatusEffect(StatusEffects.LEVITATION)) {
 			this.onLanding();
 		}
 
-		label104: {
+		label115: {
 			if (this.getControllingPassenger() instanceof PlayerEntity playerEntity && this.isAlive()) {
 				this.travelControlled(playerEntity, vec3d2);
-				break label104;
+				break label115;
 			}
 
 			this.travel(vec3d2);
 		}
 
+		if (!this.getWorld().isClient() || this.isLogicalSideForUpdatingMovement()) {
+			this.tickBlockCollision();
+		}
+
+		this.updateLimbs(this instanceof Flutterer);
 		this.getWorld().getProfiler().pop();
 		this.getWorld().getProfiler().push("freezing");
 		if (!this.getWorld().isClient && !this.isDead()) {
@@ -2860,31 +2923,31 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return false;
 	}
 
-	private void tickFallFlying() {
-		boolean bl = this.getFlag(Entity.FALL_FLYING_FLAG_INDEX);
-		if (bl && !this.isOnGround() && !this.hasVehicle() && !this.hasStatusEffect(StatusEffects.LEVITATION)) {
-			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
-			if (itemStack.isOf(Items.ELYTRA) && ElytraItem.isUsable(itemStack)) {
-				bl = true;
-				int i = this.fallFlyingTicks + 1;
-				if (!this.getWorld().isClient && i % 10 == 0) {
-					int j = i / 10;
-					if (j % 2 == 0) {
-						itemStack.damage(1, this, EquipmentSlot.CHEST);
-					}
-
-					this.emitGameEvent(GameEvent.ELYTRA_GLIDE);
-				}
-			} else {
-				bl = false;
-			}
-		} else {
-			bl = false;
-		}
-
+	protected void tickFallFlying() {
+		this.limitFallDistance();
 		if (!this.getWorld().isClient) {
-			this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, bl);
+			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
+			if (!this.isFallFlyingAllowed(itemStack)) {
+				this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, false);
+				return;
+			}
+
+			int i = this.fallFlyingTicks + 1;
+			if (i % 10 == 0) {
+				int j = i / 10;
+				if (j % 2 == 0) {
+					itemStack.damage(1, this, EquipmentSlot.CHEST);
+				}
+
+				this.emitGameEvent(GameEvent.ELYTRA_GLIDE);
+			}
 		}
+	}
+
+	protected boolean isFallFlyingAllowed(ItemStack chestEquipment) {
+		return !this.isOnGround() && !this.hasVehicle() && !this.hasStatusEffect(StatusEffects.LEVITATION)
+			? chestEquipment.isOf(Items.ELYTRA) && ElytraItem.isUsable(chestEquipment)
+			: false;
 	}
 
 	protected void tickNewAi() {
@@ -3561,20 +3624,21 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	public void sendEquipmentBreakStatus(Item item, EquipmentSlot slot) {
 		this.getWorld().sendEntityStatus(this, getEquipmentBreakStatus(slot));
+		this.onEquipmentRemoved(this.getEquippedStack(slot), slot, this.attributes);
+	}
+
+	private void onEquipmentRemoved(ItemStack removedEquipment, EquipmentSlot slot, AttributeContainer container) {
+		removedEquipment.applyAttributeModifiers(slot, (attribute, modifier) -> {
+			EntityAttributeInstance entityAttributeInstance = container.getCustomInstance(attribute);
+			if (entityAttributeInstance != null) {
+				entityAttributeInstance.removeModifier(modifier);
+			}
+		});
+		EnchantmentHelper.removeLocationBasedEffects(removedEquipment, this, slot);
 	}
 
 	public static EquipmentSlot getSlotForHand(Hand hand) {
 		return hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
-	}
-
-	@Override
-	public Box getVisibilityBoundingBox() {
-		if (this.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.DRAGON_HEAD)) {
-			float f = 0.5F;
-			return this.getBoundingBox().expand(0.5, 0.5, 0.5);
-		} else {
-			return super.getVisibilityBoundingBox();
-		}
 	}
 
 	public EquipmentSlot getPreferredEquipmentSlot(ItemStack stack) {
@@ -3668,7 +3732,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	@Override
 	public float getStepHeight() {
-		float f = (float)this.getAttributeValue(EntityAttributes.GENERIC_STEP_HEIGHT);
+		float f = (float)this.getAttributeValue(EntityAttributes.STEP_HEIGHT);
 		return this.getControllingPassenger() instanceof PlayerEntity ? Math.max(f, 1.0F) : f;
 	}
 
@@ -3683,7 +3747,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	@Override
 	public void setOnFireForTicks(int ticks) {
-		super.setOnFireForTicks(MathHelper.ceil((double)ticks * this.getAttributeValue(EntityAttributes.GENERIC_BURNING_TIME)));
+		super.setOnFireForTicks(MathHelper.ceil((double)ticks * this.getAttributeValue(EntityAttributes.BURNING_TIME)));
 	}
 
 	public boolean isInCreativeMode() {

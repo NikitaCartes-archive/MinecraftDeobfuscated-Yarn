@@ -255,7 +255,7 @@ public class ChunkRegion implements StructureWorldAccess {
 
 			return true;
 		} else {
-			Util.error(
+			Util.logErrorOrPause(
 				"Detected setBlock in a far chunk ["
 					+ i
 					+ ", "

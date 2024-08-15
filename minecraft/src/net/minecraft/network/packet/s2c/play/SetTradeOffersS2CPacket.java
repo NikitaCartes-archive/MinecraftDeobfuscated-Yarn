@@ -29,7 +29,7 @@ public class SetTradeOffersS2CPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	private SetTradeOffersS2CPacket(RegistryByteBuf buf) {
-		this.syncId = buf.readVarInt();
+		this.syncId = buf.readSyncId();
 		this.offers = TradeOfferList.PACKET_CODEC.decode(buf);
 		this.levelProgress = buf.readVarInt();
 		this.experience = buf.readVarInt();
@@ -38,7 +38,7 @@ public class SetTradeOffersS2CPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	private void write(RegistryByteBuf buf) {
-		buf.writeVarInt(this.syncId);
+		buf.writeSyncId(this.syncId);
 		TradeOfferList.PACKET_CODEC.encode(buf, this.offers);
 		buf.writeVarInt(this.levelProgress);
 		buf.writeVarInt(this.experience);

@@ -30,7 +30,7 @@ public class ShortPlantBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
-		return true;
+		return getLargeVariant(state).getDefaultState().canPlaceAt(world, pos) && world.isAir(pos.up());
 	}
 
 	@Override
@@ -40,9 +40,10 @@ public class ShortPlantBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		TallPlantBlock tallPlantBlock = (TallPlantBlock)(state.isOf(Blocks.FERN) ? Blocks.LARGE_FERN : Blocks.TALL_GRASS);
-		if (tallPlantBlock.getDefaultState().canPlaceAt(world, pos) && world.isAir(pos.up())) {
-			TallPlantBlock.placeAt(world, tallPlantBlock.getDefaultState(), pos, 2);
-		}
+		TallPlantBlock.placeAt(world, getLargeVariant(state).getDefaultState(), pos, 2);
+	}
+
+	private static TallPlantBlock getLargeVariant(BlockState state) {
+		return (TallPlantBlock)(state.isOf(Blocks.FERN) ? Blocks.LARGE_FERN : Blocks.TALL_GRASS);
 	}
 }

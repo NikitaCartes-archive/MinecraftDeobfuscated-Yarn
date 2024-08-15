@@ -242,6 +242,19 @@ public class MathHelper {
 		return i;
 	}
 
+	public static float wrapDegrees(long degrees) {
+		float f = (float)(degrees % 360L);
+		if (f >= 180.0F) {
+			f -= 360.0F;
+		}
+
+		if (f < -180.0F) {
+			f += 360.0F;
+		}
+
+		return f;
+	}
+
 	/**
 	 * Wraps an angle in degrees to the interval {@code [-180, 180)}.
 	 */
@@ -357,10 +370,6 @@ public class MathHelper {
 	 */
 	public static int floorLog2(int value) {
 		return ceilLog2(value) - (isPowerOfTwo(value) ? 0 : 1);
-	}
-
-	public static int packRgb(float r, float g, float b) {
-		return ColorHelper.Argb.getArgb(0, floor(r * 255.0F), floor(g * 255.0F), floor(b * 255.0F));
 	}
 
 	public static float fractionalPart(float value) {
@@ -591,7 +600,7 @@ public class MathHelper {
 				throw new RuntimeException("Something went wrong when converting from HSV to RGB. Input was " + hue + ", " + saturation + ", " + value);
 		}
 
-		return ColorHelper.Argb.getArgb(alpha, clamp((int)(k * 255.0F), 0, 255), clamp((int)(l * 255.0F), 0, 255), clamp((int)(m * 255.0F), 0, 255));
+		return ColorHelper.getArgb(alpha, clamp((int)(k * 255.0F), 0, 255), clamp((int)(l * 255.0F), 0, 255), clamp((int)(m * 255.0F), 0, 255));
 	}
 
 	public static int idealHash(int value) {
@@ -665,6 +674,10 @@ public class MathHelper {
 
 	public static float lerp(float delta, float start, float end) {
 		return start + delta * (end - start);
+	}
+
+	public static Vec3d lerp(double delta, Vec3d start, Vec3d end) {
+		return new Vec3d(lerp(delta, start.x, end.x), lerp(delta, start.y, end.y), lerp(delta, start.z, end.z));
 	}
 
 	public static double lerp(double delta, double start, double end) {
@@ -759,6 +772,20 @@ public class MathHelper {
 
 	public static double lerpAngleDegrees(double delta, double start, double end) {
 		return start + delta * wrapDegrees(end - start);
+	}
+
+	public static float lerpAngleRadians(float delta, float start, float end) {
+		float f = end - start;
+
+		while (f < (float) -Math.PI) {
+			f += (float) (Math.PI * 2);
+		}
+
+		while (f >= (float) Math.PI) {
+			f -= (float) (Math.PI * 2);
+		}
+
+		return start + delta * f;
 	}
 
 	public static float wrap(float value, float maxDeviation) {
@@ -899,6 +926,10 @@ public class MathHelper {
 		return Math.sqrt(squaredHypot(a, b));
 	}
 
+	public static float hypot(float a, float b) {
+		return (float)Math.sqrt(squaredHypot((double)a, (double)b));
+	}
+
 	public static double squaredMagnitude(double a, double b, double c) {
 		return a * a + b * b + c * c;
 	}
@@ -954,6 +985,10 @@ public class MathHelper {
 
 	public static int multiplyFraction(Fraction fraction, int multiplier) {
 		return fraction.getNumerator() * multiplier / fraction.getDenominator();
+	}
+
+	public static float easeInOutSine(float value) {
+		return -(cos((float) Math.PI * value) - 1.0F) / 2.0F;
 	}
 
 	static {

@@ -22,7 +22,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.GoatHornItem;
 import net.minecraft.item.Instrument;
@@ -30,9 +29,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.InstrumentTags;
 import net.minecraft.registry.tag.ItemTags;
@@ -102,8 +99,12 @@ public class GoatEntity extends AnimalEntity {
 	public ItemStack getGoatHornStack() {
 		Random random = Random.create((long)this.getUuid().hashCode());
 		TagKey<Instrument> tagKey = this.isScreaming() ? InstrumentTags.SCREAMING_GOAT_HORNS : InstrumentTags.REGULAR_GOAT_HORNS;
-		RegistryEntryList<Instrument> registryEntryList = Registries.INSTRUMENT.getOrCreateEntryList(tagKey);
-		return GoatHornItem.getStackForInstrument(Items.GOAT_HORN, (RegistryEntry<Instrument>)registryEntryList.getRandom(random).get());
+		return (ItemStack)this.getWorld()
+			.getRegistryManager()
+			.get(RegistryKeys.INSTRUMENT)
+			.getRandomEntry(tagKey, random)
+			.map(registryEntry -> GoatHornItem.getStackForInstrument(Items.GOAT_HORN, registryEntry))
+			.orElseGet(() -> new ItemStack(Items.GOAT_HORN));
 	}
 
 	@Override
@@ -117,19 +118,19 @@ public class GoatEntity extends AnimalEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createGoatAttributes() {
-		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2F)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0);
+		return AnimalEntity.createAnimalAttributes()
+			.add(EntityAttributes.MAX_HEALTH, 10.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.2F)
+			.add(EntityAttributes.ATTACK_DAMAGE, 2.0);
 	}
 
 	@Override
 	protected void onGrowUp() {
 		if (this.isBaby()) {
-			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(1.0);
+			this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(1.0);
 			this.removeHorns();
 		} else {
-			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(2.0);
+			this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
 			this.addHorns();
 		}
 	}
@@ -165,7 +166,7 @@ public class GoatEntity extends AnimalEntity {
 
 	@Nullable
 	public GoatEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		GoatEntity goatEntity = EntityType.GOAT.create(serverWorld);
+		GoatEntity goatEntity = EntityType.GOAT.create(serverWorld, SpawnReason.BREEDING);
 		if (goatEntity != null) {
 			GoatBrain.resetLongJumpCooldown(goatEntity, serverWorld.getRandom());
 			PassiveEntity passiveEntity2 = (PassiveEntity)(serverWorld.getRandom().nextBoolean() ? this : passiveEntity);
@@ -206,8 +207,16 @@ public class GoatEntity extends AnimalEntity {
 	}
 
 	@Override
-	public SoundEvent getEatSound(ItemStack stack) {
-		return this.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_EAT : SoundEvents.ENTITY_GOAT_EAT;
+	protected void playEatSound() {
+		this.getWorld()
+			.playSoundFromEntity(
+				null,
+				this,
+				this.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_EAT : SoundEvents.ENTITY_GOAT_EAT,
+				SoundCategory.NEUTRAL,
+				1.0F,
+				MathHelper.nextBetween(this.getWorld().random, 0.8F, 1.2F)
+			);
 	}
 
 	@Override
@@ -222,12 +231,11 @@ public class GoatEntity extends AnimalEntity {
 			player.playSound(this.getMilkingSound(), 1.0F, 1.0F);
 			ItemStack itemStack2 = ItemUsage.exchangeStack(itemStack, player, Items.MILK_BUCKET.getDefaultStack());
 			player.setStackInHand(hand, itemStack2);
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			ActionResult actionResult = super.interactMob(player, hand);
 			if (actionResult.isAccepted() && this.isBreedingItem(itemStack)) {
-				this.getWorld()
-					.playSoundFromEntity(null, this, this.getEatSound(itemStack), SoundCategory.NEUTRAL, 1.0F, MathHelper.nextBetween(this.getWorld().random, 0.8F, 1.2F));
+				this.playEatSound();
 			}
 
 			return actionResult;

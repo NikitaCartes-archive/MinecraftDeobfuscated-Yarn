@@ -6,11 +6,12 @@ import net.minecraft.client.render.entity.feature.SpiderEyesFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.SpiderEntityModel;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class SpiderEntityRenderer<T extends SpiderEntity> extends MobEntityRenderer<T, SpiderEntityModel<T>> {
+public class SpiderEntityRenderer<T extends SpiderEntity> extends MobEntityRenderer<T, LivingEntityRenderState, SpiderEntityModel> {
 	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/spider/spider.png");
 
 	public SpiderEntityRenderer(EntityRendererFactory.Context context) {
@@ -18,15 +19,24 @@ public class SpiderEntityRenderer<T extends SpiderEntity> extends MobEntityRende
 	}
 
 	public SpiderEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer) {
-		super(ctx, new SpiderEntityModel<>(ctx.getPart(layer)), 0.8F);
+		super(ctx, new SpiderEntityModel(ctx.getPart(layer)), 0.8F);
 		this.addFeature(new SpiderEyesFeatureRenderer<>(this));
 	}
 
-	protected float getLyingAngle(T spiderEntity) {
+	@Override
+	protected float method_3919() {
 		return 180.0F;
 	}
 
-	public Identifier getTexture(T spiderEntity) {
+	public Identifier getTexture(LivingEntityRenderState livingEntityRenderState) {
 		return TEXTURE;
+	}
+
+	public LivingEntityRenderState getRenderState() {
+		return new LivingEntityRenderState();
+	}
+
+	public void updateRenderState(T spiderEntity, LivingEntityRenderState livingEntityRenderState, float f) {
+		super.updateRenderState(spiderEntity, livingEntityRenderState, f);
 	}
 }

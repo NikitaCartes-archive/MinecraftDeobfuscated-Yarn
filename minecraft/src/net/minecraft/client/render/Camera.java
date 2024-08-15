@@ -9,6 +9,8 @@ import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.vehicle.ExperimentalMinecartController;
+import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.hit.HitResult;
@@ -50,12 +52,25 @@ public class Camera {
 		this.focusedEntity = focusedEntity;
 		this.thirdPerson = thirdPerson;
 		this.lastTickDelta = tickDelta;
-		this.setRotation(focusedEntity.getYaw(tickDelta), focusedEntity.getPitch(tickDelta));
-		this.setPos(
-			MathHelper.lerp((double)tickDelta, focusedEntity.prevX, focusedEntity.getX()),
-			MathHelper.lerp((double)tickDelta, focusedEntity.prevY, focusedEntity.getY()) + (double)MathHelper.lerp(tickDelta, this.lastCameraY, this.cameraY),
-			MathHelper.lerp((double)tickDelta, focusedEntity.prevZ, focusedEntity.getZ())
-		);
+		if (focusedEntity.hasVehicle()
+			&& focusedEntity.getVehicle() instanceof MinecartEntity minecartEntity
+			&& minecartEntity.getController() instanceof ExperimentalMinecartController experimentalMinecartController
+			&& experimentalMinecartController.method_61614()) {
+			Vec3d vec3d = minecartEntity.getPassengerRidingPos(focusedEntity)
+				.subtract(minecartEntity.getPos())
+				.subtract(focusedEntity.getVehicleAttachmentPos(minecartEntity))
+				.add(new Vec3d(0.0, (double)MathHelper.lerp(tickDelta, this.lastCameraY, this.cameraY), 0.0));
+			this.setRotation(focusedEntity.getYaw(tickDelta), focusedEntity.getPitch(tickDelta));
+			this.setPos(experimentalMinecartController.getLerpedPosition(tickDelta).add(vec3d));
+		} else {
+			this.setRotation(focusedEntity.getYaw(tickDelta), focusedEntity.getPitch(tickDelta));
+			this.setPos(
+				MathHelper.lerp((double)tickDelta, focusedEntity.prevX, focusedEntity.getX()),
+				MathHelper.lerp((double)tickDelta, focusedEntity.prevY, focusedEntity.getY()) + (double)MathHelper.lerp(tickDelta, this.lastCameraY, this.cameraY),
+				MathHelper.lerp((double)tickDelta, focusedEntity.prevZ, focusedEntity.getZ())
+			);
+		}
+
 		if (thirdPerson) {
 			if (inverseView) {
 				this.setRotation(this.yaw + 180.0F, -this.pitch);

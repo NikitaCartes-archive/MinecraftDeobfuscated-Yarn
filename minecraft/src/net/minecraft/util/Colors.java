@@ -30,6 +30,10 @@ public class Colors {
 	 */
 	public static final int RED = -65536;
 	/**
+	 * Represents the color light red, {@code 0xFFDF5050}.
+	 */
+	public static final int LIGHT_RED = -2142128;
+	/**
 	 * Represents the color green, {@code 0xFF00FF00}.
 	 */
 	public static final int GREEN = -16711936;
@@ -38,10 +42,6 @@ public class Colors {
 	 */
 	public static final int BLUE = -16776961;
 	/**
-	 * Represents the color light red, {@code 0xFFDF5050}.
-	 */
-	public static final int LIGHT_RED = -2142128;
-	/**
 	 * Represents the color yellow, {@code 0xFFFFFF00}.
 	 */
 	public static final int YELLOW = -256;
@@ -49,4 +49,8 @@ public class Colors {
 	 * Represents the color light yellow, {@code 0xFFFFFF55}.
 	 */
 	public static final int LIGHT_YELLOW = -171;
+	/**
+	 * Represents the color purple, {@code 0xFF500050}.
+	 */
+	public static final int PURPLE = -11534256;
 }

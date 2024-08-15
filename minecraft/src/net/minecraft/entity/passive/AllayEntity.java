@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -21,6 +22,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -46,7 +48,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.GameEventTags;
@@ -79,7 +80,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	private static final int field_39461 = 5;
 	private static final float field_39462 = 55.0F;
 	private static final float field_39463 = 15.0F;
-	private static final Ingredient DUPLICATION_INGREDIENT = Ingredient.ofItems(Items.AMETHYST_SHARD);
+	private static final Predicate<ItemStack> DUPLICATION_INGREDIENT = stack -> stack.isOf(Items.AMETHYST_SHARD);
 	private static final int DUPLICATION_COOLDOWN = 6000;
 	private static final int field_39679 = 3;
 	private static final TrackedData<Boolean> DANCING = DataTracker.registerData(AllayEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -112,11 +113,11 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	@Nullable
 	private BlockPos jukeboxPos;
 	private long duplicationCooldown;
-	private float field_38935;
-	private float field_38936;
+	private float itemHoldAnimationTicks;
+	private float prevItemHoldAnimationTicks;
 	private float danceTicks;
-	private float field_39473;
-	private float field_39474;
+	private float spinningAnimationTicks;
+	private float prevSpinningAnimationTicks;
 
 	public AllayEntity(EntityType<? extends AllayEntity> entityType, World world) {
 		super(entityType, world);
@@ -147,11 +148,10 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 
 	public static DefaultAttributeContainer.Builder createAllayAttributes() {
 		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0)
-			.add(EntityAttributes.GENERIC_FLYING_SPEED, 0.1F)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.1F)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0)
-			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48.0);
+			.add(EntityAttributes.MAX_HEALTH, 20.0)
+			.add(EntityAttributes.FLYING_SPEED, 0.1F)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.1F)
+			.add(EntityAttributes.ATTACK_DAMAGE, 2.0);
 	}
 
 	@Override
@@ -160,6 +160,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		birdNavigation.setCanPathThroughDoors(false);
 		birdNavigation.setCanSwim(true);
 		birdNavigation.setCanEnterOpenDoors(true);
+		birdNavigation.setMaxFollowRange(48.0F);
 		return birdNavigation;
 	}
 
@@ -187,8 +188,6 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 				this.setVelocity(this.getVelocity().multiply(0.91F));
 			}
 		}
-
-		this.updateLimbs(false);
 	}
 
 	@Override
@@ -261,27 +260,27 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	public void tick() {
 		super.tick();
 		if (this.getWorld().isClient) {
-			this.field_38936 = this.field_38935;
+			this.prevItemHoldAnimationTicks = this.itemHoldAnimationTicks;
 			if (this.isHoldingItem()) {
-				this.field_38935 = MathHelper.clamp(this.field_38935 + 1.0F, 0.0F, 5.0F);
+				this.itemHoldAnimationTicks = MathHelper.clamp(this.itemHoldAnimationTicks + 1.0F, 0.0F, 5.0F);
 			} else {
-				this.field_38935 = MathHelper.clamp(this.field_38935 - 1.0F, 0.0F, 5.0F);
+				this.itemHoldAnimationTicks = MathHelper.clamp(this.itemHoldAnimationTicks - 1.0F, 0.0F, 5.0F);
 			}
 
 			if (this.isDancing()) {
 				this.danceTicks++;
-				this.field_39474 = this.field_39473;
+				this.prevSpinningAnimationTicks = this.spinningAnimationTicks;
 				if (this.isSpinning()) {
-					this.field_39473++;
+					this.spinningAnimationTicks++;
 				} else {
-					this.field_39473--;
+					this.spinningAnimationTicks--;
 				}
 
-				this.field_39473 = MathHelper.clamp(this.field_39473, 0.0F, 15.0F);
+				this.spinningAnimationTicks = MathHelper.clamp(this.spinningAnimationTicks, 0.0F, 15.0F);
 			} else {
 				this.danceTicks = 0.0F;
-				this.field_39473 = 0.0F;
-				this.field_39474 = 0.0F;
+				this.spinningAnimationTicks = 0.0F;
+				this.prevSpinningAnimationTicks = 0.0F;
 			}
 		} else {
 			Vibrations.Ticker.tick(this.getWorld(), this.vibrationListenerData, this.vibrationCallback);
@@ -424,8 +423,8 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 			|| !this.getWorld().getBlockState(this.jukeboxPos).isOf(Blocks.JUKEBOX);
 	}
 
-	public float method_43397(float f) {
-		return MathHelper.lerp(f, this.field_38936, this.field_38935) / 5.0F;
+	public float getItemHoldAnimationTicks(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.prevItemHoldAnimationTicks, this.itemHoldAnimationTicks) / 5.0F;
 	}
 
 	public boolean isSpinning() {
@@ -433,8 +432,8 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		return f < 15.0F;
 	}
 
-	public float method_44368(float f) {
-		return MathHelper.lerp(f, this.field_39474, this.field_39473) / 15.0F;
+	public float getSpinningAnimationTicks(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.prevSpinningAnimationTicks, this.spinningAnimationTicks) / 15.0F;
 	}
 
 	@Override
@@ -507,7 +506,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	}
 
 	private void duplicate() {
-		AllayEntity allayEntity = EntityType.ALLAY.create(this.getWorld());
+		AllayEntity allayEntity = EntityType.ALLAY.create(this.getWorld(), SpawnReason.BREEDING);
 		if (allayEntity != null) {
 			allayEntity.refreshPositionAfterTeleport(this.getPos());
 			allayEntity.setPersistent();

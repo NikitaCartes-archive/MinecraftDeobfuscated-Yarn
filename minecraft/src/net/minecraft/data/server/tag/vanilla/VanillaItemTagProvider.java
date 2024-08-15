@@ -206,7 +206,12 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 				Items.WARPED_HANGING_SIGN,
 				Items.CRIMSON_HANGING_SIGN
 			);
+		this.getOrCreateTagBuilder(ItemTags.WOODEN_TOOL_MATERIALS).addTag(ItemTags.PLANKS);
 		this.getOrCreateTagBuilder(ItemTags.STONE_TOOL_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE, Items.COBBLED_DEEPSLATE);
+		this.getOrCreateTagBuilder(ItemTags.IRON_TOOL_MATERIALS).add(Items.IRON_INGOT);
+		this.getOrCreateTagBuilder(ItemTags.GOLD_TOOL_MATERIALS).add(Items.GOLD_INGOT);
+		this.getOrCreateTagBuilder(ItemTags.DIAMOND_TOOL_MATERIALS).add(Items.DIAMOND);
+		this.getOrCreateTagBuilder(ItemTags.NETHERITE_TOOL_MATERIALS).add(Items.NETHERITE_INGOT);
 		this.getOrCreateTagBuilder(ItemTags.STONE_CRAFTING_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE, Items.COBBLED_DEEPSLATE);
 		this.getOrCreateTagBuilder(ItemTags.FREEZE_IMMUNE_WEARABLES)
 			.add(Items.LEATHER_BOOTS, Items.LEATHER_LEGGINGS, Items.LEATHER_CHESTPLATE, Items.LEATHER_HELMET, Items.LEATHER_HORSE_ARMOR);
@@ -338,6 +343,7 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 		this.getOrCreateTagBuilder(ItemTags.SNIFFER_FOOD).add(Items.TORCHFLOWER_SEEDS);
 		this.getOrCreateTagBuilder(ItemTags.VILLAGER_PLANTABLE_SEEDS)
 			.add(Items.WHEAT_SEEDS, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS, Items.TORCHFLOWER_SEEDS, Items.PITCHER_POD);
+		this.getOrCreateTagBuilder(ItemTags.VILLAGER_PICKS_UP).addTag(ItemTags.VILLAGER_PLANTABLE_SEEDS).add(Items.BREAD, Items.WHEAT, Items.BEETROOT);
 		this.getOrCreateTagBuilder(ItemTags.FOOT_ARMOR_ENCHANTABLE).addTag(ItemTags.FOOT_ARMOR);
 		this.getOrCreateTagBuilder(ItemTags.LEG_ARMOR_ENCHANTABLE).addTag(ItemTags.LEG_ARMOR);
 		this.getOrCreateTagBuilder(ItemTags.CHEST_ARMOR_ENCHANTABLE).addTag(ItemTags.CHEST_ARMOR);
@@ -399,6 +405,7 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 			.addTag(ItemTags.SKULLS);
 		this.getOrCreateTagBuilder(ItemTags.DYEABLE)
 			.add(Items.LEATHER_HELMET, Items.LEATHER_CHESTPLATE, Items.LEATHER_LEGGINGS, Items.LEATHER_BOOTS, Items.LEATHER_HORSE_ARMOR, Items.WOLF_ARMOR);
+		this.getOrCreateTagBuilder(ItemTags.FURNACE_MINECART_FUEL).add(Items.COAL, Items.CHARCOAL);
 		this.getOrCreateTagBuilder(ItemTags.MEAT)
 			.add(
 				Items.BEEF,
@@ -413,7 +420,9 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 				Items.RABBIT,
 				Items.ROTTEN_FLESH
 			);
-		this.getOrCreateTagBuilder(ItemTags.WOLF_FOOD).addTag(ItemTags.MEAT);
+		this.getOrCreateTagBuilder(ItemTags.WOLF_FOOD)
+			.addTag(ItemTags.MEAT)
+			.add(Items.COD, Items.COOKED_COD, Items.SALMON, Items.COOKED_SALMON, Items.TROPICAL_FISH, Items.PUFFERFISH, Items.RABBIT_STEW);
 		this.getOrCreateTagBuilder(ItemTags.OCELOT_FOOD).add(Items.COD, Items.SALMON);
 		this.getOrCreateTagBuilder(ItemTags.CAT_FOOD).add(Items.COD, Items.SALMON);
 		this.getOrCreateTagBuilder(ItemTags.HORSE_FOOD)

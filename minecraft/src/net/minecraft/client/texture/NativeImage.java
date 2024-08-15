@@ -5,13 +5,11 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -217,7 +215,7 @@ public final class NativeImage implements AutoCloseable {
 	 * {@linkplain Format#RGBA little-endian RGBA}, or the coordinate is out-of-bounds
 	 * @return the color, with red at smallest and alpha at biggest bits
 	 */
-	public int getColor(int x, int y) {
+	private int getColor(int x, int y) {
 		if (this.format != NativeImage.Format.RGBA) {
 			throw new IllegalArgumentException(String.format(Locale.ROOT, "getPixelRGBA only works on RGBA images; have %s", this.format));
 		} else if (this.isOutOfBounds(x, y)) {
@@ -227,6 +225,10 @@ public final class NativeImage implements AutoCloseable {
 			long l = ((long)x + (long)y * (long)this.width) * 4L;
 			return MemoryUtil.memGetInt(this.pointer + l);
 		}
+	}
+
+	public int getColorArgb(int x, int y) {
+		return ColorHelper.fromAbgr(this.getColor(x, y));
 	}
 
 	/**
@@ -239,7 +241,7 @@ public final class NativeImage implements AutoCloseable {
 	 * 
 	 * @param color the color, with red at smallest and alpha at biggest bits
 	 */
-	public void setColor(int x, int y, int color) {
+	private void setColor(int x, int y, int color) {
 		if (this.format != NativeImage.Format.RGBA) {
 			throw new IllegalArgumentException(String.format(Locale.ROOT, "setPixelRGBA only works on RGBA images; have %s", this.format));
 		} else if (this.isOutOfBounds(x, y)) {
@@ -249,6 +251,10 @@ public final class NativeImage implements AutoCloseable {
 			long l = ((long)x + (long)y * (long)this.width) * 4L;
 			MemoryUtil.memPutInt(this.pointer + l, color);
 		}
+	}
+
+	public void setColorArgb(int x, int y, int color) {
+		this.setColor(x, y, ColorHelper.toAbgr(color));
 	}
 
 	public NativeImage applyToCopy(IntUnaryOperator operator) {
@@ -262,7 +268,9 @@ public final class NativeImage implements AutoCloseable {
 			IntBuffer intBuffer2 = MemoryUtil.memIntBuffer(nativeImage.pointer, i);
 
 			for (int j = 0; j < i; j++) {
-				intBuffer2.put(j, operator.applyAsInt(intBuffer.get(j)));
+				int k = ColorHelper.fromAbgr(intBuffer.get(j));
+				int l = operator.applyAsInt(k);
+				intBuffer2.put(j, ColorHelper.toAbgr(l));
 			}
 
 			return nativeImage;
@@ -278,14 +286,16 @@ public final class NativeImage implements AutoCloseable {
 			IntBuffer intBuffer = MemoryUtil.memIntBuffer(this.pointer, i);
 
 			for (int j = 0; j < i; j++) {
-				intBuffer.put(j, operator.applyAsInt(intBuffer.get(j)));
+				int k = ColorHelper.fromAbgr(intBuffer.get(j));
+				int l = operator.applyAsInt(k);
+				intBuffer.put(j, ColorHelper.toAbgr(l));
 			}
 		}
 	}
 
 	public int[] copyPixelsRgba() {
 		if (this.format != NativeImage.Format.RGBA) {
-			throw new IllegalArgumentException(String.format(Locale.ROOT, "getPixelsRGBA only works on RGBA images; have %s", this.format));
+			throw new IllegalArgumentException(String.format(Locale.ROOT, "getPixels only works on RGBA images; have %s", this.format));
 		} else {
 			this.checkAllocated();
 			int[] is = new int[this.width * this.height];
@@ -294,53 +304,14 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public void setLuminance(int x, int y, byte luminance) {
-		RenderSystem.assertOnRenderThread();
-		if (!this.format.hasLuminance()) {
-			throw new IllegalArgumentException(String.format(Locale.ROOT, "setPixelLuminance only works on image with luminance; have %s", this.format));
-		} else if (this.isOutOfBounds(x, y)) {
-			throw new IllegalArgumentException(String.format(Locale.ROOT, "(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
-		} else {
-			this.checkAllocated();
-			long l = ((long)x + (long)y * (long)this.width) * (long)this.format.getChannelCount() + (long)(this.format.getLuminanceOffset() / 8);
-			MemoryUtil.memPutByte(this.pointer + l, luminance);
-		}
-	}
+	public int[] method_61942() {
+		int[] is = this.copyPixelsRgba();
 
-	public byte getRed(int x, int y) {
-		RenderSystem.assertOnRenderThread();
-		if (!this.format.hasRedChannel()) {
-			throw new IllegalArgumentException(String.format(Locale.ROOT, "no red or luminance in %s", this.format));
-		} else if (this.isOutOfBounds(x, y)) {
-			throw new IllegalArgumentException(String.format(Locale.ROOT, "(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
-		} else {
-			int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getRedChannelOffset() / 8;
-			return MemoryUtil.memGetByte(this.pointer + (long)i);
+		for (int i = 0; i < is.length; i++) {
+			is[i] = ColorHelper.fromAbgr(is[i]);
 		}
-	}
 
-	public byte getGreen(int x, int y) {
-		RenderSystem.assertOnRenderThread();
-		if (!this.format.hasGreenChannel()) {
-			throw new IllegalArgumentException(String.format(Locale.ROOT, "no green or luminance in %s", this.format));
-		} else if (this.isOutOfBounds(x, y)) {
-			throw new IllegalArgumentException(String.format(Locale.ROOT, "(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
-		} else {
-			int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getGreenChannelOffset() / 8;
-			return MemoryUtil.memGetByte(this.pointer + (long)i);
-		}
-	}
-
-	public byte getBlue(int x, int y) {
-		RenderSystem.assertOnRenderThread();
-		if (!this.format.hasBlueChannel()) {
-			throw new IllegalArgumentException(String.format(Locale.ROOT, "no blue or luminance in %s", this.format));
-		} else if (this.isOutOfBounds(x, y)) {
-			throw new IllegalArgumentException(String.format(Locale.ROOT, "(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
-		} else {
-			int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getBlueChannelOffset() / 8;
-			return MemoryUtil.memGetByte(this.pointer + (long)i);
-		}
+		return is;
 	}
 
 	public byte getOpacity(int x, int y) {
@@ -354,48 +325,6 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public void blend(int x, int y, int color) {
-		if (this.format != NativeImage.Format.RGBA) {
-			throw new UnsupportedOperationException("Can only call blendPixel with RGBA format");
-		} else {
-			int i = this.getColor(x, y);
-			float f = (float)ColorHelper.Abgr.getAlpha(color) / 255.0F;
-			float g = (float)ColorHelper.Abgr.getBlue(color) / 255.0F;
-			float h = (float)ColorHelper.Abgr.getGreen(color) / 255.0F;
-			float j = (float)ColorHelper.Abgr.getRed(color) / 255.0F;
-			float k = (float)ColorHelper.Abgr.getAlpha(i) / 255.0F;
-			float l = (float)ColorHelper.Abgr.getBlue(i) / 255.0F;
-			float m = (float)ColorHelper.Abgr.getGreen(i) / 255.0F;
-			float n = (float)ColorHelper.Abgr.getRed(i) / 255.0F;
-			float p = 1.0F - f;
-			float q = f * f + k * p;
-			float r = g * f + l * p;
-			float s = h * f + m * p;
-			float t = j * f + n * p;
-			if (q > 1.0F) {
-				q = 1.0F;
-			}
-
-			if (r > 1.0F) {
-				r = 1.0F;
-			}
-
-			if (s > 1.0F) {
-				s = 1.0F;
-			}
-
-			if (t > 1.0F) {
-				t = 1.0F;
-			}
-
-			int u = (int)(q * 255.0F);
-			int v = (int)(r * 255.0F);
-			int w = (int)(s * 255.0F);
-			int z = (int)(t * 255.0F);
-			this.setColor(x, y, ColorHelper.Abgr.getAbgr(u, v, w, z));
-		}
-	}
-
 	@Deprecated
 	public int[] makePixelArray() {
 		if (this.format != NativeImage.Format.RGBA) {
@@ -406,10 +335,7 @@ public final class NativeImage implements AutoCloseable {
 
 			for (int i = 0; i < this.getHeight(); i++) {
 				for (int j = 0; j < this.getWidth(); j++) {
-					int k = this.getColor(j, i);
-					is[j + i * this.getWidth()] = ColorHelper.Argb.getArgb(
-						ColorHelper.Abgr.getAlpha(k), ColorHelper.Abgr.getRed(k), ColorHelper.Abgr.getGreen(k), ColorHelper.Abgr.getBlue(k)
-					);
+					is[j + i * this.getWidth()] = this.getColorArgb(j, i);
 				}
 			}
 
@@ -578,48 +504,6 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public byte[] getBytes() throws IOException {
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-		byte[] var3;
-		try {
-			WritableByteChannel writableByteChannel = Channels.newChannel(byteArrayOutputStream);
-
-			try {
-				if (!this.write(writableByteChannel)) {
-					throw new IOException("Could not write image to byte array: " + STBImage.stbi_failure_reason());
-				}
-
-				var3 = byteArrayOutputStream.toByteArray();
-			} catch (Throwable var7) {
-				if (writableByteChannel != null) {
-					try {
-						writableByteChannel.close();
-					} catch (Throwable var6) {
-						var7.addSuppressed(var6);
-					}
-				}
-
-				throw var7;
-			}
-
-			if (writableByteChannel != null) {
-				writableByteChannel.close();
-			}
-		} catch (Throwable var8) {
-			try {
-				byteArrayOutputStream.close();
-			} catch (Throwable var5) {
-				var8.addSuppressed(var5);
-			}
-
-			throw var8;
-		}
-
-		byteArrayOutputStream.close();
-		return var3;
-	}
-
 	private boolean write(WritableByteChannel channel) throws IOException {
 		NativeImage.WriteCallback writeCallback = new NativeImage.WriteCallback(channel);
 
@@ -668,7 +552,7 @@ public final class NativeImage implements AutoCloseable {
 	public void fillRect(int x, int y, int width, int height, int color) {
 		for (int i = y; i < y + height; i++) {
 			for (int j = x; j < x + width; j++) {
-				this.setColor(j, i, color);
+				this.setColorArgb(j, i, color);
 			}
 		}
 	}

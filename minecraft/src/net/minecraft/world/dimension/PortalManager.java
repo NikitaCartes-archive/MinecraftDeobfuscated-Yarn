@@ -8,7 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.TeleportTarget;
 
 public class PortalManager {
-	private Portal portal;
+	private final Portal portal;
 	private BlockPos pos;
 	private int ticksInPortal;
 	private boolean inPortal;

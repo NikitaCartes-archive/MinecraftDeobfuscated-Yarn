@@ -55,10 +55,10 @@ public interface Scaling {
 				});
 			private static final Codec<Scaling.NineSlice.Border> DIFFERENT_SIDE_SIZES_CODEC = RecordCodecBuilder.create(
 				instance -> instance.group(
-							Codecs.NONNEGATIVE_INT.fieldOf("left").forGetter(Scaling.NineSlice.Border::left),
-							Codecs.NONNEGATIVE_INT.fieldOf("top").forGetter(Scaling.NineSlice.Border::top),
-							Codecs.NONNEGATIVE_INT.fieldOf("right").forGetter(Scaling.NineSlice.Border::right),
-							Codecs.NONNEGATIVE_INT.fieldOf("bottom").forGetter(Scaling.NineSlice.Border::bottom)
+							Codecs.NON_NEGATIVE_INT.fieldOf("left").forGetter(Scaling.NineSlice.Border::left),
+							Codecs.NON_NEGATIVE_INT.fieldOf("top").forGetter(Scaling.NineSlice.Border::top),
+							Codecs.NON_NEGATIVE_INT.fieldOf("right").forGetter(Scaling.NineSlice.Border::right),
+							Codecs.NON_NEGATIVE_INT.fieldOf("bottom").forGetter(Scaling.NineSlice.Border::bottom)
 						)
 						.apply(instance, Scaling.NineSlice.Border::new)
 			);

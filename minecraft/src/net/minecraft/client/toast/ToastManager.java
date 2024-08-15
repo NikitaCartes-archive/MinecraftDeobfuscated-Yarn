@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class ToastManager {
 	private static final int SPACES = 5;
-	private static final int ALL_OCCUPIED = -1;
+	private static final int field_52786 = -1;
 	final MinecraftClient client;
 	private final List<ToastManager.Entry<?>> visibleEntries = new ArrayList();
 	private final BitSet occupiedSpaces = new BitSet(5);
@@ -26,29 +26,37 @@ public class ToastManager {
 		this.client = client;
 	}
 
+	public void update() {
+		this.visibleEntries.removeIf(entry -> {
+			entry.update();
+			if (entry.isFinishedRendering()) {
+				this.occupiedSpaces.clear(entry.topIndex, entry.topIndex + entry.requiredSpaceCount);
+				return true;
+			} else {
+				return false;
+			}
+		});
+		if (!this.toastQueue.isEmpty() && this.getEmptySpaceCount() > 0) {
+			this.toastQueue.removeIf(toast -> {
+				int i = toast.getRequiredSpaceCount();
+				int j = this.getTopIndex(i);
+				if (j == -1) {
+					return false;
+				} else {
+					this.visibleEntries.add(new ToastManager.Entry<>(toast, j, i));
+					this.occupiedSpaces.set(j, j + i);
+					return true;
+				}
+			});
+		}
+	}
+
 	public void draw(DrawContext context) {
 		if (!this.client.options.hudHidden) {
 			int i = context.getScaledWindowWidth();
-			this.visibleEntries.removeIf(visibleEntry -> {
-				if (visibleEntry != null && visibleEntry.draw(i, context)) {
-					this.occupiedSpaces.clear(visibleEntry.topIndex, visibleEntry.topIndex + visibleEntry.requiredSpaceCount);
-					return true;
-				} else {
-					return false;
-				}
-			});
-			if (!this.toastQueue.isEmpty() && this.getEmptySpaceCount() > 0) {
-				this.toastQueue.removeIf(toast -> {
-					int ix = toast.getRequiredSpaceCount();
-					int j = this.getTopIndex(ix);
-					if (j != -1) {
-						this.visibleEntries.add(new ToastManager.Entry<>(toast, j, ix));
-						this.occupiedSpaces.set(j, j + ix);
-						return true;
-					} else {
-						return false;
-					}
-				});
+
+			for (ToastManager.Entry<?> entry : this.visibleEntries) {
+				entry.draw(context, i);
 			}
 		}
 	}
@@ -115,8 +123,11 @@ public class ToastManager {
 		final int topIndex;
 		final int requiredSpaceCount;
 		private long startTime = -1L;
-		private long showTime = -1L;
+		private long fullyVisibleTime = -1L;
 		private Toast.Visibility visibility = Toast.Visibility.SHOW;
+		private long showTime;
+		private float visibleWidthPortion;
+		private boolean finishedRendering;
 
 		Entry(final T instance, final int topIndex, final int requiredSpaceCount) {
 			this.instance = instance;
@@ -128,13 +139,21 @@ public class ToastManager {
 			return this.instance;
 		}
 
-		private float getDisappearProgress(long time) {
-			float f = MathHelper.clamp((float)(time - this.startTime) / 600.0F, 0.0F, 1.0F);
-			f *= f;
-			return this.visibility == Toast.Visibility.HIDE ? 1.0F - f : f;
+		public boolean isFinishedRendering() {
+			return this.finishedRendering;
 		}
 
-		public boolean draw(int x, DrawContext context) {
+		private void updateVisibleWidthPortion(long time) {
+			float f = MathHelper.clamp((float)(time - this.startTime) / 600.0F, 0.0F, 1.0F);
+			f *= f;
+			if (this.visibility == Toast.Visibility.HIDE) {
+				this.visibleWidthPortion = 1.0F - f;
+			} else {
+				this.visibleWidthPortion = f;
+			}
+		}
+
+		public void update() {
 			long l = Util.getMeasuringTimeMs();
 			if (this.startTime == -1L) {
 				this.startTime = l;
@@ -142,20 +161,27 @@ public class ToastManager {
 			}
 
 			if (this.visibility == Toast.Visibility.SHOW && l - this.startTime <= 600L) {
-				this.showTime = l;
+				this.fullyVisibleTime = l;
 			}
 
-			context.getMatrices().push();
-			context.getMatrices().translate((float)x - (float)this.instance.getWidth() * this.getDisappearProgress(l), (float)(this.topIndex * 32), 800.0F);
-			Toast.Visibility visibility = this.instance.draw(context, ToastManager.this, l - this.showTime);
-			context.getMatrices().pop();
+			this.showTime = l - this.fullyVisibleTime;
+			this.updateVisibleWidthPortion(l);
+			this.instance.update(ToastManager.this, this.showTime);
+			Toast.Visibility visibility = this.instance.getVisibility();
 			if (visibility != this.visibility) {
-				this.startTime = l - (long)((int)((1.0F - this.getDisappearProgress(l)) * 600.0F));
+				this.startTime = l - (long)((int)((1.0F - this.visibleWidthPortion) * 600.0F));
 				this.visibility = visibility;
 				this.visibility.playSound(ToastManager.this.client.getSoundManager());
 			}
 
-			return this.visibility == Toast.Visibility.HIDE && l - this.startTime > 600L;
+			this.finishedRendering = this.visibility == Toast.Visibility.HIDE && l - this.startTime > 600L;
+		}
+
+		public void draw(DrawContext context, int scaledWindowWidth) {
+			context.getMatrices().push();
+			context.getMatrices().translate((float)scaledWindowWidth - (float)this.instance.getWidth() * this.visibleWidthPortion, (float)(this.topIndex * 32), 800.0F);
+			this.instance.draw(context, ToastManager.this.client.textRenderer, this.showTime);
+			context.getMatrices().pop();
 		}
 	}
 }

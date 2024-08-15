@@ -21,7 +21,8 @@ public record CommonPlayerSpawnInfo(
 	boolean isDebug,
 	boolean isFlat,
 	Optional<GlobalPos> lastDeathLocation,
-	int portalCooldown
+	int portalCooldown,
+	int seaLevel
 ) {
 	public CommonPlayerSpawnInfo(RegistryByteBuf buf) {
 		this(
@@ -33,6 +34,7 @@ public record CommonPlayerSpawnInfo(
 			buf.readBoolean(),
 			buf.readBoolean(),
 			buf.readOptional(PacketByteBuf::readGlobalPos),
+			buf.readVarInt(),
 			buf.readVarInt()
 		);
 	}
@@ -47,5 +49,6 @@ public record CommonPlayerSpawnInfo(
 		buf.writeBoolean(this.isFlat);
 		buf.writeOptional(this.lastDeathLocation, PacketByteBuf::writeGlobalPos);
 		buf.writeVarInt(this.portalCooldown);
+		buf.writeVarInt(this.seaLevel);
 	}
 }

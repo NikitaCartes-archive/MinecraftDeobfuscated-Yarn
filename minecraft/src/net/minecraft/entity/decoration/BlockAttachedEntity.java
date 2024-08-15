@@ -7,12 +7,15 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
 import org.slf4j.Logger;
 
 public abstract class BlockAttachedEntity extends Entity {
@@ -67,6 +70,8 @@ public abstract class BlockAttachedEntity extends Entity {
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
+		} else if (!this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && source.getAttacker() instanceof MobEntity) {
+			return false;
 		} else {
 			if (!this.isRemoved() && !this.getWorld().isClient) {
 				this.kill();
@@ -76,6 +81,11 @@ public abstract class BlockAttachedEntity extends Entity {
 
 			return true;
 		}
+	}
+
+	@Override
+	public boolean isImmuneToExplosion(Explosion explosion) {
+		return explosion.preservesDecorativeEntities() ? super.isImmuneToExplosion(explosion) : true;
 	}
 
 	@Override

@@ -25,16 +25,19 @@ public final class BundleContentsComponent implements TooltipData {
 		.xmap(BundleContentsComponent::new, component -> component.stacks);
 	private static final Fraction NESTED_BUNDLE_OCCUPANCY = Fraction.getFraction(1, 16);
 	private static final int ADD_TO_NEW_SLOT = -1;
+	public static final int field_52591 = -1;
 	final List<ItemStack> stacks;
 	final Fraction occupancy;
+	final int selectedStackIndex;
 
-	BundleContentsComponent(List<ItemStack> stacks, Fraction occupancy) {
+	BundleContentsComponent(List<ItemStack> stacks, Fraction occupancy, int selectedStackIndex) {
 		this.stacks = stacks;
 		this.occupancy = occupancy;
+		this.selectedStackIndex = selectedStackIndex;
 	}
 
 	public BundleContentsComponent(List<ItemStack> stacks) {
-		this(stacks, calculateOccupancy(stacks));
+		this(stacks, calculateOccupancy(stacks), -1);
 	}
 
 	private static Fraction calculateOccupancy(List<ItemStack> stacks) {
@@ -55,6 +58,18 @@ public final class BundleContentsComponent implements TooltipData {
 			List<BeehiveBlockEntity.BeeData> list = stack.getOrDefault(DataComponentTypes.BEES, List.of());
 			return !list.isEmpty() ? Fraction.ONE : Fraction.getFraction(1, stack.getMaxCount());
 		}
+	}
+
+	public static boolean canBeBundled(ItemStack stack) {
+		return !stack.isEmpty() && stack.getItem().canBeNested();
+	}
+
+	public int getNumberOfStacksShown() {
+		int i = this.size();
+		int j = i > 8 ? 7 : 8;
+		int k = i % 4;
+		int l = k == 0 ? 0 : 4 - k;
+		return Math.min(i, j - l);
 	}
 
 	public ItemStack get(int index) {
@@ -85,6 +100,14 @@ public final class BundleContentsComponent implements TooltipData {
 		return this.stacks.isEmpty();
 	}
 
+	public int getSelectedStackIndex() {
+		return this.selectedStackIndex;
+	}
+
+	public boolean hasSelectedStack() {
+		return this.selectedStackIndex != -1;
+	}
+
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -106,15 +129,18 @@ public final class BundleContentsComponent implements TooltipData {
 	public static class Builder {
 		private final List<ItemStack> stacks;
 		private Fraction occupancy;
+		private int selectedStackIndex;
 
 		public Builder(BundleContentsComponent base) {
 			this.stacks = new ArrayList(base.stacks);
 			this.occupancy = base.occupancy;
+			this.selectedStackIndex = base.selectedStackIndex;
 		}
 
 		public BundleContentsComponent.Builder clear() {
 			this.stacks.clear();
 			this.occupancy = Fraction.ZERO;
+			this.selectedStackIndex = -1;
 			return this;
 		}
 
@@ -138,7 +164,9 @@ public final class BundleContentsComponent implements TooltipData {
 		}
 
 		public int add(ItemStack stack) {
-			if (!stack.isEmpty() && stack.getItem().canBeNested()) {
+			if (!BundleContentsComponent.canBeBundled(stack)) {
+				return 0;
+			} else {
 				int i = Math.min(stack.getCount(), this.getMaxAllowed(stack));
 				if (i == 0) {
 					return 0;
@@ -156,15 +184,17 @@ public final class BundleContentsComponent implements TooltipData {
 
 					return i;
 				}
-			} else {
-				return 0;
 			}
 		}
 
 		public int add(Slot slot, PlayerEntity player) {
 			ItemStack itemStack = slot.getStack();
 			int i = this.getMaxAllowed(itemStack);
-			return this.add(slot.takeStackRange(itemStack.getCount(), i, player));
+			return BundleContentsComponent.canBeBundled(itemStack) ? this.add(slot.takeStackRange(itemStack.getCount(), i, player)) : 0;
+		}
+
+		public void setSelectedStackIndex(int selectedStackIndex) {
+			this.selectedStackIndex = this.selectedStackIndex != selectedStackIndex && selectedStackIndex < this.stacks.size() ? selectedStackIndex : -1;
 		}
 
 		@Nullable
@@ -172,8 +202,10 @@ public final class BundleContentsComponent implements TooltipData {
 			if (this.stacks.isEmpty()) {
 				return null;
 			} else {
-				ItemStack itemStack = ((ItemStack)this.stacks.remove(0)).copy();
+				int i = this.selectedStackIndex != -1 && this.selectedStackIndex < this.stacks.size() ? this.selectedStackIndex : 0;
+				ItemStack itemStack = ((ItemStack)this.stacks.remove(i)).copy();
 				this.occupancy = this.occupancy.subtract(BundleContentsComponent.getOccupancy(itemStack).multiplyBy(Fraction.getFraction(itemStack.getCount(), 1)));
+				this.setSelectedStackIndex(-1);
 				return itemStack;
 			}
 		}
@@ -183,7 +215,7 @@ public final class BundleContentsComponent implements TooltipData {
 		}
 
 		public BundleContentsComponent build() {
-			return new BundleContentsComponent(List.copyOf(this.stacks), this.occupancy);
+			return new BundleContentsComponent(List.copyOf(this.stacks), this.occupancy, this.selectedStackIndex);
 		}
 	}
 }

@@ -35,7 +35,6 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -266,10 +265,10 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 	}
 
 	public static DefaultAttributeContainer.Builder createRabbitAttributes() {
-		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 3.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0);
+		return AnimalEntity.createAnimalAttributes()
+			.add(EntityAttributes.MAX_HEALTH, 3.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.ATTACK_DAMAGE, 3.0);
 	}
 
 	@Override
@@ -319,7 +318,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 
 	@Nullable
 	public RabbitEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		RabbitEntity rabbitEntity = EntityType.RABBIT.create(serverWorld);
+		RabbitEntity rabbitEntity = EntityType.RABBIT.create(serverWorld, SpawnReason.BREEDING);
 		if (rabbitEntity != null) {
 			RabbitEntity.RabbitType rabbitType;
 			rabbitType = getTypeFromPos(serverWorld, this.getBlockPos());
@@ -350,18 +349,18 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 
 	public void setVariant(RabbitEntity.RabbitType rabbitType) {
 		if (rabbitType == RabbitEntity.RabbitType.EVIL) {
-			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(8.0);
+			this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue(8.0);
 			this.goalSelector.add(4, new MeleeAttackGoal(this, 1.4, true));
 			this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
 			this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
 			this.targetSelector.add(2, new ActiveTargetGoal(this, WolfEntity.class, true));
-			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)
+			this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE)
 				.updateModifier(new EntityAttributeModifier(KILLER_BUNNY_ATTACK_DAMAGE_MODIFIER_ID, 5.0, EntityAttributeModifier.Operation.ADD_VALUE));
 			if (!this.hasCustomName()) {
 				this.setCustomName(Text.translatable(Util.createTranslationKey("entity", KILLER_BUNNY)));
 			}
 		} else {
-			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).removeModifier(KILLER_BUNNY_ATTACK_DAMAGE_MODIFIER_ID);
+			this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).removeModifier(KILLER_BUNNY_ATTACK_DAMAGE_MODIFIER_ID);
 		}
 
 		this.dataTracker.set(RABBIT_TYPE, rabbitType.id);

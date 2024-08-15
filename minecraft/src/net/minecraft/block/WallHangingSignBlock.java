@@ -21,10 +21,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -60,9 +60,9 @@ public class WallHangingSignBlock extends AbstractSignBlock {
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.getBlockEntity(pos) instanceof SignBlockEntity signBlockEntity && this.shouldTryAttaching(state, player, hit, signBlockEntity, stack)) {
-			return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+			return ActionResult.PASS;
 		}
 
 		return super.onUseWithItem(stack, state, world, pos, player, hand, hit);

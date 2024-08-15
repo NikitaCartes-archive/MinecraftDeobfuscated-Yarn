@@ -10,6 +10,8 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
+import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class DownloadingTerrainScreen extends Screen {
@@ -25,7 +27,7 @@ public class DownloadingTerrainScreen extends Screen {
 		super(NarratorManager.EMPTY);
 		this.shouldClose = shouldClose;
 		this.worldEntryReason = worldEntryReason;
-		this.loadStartTime = System.currentTimeMillis();
+		this.loadStartTime = Util.getMeasuringTimeMs();
 	}
 
 	@Override
@@ -41,21 +43,23 @@ public class DownloadingTerrainScreen extends Screen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, TEXT, this.width / 2, this.height / 2 - 50, 16777215);
+		context.drawCenteredTextWithShadow(this.textRenderer, TEXT, this.width / 2, this.height / 2 - 50, Colors.WHITE);
 	}
 
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 		switch (this.worldEntryReason) {
 			case NETHER_PORTAL:
-				context.drawSprite(0, 0, -90, context.getScaledWindowWidth(), context.getScaledWindowHeight(), this.getBackgroundSprite());
+				context.drawGuiTexture(
+					RenderLayer::getGuiOpaqueTexturedBackground, this.getBackgroundSprite(), 0, 0, context.getScaledWindowWidth(), context.getScaledWindowHeight()
+				);
 				break;
 			case END_PORTAL:
 				context.fillWithLayer(RenderLayer.getEndPortal(), 0, 0, this.width, this.height, 0);
 				break;
 			case OTHER:
 				this.renderPanoramaBackground(context, delta);
-				this.applyBlur(delta);
+				this.applyBlur();
 				this.renderDarkening(context);
 		}
 	}
@@ -71,7 +75,7 @@ public class DownloadingTerrainScreen extends Screen {
 
 	@Override
 	public void tick() {
-		if (this.shouldClose.getAsBoolean() || System.currentTimeMillis() > this.loadStartTime + 30000L) {
+		if (this.shouldClose.getAsBoolean() || Util.getMeasuringTimeMs() > this.loadStartTime + 30000L) {
 			this.close();
 		}
 	}

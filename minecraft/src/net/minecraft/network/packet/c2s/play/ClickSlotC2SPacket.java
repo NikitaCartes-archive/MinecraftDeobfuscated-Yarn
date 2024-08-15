@@ -38,7 +38,7 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	private ClickSlotC2SPacket(RegistryByteBuf buf) {
-		this.syncId = buf.readByte();
+		this.syncId = buf.readSyncId();
 		this.revision = buf.readVarInt();
 		this.slot = buf.readShort();
 		this.button = buf.readByte();
@@ -48,7 +48,7 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	private void write(RegistryByteBuf buf) {
-		buf.writeByte(this.syncId);
+		buf.writeSyncId(this.syncId);
 		buf.writeVarInt(this.revision);
 		buf.writeShort(this.slot);
 		buf.writeByte(this.button);

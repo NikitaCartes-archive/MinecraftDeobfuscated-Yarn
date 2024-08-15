@@ -3,7 +3,6 @@ package net.minecraft.server.world;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
@@ -20,6 +19,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -49,7 +49,7 @@ public abstract class ChunkTicketManager {
 	private final ChunkTicketManager.DistanceFromNearestPlayerTracker distanceFromNearestPlayerTracker = new ChunkTicketManager.DistanceFromNearestPlayerTracker(8);
 	private final SimulationDistanceLevelPropagator simulationDistanceTracker = new SimulationDistanceLevelPropagator();
 	private final ChunkTicketManager.NearbyChunkTicketUpdater nearbyChunkTicketUpdater = new ChunkTicketManager.NearbyChunkTicketUpdater(32);
-	final Set<ChunkHolder> chunkHoldersWithPendingUpdates = Sets.<ChunkHolder>newHashSet();
+	final Set<ChunkHolder> chunkHoldersWithPendingUpdates = new ReferenceOpenHashSet<>();
 	final ChunkTaskPrioritySystem levelUpdateListener;
 	final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> playerTicketThrottler;
 	final MessageListener<ChunkTaskPrioritySystem.UnblockingMessage> playerTicketThrottlerUnblocker;
@@ -125,8 +125,14 @@ public abstract class ChunkTicketManager {
 		}
 
 		if (!this.chunkHoldersWithPendingUpdates.isEmpty()) {
-			this.chunkHoldersWithPendingUpdates.forEach(holder -> holder.updateStatus(chunkLoadingManager));
-			this.chunkHoldersWithPendingUpdates.forEach(holder -> holder.updateFutures(chunkLoadingManager, this.mainThreadExecutor));
+			for (ChunkHolder chunkHolder : this.chunkHoldersWithPendingUpdates) {
+				chunkHolder.updateStatus(chunkLoadingManager);
+			}
+
+			for (ChunkHolder chunkHolder : this.chunkHoldersWithPendingUpdates) {
+				chunkHolder.updateFutures(chunkLoadingManager, this.mainThreadExecutor);
+			}
+
 			this.chunkHoldersWithPendingUpdates.clear();
 			return true;
 		} else {
@@ -136,12 +142,12 @@ public abstract class ChunkTicketManager {
 				while (longIterator.hasNext()) {
 					long l = longIterator.nextLong();
 					if (this.getTicketSet(l).stream().anyMatch(ticket -> ticket.getType() == ChunkTicketType.PLAYER)) {
-						ChunkHolder chunkHolder = chunkLoadingManager.getCurrentChunkHolder(l);
-						if (chunkHolder == null) {
+						ChunkHolder chunkHolder2 = chunkLoadingManager.getCurrentChunkHolder(l);
+						if (chunkHolder2 == null) {
 							throw new IllegalStateException();
 						}
 
-						CompletableFuture<OptionalChunk<WorldChunk>> completableFuture = chunkHolder.getEntityTickingFuture();
+						CompletableFuture<OptionalChunk<WorldChunk>> completableFuture = chunkHolder2.getEntityTickingFuture();
 						completableFuture.thenAccept(
 							optionalChunk -> this.mainThreadExecutor.execute(() -> this.playerTicketThrottlerUnblocker.send(ChunkTaskPrioritySystem.createUnblockingMessage(() -> {
 									}, l, false)))
@@ -280,6 +286,11 @@ public abstract class ChunkTicketManager {
 		return this.distanceFromNearestPlayerTracker.distanceFromNearestPlayer.containsKey(chunkPos);
 	}
 
+	public LongIterator iterateChunkPosToTick() {
+		this.distanceFromNearestPlayerTracker.updateLevels();
+		return this.distanceFromNearestPlayerTracker.distanceFromNearestPlayer.keySet().iterator();
+	}
+
 	public String toDumpString() {
 		return this.levelUpdateListener.getDebugString();
 	}
@@ -317,6 +328,10 @@ public abstract class ChunkTicketManager {
 	@VisibleForTesting
 	SimulationDistanceLevelPropagator getSimulationDistanceTracker() {
 		return this.simulationDistanceTracker;
+	}
+
+	public LongSet getChunks() {
+		return this.simulationDistanceTracker.getTrackedChunks();
 	}
 
 	public void removePersistentTickets() {

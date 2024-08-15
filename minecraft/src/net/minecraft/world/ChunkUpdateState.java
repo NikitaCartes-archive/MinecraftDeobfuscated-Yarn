@@ -39,6 +39,7 @@ public class ChunkUpdateState extends PersistentState {
 	public void add(long pos) {
 		this.all.add(pos);
 		this.remaining.add(pos);
+		this.markDirty();
 	}
 
 	public boolean contains(long pos) {
@@ -50,7 +51,9 @@ public class ChunkUpdateState extends PersistentState {
 	}
 
 	public void markResolved(long pos) {
-		this.remaining.remove(pos);
+		if (this.remaining.remove(pos)) {
+			this.markDirty();
+		}
 	}
 
 	public LongSet getAll() {

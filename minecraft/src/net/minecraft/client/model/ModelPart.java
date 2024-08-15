@@ -55,15 +55,15 @@ public final class ModelPart {
 	}
 
 	public void setTransform(ModelTransform rotationData) {
-		this.pivotX = rotationData.pivotX;
-		this.pivotY = rotationData.pivotY;
-		this.pivotZ = rotationData.pivotZ;
-		this.pitch = rotationData.pitch;
-		this.yaw = rotationData.yaw;
-		this.roll = rotationData.roll;
-		this.xScale = 1.0F;
-		this.yScale = 1.0F;
-		this.zScale = 1.0F;
+		this.pivotX = rotationData.pivotX();
+		this.pivotY = rotationData.pivotY();
+		this.pivotZ = rotationData.pivotZ();
+		this.pitch = rotationData.pitch();
+		this.yaw = rotationData.yaw();
+		this.roll = rotationData.roll();
+		this.xScale = rotationData.xScale();
+		this.yScale = rotationData.yScale();
+		this.zScale = rotationData.zScale();
 	}
 
 	public void copyTransform(ModelPart part) {
@@ -123,6 +123,13 @@ public final class ModelPart {
 				matrices.pop();
 			}
 		}
+	}
+
+	public void method_62132(Quaternionf quaternionf) {
+		Quaternionf quaternionf2 = new Quaternionf().rotationZYX(this.roll, this.yaw, this.pitch);
+		Quaternionf quaternionf3 = quaternionf2.mul(quaternionf);
+		Vector3f vector3f = quaternionf3.getEulerAnglesXYZ(new Vector3f());
+		this.setAngles(vector3f.x, vector3f.y, vector3f.z);
 	}
 
 	public void forEachCuboid(MatrixStack matrices, ModelPart.CuboidConsumer consumer) {

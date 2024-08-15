@@ -272,7 +272,7 @@ public class WallBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+	protected boolean isTransparent(BlockState state) {
 		return !(Boolean)state.get(WATERLOGGED);
 	}
 

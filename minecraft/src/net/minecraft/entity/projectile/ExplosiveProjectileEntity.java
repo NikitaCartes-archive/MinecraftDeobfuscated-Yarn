@@ -79,7 +79,10 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 				this.hitOrDeflect(hitResult);
 			}
 
-			this.checkBlockCollision();
+			if (!this.getWorld().isClient()) {
+				this.tickBlockCollision();
+			}
+
 			Vec3d vec3d = this.getVelocity();
 			double d = this.getX() + vec3d.x;
 			double e = this.getY() + vec3d.y;

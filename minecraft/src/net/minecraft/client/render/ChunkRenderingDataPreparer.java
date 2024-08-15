@@ -39,14 +39,14 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ChunkRenderingDataPreparer {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Direction[] field_45618 = Direction.values();
+	private static final Direction[] DIRECTIONS = Direction.values();
 	private static final int field_45619 = 60;
 	private static final double field_45620 = Math.ceil(Math.sqrt(3.0) * 16.0);
 	private boolean field_45621 = true;
 	@Nullable
 	private Future<?> field_45622;
 	@Nullable
-	private BuiltChunkStorage field_45623;
+	private BuiltChunkStorage builtChunkStorage;
 	private final AtomicReference<ChunkRenderingDataPreparer.class_8681> field_45624 = new AtomicReference();
 	private final AtomicReference<ChunkRenderingDataPreparer.class_8680> field_45625 = new AtomicReference();
 	private final AtomicBoolean field_45626 = new AtomicBoolean(false);
@@ -61,23 +61,23 @@ public class ChunkRenderingDataPreparer {
 			}
 		}
 
-		this.field_45623 = builtChunkStorage;
+		this.builtChunkStorage = builtChunkStorage;
 		if (builtChunkStorage != null) {
 			this.field_45624.set(new ChunkRenderingDataPreparer.class_8681(builtChunkStorage.chunks.length));
-			this.method_52817();
+			this.scheduleTerrainUpdate();
 		} else {
 			this.field_45624.set(null);
 		}
 	}
 
-	public void method_52817() {
+	public void scheduleTerrainUpdate() {
 		this.field_45621 = true;
 	}
 
-	public void method_52828(Frustum frustum, List<ChunkBuilder.BuiltChunk> list) {
+	public void method_52828(Frustum frustum, List<ChunkBuilder.BuiltChunk> builtChunks) {
 		for (ChunkRenderingDataPreparer.ChunkInfo chunkInfo : ((ChunkRenderingDataPreparer.class_8681)this.field_45624.get()).storage().chunks) {
 			if (frustum.isVisible(chunkInfo.chunk.getBoundingBox())) {
-				list.add(chunkInfo.chunk);
+				builtChunks.add(chunkInfo.chunk);
 			}
 		}
 	}
@@ -89,12 +89,12 @@ public class ChunkRenderingDataPreparer {
 	public void method_52819(ChunkPos chunkPos) {
 		ChunkRenderingDataPreparer.class_8680 lv = (ChunkRenderingDataPreparer.class_8680)this.field_45625.get();
 		if (lv != null) {
-			this.method_52822(lv, chunkPos);
+			this.addNeighbors(lv, chunkPos);
 		}
 
 		ChunkRenderingDataPreparer.class_8680 lv2 = ((ChunkRenderingDataPreparer.class_8681)this.field_45624.get()).events;
 		if (lv2 != lv) {
-			this.method_52822(lv2, chunkPos);
+			this.addNeighbors(lv2, chunkPos);
 		}
 	}
 
@@ -110,19 +110,19 @@ public class ChunkRenderingDataPreparer {
 		}
 	}
 
-	public void method_52834(boolean bl, Camera camera, Frustum frustum, List<ChunkBuilder.BuiltChunk> list) {
+	public void method_52834(boolean bl, Camera camera, Frustum frustum, List<ChunkBuilder.BuiltChunk> builtChunk) {
 		Vec3d vec3d = camera.getPos();
 		if (this.field_45621 && (this.field_45622 == null || this.field_45622.isDone())) {
 			this.method_52833(bl, camera, vec3d);
 		}
 
-		this.method_52835(bl, frustum, list, vec3d);
+		this.method_52835(bl, frustum, builtChunk, vec3d);
 	}
 
 	private void method_52833(boolean bl, Camera camera, Vec3d vec3d) {
 		this.field_45621 = false;
 		this.field_45622 = Util.getMainWorkerExecutor().submit(() -> {
-			ChunkRenderingDataPreparer.class_8681 lv = new ChunkRenderingDataPreparer.class_8681(this.field_45623.chunks.length);
+			ChunkRenderingDataPreparer.class_8681 lv = new ChunkRenderingDataPreparer.class_8681(this.builtChunkStorage.chunks.length);
 			this.field_45625.set(lv.events);
 			Queue<ChunkRenderingDataPreparer.ChunkInfo> queue = Queues.<ChunkRenderingDataPreparer.ChunkInfo>newArrayDeque();
 			this.method_52821(camera, queue);
@@ -135,7 +135,7 @@ public class ChunkRenderingDataPreparer {
 		});
 	}
 
-	private void method_52835(boolean bl, Frustum frustum, List<ChunkBuilder.BuiltChunk> list, Vec3d vec3d) {
+	private void method_52835(boolean bl, Frustum frustum, List<ChunkBuilder.BuiltChunk> builtChunks, Vec3d vec3d) {
 		ChunkRenderingDataPreparer.class_8681 lv = (ChunkRenderingDataPreparer.class_8681)this.field_45624.get();
 		this.method_52823(lv);
 		if (!lv.events.sectionsToPropagateFrom.isEmpty()) {
@@ -152,7 +152,7 @@ public class ChunkRenderingDataPreparer {
 			Frustum frustum2 = WorldRenderer.method_52816(frustum);
 			Consumer<ChunkBuilder.BuiltChunk> consumer = builtChunk -> {
 				if (frustum2.isVisible(builtChunk.getBoundingBox())) {
-					list.add(builtChunk);
+					builtChunks.add(builtChunk);
 				}
 			};
 			this.method_52825(lv.storage, vec3d, queue, bl, consumer);
@@ -174,7 +174,7 @@ public class ChunkRenderingDataPreparer {
 		arg.events.chunksWhichReceivedNeighbors.clear();
 	}
 
-	private void method_52822(ChunkRenderingDataPreparer.class_8680 arg, ChunkPos chunkPos) {
+	private void addNeighbors(ChunkRenderingDataPreparer.class_8680 arg, ChunkPos chunkPos) {
 		arg.chunksWhichReceivedNeighbors.add(ChunkPos.toLong(chunkPos.x - 1, chunkPos.z));
 		arg.chunksWhichReceivedNeighbors.add(ChunkPos.toLong(chunkPos.x, chunkPos.z - 1));
 		arg.chunksWhichReceivedNeighbors.add(ChunkPos.toLong(chunkPos.x + 1, chunkPos.z));
@@ -185,21 +185,21 @@ public class ChunkRenderingDataPreparer {
 		int i = 16;
 		Vec3d vec3d = camera.getPos();
 		BlockPos blockPos = camera.getBlockPos();
-		ChunkBuilder.BuiltChunk builtChunk = this.field_45623.getRenderedChunk(blockPos);
+		ChunkBuilder.BuiltChunk builtChunk = this.builtChunkStorage.getRenderedChunk(blockPos);
 		if (builtChunk == null) {
-			HeightLimitView heightLimitView = this.field_45623.getWorld();
+			HeightLimitView heightLimitView = this.builtChunkStorage.getWorld();
 			boolean bl = blockPos.getY() > heightLimitView.getBottomY();
 			int j = bl ? heightLimitView.getTopY() - 8 : heightLimitView.getBottomY() + 8;
 			int k = MathHelper.floor(vec3d.x / 16.0) * 16;
 			int l = MathHelper.floor(vec3d.z / 16.0) * 16;
-			int m = this.field_45623.getViewDistance();
+			int m = this.builtChunkStorage.getViewDistance();
 			List<ChunkRenderingDataPreparer.ChunkInfo> list = Lists.<ChunkRenderingDataPreparer.ChunkInfo>newArrayList();
 
 			for (int n = -m; n <= m; n++) {
 				for (int o = -m; o <= m; o++) {
-					ChunkBuilder.BuiltChunk builtChunk2 = this.field_45623
+					ChunkBuilder.BuiltChunk builtChunk2 = this.builtChunkStorage
 						.getRenderedChunk(new BlockPos(k + ChunkSectionPos.getOffsetPos(n, 8), j, l + ChunkSectionPos.getOffsetPos(o, 8)));
-					if (builtChunk2 != null && this.method_52832(blockPos, builtChunk2.getOrigin())) {
+					if (builtChunk2 != null && this.isWithinViewDistance(blockPos, builtChunk2.getOrigin())) {
 						Direction direction = bl ? Direction.DOWN : Direction.UP;
 						ChunkRenderingDataPreparer.ChunkInfo chunkInfo = new ChunkRenderingDataPreparer.ChunkInfo(builtChunk2, direction, 0);
 						chunkInfo.updateCullingState(chunkInfo.cullingState, direction);
@@ -229,13 +229,13 @@ public class ChunkRenderingDataPreparer {
 
 	private void method_52825(
 		ChunkRenderingDataPreparer.RenderableChunks renderableChunks,
-		Vec3d vec3d,
+		Vec3d pos,
 		Queue<ChunkRenderingDataPreparer.ChunkInfo> queue,
 		boolean bl,
 		Consumer<ChunkBuilder.BuiltChunk> consumer
 	) {
 		int i = 16;
-		BlockPos blockPos = new BlockPos(MathHelper.floor(vec3d.x / 16.0) * 16, MathHelper.floor(vec3d.y / 16.0) * 16, MathHelper.floor(vec3d.z / 16.0) * 16);
+		BlockPos blockPos = new BlockPos(MathHelper.floor(pos.x / 16.0) * 16, MathHelper.floor(pos.y / 16.0) * 16, MathHelper.floor(pos.z / 16.0) * 16);
 		BlockPos blockPos2 = blockPos.add(8, 8, 8);
 
 		while (!queue.isEmpty()) {
@@ -249,15 +249,15 @@ public class ChunkRenderingDataPreparer {
 				|| Math.abs(builtChunk.getOrigin().getY() - blockPos.getY()) > 60
 				|| Math.abs(builtChunk.getOrigin().getZ() - blockPos.getZ()) > 60;
 
-			for (Direction direction : field_45618) {
+			for (Direction direction : DIRECTIONS) {
 				ChunkBuilder.BuiltChunk builtChunk2 = this.method_52831(blockPos, builtChunk, direction);
 				if (builtChunk2 != null && (!bl || !chunkInfo.canCull(direction.getOpposite()))) {
 					if (bl && chunkInfo.hasAnyDirection()) {
 						ChunkBuilder.ChunkData chunkData = builtChunk.getData();
 						boolean bl3 = false;
 
-						for (int j = 0; j < field_45618.length; j++) {
-							if (chunkInfo.hasDirection(j) && chunkData.isVisibleThrough(field_45618[j].getOpposite(), direction)) {
+						for (int j = 0; j < DIRECTIONS.length; j++) {
+							if (chunkInfo.hasDirection(j) && chunkData.isVisibleThrough(DIRECTIONS[j].getOpposite(), direction)) {
 								bl3 = true;
 								break;
 							}
@@ -275,18 +275,18 @@ public class ChunkRenderingDataPreparer {
 							(direction.getAxis() == Direction.Axis.Y ? blockPos2.getY() <= blockPos3.getY() : blockPos2.getY() >= blockPos3.getY()) ? 0 : 16,
 							(direction.getAxis() == Direction.Axis.Z ? blockPos2.getZ() <= blockPos3.getZ() : blockPos2.getZ() >= blockPos3.getZ()) ? 0 : 16
 						);
-						Vec3d vec3d2 = new Vec3d((double)blockPos4.getX(), (double)blockPos4.getY(), (double)blockPos4.getZ());
-						Vec3d vec3d3 = vec3d.subtract(vec3d2).normalize().multiply(field_45620);
+						Vec3d vec3d = new Vec3d((double)blockPos4.getX(), (double)blockPos4.getY(), (double)blockPos4.getZ());
+						Vec3d vec3d2 = pos.subtract(vec3d).normalize().multiply(field_45620);
 						boolean bl4 = true;
 
-						while (vec3d.subtract(vec3d2).lengthSquared() > 3600.0) {
-							vec3d2 = vec3d2.add(vec3d3);
-							HeightLimitView heightLimitView = this.field_45623.getWorld();
-							if (vec3d2.y > (double)heightLimitView.getTopY() || vec3d2.y < (double)heightLimitView.getBottomY()) {
+						while (pos.subtract(vec3d).lengthSquared() > 3600.0) {
+							vec3d = vec3d.add(vec3d2);
+							HeightLimitView heightLimitView = this.builtChunkStorage.getWorld();
+							if (vec3d.y > (double)heightLimitView.getTopY() || vec3d.y < (double)heightLimitView.getBottomY()) {
 								break;
 							}
 
-							ChunkBuilder.BuiltChunk builtChunk3 = this.field_45623.getRenderedChunk(BlockPos.ofFloored(vec3d2.x, vec3d2.y, vec3d2.z));
+							ChunkBuilder.BuiltChunk builtChunk3 = this.builtChunkStorage.getRenderedChunk(BlockPos.ofFloored(vec3d.x, vec3d.y, vec3d.z));
 							if (builtChunk3 == null || renderableChunks.field_45627.getInfo(builtChunk3) == null) {
 								bl4 = false;
 								break;
@@ -307,7 +307,7 @@ public class ChunkRenderingDataPreparer {
 						if (builtChunk2.shouldBuild()) {
 							queue.add(chunkInfo3);
 							renderableChunks.field_45627.setInfo(builtChunk2, chunkInfo3);
-						} else if (this.method_52832(blockPos, builtChunk2.getOrigin())) {
+						} else if (this.isWithinViewDistance(blockPos, builtChunk2.getOrigin())) {
 							renderableChunks.field_45627.setInfo(builtChunk2, chunkInfo3);
 							renderableChunks.field_45628
 								.computeIfAbsent(ChunkPos.toLong(builtChunk2.getOrigin()), (Long2ObjectFunction<? extends List<ChunkBuilder.BuiltChunk>>)(l -> new ArrayList()))
@@ -319,39 +319,41 @@ public class ChunkRenderingDataPreparer {
 		}
 	}
 
-	private boolean method_52832(BlockPos blockPos, BlockPos blockPos2) {
-		int i = ChunkSectionPos.getSectionCoord(blockPos.getX());
-		int j = ChunkSectionPos.getSectionCoord(blockPos.getZ());
-		int k = ChunkSectionPos.getSectionCoord(blockPos2.getX());
-		int l = ChunkSectionPos.getSectionCoord(blockPos2.getZ());
-		return ChunkFilter.isWithinDistanceExcludingEdge(i, j, this.field_45623.getViewDistance(), k, l);
+	private boolean isWithinViewDistance(BlockPos from, BlockPos to) {
+		int i = ChunkSectionPos.getSectionCoord(from.getX());
+		int j = ChunkSectionPos.getSectionCoord(from.getZ());
+		int k = ChunkSectionPos.getSectionCoord(to.getX());
+		int l = ChunkSectionPos.getSectionCoord(to.getZ());
+		return ChunkFilter.isWithinDistanceExcludingEdge(i, j, this.builtChunkStorage.getViewDistance(), k, l);
 	}
 
 	@Nullable
-	private ChunkBuilder.BuiltChunk method_52831(BlockPos blockPos, ChunkBuilder.BuiltChunk builtChunk, Direction direction) {
-		BlockPos blockPos2 = builtChunk.getNeighborPosition(direction);
-		if (!this.method_52832(blockPos, blockPos2)) {
+	private ChunkBuilder.BuiltChunk method_52831(BlockPos pos, ChunkBuilder.BuiltChunk builtChunk, Direction direction) {
+		BlockPos blockPos = builtChunk.getNeighborPosition(direction);
+		if (!this.isWithinViewDistance(pos, blockPos)) {
 			return null;
 		} else {
-			return MathHelper.abs(blockPos.getY() - blockPos2.getY()) > this.field_45623.getViewDistance() * 16 ? null : this.field_45623.getRenderedChunk(blockPos2);
+			return MathHelper.abs(pos.getY() - blockPos.getY()) > this.builtChunkStorage.getViewDistance() * 16
+				? null
+				: this.builtChunkStorage.getRenderedChunk(blockPos);
 		}
 	}
 
 	@Nullable
 	@Debug
-	protected ChunkRenderingDataPreparer.ChunkInfo method_52837(ChunkBuilder.BuiltChunk builtChunk) {
+	public ChunkRenderingDataPreparer.ChunkInfo method_52837(ChunkBuilder.BuiltChunk builtChunk) {
 		return ((ChunkRenderingDataPreparer.class_8681)this.field_45624.get()).storage.field_45627.getInfo(builtChunk);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Debug
-	protected static class ChunkInfo {
+	public static class ChunkInfo {
 		@Debug
 		protected final ChunkBuilder.BuiltChunk chunk;
 		private byte direction;
 		byte cullingState;
 		@Debug
-		protected final int propagationLevel;
+		public final int propagationLevel;
 
 		ChunkInfo(ChunkBuilder.BuiltChunk chunk, @Nullable Direction direction, int propagationLevel) {
 			this.chunk = chunk;
@@ -375,7 +377,7 @@ public class ChunkRenderingDataPreparer {
 		}
 
 		@Debug
-		protected boolean hasDirection(int ordinal) {
+		public boolean hasDirection(int ordinal) {
 			return (this.direction & 1 << ordinal) > 0;
 		}
 

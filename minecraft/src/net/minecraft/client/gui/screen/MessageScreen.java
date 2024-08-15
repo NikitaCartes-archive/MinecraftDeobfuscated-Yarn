@@ -43,7 +43,7 @@ public class MessageScreen extends Screen {
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 		this.renderPanoramaBackground(context, delta);
-		this.applyBlur(delta);
+		this.applyBlur();
 		this.renderDarkening(context);
 	}
 }

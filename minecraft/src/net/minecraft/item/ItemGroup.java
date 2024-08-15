@@ -177,8 +177,8 @@ public class ItemGroup {
 			return this;
 		}
 
-		public ItemGroup.Builder texture(Identifier identifier) {
-			this.texture = identifier;
+		public ItemGroup.Builder texture(Identifier texture) {
+			this.texture = texture;
 			return this;
 		}
 

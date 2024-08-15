@@ -34,7 +34,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
@@ -91,16 +90,13 @@ public class CatEntity extends TameableEntity implements VariantHolder<RegistryE
 	private float prevSleepAnimation;
 	private float tailCurlAnimation;
 	private float prevTailCurlAnimation;
+	private boolean nearSleepingPlayer;
 	private float headDownAnimation;
 	private float prevHeadDownAnimation;
 
 	public CatEntity(EntityType<? extends CatEntity> entityType, World world) {
 		super(entityType, world);
 		this.onTamedChanged();
-	}
-
-	public Identifier getTexture() {
-		return this.getVariant().value().texture();
 	}
 
 	@Override
@@ -245,19 +241,15 @@ public class CatEntity extends TameableEntity implements VariantHolder<RegistryE
 	}
 
 	public static DefaultAttributeContainer.Builder createCatAttributes() {
-		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0);
+		return AnimalEntity.createAnimalAttributes()
+			.add(EntityAttributes.MAX_HEALTH, 10.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.ATTACK_DAMAGE, 3.0);
 	}
 
 	@Override
-	protected void eat(PlayerEntity player, Hand hand, ItemStack stack) {
-		if (this.isBreedingItem(stack)) {
-			this.playSound(SoundEvents.ENTITY_CAT_EAT, 1.0F, 1.0F);
-		}
-
-		super.eat(player, hand, stack);
+	protected void playEatSound() {
+		this.playSound(SoundEvents.ENTITY_CAT_EAT, 1.0F, 1.0F);
 	}
 
 	@Override
@@ -277,6 +269,21 @@ public class CatEntity extends TameableEntity implements VariantHolder<RegistryE
 
 		this.updateSleepAnimation();
 		this.updateHeadDownAnimation();
+		this.nearSleepingPlayer = false;
+		if (this.isInSleepingPose()) {
+			BlockPos blockPos = this.getBlockPos();
+
+			for (PlayerEntity playerEntity : this.getWorld().getNonSpectatingEntities(PlayerEntity.class, new Box(blockPos).expand(2.0, 2.0, 2.0))) {
+				if (playerEntity.isSleeping()) {
+					this.nearSleepingPlayer = true;
+					break;
+				}
+			}
+		}
+	}
+
+	public boolean isNearSleepingPlayer() {
+		return this.nearSleepingPlayer;
 	}
 
 	private void updateSleepAnimation() {
@@ -300,21 +307,21 @@ public class CatEntity extends TameableEntity implements VariantHolder<RegistryE
 		}
 	}
 
-	public float getSleepAnimation(float tickDelta) {
+	public float getSleepAnimationProgress(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.prevSleepAnimation, this.sleepAnimation);
 	}
 
-	public float getTailCurlAnimation(float tickDelta) {
+	public float getTailCurlAnimationProgress(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.prevTailCurlAnimation, this.tailCurlAnimation);
 	}
 
-	public float getHeadDownAnimation(float tickDelta) {
+	public float getHeadDownAnimationProgress(float tickDelta) {
 		return MathHelper.lerp(tickDelta, this.prevHeadDownAnimation, this.headDownAnimation);
 	}
 
 	@Nullable
 	public CatEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		CatEntity catEntity = EntityType.CAT.create(serverWorld);
+		CatEntity catEntity = EntityType.CAT.create(serverWorld, SpawnReason.BREEDING);
 		if (catEntity != null && passiveEntity instanceof CatEntity catEntity2) {
 			if (this.random.nextBoolean()) {
 				catEntity.setVariant(this.getVariant());
@@ -376,22 +383,23 @@ public class CatEntity extends TameableEntity implements VariantHolder<RegistryE
 							this.setPersistent();
 						}
 
-						return ActionResult.success(this.getWorld().isClient());
+						return ActionResult.SUCCESS;
 					}
 				} else if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
 					if (!this.getWorld().isClient()) {
 						this.eat(player, hand, itemStack);
 						FoodComponent foodComponent = itemStack.get(DataComponentTypes.FOOD);
 						this.heal(foodComponent != null ? (float)foodComponent.nutrition() : 1.0F);
+						this.playEatSound();
 					}
 
-					return ActionResult.success(this.getWorld().isClient());
+					return ActionResult.SUCCESS;
 				}
 
 				ActionResult actionResult = super.interactMob(player, hand);
 				if (!actionResult.isAccepted()) {
 					this.setSitting(!this.isSitting());
-					return ActionResult.success(this.getWorld().isClient());
+					return ActionResult.SUCCESS;
 				}
 
 				return actionResult;
@@ -401,9 +409,10 @@ public class CatEntity extends TameableEntity implements VariantHolder<RegistryE
 				this.eat(player, hand, itemStack);
 				this.tryTame(player);
 				this.setPersistent();
+				this.playEatSound();
 			}
 
-			return ActionResult.success(this.getWorld().isClient());
+			return ActionResult.SUCCESS;
 		}
 
 		ActionResult actionResult = super.interactMob(player, hand);

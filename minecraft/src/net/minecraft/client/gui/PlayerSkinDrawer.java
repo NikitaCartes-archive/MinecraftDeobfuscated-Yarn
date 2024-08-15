@@ -1,8 +1,8 @@
 package net.minecraft.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.util.Identifier;
 
@@ -23,33 +23,31 @@ public class PlayerSkinDrawer {
 	public static final int SKIN_TEXTURE_HEIGHT = 64;
 
 	public static void draw(DrawContext context, SkinTextures textures, int x, int y, int size) {
-		draw(context, textures.texture(), x, y, size);
+		draw(context, textures, x, y, size, -1);
 	}
 
 	/**
 	 * Draws the player's head (including the hat) on GUI.
 	 */
-	public static void draw(DrawContext context, Identifier texture, int x, int y, int size) {
-		draw(context, texture, x, y, size, true, false);
+	public static void draw(DrawContext context, SkinTextures skinTextures, int x, int y, int size, int i) {
+		draw(context, skinTextures.texture(), x, y, size, true, false, i);
 	}
 
 	/**
 	 * Draws the player's head on GUI.
 	 */
-	public static void draw(DrawContext context, Identifier texture, int x, int y, int size, boolean hatVisible, boolean upsideDown) {
-		int i = 8 + (upsideDown ? 8 : 0);
-		int j = 8 * (upsideDown ? -1 : 1);
-		context.drawTexture(texture, x, y, size, size, 8.0F, (float)i, 8, j, 64, 64);
+	public static void draw(DrawContext context, Identifier texture, int x, int y, int size, boolean hatVisible, boolean upsideDown, int i) {
+		int j = 8 + (upsideDown ? 8 : 0);
+		int k = 8 * (upsideDown ? -1 : 1);
+		context.drawTexture(RenderLayer::getGuiTextured, texture, x, y, 8.0F, (float)j, size, size, 8, k, 64, 64, i);
 		if (hatVisible) {
-			drawHat(context, texture, x, y, size, upsideDown);
+			drawHat(context, texture, x, y, size, upsideDown, i);
 		}
 	}
 
-	private static void drawHat(DrawContext context, Identifier texture, int x, int y, int size, boolean upsideDown) {
-		int i = 8 + (upsideDown ? 8 : 0);
-		int j = 8 * (upsideDown ? -1 : 1);
-		RenderSystem.enableBlend();
-		context.drawTexture(texture, x, y, size, size, 40.0F, (float)i, 8, j, 64, 64);
-		RenderSystem.disableBlend();
+	private static void drawHat(DrawContext context, Identifier texture, int x, int y, int size, boolean upsideDown, int i) {
+		int j = 8 + (upsideDown ? 8 : 0);
+		int k = 8 * (upsideDown ? -1 : 1);
+		context.drawTexture(RenderLayer::getGuiTextured, texture, x, y, 40.0F, (float)j, size, size, 8, k, 64, 64, i);
 	}
 }

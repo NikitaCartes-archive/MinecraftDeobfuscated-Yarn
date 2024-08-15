@@ -284,6 +284,15 @@ public interface PacketCodecs {
 			PacketByteBuf.writeQuaternionf(byteBuf, quaternionf);
 		}
 	};
+	PacketCodec<ByteBuf, Integer> SYNC_ID = new PacketCodec<ByteBuf, Integer>() {
+		public Integer decode(ByteBuf byteBuf) {
+			return PacketByteBuf.readSyncId(byteBuf);
+		}
+
+		public void encode(ByteBuf byteBuf, Integer integer) {
+			PacketByteBuf.writeSyncId(byteBuf, integer);
+		}
+	};
 	PacketCodec<ByteBuf, PropertyMap> PROPERTY_MAP = new PacketCodec<ByteBuf, PropertyMap>() {
 		private static final int NAME_MAX_LENGTH = 64;
 		private static final int VALUE_MAX_LENGTH = 32767;

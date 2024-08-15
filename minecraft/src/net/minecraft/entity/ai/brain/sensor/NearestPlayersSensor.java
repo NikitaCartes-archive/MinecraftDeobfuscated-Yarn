@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
@@ -24,7 +25,7 @@ public class NearestPlayersSensor extends Sensor<LivingEntity> {
 		List<PlayerEntity> list = (List<PlayerEntity>)world.getPlayers()
 			.stream()
 			.filter(EntityPredicates.EXCEPT_SPECTATOR)
-			.filter(player -> entity.isInRange(player, 16.0))
+			.filter(player -> entity.isInRange(player, this.getFollowRange(entity)))
 			.sorted(Comparator.comparingDouble(entity::squaredDistanceTo))
 			.collect(Collectors.toList());
 		Brain<?> brain = entity.getBrain();
@@ -33,5 +34,9 @@ public class NearestPlayersSensor extends Sensor<LivingEntity> {
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_PLAYER, list2.isEmpty() ? null : (PlayerEntity)list2.get(0));
 		Optional<PlayerEntity> optional = list2.stream().filter(player -> testAttackableTargetPredicate(entity, player)).findFirst();
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, optional);
+	}
+
+	protected double getFollowRange(LivingEntity entity) {
+		return entity.getAttributeValue(EntityAttributes.FOLLOW_RANGE);
 	}
 }

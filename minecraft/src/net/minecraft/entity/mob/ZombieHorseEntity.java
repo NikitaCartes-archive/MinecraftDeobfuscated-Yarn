@@ -35,7 +35,7 @@ public class ZombieHorseEntity extends AbstractHorseEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createZombieHorseAttributes() {
-		return createBaseHorseAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 15.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2F);
+		return createBaseHorseAttributes().add(EntityAttributes.MAX_HEALTH, 15.0).add(EntityAttributes.MOVEMENT_SPEED, 0.2F);
 	}
 
 	public static boolean canSpawn(EntityType<? extends AnimalEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
@@ -46,7 +46,7 @@ public class ZombieHorseEntity extends AbstractHorseEntity {
 
 	@Override
 	protected void initAttributes(Random random) {
-		this.getAttributeInstance(EntityAttributes.GENERIC_JUMP_STRENGTH).setBaseValue(getChildJumpStrengthBonus(random::nextDouble));
+		this.getAttributeInstance(EntityAttributes.JUMP_STRENGTH).setBaseValue(getChildJumpStrengthBonus(random::nextDouble));
 	}
 
 	@Override
@@ -67,12 +67,12 @@ public class ZombieHorseEntity extends AbstractHorseEntity {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-		return EntityType.ZOMBIE_HORSE.create(world);
+		return EntityType.ZOMBIE_HORSE.create(world, SpawnReason.BREEDING);
 	}
 
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
-		return !this.isTame() ? ActionResult.PASS : super.interactMob(player, hand);
+		return (ActionResult)(!this.isTame() ? ActionResult.PASS : super.interactMob(player, hand));
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 
 	public abstract LightingProvider getLightingProvider();
 
-	public void setMobSpawnOptions(boolean spawnMonsters, boolean spawnAnimals) {
+	public void setMobSpawnOptions(boolean spawnMonsters) {
 	}
 
 	public void setChunkForced(ChunkPos pos, boolean forced) {

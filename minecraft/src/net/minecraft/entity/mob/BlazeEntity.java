@@ -57,9 +57,9 @@ public class BlazeEntity extends HostileEntity {
 
 	public static DefaultAttributeContainer.Builder createBlazeAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.23F)
-			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48.0);
+			.add(EntityAttributes.ATTACK_DAMAGE, 6.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.23F)
+			.add(EntityAttributes.FOLLOW_RANGE, 48.0);
 	}
 
 	@Override
@@ -259,7 +259,7 @@ public class BlazeEntity extends HostileEntity {
 		}
 
 		private double getFollowRange() {
-			return this.blaze.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
+			return this.blaze.getAttributeValue(EntityAttributes.FOLLOW_RANGE);
 		}
 	}
 }

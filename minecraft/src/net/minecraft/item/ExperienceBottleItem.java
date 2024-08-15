@@ -3,11 +3,12 @@ package net.minecraft.item;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.thrown.ExperienceBottleEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
@@ -18,7 +19,7 @@ public class ExperienceBottleItem extends Item implements ProjectileItem {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		world.playSound(
 			null,
@@ -30,23 +31,18 @@ public class ExperienceBottleItem extends Item implements ProjectileItem {
 			0.5F,
 			0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F)
 		);
-		if (!world.isClient) {
-			ExperienceBottleEntity experienceBottleEntity = new ExperienceBottleEntity(world, user);
-			experienceBottleEntity.setItem(itemStack);
-			experienceBottleEntity.setVelocity(user, user.getPitch(), user.getYaw(), -20.0F, 0.7F, 1.0F);
-			world.spawnEntity(experienceBottleEntity);
+		if (world instanceof ServerWorld serverWorld) {
+			ProjectileEntity.spawnWithVelocity(ExperienceBottleEntity::new, serverWorld, itemStack, user, -20.0F, 0.7F, 1.0F);
 		}
 
 		user.incrementStat(Stats.USED.getOrCreateStat(this));
 		itemStack.decrementUnlessCreative(1, user);
-		return TypedActionResult.success(itemStack, world.isClient());
+		return ActionResult.SUCCESS;
 	}
 
 	@Override
 	public ProjectileEntity createEntity(World world, Position pos, ItemStack stack, Direction direction) {
-		ExperienceBottleEntity experienceBottleEntity = new ExperienceBottleEntity(world, pos.getX(), pos.getY(), pos.getZ());
-		experienceBottleEntity.setItem(stack);
-		return experienceBottleEntity;
+		return new ExperienceBottleEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack);
 	}
 
 	@Override

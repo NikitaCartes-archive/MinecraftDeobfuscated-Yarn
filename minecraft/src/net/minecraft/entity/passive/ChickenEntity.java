@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
@@ -19,7 +20,6 @@ import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -68,7 +68,7 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createChickenAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 4.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25);
+		return AnimalEntity.createAnimalAttributes().add(EntityAttributes.MAX_HEALTH, 4.0).add(EntityAttributes.MOVEMENT_SPEED, 0.25);
 	}
 
 	@Override
@@ -129,7 +129,7 @@ public class ChickenEntity extends AnimalEntity {
 
 	@Nullable
 	public ChickenEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		return EntityType.CHICKEN.create(serverWorld);
+		return EntityType.CHICKEN.create(serverWorld, SpawnReason.BREEDING);
 	}
 
 	@Override

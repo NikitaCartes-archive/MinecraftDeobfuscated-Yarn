@@ -15,7 +15,6 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.SerializableRegistries;
 import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.util.Identifier;
 
 public class TagPacketSerializer {
@@ -24,17 +23,16 @@ public class TagPacketSerializer {
 	) {
 		return (Map<RegistryKey<? extends Registry<?>>, TagPacketSerializer.Serialized>)SerializableRegistries.streamRegistryManagerEntries(dynamicRegistryManager)
 			.map(registry -> Pair.of(registry.key(), serializeTags(registry.value())))
-			.filter(pair -> ((TagPacketSerializer.Serialized)pair.getSecond()).size() > 0)
+			.filter(pair -> !((TagPacketSerializer.Serialized)pair.getSecond()).isEmpty())
 			.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 	}
 
 	private static <T> TagPacketSerializer.Serialized serializeTags(Registry<T> registry) {
 		Map<Identifier, IntList> map = new HashMap();
-		registry.streamTagsAndEntries().forEach(pair -> {
-			RegistryEntryList<T> registryEntryList = (RegistryEntryList<T>)pair.getSecond();
-			IntList intList = new IntArrayList(registryEntryList.size());
+		registry.streamTags().forEach(tag -> {
+			IntList intList = new IntArrayList(tag.size());
 
-			for (RegistryEntry<T> registryEntry : registryEntryList) {
+			for (RegistryEntry<T> registryEntry : tag) {
 				if (registryEntry.getType() != RegistryEntry.Type.REFERENCE) {
 					throw new IllegalStateException("Can't serialize unregistered value " + registryEntry);
 				}
@@ -42,15 +40,15 @@ public class TagPacketSerializer {
 				intList.add(registry.getRawId(registryEntry.value()));
 			}
 
-			map.put(((TagKey)pair.getFirst()).id(), intList);
+			map.put(tag.getTag().id(), intList);
 		});
 		return new TagPacketSerializer.Serialized(map);
 	}
 
-	static <T> void loadTags(
-		RegistryKey<? extends Registry<T>> registryKey, Registry<T> registry, TagPacketSerializer.Serialized serialized, TagPacketSerializer.Loader<T> loader
-	) {
-		serialized.contents
+	static <T> TagGroupLoader.RegistryTags<T> toRegistryTags(Registry<T> registry, TagPacketSerializer.Serialized tags) {
+		RegistryKey<? extends Registry<T>> registryKey = registry.getKey();
+		Map<TagKey<T>, List<RegistryEntry<T>>> map = new HashMap();
+		tags.contents
 			.forEach(
 				(tagId, rawIds) -> {
 					TagKey<T> tagKey = TagKey.of(registryKey, tagId);
@@ -58,14 +56,10 @@ public class TagPacketSerializer {
 						.mapToObj(registry::getEntry)
 						.flatMap(Optional::stream)
 						.collect(Collectors.toUnmodifiableList());
-					loader.accept(tagKey, list);
+					map.put(tagKey, list);
 				}
 			);
-	}
-
-	@FunctionalInterface
-	public interface Loader<T> {
-		void accept(TagKey<T> tag, List<RegistryEntry<T>> entries);
+		return new TagGroupLoader.RegistryTags<>(registryKey, map);
 	}
 
 	/**
@@ -77,6 +71,7 @@ public class TagPacketSerializer {
 	 * for raw ID access to serialize or deserialize tags.
 	 */
 	public static final class Serialized {
+		public static final TagPacketSerializer.Serialized NONE = new TagPacketSerializer.Serialized(Map.of());
 		final Map<Identifier, IntList> contents;
 
 		Serialized(Map<Identifier, IntList> contents) {
@@ -91,16 +86,12 @@ public class TagPacketSerializer {
 			return new TagPacketSerializer.Serialized(buf.readMap(PacketByteBuf::readIdentifier, PacketByteBuf::readIntList));
 		}
 
-		public int size() {
-			return this.contents.size();
+		public boolean isEmpty() {
+			return this.contents.isEmpty();
 		}
 
-		public <T> void loadTo(Registry<T> registry) {
-			if (this.size() != 0) {
-				Map<TagKey<T>, List<RegistryEntry<T>>> map = new HashMap(this.size());
-				TagPacketSerializer.loadTags(registry.getKey(), registry, this, map::put);
-				registry.populateTags(map);
-			}
+		public <T> TagGroupLoader.RegistryTags<T> toRegistryTags(Registry<T> registry) {
+			return TagPacketSerializer.toRegistryTags(registry, this);
 		}
 	}
 }

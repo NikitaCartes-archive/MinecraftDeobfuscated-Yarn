@@ -307,6 +307,7 @@ public class BoatEntity extends VehicleEntity implements Leashable, VariantHolde
 			this.setVelocity(Vec3d.ZERO);
 		}
 
+		this.tickBlockCollision();
 		this.handleBubbleColumn();
 
 		for (int i = 0; i <= 1; i++) {
@@ -330,7 +331,6 @@ public class BoatEntity extends VehicleEntity implements Leashable, VariantHolde
 			}
 		}
 
-		this.checkBlockCollision();
 		List<Entity> list = this.getWorld().getOtherEntities(this, this.getBoundingBox().expand(0.2F, -0.01F, 0.2F), EntityPredicates.canBePushedBy(this));
 		if (!list.isEmpty()) {
 			boolean bl = !this.getWorld().isClient && !(this.getControllingPassenger() instanceof PlayerEntity);
@@ -773,16 +773,10 @@ public class BoatEntity extends VehicleEntity implements Leashable, VariantHolde
 		ActionResult actionResult = super.interact(player, hand);
 		if (actionResult != ActionResult.PASS) {
 			return actionResult;
-		} else if (player.shouldCancelInteraction()) {
-			return ActionResult.PASS;
-		} else if (this.ticksUnderwater < 60.0F) {
-			if (!this.getWorld().isClient) {
-				return player.startRiding(this) ? ActionResult.CONSUME : ActionResult.PASS;
-			} else {
-				return ActionResult.SUCCESS;
-			}
 		} else {
-			return ActionResult.PASS;
+			return (ActionResult)(player.shouldCancelInteraction() || !(this.ticksUnderwater < 60.0F) || !this.getWorld().isClient && !player.startRiding(this)
+				? ActionResult.PASS
+				: ActionResult.SUCCESS);
 		}
 	}
 

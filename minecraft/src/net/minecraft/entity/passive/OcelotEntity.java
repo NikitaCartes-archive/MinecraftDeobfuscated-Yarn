@@ -25,7 +25,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -130,10 +129,10 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createOcelotAttributes() {
-		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0);
+		return AnimalEntity.createAnimalAttributes()
+			.add(EntityAttributes.MAX_HEALTH, 10.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.ATTACK_DAMAGE, 3.0);
 	}
 
 	@Nullable
@@ -173,7 +172,7 @@ public class OcelotEntity extends AnimalEntity {
 				}
 			}
 
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return super.interactMob(player, hand);
 		}
@@ -217,7 +216,7 @@ public class OcelotEntity extends AnimalEntity {
 
 	@Nullable
 	public OcelotEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		return EntityType.OCELOT.create(serverWorld);
+		return EntityType.OCELOT.create(serverWorld, SpawnReason.BREEDING);
 	}
 
 	@Override

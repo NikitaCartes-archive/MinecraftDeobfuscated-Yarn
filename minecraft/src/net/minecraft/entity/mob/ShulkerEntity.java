@@ -139,7 +139,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	}
 
 	public static DefaultAttributeContainer.Builder createShulkerAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0);
+		return MobEntity.createMobAttributes().add(EntityAttributes.MAX_HEALTH, 30.0);
 	}
 
 	@Override
@@ -447,7 +447,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 			int i = this.getWorld().getEntitiesByType(EntityType.SHULKER, box.expand(8.0), Entity::isAlive).size();
 			float f = (float)(i - 1) / 5.0F;
 			if (!(this.getWorld().random.nextFloat() < f)) {
-				ShulkerEntity shulkerEntity = EntityType.SHULKER.create(this.getWorld());
+				ShulkerEntity shulkerEntity = EntityType.SHULKER.create(this.getWorld(), SpawnReason.BREEDING);
 				if (shulkerEntity != null) {
 					shulkerEntity.setVariant(this.getVariant());
 					shulkerEntity.refreshPositionAfterTeleport(vec3d);
@@ -485,9 +485,9 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 
 	void setPeekAmount(int peekAmount) {
 		if (!this.getWorld().isClient) {
-			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(COVERED_ARMOR_MODIFIER_ID);
+			this.getAttributeInstance(EntityAttributes.ARMOR).removeModifier(COVERED_ARMOR_MODIFIER_ID);
 			if (peekAmount == 0) {
-				this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addPersistentModifier(COVERED_ARMOR_BONUS);
+				this.getAttributeInstance(EntityAttributes.ARMOR).addPersistentModifier(COVERED_ARMOR_BONUS);
 				this.playSound(SoundEvents.ENTITY_SHULKER_CLOSE, 1.0F, 1.0F);
 				this.emitGameEvent(GameEvent.CONTAINER_CLOSE);
 			} else {
@@ -524,17 +524,19 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	public void pushAwayFrom(Entity entity) {
 	}
 
-	public Optional<Vec3d> getRenderPositionOffset(float tickDelta) {
+	@Nullable
+	public Vec3d getRenderPositionOffset(float tickDelta) {
 		if (this.prevAttachedBlock != null && this.teleportLerpTimer > 0) {
 			double d = (double)((float)this.teleportLerpTimer - tickDelta) / 6.0;
 			d *= d;
+			d *= (double)this.getScale();
 			BlockPos blockPos = this.getBlockPos();
 			double e = (double)(blockPos.getX() - this.prevAttachedBlock.getX()) * d;
 			double f = (double)(blockPos.getY() - this.prevAttachedBlock.getY()) * d;
 			double g = (double)(blockPos.getZ() - this.prevAttachedBlock.getZ()) * d;
-			return Optional.of(new Vec3d(-e, -f, -g));
+			return new Vec3d(-e, -f, -g);
 		} else {
-			return Optional.empty();
+			return null;
 		}
 	}
 

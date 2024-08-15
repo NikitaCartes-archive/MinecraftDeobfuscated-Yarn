@@ -7,7 +7,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SkinOverlayOwner;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.CreeperIgniteGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
@@ -42,7 +41,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
+public class CreeperEntity extends HostileEntity {
 	private static final TrackedData<Integer> FUSE_SPEED = DataTracker.registerData(CreeperEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> CHARGED = DataTracker.registerData(CreeperEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> IGNITED = DataTracker.registerData(CreeperEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -71,7 +70,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	}
 
 	public static DefaultAttributeContainer.Builder createCreeperAttributes() {
-		return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25);
+		return HostileEntity.createHostileAttributes().add(EntityAttributes.MOVEMENT_SPEED, 0.25);
 	}
 
 	@Override
@@ -187,8 +186,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 		return true;
 	}
 
-	@Override
-	public boolean shouldRenderOverlay() {
+	public boolean isCharged() {
 		return this.dataTracker.get(CHARGED);
 	}
 
@@ -225,7 +223,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 				}
 			}
 
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return super.interactMob(player, hand);
 		}
@@ -233,7 +231,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 
 	private void explode() {
 		if (!this.getWorld().isClient) {
-			float f = this.shouldRenderOverlay() ? 2.0F : 1.0F;
+			float f = this.isCharged() ? 2.0F : 1.0F;
 			this.dead = true;
 			this.getWorld().createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * f, World.ExplosionSourceType.MOB);
 			this.spawnEffectsCloud();
@@ -269,7 +267,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	}
 
 	public boolean shouldDropHead() {
-		return this.shouldRenderOverlay() && this.headsDropped < 1;
+		return this.isCharged() && this.headsDropped < 1;
 	}
 
 	public void onHeadDropped() {

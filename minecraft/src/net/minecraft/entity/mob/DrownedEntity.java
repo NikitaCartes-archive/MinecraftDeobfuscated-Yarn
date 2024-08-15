@@ -31,12 +31,14 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
@@ -67,7 +69,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	}
 
 	public static DefaultAttributeContainer.Builder createDrownedAttributes() {
-		return ZombieEntity.createZombieAttributes().add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
+		return ZombieEntity.createZombieAttributes().add(EntityAttributes.STEP_HEIGHT, 1.0);
 	}
 
 	@Override
@@ -117,11 +119,6 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 	private static boolean isValidSpawnDepth(WorldAccess world, BlockPos pos) {
 		return pos.getY() < world.getSeaLevel() - 5;
-	}
-
-	@Override
-	protected boolean shouldBreakDoors() {
-		return false;
 	}
 
 	@Override
@@ -251,14 +248,20 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 	@Override
 	public void shootAt(LivingEntity target, float pullProgress) {
-		TridentEntity tridentEntity = new TridentEntity(this.getWorld(), this, new ItemStack(Items.TRIDENT));
+		ItemStack itemStack = this.getMainHandStack();
+		ItemStack itemStack2 = itemStack.isOf(Items.TRIDENT) ? itemStack : new ItemStack(Items.TRIDENT);
+		TridentEntity tridentEntity = new TridentEntity(this.getWorld(), this, itemStack2);
 		double d = target.getX() - this.getX();
 		double e = target.getBodyY(0.3333333333333333) - tridentEntity.getY();
 		double f = target.getZ() - this.getZ();
 		double g = Math.sqrt(d * d + f * f);
-		tridentEntity.setVelocity(d, e + g * 0.2F, f, 1.6F, (float)(14 - this.getWorld().getDifficulty().getId() * 4));
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			ProjectileEntity.spawnWithVelocity(
+				tridentEntity, serverWorld, itemStack2, d, e + g * 0.2F, f, 1.6F, (float)(14 - this.getWorld().getDifficulty().getId() * 4)
+			);
+		}
+
 		this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-		this.getWorld().spawnEntity(tridentEntity);
 	}
 
 	public void setTargetingUnderwater(boolean targetingUnderwater) {
@@ -313,7 +316,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
 				this.drowned.setYaw(this.wrapDegrees(this.drowned.getYaw(), h, 90.0F));
 				this.drowned.bodyYaw = this.drowned.getYaw();
-				float i = (float)(this.speed * this.drowned.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+				float i = (float)(this.speed * this.drowned.getAttributeValue(EntityAttributes.MOVEMENT_SPEED));
 				float j = MathHelper.lerp(0.125F, this.drowned.getMovementSpeed(), i);
 				this.drowned.setMovementSpeed(j);
 				this.drowned.setVelocity(this.drowned.getVelocity().add((double)j * d * 0.005, (double)j * e * 0.1, (double)j * f * 0.005));

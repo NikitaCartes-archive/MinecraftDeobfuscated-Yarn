@@ -6,6 +6,7 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.state.ExperienceOrbEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.util.Identifier;
@@ -13,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEntity> {
+public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEntity, ExperienceOrbEntityRenderState> {
 	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/experience_orb.png");
 	private static final RenderLayer LAYER = RenderLayer.getItemEntityTranslucentCull(TEXTURE);
 
@@ -27,33 +28,35 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 		return MathHelper.clamp(super.getBlockLight(experienceOrbEntity, blockPos) + 7, 0, 15);
 	}
 
-	public void render(ExperienceOrbEntity experienceOrbEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(
+		ExperienceOrbEntityRenderState experienceOrbEntityRenderState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
+	) {
 		matrixStack.push();
-		int j = experienceOrbEntity.getOrbSize();
-		float h = (float)(j % 4 * 16 + 0) / 64.0F;
-		float k = (float)(j % 4 * 16 + 16) / 64.0F;
-		float l = (float)(j / 4 * 16 + 0) / 64.0F;
-		float m = (float)(j / 4 * 16 + 16) / 64.0F;
-		float n = 1.0F;
-		float o = 0.5F;
-		float p = 0.25F;
-		float q = 255.0F;
-		float r = ((float)experienceOrbEntity.age + g) / 2.0F;
-		int s = (int)((MathHelper.sin(r + 0.0F) + 1.0F) * 0.5F * 255.0F);
-		int t = 255;
-		int u = (int)((MathHelper.sin(r + (float) (Math.PI * 4.0 / 3.0)) + 1.0F) * 0.1F * 255.0F);
+		int j = experienceOrbEntityRenderState.size;
+		float f = (float)(j % 4 * 16 + 0) / 64.0F;
+		float g = (float)(j % 4 * 16 + 16) / 64.0F;
+		float h = (float)(j / 4 * 16 + 0) / 64.0F;
+		float k = (float)(j / 4 * 16 + 16) / 64.0F;
+		float l = 1.0F;
+		float m = 0.5F;
+		float n = 0.25F;
+		float o = 255.0F;
+		float p = experienceOrbEntityRenderState.age / 2.0F;
+		int q = (int)((MathHelper.sin(p + 0.0F) + 1.0F) * 0.5F * 255.0F);
+		int r = 255;
+		int s = (int)((MathHelper.sin(p + (float) (Math.PI * 4.0 / 3.0)) + 1.0F) * 0.1F * 255.0F);
 		matrixStack.translate(0.0F, 0.1F, 0.0F);
 		matrixStack.multiply(this.dispatcher.getRotation());
-		float v = 0.3F;
+		float t = 0.3F;
 		matrixStack.scale(0.3F, 0.3F, 0.3F);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
 		MatrixStack.Entry entry = matrixStack.peek();
-		vertex(vertexConsumer, entry, -0.5F, -0.25F, s, 255, u, h, m, i);
-		vertex(vertexConsumer, entry, 0.5F, -0.25F, s, 255, u, k, m, i);
-		vertex(vertexConsumer, entry, 0.5F, 0.75F, s, 255, u, k, l, i);
-		vertex(vertexConsumer, entry, -0.5F, 0.75F, s, 255, u, h, l, i);
+		vertex(vertexConsumer, entry, -0.5F, -0.25F, q, 255, s, f, k, i);
+		vertex(vertexConsumer, entry, 0.5F, -0.25F, q, 255, s, g, k, i);
+		vertex(vertexConsumer, entry, 0.5F, 0.75F, q, 255, s, g, h, i);
+		vertex(vertexConsumer, entry, -0.5F, 0.75F, q, 255, s, f, h, i);
 		matrixStack.pop();
-		super.render(experienceOrbEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		super.render(experienceOrbEntityRenderState, matrixStack, vertexConsumerProvider, i);
 	}
 
 	private static void vertex(
@@ -67,7 +70,16 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 			.normal(matrix, 0.0F, 1.0F, 0.0F);
 	}
 
-	public Identifier getTexture(ExperienceOrbEntity experienceOrbEntity) {
+	public Identifier getTexture(ExperienceOrbEntityRenderState experienceOrbEntityRenderState) {
 		return TEXTURE;
+	}
+
+	public ExperienceOrbEntityRenderState getRenderState() {
+		return new ExperienceOrbEntityRenderState();
+	}
+
+	public void updateRenderState(ExperienceOrbEntity experienceOrbEntity, ExperienceOrbEntityRenderState experienceOrbEntityRenderState, float f) {
+		super.updateRenderState(experienceOrbEntity, experienceOrbEntityRenderState, f);
+		experienceOrbEntityRenderState.size = experienceOrbEntity.getOrbSize();
 	}
 }

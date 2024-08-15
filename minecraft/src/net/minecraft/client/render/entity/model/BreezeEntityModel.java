@@ -11,11 +11,11 @@ import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.animation.BreezeAnimations;
-import net.minecraft.entity.mob.BreezeEntity;
+import net.minecraft.client.render.entity.state.BreezeEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class BreezeEntityModel<T extends BreezeEntity> extends SinglePartEntityModel<T> {
+public class BreezeEntityModel extends EntityModel<BreezeEntityRenderState> {
 	private static final float field_47431 = 0.6F;
 	private static final float field_47432 = 0.8F;
 	private static final float field_47433 = 1.0F;
@@ -109,21 +109,22 @@ public class BreezeEntityModel<T extends BreezeEntity> extends SinglePartEntityM
 		return TexturedModelData.of(modelData, textureWidth, textureHeight);
 	}
 
-	public void setAngles(T breezeEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(BreezeEntityRenderState breezeEntityRenderState) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		float k = h * (float) Math.PI * -0.1F;
-		this.windTop.pivotX = MathHelper.cos(k) * 1.0F * 0.6F;
-		this.windTop.pivotZ = MathHelper.sin(k) * 1.0F * 0.6F;
-		this.windMid.pivotX = MathHelper.sin(k) * 0.5F * 0.8F;
-		this.windMid.pivotZ = MathHelper.cos(k) * 0.8F;
-		this.windBottom.pivotX = MathHelper.cos(k) * -0.25F * 1.0F;
-		this.windBottom.pivotZ = MathHelper.sin(k) * -0.25F * 1.0F;
-		this.head.pivotY = 4.0F + MathHelper.cos(k) / 4.0F;
-		this.rods.yaw = h * (float) Math.PI * 0.1F;
-		this.updateAnimation(breezeEntity.shootingAnimationState, BreezeAnimations.SHOOTING, h);
-		this.updateAnimation(breezeEntity.slidingAnimationState, BreezeAnimations.SLIDING, h);
-		this.updateAnimation(breezeEntity.field_47816, BreezeAnimations.field_47846, h);
-		this.updateAnimation(breezeEntity.inhalingAnimationState, BreezeAnimations.INHALING, h);
+		float f = breezeEntityRenderState.age * (float) Math.PI * -0.1F;
+		this.windTop.pivotX = MathHelper.cos(f) * 1.0F * 0.6F;
+		this.windTop.pivotZ = MathHelper.sin(f) * 1.0F * 0.6F;
+		this.windMid.pivotX = MathHelper.sin(f) * 0.5F * 0.8F;
+		this.windMid.pivotZ = MathHelper.cos(f) * 0.8F;
+		this.windBottom.pivotX = MathHelper.cos(f) * -0.25F * 1.0F;
+		this.windBottom.pivotZ = MathHelper.sin(f) * -0.25F * 1.0F;
+		this.head.pivotY = 4.0F + MathHelper.cos(f) / 4.0F;
+		this.rods.yaw = breezeEntityRenderState.age * (float) Math.PI * 0.1F;
+		this.animate(breezeEntityRenderState.shootingAnimationState, BreezeAnimations.SHOOTING, breezeEntityRenderState.age);
+		this.animate(breezeEntityRenderState.slidingAnimationState, BreezeAnimations.SLIDING, breezeEntityRenderState.age);
+		this.animate(breezeEntityRenderState.slidingBackAnimationState, BreezeAnimations.SLIDING_BACK, breezeEntityRenderState.age);
+		this.animate(breezeEntityRenderState.inhalingAnimationState, BreezeAnimations.INHALING, breezeEntityRenderState.age);
+		this.animate(breezeEntityRenderState.longJumpingAnimationState, BreezeAnimations.LONG_JUMPING, breezeEntityRenderState.age);
 	}
 
 	@Override

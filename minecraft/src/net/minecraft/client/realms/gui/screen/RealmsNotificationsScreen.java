@@ -11,6 +11,7 @@ import net.minecraft.client.realms.RealmsAvailability;
 import net.minecraft.client.realms.RealmsPeriodicCheckers;
 import net.minecraft.client.realms.dto.RealmsNotification;
 import net.minecraft.client.realms.util.PeriodicRunnerFactory;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.util.Identifier;
 
@@ -129,23 +130,23 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 		int m = k + 48 + 2;
 		int n = l - 3;
 		if (hasUnseenNotification) {
-			context.drawGuiTexture(UNSEEN_NOTIFICATION_ICON_TEXTURE, n - 12, m + 3, 10, 10);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, UNSEEN_NOTIFICATION_ICON_TEXTURE, n - 12, m + 3, 10, 10);
 			n -= 16;
 		}
 
 		if (this.currentRunnersFactory != null && this.currentRunnersFactory.isNews()) {
 			if (hasUnreadNews) {
-				context.drawGuiTexture(NEWS_ICON_TEXTURE, n - 14, m + 1, 14, 14);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, NEWS_ICON_TEXTURE, n - 14, m + 1, 14, 14);
 				n -= 16;
 			}
 
 			if (i != 0) {
-				context.drawGuiTexture(INVITE_ICON_TEXTURE, n - 14, m + 1, 14, 14);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, INVITE_ICON_TEXTURE, n - 14, m + 1, 14, 14);
 				n -= 16;
 			}
 
 			if (trialAvailable) {
-				context.drawGuiTexture(TRIAL_AVAILABLE_ICON_TEXTURE, n - 10, m + 4, 8, 8);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, TRIAL_AVAILABLE_ICON_TEXTURE, n - 10, m + 4, 8, 8);
 			}
 		}
 	}

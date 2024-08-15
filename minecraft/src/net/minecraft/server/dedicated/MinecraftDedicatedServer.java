@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
@@ -33,7 +32,7 @@ import net.minecraft.server.ServerLinks;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
-import net.minecraft.server.filter.TextFilterer;
+import net.minecraft.server.filter.AbstractTextFilterer;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.rcon.QueryResponseHandler;
@@ -72,7 +71,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Nullable
 	private DedicatedServerGui gui;
 	@Nullable
-	private final TextFilterer filterer;
+	private final AbstractTextFilterer filterer;
 	@Nullable
 	private SubscribableDebugSampleLog debugSampleLog;
 	@Nullable
@@ -92,7 +91,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		super(serverThread, session, dataPackManager, saveLoader, Proxy.NO_PROXY, dataFixer, apiServices, worldGenerationProgressListenerFactory);
 		this.propertiesLoader = propertiesLoader;
 		this.rconCommandOutput = new RconCommandOutput(this);
-		this.filterer = TextFilterer.load(propertiesLoader.getPropertiesHandler().textFilteringConfig);
+		this.filterer = AbstractTextFilterer.createTextFilter(propertiesLoader.getPropertiesHandler());
 		this.serverLinks = loadServerLinks(propertiesLoader);
 	}
 
@@ -217,18 +216,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public boolean shouldSpawnAnimals() {
-		return this.getProperties().spawnAnimals && super.shouldSpawnAnimals();
-	}
-
-	@Override
 	public boolean isMonsterSpawningEnabled() {
 		return this.propertiesLoader.getPropertiesHandler().spawnMonsters && super.isMonsterSpawningEnabled();
-	}
-
-	@Override
-	public boolean shouldSpawnNpcs() {
-		return this.propertiesLoader.getPropertiesHandler().spawnNpcs && super.shouldSpawnNpcs();
 	}
 
 	@Override
@@ -264,10 +253,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			writer.write(String.format(Locale.ROOT, "spawn-monsters=%s%n", serverPropertiesHandler.spawnMonsters));
 			writer.write(String.format(Locale.ROOT, "entity-broadcast-range-percentage=%d%n", serverPropertiesHandler.entityBroadcastRangePercentage));
 			writer.write(String.format(Locale.ROOT, "max-world-size=%d%n", serverPropertiesHandler.maxWorldSize));
-			writer.write(String.format(Locale.ROOT, "spawn-npcs=%s%n", serverPropertiesHandler.spawnNpcs));
 			writer.write(String.format(Locale.ROOT, "view-distance=%d%n", serverPropertiesHandler.viewDistance));
 			writer.write(String.format(Locale.ROOT, "simulation-distance=%d%n", serverPropertiesHandler.simulationDistance));
-			writer.write(String.format(Locale.ROOT, "spawn-animals=%s%n", serverPropertiesHandler.spawnAnimals));
 			writer.write(String.format(Locale.ROOT, "generate-structures=%s%n", serverPropertiesHandler.generatorOptions.shouldGenerateStructures()));
 			writer.write(String.format(Locale.ROOT, "use-native=%s%n", serverPropertiesHandler.useNativeTransport));
 			writer.write(String.format(Locale.ROOT, "rate-limit=%d%n", serverPropertiesHandler.rateLimit));
@@ -308,8 +295,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public void tickWorlds(BooleanSupplier shouldKeepTicking) {
-		super.tickWorlds(shouldKeepTicking);
+	public void tickNetworkIo() {
+		super.tickNetworkIo();
 		this.executeQueuedCommands();
 	}
 
@@ -628,6 +615,11 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public ServerLinks getServerLinks() {
 		return this.serverLinks;
+	}
+
+	@Override
+	public int getPauseWhenEmptySeconds() {
+		return this.propertiesLoader.getPropertiesHandler().pauseWhenEmptySeconds;
 	}
 
 	private static ServerLinks loadServerLinks(ServerPropertiesLoader propertiesLoader) {

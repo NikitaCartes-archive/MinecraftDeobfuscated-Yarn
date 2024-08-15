@@ -11,7 +11,7 @@ public interface RenderTickCounter {
 
 	float getLastFrameDuration();
 
-	float getTickDelta(boolean bl);
+	float getTickDelta(boolean ignoreFreeze);
 
 	float getLastDuration();
 
@@ -29,7 +29,7 @@ public interface RenderTickCounter {
 		}
 
 		@Override
-		public float getTickDelta(boolean bl) {
+		public float getTickDelta(boolean ignoreFreeze) {
 			return this.value;
 		}
 
@@ -111,8 +111,8 @@ public interface RenderTickCounter {
 		}
 
 		@Override
-		public float getTickDelta(boolean bl) {
-			if (!bl && this.tickFrozen) {
+		public float getTickDelta(boolean ignoreFreeze) {
+			if (!ignoreFreeze && this.tickFrozen) {
 				return 1.0F;
 			} else {
 				return this.paused ? this.tickDeltaBeforePause : this.tickDelta;

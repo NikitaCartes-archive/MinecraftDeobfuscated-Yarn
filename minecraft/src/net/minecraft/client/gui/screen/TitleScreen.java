@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.screen;
 
 import com.mojang.authlib.minecraft.BanDetails;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.util.Objects;
@@ -299,7 +298,6 @@ public class TitleScreen extends Screen {
 
 			context.drawTextWithShadow(this.textRenderer, string, 2, this.height - 10, 16777215 | i);
 			if (this.isRealmsNotificationsGuiDisplayed() && f >= 1.0F) {
-				RenderSystem.enableDepthTest();
 				this.realmsNotificationGui.render(context, mouseX, mouseY, delta);
 			}
 		}

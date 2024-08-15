@@ -1,12 +1,17 @@
 package net.minecraft.entity.projectile.thrown;
 
+import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.EndermiteEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -25,13 +30,37 @@ public class EnderPearlEntity extends ThrownItemEntity {
 		super(entityType, world);
 	}
 
-	public EnderPearlEntity(World world, LivingEntity owner) {
-		super(EntityType.ENDER_PEARL, owner, world);
+	public EnderPearlEntity(World world, LivingEntity owner, ItemStack stack) {
+		super(EntityType.ENDER_PEARL, owner, world, stack);
 	}
 
 	@Override
 	protected Item getDefaultItem() {
 		return Items.ENDER_PEARL;
+	}
+
+	@Nullable
+	@Override
+	protected Entity getEntity(UUID uuid) {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			Entity entity = super.getEntity(uuid);
+			if (entity != null) {
+				return entity;
+			} else {
+				for (ServerWorld serverWorld2 : serverWorld.getServer().getWorlds()) {
+					if (serverWorld2 != serverWorld) {
+						entity = serverWorld2.getEntity(uuid);
+						if (entity != null) {
+							return entity;
+						}
+					}
+				}
+
+				return null;
+			}
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -61,22 +90,32 @@ public class EnderPearlEntity extends ThrownItemEntity {
 				if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
 					if (serverPlayerEntity.networkHandler.isConnectionOpen()) {
 						if (this.random.nextFloat() < 0.05F && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
-							EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(serverWorld);
+							EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(serverWorld, SpawnReason.TRIGGERED);
 							if (endermiteEntity != null) {
 								endermiteEntity.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
 								serverWorld.spawnEntity(endermiteEntity);
 							}
 						}
 
-						entity.teleportTo(new TeleportTarget(serverWorld, this.getPos(), entity.getVelocity(), entity.getYaw(), entity.getPitch(), TeleportTarget.NO_OP));
-						entity.onLanding();
-						serverPlayerEntity.clearCurrentExplosion();
-						entity.damage(this.getDamageSources().fall(), 5.0F);
+						PlayerEntity playerEntity = serverPlayerEntity.teleportTo(
+							new TeleportTarget(serverWorld, this.getPos(), entity.getVelocity(), entity.getYaw(), entity.getPitch(), TeleportTarget.NO_OP)
+						);
+						if (playerEntity != null) {
+							playerEntity.onLanding();
+							playerEntity.clearCurrentExplosion();
+							playerEntity.damage(this.getDamageSources().enderPearl(), 5.0F);
+						}
+
 						this.playTeleportSound(serverWorld, this.getPos());
 					}
 				} else {
-					entity.teleportTo(new TeleportTarget(serverWorld, this.getPos(), entity.getVelocity(), entity.getYaw(), entity.getPitch(), TeleportTarget.NO_OP));
-					entity.onLanding();
+					Entity entity2 = entity.teleportTo(
+						new TeleportTarget(serverWorld, this.getPos(), entity.getVelocity(), entity.getYaw(), entity.getPitch(), TeleportTarget.NO_OP)
+					);
+					if (entity2 != null) {
+						entity2.onLanding();
+					}
+
 					this.playTeleportSound(serverWorld, this.getPos());
 				}
 
@@ -113,7 +152,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 
 	@Override
 	public boolean canTeleportBetween(World from, World to) {
-		return from.getRegistryKey() == World.END && this.getOwner() instanceof ServerPlayerEntity serverPlayerEntity
+		return from.getRegistryKey() == World.END && to.getRegistryKey() == World.OVERWORLD && this.getOwner() instanceof ServerPlayerEntity serverPlayerEntity
 			? super.canTeleportBetween(from, to) && serverPlayerEntity.seenCredits
 			: super.canTeleportBetween(from, to);
 	}

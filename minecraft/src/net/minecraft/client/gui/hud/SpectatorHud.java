@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.hud;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -10,7 +9,9 @@ import net.minecraft.client.gui.hud.spectator.SpectatorMenu;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCloseCallback;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuState;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
@@ -63,35 +64,28 @@ public class SpectatorHud implements SpectatorMenuCloseCallback {
 	}
 
 	protected void renderSpectatorMenu(DrawContext context, float height, int x, int y, SpectatorMenuState state) {
-		RenderSystem.enableBlend();
-		context.setShaderColor(1.0F, 1.0F, 1.0F, height);
-		context.drawGuiTexture(HOTBAR_TEXTURE, x - 91, y, 182, 22);
+		int i = ColorHelper.getWhite(height);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, HOTBAR_TEXTURE, x - 91, y, 182, 22, i);
 		if (state.getSelectedSlot() >= 0) {
-			context.drawGuiTexture(HOTBAR_SELECTION_TEXTURE, x - 91 - 1 + state.getSelectedSlot() * 20, y - 1, 24, 23);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, HOTBAR_SELECTION_TEXTURE, x - 91 - 1 + state.getSelectedSlot() * 20, y - 1, 24, 23, i);
 		}
 
-		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-		for (int i = 0; i < 9; i++) {
-			this.renderSpectatorCommand(context, i, context.getScaledWindowWidth() / 2 - 90 + i * 20 + 2, (float)(y + 3), height, state.getCommand(i));
+		for (int j = 0; j < 9; j++) {
+			this.renderSpectatorCommand(context, j, context.getScaledWindowWidth() / 2 - 90 + j * 20 + 2, (float)(y + 3), height, state.getCommand(j));
 		}
-
-		RenderSystem.disableBlend();
 	}
 
-	private void renderSpectatorCommand(DrawContext context, int slot, int x, float y, float height, SpectatorMenuCommand command) {
-		if (command != SpectatorMenu.BLANK_COMMAND) {
+	private void renderSpectatorCommand(DrawContext drawContext, int slot, int x, float y, float height, SpectatorMenuCommand spectatorMenuCommand) {
+		if (spectatorMenuCommand != SpectatorMenu.BLANK_COMMAND) {
+			drawContext.getMatrices().push();
+			drawContext.getMatrices().translate((float)x, y, 0.0F);
+			float f = spectatorMenuCommand.isEnabled() ? 1.0F : 0.25F;
+			spectatorMenuCommand.renderIcon(drawContext, f, height);
+			drawContext.getMatrices().pop();
 			int i = (int)(height * 255.0F);
-			context.getMatrices().push();
-			context.getMatrices().translate((float)x, y, 0.0F);
-			float f = command.isEnabled() ? 1.0F : 0.25F;
-			context.setShaderColor(f, f, f, height);
-			command.renderIcon(context, f, i);
-			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			context.getMatrices().pop();
-			if (i > 3 && command.isEnabled()) {
+			if (i > 3 && spectatorMenuCommand.isEnabled()) {
 				Text text = this.client.options.hotbarKeys[slot].getBoundKeyLocalizedText();
-				context.drawTextWithShadow(this.client.textRenderer, text, x + 19 - 2 - this.client.textRenderer.getWidth(text), (int)y + 6 + 3, 16777215 + (i << 24));
+				drawContext.drawTextWithShadow(this.client.textRenderer, text, x + 19 - 2 - this.client.textRenderer.getWidth(text), (int)y + 6 + 3, 16777215 + (i << 24));
 			}
 		}
 	}
@@ -105,7 +99,7 @@ public class SpectatorHud implements SpectatorMenuCloseCallback {
 				int j = this.client.textRenderer.getWidth(text);
 				int k = (context.getScaledWindowWidth() - j) / 2;
 				int l = context.getScaledWindowHeight() - 35;
-				context.drawTextWithBackground(this.client.textRenderer, text, k, l, j, ColorHelper.Argb.withAlpha(i, -1));
+				context.drawTextWithBackground(this.client.textRenderer, text, k, l, j, ColorHelper.withAlpha(i, Colors.WHITE));
 			}
 		}
 	}

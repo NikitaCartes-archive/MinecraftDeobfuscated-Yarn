@@ -39,7 +39,7 @@ public abstract class StructurePlacement {
 				.optionalFieldOf("frequency_reduction_method", StructurePlacement.FrequencyReductionMethod.DEFAULT)
 				.forGetter(StructurePlacement::getFrequencyReductionMethod),
 			Codec.floatRange(0.0F, 1.0F).optionalFieldOf("frequency", 1.0F).forGetter(StructurePlacement::getFrequency),
-			Codecs.NONNEGATIVE_INT.fieldOf("salt").forGetter(StructurePlacement::getSalt),
+			Codecs.NON_NEGATIVE_INT.fieldOf("salt").forGetter(StructurePlacement::getSalt),
 			StructurePlacement.ExclusionZone.CODEC.optionalFieldOf("exclusion_zone").forGetter(StructurePlacement::getExclusionZone)
 		);
 	}

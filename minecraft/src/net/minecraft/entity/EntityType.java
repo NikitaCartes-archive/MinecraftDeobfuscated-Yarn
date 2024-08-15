@@ -1064,7 +1064,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 
 	@Nullable
 	public T create(ServerWorld world, @Nullable Consumer<T> afterConsumer, BlockPos pos, SpawnReason reason, boolean alignPosition, boolean invertY) {
-		T entity = this.create(world);
+		T entity = this.create(world, reason);
 		if (entity == null) {
 			return null;
 		} else {
@@ -1181,15 +1181,13 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	}
 
 	@Nullable
-	public T create(World world) {
+	public T create(World world, SpawnReason reason) {
 		return !this.isEnabled(world.getEnabledFeatures()) ? null : this.factory.create(this, world);
 	}
 
-	public static Optional<Entity> getEntityFromNbt(NbtCompound nbt, World world) {
+	public static Optional<Entity> getEntityFromNbt(NbtCompound nbt, World world, SpawnReason reason) {
 		return Util.ifPresentOrElse(
-			fromNbt(nbt).map(entityType -> entityType.create(world)),
-			entity -> entity.readNbt(nbt),
-			() -> LOGGER.warn("Skipping Entity with id {}", nbt.getString("id"))
+			fromNbt(nbt).map(type -> type.create(world, reason)), entity -> entity.readNbt(nbt), () -> LOGGER.warn("Skipping Entity with id {}", nbt.getString("id"))
 		);
 	}
 
@@ -1226,13 +1224,13 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	}
 
 	@Nullable
-	public static Entity loadEntityWithPassengers(NbtCompound nbt, World world, Function<Entity, Entity> entityProcessor) {
-		return (Entity)loadEntityFromNbt(nbt, world).map(entityProcessor).map(entity -> {
+	public static Entity loadEntityWithPassengers(NbtCompound nbt, World world, SpawnReason reason, Function<Entity, Entity> entityProcessor) {
+		return (Entity)loadEntityFromNbt(nbt, world, reason).map(entityProcessor).map(entity -> {
 			if (nbt.contains("Passengers", NbtElement.LIST_TYPE)) {
 				NbtList nbtList = nbt.getList("Passengers", NbtElement.COMPOUND_TYPE);
 
 				for (int i = 0; i < nbtList.size(); i++) {
-					Entity entity2 = loadEntityWithPassengers(nbtList.getCompound(i), world, entityProcessor);
+					Entity entity2 = loadEntityWithPassengers(nbtList.getCompound(i), world, reason, entityProcessor);
 					if (entity2 != null) {
 						entity2.startRiding(entity, true);
 					}
@@ -1243,11 +1241,11 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		}).orElse(null);
 	}
 
-	public static Stream<Entity> streamFromNbt(List<? extends NbtElement> entityNbtList, World world) {
+	public static Stream<Entity> streamFromNbt(List<? extends NbtElement> entityNbtList, World world, SpawnReason reason) {
 		final Spliterator<? extends NbtElement> spliterator = entityNbtList.spliterator();
 		return StreamSupport.stream(new Spliterator<Entity>() {
 			public boolean tryAdvance(Consumer<? super Entity> action) {
-				return spliterator.tryAdvance(nbt -> EntityType.loadEntityWithPassengers((NbtCompound)nbt, world, entity -> {
+				return spliterator.tryAdvance(nbt -> EntityType.loadEntityWithPassengers((NbtCompound)nbt, world, reason, entity -> {
 						action.accept(entity);
 						return entity;
 					}));
@@ -1267,11 +1265,11 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		}, false);
 	}
 
-	private static Optional<Entity> loadEntityFromNbt(NbtCompound nbt, World world) {
+	private static Optional<Entity> loadEntityFromNbt(NbtCompound nbt, World world, SpawnReason reason) {
 		try {
-			return getEntityFromNbt(nbt, world);
-		} catch (RuntimeException var3) {
-			LOGGER.warn("Exception loading entity: ", (Throwable)var3);
+			return getEntityFromNbt(nbt, world, reason);
+		} catch (RuntimeException var4) {
+			LOGGER.warn("Exception loading entity: ", (Throwable)var4);
 			return Optional.empty();
 		}
 	}

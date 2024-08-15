@@ -20,7 +20,7 @@ public class GustParticle extends SpriteBillboardParticle {
 
 	@Override
 	public ParticleTextureSheet getType() {
-		return ParticleTextureSheet.PARTICLE_SHEET_LIT;
+		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
 	@Override

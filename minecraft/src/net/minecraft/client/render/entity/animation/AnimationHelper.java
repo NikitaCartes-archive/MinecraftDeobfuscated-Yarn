@@ -5,18 +5,18 @@ import java.util.Optional;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class AnimationHelper {
-	public static void animate(SinglePartEntityModel<?> model, Animation animation, long runningTime, float scale, Vector3f tempVec) {
+	public static void animate(Model model, Animation animation, long runningTime, float scale, Vector3f tempVec) {
 		float f = getRunningSeconds(animation, runningTime);
 
 		for (Entry<String, List<Transformation>> entry : animation.boneAnimations().entrySet()) {
-			Optional<ModelPart> optional = model.getChild((String)entry.getKey());
+			Optional<ModelPart> optional = model.getPart((String)entry.getKey());
 			List<Transformation> list = (List<Transformation>)entry.getValue();
 			optional.ifPresent(part -> list.forEach(transformation -> {
 					Keyframe[] keyframes = transformation.keyframes();

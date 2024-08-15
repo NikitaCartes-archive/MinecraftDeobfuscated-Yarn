@@ -18,6 +18,7 @@ import net.minecraft.component.type.FireworksComponent;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
@@ -1103,7 +1104,7 @@ public class ItemGroups {
 						entries.add(Items.PURPLE_BANNER);
 						entries.add(Items.MAGENTA_BANNER);
 						entries.add(Items.PINK_BANNER);
-						entries.add(Raid.getOminousBanner(displayContext.lookup().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
+						entries.add(Raid.createOminousBanner(displayContext.lookup().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
 						entries.add(Items.SKELETON_SKULL);
 						entries.add(Items.WITHER_SKELETON_SKULL);
 						entries.add(Items.PLAYER_HEAD);
@@ -1589,6 +1590,8 @@ public class ItemGroups {
 					entries.add(Items.GHAST_TEAR);
 					entries.add(Items.TURTLE_HELMET);
 					entries.add(Items.PHANTOM_MEMBRANE);
+					entries.add(Items.FIELD_MASONED_BANNER_PATTERN);
+					entries.add(Items.BORDURE_INDENTED_BANNER_PATTERN);
 					entries.add(Items.FLOWER_BANNER_PATTERN);
 					entries.add(Items.CREEPER_BANNER_PATTERN);
 					entries.add(Items.SKULL_BANNER_PATTERN);
@@ -1825,7 +1828,9 @@ public class ItemGroups {
 	) {
 		registryWrapper.streamEntries()
 			.map(
-				enchantmentEntry -> EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantmentEntry, ((Enchantment)enchantmentEntry.value()).getMaxLevel()))
+				enchantmentEntry -> EnchantmentHelper.getEnchantedBookWith(
+						new EnchantmentLevelEntry(enchantmentEntry, ((Enchantment)enchantmentEntry.value()).getMaxLevel())
+					)
 			)
 			.forEach(stack -> entries.add(stack, stackVisibility));
 	}
@@ -1836,7 +1841,7 @@ public class ItemGroups {
 		registryWrapper.streamEntries()
 			.flatMap(
 				enchantmentEntry -> IntStream.rangeClosed(((Enchantment)enchantmentEntry.value()).getMinLevel(), ((Enchantment)enchantmentEntry.value()).getMaxLevel())
-						.mapToObj(level -> EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantmentEntry, level)))
+						.mapToObj(level -> EnchantmentHelper.getEnchantedBookWith(new EnchantmentLevelEntry(enchantmentEntry, level)))
 			)
 			.forEach(stack -> entries.add(stack, stackVisibility));
 	}

@@ -2,8 +2,8 @@ package net.minecraft.item;
 
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 /**
@@ -16,9 +16,9 @@ public class ItemUsage {
 	 * 
 	 * @return the action result of consuming
 	 */
-	public static TypedActionResult<ItemStack> consumeHeldItem(World world, PlayerEntity player, Hand hand) {
+	public static ActionResult consumeHeldItem(World world, PlayerEntity player, Hand hand) {
 		player.setCurrentHand(hand);
-		return TypedActionResult.consume(player.getStackInHand(hand));
+		return ActionResult.CONSUME;
 	}
 
 	/**

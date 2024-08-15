@@ -4,12 +4,13 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -19,7 +20,7 @@ public class FishingRodItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		if (user.fishHook != null) {
 			if (!world.isClient) {
@@ -52,18 +53,13 @@ public class FishingRodItem extends Item {
 			if (world instanceof ServerWorld serverWorld) {
 				int j = (int)(EnchantmentHelper.getFishingTimeReduction(serverWorld, itemStack, user) * 20.0F);
 				int k = EnchantmentHelper.getFishingLuckBonus(serverWorld, itemStack, user);
-				world.spawnEntity(new FishingBobberEntity(user, world, k, j));
+				ProjectileEntity.spawn(new FishingBobberEntity(user, world, k, j, itemStack), serverWorld, itemStack);
 			}
 
 			user.incrementStat(Stats.USED.getOrCreateStat(this));
 			user.emitGameEvent(GameEvent.ITEM_INTERACT_START);
 		}
 
-		return TypedActionResult.success(itemStack, world.isClient());
-	}
-
-	@Override
-	public int getEnchantability() {
-		return 1;
+		return ActionResult.SUCCESS;
 	}
 }

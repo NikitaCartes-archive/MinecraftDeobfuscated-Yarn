@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 
 public class StructurePoolBasedGenerator {
 	static final Logger LOGGER = LogUtils.getLogger();
+	private static final int HEIGHT_NOT_SET = Integer.MIN_VALUE;
 
 	public static Optional<Structure.StructurePosition> generate(
 		Structure.Context context,
@@ -310,7 +311,7 @@ public class StructurePoolBasedGenerator {
 				BlockPos blockPos2 = structureBlockInfo.pos();
 				BlockPos blockPos3 = blockPos2.offset(direction);
 				int j = blockPos2.getY() - i;
-				int k = -1;
+				int k = Integer.MIN_VALUE;
 				RegistryKey<StructurePool> registryKey = lookupPool(structureBlockInfo, aliasLookup);
 				Optional<? extends RegistryEntry<StructurePool>> optional = this.registry.getEntry(registryKey);
 				if (optional.isEmpty()) {
@@ -386,7 +387,7 @@ public class StructurePoolBasedGenerator {
 											if (bl && bl3) {
 												q = i + p;
 											} else {
-												if (k == -1) {
+												if (k == Integer.MIN_VALUE) {
 													k = this.chunkGenerator.getHeightOnGround(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG, world, noiseConfig);
 												}
 
@@ -420,7 +421,7 @@ public class StructurePoolBasedGenerator {
 												} else if (bl3) {
 													u = q + o;
 												} else {
-													if (k == -1) {
+													if (k == Integer.MIN_VALUE) {
 														k = this.chunkGenerator.getHeightOnGround(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG, world, noiseConfig);
 													}
 

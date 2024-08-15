@@ -3,8 +3,8 @@ package net.minecraft.item;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class SplashPotionItem extends ThrowablePotionItem {
@@ -13,7 +13,7 @@ public class SplashPotionItem extends ThrowablePotionItem {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		world.playSound(
 			null,
 			user.getX(),

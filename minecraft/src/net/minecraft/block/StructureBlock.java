@@ -16,6 +16,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.block.WireOrientation;
 
 public class StructureBlock extends BlockWithEntity implements OperatorBlock {
 	public static final MapCodec<StructureBlock> CODEC = createCodec(StructureBlock::new);
@@ -40,7 +41,7 @@ public class StructureBlock extends BlockWithEntity implements OperatorBlock {
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof StructureBlockBlockEntity) {
-			return ((StructureBlockBlockEntity)blockEntity).openScreen(player) ? ActionResult.success(world.isClient) : ActionResult.PASS;
+			return (ActionResult)(((StructureBlockBlockEntity)blockEntity).openScreen(player) ? ActionResult.SUCCESS : ActionResult.PASS);
 		} else {
 			return ActionResult.PASS;
 		}
@@ -69,7 +70,7 @@ public class StructureBlock extends BlockWithEntity implements OperatorBlock {
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		if (world instanceof ServerWorld) {
 			if (world.getBlockEntity(pos) instanceof StructureBlockBlockEntity structureBlockBlockEntity) {
 				boolean bl = world.isReceivingRedstonePower(pos);

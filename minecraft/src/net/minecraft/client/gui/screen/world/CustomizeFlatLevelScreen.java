@@ -11,6 +11,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -211,7 +212,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			}
 
 			private void renderIconBackgroundTexture(DrawContext context, int x, int y) {
-				context.drawGuiTexture(CustomizeFlatLevelScreen.SLOT_TEXTURE, x, y, 0, 18, 18);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, CustomizeFlatLevelScreen.SLOT_TEXTURE, x, y, 18, 18);
 			}
 		}
 	}

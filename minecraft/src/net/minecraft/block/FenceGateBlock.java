@@ -3,11 +3,13 @@ package net.minecraft.block;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.BiConsumer;
+import javax.annotation.Nullable;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -21,6 +23,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 
@@ -107,7 +110,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+	protected VoxelShape getCullingShape(BlockState state) {
 		if ((Boolean)state.get(IN_WALL)) {
 			return ((Direction)state.get(FACING)).getAxis() == Direction.Axis.X ? IN_WALL_X_AXIS_CULL_SHAPE : IN_WALL_Z_AXIS_CULL_SHAPE;
 		} else {
@@ -165,11 +168,11 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 			player, pos, bl ? this.type.fenceGateOpen() : this.type.fenceGateClose(), SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F
 		);
 		world.emitGameEvent(player, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
-		return ActionResult.success(world.isClient);
+		return ActionResult.SUCCESS;
 	}
 
 	@Override
-	protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+	protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
 		if (explosion.canTriggerBlocks() && !(Boolean)state.get(POWERED)) {
 			boolean bl = (Boolean)state.get(OPEN);
 			world.setBlockState(pos, state.with(OPEN, Boolean.valueOf(!bl)));
@@ -183,7 +186,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		if (!world.isClient) {
 			boolean bl = world.isReceivingRedstonePower(pos);
 			if ((Boolean)state.get(POWERED) != bl) {

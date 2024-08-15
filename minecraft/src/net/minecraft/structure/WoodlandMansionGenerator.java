@@ -1144,16 +1144,16 @@ public class WoodlandMansionGenerator {
 				List<MobEntity> list = new ArrayList();
 				switch (metadata) {
 					case "Mage":
-						list.add(EntityType.EVOKER.create(world.toServerWorld()));
+						list.add(EntityType.EVOKER.create(world.toServerWorld(), SpawnReason.STRUCTURE));
 						break;
 					case "Warrior":
-						list.add(EntityType.VINDICATOR.create(world.toServerWorld()));
+						list.add(EntityType.VINDICATOR.create(world.toServerWorld(), SpawnReason.STRUCTURE));
 						break;
 					case "Group of Allays":
 						int i = world.getRandom().nextInt(3) + 1;
 
 						for (int j = 0; j < i; j++) {
-							list.add(EntityType.ALLAY.create(world.toServerWorld()));
+							list.add(EntityType.ALLAY.create(world.toServerWorld(), SpawnReason.STRUCTURE));
 						}
 						break;
 					default:

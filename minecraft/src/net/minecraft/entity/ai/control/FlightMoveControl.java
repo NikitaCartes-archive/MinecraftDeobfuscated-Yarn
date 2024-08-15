@@ -33,9 +33,9 @@ public class FlightMoveControl extends MoveControl {
 			this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), h, 90.0F));
 			float i;
 			if (this.entity.isOnGround()) {
-				i = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+				i = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.MOVEMENT_SPEED));
 			} else {
-				i = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_FLYING_SPEED));
+				i = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.FLYING_SPEED));
 			}
 
 			this.entity.setMovementSpeed(i);

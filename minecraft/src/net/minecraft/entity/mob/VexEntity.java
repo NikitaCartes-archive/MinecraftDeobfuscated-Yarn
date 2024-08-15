@@ -7,7 +7,6 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MovementType;
 import net.minecraft.entity.Ownable;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -63,9 +62,8 @@ public class VexEntity extends HostileEntity implements Ownable {
 	}
 
 	@Override
-	public void move(MovementType movementType, Vec3d movement) {
-		super.move(movementType, movement);
-		this.checkBlockCollision();
+	protected boolean shouldTickBlockCollision() {
+		return !this.isRemoved();
 	}
 
 	@Override
@@ -94,7 +92,7 @@ public class VexEntity extends HostileEntity implements Ownable {
 	}
 
 	public static DefaultAttributeContainer.Builder createVexAttributes() {
-		return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 14.0).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0);
+		return HostileEntity.createHostileAttributes().add(EntityAttributes.MAX_HEALTH, 14.0).add(EntityAttributes.ATTACK_DAMAGE, 4.0);
 	}
 
 	@Override

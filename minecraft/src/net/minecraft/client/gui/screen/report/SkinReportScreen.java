@@ -12,6 +12,7 @@ import net.minecraft.client.gui.widget.LayoutWidgets;
 import net.minecraft.client.gui.widget.PlayerSkinWidget;
 import net.minecraft.client.session.report.AbuseReportContext;
 import net.minecraft.client.session.report.AbuseReportReason;
+import net.minecraft.client.session.report.AbuseReportType;
 import net.minecraft.client.session.report.SkinAbuseReport;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.text.Text;
@@ -43,7 +44,7 @@ public class SkinReportScreen extends ReportScreen<SkinAbuseReport.Builder> {
 		directionalLayoutWidget.add(new PlayerSkinWidget(85, 120, this.client.getEntityModelLoader(), this.reportBuilder.getReport().getSkinSupplier()));
 		DirectionalLayoutWidget directionalLayoutWidget2 = directionalLayoutWidget.add(DirectionalLayoutWidget.vertical().spacing(8));
 		this.selectReasonButton = ButtonWidget.builder(
-				SELECT_REASON_TEXT, button -> this.client.setScreen(new AbuseReportReasonScreen(this, this.reportBuilder.getReason(), reason -> {
+				SELECT_REASON_TEXT, button -> this.client.setScreen(new AbuseReportReasonScreen(this, this.reportBuilder.getReason(), AbuseReportType.SKIN, reason -> {
 						this.reportBuilder.setReason(reason);
 						this.onChange();
 					}))

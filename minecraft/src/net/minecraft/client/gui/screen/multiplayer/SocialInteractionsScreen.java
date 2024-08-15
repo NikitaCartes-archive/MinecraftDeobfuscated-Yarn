@@ -19,6 +19,7 @@ import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.network.SocialInteractionsManager;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
@@ -213,8 +214,8 @@ public class SocialInteractionsScreen extends Screen {
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.renderBackground(context, mouseX, mouseY, delta);
 		int i = this.getSearchBoxX() + 3;
-		context.drawGuiTexture(BACKGROUND_TEXTURE, i, 64, 236, this.getScreenHeight() + 16);
-		context.drawGuiTexture(SEARCH_ICON_TEXTURE, i + 10, 76, 12, 12);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, BACKGROUND_TEXTURE, i, 64, 236, this.getScreenHeight() + 16);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, SEARCH_ICON_TEXTURE, i + 10, 76, 12, 12);
 	}
 
 	@Override

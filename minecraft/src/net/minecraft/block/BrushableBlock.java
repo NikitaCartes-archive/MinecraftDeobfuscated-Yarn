@@ -28,7 +28,7 @@ public class BrushableBlock extends BlockWithEntity implements LandingBlock {
 		instance -> instance.group(
 					Registries.BLOCK.getCodec().fieldOf("turns_into").forGetter(BrushableBlock::getBaseBlock),
 					Registries.SOUND_EVENT.getCodec().fieldOf("brush_sound").forGetter(BrushableBlock::getBrushingSound),
-					Registries.SOUND_EVENT.getCodec().fieldOf("brush_comleted_sound").forGetter(BrushableBlock::getBrushingCompleteSound),
+					Registries.SOUND_EVENT.getCodec().fieldOf("brush_completed_sound").forGetter(BrushableBlock::getBrushingCompleteSound),
 					createSettingsCodec()
 				)
 				.apply(instance, BrushableBlock::new)

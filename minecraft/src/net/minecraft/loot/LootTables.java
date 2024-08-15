@@ -1,11 +1,15 @@
 package net.minecraft.loot;
 
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 
 public class LootTables {
 	private static final Set<RegistryKey<LootTable>> LOOT_TABLES = new HashSet();
@@ -74,22 +78,12 @@ public class LootTables {
 	public static final RegistryKey<LootTable> TRIAL_CHAMBER_EQUIPMENT = register("equipment/trial_chamber");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBER_RANGED_EQUIPMENT = register("equipment/trial_chamber_ranged");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBER_MELEE_EQUIPMENT = register("equipment/trial_chamber_melee");
-	public static final RegistryKey<LootTable> WHITE_SHEEP_ENTITY = register("entities/sheep/white");
-	public static final RegistryKey<LootTable> ORANGE_SHEEP_ENTITY = register("entities/sheep/orange");
-	public static final RegistryKey<LootTable> MAGENTA_SHEEP_ENTITY = register("entities/sheep/magenta");
-	public static final RegistryKey<LootTable> LIGHT_BLUE_SHEEP_ENTITY = register("entities/sheep/light_blue");
-	public static final RegistryKey<LootTable> YELLOW_SHEEP_ENTITY = register("entities/sheep/yellow");
-	public static final RegistryKey<LootTable> LIME_SHEEP_ENTITY = register("entities/sheep/lime");
-	public static final RegistryKey<LootTable> PINK_SHEEP_ENTITY = register("entities/sheep/pink");
-	public static final RegistryKey<LootTable> GRAY_SHEEP_ENTITY = register("entities/sheep/gray");
-	public static final RegistryKey<LootTable> LIGHT_GRAY_SHEEP_ENTITY = register("entities/sheep/light_gray");
-	public static final RegistryKey<LootTable> CYAN_SHEEP_ENTITY = register("entities/sheep/cyan");
-	public static final RegistryKey<LootTable> PURPLE_SHEEP_ENTITY = register("entities/sheep/purple");
-	public static final RegistryKey<LootTable> BLUE_SHEEP_ENTITY = register("entities/sheep/blue");
-	public static final RegistryKey<LootTable> BROWN_SHEEP_ENTITY = register("entities/sheep/brown");
-	public static final RegistryKey<LootTable> GREEN_SHEEP_ENTITY = register("entities/sheep/green");
-	public static final RegistryKey<LootTable> RED_SHEEP_ENTITY = register("entities/sheep/red");
-	public static final RegistryKey<LootTable> BLACK_SHEEP_ENTITY = register("entities/sheep/black");
+	public static final Map<DyeColor, RegistryKey<LootTable>> SHEEP_DROPS_FROM_DYE_COLOR = Util.make(
+		new EnumMap(DyeColor.class), lootTableMap -> registerAllDyeColors(lootTableMap, "entities/sheep")
+	);
+	public static final Map<DyeColor, RegistryKey<LootTable>> SHEEP_SHEARING_FROM_DYE_COLOR = Util.make(
+		new EnumMap(DyeColor.class), lootTableMap -> registerAllDyeColors(lootTableMap, "shearing/sheep")
+	);
 	public static final RegistryKey<LootTable> FISHING_GAMEPLAY = register("gameplay/fishing");
 	public static final RegistryKey<LootTable> FISHING_JUNK_GAMEPLAY = register("gameplay/fishing/junk");
 	public static final RegistryKey<LootTable> FISHING_TREASURE_GAMEPLAY = register("gameplay/fishing/treasure");
@@ -117,12 +111,21 @@ public class LootTables {
 	public static final RegistryKey<LootTable> OMINOUS_TRIAL_CHAMBER_CONSUMABLES_SPAWNER = register("spawners/ominous/trial_chamber/consumables");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBER_ITEMS_TO_DROP_WHEN_OMINOUS_SPAWNER = register("spawners/trial_chamber/items_to_drop_when_ominous");
 	public static final RegistryKey<LootTable> BOGGED_SHEARING = register("shearing/bogged");
+	public static final RegistryKey<LootTable> MOOSHROOM_RED_SHEARING = register("shearing/mooshroom/red");
+	public static final RegistryKey<LootTable> MOOSHROOM_BROWN_SHEARING = register("shearing/mooshroom/brown");
+	public static final RegistryKey<LootTable> SNOW_GOLEM_SHEARING = register("shearing/snow_golem");
 	public static final RegistryKey<LootTable> DESERT_WELL_ARCHAEOLOGY = register("archaeology/desert_well");
 	public static final RegistryKey<LootTable> DESERT_PYRAMID_ARCHAEOLOGY = register("archaeology/desert_pyramid");
 	public static final RegistryKey<LootTable> TRAIL_RUINS_COMMON_ARCHAEOLOGY = register("archaeology/trail_ruins_common");
 	public static final RegistryKey<LootTable> TRAIL_RUINS_RARE_ARCHAEOLOGY = register("archaeology/trail_ruins_rare");
 	public static final RegistryKey<LootTable> OCEAN_RUIN_WARM_ARCHAEOLOGY = register("archaeology/ocean_ruin_warm");
 	public static final RegistryKey<LootTable> OCEAN_RUIN_COLD_ARCHAEOLOGY = register("archaeology/ocean_ruin_cold");
+
+	private static void registerAllDyeColors(EnumMap<DyeColor, RegistryKey<LootTable>> lootTableMap, String lootTableType) {
+		for (DyeColor dyeColor : DyeColor.values()) {
+			lootTableMap.put(dyeColor, register(lootTableType + "/" + dyeColor.getName()));
+		}
+	}
 
 	private static RegistryKey<LootTable> register(String id) {
 		return registerLootTable(RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.ofVanilla(id)));

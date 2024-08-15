@@ -1,6 +1,7 @@
 package net.minecraft.entity.mob;
 
 import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.NavigationConditions;
@@ -11,7 +12,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.ToolItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -108,7 +108,7 @@ public abstract class AbstractPiglinEntity extends HostileEntity {
 	}
 
 	protected boolean isHoldingTool() {
-		return this.getMainHandStack().getItem() instanceof ToolItem;
+		return this.getMainHandStack().contains(DataComponentTypes.TOOL);
 	}
 
 	@Override

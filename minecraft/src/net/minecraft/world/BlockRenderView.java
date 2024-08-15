@@ -29,6 +29,6 @@ public interface BlockRenderView extends BlockView {
 	 * @see WorldView#isSkyVisibleAllowingSea
 	 */
 	default boolean isSkyVisible(BlockPos pos) {
-		return this.getLightLevel(LightType.SKY, pos) >= this.getMaxLightLevel();
+		return this.getLightLevel(LightType.SKY, pos) >= 15;
 	}
 }

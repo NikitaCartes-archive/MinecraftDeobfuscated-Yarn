@@ -7,65 +7,42 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.Baker;
+import net.minecraft.client.render.model.GroupableModel;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.render.model.WeightedBakedModel;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class WeightedUnbakedModel implements UnbakedModel {
-	private final List<ModelVariant> variants;
-
-	public WeightedUnbakedModel(List<ModelVariant> variants) {
-		this.variants = variants;
-	}
-
-	public List<ModelVariant> getVariants() {
-		return this.variants;
-	}
-
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		} else {
-			return o instanceof WeightedUnbakedModel weightedUnbakedModel ? this.variants.equals(weightedUnbakedModel.variants) : false;
-		}
-	}
-
-	public int hashCode() {
-		return this.variants.hashCode();
+public record WeightedUnbakedModel(List<ModelVariant> variants) implements GroupableModel {
+	@Override
+	public Object getEqualityGroup(BlockState state) {
+		return this;
 	}
 
 	@Override
-	public Collection<Identifier> getModelDependencies() {
-		return (Collection<Identifier>)this.getVariants().stream().map(ModelVariant::getLocation).collect(Collectors.toSet());
-	}
-
-	@Override
-	public void setParents(Function<Identifier, UnbakedModel> modelLoader) {
-		this.getVariants().stream().map(ModelVariant::getLocation).distinct().forEach(id -> ((UnbakedModel)modelLoader.apply(id)).setParents(modelLoader));
+	public void resolve(UnbakedModel.Resolver resolver, UnbakedModel.ModelType currentlyResolvingType) {
+		this.variants.forEach(modelVariant -> resolver.resolve(modelVariant.getLocation()));
 	}
 
 	@Nullable
 	@Override
 	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer) {
-		if (this.getVariants().isEmpty()) {
+		if (this.variants.isEmpty()) {
 			return null;
 		} else {
 			WeightedBakedModel.Builder builder = new WeightedBakedModel.Builder();
 
-			for (ModelVariant modelVariant : this.getVariants()) {
+			for (ModelVariant modelVariant : this.variants) {
 				BakedModel bakedModel = baker.bake(modelVariant.getLocation(), modelVariant);
 				builder.add(bakedModel, modelVariant.getWeight());
 			}

@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.enums.TrialSpawnerState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -98,12 +99,16 @@ public class TrialSpawnerData {
 	}
 
 	public void reset() {
+		this.spawnedMobsAlive.clear();
+		this.spawnData = Optional.empty();
+		this.method_61763();
+	}
+
+	public void method_61763() {
 		this.players.clear();
 		this.totalSpawnedMobs = 0;
 		this.nextMobSpawnsAt = 0L;
 		this.cooldownEnd = 0L;
-		this.spawnedMobsAlive.clear();
-		this.spawnData = Optional.empty();
 	}
 
 	public boolean hasSpawnData(TrialSpawnerLogic logic, Random random) {
@@ -125,7 +130,7 @@ public class TrialSpawnerData {
 
 	public int getAdditionalPlayers(BlockPos pos) {
 		if (this.players.isEmpty()) {
-			Util.error("Trial Spawner at " + pos + " has no detected players");
+			Util.logErrorOrPause("Trial Spawner at " + pos + " has no detected players");
 		}
 
 		return Math.max(0, this.players.size() - 1);
@@ -258,7 +263,7 @@ public class TrialSpawnerData {
 			if (this.displayEntity == null) {
 				NbtCompound nbtCompound = this.getSpawnData(logic, world.getRandom()).getNbt();
 				if (nbtCompound.contains("id", NbtElement.STRING_TYPE)) {
-					this.displayEntity = EntityType.loadEntityWithPassengers(nbtCompound, world, Function.identity());
+					this.displayEntity = EntityType.loadEntityWithPassengers(nbtCompound, world, SpawnReason.TRIAL_SPAWNER, Function.identity());
 				}
 			}
 

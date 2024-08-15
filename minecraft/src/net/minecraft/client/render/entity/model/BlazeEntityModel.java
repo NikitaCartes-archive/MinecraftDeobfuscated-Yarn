@@ -9,7 +9,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -65,7 +65,7 @@ import net.minecraft.util.math.MathHelper;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class BlazeEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+public class BlazeEntityModel extends EntityModel<LivingEntityRenderState> {
 	private final ModelPart root;
 	private final ModelPart[] rods;
 	private final ModelPart head;
@@ -124,36 +124,35 @@ public class BlazeEntityModel<T extends Entity> extends SinglePartEntityModel<T>
 		return this.root;
 	}
 
-	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		float f = animationProgress * (float) Math.PI * -0.1F;
+	public void setAngles(LivingEntityRenderState livingEntityRenderState) {
+		float f = livingEntityRenderState.age * (float) Math.PI * -0.1F;
 
 		for (int i = 0; i < 4; i++) {
-			this.rods[i].pivotY = -2.0F + MathHelper.cos(((float)(i * 2) + animationProgress) * 0.25F);
+			this.rods[i].pivotY = -2.0F + MathHelper.cos(((float)(i * 2) + livingEntityRenderState.age) * 0.25F);
 			this.rods[i].pivotX = MathHelper.cos(f) * 9.0F;
 			this.rods[i].pivotZ = MathHelper.sin(f) * 9.0F;
 			f++;
 		}
 
-		f = (float) (Math.PI / 4) + animationProgress * (float) Math.PI * 0.03F;
+		f = (float) (Math.PI / 4) + livingEntityRenderState.age * (float) Math.PI * 0.03F;
 
 		for (int i = 4; i < 8; i++) {
-			this.rods[i].pivotY = 2.0F + MathHelper.cos(((float)(i * 2) + animationProgress) * 0.25F);
+			this.rods[i].pivotY = 2.0F + MathHelper.cos(((float)(i * 2) + livingEntityRenderState.age) * 0.25F);
 			this.rods[i].pivotX = MathHelper.cos(f) * 7.0F;
 			this.rods[i].pivotZ = MathHelper.sin(f) * 7.0F;
 			f++;
 		}
 
-		f = 0.47123894F + animationProgress * (float) Math.PI * -0.05F;
+		f = 0.47123894F + livingEntityRenderState.age * (float) Math.PI * -0.05F;
 
 		for (int i = 8; i < 12; i++) {
-			this.rods[i].pivotY = 11.0F + MathHelper.cos(((float)i * 1.5F + animationProgress) * 0.5F);
+			this.rods[i].pivotY = 11.0F + MathHelper.cos(((float)i * 1.5F + livingEntityRenderState.age) * 0.5F);
 			this.rods[i].pivotX = MathHelper.cos(f) * 5.0F;
 			this.rods[i].pivotZ = MathHelper.sin(f) * 5.0F;
 			f++;
 		}
 
-		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
-		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
+		this.head.yaw = livingEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
+		this.head.pitch = livingEntityRenderState.pitch * (float) (Math.PI / 180.0);
 	}
 }

@@ -9,7 +9,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Util;
@@ -37,7 +36,7 @@ public class CollisionDebugRenderer implements DebugRenderer.Renderer {
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
 
 		for (VoxelShape voxelShape : this.collisions) {
-			WorldRenderer.drawShapeOutline(matrices, vertexConsumer, voxelShape, -cameraX, -cameraY, -cameraZ, 1.0F, 1.0F, 1.0F, 1.0F, true);
+			DebugRenderer.method_62350(matrices, vertexConsumer, voxelShape, -cameraX, -cameraY, -cameraZ, 1.0F, 1.0F, 1.0F, 1.0F, true);
 		}
 	}
 }

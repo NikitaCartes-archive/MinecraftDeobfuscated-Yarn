@@ -425,6 +425,12 @@ public class BlockPos extends Vec3i {
 		return StreamSupport.stream(iterateOutwards(center, maxX, maxY, maxZ).spliterator(), false);
 	}
 
+	public static Iterable<BlockPos> iterate(Box box) {
+		BlockPos blockPos = ofFloored(box.minX, box.minY, box.minZ);
+		BlockPos blockPos2 = ofFloored(box.maxX, box.maxY, box.maxZ);
+		return iterate(blockPos, blockPos2);
+	}
+
 	public static Iterable<BlockPos> iterate(BlockPos start, BlockPos end) {
 		return iterate(
 			Math.min(start.getX(), end.getX()),

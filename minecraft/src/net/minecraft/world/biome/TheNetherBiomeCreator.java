@@ -30,7 +30,7 @@ public class TheNetherBiomeCreator {
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
 			.build();
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup)
-			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
+			.carver(ConfiguredCarvers.NETHER_CAVE)
 			.feature(GenerationStep.Feature.VEGETAL_DECORATION, MiscPlacedFeatures.SPRING_LAVA);
 		DefaultBiomeFeatures.addDefaultMushrooms(lookupBackedBuilder);
 		lookupBackedBuilder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.SPRING_OPEN)
@@ -78,7 +78,7 @@ public class TheNetherBiomeCreator {
 			.spawnCost(EntityType.STRIDER, 0.7, 0.15)
 			.build();
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup)
-			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
+			.carver(ConfiguredCarvers.NETHER_CAVE)
 			.feature(GenerationStep.Feature.VEGETAL_DECORATION, MiscPlacedFeatures.SPRING_LAVA)
 			.feature(GenerationStep.Feature.LOCAL_MODIFICATIONS, NetherPlacedFeatures.BASALT_PILLAR)
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.SPRING_OPEN)
@@ -120,7 +120,7 @@ public class TheNetherBiomeCreator {
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
 			.build();
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup)
-			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
+			.carver(ConfiguredCarvers.NETHER_CAVE)
 			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, NetherPlacedFeatures.DELTA)
 			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, NetherPlacedFeatures.SMALL_BASALT_COLUMNS)
 			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, NetherPlacedFeatures.LARGE_BASALT_COLUMNS)
@@ -168,7 +168,7 @@ public class TheNetherBiomeCreator {
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
 			.build();
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup)
-			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
+			.carver(ConfiguredCarvers.NETHER_CAVE)
 			.feature(GenerationStep.Feature.VEGETAL_DECORATION, MiscPlacedFeatures.SPRING_LAVA);
 		DefaultBiomeFeatures.addDefaultMushrooms(lookupBackedBuilder);
 		lookupBackedBuilder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.SPRING_OPEN)
@@ -210,7 +210,7 @@ public class TheNetherBiomeCreator {
 			.spawnCost(EntityType.ENDERMAN, 1.0, 0.12)
 			.build();
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup)
-			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
+			.carver(ConfiguredCarvers.NETHER_CAVE)
 			.feature(GenerationStep.Feature.VEGETAL_DECORATION, MiscPlacedFeatures.SPRING_LAVA);
 		DefaultBiomeFeatures.addDefaultMushrooms(lookupBackedBuilder);
 		lookupBackedBuilder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.SPRING_OPEN)

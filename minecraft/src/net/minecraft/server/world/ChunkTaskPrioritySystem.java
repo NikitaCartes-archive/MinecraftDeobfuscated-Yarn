@@ -154,7 +154,7 @@ public class ChunkTaskPrioritySystem implements ChunkHolder.LevelUpdateListener,
 		LevelPrioritizedQueue<? extends Function<MessageListener<Unit>, ?>> levelPrioritizedQueue = (LevelPrioritizedQueue<? extends Function<MessageListener<Unit>, ?>>)this.queues
 			.get(actor);
 		if (levelPrioritizedQueue == null) {
-			throw (IllegalArgumentException)Util.throwOrPause((T)(new IllegalArgumentException("No queue for: " + actor)));
+			throw (IllegalArgumentException)Util.getFatalOrPause((T)(new IllegalArgumentException("No queue for: " + actor)));
 		} else {
 			return (LevelPrioritizedQueue<Function<MessageListener<Unit>, T>>)levelPrioritizedQueue;
 		}

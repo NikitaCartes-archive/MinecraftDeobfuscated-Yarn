@@ -7,6 +7,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.navigation.GuiNavigation;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Identifier;
@@ -55,7 +56,7 @@ public abstract class IconWidget extends ClickableWidget {
 
 		@Override
 		public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-			context.drawGuiTexture(this.texture, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+			context.drawGuiTexture(RenderLayer::getGuiTextured, this.texture, this.getX(), this.getY(), this.getWidth(), this.getHeight());
 		}
 	}
 
@@ -75,17 +76,7 @@ public abstract class IconWidget extends ClickableWidget {
 		@Override
 		protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 			context.drawTexture(
-				this.texture,
-				this.getX(),
-				this.getY(),
-				this.getWidth(),
-				this.getHeight(),
-				0.0F,
-				0.0F,
-				this.getWidth(),
-				this.getHeight(),
-				this.textureWidth,
-				this.textureHeight
+				RenderLayer::getGuiTextured, this.texture, this.getX(), this.getY(), 0.0F, 0.0F, this.getWidth(), this.getHeight(), this.textureWidth, this.textureHeight
 			);
 		}
 	}

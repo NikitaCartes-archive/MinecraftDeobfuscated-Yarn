@@ -27,6 +27,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -196,7 +197,7 @@ public abstract class PlayerManager {
 		serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 		serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.getAbilities()));
 		serverPlayNetworkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(player.getInventory().selectedSlot));
-		serverPlayNetworkHandler.sendPacket(new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().sortedValues()));
+		serverPlayNetworkHandler.sendPacket(new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().syncedValues()));
 		this.sendCommandTree(player);
 		player.getStatHandler().updateStatSet();
 		player.getRecipeBook().sendInitRecipesPacket(player);
@@ -227,7 +228,7 @@ public abstract class PlayerManager {
 		if (optional.isPresent() && ((NbtCompound)optional.get()).contains("RootVehicle", NbtElement.COMPOUND_TYPE)) {
 			NbtCompound nbtCompound = ((NbtCompound)optional.get()).getCompound("RootVehicle");
 			Entity entity = EntityType.loadEntityWithPassengers(
-				nbtCompound.getCompound("Entity"), serverWorld2, vehicle -> !serverWorld2.tryLoadEntity(vehicle) ? null : vehicle
+				nbtCompound.getCompound("Entity"), serverWorld2, SpawnReason.LOAD, vehicle -> !serverWorld2.tryLoadEntity(vehicle) ? null : vehicle
 			);
 			if (entity != null) {
 				UUID uUID;
@@ -428,7 +429,7 @@ public abstract class PlayerManager {
 	public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, boolean alive, Entity.RemovalReason removalReason) {
 		this.players.remove(player);
 		player.getServerWorld().removePlayer(player, removalReason);
-		TeleportTarget teleportTarget = player.getRespawnTarget(alive, TeleportTarget.NO_OP);
+		TeleportTarget teleportTarget = player.getRespawnTarget(!alive, TeleportTarget.NO_OP);
 		ServerWorld serverWorld = teleportTarget.world();
 		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld, player.getGameProfile(), player.getClientOptions());
 		serverPlayerEntity.networkHandler = player.networkHandler;
@@ -468,9 +469,10 @@ public abstract class PlayerManager {
 		this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
 		serverPlayerEntity.onSpawn();
 		serverPlayerEntity.setHealth(serverPlayerEntity.getHealth());
-		if (!alive) {
-			BlockPos blockPos = BlockPos.ofFloored(teleportTarget.pos());
-			BlockState blockState = serverWorld.getBlockState(blockPos);
+		BlockPos blockPos = serverPlayerEntity.getSpawnPointPosition();
+		ServerWorld serverWorld3 = this.server.getWorld(serverPlayerEntity.getSpawnPointDimension());
+		if (!alive && blockPos != null && serverWorld3 != null) {
+			BlockState blockState = serverWorld3.getBlockState(blockPos);
 			if (blockState.isOf(Blocks.RESPAWN_ANCHOR)) {
 				serverPlayerEntity.networkHandler
 					.sendPacket(
@@ -946,7 +948,7 @@ public abstract class PlayerManager {
 		}
 
 		this.sendToAll(new SynchronizeTagsS2CPacket(TagPacketSerializer.serializeTags(this.registryManager)));
-		SynchronizeRecipesS2CPacket synchronizeRecipesS2CPacket = new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().sortedValues());
+		SynchronizeRecipesS2CPacket synchronizeRecipesS2CPacket = new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().syncedValues());
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
 			serverPlayerEntity.networkHandler.sendPacket(synchronizeRecipesS2CPacket);

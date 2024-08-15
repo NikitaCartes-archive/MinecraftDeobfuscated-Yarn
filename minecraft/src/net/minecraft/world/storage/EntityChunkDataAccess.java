@@ -12,6 +12,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
@@ -62,7 +63,7 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 
 					NbtCompound nbtCompound = this.storage.update((NbtCompound)nbt.get(), -1);
 					NbtList nbtList = nbtCompound.getList("Entities", NbtElement.COMPOUND_TYPE);
-					List<Entity> list = (List<Entity>)EntityType.streamFromNbt(nbtList, this.world).collect(ImmutableList.toImmutableList());
+					List<Entity> list = (List<Entity>)EntityType.streamFromNbt(nbtList, this.world, SpawnReason.LOAD).collect(ImmutableList.toImmutableList());
 					return new ChunkDataList(pos, list);
 				}
 			}, this.taskExecutor::send);

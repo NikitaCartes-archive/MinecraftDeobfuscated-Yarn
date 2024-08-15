@@ -125,7 +125,7 @@ public class WanderingTraderEntity extends MerchantEntity {
 				this.sendOffers(player, this.getDisplayName(), 1);
 			}
 
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return super.interactMob(player, hand);
 		}

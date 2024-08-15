@@ -44,6 +44,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.LockSupport;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -56,12 +57,14 @@ import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.FuelRegistry;
 import net.minecraft.network.QueryableServer;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.message.MessageDecorator;
 import net.minecraft.network.message.MessageType;
+import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.obfuscate.DontObfuscate;
@@ -75,6 +78,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.ReloadableRegistries;
 import net.minecraft.registry.ServerDynamicRegistryType;
+import net.minecraft.registry.tag.TagGroupLoader;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.LifecycledResourceManager;
@@ -118,6 +122,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ReportType;
+import net.minecraft.util.crash.SuppressedExceptionsTracker;
 import net.minecraft.util.function.Finishable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -188,7 +193,7 @@ import org.slf4j.Logger;
  * @see net.minecraft.server.dedicated.MinecraftDedicatedServer
  * @see net.minecraft.server.integrated.IntegratedServer
  */
-public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask> implements QueryableServer, ChunkErrorHandler, CommandOutput, AutoCloseable {
+public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask> implements QueryableServer, ChunkErrorHandler, CommandOutput {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String VANILLA = "vanilla";
 	private static final float field_33212 = 0.8F;
@@ -206,7 +211,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private static final int field_33221 = 3;
 	public static final int MAX_WORLD_BORDER_RADIUS = 29999984;
 	public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo(
-		"Demo World", GameMode.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), DataConfiguration.SAFE_MODE
+		"Demo World", GameMode.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(FeatureFlags.DEFAULT_ENABLED_FEATURES), DataConfiguration.SAFE_MODE
 	);
 	public static final GameProfile ANONYMOUS_PLAYER_PROFILE = new GameProfile(Util.NIL_UUID, "Anonymous Player");
 	protected final LevelStorage.Session session;
@@ -262,8 +267,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private long tasksStartTime = Util.getMeasuringTimeNano();
 	private long waitTime;
 	private long tickStartTimeNanos = Util.getMeasuringTimeNano();
+	private boolean waitingForNextTick = false;
 	private long tickEndTimeNanos;
-	private boolean waitingForNextTick;
+	private boolean hasJustExecutedTask;
 	private final ResourcePackManager dataPackManager;
 	private final ServerScoreboard scoreboard = new ServerScoreboard(this);
 	@Nullable
@@ -280,8 +286,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private final ServerTickManager tickManager;
 	protected final SaveProperties saveProperties;
 	private final BrewingRecipeRegistry brewingRecipeRegistry;
+	private FuelRegistry fuelRegistry;
+	private int idleTickCount;
 	private volatile boolean saving;
 	private static final AtomicReference<RuntimeException> WORLD_GEN_EXCEPTION = new AtomicReference();
+	private final SuppressedExceptionsTracker suppressedExceptionsTracker = new SuppressedExceptionsTracker();
 
 	public static <S extends MinecraftServer> S startServer(Function<Thread, S> serverFactory) {
 		AtomicReference<S> atomicReference = new AtomicReference();
@@ -337,6 +346,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.serverThread = serverThread;
 			this.workerExecutor = Util.getMainWorkerExecutor();
 			this.brewingRecipeRegistry = BrewingRecipeRegistry.create(this.saveProperties.getEnabledFeatures());
+			this.resourceManagerHolder.dataPackContents.getRecipeManager().warnEmptyIngredients();
+			this.fuelRegistry = FuelRegistry.createDefault(this.combinedDynamicRegistries.getCombinedRegistryManager(), this.saveProperties.getEnabledFeatures());
 		}
 	}
 
@@ -746,7 +757,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.profiler.push("tick");
 				this.tick(bl ? () -> false : this::shouldKeepTicking);
 				this.profiler.swap("nextTickWait");
-				this.waitingForNextTick = true;
+				this.hasJustExecutedTask = true;
 				this.tickEndTimeNanos = Math.max(Util.getMeasuringTimeNano() + l, this.tickStartTimeNanos);
 				this.startTaskPerformanceLog();
 				this.runTasksTillTickEnd();
@@ -836,7 +847,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private boolean shouldKeepTicking() {
-		return this.hasRunningTasks() || Util.getMeasuringTimeNano() < (this.waitingForNextTick ? this.tickEndTimeNanos : this.tickStartTimeNanos);
+		return this.hasRunningTasks() || Util.getMeasuringTimeNano() < (this.hasJustExecutedTask ? this.tickEndTimeNanos : this.tickStartTimeNanos);
 	}
 
 	public static boolean checkWorldGenException() {
@@ -859,14 +870,21 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	protected void runTasksTillTickEnd() {
 		this.runTasks();
-		this.runTasks(() -> !this.shouldKeepTicking());
+		this.waitingForNextTick = true;
+
+		try {
+			this.runTasks(() -> !this.shouldKeepTicking());
+		} finally {
+			this.waitingForNextTick = false;
+		}
 	}
 
 	@Override
 	public void waitForTasks() {
 		boolean bl = this.shouldPushTickTimeLog();
 		long l = bl ? Util.getMeasuringTimeNano() : 0L;
-		super.waitForTasks();
+		long m = this.waitingForNextTick ? this.tickStartTimeNanos - Util.getMeasuringTimeNano() : 100000L;
+		LockSupport.parkNanos("waiting for tasks", m);
 		if (bl) {
 			this.waitTime = this.waitTime + (Util.getMeasuringTimeNano() - l);
 		}
@@ -883,7 +901,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	@Override
 	public boolean runTask() {
 		boolean bl = this.runOneTask();
-		this.waitingForNextTick = bl;
+		this.hasJustExecutedTask = bl;
 		return bl;
 	}
 
@@ -947,6 +965,25 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public void tick(BooleanSupplier shouldKeepTicking) {
 		long l = Util.getMeasuringTimeNano();
+		int i = this.getPauseWhenEmptySeconds() * 20;
+		if (i > 0) {
+			if (this.playerManager.getCurrentPlayerCount() == 0 && !this.tickManager.isSprinting()) {
+				this.idleTickCount++;
+			} else {
+				this.idleTickCount = 0;
+			}
+
+			if (this.idleTickCount >= i) {
+				if (this.idleTickCount == i) {
+					LOGGER.info("Server empty for {} seconds, pausing", this.getPauseWhenEmptySeconds());
+					this.runAutosave();
+				}
+
+				this.tickNetworkIo();
+				return;
+			}
+		}
+
 		this.ticks++;
 		this.tickManager.step();
 		this.tickWorlds(shouldKeepTicking);
@@ -957,23 +994,27 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 		this.ticksUntilAutosave--;
 		if (this.ticksUntilAutosave <= 0) {
-			this.ticksUntilAutosave = this.getAutosaveInterval();
-			LOGGER.debug("Autosave started");
-			this.profiler.push("save");
-			this.saveAll(true, false, false);
-			this.profiler.pop();
-			LOGGER.debug("Autosave finished");
+			this.runAutosave();
 		}
 
 		this.profiler.push("tallying");
 		long m = Util.getMeasuringTimeNano() - l;
-		int i = this.ticks % 100;
-		this.recentTickTimesNanos = this.recentTickTimesNanos - this.tickTimes[i];
+		int j = this.ticks % 100;
+		this.recentTickTimesNanos = this.recentTickTimesNanos - this.tickTimes[j];
 		this.recentTickTimesNanos += m;
-		this.tickTimes[i] = m;
+		this.tickTimes[j] = m;
 		this.averageTickTime = this.averageTickTime * 0.8F + (float)m / (float)TimeHelper.MILLI_IN_NANOS * 0.19999999F;
 		this.pushTickLog(l);
 		this.profiler.pop();
+	}
+
+	private void runAutosave() {
+		this.ticksUntilAutosave = this.getAutosaveInterval();
+		LOGGER.debug("Autosave started");
+		this.profiler.push("save");
+		this.saveAll(true, false, false);
+		this.profiler.pop();
+		LOGGER.debug("Autosave finished");
 	}
 
 	private void pushTickLog(long tickStartTime) {
@@ -1033,7 +1074,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	public void tickWorlds(BooleanSupplier shouldKeepTicking) {
+	protected void tickWorlds(BooleanSupplier shouldKeepTicking) {
 		this.getPlayerManager().getPlayerList().forEach(player -> player.networkHandler.disableFlush());
 		this.profiler.push("commandFunctions");
 		this.getCommandFunctionManager().tick();
@@ -1062,7 +1103,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 
 		this.profiler.swap("connection");
-		this.getNetworkIo().tick();
+		this.tickNetworkIo();
 		this.profiler.swap("players");
 		this.playerManager.updatePlayerLatency();
 		if (SharedConstants.isDevelopment && this.tickManager.shouldTick()) {
@@ -1083,6 +1124,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 
 		this.profiler.pop();
+	}
+
+	public void tickNetworkIo() {
+		this.getNetworkIo().tick();
 	}
 
 	private void sendTimeUpdatePackets(ServerWorld world) {
@@ -1191,6 +1236,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		);
 		details.addSection("World Generation", (Supplier<String>)(() -> this.saveProperties.getLifecycle().toString()));
 		details.addSection("World Seed", (Supplier<String>)(() -> String.valueOf(this.saveProperties.getGeneratorOptions().getSeed())));
+		details.addSection("Suppressed Exceptions", this.suppressedExceptionsTracker::collect);
 		if (this.serverId != null) {
 			details.addSection("Server Id", (Supplier<String>)(() -> this.serverId));
 		}
@@ -1273,7 +1319,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	private void updateMobSpawnOptions() {
 		for (ServerWorld serverWorld : this.getWorlds()) {
-			serverWorld.setMobSpawnOptions(this.isMonsterSpawningEnabled(), this.shouldSpawnAnimals());
+			serverWorld.setMobSpawnOptions(this.isMonsterSpawningEnabled());
 		}
 	}
 
@@ -1349,14 +1395,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public void setPreventProxyConnections(boolean preventProxyConnections) {
 		this.preventProxyConnections = preventProxyConnections;
-	}
-
-	public boolean shouldSpawnAnimals() {
-		return true;
-	}
-
-	public boolean shouldSpawnNpcs() {
-		return true;
 	}
 
 	public abstract boolean isUsingNativeTransport();
@@ -1567,9 +1605,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			.thenCompose(
 				resourcePacks -> {
 					LifecycledResourceManager lifecycledResourceManager = new LifecycledResourceManagerImpl(ResourceType.SERVER_DATA, resourcePacks);
+					List<Registry.PendingTagLoad<?>> list = TagGroupLoader.startReload(lifecycledResourceManager, this.combinedDynamicRegistries.getCombinedRegistryManager());
 					return DataPackContents.reload(
 							lifecycledResourceManager,
 							this.combinedDynamicRegistries,
+							list,
 							this.saveProperties.getEnabledFeatures(),
 							this.isDedicated() ? CommandManager.RegistrationEnvironment.DEDICATED : CommandManager.RegistrationEnvironment.INTEGRATED,
 							this.getFunctionPermissionLevel(),
@@ -1590,11 +1630,13 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.dataPackManager.setEnabledProfiles(dataPacks);
 				DataConfiguration dataConfiguration = new DataConfiguration(createDataPackSettings(this.dataPackManager, true), this.saveProperties.getEnabledFeatures());
 				this.saveProperties.updateLevelInfo(dataConfiguration);
-				this.resourceManagerHolder.dataPackContents.refresh();
+				this.resourceManagerHolder.dataPackContents.applyPendingTagLoads();
+				this.resourceManagerHolder.dataPackContents.getRecipeManager().warnEmptyIngredients();
 				this.getPlayerManager().saveAllPlayerData();
 				this.getPlayerManager().onDataPacksReloaded();
 				this.commandFunctionManager.setFunctions(this.resourceManagerHolder.dataPackContents.getFunctionLoader());
 				this.structureTemplateManager.setResourceManager(this.resourceManagerHolder.resourceManager);
+				this.fuelRegistry = FuelRegistry.createDefault(this.combinedDynamicRegistries.getCombinedRegistryManager(), this.saveProperties.getEnabledFeatures());
 			}, this);
 		if (this.isOnThread()) {
 			this.runTasks(completableFuture::isDone);
@@ -1874,7 +1916,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		try {
 			final List<String> list = Lists.<String>newArrayList();
 			final GameRules gameRules = this.getGameRules();
-			GameRules.accept(new GameRules.Visitor() {
+			gameRules.accept(new GameRules.Visitor() {
 				@Override
 				public <T extends GameRules.Rule<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
 					list.add(String.format(Locale.ROOT, "%s=%s\n", key.getName(), gameRules.get(key)));
@@ -2193,21 +2235,35 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	@Override
 	public void onChunkLoadFailure(Throwable exception, StorageKey key, ChunkPos chunkPos) {
 		LOGGER.error("Failed to load chunk {},{}", chunkPos.x, chunkPos.z, exception);
+		this.suppressedExceptionsTracker.onSuppressedException("chunk/load", exception);
 		this.writeChunkIoReport(CrashReport.create(exception, "Chunk load failure"), chunkPos, key);
 	}
 
 	@Override
 	public void onChunkSaveFailure(Throwable exception, StorageKey key, ChunkPos chunkPos) {
 		LOGGER.error("Failed to save chunk {},{}", chunkPos.x, chunkPos.z, exception);
+		this.suppressedExceptionsTracker.onSuppressedException("chunk/save", exception);
 		this.writeChunkIoReport(CrashReport.create(exception, "Chunk save failure"), chunkPos, key);
+	}
+
+	public void onPacketException(Throwable exception, PacketType<?> type) {
+		this.suppressedExceptionsTracker.onSuppressedException("packet/" + type.toString(), exception);
 	}
 
 	public BrewingRecipeRegistry getBrewingRecipeRegistry() {
 		return this.brewingRecipeRegistry;
 	}
 
+	public FuelRegistry getFuelRegistry() {
+		return this.fuelRegistry;
+	}
+
 	public ServerLinks getServerLinks() {
 		return ServerLinks.EMPTY;
+	}
+
+	protected int getPauseWhenEmptySeconds() {
+		return 0;
 	}
 
 	static class DebugStart {

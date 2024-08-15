@@ -9,7 +9,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.render.entity.state.WitchEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -61,11 +61,23 @@ import net.minecraft.util.math.MathHelper;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class WitchEntityModel<T extends Entity> extends VillagerResemblingModel<T> {
-	private boolean liftingNose;
+public class WitchEntityModel extends EntityModel<WitchEntityRenderState> implements ModelWithHead, ModelWithHat {
+	protected final ModelPart nose;
+	private final ModelPart root;
+	private final ModelPart head;
+	private final ModelPart hat;
+	private final ModelPart hatRim;
+	private final ModelPart rightLeg;
+	private final ModelPart leftLeg;
 
-	public WitchEntityModel(ModelPart modelPart) {
-		super(modelPart);
+	public WitchEntityModel(ModelPart root) {
+		this.root = root;
+		this.head = root.getChild(EntityModelPartNames.HEAD);
+		this.hat = this.head.getChild(EntityModelPartNames.HAT);
+		this.hatRim = this.hat.getChild(EntityModelPartNames.HAT_RIM);
+		this.nose = this.head.getChild(EntityModelPartNames.NOSE);
+		this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
+		this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -99,15 +111,23 @@ public class WitchEntityModel<T extends Entity> extends VillagerResemblingModel<
 		return TexturedModelData.of(modelData, 64, 128);
 	}
 
-	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		super.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
+	public void setAngles(WitchEntityRenderState witchEntityRenderState) {
+		this.head.yaw = witchEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
+		this.head.pitch = witchEntityRenderState.pitch * (float) (Math.PI / 180.0);
+		this.head.roll = 0.0F;
+		this.rightLeg.pitch = MathHelper.cos(witchEntityRenderState.limbFrequency * 0.6662F) * 1.4F * witchEntityRenderState.limbAmplitudeMultiplier * 0.5F;
+		this.leftLeg.pitch = MathHelper.cos(witchEntityRenderState.limbFrequency * 0.6662F + (float) Math.PI)
+			* 1.4F
+			* witchEntityRenderState.limbAmplitudeMultiplier
+			* 0.5F;
+		this.rightLeg.yaw = 0.0F;
+		this.leftLeg.yaw = 0.0F;
 		this.nose.setPivot(0.0F, -2.0F, 0.0F);
-		float f = 0.01F * (float)(entity.getId() % 10);
-		this.nose.pitch = MathHelper.sin((float)entity.age * f) * 4.5F * (float) (Math.PI / 180.0);
+		float f = 0.01F * (float)(witchEntityRenderState.id % 10);
+		this.nose.pitch = MathHelper.sin(witchEntityRenderState.age * f) * 4.5F * (float) (Math.PI / 180.0);
 		this.nose.yaw = 0.0F;
-		this.nose.roll = MathHelper.cos((float)entity.age * f) * 2.5F * (float) (Math.PI / 180.0);
-		if (this.liftingNose) {
+		this.nose.roll = MathHelper.cos(witchEntityRenderState.age * f) * 2.5F * (float) (Math.PI / 180.0);
+		if (witchEntityRenderState.holdingItem) {
 			this.nose.setPivot(0.0F, 1.0F, -1.5F);
 			this.nose.pitch = -0.9F;
 		}
@@ -117,7 +137,20 @@ public class WitchEntityModel<T extends Entity> extends VillagerResemblingModel<
 		return this.nose;
 	}
 
-	public void setLiftingNose(boolean liftingNose) {
-		this.liftingNose = liftingNose;
+	@Override
+	public ModelPart getPart() {
+		return this.root;
+	}
+
+	@Override
+	public ModelPart getHead() {
+		return this.head;
+	}
+
+	@Override
+	public void setHatVisible(boolean visible) {
+		this.head.visible = visible;
+		this.hat.visible = visible;
+		this.hatRim.visible = visible;
 	}
 }

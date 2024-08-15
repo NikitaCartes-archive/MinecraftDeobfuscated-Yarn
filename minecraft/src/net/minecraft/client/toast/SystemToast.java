@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -28,6 +29,7 @@ public class SystemToast implements Toast {
 	private boolean justUpdated;
 	private final int width;
 	private boolean hidden;
+	private Toast.Visibility visibility = Toast.Visibility.HIDE;
 
 	public SystemToast(SystemToast.Type type, Text title, @Nullable Text description) {
 		this(
@@ -77,15 +79,27 @@ public class SystemToast implements Toast {
 	}
 
 	@Override
-	public Toast.Visibility draw(DrawContext context, ToastManager manager, long startTime) {
+	public Toast.Visibility getVisibility() {
+		return this.visibility;
+	}
+
+	@Override
+	public void update(ToastManager manager, long time) {
 		if (this.justUpdated) {
-			this.startTime = startTime;
+			this.startTime = time;
 			this.justUpdated = false;
 		}
 
+		double d = (double)this.type.displayDuration * manager.getNotificationDisplayTimeMultiplier();
+		long l = time - this.startTime;
+		this.visibility = !this.hidden && (double)l < d ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
+	}
+
+	@Override
+	public void draw(DrawContext context, TextRenderer textRenderer, long startTime) {
 		int i = this.getWidth();
 		if (i == 160 && this.lines.size() <= 1) {
-			context.drawGuiTexture(TEXTURE, 0, 0, i, this.getHeight());
+			context.drawGuiTexture(RenderLayer::getGuiTextured, TEXTURE, 0, 0, i, this.getHeight());
 		} else {
 			int j = this.getHeight();
 			int k = 28;
@@ -100,31 +114,27 @@ public class SystemToast implements Toast {
 		}
 
 		if (this.lines.isEmpty()) {
-			context.drawText(manager.getClient().textRenderer, this.title, 18, 12, Colors.YELLOW, false);
+			context.drawText(textRenderer, this.title, 18, 12, Colors.YELLOW, false);
 		} else {
-			context.drawText(manager.getClient().textRenderer, this.title, 18, 7, Colors.YELLOW, false);
+			context.drawText(textRenderer, this.title, 18, 7, Colors.YELLOW, false);
 
 			for (int j = 0; j < this.lines.size(); j++) {
-				context.drawText(manager.getClient().textRenderer, (OrderedText)this.lines.get(j), 18, 18 + j * 12, -1, false);
+				context.drawText(textRenderer, (OrderedText)this.lines.get(j), 18, 18 + j * 12, -1, false);
 			}
 		}
-
-		double d = (double)this.type.displayDuration * manager.getNotificationDisplayTimeMultiplier();
-		long n = startTime - this.startTime;
-		return !this.hidden && (double)n < d ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
 	}
 
 	private void drawPart(DrawContext context, int i, int j, int k, int l) {
 		int m = j == 0 ? 20 : 5;
 		int n = Math.min(60, i - m);
 		Identifier identifier = TEXTURE;
-		context.drawGuiTexture(identifier, 160, 32, 0, j, 0, k, m, l);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, 160, 32, 0, j, 0, k, m, l);
 
 		for (int o = m; o < i - n; o += 64) {
-			context.drawGuiTexture(identifier, 160, 32, 32, j, o, k, Math.min(64, i - o - n), l);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, 160, 32, 32, j, o, k, Math.min(64, i - o - n), l);
 		}
 
-		context.drawGuiTexture(identifier, 160, 32, 160 - n, j, i - n, k, n, l);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, 160, 32, 160 - n, j, i - n, k, n, l);
 	}
 
 	public void setContent(Text title, @Nullable Text description) {

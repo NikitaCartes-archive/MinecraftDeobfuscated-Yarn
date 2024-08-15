@@ -34,12 +34,12 @@ public class EntityShapeContext implements ShapeContext {
 	}
 
 	@Deprecated
-	protected EntityShapeContext(Entity entity) {
+	protected EntityShapeContext(Entity entity, boolean collidesWithFluid) {
 		this(
 			entity.isDescending(),
 			entity.getY(),
 			entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack() : ItemStack.EMPTY,
-			entity instanceof LivingEntity ? ((LivingEntity)entity)::canWalkOnFluid : fluidState -> false,
+			collidesWithFluid ? state -> true : (entity instanceof LivingEntity ? ((LivingEntity)entity)::canWalkOnFluid : state -> false),
 			entity
 		);
 	}

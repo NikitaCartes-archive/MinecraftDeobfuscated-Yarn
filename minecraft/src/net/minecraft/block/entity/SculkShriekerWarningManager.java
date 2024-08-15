@@ -6,10 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.function.Predicate;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.WardenEntity;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.dynamic.Codecs;
@@ -21,9 +18,9 @@ import net.minecraft.util.math.Vec3d;
 public class SculkShriekerWarningManager {
 	public static final Codec<SculkShriekerWarningManager> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.NONNEGATIVE_INT.fieldOf("ticks_since_last_warning").orElse(0).forGetter(manager -> manager.ticksSinceLastWarning),
-					Codecs.NONNEGATIVE_INT.fieldOf("warning_level").orElse(0).forGetter(manager -> manager.warningLevel),
-					Codecs.NONNEGATIVE_INT.fieldOf("cooldown_ticks").orElse(0).forGetter(manager -> manager.cooldownTicks)
+					Codecs.NON_NEGATIVE_INT.fieldOf("ticks_since_last_warning").orElse(0).forGetter(manager -> manager.ticksSinceLastWarning),
+					Codecs.NON_NEGATIVE_INT.fieldOf("warning_level").orElse(0).forGetter(manager -> manager.warningLevel),
+					Codecs.NON_NEGATIVE_INT.fieldOf("cooldown_ticks").orElse(0).forGetter(manager -> manager.cooldownTicks)
 				)
 				.apply(instance, SculkShriekerWarningManager::new)
 	);
@@ -100,8 +97,7 @@ public class SculkShriekerWarningManager {
 
 	private static List<ServerPlayerEntity> getPlayersInRange(ServerWorld world, BlockPos pos) {
 		Vec3d vec3d = Vec3d.ofCenter(pos);
-		Predicate<ServerPlayerEntity> predicate = player -> player.getPos().isInRange(vec3d, 16.0);
-		return world.getPlayers(predicate.and(LivingEntity::isAlive).and(EntityPredicates.EXCEPT_SPECTATOR));
+		return world.getPlayers(player -> !player.isSpectator() && player.getPos().isInRange(vec3d, 16.0) && player.isAlive());
 	}
 
 	private void increaseWarningLevel() {

@@ -56,6 +56,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BucketItem;
@@ -91,12 +92,14 @@ import net.minecraft.network.packet.c2s.play.AcknowledgeReconfigurationC2SPacket
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
+import net.minecraft.network.packet.c2s.play.BundleItemSelectedC2SPacket;
 import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatCommandSignedC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientTickEndC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
@@ -138,6 +141,7 @@ import net.minecraft.network.packet.c2s.query.QueryPingC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
+import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.EnterReconfigurationS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
@@ -146,7 +150,6 @@ import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
-import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
@@ -230,6 +233,7 @@ public class ServerPlayNetworkHandler
 	private int vehicleFloatingTicks;
 	private int movePacketsCount;
 	private int lastTickMovePacketsCount;
+	private boolean movedThisTick;
 	@Nullable
 	private PublicPlayerSession session;
 	private MessageChain.Unpacker messageUnpacker;
@@ -369,8 +373,11 @@ public class ServerPlayNetworkHandler
 
 	@Override
 	public void onPlayerInput(PlayerInputC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		this.player.updateInput(packet.getSideways(), packet.getForward(), packet.isJumping(), packet.isSneaking());
+		if (this.player.hasVehicle()
+			&& this.player.getVehicle() instanceof AbstractMinecartEntity abstractMinecartEntity
+			&& ((double)packet.getSideways() != 0.0 || (double)packet.getForward() != 0.0)) {
+			abstractMinecartEntity.handleMovementInput(this.player, new Vec3d((double)packet.getSideways(), 0.0, (double)packet.getForward()));
+		}
 	}
 
 	/**
@@ -455,7 +462,7 @@ public class ServerPlayNetworkHandler
 
 				this.player.getServerWorld().getChunkManager().updatePosition(this.player);
 				Vec3d vec3d = new Vec3d(entity.getX() - d, entity.getY() - e, entity.getZ() - f);
-				this.player.setOnGround(vec3d);
+				this.handleMovement(vec3d);
 				this.player.increaseTravelMotionStats(vec3d.x, vec3d.y, vec3d.z);
 				this.vehicleFloating = m >= -0.03125 && !bl2 && !this.server.isFlightEnabled() && !entity.hasNoGravity() && this.isEntityOnAir(entity);
 				this.updatedRiddenX = entity.getX();
@@ -497,6 +504,11 @@ public class ServerPlayNetworkHandler
 	public void onRecipeBookData(RecipeBookDataC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.server.getRecipeManager().get(packet.getRecipeId()).ifPresent(this.player.getRecipeBook()::onRecipeDisplayed);
+	}
+
+	@Override
+	public void onBundleItemSelected(BundleItemSelectedC2SPacket packet) {
+		this.player.currentScreenHandler.selectBundleStack(packet.slotId(), packet.selectedItemIndex());
 	}
 
 	@Override
@@ -621,15 +633,10 @@ public class ServerPlayNetworkHandler
 	public void onPickFromInventory(PickFromInventoryC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.getInventory().swapSlotWithHotbar(packet.getSlot());
-		this.player
-			.networkHandler
-			.sendPacket(
-				new ScreenHandlerSlotUpdateS2CPacket(
-					-2, 0, this.player.getInventory().selectedSlot, this.player.getInventory().getStack(this.player.getInventory().selectedSlot)
-				)
-			);
-		this.player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, 0, packet.getSlot(), this.player.getInventory().getStack(packet.getSlot())));
-		this.player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(this.player.getInventory().selectedSlot));
+		int i = this.player.getInventory().selectedSlot;
+		this.player.networkHandler.sendPacket(this.player.getInventory().createSlotSetPacket(i));
+		this.player.networkHandler.sendPacket(this.player.getInventory().createSlotSetPacket(packet.getSlot()));
+		this.player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(i));
 	}
 
 	@Override
@@ -928,9 +935,9 @@ public class ServerPlayNetworkHandler
 									&& this.isEntityOnAir(this.player);
 								this.player.getServerWorld().getChunkManager().updatePosition(this.player);
 								Vec3d vec3d = new Vec3d(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k);
-								this.player.setOnGround(packet.isOnGround(), vec3d);
+								this.player.setMovement(packet.isOnGround(), packet.horizontalCollision(), vec3d);
 								this.player.handleFall(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k, packet.isOnGround());
-								this.player.setOnGround(vec3d);
+								this.handleMovement(vec3d);
 								if (bl2) {
 									this.player.onLanding();
 								}
@@ -1086,7 +1093,7 @@ public class ServerPlayNetworkHandler
 							if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= i - 1 && canPlace(this.player, itemStack)) {
 								Text text = Text.translatable("build.tooHigh", i - 1).formatted(Formatting.RED);
 								this.player.sendMessageToClient(text, true);
-							} else if (actionResult.shouldSwingHand()) {
+							} else if (actionResult instanceof ActionResult.Success success && success.swingSource() == ActionResult.SwingSource.SERVER) {
 								this.player.swingHand(hand, true);
 							}
 						}
@@ -1119,8 +1126,8 @@ public class ServerPlayNetworkHandler
 				this.player.setAngles(f, g);
 			}
 
-			ActionResult actionResult = this.player.interactionManager.interactItem(this.player, serverWorld, itemStack, hand);
-			if (actionResult.shouldSwingHand()) {
+			if (this.player.interactionManager.interactItem(this.player, serverWorld, itemStack, hand) instanceof ActionResult.Success success
+				&& success.swingSource() == ActionResult.SwingSource.SERVER) {
 				this.player.swingHand(hand, true);
 			}
 		}
@@ -1133,7 +1140,7 @@ public class ServerPlayNetworkHandler
 			for (ServerWorld serverWorld : this.server.getWorlds()) {
 				Entity entity = packet.getTarget(serverWorld);
 				if (entity != null) {
-					this.player.teleport(serverWorld, entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
+					this.player.teleport(serverWorld, entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch(), true);
 					return;
 				}
 			}
@@ -1521,55 +1528,52 @@ public class ServerPlayNetworkHandler
 
 			Box box = entity.getBoundingBox();
 			if (this.player.canInteractWithEntityIn(box, 1.0)) {
-				packet.handle(
-					new PlayerInteractEntityC2SPacket.Handler() {
-						private void processInteract(Hand hand, ServerPlayNetworkHandler.Interaction action) {
-							ItemStack itemStack = ServerPlayNetworkHandler.this.player.getStackInHand(hand);
-							if (itemStack.isItemEnabled(serverWorld.getEnabledFeatures())) {
-								ItemStack itemStack2 = itemStack.copy();
-								ActionResult actionResult = action.run(ServerPlayNetworkHandler.this.player, entity, hand);
-								if (actionResult.isAccepted()) {
-									Criteria.PLAYER_INTERACTED_WITH_ENTITY
-										.trigger(ServerPlayNetworkHandler.this.player, actionResult.shouldIncrementStat() ? itemStack2 : ItemStack.EMPTY, entity);
-									if (actionResult.shouldSwingHand()) {
-										ServerPlayNetworkHandler.this.player.swingHand(hand, true);
-									}
+				packet.handle(new PlayerInteractEntityC2SPacket.Handler() {
+					private void processInteract(Hand hand, ServerPlayNetworkHandler.Interaction action) {
+						ItemStack itemStack = ServerPlayNetworkHandler.this.player.getStackInHand(hand);
+						if (itemStack.isItemEnabled(serverWorld.getEnabledFeatures())) {
+							ItemStack itemStack2 = itemStack.copy();
+							if (action.run(ServerPlayNetworkHandler.this.player, entity, hand) instanceof ActionResult.Success success) {
+								ItemStack itemStack3 = success.shouldIncrementStat() ? itemStack2 : ItemStack.EMPTY;
+								Criteria.PLAYER_INTERACTED_WITH_ENTITY.trigger(ServerPlayNetworkHandler.this.player, itemStack3, entity);
+								if (success.swingSource() == ActionResult.SwingSource.SERVER) {
+									ServerPlayNetworkHandler.this.player.swingHand(hand, true);
 								}
 							}
 						}
+					}
 
-						@Override
-						public void interact(Hand hand) {
-							this.processInteract(hand, PlayerEntity::interact);
-						}
+					@Override
+					public void interact(Hand hand) {
+						this.processInteract(hand, PlayerEntity::interact);
+					}
 
-						@Override
-						public void interactAt(Hand hand, Vec3d pos) {
-							this.processInteract(hand, (player, entityxx, handx) -> entityxx.interactAt(player, pos, handx));
-						}
+					@Override
+					public void interactAt(Hand hand, Vec3d pos) {
+						this.processInteract(hand, (player, entityxx, handx) -> entityxx.interactAt(player, pos, handx));
+					}
 
-						@Override
-						public void attack() {
-							label23:
-							if (!(entity instanceof ItemEntity) && !(entity instanceof ExperienceOrbEntity) && entity != ServerPlayNetworkHandler.this.player) {
-								if (entity instanceof PersistentProjectileEntity persistentProjectileEntity && !persistentProjectileEntity.isAttackable()) {
-									break label23;
-								}
+					@Override
+					public void attack() {
+						label23:
+						if (!(entity instanceof ItemEntity) && !(entity instanceof ExperienceOrbEntity) && entity != ServerPlayNetworkHandler.this.player) {
+							if (entity instanceof PersistentProjectileEntity persistentProjectileEntity && !persistentProjectileEntity.isAttackable()) {
+								break label23;
+							}
 
-								ItemStack itemStack = ServerPlayNetworkHandler.this.player.getStackInHand(Hand.MAIN_HAND);
-								if (!itemStack.isItemEnabled(serverWorld.getEnabledFeatures())) {
-									return;
-								}
-
-								ServerPlayNetworkHandler.this.player.attack(entity);
+							ItemStack itemStack = ServerPlayNetworkHandler.this.player.getStackInHand(Hand.MAIN_HAND);
+							if (!itemStack.isItemEnabled(serverWorld.getEnabledFeatures())) {
 								return;
 							}
 
-							ServerPlayNetworkHandler.this.disconnect(Text.translatable("multiplayer.disconnect.invalid_entity_attacked"));
-							ServerPlayNetworkHandler.LOGGER.warn("Player {} tried to attack an invalid entity", ServerPlayNetworkHandler.this.player.getName().getString());
+							ServerPlayNetworkHandler.this.player.attack(entity);
+							return;
 						}
+
+						ServerPlayNetworkHandler.this.disconnect(Text.translatable("multiplayer.disconnect.invalid_entity_attacked"));
+						ServerPlayNetworkHandler.LOGGER.warn("Player {} tried to attack an invalid entity", ServerPlayNetworkHandler.this.player.getName().getString());
 					}
-				);
+				});
 			}
 		}
 	}
@@ -1646,16 +1650,29 @@ public class ServerPlayNetworkHandler
 	public void onCraftRequest(CraftRequestC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
-		if (!this.player.isSpectator()
-			&& this.player.currentScreenHandler.syncId == packet.getSyncId()
-			&& this.player.currentScreenHandler instanceof AbstractRecipeScreenHandler) {
+		if (!this.player.isSpectator() && this.player.currentScreenHandler.syncId == packet.getSyncId()) {
 			if (!this.player.currentScreenHandler.canUse(this.player)) {
 				LOGGER.debug("Player {} interacted with invalid menu {}", this.player, this.player.currentScreenHandler);
-			} else {
-				this.server
-					.getRecipeManager()
-					.get(packet.getRecipeId())
-					.ifPresent(recipe -> ((AbstractRecipeScreenHandler)this.player.currentScreenHandler).fillInputSlots(packet.shouldCraftAll(), recipe, this.player));
+			} else if (this.player.getRecipeBook().contains(packet.getRecipeId())) {
+				if (this.player.currentScreenHandler instanceof AbstractRecipeScreenHandler abstractRecipeScreenHandler) {
+					this.server
+						.getRecipeManager()
+						.get(packet.getRecipeId())
+						.ifPresent(
+							recipe -> {
+								if (recipe.value().getIngredientPlacement().hasNoPlacement()) {
+									LOGGER.debug("Player {} tried to place impossible recipe {}", this.player, recipe.id());
+								} else {
+									AbstractRecipeScreenHandler.PostFillAction postFillAction = abstractRecipeScreenHandler.fillInputSlots(
+										packet.shouldCraftAll(), this.player.isCreative(), recipe, this.player.getInventory()
+									);
+									if (postFillAction == AbstractRecipeScreenHandler.PostFillAction.PLACE_GHOST_RECIPE) {
+										this.player.networkHandler.sendPacket(new CraftFailedResponseS2CPacket(this.player.currentScreenHandler.syncId, recipe));
+									}
+								}
+							}
+						);
+				}
 			}
 		}
 	}
@@ -1689,7 +1706,7 @@ public class ServerPlayNetworkHandler
 			NbtComponent nbtComponent = itemStack.getOrDefault(DataComponentTypes.BLOCK_ENTITY_DATA, NbtComponent.DEFAULT);
 			if (nbtComponent.contains("x") && nbtComponent.contains("y") && nbtComponent.contains("z")) {
 				BlockPos blockPos = BlockEntity.posFromNbt(nbtComponent.getNbt());
-				if (this.player.getWorld().canSetBlock(blockPos)) {
+				if (this.player.getWorld().isPosLoaded(blockPos)) {
 					BlockEntity blockEntity = this.player.getWorld().getBlockEntity(blockPos);
 					if (blockEntity != null) {
 						blockEntity.setStackNbt(itemStack, this.player.getWorld().getRegistryManager());
@@ -1817,6 +1834,22 @@ public class ServerPlayNetworkHandler
 
 	@Override
 	public void onCustomPayload(CustomPayloadC2SPacket packet) {
+	}
+
+	@Override
+	public void onClientTickEnd(ClientTickEndC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		if (!this.movedThisTick) {
+			this.player.setMovement(Vec3d.ZERO);
+		}
+
+		this.movedThisTick = false;
+	}
+
+	private void handleMovement(Vec3d movement) {
+		this.player.setMovement(movement);
+		this.player.updateLastActionTime();
+		this.movedThisTick = true;
 	}
 
 	@Override

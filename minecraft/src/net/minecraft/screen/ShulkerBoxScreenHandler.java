@@ -30,15 +30,7 @@ public class ShulkerBoxScreenHandler extends ScreenHandler {
 			}
 		}
 
-		for (int k = 0; k < 3; k++) {
-			for (int l = 0; l < 9; l++) {
-				this.addSlot(new Slot(playerInventory, l + k * 9 + 9, 8 + l * 18, 84 + k * 18));
-			}
-		}
-
-		for (int k = 0; k < 9; k++) {
-			this.addSlot(new Slot(playerInventory, k, 8 + k * 18, 142));
-		}
+		this.addPlayerSlots(playerInventory, 8, 84);
 	}
 
 	@Override

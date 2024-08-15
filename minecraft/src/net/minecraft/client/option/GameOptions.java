@@ -61,8 +61,8 @@ import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.message.ChatVisibility;
-import net.minecraft.network.packet.c2s.common.ClientOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
+import net.minecraft.particle.ParticlesMode;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.screen.ScreenTexts;
@@ -74,6 +74,7 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.glfw.GLFW;
@@ -136,7 +137,23 @@ public class GameOptions {
 		new SimpleOption.ValidatingIntSliderCallbacks(1, 26).withModifier(value -> value * 10, value -> value / 10),
 		Codec.intRange(10, 260),
 		120,
-		value -> MinecraftClient.getInstance().getWindow().setFramerateLimit(value)
+		value -> MinecraftClient.getInstance().getInactivityFpsLimiter().setMaxFps(value)
+	);
+	private static final Text INACTIVITY_FPS_LIMIT_MINIMIZED_TOOLTIP = Text.translatable("options.inactivityFpsLimit.minimized.tooltip");
+	private static final Text INACTIVITY_FPS_LIMIT_AFK_TOOLTIP = Text.translatable("options.inactivityFpsLimit.afk.tooltip");
+	private final SimpleOption<InactivityFpsLimit> inactivityFpsLimit = new SimpleOption<>(
+		"options.inactivityFpsLimit",
+		option -> {
+			return switch (option) {
+				case MINIMIZED -> Tooltip.of(INACTIVITY_FPS_LIMIT_MINIMIZED_TOOLTIP);
+				case AFK -> Tooltip.of(INACTIVITY_FPS_LIMIT_AFK_TOOLTIP);
+			};
+		},
+		SimpleOption.enumValueText(),
+		new SimpleOption.PotentialValuesBasedCallbacks<>(Arrays.asList(InactivityFpsLimit.values()), InactivityFpsLimit.Codec),
+		InactivityFpsLimit.AFK,
+		inactivityFpsLimit -> {
+		}
 	);
 	private final SimpleOption<CloudRenderMode> cloudRenderMode = new SimpleOption<>(
 		"options.renderClouds",
@@ -151,7 +168,7 @@ public class GameOptions {
 			if (MinecraftClient.isFabulousGraphicsOrBetter()) {
 				Framebuffer framebuffer = MinecraftClient.getInstance().worldRenderer.getCloudsFramebuffer();
 				if (framebuffer != null) {
-					framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
+					framebuffer.clear();
 				}
 			}
 		}
@@ -299,7 +316,8 @@ public class GameOptions {
 		SimpleOption.enumValueText(),
 		new SimpleOption.PotentialValuesBasedCallbacks<>(Arrays.asList(Arm.values()), Arm.CODEC),
 		Arm.RIGHT,
-		value -> this.sendClientSettings()
+		arm -> {
+		}
 	);
 	public int overrideWidth;
 	public int overrideHeight;
@@ -378,7 +396,6 @@ public class GameOptions {
 	);
 	public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
 	public boolean joinedFirstServer = false;
-	public boolean hideBundleTutorial = false;
 	private final SimpleOption<Integer> biomeBlendRadius = new SimpleOption<>("options.biomeBlendRadius", SimpleOption.emptyTooltip(), (optionText, value) -> {
 		int i = value * 2 + 1;
 		return getGenericValueText(optionText, Text.translatable("options.biomeBlendRadius." + i));
@@ -402,6 +419,10 @@ public class GameOptions {
 	});
 	public int glDebugVerbosity = 1;
 	private final SimpleOption<Boolean> autoJump = SimpleOption.ofBoolean("options.autoJump", false);
+	private static final Text ROTATE_WITH_MINECART_TOOLTIP = Text.translatable("options.rotateWithMinecart.tooltip");
+	private final SimpleOption<Boolean> rotateWithMinecart = SimpleOption.ofBoolean(
+		"options.rotateWithMinecart", SimpleOption.constantTooltip(ROTATE_WITH_MINECART_TOOLTIP), false
+	);
 	private final SimpleOption<Boolean> operatorItemsTab = SimpleOption.ofBoolean("options.operatorItemsTab", false);
 	private final SimpleOption<Boolean> autoSuggestions = SimpleOption.ofBoolean("options.autoSuggestCommands", true);
 	private final SimpleOption<Boolean> chatColors = SimpleOption.ofBoolean("options.chat.color", true);
@@ -428,7 +449,8 @@ public class GameOptions {
 	);
 	private static final Text ALLOW_SERVER_LISTING_TOOLTIP = Text.translatable("options.allowServerListing.tooltip");
 	private final SimpleOption<Boolean> allowServerListing = SimpleOption.ofBoolean(
-		"options.allowServerListing", SimpleOption.constantTooltip(ALLOW_SERVER_LISTING_TOOLTIP), true, value -> this.sendClientSettings()
+		"options.allowServerListing", SimpleOption.constantTooltip(ALLOW_SERVER_LISTING_TOOLTIP), true, boolean_ -> {
+		}
 	);
 	private final SimpleOption<Boolean> reducedDebugInfo = SimpleOption.ofBoolean("options.reducedDebugInfo", false);
 	private final Map<SoundCategory, SimpleOption<Double>> soundVolumeLevels = Util.make(new EnumMap(SoundCategory.class), soundVolumeLevels -> {
@@ -876,6 +898,10 @@ public class GameOptions {
 		return this.maxFps;
 	}
 
+	public SimpleOption<InactivityFpsLimit> getInactivityFpsLimit() {
+		return this.inactivityFpsLimit;
+	}
+
 	public SimpleOption<CloudRenderMode> getCloudRenderMode() {
 		return this.cloudRenderMode;
 	}
@@ -1007,6 +1033,10 @@ public class GameOptions {
 
 	public SimpleOption<Boolean> getAutoJump() {
 		return this.autoJump;
+	}
+
+	public SimpleOption<Boolean> getRotateWithMinecart() {
+		return this.rotateWithMinecart;
 	}
 
 	public SimpleOption<Boolean> getOperatorItemsTab() {
@@ -1227,16 +1257,11 @@ public class GameOptions {
 	}
 
 	public int getTextBackgroundColor(float fallbackOpacity) {
-		return (int)(this.getTextBackgroundOpacity(fallbackOpacity) * 255.0F) << 24 & 0xFF000000;
+		return ColorHelper.fromFloats(this.getTextBackgroundOpacity(fallbackOpacity), 0.0F, 0.0F, 0.0F);
 	}
 
 	public int getTextBackgroundColor(int fallbackColor) {
-		return this.backgroundForChatOnly.getValue() ? fallbackColor : (int)(this.textBackgroundOpacity.getValue() * 255.0) << 24 & 0xFF000000;
-	}
-
-	public void setKeyCode(KeyBinding key, InputUtil.Key code) {
-		key.setBoundKey(code);
-		this.write();
+		return this.backgroundForChatOnly.getValue() ? fallbackColor : ColorHelper.fromFloats(this.textBackgroundOpacity.getValue().floatValue(), 0.0F, 0.0F, 0.0F);
 	}
 
 	private void acceptProfiledOptions(GameOptions.OptionVisitor visitor) {
@@ -1258,6 +1283,7 @@ public class GameOptions {
 		visitor.accept("graphicsMode", this.graphicsMode);
 		visitor.accept("guiScale", this.guiScale);
 		visitor.accept("maxFps", this.maxFps);
+		visitor.accept("inactivityFpsLimit", this.inactivityFpsLimit);
 		visitor.accept("mipmapLevels", this.mipmapLevels);
 		visitor.accept("narrator", this.narrator);
 		visitor.accept("particles", this.particles);
@@ -1272,6 +1298,7 @@ public class GameOptions {
 	private void accept(GameOptions.Visitor visitor) {
 		this.acceptProfiledOptions(visitor);
 		visitor.accept("autoJump", this.autoJump);
+		visitor.accept("rotateWithMinecart", this.rotateWithMinecart);
 		visitor.accept("operatorItemsTab", this.operatorItemsTab);
 		visitor.accept("autoSuggestions", this.autoSuggestions);
 		visitor.accept("chatColors", this.chatColors);
@@ -1323,7 +1350,6 @@ public class GameOptions {
 		this.skipMultiplayerWarning = visitor.visitBoolean("skipMultiplayerWarning", this.skipMultiplayerWarning);
 		visitor.accept("hideMatchedNames", this.hideMatchedNames);
 		this.joinedFirstServer = visitor.visitBoolean("joinedFirstServer", this.joinedFirstServer);
-		this.hideBundleTutorial = visitor.visitBoolean("hideBundleTutorial", this.hideBundleTutorial);
 		this.syncChunkWrites = visitor.visitBoolean("syncChunkWrites", this.syncChunkWrites);
 		visitor.accept("showAutosaveIndicator", this.showAutosaveIndicator);
 		visitor.accept("allowServerListing", this.allowServerListing);
@@ -1472,10 +1498,6 @@ public class GameOptions {
 				this.fullscreenResolution = nbtCompound2.getString("fullscreenResolution");
 			}
 
-			if (this.client.getWindow() != null) {
-				this.client.getWindow().setFramerateLimit(this.maxFps.getValue());
-			}
-
 			KeyBinding.updateKeysByCode();
 		} catch (Exception var7) {
 			LOGGER.error("Failed to load options", (Throwable)var7);
@@ -1597,7 +1619,8 @@ public class GameOptions {
 			i,
 			this.mainArm.getValue(),
 			this.client.shouldFilterText(),
-			this.allowServerListing.getValue()
+			this.allowServerListing.getValue(),
+			this.particles.getValue()
 		);
 	}
 
@@ -1610,11 +1633,11 @@ public class GameOptions {
 	 */
 	public void sendClientSettings() {
 		if (this.client.player != null) {
-			this.client.player.networkHandler.sendPacket(new ClientOptionsC2SPacket(this.getSyncedOptions()));
+			this.client.player.networkHandler.syncOptions(this.getSyncedOptions());
 		}
 	}
 
-	private void setPlayerModelPart(PlayerModelPart part, boolean enabled) {
+	public void setPlayerModelPart(PlayerModelPart part, boolean enabled) {
 		if (enabled) {
 			this.enabledPlayerModelParts.add(part);
 		} else {
@@ -1624,11 +1647,6 @@ public class GameOptions {
 
 	public boolean isPlayerModelPartEnabled(PlayerModelPart part) {
 		return this.enabledPlayerModelParts.contains(part);
-	}
-
-	public void togglePlayerModelPart(PlayerModelPart part, boolean enabled) {
-		this.setPlayerModelPart(part, enabled);
-		this.sendClientSettings();
 	}
 
 	public CloudRenderMode getCloudRenderModeValue() {

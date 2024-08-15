@@ -38,7 +38,7 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 
 	@Override
 	protected void initAttributes(Random random) {
-		this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue((double)getChildHealthBonus(random::nextInt));
+		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue((double)getChildHealthBonus(random::nextInt));
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createAbstractDonkeyAttributes() {
-		return createBaseHorseAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.175F).add(EntityAttributes.GENERIC_JUMP_STRENGTH, 0.5);
+		return createBaseHorseAttributes().add(EntityAttributes.MOVEMENT_SPEED, 0.175F).add(EntityAttributes.JUMP_STRENGTH, 0.5);
 	}
 
 	public boolean hasChest() {
@@ -159,12 +159,12 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 
 				if (!this.isTame()) {
 					this.playAngrySound();
-					return ActionResult.success(this.getWorld().isClient);
+					return ActionResult.SUCCESS;
 				}
 
 				if (!this.hasChest() && itemStack.isOf(Items.CHEST)) {
 					this.addChest(player, itemStack);
-					return ActionResult.success(this.getWorld().isClient);
+					return ActionResult.SUCCESS;
 				}
 			}
 

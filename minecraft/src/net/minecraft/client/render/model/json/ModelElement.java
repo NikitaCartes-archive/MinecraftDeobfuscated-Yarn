@@ -29,13 +29,19 @@ public class ModelElement {
 	public final Map<Direction, ModelElementFace> faces;
 	public final ModelRotation rotation;
 	public final boolean shade;
+	public final int lightEmission;
 
-	public ModelElement(Vector3f from, Vector3f to, Map<Direction, ModelElementFace> faces, @Nullable ModelRotation rotation, boolean shade) {
+	public ModelElement(Vector3f from, Vector3f to, Map<Direction, ModelElementFace> faces) {
+		this(from, to, faces, null, true, 0);
+	}
+
+	public ModelElement(Vector3f from, Vector3f to, Map<Direction, ModelElementFace> faces, @Nullable ModelRotation rotation, boolean shade, int lightEmission) {
 		this.from = from;
 		this.to = to;
 		this.faces = faces;
 		this.rotation = rotation;
 		this.shade = shade;
+		this.lightEmission = lightEmission;
 		this.initTextures();
 	}
 
@@ -67,6 +73,7 @@ public class ModelElement {
 	@Environment(EnvType.CLIENT)
 	protected static class Deserializer implements JsonDeserializer<ModelElement> {
 		private static final boolean DEFAULT_SHADE = true;
+		private static final int field_53160 = 0;
 
 		public ModelElement deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -78,7 +85,19 @@ public class ModelElement {
 				throw new JsonParseException("Expected shade to be a Boolean");
 			} else {
 				boolean bl = JsonHelper.getBoolean(jsonObject, "shade", true);
-				return new ModelElement(vector3f, vector3f2, map, modelRotation, bl);
+				int i = 0;
+				if (jsonObject.has("light_emission")) {
+					boolean bl2 = JsonHelper.hasNumber(jsonObject, "light_emission");
+					if (bl2) {
+						i = JsonHelper.getInt(jsonObject, "light_emission");
+					}
+
+					if (!bl2 || i < 0 || i > 15) {
+						throw new JsonParseException("Expected light_emission to be an Integer between (inclusive) 0 and 15");
+					}
+				}
+
+				return new ModelElement(vector3f, vector3f2, map, modelRotation, bl, i);
 			}
 		}
 

@@ -16,8 +16,8 @@ import net.minecraft.client.sound.SoundListenerTransform;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.sound.WeightedSoundSet;
 import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -92,7 +92,6 @@ public class SubtitlesHud implements SoundInstanceListener {
 						float g = 1.0F;
 						int o = this.client.textRenderer.getWidth(text);
 						int p = MathHelper.floor(MathHelper.clampedLerp(255.0F, 75.0F, (float)(Util.getMeasuringTimeMs() - soundEntry.time) / (float)(3000.0 * d)));
-						int q = p << 16 | p << 8 | p;
 						context.getMatrices().push();
 						context.getMatrices()
 							.translate(
@@ -100,16 +99,16 @@ public class SubtitlesHud implements SoundInstanceListener {
 							);
 						context.getMatrices().scale(1.0F, 1.0F, 1.0F);
 						context.fill(-l - 1, -n - 1, l + 1, n + 1, this.client.options.getTextBackgroundColor(0.8F));
-						int r = q + Colors.BLACK;
+						int q = ColorHelper.getArgb(255, p, p, p);
 						if (!bl) {
 							if (e > 0.0) {
-								context.drawTextWithShadow(this.client.textRenderer, ">", l - this.client.textRenderer.getWidth(">"), -n, r);
+								context.drawTextWithShadow(this.client.textRenderer, ">", l - this.client.textRenderer.getWidth(">"), -n, q);
 							} else if (e < 0.0) {
-								context.drawTextWithShadow(this.client.textRenderer, "<", -l, -n, r);
+								context.drawTextWithShadow(this.client.textRenderer, "<", -l, -n, q);
 							}
 						}
 
-						context.drawTextWithShadow(this.client.textRenderer, text, -o / 2, -n, r);
+						context.drawTextWithShadow(this.client.textRenderer, text, -o / 2, -n, q);
 						context.getMatrices().pop();
 						i++;
 					}

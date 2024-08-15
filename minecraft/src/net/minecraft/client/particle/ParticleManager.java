@@ -33,7 +33,6 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.texture.Sprite;
@@ -73,11 +72,7 @@ public class ParticleManager implements ResourceReloader {
 	private static final Identifier PARTICLES_PATH = Identifier.ofVanilla("particles");
 	private static final int MAX_PARTICLE_COUNT = 16384;
 	private static final List<ParticleTextureSheet> PARTICLE_TEXTURE_SHEETS = ImmutableList.of(
-		ParticleTextureSheet.TERRAIN_SHEET,
-		ParticleTextureSheet.PARTICLE_SHEET_OPAQUE,
-		ParticleTextureSheet.PARTICLE_SHEET_LIT,
-		ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT,
-		ParticleTextureSheet.CUSTOM
+		ParticleTextureSheet.TERRAIN_SHEET, ParticleTextureSheet.PARTICLE_SHEET_OPAQUE, ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT, ParticleTextureSheet.CUSTOM
 	);
 	protected ClientWorld world;
 	private final Map<ParticleTextureSheet, Queue<Particle>> particles = Maps.<ParticleTextureSheet, Queue<Particle>>newIdentityHashMap();
@@ -445,7 +440,6 @@ public class ParticleManager implements ResourceReloader {
 		for (ParticleTextureSheet particleTextureSheet : PARTICLE_TEXTURE_SHEETS) {
 			Queue<Particle> queue = (Queue<Particle>)this.particles.get(particleTextureSheet);
 			if (queue != null && !queue.isEmpty()) {
-				RenderSystem.setShader(GameRenderer::getParticleProgram);
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferBuilder = particleTextureSheet.begin(tessellator, this.textureManager);
 				if (bufferBuilder != null) {

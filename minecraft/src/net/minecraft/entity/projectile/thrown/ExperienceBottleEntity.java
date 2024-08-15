@@ -5,6 +5,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Potions;
 import net.minecraft.server.world.ServerWorld;
@@ -17,12 +18,12 @@ public class ExperienceBottleEntity extends ThrownItemEntity {
 		super(entityType, world);
 	}
 
-	public ExperienceBottleEntity(World world, LivingEntity owner) {
-		super(EntityType.EXPERIENCE_BOTTLE, owner, world);
+	public ExperienceBottleEntity(World world, LivingEntity owner, ItemStack stack) {
+		super(EntityType.EXPERIENCE_BOTTLE, owner, world, stack);
 	}
 
-	public ExperienceBottleEntity(World world, double x, double y, double z) {
-		super(EntityType.EXPERIENCE_BOTTLE, x, y, z, world);
+	public ExperienceBottleEntity(World world, double x, double y, double z, ItemStack stack) {
+		super(EntityType.EXPERIENCE_BOTTLE, x, y, z, world, stack);
 	}
 
 	@Override

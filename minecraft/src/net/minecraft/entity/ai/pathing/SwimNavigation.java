@@ -42,7 +42,7 @@ public class SwimNavigation extends EntityNavigation {
 
 	@Override
 	public boolean isValidPosition(BlockPos pos) {
-		return !this.world.getBlockState(pos).isOpaqueFullCube(this.world, pos);
+		return !this.world.getBlockState(pos).isOpaqueFullCube();
 	}
 
 	@Override

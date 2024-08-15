@@ -23,6 +23,7 @@ import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.SaveLoader;
@@ -55,12 +56,13 @@ public class TestServer extends MinecraftServer {
 	private static final int RESULT_STRING_LOG_INTERVAL = 20;
 	private static final int TEST_POS_XZ_RANGE = 14999992;
 	private static final ApiServices NONE_API_SERVICES = new ApiServices(null, ServicesKeySet.EMPTY, null, null);
+	private static final FeatureSet ENABLED_FEATURES = FeatureFlags.FEATURE_MANAGER.getFeatureSet().subtract(FeatureSet.of(FeatureFlags.REDSTONE_EXPERIMENTS));
 	private final MultiValueDebugSampleLogImpl debugSampleLog = new MultiValueDebugSampleLogImpl(4);
 	private List<GameTestBatch> batches = new ArrayList();
 	private final List<TestFunction> testFunctions;
 	private final BlockPos pos;
 	private final Stopwatch stopwatch = Stopwatch.createUnstarted();
-	private static final GameRules GAME_RULES = Util.make(new GameRules(), gameRules -> {
+	private static final GameRules GAME_RULES = Util.make(new GameRules(ENABLED_FEATURES), gameRules -> {
 		gameRules.get(GameRules.DO_MOB_SPAWNING).set(false, null);
 		gameRules.get(GameRules.DO_WEATHER_CYCLE).set(false, null);
 		gameRules.get(GameRules.RANDOM_TICK_SPEED).set(0, null);
@@ -77,9 +79,7 @@ public class TestServer extends MinecraftServer {
 			throw new IllegalArgumentException("No test functions were given!");
 		} else {
 			resourcePackManager.scanPacks();
-			DataConfiguration dataConfiguration = new DataConfiguration(
-				new DataPackSettings(new ArrayList(resourcePackManager.getIds()), List.of()), FeatureFlags.FEATURE_MANAGER.getFeatureSet()
-			);
+			DataConfiguration dataConfiguration = new DataConfiguration(new DataPackSettings(new ArrayList(resourcePackManager.getIds()), List.of()), ENABLED_FEATURES);
 			LevelInfo levelInfo = new LevelInfo("Test Level", GameMode.CREATIVE, false, Difficulty.NORMAL, true, GAME_RULES, dataConfiguration);
 			SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(resourcePackManager, dataConfiguration, false, true);
 			SaveLoading.ServerConfig serverConfig = new SaveLoading.ServerConfig(dataPacks, CommandManager.RegistrationEnvironment.DEDICATED, 4);
@@ -93,8 +93,8 @@ public class TestServer extends MinecraftServer {
 								context -> {
 									Registry<DimensionOptions> registry = new SimpleRegistry<>(RegistryKeys.DIMENSION, Lifecycle.stable()).freeze();
 									DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = context.worldGenRegistryManager()
-										.get(RegistryKeys.WORLD_PRESET)
-										.entryOf(WorldPresets.FLAT)
+										.getWrapperOrThrow(RegistryKeys.WORLD_PRESET)
+										.getOrThrow(WorldPresets.FLAT)
 										.value()
 										.createDimensionsRegistryHolder()
 										.toConfig(registry);
@@ -173,7 +173,7 @@ public class TestServer extends MinecraftServer {
 
 			if (this.testSet.hasFailedOptionalTests()) {
 				LOGGER.info("{} optional tests failed", this.testSet.getFailedOptionalTestCount());
-				this.testSet.getOptionalTests().forEach(test -> LOGGER.info("   - {}", test.getTemplatePath()));
+				this.testSet.getOptionalTests().forEach(test -> LOGGER.info("   - {} with rotation: {}", test.getTemplatePath(), test.getRotation()));
 			}
 
 			LOGGER.info("====================================================");

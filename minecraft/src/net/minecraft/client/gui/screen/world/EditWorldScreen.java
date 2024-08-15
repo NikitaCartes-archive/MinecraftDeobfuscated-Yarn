@@ -46,6 +46,7 @@ public class EditWorldScreen extends Screen {
 	private static final Text OPTIMIZE_TEXT = Text.translatable("selectWorld.edit.optimize");
 	private static final Text CONFIRM_TITLE_TEXT = Text.translatable("optimizeWorld.confirm.title");
 	private static final Text CONFIRM_DESCRIPTION_TEXT = Text.translatable("optimizeWorld.confirm.description");
+	private static final Text CONFIRM_PROCEED_TEXT = Text.translatable("optimizeWorld.confirm.proceed");
 	private static final Text SAVE_TEXT = Text.translatable("selectWorld.edit.save");
 	private static final int field_46893 = 200;
 	private static final int field_46894 = 4;
@@ -103,7 +104,7 @@ public class EditWorldScreen extends Screen {
 				}
 
 				client.setScreen(OptimizeWorldScreen.create(client, this.callback, client.getDataFixer(), session, eraseCache));
-			}, CONFIRM_TITLE_TEXT, CONFIRM_DESCRIPTION_TEXT, true))).width(200).build());
+			}, CONFIRM_TITLE_TEXT, CONFIRM_DESCRIPTION_TEXT, CONFIRM_PROCEED_TEXT, true))).width(200).build());
 		this.layout.add(new EmptyWidget(200, 20));
 		this.layout.add(directionalLayoutWidget);
 		this.layout.forEachChild(child -> {

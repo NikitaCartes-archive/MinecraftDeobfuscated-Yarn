@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.component.DataComponentTypes;
@@ -27,6 +28,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.block.WireOrientation;
 import org.slf4j.Logger;
 
 public class CommandBlock extends BlockWithEntity implements OperatorBlock {
@@ -57,18 +59,25 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		if (!world.isClient) {
 			if (world.getBlockEntity(pos) instanceof CommandBlockBlockEntity commandBlockBlockEntity) {
-				boolean bl = world.isReceivingRedstonePower(pos);
-				boolean bl2 = commandBlockBlockEntity.isPowered();
-				commandBlockBlockEntity.setPowered(bl);
-				if (!bl2 && !commandBlockBlockEntity.isAuto() && commandBlockBlockEntity.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
-					if (bl) {
-						commandBlockBlockEntity.updateConditionMet();
-						world.scheduleBlockTick(pos, this, 1);
-					}
+				this.method_61744(world, pos, commandBlockBlockEntity, world.isReceivingRedstonePower(pos));
+			}
+		}
+	}
+
+	private void method_61744(World world, BlockPos blockPos, CommandBlockBlockEntity commandBlockBlockEntity, boolean bl) {
+		boolean bl2 = commandBlockBlockEntity.isPowered();
+		if (bl != bl2) {
+			commandBlockBlockEntity.setPowered(bl);
+			if (bl) {
+				if (commandBlockBlockEntity.isAuto() || commandBlockBlockEntity.getCommandBlockType() == CommandBlockBlockEntity.Type.SEQUENCE) {
+					return;
 				}
+
+				commandBlockBlockEntity.updateConditionMet();
+				world.scheduleBlockTick(blockPos, this, 1);
 			}
 		}
 	}
@@ -118,7 +127,7 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof CommandBlockBlockEntity && player.isCreativeLevelTwoOp()) {
 			player.openCommandBlockScreen((CommandBlockBlockEntity)blockEntity);
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return ActionResult.PASS;
 		}
@@ -146,7 +155,7 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 				}
 
 				boolean bl = world.isReceivingRedstonePower(pos);
-				commandBlockBlockEntity.setPowered(bl);
+				this.method_61744(world, pos, commandBlockBlockEntity, bl);
 			}
 		}
 	}

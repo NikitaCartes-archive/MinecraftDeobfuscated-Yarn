@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import java.util.List;
+import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.entity.BeehiveBlockEntity;
@@ -31,6 +32,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -38,10 +40,10 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -54,6 +56,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.explosion.Explosion;
 
 public class BeehiveBlock extends BlockWithEntity {
 	public static final MapCodec<BeehiveBlock> CODEC = createCodec(BeehiveBlock::new);
@@ -96,6 +99,12 @@ public class BeehiveBlock extends BlockWithEntity {
 		}
 	}
 
+	@Override
+	protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+		super.onExploded(state, world, pos, explosion, stackMerger);
+		this.angerNearbyBees(world, pos);
+	}
+
 	private void angerNearbyBees(World world, BlockPos pos) {
 		Box box = new Box(pos).expand(8.0, 6.0, 8.0);
 		List<BeeEntity> list = world.getNonSpectatingEntities(BeeEntity.class, box);
@@ -119,7 +128,7 @@ public class BeehiveBlock extends BlockWithEntity {
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		int i = (Integer)state.get(HONEY_LEVEL);
 		boolean bl = false;
 		if (i >= 5) {
@@ -159,7 +168,7 @@ public class BeehiveBlock extends BlockWithEntity {
 				this.takeHoney(world, state, pos);
 			}
 
-			return ItemActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
 		}

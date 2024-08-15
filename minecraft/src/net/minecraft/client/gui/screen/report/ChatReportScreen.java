@@ -10,6 +10,7 @@ import net.minecraft.client.gui.widget.EditBoxWidget;
 import net.minecraft.client.gui.widget.LayoutWidgets;
 import net.minecraft.client.session.report.AbuseReportContext;
 import net.minecraft.client.session.report.AbuseReportReason;
+import net.minecraft.client.session.report.AbuseReportType;
 import net.minecraft.client.session.report.ChatAbuseReport;
 import net.minecraft.text.Text;
 
@@ -47,7 +48,7 @@ public class ChatReportScreen extends ReportScreen<ChatAbuseReport.Builder> {
 					.build()
 			);
 		this.selectReasonButton = ButtonWidget.builder(
-				SELECT_REASON_TEXT, button -> this.client.setScreen(new AbuseReportReasonScreen(this, this.reportBuilder.getReason(), reason -> {
+				SELECT_REASON_TEXT, button -> this.client.setScreen(new AbuseReportReasonScreen(this, this.reportBuilder.getReason(), AbuseReportType.CHAT, reason -> {
 						this.reportBuilder.setReason(reason);
 						this.onChange();
 					}))

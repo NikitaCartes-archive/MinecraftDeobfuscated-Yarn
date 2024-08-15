@@ -8,7 +8,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -36,7 +36,7 @@ import net.minecraft.util.math.MathHelper;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class EndermiteEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+public class EndermiteEntityModel extends EntityModel<EntityRenderState> {
 	private static final int BODY_SEGMENTS_COUNT = 4;
 	private static final int[][] SEGMENT_DIMENSIONS = new int[][]{{4, 3, 2}, {6, 4, 5}, {3, 3, 1}, {1, 2, 1}};
 	private static final int[][] SEGMENT_UVS = new int[][]{{0, 0}, {0, 5}, {0, 14}, {0, 18}};
@@ -90,16 +90,10 @@ public class EndermiteEntityModel<T extends Entity> extends SinglePartEntityMode
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+	public void setAngles(EntityRenderState state) {
 		for (int i = 0; i < this.bodySegments.length; i++) {
-			this.bodySegments[i].yaw = MathHelper.cos(animationProgress * 0.9F + (float)i * 0.15F * (float) Math.PI)
-				* (float) Math.PI
-				* 0.01F
-				* (float)(1 + Math.abs(i - 2));
-			this.bodySegments[i].pivotX = MathHelper.sin(animationProgress * 0.9F + (float)i * 0.15F * (float) Math.PI)
-				* (float) Math.PI
-				* 0.1F
-				* (float)Math.abs(i - 2);
+			this.bodySegments[i].yaw = MathHelper.cos(state.age * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.01F * (float)(1 + Math.abs(i - 2));
+			this.bodySegments[i].pivotX = MathHelper.sin(state.age * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.1F * (float)Math.abs(i - 2);
 		}
 	}
 }

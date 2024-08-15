@@ -11,7 +11,7 @@ public interface SpectatorMenuCommand {
 
 	Text getName();
 
-	void renderIcon(DrawContext context, float brightness, int alpha);
+	void renderIcon(DrawContext context, float brightness, float f);
 
 	boolean isEnabled();
 }

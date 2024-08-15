@@ -9,9 +9,9 @@ import net.minecraft.world.gen.carver.ConfiguredCarvers;
 
 public class DefaultBiomeFeatures {
 	public static void addLandCarvers(GenerationSettings.LookupBackedBuilder builder) {
-		builder.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.CAVE);
-		builder.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.CAVE_EXTRA_UNDERGROUND);
-		builder.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.CANYON);
+		builder.carver(ConfiguredCarvers.CAVE);
+		builder.carver(ConfiguredCarvers.CAVE_EXTRA_UNDERGROUND);
+		builder.carver(ConfiguredCarvers.CANYON);
 		builder.feature(GenerationStep.Feature.LAKES, MiscPlacedFeatures.LAKE_LAVA_UNDERGROUND);
 		builder.feature(GenerationStep.Feature.LAKES, MiscPlacedFeatures.LAKE_LAVA_SURFACE);
 	}
@@ -344,10 +344,6 @@ public class DefaultBiomeFeatures {
 
 	public static void addKelp(GenerationSettings.LookupBackedBuilder builder) {
 		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, OceanPlacedFeatures.KELP_COLD);
-	}
-
-	public static void addSeagrassOnStone(GenerationSettings.LookupBackedBuilder builder) {
-		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, OceanPlacedFeatures.SEAGRASS_SIMPLE);
 	}
 
 	public static void addLessKelp(GenerationSettings.LookupBackedBuilder builder) {

@@ -15,8 +15,8 @@ import org.joml.Matrix4f;
 @Environment(EnvType.CLIENT)
 public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
-	private static final int DARK_CYAN = ColorHelper.Argb.getArgb(255, 0, 155, 155);
-	private static final int YELLOW = ColorHelper.Argb.getArgb(255, 255, 255, 0);
+	private static final int DARK_CYAN = ColorHelper.getArgb(255, 0, 155, 155);
+	private static final int YELLOW = ColorHelper.getArgb(255, 255, 255, 0);
 
 	public ChunkBorderDebugRenderer(MinecraftClient client) {
 		this.client = client;

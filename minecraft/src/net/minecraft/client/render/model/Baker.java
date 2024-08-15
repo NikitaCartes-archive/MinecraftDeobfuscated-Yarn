@@ -7,7 +7,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public interface Baker {
-	UnbakedModel getOrLoadModel(Identifier id);
+	UnbakedModel getModel(Identifier id);
 
 	@Nullable
 	BakedModel bake(Identifier id, ModelBakeSettings settings);

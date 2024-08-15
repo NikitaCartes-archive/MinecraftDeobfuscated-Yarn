@@ -13,20 +13,20 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	private static final TrackedData<Boolean> LIT = DataTracker.registerData(FurnaceMinecartEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final int FUEL_PER_ITEM = 3600;
+	private static final int MAX_FUEL = 32000;
 	private int fuel;
 	public double pushX;
 	public double pushZ;
-	private static final Ingredient ACCEPTABLE_FUEL = Ingredient.ofItems(Items.COAL, Items.CHARCOAL);
 
 	public FurnaceMinecartEntity(EntityType<? extends FurnaceMinecartEntity> entityType, World world) {
 		super(entityType, world);
@@ -70,7 +70,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	protected double getMaxSpeed() {
-		return (this.isTouchingWater() ? 3.0 : 4.0) / 20.0;
+		return this.isTouchingWater() ? super.getMaxSpeed() * 0.75 : super.getMaxSpeed() * 0.5;
 	}
 
 	@Override
@@ -79,10 +79,10 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected void moveOnRail(BlockPos pos, BlockState state) {
+	protected void moveOnRail() {
 		double d = 1.0E-4;
 		double e = 0.001;
-		super.moveOnRail(pos, state);
+		super.moveOnRail();
 		Vec3d vec3d = this.getVelocity();
 		double f = vec3d.horizontalLengthSquared();
 		double g = this.pushX * this.pushX + this.pushZ * this.pushZ;
@@ -95,29 +95,28 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected void applySlowdown() {
+	protected Vec3d applySlowdown(Vec3d velocity) {
 		double d = this.pushX * this.pushX + this.pushZ * this.pushZ;
+		Vec3d vec3d;
 		if (d > 1.0E-7) {
 			d = Math.sqrt(d);
 			this.pushX /= d;
 			this.pushZ /= d;
-			Vec3d vec3d = this.getVelocity().multiply(0.8, 0.0, 0.8).add(this.pushX, 0.0, this.pushZ);
+			vec3d = velocity.multiply(0.8, 0.0, 0.8).add(this.pushX, 0.0, this.pushZ);
 			if (this.isTouchingWater()) {
 				vec3d = vec3d.multiply(0.1);
 			}
-
-			this.setVelocity(vec3d);
 		} else {
-			this.setVelocity(this.getVelocity().multiply(0.98, 0.0, 0.98));
+			vec3d = velocity.multiply(0.98, 0.0, 0.98);
 		}
 
-		super.applySlowdown();
+		return super.applySlowdown(vec3d);
 	}
 
 	@Override
 	public ActionResult interact(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (ACCEPTABLE_FUEL.test(itemStack) && this.fuel + 3600 <= 32000) {
+		if (itemStack.isIn(ItemTags.FURNACE_MINECART_FUEL) && this.fuel + 3600 <= 32000) {
 			itemStack.decrementUnlessCreative(1, player);
 			this.fuel += 3600;
 		}
@@ -127,7 +126,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 			this.pushZ = this.getZ() - player.getZ();
 		}
 
-		return ActionResult.success(this.getWorld().isClient);
+		return ActionResult.SUCCESS;
 	}
 
 	@Override

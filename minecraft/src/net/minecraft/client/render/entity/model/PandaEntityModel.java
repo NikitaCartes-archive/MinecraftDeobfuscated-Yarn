@@ -1,5 +1,6 @@
 package net.minecraft.client.render.entity.model;
 
+import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelData;
@@ -7,19 +8,16 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
-import net.minecraft.client.model.ModelUtil;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.passive.PandaEntity;
+import net.minecraft.client.render.entity.state.PandaEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityModel<T> {
-	private float sittingAnimationProgress;
-	private float lieOnBackAnimationProgress;
-	private float playAnimationProgress;
+public class PandaEntityModel extends QuadrupedEntityModel<PandaEntityRenderState> {
+	public static final ModelTransformer BABY_TRANSFORMER = new BabyModelTransformer(true, 23.0F, 4.8F, 2.7F, 3.0F, 49.0F, Set.of("head"));
 
-	public PandaEntityModel(ModelPart root) {
-		super(root, true, 23.0F, 4.8F, 2.7F, 3.0F, 49);
+	public PandaEntityModel(ModelPart modelPart) {
+		super(modelPart);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -53,52 +51,40 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 		return TexturedModelData.of(modelData, 64, 64);
 	}
 
-	public void animateModel(T pandaEntity, float f, float g, float h) {
-		super.animateModel(pandaEntity, f, g, h);
-		this.sittingAnimationProgress = pandaEntity.getSittingAnimationProgress(h);
-		this.lieOnBackAnimationProgress = pandaEntity.getLieOnBackAnimationProgress(h);
-		this.playAnimationProgress = pandaEntity.isBaby() ? 0.0F : pandaEntity.getRollOverAnimationProgress(h);
-	}
-
-	public void setAngles(T pandaEntity, float f, float g, float h, float i, float j) {
-		super.setAngles(pandaEntity, f, g, h, i, j);
-		boolean bl = pandaEntity.getAskForBambooTicks() > 0;
-		boolean bl2 = pandaEntity.isSneezing();
-		int k = pandaEntity.getSneezeProgress();
-		boolean bl3 = pandaEntity.isEating();
-		boolean bl4 = pandaEntity.isScaredByThunderstorm();
-		if (bl) {
-			this.head.yaw = 0.35F * MathHelper.sin(0.6F * h);
-			this.head.roll = 0.35F * MathHelper.sin(0.6F * h);
-			this.rightFrontLeg.pitch = -0.75F * MathHelper.sin(0.3F * h);
-			this.leftFrontLeg.pitch = 0.75F * MathHelper.sin(0.3F * h);
+	public void setAngles(PandaEntityRenderState pandaEntityRenderState) {
+		super.setAngles(pandaEntityRenderState);
+		if (pandaEntityRenderState.askingForBamboo) {
+			this.head.yaw = 0.35F * MathHelper.sin(0.6F * pandaEntityRenderState.age);
+			this.head.roll = 0.35F * MathHelper.sin(0.6F * pandaEntityRenderState.age);
+			this.rightFrontLeg.pitch = -0.75F * MathHelper.sin(0.3F * pandaEntityRenderState.age);
+			this.leftFrontLeg.pitch = 0.75F * MathHelper.sin(0.3F * pandaEntityRenderState.age);
 		} else {
 			this.head.roll = 0.0F;
 		}
 
-		if (bl2) {
-			if (k < 15) {
-				this.head.pitch = (float) (-Math.PI / 4) * (float)k / 14.0F;
-			} else if (k < 20) {
-				float l = (float)((k - 15) / 5);
-				this.head.pitch = (float) (-Math.PI / 4) + (float) (Math.PI / 4) * l;
+		if (pandaEntityRenderState.sneezing) {
+			if (pandaEntityRenderState.sneezeProgress < 15) {
+				this.head.pitch = (float) (-Math.PI / 4) * (float)pandaEntityRenderState.sneezeProgress / 14.0F;
+			} else if (pandaEntityRenderState.sneezeProgress < 20) {
+				float f = (float)((pandaEntityRenderState.sneezeProgress - 15) / 5);
+				this.head.pitch = (float) (-Math.PI / 4) + (float) (Math.PI / 4) * f;
 			}
 		}
 
-		if (this.sittingAnimationProgress > 0.0F) {
-			this.body.pitch = ModelUtil.interpolateAngle(this.body.pitch, 1.7407963F, this.sittingAnimationProgress);
-			this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, (float) (Math.PI / 2), this.sittingAnimationProgress);
+		if (pandaEntityRenderState.sittingAnimationProgress > 0.0F) {
+			this.body.pitch = MathHelper.lerpAngleRadians(pandaEntityRenderState.sittingAnimationProgress, this.body.pitch, 1.7407963F);
+			this.head.pitch = MathHelper.lerpAngleRadians(pandaEntityRenderState.sittingAnimationProgress, this.head.pitch, (float) (Math.PI / 2));
 			this.rightFrontLeg.roll = -0.27079642F;
 			this.leftFrontLeg.roll = 0.27079642F;
 			this.rightHindLeg.roll = 0.5707964F;
 			this.leftHindLeg.roll = -0.5707964F;
-			if (bl3) {
-				this.head.pitch = (float) (Math.PI / 2) + 0.2F * MathHelper.sin(h * 0.6F);
-				this.rightFrontLeg.pitch = -0.4F - 0.2F * MathHelper.sin(h * 0.6F);
-				this.leftFrontLeg.pitch = -0.4F - 0.2F * MathHelper.sin(h * 0.6F);
+			if (pandaEntityRenderState.eating) {
+				this.head.pitch = (float) (Math.PI / 2) + 0.2F * MathHelper.sin(pandaEntityRenderState.age * 0.6F);
+				this.rightFrontLeg.pitch = -0.4F - 0.2F * MathHelper.sin(pandaEntityRenderState.age * 0.6F);
+				this.leftFrontLeg.pitch = -0.4F - 0.2F * MathHelper.sin(pandaEntityRenderState.age * 0.6F);
 			}
 
-			if (bl4) {
+			if (pandaEntityRenderState.scaredByThunderstorm) {
 				this.head.pitch = 2.1707964F;
 				this.rightFrontLeg.pitch = -0.9F;
 				this.leftFrontLeg.pitch = -0.9F;
@@ -110,20 +96,20 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 			this.leftFrontLeg.roll = 0.0F;
 		}
 
-		if (this.lieOnBackAnimationProgress > 0.0F) {
-			this.rightHindLeg.pitch = -0.6F * MathHelper.sin(h * 0.15F);
-			this.leftHindLeg.pitch = 0.6F * MathHelper.sin(h * 0.15F);
-			this.rightFrontLeg.pitch = 0.3F * MathHelper.sin(h * 0.25F);
-			this.leftFrontLeg.pitch = -0.3F * MathHelper.sin(h * 0.25F);
-			this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, (float) (Math.PI / 2), this.lieOnBackAnimationProgress);
+		if (pandaEntityRenderState.lieOnBackAnimationProgress > 0.0F) {
+			this.rightHindLeg.pitch = -0.6F * MathHelper.sin(pandaEntityRenderState.age * 0.15F);
+			this.leftHindLeg.pitch = 0.6F * MathHelper.sin(pandaEntityRenderState.age * 0.15F);
+			this.rightFrontLeg.pitch = 0.3F * MathHelper.sin(pandaEntityRenderState.age * 0.25F);
+			this.leftFrontLeg.pitch = -0.3F * MathHelper.sin(pandaEntityRenderState.age * 0.25F);
+			this.head.pitch = MathHelper.lerpAngleRadians(pandaEntityRenderState.lieOnBackAnimationProgress, this.head.pitch, (float) (Math.PI / 2));
 		}
 
-		if (this.playAnimationProgress > 0.0F) {
-			this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, 2.0561945F, this.playAnimationProgress);
-			this.rightHindLeg.pitch = -0.5F * MathHelper.sin(h * 0.5F);
-			this.leftHindLeg.pitch = 0.5F * MathHelper.sin(h * 0.5F);
-			this.rightFrontLeg.pitch = 0.5F * MathHelper.sin(h * 0.5F);
-			this.leftFrontLeg.pitch = -0.5F * MathHelper.sin(h * 0.5F);
+		if (pandaEntityRenderState.rollOverAnimationProgress > 0.0F) {
+			this.head.pitch = MathHelper.lerpAngleRadians(pandaEntityRenderState.rollOverAnimationProgress, this.head.pitch, 2.0561945F);
+			this.rightHindLeg.pitch = -0.5F * MathHelper.sin(pandaEntityRenderState.age * 0.5F);
+			this.leftHindLeg.pitch = 0.5F * MathHelper.sin(pandaEntityRenderState.age * 0.5F);
+			this.rightFrontLeg.pitch = 0.5F * MathHelper.sin(pandaEntityRenderState.age * 0.5F);
+			this.leftFrontLeg.pitch = -0.5F * MathHelper.sin(pandaEntityRenderState.age * 0.5F);
 		}
 	}
 }

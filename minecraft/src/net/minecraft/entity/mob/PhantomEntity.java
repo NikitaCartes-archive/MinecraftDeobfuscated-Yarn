@@ -83,7 +83,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 	private void onSizeChanged() {
 		this.calculateDimensions();
-		this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue((double)(6 + this.getPhantomSize()));
+		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue((double)(6 + this.getPhantomSize()));
 	}
 
 	public int getPhantomSize() {

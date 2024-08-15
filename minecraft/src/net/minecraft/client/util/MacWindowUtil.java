@@ -6,6 +6,7 @@ import com.sun.jna.Pointer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
+import java.util.Locale;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,6 +15,7 @@ import org.lwjgl.glfw.GLFWNativeCocoa;
 
 @Environment(EnvType.CLIENT)
 public class MacWindowUtil {
+	public static final boolean field_52734 = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("mac");
 	private static final int field_46537 = 8;
 	private static final int FULLSCREEN_MASK = 16384;
 

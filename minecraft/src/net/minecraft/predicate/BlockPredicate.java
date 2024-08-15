@@ -2,6 +2,7 @@ package net.minecraft.predicate;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -13,8 +14,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryCodecs;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
@@ -42,7 +43,7 @@ public record BlockPredicate(Optional<RegistryEntryList<Block>> blocks, Optional
 	);
 
 	public boolean test(ServerWorld world, BlockPos pos) {
-		if (!world.canSetBlock(pos)) {
+		if (!world.isPosLoaded(pos)) {
 			return false;
 		} else {
 			return !this.testState(world.getBlockState(pos))
@@ -83,18 +84,17 @@ public record BlockPredicate(Optional<RegistryEntryList<Block>> blocks, Optional
 			return new BlockPredicate.Builder();
 		}
 
-		public BlockPredicate.Builder blocks(Block... blocks) {
+		public BlockPredicate.Builder blocks(RegistryEntryLookup<Block> blockRegistry, Block... blocks) {
+			return this.blocks(blockRegistry, Arrays.asList(blocks));
+		}
+
+		public BlockPredicate.Builder blocks(RegistryEntryLookup<Block> blockRegistry, Collection<Block> blocks) {
 			this.blocks = Optional.of(RegistryEntryList.of(Block::getRegistryEntry, blocks));
 			return this;
 		}
 
-		public BlockPredicate.Builder blocks(Collection<Block> blocks) {
-			this.blocks = Optional.of(RegistryEntryList.of(Block::getRegistryEntry, blocks));
-			return this;
-		}
-
-		public BlockPredicate.Builder tag(TagKey<Block> tag) {
-			this.blocks = Optional.of(Registries.BLOCK.getOrCreateEntryList(tag));
+		public BlockPredicate.Builder tag(RegistryEntryLookup<Block> blockRegistry, TagKey<Block> tag) {
+			this.blocks = Optional.of(blockRegistry.getOrThrow(tag));
 			return this;
 		}
 

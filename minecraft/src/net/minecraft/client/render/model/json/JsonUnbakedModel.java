@@ -4,7 +4,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -15,17 +14,12 @@ import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import java.io.Reader;
-import java.io.StringReader;
 import java.lang.reflect.Type;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -36,7 +30,7 @@ import net.minecraft.client.render.model.Baker;
 import net.minecraft.client.render.model.BasicBakedModel;
 import net.minecraft.client.render.model.BuiltinBakedModel;
 import net.minecraft.client.render.model.ModelBakeSettings;
-import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.Models;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.Sprite;
@@ -85,10 +79,6 @@ public class JsonUnbakedModel implements UnbakedModel {
 
 	public static JsonUnbakedModel deserialize(Reader input) {
 		return JsonHelper.deserialize(GSON, input, JsonUnbakedModel.class);
-	}
-
-	public static JsonUnbakedModel deserialize(String json) {
-		return deserialize(new StringReader(json));
 	}
 
 	public JsonUnbakedModel(
@@ -142,62 +132,18 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	@Override
-	public Collection<Identifier> getModelDependencies() {
-		Set<Identifier> set = Sets.<Identifier>newHashSet();
-
-		for (ModelOverride modelOverride : this.overrides) {
-			set.add(modelOverride.getModelId());
-		}
-
+	public void resolve(UnbakedModel.Resolver resolver, UnbakedModel.ModelType currentlyResolvingType) {
 		if (this.parentId != null) {
-			set.add(this.parentId);
-		}
-
-		return set;
-	}
-
-	@Override
-	public void setParents(Function<Identifier, UnbakedModel> modelLoader) {
-		Set<UnbakedModel> set = Sets.<UnbakedModel>newLinkedHashSet();
-
-		for (JsonUnbakedModel jsonUnbakedModel = this;
-			jsonUnbakedModel.parentId != null && jsonUnbakedModel.parent == null;
-			jsonUnbakedModel = jsonUnbakedModel.parent
-		) {
-			set.add(jsonUnbakedModel);
-			UnbakedModel unbakedModel = (UnbakedModel)modelLoader.apply(jsonUnbakedModel.parentId);
-			if (unbakedModel == null) {
-				LOGGER.warn("No parent '{}' while loading model '{}'", this.parentId, jsonUnbakedModel);
-			}
-
-			if (set.contains(unbakedModel)) {
-				LOGGER.warn(
-					"Found 'parent' loop while loading model '{}' in chain: {} -> {}",
-					jsonUnbakedModel,
-					set.stream().map(Object::toString).collect(Collectors.joining(" -> ")),
-					this.parentId
-				);
-				unbakedModel = null;
-			}
-
-			if (unbakedModel == null) {
-				jsonUnbakedModel.parentId = ModelLoader.MISSING_ID;
-				unbakedModel = (UnbakedModel)modelLoader.apply(jsonUnbakedModel.parentId);
-			}
-
-			if (!(unbakedModel instanceof JsonUnbakedModel)) {
+			if (!(resolver.resolve(this.parentId) instanceof JsonUnbakedModel jsonUnbakedModel)) {
 				throw new IllegalStateException("BlockModel parent has to be a block model.");
 			}
 
-			jsonUnbakedModel.parent = (JsonUnbakedModel)unbakedModel;
+			this.parent = jsonUnbakedModel;
 		}
 
-		this.overrides.forEach(override -> {
-			UnbakedModel unbakedModelx = (UnbakedModel)modelLoader.apply(override.getModelId());
-			if (!Objects.equals(unbakedModelx, this)) {
-				unbakedModelx.setParents(modelLoader);
-			}
-		});
+		if (currentlyResolvingType != UnbakedModel.ModelType.OVERRIDE) {
+			this.overrides.forEach(override -> resolver.resolveOverride(override.getModelId()));
+		}
 	}
 
 	@Override
@@ -207,7 +153,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 
 	public BakedModel bake(Baker baker, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, boolean bl) {
 		Sprite sprite = (Sprite)textureGetter.apply(this.resolveSprite("particle"));
-		if (this.getRootModel() == ModelLoader.BLOCK_ENTITY_MARKER) {
+		if (this.getRootModel() == Models.BLOCK_ENTITY_MARKER) {
 			return new BuiltinBakedModel(this.getTransformations(), this.compileOverrides(baker, parent), sprite, this.getGuiLight().isSide());
 		} else {
 			BasicBakedModel.Builder builder = new BasicBakedModel.Builder(this, this.compileOverrides(baker, parent), bl).setParticle(sprite);
@@ -232,7 +178,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	private static BakedQuad createQuad(ModelElement element, ModelElementFace elementFace, Sprite sprite, Direction side, ModelBakeSettings settings) {
-		return QUAD_FACTORY.bake(element.from, element.to, elementFace, sprite, side, settings, element.rotation, element.shade);
+		return QUAD_FACTORY.bake(element.from, element.to, elementFace, sprite, side, settings, element.rotation, element.shade, element.lightEmission);
 	}
 
 	public boolean textureExists(String name) {

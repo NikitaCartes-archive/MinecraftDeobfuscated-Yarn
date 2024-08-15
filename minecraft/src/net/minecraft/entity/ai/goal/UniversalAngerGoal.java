@@ -41,7 +41,7 @@ public class UniversalAngerGoal<T extends MobEntity & Angerable> extends Goal {
 	}
 
 	private List<? extends MobEntity> getOthersInRange() {
-		double d = this.mob.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
+		double d = this.mob.getAttributeValue(EntityAttributes.FOLLOW_RANGE);
 		Box box = Box.from(this.mob.getPos()).expand(d, 10.0, d);
 		return this.mob.getWorld().getEntitiesByClass(this.mob.getClass(), box, EntityPredicates.EXCEPT_SPECTATOR);
 	}

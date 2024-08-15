@@ -11,11 +11,13 @@ import java.util.concurrent.locks.LockSupport;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import javax.annotation.CheckReturnValue;
+import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.profiler.SampleType;
 import net.minecraft.util.profiler.Sampler;
 import org.slf4j.Logger;
 
 public abstract class ThreadExecutor<R extends Runnable> implements SampleableExecutor, MessageListener<R>, Executor {
+	public static final long field_52421 = 100000L;
 	private final String name;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Queue<R> tasks = Queues.<R>newConcurrentLinkedQueue();
@@ -130,7 +132,7 @@ public abstract class ThreadExecutor<R extends Runnable> implements SampleableEx
 		}
 	}
 
-	public void waitForTasks() {
+	protected void waitForTasks() {
 		Thread.yield();
 		LockSupport.parkNanos("waiting for tasks", 100000L);
 	}
@@ -140,11 +142,18 @@ public abstract class ThreadExecutor<R extends Runnable> implements SampleableEx
 			task.run();
 		} catch (Exception var3) {
 			LOGGER.error(LogUtils.FATAL_MARKER, "Error executing task on {}", this.getName(), var3);
+			throw var3;
 		}
 	}
 
 	@Override
 	public List<Sampler> createSamplers() {
 		return ImmutableList.of(Sampler.create(this.name + "-pending-tasks", SampleType.EVENT_LOOPS, this::getTaskCount));
+	}
+
+	public static boolean method_61391(Throwable throwable) {
+		return throwable instanceof CrashException crashException
+			? method_61391(crashException.getCause())
+			: throwable instanceof OutOfMemoryError || throwable instanceof StackOverflowError;
 	}
 }

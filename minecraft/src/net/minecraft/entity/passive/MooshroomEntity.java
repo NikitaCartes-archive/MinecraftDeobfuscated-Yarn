@@ -21,10 +21,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
@@ -104,7 +107,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 			}
 
 			this.playSound(soundEvent, 1.0F, 1.0F);
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else if (itemStack.isOf(Items.SHEARS) && this.isShearable()) {
 			this.sheared(SoundCategory.PLAYERS);
 			this.emitGameEvent(GameEvent.SHEAR, player);
@@ -112,7 +115,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 				itemStack.damage(1, player, getSlotForHand(hand));
 			}
 
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else if (this.getVariant() == MooshroomEntity.Type.BROWN && itemStack.isIn(ItemTags.SMALL_FLOWERS)) {
 			if (this.stewEffects != null) {
 				for (int i = 0; i < 2; i++) {
@@ -152,7 +155,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 				this.playSound(SoundEvents.ENTITY_MOOSHROOM_EAT, 2.0F, 1.0F);
 			}
 
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return super.interactMob(player, hand);
 		}
@@ -162,7 +165,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 	public void sheared(SoundCategory shearedSoundCategory) {
 		this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_MOOSHROOM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
 		if (!this.getWorld().isClient()) {
-			CowEntity cowEntity = EntityType.COW.create(this.getWorld());
+			CowEntity cowEntity = EntityType.COW.create(this.getWorld(), SpawnReason.CONVERSION);
 			if (cowEntity != null) {
 				((ServerWorld)this.getWorld()).spawnParticles(ParticleTypes.EXPLOSION, this.getX(), this.getBodyY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
 				this.discard();
@@ -180,11 +183,11 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 
 				cowEntity.setInvulnerable(this.isInvulnerable());
 				this.getWorld().spawnEntity(cowEntity);
-
-				for (int i = 0; i < 5; i++) {
-					this.getWorld()
-						.spawnEntity(new ItemEntity(this.getWorld(), this.getX(), this.getBodyY(1.0), this.getZ(), new ItemStack(this.getVariant().mushroom.getBlock())));
-				}
+				this.forEachShearedItem(this.getVariant().getShearingLootTable(), stack -> {
+					for (int i = 0; i < stack.getCount(); i++) {
+						this.getWorld().spawnEntity(new ItemEntity(this.getWorld(), this.getX(), this.getBodyY(1.0), this.getZ(), stack.copyWithCount(1)));
+					}
+				});
 			}
 		}
 	}
@@ -199,7 +202,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 		super.writeCustomDataToNbt(nbt);
 		nbt.putString("Type", this.getVariant().asString());
 		if (this.stewEffects != null) {
-			SuspiciousStewEffectsComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.stewEffects).ifSuccess(nbtElement -> nbt.put("stew_effects", nbtElement));
+			SuspiciousStewEffectsComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.stewEffects).ifSuccess(stewEffects -> nbt.put("stew_effects", stewEffects));
 		}
 	}
 
@@ -208,9 +211,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 		super.readCustomDataFromNbt(nbt);
 		this.setVariant(MooshroomEntity.Type.fromName(nbt.getString("Type")));
 		if (nbt.contains("stew_effects", NbtElement.LIST_TYPE)) {
-			SuspiciousStewEffectsComponent.CODEC
-				.parse(NbtOps.INSTANCE, nbt.get("stew_effects"))
-				.ifSuccess(suspiciousStewEffectsComponent -> this.stewEffects = suspiciousStewEffectsComponent);
+			SuspiciousStewEffectsComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get("stew_effects")).ifSuccess(stewEffects -> this.stewEffects = stewEffects);
 		}
 	}
 
@@ -229,7 +230,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 
 	@Nullable
 	public MooshroomEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		MooshroomEntity mooshroomEntity = EntityType.MOOSHROOM.create(serverWorld);
+		MooshroomEntity mooshroomEntity = EntityType.MOOSHROOM.create(serverWorld, SpawnReason.BREEDING);
 		if (mooshroomEntity != null) {
 			mooshroomEntity.setVariant(this.chooseBabyType((MooshroomEntity)passiveEntity));
 		}
@@ -251,16 +252,18 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 	}
 
 	public static enum Type implements StringIdentifiable {
-		RED("red", Blocks.RED_MUSHROOM.getDefaultState()),
-		BROWN("brown", Blocks.BROWN_MUSHROOM.getDefaultState());
+		RED("red", Blocks.RED_MUSHROOM.getDefaultState(), LootTables.MOOSHROOM_RED_SHEARING),
+		BROWN("brown", Blocks.BROWN_MUSHROOM.getDefaultState(), LootTables.MOOSHROOM_BROWN_SHEARING);
 
 		public static final StringIdentifiable.EnumCodec<MooshroomEntity.Type> CODEC = StringIdentifiable.createCodec(MooshroomEntity.Type::values);
 		final String name;
-		final BlockState mushroom;
+		private final BlockState mushroom;
+		private final RegistryKey<LootTable> shearingLootTable;
 
-		private Type(final String name, final BlockState mushroom) {
+		private Type(final String name, final BlockState mushroom, final RegistryKey<LootTable> shearingLootTable) {
 			this.name = name;
 			this.mushroom = mushroom;
+			this.shearingLootTable = shearingLootTable;
 		}
 
 		public BlockState getMushroomState() {
@@ -270,6 +273,10 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 		@Override
 		public String asString() {
 			return this.name;
+		}
+
+		public RegistryKey<LootTable> getShearingLootTable() {
+			return this.shearingLootTable;
 		}
 
 		static MooshroomEntity.Type fromName(String name) {

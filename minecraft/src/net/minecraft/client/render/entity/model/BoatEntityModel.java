@@ -1,7 +1,5 @@
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelData;
@@ -10,7 +8,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.client.render.entity.state.BoatEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -50,23 +48,16 @@ import net.minecraft.util.math.MathHelper;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class BoatEntityModel extends CompositeEntityModel<BoatEntity> implements ModelWithWaterPatch {
-	/**
-	 * The key of the left paddle model part, whose value is {@value}.
-	 */
-	private static final String LEFT_PADDLE = "left_paddle";
-	/**
-	 * The key of the right paddle model part, whose value is {@value}.
-	 */
-	private static final String RIGHT_PADDLE = "right_paddle";
+public class BoatEntityModel extends EntityModel<BoatEntityRenderState> {
+	private static final int field_52877 = 28;
+	private static final int field_52878 = 32;
+	private static final int field_52879 = 6;
+	private static final int field_52880 = 20;
+	private static final int field_52881 = 4;
 	/**
 	 * The key of the water patch model part, whose value is {@value}.
 	 */
 	private static final String WATER_PATCH = "water_patch";
-	/**
-	 * The key of the bottom model part, whose value is {@value}.
-	 */
-	private static final String BOTTOM = "bottom";
 	/**
 	 * The key of the back model part, whose value is {@value}.
 	 */
@@ -83,34 +74,22 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> implements
 	 * The key of the left model part, whose value is {@value}.
 	 */
 	private static final String LEFT = "left";
+	private final ModelPart root;
 	private final ModelPart leftPaddle;
 	private final ModelPart rightPaddle;
-	private final ModelPart waterPatch;
-	private final ImmutableList<ModelPart> parts;
 
 	public BoatEntityModel(ModelPart root) {
-		this.leftPaddle = root.getChild("left_paddle");
-		this.rightPaddle = root.getChild("right_paddle");
-		this.waterPatch = root.getChild("water_patch");
-		this.parts = this.getParts(root).build();
+		this.root = root;
+		this.leftPaddle = root.getChild(EntityModelPartNames.LEFT_PADDLE);
+		this.rightPaddle = root.getChild(EntityModelPartNames.RIGHT_PADDLE);
 	}
 
-	protected Builder<ModelPart> getParts(ModelPart root) {
-		Builder<ModelPart> builder = new Builder<>();
-		builder.add(
-			root.getChild("bottom"), root.getChild("back"), root.getChild("front"), root.getChild("right"), root.getChild("left"), this.leftPaddle, this.rightPaddle
-		);
-		return builder;
-	}
-
-	public static void addParts(ModelPartData modelPartData) {
-		int i = 32;
-		int j = 6;
-		int k = 20;
-		int l = 4;
-		int m = 28;
+	private static void addParts(ModelPartData modelPartData) {
+		int i = 16;
+		int j = 14;
+		int k = 10;
 		modelPartData.addChild(
-			"bottom",
+			EntityModelPartNames.BOTTOM,
 			ModelPartBuilder.create().uv(0, 0).cuboid(-14.0F, -9.0F, -3.0F, 28.0F, 16.0F, 3.0F),
 			ModelTransform.of(0.0F, 3.0F, 1.0F, (float) (Math.PI / 2), 0.0F, 0.0F)
 		);
@@ -130,24 +109,19 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> implements
 			ModelTransform.of(0.0F, 4.0F, -9.0F, 0.0F, (float) Math.PI, 0.0F)
 		);
 		modelPartData.addChild("left", ModelPartBuilder.create().uv(0, 43).cuboid(-14.0F, -7.0F, -1.0F, 28.0F, 6.0F, 2.0F), ModelTransform.pivot(0.0F, 4.0F, 9.0F));
-		int n = 20;
-		int o = 7;
-		int p = 6;
+		int l = 20;
+		int m = 7;
+		int n = 6;
 		float f = -5.0F;
 		modelPartData.addChild(
-			"left_paddle",
+			EntityModelPartNames.LEFT_PADDLE,
 			ModelPartBuilder.create().uv(62, 0).cuboid(-1.0F, 0.0F, -5.0F, 2.0F, 2.0F, 18.0F).cuboid(-1.001F, -3.0F, 8.0F, 1.0F, 6.0F, 7.0F),
 			ModelTransform.of(3.0F, -5.0F, 9.0F, 0.0F, 0.0F, (float) (Math.PI / 16))
 		);
 		modelPartData.addChild(
-			"right_paddle",
+			EntityModelPartNames.RIGHT_PADDLE,
 			ModelPartBuilder.create().uv(62, 20).cuboid(-1.0F, 0.0F, -5.0F, 2.0F, 2.0F, 18.0F).cuboid(0.001F, -3.0F, 8.0F, 1.0F, 6.0F, 7.0F),
 			ModelTransform.of(3.0F, -5.0F, -9.0F, 0.0F, (float) Math.PI, (float) (Math.PI / 16))
-		);
-		modelPartData.addChild(
-			"water_patch",
-			ModelPartBuilder.create().uv(0, 0).cuboid(-14.0F, -9.0F, -3.0F, 28.0F, 16.0F, 3.0F),
-			ModelTransform.of(0.0F, -3.0F, 1.0F, (float) (Math.PI / 2), 0.0F, 0.0F)
 		);
 	}
 
@@ -158,24 +132,52 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> implements
 		return TexturedModelData.of(modelData, 128, 64);
 	}
 
-	public void setAngles(BoatEntity boatEntity, float f, float g, float h, float i, float j) {
-		setPaddleAngle(boatEntity, 0, this.leftPaddle, f);
-		setPaddleAngle(boatEntity, 1, this.rightPaddle, f);
+	public static TexturedModelData getChestTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		addParts(modelPartData);
+		modelPartData.addChild(
+			EntityModelPartNames.CHEST_BOTTOM,
+			ModelPartBuilder.create().uv(0, 76).cuboid(0.0F, 0.0F, 0.0F, 12.0F, 8.0F, 12.0F),
+			ModelTransform.of(-2.0F, -5.0F, -6.0F, 0.0F, (float) (-Math.PI / 2), 0.0F)
+		);
+		modelPartData.addChild(
+			EntityModelPartNames.CHEST_LID,
+			ModelPartBuilder.create().uv(0, 59).cuboid(0.0F, 0.0F, 0.0F, 12.0F, 4.0F, 12.0F),
+			ModelTransform.of(-2.0F, -9.0F, -6.0F, 0.0F, (float) (-Math.PI / 2), 0.0F)
+		);
+		modelPartData.addChild(
+			EntityModelPartNames.CHEST_LOCK,
+			ModelPartBuilder.create().uv(0, 59).cuboid(0.0F, 0.0F, 0.0F, 2.0F, 4.0F, 1.0F),
+			ModelTransform.of(-1.0F, -6.0F, -1.0F, 0.0F, (float) (-Math.PI / 2), 0.0F)
+		);
+		return TexturedModelData.of(modelData, 128, 128);
 	}
 
-	public ImmutableList<ModelPart> getParts() {
-		return this.parts;
+	public static TexturedModelData getBaseTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		modelPartData.addChild(
+			"water_patch",
+			ModelPartBuilder.create().uv(0, 0).cuboid(-14.0F, -9.0F, -3.0F, 28.0F, 16.0F, 3.0F),
+			ModelTransform.of(0.0F, -3.0F, 1.0F, (float) (Math.PI / 2), 0.0F, 0.0F)
+		);
+		return TexturedModelData.of(modelData, 0, 0);
+	}
+
+	public void setAngles(BoatEntityRenderState boatEntityRenderState) {
+		setPaddleAngle(boatEntityRenderState.leftPaddleAngle, 0, this.leftPaddle);
+		setPaddleAngle(boatEntityRenderState.rightPaddleAngle, 1, this.rightPaddle);
 	}
 
 	@Override
-	public ModelPart getWaterPatch() {
-		return this.waterPatch;
+	public ModelPart getPart() {
+		return this.root;
 	}
 
-	private static void setPaddleAngle(BoatEntity entity, int sigma, ModelPart part, float angle) {
-		float f = entity.interpolatePaddlePhase(sigma, angle);
-		part.pitch = MathHelper.clampedLerp((float) (-Math.PI / 3), (float) (-Math.PI / 12), (MathHelper.sin(-f) + 1.0F) / 2.0F);
-		part.yaw = MathHelper.clampedLerp((float) (-Math.PI / 4), (float) (Math.PI / 4), (MathHelper.sin(-f + 1.0F) + 1.0F) / 2.0F);
+	private static void setPaddleAngle(float angle, int sigma, ModelPart part) {
+		part.pitch = MathHelper.clampedLerp((float) (-Math.PI / 3), (float) (-Math.PI / 12), (MathHelper.sin(-angle) + 1.0F) / 2.0F);
+		part.yaw = MathHelper.clampedLerp((float) (-Math.PI / 4), (float) (Math.PI / 4), (MathHelper.sin(-angle + 1.0F) + 1.0F) / 2.0F);
 		if (sigma == 1) {
 			part.yaw = (float) Math.PI - part.yaw;
 		}

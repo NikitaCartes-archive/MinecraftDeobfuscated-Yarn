@@ -27,9 +27,9 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -69,19 +69,19 @@ public class CrossbowItem extends RangedWeaponItem {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		ChargedProjectilesComponent chargedProjectilesComponent = itemStack.get(DataComponentTypes.CHARGED_PROJECTILES);
 		if (chargedProjectilesComponent != null && !chargedProjectilesComponent.isEmpty()) {
 			this.shootAll(world, user, hand, itemStack, getSpeed(chargedProjectilesComponent), 1.0F, null);
-			return TypedActionResult.consume(itemStack);
+			return ActionResult.CONSUME;
 		} else if (!user.getProjectileType(itemStack).isEmpty()) {
 			this.charged = false;
 			this.loaded = false;
 			user.setCurrentHand(hand);
-			return TypedActionResult.consume(itemStack);
+			return ActionResult.CONSUME;
 		} else {
-			return TypedActionResult.fail(itemStack);
+			return ActionResult.FAIL;
 		}
 	}
 

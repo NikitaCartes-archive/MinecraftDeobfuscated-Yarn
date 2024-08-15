@@ -20,7 +20,6 @@ import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -101,7 +100,7 @@ public class TadpoleEntity extends FishEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createTadpoleAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1.0).add(EntityAttributes.GENERIC_MAX_HEALTH, 6.0);
+		return AnimalEntity.createAnimalAttributes().add(EntityAttributes.MOVEMENT_SPEED, 1.0).add(EntityAttributes.MAX_HEALTH, 6.0);
 	}
 
 	@Override
@@ -147,7 +146,7 @@ public class TadpoleEntity extends FishEntity {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (this.isFrogFood(itemStack)) {
 			this.eatSlimeBall(player, itemStack);
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return (ActionResult)Bucketable.tryBucket(player, hand, this).orElse(super.interactMob(player, hand));
 		}
@@ -223,7 +222,7 @@ public class TadpoleEntity extends FishEntity {
 
 	private void growUp() {
 		if (this.getWorld() instanceof ServerWorld serverWorld) {
-			FrogEntity frogEntity = EntityType.FROG.create(this.getWorld());
+			FrogEntity frogEntity = EntityType.FROG.create(this.getWorld(), SpawnReason.CONVERSION);
 			if (frogEntity != null) {
 				frogEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
 				frogEntity.initialize(serverWorld, this.getWorld().getLocalDifficulty(frogEntity.getBlockPos()), SpawnReason.CONVERSION, null);

@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelData;
@@ -9,7 +9,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.render.entity.state.ChickenEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -50,13 +50,14 @@ import net.minecraft.util.math.MathHelper;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class ChickenEntityModel<T extends Entity> extends AnimalModel<T> {
+public class ChickenEntityModel extends EntityModel<ChickenEntityRenderState> {
 	/**
 	 * The key of the wattle model part, whose value is {@value}.
 	 */
 	public static final String RED_THING = "red_thing";
+	public static final ModelTransformer BABY_TRANSFORMER = new BabyModelTransformer(Set.of("head", "beak", "red_thing"));
+	private final ModelPart root;
 	private final ModelPart head;
-	private final ModelPart body;
 	private final ModelPart rightLeg;
 	private final ModelPart leftLeg;
 	private final ModelPart rightWing;
@@ -65,10 +66,10 @@ public class ChickenEntityModel<T extends Entity> extends AnimalModel<T> {
 	private final ModelPart wattle;
 
 	public ChickenEntityModel(ModelPart root) {
+		this.root = root;
 		this.head = root.getChild(EntityModelPartNames.HEAD);
 		this.beak = root.getChild(EntityModelPartNames.BEAK);
 		this.wattle = root.getChild("red_thing");
-		this.body = root.getChild(EntityModelPartNames.BODY);
 		this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
 		this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
 		this.rightWing = root.getChild(EntityModelPartNames.RIGHT_WING);
@@ -106,26 +107,23 @@ public class ChickenEntityModel<T extends Entity> extends AnimalModel<T> {
 	}
 
 	@Override
-	protected Iterable<ModelPart> getHeadParts() {
-		return ImmutableList.<ModelPart>of(this.head, this.beak, this.wattle);
+	public ModelPart getPart() {
+		return this.root;
 	}
 
-	@Override
-	protected Iterable<ModelPart> getBodyParts() {
-		return ImmutableList.<ModelPart>of(this.body, this.rightLeg, this.leftLeg, this.rightWing, this.leftWing);
-	}
-
-	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
-		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
+	public void setAngles(ChickenEntityRenderState chickenEntityRenderState) {
+		float f = (MathHelper.sin(chickenEntityRenderState.flapProgress) + 1.0F) * chickenEntityRenderState.maxWingDeviation;
+		this.head.pitch = chickenEntityRenderState.pitch * (float) (Math.PI / 180.0);
+		this.head.yaw = chickenEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		this.beak.pitch = this.head.pitch;
 		this.beak.yaw = this.head.yaw;
 		this.wattle.pitch = this.head.pitch;
 		this.wattle.yaw = this.head.yaw;
-		this.rightLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
-		this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
-		this.rightWing.roll = animationProgress;
-		this.leftWing.roll = -animationProgress;
+		float g = chickenEntityRenderState.limbAmplitudeMultiplier;
+		float h = chickenEntityRenderState.limbFrequency;
+		this.rightLeg.pitch = MathHelper.cos(h * 0.6662F) * 1.4F * g;
+		this.leftLeg.pitch = MathHelper.cos(h * 0.6662F + (float) Math.PI) * 1.4F * g;
+		this.rightWing.roll = f;
+		this.leftWing.roll = -f;
 	}
 }

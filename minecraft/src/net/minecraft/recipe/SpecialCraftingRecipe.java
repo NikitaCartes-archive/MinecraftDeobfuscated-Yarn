@@ -25,4 +25,9 @@ public abstract class SpecialCraftingRecipe implements CraftingRecipe {
 	public CraftingRecipeCategory getCategory() {
 		return this.category;
 	}
+
+	@Override
+	public IngredientPlacement getIngredientPlacement() {
+		return IngredientPlacement.NONE;
+	}
 }

@@ -31,7 +31,6 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
@@ -49,16 +48,16 @@ import net.minecraft.world.storage.StorageKey;
 import net.minecraft.world.storage.VersionedChunkStorage;
 import org.slf4j.Logger;
 
-public class WorldUpdater {
+public class WorldUpdater implements AutoCloseable {
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final ThreadFactory UPDATE_THREAD_FACTORY = new ThreadFactoryBuilder().setDaemon(true).build();
 	private static final String NEW_PREFIX = "new_";
-	static final MutableText UPGRADING_POI_TEXT = Text.translatable("optimizeWorld.stage.upgrading.poi");
-	static final MutableText FINISHED_POI_TEXT = Text.translatable("optimizeWorld.stage.finished.poi");
-	static final MutableText UPGRADING_ENTITIES_TEXT = Text.translatable("optimizeWorld.stage.upgrading.entities");
-	static final MutableText FINISHED_ENTITIES_TEXT = Text.translatable("optimizeWorld.stage.finished.entities");
-	static final MutableText UPGRADING_CHUNKS_TEXT = Text.translatable("optimizeWorld.stage.upgrading.chunks");
-	static final MutableText FINISHED_CHUNKS_TEXT = Text.translatable("optimizeWorld.stage.finished.chunks");
+	static final Text UPGRADING_POI_TEXT = Text.translatable("optimizeWorld.stage.upgrading.poi");
+	static final Text FINISHED_POI_TEXT = Text.translatable("optimizeWorld.stage.finished.poi");
+	static final Text UPGRADING_ENTITIES_TEXT = Text.translatable("optimizeWorld.stage.upgrading.entities");
+	static final Text FINISHED_ENTITIES_TEXT = Text.translatable("optimizeWorld.stage.finished.entities");
+	static final Text UPGRADING_CHUNKS_TEXT = Text.translatable("optimizeWorld.stage.upgrading.chunks");
+	static final Text FINISHED_CHUNKS_TEXT = Text.translatable("optimizeWorld.stage.finished.chunks");
 	final Registry<DimensionOptions> dimensionOptionsRegistry;
 	final Set<RegistryKey<World>> worldKeys;
 	final boolean eraseCache;
@@ -90,9 +89,7 @@ public class WorldUpdater {
 		this.eraseCache = eraseCache;
 		this.dataFixer = dataFixer;
 		this.session = session;
-		this.persistentStateManager = new PersistentStateManager(
-			this.session.getWorldDirectory(World.OVERWORLD).resolve("data").toFile(), dataFixer, dynamicRegistryManager
-		);
+		this.persistentStateManager = new PersistentStateManager(this.session.getWorldDirectory(World.OVERWORLD).resolve("data"), dataFixer, dynamicRegistryManager);
 		this.recreateRegionFiles = recreateRegionFiles;
 		this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
 		this.updateThread.setUncaughtExceptionHandler((thread, throwable) -> {
@@ -158,12 +155,16 @@ public class WorldUpdater {
 		return this.status;
 	}
 
+	public void close() {
+		this.persistentStateManager.close();
+	}
+
 	static Path getNewDirectoryPath(Path current) {
 		return current.resolveSibling("new_" + current.getFileName().toString());
 	}
 
 	abstract class ChunkPosKeyedStorageUpdate extends WorldUpdater.Update<ChunkPosKeyedStorage> {
-		ChunkPosKeyedStorageUpdate(final DataFixTypes dataFixTypes, final String targetName, final MutableText upgradingText, final MutableText finishedText) {
+		ChunkPosKeyedStorageUpdate(final DataFixTypes dataFixTypes, final String targetName, final Text upgradingText, final Text finishedText) {
 			super(dataFixTypes, targetName, targetName, upgradingText, finishedText);
 		}
 
@@ -268,7 +269,7 @@ public class WorldUpdater {
 						this.pendingUpdateFuture.join();
 					}
 
-					this.pendingUpdateFuture = versionedChunkStorage.setNbt(chunkPos, nbtCompound2);
+					this.pendingUpdateFuture = versionedChunkStorage.setNbt(chunkPos, () -> nbtCompound2);
 					return true;
 				}
 			}
@@ -286,15 +287,15 @@ public class WorldUpdater {
 	}
 
 	abstract class Update<T extends AutoCloseable> {
-		private final MutableText upgradingText;
-		private final MutableText finishedText;
+		private final Text upgradingText;
+		private final Text finishedText;
 		private final String name;
 		private final String targetName;
 		@Nullable
 		protected CompletableFuture<Void> pendingUpdateFuture;
 		protected final DataFixTypes dataFixTypes;
 
-		Update(final DataFixTypes dataFixTypes, final String name, final String targetName, final MutableText upgradingText, final MutableText finishedText) {
+		Update(final DataFixTypes dataFixTypes, final String name, final String targetName, final Text upgradingText, final Text finishedText) {
 			this.dataFixTypes = dataFixTypes;
 			this.name = name;
 			this.targetName = targetName;

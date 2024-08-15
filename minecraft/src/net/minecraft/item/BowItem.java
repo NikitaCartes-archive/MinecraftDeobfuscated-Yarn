@@ -10,8 +10,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
@@ -78,14 +78,14 @@ public class BowItem extends RangedWeaponItem {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		boolean bl = !user.getProjectileType(itemStack).isEmpty();
 		if (!user.isInCreativeMode() && !bl) {
-			return TypedActionResult.fail(itemStack);
+			return ActionResult.FAIL;
 		} else {
 			user.setCurrentHand(hand);
-			return TypedActionResult.consume(itemStack);
+			return ActionResult.CONSUME;
 		}
 	}
 

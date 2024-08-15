@@ -55,13 +55,9 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 	private static final int BRAIN_RANGE = 30;
 	private static final int TARGET_ENTITY_RANGE = 8;
 	private static final float DEFAULT_DRAWN_STRING_SIZE = 0.02F;
-	private static final int WHITE = -1;
-	private static final int YELLOW = -256;
 	private static final int AQUA = -16711681;
-	private static final int GREEN = -16711936;
 	private static final int GRAY = -3355444;
 	private static final int PINK = -98404;
-	private static final int RED = -65536;
 	private static final int ORANGE = -23296;
 	private final MinecraftClient client;
 	private final Map<BlockPos, VillageDebugRenderer.PointOfInterest> pointsOfInterest = Maps.<BlockPos, VillageDebugRenderer.PointOfInterest>newHashMap();

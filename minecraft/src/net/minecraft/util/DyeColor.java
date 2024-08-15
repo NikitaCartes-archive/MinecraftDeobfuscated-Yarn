@@ -53,7 +53,7 @@ public enum DyeColor implements StringIdentifiable {
 		this.name = name;
 		this.mapColor = mapColor;
 		this.signColor = signColor;
-		this.entityColor = ColorHelper.Argb.fullAlpha(entityColor);
+		this.entityColor = ColorHelper.fullAlpha(entityColor);
 		this.fireworkColor = fireworkColor;
 	}
 

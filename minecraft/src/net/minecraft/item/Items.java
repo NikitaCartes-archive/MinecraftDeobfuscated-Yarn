@@ -25,12 +25,13 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.trim.ArmorTrimPatterns;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.BannerPatternTags;
 import net.minecraft.registry.tag.InstrumentTags;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -425,7 +426,7 @@ public class Items {
 	public static final Item END_STONE_BRICKS = register(Blocks.END_STONE_BRICKS);
 	public static final Item DRAGON_EGG = register(new BlockItem(Blocks.DRAGON_EGG, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item SANDSTONE_STAIRS = register(Blocks.SANDSTONE_STAIRS);
-	public static final Item ENDER_CHEST = register(Blocks.ENDER_CHEST, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
+	public static final Item ENDER_CHEST = register(Blocks.ENDER_CHEST);
 	public static final Item EMERALD_BLOCK = register(Blocks.EMERALD_BLOCK);
 	public static final Item OAK_STAIRS = register(Blocks.OAK_STAIRS);
 	public static final Item SPRUCE_STAIRS = register(Blocks.SPRUCE_STAIRS);
@@ -666,7 +667,7 @@ public class Items {
 	public static final Item RED_CONCRETE_POWDER = register(Blocks.RED_CONCRETE_POWDER);
 	public static final Item BLACK_CONCRETE_POWDER = register(Blocks.BLACK_CONCRETE_POWDER);
 	public static final Item TURTLE_EGG = register(Blocks.TURTLE_EGG);
-	public static final Item SNIFFER_EGG = register(Blocks.SNIFFER_EGG);
+	public static final Item SNIFFER_EGG = register(Blocks.SNIFFER_EGG, settings -> settings.rarity(Rarity.UNCOMMON));
 	public static final Item DEAD_TUBE_CORAL_BLOCK = register(Blocks.DEAD_TUBE_CORAL_BLOCK);
 	public static final Item DEAD_BRAIN_CORAL_BLOCK = register(Blocks.DEAD_BRAIN_CORAL_BLOCK);
 	public static final Item DEAD_BUBBLE_CORAL_BLOCK = register(Blocks.DEAD_BUBBLE_CORAL_BLOCK);
@@ -718,7 +719,7 @@ public class Items {
 		new VerticallyAttachableBlockItem(Blocks.DEAD_HORN_CORAL_FAN, Blocks.DEAD_HORN_CORAL_WALL_FAN, new Item.Settings(), Direction.DOWN)
 	);
 	public static final Item BLUE_ICE = register(Blocks.BLUE_ICE);
-	public static final Item CONDUIT = register(new BlockItem(Blocks.CONDUIT, new Item.Settings().rarity(Rarity.RARE)));
+	public static final Item CONDUIT = register(new BlockItem(Blocks.CONDUIT, new Item.Settings().rarity(Rarity.UNCOMMON)));
 	public static final Item POLISHED_GRANITE_STAIRS = register(Blocks.POLISHED_GRANITE_STAIRS);
 	public static final Item SMOOTH_RED_SANDSTONE_STAIRS = register(Blocks.SMOOTH_RED_SANDSTONE_STAIRS);
 	public static final Item MOSSY_STONE_BRICK_STAIRS = register(Blocks.MOSSY_STONE_BRICK_STAIRS);
@@ -879,7 +880,8 @@ public class Items {
 	public static final Item WARPED_FUNGUS_ON_A_STICK = register(
 		"warped_fungus_on_a_stick", new OnAStickItem<>(new Item.Settings().maxDamage(100), EntityType.STRIDER, 1)
 	);
-	public static final Item ELYTRA = register("elytra", new ElytraItem(new Item.Settings().maxDamage(432).rarity(Rarity.UNCOMMON)));
+	public static final Item PHANTOM_MEMBRANE = register("phantom_membrane", new Item(new Item.Settings()));
+	public static final Item ELYTRA = register("elytra", new ElytraItem(new Item.Settings().maxDamage(432).rarity(Rarity.EPIC).repairable(PHANTOM_MEMBRANE)));
 	public static final Item OAK_BOAT = register("oak_boat", new BoatItem(false, BoatEntity.Type.OAK, new Item.Settings().maxCount(1)));
 	public static final Item OAK_CHEST_BOAT = register("oak_chest_boat", new BoatItem(true, BoatEntity.Type.OAK, new Item.Settings().maxCount(1)));
 	public static final Item SPRUCE_BOAT = register("spruce_boat", new BoatItem(false, BoatEntity.Type.SPRUCE, new Item.Settings().maxCount(1)));
@@ -912,7 +914,7 @@ public class Items {
 	public static final Item FLINT_AND_STEEL = register("flint_and_steel", new FlintAndSteelItem(new Item.Settings().maxDamage(64)));
 	public static final Item BOWL = register("bowl", new Item(new Item.Settings()));
 	public static final Item APPLE = register("apple", new Item(new Item.Settings().food(FoodComponents.APPLE)));
-	public static final Item BOW = register("bow", new BowItem(new Item.Settings().maxDamage(384)));
+	public static final Item BOW = register("bow", new BowItem(new Item.Settings().maxDamage(384).enchantable(1)));
 	public static final Item ARROW = register("arrow", new ArrowItem(new Item.Settings()));
 	public static final Item COAL = register("coal", new Item(new Item.Settings()));
 	public static final Item CHARCOAL = register("charcoal", new Item(new Item.Settings()));
@@ -929,124 +931,38 @@ public class Items {
 	public static final Item GOLD_INGOT = register("gold_ingot", new Item(new Item.Settings()));
 	public static final Item NETHERITE_INGOT = register("netherite_ingot", new Item(new Item.Settings().fireproof()));
 	public static final Item NETHERITE_SCRAP = register("netherite_scrap", new Item(new Item.Settings().fireproof()));
-	public static final Item WOODEN_SWORD = register(
-		"wooden_sword", new SwordItem(ToolMaterials.WOOD, new Item.Settings().attributeModifiers(SwordItem.createAttributeModifiers(ToolMaterials.WOOD, 3, -2.4F)))
-	);
-	public static final Item WOODEN_SHOVEL = register(
-		"wooden_shovel",
-		new ShovelItem(ToolMaterials.WOOD, new Item.Settings().attributeModifiers(ShovelItem.createAttributeModifiers(ToolMaterials.WOOD, 1.5F, -3.0F)))
-	);
-	public static final Item WOODEN_PICKAXE = register(
-		"wooden_pickaxe",
-		new PickaxeItem(ToolMaterials.WOOD, new Item.Settings().attributeModifiers(PickaxeItem.createAttributeModifiers(ToolMaterials.WOOD, 1.0F, -2.8F)))
-	);
-	public static final Item WOODEN_AXE = register(
-		"wooden_axe", new AxeItem(ToolMaterials.WOOD, new Item.Settings().attributeModifiers(AxeItem.createAttributeModifiers(ToolMaterials.WOOD, 6.0F, -3.2F)))
-	);
-	public static final Item WOODEN_HOE = register(
-		"wooden_hoe", new HoeItem(ToolMaterials.WOOD, new Item.Settings().attributeModifiers(HoeItem.createAttributeModifiers(ToolMaterials.WOOD, 0.0F, -3.0F)))
-	);
-	public static final Item STONE_SWORD = register(
-		"stone_sword", new SwordItem(ToolMaterials.STONE, new Item.Settings().attributeModifiers(SwordItem.createAttributeModifiers(ToolMaterials.STONE, 3, -2.4F)))
-	);
-	public static final Item STONE_SHOVEL = register(
-		"stone_shovel",
-		new ShovelItem(ToolMaterials.STONE, new Item.Settings().attributeModifiers(ShovelItem.createAttributeModifiers(ToolMaterials.STONE, 1.5F, -3.0F)))
-	);
-	public static final Item STONE_PICKAXE = register(
-		"stone_pickaxe",
-		new PickaxeItem(ToolMaterials.STONE, new Item.Settings().attributeModifiers(PickaxeItem.createAttributeModifiers(ToolMaterials.STONE, 1.0F, -2.8F)))
-	);
-	public static final Item STONE_AXE = register(
-		"stone_axe", new AxeItem(ToolMaterials.STONE, new Item.Settings().attributeModifiers(AxeItem.createAttributeModifiers(ToolMaterials.STONE, 7.0F, -3.2F)))
-	);
-	public static final Item STONE_HOE = register(
-		"stone_hoe", new HoeItem(ToolMaterials.STONE, new Item.Settings().attributeModifiers(HoeItem.createAttributeModifiers(ToolMaterials.STONE, -1.0F, -2.0F)))
-	);
-	public static final Item GOLDEN_SWORD = register(
-		"golden_sword", new SwordItem(ToolMaterials.GOLD, new Item.Settings().attributeModifiers(SwordItem.createAttributeModifiers(ToolMaterials.GOLD, 3, -2.4F)))
-	);
-	public static final Item GOLDEN_SHOVEL = register(
-		"golden_shovel",
-		new ShovelItem(ToolMaterials.GOLD, new Item.Settings().attributeModifiers(ShovelItem.createAttributeModifiers(ToolMaterials.GOLD, 1.5F, -3.0F)))
-	);
-	public static final Item GOLDEN_PICKAXE = register(
-		"golden_pickaxe",
-		new PickaxeItem(ToolMaterials.GOLD, new Item.Settings().attributeModifiers(PickaxeItem.createAttributeModifiers(ToolMaterials.GOLD, 1.0F, -2.8F)))
-	);
-	public static final Item GOLDEN_AXE = register(
-		"golden_axe", new AxeItem(ToolMaterials.GOLD, new Item.Settings().attributeModifiers(AxeItem.createAttributeModifiers(ToolMaterials.GOLD, 6.0F, -3.0F)))
-	);
-	public static final Item GOLDEN_HOE = register(
-		"golden_hoe", new HoeItem(ToolMaterials.GOLD, new Item.Settings().attributeModifiers(HoeItem.createAttributeModifiers(ToolMaterials.GOLD, 0.0F, -3.0F)))
-	);
-	public static final Item IRON_SWORD = register(
-		"iron_sword", new SwordItem(ToolMaterials.IRON, new Item.Settings().attributeModifiers(SwordItem.createAttributeModifiers(ToolMaterials.IRON, 3, -2.4F)))
-	);
-	public static final Item IRON_SHOVEL = register(
-		"iron_shovel",
-		new ShovelItem(ToolMaterials.IRON, new Item.Settings().attributeModifiers(ShovelItem.createAttributeModifiers(ToolMaterials.IRON, 1.5F, -3.0F)))
-	);
-	public static final Item IRON_PICKAXE = register(
-		"iron_pickaxe",
-		new PickaxeItem(ToolMaterials.IRON, new Item.Settings().attributeModifiers(PickaxeItem.createAttributeModifiers(ToolMaterials.IRON, 1.0F, -2.8F)))
-	);
-	public static final Item IRON_AXE = register(
-		"iron_axe", new AxeItem(ToolMaterials.IRON, new Item.Settings().attributeModifiers(AxeItem.createAttributeModifiers(ToolMaterials.IRON, 6.0F, -3.1F)))
-	);
-	public static final Item IRON_HOE = register(
-		"iron_hoe", new HoeItem(ToolMaterials.IRON, new Item.Settings().attributeModifiers(HoeItem.createAttributeModifiers(ToolMaterials.IRON, -2.0F, -1.0F)))
-	);
-	public static final Item DIAMOND_SWORD = register(
-		"diamond_sword",
-		new SwordItem(ToolMaterials.DIAMOND, new Item.Settings().attributeModifiers(SwordItem.createAttributeModifiers(ToolMaterials.DIAMOND, 3, -2.4F)))
-	);
-	public static final Item DIAMOND_SHOVEL = register(
-		"diamond_shovel",
-		new ShovelItem(ToolMaterials.DIAMOND, new Item.Settings().attributeModifiers(ShovelItem.createAttributeModifiers(ToolMaterials.DIAMOND, 1.5F, -3.0F)))
-	);
-	public static final Item DIAMOND_PICKAXE = register(
-		"diamond_pickaxe",
-		new PickaxeItem(ToolMaterials.DIAMOND, new Item.Settings().attributeModifiers(PickaxeItem.createAttributeModifiers(ToolMaterials.DIAMOND, 1.0F, -2.8F)))
-	);
-	public static final Item DIAMOND_AXE = register(
-		"diamond_axe",
-		new AxeItem(ToolMaterials.DIAMOND, new Item.Settings().attributeModifiers(AxeItem.createAttributeModifiers(ToolMaterials.DIAMOND, 5.0F, -3.0F)))
-	);
-	public static final Item DIAMOND_HOE = register(
-		"diamond_hoe",
-		new HoeItem(ToolMaterials.DIAMOND, new Item.Settings().attributeModifiers(HoeItem.createAttributeModifiers(ToolMaterials.DIAMOND, -3.0F, 0.0F)))
-	);
-	public static final Item NETHERITE_SWORD = register(
-		"netherite_sword",
-		new SwordItem(
-			ToolMaterials.NETHERITE, new Item.Settings().fireproof().attributeModifiers(SwordItem.createAttributeModifiers(ToolMaterials.NETHERITE, 3, -2.4F))
-		)
-	);
-	public static final Item NETHERITE_SHOVEL = register(
-		"netherite_shovel",
-		new ShovelItem(
-			ToolMaterials.NETHERITE, new Item.Settings().fireproof().attributeModifiers(ShovelItem.createAttributeModifiers(ToolMaterials.NETHERITE, 1.5F, -3.0F))
-		)
-	);
+	public static final Item WOODEN_SWORD = register("wooden_sword", new SwordItem(ToolMaterial.WOOD, 3.0F, -2.4F, new Item.Settings()));
+	public static final Item WOODEN_SHOVEL = register("wooden_shovel", new ShovelItem(ToolMaterial.WOOD, 1.5F, -3.0F, new Item.Settings()));
+	public static final Item WOODEN_PICKAXE = register("wooden_pickaxe", new PickaxeItem(ToolMaterial.WOOD, 1.0F, -2.8F, new Item.Settings()));
+	public static final Item WOODEN_AXE = register("wooden_axe", new AxeItem(ToolMaterial.WOOD, 6.0F, -3.2F, new Item.Settings()));
+	public static final Item WOODEN_HOE = register("wooden_hoe", new HoeItem(ToolMaterial.WOOD, 0.0F, -3.0F, new Item.Settings()));
+	public static final Item STONE_SWORD = register("stone_sword", new SwordItem(ToolMaterial.STONE, 3.0F, -2.4F, new Item.Settings()));
+	public static final Item STONE_SHOVEL = register("stone_shovel", new ShovelItem(ToolMaterial.STONE, 1.5F, -3.0F, new Item.Settings()));
+	public static final Item STONE_PICKAXE = register("stone_pickaxe", new PickaxeItem(ToolMaterial.STONE, 1.0F, -2.8F, new Item.Settings()));
+	public static final Item STONE_AXE = register("stone_axe", new AxeItem(ToolMaterial.STONE, 7.0F, -3.2F, new Item.Settings()));
+	public static final Item STONE_HOE = register("stone_hoe", new HoeItem(ToolMaterial.STONE, -1.0F, -2.0F, new Item.Settings()));
+	public static final Item GOLDEN_SWORD = register("golden_sword", new SwordItem(ToolMaterial.GOLD, 3.0F, -2.4F, new Item.Settings()));
+	public static final Item GOLDEN_SHOVEL = register("golden_shovel", new ShovelItem(ToolMaterial.GOLD, 1.5F, -3.0F, new Item.Settings()));
+	public static final Item GOLDEN_PICKAXE = register("golden_pickaxe", new PickaxeItem(ToolMaterial.GOLD, 1.0F, -2.8F, new Item.Settings()));
+	public static final Item GOLDEN_AXE = register("golden_axe", new AxeItem(ToolMaterial.GOLD, 6.0F, -3.0F, new Item.Settings()));
+	public static final Item GOLDEN_HOE = register("golden_hoe", new HoeItem(ToolMaterial.GOLD, 0.0F, -3.0F, new Item.Settings()));
+	public static final Item IRON_SWORD = register("iron_sword", new SwordItem(ToolMaterial.IRON, 3.0F, -2.4F, new Item.Settings()));
+	public static final Item IRON_SHOVEL = register("iron_shovel", new ShovelItem(ToolMaterial.IRON, 1.5F, -3.0F, new Item.Settings()));
+	public static final Item IRON_PICKAXE = register("iron_pickaxe", new PickaxeItem(ToolMaterial.IRON, 1.0F, -2.8F, new Item.Settings()));
+	public static final Item IRON_AXE = register("iron_axe", new AxeItem(ToolMaterial.IRON, 6.0F, -3.1F, new Item.Settings()));
+	public static final Item IRON_HOE = register("iron_hoe", new HoeItem(ToolMaterial.IRON, -2.0F, -1.0F, new Item.Settings()));
+	public static final Item DIAMOND_SWORD = register("diamond_sword", new SwordItem(ToolMaterial.DIAMOND, 3.0F, -2.4F, new Item.Settings()));
+	public static final Item DIAMOND_SHOVEL = register("diamond_shovel", new ShovelItem(ToolMaterial.DIAMOND, 1.5F, -3.0F, new Item.Settings()));
+	public static final Item DIAMOND_PICKAXE = register("diamond_pickaxe", new PickaxeItem(ToolMaterial.DIAMOND, 1.0F, -2.8F, new Item.Settings()));
+	public static final Item DIAMOND_AXE = register("diamond_axe", new AxeItem(ToolMaterial.DIAMOND, 5.0F, -3.0F, new Item.Settings()));
+	public static final Item DIAMOND_HOE = register("diamond_hoe", new HoeItem(ToolMaterial.DIAMOND, -3.0F, 0.0F, new Item.Settings()));
+	public static final Item NETHERITE_SWORD = register("netherite_sword", new SwordItem(ToolMaterial.NETHERITE, 3.0F, -2.4F, new Item.Settings().fireproof()));
+	public static final Item NETHERITE_SHOVEL = register("netherite_shovel", new ShovelItem(ToolMaterial.NETHERITE, 1.5F, -3.0F, new Item.Settings().fireproof()));
 	public static final Item NETHERITE_PICKAXE = register(
-		"netherite_pickaxe",
-		new PickaxeItem(
-			ToolMaterials.NETHERITE, new Item.Settings().fireproof().attributeModifiers(PickaxeItem.createAttributeModifiers(ToolMaterials.NETHERITE, 1.0F, -2.8F))
-		)
+		"netherite_pickaxe", new PickaxeItem(ToolMaterial.NETHERITE, 1.0F, -2.8F, new Item.Settings().fireproof())
 	);
-	public static final Item NETHERITE_AXE = register(
-		"netherite_axe",
-		new AxeItem(
-			ToolMaterials.NETHERITE, new Item.Settings().fireproof().attributeModifiers(AxeItem.createAttributeModifiers(ToolMaterials.NETHERITE, 5.0F, -3.0F))
-		)
-	);
-	public static final Item NETHERITE_HOE = register(
-		"netherite_hoe",
-		new HoeItem(
-			ToolMaterials.NETHERITE, new Item.Settings().fireproof().attributeModifiers(HoeItem.createAttributeModifiers(ToolMaterials.NETHERITE, -4.0F, 0.0F))
-		)
-	);
+	public static final Item NETHERITE_AXE = register("netherite_axe", new AxeItem(ToolMaterial.NETHERITE, 5.0F, -3.0F, new Item.Settings().fireproof()));
+	public static final Item NETHERITE_HOE = register("netherite_hoe", new HoeItem(ToolMaterial.NETHERITE, -4.0F, 0.0F, new Item.Settings().fireproof()));
 	public static final Item STICK = register("stick", new Item(new Item.Settings()));
 	public static final Item MUSHROOM_STEW = register("mushroom_stew", new Item(new Item.Settings().maxCount(1).food(FoodComponents.MUSHROOM_STEW)));
 	public static final Item STRING = register("string", new AliasedBlockItem(Blocks.TRIPWIRE, new Item.Settings()));
@@ -1069,17 +985,22 @@ public class Items {
 		"leather_boots", new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.BOOTS, new Item.Settings().maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(5)))
 	);
 	public static final Item CHAINMAIL_HELMET = register(
-		"chainmail_helmet", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.HELMET, new Item.Settings().maxDamage(ArmorItem.Type.HELMET.getMaxDamage(15)))
+		"chainmail_helmet",
+		new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.HELMET, new Item.Settings().rarity(Rarity.UNCOMMON).maxDamage(ArmorItem.Type.HELMET.getMaxDamage(15)))
 	);
 	public static final Item CHAINMAIL_CHESTPLATE = register(
 		"chainmail_chestplate",
-		new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(15)))
+		new ArmorItem(
+			ArmorMaterials.CHAIN, ArmorItem.Type.CHESTPLATE, new Item.Settings().rarity(Rarity.UNCOMMON).maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(15))
+		)
 	);
 	public static final Item CHAINMAIL_LEGGINGS = register(
-		"chainmail_leggings", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamage(ArmorItem.Type.LEGGINGS.getMaxDamage(15)))
+		"chainmail_leggings",
+		new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.UNCOMMON).maxDamage(ArmorItem.Type.LEGGINGS.getMaxDamage(15)))
 	);
 	public static final Item CHAINMAIL_BOOTS = register(
-		"chainmail_boots", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.BOOTS, new Item.Settings().maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(15)))
+		"chainmail_boots",
+		new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.UNCOMMON).maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(15)))
 	);
 	public static final Item IRON_HELMET = register(
 		"iron_helmet", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.HELMET, new Item.Settings().maxDamage(ArmorItem.Type.HELMET.getMaxDamage(15)))
@@ -1138,10 +1059,10 @@ public class Items {
 	public static final Item PORKCHOP = register("porkchop", new Item(new Item.Settings().food(FoodComponents.PORKCHOP)));
 	public static final Item COOKED_PORKCHOP = register("cooked_porkchop", new Item(new Item.Settings().food(FoodComponents.COOKED_PORKCHOP)));
 	public static final Item PAINTING = register("painting", new DecorationItem(EntityType.PAINTING, new Item.Settings()));
-	public static final Item GOLDEN_APPLE = register("golden_apple", new Item(new Item.Settings().rarity(Rarity.RARE).food(FoodComponents.GOLDEN_APPLE)));
+	public static final Item GOLDEN_APPLE = register("golden_apple", new Item(new Item.Settings().food(FoodComponents.GOLDEN_APPLE)));
 	public static final Item ENCHANTED_GOLDEN_APPLE = register(
 		"enchanted_golden_apple",
-		new Item(new Item.Settings().rarity(Rarity.EPIC).food(FoodComponents.ENCHANTED_GOLDEN_APPLE).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true))
+		new Item(new Item.Settings().rarity(Rarity.RARE).food(FoodComponents.ENCHANTED_GOLDEN_APPLE).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true))
 	);
 	public static final Item OAK_SIGN = register("oak_sign", new SignItem(new Item.Settings().maxCount(16), Blocks.OAK_SIGN, Blocks.OAK_WALL_SIGN));
 	public static final Item SPRUCE_SIGN = register("spruce_sign", new SignItem(new Item.Settings().maxCount(16), Blocks.SPRUCE_SIGN, Blocks.SPRUCE_WALL_SIGN));
@@ -1258,15 +1179,20 @@ public class Items {
 	public static final Item CLAY_BALL = register("clay_ball", new Item(new Item.Settings()));
 	public static final Item DRIED_KELP_BLOCK = register(Blocks.DRIED_KELP_BLOCK);
 	public static final Item PAPER = register("paper", new Item(new Item.Settings()));
-	public static final Item BOOK = register("book", new BookItem(new Item.Settings()));
+	public static final Item BOOK = register("book", new Item(new Item.Settings().enchantable(1)));
 	public static final Item SLIME_BALL = register("slime_ball", new Item(new Item.Settings()));
 	public static final Item EGG = register("egg", new EggItem(new Item.Settings().maxCount(16)));
 	public static final Item COMPASS = register("compass", new CompassItem(new Item.Settings()));
-	public static final Item RECOVERY_COMPASS = register("recovery_compass", new Item(new Item.Settings()));
+	public static final Item RECOVERY_COMPASS = register("recovery_compass", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
 	public static final Item BUNDLE = register(
-		"bundle", new BundleItem(new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT))
+		"bundle",
+		new BundleItem(
+			"bundle_open_front",
+			"bundle_open_back",
+			new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		)
 	);
-	public static final Item FISHING_ROD = register("fishing_rod", new FishingRodItem(new Item.Settings().maxDamage(64)));
+	public static final Item FISHING_ROD = register("fishing_rod", new FishingRodItem(new Item.Settings().maxDamage(64).enchantable(1)));
 	public static final Item CLOCK = register("clock", new Item(new Item.Settings()));
 	public static final Item SPYGLASS = register("spyglass", new SpyglassItem(new Item.Settings().maxCount(1)));
 	public static final Item GLOWSTONE_DUST = register("glowstone_dust", new Item(new Item.Settings()));
@@ -1486,6 +1412,7 @@ public class Items {
 	public static final Item WRITTEN_BOOK = register(
 		"written_book", new WrittenBookItem(new Item.Settings().maxCount(16).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true))
 	);
+	public static final Item BREEZE_ROD = register("breeze_rod", new Item(new Item.Settings()));
 	public static final Item MACE = register(
 		"mace",
 		new MaceItem(
@@ -1493,7 +1420,9 @@ public class Items {
 				.rarity(Rarity.EPIC)
 				.maxDamage(500)
 				.component(DataComponentTypes.TOOL, MaceItem.createToolComponent())
+				.repairable(BREEZE_ROD)
 				.attributeModifiers(MaceItem.createAttributeModifiers())
+				.enchantable(15)
 		)
 	);
 	public static final Item ITEM_FRAME = register("item_frame", new ItemFrameItem(EntityType.ITEM_FRAME, new Item.Settings()));
@@ -1509,9 +1438,7 @@ public class Items {
 		new VerticallyAttachableBlockItem(Blocks.SKELETON_SKULL, Blocks.SKELETON_WALL_SKULL, new Item.Settings().rarity(Rarity.UNCOMMON), Direction.DOWN)
 	);
 	public static final Item WITHER_SKELETON_SKULL = register(
-		new VerticallyAttachableBlockItem(
-			Blocks.WITHER_SKELETON_SKULL, Blocks.WITHER_SKELETON_WALL_SKULL, new Item.Settings().rarity(Rarity.UNCOMMON), Direction.DOWN
-		)
+		new VerticallyAttachableBlockItem(Blocks.WITHER_SKELETON_SKULL, Blocks.WITHER_SKELETON_WALL_SKULL, new Item.Settings().rarity(Rarity.RARE), Direction.DOWN)
 	);
 	public static final Item PLAYER_HEAD = register(new PlayerHeadItem(Blocks.PLAYER_HEAD, Blocks.PLAYER_WALL_HEAD, new Item.Settings().rarity(Rarity.UNCOMMON)));
 	public static final Item ZOMBIE_HEAD = register(
@@ -1521,13 +1448,13 @@ public class Items {
 		new VerticallyAttachableBlockItem(Blocks.CREEPER_HEAD, Blocks.CREEPER_WALL_HEAD, new Item.Settings().rarity(Rarity.UNCOMMON), Direction.DOWN)
 	);
 	public static final Item DRAGON_HEAD = register(
-		new VerticallyAttachableBlockItem(Blocks.DRAGON_HEAD, Blocks.DRAGON_WALL_HEAD, new Item.Settings().rarity(Rarity.UNCOMMON), Direction.DOWN)
+		new VerticallyAttachableBlockItem(Blocks.DRAGON_HEAD, Blocks.DRAGON_WALL_HEAD, new Item.Settings().rarity(Rarity.EPIC), Direction.DOWN)
 	);
 	public static final Item PIGLIN_HEAD = register(
 		new VerticallyAttachableBlockItem(Blocks.PIGLIN_HEAD, Blocks.PIGLIN_WALL_HEAD, new Item.Settings().rarity(Rarity.UNCOMMON), Direction.DOWN)
 	);
 	public static final Item NETHER_STAR = register(
-		"nether_star", new Item(new Item.Settings().rarity(Rarity.UNCOMMON).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true))
+		"nether_star", new Item(new Item.Settings().rarity(Rarity.RARE).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true))
 	);
 	public static final Item PUMPKIN_PIE = register("pumpkin_pie", new Item(new Item.Settings().food(FoodComponents.PUMPKIN_PIE)));
 	public static final Item FIREWORK_ROCKET = register(
@@ -1536,7 +1463,7 @@ public class Items {
 	public static final Item FIREWORK_STAR = register("firework_star", new FireworkStarItem(new Item.Settings()));
 	public static final Item ENCHANTED_BOOK = register(
 		"enchanted_book",
-		new EnchantedBookItem(
+		new Item(
 			new Item.Settings()
 				.maxCount(1)
 				.rarity(Rarity.UNCOMMON)
@@ -1689,7 +1616,7 @@ public class Items {
 		)
 	);
 	public static final Item END_CRYSTAL = register(
-		"end_crystal", new EndCrystalItem(new Item.Settings().rarity(Rarity.RARE).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true))
+		"end_crystal", new EndCrystalItem(new Item.Settings().component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true))
 	);
 	public static final Item CHORUS_FRUIT = register("chorus_fruit", new ChorusFruitItem(new Item.Settings().food(FoodComponents.CHORUS_FRUIT)));
 	public static final Item POPPED_CHORUS_FRUIT = register("popped_chorus_fruit", new Item(new Item.Settings()));
@@ -1710,7 +1637,10 @@ public class Items {
 		"lingering_potion", new LingeringPotionItem(new Item.Settings().maxCount(1).component(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT))
 	);
 	public static final Item SHIELD = register(
-		"shield", new ShieldItem(new Item.Settings().maxDamage(336).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT))
+		"shield",
+		new ShieldItem(
+			new Item.Settings().maxDamage(336).component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT).repairable(ItemTags.WOODEN_TOOL_MATERIALS)
+		)
 	);
 	public static final Item TOTEM_OF_UNDYING = register("totem_of_undying", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON)));
 	public static final Item SHULKER_SHELL = register("shulker_shell", new Item(new Item.Settings()));
@@ -1729,79 +1659,81 @@ public class Items {
 		)
 	);
 	public static final Item MUSIC_DISC_13 = register(
-		"music_disc_13", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.THIRTEEN))
+		"music_disc_13", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).jukeboxPlayable(JukeboxSongs.THIRTEEN))
 	);
 	public static final Item MUSIC_DISC_CAT = register(
-		"music_disc_cat", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.CAT))
+		"music_disc_cat", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).jukeboxPlayable(JukeboxSongs.CAT))
 	);
 	public static final Item MUSIC_DISC_BLOCKS = register(
-		"music_disc_blocks", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.BLOCKS))
+		"music_disc_blocks", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).jukeboxPlayable(JukeboxSongs.BLOCKS))
 	);
 	public static final Item MUSIC_DISC_CHIRP = register(
-		"music_disc_chirp", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.CHIRP))
+		"music_disc_chirp", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).jukeboxPlayable(JukeboxSongs.CHIRP))
 	);
 	public static final Item MUSIC_DISC_CREATOR = register(
 		"music_disc_creator", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.CREATOR))
 	);
 	public static final Item MUSIC_DISC_CREATOR_MUSIC_BOX = register(
-		"music_disc_creator_music_box", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.CREATOR_MUSIC_BOX))
+		"music_disc_creator_music_box", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).jukeboxPlayable(JukeboxSongs.CREATOR_MUSIC_BOX))
 	);
 	public static final Item MUSIC_DISC_FAR = register(
-		"music_disc_far", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.FAR))
+		"music_disc_far", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).jukeboxPlayable(JukeboxSongs.FAR))
 	);
 	public static final Item MUSIC_DISC_MALL = register(
-		"music_disc_mall", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.MALL))
+		"music_disc_mall", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).jukeboxPlayable(JukeboxSongs.MALL))
 	);
 	public static final Item MUSIC_DISC_MELLOHI = register(
-		"music_disc_mellohi", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.MELLOHI))
+		"music_disc_mellohi", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).jukeboxPlayable(JukeboxSongs.MELLOHI))
 	);
 	public static final Item MUSIC_DISC_STAL = register(
-		"music_disc_stal", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.STAL))
+		"music_disc_stal", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).jukeboxPlayable(JukeboxSongs.STAL))
 	);
 	public static final Item MUSIC_DISC_STRAD = register(
-		"music_disc_strad", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.STRAD))
+		"music_disc_strad", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).jukeboxPlayable(JukeboxSongs.STRAD))
 	);
 	public static final Item MUSIC_DISC_WARD = register(
-		"music_disc_ward", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.WARD))
+		"music_disc_ward", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).jukeboxPlayable(JukeboxSongs.WARD))
 	);
 	public static final Item MUSIC_DISC_11 = register(
-		"music_disc_11", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.ELEVEN))
+		"music_disc_11", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).jukeboxPlayable(JukeboxSongs.ELEVEN))
 	);
 	public static final Item MUSIC_DISC_WAIT = register(
-		"music_disc_wait", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.WAIT))
+		"music_disc_wait", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).jukeboxPlayable(JukeboxSongs.WAIT))
 	);
 	public static final Item MUSIC_DISC_OTHERSIDE = register(
 		"music_disc_otherside", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.OTHERSIDE))
 	);
 	public static final Item MUSIC_DISC_RELIC = register(
-		"music_disc_relic", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.RELIC))
+		"music_disc_relic", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).jukeboxPlayable(JukeboxSongs.RELIC))
 	);
 	public static final Item MUSIC_DISC_5 = register(
-		"music_disc_5", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.FIVE))
+		"music_disc_5", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).jukeboxPlayable(JukeboxSongs.FIVE))
 	);
 	public static final Item MUSIC_DISC_PIGSTEP = register(
 		"music_disc_pigstep", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.PIGSTEP))
 	);
 	public static final Item MUSIC_DISC_PRECIPICE = register(
-		"music_disc_precipice", new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.PRECIPICE))
+		"music_disc_precipice", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).jukeboxPlayable(JukeboxSongs.PRECIPICE))
 	);
-	public static final Item DISC_FRAGMENT_5 = register("disc_fragment_5", new DiscFragmentItem(new Item.Settings()));
+	public static final Item DISC_FRAGMENT_5 = register("disc_fragment_5", new DiscFragmentItem(new Item.Settings().rarity(Rarity.UNCOMMON)));
 	public static final Item TRIDENT = register(
 		"trident",
 		new TridentItem(
 			new Item.Settings()
-				.rarity(Rarity.EPIC)
+				.rarity(Rarity.RARE)
 				.maxDamage(250)
 				.attributeModifiers(TridentItem.createAttributeModifiers())
 				.component(DataComponentTypes.TOOL, TridentItem.createToolComponent())
+				.enchantable(1)
 		)
 	);
-	public static final Item PHANTOM_MEMBRANE = register("phantom_membrane", new Item(new Item.Settings()));
-	public static final Item NAUTILUS_SHELL = register("nautilus_shell", new Item(new Item.Settings()));
+	public static final Item NAUTILUS_SHELL = register("nautilus_shell", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
 	public static final Item HEART_OF_THE_SEA = register("heart_of_the_sea", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
 	public static final Item CROSSBOW = register(
 		"crossbow",
-		new CrossbowItem(new Item.Settings().maxCount(1).maxDamage(465).component(DataComponentTypes.CHARGED_PROJECTILES, ChargedProjectilesComponent.DEFAULT))
+		new CrossbowItem(
+			new Item.Settings().maxCount(1).maxDamage(465).component(DataComponentTypes.CHARGED_PROJECTILES, ChargedProjectilesComponent.DEFAULT).enchantable(1)
+		)
 	);
 	public static final Item SUSPICIOUS_STEW = register(
 		"suspicious_stew",
@@ -1820,10 +1752,10 @@ public class Items {
 		"creeper_banner_pattern", new BannerPatternItem(BannerPatternTags.CREEPER_PATTERN_ITEM, new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON))
 	);
 	public static final Item SKULL_BANNER_PATTERN = register(
-		"skull_banner_pattern", new BannerPatternItem(BannerPatternTags.SKULL_PATTERN_ITEM, new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON))
+		"skull_banner_pattern", new BannerPatternItem(BannerPatternTags.SKULL_PATTERN_ITEM, new Item.Settings().maxCount(1).rarity(Rarity.RARE))
 	);
 	public static final Item MOJANG_BANNER_PATTERN = register(
-		"mojang_banner_pattern", new BannerPatternItem(BannerPatternTags.MOJANG_PATTERN_ITEM, new Item.Settings().maxCount(1).rarity(Rarity.EPIC))
+		"mojang_banner_pattern", new BannerPatternItem(BannerPatternTags.MOJANG_PATTERN_ITEM, new Item.Settings().maxCount(1).rarity(Rarity.RARE))
 	);
 	public static final Item GLOBE_BANNER_PATTERN = register(
 		"globe_banner_pattern", new BannerPatternItem(BannerPatternTags.GLOBE_PATTERN_ITEM, new Item.Settings().maxCount(1))
@@ -1837,7 +1769,15 @@ public class Items {
 	public static final Item GUSTER_BANNER_PATTERN = register(
 		"guster_banner_pattern", new BannerPatternItem(BannerPatternTags.GUSTER_PATTERN_ITEM, new Item.Settings().maxCount(1).rarity(Rarity.RARE))
 	);
-	public static final Item GOAT_HORN = register("goat_horn", new GoatHornItem(new Item.Settings().maxCount(1), InstrumentTags.GOAT_HORNS));
+	public static final Item FIELD_MASONED_BANNER_PATTERN = register(
+		"field_masoned_banner_pattern", new BannerPatternItem(BannerPatternTags.FIELD_MASONED_PATTERN_ITEM, new Item.Settings().maxCount(1))
+	);
+	public static final Item BORDURE_INDENTED_BANNER_PATTERN = register(
+		"bordure_indented_banner_pattern", new BannerPatternItem(BannerPatternTags.BORDURE_INDENTED_PATTERN_ITEM, new Item.Settings().maxCount(1))
+	);
+	public static final Item GOAT_HORN = register(
+		"goat_horn", new GoatHornItem(new Item.Settings().rarity(Rarity.UNCOMMON).maxCount(1), InstrumentTags.GOAT_HORNS)
+	);
 	public static final Item COMPOSTER = register(Blocks.COMPOSTER);
 	public static final Item BARREL = register(Blocks.BARREL, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
 	public static final Item SMOKER = register(Blocks.SMOKER, settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
@@ -1911,60 +1851,88 @@ public class Items {
 	public static final Item VERDANT_FROGLIGHT = register(Blocks.VERDANT_FROGLIGHT);
 	public static final Item PEARLESCENT_FROGLIGHT = register(Blocks.PEARLESCENT_FROGLIGHT);
 	public static final Item FROGSPAWN = register(new PlaceableOnWaterItem(Blocks.FROGSPAWN, new Item.Settings()));
-	public static final Item ECHO_SHARD = register("echo_shard", new Item(new Item.Settings()));
+	public static final Item ECHO_SHARD = register("echo_shard", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
 	public static final Item BRUSH = register("brush", new BrushItem(new Item.Settings().maxDamage(64)));
-	public static final Item NETHERITE_UPGRADE_SMITHING_TEMPLATE = register("netherite_upgrade_smithing_template", SmithingTemplateItem.createNetheriteUpgrade());
-	public static final Item SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE = register(
-		"sentry_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.SENTRY)
+	public static final Item NETHERITE_UPGRADE_SMITHING_TEMPLATE = register(
+		"netherite_upgrade_smithing_template", SmithingTemplateItem.createNetheriteUpgrade(new Item.Settings().rarity(Rarity.UNCOMMON))
 	);
-	public static final Item DUNE_ARMOR_TRIM_SMITHING_TEMPLATE = register("dune_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.DUNE));
-	public static final Item COAST_ARMOR_TRIM_SMITHING_TEMPLATE = register("coast_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.COAST));
-	public static final Item WILD_ARMOR_TRIM_SMITHING_TEMPLATE = register("wild_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.WILD));
-	public static final Item WARD_ARMOR_TRIM_SMITHING_TEMPLATE = register("ward_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.WARD));
-	public static final Item EYE_ARMOR_TRIM_SMITHING_TEMPLATE = register("eye_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.EYE));
-	public static final Item VEX_ARMOR_TRIM_SMITHING_TEMPLATE = register("vex_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.VEX));
-	public static final Item TIDE_ARMOR_TRIM_SMITHING_TEMPLATE = register("tide_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.TIDE));
-	public static final Item SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE = register("snout_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.SNOUT));
-	public static final Item RIB_ARMOR_TRIM_SMITHING_TEMPLATE = register("rib_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.RIB));
-	public static final Item SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE = register("spire_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.SPIRE));
+	public static final Item SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE = register(
+		"sentry_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.UNCOMMON))
+	);
+	public static final Item DUNE_ARMOR_TRIM_SMITHING_TEMPLATE = register(
+		"dune_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.UNCOMMON))
+	);
+	public static final Item COAST_ARMOR_TRIM_SMITHING_TEMPLATE = register(
+		"coast_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.UNCOMMON))
+	);
+	public static final Item WILD_ARMOR_TRIM_SMITHING_TEMPLATE = register(
+		"wild_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.UNCOMMON))
+	);
+	public static final Item WARD_ARMOR_TRIM_SMITHING_TEMPLATE = register(
+		"ward_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.RARE))
+	);
+	public static final Item EYE_ARMOR_TRIM_SMITHING_TEMPLATE = register(
+		"eye_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.RARE))
+	);
+	public static final Item VEX_ARMOR_TRIM_SMITHING_TEMPLATE = register(
+		"vex_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.RARE))
+	);
+	public static final Item TIDE_ARMOR_TRIM_SMITHING_TEMPLATE = register(
+		"tide_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.UNCOMMON))
+	);
+	public static final Item SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE = register(
+		"snout_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.UNCOMMON))
+	);
+	public static final Item RIB_ARMOR_TRIM_SMITHING_TEMPLATE = register(
+		"rib_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.UNCOMMON))
+	);
+	public static final Item SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE = register(
+		"spire_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.RARE))
+	);
 	public static final Item WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE = register(
-		"wayfinder_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.WAYFINDER)
+		"wayfinder_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.UNCOMMON))
 	);
 	public static final Item SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE = register(
-		"shaper_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.SHAPER)
+		"shaper_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.UNCOMMON))
 	);
 	public static final Item SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE = register(
-		"silence_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.SILENCE)
+		"silence_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.EPIC))
 	);
 	public static final Item RAISER_ARMOR_TRIM_SMITHING_TEMPLATE = register(
-		"raiser_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.RAISER)
+		"raiser_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.UNCOMMON))
 	);
-	public static final Item HOST_ARMOR_TRIM_SMITHING_TEMPLATE = register("host_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.HOST));
-	public static final Item FLOW_ARMOR_TRIM_SMITHING_TEMPLATE = register("flow_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.FLOW));
-	public static final Item BOLT_ARMOR_TRIM_SMITHING_TEMPLATE = register("bolt_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.BOLT));
-	public static final Item ANGLER_POTTERY_SHERD = register("angler_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item ARCHER_POTTERY_SHERD = register("archer_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item ARMS_UP_POTTERY_SHERD = register("arms_up_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item BLADE_POTTERY_SHERD = register("blade_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item BREWER_POTTERY_SHERD = register("brewer_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item BURN_POTTERY_SHERD = register("burn_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item DANGER_POTTERY_SHERD = register("danger_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item EXPLORER_POTTERY_SHERD = register("explorer_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item FLOW_POTTERY_SHERD = register("flow_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item FRIEND_POTTERY_SHERD = register("friend_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item GUSTER_POTTERY_SHERD = register("guster_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item HEART_POTTERY_SHERD = register("heart_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item HEARTBREAK_POTTERY_SHERD = register("heartbreak_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item HOWL_POTTERY_SHERD = register("howl_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item MINER_POTTERY_SHERD = register("miner_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item MOURNER_POTTERY_SHERD = register("mourner_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item PLENTY_POTTERY_SHERD = register("plenty_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item PRIZE_POTTERY_SHERD = register("prize_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item SCRAPE_POTTERY_SHERD = register("scrape_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item SHEAF_POTTERY_SHERD = register("sheaf_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item SHELTER_POTTERY_SHERD = register("shelter_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item SKULL_POTTERY_SHERD = register("skull_pottery_sherd", new Item(new Item.Settings()));
-	public static final Item SNORT_POTTERY_SHERD = register("snort_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item HOST_ARMOR_TRIM_SMITHING_TEMPLATE = register(
+		"host_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.UNCOMMON))
+	);
+	public static final Item FLOW_ARMOR_TRIM_SMITHING_TEMPLATE = register(
+		"flow_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.UNCOMMON))
+	);
+	public static final Item BOLT_ARMOR_TRIM_SMITHING_TEMPLATE = register(
+		"bolt_armor_trim_smithing_template", SmithingTemplateItem.of(new Item.Settings().rarity(Rarity.UNCOMMON))
+	);
+	public static final Item ANGLER_POTTERY_SHERD = register("angler_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item ARCHER_POTTERY_SHERD = register("archer_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item ARMS_UP_POTTERY_SHERD = register("arms_up_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item BLADE_POTTERY_SHERD = register("blade_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item BREWER_POTTERY_SHERD = register("brewer_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item BURN_POTTERY_SHERD = register("burn_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item DANGER_POTTERY_SHERD = register("danger_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item EXPLORER_POTTERY_SHERD = register("explorer_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item FLOW_POTTERY_SHERD = register("flow_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item FRIEND_POTTERY_SHERD = register("friend_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item GUSTER_POTTERY_SHERD = register("guster_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item HEART_POTTERY_SHERD = register("heart_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item HEARTBREAK_POTTERY_SHERD = register("heartbreak_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item HOWL_POTTERY_SHERD = register("howl_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item MINER_POTTERY_SHERD = register("miner_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item MOURNER_POTTERY_SHERD = register("mourner_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item PLENTY_POTTERY_SHERD = register("plenty_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item PRIZE_POTTERY_SHERD = register("prize_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item SCRAPE_POTTERY_SHERD = register("scrape_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item SHEAF_POTTERY_SHERD = register("sheaf_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item SHELTER_POTTERY_SHERD = register("shelter_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item SKULL_POTTERY_SHERD = register("skull_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
+	public static final Item SNORT_POTTERY_SHERD = register("snort_pottery_sherd", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)));
 	public static final Item COPPER_GRATE = register(Blocks.COPPER_GRATE);
 	public static final Item EXPOSED_COPPER_GRATE = register(Blocks.EXPOSED_COPPER_GRATE);
 	public static final Item WEATHERED_COPPER_GRATE = register(Blocks.WEATHERED_COPPER_GRATE);
@@ -1986,9 +1954,11 @@ public class Items {
 	public static final Item OMINOUS_TRIAL_KEY = register("ominous_trial_key", new Item(new Item.Settings()));
 	public static final Item VAULT = register(Blocks.VAULT);
 	public static final Item OMINOUS_BOTTLE = register(
-		"ominous_bottle", new OminousBottleItem(new Item.Settings().food(FoodComponents.OMINOUS_BOTTLE).component(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER, 0))
+		"ominous_bottle",
+		new OminousBottleItem(
+			new Item.Settings().rarity(Rarity.UNCOMMON).food(FoodComponents.OMINOUS_BOTTLE).component(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER, 0)
+		)
 	);
-	public static final Item BREEZE_ROD = register("breeze_rod", new Item(new Item.Settings()));
 
 	public static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));

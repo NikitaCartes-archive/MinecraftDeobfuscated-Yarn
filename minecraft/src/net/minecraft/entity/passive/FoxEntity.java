@@ -72,7 +72,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
@@ -125,6 +124,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		this.setPathfindingPenalty(PathNodeType.DANGER_OTHER, 0.0F);
 		this.setPathfindingPenalty(PathNodeType.DAMAGE_OTHER, 0.0F);
 		this.setCanPickUpLoot(true);
+		this.getNavigation().setMaxFollowRange(32.0F);
 	}
 
 	@Override
@@ -178,11 +178,6 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	@Override
-	public SoundEvent getEatSound(ItemStack stack) {
-		return SoundEvents.ENTITY_FOX_EAT;
-	}
-
-	@Override
 	public void tickMovement() {
 		if (!this.getWorld().isClient && this.isAlive() && this.canMoveVoluntarily()) {
 			this.eatingTime++;
@@ -196,7 +191,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 
 					this.eatingTime = 0;
 				} else if (this.eatingTime > 560 && this.random.nextFloat() < 0.1F) {
-					this.playSound(this.getEatSound(itemStack), 1.0F, 1.0F);
+					this.playEatSound();
 					this.getWorld().sendEntityStatus(this, EntityStatuses.CREATE_EATING_PARTICLES);
 				}
 			}
@@ -279,17 +274,17 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	public static DefaultAttributeContainer.Builder createFoxAttributes() {
-		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
-			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0)
-			.add(EntityAttributes.GENERIC_SAFE_FALL_DISTANCE, 5.0);
+		return AnimalEntity.createAnimalAttributes()
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.MAX_HEALTH, 10.0)
+			.add(EntityAttributes.ATTACK_DAMAGE, 2.0)
+			.add(EntityAttributes.SAFE_FALL_DISTANCE, 5.0)
+			.add(EntityAttributes.FOLLOW_RANGE, 32.0);
 	}
 
 	@Nullable
 	public FoxEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		FoxEntity foxEntity = EntityType.FOX.create(serverWorld);
+		FoxEntity foxEntity = EntityType.FOX.create(serverWorld, SpawnReason.BREEDING);
 		if (foxEntity != null) {
 			foxEntity.setVariant(this.random.nextBoolean() ? this.getVariant() : ((FoxEntity)passiveEntity).getVariant());
 		}
@@ -342,12 +337,8 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	@Override
-	protected void eat(PlayerEntity player, Hand hand, ItemStack stack) {
-		if (this.isBreedingItem(stack)) {
-			this.playSound(this.getEatSound(stack), 1.0F, 1.0F);
-		}
-
-		super.eat(player, hand, stack);
+	protected void playEatSound() {
+		this.playSound(SoundEvents.ENTITY_FOX_EAT, 1.0F, 1.0F);
 	}
 
 	@Override

@@ -1,7 +1,8 @@
 package net.minecraft.client.render.model;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -88,10 +89,11 @@ public class BasicBakedModel implements BakedModel {
 
 	@Environment(EnvType.CLIENT)
 	public static class Builder {
-		private final List<BakedQuad> quads = Lists.<BakedQuad>newArrayList();
-		private final Map<Direction, List<BakedQuad>> faceQuads = Maps.newEnumMap(Direction.class);
+		private final ImmutableList.Builder<BakedQuad> quads = ImmutableList.builder();
+		private final EnumMap<Direction, ImmutableList.Builder<BakedQuad>> faceQuads = Maps.newEnumMap(Direction.class);
 		private final ModelOverrideList itemPropertyOverrides;
 		private final boolean usesAo;
+		@Nullable
 		private Sprite particleTexture;
 		private final boolean isSideLit;
 		private final boolean hasDepth;
@@ -101,20 +103,20 @@ public class BasicBakedModel implements BakedModel {
 			this(unbakedModel.useAmbientOcclusion(), unbakedModel.getGuiLight().isSide(), hasDepth, unbakedModel.getTransformations(), itemPropertyOverrides);
 		}
 
-		private Builder(boolean usesAo, boolean isSideLit, boolean hasDepth, ModelTransformation transformation, ModelOverrideList itemPropertyOverrides) {
-			for (Direction direction : Direction.values()) {
-				this.faceQuads.put(direction, Lists.newArrayList());
-			}
-
+		private Builder(boolean usesAo, boolean bl, boolean hasDepth, ModelTransformation transformation, ModelOverrideList itemPropertyOverrides) {
 			this.itemPropertyOverrides = itemPropertyOverrides;
 			this.usesAo = usesAo;
-			this.isSideLit = isSideLit;
+			this.isSideLit = bl;
 			this.hasDepth = hasDepth;
 			this.transformation = transformation;
+
+			for (Direction direction : Direction.values()) {
+				this.faceQuads.put(direction, ImmutableList.builder());
+			}
 		}
 
 		public BasicBakedModel.Builder addQuad(Direction side, BakedQuad quad) {
-			((List)this.faceQuads.get(side)).add(quad);
+			((ImmutableList.Builder)this.faceQuads.get(side)).add(quad);
 			return this;
 		}
 
@@ -136,8 +138,9 @@ public class BasicBakedModel implements BakedModel {
 			if (this.particleTexture == null) {
 				throw new RuntimeException("Missing particle!");
 			} else {
+				Map<Direction, List<BakedQuad>> map = Maps.transformValues(this.faceQuads, ImmutableList.Builder::build);
 				return new BasicBakedModel(
-					this.quads, this.faceQuads, this.usesAo, this.isSideLit, this.hasDepth, this.particleTexture, this.transformation, this.itemPropertyOverrides
+					this.quads.build(), new EnumMap(map), this.usesAo, this.isSideLit, this.hasDepth, this.particleTexture, this.transformation, this.itemPropertyOverrides
 				);
 			}
 		}

@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.screen.advancement;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -16,6 +15,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -33,6 +33,8 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	public static final int PAGE_HEIGHT = 113;
 	private static final int TITLE_OFFSET_X = 8;
 	private static final int TITLE_OFFSET_Y = 6;
+	private static final int field_52799 = 256;
+	private static final int field_52800 = 256;
 	public static final int field_32302 = 16;
 	public static final int field_32303 = 16;
 	public static final int field_32304 = 14;
@@ -73,9 +75,9 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 			this.advancementHandler.selectTab(this.selectedTab == null ? null : this.selectedTab.getRoot().getAdvancementEntry(), true);
 		}
 
-		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, buttonWidget -> this.close()).width(200).build());
-		this.layout.forEachChild(element -> {
-			ClickableWidget var10000 = this.addDrawableChild(element);
+		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).width(200).build());
+		this.layout.forEachChild(child -> {
+			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
 		this.initTabNavigation();
 	}
@@ -176,8 +178,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	}
 
 	public void drawWindow(DrawContext context, int x, int y) {
-		RenderSystem.enableBlend();
-		context.drawTexture(WINDOW_TEXTURE, x, y, 0, 0, 252, 140);
+		context.drawTexture(RenderLayer::getGuiTextured, WINDOW_TEXTURE, x, y, 0.0F, 0.0F, 252, 140, 256, 256);
 		if (this.tabs.size() > 1) {
 			for (AdvancementTab advancementTab : this.tabs.values()) {
 				advancementTab.drawBackground(context, x, y, advancementTab == this.selectedTab);
@@ -195,9 +196,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		if (this.selectedTab != null) {
 			context.getMatrices().push();
 			context.getMatrices().translate((float)(x + 9), (float)(y + 18), 400.0F);
-			RenderSystem.enableDepthTest();
 			this.selectedTab.drawWidgetTooltip(context, mouseX - x - 9, mouseY - y - 18, x, y);
-			RenderSystem.disableDepthTest();
 			context.getMatrices().pop();
 		}
 

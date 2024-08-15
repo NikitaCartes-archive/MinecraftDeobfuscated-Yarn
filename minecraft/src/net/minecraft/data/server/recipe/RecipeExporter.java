@@ -10,4 +10,6 @@ public interface RecipeExporter {
 	void accept(Identifier recipeId, Recipe<?> recipe, @Nullable AdvancementEntry advancement);
 
 	Advancement.Builder getAdvancementBuilder();
+
+	void addRootAdvancement();
 }

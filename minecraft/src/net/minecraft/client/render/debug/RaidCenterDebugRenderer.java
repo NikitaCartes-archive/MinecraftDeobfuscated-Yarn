@@ -38,7 +38,6 @@ public class RaidCenterDebugRenderer implements DebugRenderer.Renderer {
 
 	private static void drawRaidCenter(MatrixStack matrices, VertexConsumerProvider vertexConsumers, BlockPos pos) {
 		DebugRenderer.drawBlockBox(matrices, vertexConsumers, pos, 1.0F, 0.0F, 0.0F, 0.15F);
-		int i = -65536;
 		drawString(matrices, vertexConsumers, "Raid center", pos, -65536);
 	}
 

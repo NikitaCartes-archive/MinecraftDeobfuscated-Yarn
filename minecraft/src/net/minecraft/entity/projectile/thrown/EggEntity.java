@@ -4,8 +4,10 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -20,12 +22,12 @@ public class EggEntity extends ThrownItemEntity {
 		super(entityType, world);
 	}
 
-	public EggEntity(World world, LivingEntity owner) {
-		super(EntityType.EGG, owner, world);
+	public EggEntity(World world, LivingEntity owner, ItemStack stack) {
+		super(EntityType.EGG, owner, world, stack);
 	}
 
-	public EggEntity(World world, double x, double y, double z) {
-		super(EntityType.EGG, x, y, z, world);
+	public EggEntity(World world, double x, double y, double z, ItemStack stack) {
+		super(EntityType.EGG, x, y, z, world, stack);
 	}
 
 	@Override
@@ -65,7 +67,7 @@ public class EggEntity extends ThrownItemEntity {
 				}
 
 				for (int j = 0; j < i; j++) {
-					ChickenEntity chickenEntity = EntityType.CHICKEN.create(this.getWorld());
+					ChickenEntity chickenEntity = EntityType.CHICKEN.create(this.getWorld(), SpawnReason.TRIGGERED);
 					if (chickenEntity != null) {
 						chickenEntity.setBreedingAge(-24000);
 						chickenEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);

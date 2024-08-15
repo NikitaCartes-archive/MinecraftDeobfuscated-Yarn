@@ -4,12 +4,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.ParrotEntityModel;
+import net.minecraft.client.render.entity.state.ParrotEntityRenderState;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class ParrotEntityRenderer extends MobEntityRenderer<ParrotEntity, ParrotEntityModel> {
+public class ParrotEntityRenderer extends MobEntityRenderer<ParrotEntity, ParrotEntityRenderState, ParrotEntityModel> {
 	private static final Identifier RED_BLUE_TEXTURE = Identifier.ofVanilla("textures/entity/parrot/parrot_red_blue.png");
 	private static final Identifier BLUE_TEXTURE = Identifier.ofVanilla("textures/entity/parrot/parrot_blue.png");
 	private static final Identifier GREEN_TEXTURE = Identifier.ofVanilla("textures/entity/parrot/parrot_green.png");
@@ -20,8 +21,21 @@ public class ParrotEntityRenderer extends MobEntityRenderer<ParrotEntity, Parrot
 		super(context, new ParrotEntityModel(context.getPart(EntityModelLayers.PARROT)), 0.3F);
 	}
 
-	public Identifier getTexture(ParrotEntity parrotEntity) {
-		return getTexture(parrotEntity.getVariant());
+	public Identifier getTexture(ParrotEntityRenderState parrotEntityRenderState) {
+		return getTexture(parrotEntityRenderState.variant);
+	}
+
+	public ParrotEntityRenderState getRenderState() {
+		return new ParrotEntityRenderState();
+	}
+
+	public void updateRenderState(ParrotEntity parrotEntity, ParrotEntityRenderState parrotEntityRenderState, float f) {
+		super.updateRenderState(parrotEntity, parrotEntityRenderState, f);
+		parrotEntityRenderState.variant = parrotEntity.getVariant();
+		float g = MathHelper.lerp(f, parrotEntity.prevFlapProgress, parrotEntity.flapProgress);
+		float h = MathHelper.lerp(f, parrotEntity.prevMaxWingDeviation, parrotEntity.maxWingDeviation);
+		parrotEntityRenderState.flapAngle = (MathHelper.sin(g) + 1.0F) * h;
+		parrotEntityRenderState.parrotPose = ParrotEntityModel.getPose(parrotEntity);
 	}
 
 	public static Identifier getTexture(ParrotEntity.Variant variant) {
@@ -32,11 +46,5 @@ public class ParrotEntityRenderer extends MobEntityRenderer<ParrotEntity, Parrot
 			case YELLOW_BLUE -> YELLOW_TEXTURE;
 			case GRAY -> GREY_TEXTURE;
 		};
-	}
-
-	public float getAnimationProgress(ParrotEntity parrotEntity, float f) {
-		float g = MathHelper.lerp(f, parrotEntity.prevFlapProgress, parrotEntity.flapProgress);
-		float h = MathHelper.lerp(f, parrotEntity.prevMaxWingDeviation, parrotEntity.maxWingDeviation);
-		return (MathHelper.sin(g) + 1.0F) * h;
 	}
 }

@@ -77,9 +77,9 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	public static DefaultAttributeContainer.Builder createZombifiedPiglinAttributes() {
 		return ZombieEntity.createZombieAttributes()
-			.add(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS, 0.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.23F)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0);
+			.add(EntityAttributes.SPAWN_REINFORCEMENTS, 0.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.23F)
+			.add(EntityAttributes.ATTACK_DAMAGE, 5.0);
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	@Override
 	protected void mobTick() {
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 		if (this.hasAngerTime()) {
 			if (!this.isBaby() && !entityAttributeInstance.hasModifier(ATTACKING_SPEED_MODIFIER_ID)) {
 				entityAttributeInstance.addTemporaryModifier(ATTACKING_SPEED_BOOST);
@@ -139,7 +139,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	}
 
 	private void angerNearbyZombifiedPiglins() {
-		double d = this.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
+		double d = this.getAttributeValue(EntityAttributes.FOLLOW_RANGE);
 		Box box = Box.from(this.getPos()).expand(d, 10.0, d);
 		this.getWorld()
 			.getEntitiesByClass(ZombifiedPiglinEntity.class, box, EntityPredicates.EXCEPT_SPECTATOR)
@@ -231,7 +231,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	@Override
 	protected void initAttributes() {
-		this.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS).setBaseValue(0.0);
+		this.getAttributeInstance(EntityAttributes.SPAWN_REINFORCEMENTS).setBaseValue(0.0);
 	}
 
 	@Nullable

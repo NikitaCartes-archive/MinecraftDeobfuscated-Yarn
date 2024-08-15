@@ -11,6 +11,7 @@ import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.PlacedAdvancement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -99,7 +100,7 @@ public class AdvancementTab {
 
 		for (int m = -1; m <= 15; m++) {
 			for (int n = -1; n <= 8; n++) {
-				context.drawTexture(identifier, k + 16 * m, l + 16 * n, 0.0F, 0.0F, 16, 16, 16, 16);
+				context.drawTexture(RenderLayer::getGuiTextured, identifier, k + 16 * m, l + 16 * n, 0.0F, 0.0F, 16, 16, 16, 16);
 			}
 		}
 

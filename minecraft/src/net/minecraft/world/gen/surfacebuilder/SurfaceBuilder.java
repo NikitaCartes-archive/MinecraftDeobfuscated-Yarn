@@ -182,6 +182,10 @@ public class SurfaceBuilder {
 		return !state.isAir() && state.getFluidState().isEmpty();
 	}
 
+	public int getSeaLevel() {
+		return this.seaLevel;
+	}
+
 	@Deprecated
 	public Optional<BlockState> applyMaterialRule(
 		MaterialRules.MaterialRule rule,
@@ -245,7 +249,7 @@ public class SurfaceBuilder {
 			double g = 1.5;
 			double h = Math.abs(this.icebergPillarRoofNoise.sample((double)x * 1.17, 0.0, (double)z * 1.17) * 1.5);
 			double i = Math.min(e * e * 1.2, Math.ceil(h * 40.0) + 14.0);
-			if (biome.shouldGenerateLowerFrozenOceanSurface(mutablePos.set(x, 63, z))) {
+			if (biome.shouldGenerateLowerFrozenOceanSurface(mutablePos.set(x, this.seaLevel, z), this.seaLevel)) {
 				i -= 2.0;
 			}
 

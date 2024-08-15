@@ -8,8 +8,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
@@ -53,8 +55,8 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	}
 
 	@Override
-	public void renderIcon(DrawContext context, float brightness, int alpha) {
-		context.drawGuiTexture(TELEPORT_TO_PLAYER_TEXTURE, 0, 0, 16, 16);
+	public void renderIcon(DrawContext context, float brightness, float f) {
+		context.drawGuiTexture(RenderLayer::getGuiTextured, TELEPORT_TO_PLAYER_TEXTURE, 0, 0, 16, 16, ColorHelper.fromFloats(f, brightness, brightness, brightness));
 	}
 
 	@Override

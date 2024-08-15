@@ -7,6 +7,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -33,18 +34,18 @@ public class ChainRestrictedNeighborUpdater implements NeighborUpdater {
 	}
 
 	@Override
-	public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos sourcePos) {
-		this.enqueue(pos, new ChainRestrictedNeighborUpdater.SimpleEntry(pos, sourceBlock, sourcePos.toImmutable()));
+	public void updateNeighbor(BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation) {
+		this.enqueue(pos, new ChainRestrictedNeighborUpdater.SimpleEntry(pos, sourceBlock, orientation));
 	}
 
 	@Override
-	public void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-		this.enqueue(pos, new ChainRestrictedNeighborUpdater.StatefulEntry(state, pos.toImmutable(), sourceBlock, sourcePos.toImmutable(), notify));
+	public void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation, boolean notify) {
+		this.enqueue(pos, new ChainRestrictedNeighborUpdater.StatefulEntry(state, pos.toImmutable(), sourceBlock, orientation, notify));
 	}
 
 	@Override
-	public void updateNeighbors(BlockPos pos, Block sourceBlock, @Nullable Direction except) {
-		this.enqueue(pos, new ChainRestrictedNeighborUpdater.SixWayEntry(pos.toImmutable(), sourceBlock, except));
+	public void updateNeighbors(BlockPos pos, Block sourceBlock, @Nullable Direction except, @Nullable WireOrientation orientation) {
+		this.enqueue(pos, new ChainRestrictedNeighborUpdater.SixWayEntry(pos.toImmutable(), sourceBlock, orientation, except));
 	}
 
 	private void enqueue(BlockPos pos, ChainRestrictedNeighborUpdater.Entry entry) {
@@ -94,11 +95,11 @@ public class ChainRestrictedNeighborUpdater implements NeighborUpdater {
 		boolean update(World world);
 	}
 
-	static record SimpleEntry(BlockPos pos, Block sourceBlock, BlockPos sourcePos) implements ChainRestrictedNeighborUpdater.Entry {
+	static record SimpleEntry(BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation) implements ChainRestrictedNeighborUpdater.Entry {
 		@Override
 		public boolean update(World world) {
 			BlockState blockState = world.getBlockState(this.pos);
-			NeighborUpdater.tryNeighborUpdate(world, blockState, this.pos, this.sourceBlock, this.sourcePos, false);
+			NeighborUpdater.tryNeighborUpdate(world, blockState, this.pos, this.sourceBlock, this.orientation, false);
 			return false;
 		}
 	}
@@ -107,12 +108,15 @@ public class ChainRestrictedNeighborUpdater implements NeighborUpdater {
 		private final BlockPos pos;
 		private final Block sourceBlock;
 		@Nullable
+		private WireOrientation orientation;
+		@Nullable
 		private final Direction except;
 		private int currentDirectionIndex = 0;
 
-		SixWayEntry(BlockPos pos, Block sourceBlock, @Nullable Direction except) {
+		SixWayEntry(BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation, @Nullable Direction except) {
 			this.pos = pos;
 			this.sourceBlock = sourceBlock;
+			this.orientation = orientation;
 			this.except = except;
 			if (NeighborUpdater.UPDATE_ORDER[this.currentDirectionIndex] == except) {
 				this.currentDirectionIndex++;
@@ -121,9 +125,19 @@ public class ChainRestrictedNeighborUpdater implements NeighborUpdater {
 
 		@Override
 		public boolean update(World world) {
-			BlockPos blockPos = this.pos.offset(NeighborUpdater.UPDATE_ORDER[this.currentDirectionIndex++]);
+			Direction direction = NeighborUpdater.UPDATE_ORDER[this.currentDirectionIndex++];
+			BlockPos blockPos = this.pos.offset(direction);
 			BlockState blockState = world.getBlockState(blockPos);
-			NeighborUpdater.tryNeighborUpdate(world, blockState, blockPos, this.sourceBlock, this.pos, false);
+			WireOrientation wireOrientation = null;
+			if (world.getEnabledFeatures().contains(FeatureFlags.REDSTONE_EXPERIMENTS)) {
+				if (this.orientation == null) {
+					this.orientation = OrientationHelper.getEmissionOrientation(world, this.except == null ? null : this.except.getOpposite(), null);
+				}
+
+				wireOrientation = this.orientation.withFront(direction);
+			}
+
+			NeighborUpdater.tryNeighborUpdate(world, blockState, blockPos, this.sourceBlock, wireOrientation, false);
 			if (this.currentDirectionIndex < NeighborUpdater.UPDATE_ORDER.length && NeighborUpdater.UPDATE_ORDER[this.currentDirectionIndex] == this.except) {
 				this.currentDirectionIndex++;
 			}
@@ -141,11 +155,11 @@ public class ChainRestrictedNeighborUpdater implements NeighborUpdater {
 		}
 	}
 
-	static record StatefulEntry(BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean movedByPiston)
+	static record StatefulEntry(BlockState state, BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation, boolean movedByPiston)
 		implements ChainRestrictedNeighborUpdater.Entry {
 		@Override
 		public boolean update(World world) {
-			NeighborUpdater.tryNeighborUpdate(world, this.state, this.pos, this.sourceBlock, this.sourcePos, this.movedByPiston);
+			NeighborUpdater.tryNeighborUpdate(world, this.state, this.pos, this.sourceBlock, this.orientation, this.movedByPiston);
 			return false;
 		}
 	}

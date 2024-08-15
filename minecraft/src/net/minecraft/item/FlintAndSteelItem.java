@@ -42,7 +42,7 @@ public class FlintAndSteelItem extends Item {
 					itemStack.damage(1, playerEntity, LivingEntity.getSlotForHand(context.getHand()));
 				}
 
-				return ActionResult.success(world.isClient());
+				return ActionResult.SUCCESS;
 			} else {
 				return ActionResult.FAIL;
 			}
@@ -54,7 +54,7 @@ public class FlintAndSteelItem extends Item {
 				context.getStack().damage(1, playerEntity, LivingEntity.getSlotForHand(context.getHand()));
 			}
 
-			return ActionResult.success(world.isClient());
+			return ActionResult.SUCCESS;
 		}
 	}
 }

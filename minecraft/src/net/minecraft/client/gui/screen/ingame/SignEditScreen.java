@@ -7,7 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
@@ -21,7 +21,7 @@ public class SignEditScreen extends AbstractSignEditScreen {
 	public static final float TEXT_SCALE_MULTIPLIER = 0.9765628F;
 	private static final Vector3f TEXT_SCALE = new Vector3f(0.9765628F, 0.9765628F, 0.9765628F);
 	@Nullable
-	private SignBlockEntityRenderer.SignModel model;
+	private Model model;
 
 	public SignEditScreen(SignBlockEntity sign, boolean filtered, boolean bl) {
 		super(sign, filtered, bl);
@@ -30,7 +30,8 @@ public class SignEditScreen extends AbstractSignEditScreen {
 	@Override
 	protected void init() {
 		super.init();
-		this.model = SignBlockEntityRenderer.createSignModel(this.client.getEntityModelLoader(), this.signType);
+		boolean bl = this.blockEntity.getCachedState().getBlock() instanceof SignBlock;
+		this.model = SignBlockEntityRenderer.createSignModel(this.client.getEntityModelLoader(), this.signType, bl);
 	}
 
 	@Override
@@ -43,15 +44,13 @@ public class SignEditScreen extends AbstractSignEditScreen {
 	}
 
 	@Override
-	protected void renderSignBackground(DrawContext context, BlockState state) {
+	protected void renderSignBackground(DrawContext context) {
 		if (this.model != null) {
-			boolean bl = state.getBlock() instanceof SignBlock;
 			context.getMatrices().translate(0.0F, 31.0F, 0.0F);
 			context.getMatrices().scale(62.500004F, 62.500004F, -62.500004F);
 			SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getSignTextureId(this.signType);
 			VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(context.getVertexConsumers(), this.model::getLayer);
-			this.model.stick.visible = bl;
-			this.model.root.render(context.getMatrices(), vertexConsumer, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+			this.model.render(context.getMatrices(), vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
 		}
 	}
 

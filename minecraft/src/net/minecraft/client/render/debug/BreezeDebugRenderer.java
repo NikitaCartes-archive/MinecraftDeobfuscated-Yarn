@@ -20,11 +20,11 @@ import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class BreezeDebugRenderer {
-	private static final int PINK = ColorHelper.Argb.getArgb(255, 255, 100, 255);
-	private static final int LIGHT_BLUE = ColorHelper.Argb.getArgb(255, 100, 255, 255);
-	private static final int GREEN = ColorHelper.Argb.getArgb(255, 0, 255, 0);
-	private static final int ORANGE = ColorHelper.Argb.getArgb(255, 255, 165, 0);
-	private static final int RED = ColorHelper.Argb.getArgb(255, 255, 0, 0);
+	private static final int PINK = ColorHelper.getArgb(255, 255, 100, 255);
+	private static final int LIGHT_BLUE = ColorHelper.getArgb(255, 100, 255, 255);
+	private static final int GREEN = ColorHelper.getArgb(255, 0, 255, 0);
+	private static final int ORANGE = ColorHelper.getArgb(255, 255, 165, 0);
+	private static final int RED = ColorHelper.getArgb(255, 255, 0, 0);
 	private static final int field_47470 = 20;
 	private static final float field_47471 = (float) (Math.PI / 10);
 	private final MinecraftClient client;
@@ -55,7 +55,7 @@ public class BreezeDebugRenderer {
 									matrices.peek().getPositionMatrix(), cameraX, cameraY, cameraZ, vertexConsumers.getBuffer(RenderLayer.getDebugLineStrip(2.0)), vec3d, 8.0F, ORANGE
 								);
 								drawCurve(
-									matrices.peek().getPositionMatrix(), cameraX, cameraY, cameraZ, vertexConsumers.getBuffer(RenderLayer.getDebugLineStrip(2.0)), vec3d, 20.0F, RED
+									matrices.peek().getPositionMatrix(), cameraX, cameraY, cameraZ, vertexConsumers.getBuffer(RenderLayer.getDebugLineStrip(2.0)), vec3d, 24.0F, RED
 								);
 							}
 						);

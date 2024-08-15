@@ -45,9 +45,7 @@ import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.GhastEntity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -56,7 +54,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -97,6 +94,7 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	private static final float WILD_MAX_HEALTH = 8.0F;
 	private static final float TAMED_MAX_HEALTH = 40.0F;
 	private static final float field_49237 = 0.125F;
+	public static final float field_52477 = (float) (Math.PI / 5);
 	private float begAnimationProgress;
 	private float lastBegAnimationProgress;
 	private boolean furWet;
@@ -156,10 +154,10 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	}
 
 	public static DefaultAttributeContainer.Builder createWolfAttributes() {
-		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 8.0)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0);
+		return AnimalEntity.createAnimalAttributes()
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.MAX_HEALTH, 8.0)
+			.add(EntityAttributes.ATTACK_DAMAGE, 4.0);
 	}
 
 	@Override
@@ -320,15 +318,6 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	}
 
 	/**
-	 * Returns whether this wolf's fur is wet.
-	 * <p>
-	 * The wolf's fur will remain wet until the wolf shakes.
-	 */
-	public boolean isFurWet() {
-		return this.furWet;
-	}
-
-	/**
 	 * Returns this wolf's brightness multiplier based on the fur wetness.
 	 * <p>
 	 * The brightness multiplier represents how much darker the wolf gets while its fur is wet. The multiplier changes (from 0.75 to 1.0 incrementally) when a wolf shakes.
@@ -339,18 +328,11 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	 * @param tickDelta progress for linearly interpolating between the previous and current game state
 	 */
 	public float getFurWetBrightnessMultiplier(float tickDelta) {
-		return Math.min(0.75F + MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress) / 2.0F * 0.25F, 1.0F);
+		return !this.furWet ? 1.0F : Math.min(0.75F + MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress) / 2.0F * 0.25F, 1.0F);
 	}
 
-	public float getShakeAnimationProgress(float tickDelta, float f) {
-		float g = (MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress) + f) / 1.8F;
-		if (g < 0.0F) {
-			g = 0.0F;
-		} else if (g > 1.0F) {
-			g = 1.0F;
-		}
-
-		return MathHelper.sin(g * (float) Math.PI) * MathHelper.sin(g * (float) Math.PI * 11.0F) * 0.15F * (float) Math.PI;
+	public float getShakeProgress(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress);
 	}
 
 	public float getBegAnimationProgress(float tickDelta) {
@@ -415,10 +397,10 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	@Override
 	protected void updateAttributesForTamed() {
 		if (this.isTamed()) {
-			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(40.0);
+			this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(40.0);
 			this.setHealth(40.0F);
 		} else {
-			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(8.0);
+			this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(8.0);
 		}
 	}
 
@@ -431,74 +413,69 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
-		if (!this.getWorld().isClient || this.isBaby() && this.isBreedingItem(itemStack)) {
-			if (this.isTamed()) {
-				if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
-					itemStack.decrementUnlessCreative(1, player);
-					FoodComponent foodComponent = itemStack.get(DataComponentTypes.FOOD);
-					float f = foodComponent != null ? (float)foodComponent.nutrition() : 1.0F;
-					this.heal(2.0F * f);
-					return ActionResult.success(this.getWorld().isClient());
-				} else {
-					if (item instanceof DyeItem dyeItem && this.isOwner(player)) {
-						DyeColor dyeColor = dyeItem.getColor();
-						if (dyeColor != this.getCollarColor()) {
-							this.setCollarColor(dyeColor);
-							itemStack.decrementUnlessCreative(1, player);
-							return ActionResult.SUCCESS;
-						}
-
-						return super.interactMob(player, hand);
-					}
-
-					if (itemStack.isOf(Items.WOLF_ARMOR) && this.isOwner(player) && this.getBodyArmor().isEmpty() && !this.isBaby()) {
-						this.equipBodyArmor(itemStack.copyWithCount(1));
-						itemStack.decrementUnlessCreative(1, player);
-						return ActionResult.SUCCESS;
-					} else if (itemStack.isOf(Items.SHEARS)
-						&& this.isOwner(player)
-						&& this.hasArmor()
-						&& (!EnchantmentHelper.hasAnyEnchantmentsWith(this.getBodyArmor(), EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE) || player.isCreative())) {
-						itemStack.damage(1, player, getSlotForHand(hand));
-						this.playSoundIfNotSilent(SoundEvents.ITEM_ARMOR_UNEQUIP_WOLF);
-						ItemStack itemStack2 = this.getBodyArmor();
-						this.equipBodyArmor(ItemStack.EMPTY);
-						this.dropStack(itemStack2);
-						return ActionResult.SUCCESS;
-					} else if (((Ingredient)ArmorMaterials.ARMADILLO.value().repairIngredient().get()).test(itemStack)
-						&& this.isInSittingPose()
-						&& this.hasArmor()
-						&& this.isOwner(player)
-						&& this.getBodyArmor().isDamaged()) {
-						itemStack.decrement(1);
-						this.playSoundIfNotSilent(SoundEvents.ITEM_WOLF_ARMOR_REPAIR);
-						ItemStack itemStack2 = this.getBodyArmor();
-						int i = (int)((float)itemStack2.getMaxDamage() * 0.125F);
-						itemStack2.setDamage(Math.max(0, itemStack2.getDamage() - i));
-						return ActionResult.SUCCESS;
-					} else {
-						ActionResult actionResult = super.interactMob(player, hand);
-						if (!actionResult.isAccepted() && this.isOwner(player)) {
-							this.setSitting(!this.isSitting());
-							this.jumping = false;
-							this.navigation.stop();
-							this.setTarget(null);
-							return ActionResult.SUCCESS_NO_ITEM_USED;
-						} else {
-							return actionResult;
-						}
-					}
-				}
-			} else if (itemStack.isOf(Items.BONE) && !this.hasAngerTime()) {
+		if (this.isTamed()) {
+			if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
 				itemStack.decrementUnlessCreative(1, player);
-				this.tryTame(player);
+				FoodComponent foodComponent = itemStack.get(DataComponentTypes.FOOD);
+				float f = foodComponent != null ? (float)foodComponent.nutrition() : 1.0F;
+				this.heal(2.0F * f);
 				return ActionResult.SUCCESS;
 			} else {
-				return super.interactMob(player, hand);
+				if (item instanceof DyeItem dyeItem && this.isOwner(player)) {
+					DyeColor dyeColor = dyeItem.getColor();
+					if (dyeColor != this.getCollarColor()) {
+						this.setCollarColor(dyeColor);
+						itemStack.decrementUnlessCreative(1, player);
+						return ActionResult.SUCCESS;
+					}
+
+					return super.interactMob(player, hand);
+				}
+
+				if (itemStack.isOf(Items.WOLF_ARMOR) && this.isOwner(player) && this.getBodyArmor().isEmpty() && !this.isBaby()) {
+					this.equipBodyArmor(itemStack.copyWithCount(1));
+					itemStack.decrementUnlessCreative(1, player);
+					return ActionResult.SUCCESS;
+				} else if (itemStack.isOf(Items.SHEARS)
+					&& this.isOwner(player)
+					&& this.hasArmor()
+					&& (!EnchantmentHelper.hasAnyEnchantmentsWith(this.getBodyArmor(), EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE) || player.isCreative())) {
+					itemStack.damage(1, player, getSlotForHand(hand));
+					this.playSoundIfNotSilent(SoundEvents.ITEM_ARMOR_UNEQUIP_WOLF);
+					ItemStack itemStack2 = this.getBodyArmor();
+					this.equipBodyArmor(ItemStack.EMPTY);
+					this.dropStack(itemStack2);
+					return ActionResult.SUCCESS;
+				} else if (this.isInSittingPose()
+					&& this.hasArmor()
+					&& this.isOwner(player)
+					&& this.getBodyArmor().isDamaged()
+					&& this.getBodyArmor().canRepairWith(itemStack)) {
+					itemStack.decrement(1);
+					this.playSoundIfNotSilent(SoundEvents.ITEM_WOLF_ARMOR_REPAIR);
+					ItemStack itemStack2 = this.getBodyArmor();
+					int i = (int)((float)itemStack2.getMaxDamage() * 0.125F);
+					itemStack2.setDamage(Math.max(0, itemStack2.getDamage() - i));
+					return ActionResult.SUCCESS;
+				} else {
+					ActionResult actionResult = super.interactMob(player, hand);
+					if (!actionResult.isAccepted() && this.isOwner(player)) {
+						this.setSitting(!this.isSitting());
+						this.jumping = false;
+						this.navigation.stop();
+						this.setTarget(null);
+						return ActionResult.SUCCESS.noIncrementStat();
+					} else {
+						return actionResult;
+					}
+				}
 			}
+		} else if (!this.getWorld().isClient && itemStack.isOf(Items.BONE) && !this.hasAngerTime()) {
+			itemStack.decrementUnlessCreative(1, player);
+			this.tryTame(player);
+			return ActionResult.SUCCESS_SERVER;
 		} else {
-			boolean bl = this.isOwner(player) || this.isTamed() || itemStack.isOf(Items.BONE) && !this.isTamed() && !this.hasAngerTime();
-			return bl ? ActionResult.CONSUME : ActionResult.PASS;
+			return super.interactMob(player, hand);
 		}
 	}
 
@@ -589,7 +566,7 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 
 	@Nullable
 	public WolfEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		WolfEntity wolfEntity = EntityType.WOLF.create(serverWorld);
+		WolfEntity wolfEntity = EntityType.WOLF.create(serverWorld, SpawnReason.BREEDING);
 		if (wolfEntity != null && passiveEntity instanceof WolfEntity wolfEntity2) {
 			if (this.random.nextBoolean()) {
 				wolfEntity.setVariant(this.getVariant());

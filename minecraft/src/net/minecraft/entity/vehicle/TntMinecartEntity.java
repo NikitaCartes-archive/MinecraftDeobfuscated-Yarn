@@ -18,13 +18,17 @@ import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
 public class TntMinecartEntity extends AbstractMinecartEntity {
 	private static final byte PRIME_TNT_STATUS = 10;
+	private static final String EXPLOSION_POWER_NBT_KEY = "explosion_power";
+	private static final float DEFAULT_EXPLOSION_POWER = 4.0F;
 	private int fuseTicks = -1;
+	private float explosionPower = 4.0F;
 
 	public TntMinecartEntity(EntityType<? extends TntMinecartEntity> entityType, World world) {
 		super(entityType, world);
@@ -46,6 +50,7 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	public void tick() {
+		double d = this.getVelocity().horizontalLengthSquared();
 		super.tick();
 		if (this.fuseTicks > 0) {
 			this.fuseTicks--;
@@ -55,9 +60,9 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 		}
 
 		if (this.horizontalCollision) {
-			double d = this.getVelocity().horizontalLengthSquared();
-			if (d >= 0.01F) {
-				this.explode(d);
+			double e = this.getVelocity().horizontalLengthSquared();
+			if (d >= 0.01F && e <= 0.01F) {
+				this.explode(e);
 			}
 		}
 	}
@@ -173,12 +178,19 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 		if (nbt.contains("TNTFuse", NbtElement.NUMBER_TYPE)) {
 			this.fuseTicks = nbt.getInt("TNTFuse");
 		}
+
+		if (nbt.contains("explosion_power", NbtElement.NUMBER_TYPE)) {
+			this.explosionPower = MathHelper.clamp(nbt.getFloat("explosion_power"), 0.0F, 128.0F);
+		}
 	}
 
 	@Override
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putInt("TNTFuse", this.fuseTicks);
+		if (this.explosionPower != 4.0F) {
+			nbt.putFloat("explosion_power", this.explosionPower);
+		}
 	}
 
 	@Override

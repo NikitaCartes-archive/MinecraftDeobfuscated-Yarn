@@ -1,8 +1,11 @@
 package net.minecraft.util.math;
 
 import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import java.util.EnumSet;
 import java.util.List;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
 import org.joml.Vector3f;
@@ -26,6 +29,15 @@ public class Vec3d implements Position {
 			coordinates -> Util.decodeFixedLengthList(coordinates, 3).map(coords -> new Vec3d((Double)coords.get(0), (Double)coords.get(1), (Double)coords.get(2))),
 			vec -> List.of(vec.getX(), vec.getY(), vec.getZ())
 		);
+	public static final PacketCodec<ByteBuf, Vec3d> PACKET_CODEC = new PacketCodec<ByteBuf, Vec3d>() {
+		public Vec3d decode(ByteBuf byteBuf) {
+			return PacketByteBuf.readVec3d(byteBuf);
+		}
+
+		public void encode(ByteBuf byteBuf, Vec3d vec3d) {
+			PacketByteBuf.writeVec3d(byteBuf, vec3d);
+		}
+	};
 	/**
 	 * The zero vector (0, 0, 0).
 	 */
@@ -120,6 +132,10 @@ public class Vec3d implements Position {
 		this((double)vec.x(), (double)vec.y(), (double)vec.z());
 	}
 
+	public Vec3d(Vec3i vec) {
+		this((double)vec.getX(), (double)vec.getY(), (double)vec.getZ());
+	}
+
 	/**
 	 * Subtracts this vector from the given vector.
 	 * 
@@ -141,7 +157,7 @@ public class Vec3d implements Position {
 	 */
 	public Vec3d normalize() {
 		double d = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
-		return d < 1.0E-4 ? ZERO : new Vec3d(this.x / d, this.y / d, this.z / d);
+		return d < 1.0E-5F ? ZERO : new Vec3d(this.x / d, this.y / d, this.z / d);
 	}
 
 	/**
@@ -169,6 +185,10 @@ public class Vec3d implements Position {
 		return this.subtract(vec.x, vec.y, vec.z);
 	}
 
+	public Vec3d subtract(double value) {
+		return this.subtract(value, value, value);
+	}
+
 	/**
 	 * Subtracts the given vector from this vector.
 	 * 
@@ -177,6 +197,10 @@ public class Vec3d implements Position {
 	 */
 	public Vec3d subtract(double x, double y, double z) {
 		return this.add(-x, -y, -z);
+	}
+
+	public Vec3d add(double value) {
+		return this.add(value, value, value);
 	}
 
 	/**
@@ -292,6 +316,10 @@ public class Vec3d implements Position {
 	 */
 	public Vec3d multiply(double x, double y, double z) {
 		return new Vec3d(this.x * x, this.y * y, this.z * z);
+	}
+
+	public Vec3d getHorizontal() {
+		return new Vec3d(this.x, 0.0, this.z);
 	}
 
 	/**

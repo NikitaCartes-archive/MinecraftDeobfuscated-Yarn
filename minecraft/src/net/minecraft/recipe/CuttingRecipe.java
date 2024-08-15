@@ -3,13 +3,13 @@ package net.minecraft.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.input.SingleStackRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.collection.DefaultedList;
 
 /**
  * A recipe that has only one input ingredient. It can be used by any type
@@ -21,6 +21,8 @@ public abstract class CuttingRecipe implements Recipe<SingleStackRecipeInput> {
 	private final RecipeType<?> type;
 	private final RecipeSerializer<?> serializer;
 	protected final String group;
+	@Nullable
+	private IngredientPlacement ingredientPlacement;
 
 	public CuttingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, String group, Ingredient ingredient, ItemStack result) {
 		this.type = type;
@@ -51,10 +53,12 @@ public abstract class CuttingRecipe implements Recipe<SingleStackRecipeInput> {
 	}
 
 	@Override
-	public DefaultedList<Ingredient> getIngredients() {
-		DefaultedList<Ingredient> defaultedList = DefaultedList.of();
-		defaultedList.add(this.ingredient);
-		return defaultedList;
+	public IngredientPlacement getIngredientPlacement() {
+		if (this.ingredientPlacement == null) {
+			this.ingredientPlacement = IngredientPlacement.forSingleSlot(this.ingredient);
+		}
+
+		return this.ingredientPlacement;
 	}
 
 	@Override
@@ -80,7 +84,7 @@ public abstract class CuttingRecipe implements Recipe<SingleStackRecipeInput> {
 			this.codec = RecordCodecBuilder.mapCodec(
 				instance -> instance.group(
 							Codec.STRING.optionalFieldOf("group", "").forGetter(recipe -> recipe.group),
-							Ingredient.DISALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(recipe -> recipe.ingredient),
+							Ingredient.CODEC.fieldOf("ingredient").forGetter(recipe -> recipe.ingredient),
 							ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
 						)
 						.apply(instance, recipeFactory::create)

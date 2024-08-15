@@ -70,17 +70,12 @@ public class BrewingStandBlock extends BlockWithEntity {
 
 	@Override
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (world.isClient) {
-			return ActionResult.SUCCESS;
-		} else {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof BrewingStandBlockEntity) {
-				player.openHandledScreen((BrewingStandBlockEntity)blockEntity);
-				player.incrementStat(Stats.INTERACT_WITH_BREWINGSTAND);
-			}
-
-			return ActionResult.CONSUME;
+		if (!world.isClient && world.getBlockEntity(pos) instanceof BrewingStandBlockEntity brewingStandBlockEntity) {
+			player.openHandledScreen(brewingStandBlockEntity);
+			player.incrementStat(Stats.INTERACT_WITH_BREWINGSTAND);
 		}
+
+		return ActionResult.SUCCESS;
 	}
 
 	@Override

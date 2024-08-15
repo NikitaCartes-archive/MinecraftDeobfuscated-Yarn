@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -115,7 +116,9 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	@Override
 	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 		super.drawBackground(context, delta, mouseX, mouseY);
-		context.drawGuiTexture(this.handler.getSlot(0).hasStack() ? TEXT_FIELD_TEXTURE : TEXT_FIELD_DISABLED_TEXTURE, this.x + 59, this.y + 20, 110, 16);
+		context.drawGuiTexture(
+			RenderLayer::getGuiTextured, this.handler.getSlot(0).hasStack() ? TEXT_FIELD_TEXTURE : TEXT_FIELD_DISABLED_TEXTURE, this.x + 59, this.y + 20, 110, 16
+		);
 	}
 
 	@Override
@@ -126,7 +129,7 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	@Override
 	protected void drawInvalidRecipeArrow(DrawContext context, int x, int y) {
 		if ((this.handler.getSlot(0).hasStack() || this.handler.getSlot(1).hasStack()) && !this.handler.getSlot(this.handler.getResultSlotIndex()).hasStack()) {
-			context.drawGuiTexture(ERROR_TEXTURE, x + 99, y + 45, 28, 21);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, ERROR_TEXTURE, x + 99, y + 45, 28, 21);
 		}
 	}
 

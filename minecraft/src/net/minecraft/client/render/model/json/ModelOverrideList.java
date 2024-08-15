@@ -59,7 +59,7 @@ public class ModelOverrideList {
 
 	@Nullable
 	private BakedModel bakeOverridingModel(Baker baker, JsonUnbakedModel parent, ModelOverride override) {
-		UnbakedModel unbakedModel = baker.getOrLoadModel(override.getModelId());
+		UnbakedModel unbakedModel = baker.getModel(override.getModelId());
 		return Objects.equals(unbakedModel, parent) ? null : baker.bake(override.getModelId(), net.minecraft.client.render.model.ModelRotation.X0_Y0);
 	}
 

@@ -46,6 +46,8 @@ public class BookEditScreen extends Screen {
 	private static final int MAX_TEXT_HEIGHT = 128;
 	private static final int WIDTH = 192;
 	private static final int HEIGHT = 192;
+	private static final int field_52805 = 256;
+	private static final int field_52806 = 256;
 	private static final Text EDIT_TITLE_TEXT = Text.translatable("book.editTitle");
 	private static final Text FINALIZE_WARNING_TEXT = Text.translatable("book.finalizeWarning");
 	private static final OrderedText BLACK_CURSOR_TEXT = OrderedText.styledForwardsVisitedString("_", Style.EMPTY.withColor(Formatting.BLACK));
@@ -406,7 +408,7 @@ public class BookEditScreen extends Screen {
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 		this.renderInGameBackground(context);
-		context.drawTexture(BookScreen.BOOK_TEXTURE, (this.width - 192) / 2, 2, 0, 0, 192, 192);
+		context.drawTexture(RenderLayer::getGuiTextured, BookScreen.BOOK_TEXTURE, (this.width - 192) / 2, 2, 0.0F, 0.0F, 192, 192, 256, 256);
 	}
 
 	private void drawCursor(DrawContext context, BookEditScreen.Position position, boolean atEnd) {

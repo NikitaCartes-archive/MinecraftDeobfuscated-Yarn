@@ -1,10 +1,9 @@
 package net.minecraft.world.gen.chunk;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.ImmutableList.Builder;
 import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -173,17 +172,17 @@ public class ChunkNoiseSampler implements DensityFunction.EachApplier, DensityFu
 			);
 		}
 
-		Builder<ChunkNoiseSampler.BlockStateSampler> builder = ImmutableList.builder();
+		List<ChunkNoiseSampler.BlockStateSampler> list = new ArrayList();
 		DensityFunction densityFunction = DensityFunctionTypes.cacheAllInCell(
 				DensityFunctionTypes.add(noiseRouter2.finalDensity(), DensityFunctionTypes.Beardifier.INSTANCE)
 			)
 			.apply(this::getActualDensityFunction);
-		builder.add(pos -> this.aquiferSampler.apply(pos, densityFunction.sample(pos)));
+		list.add((ChunkNoiseSampler.BlockStateSampler)pos -> this.aquiferSampler.apply(pos, densityFunction.sample(pos)));
 		if (chunkGeneratorSettings.oreVeins()) {
-			builder.add(OreVeinSampler.create(noiseRouter2.veinToggle(), noiseRouter2.veinRidged(), noiseRouter2.veinGap(), noiseConfig.getOreRandomDeriver()));
+			list.add(OreVeinSampler.create(noiseRouter2.veinToggle(), noiseRouter2.veinRidged(), noiseRouter2.veinGap(), noiseConfig.getOreRandomDeriver()));
 		}
 
-		this.blockStateSampler = new ChainedBlockSource(builder.build());
+		this.blockStateSampler = new ChainedBlockSource((ChunkNoiseSampler.BlockStateSampler[])list.toArray(new ChunkNoiseSampler.BlockStateSampler[0]));
 		this.initialDensityWithoutJaggedness = noiseRouter2.initialDensityWithoutJaggedness();
 	}
 
@@ -340,7 +339,10 @@ public class ChunkNoiseSampler implements DensityFunction.EachApplier, DensityFu
 	 * @param cellY the chunk-local cell Y coordinate
 	 */
 	public void onSampledCellCorners(int cellY, int cellZ) {
-		this.interpolators.forEach(interpolator -> interpolator.onSampledCellCorners(cellY, cellZ));
+		for (ChunkNoiseSampler.DensityInterpolator densityInterpolator : this.interpolators) {
+			densityInterpolator.onSampledCellCorners(cellY, cellZ);
+		}
+
 		this.isSamplingForCaches = true;
 		this.startBlockY = (cellY + this.minimumCellY) * this.verticalCellBlockCount;
 		this.startBlockZ = (this.startCellZ + cellZ) * this.horizontalCellBlockCount;
@@ -362,7 +364,10 @@ public class ChunkNoiseSampler implements DensityFunction.EachApplier, DensityFu
 	 */
 	public void interpolateY(int blockY, double deltaY) {
 		this.cellBlockY = blockY - this.startBlockY;
-		this.interpolators.forEach(interpolator -> interpolator.interpolateY(deltaY));
+
+		for (ChunkNoiseSampler.DensityInterpolator densityInterpolator : this.interpolators) {
+			densityInterpolator.interpolateY(deltaY);
+		}
 	}
 
 	/**
@@ -373,7 +378,10 @@ public class ChunkNoiseSampler implements DensityFunction.EachApplier, DensityFu
 	 */
 	public void interpolateX(int blockX, double deltaX) {
 		this.cellBlockX = blockX - this.startBlockX;
-		this.interpolators.forEach(interpolator -> interpolator.interpolateX(deltaX));
+
+		for (ChunkNoiseSampler.DensityInterpolator densityInterpolator : this.interpolators) {
+			densityInterpolator.interpolateX(deltaX);
+		}
 	}
 
 	/**
@@ -385,7 +393,10 @@ public class ChunkNoiseSampler implements DensityFunction.EachApplier, DensityFu
 	public void interpolateZ(int blockZ, double deltaZ) {
 		this.cellBlockZ = blockZ - this.startBlockZ;
 		this.sampleUniqueIndex++;
-		this.interpolators.forEach(interpolator -> interpolator.interpolateZ(deltaZ));
+
+		for (ChunkNoiseSampler.DensityInterpolator densityInterpolator : this.interpolators) {
+			densityInterpolator.interpolateZ(deltaZ);
+		}
 	}
 
 	/**

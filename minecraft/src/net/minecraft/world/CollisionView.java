@@ -9,8 +9,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.function.BooleanBiFunction;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -50,7 +53,11 @@ public interface CollisionView extends BlockView {
 	}
 
 	default boolean isSpaceEmpty(@Nullable Entity entity, Box box) {
-		for (VoxelShape voxelShape : this.getBlockCollisions(entity, box)) {
+		return this.isSpaceEmpty(entity, box, false);
+	}
+
+	default boolean isSpaceEmpty(@Nullable Entity entity, Box box, boolean checkFluid) {
+		for (VoxelShape voxelShape : checkFluid ? this.getBlockOrFluidCollisions(entity, box) : this.getBlockCollisions(entity, box)) {
 			if (!voxelShape.isEmpty()) {
 				return false;
 			}
@@ -88,10 +95,27 @@ public interface CollisionView extends BlockView {
 		return () -> new BlockCollisionSpliterator(this, entity, box, false, (pos, voxelShape) -> voxelShape);
 	}
 
+	default Iterable<VoxelShape> getBlockOrFluidCollisions(@Nullable Entity entity, Box box) {
+		return () -> new BlockCollisionSpliterator(this, ShapeContext.of(entity, true), box, false, (mutable, voxelShape) -> voxelShape);
+	}
+
 	@Nullable
 	private VoxelShape getWorldBorderCollisions(Entity entity, Box box) {
 		WorldBorder worldBorder = this.getWorldBorder();
 		return worldBorder.canCollide(entity, box) ? worldBorder.asVoxelShape() : null;
+	}
+
+	default HitResult getWorldBorderCollisions(RaycastContext context) {
+		HitResult hitResult = this.raycast(context);
+		WorldBorder worldBorder = this.getWorldBorder();
+		if (worldBorder.contains(context.getStart()) && !worldBorder.contains(hitResult.getPos())) {
+			Vec3d vec3d = hitResult.getPos().subtract(context.getStart());
+			Direction direction = Direction.getFacing(vec3d.x, vec3d.y, vec3d.z);
+			Vec3d vec3d2 = worldBorder.clamp(hitResult.getPos());
+			return new BlockHitResult(vec3d2, direction, BlockPos.ofFloored(vec3d2), false);
+		} else {
+			return hitResult;
+		}
 	}
 
 	default boolean canCollide(@Nullable Entity entity, Box box) {
@@ -129,8 +153,8 @@ public interface CollisionView extends BlockView {
 		} else {
 			Box box = shape.getBoundingBox().expand(x, y, z);
 			VoxelShape voxelShape = (VoxelShape)StreamSupport.stream(this.getBlockCollisions(entity, box).spliterator(), false)
-				.filter(voxelShapex -> this.getWorldBorder() == null || this.getWorldBorder().contains(voxelShapex.getBoundingBox()))
-				.flatMap(voxelShapex -> voxelShapex.getBoundingBoxes().stream())
+				.filter(collision -> this.getWorldBorder() == null || this.getWorldBorder().contains(collision.getBoundingBox()))
+				.flatMap(collision -> collision.getBoundingBoxes().stream())
 				.map(boxx -> boxx.expand(x / 2.0, y / 2.0, z / 2.0))
 				.map(VoxelShapes::cuboid)
 				.reduce(VoxelShapes.empty(), VoxelShapes::union);

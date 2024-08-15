@@ -96,5 +96,10 @@ public abstract class VehicleEntity extends Entity {
 		this.killAndDropItem(this.asItem());
 	}
 
+	@Override
+	public int getDefaultPortalCooldown() {
+		return 10;
+	}
+
 	abstract Item asItem();
 }

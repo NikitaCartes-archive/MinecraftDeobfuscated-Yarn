@@ -13,9 +13,6 @@ import net.minecraft.util.profiler.log.MultiValueDebugSampleLog;
 
 @Environment(EnvType.CLIENT)
 public class TickChart extends DebugChart {
-	private static final int field_45935 = -65536;
-	private static final int field_45936 = -256;
-	private static final int field_45937 = -16711936;
 	private static final int field_48763 = -6745839;
 	private static final int field_48764 = -4548257;
 	private static final int field_48765 = -10547572;
@@ -29,7 +26,7 @@ public class TickChart extends DebugChart {
 	@Override
 	protected void renderThresholds(DrawContext context, int x, int width, int height) {
 		float f = (float)TimeHelper.SECOND_IN_MILLIS / (Float)this.millisPerTickSupplier.get();
-		this.drawBorderedText(context, String.format("%.1f TPS", f), x + 1, height - 60 + 1);
+		this.drawBorderedText(context, String.format(Locale.ROOT, "%.1f TPS", f), x + 1, height - 60 + 1);
 	}
 
 	@Override

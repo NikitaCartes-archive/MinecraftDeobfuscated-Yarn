@@ -57,17 +57,25 @@ public class WorldBorder {
 		return x >= this.getBoundWest() - margin && x < this.getBoundEast() + margin && z >= this.getBoundNorth() - margin && z < this.getBoundSouth() + margin;
 	}
 
-	public BlockPos clamp(BlockPos pos) {
-		return this.clamp((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
+	public BlockPos clampFloored(BlockPos pos) {
+		return this.clampFloored((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
 	}
 
-	public BlockPos clamp(Vec3d pos) {
-		return this.clamp(pos.getX(), pos.getY(), pos.getZ());
+	public BlockPos clampFloored(Vec3d pos) {
+		return this.clampFloored(pos.getX(), pos.getY(), pos.getZ());
 	}
 
-	public BlockPos clamp(double x, double y, double z) {
-		return BlockPos.ofFloored(
-			MathHelper.clamp(x, this.getBoundWest(), this.getBoundEast() - 1.0), y, MathHelper.clamp(z, this.getBoundNorth(), this.getBoundSouth() - 1.0)
+	public BlockPos clampFloored(double x, double y, double z) {
+		return BlockPos.ofFloored(this.clamp(x, y, z));
+	}
+
+	public Vec3d clamp(Vec3d pos) {
+		return this.clamp(pos.x, pos.y, pos.z);
+	}
+
+	public Vec3d clamp(double x, double y, double z) {
+		return new Vec3d(
+			MathHelper.clamp(x, this.getBoundWest(), this.getBoundEast() - 1.0E-5F), y, MathHelper.clamp(z, this.getBoundNorth(), this.getBoundSouth() - 1.0E-5F)
 		);
 	}
 

@@ -7,14 +7,6 @@ import java.util.concurrent.CompletableFuture;
 public interface TextStream {
 	TextStream UNFILTERED = new TextStream() {
 		@Override
-		public void onConnect() {
-		}
-
-		@Override
-		public void onDisconnect() {
-		}
-
-		@Override
 		public CompletableFuture<FilteredMessage> filterText(String text) {
 			return CompletableFuture.completedFuture(FilteredMessage.permitted(text));
 		}
@@ -25,9 +17,11 @@ public interface TextStream {
 		}
 	};
 
-	void onConnect();
+	default void onConnect() {
+	}
 
-	void onDisconnect();
+	default void onDisconnect() {
+	}
 
 	CompletableFuture<FilteredMessage> filterText(String text);
 

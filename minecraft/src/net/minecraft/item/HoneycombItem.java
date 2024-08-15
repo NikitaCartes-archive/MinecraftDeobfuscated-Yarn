@@ -74,15 +74,15 @@ public class HoneycombItem extends Item implements SignChangingItem {
 		return (ActionResult)getWaxedState(blockState).map(state -> {
 			PlayerEntity playerEntity = context.getPlayer();
 			ItemStack itemStack = context.getStack();
-			if (playerEntity instanceof ServerPlayerEntity) {
-				Criteria.ITEM_USED_ON_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
+			if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity) {
+				Criteria.ITEM_USED_ON_BLOCK.trigger(serverPlayerEntity, blockPos, itemStack);
 			}
 
 			itemStack.decrement(1);
 			world.setBlockState(blockPos, state, Block.NOTIFY_ALL_AND_REDRAW);
 			world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(playerEntity, state));
 			world.syncWorldEvent(playerEntity, WorldEvents.BLOCK_WAXED, blockPos, 0);
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		}).orElse(ActionResult.PASS);
 	}
 

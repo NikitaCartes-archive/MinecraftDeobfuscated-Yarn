@@ -99,7 +99,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	}
 
 	public static DefaultAttributeContainer.Builder createGhastAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 100.0);
+		return MobEntity.createMobAttributes().add(EntityAttributes.MAX_HEALTH, 10.0).add(EntityAttributes.FOLLOW_RANGE, 100.0);
 	}
 
 	@Override

@@ -49,7 +49,7 @@ public class ItemModelGenerator {
 		map.put(Direction.SOUTH, new ModelElementFace(null, layer, key, new ModelElementTexture(new float[]{0.0F, 0.0F, 16.0F, 16.0F}, 0)));
 		map.put(Direction.NORTH, new ModelElementFace(null, layer, key, new ModelElementTexture(new float[]{16.0F, 0.0F, 0.0F, 16.0F}, 0)));
 		List<ModelElement> list = Lists.<ModelElement>newArrayList();
-		list.add(new ModelElement(new Vector3f(0.0F, 0.0F, 7.5F), new Vector3f(16.0F, 16.0F, 8.5F), map, null, true));
+		list.add(new ModelElement(new Vector3f(0.0F, 0.0F, 7.5F), new Vector3f(16.0F, 16.0F, 8.5F), map));
 		list.addAll(this.addSubComponents(sprite, key, layer));
 		return list;
 	}
@@ -126,16 +126,16 @@ public class ItemModelGenerator {
 			map.put(side.getDirection(), new ModelElementFace(null, layer, key, new ModelElementTexture(new float[]{l, n, m, o}, 0)));
 			switch (side) {
 				case UP:
-					list.add(new ModelElement(new Vector3f(h, i, 7.5F), new Vector3f(j, i, 8.5F), map, null, true));
+					list.add(new ModelElement(new Vector3f(h, i, 7.5F), new Vector3f(j, i, 8.5F), map));
 					break;
 				case DOWN:
-					list.add(new ModelElement(new Vector3f(h, k, 7.5F), new Vector3f(j, k, 8.5F), map, null, true));
+					list.add(new ModelElement(new Vector3f(h, k, 7.5F), new Vector3f(j, k, 8.5F), map));
 					break;
 				case LEFT:
-					list.add(new ModelElement(new Vector3f(h, i, 7.5F), new Vector3f(h, k, 8.5F), map, null, true));
+					list.add(new ModelElement(new Vector3f(h, i, 7.5F), new Vector3f(h, k, 8.5F), map));
 					break;
 				case RIGHT:
-					list.add(new ModelElement(new Vector3f(j, i, 7.5F), new Vector3f(j, k, 8.5F), map, null, true));
+					list.add(new ModelElement(new Vector3f(j, i, 7.5F), new Vector3f(j, k, 8.5F), map));
 			}
 		}
 

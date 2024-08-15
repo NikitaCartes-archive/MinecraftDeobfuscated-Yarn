@@ -147,11 +147,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements DynamicTextur
 
 	@Override
 	public void tick() {
-		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(this::tickAnimatedSprites);
-		} else {
-			this.tickAnimatedSprites();
-		}
+		this.tickAnimatedSprites();
 	}
 
 	public Sprite getSprite(Identifier id) {

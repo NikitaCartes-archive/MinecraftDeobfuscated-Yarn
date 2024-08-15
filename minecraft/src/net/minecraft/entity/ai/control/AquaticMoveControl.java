@@ -40,7 +40,7 @@ public class AquaticMoveControl extends MoveControl {
 				this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), h, (float)this.yawChange));
 				this.entity.bodyYaw = this.entity.getYaw();
 				this.entity.headYaw = this.entity.getYaw();
-				float i = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+				float i = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.MOVEMENT_SPEED));
 				if (this.entity.isTouchingWater()) {
 					this.entity.setMovementSpeed(i * this.speedInWater);
 					double j = Math.sqrt(d * d + f * f);

@@ -31,8 +31,8 @@ public class ShovelItem extends MiningToolItem {
 			.build()
 	);
 
-	public ShovelItem(ToolMaterial toolMaterial, Item.Settings settings) {
-		super(toolMaterial, BlockTags.SHOVEL_MINEABLE, settings);
+	public ShovelItem(ToolMaterial material, float attackDamage, float attackSpeed, Item.Settings settings) {
+		super(material, BlockTags.SHOVEL_MINEABLE, attackDamage, attackSpeed, settings);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class ShovelItem extends MiningToolItem {
 					}
 				}
 
-				return ActionResult.success(world.isClient);
+				return ActionResult.SUCCESS;
 			} else {
 				return ActionResult.PASS;
 			}

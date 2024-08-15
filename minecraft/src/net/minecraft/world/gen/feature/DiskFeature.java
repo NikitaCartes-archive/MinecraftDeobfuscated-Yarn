@@ -39,14 +39,21 @@ public class DiskFeature extends Feature<DiskFeatureConfig> {
 
 	protected boolean placeBlock(DiskFeatureConfig config, StructureWorldAccess world, Random random, int topY, int bottomY, BlockPos.Mutable pos) {
 		boolean bl = false;
+		boolean bl2 = false;
 
 		for (int i = topY; i > bottomY; i--) {
 			pos.setY(i);
 			if (config.target().test(world, pos)) {
 				BlockState blockState = config.stateProvider().getBlockState(world, random, pos);
 				world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
-				this.markBlocksAboveForPostProcessing(world, pos);
+				if (!bl2) {
+					this.markBlocksAboveForPostProcessing(world, pos);
+				}
+
 				bl = true;
+				bl2 = true;
+			} else {
+				bl2 = false;
 			}
 		}
 

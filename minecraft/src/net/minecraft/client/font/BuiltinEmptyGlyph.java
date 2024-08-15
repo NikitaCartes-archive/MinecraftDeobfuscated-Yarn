@@ -25,7 +25,7 @@ public enum BuiltinEmptyGlyph implements Glyph {
 
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
-				nativeImage.setColor(j, i, colorSupplier.getColor(j, i));
+				nativeImage.setColorArgb(j, i, colorSupplier.getColor(j, i));
 			}
 		}
 

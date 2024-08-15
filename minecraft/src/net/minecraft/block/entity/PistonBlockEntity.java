@@ -29,6 +29,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.block.OrientationHelper;
 
 /**
  * A piston block entity represents the block being pushed by a piston.
@@ -190,6 +191,7 @@ public class PistonBlockEntity extends BlockEntity {
 				distance * (double)movementDirection.getOffsetX(), distance * (double)movementDirection.getOffsetY(), distance * (double)movementDirection.getOffsetZ()
 			)
 		);
+		entity.tickBlockCollision();
 		entityMovementDirection.set(null);
 	}
 
@@ -282,9 +284,13 @@ public class PistonBlockEntity extends BlockEntity {
 				}
 
 				this.world.setBlockState(this.pos, blockState, Block.NOTIFY_ALL);
-				this.world.updateNeighbor(this.pos, blockState.getBlock(), this.pos);
+				this.world.updateNeighbor(this.pos, blockState.getBlock(), OrientationHelper.getEmissionOrientation(this.world, this.method_61764(), null));
 			}
 		}
+	}
+
+	public Direction method_61764() {
+		return this.extending ? this.facing : this.facing.getOpposite();
 	}
 
 	public static void tick(World world, BlockPos pos, BlockState state, PistonBlockEntity blockEntity) {
@@ -307,7 +313,7 @@ public class PistonBlockEntity extends BlockEntity {
 						}
 
 						world.setBlockState(pos, blockState, Block.NOTIFY_ALL | Block.MOVED);
-						world.updateNeighbor(pos, blockState.getBlock(), pos);
+						world.updateNeighbor(pos, blockState.getBlock(), OrientationHelper.getEmissionOrientation(world, blockEntity.method_61764(), null));
 					}
 				}
 			}

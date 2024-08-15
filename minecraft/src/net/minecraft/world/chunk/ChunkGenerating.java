@@ -4,15 +4,14 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ChunkTaskPrioritySystem;
 import net.minecraft.server.world.ServerLightingProvider;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.BoundedRegionArray;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.Blender;
 
 public class ChunkGenerating {
@@ -118,8 +117,7 @@ public class ChunkGenerating {
 				serverWorld.getChunkManager().getNoiseConfig(),
 				serverWorld.getBiomeAccess(),
 				serverWorld.getStructureAccessor().forRegion(chunkRegion),
-				chunk,
-				GenerationStep.Carver.AIR
+				chunk
 			);
 		return CompletableFuture.completedFuture(chunk);
 	}
@@ -171,8 +169,8 @@ public class ChunkGenerating {
 			ProtoChunk protoChunk = (ProtoChunk)chunk;
 			ServerWorld serverWorld = context.world();
 			WorldChunk worldChunk;
-			if (protoChunk instanceof WrapperProtoChunk) {
-				worldChunk = ((WrapperProtoChunk)protoChunk).getWrappedChunk();
+			if (protoChunk instanceof WrapperProtoChunk wrapperProtoChunk) {
+				worldChunk = wrapperProtoChunk.getWrappedChunk();
 			} else {
 				worldChunk = new WorldChunk(serverWorld, protoChunk, worldChunkx -> addEntities(serverWorld, protoChunk.getEntities()));
 				abstractChunkHolder.replaceWith(new WrapperProtoChunk(worldChunk, false));
@@ -184,12 +182,12 @@ public class ChunkGenerating {
 			worldChunk.updateAllBlockEntities();
 			worldChunk.addChunkTickSchedulers(serverWorld);
 			return worldChunk;
-		}, runnable -> context.mainThreadMailBox().send(ChunkTaskPrioritySystem.createMessage(runnable, chunkPos.toLong(), abstractChunkHolder::getLevel)));
+		}, context.mainThreadExecutor());
 	}
 
 	private static void addEntities(ServerWorld world, List<NbtCompound> entities) {
 		if (!entities.isEmpty()) {
-			world.addEntities(EntityType.streamFromNbt(entities, world));
+			world.addEntities(EntityType.streamFromNbt(entities, world, SpawnReason.LOAD));
 		}
 	}
 }

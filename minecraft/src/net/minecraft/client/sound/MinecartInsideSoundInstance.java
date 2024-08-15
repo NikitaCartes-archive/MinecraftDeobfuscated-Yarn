@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.entity.vehicle.ExperimentalMinecartController;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
@@ -42,7 +43,8 @@ public class MinecartInsideSoundInstance extends MovingSoundInstance {
 
 	@Override
 	public void tick() {
-		if (this.minecart.isRemoved() || !this.player.hasVehicle() || this.player.getVehicle() != this.minecart) {
+		boolean bl = !this.minecart.isOnRail() && this.minecart.getController() instanceof ExperimentalMinecartController;
+		if (this.minecart.isRemoved() || !this.player.hasVehicle() || this.player.getVehicle() != this.minecart || bl) {
 			this.setDone();
 		} else if (this.underwater != this.player.isSubmergedInWater()) {
 			this.volume = 0.0F;

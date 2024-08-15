@@ -41,8 +41,6 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ArmorMaterials;
-import net.minecraft.item.Instrument;
-import net.minecraft.item.Instruments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
@@ -223,7 +221,6 @@ public class Registries {
 	);
 	public static final Registry<CatVariant> CAT_VARIANT = create(RegistryKeys.CAT_VARIANT, CatVariant::registerAndGetDefault);
 	public static final Registry<FrogVariant> FROG_VARIANT = create(RegistryKeys.FROG_VARIANT, FrogVariant::registerAndGetDefault);
-	public static final Registry<Instrument> INSTRUMENT = create(RegistryKeys.INSTRUMENT, Instruments::registerAndGetDefault);
 	public static final Registry<DecoratedPotPattern> DECORATED_POT_PATTERN = create(
 		RegistryKeys.DECORATED_POT_PATTERN, DecoratedPotPatterns::registerAndGetDefault
 	);
@@ -301,6 +298,7 @@ public class Registries {
 		REGISTRIES.freeze();
 
 		for (Registry<?> registry : REGISTRIES) {
+			resetTagEntries(registry);
 			registry.freeze();
 		}
 	}
@@ -308,7 +306,7 @@ public class Registries {
 	private static <T extends Registry<?>> void validate(Registry<T> registries) {
 		registries.forEach(registry -> {
 			if (registry.getIds().isEmpty()) {
-				Util.error("Registry '" + registries.getId((T)registry) + "' was empty after loading");
+				Util.logErrorOrPause("Registry '" + registries.getId((T)registry) + "' was empty after loading");
 			}
 
 			if (registry instanceof DefaultedRegistry) {
@@ -316,6 +314,14 @@ public class Registries {
 				Validate.notNull(registry.get(identifier), "Missing default of DefaultedMappedRegistry: " + identifier);
 			}
 		});
+	}
+
+	public static <T> RegistryEntryLookup<T> createEntryLookup(Registry<T> registry) {
+		return ((MutableRegistry)registry).createMutableEntryLookup();
+	}
+
+	private static void resetTagEntries(Registry<?> registry) {
+		((SimpleRegistry)registry).resetTagEntries();
 	}
 
 	@FunctionalInterface

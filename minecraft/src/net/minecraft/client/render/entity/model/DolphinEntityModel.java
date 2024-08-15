@@ -8,7 +8,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.render.entity.state.DolphinEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -48,7 +48,8 @@ import net.minecraft.util.math.MathHelper;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class DolphinEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+public class DolphinEntityModel extends EntityModel<DolphinEntityRenderState> {
+	public static final ModelTransformer BABY_TRANSFORMER = ModelTransformer.scaling(0.5F);
 	private final ModelPart root;
 	private final ModelPart body;
 	private final ModelPart tail;
@@ -104,14 +105,13 @@ public class DolphinEntityModel<T extends Entity> extends SinglePartEntityModel<
 		return this.root;
 	}
 
-	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		this.body.pitch = headPitch * (float) (Math.PI / 180.0);
-		this.body.yaw = headYaw * (float) (Math.PI / 180.0);
-		if (entity.getVelocity().horizontalLengthSquared() > 1.0E-7) {
-			this.body.pitch = this.body.pitch + (-0.05F - 0.05F * MathHelper.cos(animationProgress * 0.3F));
-			this.tail.pitch = -0.1F * MathHelper.cos(animationProgress * 0.3F);
-			this.tailFin.pitch = -0.2F * MathHelper.cos(animationProgress * 0.3F);
+	public void setAngles(DolphinEntityRenderState dolphinEntityRenderState) {
+		this.body.pitch = dolphinEntityRenderState.pitch * (float) (Math.PI / 180.0);
+		this.body.yaw = dolphinEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
+		if (dolphinEntityRenderState.moving) {
+			this.body.pitch = this.body.pitch + (-0.05F - 0.05F * MathHelper.cos(dolphinEntityRenderState.age * 0.3F));
+			this.tail.pitch = -0.1F * MathHelper.cos(dolphinEntityRenderState.age * 0.3F);
+			this.tailFin.pitch = -0.2F * MathHelper.cos(dolphinEntityRenderState.age * 0.3F);
 		}
 	}
 }

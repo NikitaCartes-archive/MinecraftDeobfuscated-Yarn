@@ -5,12 +5,13 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
 public class TemptGoal extends Goal {
-	private static final TargetPredicate TEMPTING_ENTITY_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(10.0).ignoreVisibility();
+	private static final TargetPredicate TEMPTING_ENTITY_PREDICATE = TargetPredicate.createNonAttackable().ignoreVisibility();
 	private final TargetPredicate predicate;
 	protected final PathAwareEntity mob;
 	private final double speed;
@@ -41,7 +42,9 @@ public class TemptGoal extends Goal {
 			this.cooldown--;
 			return false;
 		} else {
-			this.closestPlayer = this.mob.getWorld().getClosestPlayer(this.predicate, this.mob);
+			this.closestPlayer = this.mob
+				.getWorld()
+				.getClosestPlayer(this.predicate.setBaseMaxDistance(this.mob.getAttributeValue(EntityAttributes.TEMPT_RANGE)), this.mob);
 			return this.closestPlayer != null;
 		}
 	}

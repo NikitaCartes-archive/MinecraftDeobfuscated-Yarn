@@ -27,6 +27,10 @@ public abstract class DebugChart {
 		return Math.min(this.log.getDimension() + 2, centerX);
 	}
 
+	public int method_61983() {
+		return 60 + 9;
+	}
+
 	public void render(DrawContext context, int x, int width) {
 		int i = context.getScaledWindowHeight();
 		context.fill(RenderLayer.getGuiOverlay(), x, i - 60, x + width, i, -1873784752);
@@ -98,7 +102,7 @@ public abstract class DebugChart {
 	protected int getColor(double value, double min, int minColor, double median, int medianColor, double max, int maxColor) {
 		value = MathHelper.clamp(value, min, max);
 		return value < median
-			? ColorHelper.Argb.lerp((float)((value - min) / (median - min)), minColor, medianColor)
-			: ColorHelper.Argb.lerp((float)((value - median) / (max - median)), medianColor, maxColor);
+			? ColorHelper.lerp((float)((value - min) / (median - min)), minColor, medianColor)
+			: ColorHelper.lerp((float)((value - median) / (max - median)), medianColor, maxColor);
 	}
 }

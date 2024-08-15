@@ -106,7 +106,12 @@ public final class ItemTags {
 	public static final TagKey<Item> LECTERN_BOOKS = of("lectern_books");
 	public static final TagKey<Item> BOOKSHELF_BOOKS = of("bookshelf_books");
 	public static final TagKey<Item> BEACON_PAYMENT_ITEMS = of("beacon_payment_items");
+	public static final TagKey<Item> WOODEN_TOOL_MATERIALS = of("wooden_tool_materials");
 	public static final TagKey<Item> STONE_TOOL_MATERIALS = of("stone_tool_materials");
+	public static final TagKey<Item> IRON_TOOL_MATERIALS = of("iron_tool_materials");
+	public static final TagKey<Item> GOLD_TOOL_MATERIALS = of("gold_tool_materials");
+	public static final TagKey<Item> DIAMOND_TOOL_MATERIALS = of("diamond_tool_materials");
+	public static final TagKey<Item> NETHERITE_TOOL_MATERIALS = of("netherite_tool_materials");
 	public static final TagKey<Item> STONE_CRAFTING_MATERIALS = of("stone_crafting_materials");
 	public static final TagKey<Item> FREEZE_IMMUNE_WEARABLES = of("freeze_immune_wearables");
 	public static final TagKey<Item> DAMPENS_VIBRATIONS = of("dampens_vibrations");
@@ -132,7 +137,9 @@ public final class ItemTags {
 	public static final TagKey<Item> SHOVELS = of("shovels");
 	public static final TagKey<Item> BREAKS_DECORATED_POTS = of("breaks_decorated_pots");
 	public static final TagKey<Item> VILLAGER_PLANTABLE_SEEDS = of("villager_plantable_seeds");
+	public static final TagKey<Item> VILLAGER_PICKS_UP = of("villager_picks_up");
 	public static final TagKey<Item> DYEABLE = of("dyeable");
+	public static final TagKey<Item> FURNACE_MINECART_FUEL = of("furnace_minecart_fuel");
 	public static final TagKey<Item> FOOT_ARMOR_ENCHANTABLE = of("enchantable/foot_armor");
 	public static final TagKey<Item> LEG_ARMOR_ENCHANTABLE = of("enchantable/leg_armor");
 	public static final TagKey<Item> CHEST_ARMOR_ENCHANTABLE = of("enchantable/chest_armor");

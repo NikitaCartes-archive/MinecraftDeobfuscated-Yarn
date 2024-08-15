@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import java.util.Arrays;
+import javax.annotation.Nullable;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,6 +21,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.block.OrientationHelper;
+import net.minecraft.world.block.WireOrientation;
 
 public class PistonHeadBlock extends FacingBlock {
 	public static final MapCodec<PistonHeadBlock> CODEC = createCodec(PistonHeadBlock::new);
@@ -136,9 +139,13 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		if (state.canPlaceAt(world, pos)) {
-			world.updateNeighbor(pos.offset(((Direction)state.get(FACING)).getOpposite()), sourceBlock, sourcePos);
+			world.updateNeighbor(
+				pos.offset(((Direction)state.get(FACING)).getOpposite()),
+				sourceBlock,
+				OrientationHelper.withFrontNullable(wireOrientation, ((Direction)state.get(FACING)).getOpposite())
+			);
 		}
 	}
 

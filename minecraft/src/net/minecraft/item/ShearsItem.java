@@ -3,12 +3,16 @@ package net.minecraft.item;
 import java.util.List;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractPlantStemBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.component.type.ToolComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -24,12 +28,13 @@ public class ShearsItem extends Item {
 	}
 
 	public static ToolComponent createToolComponent() {
+		RegistryEntryLookup<Block> registryEntryLookup = Registries.createEntryLookup(Registries.BLOCK);
 		return new ToolComponent(
 			List.of(
-				ToolComponent.Rule.ofAlwaysDropping(List.of(Blocks.COBWEB), 15.0F),
-				ToolComponent.Rule.of(BlockTags.LEAVES, 15.0F),
-				ToolComponent.Rule.of(BlockTags.WOOL, 5.0F),
-				ToolComponent.Rule.of(List.of(Blocks.VINE, Blocks.GLOW_LICHEN), 2.0F)
+				ToolComponent.Rule.ofAlwaysDropping(RegistryEntryList.of(Blocks.COBWEB.getRegistryEntry()), 15.0F),
+				ToolComponent.Rule.of(registryEntryLookup.getOrThrow(BlockTags.LEAVES), 15.0F),
+				ToolComponent.Rule.of(registryEntryLookup.getOrThrow(BlockTags.WOOL), 5.0F),
+				ToolComponent.Rule.of(RegistryEntryList.of(Blocks.VINE.getRegistryEntry(), Blocks.GLOW_LICHEN.getRegistryEntry()), 2.0F)
 			),
 			1.0F,
 			1
@@ -73,7 +78,7 @@ public class ShearsItem extends Item {
 				itemStack.damage(1, playerEntity, LivingEntity.getSlotForHand(context.getHand()));
 			}
 
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		}
 
 		return super.useOnBlock(context);

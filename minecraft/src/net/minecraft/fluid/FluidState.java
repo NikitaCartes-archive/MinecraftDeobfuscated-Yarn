@@ -63,7 +63,7 @@ public final class FluidState extends State<Fluid, FluidState> {
 			for (int j = -1; j <= 1; j++) {
 				BlockPos blockPos = pos.add(i, 0, j);
 				FluidState fluidState = world.getFluidState(blockPos);
-				if (!fluidState.getFluid().matchesType(this.getFluid()) && !world.getBlockState(blockPos).isOpaqueFullCube(world, blockPos)) {
+				if (!fluidState.getFluid().matchesType(this.getFluid()) && !world.getBlockState(blockPos).isOpaqueFullCube()) {
 					return true;
 				}
 			}
@@ -72,8 +72,8 @@ public final class FluidState extends State<Fluid, FluidState> {
 		return false;
 	}
 
-	public void onScheduledTick(World world, BlockPos pos) {
-		this.getFluid().onScheduledTick(world, pos, this);
+	public void onScheduledTick(World world, BlockPos pos, BlockState state) {
+		this.getFluid().onScheduledTick(world, pos, state, this);
 	}
 
 	public void randomDisplayTick(World world, BlockPos pos, Random random) {

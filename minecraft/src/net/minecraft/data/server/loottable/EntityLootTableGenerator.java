@@ -37,6 +37,7 @@ import net.minecraft.predicate.item.EnchantmentsPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.predicate.item.ItemSubPredicateTypes;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
@@ -144,17 +145,19 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 		return ENTITY_TYPES_IN_MISC_GROUP_TO_CHECK.contains(entityType) || entityType.getSpawnGroup() != SpawnGroup.MISC;
 	}
 
-	protected LootCondition.Builder killedByFrog() {
+	protected LootCondition.Builder killedByFrog(RegistryEntryLookup<EntityType<?>> registryLookup) {
 		return DamageSourcePropertiesLootCondition.builder(
-			DamageSourcePredicate.Builder.create().sourceEntity(EntityPredicate.Builder.create().type(EntityType.FROG))
+			DamageSourcePredicate.Builder.create().sourceEntity(EntityPredicate.Builder.create().type(registryLookup, EntityType.FROG))
 		);
 	}
 
-	protected LootCondition.Builder killedByFrog(RegistryKey<FrogVariant> frogVariant) {
+	protected LootCondition.Builder killedByFrog(RegistryEntryLookup<EntityType<?>> registryLookup, RegistryKey<FrogVariant> frogVariant) {
 		return DamageSourcePropertiesLootCondition.builder(
 			DamageSourcePredicate.Builder.create()
 				.sourceEntity(
-					EntityPredicate.Builder.create().type(EntityType.FROG).typeSpecific(EntitySubPredicateTypes.frogVariant(Registries.FROG_VARIANT.entryOf(frogVariant)))
+					EntityPredicate.Builder.create()
+						.type(registryLookup, EntityType.FROG)
+						.typeSpecific(EntitySubPredicateTypes.frogVariant(Registries.FROG_VARIANT.entryOf(frogVariant)))
 				)
 		);
 	}

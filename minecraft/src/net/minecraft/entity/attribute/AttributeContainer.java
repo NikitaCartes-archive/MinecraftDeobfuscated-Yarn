@@ -117,6 +117,15 @@ public class AttributeContainer {
 		});
 	}
 
+	public void addPersistentModifiersFrom(AttributeContainer other) {
+		other.custom.values().forEach(attributeInstance -> {
+			EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(attributeInstance.getAttribute());
+			if (entityAttributeInstance != null) {
+				entityAttributeInstance.addPersistentModifiers(attributeInstance.getPersistentModifiers());
+			}
+		});
+	}
+
 	public NbtList toNbt() {
 		NbtList nbtList = new NbtList();
 

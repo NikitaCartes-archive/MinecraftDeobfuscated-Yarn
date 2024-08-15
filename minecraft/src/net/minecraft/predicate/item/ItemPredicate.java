@@ -12,8 +12,8 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.ComponentPredicate;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryCodecs;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
@@ -65,13 +65,13 @@ public record ItemPredicate(
 			return new ItemPredicate.Builder();
 		}
 
-		public ItemPredicate.Builder items(ItemConvertible... items) {
+		public ItemPredicate.Builder items(RegistryEntryLookup<Item> itemRegistry, ItemConvertible... items) {
 			this.item = Optional.of(RegistryEntryList.of(item -> item.asItem().getRegistryEntry(), items));
 			return this;
 		}
 
-		public ItemPredicate.Builder tag(TagKey<Item> tag) {
-			this.item = Optional.of(Registries.ITEM.getOrCreateEntryList(tag));
+		public ItemPredicate.Builder tag(RegistryEntryLookup<Item> itemRegistry, TagKey<Item> tag) {
+			this.item = Optional.of(itemRegistry.getOrThrow(tag));
 			return this;
 		}
 

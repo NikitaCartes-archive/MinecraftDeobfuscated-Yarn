@@ -40,10 +40,10 @@ public class ElderGuardianAppearanceParticle extends Particle {
 	public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
 		float f = ((float)this.age + tickDelta) / (float)this.maxAge;
 		float g = 0.05F + 0.5F * MathHelper.sin(f * (float) Math.PI);
-		int i = ColorHelper.Argb.fromFloats(g, 1.0F, 1.0F, 1.0F);
+		int i = ColorHelper.fromFloats(g, 1.0F, 1.0F, 1.0F);
 		MatrixStack matrixStack = new MatrixStack();
 		matrixStack.multiply(camera.getRotation());
-		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(150.0F * f - 60.0F));
+		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(60.0F - 150.0F * f));
 		matrixStack.scale(1.0F, -1.0F, -1.0F);
 		matrixStack.translate(0.0F, -1.101F, 1.5F);
 		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();

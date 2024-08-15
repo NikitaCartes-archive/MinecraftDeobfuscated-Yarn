@@ -15,19 +15,7 @@ public class PointOfInterest {
 	private int freeTickets;
 	private final Runnable updateListener;
 
-	public static Codec<PointOfInterest> createCodec(Runnable updateListener) {
-		return RecordCodecBuilder.create(
-			instance -> instance.group(
-						BlockPos.CODEC.fieldOf("pos").forGetter(poi -> poi.pos),
-						RegistryFixedCodec.of(RegistryKeys.POINT_OF_INTEREST_TYPE).fieldOf("type").forGetter(poi -> poi.type),
-						Codec.INT.fieldOf("free_tickets").orElse(0).forGetter(poi -> poi.freeTickets),
-						RecordCodecBuilder.point(updateListener)
-					)
-					.apply(instance, PointOfInterest::new)
-		);
-	}
-
-	private PointOfInterest(BlockPos pos, RegistryEntry<PointOfInterestType> type, int freeTickets, Runnable updateListener) {
+	PointOfInterest(BlockPos pos, RegistryEntry<PointOfInterestType> type, int freeTickets, Runnable updateListener) {
 		this.pos = pos.toImmutable();
 		this.type = type;
 		this.freeTickets = freeTickets;
@@ -36,6 +24,10 @@ public class PointOfInterest {
 
 	public PointOfInterest(BlockPos pos, RegistryEntry<PointOfInterestType> type, Runnable updateListener) {
 		this(pos, type, type.value().ticketCount(), updateListener);
+	}
+
+	public PointOfInterest.Serialized toSerialized() {
+		return new PointOfInterest.Serialized(this.pos, this.type, this.freeTickets);
 	}
 
 	@Deprecated
@@ -90,5 +82,20 @@ public class PointOfInterest {
 
 	public int hashCode() {
 		return this.pos.hashCode();
+	}
+
+	public static record Serialized(BlockPos pos, RegistryEntry<PointOfInterestType> poiType, int freeTickets) {
+		public static final Codec<PointOfInterest.Serialized> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						BlockPos.CODEC.fieldOf("pos").forGetter(PointOfInterest.Serialized::pos),
+						RegistryFixedCodec.of(RegistryKeys.POINT_OF_INTEREST_TYPE).fieldOf("type").forGetter(PointOfInterest.Serialized::poiType),
+						Codec.INT.fieldOf("free_tickets").orElse(0).forGetter(PointOfInterest.Serialized::freeTickets)
+					)
+					.apply(instance, PointOfInterest.Serialized::new)
+		);
+
+		public PointOfInterest toPointOfInterest(Runnable updateListener) {
+			return new PointOfInterest(this.pos, this.poiType, this.freeTickets, updateListener);
+		}
 	}
 }

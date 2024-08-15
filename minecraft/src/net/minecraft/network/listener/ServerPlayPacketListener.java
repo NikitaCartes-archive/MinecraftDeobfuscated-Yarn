@@ -6,12 +6,14 @@ import net.minecraft.network.packet.c2s.play.AcknowledgeReconfigurationC2SPacket
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
+import net.minecraft.network.packet.c2s.play.BundleItemSelectedC2SPacket;
 import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatCommandSignedC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientTickEndC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
@@ -53,7 +55,7 @@ import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 /**
  * A server side packet listener where play stage packets from a client are processed.
  */
-public interface ServerPlayPacketListener extends ServerQueryPingPacketListener, ServerCommonPacketListener {
+public interface ServerPlayPacketListener extends ServerCommonPacketListener, ServerQueryPingPacketListener {
 	@Override
 	default NetworkPhase getPhase() {
 		return NetworkPhase.PLAY;
@@ -111,6 +113,8 @@ public interface ServerPlayPacketListener extends ServerQueryPingPacketListener,
 
 	void onRecipeBookData(RecipeBookDataC2SPacket packet);
 
+	void onBundleItemSelected(BundleItemSelectedC2SPacket packet);
+
 	void onRecipeCategoryOptions(RecipeCategoryOptionsC2SPacket packet);
 
 	void onAdvancementTab(AdvancementTabC2SPacket packet);
@@ -154,4 +158,6 @@ public interface ServerPlayPacketListener extends ServerQueryPingPacketListener,
 	void onAcknowledgeChunks(AcknowledgeChunksC2SPacket packet);
 
 	void onDebugSampleSubscription(DebugSampleSubscriptionC2SPacket packet);
+
+	void onClientTickEnd(ClientTickEndC2SPacket packet);
 }

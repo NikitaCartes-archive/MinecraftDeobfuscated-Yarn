@@ -54,7 +54,7 @@ public class StatusEffect implements ToggleableFeature {
 		this.color = color;
 		this.particleFactory = effect -> {
 			int j = effect.isAmbient() ? AMBIENT_PARTICLE_ALPHA : 255;
-			return EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, ColorHelper.Argb.withAlpha(j, color));
+			return EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, ColorHelper.withAlpha(j, color));
 		};
 	}
 

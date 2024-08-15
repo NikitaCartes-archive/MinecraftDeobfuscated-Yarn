@@ -399,17 +399,21 @@ public class Box {
 		return this.expand(-value);
 	}
 
-	public Optional<Vec3d> raycast(Vec3d min, Vec3d max) {
+	public Optional<Vec3d> raycast(Vec3d from, Vec3d to) {
+		return raycast(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ, from, to);
+	}
+
+	public static Optional<Vec3d> raycast(double minX, double minY, double minZ, double maxX, double maxY, double maxZ, Vec3d from, Vec3d to) {
 		double[] ds = new double[]{1.0};
-		double d = max.x - min.x;
-		double e = max.y - min.y;
-		double f = max.z - min.z;
-		Direction direction = traceCollisionSide(this, min, ds, null, d, e, f);
+		double d = to.x - from.x;
+		double e = to.y - from.y;
+		double f = to.z - from.z;
+		Direction direction = traceCollisionSide(minX, minY, minZ, maxX, maxY, maxZ, from, ds, null, d, e, f);
 		if (direction == null) {
 			return Optional.empty();
 		} else {
 			double g = ds[0];
-			return Optional.of(min.add(g * d, g * e, g * f));
+			return Optional.of(from.add(g * d, g * e, g * f));
 		}
 	}
 
@@ -437,6 +441,26 @@ public class Box {
 	private static Direction traceCollisionSide(
 		Box box, Vec3d intersectingVector, double[] traceDistanceResult, @Nullable Direction approachDirection, double deltaX, double deltaY, double deltaZ
 	) {
+		return traceCollisionSide(
+			box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, intersectingVector, traceDistanceResult, approachDirection, deltaX, deltaY, deltaZ
+		);
+	}
+
+	@Nullable
+	private static Direction traceCollisionSide(
+		double minX,
+		double minY,
+		double minZ,
+		double maxX,
+		double maxY,
+		double maxZ,
+		Vec3d intersectingVector,
+		double[] traceDistanceResult,
+		@Nullable Direction approachDirection,
+		double deltaX,
+		double deltaY,
+		double deltaZ
+	) {
 		if (deltaX > 1.0E-7) {
 			approachDirection = traceCollisionSide(
 				traceDistanceResult,
@@ -444,11 +468,11 @@ public class Box {
 				deltaX,
 				deltaY,
 				deltaZ,
-				box.minX,
-				box.minY,
-				box.maxY,
-				box.minZ,
-				box.maxZ,
+				minX,
+				minY,
+				maxY,
+				minZ,
+				maxZ,
 				Direction.WEST,
 				intersectingVector.x,
 				intersectingVector.y,
@@ -461,11 +485,11 @@ public class Box {
 				deltaX,
 				deltaY,
 				deltaZ,
-				box.maxX,
-				box.minY,
-				box.maxY,
-				box.minZ,
-				box.maxZ,
+				maxX,
+				minY,
+				maxY,
+				minZ,
+				maxZ,
 				Direction.EAST,
 				intersectingVector.x,
 				intersectingVector.y,
@@ -480,11 +504,11 @@ public class Box {
 				deltaY,
 				deltaZ,
 				deltaX,
-				box.minY,
-				box.minZ,
-				box.maxZ,
-				box.minX,
-				box.maxX,
+				minY,
+				minZ,
+				maxZ,
+				minX,
+				maxX,
 				Direction.DOWN,
 				intersectingVector.y,
 				intersectingVector.z,
@@ -497,11 +521,11 @@ public class Box {
 				deltaY,
 				deltaZ,
 				deltaX,
-				box.maxY,
-				box.minZ,
-				box.maxZ,
-				box.minX,
-				box.maxX,
+				maxY,
+				minZ,
+				maxZ,
+				minX,
+				maxX,
 				Direction.UP,
 				intersectingVector.y,
 				intersectingVector.z,
@@ -516,11 +540,11 @@ public class Box {
 				deltaZ,
 				deltaX,
 				deltaY,
-				box.minZ,
-				box.minX,
-				box.maxX,
-				box.minY,
-				box.maxY,
+				minZ,
+				minX,
+				maxX,
+				minY,
+				maxY,
 				Direction.NORTH,
 				intersectingVector.z,
 				intersectingVector.x,
@@ -533,11 +557,11 @@ public class Box {
 				deltaZ,
 				deltaX,
 				deltaY,
-				box.maxZ,
-				box.minX,
-				box.maxX,
-				box.minY,
-				box.maxY,
+				maxZ,
+				minX,
+				maxX,
+				minY,
+				maxY,
 				Direction.SOUTH,
 				intersectingVector.z,
 				intersectingVector.x,
@@ -605,10 +629,6 @@ public class Box {
 	 */
 	public Vec3d getCenter() {
 		return new Vec3d(MathHelper.lerp(0.5, this.minX, this.maxX), MathHelper.lerp(0.5, this.minY, this.maxY), MathHelper.lerp(0.5, this.minZ, this.maxZ));
-	}
-
-	public Vec3d getBottomCenter() {
-		return new Vec3d(MathHelper.lerp(0.5, this.minX, this.maxX), this.minY, MathHelper.lerp(0.5, this.minZ, this.maxZ));
 	}
 
 	public Vec3d getMinPos() {

@@ -64,6 +64,7 @@ import net.minecraft.client.realms.util.PeriodicRunnerFactory;
 import net.minecraft.client.realms.util.RealmsPersistence;
 import net.minecraft.client.realms.util.RealmsServerFilterer;
 import net.minecraft.client.realms.util.RealmsUtil;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundEvents;
@@ -783,7 +784,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 
 		private void drawTextureWithTooltip(DrawContext context, int x, int y, int mouseX, int mouseY, Identifier texture, Supplier<Text> tooltip) {
-			context.drawGuiTexture(texture, x, y, 10, 28);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, texture, x, y, 10, 28);
 			if (RealmsMainScreen.this.realmSelectionList.isMouseOver((double)mouseX, (double)mouseY)
 				&& mouseX >= x
 				&& mouseX <= x + 10
@@ -883,7 +884,9 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 
 		private void render(DrawContext context) {
-			context.drawGuiTexture(TEXTURES[Math.min(this.notificationCount, 6) - 1], this.getX() + this.getWidth() - 5, this.getY() - 3, 8, 8);
+			context.drawGuiTexture(
+				RenderLayer::getGuiTextured, TEXTURES[Math.min(this.notificationCount, 6) - 1], this.getX() + this.getWidth() - 5, this.getY() - 3, 8, 8
+			);
 		}
 	}
 
@@ -966,7 +969,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			if (this.server.state == RealmsServer.State.UNINITIALIZED) {
-				context.drawGuiTexture(RealmsMainScreen.NEW_REALM_ICON_TEXTURE, x - 5, y + entryHeight / 2 - 10, 40, 20);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, RealmsMainScreen.NEW_REALM_ICON_TEXTURE, x - 5, y + entryHeight / 2 - 10, 40, 20);
 				int i = y + entryHeight / 2 - 9 / 2;
 				context.drawTextWithShadow(RealmsMainScreen.this.textRenderer, RealmsMainScreen.UNINITIALIZED_TEXT, x + 40 - 2, i, 8388479);
 			} else {
@@ -1106,7 +1109,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			context.drawGuiTexture(RealmsMainScreen.NEW_REALM_ICON_TEXTURE, x - 5, y + entryHeight / 2 - 10, 40, 20);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, RealmsMainScreen.NEW_REALM_ICON_TEXTURE, x - 5, y + entryHeight / 2 - 10, 40, 20);
 			int i = y + entryHeight / 2 - 9 / 2;
 			context.drawTextWithShadow(RealmsMainScreen.this.textRenderer, START_TEXT, x + 40 - 2, i - 5, 8388479);
 			context.drawTextWithShadow(

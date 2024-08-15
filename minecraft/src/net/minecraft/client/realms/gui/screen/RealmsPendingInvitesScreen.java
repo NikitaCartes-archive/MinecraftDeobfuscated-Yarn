@@ -17,6 +17,7 @@ import net.minecraft.client.realms.RealmsPeriodicCheckers;
 import net.minecraft.client.realms.dto.PendingInvite;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.util.RealmsUtil;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -236,7 +237,12 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			@Override
 			protected void render(DrawContext context, int x, int y, boolean showTooltip) {
 				context.drawGuiTexture(
-					showTooltip ? RealmsPendingInvitesScreen.ACCEPT_HIGHLIGHTED_ICON_TEXTURE : RealmsPendingInvitesScreen.ACCEPT_ICON_TEXTURE, x, y, 18, 18
+					RenderLayer::getGuiTextured,
+					showTooltip ? RealmsPendingInvitesScreen.ACCEPT_HIGHLIGHTED_ICON_TEXTURE : RealmsPendingInvitesScreen.ACCEPT_ICON_TEXTURE,
+					x,
+					y,
+					18,
+					18
 				);
 				if (showTooltip) {
 					RealmsPendingInvitesScreen.this.tooltip = RealmsPendingInvitesScreen.ACCEPT_TEXT;
@@ -258,7 +264,12 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			@Override
 			protected void render(DrawContext context, int x, int y, boolean showTooltip) {
 				context.drawGuiTexture(
-					showTooltip ? RealmsPendingInvitesScreen.REJECT_HIGHLIGHTED_ICON_TEXTURE : RealmsPendingInvitesScreen.REJECT_ICON_TEXTURE, x, y, 18, 18
+					RenderLayer::getGuiTextured,
+					showTooltip ? RealmsPendingInvitesScreen.REJECT_HIGHLIGHTED_ICON_TEXTURE : RealmsPendingInvitesScreen.REJECT_ICON_TEXTURE,
+					x,
+					y,
+					18,
+					18
 				);
 				if (showTooltip) {
 					RealmsPendingInvitesScreen.this.tooltip = RealmsPendingInvitesScreen.REJECT_TEXT;

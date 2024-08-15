@@ -24,6 +24,14 @@ public class ChunkSection {
 	private final PalettedContainer<BlockState> blockStateContainer;
 	private ReadableContainer<RegistryEntry<Biome>> biomeContainer;
 
+	private ChunkSection(ChunkSection section) {
+		this.nonEmptyBlockCount = section.nonEmptyBlockCount;
+		this.randomTickableBlockCount = section.randomTickableBlockCount;
+		this.nonEmptyFluidCount = section.nonEmptyFluidCount;
+		this.blockStateContainer = section.blockStateContainer.copy();
+		this.biomeContainer = section.biomeContainer.copy();
+	}
+
 	public ChunkSection(PalettedContainer<BlockState> blockStateContainer, ReadableContainer<RegistryEntry<Biome>> biomeContainer) {
 		this.blockStateContainer = blockStateContainer;
 		this.biomeContainer = biomeContainer;
@@ -192,5 +200,9 @@ public class ChunkSection {
 		}
 
 		this.biomeContainer = palettedContainer;
+	}
+
+	public ChunkSection copy() {
+		return new ChunkSection(this);
 	}
 }

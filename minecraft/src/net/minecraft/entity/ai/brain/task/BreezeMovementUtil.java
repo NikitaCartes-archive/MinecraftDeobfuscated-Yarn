@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.brain.task;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.BreezeEntity;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.MathHelper;
@@ -21,9 +22,13 @@ public class BreezeMovementUtil {
 
 	public static boolean canMoveTo(BreezeEntity breeze, Vec3d pos) {
 		Vec3d vec3d = new Vec3d(breeze.getX(), breeze.getY(), breeze.getZ());
-		return pos.distanceTo(vec3d) > 50.0
+		return pos.distanceTo(vec3d) > getMaxMoveDistance(breeze)
 			? false
 			: breeze.getWorld().raycast(new RaycastContext(vec3d, pos, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, breeze)).getType()
 				== HitResult.Type.MISS;
+	}
+
+	private static double getMaxMoveDistance(BreezeEntity breeze) {
+		return Math.max(50.0, breeze.getAttributeValue(EntityAttributes.FOLLOW_RANGE));
 	}
 }

@@ -13,9 +13,9 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
 public class FireworkRocketRecipe extends SpecialCraftingRecipe {
-	private static final Ingredient PAPER = Ingredient.ofItems(Items.PAPER);
-	private static final Ingredient DURATION_MODIFIER = Ingredient.ofItems(Items.GUNPOWDER);
-	private static final Ingredient FIREWORK_STAR = Ingredient.ofItems(Items.FIREWORK_STAR);
+	private static final Ingredient PAPER = Ingredient.ofItem(Items.PAPER);
+	private static final Ingredient DURATION_MODIFIER = Ingredient.ofItem(Items.GUNPOWDER);
+	private static final Ingredient FIREWORK_STAR = Ingredient.ofItem(Items.FIREWORK_STAR);
 
 	public FireworkRocketRecipe(CraftingRecipeCategory craftingRecipeCategory) {
 		super(craftingRecipeCategory);

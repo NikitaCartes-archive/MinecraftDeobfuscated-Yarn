@@ -41,6 +41,7 @@ import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -73,6 +74,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -109,6 +111,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	 */
 	protected static final int MINIMUM_DROPPED_XP_PER_EQUIPMENT = 1;
 	private static final Vec3i ITEM_PICK_UP_RANGE_EXPANDER = new Vec3i(1, 0, 1);
+	private static final List<EquipmentSlot> EQUIPMENT_INIT_ORDER = List.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET);
 	/**
 	 * The base chance (before applying local difficulty) that this mob will spawn with equipment.
 	 * 
@@ -199,7 +202,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	}
 
 	public static DefaultAttributeContainer.Builder createMobAttributes() {
-		return LivingEntity.createLivingAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 16.0);
+		return LivingEntity.createLivingAttributes().add(EntityAttributes.FOLLOW_RANGE, 16.0);
 	}
 
 	protected EntityNavigation createNavigation(World world) {
@@ -477,7 +480,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		if (nbt.contains("CanPickUpLoot", NbtElement.BYTE_TYPE)) {
+		if (nbt.contains("CanPickUpLoot", NbtElement.NUMBER_TYPE)) {
 			this.setCanPickUpLoot(nbt.getBoolean("CanPickUpLoot"));
 		}
 
@@ -711,7 +714,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 
 	private double getAttackDamageWith(ItemStack stack) {
 		AttributeModifiersComponent attributeModifiersComponent = stack.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
-		return attributeModifiersComponent.applyOperations(this.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE), EquipmentSlot.MAINHAND);
+		return attributeModifiersComponent.applyOperations(this.getAttributeBaseValue(EntityAttributes.ATTACK_DAMAGE), EquipmentSlot.MAINHAND);
 	}
 
 	public boolean prefersNewDamageableItem(ItemStack newStack, ItemStack oldStack) {
@@ -904,7 +907,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 
 	public static boolean canMobSpawn(EntityType<? extends MobEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		BlockPos blockPos = pos.down();
-		return spawnReason == SpawnReason.SPAWNER || world.getBlockState(blockPos).allowsSpawning(world, blockPos, type);
+		return SpawnReason.isAnySpawner(spawnReason) || world.getBlockState(blockPos).allowsSpawning(world, blockPos, type);
 	}
 
 	public boolean canSpawn(WorldAccess world, SpawnReason spawnReason) {
@@ -1100,19 +1103,17 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 
 			boolean bl = true;
 
-			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-				if (equipmentSlot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
-					ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-					if (!bl && random.nextFloat() < f) {
-						break;
-					}
+			for (EquipmentSlot equipmentSlot : EQUIPMENT_INIT_ORDER) {
+				ItemStack itemStack = this.getEquippedStack(equipmentSlot);
+				if (!bl && random.nextFloat() < f) {
+					break;
+				}
 
-					bl = false;
-					if (itemStack.isEmpty()) {
-						Item item = getEquipmentForSlot(equipmentSlot, i);
-						if (item != null) {
-							this.equipStack(equipmentSlot, new ItemStack(item));
-						}
+				bl = false;
+				if (itemStack.isEmpty()) {
+					Item item = getEquipmentForSlot(equipmentSlot, i);
+					if (item != null) {
+						this.equipStack(equipmentSlot, new ItemStack(item));
 					}
 				}
 			}
@@ -1204,9 +1205,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	@Nullable
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		Random random = world.getRandom();
-		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)Objects.requireNonNull(
-			this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
-		);
+		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE));
 		if (!entityAttributeInstance.hasModifier(RANDOM_SPAWN_BONUS_MODIFIER_ID)) {
 			entityAttributeInstance.addPersistentModifier(
 				new EntityAttributeModifier(
@@ -1297,10 +1296,12 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 					player, this, (EntityType<? extends MobEntity>)this.getType(), (ServerWorld)this.getWorld(), this.getPos(), itemStack
 				);
 				optional.ifPresent(entity -> this.onPlayerSpawnedChild(player, entity));
-				return optional.isPresent() ? ActionResult.SUCCESS : ActionResult.PASS;
-			} else {
-				return ActionResult.CONSUME;
+				if (optional.isEmpty()) {
+					return ActionResult.PASS;
+				}
 			}
+
+			return ActionResult.SUCCESS_SERVER;
 		} else {
 			return ActionResult.PASS;
 		}
@@ -1356,7 +1357,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		if (this.isRemoved()) {
 			return null;
 		} else {
-			T mobEntity = (T)entityType.create(this.getWorld());
+			T mobEntity = (T)entityType.create(this.getWorld(), SpawnReason.CONVERSION);
 			if (mobEntity == null) {
 				return null;
 			} else {
@@ -1505,10 +1506,11 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		float f = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+		float f = (float)this.getAttributeValue(EntityAttributes.ATTACK_DAMAGE);
+		ItemStack itemStack = this.getWeaponStack();
 		DamageSource damageSource = this.getDamageSources().mobAttack(this);
 		if (this.getWorld() instanceof ServerWorld serverWorld) {
-			f = EnchantmentHelper.getDamage(serverWorld, this.getWeaponStack(), target, damageSource, f);
+			f = EnchantmentHelper.getDamage(serverWorld, itemStack, target, damageSource, f);
 		}
 
 		boolean bl = target.damage(damageSource, f);
@@ -1524,6 +1526,10 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 			}
 
 			if (this.getWorld() instanceof ServerWorld serverWorld2) {
+				if (target instanceof LivingEntity livingEntity2) {
+					itemStack.postHit(livingEntity2, this);
+				}
+
 				EnchantmentHelper.onTargetDamaged(serverWorld2, target, damageSource);
 			}
 
@@ -1584,5 +1590,13 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	public ItemStack getPickBlockStack() {
 		SpawnEggItem spawnEggItem = SpawnEggItem.forEntity(this.getType());
 		return spawnEggItem == null ? null : new ItemStack(spawnEggItem);
+	}
+
+	@Override
+	protected void updateAttribute(RegistryEntry<EntityAttribute> attribute) {
+		super.updateAttribute(attribute);
+		if (attribute.matches(EntityAttributes.FOLLOW_RANGE) || attribute.matches(EntityAttributes.TEMPT_RANGE)) {
+			this.getNavigation().updateRange();
+		}
 	}
 }

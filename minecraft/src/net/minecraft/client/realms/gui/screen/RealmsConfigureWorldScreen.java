@@ -20,6 +20,7 @@ import net.minecraft.client.realms.task.CloseServerTask;
 import net.minecraft.client.realms.task.OpenServerTask;
 import net.minecraft.client.realms.task.SwitchMinigameTask;
 import net.minecraft.client.realms.task.SwitchSlotTask;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -346,7 +347,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	}
 
 	private void drawServerState(DrawContext context, int x, int y, int mouseX, int mouseY, Identifier texture, Supplier<Text> tooltipGetter) {
-		context.drawGuiTexture(texture, x, y, 10, 28);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, texture, x, y, 10, 28);
 		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
 			this.setTooltip((Text)tooltipGetter.get());
 		}

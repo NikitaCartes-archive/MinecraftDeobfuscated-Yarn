@@ -3,11 +3,11 @@ package net.minecraft.world.gen;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.util.Identifier;
@@ -63,12 +63,12 @@ public class WorldPresets {
 		});
 	}
 
-	public static DimensionOptionsRegistryHolder createDemoOptions(DynamicRegistryManager dynamicRegistryManager) {
-		return dynamicRegistryManager.get(RegistryKeys.WORLD_PRESET).entryOf(DEFAULT).value().createDimensionsRegistryHolder();
+	public static DimensionOptionsRegistryHolder createDemoOptions(RegistryWrapper.WrapperLookup registryLookup) {
+		return registryLookup.getWrapperOrThrow(RegistryKeys.WORLD_PRESET).getOrThrow(DEFAULT).value().createDimensionsRegistryHolder();
 	}
 
-	public static DimensionOptions getDefaultOverworldOptions(DynamicRegistryManager dynamicRegistryManager) {
-		return (DimensionOptions)dynamicRegistryManager.get(RegistryKeys.WORLD_PRESET).entryOf(DEFAULT).value().getOverworld().orElseThrow();
+	public static DimensionOptions getDefaultOverworldOptions(RegistryWrapper.WrapperLookup registryLookup) {
+		return (DimensionOptions)registryLookup.getWrapperOrThrow(RegistryKeys.WORLD_PRESET).getOrThrow(DEFAULT).value().getOverworld().orElseThrow();
 	}
 
 	static class Registrar {

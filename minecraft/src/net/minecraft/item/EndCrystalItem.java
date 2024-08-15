@@ -49,7 +49,7 @@ public class EndCrystalItem extends Item {
 					}
 
 					context.getStack().decrement(1);
-					return ActionResult.success(world.isClient);
+					return ActionResult.SUCCESS;
 				}
 			}
 		}

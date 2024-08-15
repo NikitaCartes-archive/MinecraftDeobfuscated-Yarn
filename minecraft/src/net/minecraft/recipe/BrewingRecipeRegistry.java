@@ -214,20 +214,20 @@ public class BrewingRecipeRegistry {
 			if (input.isEnabled(this.enabledFeatures) && ingredient.isEnabled(this.enabledFeatures) && output.isEnabled(this.enabledFeatures)) {
 				assertPotion(input);
 				assertPotion(output);
-				this.itemRecipes.add(new BrewingRecipeRegistry.Recipe<>(input.getRegistryEntry(), Ingredient.ofItems(ingredient), output.getRegistryEntry()));
+				this.itemRecipes.add(new BrewingRecipeRegistry.Recipe<>(input.getRegistryEntry(), Ingredient.ofItem(ingredient), output.getRegistryEntry()));
 			}
 		}
 
 		public void registerPotionType(Item item) {
 			if (item.isEnabled(this.enabledFeatures)) {
 				assertPotion(item);
-				this.potionTypes.add(Ingredient.ofItems(item));
+				this.potionTypes.add(Ingredient.ofItem(item));
 			}
 		}
 
 		public void registerPotionRecipe(RegistryEntry<Potion> input, Item ingredient, RegistryEntry<Potion> output) {
 			if (input.value().isEnabled(this.enabledFeatures) && ingredient.isEnabled(this.enabledFeatures) && output.value().isEnabled(this.enabledFeatures)) {
-				this.potionRecipes.add(new BrewingRecipeRegistry.Recipe<>(input, Ingredient.ofItems(ingredient), output));
+				this.potionRecipes.add(new BrewingRecipeRegistry.Recipe<>(input, Ingredient.ofItem(ingredient), output));
 			}
 		}
 

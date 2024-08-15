@@ -24,6 +24,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.block.OrientationHelper;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.event.GameEvent;
 
 public class TripwireHookBlock extends Block {
@@ -174,10 +176,8 @@ public class TripwireHookBlock extends Block {
 				for (int l = 1; l < j; l++) {
 					BlockPos blockPos2 = pos.offset(direction, l);
 					BlockState blockState4 = blockStates[l];
-					if (blockState4 != null) {
+					if (blockState4 != null && !world.getBlockState(blockPos2).isAir()) {
 						world.setBlockState(blockPos2, blockState4.withIfExists(ATTACHED, Boolean.valueOf(bl5)), Block.NOTIFY_ALL);
-						if (!world.getBlockState(blockPos2).isAir()) {
-						}
 					}
 				}
 			}
@@ -206,8 +206,10 @@ public class TripwireHookBlock extends Block {
 	}
 
 	private static void updateNeighborsOnAxis(Block block, World world, BlockPos pos, Direction direction) {
-		world.updateNeighborsAlways(pos, block);
-		world.updateNeighborsAlways(pos.offset(direction.getOpposite()), block);
+		Direction direction2 = direction.getOpposite();
+		WireOrientation wireOrientation = OrientationHelper.getEmissionOrientation(world, direction2, Direction.UP);
+		world.updateNeighborsAlways(pos, block, wireOrientation);
+		world.updateNeighborsAlways(pos.offset(direction2), block, wireOrientation);
 	}
 
 	@Override
@@ -220,8 +222,7 @@ public class TripwireHookBlock extends Block {
 			}
 
 			if (bl2) {
-				world.updateNeighborsAlways(pos, this);
-				world.updateNeighborsAlways(pos.offset(((Direction)state.get(FACING)).getOpposite()), this);
+				updateNeighborsOnAxis(this, world, pos, state.get(FACING));
 			}
 
 			super.onStateReplaced(state, world, pos, newState, moved);

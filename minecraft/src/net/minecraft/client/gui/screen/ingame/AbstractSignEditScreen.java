@@ -21,12 +21,13 @@ import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
+import net.minecraft.util.math.ColorHelper;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractSignEditScreen extends Screen {
-	private final SignBlockEntity blockEntity;
+	protected final SignBlockEntity blockEntity;
 	private SignText text;
 	private final String[] messages;
 	private final boolean front;
@@ -102,9 +103,11 @@ public abstract class AbstractSignEditScreen extends Screen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
+		context.draw();
 		DiffuseLighting.disableGuiDepthLighting();
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 40, 16777215);
 		this.renderSign(context);
+		context.draw();
 		DiffuseLighting.enableGuiDepthLighting();
 	}
 
@@ -133,7 +136,7 @@ public abstract class AbstractSignEditScreen extends Screen {
 		return false;
 	}
 
-	protected abstract void renderSignBackground(DrawContext context, BlockState state);
+	protected abstract void renderSignBackground(DrawContext context);
 
 	protected abstract Vector3f getTextScale();
 
@@ -142,11 +145,10 @@ public abstract class AbstractSignEditScreen extends Screen {
 	}
 
 	private void renderSign(DrawContext context) {
-		BlockState blockState = this.blockEntity.getCachedState();
 		context.getMatrices().push();
-		this.translateForRender(context, blockState);
+		this.translateForRender(context, this.blockEntity.getCachedState());
 		context.getMatrices().push();
-		this.renderSignBackground(context, blockState);
+		this.renderSignBackground(context);
 		context.getMatrices().pop();
 		this.renderSignText(context);
 		context.getMatrices().pop();
@@ -188,7 +190,7 @@ public abstract class AbstractSignEditScreen extends Screen {
 				int o = this.textRenderer.getWidth(string.substring(0, Math.max(Math.min(j, string.length()), 0)));
 				int p = o - this.textRenderer.getWidth(string) / 2;
 				if (bl && j < string.length()) {
-					context.fill(p, m - 1, p + 1, m + this.blockEntity.getTextLineHeight(), Colors.BLACK | i);
+					context.fill(p, m - 1, p + 1, m + this.blockEntity.getTextLineHeight(), ColorHelper.fullAlpha(i));
 				}
 
 				if (k != j) {

@@ -97,7 +97,7 @@ public class SculkShriekerBlock extends BlockWithEntity implements Waterloggable
 	}
 
 	@Override
-	protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+	protected VoxelShape getCullingShape(BlockState state) {
 		return SHAPE;
 	}
 

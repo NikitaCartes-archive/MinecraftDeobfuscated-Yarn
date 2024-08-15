@@ -157,11 +157,11 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 	}
 
 	public static DefaultAttributeContainer.Builder createParrotAttributes() {
-		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 6.0)
-			.add(EntityAttributes.GENERIC_FLYING_SPEED, 0.4F)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2F)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0);
+		return AnimalEntity.createAnimalAttributes()
+			.add(EntityAttributes.MAX_HEALTH, 6.0)
+			.add(EntityAttributes.FLYING_SPEED, 0.4F)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.2F)
+			.add(EntityAttributes.ATTACK_DAMAGE, 3.0);
 	}
 
 	@Override
@@ -264,14 +264,14 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 				}
 			}
 
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else if (!itemStack.isIn(ItemTags.PARROT_POISONOUS_FOOD)) {
 			if (!this.isInAir() && this.isTamed() && this.isOwner(player)) {
 				if (!this.getWorld().isClient) {
 					this.setSitting(!this.isSitting());
 				}
 
-				return ActionResult.success(this.getWorld().isClient);
+				return ActionResult.SUCCESS;
 			} else {
 				return super.interactMob(player, hand);
 			}
@@ -282,7 +282,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 				this.damage(this.getDamageSources().playerAttack(player), Float.MAX_VALUE);
 			}
 
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		}
 	}
 

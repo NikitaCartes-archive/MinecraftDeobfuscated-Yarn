@@ -1,11 +1,10 @@
 package net.minecraft.client.font;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Objects;
+import java.util.Locale;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -26,13 +25,14 @@ public class TrueTypeFont implements Font {
 	@Nullable
 	private FT_Face face;
 	final float oversample;
-	private final IntSet excludedCharacters = new IntArraySet();
+	private final GlyphContainer<TrueTypeFont.class_9908> field_52695 = new GlyphContainer<>(TrueTypeFont.class_9908[]::new, TrueTypeFont.class_9908[][]::new);
 
 	public TrueTypeFont(ByteBuffer buffer, FT_Face face, float size, float oversample, float shiftX, float shiftY, String excludedCharacters) {
 		this.buffer = buffer;
 		this.face = face;
 		this.oversample = oversample;
-		excludedCharacters.codePoints().forEach(this.excludedCharacters::add);
+		IntSet intSet = new IntArraySet();
+		excludedCharacters.codePoints().forEach(intSet::add);
 		int i = Math.round(size * oversample);
 		FreeType.FT_Set_Pixel_Sizes(face, i, i);
 		float f = shiftX * oversample;
@@ -41,30 +41,64 @@ public class TrueTypeFont implements Font {
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 			FT_Vector fT_Vector = FreeTypeUtil.set(FT_Vector.malloc(memoryStack), f, g);
 			FreeType.FT_Set_Transform(face, null, fT_Vector);
+			IntBuffer intBuffer = memoryStack.mallocInt(1);
+			int j = (int)FreeType.FT_Get_First_Char(face, intBuffer);
+
+			while (true) {
+				int k = intBuffer.get(0);
+				if (k == 0) {
+					return;
+				}
+
+				if (!intSet.contains(j)) {
+					this.field_52695.put(j, new TrueTypeFont.class_9908(k));
+				}
+
+				j = (int)FreeType.FT_Get_Next_Char(face, (long)j, intBuffer);
+			}
 		}
 	}
 
 	@Nullable
 	@Override
 	public Glyph getGlyph(int codePoint) {
-		FT_Face fT_Face = this.getInfo();
-		if (this.excludedCharacters.contains(codePoint)) {
-			return null;
-		} else {
-			int i = FreeType.FT_Get_Char_Index(fT_Face, (long)codePoint);
-			if (i == 0) {
-				return null;
-			} else {
-				FreeTypeUtil.checkFatalError(FreeType.FT_Load_Glyph(fT_Face, i, 4194312), "Loading glyph");
-				FT_GlyphSlot fT_GlyphSlot = (FT_GlyphSlot)Objects.requireNonNull(fT_Face.glyph(), "Glyph not initialized");
-				float f = FreeTypeUtil.getX(fT_GlyphSlot.advance());
-				FT_Bitmap fT_Bitmap = fT_GlyphSlot.bitmap();
-				int j = fT_GlyphSlot.bitmap_left();
-				int k = fT_GlyphSlot.bitmap_top();
-				int l = fT_Bitmap.width();
-				int m = fT_Bitmap.rows();
-				return (Glyph)(l > 0 && m > 0 ? new TrueTypeFont.TtfGlyph((float)j, (float)k, l, m, f, i) : () -> f / this.oversample);
+		TrueTypeFont.class_9908 lv = this.field_52695.get(codePoint);
+		return lv != null ? this.method_61901(codePoint, lv) : null;
+	}
+
+	private Glyph method_61901(int i, TrueTypeFont.class_9908 arg) {
+		Glyph glyph = arg.field_52697;
+		if (glyph == null) {
+			FT_Face fT_Face = this.getInfo();
+			synchronized (fT_Face) {
+				glyph = arg.field_52697;
+				if (glyph == null) {
+					glyph = this.method_61902(i, fT_Face, arg.field_52696);
+					arg.field_52697 = glyph;
+				}
 			}
+		}
+
+		return glyph;
+	}
+
+	private Glyph method_61902(int i, FT_Face fT_Face, int j) {
+		int k = FreeType.FT_Load_Glyph(fT_Face, j, 4194312);
+		if (k != 0) {
+			FreeTypeUtil.checkFatalError(k, String.format(Locale.ROOT, "Loading glyph U+%06X", i));
+		}
+
+		FT_GlyphSlot fT_GlyphSlot = fT_Face.glyph();
+		if (fT_GlyphSlot == null) {
+			throw new NullPointerException(String.format(Locale.ROOT, "Glyph U+%06X not initialized", i));
+		} else {
+			float f = FreeTypeUtil.getX(fT_GlyphSlot.advance());
+			FT_Bitmap fT_Bitmap = fT_GlyphSlot.bitmap();
+			int l = fT_GlyphSlot.bitmap_left();
+			int m = fT_GlyphSlot.bitmap_top();
+			int n = fT_Bitmap.width();
+			int o = fT_Bitmap.rows();
+			return (Glyph)(n > 0 && o > 0 ? new TrueTypeFont.TtfGlyph((float)l, (float)m, n, o, f, j) : () -> f / this.oversample);
 		}
 	}
 
@@ -92,19 +126,7 @@ public class TrueTypeFont implements Font {
 
 	@Override
 	public IntSet getProvidedGlyphs() {
-		FT_Face fT_Face = this.getInfo();
-		IntSet intSet = new IntOpenHashSet();
-
-		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-			IntBuffer intBuffer = memoryStack.mallocInt(1);
-
-			for (long l = FreeType.FT_Get_First_Char(fT_Face, intBuffer); intBuffer.get(0) != 0; l = FreeType.FT_Get_Next_Char(fT_Face, l, intBuffer)) {
-				intSet.add((int)l);
-			}
-		}
-
-		intSet.removeAll(this.excludedCharacters);
-		return intSet;
+		return this.field_52695.getProvidedGlyphs();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -174,6 +196,17 @@ public class TrueTypeFont implements Font {
 					return false;
 				}
 			});
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class class_9908 {
+		final int field_52696;
+		@Nullable
+		volatile Glyph field_52697;
+
+		class_9908(int i) {
+			this.field_52696 = i;
 		}
 	}
 }

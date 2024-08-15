@@ -1,12 +1,11 @@
 package net.minecraft.world.gen;
 
-import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 
-public record ChainedBlockSource(List<ChunkNoiseSampler.BlockStateSampler> samplers) implements ChunkNoiseSampler.BlockStateSampler {
+public record ChainedBlockSource(ChunkNoiseSampler.BlockStateSampler[] samplers) implements ChunkNoiseSampler.BlockStateSampler {
 	@Nullable
 	@Override
 	public BlockState sample(DensityFunction.NoisePos pos) {

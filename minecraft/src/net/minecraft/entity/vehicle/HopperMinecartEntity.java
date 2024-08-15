@@ -4,6 +4,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.Hopper;
 import net.minecraft.block.entity.HopperBlockEntity;
+import net.minecraft.block.enums.RailShape;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -13,10 +14,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.screen.HopperScreenHandler;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class HopperMinecartEntity extends StorageMinecartEntity implements Hopper {
 	private boolean enabled = true;
+	private boolean field_52523 = false;
 
 	public HopperMinecartEntity(EntityType<? extends HopperMinecartEntity> entityType, World world) {
 		super(entityType, world);
@@ -84,8 +87,21 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 
 	@Override
 	public void tick() {
+		this.field_52523 = false;
 		super.tick();
-		if (!this.getWorld().isClient && this.isAlive() && this.isEnabled() && this.canOperate()) {
+		this.method_61600();
+	}
+
+	@Override
+	protected double method_61564(BlockPos blockPos, RailShape railShape, double d) {
+		double e = super.method_61564(blockPos, railShape, d);
+		this.method_61600();
+		return e;
+	}
+
+	private void method_61600() {
+		if (!this.getWorld().isClient && this.isAlive() && this.isEnabled() && !this.field_52523 && this.canOperate()) {
+			this.field_52523 = true;
 			this.markDirty();
 		}
 	}

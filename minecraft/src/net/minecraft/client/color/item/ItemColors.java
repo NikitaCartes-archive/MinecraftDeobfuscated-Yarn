@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.Colors;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.biome.FoliageColors;
@@ -50,7 +51,7 @@ public class ItemColors {
 				if (i == 0) {
 					return -7697782;
 				} else if (i == 1) {
-					return ColorHelper.Argb.fullAlpha(intList.getInt(0));
+					return ColorHelper.fullAlpha(intList.getInt(0));
 				} else {
 					int j = 0;
 					int k = 0;
@@ -58,19 +59,19 @@ public class ItemColors {
 
 					for (int m = 0; m < i; m++) {
 						int n = intList.getInt(m);
-						j += ColorHelper.Argb.getRed(n);
-						k += ColorHelper.Argb.getGreen(n);
-						l += ColorHelper.Argb.getBlue(n);
+						j += ColorHelper.getRed(n);
+						k += ColorHelper.getGreen(n);
+						l += ColorHelper.getBlue(n);
 					}
 
-					return ColorHelper.Argb.getArgb(j / i, k / i, l / i);
+					return ColorHelper.getArgb(j / i, k / i, l / i);
 				}
 			}
 		}, Items.FIREWORK_STAR);
 		itemColors.register(
 			(stack, tintIndex) -> tintIndex > 0
 					? -1
-					: ColorHelper.Argb.fullAlpha(stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT).getColor()),
+					: ColorHelper.fullAlpha(stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT).getColor()),
 			Items.POTION,
 			Items.SPLASH_POTION,
 			Items.LINGERING_POTION,
@@ -78,7 +79,7 @@ public class ItemColors {
 		);
 
 		for (SpawnEggItem spawnEggItem : SpawnEggItem.getAll()) {
-			itemColors.register((stack, tintIndex) -> ColorHelper.Argb.fullAlpha(spawnEggItem.getColor(tintIndex)), spawnEggItem);
+			itemColors.register((stack, tintIndex) -> ColorHelper.fullAlpha(spawnEggItem.getColor(tintIndex)), spawnEggItem);
 		}
 
 		itemColors.register(
@@ -100,7 +101,9 @@ public class ItemColors {
 		);
 		itemColors.register((stack, tintIndex) -> FoliageColors.getMangroveColor(), Blocks.MANGROVE_LEAVES);
 		itemColors.register(
-			(stack, tintIndex) -> tintIndex == 0 ? -1 : ColorHelper.Argb.fullAlpha(stack.getOrDefault(DataComponentTypes.MAP_COLOR, MapColorComponent.DEFAULT).rgb()),
+			(stack, tintIndex) -> tintIndex == 0
+					? Colors.WHITE
+					: ColorHelper.fullAlpha(stack.getOrDefault(DataComponentTypes.MAP_COLOR, MapColorComponent.DEFAULT).rgb()),
 			Items.FILLED_MAP
 		);
 		return itemColors;

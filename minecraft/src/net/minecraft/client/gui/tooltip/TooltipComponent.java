@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.tooltip;
 
+import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
@@ -16,19 +17,28 @@ public interface TooltipComponent {
 		return new OrderedTextTooltipComponent(text);
 	}
 
-	static TooltipComponent of(TooltipData data) {
-		if (data instanceof BundleTooltipData bundleTooltipData) {
-			return new BundleTooltipComponent(bundleTooltipData.contents());
-		} else if (data instanceof ProfilesTooltipComponent.ProfilesData profilesData) {
-			return new ProfilesTooltipComponent(profilesData);
-		} else {
-			throw new IllegalArgumentException("Unknown TooltipComponent");
-		}
+	static TooltipComponent of(TooltipData tooltipData) {
+		Objects.requireNonNull(tooltipData);
+
+		return (TooltipComponent)(switch (tooltipData) {
+			case BundleTooltipData bundleTooltipData -> new BundleTooltipComponent(bundleTooltipData.contents());
+			case ProfilesTooltipComponent.ProfilesData profilesData -> new ProfilesTooltipComponent(profilesData);
+			default -> throw new IllegalArgumentException("Unknown TooltipComponent");
+		});
 	}
 
-	int getHeight();
+	int getHeight(TextRenderer textRenderer);
 
 	int getWidth(TextRenderer textRenderer);
+
+	/**
+	 * Returns whether this tooltip component should be visible when the item that
+	 * it is on is focused, regardless of whether the cursor is hovering over
+	 * another item.
+	 */
+	default boolean isSticky() {
+		return false;
+	}
 
 	default void drawText(TextRenderer textRenderer, int x, int y, Matrix4f matrix, VertexConsumerProvider.Immediate vertexConsumers) {
 	}

@@ -251,7 +251,7 @@ public class CloneCommand {
 									);
 									list2.add(new CloneCommand.BlockInfo(blockPos7, blockState, blockEntityInfo));
 									deque.addLast(blockPos6);
-								} else if (!blockState.isOpaqueFullCube(serverWorld, blockPos6) && !blockState.isFullCube(serverWorld, blockPos6)) {
+								} else if (!blockState.isOpaqueFullCube() && !blockState.isFullCube(serverWorld, blockPos6)) {
 									list3.add(new CloneCommand.BlockInfo(blockPos7, blockState, null));
 									deque.addFirst(blockPos6);
 								} else {

@@ -82,10 +82,10 @@ public class VindicatorEntity extends IllagerEntity {
 
 	public static DefaultAttributeContainer.Builder createVindicatorAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35F)
-			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 12.0)
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 24.0)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0);
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.35F)
+			.add(EntityAttributes.FOLLOW_RANGE, 12.0)
+			.add(EntityAttributes.MAX_HEALTH, 24.0)
+			.add(EntityAttributes.ATTACK_DAMAGE, 5.0);
 	}
 
 	@Override

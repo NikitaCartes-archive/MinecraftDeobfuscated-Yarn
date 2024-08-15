@@ -2,6 +2,7 @@ package net.minecraft.client.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.model.ModelTransformer;
 
 @Environment(EnvType.CLIENT)
 public class TexturedModelData {
@@ -11,6 +12,10 @@ public class TexturedModelData {
 	private TexturedModelData(ModelData data, TextureDimensions dimensions) {
 		this.data = data;
 		this.dimensions = dimensions;
+	}
+
+	public TexturedModelData transform(ModelTransformer transformer) {
+		return new TexturedModelData(transformer.apply(this.data), this.dimensions);
 	}
 
 	public ModelPart createModel() {

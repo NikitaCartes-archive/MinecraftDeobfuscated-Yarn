@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.state.ItemEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -20,7 +21,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
+public class ItemEntityRenderer extends EntityRenderer<ItemEntity, ItemEntityRenderState> {
 	private static final float field_32924 = 0.15F;
 	private static final float field_32929 = 0.0F;
 	private static final float field_32930 = 0.0F;
@@ -35,25 +36,40 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		this.shadowOpacity = 0.75F;
 	}
 
-	public Identifier getTexture(ItemEntity itemEntity) {
+	public Identifier getTexture(ItemEntityRenderState itemEntityRenderState) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 
-	public void render(ItemEntity itemEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		matrixStack.push();
+	public ItemEntityRenderState getRenderState() {
+		return new ItemEntityRenderState();
+	}
+
+	public void updateRenderState(ItemEntity itemEntity, ItemEntityRenderState itemEntityRenderState, float f) {
+		super.updateRenderState(itemEntity, itemEntityRenderState, f);
+		itemEntityRenderState.age = (float)itemEntity.getItemAge() + f;
+		itemEntityRenderState.uniqueOffset = itemEntity.uniqueOffset;
 		ItemStack itemStack = itemEntity.getStack();
-		this.random.setSeed((long)getSeed(itemStack));
-		BakedModel bakedModel = this.itemRenderer.getModel(itemStack, itemEntity.getWorld(), null, itemEntity.getId());
-		boolean bl = bakedModel.hasDepth();
-		float h = 0.25F;
-		float j = MathHelper.sin(((float)itemEntity.getItemAge() + g) / 10.0F + itemEntity.uniqueOffset) * 0.1F + 0.1F;
-		float k = bakedModel.getTransformation().getTransformation(ModelTransformationMode.GROUND).scale.y();
-		matrixStack.translate(0.0F, j + 0.25F * k, 0.0F);
-		float l = itemEntity.getRotation(g);
-		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation(l));
-		renderStack(this.itemRenderer, matrixStack, vertexConsumerProvider, i, itemStack, bakedModel, bl, this.random);
-		matrixStack.pop();
-		super.render(itemEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		itemEntityRenderState.stack = itemStack;
+		itemEntityRenderState.model = this.itemRenderer.getModel(itemStack, itemEntity.getWorld(), null, itemEntity.getId());
+	}
+
+	public void render(ItemEntityRenderState itemEntityRenderState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+		BakedModel bakedModel = itemEntityRenderState.model;
+		if (bakedModel != null) {
+			matrixStack.push();
+			ItemStack itemStack = itemEntityRenderState.stack;
+			this.random.setSeed((long)getSeed(itemStack));
+			boolean bl = bakedModel.hasDepth();
+			float f = 0.25F;
+			float g = MathHelper.sin(itemEntityRenderState.age / 10.0F + itemEntityRenderState.uniqueOffset) * 0.1F + 0.1F;
+			float h = bakedModel.getTransformation().getTransformation(ModelTransformationMode.GROUND).scale.y();
+			matrixStack.translate(0.0F, g + 0.25F * h, 0.0F);
+			float j = ItemEntity.getRotation(itemEntityRenderState.age, itemEntityRenderState.uniqueOffset);
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation(j));
+			renderStack(this.itemRenderer, matrixStack, vertexConsumerProvider, i, itemStack, bakedModel, bl, this.random);
+			matrixStack.pop();
+			super.render(itemEntityRenderState, matrixStack, vertexConsumerProvider, i);
+		}
 	}
 
 	public static int getSeed(ItemStack stack) {

@@ -44,7 +44,7 @@ public class DebugStickItem extends Item {
 			}
 		}
 
-		return ActionResult.success(world.isClient);
+		return ActionResult.SUCCESS;
 	}
 
 	private boolean use(PlayerEntity player, BlockState state, WorldAccess world, BlockPos pos, boolean update, ItemStack stack) {

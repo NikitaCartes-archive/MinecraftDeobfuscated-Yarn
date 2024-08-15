@@ -26,7 +26,7 @@ public class NameTagItem extends Item {
 				stack.decrement(1);
 			}
 
-			return ActionResult.success(user.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return ActionResult.PASS;
 		}

@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.screen.world;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
@@ -38,6 +37,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.input.KeyCodes;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.texture.NativeImage;
@@ -284,7 +284,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	}
 
 	@Environment(EnvType.CLIENT)
-	public final class WorldEntry extends WorldListWidget.Entry implements AutoCloseable {
+	public final class WorldEntry extends WorldListWidget.Entry {
 		private static final int field_32435 = 32;
 		private static final int field_32436 = 32;
 		private final MinecraftClient client;
@@ -364,9 +364,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			context.drawText(this.client.textRenderer, string, x + 32 + 3, y + 1, 16777215, false);
 			context.drawText(this.client.textRenderer, string2, x + 32 + 3, y + 9 + 3, Colors.GRAY, false);
 			context.drawText(this.client.textRenderer, text, x + 32 + 3, y + 9 + 9 + 3, Colors.GRAY, false);
-			RenderSystem.enableBlend();
-			context.drawTexture(this.icon.getTextureId(), x, y, 0.0F, 0.0F, 32, 32, 32, 32);
-			RenderSystem.disableBlend();
+			context.drawTexture(RenderLayer::getGuiTextured, this.icon.getTextureId(), x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			if (this.client.options.getTouchscreen().getValue() || hovered) {
 				context.fill(x, y, x + 32, y + 32, -1601138544);
 				int i = mouseX - x;
@@ -376,30 +374,30 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				Identifier identifier3 = bl ? WorldListWidget.ERROR_HIGHLIGHTED_TEXTURE : WorldListWidget.ERROR_TEXTURE;
 				Identifier identifier4 = bl ? WorldListWidget.MARKED_JOIN_HIGHLIGHTED_TEXTURE : WorldListWidget.MARKED_JOIN_TEXTURE;
 				if (this.level instanceof LevelSummary.SymlinkLevelSummary || this.level instanceof LevelSummary.RecoveryWarning) {
-					context.drawGuiTexture(identifier3, x, y, 32, 32);
-					context.drawGuiTexture(identifier4, x, y, 32, 32);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, identifier3, x, y, 32, 32);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, identifier4, x, y, 32, 32);
 					return;
 				}
 
 				if (this.level.isLocked()) {
-					context.drawGuiTexture(identifier3, x, y, 32, 32);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, identifier3, x, y, 32, 32);
 					if (bl) {
 						this.screen.setTooltip(this.client.textRenderer.wrapLines(WorldListWidget.LOCKED_TEXT, 175));
 					}
 				} else if (this.level.requiresConversion()) {
-					context.drawGuiTexture(identifier3, x, y, 32, 32);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, identifier3, x, y, 32, 32);
 					if (bl) {
 						this.screen.setTooltip(this.client.textRenderer.wrapLines(WorldListWidget.CONVERSION_TOOLTIP, 175));
 					}
 				} else if (!this.level.isVersionAvailable()) {
-					context.drawGuiTexture(identifier3, x, y, 32, 32);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, identifier3, x, y, 32, 32);
 					if (bl) {
 						this.screen.setTooltip(this.client.textRenderer.wrapLines(WorldListWidget.INCOMPATIBLE_TOOLTIP, 175));
 					}
 				} else if (this.level.shouldPromptBackup()) {
-					context.drawGuiTexture(identifier4, x, y, 32, 32);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, identifier4, x, y, 32, 32);
 					if (this.level.wouldBeDowngraded()) {
-						context.drawGuiTexture(identifier3, x, y, 32, 32);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, identifier3, x, y, 32, 32);
 						if (bl) {
 							this.screen
 								.setTooltip(
@@ -407,13 +405,13 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 								);
 						}
 					} else if (!SharedConstants.getGameVersion().isStable()) {
-						context.drawGuiTexture(identifier2, x, y, 32, 32);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, identifier2, x, y, 32, 32);
 						if (bl) {
 							this.screen.setTooltip(ImmutableList.of(WorldListWidget.SNAPSHOT_FIRST_LINE.asOrderedText(), WorldListWidget.SNAPSHOT_SECOND_LINE.asOrderedText()));
 						}
 					}
 				} else {
-					context.drawGuiTexture(identifier, x, y, 32, 32);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, x, y, 32, 32);
 				}
 			}
 		}

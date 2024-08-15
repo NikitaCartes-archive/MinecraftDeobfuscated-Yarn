@@ -28,6 +28,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.block.WireOrientation;
 
 public class HopperBlock extends BlockWithEntity {
 	public static final MapCodec<HopperBlock> CODEC = createCodec(HopperBlock::new);
@@ -121,21 +122,16 @@ public class HopperBlock extends BlockWithEntity {
 
 	@Override
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (world.isClient) {
-			return ActionResult.SUCCESS;
-		} else {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof HopperBlockEntity) {
-				player.openHandledScreen((HopperBlockEntity)blockEntity);
-				player.incrementStat(Stats.INSPECT_HOPPER);
-			}
-
-			return ActionResult.CONSUME;
+		if (!world.isClient && world.getBlockEntity(pos) instanceof HopperBlockEntity hopperBlockEntity) {
+			player.openHandledScreen(hopperBlockEntity);
+			player.incrementStat(Stats.INSPECT_HOPPER);
 		}
+
+		return ActionResult.SUCCESS;
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		this.updateEnabled(world, pos, state);
 	}
 

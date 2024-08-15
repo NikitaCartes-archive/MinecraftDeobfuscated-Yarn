@@ -46,12 +46,9 @@ public class BlockItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		ActionResult actionResult = this.place(new ItemPlacementContext(context));
-		if (!actionResult.isAccepted() && context.getStack().contains(DataComponentTypes.FOOD)) {
-			ActionResult actionResult2 = super.use(context.getWorld(), context.getPlayer(), context.getHand()).getResult();
-			return actionResult2 == ActionResult.CONSUME ? ActionResult.CONSUME_PARTIAL : actionResult2;
-		} else {
-			return actionResult;
-		}
+		return !actionResult.isAccepted() && context.getStack().contains(DataComponentTypes.FOOD)
+			? super.use(context.getWorld(), context.getPlayer(), context.getHand())
+			: actionResult;
 	}
 
 	public ActionResult place(ItemPlacementContext context) {
@@ -96,7 +93,7 @@ public class BlockItem extends Item {
 					);
 					world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(playerEntity, blockState2));
 					itemStack.decrementUnlessCreative(1, playerEntity);
-					return ActionResult.success(world.isClient);
+					return ActionResult.SUCCESS_SERVER;
 				}
 			}
 		}

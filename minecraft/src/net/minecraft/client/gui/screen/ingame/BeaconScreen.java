@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.PressableWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerInventory;
@@ -128,7 +129,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
-		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, i, j, 0.0F, 0.0F, this.backgroundWidth, this.backgroundHeight, 256, 256);
 		context.getMatrices().push();
 		context.getMatrices().translate(0.0F, 0.0F, 100.0F);
 		context.drawItem(new ItemStack(Items.NETHERITE_INGOT), i + 20, j + 109);
@@ -170,7 +171,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 				identifier = BeaconScreen.BUTTON_TEXTURE;
 			}
 
-			context.drawGuiTexture(identifier, this.getX(), this.getY(), this.width, this.height);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, this.getX(), this.getY(), this.width, this.height);
 			this.renderExtra(context);
 		}
 
@@ -270,7 +271,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 		@Override
 		protected void renderExtra(DrawContext context) {
-			context.drawSprite(this.getX() + 2, this.getY() + 2, 0, 18, 18, this.sprite);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, this.sprite, this.getX() + 2, this.getY() + 2, 18, 18);
 		}
 
 		@Override
@@ -296,7 +297,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 		@Override
 		protected void renderExtra(DrawContext context) {
-			context.drawGuiTexture(this.texture, this.getX() + 2, this.getY() + 2, 18, 18);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, this.texture, this.getX() + 2, this.getY() + 2, 18, 18);
 		}
 	}
 

@@ -8,14 +8,24 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.OptionalDynamic;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import javax.annotation.Nullable;
@@ -32,28 +42,37 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.HeightLimitView;
 import org.slf4j.Logger;
 
-public class SerializingRegionBasedStorage<R> implements AutoCloseable {
-	private static final Logger LOGGER = LogUtils.getLogger();
+public class SerializingRegionBasedStorage<R, P> implements AutoCloseable {
+	static final Logger LOGGER = LogUtils.getLogger();
 	private static final String SECTIONS_KEY = "Sections";
 	private final ChunkPosKeyedStorage storageAccess;
 	private final Long2ObjectMap<Optional<R>> loadedElements = new Long2ObjectOpenHashMap<>();
 	private final LongLinkedOpenHashSet unsavedElements = new LongLinkedOpenHashSet();
-	private final Function<Runnable, Codec<R>> codecFactory;
+	private final Codec<P> codec;
+	private final Function<R, P> serializer;
+	private final BiFunction<P, Runnable, R> deserializer;
 	private final Function<Runnable, R> factory;
 	private final DynamicRegistryManager registryManager;
 	private final ChunkErrorHandler errorHandler;
 	protected final HeightLimitView world;
+	private final LongSet loadedChunks = new LongOpenHashSet();
+	private final Long2ObjectMap<CompletableFuture<Optional<SerializingRegionBasedStorage.LoadResult<P>>>> pendingLoads = new Long2ObjectOpenHashMap<>();
+	private final Object lock = new Object();
 
 	public SerializingRegionBasedStorage(
 		ChunkPosKeyedStorage storageAccess,
-		Function<Runnable, Codec<R>> codecFactory,
+		Codec<P> codec,
+		Function<R, P> serializer,
+		BiFunction<P, Runnable, R> deserializer,
 		Function<Runnable, R> factory,
 		DynamicRegistryManager registryManager,
 		ChunkErrorHandler errorHandler,
 		HeightLimitView world
 	) {
 		this.storageAccess = storageAccess;
-		this.codecFactory = codecFactory;
+		this.codec = codec;
+		this.serializer = serializer;
+		this.deserializer = deserializer;
 		this.factory = factory;
 		this.registryManager = registryManager;
 		this.errorHandler = errorHandler;
@@ -61,9 +80,39 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	}
 
 	protected void tick(BooleanSupplier shouldKeepTicking) {
-		while (this.hasUnsavedElements() && shouldKeepTicking.getAsBoolean()) {
-			ChunkPos chunkPos = ChunkSectionPos.from(this.unsavedElements.firstLong()).toChunkPos();
+		LongIterator longIterator = this.unsavedElements.iterator();
+
+		while (longIterator.hasNext() && shouldKeepTicking.getAsBoolean()) {
+			ChunkPos chunkPos = new ChunkPos(longIterator.nextLong());
+			longIterator.remove();
 			this.save(chunkPos);
+		}
+
+		this.tickPendingLoads();
+	}
+
+	private void tickPendingLoads() {
+		synchronized (this.lock) {
+			Iterator<Entry<CompletableFuture<Optional<SerializingRegionBasedStorage.LoadResult<P>>>>> iterator = Long2ObjectMaps.fastIterator(this.pendingLoads);
+
+			while (iterator.hasNext()) {
+				Entry<CompletableFuture<Optional<SerializingRegionBasedStorage.LoadResult<P>>>> entry = (Entry<CompletableFuture<Optional<SerializingRegionBasedStorage.LoadResult<P>>>>)iterator.next();
+				Optional<SerializingRegionBasedStorage.LoadResult<P>> optional = (Optional<SerializingRegionBasedStorage.LoadResult<P>>)((CompletableFuture)entry.getValue())
+					.getNow(null);
+				if (optional != null) {
+					long l = entry.getLongKey();
+					this.onLoad(new ChunkPos(l), (SerializingRegionBasedStorage.LoadResult<P>)optional.orElse(null));
+					iterator.remove();
+					this.loadedChunks.add(l);
+				}
+			}
+		}
+	}
+
+	public void save() {
+		if (!this.unsavedElements.isEmpty()) {
+			this.unsavedElements.forEach(chunkPos -> this.save(new ChunkPos(chunkPos)));
+			this.unsavedElements.clear();
 		}
 	}
 
@@ -84,10 +133,10 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 			if (optional != null) {
 				return optional;
 			} else {
-				this.loadDataAt(ChunkSectionPos.from(pos).toChunkPos());
+				this.loadAndWait(ChunkSectionPos.from(pos).toChunkPos());
 				optional = this.getIfLoaded(pos);
 				if (optional == null) {
-					throw (IllegalStateException)Util.throwOrPause(new IllegalStateException());
+					throw (IllegalStateException)Util.getFatalOrPause(new IllegalStateException());
 				} else {
 					return optional;
 				}
@@ -102,7 +151,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 
 	protected R getOrCreate(long pos) {
 		if (this.isPosInvalid(pos)) {
-			throw (IllegalArgumentException)Util.throwOrPause(new IllegalArgumentException("sectionPos out of bounds"));
+			throw (IllegalArgumentException)Util.getFatalOrPause(new IllegalArgumentException("sectionPos out of bounds"));
 		} else {
 			Optional<R> optional = this.get(pos);
 			if (optional.isPresent()) {
@@ -115,47 +164,73 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		}
 	}
 
-	private void loadDataAt(ChunkPos pos) {
-		Optional<NbtCompound> optional = (Optional<NbtCompound>)this.loadNbt(pos).join();
-		RegistryOps<NbtElement> registryOps = this.registryManager.getOps(NbtOps.INSTANCE);
-		this.update(pos, registryOps, (NbtCompound)optional.orElse(null));
+	public CompletableFuture<?> load(ChunkPos chunkPos) {
+		synchronized (this.lock) {
+			long l = chunkPos.toLong();
+			return this.loadedChunks.contains(l)
+				? CompletableFuture.completedFuture(null)
+				: this.pendingLoads
+					.computeIfAbsent(
+						l, (Long2ObjectFunction<? extends CompletableFuture<Optional<SerializingRegionBasedStorage.LoadResult<P>>>>)(pos -> this.loadNbt(chunkPos))
+					);
+		}
 	}
 
-	private CompletableFuture<Optional<NbtCompound>> loadNbt(ChunkPos pos) {
-		return this.storageAccess.read(pos).exceptionally(throwable -> {
-			if (throwable instanceof IOException iOException) {
-				LOGGER.error("Error reading chunk {} data from disk", pos, iOException);
-				this.errorHandler.onChunkLoadFailure(iOException, this.storageAccess.getStorageKey(), pos);
-				return Optional.empty();
-			} else {
-				throw new CompletionException(throwable);
+	private void loadAndWait(ChunkPos chunkPos) {
+		long l = chunkPos.toLong();
+		CompletableFuture<Optional<SerializingRegionBasedStorage.LoadResult<P>>> completableFuture;
+		synchronized (this.lock) {
+			if (!this.loadedChunks.add(l)) {
+				return;
 			}
-		});
+
+			completableFuture = this.pendingLoads
+				.computeIfAbsent(
+					l, (Long2ObjectFunction<? extends CompletableFuture<Optional<SerializingRegionBasedStorage.LoadResult<P>>>>)(pos -> this.loadNbt(chunkPos))
+				);
+		}
+
+		this.onLoad(chunkPos, (SerializingRegionBasedStorage.LoadResult<P>)((Optional)completableFuture.join()).orElse(null));
+		synchronized (this.lock) {
+			this.pendingLoads.remove(l);
+		}
 	}
 
-	private void update(ChunkPos pos, RegistryOps<NbtElement> ops, @Nullable NbtCompound nbt) {
-		if (nbt == null) {
+	private CompletableFuture<Optional<SerializingRegionBasedStorage.LoadResult<P>>> loadNbt(ChunkPos chunkPos) {
+		RegistryOps<NbtElement> registryOps = this.registryManager.getOps(NbtOps.INSTANCE);
+		return this.storageAccess
+			.read(chunkPos)
+			.thenApplyAsync(
+				chunkNbt -> chunkNbt.map(nbt -> SerializingRegionBasedStorage.LoadResult.fromNbt(this.codec, registryOps, nbt, this.storageAccess, this.world)),
+				Util.getMainWorkerExecutor()
+			)
+			.exceptionally(throwable -> {
+				if (throwable instanceof IOException iOException) {
+					LOGGER.error("Error reading chunk {} data from disk", chunkPos, iOException);
+					this.errorHandler.onChunkLoadFailure(iOException, this.storageAccess.getStorageKey(), chunkPos);
+					return Optional.empty();
+				} else {
+					throw new CompletionException(throwable);
+				}
+			});
+	}
+
+	private void onLoad(ChunkPos chunkPos, @Nullable SerializingRegionBasedStorage.LoadResult<P> result) {
+		if (result == null) {
 			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
-				this.loadedElements.put(chunkSectionPosAsLong(pos, i), Optional.empty());
+				this.loadedElements.put(chunkSectionPosAsLong(chunkPos, i), Optional.empty());
 			}
 		} else {
-			Dynamic<NbtElement> dynamic = new Dynamic<>(ops, nbt);
-			int j = getDataVersion(dynamic);
-			int k = SharedConstants.getGameVersion().getSaveVersion().getId();
-			boolean bl = j != k;
-			Dynamic<NbtElement> dynamic2 = this.storageAccess.update(dynamic, j);
-			OptionalDynamic<NbtElement> optionalDynamic = dynamic2.get("Sections");
+			boolean bl = result.versionChanged();
 
-			for (int l = this.world.getBottomSectionCoord(); l < this.world.getTopSectionCoord(); l++) {
-				long m = chunkSectionPosAsLong(pos, l);
-				Optional<R> optional = optionalDynamic.get(Integer.toString(l))
-					.result()
-					.flatMap(dynamicx -> ((Codec)this.codecFactory.apply((Runnable)() -> this.onUpdate(m))).parse(dynamicx).resultOrPartial(LOGGER::error));
-				this.loadedElements.put(m, optional);
-				optional.ifPresent(sections -> {
-					this.onLoad(m);
+			for (int j = this.world.getBottomSectionCoord(); j < this.world.getTopSectionCoord(); j++) {
+				long l = chunkSectionPosAsLong(chunkPos, j);
+				Optional<R> optional = Optional.ofNullable(result.sectionsByY.get(j)).map(section -> this.deserializer.apply(section, (Runnable)() -> this.onUpdate(l)));
+				this.loadedElements.put(l, optional);
+				optional.ifPresent(object -> {
+					this.onLoad(l);
 					if (bl) {
-						this.onUpdate(m);
+						this.onUpdate(l);
 					}
 				});
 			}
@@ -181,12 +256,11 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 
 		for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
 			long l = chunkSectionPosAsLong(chunkPos, i);
-			this.unsavedElements.remove(l);
 			Optional<R> optional = this.loadedElements.get(l);
 			if (optional != null && !optional.isEmpty()) {
-				DataResult<T> dataResult = ((Codec)this.codecFactory.apply((Runnable)() -> this.onUpdate(l))).encodeStart(ops, optional.get());
+				DataResult<T> dataResult = this.codec.encodeStart(ops, (P)this.serializer.apply(optional.get()));
 				String string = Integer.toString(i);
-				dataResult.resultOrPartial(LOGGER::error).ifPresent(object -> map.put(ops.createString(string), object));
+				dataResult.resultOrPartial(LOGGER::error).ifPresent(value -> map.put(ops.createString(string), value));
 			}
 		}
 
@@ -213,29 +287,49 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	protected void onUpdate(long pos) {
 		Optional<R> optional = this.loadedElements.get(pos);
 		if (optional != null && !optional.isEmpty()) {
-			this.unsavedElements.add(pos);
+			this.unsavedElements.add(ChunkPos.toLong(ChunkSectionPos.unpackX(pos), ChunkSectionPos.unpackZ(pos)));
 		} else {
 			LOGGER.warn("No data for position: {}", ChunkSectionPos.from(pos));
 		}
 	}
 
-	private static int getDataVersion(Dynamic<?> dynamic) {
+	static int getDataVersion(Dynamic<?> dynamic) {
 		return dynamic.get("DataVersion").asInt(1945);
 	}
 
 	public void saveChunk(ChunkPos pos) {
-		if (this.hasUnsavedElements()) {
-			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
-				long l = chunkSectionPosAsLong(pos, i);
-				if (this.unsavedElements.contains(l)) {
-					this.save(pos);
-					return;
-				}
-			}
+		if (this.unsavedElements.remove(pos.toLong())) {
+			this.save(pos);
 		}
 	}
 
 	public void close() throws IOException {
 		this.storageAccess.close();
+	}
+
+	static record LoadResult<T>(Int2ObjectMap<T> sectionsByY, boolean versionChanged) {
+
+		public static <T> SerializingRegionBasedStorage.LoadResult<T> fromNbt(
+			Codec<T> sectionCodec, DynamicOps<NbtElement> ops, NbtElement nbt, ChunkPosKeyedStorage storage, HeightLimitView world
+		) {
+			Dynamic<NbtElement> dynamic = new Dynamic<>(ops, nbt);
+			int i = SerializingRegionBasedStorage.getDataVersion(dynamic);
+			int j = SharedConstants.getGameVersion().getSaveVersion().getId();
+			boolean bl = i != j;
+			Dynamic<NbtElement> dynamic2 = storage.update(dynamic, i);
+			OptionalDynamic<NbtElement> optionalDynamic = dynamic2.get("Sections");
+			Int2ObjectMap<T> int2ObjectMap = new Int2ObjectOpenHashMap<>();
+
+			for (int k = world.getBottomSectionCoord(); k < world.getTopSectionCoord(); k++) {
+				Optional<T> optional = optionalDynamic.get(Integer.toString(k))
+					.result()
+					.flatMap(section -> sectionCodec.parse(section).resultOrPartial(SerializingRegionBasedStorage.LOGGER::error));
+				if (optional.isPresent()) {
+					int2ObjectMap.put(k, (T)optional.get());
+				}
+			}
+
+			return new SerializingRegionBasedStorage.LoadResult<>(int2ObjectMap, bl);
+		}
 	}
 }

@@ -22,7 +22,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.option.SimpleOption;
-import net.minecraft.client.render.FogShape;
+import net.minecraft.client.render.Fog;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.texture.AbstractTexture;
@@ -74,15 +74,11 @@ public class RenderSystem {
 	private static VertexSorter vertexSorting = VertexSorter.BY_DISTANCE;
 	private static VertexSorter savedVertexSorting = VertexSorter.BY_DISTANCE;
 	private static final Matrix4fStack modelViewStack = new Matrix4fStack(16);
-	private static Matrix4f modelViewMatrix = new Matrix4f();
 	private static Matrix4f textureMatrix = new Matrix4f();
 	private static final int[] shaderTextures = new int[12];
 	private static final float[] shaderColor = new float[]{1.0F, 1.0F, 1.0F, 1.0F};
 	private static float shaderGlintAlpha = 1.0F;
-	private static float shaderFogStart;
-	private static float shaderFogEnd = 1.0F;
-	private static final float[] shaderFogColor = new float[]{0.0F, 0.0F, 0.0F, 0.0F};
-	private static FogShape shaderFogShape = FogShape.SPHERE;
+	private static Fog shaderFog = Fog.DUMMY;
 	private static final Vector3f[] shaderLightDirections = new Vector3f[2];
 	private static float shaderGameTime;
 	private static float shaderLineWidth = 1.0F;
@@ -333,18 +329,18 @@ public class RenderSystem {
 		GlStateManager._clearStencil(stencil);
 	}
 
-	public static void clear(int mask, boolean getError) {
-		GlStateManager._clear(mask, getError);
+	public static void clear(int mask) {
+		GlStateManager._clear(mask);
 	}
 
-	public static void setShaderFogStart(float shaderFogStart) {
+	public static void setShaderFog(Fog fog) {
 		assertOnRenderThread();
-		RenderSystem.shaderFogStart = shaderFogStart;
+		shaderFog = fog;
 	}
 
-	public static float getShaderFogStart() {
+	public static Fog getShaderFog() {
 		assertOnRenderThread();
-		return shaderFogStart;
+		return shaderFog;
 	}
 
 	public static void setShaderGlintAlpha(double d) {
@@ -359,43 +355,6 @@ public class RenderSystem {
 	public static float getShaderGlintAlpha() {
 		assertOnRenderThread();
 		return shaderGlintAlpha;
-	}
-
-	public static void setShaderFogEnd(float shaderFogEnd) {
-		assertOnRenderThread();
-		RenderSystem.shaderFogEnd = shaderFogEnd;
-	}
-
-	public static float getShaderFogEnd() {
-		assertOnRenderThread();
-		return shaderFogEnd;
-	}
-
-	public static void setShaderFogColor(float red, float green, float blue, float alpha) {
-		assertOnRenderThread();
-		shaderFogColor[0] = red;
-		shaderFogColor[1] = green;
-		shaderFogColor[2] = blue;
-		shaderFogColor[3] = alpha;
-	}
-
-	public static void setShaderFogColor(float red, float green, float blue) {
-		setShaderFogColor(red, green, blue, 1.0F);
-	}
-
-	public static float[] getShaderFogColor() {
-		assertOnRenderThread();
-		return shaderFogColor;
-	}
-
-	public static void setShaderFogShape(FogShape shaderFogShape) {
-		assertOnRenderThread();
-		RenderSystem.shaderFogShape = shaderFogShape;
-	}
-
-	public static FogShape getShaderFogShape() {
-		assertOnRenderThread();
-		return shaderFogShape;
 	}
 
 	public static void setShaderLights(Vector3f vector3f, Vector3f vector3f2) {
@@ -416,14 +375,7 @@ public class RenderSystem {
 	}
 
 	public static void setShaderColor(float red, float green, float blue, float alpha) {
-		if (!isOnRenderThread()) {
-			recordRenderCall(() -> _setShaderColor(red, green, blue, alpha));
-		} else {
-			_setShaderColor(red, green, blue, alpha);
-		}
-	}
-
-	private static void _setShaderColor(float red, float green, float blue, float alpha) {
+		assertOnRenderThread();
 		shaderColor[0] = red;
 		shaderColor[1] = green;
 		shaderColor[2] = blue;
@@ -441,11 +393,8 @@ public class RenderSystem {
 	}
 
 	public static void lineWidth(float width) {
-		if (!isOnRenderThread()) {
-			recordRenderCall(() -> shaderLineWidth = width);
-		} else {
-			shaderLineWidth = width;
-		}
+		assertOnRenderThread();
+		shaderLineWidth = width;
 	}
 
 	public static float getShaderLineWidth() {
@@ -504,7 +453,7 @@ public class RenderSystem {
 		GlStateManager._depthFunc(515);
 		projectionMatrix.identity();
 		savedProjectionMatrix.identity();
-		modelViewMatrix.identity();
+		modelViewStack.clear();
 		textureMatrix.identity();
 		GlStateManager._viewport(x, y, width, height);
 	}
@@ -653,22 +602,6 @@ public class RenderSystem {
 		}
 	}
 
-	public static void glGenBuffers(Consumer<Integer> consumer) {
-		if (!isOnRenderThread()) {
-			recordRenderCall(() -> consumer.accept(GlStateManager._glGenBuffers()));
-		} else {
-			consumer.accept(GlStateManager._glGenBuffers());
-		}
-	}
-
-	public static void glGenVertexArrays(Consumer<Integer> consumer) {
-		if (!isOnRenderThread()) {
-			recordRenderCall(() -> consumer.accept(GlStateManager._glGenVertexArrays()));
-		} else {
-			consumer.accept(GlStateManager._glGenVertexArrays());
-		}
-	}
-
 	public static Tessellator renderThreadTesselator() {
 		assertOnRenderThread();
 		return RENDER_THREAD_TESSELATOR;
@@ -678,6 +611,10 @@ public class RenderSystem {
 		blendFuncSeparate(
 			GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
 		);
+	}
+
+	public static void overlayBlendFunc() {
+		blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
 	}
 
 	@Deprecated
@@ -702,11 +639,8 @@ public class RenderSystem {
 	 * not obfuscated and is kept as is.
 	 */
 	public static void setShader(Supplier<ShaderProgram> program) {
-		if (!isOnRenderThread()) {
-			recordRenderCall(() -> shader = (ShaderProgram)program.get());
-		} else {
-			shader = (ShaderProgram)program.get();
-		}
+		assertOnRenderThread();
+		shader = (ShaderProgram)program.get();
 	}
 
 	@Nullable
@@ -716,14 +650,7 @@ public class RenderSystem {
 	}
 
 	public static void setShaderTexture(int texture, Identifier id) {
-		if (!isOnRenderThread()) {
-			recordRenderCall(() -> _setShaderTexture(texture, id));
-		} else {
-			_setShaderTexture(texture, id);
-		}
-	}
-
-	public static void _setShaderTexture(int texture, Identifier id) {
+		assertOnRenderThread();
 		if (texture >= 0 && texture < shaderTextures.length) {
 			TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
 			AbstractTexture abstractTexture = textureManager.getTexture(id);
@@ -732,14 +659,7 @@ public class RenderSystem {
 	}
 
 	public static void setShaderTexture(int texture, int glId) {
-		if (!isOnRenderThread()) {
-			recordRenderCall(() -> _setShaderTexture(texture, glId));
-		} else {
-			_setShaderTexture(texture, glId);
-		}
-	}
-
-	public static void _setShaderTexture(int texture, int glId) {
+		assertOnRenderThread();
 		if (texture >= 0 && texture < shaderTextures.length) {
 			shaderTextures[texture] = glId;
 		}
@@ -751,66 +671,29 @@ public class RenderSystem {
 	}
 
 	public static void setProjectionMatrix(Matrix4f projectionMatrix, VertexSorter vertexSorting) {
-		Matrix4f matrix4f = new Matrix4f(projectionMatrix);
-		if (!isOnRenderThread()) {
-			recordRenderCall(() -> {
-				projectionMatrix = matrix4f;
-				vertexSorting = vertexSorting;
-			});
-		} else {
-			RenderSystem.projectionMatrix = matrix4f;
-			RenderSystem.vertexSorting = vertexSorting;
-		}
+		assertOnRenderThread();
+		RenderSystem.projectionMatrix = new Matrix4f(projectionMatrix);
+		RenderSystem.vertexSorting = vertexSorting;
 	}
 
 	public static void setTextureMatrix(Matrix4f textureMatrix) {
-		Matrix4f matrix4f = new Matrix4f(textureMatrix);
-		if (!isOnRenderThread()) {
-			recordRenderCall(() -> textureMatrix = matrix4f);
-		} else {
-			RenderSystem.textureMatrix = matrix4f;
-		}
+		assertOnRenderThread();
+		RenderSystem.textureMatrix = new Matrix4f(textureMatrix);
 	}
 
 	public static void resetTextureMatrix() {
-		if (!isOnRenderThread()) {
-			recordRenderCall(() -> textureMatrix.identity());
-		} else {
-			textureMatrix.identity();
-		}
-	}
-
-	public static void applyModelViewMatrix() {
-		Matrix4f matrix4f = new Matrix4f(modelViewStack);
-		if (!isOnRenderThread()) {
-			recordRenderCall(() -> modelViewMatrix = matrix4f);
-		} else {
-			modelViewMatrix = matrix4f;
-		}
+		assertOnRenderThread();
+		textureMatrix.identity();
 	}
 
 	public static void backupProjectionMatrix() {
-		if (!isOnRenderThread()) {
-			recordRenderCall(() -> _backupProjectionMatrix());
-		} else {
-			_backupProjectionMatrix();
-		}
-	}
-
-	private static void _backupProjectionMatrix() {
+		assertOnRenderThread();
 		savedProjectionMatrix = projectionMatrix;
 		savedVertexSorting = vertexSorting;
 	}
 
 	public static void restoreProjectionMatrix() {
-		if (!isOnRenderThread()) {
-			recordRenderCall(() -> _restoreProjectionMatrix());
-		} else {
-			_restoreProjectionMatrix();
-		}
-	}
-
-	private static void _restoreProjectionMatrix() {
+		assertOnRenderThread();
 		projectionMatrix = savedProjectionMatrix;
 		vertexSorting = savedVertexSorting;
 	}
@@ -822,10 +705,11 @@ public class RenderSystem {
 
 	public static Matrix4f getModelViewMatrix() {
 		assertOnRenderThread();
-		return modelViewMatrix;
+		return modelViewStack;
 	}
 
 	public static Matrix4fStack getModelViewStack() {
+		assertOnRenderThread();
 		return modelViewStack;
 	}
 
@@ -845,12 +729,8 @@ public class RenderSystem {
 	}
 
 	public static void setShaderGameTime(long time, float tickDelta) {
-		float f = ((float)(time % 24000L) + tickDelta) / 24000.0F;
-		if (!isOnRenderThread()) {
-			recordRenderCall(() -> shaderGameTime = f);
-		} else {
-			shaderGameTime = f;
-		}
+		assertOnRenderThread();
+		shaderGameTime = ((float)(time % 24000L) + tickDelta) / 24000.0F;
 	}
 
 	public static float getShaderGameTime() {

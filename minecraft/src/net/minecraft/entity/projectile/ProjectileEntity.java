@@ -3,8 +3,10 @@ package net.minecraft.entity.projectile;
 import com.google.common.base.MoreObjects;
 import it.unimi.dsi.fastutil.doubles.DoubleDoubleImmutablePair;
 import java.util.UUID;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -12,10 +14,13 @@ import net.minecraft.entity.Ownable;
 import net.minecraft.entity.ProjectileDeflection;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.server.world.ServerWorld;
@@ -23,6 +28,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
@@ -55,12 +61,17 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	public Entity getOwner() {
 		if (this.owner != null && !this.owner.isRemoved()) {
 			return this.owner;
-		} else if (this.ownerUuid != null && this.getWorld() instanceof ServerWorld serverWorld) {
-			this.owner = serverWorld.getEntity(this.ownerUuid);
+		} else if (this.ownerUuid != null) {
+			this.owner = this.getEntity(this.ownerUuid);
 			return this.owner;
 		} else {
 			return null;
 		}
+	}
+
+	@Nullable
+	protected Entity getEntity(UUID uuid) {
+		return this.getWorld() instanceof ServerWorld serverWorld ? serverWorld.getEntity(uuid) : null;
 	}
 
 	/**
@@ -125,15 +136,11 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	private boolean shouldLeaveOwner() {
 		Entity entity = this.getOwner();
 		if (entity != null) {
-			for (Entity entity2 : this.getWorld()
-				.getOtherEntities(this, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), entityx -> !entityx.isSpectator() && entityx.canHit())) {
-				if (entity2.getRootVehicle() == entity.getRootVehicle()) {
-					return false;
-				}
-			}
+			Box box = this.getBoundingBox().stretch(this.getVelocity()).expand(1.0);
+			return entity.getRootVehicle().streamSelfAndPassengers().filter(EntityPredicates.CAN_HIT).noneMatch(entityx -> box.intersects(entityx.getBoundingBox()));
+		} else {
+			return true;
 		}
-
-		return true;
 	}
 
 	public Vec3d calculateVelocity(double x, double y, double z, float power, float uncertainty) {
@@ -197,6 +204,62 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 		this.setVelocity(this.getVelocity().add(vec3d.x, shooter.isOnGround() ? 0.0 : vec3d.y, vec3d.z));
 	}
 
+	public static <T extends ProjectileEntity> T spawnWithVelocity(
+		ProjectileEntity.ProjectileCreator<T> creator, ServerWorld world, ItemStack projectileStack, LivingEntity shooter, float roll, float power, float divergence
+	) {
+		return spawn(
+			creator.create(world, shooter, projectileStack),
+			world,
+			projectileStack,
+			entity -> entity.setVelocity(shooter, shooter.getPitch(), shooter.getYaw(), roll, power, divergence)
+		);
+	}
+
+	public static <T extends ProjectileEntity> T spawnWithVelocity(
+		ProjectileEntity.ProjectileCreator<T> creator,
+		ServerWorld world,
+		ItemStack projectileStack,
+		LivingEntity shooter,
+		double velocityX,
+		double velocityY,
+		double velocityZ,
+		float power,
+		float divergence
+	) {
+		return spawn(
+			creator.create(world, shooter, projectileStack), world, projectileStack, entity -> entity.setVelocity(velocityX, velocityY, velocityZ, power, divergence)
+		);
+	}
+
+	public static <T extends ProjectileEntity> T spawnWithVelocity(
+		T projectile, ServerWorld world, ItemStack projectileStack, double velocityX, double velocityY, double velocityZ, float power, float divergence
+	) {
+		return spawn(projectile, world, projectileStack, entity -> projectile.setVelocity(velocityX, velocityY, velocityZ, power, divergence));
+	}
+
+	public static <T extends ProjectileEntity> T spawn(T projectile, ServerWorld world, ItemStack projectileStack) {
+		return spawn(projectile, world, projectileStack, entity -> {
+		});
+	}
+
+	public static <T extends ProjectileEntity> T spawn(T projectile, ServerWorld world, ItemStack projectileStack, Consumer<T> beforeSpawn) {
+		beforeSpawn.accept(projectile);
+		world.spawnEntity(projectile);
+		projectile.triggerProjectileSpawned(world, projectileStack);
+		return projectile;
+	}
+
+	public void triggerProjectileSpawned(ServerWorld world, ItemStack projectileStack) {
+		EnchantmentHelper.onProjectileSpawned(world, projectileStack, this, item -> {
+		});
+		if (this instanceof PersistentProjectileEntity persistentProjectileEntity) {
+			ItemStack itemStack = persistentProjectileEntity.getWeaponStack();
+			if (itemStack != null && !itemStack.isEmpty() && !projectileStack.getItem().equals(itemStack.getItem())) {
+				EnchantmentHelper.onProjectileSpawned(world, itemStack, this, persistentProjectileEntity::onBroken);
+			}
+		}
+	}
+
 	protected ProjectileDeflection hitOrDeflect(HitResult hitResult) {
 		if (hitResult.getType() == HitResult.Type.ENTITY) {
 			EntityHitResult entityHitResult = (EntityHitResult)hitResult;
@@ -226,6 +289,9 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	}
 
 	protected void onDeflected(@Nullable Entity deflector, boolean fromAttack) {
+	}
+
+	protected void onBroken(Item item) {
 	}
 
 	protected void onCollision(HitResult hitResult) {
@@ -335,5 +401,15 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 		double d = this.getVelocity().x;
 		double e = this.getVelocity().z;
 		return DoubleDoubleImmutablePair.of(d, e);
+	}
+
+	@Override
+	public int getDefaultPortalCooldown() {
+		return 2;
+	}
+
+	@FunctionalInterface
+	public interface ProjectileCreator<T extends ProjectileEntity> {
+		T create(ServerWorld world, LivingEntity shooter, ItemStack stack);
 	}
 }

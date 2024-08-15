@@ -8,11 +8,11 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.passive.StriderEntity;
+import net.minecraft.client.render.entity.state.StriderEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class StriderEntityModel<T extends StriderEntity> extends SinglePartEntityModel<T> {
+public class StriderEntityModel extends EntityModel<StriderEntityRenderState> {
 	/**
 	 * The key of the right bottom bristle model part, whose value is {@value}.
 	 */
@@ -106,17 +106,18 @@ public class StriderEntityModel<T extends StriderEntity> extends SinglePartEntit
 		return TexturedModelData.of(modelData, 64, 128);
 	}
 
-	public void setAngles(StriderEntity striderEntity, float f, float g, float h, float i, float j) {
-		g = Math.min(0.25F, g);
-		if (!striderEntity.hasPassengers()) {
-			this.body.pitch = j * (float) (Math.PI / 180.0);
-			this.body.yaw = i * (float) (Math.PI / 180.0);
+	public void setAngles(StriderEntityRenderState striderEntityRenderState) {
+		float f = striderEntityRenderState.limbFrequency;
+		float g = Math.min(striderEntityRenderState.limbAmplitudeMultiplier, 0.25F);
+		if (!striderEntityRenderState.hasPassengers) {
+			this.body.pitch = striderEntityRenderState.pitch * (float) (Math.PI / 180.0);
+			this.body.yaw = striderEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		} else {
 			this.body.pitch = 0.0F;
 			this.body.yaw = 0.0F;
 		}
 
-		float k = 1.5F;
+		float h = 1.5F;
 		this.body.roll = 0.1F * MathHelper.sin(f * 1.5F) * 4.0F * g;
 		this.body.pivotY = 2.0F;
 		this.body.pivotY = this.body.pivotY - 2.0F * MathHelper.cos(f * 1.5F) * 2.0F * g;
@@ -132,21 +133,21 @@ public class StriderEntityModel<T extends StriderEntity> extends SinglePartEntit
 		this.leftTopBristle.roll = 0.87266463F;
 		this.leftMiddleBristle.roll = 1.134464F;
 		this.leftBottomBristle.roll = 1.2217305F;
-		float l = MathHelper.cos(f * 1.5F + (float) Math.PI) * g;
-		this.rightBottomBristle.roll += l * 1.3F;
-		this.rightMiddleBristle.roll += l * 1.2F;
-		this.rightTopBristle.roll += l * 0.6F;
-		this.leftTopBristle.roll += l * 0.6F;
-		this.leftMiddleBristle.roll += l * 1.2F;
-		this.leftBottomBristle.roll += l * 1.3F;
-		float m = 1.0F;
-		float n = 1.0F;
-		this.rightBottomBristle.roll = this.rightBottomBristle.roll + 0.05F * MathHelper.sin(h * 1.0F * -0.4F);
-		this.rightMiddleBristle.roll = this.rightMiddleBristle.roll + 0.1F * MathHelper.sin(h * 1.0F * 0.2F);
-		this.rightTopBristle.roll = this.rightTopBristle.roll + 0.1F * MathHelper.sin(h * 1.0F * 0.4F);
-		this.leftTopBristle.roll = this.leftTopBristle.roll + 0.1F * MathHelper.sin(h * 1.0F * 0.4F);
-		this.leftMiddleBristle.roll = this.leftMiddleBristle.roll + 0.1F * MathHelper.sin(h * 1.0F * 0.2F);
-		this.leftBottomBristle.roll = this.leftBottomBristle.roll + 0.05F * MathHelper.sin(h * 1.0F * -0.4F);
+		float i = MathHelper.cos(f * 1.5F + (float) Math.PI) * g;
+		this.rightBottomBristle.roll += i * 1.3F;
+		this.rightMiddleBristle.roll += i * 1.2F;
+		this.rightTopBristle.roll += i * 0.6F;
+		this.leftTopBristle.roll += i * 0.6F;
+		this.leftMiddleBristle.roll += i * 1.2F;
+		this.leftBottomBristle.roll += i * 1.3F;
+		float j = 1.0F;
+		float k = 1.0F;
+		this.rightBottomBristle.roll = this.rightBottomBristle.roll + 0.05F * MathHelper.sin(striderEntityRenderState.age * 1.0F * -0.4F);
+		this.rightMiddleBristle.roll = this.rightMiddleBristle.roll + 0.1F * MathHelper.sin(striderEntityRenderState.age * 1.0F * 0.2F);
+		this.rightTopBristle.roll = this.rightTopBristle.roll + 0.1F * MathHelper.sin(striderEntityRenderState.age * 1.0F * 0.4F);
+		this.leftTopBristle.roll = this.leftTopBristle.roll + 0.1F * MathHelper.sin(striderEntityRenderState.age * 1.0F * 0.4F);
+		this.leftMiddleBristle.roll = this.leftMiddleBristle.roll + 0.1F * MathHelper.sin(striderEntityRenderState.age * 1.0F * 0.2F);
+		this.leftBottomBristle.roll = this.leftBottomBristle.roll + 0.05F * MathHelper.sin(striderEntityRenderState.age * 1.0F * -0.4F);
 	}
 
 	@Override

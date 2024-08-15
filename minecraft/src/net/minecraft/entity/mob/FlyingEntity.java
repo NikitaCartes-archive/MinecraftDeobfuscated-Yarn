@@ -44,8 +44,6 @@ public abstract class FlyingEntity extends MobEntity {
 				this.setVelocity(this.getVelocity().multiply((double)f));
 			}
 		}
-
-		this.updateLimbs(false);
 	}
 
 	@Override

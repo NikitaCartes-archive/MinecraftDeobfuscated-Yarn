@@ -12,6 +12,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.stream.JsonReader;
 import com.mojang.brigadier.Message;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.JsonOps;
 import java.io.StringReader;
 import java.lang.reflect.Type;
@@ -243,12 +244,16 @@ public interface Text extends Message, StringVisitable {
 		return MutableText.of(new NbtTextContent(rawPath, interpret, separator, dataSource));
 	}
 
-	static MutableText score(String name, String objective) {
-		return MutableText.of(new ScoreTextContent(name, objective));
+	static MutableText score(ParsedSelector selector, String objective) {
+		return MutableText.of(new ScoreTextContent(Either.left(selector), objective));
 	}
 
-	static MutableText selector(String pattern, Optional<Text> separator) {
-		return MutableText.of(new SelectorTextContent(pattern, separator));
+	static MutableText score(String name, String objective) {
+		return MutableText.of(new ScoreTextContent(Either.right(name), objective));
+	}
+
+	static MutableText selector(ParsedSelector selector, Optional<Text> separator) {
+		return MutableText.of(new SelectorTextContent(selector, separator));
 	}
 
 	/**

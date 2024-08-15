@@ -29,7 +29,7 @@ public class TransparentBlock extends TranslucentBlock {
 	}
 
 	@Override
-	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+	protected boolean isTransparent(BlockState state) {
 		return true;
 	}
 }

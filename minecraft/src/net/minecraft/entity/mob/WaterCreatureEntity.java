@@ -12,6 +12,8 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public abstract class WaterCreatureEntity extends PathAwareEntity {
+	public static final int MIN_AMBIENT_SOUND_DELAY = 120;
+
 	protected WaterCreatureEntity(EntityType<? extends WaterCreatureEntity> entityType, World world) {
 		super(entityType, world);
 		this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);

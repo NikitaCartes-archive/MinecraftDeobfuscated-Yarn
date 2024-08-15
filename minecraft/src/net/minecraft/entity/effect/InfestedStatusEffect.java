@@ -3,6 +3,7 @@ package net.minecraft.entity.effect;
 import java.util.function.ToIntFunction;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.SilverfishEntity;
 import net.minecraft.particle.ParticleTypes;
@@ -35,7 +36,7 @@ class InfestedStatusEffect extends StatusEffect {
 	}
 
 	private void spawnSilverfish(World world, LivingEntity entity, double x, double y, double z) {
-		SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(world);
+		SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(world, SpawnReason.TRIGGERED);
 		if (silverfishEntity != null) {
 			Random random = entity.getRandom();
 			float f = (float) (Math.PI / 2);

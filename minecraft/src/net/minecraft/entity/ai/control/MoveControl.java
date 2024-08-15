@@ -56,7 +56,7 @@ public class MoveControl implements Control {
 
 	public void tick() {
 		if (this.state == MoveControl.State.STRAFE) {
-			float f = (float)this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+			float f = (float)this.entity.getAttributeValue(EntityAttributes.MOVEMENT_SPEED);
 			float g = (float)this.speed * f;
 			float h = this.forwardMovement;
 			float i = this.sidewaysMovement;
@@ -94,7 +94,7 @@ public class MoveControl implements Control {
 
 			float n = (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI) - 90.0F;
 			this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), n, 90.0F));
-			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
+			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.MOVEMENT_SPEED)));
 			BlockPos blockPos = this.entity.getBlockPos();
 			BlockState blockState = this.entity.getWorld().getBlockState(blockPos);
 			VoxelShape voxelShape = blockState.getCollisionShape(this.entity.getWorld(), blockPos);
@@ -107,7 +107,7 @@ public class MoveControl implements Control {
 				this.state = MoveControl.State.JUMPING;
 			}
 		} else if (this.state == MoveControl.State.JUMPING) {
-			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
+			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.MOVEMENT_SPEED)));
 			if (this.entity.isOnGround()) {
 				this.state = MoveControl.State.WAIT;
 			}

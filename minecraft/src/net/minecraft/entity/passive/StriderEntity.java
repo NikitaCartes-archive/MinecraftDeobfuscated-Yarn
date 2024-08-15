@@ -166,7 +166,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	public void setCold(boolean cold) {
 		this.dataTracker.set(COLD, cold);
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 		if (entityAttributeInstance != null) {
 			if (cold) {
 				entityAttributeInstance.updateModifier(SUFFOCATING_MODIFIER);
@@ -267,7 +267,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	@Override
 	protected float getSaddledSpeed(PlayerEntity controllingPlayer) {
 		return (float)(
-			this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+			this.getAttributeValue(EntityAttributes.MOVEMENT_SPEED)
 				* (double)(this.isCold() ? 0.35F : 0.55F)
 				* (double)this.saddledComponent.getMovementSpeedMultiplier()
 		);
@@ -290,7 +290,6 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
-		this.checkBlockCollision();
 		if (this.isInLava()) {
 			this.onLanding();
 		} else {
@@ -352,7 +351,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	public static DefaultAttributeContainer.Builder createStriderAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.175F).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 16.0);
+		return AnimalEntity.createAnimalAttributes().add(EntityAttributes.MOVEMENT_SPEED, 0.175F);
 	}
 
 	@Override
@@ -401,7 +400,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Nullable
 	public StriderEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		return EntityType.STRIDER.create(serverWorld);
+		return EntityType.STRIDER.create(serverWorld, SpawnReason.BREEDING);
 	}
 
 	@Override
@@ -425,12 +424,12 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 				player.startRiding(this);
 			}
 
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			ActionResult actionResult = super.interactMob(player, hand);
 			if (!actionResult.isAccepted()) {
 				ItemStack itemStack = player.getStackInHand(hand);
-				return itemStack.isOf(Items.SADDLE) ? itemStack.useOnEntity(player, this, hand) : ActionResult.PASS;
+				return (ActionResult)(itemStack.isOf(Items.SADDLE) ? itemStack.useOnEntity(player, this, hand) : ActionResult.PASS);
 			} else {
 				if (bl && !this.isSilent()) {
 					this.getWorld()
@@ -464,14 +463,14 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		} else {
 			Random random = world.getRandom();
 			if (random.nextInt(30) == 0) {
-				MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(world.toServerWorld());
+				MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(world.toServerWorld(), SpawnReason.JOCKEY);
 				if (mobEntity != null) {
 					entityData = this.initializeRider(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(random), false));
 					mobEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
 					this.saddle(new ItemStack(Items.SADDLE), null);
 				}
 			} else if (random.nextInt(10) == 0) {
-				PassiveEntity passiveEntity = EntityType.STRIDER.create(world.toServerWorld());
+				PassiveEntity passiveEntity = EntityType.STRIDER.create(world.toServerWorld(), SpawnReason.JOCKEY);
 				if (passiveEntity != null) {
 					passiveEntity.setBreedingAge(-24000);
 					entityData = this.initializeRider(world, difficulty, passiveEntity, null);

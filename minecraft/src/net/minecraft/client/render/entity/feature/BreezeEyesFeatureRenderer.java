@@ -8,32 +8,23 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.BreezeEntityRenderer;
 import net.minecraft.client.render.entity.model.BreezeEntityModel;
+import net.minecraft.client.render.entity.state.BreezeEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.mob.BreezeEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class BreezeEyesFeatureRenderer extends FeatureRenderer<BreezeEntity, BreezeEntityModel<BreezeEntity>> {
+public class BreezeEyesFeatureRenderer extends FeatureRenderer<BreezeEntityRenderState, BreezeEntityModel> {
 	private static final RenderLayer TEXTURE = RenderLayer.getEntityTranslucentEmissiveNoOutline(Identifier.ofVanilla("textures/entity/breeze/breeze_eyes.png"));
 
-	public BreezeEyesFeatureRenderer(FeatureRendererContext<BreezeEntity, BreezeEntityModel<BreezeEntity>> featureRendererContext) {
+	public BreezeEyesFeatureRenderer(FeatureRendererContext<BreezeEntityRenderState, BreezeEntityModel> featureRendererContext) {
 		super(featureRendererContext);
 	}
 
 	public void render(
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		BreezeEntity breezeEntity,
-		float f,
-		float g,
-		float h,
-		float j,
-		float k,
-		float l
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, BreezeEntityRenderState breezeEntityRenderState, float f, float g
 	) {
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(TEXTURE);
-		BreezeEntityModel<BreezeEntity> breezeEntityModel = this.getContextModel();
+		BreezeEntityModel breezeEntityModel = this.getContextModel();
 		BreezeEntityRenderer.updatePartVisibility(breezeEntityModel, breezeEntityModel.getHead(), breezeEntityModel.getEyes())
 			.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 	}

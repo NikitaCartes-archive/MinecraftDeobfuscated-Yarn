@@ -47,7 +47,7 @@ public class IceBlock extends TranslucentBlock {
 
 	@Override
 	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		if (world.getLightLevel(LightType.BLOCK, pos) > 11 - state.getOpacity(world, pos)) {
+		if (world.getLightLevel(LightType.BLOCK, pos) > 11 - state.getOpacity()) {
 			this.melt(state, world, pos);
 		}
 	}
@@ -57,7 +57,7 @@ public class IceBlock extends TranslucentBlock {
 			world.removeBlock(pos, false);
 		} else {
 			world.setBlockState(pos, getMeltedState());
-			world.updateNeighbor(pos, getMeltedState().getBlock(), pos);
+			world.updateNeighbor(pos, getMeltedState().getBlock(), null);
 		}
 	}
 }

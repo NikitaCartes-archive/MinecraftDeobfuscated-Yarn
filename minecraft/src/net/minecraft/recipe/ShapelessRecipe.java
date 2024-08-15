@@ -1,25 +1,28 @@
 package net.minecraft.recipe;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public class ShapelessRecipe implements CraftingRecipe {
 	final String group;
 	final CraftingRecipeCategory category;
 	final ItemStack result;
-	final DefaultedList<Ingredient> ingredients;
+	final List<Ingredient> ingredients;
+	@Nullable
+	private IngredientPlacement ingredientPlacement;
 
-	public ShapelessRecipe(String group, CraftingRecipeCategory category, ItemStack result, DefaultedList<Ingredient> ingredients) {
+	public ShapelessRecipe(String group, CraftingRecipeCategory category, ItemStack result, List<Ingredient> ingredients) {
 		this.group = group;
 		this.category = category;
 		this.result = result;
@@ -47,8 +50,12 @@ public class ShapelessRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public DefaultedList<Ingredient> getIngredients() {
-		return this.ingredients;
+	public IngredientPlacement getIngredientPlacement() {
+		if (this.ingredientPlacement == null) {
+			this.ingredientPlacement = IngredientPlacement.forShapeless(this.ingredients);
+		}
+
+		return this.ingredientPlacement;
 	}
 
 	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
@@ -57,7 +64,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 		} else {
 			return craftingRecipeInput.getSize() == 1 && this.ingredients.size() == 1
 				? ((Ingredient)this.ingredients.getFirst()).test(craftingRecipeInput.getStackInSlot(0))
-				: craftingRecipeInput.getRecipeMatcher().match(this, null);
+				: craftingRecipeInput.getRecipeMatcher().isCraftable(this, null);
 		}
 	}
 
@@ -76,28 +83,20 @@ public class ShapelessRecipe implements CraftingRecipe {
 						Codec.STRING.optionalFieldOf("group", "").forGetter(recipe -> recipe.group),
 						CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(recipe -> recipe.category),
 						ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
-						Ingredient.DISALLOW_EMPTY_CODEC
-							.listOf()
-							.fieldOf("ingredients")
-							.flatXmap(
-								ingredients -> {
-									Ingredient[] ingredients2 = (Ingredient[])ingredients.stream().filter(ingredient -> !ingredient.isEmpty()).toArray(Ingredient[]::new);
-									if (ingredients2.length == 0) {
-										return DataResult.error(() -> "No ingredients for shapeless recipe");
-									} else {
-										return ingredients2.length > 9
-											? DataResult.error(() -> "Too many ingredients for shapeless recipe")
-											: DataResult.success(DefaultedList.copyOf(Ingredient.EMPTY, ingredients2));
-									}
-								},
-								DataResult::success
-							)
-							.forGetter(recipe -> recipe.ingredients)
+						Ingredient.CODEC.listOf(1, 9).fieldOf("ingredients").forGetter(recipe -> recipe.ingredients)
 					)
 					.apply(instance, ShapelessRecipe::new)
 		);
-		public static final PacketCodec<RegistryByteBuf, ShapelessRecipe> PACKET_CODEC = PacketCodec.ofStatic(
-			ShapelessRecipe.Serializer::write, ShapelessRecipe.Serializer::read
+		public static final PacketCodec<RegistryByteBuf, ShapelessRecipe> PACKET_CODEC = PacketCodec.tuple(
+			PacketCodecs.STRING,
+			recipe -> recipe.group,
+			CraftingRecipeCategory.PACKET_CODEC,
+			recipe -> recipe.category,
+			ItemStack.PACKET_CODEC,
+			recipe -> recipe.result,
+			Ingredient.PACKET_CODEC.collect(PacketCodecs.toList()),
+			recipe -> recipe.ingredients,
+			ShapelessRecipe::new
 		);
 
 		@Override
@@ -108,28 +107,6 @@ public class ShapelessRecipe implements CraftingRecipe {
 		@Override
 		public PacketCodec<RegistryByteBuf, ShapelessRecipe> packetCodec() {
 			return PACKET_CODEC;
-		}
-
-		private static ShapelessRecipe read(RegistryByteBuf buf) {
-			String string = buf.readString();
-			CraftingRecipeCategory craftingRecipeCategory = buf.readEnumConstant(CraftingRecipeCategory.class);
-			int i = buf.readVarInt();
-			DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(i, Ingredient.EMPTY);
-			defaultedList.replaceAll(empty -> Ingredient.PACKET_CODEC.decode(buf));
-			ItemStack itemStack = ItemStack.PACKET_CODEC.decode(buf);
-			return new ShapelessRecipe(string, craftingRecipeCategory, itemStack, defaultedList);
-		}
-
-		private static void write(RegistryByteBuf buf, ShapelessRecipe recipe) {
-			buf.writeString(recipe.group);
-			buf.writeEnumConstant(recipe.category);
-			buf.writeVarInt(recipe.ingredients.size());
-
-			for (Ingredient ingredient : recipe.ingredients) {
-				Ingredient.PACKET_CODEC.encode(buf, ingredient);
-			}
-
-			ItemStack.PACKET_CODEC.encode(buf, recipe.result);
 		}
 	}
 }

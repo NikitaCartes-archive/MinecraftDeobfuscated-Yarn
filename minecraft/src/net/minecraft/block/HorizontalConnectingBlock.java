@@ -87,7 +87,7 @@ public abstract class HorizontalConnectingBlock extends Block implements Waterlo
 	}
 
 	@Override
-	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+	protected boolean isTransparent(BlockState state) {
 		return !(Boolean)state.get(WATERLOGGED);
 	}
 

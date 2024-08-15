@@ -14,7 +14,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class CaveVinesBodyBlock extends AbstractPlantBlock implements Fertilizable, CaveVines {
+public class CaveVinesBodyBlock extends AbstractPlantBlock implements CaveVines {
 	public static final MapCodec<CaveVinesBodyBlock> CODEC = createCodec(CaveVinesBodyBlock::new);
 
 	@Override

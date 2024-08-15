@@ -12,7 +12,7 @@ public record LightPredicate(NumberRange.IntRange range) {
 	);
 
 	public boolean test(ServerWorld world, BlockPos pos) {
-		return !world.canSetBlock(pos) ? false : this.range.test(world.getLightLevel(pos));
+		return !world.isPosLoaded(pos) ? false : this.range.test(world.getLightLevel(pos));
 	}
 
 	public static class Builder {

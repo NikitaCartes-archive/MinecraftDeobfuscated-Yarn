@@ -5,6 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
@@ -16,7 +17,6 @@ import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
@@ -55,7 +55,7 @@ public class CowEntity extends AnimalEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createCowAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2F);
+		return AnimalEntity.createAnimalAttributes().add(EntityAttributes.MAX_HEALTH, 10.0).add(EntityAttributes.MOVEMENT_SPEED, 0.2F);
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class CowEntity extends AnimalEntity {
 			player.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
 			ItemStack itemStack2 = ItemUsage.exchangeStack(itemStack, player, Items.MILK_BUCKET.getDefaultStack());
 			player.setStackInHand(hand, itemStack2);
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return super.interactMob(player, hand);
 		}
@@ -98,7 +98,7 @@ public class CowEntity extends AnimalEntity {
 
 	@Nullable
 	public CowEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		return EntityType.COW.create(serverWorld);
+		return EntityType.COW.create(serverWorld, SpawnReason.BREEDING);
 	}
 
 	@Override

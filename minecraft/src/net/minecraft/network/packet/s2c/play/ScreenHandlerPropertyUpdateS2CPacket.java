@@ -22,13 +22,13 @@ public class ScreenHandlerPropertyUpdateS2CPacket implements Packet<ClientPlayPa
 	}
 
 	private ScreenHandlerPropertyUpdateS2CPacket(PacketByteBuf buf) {
-		this.syncId = buf.readUnsignedByte();
+		this.syncId = buf.readSyncId();
 		this.propertyId = buf.readShort();
 		this.value = buf.readShort();
 	}
 
 	private void write(PacketByteBuf buf) {
-		buf.writeByte(this.syncId);
+		buf.writeSyncId(this.syncId);
 		buf.writeShort(this.propertyId);
 		buf.writeShort(this.value);
 	}

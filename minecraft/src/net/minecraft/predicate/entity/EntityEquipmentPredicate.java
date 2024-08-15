@@ -8,6 +8,7 @@ import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.ComponentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
@@ -36,9 +37,13 @@ public record EntityEquipmentPredicate(
 				.apply(instance, EntityEquipmentPredicate::new)
 	);
 
-	public static EntityEquipmentPredicate ominousBannerOnHead(RegistryEntryLookup<BannerPattern> bannerPatternLookup) {
+	public static EntityEquipmentPredicate ominousBannerOnHead(RegistryEntryLookup<Item> itemLookup, RegistryEntryLookup<BannerPattern> bannerPatternLookup) {
 		return EntityEquipmentPredicate.Builder.create()
-			.head(ItemPredicate.Builder.create().items(Items.WHITE_BANNER).component(ComponentPredicate.of(Raid.getOminousBanner(bannerPatternLookup).getComponents())))
+			.head(
+				ItemPredicate.Builder.create()
+					.items(itemLookup, Items.WHITE_BANNER)
+					.component(ComponentPredicate.of(Raid.createOminousBanner(bannerPatternLookup).getComponents()))
+			)
 			.build();
 	}
 

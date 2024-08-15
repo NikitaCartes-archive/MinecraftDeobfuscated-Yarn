@@ -33,9 +33,9 @@ public class ElderGuardianEntity extends GuardianEntity {
 
 	public static DefaultAttributeContainer.Builder createElderGuardianAttributes() {
 		return GuardianEntity.createGuardianAttributes()
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8.0)
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 80.0);
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.ATTACK_DAMAGE, 8.0)
+			.add(EntityAttributes.MAX_HEALTH, 80.0);
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,6 +22,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.tab.Tab;
 import net.minecraft.client.gui.tab.TabManager;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
@@ -127,13 +127,22 @@ public class TabNavigationWidget extends AbstractParentElement implements Drawab
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		RenderSystem.enableBlend();
 		context.drawTexture(
-			Screen.HEADER_SEPARATOR_TEXTURE, 0, this.grid.getY() + this.grid.getHeight() - 2, 0.0F, 0.0F, ((TabButtonWidget)this.tabButtons.get(0)).getX(), 2, 32, 2
+			RenderLayer::getGuiTextured,
+			Screen.HEADER_SEPARATOR_TEXTURE,
+			0,
+			this.grid.getY() + this.grid.getHeight() - 2,
+			0.0F,
+			0.0F,
+			((TabButtonWidget)this.tabButtons.get(0)).getX(),
+			2,
+			32,
+			2
 		);
 		int i = ((TabButtonWidget)this.tabButtons.get(this.tabButtons.size() - 1)).getRight();
-		context.drawTexture(Screen.HEADER_SEPARATOR_TEXTURE, i, this.grid.getY() + this.grid.getHeight() - 2, 0.0F, 0.0F, this.tabNavWidth, 2, 32, 2);
-		RenderSystem.disableBlend();
+		context.drawTexture(
+			RenderLayer::getGuiTextured, Screen.HEADER_SEPARATOR_TEXTURE, i, this.grid.getY() + this.grid.getHeight() - 2, 0.0F, 0.0F, this.tabNavWidth, 2, 32, 2
+		);
 
 		for (TabButtonWidget tabButtonWidget : this.tabButtons) {
 			tabButtonWidget.render(context, mouseX, mouseY, delta);

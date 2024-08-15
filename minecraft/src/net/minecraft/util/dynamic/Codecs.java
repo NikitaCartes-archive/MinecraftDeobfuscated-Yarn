@@ -125,14 +125,14 @@ public class Codecs {
 		return floatList;
 	});
 	public static final Codec<Integer> ARGB = Codec.withAlternative(
-		Codec.INT, VECTOR_4F, vec4f -> ColorHelper.Argb.fromFloats(vec4f.w(), vec4f.x(), vec4f.y(), vec4f.z())
+		Codec.INT, VECTOR_4F, vec4f -> ColorHelper.fromFloats(vec4f.w(), vec4f.x(), vec4f.y(), vec4f.z())
 	);
 	public static final Codec<Integer> UNSIGNED_BYTE = Codec.BYTE
 		.flatComapMap(
 			UnsignedBytes::toInt,
 			value -> value > 255 ? DataResult.error(() -> "Unsigned byte was too large: " + value + " > 255") : DataResult.success(value.byteValue())
 		);
-	public static final Codec<Integer> NONNEGATIVE_INT = rangedInt(0, Integer.MAX_VALUE, v -> "Value must be non-negative: " + v);
+	public static final Codec<Integer> NON_NEGATIVE_INT = rangedInt(0, Integer.MAX_VALUE, v -> "Value must be non-negative: " + v);
 	public static final Codec<Integer> POSITIVE_INT = rangedInt(1, Integer.MAX_VALUE, v -> "Value must be positive: " + v);
 	public static final Codec<Float> POSITIVE_FLOAT = rangedFloat(0.0F, Float.MAX_VALUE, v -> "Value must be positive: " + v);
 	public static final Codec<Pattern> REGULAR_EXPRESSION = Codec.STRING.comapFlatMap(pattern -> {

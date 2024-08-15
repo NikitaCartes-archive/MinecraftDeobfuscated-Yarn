@@ -1,5 +1,6 @@
 package net.minecraft.client.tutorial;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.input.Input;
@@ -24,7 +25,9 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 	private static final Text LOOK_TITLE = Text.translatable("tutorial.look.title");
 	private static final Text LOOK_DESCRIPTION = Text.translatable("tutorial.look.description");
 	private final TutorialManager manager;
+	@Nullable
 	private TutorialToast moveToast;
+	@Nullable
 	private TutorialToast lookAroundToast;
 	private int ticks;
 	private int movedTicks;

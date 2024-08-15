@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.util.Identifier;
 
 /**
@@ -22,10 +22,8 @@ import net.minecraft.util.Identifier;
  * inaccurate. Model parts with an associated field are required.
  */
 @Environment(EnvType.CLIENT)
-public abstract class EntityModel<T extends Entity> extends Model {
-	public float handSwingProgress;
-	public boolean riding;
-	public boolean child = true;
+public abstract class EntityModel<T extends EntityRenderState> extends Model {
+	public static final float field_52908 = -1.501F;
 
 	protected EntityModel() {
 		this(RenderLayer::getEntityCutoutNoCull);
@@ -35,14 +33,5 @@ public abstract class EntityModel<T extends Entity> extends Model {
 		super(function);
 	}
 
-	public abstract void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch);
-
-	public void animateModel(T entity, float limbAngle, float limbDistance, float tickDelta) {
-	}
-
-	public void copyStateTo(EntityModel<T> copy) {
-		copy.handSwingProgress = this.handSwingProgress;
-		copy.riding = this.riding;
-		copy.child = this.child;
-	}
+	public abstract void setAngles(T state);
 }

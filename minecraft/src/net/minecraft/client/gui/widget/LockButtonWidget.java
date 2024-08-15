@@ -3,6 +3,7 @@ package net.minecraft.client.gui.widget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -43,7 +44,7 @@ public class LockButtonWidget extends ButtonWidget {
 			icon = this.locked ? LockButtonWidget.Icon.LOCKED : LockButtonWidget.Icon.UNLOCKED;
 		}
 
-		context.drawGuiTexture(icon.texture, this.getX(), this.getY(), this.width, this.height);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, icon.texture, this.getX(), this.getY(), this.width, this.height);
 	}
 
 	@Environment(EnvType.CLIENT)

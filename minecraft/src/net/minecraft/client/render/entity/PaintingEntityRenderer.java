@@ -8,6 +8,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.entity.state.PaintingEntityRenderState;
 import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
@@ -19,38 +20,87 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
+public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity, PaintingEntityRenderState> {
 	public PaintingEntityRenderer(EntityRendererFactory.Context context) {
 		super(context);
 	}
 
-	public void render(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		matrixStack.push();
-		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F - f));
-		PaintingVariant paintingVariant = paintingEntity.getVariant().value();
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(this.getTexture(paintingEntity)));
-		PaintingManager paintingManager = MinecraftClient.getInstance().getPaintingManager();
-		this.renderPainting(
-			matrixStack,
-			vertexConsumer,
-			paintingEntity,
-			paintingVariant.width(),
-			paintingVariant.height(),
-			paintingManager.getPaintingSprite(paintingVariant),
-			paintingManager.getBackSprite()
-		);
-		matrixStack.pop();
-		super.render(paintingEntity, f, g, matrixStack, vertexConsumerProvider, i);
+	public void render(PaintingEntityRenderState paintingEntityRenderState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+		PaintingVariant paintingVariant = paintingEntityRenderState.variant;
+		if (paintingVariant != null) {
+			matrixStack.push();
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float)(180 - paintingEntityRenderState.facing.getHorizontal() * 90)));
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolidZOffsetForward(this.getTexture(paintingEntityRenderState)));
+			PaintingManager paintingManager = MinecraftClient.getInstance().getPaintingManager();
+			this.renderPainting(
+				matrixStack,
+				vertexConsumer,
+				paintingEntityRenderState.lightmapCoordinates,
+				paintingVariant.width(),
+				paintingVariant.height(),
+				paintingManager.getPaintingSprite(paintingVariant),
+				paintingManager.getBackSprite()
+			);
+			matrixStack.pop();
+			super.render(paintingEntityRenderState, matrixStack, vertexConsumerProvider, i);
+		}
 	}
 
-	public Identifier getTexture(PaintingEntity paintingEntity) {
+	public Identifier getTexture(PaintingEntityRenderState paintingEntityRenderState) {
 		return MinecraftClient.getInstance().getPaintingManager().getBackSprite().getAtlasId();
 	}
 
+	public PaintingEntityRenderState getRenderState() {
+		return new PaintingEntityRenderState();
+	}
+
+	public void updateRenderState(PaintingEntity paintingEntity, PaintingEntityRenderState paintingEntityRenderState, float f) {
+		super.updateRenderState(paintingEntity, paintingEntityRenderState, f);
+		Direction direction = paintingEntity.getHorizontalFacing();
+		PaintingVariant paintingVariant = paintingEntity.getVariant().value();
+		paintingEntityRenderState.facing = direction;
+		paintingEntityRenderState.variant = paintingVariant;
+		int i = paintingVariant.width();
+		int j = paintingVariant.height();
+		if (paintingEntityRenderState.lightmapCoordinates.length != i * j) {
+			paintingEntityRenderState.lightmapCoordinates = new int[i * j];
+		}
+
+		float g = (float)(-i) / 2.0F;
+		float h = (float)(-j) / 2.0F;
+		World world = paintingEntity.getWorld();
+
+		for (int k = 0; k < j; k++) {
+			for (int l = 0; l < i; l++) {
+				float m = (float)l + g + 0.5F;
+				float n = (float)k + h + 0.5F;
+				int o = paintingEntity.getBlockX();
+				int p = MathHelper.floor(paintingEntity.getY() + (double)n);
+				int q = paintingEntity.getBlockZ();
+				switch (direction) {
+					case NORTH:
+						o = MathHelper.floor(paintingEntity.getX() + (double)m);
+						break;
+					case WEST:
+						q = MathHelper.floor(paintingEntity.getZ() - (double)m);
+						break;
+					case SOUTH:
+						o = MathHelper.floor(paintingEntity.getX() - (double)m);
+						break;
+					case EAST:
+						q = MathHelper.floor(paintingEntity.getZ() + (double)m);
+				}
+
+				paintingEntityRenderState.lightmapCoordinates[l + k * i] = WorldRenderer.getLightmapCoordinates(world, new BlockPos(o, p, q));
+			}
+		}
+	}
+
 	private void renderPainting(
-		MatrixStack matrices, VertexConsumer vertexConsumer, PaintingEntity entity, int width, int height, Sprite paintingSprite, Sprite backSprite
+		MatrixStack matrices, VertexConsumer vertexConsumer, int[] lightmapCoordinates, int width, int height, Sprite paintingSprite, Sprite backSprite
 	) {
 		MatrixStack.Entry entry = matrices.peek();
 		float f = (float)(-width) / 2.0F;
@@ -77,55 +127,35 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 				float x = f + (float)u;
 				float y = g + (float)(v + 1);
 				float z = g + (float)v;
-				int aa = entity.getBlockX();
-				int ab = MathHelper.floor(entity.getY() + (double)((y + z) / 2.0F));
-				int ac = entity.getBlockZ();
-				Direction direction = entity.getHorizontalFacing();
-				if (direction == Direction.NORTH) {
-					aa = MathHelper.floor(entity.getX() + (double)((w + x) / 2.0F));
-				}
-
-				if (direction == Direction.WEST) {
-					ac = MathHelper.floor(entity.getZ() - (double)((w + x) / 2.0F));
-				}
-
-				if (direction == Direction.SOUTH) {
-					aa = MathHelper.floor(entity.getX() - (double)((w + x) / 2.0F));
-				}
-
-				if (direction == Direction.EAST) {
-					ac = MathHelper.floor(entity.getZ() + (double)((w + x) / 2.0F));
-				}
-
-				int ad = WorldRenderer.getLightmapCoordinates(entity.getWorld(), new BlockPos(aa, ab, ac));
-				float ae = paintingSprite.getFrameU((float)(d * (double)(width - u)));
-				float af = paintingSprite.getFrameU((float)(d * (double)(width - (u + 1))));
-				float ag = paintingSprite.getFrameV((float)(e * (double)(height - v)));
-				float ah = paintingSprite.getFrameV((float)(e * (double)(height - (v + 1))));
-				this.vertex(entry, vertexConsumer, w, z, af, ag, -0.03125F, 0, 0, -1, ad);
-				this.vertex(entry, vertexConsumer, x, z, ae, ag, -0.03125F, 0, 0, -1, ad);
-				this.vertex(entry, vertexConsumer, x, y, ae, ah, -0.03125F, 0, 0, -1, ad);
-				this.vertex(entry, vertexConsumer, w, y, af, ah, -0.03125F, 0, 0, -1, ad);
-				this.vertex(entry, vertexConsumer, w, y, j, k, 0.03125F, 0, 0, 1, ad);
-				this.vertex(entry, vertexConsumer, x, y, i, k, 0.03125F, 0, 0, 1, ad);
-				this.vertex(entry, vertexConsumer, x, z, i, l, 0.03125F, 0, 0, 1, ad);
-				this.vertex(entry, vertexConsumer, w, z, j, l, 0.03125F, 0, 0, 1, ad);
-				this.vertex(entry, vertexConsumer, w, y, m, o, -0.03125F, 0, 1, 0, ad);
-				this.vertex(entry, vertexConsumer, x, y, n, o, -0.03125F, 0, 1, 0, ad);
-				this.vertex(entry, vertexConsumer, x, y, n, p, 0.03125F, 0, 1, 0, ad);
-				this.vertex(entry, vertexConsumer, w, y, m, p, 0.03125F, 0, 1, 0, ad);
-				this.vertex(entry, vertexConsumer, w, z, m, o, 0.03125F, 0, -1, 0, ad);
-				this.vertex(entry, vertexConsumer, x, z, n, o, 0.03125F, 0, -1, 0, ad);
-				this.vertex(entry, vertexConsumer, x, z, n, p, -0.03125F, 0, -1, 0, ad);
-				this.vertex(entry, vertexConsumer, w, z, m, p, -0.03125F, 0, -1, 0, ad);
-				this.vertex(entry, vertexConsumer, w, y, r, s, 0.03125F, -1, 0, 0, ad);
-				this.vertex(entry, vertexConsumer, w, z, r, t, 0.03125F, -1, 0, 0, ad);
-				this.vertex(entry, vertexConsumer, w, z, q, t, -0.03125F, -1, 0, 0, ad);
-				this.vertex(entry, vertexConsumer, w, y, q, s, -0.03125F, -1, 0, 0, ad);
-				this.vertex(entry, vertexConsumer, x, y, r, s, -0.03125F, 1, 0, 0, ad);
-				this.vertex(entry, vertexConsumer, x, z, r, t, -0.03125F, 1, 0, 0, ad);
-				this.vertex(entry, vertexConsumer, x, z, q, t, 0.03125F, 1, 0, 0, ad);
-				this.vertex(entry, vertexConsumer, x, y, q, s, 0.03125F, 1, 0, 0, ad);
+				int aa = lightmapCoordinates[u + v * width];
+				float ab = paintingSprite.getFrameU((float)(d * (double)(width - u)));
+				float ac = paintingSprite.getFrameU((float)(d * (double)(width - (u + 1))));
+				float ad = paintingSprite.getFrameV((float)(e * (double)(height - v)));
+				float ae = paintingSprite.getFrameV((float)(e * (double)(height - (v + 1))));
+				this.vertex(entry, vertexConsumer, w, z, ac, ad, -0.03125F, 0, 0, -1, aa);
+				this.vertex(entry, vertexConsumer, x, z, ab, ad, -0.03125F, 0, 0, -1, aa);
+				this.vertex(entry, vertexConsumer, x, y, ab, ae, -0.03125F, 0, 0, -1, aa);
+				this.vertex(entry, vertexConsumer, w, y, ac, ae, -0.03125F, 0, 0, -1, aa);
+				this.vertex(entry, vertexConsumer, w, y, j, k, 0.03125F, 0, 0, 1, aa);
+				this.vertex(entry, vertexConsumer, x, y, i, k, 0.03125F, 0, 0, 1, aa);
+				this.vertex(entry, vertexConsumer, x, z, i, l, 0.03125F, 0, 0, 1, aa);
+				this.vertex(entry, vertexConsumer, w, z, j, l, 0.03125F, 0, 0, 1, aa);
+				this.vertex(entry, vertexConsumer, w, y, m, o, -0.03125F, 0, 1, 0, aa);
+				this.vertex(entry, vertexConsumer, x, y, n, o, -0.03125F, 0, 1, 0, aa);
+				this.vertex(entry, vertexConsumer, x, y, n, p, 0.03125F, 0, 1, 0, aa);
+				this.vertex(entry, vertexConsumer, w, y, m, p, 0.03125F, 0, 1, 0, aa);
+				this.vertex(entry, vertexConsumer, w, z, m, o, 0.03125F, 0, -1, 0, aa);
+				this.vertex(entry, vertexConsumer, x, z, n, o, 0.03125F, 0, -1, 0, aa);
+				this.vertex(entry, vertexConsumer, x, z, n, p, -0.03125F, 0, -1, 0, aa);
+				this.vertex(entry, vertexConsumer, w, z, m, p, -0.03125F, 0, -1, 0, aa);
+				this.vertex(entry, vertexConsumer, w, y, r, s, 0.03125F, -1, 0, 0, aa);
+				this.vertex(entry, vertexConsumer, w, z, r, t, 0.03125F, -1, 0, 0, aa);
+				this.vertex(entry, vertexConsumer, w, z, q, t, -0.03125F, -1, 0, 0, aa);
+				this.vertex(entry, vertexConsumer, w, y, q, s, -0.03125F, -1, 0, 0, aa);
+				this.vertex(entry, vertexConsumer, x, y, r, s, -0.03125F, 1, 0, 0, aa);
+				this.vertex(entry, vertexConsumer, x, z, r, t, -0.03125F, 1, 0, 0, aa);
+				this.vertex(entry, vertexConsumer, x, z, q, t, 0.03125F, 1, 0, 0, aa);
+				this.vertex(entry, vertexConsumer, x, y, q, s, 0.03125F, 1, 0, 0, aa);
 			}
 		}
 	}

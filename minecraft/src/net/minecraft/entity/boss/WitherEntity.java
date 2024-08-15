@@ -10,7 +10,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SkinOverlayOwner;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.FlightMoveControl;
@@ -56,7 +55,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
-public class WitherEntity extends HostileEntity implements SkinOverlayOwner, RangedAttackMob {
+public class WitherEntity extends HostileEntity implements RangedAttackMob {
 	private static final TrackedData<Integer> TRACKED_ENTITY_ID_1 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> TRACKED_ENTITY_ID_2 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> TRACKED_ENTITY_ID_3 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -429,7 +428,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 			witherSkullEntity.setCharged(true);
 		}
 
-		witherSkullEntity.setPos(d, e, f);
+		witherSkullEntity.setPosition(d, e, f);
 		this.getWorld().spawnEntity(witherSkullEntity);
 	}
 
@@ -496,19 +495,19 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 
 	public static DefaultAttributeContainer.Builder createWitherAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 300.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.6F)
-			.add(EntityAttributes.GENERIC_FLYING_SPEED, 0.6F)
-			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 40.0)
-			.add(EntityAttributes.GENERIC_ARMOR, 4.0);
+			.add(EntityAttributes.MAX_HEALTH, 300.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.6F)
+			.add(EntityAttributes.FLYING_SPEED, 0.6F)
+			.add(EntityAttributes.FOLLOW_RANGE, 40.0)
+			.add(EntityAttributes.ARMOR, 4.0);
 	}
 
-	public float getHeadYaw(int headIndex) {
-		return this.sideHeadYaws[headIndex];
+	public float[] getSideHeadYaws() {
+		return this.sideHeadYaws;
 	}
 
-	public float getHeadPitch(int headIndex) {
-		return this.sideHeadPitches[headIndex];
+	public float[] getSideHeadPitches() {
+		return this.sideHeadPitches;
 	}
 
 	public int getInvulnerableTimer() {
@@ -527,7 +526,6 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 		this.dataTracker.set((TrackedData<Integer>)TRACKED_ENTITY_IDS.get(headIndex), id);
 	}
 
-	@Override
 	public boolean shouldRenderOverlay() {
 		return this.getHealth() <= this.getMaxHealth() / 2.0F;
 	}

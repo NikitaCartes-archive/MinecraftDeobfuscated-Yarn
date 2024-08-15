@@ -18,7 +18,6 @@ import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -77,12 +76,6 @@ public class HangingSignBlockEntityRenderer extends SignBlockEntityRenderer {
 		matrices.translate(0.5, 0.9375, 0.5);
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationDegrees));
 		matrices.translate(0.0F, -0.3125F, 0.0F);
-	}
-
-	@Override
-	void renderSignModel(MatrixStack matrices, int light, int overlay, Model model, VertexConsumer vertexConsumers) {
-		HangingSignBlockEntityRenderer.HangingSignModel hangingSignModel = (HangingSignBlockEntityRenderer.HangingSignModel)model;
-		hangingSignModel.root.render(matrices, vertexConsumers, light, overlay);
 	}
 
 	@Override
@@ -153,8 +146,8 @@ public class HangingSignBlockEntityRenderer extends SignBlockEntityRenderer {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-			this.root.render(matrices, vertices, light, overlay, color);
+		public ModelPart getPart() {
+			return this.root;
 		}
 	}
 }

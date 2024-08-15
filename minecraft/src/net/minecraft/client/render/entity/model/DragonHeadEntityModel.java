@@ -8,9 +8,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.block.entity.SkullBlockEntityModel;
-import net.minecraft.client.util.math.MatrixStack;
 
 /**
  * Represents the model of the dragon head.
@@ -55,7 +53,7 @@ public class DragonHeadEntityModel extends SkullBlockEntityModel {
 				.mirrored(false)
 				.cuboid("scale", 3.0F, -12.0F, -4.0F, 2, 4, 6, 0, 0)
 				.cuboid("nostril", 3.0F, -3.0F, -22.0F, 2, 2, 4, 112, 0),
-			ModelTransform.NONE
+			ModelTransform.pivot(0.0F, -7.986666F, 0.0F).scaled(0.75F)
 		);
 		modelPartData2.addChild(
 			EntityModelPartNames.JAW,
@@ -73,11 +71,7 @@ public class DragonHeadEntityModel extends SkullBlockEntityModel {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-		matrices.push();
-		matrices.translate(0.0F, -0.374375F, 0.0F);
-		matrices.scale(0.75F, 0.75F, 0.75F);
-		this.head.render(matrices, vertices, light, overlay, color);
-		matrices.pop();
+	public ModelPart getPart() {
+		return this.head;
 	}
 }

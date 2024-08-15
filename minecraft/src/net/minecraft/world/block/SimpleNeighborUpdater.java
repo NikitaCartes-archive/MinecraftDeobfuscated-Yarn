@@ -1,5 +1,6 @@
 package net.minecraft.world.block;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
@@ -19,13 +20,13 @@ public class SimpleNeighborUpdater implements NeighborUpdater {
 	}
 
 	@Override
-	public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos sourcePos) {
+	public void updateNeighbor(BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation) {
 		BlockState blockState = this.world.getBlockState(pos);
-		this.updateNeighbor(blockState, pos, sourceBlock, sourcePos, false);
+		this.updateNeighbor(blockState, pos, sourceBlock, orientation, false);
 	}
 
 	@Override
-	public void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-		NeighborUpdater.tryNeighborUpdate(this.world, state, pos, sourceBlock, sourcePos, notify);
+	public void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation, boolean notify) {
+		NeighborUpdater.tryNeighborUpdate(this.world, state, pos, sourceBlock, orientation, notify);
 	}
 }

@@ -38,12 +38,11 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 
 	@Override
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (world.isClient) {
-			return ActionResult.SUCCESS;
-		} else {
+		if (!world.isClient) {
 			this.openScreen(world, pos, player);
-			return ActionResult.CONSUME;
 		}
+
+		return ActionResult.SUCCESS;
 	}
 
 	protected abstract void openScreen(World world, BlockPos pos, PlayerEntity player);

@@ -38,6 +38,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.block.WireOrientation;
 
 public class CrafterBlock extends BlockWithEntity {
 	public static final MapCodec<CrafterBlock> CODEC = createCodec(CrafterBlock::new);
@@ -72,7 +73,7 @@ public class CrafterBlock extends BlockWithEntity {
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		boolean bl = world.isReceivingRedstonePower(pos);
 		boolean bl2 = (Boolean)state.get(TRIGGERED);
 		BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -139,16 +140,11 @@ public class CrafterBlock extends BlockWithEntity {
 
 	@Override
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (world.isClient) {
-			return ActionResult.SUCCESS;
-		} else {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof CrafterBlockEntity) {
-				player.openHandledScreen((CrafterBlockEntity)blockEntity);
-			}
-
-			return ActionResult.CONSUME;
+		if (!world.isClient && world.getBlockEntity(pos) instanceof CrafterBlockEntity crafterBlockEntity) {
+			player.openHandledScreen(crafterBlockEntity);
 		}
+
+		return ActionResult.SUCCESS;
 	}
 
 	protected void craft(BlockState state, ServerWorld world, BlockPos pos) {

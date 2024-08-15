@@ -13,7 +13,6 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkToNibbleArrayMap;
@@ -29,7 +28,6 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 	private final LongOpenHashSet blockPositionsToCheck = new LongOpenHashSet(512, 0.5F);
 	private final LongArrayFIFOQueue field_44734 = new LongArrayFIFOQueue();
 	private final LongArrayFIFOQueue field_44735 = new LongArrayFIFOQueue();
-	private final BlockPos.Mutable reusableBlockPos = new BlockPos.Mutable();
 	private static final int field_31709 = 2;
 	private final long[] cachedChunkPositions = new long[2];
 	private final LightSourceView[] cachedChunks = new LightSourceView[2];
@@ -40,29 +38,29 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 		this.clearChunkCache();
 	}
 
-	public static boolean needsLightUpdate(BlockView blockView, BlockPos pos, BlockState oldState, BlockState newState) {
+	public static boolean needsLightUpdate(BlockState oldState, BlockState newState) {
 		return newState == oldState
 			? false
-			: newState.getOpacity(blockView, pos) != oldState.getOpacity(blockView, pos)
+			: newState.getOpacity() != oldState.getOpacity()
 				|| newState.getLuminance() != oldState.getLuminance()
 				|| newState.hasSidedTransparency()
 				|| oldState.hasSidedTransparency();
 	}
 
-	public static int getRealisticOpacity(BlockView world, BlockState state1, BlockPos pos1, BlockState state2, BlockPos pos2, Direction direction, int opacity2) {
+	public static int getRealisticOpacity(BlockState state1, BlockState state2, Direction direction, int opacity2) {
 		boolean bl = isTrivialForLighting(state1);
 		boolean bl2 = isTrivialForLighting(state2);
 		if (bl && bl2) {
 			return opacity2;
 		} else {
-			VoxelShape voxelShape = bl ? VoxelShapes.empty() : state1.getCullingShape(world, pos1);
-			VoxelShape voxelShape2 = bl2 ? VoxelShapes.empty() : state2.getCullingShape(world, pos2);
+			VoxelShape voxelShape = bl ? VoxelShapes.empty() : state1.getCullingShape();
+			VoxelShape voxelShape2 = bl2 ? VoxelShapes.empty() : state2.getCullingShape();
 			return VoxelShapes.adjacentSidesCoverSquare(voxelShape, voxelShape2, direction) ? 16 : opacity2;
 		}
 	}
 
-	public static VoxelShape getOpaqueShape(BlockView blockView, BlockPos pos, BlockState blockState, Direction direction) {
-		return isTrivialForLighting(blockState) ? VoxelShapes.empty() : blockState.getCullingFace(blockView, pos, direction);
+	public static VoxelShape getOpaqueShape(BlockState state, Direction direction) {
+		return isTrivialForLighting(state) ? VoxelShapes.empty() : state.getCullingFace(direction);
 	}
 
 	protected static boolean isTrivialForLighting(BlockState blockState) {
@@ -76,18 +74,14 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 		return lightSourceView == null ? Blocks.BEDROCK.getDefaultState() : lightSourceView.getBlockState(pos);
 	}
 
-	protected int getOpacity(BlockState state, BlockPos pos) {
-		return Math.max(1, state.getOpacity(this.chunkProvider.getWorld(), pos));
+	protected int getOpacity(BlockState state) {
+		return Math.max(1, state.getOpacity());
 	}
 
-	protected boolean shapesCoverFullCube(long sourceId, BlockState sourceState, long targetId, BlockState targetState, Direction direction) {
-		VoxelShape voxelShape = this.getOpaqueShape(sourceState, sourceId, direction);
-		VoxelShape voxelShape2 = this.getOpaqueShape(targetState, targetId, direction.getOpposite());
+	protected boolean shapesCoverFullCube(BlockState source, BlockState target, Direction direction) {
+		VoxelShape voxelShape = getOpaqueShape(source, direction);
+		VoxelShape voxelShape2 = getOpaqueShape(target, direction.getOpposite());
 		return VoxelShapes.unionCoversFullCube(voxelShape, voxelShape2);
-	}
-
-	protected VoxelShape getOpaqueShape(BlockState blockState, long pos, Direction direction) {
-		return getOpaqueShape(this.chunkProvider.getWorld(), this.reusableBlockPos.set(pos), blockState, direction);
 	}
 
 	@Nullable

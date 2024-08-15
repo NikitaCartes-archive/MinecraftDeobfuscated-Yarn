@@ -10,9 +10,11 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TriState;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.tuple.Triple;
 import org.joml.Matrix4f;
@@ -20,7 +22,7 @@ import org.joml.Matrix4fStack;
 
 @Environment(EnvType.CLIENT)
 public abstract class RenderPhase {
-	private static final float VIEW_OFFSET_Z_LAYERING_SCALE = 0.99975586F;
+	private static final float VIEW_OFFSET_Z_LAYERING_SCALE = 2.4414062E-4F;
 	public static final double field_42230 = 8.0;
 	protected final String name;
 	private final Runnable beginAction;
@@ -77,6 +79,40 @@ public abstract class RenderPhase {
 			RenderSystem.defaultBlendFunc();
 		}
 	);
+	protected static final RenderPhase.Transparency VIGNETTE_TRANSPARENCY = new RenderPhase.Transparency("vignette_transparency", () -> {
+		RenderSystem.enableBlend();
+		RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
+	}, () -> {
+		RenderSystem.disableBlend();
+		RenderSystem.defaultBlendFunc();
+	});
+	protected static final RenderPhase.Transparency CROSSHAIR_TRANSPARENCY = new RenderPhase.Transparency(
+		"crosshair_transparency",
+		() -> {
+			RenderSystem.enableBlend();
+			RenderSystem.blendFuncSeparate(
+				GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
+			);
+		},
+		() -> {
+			RenderSystem.disableBlend();
+			RenderSystem.defaultBlendFunc();
+		}
+	);
+	protected static final RenderPhase.Transparency MOJANG_LOGO_TRANSPARENCY = new RenderPhase.Transparency("mojang_logo_transparency", () -> {
+		RenderSystem.enableBlend();
+		RenderSystem.blendFunc(770, 1);
+	}, () -> {
+		RenderSystem.disableBlend();
+		RenderSystem.defaultBlendFunc();
+	});
+	protected static final RenderPhase.Transparency NAUSEA_OVERLAY_TRANSPARENCY = new RenderPhase.Transparency("nausea_overlay_transparency", () -> {
+		RenderSystem.enableBlend();
+		RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
+	}, () -> {
+		RenderSystem.disableBlend();
+		RenderSystem.defaultBlendFunc();
+	});
 	protected static final RenderPhase.ShaderProgram NO_PROGRAM = new RenderPhase.ShaderProgram();
 	protected static final RenderPhase.ShaderProgram POSITION_COLOR_LIGHTMAP_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getPositionColorLightmapProgram);
 	protected static final RenderPhase.ShaderProgram POSITION_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getPositionProgram);
@@ -84,7 +120,8 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.ShaderProgram POSITION_COLOR_TEXTURE_LIGHTMAP_PROGRAM = new RenderPhase.ShaderProgram(
 		GameRenderer::getPositionColorTexLightmapProgram
 	);
-	protected static final RenderPhase.ShaderProgram COLOR_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getPositionColorProgram);
+	protected static final RenderPhase.ShaderProgram POSITION_COLOR_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getPositionColorProgram);
+	protected static final RenderPhase.ShaderProgram POSITION_TEXTURE_COLOR_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getPositionTexColorProgram);
 	protected static final RenderPhase.ShaderProgram SOLID_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeSolidProgram);
 	protected static final RenderPhase.ShaderProgram CUTOUT_MIPPED_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeCutoutMippedProgram);
 	protected static final RenderPhase.ShaderProgram CUTOUT_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeCutoutProgram);
@@ -159,8 +196,8 @@ public abstract class RenderPhase {
 		GameRenderer::getRenderTypeGuiGhostRecipeOverlayProgram
 	);
 	protected static final RenderPhase.ShaderProgram BREEZE_WIND_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeBreezeWindProgram);
-	protected static final RenderPhase.Texture MIPMAP_BLOCK_ATLAS_TEXTURE = new RenderPhase.Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, true);
-	protected static final RenderPhase.Texture BLOCK_ATLAS_TEXTURE = new RenderPhase.Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false);
+	protected static final RenderPhase.Texture MIPMAP_BLOCK_ATLAS_TEXTURE = new RenderPhase.Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, TriState.FALSE, true);
+	protected static final RenderPhase.Texture BLOCK_ATLAS_TEXTURE = new RenderPhase.Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, TriState.FALSE, false);
 	protected static final RenderPhase.TextureBase NO_TEXTURE = new RenderPhase.TextureBase();
 	protected static final RenderPhase.Texturing DEFAULT_TEXTURING = new RenderPhase.Texturing("default_texturing", () -> {
 	}, () -> {
@@ -198,15 +235,22 @@ public abstract class RenderPhase {
 		Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
 		matrix4fStack.pushMatrix();
 		matrix4fStack.scale(0.99975586F, 0.99975586F, 0.99975586F);
-		RenderSystem.applyModelViewMatrix();
 	}, () -> {
 		Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
 		matrix4fStack.popMatrix();
-		RenderSystem.applyModelViewMatrix();
 	});
-	protected static final RenderPhase.Target MAIN_TARGET = new RenderPhase.Target("main_target", () -> {
+	protected static final RenderPhase.Layering VIEW_OFFSET_Z_LAYERING_FORWARD = new RenderPhase.Layering("view_offset_z_layering_forward", () -> {
+		Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+		matrix4fStack.pushMatrix();
+		matrix4fStack.scale(1.0002441F, 1.0002441F, 1.0002441F);
 	}, () -> {
+		Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+		matrix4fStack.popMatrix();
 	});
+	protected static final RenderPhase.Target MAIN_TARGET = new RenderPhase.Target(
+		"main_target", () -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false), () -> {
+		}
+	);
 	protected static final RenderPhase.Target OUTLINE_TARGET = new RenderPhase.Target(
 		"outline_target",
 		() -> MinecraftClient.getInstance().worldRenderer.getEntityOutlinesFramebuffer().beginWrite(false),
@@ -215,6 +259,8 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.Target TRANSLUCENT_TARGET = new RenderPhase.Target("translucent_target", () -> {
 		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
 			MinecraftClient.getInstance().worldRenderer.getTranslucentFramebuffer().beginWrite(false);
+		} else {
+			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
 		}
 	}, () -> {
 		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
@@ -224,6 +270,8 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.Target PARTICLES_TARGET = new RenderPhase.Target("particles_target", () -> {
 		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
 			MinecraftClient.getInstance().worldRenderer.getParticlesFramebuffer().beginWrite(false);
+		} else {
+			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
 		}
 	}, () -> {
 		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
@@ -233,6 +281,8 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.Target WEATHER_TARGET = new RenderPhase.Target("weather_target", () -> {
 		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
 			MinecraftClient.getInstance().worldRenderer.getWeatherFramebuffer().beginWrite(false);
+		} else {
+			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
 		}
 	}, () -> {
 		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
@@ -242,6 +292,8 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.Target CLOUDS_TARGET = new RenderPhase.Target("clouds_target", () -> {
 		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
 			MinecraftClient.getInstance().worldRenderer.getCloudsFramebuffer().beginWrite(false);
+		} else {
+			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
 		}
 	}, () -> {
 		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
@@ -251,6 +303,8 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.Target ITEM_ENTITY_TARGET = new RenderPhase.Target("item_entity_target", () -> {
 		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
 			MinecraftClient.getInstance().worldRenderer.getEntityFramebuffer().beginWrite(false);
+		} else {
+			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
 		}
 	}, () -> {
 		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
@@ -446,18 +500,19 @@ public abstract class RenderPhase {
 	@Environment(EnvType.CLIENT)
 	protected static class Texture extends RenderPhase.TextureBase {
 		private final Optional<Identifier> id;
-		private final boolean blur;
+		private final TriState blur;
 		private final boolean mipmap;
 
-		public Texture(Identifier id, boolean blur, boolean mipmap) {
+		public Texture(Identifier id, TriState bilinear, boolean mipmap) {
 			super(() -> {
 				TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-				textureManager.getTexture(id).setFilter(blur, mipmap);
+				AbstractTexture abstractTexture = textureManager.getTexture(id);
+				abstractTexture.setFilter(bilinear.asBoolean(abstractTexture.isBilinear()), mipmap);
 				RenderSystem.setShaderTexture(0, id);
 			}, () -> {
 			});
 			this.id = Optional.of(id);
-			this.blur = blur;
+			this.blur = bilinear;
 			this.mipmap = mipmap;
 		}
 

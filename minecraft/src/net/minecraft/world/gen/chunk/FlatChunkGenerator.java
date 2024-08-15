@@ -19,7 +19,6 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.placement.StructurePlacementCalculator;
 import net.minecraft.world.gen.noise.NoiseConfig;
@@ -41,7 +40,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 		Stream<RegistryEntry<StructureSet>> stream = (Stream<RegistryEntry<StructureSet>>)this.config
 			.getStructureOverrides()
 			.map(RegistryEntryList::stream)
-			.orElseGet(() -> structureSetRegistry.streamEntries().map(reference -> reference));
+			.orElseGet(() -> structureSetRegistry.streamEntries().map(structureEntry -> structureEntry));
 		return StructurePlacementCalculator.create(noiseConfig, seed, this.biomeSource, stream);
 	}
 
@@ -120,15 +119,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public void carve(
-		ChunkRegion chunkRegion,
-		long seed,
-		NoiseConfig noiseConfig,
-		BiomeAccess biomeAccess,
-		StructureAccessor structureAccessor,
-		Chunk chunk,
-		GenerationStep.Carver carverStep
-	) {
+	public void carve(ChunkRegion chunkRegion, long seed, NoiseConfig noiseConfig, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk) {
 	}
 
 	@Override

@@ -21,11 +21,14 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -56,7 +59,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 	}
 
 	public static DefaultAttributeContainer.Builder createSnowGolemAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 4.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2F);
+		return MobEntity.createMobAttributes().add(EntityAttributes.MAX_HEALTH, 4.0).add(EntityAttributes.MOVEMENT_SPEED, 0.2F);
 	}
 
 	@Override
@@ -113,15 +116,16 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 
 	@Override
 	public void shootAt(LivingEntity target, float pullProgress) {
-		SnowballEntity snowballEntity = new SnowballEntity(this.getWorld(), this);
-		double d = target.getEyeY() - 1.1F;
-		double e = target.getX() - this.getX();
-		double f = d - snowballEntity.getY();
-		double g = target.getZ() - this.getZ();
-		double h = Math.sqrt(e * e + g * g) * 0.2F;
-		snowballEntity.setVelocity(e, f + h, g, 1.6F, 12.0F);
+		double d = target.getX() - this.getX();
+		double e = target.getEyeY() - 1.1F;
+		double f = target.getZ() - this.getZ();
+		double g = Math.sqrt(d * d + f * f) * 0.2F;
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			ItemStack itemStack = new ItemStack(Items.SNOWBALL);
+			ProjectileEntity.spawnWithVelocity(SnowballEntity::new, serverWorld, itemStack, this, d, e + g, f, 1.6F, 12.0F);
+		}
+
 		this.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0F, 0.4F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-		this.getWorld().spawnEntity(snowballEntity);
 	}
 
 	@Override
@@ -134,7 +138,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 				itemStack.damage(1, player, getSlotForHand(hand));
 			}
 
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return ActionResult.PASS;
 		}
@@ -145,7 +149,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 		this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_SNOW_GOLEM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
 		if (!this.getWorld().isClient()) {
 			this.setHasPumpkin(false);
-			this.dropStack(new ItemStack(Items.CARVED_PUMPKIN), this.getStandingEyeHeight());
+			this.forEachShearedItem(LootTables.SNOW_GOLEM_SHEARING, itemStack -> this.dropStack(itemStack, this.getStandingEyeHeight()));
 		}
 	}
 

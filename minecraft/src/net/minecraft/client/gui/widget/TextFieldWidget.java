@@ -10,7 +10,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -28,7 +27,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class TextFieldWidget extends ClickableWidget implements Drawable {
+public class TextFieldWidget extends ClickableWidget {
 	private static final ButtonTextures TEXTURES = new ButtonTextures(
 		Identifier.ofVanilla("widget/text_field"), Identifier.ofVanilla("widget/text_field_highlighted")
 	);
@@ -377,7 +376,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 		if (this.isVisible()) {
 			if (this.drawsBackground()) {
 				Identifier identifier = TEXTURES.get(this.isNarratable(), this.isFocused());
-				context.drawGuiTexture(identifier, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+				context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, this.getX(), this.getY(), this.getWidth(), this.getHeight());
 			}
 
 			int i = this.editable ? this.editableColor : this.uneditableColor;

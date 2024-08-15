@@ -34,6 +34,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 	@Nullable
 	private String newItemName;
 	private final Property levelCost = Property.create();
+	private boolean keepSecondSlot = false;
 	private static final int field_30753 = 0;
 	private static final int field_30754 = 1;
 	private static final int field_30755 = 1;
@@ -76,7 +77,6 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 			player.addExperienceLevels(-this.levelCost.get());
 		}
 
-		this.input.setStack(0, ItemStack.EMPTY);
 		if (this.repairItemUsage > 0) {
 			ItemStack itemStack = this.input.getStack(1);
 			if (!itemStack.isEmpty() && itemStack.getCount() > this.repairItemUsage) {
@@ -85,11 +85,12 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 			} else {
 				this.input.setStack(1, ItemStack.EMPTY);
 			}
-		} else {
+		} else if (!this.keepSecondSlot) {
 			this.input.setStack(1, ItemStack.EMPTY);
 		}
 
 		this.levelCost.set(0);
+		this.input.setStack(0, ItemStack.EMPTY);
 		this.context.run((world, pos) -> {
 			BlockState blockState = world.getBlockState(pos);
 			if (!player.isInCreativeMode() && blockState.isIn(BlockTags.ANVIL) && player.getRandom().nextFloat() < 0.12F) {
@@ -110,6 +111,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 	@Override
 	public void updateResult() {
 		ItemStack itemStack = this.input.getStack(0);
+		this.keepSecondSlot = false;
 		this.levelCost.set(1);
 		int i = 0;
 		long l = 0L;
@@ -123,7 +125,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 			this.repairItemUsage = 0;
 			if (!itemStack3.isEmpty()) {
 				boolean bl = itemStack3.contains(DataComponentTypes.STORED_ENCHANTMENTS);
-				if (itemStack2.isDamageable() && itemStack2.getItem().canRepair(itemStack, itemStack3)) {
+				if (itemStack2.isDamageable() && itemStack.canRepairWith(itemStack3)) {
 					int k = Math.min(itemStack2.getDamage(), itemStack2.getMaxDamage() / 4);
 					if (k <= 0) {
 						this.output.setStack(0, ItemStack.EMPTY);
@@ -232,8 +234,12 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 				itemStack2 = ItemStack.EMPTY;
 			}
 
-			if (j == i && j > 0 && this.levelCost.get() >= 40) {
-				this.levelCost.set(39);
+			if (j == i && j > 0) {
+				if (this.levelCost.get() >= 40) {
+					this.levelCost.set(39);
+				}
+
+				this.keepSecondSlot = true;
 			}
 
 			if (this.levelCost.get() >= 40 && !this.player.getAbilities().creativeMode) {

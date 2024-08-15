@@ -78,7 +78,7 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	@Override
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData);
-		this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(4.0);
+		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(4.0);
 		this.updateAttackType();
 		return entityData2;
 	}

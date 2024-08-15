@@ -3,12 +3,15 @@ package net.minecraft.loot.function;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
-import net.minecraft.item.GoatHornItem;
+import java.util.Optional;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Instrument;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 
 public class SetInstrumentLootFunction extends ConditionalLootFunction {
@@ -31,7 +34,12 @@ public class SetInstrumentLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		GoatHornItem.setRandomInstrumentFromTag(stack, this.options, context.getRandom());
+		Registry<Instrument> registry = context.getWorld().getRegistryManager().get(RegistryKeys.INSTRUMENT);
+		Optional<RegistryEntry<Instrument>> optional = registry.getRandomEntry(this.options, context.getRandom());
+		if (optional.isPresent()) {
+			stack.set(DataComponentTypes.INSTRUMENT, (RegistryEntry<Instrument>)optional.get());
+		}
+
 		return stack;
 	}
 

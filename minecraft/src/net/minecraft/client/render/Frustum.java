@@ -86,4 +86,37 @@ public class Frustum {
 		float k = (float)(maxZ - this.z);
 		return this.frustumIntersection.testAab(f, g, h, i, j, k);
 	}
+
+	public Vector4f[] method_62342() {
+		Vector4f[] vector4fs = new Vector4f[]{
+			new Vector4f(-1.0F, -1.0F, -1.0F, 1.0F),
+			new Vector4f(1.0F, -1.0F, -1.0F, 1.0F),
+			new Vector4f(1.0F, 1.0F, -1.0F, 1.0F),
+			new Vector4f(-1.0F, 1.0F, -1.0F, 1.0F),
+			new Vector4f(-1.0F, -1.0F, 1.0F, 1.0F),
+			new Vector4f(1.0F, -1.0F, 1.0F, 1.0F),
+			new Vector4f(1.0F, 1.0F, 1.0F, 1.0F),
+			new Vector4f(-1.0F, 1.0F, 1.0F, 1.0F)
+		};
+		Matrix4f matrix4f = this.positionProjectionMatrix.invert(new Matrix4f());
+
+		for (int i = 0; i < 8; i++) {
+			matrix4f.transform(vector4fs[i]);
+			vector4fs[i].div(vector4fs[i].w());
+		}
+
+		return vector4fs;
+	}
+
+	public double method_62343() {
+		return this.x;
+	}
+
+	public double method_62344() {
+		return this.y;
+	}
+
+	public double method_62345() {
+		return this.z;
+	}
 }

@@ -25,11 +25,11 @@ public class ItemLoreToTextFix extends DataFix {
 			type,
 			itemStackTyped -> itemStackTyped.updateTyped(
 					opticFinder,
-					tagTyped -> tagTyped.update(
+					nbtTyped -> nbtTyped.update(
 							DSL.remainderFinder(),
-							tagDynamic -> tagDynamic.update(
+							nbtDynamic -> nbtDynamic.update(
 									"display",
-									displaySubtag -> displaySubtag.update(
+									displaySubNbt -> displaySubNbt.update(
 											"Lore", lore -> DataFixUtils.orElse(lore.asStreamOpt().map(ItemLoreToTextFix::fixLoreNbt).map(lore::createList).result(), lore)
 										)
 								)

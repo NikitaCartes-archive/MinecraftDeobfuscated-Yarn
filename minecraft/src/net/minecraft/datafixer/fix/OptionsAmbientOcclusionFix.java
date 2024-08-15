@@ -19,9 +19,7 @@ public class OptionsAmbientOcclusionFix extends DataFix {
 			this.getInputSchema().getType(TypeReferences.OPTIONS),
 			optionsTyped -> optionsTyped.update(
 					DSL.remainderFinder(),
-					optionsdynamic -> DataFixUtils.orElse(
-							optionsdynamic.get("ao").asString().map(setting -> optionsdynamic.set("ao", optionsdynamic.createString(fixValue(setting)))).result(), optionsdynamic
-						)
+					options -> DataFixUtils.orElse(options.get("ao").asString().map(setting -> options.set("ao", options.createString(fixValue(setting)))).result(), options)
 				)
 		);
 	}

@@ -1,6 +1,7 @@
 package net.minecraft.entity.raid;
 
 import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +19,8 @@ import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MoveToRaidCenterGoal;
+import net.minecraft.entity.ai.pathing.Path;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -44,7 +47,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	protected static final TrackedData<Boolean> CELEBRATING = DataTracker.registerData(RaiderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	static final Predicate<ItemEntity> OBTAINABLE_OMINOUS_BANNER_PREDICATE = itemEntity -> !itemEntity.cannotPickup()
 			&& itemEntity.isAlive()
-			&& ItemStack.areEqual(itemEntity.getStack(), Raid.getOminousBanner(itemEntity.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
+			&& ItemStack.areEqual(itemEntity.getStack(), Raid.createOminousBanner(itemEntity.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
 	@Nullable
 	protected Raid raid;
 	private int wave;
@@ -58,7 +61,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	@Override
 	protected void initGoals() {
 		super.initGoals();
-		this.goalSelector.add(1, new RaiderEntity.PickupBannerAsLeaderGoal<>(this));
+		this.goalSelector.add(1, new RaiderEntity.PickUpBannerAsLeaderGoal<>(this));
 		this.goalSelector.add(3, new MoveToRaidCenterGoal<>(this));
 		this.goalSelector.add(4, new RaiderEntity.AttackHomeGoal(this, 1.05F, 1));
 		this.goalSelector.add(5, new RaiderEntity.CelebrateGoal(this));
@@ -147,7 +150,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	public boolean isCaptain() {
 		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
 		boolean bl = !itemStack.isEmpty()
-			&& ItemStack.areEqual(itemStack, Raid.getOminousBanner(this.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
+			&& ItemStack.areEqual(itemStack, Raid.createOminousBanner(this.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
 		boolean bl2 = this.isPatrolLeader();
 		return bl && bl2;
 	}
@@ -211,7 +214,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 		boolean bl = this.hasActiveRaid() && this.getRaid().getCaptain(this.getWave()) != null;
 		if (this.hasActiveRaid()
 			&& !bl
-			&& ItemStack.areEqual(itemStack, Raid.getOminousBanner(this.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)))) {
+			&& ItemStack.areEqual(itemStack, Raid.createOminousBanner(this.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)))) {
 			EquipmentSlot equipmentSlot = EquipmentSlot.HEAD;
 			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 			double d = (double)this.getDropChance(equipmentSlot);
@@ -481,48 +484,93 @@ public abstract class RaiderEntity extends PatrolEntity {
 		}
 	}
 
-	public class PickupBannerAsLeaderGoal<T extends RaiderEntity> extends Goal {
+	public class PickUpBannerAsLeaderGoal<T extends RaiderEntity> extends Goal {
 		private final T actor;
+		private Int2LongOpenHashMap bannerItemCache = new Int2LongOpenHashMap();
+		@Nullable
+		private Path path;
+		@Nullable
+		private ItemEntity bannerItemEntity;
 
-		public PickupBannerAsLeaderGoal(final T actor) {
+		public PickUpBannerAsLeaderGoal(final T actor) {
 			this.actor = actor;
 			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
 		@Override
 		public boolean canStart() {
-			Raid raid = this.actor.getRaid();
-			if (this.actor.hasActiveRaid()
-				&& !this.actor.getRaid().isFinished()
-				&& this.actor.canLead()
-				&& !ItemStack.areEqual(
-					this.actor.getEquippedStack(EquipmentSlot.HEAD), Raid.getOminousBanner(this.actor.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN))
-				)) {
-				RaiderEntity raiderEntity = raid.getCaptain(this.actor.getWave());
-				if (raiderEntity == null || !raiderEntity.isAlive()) {
-					List<ItemEntity> list = this.actor
-						.getWorld()
-						.getEntitiesByClass(ItemEntity.class, this.actor.getBoundingBox().expand(16.0, 8.0, 16.0), RaiderEntity.OBTAINABLE_OMINOUS_BANNER_PREDICATE);
-					if (!list.isEmpty()) {
-						return this.actor.getNavigation().startMovingTo((Entity)list.get(0), 1.15F);
+			if (this.shouldStop()) {
+				return false;
+			} else {
+				Int2LongOpenHashMap int2LongOpenHashMap = new Int2LongOpenHashMap();
+				double d = RaiderEntity.this.getAttributeValue(EntityAttributes.FOLLOW_RANGE);
+
+				for (ItemEntity itemEntity : this.actor
+					.getWorld()
+					.getEntitiesByClass((Class<T>)ItemEntity.class, this.actor.getBoundingBox().expand(d, 8.0, d), RaiderEntity.OBTAINABLE_OMINOUS_BANNER_PREDICATE)) {
+					long l = this.bannerItemCache.getOrDefault(itemEntity.getId(), Long.MIN_VALUE);
+					if (RaiderEntity.this.getWorld().getTime() < l) {
+						int2LongOpenHashMap.put(itemEntity.getId(), l);
+					} else {
+						Path path = this.actor.getNavigation().findPathTo(itemEntity, 1);
+						if (path != null && path.reachesTarget()) {
+							this.path = path;
+							this.bannerItemEntity = itemEntity;
+							return true;
+						}
+
+						int2LongOpenHashMap.put(itemEntity.getId(), RaiderEntity.this.getWorld().getTime() + 600L);
 					}
 				}
 
-				return false;
-			} else {
+				this.bannerItemCache = int2LongOpenHashMap;
 				return false;
 			}
 		}
 
 		@Override
+		public boolean shouldContinue() {
+			if (this.bannerItemEntity == null || this.path == null) {
+				return false;
+			} else if (this.bannerItemEntity.isRemoved()) {
+				return false;
+			} else {
+				return this.path.isFinished() ? false : !this.shouldStop();
+			}
+		}
+
+		private boolean shouldStop() {
+			if (!this.actor.hasActiveRaid()) {
+				return true;
+			} else if (this.actor.getRaid().isFinished()) {
+				return true;
+			} else if (!this.actor.canLead()) {
+				return true;
+			} else if (ItemStack.areEqual(
+				this.actor.getEquippedStack(EquipmentSlot.HEAD), Raid.createOminousBanner(this.actor.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN))
+			)) {
+				return true;
+			} else {
+				RaiderEntity raiderEntity = RaiderEntity.this.raid.getCaptain(this.actor.getWave());
+				return raiderEntity != null && raiderEntity.isAlive();
+			}
+		}
+
+		@Override
+		public void start() {
+			this.actor.getNavigation().startMovingAlong(this.path, 1.15F);
+		}
+
+		@Override
+		public void stop() {
+			this.path = null;
+			this.bannerItemEntity = null;
+		}
+
+		@Override
 		public void tick() {
-			if (this.actor.getNavigation().getTargetPos().isWithinDistance(this.actor.getPos(), 1.414)) {
-				List<ItemEntity> list = this.actor
-					.getWorld()
-					.getEntitiesByClass(ItemEntity.class, this.actor.getBoundingBox().expand(4.0, 4.0, 4.0), RaiderEntity.OBTAINABLE_OMINOUS_BANNER_PREDICATE);
-				if (!list.isEmpty()) {
-					this.actor.loot((ItemEntity)list.get(0));
-				}
+			if (this.bannerItemEntity != null && this.bannerItemEntity.isInRange(this.actor, 1.414)) {
+				this.actor.loot(this.bannerItemEntity);
 			}
 		}
 	}

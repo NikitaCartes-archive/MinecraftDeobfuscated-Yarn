@@ -40,8 +40,6 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 	private final String defaultSlotName;
 	private String slotName;
 	private boolean pvp;
-	private boolean spawnNpcs;
-	private boolean spawnAnimals;
 	private boolean spawnMonsters;
 	int spawnProtection;
 	private boolean commandBlocks;
@@ -61,17 +59,13 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 			this.pvp = options.pvp;
 			this.spawnProtection = options.spawnProtection;
 			this.forceGameMode = options.forceGameMode;
-			this.spawnAnimals = options.spawnAnimals;
 			this.spawnMonsters = options.spawnMonsters;
-			this.spawnNpcs = options.spawnNpcs;
 			this.commandBlocks = options.commandBlocks;
 		} else {
 			this.pvp = true;
 			this.spawnProtection = 0;
 			this.forceGameMode = false;
-			this.spawnAnimals = true;
 			this.spawnMonsters = true;
-			this.spawnNpcs = true;
 			this.commandBlocks = true;
 		}
 	}
@@ -128,26 +122,16 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 				.initially(this.gameMode)
 				.build(this.column1_x, row(3), this.column2_x, 20, Text.translatable("selectWorld.gameMode"), (button, gameModeIndex) -> this.gameMode = gameModeIndex)
 		);
+		this.spawnProtectionButton = this.addDrawableChild(new RealmsSlotOptionsScreen.SettingsSlider(i, row(3), this.column2_x, this.spawnProtection, 0.0F, 16.0F));
 		Text text2 = Text.translatable("mco.configure.world.spawn_toggle.message");
-		CyclingButtonWidget<Boolean> cyclingButtonWidget2 = this.addDrawableChild(
-			CyclingButtonWidget.onOffBuilder(this.spawnAnimals)
-				.build(
-					i,
-					row(3),
-					this.column2_x,
-					20,
-					Text.translatable("mco.configure.world.spawnAnimals"),
-					this.getSpawnToggleButtonCallback(text2, spawnAnimals -> this.spawnAnimals = spawnAnimals)
-				)
-		);
-		CyclingButtonWidget<Boolean> cyclingButtonWidget3 = CyclingButtonWidget.onOffBuilder(this.difficulty != Difficulty.PEACEFUL && this.spawnMonsters)
+		CyclingButtonWidget<Boolean> cyclingButtonWidget2 = CyclingButtonWidget.onOffBuilder(this.difficulty != Difficulty.PEACEFUL && this.spawnMonsters)
 			.build(
 				i,
 				row(5),
 				this.column2_x,
 				20,
 				Text.translatable("mco.configure.world.spawnMonsters"),
-				this.getSpawnToggleButtonCallback(text2, spawnMonsters -> this.spawnMonsters = spawnMonsters)
+				this.getSpawnToggleButtonCallback(text2, boolean_ -> this.spawnMonsters = boolean_)
 			);
 		this.addDrawableChild(
 			CyclingButtonWidget.<Difficulty>builder(Difficulty::getTranslatableName)
@@ -157,53 +141,37 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 					this.difficulty = difficulty;
 					if (this.worldType == RealmsServer.WorldType.NORMAL) {
 						boolean bl = this.difficulty != Difficulty.PEACEFUL;
-						cyclingButtonWidget3.active = bl;
-						cyclingButtonWidget3.setValue(bl && this.spawnMonsters);
+						cyclingButtonWidget2.active = bl;
+						cyclingButtonWidget2.setValue(bl && this.spawnMonsters);
 					}
 				})
 		);
-		this.addDrawableChild(cyclingButtonWidget3);
-		this.spawnProtectionButton = this.addDrawableChild(
-			new RealmsSlotOptionsScreen.SettingsSlider(this.column1_x, row(7), this.column2_x, this.spawnProtection, 0.0F, 16.0F)
-		);
-		CyclingButtonWidget<Boolean> cyclingButtonWidget4 = this.addDrawableChild(
-			CyclingButtonWidget.onOffBuilder(this.spawnNpcs)
-				.build(
-					i,
-					row(7),
-					this.column2_x,
-					20,
-					Text.translatable("mco.configure.world.spawnNPCs"),
-					this.getSpawnToggleButtonCallback(Text.translatable("mco.configure.world.spawn_toggle.message.npc"), spawnNpcs -> this.spawnNpcs = spawnNpcs)
-				)
-		);
-		CyclingButtonWidget<Boolean> cyclingButtonWidget5 = this.addDrawableChild(
+		this.addDrawableChild(cyclingButtonWidget2);
+		CyclingButtonWidget<Boolean> cyclingButtonWidget3 = this.addDrawableChild(
 			CyclingButtonWidget.onOffBuilder(this.forceGameMode)
 				.build(
 					this.column1_x,
-					row(9),
+					row(7),
 					this.column2_x,
 					20,
 					Text.translatable("mco.configure.world.forceGameMode"),
 					(button, forceGameMode) -> this.forceGameMode = forceGameMode
 				)
 		);
-		CyclingButtonWidget<Boolean> cyclingButtonWidget6 = this.addDrawableChild(
+		CyclingButtonWidget<Boolean> cyclingButtonWidget4 = this.addDrawableChild(
 			CyclingButtonWidget.onOffBuilder(this.commandBlocks)
-				.build(i, row(9), this.column2_x, 20, Text.translatable("mco.configure.world.commandBlocks"), (button, commandBlocks) -> this.commandBlocks = commandBlocks)
+				.build(i, row(7), this.column2_x, 20, Text.translatable("mco.configure.world.commandBlocks"), (button, commandBlocks) -> this.commandBlocks = commandBlocks)
 		);
 		if (this.worldType != RealmsServer.WorldType.NORMAL) {
 			cyclingButtonWidget.active = false;
 			cyclingButtonWidget2.active = false;
+			this.spawnProtectionButton.active = false;
 			cyclingButtonWidget4.active = false;
 			cyclingButtonWidget3.active = false;
-			this.spawnProtectionButton.active = false;
-			cyclingButtonWidget6.active = false;
-			cyclingButtonWidget5.active = false;
 		}
 
 		if (this.difficulty == Difficulty.PEACEFUL) {
-			cyclingButtonWidget3.active = false;
+			cyclingButtonWidget2.active = false;
 		}
 
 		this.addDrawableChild(
@@ -260,18 +228,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 			this.parent
 				.saveSlotSettings(
 					new RealmsWorldOptions(
-						this.pvp,
-						this.spawnAnimals,
-						bl,
-						this.spawnNpcs,
-						this.spawnProtection,
-						this.commandBlocks,
-						i,
-						j,
-						this.forceGameMode,
-						this.slotName,
-						this.options.version,
-						this.options.compatibility
+						this.pvp, bl, this.spawnProtection, this.commandBlocks, i, j, this.forceGameMode, this.slotName, this.options.version, this.options.compatibility
 					)
 				);
 		} else {
@@ -279,9 +236,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 				.saveSlotSettings(
 					new RealmsWorldOptions(
 						this.options.pvp,
-						this.options.spawnAnimals,
 						this.options.spawnMonsters,
-						this.options.spawnNpcs,
 						this.options.spawnProtection,
 						this.options.commandBlocks,
 						i,

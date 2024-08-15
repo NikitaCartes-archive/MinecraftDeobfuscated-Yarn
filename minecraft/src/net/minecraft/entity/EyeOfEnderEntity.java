@@ -17,6 +17,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
 public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
+	private static final float field_52507 = 12.25F;
 	private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(EyeOfEnderEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private double targetX;
 	private double targetY;
@@ -53,13 +54,17 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 
 	@Override
 	public boolean shouldRender(double distance) {
-		double d = this.getBoundingBox().getAverageSideLength() * 4.0;
-		if (Double.isNaN(d)) {
-			d = 4.0;
-		}
+		if (this.age < 2 && distance < 12.25) {
+			return false;
+		} else {
+			double d = this.getBoundingBox().getAverageSideLength() * 4.0;
+			if (Double.isNaN(d)) {
+				d = 4.0;
+			}
 
-		d *= 64.0;
-		return distance < d * d;
+			d *= 64.0;
+			return distance < d * d;
+		}
 	}
 
 	/**

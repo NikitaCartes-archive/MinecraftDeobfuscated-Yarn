@@ -1,19 +1,16 @@
 package net.minecraft.client.gui.screen.recipebook;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.recipebook.RecipeBookGroup;
-import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -29,18 +26,16 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 		this.setTextures(TEXTURES);
 	}
 
-	public void checkForNewRecipes(MinecraftClient client) {
-		ClientRecipeBook clientRecipeBook = client.player.getRecipeBook();
-		List<RecipeResultCollection> list = clientRecipeBook.getResultsForGroup(this.category);
-		if (client.player.currentScreenHandler instanceof AbstractRecipeScreenHandler) {
-			for (RecipeResultCollection recipeResultCollection : list) {
-				for (RecipeEntry<?> recipeEntry : recipeResultCollection.getResults(
-					clientRecipeBook.isFilteringCraftable((AbstractRecipeScreenHandler<?, ?>)client.player.currentScreenHandler)
-				)) {
-					if (clientRecipeBook.shouldDisplay(recipeEntry)) {
-						this.bounce = 15.0F;
-						return;
-					}
+	public void checkForNewRecipes(ClientRecipeBook recipeBook, boolean filteringCraftable) {
+		RecipeResultCollection.RecipeFilterMode recipeFilterMode = filteringCraftable
+			? RecipeResultCollection.RecipeFilterMode.CRAFTABLE
+			: RecipeResultCollection.RecipeFilterMode.ANY;
+
+		for (RecipeResultCollection recipeResultCollection : recipeBook.getResultsForGroup(this.category)) {
+			for (RecipeEntry<?> recipeEntry : recipeResultCollection.method_62050(recipeFilterMode)) {
+				if (recipeBook.shouldDisplay(recipeEntry)) {
+					this.bounce = 15.0F;
+					return;
 				}
 			}
 		}
@@ -57,17 +52,14 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 				context.getMatrices().translate((float)(-(this.getX() + 8)), (float)(-(this.getY() + 12)), 0.0F);
 			}
 
-			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			RenderSystem.disableDepthTest();
 			Identifier identifier = this.textures.get(true, this.toggled);
 			int i = this.getX();
 			if (this.toggled) {
 				i -= 2;
 			}
 
-			context.drawGuiTexture(identifier, i, this.getY(), this.width, this.height);
-			RenderSystem.enableDepthTest();
-			this.renderIcons(context, minecraftClient.getItemRenderer());
+			context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, i, this.getY(), this.width, this.height);
+			this.renderIcons(context);
 			if (this.bounce > 0.0F) {
 				context.getMatrices().pop();
 				this.bounce -= delta;
@@ -75,7 +67,7 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 		}
 	}
 
-	private void renderIcons(DrawContext context, ItemRenderer itemRenderer) {
+	private void renderIcons(DrawContext context) {
 		List<ItemStack> list = this.category.getIcons();
 		int i = this.toggled ? -2 : 0;
 		if (list.size() == 1) {
@@ -93,12 +85,11 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 	public boolean hasKnownRecipes(ClientRecipeBook recipeBook) {
 		List<RecipeResultCollection> list = recipeBook.getResultsForGroup(this.category);
 		this.visible = false;
-		if (list != null) {
-			for (RecipeResultCollection recipeResultCollection : list) {
-				if (recipeResultCollection.isInitialized() && recipeResultCollection.hasFittingRecipes()) {
-					this.visible = true;
-					break;
-				}
+
+		for (RecipeResultCollection recipeResultCollection : list) {
+			if (recipeResultCollection.isInitialized() && recipeResultCollection.hasFittingRecipes()) {
+				this.visible = true;
+				break;
 			}
 		}
 

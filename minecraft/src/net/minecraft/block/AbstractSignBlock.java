@@ -22,7 +22,6 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.text.PlainTextContent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -75,7 +74,7 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.getBlockEntity(pos) instanceof SignBlockEntity signBlockEntity) {
 			SignChangingItem signChangingItem2 = stack.getItem() instanceof SignChangingItem signChangingItem ? signChangingItem : null;
 			boolean bl = signChangingItem2 != null && player.canModifyBlocks();
@@ -87,18 +86,18 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 						player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
 						world.emitGameEvent(GameEvent.BLOCK_CHANGE, signBlockEntity.getPos(), GameEvent.Emitter.of(player, signBlockEntity.getCachedState()));
 						stack.decrementUnlessCreative(1, player);
-						return ItemActionResult.SUCCESS;
+						return ActionResult.SUCCESS;
 					} else {
-						return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+						return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 					}
 				} else {
-					return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+					return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 				}
 			} else {
-				return !bl && !signBlockEntity.isWaxed() ? ItemActionResult.CONSUME : ItemActionResult.SUCCESS;
+				return !bl && !signBlockEntity.isWaxed() ? ActionResult.CONSUME : ActionResult.SUCCESS;
 			}
 		} else {
-			return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+			return ActionResult.PASS;
 		}
 	}
 
@@ -106,19 +105,19 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (world.getBlockEntity(pos) instanceof SignBlockEntity signBlockEntity) {
 			if (world.isClient) {
-				Util.throwOrPause(new IllegalStateException("Expected to only call this on server"));
+				Util.getFatalOrPause(new IllegalStateException("Expected to only call this on server"));
 			}
 
 			boolean bl = signBlockEntity.isPlayerFacingFront(player);
 			boolean bl2 = signBlockEntity.runCommandClickEvent(player, world, pos, bl);
 			if (signBlockEntity.isWaxed()) {
 				world.playSound(null, signBlockEntity.getPos(), signBlockEntity.getInteractionFailSound(), SoundCategory.BLOCKS);
-				return ActionResult.SUCCESS;
+				return ActionResult.SUCCESS_SERVER;
 			} else if (bl2) {
-				return ActionResult.SUCCESS;
+				return ActionResult.SUCCESS_SERVER;
 			} else if (!this.isOtherPlayerEditing(player, signBlockEntity) && player.canModifyBlocks() && this.isTextLiteralOrEmpty(player, signBlockEntity, bl)) {
 				this.openEditScreen(player, signBlockEntity, bl);
-				return ActionResult.SUCCESS;
+				return ActionResult.SUCCESS_SERVER;
 			} else {
 				return ActionResult.PASS;
 			}

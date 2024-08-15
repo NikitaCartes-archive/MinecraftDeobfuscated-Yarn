@@ -44,7 +44,6 @@ public class LightningEntity extends Entity {
 
 	public LightningEntity(EntityType<? extends LightningEntity> entityType, World world) {
 		super(entityType, world);
-		this.ignoreCameraFrustum = true;
 		this.ambientTick = 2;
 		this.seed = this.random.nextLong();
 		this.remainingActions = this.random.nextInt(3) + 1;

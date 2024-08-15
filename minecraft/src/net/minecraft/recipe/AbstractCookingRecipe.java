@@ -1,10 +1,10 @@
 package net.minecraft.recipe;
 
+import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.recipe.input.SingleStackRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public abstract class AbstractCookingRecipe implements Recipe<SingleStackRecipeInput> {
@@ -15,6 +15,8 @@ public abstract class AbstractCookingRecipe implements Recipe<SingleStackRecipeI
 	protected final ItemStack result;
 	protected final float experience;
 	protected final int cookingTime;
+	@Nullable
+	private IngredientPlacement ingredientPlacement;
 
 	public AbstractCookingRecipe(
 		RecipeType<?> type, String group, CookingRecipeCategory category, Ingredient ingredient, ItemStack result, float experience, int cookingTime
@@ -42,10 +44,12 @@ public abstract class AbstractCookingRecipe implements Recipe<SingleStackRecipeI
 	}
 
 	@Override
-	public DefaultedList<Ingredient> getIngredients() {
-		DefaultedList<Ingredient> defaultedList = DefaultedList.of();
-		defaultedList.add(this.ingredient);
-		return defaultedList;
+	public IngredientPlacement getIngredientPlacement() {
+		if (this.ingredientPlacement == null) {
+			this.ingredientPlacement = IngredientPlacement.forSingleSlot(this.ingredient);
+		}
+
+		return this.ingredientPlacement;
 	}
 
 	public float getExperience() {

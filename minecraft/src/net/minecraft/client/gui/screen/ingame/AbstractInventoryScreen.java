@@ -7,6 +7,7 @@ import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.entity.effect.StatusEffect;
@@ -85,9 +86,9 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 
 		for (StatusEffectInstance statusEffectInstance : statusEffects) {
 			if (wide) {
-				context.drawGuiTexture(EFFECT_BACKGROUND_LARGE_TEXTURE, x, i, 120, 32);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, EFFECT_BACKGROUND_LARGE_TEXTURE, x, i, 120, 32);
 			} else {
-				context.drawGuiTexture(EFFECT_BACKGROUND_SMALL_TEXTURE, x, i, 32, 32);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, EFFECT_BACKGROUND_SMALL_TEXTURE, x, i, 32, 32);
 			}
 
 			i += height;
@@ -101,7 +102,7 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 		for (StatusEffectInstance statusEffectInstance : statusEffects) {
 			RegistryEntry<StatusEffect> registryEntry = statusEffectInstance.getEffectType();
 			Sprite sprite = statusEffectSpriteManager.getSprite(registryEntry);
-			context.drawSprite(x + (wide ? 6 : 7), i + 7, 0, 18, 18, sprite);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, sprite, x + (wide ? 6 : 7), i + 7, 18, 18);
 			i += height;
 		}
 	}

@@ -27,7 +27,6 @@ public interface PlacementModifierType<P extends PlacementModifier> {
 	PlacementModifierType<HeightRangePlacementModifier> HEIGHT_RANGE = register("height_range", HeightRangePlacementModifier.MODIFIER_CODEC);
 	PlacementModifierType<SquarePlacementModifier> IN_SQUARE = register("in_square", SquarePlacementModifier.MODIFIER_CODEC);
 	PlacementModifierType<RandomOffsetPlacementModifier> RANDOM_OFFSET = register("random_offset", RandomOffsetPlacementModifier.MODIFIER_CODEC);
-	PlacementModifierType<CarvingMaskPlacementModifier> CARVING_MASK = register("carving_mask", CarvingMaskPlacementModifier.MODIFIER_CODEC);
 	PlacementModifierType<FixedPlacementModifier> FIXED_PLACEMENT = register("fixed_placement", FixedPlacementModifier.CODEC);
 
 	MapCodec<P> codec();

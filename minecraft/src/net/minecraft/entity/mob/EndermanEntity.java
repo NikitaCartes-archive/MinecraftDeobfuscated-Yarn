@@ -109,17 +109,17 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 	public static DefaultAttributeContainer.Builder createEndermanAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 7.0)
-			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 64.0)
-			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
+			.add(EntityAttributes.MAX_HEALTH, 40.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.ATTACK_DAMAGE, 7.0)
+			.add(EntityAttributes.FOLLOW_RANGE, 64.0)
+			.add(EntityAttributes.STEP_HEIGHT, 1.0);
 	}
 
 	@Override
 	public void setTarget(@Nullable LivingEntity target) {
 		super.setTarget(target);
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 		if (target == null) {
 			this.ageWhenTargetSet = 0;
 			this.dataTracker.set(ANGRY, false);
@@ -550,7 +550,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 		@Override
 		public boolean canStart() {
-			this.targetPlayer = this.enderman.getWorld().getClosestPlayer(this.staringPlayerPredicate, this.enderman);
+			this.targetPlayer = this.enderman.getWorld().getClosestPlayer(this.staringPlayerPredicate.setBaseMaxDistance(this.getFollowRange()), this.enderman);
 			return this.targetPlayer != null;
 		}
 

@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.passive.TadpoleEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -103,7 +104,7 @@ public class FrogspawnBlock extends Block {
 		int i = random.nextBetweenExclusive(2, 6);
 
 		for (int j = 1; j <= i; j++) {
-			TadpoleEntity tadpoleEntity = EntityType.TADPOLE.create(world);
+			TadpoleEntity tadpoleEntity = EntityType.TADPOLE.create(world, SpawnReason.BREEDING);
 			if (tadpoleEntity != null) {
 				double d = (double)pos.getX() + this.getSpawnOffset(random);
 				double e = (double)pos.getZ() + this.getSpawnOffset(random);

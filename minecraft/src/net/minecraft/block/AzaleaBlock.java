@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -48,5 +49,10 @@ public class AzaleaBlock extends PlantBlock implements Fertilizable {
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		SaplingGenerator.AZALEA.generate(world, world.getChunkManager().getChunkGenerator(), pos, state, random);
+	}
+
+	@Override
+	protected boolean canPathfindThrough(BlockState state, NavigationType type) {
+		return false;
 	}
 }

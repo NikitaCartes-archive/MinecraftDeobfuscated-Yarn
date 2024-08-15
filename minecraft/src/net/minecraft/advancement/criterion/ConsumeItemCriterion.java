@@ -4,11 +4,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class ConsumeItemCriterion extends AbstractCriterion<ConsumeItemCriterion.Conditions> {
@@ -34,8 +36,8 @@ public class ConsumeItemCriterion extends AbstractCriterion<ConsumeItemCriterion
 			return Criteria.CONSUME_ITEM.create(new ConsumeItemCriterion.Conditions(Optional.empty(), Optional.empty()));
 		}
 
-		public static AdvancementCriterion<ConsumeItemCriterion.Conditions> item(ItemConvertible item) {
-			return predicate(ItemPredicate.Builder.create().items(item.asItem()));
+		public static AdvancementCriterion<ConsumeItemCriterion.Conditions> item(RegistryEntryLookup<Item> itemRegistry, ItemConvertible item) {
+			return predicate(ItemPredicate.Builder.create().items(itemRegistry, item.asItem()));
 		}
 
 		public static AdvancementCriterion<ConsumeItemCriterion.Conditions> predicate(ItemPredicate.Builder predicate) {

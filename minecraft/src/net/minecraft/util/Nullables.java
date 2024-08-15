@@ -2,6 +2,7 @@ package net.minecraft.util;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -10,6 +11,11 @@ import javax.annotation.Nullable;
  * Contains utility methods that accept or return nullable values.
  */
 public class Nullables {
+	@Deprecated
+	public static <T> T requireNonNullElse(@Nullable T first, T second) {
+		return (T)Objects.requireNonNullElse(first, second);
+	}
+
 	/**
 	 * {@return the {@code value} with {@code mapper} applied if the value is not {@code null},
 	 * otherwise {@code null}}

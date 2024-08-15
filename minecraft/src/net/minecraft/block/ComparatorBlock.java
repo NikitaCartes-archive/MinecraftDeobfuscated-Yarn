@@ -130,7 +130,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			world.playSound(player, pos, SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.BLOCKS, 0.3F, f);
 			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
 			this.update(world, pos, state);
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		}
 	}
 

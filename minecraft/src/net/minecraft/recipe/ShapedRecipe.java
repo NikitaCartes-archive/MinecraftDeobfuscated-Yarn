@@ -1,15 +1,18 @@
 package net.minecraft.recipe;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public class ShapedRecipe implements CraftingRecipe {
@@ -18,6 +21,8 @@ public class ShapedRecipe implements CraftingRecipe {
 	final String group;
 	final CraftingRecipeCategory category;
 	final boolean showNotification;
+	@Nullable
+	private IngredientPlacement ingredientPlacement;
 
 	public ShapedRecipe(String group, CraftingRecipeCategory category, RawShapedRecipe raw, ItemStack result, boolean showNotification) {
 		this.group = group;
@@ -51,9 +56,18 @@ public class ShapedRecipe implements CraftingRecipe {
 		return this.result;
 	}
 
-	@Override
-	public DefaultedList<Ingredient> getIngredients() {
+	@VisibleForTesting
+	public List<Optional<Ingredient>> getIngredients() {
 		return this.raw.getIngredients();
+	}
+
+	@Override
+	public IngredientPlacement getIngredientPlacement() {
+		if (this.ingredientPlacement == null) {
+			this.ingredientPlacement = IngredientPlacement.forMultipleSlots(this.raw.getIngredients());
+		}
+
+		return this.ingredientPlacement;
 	}
 
 	@Override
@@ -80,13 +94,6 @@ public class ShapedRecipe implements CraftingRecipe {
 
 	public int getHeight() {
 		return this.raw.getHeight();
-	}
-
-	@Override
-	public boolean isEmpty() {
-		DefaultedList<Ingredient> defaultedList = this.getIngredients();
-		return defaultedList.isEmpty()
-			|| defaultedList.stream().filter(ingredient -> !ingredient.isEmpty()).anyMatch(ingredient -> ingredient.getMatchingStacks().length == 0);
 	}
 
 	public static class Serializer implements RecipeSerializer<ShapedRecipe> {

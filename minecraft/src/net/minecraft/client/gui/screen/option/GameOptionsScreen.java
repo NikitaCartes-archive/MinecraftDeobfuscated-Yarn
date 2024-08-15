@@ -32,8 +32,8 @@ public abstract class GameOptionsScreen extends Screen {
 		this.initHeader();
 		this.initBody();
 		this.initFooter();
-		this.layout.forEachChild(element -> {
-			ClickableWidget var10000 = this.addDrawableChild(element);
+		this.layout.forEachChild(child -> {
+			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
 		this.initTabNavigation();
 	}

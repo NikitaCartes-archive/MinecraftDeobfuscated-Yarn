@@ -399,7 +399,6 @@ public class OverworldBiomeCreator {
 		builder.spawn(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.SALMON, 15, 1, 5));
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = createOceanGenerationSettings(featureLookup, carverLookup);
 		lookupBackedBuilder.feature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? OceanPlacedFeatures.SEAGRASS_DEEP_COLD : OceanPlacedFeatures.SEAGRASS_COLD);
-		DefaultBiomeFeatures.addSeagrassOnStone(lookupBackedBuilder);
 		DefaultBiomeFeatures.addKelp(lookupBackedBuilder);
 		return createOcean(builder, 4020182, 329011, lookupBackedBuilder);
 	}
@@ -410,7 +409,6 @@ public class OverworldBiomeCreator {
 		builder.spawn(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.DOLPHIN, 1, 1, 2));
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = createOceanGenerationSettings(featureLookup, carverLookup);
 		lookupBackedBuilder.feature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? OceanPlacedFeatures.SEAGRASS_DEEP : OceanPlacedFeatures.SEAGRASS_NORMAL);
-		DefaultBiomeFeatures.addSeagrassOnStone(lookupBackedBuilder);
 		DefaultBiomeFeatures.addKelp(lookupBackedBuilder);
 		return createOcean(builder, 4159204, 329011, lookupBackedBuilder);
 	}
@@ -428,10 +426,6 @@ public class OverworldBiomeCreator {
 			.spawn(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.DOLPHIN, 2, 1, 2));
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = createOceanGenerationSettings(featureLookup, carverLookup);
 		lookupBackedBuilder.feature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? OceanPlacedFeatures.SEAGRASS_DEEP_WARM : OceanPlacedFeatures.SEAGRASS_WARM);
-		if (deep) {
-			DefaultBiomeFeatures.addSeagrassOnStone(lookupBackedBuilder);
-		}
-
 		DefaultBiomeFeatures.addLessKelp(lookupBackedBuilder);
 		return createOcean(builder, 4566514, 267827, lookupBackedBuilder);
 	}
@@ -861,9 +855,9 @@ public class OverworldBiomeCreator {
 	public static Biome createDeepDark(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup);
-		lookupBackedBuilder.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.CAVE);
-		lookupBackedBuilder.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.CAVE_EXTRA_UNDERGROUND);
-		lookupBackedBuilder.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.CANYON);
+		lookupBackedBuilder.carver(ConfiguredCarvers.CAVE);
+		lookupBackedBuilder.carver(ConfiguredCarvers.CAVE_EXTRA_UNDERGROUND);
+		lookupBackedBuilder.carver(ConfiguredCarvers.CANYON);
 		DefaultBiomeFeatures.addAmethystGeodes(lookupBackedBuilder);
 		DefaultBiomeFeatures.addDungeons(lookupBackedBuilder);
 		DefaultBiomeFeatures.addMineables(lookupBackedBuilder);

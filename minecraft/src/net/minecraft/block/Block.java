@@ -144,9 +144,9 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	private String translationKey;
 	@Nullable
 	private Item cachedItem;
-	private static final int field_31026 = 2048;
-	private static final ThreadLocal<Object2ByteLinkedOpenHashMap<Block.NeighborGroup>> FACE_CULL_MAP = ThreadLocal.withInitial(() -> {
-		Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<Block.NeighborGroup>(2048, 0.25F) {
+	private static final int FACE_CULL_MAP_SIZE = 256;
+	private static final ThreadLocal<Object2ByteLinkedOpenHashMap<Block.VoxelShapePair>> FACE_CULL_MAP = ThreadLocal.withInitial(() -> {
+		Object2ByteLinkedOpenHashMap<Block.VoxelShapePair> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<Block.VoxelShapePair>(256, 0.25F) {
 			@Override
 			protected void rehash(int newN) {
 			}
@@ -285,33 +285,34 @@ public class Block extends AbstractBlock implements ItemConvertible {
 			|| state.isIn(BlockTags.SHULKER_BOXES);
 	}
 
-	public static boolean shouldDrawSide(BlockState state, BlockView world, BlockPos pos, Direction side, BlockPos otherPos) {
-		BlockState blockState = world.getBlockState(otherPos);
-		if (state.isSideInvisible(blockState, side)) {
+	public static boolean shouldDrawSide(BlockState state, BlockState otherState, Direction side) {
+		VoxelShape voxelShape = otherState.getCullingFace(side.getOpposite());
+		if (voxelShape == VoxelShapes.fullCube()) {
 			return false;
-		} else if (blockState.isOpaque()) {
-			Block.NeighborGroup neighborGroup = new Block.NeighborGroup(state, blockState, side);
-			Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap = (Object2ByteLinkedOpenHashMap<Block.NeighborGroup>)FACE_CULL_MAP.get();
-			byte b = object2ByteLinkedOpenHashMap.getAndMoveToFirst(neighborGroup);
-			if (b != 127) {
-				return b != 0;
+		} else if (state.isSideInvisible(otherState, side)) {
+			return false;
+		} else if (voxelShape == VoxelShapes.empty()) {
+			return true;
+		} else {
+			VoxelShape voxelShape2 = state.getCullingFace(side);
+			if (voxelShape2 == VoxelShapes.empty()) {
+				return true;
 			} else {
-				VoxelShape voxelShape = state.getCullingFace(world, pos, side);
-				if (voxelShape.isEmpty()) {
-					return true;
+				Block.VoxelShapePair voxelShapePair = new Block.VoxelShapePair(voxelShape2, voxelShape);
+				Object2ByteLinkedOpenHashMap<Block.VoxelShapePair> object2ByteLinkedOpenHashMap = (Object2ByteLinkedOpenHashMap<Block.VoxelShapePair>)FACE_CULL_MAP.get();
+				byte b = object2ByteLinkedOpenHashMap.getAndMoveToFirst(voxelShapePair);
+				if (b != 127) {
+					return b != 0;
 				} else {
-					VoxelShape voxelShape2 = blockState.getCullingFace(world, otherPos, side.getOpposite());
-					boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
-					if (object2ByteLinkedOpenHashMap.size() == 2048) {
+					boolean bl = VoxelShapes.matchesAnywhere(voxelShape2, voxelShape, BooleanBiFunction.ONLY_FIRST);
+					if (object2ByteLinkedOpenHashMap.size() == 256) {
 						object2ByteLinkedOpenHashMap.removeLastByte();
 					}
 
-					object2ByteLinkedOpenHashMap.putAndMoveToFirst(neighborGroup, (byte)(bl ? 1 : 0));
+					object2ByteLinkedOpenHashMap.putAndMoveToFirst(voxelShapePair, (byte)(bl ? 1 : 0));
 					return bl;
 				}
 			}
-		} else {
-			return true;
 		}
 	}
 
@@ -457,7 +458,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	 * when overriding this method. The logical side can be checked using {@link
 	 * World#isClient}.
 	 */
-	public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
+	public void onDestroyedByExplosion(ServerWorld world, BlockPos pos, Explosion explosion) {
 	}
 
 	/**
@@ -779,6 +780,20 @@ public class Block extends AbstractBlock implements ItemConvertible {
 			int i = this.self.hashCode();
 			i = 31 * i + this.other.hashCode();
 			return 31 * i + this.facing.hashCode();
+		}
+	}
+
+	static record VoxelShapePair(VoxelShape first, VoxelShape second) {
+		public boolean equals(Object o) {
+			if (o instanceof Block.VoxelShapePair voxelShapePair && this.first == voxelShapePair.first && this.second == voxelShapePair.second) {
+				return true;
+			}
+
+			return false;
+		}
+
+		public int hashCode() {
+			return System.identityHashCode(this.first) * 31 + System.identityHashCode(this.second);
 		}
 	}
 }

@@ -48,8 +48,8 @@ public class PortalForcer {
 			)
 			.map(PointOfInterest::getPos)
 			.filter(worldBorder::contains)
-			.filter(blockPos -> this.world.getBlockState(blockPos).contains(Properties.HORIZONTAL_AXIS))
-			.min(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(pos)).thenComparingInt(Vec3i::getY));
+			.filter(portalPos -> this.world.getBlockState(portalPos).contains(Properties.HORIZONTAL_AXIS))
+			.min(Comparator.comparingDouble(portalPos -> portalPos.getSquaredDistance(pos)).thenComparingInt(Vec3i::getY));
 	}
 
 	public Optional<BlockLocating.Rectangle> createPortal(BlockPos pos, Direction.Axis axis) {
@@ -113,7 +113,7 @@ public class PortalForcer {
 			}
 
 			blockPos = new BlockPos(pos.getX() - direction.getOffsetX() * 1, MathHelper.clamp(pos.getY(), o, p), pos.getZ() - direction.getOffsetZ() * 1).toImmutable();
-			blockPos = worldBorder.clamp(blockPos);
+			blockPos = worldBorder.clampFloored(blockPos);
 			Direction direction2 = direction.rotateYClockwise();
 
 			for (int lx = -1; lx < 2; lx++) {

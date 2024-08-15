@@ -9,28 +9,15 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringHelper;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class WrittenBookItem extends Item {
 	public WrittenBookItem(Item.Settings settings) {
 		super(settings);
-	}
-
-	@Override
-	public Text getName(ItemStack stack) {
-		WrittenBookContentComponent writtenBookContentComponent = stack.get(DataComponentTypes.WRITTEN_BOOK_CONTENT);
-		if (writtenBookContentComponent != null) {
-			String string = writtenBookContentComponent.title().raw();
-			if (!StringHelper.isBlank(string)) {
-				return Text.literal(string);
-			}
-		}
-
-		return super.getName(stack);
 	}
 
 	@Override
@@ -46,11 +33,11 @@ public class WrittenBookItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		user.useBook(itemStack, hand);
 		user.incrementStat(Stats.USED.getOrCreateStat(this));
-		return TypedActionResult.success(itemStack, world.isClient());
+		return ActionResult.SUCCESS;
 	}
 
 	public static boolean resolve(ItemStack book, ServerCommandSource commandSource, @Nullable PlayerEntity player) {

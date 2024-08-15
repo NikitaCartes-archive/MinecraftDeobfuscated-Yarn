@@ -23,7 +23,6 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -71,15 +70,15 @@ public class RespawnAnchorBlock extends Block {
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (isChargeItem(stack) && canCharge(state)) {
 			charge(player, world, pos, state);
 			stack.decrementUnlessCreative(1, player);
-			return ItemActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		} else {
-			return hand == Hand.MAIN_HAND && isChargeItem(player.getStackInHand(Hand.OFF_HAND)) && canCharge(state)
-				? ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION
-				: ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return (ActionResult)(hand == Hand.MAIN_HAND && isChargeItem(player.getStackInHand(Hand.OFF_HAND)) && canCharge(state)
+				? ActionResult.PASS
+				: ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION);
 		}
 	}
 
@@ -92,7 +91,7 @@ public class RespawnAnchorBlock extends Block {
 				this.explode(state, world, pos);
 			}
 
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			if (!world.isClient) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)player;
@@ -108,7 +107,7 @@ public class RespawnAnchorBlock extends Block {
 						1.0F,
 						1.0F
 					);
-					return ActionResult.SUCCESS;
+					return ActionResult.SUCCESS_SERVER;
 				}
 			}
 

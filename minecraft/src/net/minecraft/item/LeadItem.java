@@ -27,13 +27,11 @@ public class LeadItem extends Item {
 		if (blockState.isIn(BlockTags.FENCES)) {
 			PlayerEntity playerEntity = context.getPlayer();
 			if (!world.isClient && playerEntity != null) {
-				attachHeldMobsToBlock(playerEntity, world, blockPos);
+				return attachHeldMobsToBlock(playerEntity, world, blockPos);
 			}
-
-			return ActionResult.success(world.isClient);
-		} else {
-			return ActionResult.PASS;
 		}
+
+		return ActionResult.PASS;
 	}
 
 	public static ActionResult attachHeldMobsToBlock(PlayerEntity player, World world, BlockPos pos) {
@@ -51,7 +49,7 @@ public class LeadItem extends Item {
 
 		if (!list.isEmpty()) {
 			world.emitGameEvent(GameEvent.BLOCK_ATTACH, pos, GameEvent.Emitter.of(player));
-			return ActionResult.SUCCESS;
+			return ActionResult.SUCCESS_SERVER;
 		} else {
 			return ActionResult.PASS;
 		}

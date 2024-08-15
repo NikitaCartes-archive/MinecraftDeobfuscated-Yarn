@@ -80,18 +80,18 @@ public abstract class DisplayEntity extends Entity {
 	private int interpolationDuration;
 	private float lerpProgress;
 	private Box visibilityBoundingBox;
+	private boolean tooSmallToRender = true;
 	protected boolean renderingDataSet;
 	private boolean startInterpolationSet;
 	private boolean interpolationDurationSet;
 	@Nullable
-	private DisplayEntity.RenderState renderState;
+	private DisplayEntity.RenderState renderProperties;
 	@Nullable
 	private DisplayEntity.InterpolationTarget interpolationTarget;
 
 	public DisplayEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
 		this.noClip = true;
-		this.ignoreCameraFrustum = true;
 		this.visibilityBoundingBox = this.getBoundingBox();
 	}
 
@@ -145,10 +145,10 @@ public abstract class DisplayEntity extends Entity {
 			if (this.renderingDataSet) {
 				this.renderingDataSet = false;
 				boolean bl = this.interpolationDuration != 0;
-				if (bl && this.renderState != null) {
-					this.renderState = this.getLerpedRenderState(this.renderState, this.lerpProgress);
+				if (bl && this.renderProperties != null) {
+					this.renderProperties = this.getLerpedRenderState(this.renderProperties, this.lerpProgress);
 				} else {
-					this.renderState = this.copyRenderState();
+					this.renderProperties = this.copyRenderState();
 				}
 
 				this.refreshData(bl, this.lerpProgress);
@@ -314,9 +314,12 @@ public abstract class DisplayEntity extends Entity {
 		return this.interpolationTarget != null ? (float)this.interpolationTarget.yaw : this.getYaw();
 	}
 
-	@Override
 	public Box getVisibilityBoundingBox() {
 		return this.visibilityBoundingBox;
+	}
+
+	public boolean shouldRender() {
+		return !this.tooSmallToRender;
 	}
 
 	@Override
@@ -331,7 +334,7 @@ public abstract class DisplayEntity extends Entity {
 
 	@Nullable
 	public DisplayEntity.RenderState getRenderState() {
-		return this.renderState;
+		return this.renderProperties;
 	}
 
 	private void setInterpolationDuration(int interpolationDuration) {
@@ -450,16 +453,12 @@ public abstract class DisplayEntity extends Entity {
 	private void updateVisibilityBoundingBox() {
 		float f = this.getDisplayWidth();
 		float g = this.getDisplayHeight();
-		if (f != 0.0F && g != 0.0F) {
-			this.ignoreCameraFrustum = false;
-			float h = f / 2.0F;
-			double d = this.getX();
-			double e = this.getY();
-			double i = this.getZ();
-			this.visibilityBoundingBox = new Box(d - (double)h, e, i - (double)h, d + (double)h, e + (double)g, i + (double)h);
-		} else {
-			this.ignoreCameraFrustum = true;
-		}
+		this.tooSmallToRender = f == 0.0F || g == 0.0F;
+		float h = f / 2.0F;
+		double d = this.getX();
+		double e = this.getY();
+		double i = this.getZ();
+		this.visibilityBoundingBox = new Box(d - (double)h, e, i - (double)h, d + (double)h, e + (double)g, i + (double)h);
 	}
 
 	@Override
@@ -517,7 +516,7 @@ public abstract class DisplayEntity extends Entity {
 	static record ArgbLerper(int previous, int current) implements DisplayEntity.IntLerper {
 		@Override
 		public int lerp(float delta) {
-			return ColorHelper.Argb.lerp(delta, this.previous, this.current);
+			return ColorHelper.lerp(delta, this.previous, this.current);
 		}
 	}
 

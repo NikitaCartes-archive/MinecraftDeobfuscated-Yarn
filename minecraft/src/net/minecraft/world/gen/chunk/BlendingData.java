@@ -4,14 +4,13 @@ import com.google.common.primitives.Doubles;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.DoubleStream;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -46,7 +45,7 @@ public class BlendingData {
 	private static final int CHUNK_BIOME_END_INDEX = BIOMES_PER_CHUNK;
 	private static final int NORTH_WEST_END_INDEX = 2 * LAST_CHUNK_BIOME_INDEX + 1;
 	private static final int SOUTH_EAST_END_INDEX_PART = 2 * CHUNK_BIOME_END_INDEX + 1;
-	private static final int HORIZONTAL_BIOME_COUNT = NORTH_WEST_END_INDEX + SOUTH_EAST_END_INDEX_PART;
+	static final int HORIZONTAL_BIOME_COUNT = NORTH_WEST_END_INDEX + SOUTH_EAST_END_INDEX_PART;
 	private final HeightLimitView oldHeightLimit;
 	private static final List<Block> SURFACE_BLOCKS = List.of(
 		Blocks.PODZOL,
@@ -66,30 +65,9 @@ public class BlendingData {
 	private final double[] surfaceHeights;
 	private final List<List<RegistryEntry<Biome>>> biomes;
 	private final transient double[][] collidableBlockDensities;
-	private static final Codec<double[]> DOUBLE_ARRAY_CODEC = Codec.DOUBLE.listOf().xmap(Doubles::toArray, Doubles::asList);
-	public static final Codec<BlendingData> CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(
-						Codec.INT.fieldOf("min_section").forGetter(blendingData -> blendingData.oldHeightLimit.getBottomSectionCoord()),
-						Codec.INT.fieldOf("max_section").forGetter(blendingData -> blendingData.oldHeightLimit.getTopSectionCoord()),
-						DOUBLE_ARRAY_CODEC.lenientOptionalFieldOf("heights")
-							.forGetter(
-								blendingData -> DoubleStream.of(blendingData.surfaceHeights).anyMatch(height -> height != Double.MAX_VALUE)
-										? Optional.of(blendingData.surfaceHeights)
-										: Optional.empty()
-							)
-					)
-					.apply(instance, BlendingData::new)
-		)
-		.comapFlatMap(BlendingData::validate, Function.identity());
-
-	private static DataResult<BlendingData> validate(BlendingData data) {
-		return data.surfaceHeights.length != HORIZONTAL_BIOME_COUNT
-			? DataResult.error(() -> "heights has to be of length " + HORIZONTAL_BIOME_COUNT)
-			: DataResult.success(data);
-	}
 
 	private BlendingData(int oldBottomSectionY, int oldTopSectionY, Optional<double[]> heights) {
-		this.surfaceHeights = (double[])heights.orElse(Util.make(new double[HORIZONTAL_BIOME_COUNT], heights2 -> Arrays.fill(heights2, Double.MAX_VALUE)));
+		this.surfaceHeights = (double[])heights.orElseGet(() -> Util.make(new double[HORIZONTAL_BIOME_COUNT], ds -> Arrays.fill(ds, Double.MAX_VALUE)));
 		this.collidableBlockDensities = new double[HORIZONTAL_BIOME_COUNT][];
 		ObjectArrayList<List<RegistryEntry<Biome>>> objectArrayList = new ObjectArrayList<>(HORIZONTAL_BIOME_COUNT);
 		objectArrayList.size(HORIZONTAL_BIOME_COUNT);
@@ -97,6 +75,28 @@ public class BlendingData {
 		int i = ChunkSectionPos.getBlockCoord(oldBottomSectionY);
 		int j = ChunkSectionPos.getBlockCoord(oldTopSectionY) - i;
 		this.oldHeightLimit = HeightLimitView.create(i, j);
+	}
+
+	@Nullable
+	public static BlendingData fromSerialized(@Nullable BlendingData.Serialized serialized) {
+		return serialized == null ? null : new BlendingData(serialized.minSection(), serialized.maxSection(), serialized.heights());
+	}
+
+	public BlendingData.Serialized toSerialized() {
+		boolean bl = false;
+
+		for (double d : this.surfaceHeights) {
+			if (d != Double.MAX_VALUE) {
+				bl = true;
+				break;
+			}
+		}
+
+		return new BlendingData.Serialized(
+			this.oldHeightLimit.getBottomSectionCoord(),
+			this.oldHeightLimit.getTopSectionCoord(),
+			bl ? Optional.of(DoubleArrays.copy(this.surfaceHeights)) : Optional.empty()
+		);
 	}
 
 	@Nullable
@@ -433,5 +433,24 @@ public class BlendingData {
 
 	protected interface HeightConsumer {
 		void consume(int biomeX, int biomeZ, double height);
+	}
+
+	public static record Serialized(int minSection, int maxSection, Optional<double[]> heights) {
+		private static final Codec<double[]> DOUBLE_ARRAY_CODEC = Codec.DOUBLE.listOf().xmap(Doubles::toArray, Doubles::asList);
+		public static final Codec<BlendingData.Serialized> CODEC = RecordCodecBuilder.<BlendingData.Serialized>create(
+				instance -> instance.group(
+							Codec.INT.fieldOf("min_section").forGetter(BlendingData.Serialized::minSection),
+							Codec.INT.fieldOf("max_section").forGetter(BlendingData.Serialized::maxSection),
+							DOUBLE_ARRAY_CODEC.lenientOptionalFieldOf("heights").forGetter(BlendingData.Serialized::heights)
+						)
+						.apply(instance, BlendingData.Serialized::new)
+			)
+			.validate(BlendingData.Serialized::validate);
+
+		private static DataResult<BlendingData.Serialized> validate(BlendingData.Serialized serialized) {
+			return serialized.heights.isPresent() && ((double[])serialized.heights.get()).length != BlendingData.HORIZONTAL_BIOME_COUNT
+				? DataResult.error(() -> "heights has to be of length " + BlendingData.HORIZONTAL_BIOME_COUNT)
+				: DataResult.success(serialized);
+		}
 	}
 }

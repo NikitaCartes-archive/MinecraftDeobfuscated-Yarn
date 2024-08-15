@@ -30,7 +30,7 @@ public class ArrayVoxelShape extends VoxelShape {
 			this.yPoints = yPoints;
 			this.zPoints = zPoints;
 		} else {
-			throw (IllegalArgumentException)Util.throwOrPause(
+			throw (IllegalArgumentException)Util.getFatalOrPause(
 				new IllegalArgumentException("Lengths of point arrays must be consistent with the size of the VoxelShape.")
 			);
 		}

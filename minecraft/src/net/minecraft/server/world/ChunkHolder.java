@@ -131,9 +131,12 @@ public class ChunkHolder extends AbstractChunkHolder {
 		}
 	}
 
-	public void markForBlockUpdate(BlockPos pos) {
+	public boolean markForBlockUpdate(BlockPos pos) {
 		WorldChunk worldChunk = this.getWorldChunk();
-		if (worldChunk != null) {
+		if (worldChunk == null) {
+			return false;
+		} else {
+			boolean bl = this.pendingBlockUpdates;
 			int i = this.world.getSectionIndex(pos.getY());
 			if (this.blockUpdatesBySection[i] == null) {
 				this.pendingBlockUpdates = true;
@@ -141,27 +144,36 @@ public class ChunkHolder extends AbstractChunkHolder {
 			}
 
 			this.blockUpdatesBySection[i].add(ChunkSectionPos.packLocal(pos));
+			return !bl;
 		}
 	}
 
 	/**
 	 * @param y chunk section y coordinate
 	 */
-	public void markForLightUpdate(LightType lightType, int y) {
+	public boolean markForLightUpdate(LightType lightType, int y) {
 		Chunk chunk = this.getOrNull(ChunkStatus.INITIALIZE_LIGHT);
-		if (chunk != null) {
+		if (chunk == null) {
+			return false;
+		} else {
 			chunk.setNeedsSaving(true);
 			WorldChunk worldChunk = this.getWorldChunk();
-			if (worldChunk != null) {
+			if (worldChunk == null) {
+				return false;
+			} else {
 				int i = this.lightingProvider.getBottomY();
 				int j = this.lightingProvider.getTopY();
 				if (y >= i && y <= j) {
+					BitSet bitSet = lightType == LightType.SKY ? this.skyLightUpdateBits : this.blockLightUpdateBits;
 					int k = y - i;
-					if (lightType == LightType.SKY) {
-						this.skyLightUpdateBits.set(k);
+					if (!bitSet.get(k)) {
+						bitSet.set(k);
+						return true;
 					} else {
-						this.blockLightUpdateBits.set(k);
+						return false;
 					}
+				} else {
+					return false;
 				}
 			}
 		}
@@ -304,7 +316,7 @@ public class ChunkHolder extends AbstractChunkHolder {
 		boolean bl6 = chunkLevelType2.isAfter(ChunkLevelType.ENTITY_TICKING);
 		if (!bl5 && bl6) {
 			if (this.entityTickingFuture != UNLOADED_WORLD_CHUNK_FUTURE) {
-				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException());
+				throw (IllegalStateException)Util.getFatalOrPause(new IllegalStateException());
 			}
 
 			this.entityTickingFuture = chunkLoadingManager.makeChunkEntitiesTickable(this);

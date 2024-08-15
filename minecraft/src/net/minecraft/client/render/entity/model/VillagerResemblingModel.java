@@ -8,8 +8,7 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.MerchantEntity;
+import net.minecraft.client.render.entity.state.VillagerEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -52,21 +51,19 @@ import net.minecraft.util.math.MathHelper;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class VillagerResemblingModel<T extends Entity> extends SinglePartEntityModel<T> implements ModelWithHead, ModelWithHat {
+public class VillagerResemblingModel extends EntityModel<VillagerEntityRenderState> implements ModelWithHead, ModelWithHat {
 	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart hat;
 	private final ModelPart hatRim;
 	private final ModelPart rightLeg;
 	private final ModelPart leftLeg;
-	protected final ModelPart nose;
 
 	public VillagerResemblingModel(ModelPart root) {
 		this.root = root;
 		this.head = root.getChild(EntityModelPartNames.HEAD);
 		this.hat = this.head.getChild(EntityModelPartNames.HAT);
 		this.hatRim = this.hat.getChild(EntityModelPartNames.HAT_RIM);
-		this.nose = this.head.getChild(EntityModelPartNames.NOSE);
 		this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
 		this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
 	}
@@ -122,24 +119,21 @@ public class VillagerResemblingModel<T extends Entity> extends SinglePartEntityM
 		return this.root;
 	}
 
-	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		boolean bl = false;
-		if (entity instanceof MerchantEntity) {
-			bl = ((MerchantEntity)entity).getHeadRollingTimeLeft() > 0;
-		}
-
-		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
-		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
-		if (bl) {
-			this.head.roll = 0.3F * MathHelper.sin(0.45F * animationProgress);
+	public void setAngles(VillagerEntityRenderState villagerEntityRenderState) {
+		this.head.yaw = villagerEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
+		this.head.pitch = villagerEntityRenderState.pitch * (float) (Math.PI / 180.0);
+		if (villagerEntityRenderState.headRolling) {
+			this.head.roll = 0.3F * MathHelper.sin(0.45F * villagerEntityRenderState.age);
 			this.head.pitch = 0.4F;
 		} else {
 			this.head.roll = 0.0F;
 		}
 
-		this.rightLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance * 0.5F;
-		this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance * 0.5F;
+		this.rightLeg.pitch = MathHelper.cos(villagerEntityRenderState.limbFrequency * 0.6662F) * 1.4F * villagerEntityRenderState.limbAmplitudeMultiplier * 0.5F;
+		this.leftLeg.pitch = MathHelper.cos(villagerEntityRenderState.limbFrequency * 0.6662F + (float) Math.PI)
+			* 1.4F
+			* villagerEntityRenderState.limbAmplitudeMultiplier
+			* 0.5F;
 		this.rightLeg.yaw = 0.0F;
 		this.leftLeg.yaw = 0.0F;
 	}

@@ -9,11 +9,11 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.client.render.entity.state.IronGolemEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class IronGolemEntityModel<T extends IronGolemEntity> extends SinglePartEntityModel<T> {
+public class IronGolemEntityModel extends EntityModel<IronGolemEntityRenderState> {
 	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart rightArm;
@@ -71,30 +71,30 @@ public class IronGolemEntityModel<T extends IronGolemEntity> extends SinglePartE
 		return this.root;
 	}
 
-	public void setAngles(T ironGolemEntity, float f, float g, float h, float i, float j) {
-		this.head.yaw = i * (float) (Math.PI / 180.0);
-		this.head.pitch = j * (float) (Math.PI / 180.0);
-		this.rightLeg.pitch = -1.5F * MathHelper.wrap(f, 13.0F) * g;
-		this.leftLeg.pitch = 1.5F * MathHelper.wrap(f, 13.0F) * g;
-		this.rightLeg.yaw = 0.0F;
-		this.leftLeg.yaw = 0.0F;
-	}
-
-	public void animateModel(T ironGolemEntity, float f, float g, float h) {
-		int i = ironGolemEntity.getAttackTicksLeft();
-		if (i > 0) {
-			this.rightArm.pitch = -2.0F + 1.5F * MathHelper.wrap((float)i - h, 10.0F);
-			this.leftArm.pitch = -2.0F + 1.5F * MathHelper.wrap((float)i - h, 10.0F);
+	public void setAngles(IronGolemEntityRenderState ironGolemEntityRenderState) {
+		float f = ironGolemEntityRenderState.attackTicksLeft;
+		float g = ironGolemEntityRenderState.limbAmplitudeMultiplier;
+		float h = ironGolemEntityRenderState.limbFrequency;
+		if (f > 0.0F) {
+			this.rightArm.pitch = -2.0F + 1.5F * MathHelper.wrap(f, 10.0F);
+			this.leftArm.pitch = -2.0F + 1.5F * MathHelper.wrap(f, 10.0F);
 		} else {
-			int j = ironGolemEntity.getLookingAtVillagerTicks();
-			if (j > 0) {
-				this.rightArm.pitch = -0.8F + 0.025F * MathHelper.wrap((float)j, 70.0F);
+			int i = ironGolemEntityRenderState.lookingAtVillagerTicks;
+			if (i > 0) {
+				this.rightArm.pitch = -0.8F + 0.025F * MathHelper.wrap((float)i, 70.0F);
 				this.leftArm.pitch = 0.0F;
 			} else {
-				this.rightArm.pitch = (-0.2F + 1.5F * MathHelper.wrap(f, 13.0F)) * g;
-				this.leftArm.pitch = (-0.2F - 1.5F * MathHelper.wrap(f, 13.0F)) * g;
+				this.rightArm.pitch = (-0.2F + 1.5F * MathHelper.wrap(h, 13.0F)) * g;
+				this.leftArm.pitch = (-0.2F - 1.5F * MathHelper.wrap(h, 13.0F)) * g;
 			}
 		}
+
+		this.head.yaw = ironGolemEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
+		this.head.pitch = ironGolemEntityRenderState.pitch * (float) (Math.PI / 180.0);
+		this.rightLeg.pitch = -1.5F * MathHelper.wrap(h, 13.0F) * g;
+		this.leftLeg.pitch = 1.5F * MathHelper.wrap(h, 13.0F) * g;
+		this.rightLeg.yaw = 0.0F;
+		this.leftLeg.yaw = 0.0F;
 	}
 
 	public ModelPart getRightArm() {

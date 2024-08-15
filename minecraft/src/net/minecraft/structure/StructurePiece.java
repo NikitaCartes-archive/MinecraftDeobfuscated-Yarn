@@ -411,7 +411,7 @@ public abstract class StructurePiece {
 				return state;
 			}
 
-			if (blockState.isOpaqueFullCube(world, blockPos)) {
+			if (blockState.isOpaqueFullCube()) {
 				if (direction != null) {
 					direction = null;
 					break;
@@ -426,17 +426,17 @@ public abstract class StructurePiece {
 		} else {
 			Direction direction3 = state.get(HorizontalFacingBlock.FACING);
 			BlockPos blockPos2 = pos.offset(direction3);
-			if (world.getBlockState(blockPos2).isOpaqueFullCube(world, blockPos2)) {
+			if (world.getBlockState(blockPos2).isOpaqueFullCube()) {
 				direction3 = direction3.getOpposite();
 				blockPos2 = pos.offset(direction3);
 			}
 
-			if (world.getBlockState(blockPos2).isOpaqueFullCube(world, blockPos2)) {
+			if (world.getBlockState(blockPos2).isOpaqueFullCube()) {
 				direction3 = direction3.rotateYClockwise();
 				blockPos2 = pos.offset(direction3);
 			}
 
-			if (world.getBlockState(blockPos2).isOpaqueFullCube(world, blockPos2)) {
+			if (world.getBlockState(blockPos2).isOpaqueFullCube()) {
 				direction3 = direction3.getOpposite();
 				blockPos2 = pos.offset(direction3);
 			}

@@ -9,11 +9,11 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class SilverfishEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+public class SilverfishEntityModel extends EntityModel<EntityRenderState> {
 	private static final int BODY_PARTS_COUNT = 7;
 	private final ModelPart root;
 	private final ModelPart[] body = new ModelPart[7];
@@ -86,10 +86,10 @@ public class SilverfishEntityModel<T extends Entity> extends SinglePartEntityMod
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+	public void setAngles(EntityRenderState state) {
 		for (int i = 0; i < this.body.length; i++) {
-			this.body[i].yaw = MathHelper.cos(animationProgress * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.05F * (float)(1 + Math.abs(i - 2));
-			this.body[i].pivotX = MathHelper.sin(animationProgress * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.2F * (float)Math.abs(i - 2);
+			this.body[i].yaw = MathHelper.cos(state.age * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.05F * (float)(1 + Math.abs(i - 2));
+			this.body[i].pivotX = MathHelper.sin(state.age * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.2F * (float)Math.abs(i - 2);
 		}
 
 		this.scales[0].yaw = this.body[2].yaw;

@@ -97,7 +97,7 @@ public class ServerInfo {
 			}
 		}
 
-		if (root.contains("acceptTextures", NbtElement.BYTE_TYPE)) {
+		if (root.contains("acceptTextures", NbtElement.NUMBER_TYPE)) {
 			if (root.getBoolean("acceptTextures")) {
 				serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.ENABLED);
 			} else {

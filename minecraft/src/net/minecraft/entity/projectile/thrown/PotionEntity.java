@@ -12,7 +12,6 @@ import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
@@ -34,7 +33,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
-public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
+public class PotionEntity extends ThrownItemEntity {
 	public static final double field_30667 = 4.0;
 	private static final double field_30668 = 16.0;
 	public static final Predicate<LivingEntity> AFFECTED_BY_WATER = entity -> entity.hurtByWater() || entity.isOnFire();
@@ -43,12 +42,12 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		super(entityType, world);
 	}
 
-	public PotionEntity(World world, LivingEntity owner) {
-		super(EntityType.POTION, owner, world);
+	public PotionEntity(World world, LivingEntity owner, ItemStack stack) {
+		super(EntityType.POTION, owner, world, stack);
 	}
 
-	public PotionEntity(World world, double x, double y, double z) {
-		super(EntityType.POTION, x, y, z, world);
+	public PotionEntity(World world, double x, double y, double z, ItemStack stack) {
+		super(EntityType.POTION, x, y, z, world, stack);
 	}
 
 	@Override

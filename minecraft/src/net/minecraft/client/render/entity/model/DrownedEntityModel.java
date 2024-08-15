@@ -9,15 +9,14 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.client.render.entity.state.ZombieEntityRenderState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Arm;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class DrownedEntityModel<T extends ZombieEntity> extends ZombieEntityModel<T> {
+public class DrownedEntityModel extends ZombieEntityModel<ZombieEntityRenderState> {
 	public DrownedEntityModel(ModelPart modelPart) {
 		super(modelPart);
 	}
@@ -38,42 +37,36 @@ public class DrownedEntityModel<T extends ZombieEntity> extends ZombieEntityMode
 		return TexturedModelData.of(modelData, 64, 64);
 	}
 
-	public void animateModel(T zombieEntity, float f, float g, float h) {
-		this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
-		this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
-		ItemStack itemStack = zombieEntity.getStackInHand(Hand.MAIN_HAND);
-		if (itemStack.isOf(Items.TRIDENT) && zombieEntity.isAttacking()) {
-			if (zombieEntity.getMainArm() == Arm.RIGHT) {
-				this.rightArmPose = BipedEntityModel.ArmPose.THROW_SPEAR;
-			} else {
-				this.leftArmPose = BipedEntityModel.ArmPose.THROW_SPEAR;
-			}
-		}
-
-		super.animateModel(zombieEntity, f, g, h);
+	protected BipedEntityModel.ArmPose getArmPose(ZombieEntityRenderState zombieEntityRenderState, Arm arm) {
+		ItemStack itemStack = arm == Arm.RIGHT ? zombieEntityRenderState.rightHandStack : zombieEntityRenderState.leftHandStack;
+		return itemStack.isOf(Items.TRIDENT) && zombieEntityRenderState.attacking && zombieEntityRenderState.mainArm == arm
+			? BipedEntityModel.ArmPose.THROW_SPEAR
+			: BipedEntityModel.ArmPose.EMPTY;
 	}
 
-	public void setAngles(T zombieEntity, float f, float g, float h, float i, float j) {
-		super.setAngles(zombieEntity, f, g, h, i, j);
-		if (this.leftArmPose == BipedEntityModel.ArmPose.THROW_SPEAR) {
+	@Override
+	public void setAngles(ZombieEntityRenderState zombieEntityRenderState) {
+		super.setAngles(zombieEntityRenderState);
+		if (this.getArmPose(zombieEntityRenderState, Arm.LEFT) == BipedEntityModel.ArmPose.THROW_SPEAR) {
 			this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) Math.PI;
 			this.leftArm.yaw = 0.0F;
 		}
 
-		if (this.rightArmPose == BipedEntityModel.ArmPose.THROW_SPEAR) {
+		if (this.getArmPose(zombieEntityRenderState, Arm.RIGHT) == BipedEntityModel.ArmPose.THROW_SPEAR) {
 			this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) Math.PI;
 			this.rightArm.yaw = 0.0F;
 		}
 
-		if (this.leaningPitch > 0.0F) {
-			this.rightArm.pitch = this.lerpAngle(this.leaningPitch, this.rightArm.pitch, (float) (-Math.PI * 4.0 / 5.0))
-				+ this.leaningPitch * 0.35F * MathHelper.sin(0.1F * h);
-			this.leftArm.pitch = this.lerpAngle(this.leaningPitch, this.leftArm.pitch, (float) (-Math.PI * 4.0 / 5.0))
-				- this.leaningPitch * 0.35F * MathHelper.sin(0.1F * h);
-			this.rightArm.roll = this.lerpAngle(this.leaningPitch, this.rightArm.roll, -0.15F);
-			this.leftArm.roll = this.lerpAngle(this.leaningPitch, this.leftArm.roll, 0.15F);
-			this.leftLeg.pitch = this.leftLeg.pitch - this.leaningPitch * 0.55F * MathHelper.sin(0.1F * h);
-			this.rightLeg.pitch = this.rightLeg.pitch + this.leaningPitch * 0.55F * MathHelper.sin(0.1F * h);
+		float f = zombieEntityRenderState.leaningPitch;
+		if (f > 0.0F) {
+			this.rightArm.pitch = MathHelper.lerpAngleRadians(f, this.rightArm.pitch, (float) (-Math.PI * 4.0 / 5.0))
+				+ f * 0.35F * MathHelper.sin(0.1F * zombieEntityRenderState.age);
+			this.leftArm.pitch = MathHelper.lerpAngleRadians(f, this.leftArm.pitch, (float) (-Math.PI * 4.0 / 5.0))
+				- f * 0.35F * MathHelper.sin(0.1F * zombieEntityRenderState.age);
+			this.rightArm.roll = MathHelper.lerpAngleRadians(f, this.rightArm.roll, -0.15F);
+			this.leftArm.roll = MathHelper.lerpAngleRadians(f, this.leftArm.roll, 0.15F);
+			this.leftLeg.pitch = this.leftLeg.pitch - f * 0.55F * MathHelper.sin(0.1F * zombieEntityRenderState.age);
+			this.rightLeg.pitch = this.rightLeg.pitch + f * 0.55F * MathHelper.sin(0.1F * zombieEntityRenderState.age);
 			this.head.pitch = 0.0F;
 		}
 	}

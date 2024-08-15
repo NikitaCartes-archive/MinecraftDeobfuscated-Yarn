@@ -31,26 +31,18 @@ public class PointOfInterestSet {
 	private final Runnable updateListener;
 	private boolean valid;
 
-	public static Codec<PointOfInterestSet> createCodec(Runnable updateListener) {
-		return RecordCodecBuilder.<PointOfInterestSet>create(
-				instance -> instance.group(
-							RecordCodecBuilder.point(updateListener),
-							Codec.BOOL.lenientOptionalFieldOf("Valid", Boolean.valueOf(false)).forGetter(poiSet -> poiSet.valid),
-							PointOfInterest.createCodec(updateListener).listOf().fieldOf("Records").forGetter(poiSet -> ImmutableList.copyOf(poiSet.pointsOfInterestByPos.values()))
-						)
-						.apply(instance, PointOfInterestSet::new)
-			)
-			.orElseGet(Util.addPrefix("Failed to read POI section: ", LOGGER::error), () -> new PointOfInterestSet(updateListener, false, ImmutableList.of()));
-	}
-
 	public PointOfInterestSet(Runnable updateListener) {
 		this(updateListener, true, ImmutableList.of());
 	}
 
-	private PointOfInterestSet(Runnable updateListener, boolean valid, List<PointOfInterest> pois) {
+	PointOfInterestSet(Runnable updateListener, boolean valid, List<PointOfInterest> pois) {
 		this.updateListener = updateListener;
 		this.valid = valid;
 		pois.forEach(this::add);
+	}
+
+	public PointOfInterestSet.Serialized toSerialized() {
+		return new PointOfInterestSet.Serialized(this.valid, this.pointsOfInterestByPos.values().stream().map(PointOfInterest::toSerialized).toList());
 	}
 
 	public Stream<PointOfInterest> get(Predicate<RegistryEntry<PointOfInterestType>> predicate, PointOfInterestStorage.OccupationStatus occupationStatus) {
@@ -79,7 +71,7 @@ public class PointOfInterestSet {
 				return false;
 			}
 
-			Util.error("POI data mismatch: already registered at " + blockPos);
+			Util.logErrorOrPause("POI data mismatch: already registered at " + blockPos);
 		}
 
 		this.pointsOfInterestByPos.put(s, poi);
@@ -107,7 +99,7 @@ public class PointOfInterestSet {
 	public boolean releaseTicket(BlockPos pos) {
 		PointOfInterest pointOfInterest = this.pointsOfInterestByPos.get(ChunkSectionPos.packLocal(pos));
 		if (pointOfInterest == null) {
-			throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("POI never registered at " + pos));
+			throw (IllegalStateException)Util.getFatalOrPause(new IllegalStateException("POI never registered at " + pos));
 		} else {
 			boolean bl = pointOfInterest.releaseTicket();
 			this.updateListener.run();
@@ -132,10 +124,10 @@ public class PointOfInterestSet {
 			Short2ObjectMap<PointOfInterest> short2ObjectMap = new Short2ObjectOpenHashMap<>(this.pointsOfInterestByPos);
 			this.clear();
 			updater.accept(
-				(BiConsumer)(pos, registryEntry) -> {
+				(BiConsumer)(pos, poiEntry) -> {
 					short s = ChunkSectionPos.packLocal(pos);
 					PointOfInterest pointOfInterest = short2ObjectMap.computeIfAbsent(
-						s, (Short2ObjectFunction<? extends PointOfInterest>)(sx -> new PointOfInterest(pos, registryEntry, this.updateListener))
+						s, (Short2ObjectFunction<? extends PointOfInterest>)(sx -> new PointOfInterest(pos, poiEntry, this.updateListener))
 					);
 					this.add(pointOfInterest);
 				}
@@ -152,5 +144,19 @@ public class PointOfInterestSet {
 
 	boolean isValid() {
 		return this.valid;
+	}
+
+	public static record Serialized(boolean isValid, List<PointOfInterest.Serialized> records) {
+		public static final Codec<PointOfInterestSet.Serialized> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codec.BOOL.lenientOptionalFieldOf("Valid", Boolean.valueOf(false)).forGetter(PointOfInterestSet.Serialized::isValid),
+						PointOfInterest.Serialized.CODEC.listOf().fieldOf("Records").forGetter(PointOfInterestSet.Serialized::records)
+					)
+					.apply(instance, PointOfInterestSet.Serialized::new)
+		);
+
+		public PointOfInterestSet toPointOfInterestSet(Runnable updateListener) {
+			return new PointOfInterestSet(updateListener, this.isValid, this.records.stream().map(serialized -> serialized.toPointOfInterest(updateListener)).toList());
+		}
 	}
 }

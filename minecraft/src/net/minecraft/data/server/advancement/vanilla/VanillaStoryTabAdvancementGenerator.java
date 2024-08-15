@@ -13,12 +13,14 @@ import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.server.advancement.AdvancementTabGenerator;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.TagPredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -31,6 +33,7 @@ import net.minecraft.world.gen.structure.StructureKeys;
 public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenerator {
 	@Override
 	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<AdvancementEntry> exporter) {
+		RegistryEntryLookup<Item> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.ITEM);
 		AdvancementEntry advancementEntry = Advancement.Builder.create()
 			.display(
 				Blocks.GRASS_BLOCK,
@@ -56,7 +59,7 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 				true,
 				false
 			)
-			.criterion("get_stone", InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(ItemTags.STONE_TOOL_MATERIALS)))
+			.criterion("get_stone", InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(registryEntryLookup, ItemTags.STONE_TOOL_MATERIALS)))
 			.build(exporter, "story/mine_stone");
 		AdvancementEntry advancementEntry3 = Advancement.Builder.create()
 			.parent(advancementEntry2)

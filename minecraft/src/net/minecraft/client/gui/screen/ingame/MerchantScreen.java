@@ -1,10 +1,10 @@
 package net.minecraft.client.gui.screen.ingame;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.SelectMerchantTradeC2SPacket;
@@ -105,7 +105,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
-		context.drawTexture(TEXTURE, i, j, 0, 0.0F, 0.0F, this.backgroundWidth, this.backgroundHeight, 512, 256);
+		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, i, j, 0.0F, 0.0F, this.backgroundWidth, this.backgroundHeight, 512, 256);
 		TradeOfferList tradeOfferList = this.handler.getRecipes();
 		if (!tradeOfferList.isEmpty()) {
 			int k = this.selectedIndex;
@@ -115,7 +115,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 
 			TradeOffer tradeOffer = (TradeOffer)tradeOfferList.get(k);
 			if (tradeOffer.isDisabled()) {
-				context.drawGuiTexture(OUT_OF_STOCK_TEXTURE, this.x + 83 + 99, this.y + 35, 0, 28, 21);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, OUT_OF_STOCK_TEXTURE, this.x + 83 + 99, this.y + 35, 28, 21);
 			}
 		}
 	}
@@ -124,17 +124,17 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 		int i = this.handler.getLevelProgress();
 		int j = this.handler.getExperience();
 		if (i < 5) {
-			context.drawGuiTexture(EXPERIENCE_BAR_BACKGROUND_TEXTURE, x + 136, y + 16, 0, 102, 5);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, EXPERIENCE_BAR_BACKGROUND_TEXTURE, x + 136, y + 16, 102, 5);
 			int k = VillagerData.getLowerLevelExperience(i);
 			if (j >= k && VillagerData.canLevelUp(i)) {
 				int l = 102;
 				float f = 102.0F / (float)(VillagerData.getUpperLevelExperience(i) - k);
 				int m = Math.min(MathHelper.floor(f * (float)(j - k)), 102);
-				context.drawGuiTexture(EXPERIENCE_BAR_CURRENT_TEXTURE, 102, 5, 0, 0, x + 136, y + 16, 0, m, 5);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, EXPERIENCE_BAR_CURRENT_TEXTURE, 102, 5, 0, 0, x + 136, y + 16, m, 5);
 				int n = this.handler.getMerchantRewardedExperience();
 				if (n > 0) {
 					int o = Math.min(MathHelper.floor((float)n * f), 102 - m);
-					context.drawGuiTexture(EXPERIENCE_BAR_RESULT_TEXTURE, 102, 5, m, 0, x + 136 + m, y + 16, 0, o, 5);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, EXPERIENCE_BAR_RESULT_TEXTURE, 102, 5, m, 0, x + 136 + m, y + 16, o, 5);
 				}
 			}
 		}
@@ -151,9 +151,9 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 				m = 113;
 			}
 
-			context.drawGuiTexture(SCROLLER_TEXTURE, x + 94, y + 18 + m, 0, 6, 27);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, SCROLLER_TEXTURE, x + 94, y + 18 + m, 6, 27);
 		} else {
-			context.drawGuiTexture(SCROLLER_DISABLED_TEXTURE, x + 94, y + 18, 0, 6, 27);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, SCROLLER_DISABLED_TEXTURE, x + 94, y + 18, 6, 27);
 		}
 	}
 
@@ -212,19 +212,16 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 
 				widgetButtonPage.visible = widgetButtonPage.index < this.handler.getRecipes().size();
 			}
-
-			RenderSystem.enableDepthTest();
 		}
 
 		this.drawMouseoverTooltip(context, mouseX, mouseY);
 	}
 
 	private void renderArrow(DrawContext context, TradeOffer tradeOffer, int x, int y) {
-		RenderSystem.enableBlend();
 		if (tradeOffer.isDisabled()) {
-			context.drawGuiTexture(TRADE_ARROW_OUT_OF_STOCK_TEXTURE, x + 5 + 35 + 20, y + 3, 0, 10, 9);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, TRADE_ARROW_OUT_OF_STOCK_TEXTURE, x + 5 + 35 + 20, y + 3, 10, 9);
 		} else {
-			context.drawGuiTexture(TRADE_ARROW_TEXTURE, x + 5 + 35 + 20, y + 3, 0, 10, 9);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, TRADE_ARROW_TEXTURE, x + 5 + 35 + 20, y + 3, 10, 9);
 		}
 	}
 
@@ -237,7 +234,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 			context.drawItemInSlot(this.textRenderer, adjustedFirstBuyItem, x + 14, y, adjustedFirstBuyItem.getCount() == 1 ? "1" : null);
 			context.getMatrices().push();
 			context.getMatrices().translate(0.0F, 0.0F, 300.0F);
-			context.drawGuiTexture(DISCOUNT_STRIKETHROUGH_TEXTURE, x + 7, y + 12, 0, 9, 2);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, DISCOUNT_STRIKETHROUGH_TEXTURE, x + 7, y + 12, 9, 2);
 			context.getMatrices().pop();
 		}
 	}

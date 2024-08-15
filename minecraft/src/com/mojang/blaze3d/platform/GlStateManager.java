@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.util.MacWindowUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.DeobfuscateClass;
 import org.joml.Matrix4f;
@@ -40,6 +41,8 @@ public class GlStateManager {
 	private static final GlStateManager.LogicOpState COLOR_LOGIC = new GlStateManager.LogicOpState();
 	private static final GlStateManager.StencilState STENCIL = new GlStateManager.StencilState();
 	private static final GlStateManager.ScissorTestState SCISSOR = new GlStateManager.ScissorTestState();
+	private static final GlStateManager.class_9877 READ_FRAMEBUFFER = new GlStateManager.class_9877();
+	private static final GlStateManager.class_9877 DRAW_FRAMEBUFFER = new GlStateManager.class_9877();
 	private static int activeTexture;
 	private static final GlStateManager.Texture2DState[] TEXTURES = (GlStateManager.Texture2DState[])IntStream.range(0, 12)
 		.mapToObj(i -> new GlStateManager.Texture2DState())
@@ -337,7 +340,16 @@ public class GlStateManager {
 
 	public static void _glBindFramebuffer(int target, int framebuffer) {
 		RenderSystem.assertOnRenderThreadOrInit();
-		GL30.glBindFramebuffer(target, framebuffer);
+
+		boolean bl = switch (target) {
+			case 36008 -> READ_FRAMEBUFFER.method_61557(framebuffer);
+			case 36009 -> DRAW_FRAMEBUFFER.method_61557(framebuffer);
+			case 36160 -> READ_FRAMEBUFFER.method_61557(framebuffer) | DRAW_FRAMEBUFFER.method_61557(framebuffer);
+			default -> true;
+		};
+		if (bl) {
+			GL30.glBindFramebuffer(target, framebuffer);
+		}
 	}
 
 	public static void _glBlitFrameBuffer(int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, int mask, int filter) {
@@ -657,10 +669,10 @@ public class GlStateManager {
 		GL11.glClearStencil(stencil);
 	}
 
-	public static void _clear(int mask, boolean getError) {
+	public static void _clear(int mask) {
 		RenderSystem.assertOnRenderThreadOrInit();
 		GL11.glClear(mask);
-		if (getError) {
+		if (MacWindowUtil.field_52734) {
 			_getError();
 		}
 	}
@@ -925,6 +937,20 @@ public class GlStateManager {
 
 		public static int getHeight() {
 			return INSTANCE.height;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class class_9877 {
+		public int field_52509;
+
+		public boolean method_61557(int i) {
+			if (i != this.field_52509) {
+				this.field_52509 = i;
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 }

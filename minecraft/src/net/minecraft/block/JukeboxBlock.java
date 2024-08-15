@@ -17,7 +17,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -51,20 +50,20 @@ public class JukeboxBlock extends BlockWithEntity {
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if ((Boolean)state.get(HAS_RECORD) && world.getBlockEntity(pos) instanceof JukeboxBlockEntity jukeboxBlockEntity) {
 			jukeboxBlockEntity.dropRecord();
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return ActionResult.PASS;
 		}
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if ((Boolean)state.get(HAS_RECORD)) {
-			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 		} else {
 			ItemStack itemStack = player.getStackInHand(hand);
-			ItemActionResult itemActionResult = JukeboxPlayableComponent.tryPlayStack(world, pos, itemStack, player);
-			return !itemActionResult.isAccepted() ? ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION : itemActionResult;
+			ActionResult actionResult = JukeboxPlayableComponent.tryPlayStack(world, pos, itemStack, player);
+			return (ActionResult)(!actionResult.isAccepted() ? ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION : actionResult);
 		}
 	}
 

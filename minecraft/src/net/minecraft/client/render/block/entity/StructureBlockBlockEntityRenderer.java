@@ -2,6 +2,7 @@ package net.minecraft.client.render.block.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9974;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
@@ -10,7 +11,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.test.StructureTestUtil;
 import net.minecraft.util.math.BlockPos;
@@ -87,7 +87,7 @@ public class StructureBlockBlockEntityRenderer implements BlockEntityRenderer<St
 					float s = 0.5F;
 					if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE || structureBlockBlockEntity.shouldShowBoundingBox()) {
 						VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLines());
-						WorldRenderer.drawBox(matrixStack, vertexConsumer, m, g, n, o, h, p, 0.9F, 0.9F, 0.9F, 1.0F, 0.5F, 0.5F, 0.5F);
+						class_9974.method_62293(matrixStack, vertexConsumer, m, g, n, o, h, p, 0.9F, 0.9F, 0.9F, 1.0F, 0.5F, 0.5F, 0.5F);
 					}
 
 					if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE && structureBlockBlockEntity.shouldShowAir()) {
@@ -120,13 +120,13 @@ public class StructureBlockBlockEntityRenderer implements BlockEntityRenderer<St
 				double i = (double)((float)(blockPos3.getY() - blockPos.getY()) + 0.55F + f);
 				double j = (double)((float)(blockPos3.getZ() - blockPos.getZ()) + 0.55F + f);
 				if (bl) {
-					WorldRenderer.drawBox(matrices, vertexConsumer, d, e, g, h, i, j, 0.5F, 0.5F, 1.0F, 1.0F, 0.5F, 0.5F, 1.0F);
+					class_9974.method_62293(matrices, vertexConsumer, d, e, g, h, i, j, 0.5F, 0.5F, 1.0F, 1.0F, 0.5F, 0.5F, 1.0F);
 				} else if (bl2) {
-					WorldRenderer.drawBox(matrices, vertexConsumer, d, e, g, h, i, j, 1.0F, 0.75F, 0.75F, 1.0F, 1.0F, 0.75F, 0.75F);
+					class_9974.method_62293(matrices, vertexConsumer, d, e, g, h, i, j, 1.0F, 0.75F, 0.75F, 1.0F, 1.0F, 0.75F, 0.75F);
 				} else if (bl3) {
-					WorldRenderer.drawBox(matrices, vertexConsumer, d, e, g, h, i, j, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F, 0.0F);
+					class_9974.method_62293(matrices, vertexConsumer, d, e, g, h, i, j, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F, 0.0F);
 				} else if (bl4) {
-					WorldRenderer.drawBox(matrices, vertexConsumer, d, e, g, h, i, j, 1.0F, 1.0F, 0.0F, 1.0F, 1.0F, 1.0F, 0.0F);
+					class_9974.method_62293(matrices, vertexConsumer, d, e, g, h, i, j, 1.0F, 1.0F, 0.0F, 1.0F, 1.0F, 1.0F, 0.0F);
 				}
 			}
 		}
@@ -154,7 +154,7 @@ public class StructureBlockBlockEntityRenderer implements BlockEntityRenderer<St
 				float j = (float)(x + blockPos2.getX() - blockPos.getX()) + 0.5F + 0.48F;
 				float k = (float)(y + blockPos2.getY() - blockPos.getY()) + 0.5F + 0.48F;
 				float l = (float)(z + blockPos2.getZ() - blockPos.getZ()) + 0.5F + 0.48F;
-				WorldRenderer.renderFilledBoxFace(matrices, vertexConsumer, direction, g, h, i, j, k, l, 0.75F, 0.75F, 1.0F, 0.2F);
+				class_9974.method_62297(matrices, vertexConsumer, direction, g, h, i, j, k, l, 0.75F, 0.75F, 1.0F, 0.2F);
 			});
 		}
 	}

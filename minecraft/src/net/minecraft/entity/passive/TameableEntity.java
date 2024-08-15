@@ -210,7 +210,7 @@ public abstract class TameableEntity extends AnimalEntity implements Tameable {
 	}
 
 	@Override
-	public boolean isTeammate(Entity other) {
+	protected boolean isInSameTeam(Entity other) {
 		if (this.isTamed()) {
 			LivingEntity livingEntity = this.getOwner();
 			if (other == livingEntity) {
@@ -218,11 +218,11 @@ public abstract class TameableEntity extends AnimalEntity implements Tameable {
 			}
 
 			if (livingEntity != null) {
-				return livingEntity.isTeammate(other);
+				return livingEntity.isInSameTeam(other);
 			}
 		}
 
-		return super.isTeammate(other);
+		return super.isInSameTeam(other);
 	}
 
 	@Override

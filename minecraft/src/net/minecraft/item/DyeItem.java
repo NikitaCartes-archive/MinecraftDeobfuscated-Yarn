@@ -32,7 +32,7 @@ public class DyeItem extends Item implements SignChangingItem {
 				stack.decrement(1);
 			}
 
-			return ActionResult.success(user.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		}
 
 		return ActionResult.PASS;

@@ -21,7 +21,7 @@ public class SaddleItem extends Item {
 				entity.getWorld().emitGameEvent(entity, GameEvent.EQUIP, entity.getPos());
 			}
 
-			return ActionResult.success(user.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		}
 
 		return ActionResult.PASS;

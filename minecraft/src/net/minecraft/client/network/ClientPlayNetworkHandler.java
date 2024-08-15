@@ -10,6 +10,7 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,6 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -42,19 +44,15 @@ import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.screen.ingame.HorseScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
-import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.input.KeyboardInput;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
 import net.minecraft.client.recipebook.ClientRecipeBook;
-import net.minecraft.client.render.MapRenderer;
-import net.minecraft.client.render.debug.NeighborUpdateDebugRenderer;
 import net.minecraft.client.render.debug.VillageDebugRenderer;
 import net.minecraft.client.render.debug.VillageSectionsDebugRenderer;
 import net.minecraft.client.render.debug.WorldGenAttemptDebugRenderer;
 import net.minecraft.client.search.SearchManager;
-import net.minecraft.client.session.ProfileKeys;
 import net.minecraft.client.sound.AbstractBeeSoundInstance;
 import net.minecraft.client.sound.AggressiveBeeSoundInstance;
 import net.minecraft.client.sound.GuardianAttackSoundInstance;
@@ -75,6 +73,7 @@ import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.Leashable;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.TrackedPosition;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -91,7 +90,9 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.ExperimentalMinecartController;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.FuelRegistry;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -117,6 +118,8 @@ import net.minecraft.network.message.MessageSignatureStorage;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.c2s.common.ClientOptionsC2SPacket;
+import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.network.packet.c2s.play.AcknowledgeChunksC2SPacket;
 import net.minecraft.network.packet.c2s.play.AcknowledgeReconfigurationC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatCommandSignedC2SPacket;
@@ -144,6 +147,7 @@ import net.minecraft.network.packet.s2c.custom.DebugPoiAddedCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugPoiRemovedCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugPoiTicketCountCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugRaidsCustomPayload;
+import net.minecraft.network.packet.s2c.custom.DebugRedstoneUpdateOrderCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugStructuresCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugVillageSectionsCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugWorldgenAttemptCustomPayload;
@@ -206,6 +210,7 @@ import net.minecraft.network.packet.s2c.play.LightData;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.MoveMinecartAlongTrackS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
@@ -236,6 +241,8 @@ import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
 import net.minecraft.network.packet.s2c.play.ServerMetadataS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.SetCursorItemS2CPacket;
+import net.minecraft.network.packet.s2c.play.SetPlayerInventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
 import net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket;
@@ -266,8 +273,11 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.SerializableRegistries;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagPacketSerializer;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreAccess;
@@ -305,7 +315,6 @@ import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.tick.TickManager;
 import org.slf4j.Logger;
 
@@ -315,7 +324,6 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private static final Text UNSECURE_SERVER_TOAST_TITLE = Text.translatable("multiplayer.unsecureserver.toast.title");
 	private static final Text UNSECURE_SERVER_TOAST_TEXT = Text.translatable("multiplayer.unsecureserver.toast");
 	private static final Text INVALID_PACKET_TEXT = Text.translatable("multiplayer.disconnect.invalid_packet");
-	private static final Text CHAT_VALIDATION_FAILED_TEXT = Text.translatable("multiplayer.disconnect.chat_validation_failed");
 	private static final Text RECONFIGURING_TEXT = Text.translatable("connect.reconfiguring");
 	private static final int ACKNOWLEDGMENT_BATCH_SIZE = 64;
 	private final GameProfile profile;
@@ -336,11 +344,16 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private final DynamicRegistryManager.Immutable combinedDynamicRegistries;
 	private final FeatureSet enabledFeatures;
 	private final BrewingRecipeRegistry brewingRecipeRegistry;
+	private FuelRegistry fuelRegistry;
 	@Nullable
 	private ClientPlayerSession session;
 	private MessageChain.Packer messagePacker = MessageChain.Packer.NONE;
 	private LastSeenMessagesCollector lastSeenMessagesCollector = new LastSeenMessagesCollector(20);
 	private MessageSignatureStorage signatureStorage = MessageSignatureStorage.create();
+	@Nullable
+	private CompletableFuture<Optional<PlayerKeyPair>> profileKeyPairFuture;
+	@Nullable
+	private SyncedClientOptions syncedOptions;
 	private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
 	private final PingMeasurer pingMeasurer;
 	private final DebugSampleSubscriber debugSampleSubscriber;
@@ -367,6 +380,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 
 		this.brewingRecipeRegistry = BrewingRecipeRegistry.create(this.enabledFeatures);
+		this.fuelRegistry = FuelRegistry.createDefault(clientConnectionState.receivedRegistries(), this.enabledFeatures);
 	}
 
 	public ClientCommandSource getCommandSource() {
@@ -402,7 +416,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.simulationDistance = packet.simulationDistance();
 		boolean bl = commonPlayerSpawnInfo.isDebug();
 		boolean bl2 = commonPlayerSpawnInfo.isFlat();
-		ClientWorld.Properties properties = new ClientWorld.Properties(Difficulty.NORMAL, packet.hardcore(), bl2);
+		int i = commonPlayerSpawnInfo.seaLevel();
+		ClientWorld.Properties properties = new ClientWorld.Properties(this.enabledFeatures, Difficulty.NORMAL, packet.hardcore(), bl2);
 		this.worldProperties = properties;
 		this.world = new ClientWorld(
 			this,
@@ -414,7 +429,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			this.client::getProfiler,
 			this.client.worldRenderer,
 			bl,
-			commonPlayerSpawnInfo.seed()
+			commonPlayerSpawnInfo.seed(),
+			i
 		);
 		this.client.joinWorld(this.world, DownloadingTerrainScreen.WorldEntryReason.OTHER);
 		if (this.client.player == null) {
@@ -444,7 +460,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.lastSeenMessagesCollector = new LastSeenMessagesCollector(20);
 		this.signatureStorage = MessageSignatureStorage.create();
 		if (this.connection.isEncrypted()) {
-			this.client.getProfileKeys().fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(this::updateKeyPair), this.client);
+			this.fetchProfileKey();
 		}
 
 		this.worldSession.setGameMode(commonPlayerSpawnInfo.gameMode(), packet.hardcore());
@@ -482,7 +498,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				return new OtherClientPlayerEntity(this.world, playerListEntry.getProfile());
 			}
 		} else {
-			return entityType.create(this.world);
+			return entityType.create(this.world, SpawnReason.LOAD);
 		}
 	}
 
@@ -546,7 +562,12 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			if (!entity.isLogicalSideForUpdatingMovement()) {
 				float g = (float)(packet.getYaw() * 360) / 256.0F;
 				float h = (float)(packet.getPitch() * 360) / 256.0F;
-				entity.updateTrackedPositionAndAngles(d, e, f, g, h, 3);
+				if (this.world.hasEntity(entity)) {
+					entity.updateTrackedPositionAndAngles(d, e, f, g, h, 3);
+				} else {
+					entity.refreshPositionAndAngles(d, e, f, g, h);
+				}
+
 				entity.setOnGround(packet.isOnGround());
 			}
 		}
@@ -599,6 +620,18 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				}
 
 				entity.setOnGround(packet.isOnGround());
+			}
+		}
+	}
+
+	@Override
+	public void onMoveMinecartAlongTrack(MoveMinecartAlongTrackS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		Entity entity = packet.getEntity(this.world);
+		if (entity instanceof AbstractMinecartEntity abstractMinecartEntity) {
+			if (!entity.isLogicalSideForUpdatingMovement()
+				&& abstractMinecartEntity.getController() instanceof ExperimentalMinecartController experimentalMinecartController) {
+				experimentalMinecartController.lerpSteps.addAll(packet.lerpSteps());
 			}
 		}
 	}
@@ -691,7 +724,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 		this.connection.send(new TeleportConfirmC2SPacket(packet.getTeleportId()));
 		this.connection
-			.send(new PlayerMoveC2SPacket.Full(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.getYaw(), playerEntity.getPitch(), false));
+			.send(
+				new PlayerMoveC2SPacket.Full(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.getYaw(), playerEntity.getPitch(), false, false)
+			);
 	}
 
 	@Override
@@ -708,7 +743,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.loadChunk(i, j, packet.getChunkData());
 		LightData lightData = packet.getLightData();
 		this.world.enqueueChunkUpdate(() -> {
-			this.readLightData(i, j, lightData);
+			this.readLightData(i, j, lightData, false);
 			WorldChunk worldChunk = this.world.getChunkManager().getWorldChunk(i, j, false);
 			if (worldChunk != null) {
 				this.scheduleRenderChunk(worldChunk, i, j);
@@ -752,8 +787,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			ChunkSection chunkSection = chunkSections[i];
 			int j = this.world.sectionIndexToCoord(i);
 			lightingProvider.setSectionStatus(ChunkSectionPos.from(chunkPos, j), chunkSection.isEmpty());
-			this.world.scheduleBlockRenders(x, j, z);
 		}
+
+		this.world.method_62146(x - 1, this.world.getBottomSectionCoord(), z - 1, x + 1, this.world.getTopSectionCoord(), z + 1);
 	}
 
 	@Override
@@ -1090,7 +1126,10 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			Map<MapIdComponent, MapState> map = this.world.getMapStates();
 			boolean bl2 = commonPlayerSpawnInfo.isDebug();
 			boolean bl3 = commonPlayerSpawnInfo.isFlat();
-			ClientWorld.Properties properties = new ClientWorld.Properties(this.worldProperties.getDifficulty(), this.worldProperties.isHardcore(), bl3);
+			int i = commonPlayerSpawnInfo.seaLevel();
+			ClientWorld.Properties properties = new ClientWorld.Properties(
+				this.enabledFeatures, this.worldProperties.getDifficulty(), this.worldProperties.isHardcore(), bl3
+			);
 			this.worldProperties = properties;
 			this.world = new ClientWorld(
 				this,
@@ -1102,7 +1141,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				this.client::getProfiler,
 				this.client.worldRenderer,
 				bl2,
-				commonPlayerSpawnInfo.seed()
+				commonPlayerSpawnInfo.seed(),
+				i
 			);
 			this.world.putMapStates(map);
 			this.client.joinWorld(this.world, worldEntryReason);
@@ -1179,25 +1219,21 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onExplosion(ExplosionS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Explosion explosion = new Explosion(
-			this.client.world,
-			null,
-			packet.getX(),
-			packet.getY(),
-			packet.getZ(),
-			packet.getRadius(),
-			packet.getAffectedBlocks(),
-			packet.getDestructionType(),
-			packet.getParticle(),
-			packet.getEmitterParticle(),
-			packet.getSoundEvent()
-		);
-		explosion.affectWorld(true);
+		Vec3d vec3d = packet.center();
 		this.client
-			.player
-			.setVelocity(
-				this.client.player.getVelocity().add((double)packet.getPlayerVelocityX(), (double)packet.getPlayerVelocityY(), (double)packet.getPlayerVelocityZ())
+			.world
+			.playSound(
+				vec3d.getX(),
+				vec3d.getY(),
+				vec3d.getZ(),
+				packet.explosionSound().value(),
+				SoundCategory.BLOCKS,
+				4.0F,
+				(1.0F + (this.client.world.random.nextFloat() - this.client.world.random.nextFloat()) * 0.2F) * 0.7F,
+				false
 			);
+		this.client.world.addParticle(packet.explosionParticle(), vec3d.getX(), vec3d.getY(), vec3d.getZ(), 1.0, 0.0, 0.0);
+		packet.playerKnockback().ifPresent(this.client.player::addVelocityInternal);
 	}
 
 	@Override
@@ -1228,31 +1264,45 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		ItemStack itemStack = packet.getStack();
 		int i = packet.getSlot();
 		this.client.getTutorialManager().onSlotUpdate(itemStack);
-		if (packet.getSyncId() == ScreenHandlerSlotUpdateS2CPacket.UPDATE_CURSOR_SYNC_ID) {
-			if (!(this.client.currentScreen instanceof CreativeInventoryScreen)) {
-				playerEntity.currentScreenHandler.setCursorStack(itemStack);
-			}
-		} else if (packet.getSyncId() == ScreenHandlerSlotUpdateS2CPacket.UPDATE_PLAYER_INVENTORY_SYNC_ID) {
-			playerEntity.getInventory().setStack(i, itemStack);
+		boolean bl;
+		if (this.client.currentScreen instanceof CreativeInventoryScreen creativeInventoryScreen) {
+			bl = !creativeInventoryScreen.isInventoryTabSelected();
 		} else {
-			boolean bl = false;
-			if (this.client.currentScreen instanceof CreativeInventoryScreen creativeInventoryScreen) {
-				bl = !creativeInventoryScreen.isInventoryTabSelected();
-			}
-
-			if (packet.getSyncId() == 0 && PlayerScreenHandler.isInHotbar(i)) {
-				if (!itemStack.isEmpty()) {
-					ItemStack itemStack2 = playerEntity.playerScreenHandler.getSlot(i).getStack();
-					if (itemStack2.isEmpty() || itemStack2.getCount() < itemStack.getCount()) {
-						itemStack.setBobbingAnimationTime(5);
-					}
-				}
-
-				playerEntity.playerScreenHandler.setStackInSlot(i, packet.getRevision(), itemStack);
-			} else if (packet.getSyncId() == playerEntity.currentScreenHandler.syncId && (packet.getSyncId() != 0 || !bl)) {
-				playerEntity.currentScreenHandler.setStackInSlot(i, packet.getRevision(), itemStack);
-			}
+			bl = false;
 		}
+
+		if (packet.getSyncId() == 0 && PlayerScreenHandler.isInHotbar(i)) {
+			if (!itemStack.isEmpty()) {
+				ItemStack itemStack2 = playerEntity.playerScreenHandler.getSlot(i).getStack();
+				if (itemStack2.isEmpty() || itemStack2.getCount() < itemStack.getCount()) {
+					itemStack.setBobbingAnimationTime(5);
+				}
+			}
+
+			playerEntity.playerScreenHandler.setStackInSlot(i, packet.getRevision(), itemStack);
+		} else if (packet.getSyncId() == playerEntity.currentScreenHandler.syncId && (packet.getSyncId() != 0 || !bl)) {
+			playerEntity.currentScreenHandler.setStackInSlot(i, packet.getRevision(), itemStack);
+		}
+
+		if (this.client.currentScreen instanceof CreativeInventoryScreen) {
+			playerEntity.playerScreenHandler.sendContentUpdates();
+		}
+	}
+
+	@Override
+	public void onSetCursorItem(SetCursorItemS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.client.getTutorialManager().onSlotUpdate(packet.contents());
+		if (!(this.client.currentScreen instanceof CreativeInventoryScreen)) {
+			this.client.player.currentScreenHandler.setCursorStack(packet.contents());
+		}
+	}
+
+	@Override
+	public void onSetPlayerInventory(SetPlayerInventoryS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.client.getTutorialManager().onSlotUpdate(packet.contents());
+		this.client.player.getInventory().setStack(packet.slot(), packet.contents());
 	}
 
 	@Override
@@ -1416,7 +1466,6 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onMapUpdate(MapUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		MapRenderer mapRenderer = this.client.gameRenderer.getMapRenderer();
 		MapIdComponent mapIdComponent = packet.mapId();
 		MapState mapState = this.client.world.getMapState(mapIdComponent);
 		if (mapState == null) {
@@ -1425,7 +1474,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 
 		packet.apply(mapState);
-		mapRenderer.updateTexture(mapIdComponent, mapState);
+		this.client.getMapTextureManager().setNeedsUpdate(mapIdComponent, mapState);
 	}
 
 	@Override
@@ -1571,14 +1620,25 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 	}
 
+	private <T> Registry.PendingTagLoad<T> method_62148(RegistryKey<? extends Registry<? extends T>> registryKey, TagPacketSerializer.Serialized serialized) {
+		Registry<T> registry = this.combinedDynamicRegistries.get(registryKey);
+		return registry.startTagReload(serialized.toRegistryTags(registry));
+	}
+
 	@Override
 	public void onSynchronizeTags(SynchronizeTagsS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		ClientTagLoader clientTagLoader = new ClientTagLoader();
-		packet.getGroups().forEach(clientTagLoader::put);
-		clientTagLoader.load(this.combinedDynamicRegistries, this.connection.isLocal());
-		List<ItemStack> list = List.copyOf(ItemGroups.getSearchGroup().getDisplayStacks());
-		this.searchManager.addItemTagReloader(list);
+		List<Registry.PendingTagLoad<?>> list = new ArrayList(packet.getGroups().size());
+		boolean bl = this.connection.isLocal();
+		packet.getGroups().forEach((registryKey, serialized) -> {
+			if (!bl || SerializableRegistries.isSynced(registryKey)) {
+				list.add(this.method_62148(registryKey, serialized));
+			}
+		});
+		list.forEach(Registry.PendingTagLoad::apply);
+		this.fuelRegistry = FuelRegistry.createDefault(this.combinedDynamicRegistries, this.enabledFeatures);
+		List<ItemStack> list2 = List.copyOf(ItemGroups.getSearchGroup().getDisplayStacks());
+		this.searchManager.addItemTagReloader(list2);
 	}
 
 	@Override
@@ -1789,6 +1849,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				break;
 			case UPDATE_DISPLAY_NAME:
 				currentEntry.setDisplayName(receivedEntry.displayName());
+				break;
+			case UPDATE_LIST_ORDER:
+				currentEntry.method_62153(receivedEntry.listOrder());
 		}
 	}
 
@@ -1903,8 +1966,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				.pathfindingDebugRenderer
 				.addPath(debugPathCustomPayload.entityId(), debugPathCustomPayload.path(), debugPathCustomPayload.maxNodeDistance());
 		} else if (payload instanceof DebugNeighborsUpdateCustomPayload debugNeighborsUpdateCustomPayload) {
-			((NeighborUpdateDebugRenderer)this.client.debugRenderer.neighborUpdateDebugRenderer)
-				.addNeighborUpdate(debugNeighborsUpdateCustomPayload.time(), debugNeighborsUpdateCustomPayload.pos());
+			this.client.debugRenderer.neighborUpdateDebugRenderer.addNeighborUpdate(debugNeighborsUpdateCustomPayload.time(), debugNeighborsUpdateCustomPayload.pos());
+		} else if (payload instanceof DebugRedstoneUpdateOrderCustomPayload debugRedstoneUpdateOrderCustomPayload) {
+			this.client.debugRenderer.redstoneUpdateOrderDebugRenderer.addUpdateOrder(debugRedstoneUpdateOrderCustomPayload);
 		} else if (payload instanceof DebugStructuresCustomPayload debugStructuresCustomPayload) {
 			this.client
 				.debugRenderer
@@ -2159,10 +2223,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		ScreenHandler screenHandler = this.client.player.currentScreenHandler;
 		if (screenHandler.syncId == packet.getSyncId()) {
-			this.recipeManager.get(packet.getRecipeId()).ifPresent(recipe -> {
-				if (this.client.currentScreen instanceof RecipeBookProvider) {
-					RecipeBookWidget recipeBookWidget = ((RecipeBookProvider)this.client.currentScreen).getRecipeBookWidget();
-					recipeBookWidget.showGhostRecipe(recipe, screenHandler.slots);
+			this.recipeManager.get(packet.getRecipeId()).ifPresent(recipeEntry -> {
+				if (this.client.currentScreen instanceof RecipeBookProvider recipeBookProvider) {
+					recipeBookProvider.getRecipeBookWidget().setGhostRecipe(recipeEntry);
 				}
 			});
 		}
@@ -2174,19 +2237,19 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		int i = packet.getChunkX();
 		int j = packet.getChunkZ();
 		LightData lightData = packet.getData();
-		this.world.enqueueChunkUpdate(() -> this.readLightData(i, j, lightData));
+		this.world.enqueueChunkUpdate(() -> this.readLightData(i, j, lightData, true));
 	}
 
-	private void readLightData(int x, int z, LightData data) {
+	private void readLightData(int x, int z, LightData data, boolean bl) {
 		LightingProvider lightingProvider = this.world.getChunkManager().getLightingProvider();
 		BitSet bitSet = data.getInitedSky();
 		BitSet bitSet2 = data.getUninitedSky();
 		Iterator<byte[]> iterator = data.getSkyNibbles().iterator();
-		this.updateLighting(x, z, lightingProvider, LightType.SKY, bitSet, bitSet2, iterator);
+		this.updateLighting(x, z, lightingProvider, LightType.SKY, bitSet, bitSet2, iterator, bl);
 		BitSet bitSet3 = data.getInitedBlock();
 		BitSet bitSet4 = data.getUninitedBlock();
 		Iterator<byte[]> iterator2 = data.getBlockNibbles().iterator();
-		this.updateLighting(x, z, lightingProvider, LightType.BLOCK, bitSet3, bitSet4, iterator2);
+		this.updateLighting(x, z, lightingProvider, LightType.BLOCK, bitSet3, bitSet4, iterator2, bl);
 		lightingProvider.setColumnEnabled(new ChunkPos(x, z), true);
 	}
 
@@ -2268,16 +2331,20 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.pingMeasurer.onPingResult(packet);
 	}
 
-	private void updateLighting(int chunkX, int chunkZ, LightingProvider provider, LightType type, BitSet inited, BitSet uninited, Iterator<byte[]> nibbles) {
+	private void updateLighting(
+		int chunkX, int chunkZ, LightingProvider provider, LightType type, BitSet inited, BitSet uninited, Iterator<byte[]> nibbles, boolean bl
+	) {
 		for (int i = 0; i < provider.getHeight(); i++) {
 			int j = provider.getBottomY() + i;
-			boolean bl = inited.get(i);
-			boolean bl2 = uninited.get(i);
-			if (bl || bl2) {
+			boolean bl2 = inited.get(i);
+			boolean bl3 = uninited.get(i);
+			if (bl2 || bl3) {
 				provider.enqueueSectionData(
-					type, ChunkSectionPos.from(chunkX, j, chunkZ), bl ? new ChunkNibbleArray((byte[])((byte[])nibbles.next()).clone()) : new ChunkNibbleArray()
+					type, ChunkSectionPos.from(chunkX, j, chunkZ), bl2 ? new ChunkNibbleArray((byte[])((byte[])nibbles.next()).clone()) : new ChunkNibbleArray()
 				);
-				this.world.scheduleBlockRenders(chunkX, j, chunkZ);
+				if (bl) {
+					this.world.scheduleBlockRenders(chunkX, j, chunkZ);
+				}
 			}
 		}
 	}
@@ -2404,13 +2471,22 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		return this.commandDispatcher.parse(command, this.commandSource);
 	}
 
+	public void syncOptions(SyncedClientOptions syncedOptions) {
+		if (!syncedOptions.equals(this.syncedOptions)) {
+			this.sendPacket(new ClientOptionsC2SPacket(syncedOptions));
+			this.syncedOptions = syncedOptions;
+		}
+	}
+
 	@Override
 	public void tick() {
-		if (this.connection.isEncrypted()) {
-			ProfileKeys profileKeys = this.client.getProfileKeys();
-			if (profileKeys.isExpired()) {
-				profileKeys.fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(this::updateKeyPair), this.client);
-			}
+		if (this.session != null && this.client.getProfileKeys().isExpired()) {
+			this.fetchProfileKey();
+		}
+
+		if (this.profileKeyPairFuture != null && this.profileKeyPairFuture.isDone()) {
+			((Optional)this.profileKeyPairFuture.join()).ifPresent(this::updateKeyPair);
+			this.profileKeyPairFuture = null;
 		}
 
 		this.sendQueuedPackets();
@@ -2425,7 +2501,11 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 	}
 
-	public void updateKeyPair(PlayerKeyPair keyPair) {
+	public void fetchProfileKey() {
+		this.profileKeyPairFuture = this.client.getProfileKeys().fetchKeyPair();
+	}
+
+	private void updateKeyPair(PlayerKeyPair keyPair) {
 		if (this.client.uuidEquals(this.profile.getId())) {
 			if (this.session == null || !this.session.keyPair().equals(keyPair)) {
 				this.session = ClientPlayerSession.create(keyPair);
@@ -2454,6 +2534,10 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 
 	public BrewingRecipeRegistry getBrewingRecipeRegistry() {
 		return this.brewingRecipeRegistry;
+	}
+
+	public FuelRegistry getFuelRegistry() {
+		return this.fuelRegistry;
 	}
 
 	public void refreshSearchManager() {

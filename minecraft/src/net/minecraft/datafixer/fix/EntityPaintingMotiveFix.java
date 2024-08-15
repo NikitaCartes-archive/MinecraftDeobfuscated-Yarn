@@ -23,15 +23,13 @@ public class EntityPaintingMotiveFix extends ChoiceFix {
 		super(outputSchema, changesType, "EntityPaintingMotiveFix", TypeReferences.ENTITY, "minecraft:painting");
 	}
 
-	public Dynamic<?> renameMotive(Dynamic<?> paintingdynamic) {
-		Optional<String> optional = paintingdynamic.get("Motive").asString().result();
+	public Dynamic<?> renameMotive(Dynamic<?> painting) {
+		Optional<String> optional = painting.get("Motive").asString().result();
 		if (optional.isPresent()) {
 			String string = ((String)optional.get()).toLowerCase(Locale.ROOT);
-			return paintingdynamic.set(
-				"Motive", paintingdynamic.createString(IdentifierNormalizingSchema.normalize((String)RENAMED_MOTIVES.getOrDefault(string, string)))
-			);
+			return painting.set("Motive", painting.createString(IdentifierNormalizingSchema.normalize((String)RENAMED_MOTIVES.getOrDefault(string, string))));
 		} else {
-			return paintingdynamic;
+			return painting;
 		}
 	}
 

@@ -20,6 +20,7 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.random.Random;
+import org.jetbrains.annotations.Contract;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -52,7 +53,8 @@ public enum Direction implements StringIdentifiable {
 	private final String name;
 	private final Direction.Axis axis;
 	private final Direction.AxisDirection direction;
-	private final Vec3i vector;
+	private final Vec3i vec3i;
+	private final Vec3d doubleVector;
 	private static final Direction[] ALL = values();
 	private static final Direction[] VALUES = (Direction[])Arrays.stream(ALL).sorted(Comparator.comparingInt(direction -> direction.id)).toArray(Direction[]::new);
 	private static final Direction[] HORIZONTAL = (Direction[])Arrays.stream(ALL)
@@ -75,7 +77,8 @@ public enum Direction implements StringIdentifiable {
 		this.name = name;
 		this.axis = axis;
 		this.direction = direction;
-		this.vector = vector;
+		this.vec3i = vector;
+		this.doubleVector = Vec3d.of(vector);
 	}
 
 	public static Direction[] getEntityFacingOrder(Entity entity) {
@@ -131,6 +134,16 @@ public enum Direction implements StringIdentifiable {
 
 	public static Stream<Direction> stream() {
 		return Stream.of(ALL);
+	}
+
+	public static float getHorizontalDegrees(Direction direction) {
+		return switch (direction) {
+			case NORTH -> 180.0F;
+			case SOUTH -> 0.0F;
+			case WEST -> 90.0F;
+			case EAST -> -90.0F;
+			default -> throw new IllegalStateException("No y-Rot for vertical axis: " + direction);
+		};
 	}
 
 	public Quaternionf getRotationQuaternion() {
@@ -245,15 +258,15 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	public int getOffsetX() {
-		return this.vector.getX();
+		return this.vec3i.getX();
 	}
 
 	public int getOffsetY() {
-		return this.vector.getY();
+		return this.vec3i.getY();
 	}
 
 	public int getOffsetZ() {
-		return this.vector.getZ();
+		return this.vec3i.getZ();
 	}
 
 	public Vector3f getUnitVector() {
@@ -285,35 +298,6 @@ public enum Direction implements StringIdentifiable {
 		return HORIZONTAL[MathHelper.abs(value % HORIZONTAL.length)];
 	}
 
-	@Nullable
-	public static Direction fromVector(int x, int y, int z) {
-		if (x == 0) {
-			if (y == 0) {
-				if (z > 0) {
-					return SOUTH;
-				}
-
-				if (z < 0) {
-					return NORTH;
-				}
-			} else if (z == 0) {
-				if (y > 0) {
-					return UP;
-				}
-
-				return DOWN;
-			}
-		} else if (y == 0 && z == 0) {
-			if (x > 0) {
-				return EAST;
-			}
-
-			return WEST;
-		}
-
-		return null;
-	}
-
 	public static Direction fromRotation(double rotation) {
 		return fromHorizontal(MathHelper.floor(rotation / 90.0 + 0.5) & 3);
 	}
@@ -343,7 +327,7 @@ public enum Direction implements StringIdentifiable {
 		float f = Float.MIN_VALUE;
 
 		for (Direction direction2 : ALL) {
-			float g = x * (float)direction2.vector.getX() + y * (float)direction2.vector.getY() + z * (float)direction2.vector.getZ();
+			float g = x * (float)direction2.vec3i.getX() + y * (float)direction2.vec3i.getY() + z * (float)direction2.vec3i.getZ();
 			if (g > f) {
 				f = g;
 				direction = direction2;
@@ -355,6 +339,32 @@ public enum Direction implements StringIdentifiable {
 
 	public static Direction getFacing(Vec3d vec) {
 		return getFacing(vec.x, vec.y, vec.z);
+	}
+
+	/**
+	 * {@return the closest direction of the vector, or {@code fallback} for zero vector}
+	 */
+	@Nullable
+	@Contract("_,_,_,!null->!null;_,_,_,_->_")
+	public static Direction fromVector(int x, int y, int z, @Nullable Direction fallback) {
+		int i = Math.abs(x);
+		int j = Math.abs(y);
+		int k = Math.abs(z);
+		if (i > k && i > j) {
+			return x < 0 ? WEST : EAST;
+		} else if (k > i && k > j) {
+			return z < 0 ? NORTH : SOUTH;
+		} else if (j > i && j > k) {
+			return y < 0 ? DOWN : UP;
+		} else {
+			return fallback;
+		}
+	}
+
+	@Nullable
+	@Contract("_,!null->!null;_,_->_")
+	public static Direction fromVector(Vec3i vec, @Nullable Direction fallback) {
+		return fromVector(vec.getX(), vec.getY(), vec.getZ(), fallback);
 	}
 
 	public String toString() {
@@ -381,7 +391,11 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	public Vec3i getVector() {
-		return this.vector;
+		return this.vec3i;
+	}
+
+	public Vec3d getDoubleVector() {
+		return this.doubleVector;
 	}
 
 	/**
@@ -395,7 +409,7 @@ public enum Direction implements StringIdentifiable {
 		float f = yaw * (float) (Math.PI / 180.0);
 		float g = -MathHelper.sin(f);
 		float h = MathHelper.cos(f);
-		return (float)this.vector.getX() * g + (float)this.vector.getZ() * h > 0.0F;
+		return (float)this.vec3i.getX() * g + (float)this.vec3i.getZ() * h > 0.0F;
 	}
 
 	public static enum Axis implements StringIdentifiable, Predicate<Direction> {

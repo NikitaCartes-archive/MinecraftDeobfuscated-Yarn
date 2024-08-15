@@ -78,7 +78,7 @@ public class RamImpactTask extends MultiTickTask<GoatEntity> {
 		if (!list.isEmpty()) {
 			LivingEntity livingEntity = (LivingEntity)list.get(0);
 			DamageSource damageSource = serverWorld.getDamageSources().mobAttackNoAggro(goatEntity);
-			if (livingEntity.damage(damageSource, (float)goatEntity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE))) {
+			if (livingEntity.damage(damageSource, (float)goatEntity.getAttributeValue(EntityAttributes.ATTACK_DAMAGE))) {
 				EnchantmentHelper.onTargetDamaged(serverWorld, livingEntity, damageSource);
 			}
 

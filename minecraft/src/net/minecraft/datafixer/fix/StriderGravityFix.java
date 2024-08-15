@@ -7,8 +7,8 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class StriderGravityFix extends ChoiceFix {
-	public StriderGravityFix(Schema outputschema, boolean changesType) {
-		super(outputschema, changesType, "StriderGravityFix", TypeReferences.ENTITY, "minecraft:strider");
+	public StriderGravityFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "StriderGravityFix", TypeReferences.ENTITY, "minecraft:strider");
 	}
 
 	public Dynamic<?> updateNoGravityNbt(Dynamic<?> striderDynamic) {

@@ -12,8 +12,6 @@ public class ScreenHandlerSlotUpdateS2CPacket implements Packet<ClientPlayPacket
 	public static final PacketCodec<RegistryByteBuf, ScreenHandlerSlotUpdateS2CPacket> CODEC = Packet.createCodec(
 		ScreenHandlerSlotUpdateS2CPacket::write, ScreenHandlerSlotUpdateS2CPacket::new
 	);
-	public static final int UPDATE_CURSOR_SYNC_ID = -1;
-	public static final int UPDATE_PLAYER_INVENTORY_SYNC_ID = -2;
 	private final int syncId;
 	private final int revision;
 	private final int slot;
@@ -27,14 +25,14 @@ public class ScreenHandlerSlotUpdateS2CPacket implements Packet<ClientPlayPacket
 	}
 
 	private ScreenHandlerSlotUpdateS2CPacket(RegistryByteBuf buf) {
-		this.syncId = buf.readByte();
+		this.syncId = buf.readSyncId();
 		this.revision = buf.readVarInt();
 		this.slot = buf.readShort();
 		this.stack = ItemStack.OPTIONAL_PACKET_CODEC.decode(buf);
 	}
 
 	private void write(RegistryByteBuf buf) {
-		buf.writeByte(this.syncId);
+		buf.writeSyncId(this.syncId);
 		buf.writeVarInt(this.revision);
 		buf.writeShort(this.slot);
 		ItemStack.OPTIONAL_PACKET_CODEC.encode(buf, this.stack);

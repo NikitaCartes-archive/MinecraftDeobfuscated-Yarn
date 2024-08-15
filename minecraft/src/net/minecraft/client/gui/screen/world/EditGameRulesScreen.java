@@ -236,7 +236,7 @@ public class EditGameRulesScreen extends Screen {
 				24
 			);
 			final Map<GameRules.Category, Map<GameRules.Key<?>, EditGameRulesScreen.AbstractRuleWidget>> map = Maps.<GameRules.Category, Map<GameRules.Key<?>, EditGameRulesScreen.AbstractRuleWidget>>newHashMap();
-			GameRules.accept(new GameRules.Visitor() {
+			gameRules.accept(new GameRules.Visitor() {
 				@Override
 				public void visitBoolean(GameRules.Key<GameRules.BooleanRule> key, GameRules.Type<GameRules.BooleanRule> type) {
 					this.createRuleWidget(key, (name, description, ruleName, rule) -> EditGameRulesScreen.this.new BooleanRuleWidget(name, description, ruleName, rule));

@@ -36,7 +36,7 @@ public class ChunkNibbleArray {
 		this.bytes = bytes;
 		this.defaultValue = 0;
 		if (bytes.length != 2048) {
-			throw (IllegalArgumentException)Util.throwOrPause(new IllegalArgumentException("DataLayer should be 2048 bytes not: " + bytes.length));
+			throw (IllegalArgumentException)Util.getFatalOrPause(new IllegalArgumentException("DataLayer should be 2048 bytes not: " + bytes.length));
 		}
 	}
 

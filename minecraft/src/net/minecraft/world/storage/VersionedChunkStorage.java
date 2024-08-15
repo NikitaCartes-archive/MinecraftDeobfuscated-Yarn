@@ -104,9 +104,9 @@ public class VersionedChunkStorage implements AutoCloseable {
 		return this.worker.readChunkData(chunkPos);
 	}
 
-	public CompletableFuture<Void> setNbt(ChunkPos chunkPos, NbtCompound nbt) {
+	public CompletableFuture<Void> setNbt(ChunkPos chunkPos, Supplier<NbtCompound> nbtSupplier) {
 		this.markFeatureUpdateResolved(chunkPos);
-		return this.worker.setResult(chunkPos, nbt);
+		return this.worker.setResult(chunkPos, nbtSupplier);
 	}
 
 	protected void markFeatureUpdateResolved(ChunkPos chunkPos) {

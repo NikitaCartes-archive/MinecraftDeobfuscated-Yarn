@@ -20,6 +20,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.ItemStack;
@@ -41,6 +42,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -49,12 +51,12 @@ import net.minecraft.world.explosion.Explosion;
 public class ArmorStandEntity extends LivingEntity {
 	public static final int field_30443 = 5;
 	private static final boolean field_30445 = true;
-	private static final EulerAngle DEFAULT_HEAD_ROTATION = new EulerAngle(0.0F, 0.0F, 0.0F);
-	private static final EulerAngle DEFAULT_BODY_ROTATION = new EulerAngle(0.0F, 0.0F, 0.0F);
-	private static final EulerAngle DEFAULT_LEFT_ARM_ROTATION = new EulerAngle(-10.0F, 0.0F, -10.0F);
-	private static final EulerAngle DEFAULT_RIGHT_ARM_ROTATION = new EulerAngle(-15.0F, 0.0F, 10.0F);
-	private static final EulerAngle DEFAULT_LEFT_LEG_ROTATION = new EulerAngle(-1.0F, 0.0F, -1.0F);
-	private static final EulerAngle DEFAULT_RIGHT_LEG_ROTATION = new EulerAngle(1.0F, 0.0F, 1.0F);
+	public static final EulerAngle DEFAULT_HEAD_ROTATION = new EulerAngle(0.0F, 0.0F, 0.0F);
+	public static final EulerAngle DEFAULT_BODY_ROTATION = new EulerAngle(0.0F, 0.0F, 0.0F);
+	public static final EulerAngle DEFAULT_LEFT_ARM_ROTATION = new EulerAngle(-10.0F, 0.0F, -10.0F);
+	public static final EulerAngle DEFAULT_RIGHT_ARM_ROTATION = new EulerAngle(-15.0F, 0.0F, 10.0F);
+	public static final EulerAngle DEFAULT_LEFT_LEG_ROTATION = new EulerAngle(-1.0F, 0.0F, -1.0F);
+	public static final EulerAngle DEFAULT_RIGHT_LEG_ROTATION = new EulerAngle(1.0F, 0.0F, 1.0F);
 	private static final EntityDimensions MARKER_DIMENSIONS = EntityDimensions.fixed(0.0F, 0.0F);
 	private static final EntityDimensions SMALL_DIMENSIONS = EntityType.ARMOR_STAND.getDimensions().scaled(0.5F).withEyeHeight(0.9875F);
 	private static final double field_30447 = 0.1;
@@ -98,7 +100,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createArmorStandAttributes() {
-		return createLivingAttributes().add(EntityAttributes.GENERIC_STEP_HEIGHT, 0.0);
+		return createLivingAttributes().add(EntityAttributes.STEP_HEIGHT, 0.0);
 	}
 
 	@Override
@@ -197,7 +199,7 @@ public class ArmorStandEntity extends LivingEntity {
 		nbt.putBoolean("Small", this.isSmall());
 		nbt.putBoolean("ShowArms", this.shouldShowArms());
 		nbt.putInt("DisabledSlots", this.disabledSlots);
-		nbt.putBoolean("NoBasePlate", this.shouldHideBasePlate());
+		nbt.putBoolean("NoBasePlate", !this.shouldShowBasePlate());
 		if (this.isMarker()) {
 			nbt.putBoolean("Marker", this.isMarker());
 		}
@@ -307,14 +309,14 @@ public class ArmorStandEntity extends LivingEntity {
 		} else if (player.isSpectator()) {
 			return ActionResult.SUCCESS;
 		} else if (player.getWorld().isClient) {
-			return ActionResult.CONSUME;
+			return ActionResult.SUCCESS_SERVER;
 		} else {
 			EquipmentSlot equipmentSlot = this.getPreferredEquipmentSlot(itemStack);
 			if (itemStack.isEmpty()) {
 				EquipmentSlot equipmentSlot2 = this.getSlotFromPosition(hitPos);
 				EquipmentSlot equipmentSlot3 = this.isSlotDisabled(equipmentSlot2) ? equipmentSlot : equipmentSlot2;
 				if (this.hasStackEquipped(equipmentSlot3) && this.equip(player, equipmentSlot3, itemStack, hand)) {
-					return ActionResult.SUCCESS;
+					return ActionResult.SUCCESS_SERVER;
 				}
 			} else {
 				if (this.isSlotDisabled(equipmentSlot)) {
@@ -326,7 +328,7 @@ public class ArmorStandEntity extends LivingEntity {
 				}
 
 				if (this.equip(player, equipmentSlot, itemStack, hand)) {
-					return ActionResult.SUCCESS;
+					return ActionResult.SUCCESS_SERVER;
 				}
 			}
 
@@ -383,60 +385,60 @@ public class ArmorStandEntity extends LivingEntity {
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isRemoved()) {
 			return false;
-		} else if (this.getWorld() instanceof ServerWorld serverWorld) {
-			if (source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-				this.kill();
-				return false;
-			} else if (this.isInvulnerableTo(source) || this.invisible || this.isMarker()) {
-				return false;
-			} else if (source.isIn(DamageTypeTags.IS_EXPLOSION)) {
-				this.onBreak(serverWorld, source);
-				this.kill();
-				return false;
-			} else if (source.isIn(DamageTypeTags.IGNITES_ARMOR_STANDS)) {
-				if (this.isOnFire()) {
-					this.updateHealth(serverWorld, source, 0.15F);
-				} else {
-					this.setOnFireFor(5.0F);
-				}
+		} else if (!(this.getWorld() instanceof ServerWorld serverWorld)) {
+			return false;
+		} else if (!this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && source.getAttacker() instanceof MobEntity) {
+			return false;
+		} else if (source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+			this.kill();
+			return false;
+		} else if (this.isInvulnerableTo(source) || this.invisible || this.isMarker()) {
+			return false;
+		} else if (source.isIn(DamageTypeTags.IS_EXPLOSION)) {
+			this.onBreak(serverWorld, source);
+			this.kill();
+			return false;
+		} else if (source.isIn(DamageTypeTags.IGNITES_ARMOR_STANDS)) {
+			if (this.isOnFire()) {
+				this.updateHealth(serverWorld, source, 0.15F);
+			} else {
+				this.setOnFireFor(5.0F);
+			}
 
-				return false;
-			} else if (source.isIn(DamageTypeTags.BURNS_ARMOR_STANDS) && this.getHealth() > 0.5F) {
-				this.updateHealth(serverWorld, source, 4.0F);
+			return false;
+		} else if (source.isIn(DamageTypeTags.BURNS_ARMOR_STANDS) && this.getHealth() > 0.5F) {
+			this.updateHealth(serverWorld, source, 4.0F);
+			return false;
+		} else {
+			boolean bl = source.isIn(DamageTypeTags.CAN_BREAK_ARMOR_STAND);
+			boolean bl2 = source.isIn(DamageTypeTags.ALWAYS_KILLS_ARMOR_STANDS);
+			if (!bl && !bl2) {
 				return false;
 			} else {
-				boolean bl = source.isIn(DamageTypeTags.CAN_BREAK_ARMOR_STAND);
-				boolean bl2 = source.isIn(DamageTypeTags.ALWAYS_KILLS_ARMOR_STANDS);
-				if (!bl && !bl2) {
+				if (source.getAttacker() instanceof PlayerEntity playerEntity && !playerEntity.getAbilities().allowModifyWorld) {
 					return false;
-				} else {
-					if (source.getAttacker() instanceof PlayerEntity playerEntity && !playerEntity.getAbilities().allowModifyWorld) {
-						return false;
-					}
+				}
 
-					if (source.isSourceCreativePlayer()) {
-						this.playBreakSound();
+				if (source.isSourceCreativePlayer()) {
+					this.playBreakSound();
+					this.spawnBreakParticles();
+					this.kill();
+					return true;
+				} else {
+					long l = serverWorld.getTime();
+					if (l - this.lastHitTime > 5L && !bl2) {
+						serverWorld.sendEntityStatus(this, EntityStatuses.HIT_ARMOR_STAND);
+						this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
+						this.lastHitTime = l;
+					} else {
+						this.breakAndDropItem(serverWorld, source);
 						this.spawnBreakParticles();
 						this.kill();
-						return true;
-					} else {
-						long l = serverWorld.getTime();
-						if (l - this.lastHitTime > 5L && !bl2) {
-							serverWorld.sendEntityStatus(this, EntityStatuses.HIT_ARMOR_STAND);
-							this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
-							this.lastHitTime = l;
-						} else {
-							this.breakAndDropItem(serverWorld, source);
-							this.spawnBreakParticles();
-							this.kill();
-						}
-
-						return true;
 					}
+
+					return true;
 				}
 			}
-		} else {
-			return false;
 		}
 	}
 
@@ -608,7 +610,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	public boolean isImmuneToExplosion(Explosion explosion) {
-		return this.isInvisible();
+		return explosion.preservesDecorativeEntities() ? this.isInvisible() : true;
 	}
 
 	@Override
@@ -641,8 +643,8 @@ public class ArmorStandEntity extends LivingEntity {
 		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), HIDE_BASE_PLATE_FLAG, hideBasePlate));
 	}
 
-	public boolean shouldHideBasePlate() {
-		return (this.dataTracker.get(ARMOR_STAND_FLAGS) & 8) != 0;
+	public boolean shouldShowBasePlate() {
+		return (this.dataTracker.get(ARMOR_STAND_FLAGS) & 8) == 0;
 	}
 
 	private void setMarker(boolean marker) {

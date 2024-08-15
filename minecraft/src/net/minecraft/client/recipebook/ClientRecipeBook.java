@@ -60,7 +60,7 @@ public class ClientRecipeBook extends RecipeBook {
 
 		for (RecipeEntry<?> recipeEntry : recipes) {
 			Recipe<?> recipe = recipeEntry.value();
-			if (!recipe.isIgnoredInRecipeBook() && !recipe.isEmpty()) {
+			if (!recipe.isIgnoredInRecipeBook() && !recipe.getIngredientPlacement().hasNoPlacement()) {
 				RecipeBookGroup recipeBookGroup = getGroupForRecipe(recipeEntry);
 				String string = recipe.getGroup();
 				if (string.isEmpty()) {

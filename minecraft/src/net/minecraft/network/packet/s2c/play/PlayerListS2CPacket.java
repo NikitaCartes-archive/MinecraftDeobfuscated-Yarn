@@ -45,7 +45,8 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 			PlayerListS2CPacket.Action.UPDATE_GAME_MODE,
 			PlayerListS2CPacket.Action.UPDATE_LISTED,
 			PlayerListS2CPacket.Action.UPDATE_LATENCY,
-			PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME
+			PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME,
+			PlayerListS2CPacket.Action.UPDATE_LIST_ORDER
 		);
 		return new PlayerListS2CPacket(enumSet, players);
 	}
@@ -119,7 +120,8 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		UPDATE_DISPLAY_NAME(
 			(serialized, buf) -> serialized.displayName = PacketByteBuf.readNullable(buf, TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC),
 			(buf, entry) -> PacketByteBuf.writeNullable(buf, entry.displayName(), TextCodecs.UNLIMITED_REGISTRY_PACKET_CODEC)
-		);
+		),
+		UPDATE_LIST_ORDER((serialized, buf) -> serialized.listOrder = buf.readVarInt(), (buf, entry) -> buf.writeVarInt(entry.listOrder));
 
 		final PlayerListS2CPacket.Action.Reader reader;
 		final PlayerListS2CPacket.Action.Writer writer;
@@ -145,6 +147,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		int latency,
 		GameMode gameMode,
 		@Nullable Text displayName,
+		int listOrder,
 		@Nullable PublicPlayerSession.Serialized chatSession
 	) {
 
@@ -156,6 +159,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				player.networkHandler.getLatency(),
 				player.interactionManager.getGameMode(),
 				player.getPlayerListName(),
+				player.getPlayerListOrder(),
 				Nullables.map(player.getSession(), PublicPlayerSession::toSerialized)
 			);
 		}
@@ -170,6 +174,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		GameMode gameMode = GameMode.DEFAULT;
 		@Nullable
 		Text displayName;
+		int listOrder;
 		@Nullable
 		PublicPlayerSession.Serialized session;
 
@@ -178,7 +183,9 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		PlayerListS2CPacket.Entry toEntry() {
-			return new PlayerListS2CPacket.Entry(this.profileId, this.gameProfile, this.listed, this.latency, this.gameMode, this.displayName, this.session);
+			return new PlayerListS2CPacket.Entry(
+				this.profileId, this.gameProfile, this.listed, this.latency, this.gameMode, this.displayName, this.listOrder, this.session
+			);
 		}
 	}
 }

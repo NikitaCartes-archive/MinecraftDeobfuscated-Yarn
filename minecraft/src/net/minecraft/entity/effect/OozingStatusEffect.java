@@ -7,6 +7,7 @@ import java.util.function.ToIntFunction;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.MathHelper;
@@ -44,7 +45,7 @@ class OozingStatusEffect extends StatusEffect {
 	}
 
 	private void spawnSlime(World world, double x, double y, double z) {
-		SlimeEntity slimeEntity = EntityType.SLIME.create(world);
+		SlimeEntity slimeEntity = EntityType.SLIME.create(world, SpawnReason.TRIGGERED);
 		if (slimeEntity != null) {
 			slimeEntity.setSize(2, true);
 			slimeEntity.refreshPositionAndAngles(x, y, z, world.getRandom().nextFloat() * 360.0F, 0.0F);

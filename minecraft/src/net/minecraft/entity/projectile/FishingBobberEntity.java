@@ -69,7 +69,6 @@ public class FishingBobberEntity extends ProjectileEntity {
 
 	private FishingBobberEntity(EntityType<? extends FishingBobberEntity> type, World world, int luckBonus, int waitTimeReductionTicks) {
 		super(type, world);
-		this.ignoreCameraFrustum = true;
 		this.luckBonus = Math.max(0, luckBonus);
 		this.waitTimeReductionTicks = Math.max(0, waitTimeReductionTicks);
 	}
@@ -78,7 +77,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 		this(entityType, world, 0, 0);
 	}
 
-	public FishingBobberEntity(PlayerEntity thrower, World world, int luckBonus, int waitTimeReductionTicks) {
+	public FishingBobberEntity(PlayerEntity thrower, World world, int luckBonus, int waitTimeReductionTicks, ItemStack stack) {
 		this(EntityType.FISHING_BOBBER, world, luckBonus, waitTimeReductionTicks);
 		this.setOwner(thrower);
 		float f = thrower.getPitch();
@@ -226,6 +225,10 @@ public class FishingBobberEntity extends ProjectileEntity {
 			}
 
 			this.move(MovementType.SELF, this.getVelocity());
+			if (!this.getWorld().isClient()) {
+				this.tickBlockCollision();
+			}
+
 			this.updateRotation();
 			if (this.state == FishingBobberEntity.State.FLYING && (this.isOnGround() || this.horizontalCollision)) {
 				this.setVelocity(Vec3d.ZERO);

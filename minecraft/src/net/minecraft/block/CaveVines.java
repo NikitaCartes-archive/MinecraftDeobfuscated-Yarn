@@ -28,7 +28,7 @@ public interface CaveVines {
 			BlockState blockState = state.with(BERRIES, Boolean.valueOf(false));
 			world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
 			world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(picker, blockState));
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return ActionResult.PASS;
 		}

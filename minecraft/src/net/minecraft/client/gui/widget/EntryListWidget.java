@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.widget;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.AbstractList;
 import java.util.Collection;
 import java.util.List;
@@ -19,6 +18,7 @@ import net.minecraft.client.gui.navigation.NavigationDirection;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -191,14 +191,11 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 				k = this.getY();
 			}
 
-			RenderSystem.enableBlend();
-			context.drawGuiTexture(SCROLLER_BACKGROUND_TEXTURE, i, this.getY(), 6, this.getHeight());
-			context.drawGuiTexture(SCROLLER_TEXTURE, i, k, 6, j);
-			RenderSystem.disableBlend();
+			context.drawGuiTexture(RenderLayer::getGuiTextured, SCROLLER_BACKGROUND_TEXTURE, i, this.getY(), 6, this.getHeight());
+			context.drawGuiTexture(RenderLayer::getGuiTextured, SCROLLER_TEXTURE, i, k, 6, j);
 		}
 
 		this.renderDecorations(context, mouseX, mouseY);
-		RenderSystem.disableBlend();
 	}
 
 	protected boolean isScrollbarVisible() {
@@ -206,18 +203,16 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	protected void drawHeaderAndFooterSeparators(DrawContext context) {
-		RenderSystem.enableBlend();
 		Identifier identifier = this.client.world == null ? Screen.HEADER_SEPARATOR_TEXTURE : Screen.INWORLD_HEADER_SEPARATOR_TEXTURE;
 		Identifier identifier2 = this.client.world == null ? Screen.FOOTER_SEPARATOR_TEXTURE : Screen.INWORLD_FOOTER_SEPARATOR_TEXTURE;
-		context.drawTexture(identifier, this.getX(), this.getY() - 2, 0.0F, 0.0F, this.getWidth(), 2, 32, 2);
-		context.drawTexture(identifier2, this.getX(), this.getBottom(), 0.0F, 0.0F, this.getWidth(), 2, 32, 2);
-		RenderSystem.disableBlend();
+		context.drawTexture(RenderLayer::getGuiTextured, identifier, this.getX(), this.getY() - 2, 0.0F, 0.0F, this.getWidth(), 2, 32, 2);
+		context.drawTexture(RenderLayer::getGuiTextured, identifier2, this.getX(), this.getBottom(), 0.0F, 0.0F, this.getWidth(), 2, 32, 2);
 	}
 
 	protected void drawMenuListBackground(DrawContext context) {
-		RenderSystem.enableBlend();
 		Identifier identifier = this.client.world == null ? MENU_LIST_BACKGROUND_TEXTURE : INWORLD_MENU_LIST_BACKGROUND_TEXTURE;
 		context.drawTexture(
+			RenderLayer::getGuiTextured,
 			identifier,
 			this.getX(),
 			this.getY(),
@@ -228,7 +223,6 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 			32,
 			32
 		);
-		RenderSystem.disableBlend();
 	}
 
 	protected void enableScissor(DrawContext context) {

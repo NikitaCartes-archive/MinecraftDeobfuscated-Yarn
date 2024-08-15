@@ -22,6 +22,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.network.SocialInteractionsManager;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.session.report.AbuseReportContext;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.screen.ScreenTexts;
@@ -74,12 +75,12 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	private static final Text reportText = Text.translatable("gui.socialInteractions.tooltip.report");
 	private static final int field_32420 = 24;
 	private static final int field_32421 = 4;
-	public static final int BLACK_COLOR = ColorHelper.Argb.getArgb(190, 0, 0, 0);
+	public static final int BLACK_COLOR = ColorHelper.getArgb(190, 0, 0, 0);
 	private static final int field_32422 = 20;
-	public static final int GRAY_COLOR = ColorHelper.Argb.getArgb(255, 74, 74, 74);
-	public static final int DARK_GRAY_COLOR = ColorHelper.Argb.getArgb(255, 48, 48, 48);
-	public static final int WHITE_COLOR = ColorHelper.Argb.getArgb(255, 255, 255, 255);
-	public static final int LIGHT_GRAY_COLOR = ColorHelper.Argb.getArgb(140, 255, 255, 255);
+	public static final int GRAY_COLOR = ColorHelper.getArgb(255, 74, 74, 74);
+	public static final int DARK_GRAY_COLOR = ColorHelper.getArgb(255, 48, 48, 48);
+	public static final int WHITE_COLOR = ColorHelper.getArgb(255, 255, 255, 255);
+	public static final int LIGHT_GRAY_COLOR = ColorHelper.getArgb(140, 255, 255, 255);
 
 	public SocialInteractionsPlayerListEntry(
 		MinecraftClient client, SocialInteractionsScreen parent, UUID uuid, String name, Supplier<SkinTextures> skinTexture, boolean reportable
@@ -191,7 +192,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		}
 
 		if (this.hasDraftReport && this.reportButton != null) {
-			context.drawGuiTexture(DRAFT_REPORT_ICON_TEXTURE, this.reportButton.getX() + 5, this.reportButton.getY() + 1, 15, 15);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, DRAFT_REPORT_ICON_TEXTURE, this.reportButton.getX() + 5, this.reportButton.getY() + 1, 15, 15);
 		}
 	}
 

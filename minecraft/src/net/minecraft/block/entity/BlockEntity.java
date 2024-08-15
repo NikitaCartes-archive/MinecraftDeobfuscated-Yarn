@@ -261,6 +261,7 @@ public abstract class BlockEntity {
 	public void setStackNbt(ItemStack stack, RegistryWrapper.WrapperLookup registries) {
 		NbtCompound nbtCompound = this.createComponentlessNbt(registries);
 		this.removeFromCopiedStackNbt(nbtCompound);
+		stack.clearComponentChanges();
 		BlockItem.setBlockEntityData(stack, this.getType(), nbtCompound);
 		stack.applyComponentsFrom(this.createComponentMap());
 	}

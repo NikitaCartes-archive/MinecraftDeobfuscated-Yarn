@@ -116,7 +116,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
-		return true;
+		return !isDry(state) && world.getBlockState(pos.down()).isIn(BlockTags.CORAL_BLOCKS);
 	}
 
 	@Override
@@ -126,42 +126,40 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		if (!isDry(state) && world.getBlockState(pos.down()).isIn(BlockTags.CORAL_BLOCKS)) {
-			int i = 5;
-			int j = 1;
-			int k = 2;
-			int l = 0;
-			int m = pos.getX() - 2;
-			int n = 0;
+		int i = 5;
+		int j = 1;
+		int k = 2;
+		int l = 0;
+		int m = pos.getX() - 2;
+		int n = 0;
 
-			for (int o = 0; o < 5; o++) {
-				for (int p = 0; p < j; p++) {
-					int q = 2 + pos.getY() - 1;
+		for (int o = 0; o < 5; o++) {
+			for (int p = 0; p < j; p++) {
+				int q = 2 + pos.getY() - 1;
 
-					for (int r = q - 2; r < q; r++) {
-						BlockPos blockPos = new BlockPos(m + o, r, pos.getZ() - n + p);
-						if (blockPos != pos && random.nextInt(6) == 0 && world.getBlockState(blockPos).isOf(Blocks.WATER)) {
-							BlockState blockState = world.getBlockState(blockPos.down());
-							if (blockState.isIn(BlockTags.CORAL_BLOCKS)) {
-								world.setBlockState(blockPos, Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, Integer.valueOf(random.nextInt(4) + 1)), Block.NOTIFY_ALL);
-							}
+				for (int r = q - 2; r < q; r++) {
+					BlockPos blockPos = new BlockPos(m + o, r, pos.getZ() - n + p);
+					if (blockPos != pos && random.nextInt(6) == 0 && world.getBlockState(blockPos).isOf(Blocks.WATER)) {
+						BlockState blockState = world.getBlockState(blockPos.down());
+						if (blockState.isIn(BlockTags.CORAL_BLOCKS)) {
+							world.setBlockState(blockPos, Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, Integer.valueOf(random.nextInt(4) + 1)), Block.NOTIFY_ALL);
 						}
 					}
 				}
-
-				if (l < 2) {
-					j += 2;
-					n++;
-				} else {
-					j -= 2;
-					n--;
-				}
-
-				l++;
 			}
 
-			world.setBlockState(pos, state.with(PICKLES, Integer.valueOf(4)), Block.NOTIFY_LISTENERS);
+			if (l < 2) {
+				j += 2;
+				n++;
+			} else {
+				j -= 2;
+				n--;
+			}
+
+			l++;
 		}
+
+		world.setBlockState(pos, state.with(PICKLES, Integer.valueOf(4)), Block.NOTIFY_LISTENERS);
 	}
 
 	@Override

@@ -71,17 +71,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 				return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, EnchantmentScreenHandler.EMPTY_LAPIS_SLOT_TEXTURE);
 			}
 		});
-
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 9; j++) {
-				this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
-			}
-		}
-
-		for (int i = 0; i < 9; i++) {
-			this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
-		}
-
+		this.addPlayerSlots(playerInventory, 8, 84);
 		this.addProperty(Property.create(this.enchantmentPower, 0));
 		this.addProperty(Property.create(this.enchantmentPower, 1));
 		this.addProperty(Property.create(this.enchantmentPower, 2));
@@ -189,7 +179,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 				return true;
 			}
 		} else {
-			Util.error(player.getName() + " pressed invalid button id: " + id);
+			Util.logErrorOrPause(player.getName() + " pressed invalid button id: " + id);
 			return false;
 		}
 	}

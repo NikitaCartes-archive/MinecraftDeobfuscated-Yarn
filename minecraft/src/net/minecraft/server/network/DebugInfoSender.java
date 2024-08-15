@@ -29,6 +29,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.custom.DebugGameTestAddMarkerCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugGameTestClearCustomPayload;
+import net.minecraft.network.packet.s2c.custom.DebugRedstoneUpdateOrderCustomPayload;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
@@ -79,6 +80,12 @@ public class DebugInfoSender {
 	}
 
 	public static void sendNeighborUpdate(World world, BlockPos pos) {
+	}
+
+	public static void sendRedstoneUpdateOrder(World world, DebugRedstoneUpdateOrderCustomPayload payload) {
+		if (world instanceof ServerWorld serverWorld) {
+			sendToAll(serverWorld, payload);
+		}
 	}
 
 	public static void sendStructureStart(StructureWorldAccess world, StructureStart structureStart) {

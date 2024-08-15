@@ -9,6 +9,7 @@ import net.minecraft.block.pattern.BlockPatternBuilder;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -54,7 +55,7 @@ public class WitherSkullBlock extends SkullBlock {
 			if (bl && pos.getY() >= world.getBottomY() && world.getDifficulty() != Difficulty.PEACEFUL) {
 				BlockPattern.Result result = getWitherBossPattern().searchAround(world, pos);
 				if (result != null) {
-					WitherEntity witherEntity = EntityType.WITHER.create(world);
+					WitherEntity witherEntity = EntityType.WITHER.create(world, SpawnReason.TRIGGERED);
 					if (witherEntity != null) {
 						CarvedPumpkinBlock.breakPatternBlocks(world, result);
 						BlockPos blockPos = result.translate(1, 2, 0).getBlockPos();

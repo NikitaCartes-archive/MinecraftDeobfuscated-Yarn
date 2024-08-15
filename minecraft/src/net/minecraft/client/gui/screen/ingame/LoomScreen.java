@@ -10,9 +10,10 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.ModelBaker;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
@@ -87,26 +88,27 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 		int i = this.x;
 		int j = this.y;
-		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, i, j, 0.0F, 0.0F, this.backgroundWidth, this.backgroundHeight, 256, 256);
 		Slot slot = this.handler.getBannerSlot();
 		Slot slot2 = this.handler.getDyeSlot();
 		Slot slot3 = this.handler.getPatternSlot();
 		Slot slot4 = this.handler.getOutputSlot();
 		if (!slot.hasStack()) {
-			context.drawGuiTexture(BANNER_SLOT_TEXTURE, i + slot.x, j + slot.y, 16, 16);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, BANNER_SLOT_TEXTURE, i + slot.x, j + slot.y, 16, 16);
 		}
 
 		if (!slot2.hasStack()) {
-			context.drawGuiTexture(DYE_SLOT_TEXTURE, i + slot2.x, j + slot2.y, 16, 16);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, DYE_SLOT_TEXTURE, i + slot2.x, j + slot2.y, 16, 16);
 		}
 
 		if (!slot3.hasStack()) {
-			context.drawGuiTexture(PATTERN_SLOT_TEXTURE, i + slot3.x, j + slot3.y, 16, 16);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, PATTERN_SLOT_TEXTURE, i + slot3.x, j + slot3.y, 16, 16);
 		}
 
 		int k = (int)(41.0F * this.scrollPosition);
 		Identifier identifier = this.canApplyDyePattern ? SCROLLER_TEXTURE : SCROLLER_DISABLED_TEXTURE;
-		context.drawGuiTexture(identifier, i + 119, j + 13 + k, 12, 15);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, i + 119, j + 13 + k, 12, 15);
+		context.draw();
 		DiffuseLighting.disableGuiDepthLighting();
 		if (this.bannerPatterns != null && !this.hasTooManyPatterns) {
 			context.getMatrices().push();
@@ -124,15 +126,14 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 				15728880,
 				OverlayTexture.DEFAULT_UV,
 				this.bannerField,
-				ModelLoader.BANNER_BASE,
+				ModelBaker.BANNER_BASE,
 				true,
 				dyeColor,
 				this.bannerPatterns
 			);
 			context.getMatrices().pop();
-			context.draw();
 		} else if (this.hasTooManyPatterns) {
-			context.drawGuiTexture(ERROR_TEXTURE, i + slot4.x - 5, j + slot4.y - 5, 26, 26);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, ERROR_TEXTURE, i + slot4.x - 5, j + slot4.y - 5, 26, 26);
 		}
 
 		if (this.canApplyDyePattern) {
@@ -161,12 +162,13 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 						identifier2 = PATTERN_TEXTURE;
 					}
 
-					context.drawGuiTexture(identifier2, r, s, 14, 14);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, identifier2, r, s, 14, 14);
 					this.drawBanner(context, (RegistryEntry<BannerPattern>)list.get(q), r, s);
 				}
 			}
 		}
 
+		context.draw();
 		DiffuseLighting.enableGuiDepthLighting();
 	}
 
@@ -188,7 +190,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 			15728880,
 			OverlayTexture.DEFAULT_UV,
 			this.bannerField,
-			ModelLoader.BANNER_BASE,
+			ModelBaker.BANNER_BASE,
 			true,
 			DyeColor.GRAY,
 			bannerPatternsComponent

@@ -36,7 +36,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -198,10 +197,10 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createTurtleAttributes() {
-		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25)
-			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
+		return AnimalEntity.createAnimalAttributes()
+			.add(EntityAttributes.MAX_HEALTH, 30.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.25)
+			.add(EntityAttributes.STEP_HEIGHT, 1.0);
 	}
 
 	@Override
@@ -271,7 +270,7 @@ public class TurtleEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-		return EntityType.TURTLE.create(world);
+		return EntityType.TURTLE.create(world, SpawnReason.BREEDING);
 	}
 
 	@Override
@@ -625,7 +624,7 @@ public class TurtleEntity extends AnimalEntity {
 					float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
 					this.turtle.setYaw(this.wrapDegrees(this.turtle.getYaw(), h, 90.0F));
 					this.turtle.bodyYaw = this.turtle.getYaw();
-					float i = (float)(this.speed * this.turtle.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+					float i = (float)(this.speed * this.turtle.getAttributeValue(EntityAttributes.MOVEMENT_SPEED));
 					this.turtle.setMovementSpeed(MathHelper.lerp(0.125F, this.turtle.getMovementSpeed(), i));
 					this.turtle.setVelocity(this.turtle.getVelocity().add(0.0, (double)this.turtle.getMovementSpeed() * e * 0.1, 0.0));
 				}

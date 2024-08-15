@@ -4,27 +4,6 @@ import com.mojang.serialization.Codec;
 import net.minecraft.util.StringIdentifiable;
 
 public class GenerationStep {
-	public static enum Carver implements StringIdentifiable {
-		AIR("air"),
-		LIQUID("liquid");
-
-		public static final Codec<GenerationStep.Carver> CODEC = StringIdentifiable.createCodec(GenerationStep.Carver::values);
-		private final String name;
-
-		private Carver(final String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return this.name;
-		}
-
-		@Override
-		public String asString() {
-			return this.name;
-		}
-	}
-
 	public static enum Feature implements StringIdentifiable {
 		RAW_GENERATION("raw_generation"),
 		LAKES("lakes"),

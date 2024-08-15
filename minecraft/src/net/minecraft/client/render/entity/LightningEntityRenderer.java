@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.state.LightningEntityRenderState;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LightningEntity;
@@ -13,74 +14,74 @@ import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
-public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
+public class LightningEntityRenderer extends EntityRenderer<LightningEntity, LightningEntityRenderState> {
 	public LightningEntityRenderer(EntityRendererFactory.Context context) {
 		super(context);
 	}
 
-	public void render(LightningEntity lightningEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(LightningEntityRenderState lightningEntityRenderState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		float[] fs = new float[8];
 		float[] gs = new float[8];
-		float h = 0.0F;
-		float j = 0.0F;
-		Random random = Random.create(lightningEntity.seed);
+		float f = 0.0F;
+		float g = 0.0F;
+		Random random = Random.create(lightningEntityRenderState.seed);
 
-		for (int k = 7; k >= 0; k--) {
-			fs[k] = h;
-			gs[k] = j;
-			h += (float)(random.nextInt(11) - 5);
-			j += (float)(random.nextInt(11) - 5);
+		for (int j = 7; j >= 0; j--) {
+			fs[j] = f;
+			gs[j] = g;
+			f += (float)(random.nextInt(11) - 5);
+			g += (float)(random.nextInt(11) - 5);
 		}
 
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLightning());
 		Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
 
-		for (int l = 0; l < 4; l++) {
-			Random random2 = Random.create(lightningEntity.seed);
+		for (int k = 0; k < 4; k++) {
+			Random random2 = Random.create(lightningEntityRenderState.seed);
 
-			for (int m = 0; m < 3; m++) {
-				int n = 7;
-				int o = 0;
-				if (m > 0) {
-					n = 7 - m;
+			for (int l = 0; l < 3; l++) {
+				int m = 7;
+				int n = 0;
+				if (l > 0) {
+					m = 7 - l;
 				}
 
-				if (m > 0) {
-					o = n - 2;
+				if (l > 0) {
+					n = m - 2;
 				}
 
-				float p = fs[n] - h;
-				float q = gs[n] - j;
+				float h = fs[m] - f;
+				float o = gs[m] - g;
 
-				for (int r = n; r >= o; r--) {
-					float s = p;
-					float t = q;
-					if (m == 0) {
-						p += (float)(random2.nextInt(11) - 5);
-						q += (float)(random2.nextInt(11) - 5);
+				for (int p = m; p >= n; p--) {
+					float q = h;
+					float r = o;
+					if (l == 0) {
+						h += (float)(random2.nextInt(11) - 5);
+						o += (float)(random2.nextInt(11) - 5);
 					} else {
-						p += (float)(random2.nextInt(31) - 15);
-						q += (float)(random2.nextInt(31) - 15);
+						h += (float)(random2.nextInt(31) - 15);
+						o += (float)(random2.nextInt(31) - 15);
 					}
 
-					float u = 0.5F;
-					float v = 0.45F;
-					float w = 0.45F;
-					float x = 0.5F;
-					float y = 0.1F + (float)l * 0.2F;
-					if (m == 0) {
-						y *= (float)r * 0.1F + 1.0F;
+					float s = 0.5F;
+					float t = 0.45F;
+					float u = 0.45F;
+					float v = 0.5F;
+					float w = 0.1F + (float)k * 0.2F;
+					if (l == 0) {
+						w *= (float)p * 0.1F + 1.0F;
 					}
 
-					float z = 0.1F + (float)l * 0.2F;
-					if (m == 0) {
-						z *= ((float)r - 1.0F) * 0.1F + 1.0F;
+					float x = 0.1F + (float)k * 0.2F;
+					if (l == 0) {
+						x *= ((float)p - 1.0F) * 0.1F + 1.0F;
 					}
 
-					drawBranch(matrix4f, vertexConsumer, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, false, false, true, false);
-					drawBranch(matrix4f, vertexConsumer, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, true, false, true, true);
-					drawBranch(matrix4f, vertexConsumer, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, true, true, false, true);
-					drawBranch(matrix4f, vertexConsumer, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, false, true, false, false);
+					drawBranch(matrix4f, vertexConsumer, h, o, p, q, r, 0.45F, 0.45F, 0.5F, w, x, false, false, true, false);
+					drawBranch(matrix4f, vertexConsumer, h, o, p, q, r, 0.45F, 0.45F, 0.5F, w, x, true, false, true, true);
+					drawBranch(matrix4f, vertexConsumer, h, o, p, q, r, 0.45F, 0.45F, 0.5F, w, x, true, true, false, true);
+					drawBranch(matrix4f, vertexConsumer, h, o, p, q, r, 0.45F, 0.45F, 0.5F, w, x, false, true, false, false);
 				}
 			}
 		}
@@ -110,7 +111,20 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 		buffer.vertex(matrix, x1 + (shiftEast2 ? offset1 : -offset1), (float)(y * 16), z1 + (shiftSouth2 ? offset1 : -offset1)).color(red, green, blue, 0.3F);
 	}
 
-	public Identifier getTexture(LightningEntity lightningEntity) {
+	public Identifier getTexture(LightningEntityRenderState lightningEntityRenderState) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
+	}
+
+	public LightningEntityRenderState getRenderState() {
+		return new LightningEntityRenderState();
+	}
+
+	public void updateRenderState(LightningEntity lightningEntity, LightningEntityRenderState lightningEntityRenderState, float f) {
+		super.updateRenderState(lightningEntity, lightningEntityRenderState, f);
+		lightningEntityRenderState.seed = lightningEntity.seed;
+	}
+
+	protected boolean canBeCulled(LightningEntity lightningEntity) {
+		return false;
 	}
 }

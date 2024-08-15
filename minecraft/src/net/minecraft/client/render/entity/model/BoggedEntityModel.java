@@ -9,10 +9,10 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.mob.BoggedEntity;
+import net.minecraft.client.render.entity.state.BoggedEntityRenderState;
 
 @Environment(EnvType.CLIENT)
-public class BoggedEntityModel extends SkeletonEntityModel<BoggedEntity> {
+public class BoggedEntityModel extends SkeletonEntityModel<BoggedEntityRenderState> {
 	private final ModelPart mushrooms;
 
 	public BoggedEntityModel(ModelPart modelPart) {
@@ -24,8 +24,7 @@ public class BoggedEntityModel extends SkeletonEntityModel<BoggedEntity> {
 		ModelData modelData = BipedEntityModel.getModelData(Dilation.NONE, 0.0F);
 		ModelPartData modelPartData = modelData.getRoot();
 		SkeletonEntityModel.addLimbs(modelPartData);
-		ModelPartData modelPartData2 = modelPartData.getChild(EntityModelPartNames.HEAD)
-			.addChild(EntityModelPartNames.MUSHROOMS, ModelPartBuilder.create(), ModelTransform.NONE);
+		ModelPartData modelPartData2 = modelPartData.getChild(EntityModelPartNames.HEAD).addChild("mushrooms");
 		modelPartData2.addChild(
 			"red_mushroom_1",
 			ModelPartBuilder.create().uv(50, 16).cuboid(-3.0F, -3.0F, 0.0F, 6.0F, 4.0F, 0.0F),
@@ -59,8 +58,8 @@ public class BoggedEntityModel extends SkeletonEntityModel<BoggedEntity> {
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 
-	public void animateModel(BoggedEntity boggedEntity, float f, float g, float h) {
-		this.mushrooms.visible = !boggedEntity.isSheared();
-		super.animateModel(boggedEntity, f, g, h);
+	public void setAngles(BoggedEntityRenderState boggedEntityRenderState) {
+		super.setAngles(boggedEntityRenderState);
+		this.mushrooms.visible = !boggedEntityRenderState.sheared;
 	}
 }

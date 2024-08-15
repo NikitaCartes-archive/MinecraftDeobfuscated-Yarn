@@ -10,6 +10,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Urls;
@@ -44,7 +45,8 @@ public class AccessibilityOptionsScreen extends GameOptionsScreen {
 			gameOptions.getMonochromeLogo(),
 			gameOptions.getPanoramaSpeed(),
 			gameOptions.getHideSplashTexts(),
-			gameOptions.getNarratorHotkey()
+			gameOptions.getNarratorHotkey(),
+			gameOptions.getRotateWithMinecart()
 		};
 	}
 
@@ -60,6 +62,11 @@ public class AccessibilityOptionsScreen extends GameOptionsScreen {
 			clickableWidget.active = false;
 			clickableWidget.setTooltip(Tooltip.of(Text.translatable("options.accessibility.high_contrast.error.tooltip")));
 		}
+
+		ClickableWidget clickableWidget2 = this.body.getWidgetFor(this.gameOptions.getRotateWithMinecart());
+		if (clickableWidget2 != null) {
+			clickableWidget2.active = this.isMinecartImprovementsExperimentEnabled();
+		}
 	}
 
 	@Override
@@ -74,5 +81,9 @@ public class AccessibilityOptionsScreen extends GameOptionsScreen {
 			ButtonWidget.builder(Text.translatable("options.accessibility.link"), ConfirmLinkScreen.opening(this, Urls.JAVA_ACCESSIBILITY)).build()
 		);
 		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent)).build());
+	}
+
+	private boolean isMinecartImprovementsExperimentEnabled() {
+		return this.client.world != null && this.client.world.getEnabledFeatures().contains(FeatureFlags.MINECART_IMPROVEMENTS);
 	}
 }

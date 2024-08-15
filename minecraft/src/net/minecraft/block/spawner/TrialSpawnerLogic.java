@@ -212,7 +212,7 @@ public final class TrialSpawnerLogic {
 							}
 						}
 
-						Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, world, entityx -> {
+						Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, world, SpawnReason.TRIAL_SPAWNER, entityx -> {
 							entityx.refreshPositionAndAngles(d, e, f, random.nextFloat() * 360.0F, 0.0F);
 							return entityx;
 						});

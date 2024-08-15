@@ -15,9 +15,9 @@ public class DustPlumeParticle extends AscendingParticle {
 	) {
 		super(world, x, y, z, 0.7F, 0.6F, 0.7F, velocityX, velocityY + 0.15F, velocityZ, scaleMultiplier, spriteProvider, 0.5F, 7, 0.5F, false);
 		float f = (float)Math.random() * 0.2F;
-		this.red = (float)ColorHelper.Argb.getRed(12235202) / 255.0F - f;
-		this.green = (float)ColorHelper.Argb.getGreen(12235202) / 255.0F - f;
-		this.blue = (float)ColorHelper.Argb.getBlue(12235202) / 255.0F - f;
+		this.red = (float)ColorHelper.getRed(12235202) / 255.0F - f;
+		this.green = (float)ColorHelper.getGreen(12235202) / 255.0F - f;
+		this.blue = (float)ColorHelper.getBlue(12235202) / 255.0F - f;
 	}
 
 	@Override

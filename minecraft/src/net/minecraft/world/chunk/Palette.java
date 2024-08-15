@@ -68,7 +68,7 @@ public interface Palette<T> {
 	 */
 	int getSize();
 
-	Palette<T> copy();
+	Palette<T> copy(PaletteResizeListener<T> resizeListener);
 
 	/**
 	 * An interface for easy creation of palettes.

@@ -31,6 +31,7 @@ import net.minecraft.datafixer.fix.AreaEffectCloudPotionFix;
 import net.minecraft.datafixer.fix.ArrowPickupFix;
 import net.minecraft.datafixer.fix.ArrowStoredWeaponFix;
 import net.minecraft.datafixer.fix.AttributeIdFix;
+import net.minecraft.datafixer.fix.AttributeIdPrefixFix;
 import net.minecraft.datafixer.fix.BannerCustomNameToItemNameFix;
 import net.minecraft.datafixer.fix.BannerPatternFormatFix;
 import net.minecraft.datafixer.fix.BedBlockEntityFix;
@@ -53,6 +54,7 @@ import net.minecraft.datafixer.fix.BlockNameFix;
 import net.minecraft.datafixer.fix.BlockNameFlatteningFix;
 import net.minecraft.datafixer.fix.BlockPosFormatFix;
 import net.minecraft.datafixer.fix.BlockStateStructureTemplateFix;
+import net.minecraft.datafixer.fix.CarvingStepRemoveFix;
 import net.minecraft.datafixer.fix.CatTypeFix;
 import net.minecraft.datafixer.fix.CauldronRenameFix;
 import net.minecraft.datafixer.fix.ChoiceFix;
@@ -151,6 +153,7 @@ import net.minecraft.datafixer.fix.ObjectiveDisplayNameFix;
 import net.minecraft.datafixer.fix.ObjectiveRenderTypeFix;
 import net.minecraft.datafixer.fix.OminousBannerBlockEntityRenameFix;
 import net.minecraft.datafixer.fix.OminousBannerItemRenameFix;
+import net.minecraft.datafixer.fix.OminousBannerRarityFix;
 import net.minecraft.datafixer.fix.OptionFix;
 import net.minecraft.datafixer.fix.OptionsAccessibilityOnboardFix;
 import net.minecraft.datafixer.fix.OptionsAddTextBackgroundFix;
@@ -442,7 +445,7 @@ public class Schemas {
 				schema42,
 				false,
 				Set.of(
-					"minecraft:note_block",
+					"minecraft:noteblock",
 					"minecraft:flower_pot",
 					"minecraft:dandelion",
 					"minecraft:poppy",
@@ -1308,6 +1311,12 @@ public class Schemas {
 		Schema schema226 = builder.addSchema(3945, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new AttributeIdFix(schema226));
 		builder.addFixer(new JukeboxTicksSinceSongStartedFix(schema226));
+		Schema schema227 = builder.addSchema(4054, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new OminousBannerRarityFix(schema227));
+		Schema schema228 = builder.addSchema(4055, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new AttributeIdPrefixFix(schema228));
+		Schema schema229 = builder.addSchema(4057, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new CarvingStepRemoveFix(schema229));
 	}
 
 	private static UnaryOperator<String> replacingRaw(Map<String, String> replacements) {

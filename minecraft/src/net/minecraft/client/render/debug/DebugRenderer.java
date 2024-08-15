@@ -1,24 +1,28 @@
 package net.minecraft.client.render.debug;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9974;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.LightType;
 
 @Environment(EnvType.CLIENT)
@@ -29,7 +33,8 @@ public class DebugRenderer {
 	public final DebugRenderer.Renderer heightmapDebugRenderer;
 	public final DebugRenderer.Renderer collisionDebugRenderer;
 	public final DebugRenderer.Renderer supportingBlockDebugRenderer;
-	public final DebugRenderer.Renderer neighborUpdateDebugRenderer;
+	public final NeighborUpdateDebugRenderer neighborUpdateDebugRenderer;
+	public final RedstoneUpdateOrderDebugRenderer redstoneUpdateOrderDebugRenderer;
 	public final StructureDebugRenderer structureDebugRenderer;
 	public final DebugRenderer.Renderer skyLightDebugRenderer;
 	public final DebugRenderer.Renderer worldGenAttemptDebugRenderer;
@@ -44,6 +49,7 @@ public class DebugRenderer {
 	public final GameEventDebugRenderer gameEventDebugRenderer;
 	public final LightDebugRenderer lightDebugRenderer;
 	public final BreezeDebugRenderer breezeDebugRenderer;
+	public final ChunkDebugRenderer chunkDebugRenderer;
 	private boolean showChunkBorder;
 
 	public DebugRenderer(MinecraftClient client) {
@@ -53,6 +59,7 @@ public class DebugRenderer {
 		this.collisionDebugRenderer = new CollisionDebugRenderer(client);
 		this.supportingBlockDebugRenderer = new SupportingBlockDebugRenderer(client);
 		this.neighborUpdateDebugRenderer = new NeighborUpdateDebugRenderer(client);
+		this.redstoneUpdateOrderDebugRenderer = new RedstoneUpdateOrderDebugRenderer(client);
 		this.structureDebugRenderer = new StructureDebugRenderer(client);
 		this.skyLightDebugRenderer = new SkyLightDebugRenderer(client);
 		this.worldGenAttemptDebugRenderer = new WorldGenAttemptDebugRenderer();
@@ -67,6 +74,7 @@ public class DebugRenderer {
 		this.gameEventDebugRenderer = new GameEventDebugRenderer(client);
 		this.lightDebugRenderer = new LightDebugRenderer(client, LightType.SKY);
 		this.breezeDebugRenderer = new BreezeDebugRenderer(client);
+		this.chunkDebugRenderer = new ChunkDebugRenderer(client);
 	}
 
 	public void reset() {
@@ -91,6 +99,7 @@ public class DebugRenderer {
 		this.gameEventDebugRenderer.clear();
 		this.lightDebugRenderer.clear();
 		this.breezeDebugRenderer.clear();
+		this.chunkDebugRenderer.clear();
 	}
 
 	public boolean toggleShowChunkBorder() {
@@ -106,6 +115,10 @@ public class DebugRenderer {
 		this.gameTestDebugRenderer.render(matrices, vertexConsumers, cameraX, cameraY, cameraZ);
 	}
 
+	public void method_62351(MatrixStack matrixStack, VertexConsumerProvider.Immediate immediate, double d, double e, double f) {
+		this.chunkDebugRenderer.render(matrixStack, immediate, d, e, f);
+	}
+
 	public static Optional<Entity> getTargetedEntity(@Nullable Entity entity, int maxDistance) {
 		if (entity == null) {
 			return Optional.empty();
@@ -115,8 +128,7 @@ public class DebugRenderer {
 			Vec3d vec3d3 = vec3d.add(vec3d2);
 			Box box = entity.getBoundingBox().stretch(vec3d2).expand(1.0);
 			int i = maxDistance * maxDistance;
-			Predicate<Entity> predicate = entityx -> !entityx.isSpectator() && entityx.canHit();
-			EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, predicate, (double)i);
+			EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, EntityPredicates.CAN_HIT, (double)i);
 			if (entityHitResult == null) {
 				return Optional.empty();
 			} else {
@@ -170,7 +182,7 @@ public class DebugRenderer {
 		float alpha
 	) {
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getDebugFilledBox());
-		WorldRenderer.renderFilledBox(matrices, vertexConsumer, minX, minY, minZ, maxX, maxY, maxZ, red, green, blue, alpha);
+		class_9974.method_62300(matrices, vertexConsumer, minX, minY, minZ, maxX, maxY, maxZ, red, green, blue, alpha);
 	}
 
 	public static void drawString(MatrixStack matrices, VertexConsumerProvider vertexConsumers, String string, int x, int y, int z, int color) {
@@ -224,6 +236,48 @@ public class DebugRenderer {
 				15728880
 			);
 			matrices.pop();
+		}
+	}
+
+	private static Vec3d method_62348(float f) {
+		float g = 5.99999F;
+		int i = (int)(MathHelper.clamp(f, 0.0F, 1.0F) * 5.99999F);
+		float h = f * 5.99999F - (float)i;
+
+		return switch (i) {
+			case 0 -> new Vec3d(1.0, (double)h, 0.0);
+			case 1 -> new Vec3d((double)(1.0F - h), 1.0, 0.0);
+			case 2 -> new Vec3d(0.0, 1.0, (double)h);
+			case 3 -> new Vec3d(0.0, 1.0 - (double)h, 1.0);
+			case 4 -> new Vec3d((double)h, 0.0, 1.0);
+			case 5 -> new Vec3d(1.0, 0.0, 1.0 - (double)h);
+			default -> throw new IllegalStateException("Unexpected value: " + i);
+		};
+	}
+
+	private static Vec3d method_62349(float f, float g, float h, float i) {
+		Vec3d vec3d = method_62348(i).multiply((double)f);
+		Vec3d vec3d2 = method_62348((i + 0.33333334F) % 1.0F).multiply((double)g);
+		Vec3d vec3d3 = method_62348((i + 0.6666667F) % 1.0F).multiply((double)h);
+		Vec3d vec3d4 = vec3d.add(vec3d2).add(vec3d3);
+		double d = Math.max(Math.max(1.0, vec3d4.x), Math.max(vec3d4.y, vec3d4.z));
+		return new Vec3d(vec3d4.x / d, vec3d4.y / d, vec3d4.z / d);
+	}
+
+	public static void method_62350(
+		MatrixStack matrixStack, VertexConsumer vertexConsumer, VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j, boolean bl
+	) {
+		List<Box> list = voxelShape.getBoundingBoxes();
+		if (!list.isEmpty()) {
+			int k = bl ? list.size() : list.size() * 8;
+			class_9974.method_62296(matrixStack, vertexConsumer, VoxelShapes.cuboid((Box)list.get(0)), d, e, f, g, h, i, j);
+
+			for (int l = 1; l < list.size(); l++) {
+				Box box = (Box)list.get(l);
+				float m = (float)l / (float)k;
+				Vec3d vec3d = method_62349(g, h, i, m);
+				class_9974.method_62296(matrixStack, vertexConsumer, VoxelShapes.cuboid(box), d, e, f, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z, j);
+			}
 		}
 	}
 

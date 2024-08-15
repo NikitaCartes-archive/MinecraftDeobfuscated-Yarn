@@ -20,6 +20,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
+import net.minecraft.item.BundleItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -175,6 +176,8 @@ public abstract class ScreenHandler {
 	public static final int field_30735 = 1;
 	public static final int field_30736 = 2;
 	public static final int field_30737 = Integer.MAX_VALUE;
+	public static final int field_52557 = 9;
+	public static final int field_52558 = 18;
 	/**
 	 * A list of item stacks that is used for tracking changes in {@link #sendContentUpdates()}.
 	 */
@@ -200,6 +203,31 @@ public abstract class ScreenHandler {
 	protected ScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId) {
 		this.type = type;
 		this.syncId = syncId;
+	}
+
+	protected void addPlayerHotbarSlots(Inventory playerInventory, int left, int y) {
+		for (int i = 0; i < 9; i++) {
+			this.addSlot(new Slot(playerInventory, i, left + i * 18, y));
+		}
+	}
+
+	protected void addPlayerInventorySlots(Inventory playerInventory, int left, int top) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 9; j++) {
+				this.addSlot(new Slot(playerInventory, j + (i + 1) * 9, left + j * 18, top + i * 18));
+			}
+		}
+	}
+
+	/**
+	 * Adds the slots for the player inventory and hotbar. Subclasses should call this
+	 * within the constructor.
+	 */
+	protected void addPlayerSlots(Inventory playerInventory, int left, int top) {
+		this.addPlayerInventorySlots(playerInventory, left, top);
+		int i = 4;
+		int j = 58;
+		this.addPlayerHotbarSlots(playerInventory, left, top + 58);
 	}
 
 	/**
@@ -525,6 +553,13 @@ public abstract class ScreenHandler {
 	 */
 	public abstract ItemStack quickMove(PlayerEntity player, int slot);
 
+	public void selectBundleStack(int slot, int selectedStack) {
+		if (slot >= 0 && slot < this.slots.size()) {
+			ItemStack itemStack = this.slots.get(slot).getStack();
+			BundleItem.setSelectedStackIndex(itemStack, selectedStack);
+		}
+	}
+
 	/**
 	 * Performs a slot click. This can behave in many different ways depending mainly on the action type.
 	 * 
@@ -736,6 +771,14 @@ public abstract class ScreenHandler {
 			int j = button == 0 ? 1 : slot3.getStack().getCount();
 			ItemStack itemStack = slot3.takeStackRange(j, Integer.MAX_VALUE, player);
 			player.dropItem(itemStack, true);
+			if (button == 1) {
+				while (!itemStack.isEmpty() && ItemStack.areItemsEqual(slot3.getStack(), itemStack)) {
+					itemStack = slot3.takeStackRange(j, Integer.MAX_VALUE, player);
+					player.dropItem(itemStack, true);
+				}
+			}
+
+			player.dropCreativeStack(itemStack);
 		} else if (actionType == SlotActionType.PICKUP_ALL && slotIndex >= 0) {
 			Slot slot3 = this.slots.get(slotIndex);
 			ItemStack itemStack2 = this.getCursorStack();

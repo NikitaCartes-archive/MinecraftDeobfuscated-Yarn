@@ -69,6 +69,10 @@ public class EntityAttributeInstance {
 		return ImmutableSet.copyOf(this.idToModifiers.values());
 	}
 
+	public Set<EntityAttributeModifier> getPersistentModifiers() {
+		return ImmutableSet.copyOf(this.persistentModifiers.values());
+	}
+
 	@Nullable
 	public EntityAttributeModifier getModifier(Identifier id) {
 		return (EntityAttributeModifier)this.idToModifiers.get(id);
@@ -113,6 +117,12 @@ public class EntityAttributeInstance {
 	public void addPersistentModifier(EntityAttributeModifier modifier) {
 		this.addModifier(modifier);
 		this.persistentModifiers.put(modifier.id(), modifier);
+	}
+
+	public void addPersistentModifiers(Collection<EntityAttributeModifier> modifiers) {
+		for (EntityAttributeModifier entityAttributeModifier : modifiers) {
+			this.addPersistentModifier(entityAttributeModifier);
+		}
 	}
 
 	protected void onUpdate() {

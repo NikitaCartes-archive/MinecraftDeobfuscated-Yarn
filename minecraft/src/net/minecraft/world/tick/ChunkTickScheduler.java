@@ -1,8 +1,7 @@
 package net.minecraft.world.tick;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -96,16 +95,25 @@ public class ChunkTickScheduler<T> implements SerializableTickScheduler<T>, Basi
 		return this.tickQueue.size() + (this.ticks != null ? this.ticks.size() : 0);
 	}
 
-	public NbtList toNbt(long l, Function<T, String> function) {
-		NbtList nbtList = new NbtList();
+	@Override
+	public List<Tick<T>> collectTicks(long time) {
+		List<Tick<T>> list = new ArrayList(this.tickQueue.size());
 		if (this.ticks != null) {
-			for (Tick<T> tick : this.ticks) {
-				nbtList.add(tick.toNbt(function));
-			}
+			list.addAll(this.ticks);
 		}
 
 		for (OrderedTick<T> orderedTick : this.tickQueue) {
-			nbtList.add(Tick.orderedTickToNbt(orderedTick, function, l));
+			list.add(orderedTick.toTick(time));
+		}
+
+		return list;
+	}
+
+	public NbtList toNbt(long time, Function<T, String> typeToNameFunction) {
+		NbtList nbtList = new NbtList();
+
+		for (Tick<T> tick : this.collectTicks(time)) {
+			nbtList.add(tick.toNbt(typeToNameFunction));
 		}
 
 		return nbtList;
@@ -124,8 +132,6 @@ public class ChunkTickScheduler<T> implements SerializableTickScheduler<T>, Basi
 	}
 
 	public static <T> ChunkTickScheduler<T> create(NbtList tickQueue, Function<String, Optional<T>> nameToTypeFunction, ChunkPos pos) {
-		Builder<Tick<T>> builder = ImmutableList.builder();
-		Tick.tick(tickQueue, nameToTypeFunction, pos, builder::add);
-		return new ChunkTickScheduler<>(builder.build());
+		return new ChunkTickScheduler<>(Tick.tick(tickQueue, nameToTypeFunction, pos));
 	}
 }

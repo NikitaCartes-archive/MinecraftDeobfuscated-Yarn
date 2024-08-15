@@ -25,7 +25,6 @@ import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.noise.NoiseConfig;
 
@@ -111,15 +110,7 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public void carve(
-		ChunkRegion chunkRegion,
-		long seed,
-		NoiseConfig noiseConfig,
-		BiomeAccess biomeAccess,
-		StructureAccessor structureAccessor,
-		Chunk chunk,
-		GenerationStep.Carver carverStep
-	) {
+	public void carve(ChunkRegion chunkRegion, long seed, NoiseConfig noiseConfig, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk) {
 	}
 
 	@Override

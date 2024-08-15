@@ -34,7 +34,8 @@ public class BakedQuadFactory {
 		Direction side,
 		ModelBakeSettings settings,
 		@Nullable net.minecraft.client.render.model.json.ModelRotation rotation,
-		boolean shade
+		boolean shade,
+		int lightEmission
 	) {
 		ModelElementTexture modelElementTexture = face.textureData();
 		if (settings.isUvLocked()) {
@@ -50,14 +51,14 @@ public class BakedQuadFactory {
 		modelElementTexture.uvs[2] = MathHelper.lerp(f, modelElementTexture.uvs[2], g);
 		modelElementTexture.uvs[1] = MathHelper.lerp(f, modelElementTexture.uvs[1], h);
 		modelElementTexture.uvs[3] = MathHelper.lerp(f, modelElementTexture.uvs[3], h);
-		int[] is = this.packVertexData(modelElementTexture, texture, side, this.getPositionMatrix(from, to), settings.getRotation(), rotation, shade);
+		int[] is = this.packVertexData(modelElementTexture, texture, side, this.getPositionMatrix(from, to), settings.getRotation(), rotation);
 		Direction direction = decodeDirection(is);
 		System.arraycopy(fs, 0, modelElementTexture.uvs, 0, fs.length);
 		if (rotation == null) {
 			this.encodeDirection(is, direction);
 		}
 
-		return new BakedQuad(is, face.tintIndex(), direction, texture, shade);
+		return new BakedQuad(is, face.tintIndex(), direction, texture, shade, lightEmission);
 	}
 
 	public static ModelElementTexture uvLock(ModelElementTexture texture, Direction orientation, AffineTransformation rotation) {
@@ -105,13 +106,12 @@ public class BakedQuadFactory {
 		Direction direction,
 		float[] positionMatrix,
 		AffineTransformation orientation,
-		@Nullable net.minecraft.client.render.model.json.ModelRotation rotation,
-		boolean shaded
+		@Nullable net.minecraft.client.render.model.json.ModelRotation rotation
 	) {
 		int[] is = new int[32];
 
 		for (int i = 0; i < 4; i++) {
-			this.packVertexData(is, i, direction, texture, positionMatrix, sprite, orientation, rotation, shaded);
+			this.packVertexData(is, i, direction, texture, positionMatrix, sprite, orientation, rotation);
 		}
 
 		return is;
@@ -136,8 +136,7 @@ public class BakedQuadFactory {
 		float[] positionMatrix,
 		Sprite sprite,
 		AffineTransformation orientation,
-		@Nullable net.minecraft.client.render.model.json.ModelRotation rotation,
-		boolean shaded
+		@Nullable net.minecraft.client.render.model.json.ModelRotation rotation
 	) {
 		CubeFace.Corner corner = CubeFace.getFace(direction).getCorner(cornerIndex);
 		Vector3f vector3f = new Vector3f(positionMatrix[corner.xSide], positionMatrix[corner.ySide], positionMatrix[corner.zSide]);

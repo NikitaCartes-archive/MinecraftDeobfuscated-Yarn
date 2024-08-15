@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import java.util.Arrays;
+import java.util.Locale;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.TimeArgumentType;
 import net.minecraft.server.ServerTickManager;
@@ -52,13 +53,13 @@ public class TickCommand {
 	}
 
 	private static String format(long nanos) {
-		return String.format("%.1f", (float)nanos / (float)TimeHelper.MILLI_IN_NANOS);
+		return String.format(Locale.ROOT, "%.1f", (float)nanos / (float)TimeHelper.MILLI_IN_NANOS);
 	}
 
 	private static int executeRate(ServerCommandSource source, float rate) {
 		ServerTickManager serverTickManager = source.getServer().getTickManager();
 		serverTickManager.setTickRate(rate);
-		String string = String.format("%.1f", rate);
+		String string = String.format(Locale.ROOT, "%.1f", rate);
 		source.sendFeedback(() -> Text.translatable("commands.tick.rate.success", string), true);
 		return (int)rate;
 	}
@@ -67,7 +68,7 @@ public class TickCommand {
 		ServerTickManager serverTickManager = source.getServer().getTickManager();
 		String string = format(source.getServer().getAverageNanosPerTick());
 		float f = serverTickManager.getTickRate();
-		String string2 = String.format("%.1f", f);
+		String string2 = String.format(Locale.ROOT, "%.1f", f);
 		if (serverTickManager.isSprinting()) {
 			source.sendFeedback(() -> Text.translatable("commands.tick.status.sprinting"), false);
 			source.sendFeedback(() -> Text.translatable("commands.tick.query.rate.sprinting", string2, string), false);

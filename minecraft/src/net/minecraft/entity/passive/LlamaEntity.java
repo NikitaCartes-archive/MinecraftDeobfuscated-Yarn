@@ -33,13 +33,13 @@ import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -75,6 +75,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 
 	public LlamaEntity(EntityType<? extends LlamaEntity> entityType, World world) {
 		super(entityType, world);
+		this.getNavigation().setMaxFollowRange(40.0F);
 	}
 
 	public boolean isTrader() {
@@ -126,7 +127,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	}
 
 	public static DefaultAttributeContainer.Builder createLlamaAttributes() {
-		return createAbstractDonkeyAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 40.0);
+		return createAbstractDonkeyAttributes();
 	}
 
 	@Override
@@ -334,7 +335,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 
 	@Nullable
 	protected LlamaEntity createChild() {
-		return EntityType.LLAMA.create(this.getWorld());
+		return EntityType.LLAMA.create(this.getWorld(), SpawnReason.BREEDING);
 	}
 
 	private void spitAt(LivingEntity target) {
@@ -343,7 +344,10 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 		double e = target.getBodyY(0.3333333333333333) - llamaSpitEntity.getY();
 		double f = target.getZ() - this.getZ();
 		double g = Math.sqrt(d * d + f * f) * 0.2F;
-		llamaSpitEntity.setVelocity(d, e + g, f, 1.5F, 10.0F);
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			ProjectileEntity.spawnWithVelocity(llamaSpitEntity, serverWorld, ItemStack.EMPTY, d, e + g, f, 1.5F, 10.0F);
+		}
+
 		if (!this.isSilent()) {
 			this.getWorld()
 				.playSound(
@@ -358,7 +362,6 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 				);
 		}
 
-		this.getWorld().spawnEntity(llamaSpitEntity);
 		this.spit = true;
 	}
 

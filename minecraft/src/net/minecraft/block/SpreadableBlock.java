@@ -22,8 +22,8 @@ public abstract class SpreadableBlock extends SnowyBlock {
 		} else if (blockState.getFluidState().getLevel() == 8) {
 			return false;
 		} else {
-			int i = ChunkLightProvider.getRealisticOpacity(world, state, pos, blockState, blockPos, Direction.UP, blockState.getOpacity(world, blockPos));
-			return i < world.getMaxLightLevel();
+			int i = ChunkLightProvider.getRealisticOpacity(state, blockState, Direction.UP, blockState.getOpacity());
+			return i < 15;
 		}
 	}
 

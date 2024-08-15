@@ -2,6 +2,7 @@ package net.minecraft.data.server.loottable.vanilla;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.data.server.loottable.EntityLootTableGenerator;
+import net.minecraft.data.server.loottable.LootTableData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.FrogVariant;
 import net.minecraft.item.Items;
@@ -32,6 +33,9 @@ import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.RaiderPredicate;
 import net.minecraft.predicate.entity.SlimePredicate;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.EntityTypeTags;
@@ -45,6 +49,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 
 	@Override
 	public void generate() {
+		RegistryEntryLookup<EntityType<?>> registryEntryLookup = this.registryLookup.getWrapperOrThrow(RegistryKeys.ENTITY_TYPE);
 		this.register(EntityType.ALLAY, LootTable.builder());
 		this.register(EntityType.ARMADILLO, LootTable.builder());
 		this.register(EntityType.ARMOR_STAND, LootTable.builder());
@@ -206,7 +211,11 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.with(TagEntry.expandBuilder(ItemTags.CREEPER_DROP_MUSIC_DISCS))
-						.conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.ATTACKER, EntityPredicate.Builder.create().type(EntityTypeTags.SKELETONS)))
+						.conditionally(
+							EntityPropertiesLootCondition.builder(
+								LootContext.EntityTarget.ATTACKER, EntityPredicate.Builder.create().type(registryEntryLookup, EntityTypeTags.SKELETONS)
+							)
+						)
 				)
 		);
 		this.register(
@@ -458,7 +467,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 							ItemEntry.builder(Items.MAGMA_CREAM)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(-2.0F, 1.0F)))
 								.apply(EnchantedCountIncreaseLootFunction.builder(this.registryLookup, UniformLootNumberProvider.create(0.0F, 1.0F)))
-								.conditionally(this.killedByFrog().invert())
+								.conditionally(this.killedByFrog(registryEntryLookup).invert())
 								.conditionally(
 									EntityPropertiesLootCondition.builder(
 										LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().typeSpecific(SlimePredicate.of(NumberRange.IntRange.atLeast(2)))
@@ -468,17 +477,17 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 						.with(
 							ItemEntry.builder(Items.PEARLESCENT_FROGLIGHT)
 								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
-								.conditionally(this.killedByFrog(FrogVariant.WARM))
+								.conditionally(this.killedByFrog(registryEntryLookup, FrogVariant.WARM))
 						)
 						.with(
 							ItemEntry.builder(Items.VERDANT_FROGLIGHT)
 								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
-								.conditionally(this.killedByFrog(FrogVariant.COLD))
+								.conditionally(this.killedByFrog(registryEntryLookup, FrogVariant.COLD))
 						)
 						.with(
 							ItemEntry.builder(Items.OCHRE_FROGLIGHT)
 								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
-								.conditionally(this.killedByFrog(FrogVariant.TEMPERATE))
+								.conditionally(this.killedByFrog(registryEntryLookup, FrogVariant.TEMPERATE))
 						)
 				)
 		);
@@ -681,22 +690,8 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 						)
 				)
 		);
-		this.register(EntityType.SHEEP, LootTables.BLACK_SHEEP_ENTITY, createForSheep(Blocks.BLACK_WOOL));
-		this.register(EntityType.SHEEP, LootTables.BLUE_SHEEP_ENTITY, createForSheep(Blocks.BLUE_WOOL));
-		this.register(EntityType.SHEEP, LootTables.BROWN_SHEEP_ENTITY, createForSheep(Blocks.BROWN_WOOL));
-		this.register(EntityType.SHEEP, LootTables.CYAN_SHEEP_ENTITY, createForSheep(Blocks.CYAN_WOOL));
-		this.register(EntityType.SHEEP, LootTables.GRAY_SHEEP_ENTITY, createForSheep(Blocks.GRAY_WOOL));
-		this.register(EntityType.SHEEP, LootTables.GREEN_SHEEP_ENTITY, createForSheep(Blocks.GREEN_WOOL));
-		this.register(EntityType.SHEEP, LootTables.LIGHT_BLUE_SHEEP_ENTITY, createForSheep(Blocks.LIGHT_BLUE_WOOL));
-		this.register(EntityType.SHEEP, LootTables.LIGHT_GRAY_SHEEP_ENTITY, createForSheep(Blocks.LIGHT_GRAY_WOOL));
-		this.register(EntityType.SHEEP, LootTables.LIME_SHEEP_ENTITY, createForSheep(Blocks.LIME_WOOL));
-		this.register(EntityType.SHEEP, LootTables.MAGENTA_SHEEP_ENTITY, createForSheep(Blocks.MAGENTA_WOOL));
-		this.register(EntityType.SHEEP, LootTables.ORANGE_SHEEP_ENTITY, createForSheep(Blocks.ORANGE_WOOL));
-		this.register(EntityType.SHEEP, LootTables.PINK_SHEEP_ENTITY, createForSheep(Blocks.PINK_WOOL));
-		this.register(EntityType.SHEEP, LootTables.PURPLE_SHEEP_ENTITY, createForSheep(Blocks.PURPLE_WOOL));
-		this.register(EntityType.SHEEP, LootTables.RED_SHEEP_ENTITY, createForSheep(Blocks.RED_WOOL));
-		this.register(EntityType.SHEEP, LootTables.WHITE_SHEEP_ENTITY, createForSheep(Blocks.WHITE_WOOL));
-		this.register(EntityType.SHEEP, LootTables.YELLOW_SHEEP_ENTITY, createForSheep(Blocks.YELLOW_WOOL));
+		LootTableData.WOOL_FROM_DYE_COLOR
+			.forEach((color, wool) -> this.register(EntityType.SHEEP, (RegistryKey<LootTable>)LootTables.SHEEP_DROPS_FROM_DYE_COLOR.get(color), createForSheep(wool)));
 		this.register(
 			EntityType.SHULKER,
 			LootTable.builder()
@@ -753,9 +748,13 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 							ItemEntry.builder(Items.SLIME_BALL)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 2.0F)))
 								.apply(EnchantedCountIncreaseLootFunction.builder(this.registryLookup, UniformLootNumberProvider.create(0.0F, 1.0F)))
-								.conditionally(this.killedByFrog().invert())
+								.conditionally(this.killedByFrog(registryEntryLookup).invert())
 						)
-						.with(ItemEntry.builder(Items.SLIME_BALL).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F))).conditionally(this.killedByFrog()))
+						.with(
+							ItemEntry.builder(Items.SLIME_BALL)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.conditionally(this.killedByFrog(registryEntryLookup))
+						)
 						.conditionally(
 							EntityPropertiesLootCondition.builder(
 								LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().typeSpecific(SlimePredicate.of(NumberRange.IntRange.exactly(1)))

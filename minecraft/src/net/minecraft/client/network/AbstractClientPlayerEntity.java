@@ -10,7 +10,6 @@ import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -25,6 +24,8 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	public float elytraYaw;
 	public float elytraRoll;
 	public final ClientWorld clientWorld;
+	public float field_53038;
+	public float field_53039;
 
 	public AbstractClientPlayerEntity(ClientWorld world, GameProfile profile) {
 		super(world, world.getSpawnPos(), world.getSpawnAngle(), profile);
@@ -54,6 +55,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void tick() {
+		this.field_53038 = this.field_53039;
 		this.lastVelocity = this.getVelocity();
 		super.tick();
 	}
@@ -67,34 +69,27 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 		return playerListEntry == null ? DefaultSkinHelper.getSkinTextures(this.getUuid()) : playerListEntry.getSkinTextures();
 	}
 
-	public float getFovMultiplier() {
+	public float getFovMultiplier(boolean firstPerson) {
 		float f = 1.0F;
 		if (this.getAbilities().flying) {
 			f *= 1.1F;
 		}
 
-		f *= ((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) / this.getAbilities().getWalkSpeed() + 1.0F) / 2.0F;
-		if (this.getAbilities().getWalkSpeed() == 0.0F || Float.isNaN(f) || Float.isInfinite(f)) {
-			f = 1.0F;
+		float g = this.getAbilities().getWalkSpeed();
+		if (g != 0.0F) {
+			float h = (float)this.getAttributeValue(EntityAttributes.MOVEMENT_SPEED) / g;
+			f *= (h + 1.0F) / 2.0F;
 		}
 
-		ItemStack itemStack = this.getActiveItem();
 		if (this.isUsingItem()) {
-			if (itemStack.isOf(Items.BOW)) {
-				int i = this.getItemUseTime();
-				float g = (float)i / 20.0F;
-				if (g > 1.0F) {
-					g = 1.0F;
-				} else {
-					g *= g;
-				}
-
-				f *= 1.0F - g * 0.15F;
-			} else if (MinecraftClient.getInstance().options.getPerspective().isFirstPerson() && this.isUsingSpyglass()) {
+			if (this.getActiveItem().isOf(Items.BOW)) {
+				float h = Math.min((float)this.getItemUseTime() / 20.0F, 1.0F);
+				f *= 1.0F - MathHelper.square(h) * 0.15F;
+			} else if (firstPerson && this.isUsingSpyglass()) {
 				return 0.1F;
 			}
 		}
 
-		return MathHelper.lerp(MinecraftClient.getInstance().options.getFovEffectScale().getValue().floatValue(), 1.0F, f);
+		return f;
 	}
 }

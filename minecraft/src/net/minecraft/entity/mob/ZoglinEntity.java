@@ -8,9 +8,11 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.LivingTargetCache;
@@ -43,9 +45,11 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
-public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
+public class ZoglinEntity extends HostileEntity implements Hoglin {
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(ZoglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final int field_30514 = 40;
 	private static final int field_30505 = 1;
@@ -152,13 +156,23 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		}
 	}
 
+	@Nullable
+	@Override
+	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
+		if (world.getRandom().nextFloat() < 0.2F) {
+			this.setBaby(true);
+		}
+
+		return super.initialize(world, difficulty, spawnReason, entityData);
+	}
+
 	public static DefaultAttributeContainer.Builder createZoglinAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.6F)
-			.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.0)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
+			.add(EntityAttributes.MAX_HEALTH, 40.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.KNOCKBACK_RESISTANCE, 0.6F)
+			.add(EntityAttributes.ATTACK_KNOCKBACK, 1.0)
+			.add(EntityAttributes.ATTACK_DAMAGE, 6.0);
 	}
 
 	public boolean isAdult() {
@@ -239,7 +253,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	public void setBaby(boolean baby) {
 		this.getDataTracker().set(BABY, baby);
 		if (!this.getWorld().isClient && baby) {
-			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(0.5);
+			this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(0.5);
 		}
 	}
 

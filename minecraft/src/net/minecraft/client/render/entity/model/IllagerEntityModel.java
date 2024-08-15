@@ -9,13 +9,14 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.entity.state.IllagerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class IllagerEntityModel<T extends IllagerEntity> extends SinglePartEntityModel<T> implements ModelWithArms, ModelWithHead {
+public class IllagerEntityModel<S extends IllagerEntityRenderState> extends EntityModel<S> implements ModelWithArms, ModelWithHead {
 	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart hat;
@@ -88,10 +89,10 @@ public class IllagerEntityModel<T extends IllagerEntity> extends SinglePartEntit
 		return this.root;
 	}
 
-	public void setAngles(T illagerEntity, float f, float g, float h, float i, float j) {
-		this.head.yaw = i * (float) (Math.PI / 180.0);
-		this.head.pitch = j * (float) (Math.PI / 180.0);
-		if (this.riding) {
+	public void setAngles(S illagerEntityRenderState) {
+		this.head.yaw = illagerEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
+		this.head.pitch = illagerEntityRenderState.pitch * (float) (Math.PI / 180.0);
+		if (illagerEntityRenderState.hasVehicle) {
 			this.rightArm.pitch = (float) (-Math.PI / 5);
 			this.rightArm.yaw = 0.0F;
 			this.rightArm.roll = 0.0F;
@@ -105,34 +106,38 @@ public class IllagerEntityModel<T extends IllagerEntity> extends SinglePartEntit
 			this.leftLeg.yaw = (float) (-Math.PI / 10);
 			this.leftLeg.roll = -0.07853982F;
 		} else {
-			this.rightArm.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 2.0F * g * 0.5F;
+			float f = illagerEntityRenderState.limbAmplitudeMultiplier;
+			float g = illagerEntityRenderState.limbFrequency;
+			this.rightArm.pitch = MathHelper.cos(g * 0.6662F + (float) Math.PI) * 2.0F * f * 0.5F;
 			this.rightArm.yaw = 0.0F;
 			this.rightArm.roll = 0.0F;
-			this.leftArm.pitch = MathHelper.cos(f * 0.6662F) * 2.0F * g * 0.5F;
+			this.leftArm.pitch = MathHelper.cos(g * 0.6662F) * 2.0F * f * 0.5F;
 			this.leftArm.yaw = 0.0F;
 			this.leftArm.roll = 0.0F;
-			this.rightLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g * 0.5F;
+			this.rightLeg.pitch = MathHelper.cos(g * 0.6662F) * 1.4F * f * 0.5F;
 			this.rightLeg.yaw = 0.0F;
 			this.rightLeg.roll = 0.0F;
-			this.leftLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g * 0.5F;
+			this.leftLeg.pitch = MathHelper.cos(g * 0.6662F + (float) Math.PI) * 1.4F * f * 0.5F;
 			this.leftLeg.yaw = 0.0F;
 			this.leftLeg.roll = 0.0F;
 		}
 
-		IllagerEntity.State state = illagerEntity.getState();
+		IllagerEntity.State state = illagerEntityRenderState.illagerState;
 		if (state == IllagerEntity.State.ATTACKING) {
-			if (illagerEntity.getMainHandStack().isEmpty()) {
-				CrossbowPosing.meleeAttack(this.leftArm, this.rightArm, true, this.handSwingProgress, h);
+			if (illagerEntityRenderState.getMainHandStack().isEmpty()) {
+				CrossbowPosing.meleeAttack(this.leftArm, this.rightArm, true, illagerEntityRenderState.handSwingProgress, illagerEntityRenderState.age);
 			} else {
-				CrossbowPosing.meleeAttack(this.rightArm, this.leftArm, illagerEntity, this.handSwingProgress, h);
+				CrossbowPosing.meleeAttack(
+					this.rightArm, this.leftArm, illagerEntityRenderState.illagerMainArm, illagerEntityRenderState.handSwingProgress, illagerEntityRenderState.age
+				);
 			}
 		} else if (state == IllagerEntity.State.SPELLCASTING) {
 			this.rightArm.pivotZ = 0.0F;
 			this.rightArm.pivotX = -5.0F;
 			this.leftArm.pivotZ = 0.0F;
 			this.leftArm.pivotX = 5.0F;
-			this.rightArm.pitch = MathHelper.cos(h * 0.6662F) * 0.25F;
-			this.leftArm.pitch = MathHelper.cos(h * 0.6662F) * 0.25F;
+			this.rightArm.pitch = MathHelper.cos(illagerEntityRenderState.age * 0.6662F) * 0.25F;
+			this.leftArm.pitch = MathHelper.cos(illagerEntityRenderState.age * 0.6662F) * 0.25F;
 			this.rightArm.roll = (float) (Math.PI * 3.0 / 4.0);
 			this.leftArm.roll = (float) (-Math.PI * 3.0 / 4.0);
 			this.rightArm.yaw = 0.0F;
@@ -146,16 +151,16 @@ public class IllagerEntityModel<T extends IllagerEntity> extends SinglePartEntit
 		} else if (state == IllagerEntity.State.CROSSBOW_HOLD) {
 			CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, true);
 		} else if (state == IllagerEntity.State.CROSSBOW_CHARGE) {
-			CrossbowPosing.charge(this.rightArm, this.leftArm, illagerEntity, true);
+			CrossbowPosing.charge(this.rightArm, this.leftArm, (float)illagerEntityRenderState.crossbowPullTime, illagerEntityRenderState.itemUseTime, true);
 		} else if (state == IllagerEntity.State.CELEBRATING) {
 			this.rightArm.pivotZ = 0.0F;
 			this.rightArm.pivotX = -5.0F;
-			this.rightArm.pitch = MathHelper.cos(h * 0.6662F) * 0.05F;
+			this.rightArm.pitch = MathHelper.cos(illagerEntityRenderState.age * 0.6662F) * 0.05F;
 			this.rightArm.roll = 2.670354F;
 			this.rightArm.yaw = 0.0F;
 			this.leftArm.pivotZ = 0.0F;
 			this.leftArm.pivotX = 5.0F;
-			this.leftArm.pitch = MathHelper.cos(h * 0.6662F) * 0.05F;
+			this.leftArm.pitch = MathHelper.cos(illagerEntityRenderState.age * 0.6662F) * 0.05F;
 			this.leftArm.roll = (float) (-Math.PI * 3.0 / 4.0);
 			this.leftArm.yaw = 0.0F;
 		}
@@ -181,6 +186,7 @@ public class IllagerEntityModel<T extends IllagerEntity> extends SinglePartEntit
 
 	@Override
 	public void setArmAngle(Arm arm, MatrixStack matrices) {
+		this.root.rotate(matrices);
 		this.getAttackingArm(arm).rotate(matrices);
 	}
 }

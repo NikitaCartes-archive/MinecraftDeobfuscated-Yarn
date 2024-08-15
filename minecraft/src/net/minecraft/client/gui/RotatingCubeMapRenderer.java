@@ -1,10 +1,11 @@
 package net.minecraft.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class RotatingCubeMapRenderer {
@@ -12,7 +13,6 @@ public class RotatingCubeMapRenderer {
 	private final MinecraftClient client;
 	private final CubeMapRenderer cubeMap;
 	private float pitch;
-	private float yaw;
 
 	public RotatingCubeMapRenderer(CubeMapRenderer cubeMap) {
 		this.cubeMap = cubeMap;
@@ -20,15 +20,13 @@ public class RotatingCubeMapRenderer {
 	}
 
 	public void render(DrawContext context, int width, int height, float alpha, float tickDelta) {
-		float f = (float)((double)tickDelta * this.client.options.getPanoramaSpeed().getValue());
-		this.pitch = wrapOnce(this.pitch + f * 0.1F, 360.0F);
-		this.yaw = wrapOnce(this.yaw + f * 0.001F, (float) (Math.PI * 2));
+		float f = this.client.getRenderTickCounter().getLastDuration();
+		float g = (float)((double)f * this.client.options.getPanoramaSpeed().getValue());
+		this.pitch = wrapOnce(this.pitch + g * 0.1F, 360.0F);
+		context.draw();
 		this.cubeMap.draw(this.client, 10.0F, -this.pitch, alpha);
-		RenderSystem.enableBlend();
-		context.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
-		context.drawTexture(OVERLAY_TEXTURE, 0, 0, width, height, 0.0F, 0.0F, 16, 128, 16, 128);
-		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.disableBlend();
+		context.draw();
+		context.drawTexture(RenderLayer::getGuiTextured, OVERLAY_TEXTURE, 0, 0, 0.0F, 0.0F, width, height, 16, 128, 16, 128, ColorHelper.getWhite(alpha));
 	}
 
 	private static float wrapOnce(float a, float b) {

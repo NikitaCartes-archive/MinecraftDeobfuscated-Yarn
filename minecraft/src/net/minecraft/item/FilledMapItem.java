@@ -364,7 +364,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 				}
 			}
 
-			return ActionResult.success(context.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return super.useOnBlock(context);
 		}

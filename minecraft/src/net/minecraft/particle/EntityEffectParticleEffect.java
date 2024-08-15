@@ -30,19 +30,19 @@ public class EntityEffectParticleEffect implements ParticleEffect {
 	}
 
 	public float getRed() {
-		return (float)ColorHelper.Argb.getRed(this.color) / 255.0F;
+		return (float)ColorHelper.getRed(this.color) / 255.0F;
 	}
 
 	public float getGreen() {
-		return (float)ColorHelper.Argb.getGreen(this.color) / 255.0F;
+		return (float)ColorHelper.getGreen(this.color) / 255.0F;
 	}
 
 	public float getBlue() {
-		return (float)ColorHelper.Argb.getBlue(this.color) / 255.0F;
+		return (float)ColorHelper.getBlue(this.color) / 255.0F;
 	}
 
 	public float getAlpha() {
-		return (float)ColorHelper.Argb.getAlpha(this.color) / 255.0F;
+		return (float)ColorHelper.getAlpha(this.color) / 255.0F;
 	}
 
 	public static EntityEffectParticleEffect create(ParticleType<EntityEffectParticleEffect> type, int color) {
@@ -50,6 +50,6 @@ public class EntityEffectParticleEffect implements ParticleEffect {
 	}
 
 	public static EntityEffectParticleEffect create(ParticleType<EntityEffectParticleEffect> type, float r, float g, float b) {
-		return create(type, ColorHelper.Argb.fromFloats(1.0F, r, g, b));
+		return create(type, ColorHelper.fromFloats(1.0F, r, g, b));
 	}
 }

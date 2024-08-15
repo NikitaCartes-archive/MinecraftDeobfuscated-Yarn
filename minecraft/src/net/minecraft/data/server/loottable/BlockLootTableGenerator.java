@@ -74,7 +74,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 public abstract class BlockLootTableGenerator implements LootTableGenerator {
-	protected static final LootCondition.Builder WITH_SHEARS = MatchToolLootCondition.builder(ItemPredicate.Builder.create().items(Items.SHEARS));
 	protected final RegistryWrapper.WrapperLookup registryLookup;
 	protected final Set<Item> explosionImmuneItems;
 	protected final FeatureSet requiredFeatures;
@@ -97,8 +96,12 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 		return this.createSilkTouchCondition().invert();
 	}
 
+	protected LootCondition.Builder createWithShearsCondition() {
+		return MatchToolLootCondition.builder(ItemPredicate.Builder.create().items(this.registryLookup.getWrapperOrThrow(RegistryKeys.ITEM), Items.SHEARS));
+	}
+
 	private LootCondition.Builder createWithShearsOrSilkTouchCondition() {
-		return WITH_SHEARS.or(this.createSilkTouchCondition());
+		return this.createWithShearsCondition().or(this.createSilkTouchCondition());
 	}
 
 	private LootCondition.Builder createWithoutShearsOrSilkTouchCondition() {
@@ -146,7 +149,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder dropsWithShears(Block block, LootPoolEntry.Builder<?> loot) {
-		return drops(block, WITH_SHEARS, loot);
+		return drops(block, this.createWithShearsCondition(), loot);
 	}
 
 	protected LootTable.Builder dropsWithSilkTouchOrShears(Block block, LootPoolEntry.Builder<?> loot) {
@@ -312,6 +315,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 										.include(DataComponentTypes.ITEM_NAME)
 										.include(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP)
 										.include(DataComponentTypes.BANNER_PATTERNS)
+										.include(DataComponentTypes.RARITY)
 								)
 						)
 				)
@@ -422,8 +426,9 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 			);
 	}
 
-	protected static LootTable.Builder dropsWithShears(ItemConvertible drop) {
-		return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).conditionally(WITH_SHEARS).with(ItemEntry.builder(drop)));
+	protected LootTable.Builder dropsWithShears(ItemConvertible item) {
+		return LootTable.builder()
+			.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).conditionally(this.createWithShearsCondition()).with(ItemEntry.builder(item)));
 	}
 
 	protected LootTable.Builder multifaceGrowthDrops(Block drop, LootCondition.Builder condition) {
@@ -512,15 +517,16 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 		return LootTable.builder()
 			.pool(
 				LootPool.builder()
-					.conditionally(WITH_SHEARS)
+					.conditionally(this.createWithShearsCondition())
 					.with(ItemEntry.builder(seagrass).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
 			);
 	}
 
 	protected LootTable.Builder tallPlantDrops(Block tallPlant, Block shortPlant) {
+		RegistryWrapper.Impl<Block> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.BLOCK);
 		LootPoolEntry.Builder<?> builder = ItemEntry.builder(shortPlant)
 			.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F)))
-			.conditionally(WITH_SHEARS)
+			.conditionally(this.createWithShearsCondition())
 			.alternatively(
 				((LeafEntry.Builder)this.addSurvivesExplosionCondition(tallPlant, ItemEntry.builder(Items.WHEAT_SEEDS)))
 					.conditionally(RandomChanceLootCondition.builder(0.125F))
@@ -535,7 +541,9 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 					.conditionally(
 						LocationCheckLootCondition.builder(
 							LocationPredicate.Builder.create()
-								.block(BlockPredicate.Builder.create().blocks(tallPlant).state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER))),
+								.block(
+									BlockPredicate.Builder.create().blocks(impl, tallPlant).state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER))
+								),
 							new BlockPos(0, 1, 0)
 						)
 					)
@@ -549,7 +557,9 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 					.conditionally(
 						LocationCheckLootCondition.builder(
 							LocationPredicate.Builder.create()
-								.block(BlockPredicate.Builder.create().blocks(tallPlant).state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER))),
+								.block(
+									BlockPredicate.Builder.create().blocks(impl, tallPlant).state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER))
+								),
 							new BlockPos(0, -1, 0)
 						)
 					)

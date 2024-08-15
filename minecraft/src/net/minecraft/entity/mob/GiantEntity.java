@@ -14,9 +14,9 @@ public class GiantEntity extends HostileEntity {
 
 	public static DefaultAttributeContainer.Builder createGiantAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 100.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.5)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 50.0);
+			.add(EntityAttributes.MAX_HEALTH, 100.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.5)
+			.add(EntityAttributes.ATTACK_DAMAGE, 50.0);
 	}
 
 	@Override

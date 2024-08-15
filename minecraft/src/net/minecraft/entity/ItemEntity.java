@@ -8,6 +8,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
@@ -25,9 +26,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.explosion.Explosion;
 
 public class ItemEntity extends Entity implements Ownable {
 	private static final TrackedData<ItemStack> STACK = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
@@ -152,6 +155,10 @@ public class ItemEntity extends Entity implements Ownable {
 
 			if (!this.isOnGround() || this.getVelocity().horizontalLengthSquared() > 1.0E-5F || (this.age + this.getId()) % 4 == 0) {
 				this.move(MovementType.SELF, this.getVelocity());
+				if (!this.getWorld().isClient()) {
+					this.tickBlockCollision();
+				}
+
 				float f = 0.98F;
 				if (this.isOnGround()) {
 					f = this.getWorld().getBlockState(this.getVelocityAffectingPos()).getBlock().getSlipperiness() * 0.98F;
@@ -272,6 +279,8 @@ public class ItemEntity extends Entity implements Ownable {
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
+		} else if (!this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && source.getAttacker() instanceof MobEntity) {
+			return false;
 		} else if (!this.getStack().isEmpty() && this.getStack().isOf(Items.NETHER_STAR) && source.isIn(DamageTypeTags.IS_EXPLOSION)) {
 			return false;
 		} else if (!this.getStack().takesDamageFrom(source)) {
@@ -289,6 +298,11 @@ public class ItemEntity extends Entity implements Ownable {
 
 			return true;
 		}
+	}
+
+	@Override
+	public boolean isImmuneToExplosion(Explosion explosion) {
+		return explosion.preservesDecorativeEntities() ? super.isImmuneToExplosion(explosion) : true;
 	}
 
 	@Override
@@ -481,8 +495,8 @@ public class ItemEntity extends Entity implements Ownable {
 		this.itemAge = 5999;
 	}
 
-	public float getRotation(float tickDelta) {
-		return ((float)this.getItemAge() + tickDelta) / 20.0F + this.uniqueOffset;
+	public static float getRotation(float f, float g) {
+		return f / 20.0F + g;
 	}
 
 	public ItemEntity copy() {
@@ -496,7 +510,7 @@ public class ItemEntity extends Entity implements Ownable {
 
 	@Override
 	public float getBodyYaw() {
-		return 180.0F - this.getRotation(0.5F) / (float) (Math.PI * 2) * 360.0F;
+		return 180.0F - getRotation((float)this.getItemAge() + 0.5F, this.uniqueOffset) / (float) (Math.PI * 2) * 360.0F;
 	}
 
 	@Override

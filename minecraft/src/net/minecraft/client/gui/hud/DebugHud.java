@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_9931;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
@@ -110,6 +111,7 @@ public class DebugHud {
 	private final TickChart tickChart;
 	private final PingChart pingChart;
 	private final PacketSizeChart packetSizeChart;
+	private final class_9931 field_52772;
 
 	public DebugHud(MinecraftClient client) {
 		this.client = client;
@@ -119,6 +121,7 @@ public class DebugHud {
 		this.tickChart = new TickChart(this.textRenderer, this.tickNanosLog, () -> client.world.getTickManager().getMillisPerTick());
 		this.pingChart = new PingChart(this.textRenderer, this.pingLog);
 		this.packetSizeChart = new PacketSizeChart(this.textRenderer, this.packetSizeLog);
+		this.field_52772 = new class_9931(this.textRenderer);
 	}
 
 	public void resetChunk() {
@@ -126,35 +129,41 @@ public class DebugHud {
 		this.chunk = null;
 	}
 
-	public void render(DrawContext context) {
+	public void render(DrawContext drawContext) {
 		this.client.getProfiler().push("debug");
 		Entity entity = this.client.getCameraEntity();
 		this.blockHit = entity.raycast(20.0, 0.0F, false);
 		this.fluidHit = entity.raycast(20.0, 0.0F, true);
-		context.draw(() -> {
-			this.drawLeftText(context);
-			this.drawRightText(context);
-			if (this.renderingAndTickChartsVisible) {
-				int i = context.getScaledWindowWidth();
-				int j = i / 2;
-				this.renderingChart.render(context, 0, this.renderingChart.getWidth(j));
-				if (this.tickNanosLog.getLength() > 0) {
-					int k = this.tickChart.getWidth(j);
-					this.tickChart.render(context, i - k, k);
-				}
+		this.drawLeftText(drawContext);
+		this.drawRightText(drawContext);
+		this.field_52772.method_61984(10);
+		if (this.renderingAndTickChartsVisible) {
+			int i = drawContext.getScaledWindowWidth();
+			int j = i / 2;
+			this.renderingChart.render(drawContext, 0, this.renderingChart.getWidth(j));
+			if (this.tickNanosLog.getLength() > 0) {
+				int k = this.tickChart.getWidth(j);
+				this.tickChart.render(drawContext, i - k, k);
 			}
 
-			if (this.packetSizeAndPingChartsVisible) {
-				int i = context.getScaledWindowWidth();
-				int j = i / 2;
-				if (!this.client.isInSingleplayer()) {
-					this.packetSizeChart.render(context, 0, this.packetSizeChart.getWidth(j));
-				}
+			this.field_52772.method_61984(this.tickChart.method_61983());
+		}
 
-				int k = this.pingChart.getWidth(j);
-				this.pingChart.render(context, i - k, k);
+		if (this.packetSizeAndPingChartsVisible) {
+			int i = drawContext.getScaledWindowWidth();
+			int j = i / 2;
+			if (!this.client.isInSingleplayer()) {
+				this.packetSizeChart.render(drawContext, 0, this.packetSizeChart.getWidth(j));
 			}
-		});
+
+			int k = this.pingChart.getWidth(j);
+			this.pingChart.render(drawContext, i - k, k);
+			this.field_52772.method_61984(this.pingChart.method_61983());
+		}
+
+		this.client.getProfiler().push("profilerPie");
+		this.field_52772.method_61986(drawContext);
+		this.client.getProfiler().pop();
 		this.client.getProfiler().pop();
 	}
 
@@ -414,7 +423,7 @@ public class DebugHud {
 
 			PostEffectProcessor postEffectProcessor = this.client.gameRenderer.getPostProcessor();
 			if (postEffectProcessor != null) {
-				list.add("Shader: " + postEffectProcessor.getName());
+				list.add("Shader: " + postEffectProcessor.method_62231());
 			}
 
 			list.add(
@@ -609,6 +618,10 @@ public class DebugHud {
 
 	public MultiValueDebugSampleLogImpl getPacketSizeLog() {
 		return this.packetSizeLog;
+	}
+
+	public class_9931 method_61981() {
+		return this.field_52772;
 	}
 
 	public void set(long[] values, DebugSampleType type) {

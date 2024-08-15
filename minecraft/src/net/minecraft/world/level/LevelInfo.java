@@ -35,7 +35,7 @@ public final class LevelInfo {
 			dynamic.get("hardcore").asBoolean(false),
 			(Difficulty)dynamic.get("Difficulty").asNumber().map(difficulty -> Difficulty.byId(difficulty.byteValue())).result().orElse(Difficulty.NORMAL),
 			dynamic.get("allowCommands").asBoolean(gameMode == GameMode.CREATIVE),
-			new GameRules(dynamic.get("GameRules")),
+			new GameRules(dataConfiguration.enabledFeatures(), dynamic.get("GameRules")),
 			dataConfiguration
 		);
 	}
@@ -81,6 +81,14 @@ public final class LevelInfo {
 	}
 
 	public LevelInfo withCopiedGameRules() {
-		return new LevelInfo(this.name, this.gameMode, this.hardcore, this.difficulty, this.allowCommands, this.gameRules.copy(), this.dataConfiguration);
+		return new LevelInfo(
+			this.name,
+			this.gameMode,
+			this.hardcore,
+			this.difficulty,
+			this.allowCommands,
+			this.gameRules.copy(this.dataConfiguration.enabledFeatures()),
+			this.dataConfiguration
+		);
 	}
 }

@@ -20,12 +20,12 @@ import net.minecraft.world.GameMode;
 public class OpenToLanScreen extends Screen {
 	private static final int MIN_PORT = 1024;
 	private static final int MAX_PORT = 65535;
-	private static final Text ALLOW_COMMANDS_TEXT = Text.translatable("selectWorld.allowCommands.new");
+	private static final Text ALLOW_COMMANDS_TEXT = Text.translatable("selectWorld.allowCommands");
 	private static final Text GAME_MODE_TEXT = Text.translatable("selectWorld.gameMode");
 	private static final Text OTHER_PLAYERS_TEXT = Text.translatable("lanServer.otherPlayers");
 	private static final Text PORT_TEXT = Text.translatable("lanServer.port");
-	private static final Text UNAVAILABLE_PORT_TEXT = Text.translatable("lanServer.port.unavailable.new", 1024, 65535);
-	private static final Text INVALID_PORT_TEXT = Text.translatable("lanServer.port.invalid.new", 1024, 65535);
+	private static final Text UNAVAILABLE_PORT_TEXT = Text.translatable("lanServer.port.unavailable", 1024, 65535);
+	private static final Text INVALID_PORT_TEXT = Text.translatable("lanServer.port.invalid", 1024, 65535);
 	private static final int ERROR_TEXT_COLOR = 16733525;
 	private final Screen parent;
 	private GameMode gameMode = GameMode.SURVIVAL;

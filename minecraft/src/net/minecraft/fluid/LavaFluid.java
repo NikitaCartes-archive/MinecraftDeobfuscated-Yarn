@@ -47,7 +47,7 @@ public abstract class LavaFluid extends FlowableFluid {
 	@Override
 	public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
 		BlockPos blockPos = pos.up();
-		if (world.getBlockState(blockPos).isAir() && !world.getBlockState(blockPos).isOpaqueFullCube(world, blockPos)) {
+		if (world.getBlockState(blockPos).isAir() && !world.getBlockState(blockPos).isOpaqueFullCube()) {
 			if (random.nextInt(100) == 0) {
 				double d = (double)pos.getX() + random.nextDouble();
 				double e = (double)pos.getY() + 1.0;
@@ -80,7 +80,7 @@ public abstract class LavaFluid extends FlowableFluid {
 
 				for (int j = 0; j < i; j++) {
 					blockPos = blockPos.add(random.nextInt(3) - 1, 1, random.nextInt(3) - 1);
-					if (!world.canSetBlock(blockPos)) {
+					if (!world.isPosLoaded(blockPos)) {
 						return;
 					}
 
@@ -97,7 +97,7 @@ public abstract class LavaFluid extends FlowableFluid {
 			} else {
 				for (int k = 0; k < 3; k++) {
 					BlockPos blockPos2 = pos.add(random.nextInt(3) - 1, 0, random.nextInt(3) - 1);
-					if (!world.canSetBlock(blockPos2)) {
+					if (!world.isPosLoaded(blockPos2)) {
 						return;
 					}
 

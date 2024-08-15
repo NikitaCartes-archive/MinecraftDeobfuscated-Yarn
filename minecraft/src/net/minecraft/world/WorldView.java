@@ -76,7 +76,6 @@ public interface WorldView extends BlockRenderView, CollisionView, RedstoneView,
 	 */
 	boolean isClient();
 
-	@Deprecated
 	int getSeaLevel();
 
 	DimensionType getDimension();
@@ -122,7 +121,7 @@ public interface WorldView extends BlockRenderView, CollisionView, RedstoneView,
 			} else {
 				for (BlockPos var4 = blockPos.down(); var4.getY() > pos.getY(); var4 = var4.down()) {
 					BlockState blockState = this.getBlockState(var4);
-					if (blockState.getOpacity(this, var4) > 0 && !blockState.isLiquid()) {
+					if (blockState.getOpacity() > 0 && !blockState.isLiquid()) {
 						return false;
 					}
 				}

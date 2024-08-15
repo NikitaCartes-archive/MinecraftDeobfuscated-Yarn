@@ -11,8 +11,6 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 
 public class BreezeAttackablesSensor extends NearestLivingEntitiesSensor<BreezeEntity> {
-	public static final int RANGE = 24;
-
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
 		return ImmutableSet.copyOf(Iterables.concat(super.getOutputMemoryModules(), List.of(MemoryModuleType.NEAREST_ATTACKABLE)));
@@ -31,15 +29,5 @@ public class BreezeAttackablesSensor extends NearestLivingEntitiesSensor<BreezeE
 				livingEntity -> breezeEntity.getBrain().remember(MemoryModuleType.NEAREST_ATTACKABLE, livingEntity),
 				() -> breezeEntity.getBrain().forget(MemoryModuleType.NEAREST_ATTACKABLE)
 			);
-	}
-
-	@Override
-	protected int getHorizontalExpansion() {
-		return 24;
-	}
-
-	@Override
-	protected int getHeightExpansion() {
-		return 24;
 	}
 }

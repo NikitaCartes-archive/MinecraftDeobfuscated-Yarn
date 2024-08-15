@@ -8,22 +8,49 @@ import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public abstract class PlayerMoveC2SPacket implements Packet<ServerPlayPacketListener> {
+	private static final int CHANGE_POSITION_FLAG = 1;
+	private static final int CHANGE_LOOK_FLAG = 2;
 	protected final double x;
 	protected final double y;
 	protected final double z;
 	protected final float yaw;
 	protected final float pitch;
 	protected final boolean onGround;
+	protected final boolean horizontalCollision;
 	protected final boolean changePosition;
 	protected final boolean changeLook;
 
-	protected PlayerMoveC2SPacket(double x, double y, double z, float yaw, float pitch, boolean onGround, boolean changePosition, boolean changeLook) {
+	static int toFlag(boolean changePosition, boolean changeLook) {
+		int i = 0;
+		if (changePosition) {
+			i |= 1;
+		}
+
+		if (changeLook) {
+			i |= 2;
+		}
+
+		return i;
+	}
+
+	static boolean changePosition(int flag) {
+		return (flag & 1) != 0;
+	}
+
+	static boolean changeLook(int flag) {
+		return (flag & 2) != 0;
+	}
+
+	protected PlayerMoveC2SPacket(
+		double x, double y, double z, float yaw, float pitch, boolean onGround, boolean horizontalCollision, boolean changePosition, boolean changeLook
+	) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.yaw = yaw;
 		this.pitch = pitch;
 		this.onGround = onGround;
+		this.horizontalCollision = horizontalCollision;
 		this.changePosition = changePosition;
 		this.changeLook = changeLook;
 	}
@@ -59,6 +86,10 @@ public abstract class PlayerMoveC2SPacket implements Packet<ServerPlayPacketList
 		return this.onGround;
 	}
 
+	public boolean horizontalCollision() {
+		return this.horizontalCollision;
+	}
+
 	public boolean changesPosition() {
 		return this.changePosition;
 	}
@@ -72,8 +103,8 @@ public abstract class PlayerMoveC2SPacket implements Packet<ServerPlayPacketList
 			PlayerMoveC2SPacket.Full::write, PlayerMoveC2SPacket.Full::read
 		);
 
-		public Full(double x, double y, double z, float yaw, float pitch, boolean onGround) {
-			super(x, y, z, yaw, pitch, onGround, true, true);
+		public Full(double x, double y, double z, float yaw, float pitch, boolean onGround, boolean horizontalCollision) {
+			super(x, y, z, yaw, pitch, onGround, horizontalCollision, true, true);
 		}
 
 		private static PlayerMoveC2SPacket.Full read(PacketByteBuf buf) {
@@ -82,8 +113,10 @@ public abstract class PlayerMoveC2SPacket implements Packet<ServerPlayPacketList
 			double f = buf.readDouble();
 			float g = buf.readFloat();
 			float h = buf.readFloat();
-			boolean bl = buf.readUnsignedByte() != 0;
-			return new PlayerMoveC2SPacket.Full(d, e, f, g, h, bl);
+			short s = buf.readUnsignedByte();
+			boolean bl = PlayerMoveC2SPacket.changePosition(s);
+			boolean bl2 = PlayerMoveC2SPacket.changeLook(s);
+			return new PlayerMoveC2SPacket.Full(d, e, f, g, h, bl, bl2);
 		}
 
 		private void write(PacketByteBuf buf) {
@@ -92,7 +125,7 @@ public abstract class PlayerMoveC2SPacket implements Packet<ServerPlayPacketList
 			buf.writeDouble(this.z);
 			buf.writeFloat(this.yaw);
 			buf.writeFloat(this.pitch);
-			buf.writeByte(this.onGround ? 1 : 0);
+			buf.writeByte(PlayerMoveC2SPacket.toFlag(this.onGround, this.horizontalCollision));
 		}
 
 		@Override
@@ -106,21 +139,23 @@ public abstract class PlayerMoveC2SPacket implements Packet<ServerPlayPacketList
 			PlayerMoveC2SPacket.LookAndOnGround::write, PlayerMoveC2SPacket.LookAndOnGround::read
 		);
 
-		public LookAndOnGround(float yaw, float pitch, boolean onGround) {
-			super(0.0, 0.0, 0.0, yaw, pitch, onGround, false, true);
+		public LookAndOnGround(float yaw, float pitch, boolean onGround, boolean horizontalCollision) {
+			super(0.0, 0.0, 0.0, yaw, pitch, onGround, horizontalCollision, false, true);
 		}
 
 		private static PlayerMoveC2SPacket.LookAndOnGround read(PacketByteBuf buf) {
 			float f = buf.readFloat();
 			float g = buf.readFloat();
-			boolean bl = buf.readUnsignedByte() != 0;
-			return new PlayerMoveC2SPacket.LookAndOnGround(f, g, bl);
+			short s = buf.readUnsignedByte();
+			boolean bl = PlayerMoveC2SPacket.changePosition(s);
+			boolean bl2 = PlayerMoveC2SPacket.changeLook(s);
+			return new PlayerMoveC2SPacket.LookAndOnGround(f, g, bl, bl2);
 		}
 
 		private void write(PacketByteBuf buf) {
 			buf.writeFloat(this.yaw);
 			buf.writeFloat(this.pitch);
-			buf.writeByte(this.onGround ? 1 : 0);
+			buf.writeByte(PlayerMoveC2SPacket.toFlag(this.onGround, this.horizontalCollision));
 		}
 
 		@Override
@@ -134,17 +169,19 @@ public abstract class PlayerMoveC2SPacket implements Packet<ServerPlayPacketList
 			PlayerMoveC2SPacket.OnGroundOnly::write, PlayerMoveC2SPacket.OnGroundOnly::read
 		);
 
-		public OnGroundOnly(boolean onGround) {
-			super(0.0, 0.0, 0.0, 0.0F, 0.0F, onGround, false, false);
+		public OnGroundOnly(boolean onGround, boolean horizontalCollision) {
+			super(0.0, 0.0, 0.0, 0.0F, 0.0F, onGround, horizontalCollision, false, false);
 		}
 
 		private static PlayerMoveC2SPacket.OnGroundOnly read(PacketByteBuf buf) {
-			boolean bl = buf.readUnsignedByte() != 0;
-			return new PlayerMoveC2SPacket.OnGroundOnly(bl);
+			short s = buf.readUnsignedByte();
+			boolean bl = PlayerMoveC2SPacket.changePosition(s);
+			boolean bl2 = PlayerMoveC2SPacket.changeLook(s);
+			return new PlayerMoveC2SPacket.OnGroundOnly(bl, bl2);
 		}
 
 		private void write(PacketByteBuf buf) {
-			buf.writeByte(this.onGround ? 1 : 0);
+			buf.writeByte(PlayerMoveC2SPacket.toFlag(this.onGround, this.horizontalCollision));
 		}
 
 		@Override
@@ -158,23 +195,25 @@ public abstract class PlayerMoveC2SPacket implements Packet<ServerPlayPacketList
 			PlayerMoveC2SPacket.PositionAndOnGround::write, PlayerMoveC2SPacket.PositionAndOnGround::read
 		);
 
-		public PositionAndOnGround(double x, double y, double z, boolean onGround) {
-			super(x, y, z, 0.0F, 0.0F, onGround, true, false);
+		public PositionAndOnGround(double x, double y, double z, boolean onGround, boolean horizontalCollision) {
+			super(x, y, z, 0.0F, 0.0F, onGround, horizontalCollision, true, false);
 		}
 
 		private static PlayerMoveC2SPacket.PositionAndOnGround read(PacketByteBuf buf) {
 			double d = buf.readDouble();
 			double e = buf.readDouble();
 			double f = buf.readDouble();
-			boolean bl = buf.readUnsignedByte() != 0;
-			return new PlayerMoveC2SPacket.PositionAndOnGround(d, e, f, bl);
+			short s = buf.readUnsignedByte();
+			boolean bl = PlayerMoveC2SPacket.changePosition(s);
+			boolean bl2 = PlayerMoveC2SPacket.changeLook(s);
+			return new PlayerMoveC2SPacket.PositionAndOnGround(d, e, f, bl, bl2);
 		}
 
 		private void write(PacketByteBuf buf) {
 			buf.writeDouble(this.x);
 			buf.writeDouble(this.y);
 			buf.writeDouble(this.z);
-			buf.writeByte(this.onGround ? 1 : 0);
+			buf.writeByte(PlayerMoveC2SPacket.toFlag(this.onGround, this.horizontalCollision));
 		}
 
 		@Override

@@ -50,18 +50,7 @@ public class BeaconScreenHandler extends ScreenHandler {
 		this.paymentSlot = new BeaconScreenHandler.PaymentSlot(this.payment, 0, 136, 110);
 		this.addSlot(this.paymentSlot);
 		this.addProperties(propertyDelegate);
-		int i = 36;
-		int j = 137;
-
-		for (int k = 0; k < 3; k++) {
-			for (int l = 0; l < 9; l++) {
-				this.addSlot(new Slot(inventory, l + k * 9 + 9, 36 + l * 18, 137 + k * 18));
-			}
-		}
-
-		for (int k = 0; k < 9; k++) {
-			this.addSlot(new Slot(inventory, k, 36 + k * 18, 195));
-		}
+		this.addPlayerSlots(inventory, 36, 137);
 	}
 
 	@Override

@@ -1,69 +1,99 @@
 package net.minecraft.util;
 
+import javax.annotation.Nullable;
+import net.minecraft.item.ItemStack;
+
 /**
  * An enum indicating the hand interaction's result. Methods called on hand interaction,
  * such as {@link net.minecraft.block.AbstractBlock#onUse}, return this.
- * 
- * @see TypedActionResult
  */
-public enum ActionResult {
+public sealed interface ActionResult permits ActionResult.Success, ActionResult.Fail, ActionResult.Pass, ActionResult.PassToDefaultBlockAction {
 	/**
 	 * Indicates an action is performed and the actor's hand should swing to
 	 * indicate the performance.
 	 */
-	SUCCESS,
-	SUCCESS_NO_ITEM_USED,
+	ActionResult.Success SUCCESS = new ActionResult.Success(ActionResult.SwingSource.CLIENT, ActionResult.ItemContext.KEEP_HAND_STACK);
+	/**
+	 * Indicates an action is performed on the logical server only and the
+	 * actor's hand should swing to indicate the performance.
+	 */
+	ActionResult.Success SUCCESS_SERVER = new ActionResult.Success(ActionResult.SwingSource.SERVER, ActionResult.ItemContext.KEEP_HAND_STACK);
 	/**
 	 * Indicates an action is performed but no animation should accompany the
 	 * performance.
 	 */
-	CONSUME,
-	/**
-	 * Indicates an action is performed but no animation should accompany the
-	 * performance and no statistic should be incremented.
-	 */
-	CONSUME_PARTIAL,
-	/**
-	 * Indicates an action is not performed but allows other actions to
-	 * perform.
-	 */
-	PASS,
+	ActionResult.Success CONSUME = new ActionResult.Success(ActionResult.SwingSource.NONE, ActionResult.ItemContext.KEEP_HAND_STACK);
 	/**
 	 * Indicates that an action is not performed and prevents other actions
 	 * from performing.
 	 */
-	FAIL;
+	ActionResult.Fail FAIL = new ActionResult.Fail();
+	/**
+	 * Indicates an action is not performed but allows other actions to
+	 * perform.
+	 */
+	ActionResult.Pass PASS = new ActionResult.Pass();
+	/**
+	 * Indicates an action is not performed and the default block action
+	 * should be performed instead.
+	 */
+	ActionResult.PassToDefaultBlockAction PASS_TO_DEFAULT_BLOCK_ACTION = new ActionResult.PassToDefaultBlockAction();
 
 	/**
 	 * {@return whether an action is performed}
 	 */
-	public boolean isAccepted() {
-		return this == SUCCESS || this == CONSUME || this == CONSUME_PARTIAL || this == SUCCESS_NO_ITEM_USED;
+	default boolean isAccepted() {
+		return false;
+	}
+
+	public static record Fail() implements ActionResult {
+	}
+
+	public static record ItemContext(boolean incrementStat, @Nullable ItemStack newHandStack) {
+		static ActionResult.ItemContext KEEP_HAND_STACK_NO_INCREMENT_STAT = new ActionResult.ItemContext(false, null);
+		static ActionResult.ItemContext KEEP_HAND_STACK = new ActionResult.ItemContext(true, null);
+	}
+
+	public static record Pass() implements ActionResult {
+	}
+
+	public static record PassToDefaultBlockAction() implements ActionResult {
+	}
+
+	public static record Success(ActionResult.SwingSource swingSource, ActionResult.ItemContext itemContext) implements ActionResult {
+		@Override
+		public boolean isAccepted() {
+			return true;
+		}
+
+		public ActionResult.Success withNewHandStack(ItemStack newHandStack) {
+			return new ActionResult.Success(this.swingSource, new ActionResult.ItemContext(true, newHandStack));
+		}
+
+		public ActionResult.Success noIncrementStat() {
+			return new ActionResult.Success(this.swingSource, ActionResult.ItemContext.KEEP_HAND_STACK_NO_INCREMENT_STAT);
+		}
+
+		public boolean shouldIncrementStat() {
+			return this.itemContext.incrementStat;
+		}
+
+		/**
+		 * {@return the item stack that should replace the hand stack after this interaction, if any}
+		 */
+		@Nullable
+		public ItemStack getNewHandStack() {
+			return this.itemContext.newHandStack;
+		}
 	}
 
 	/**
-	 * {@return whether an actor should have a hand-swinging animation on
-	 * action performance}
+	 * Represents the side that should be considered the source of truth
+	 * for an arm swing, if any.
 	 */
-	public boolean shouldSwingHand() {
-		return this == SUCCESS || this == SUCCESS_NO_ITEM_USED;
-	}
-
-	/**
-	 * {@return whether action performance should increment an item's "used"
-	 * statistic}
-	 */
-	public boolean shouldIncrementStat() {
-		return this == SUCCESS || this == CONSUME;
-	}
-
-	/**
-	 * {@return an action result indicating success}
-	 * 
-	 * <p>This returns {@link #SUCCESS} if {@code swingHand} is {@code true}, otherwise
-	 * {@link #CONSUME}.
-	 */
-	public static ActionResult success(boolean swingHand) {
-		return swingHand ? SUCCESS : CONSUME;
+	public static enum SwingSource {
+		NONE,
+		CLIENT,
+		SERVER;
 	}
 }

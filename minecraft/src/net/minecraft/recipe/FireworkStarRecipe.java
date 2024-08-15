@@ -1,6 +1,5 @@
 package net.minecraft.recipe;
 
-import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Map;
@@ -13,39 +12,34 @@ import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.Util;
 import net.minecraft.world.World;
 
 public class FireworkStarRecipe extends SpecialCraftingRecipe {
-	private static final Ingredient TYPE_MODIFIER = Ingredient.ofItems(
+	private static final Map<Item, FireworkExplosionComponent.Type> TYPE_MODIFIER_MAP = Map.of(
 		Items.FIRE_CHARGE,
+		FireworkExplosionComponent.Type.LARGE_BALL,
 		Items.FEATHER,
+		FireworkExplosionComponent.Type.BURST,
 		Items.GOLD_NUGGET,
+		FireworkExplosionComponent.Type.STAR,
 		Items.SKELETON_SKULL,
+		FireworkExplosionComponent.Type.CREEPER,
 		Items.WITHER_SKELETON_SKULL,
+		FireworkExplosionComponent.Type.CREEPER,
 		Items.CREEPER_HEAD,
+		FireworkExplosionComponent.Type.CREEPER,
 		Items.PLAYER_HEAD,
+		FireworkExplosionComponent.Type.CREEPER,
 		Items.DRAGON_HEAD,
+		FireworkExplosionComponent.Type.CREEPER,
 		Items.ZOMBIE_HEAD,
-		Items.PIGLIN_HEAD
+		FireworkExplosionComponent.Type.CREEPER,
+		Items.PIGLIN_HEAD,
+		FireworkExplosionComponent.Type.CREEPER
 	);
-	private static final Ingredient TRAIL_MODIFIER = Ingredient.ofItems(Items.DIAMOND);
-	private static final Ingredient FLICKER_MODIFIER = Ingredient.ofItems(Items.GLOWSTONE_DUST);
-	private static final Map<Item, FireworkExplosionComponent.Type> TYPE_MODIFIER_MAP = Util.make(
-		Maps.<Item, FireworkExplosionComponent.Type>newHashMap(), typeModifiers -> {
-			typeModifiers.put(Items.FIRE_CHARGE, FireworkExplosionComponent.Type.LARGE_BALL);
-			typeModifiers.put(Items.FEATHER, FireworkExplosionComponent.Type.BURST);
-			typeModifiers.put(Items.GOLD_NUGGET, FireworkExplosionComponent.Type.STAR);
-			typeModifiers.put(Items.SKELETON_SKULL, FireworkExplosionComponent.Type.CREEPER);
-			typeModifiers.put(Items.WITHER_SKELETON_SKULL, FireworkExplosionComponent.Type.CREEPER);
-			typeModifiers.put(Items.CREEPER_HEAD, FireworkExplosionComponent.Type.CREEPER);
-			typeModifiers.put(Items.PLAYER_HEAD, FireworkExplosionComponent.Type.CREEPER);
-			typeModifiers.put(Items.DRAGON_HEAD, FireworkExplosionComponent.Type.CREEPER);
-			typeModifiers.put(Items.ZOMBIE_HEAD, FireworkExplosionComponent.Type.CREEPER);
-			typeModifiers.put(Items.PIGLIN_HEAD, FireworkExplosionComponent.Type.CREEPER);
-		}
-	);
-	private static final Ingredient GUNPOWDER = Ingredient.ofItems(Items.GUNPOWDER);
+	private static final Ingredient TRAIL_MODIFIER = Ingredient.ofItem(Items.DIAMOND);
+	private static final Ingredient FLICKER_MODIFIER = Ingredient.ofItem(Items.GLOWSTONE_DUST);
+	private static final Ingredient GUNPOWDER = Ingredient.ofItem(Items.GUNPOWDER);
 
 	public FireworkStarRecipe(CraftingRecipeCategory craftingRecipeCategory) {
 		super(craftingRecipeCategory);
@@ -61,7 +55,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
 			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack.isEmpty()) {
-				if (TYPE_MODIFIER.test(itemStack)) {
+				if (TYPE_MODIFIER_MAP.containsKey(itemStack.getItem())) {
 					if (bl3) {
 						return false;
 					}
@@ -107,8 +101,9 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
 			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack.isEmpty()) {
-				if (TYPE_MODIFIER.test(itemStack)) {
-					type = (FireworkExplosionComponent.Type)TYPE_MODIFIER_MAP.get(itemStack.getItem());
+				FireworkExplosionComponent.Type type2 = (FireworkExplosionComponent.Type)TYPE_MODIFIER_MAP.get(itemStack.getItem());
+				if (type2 != null) {
+					type = type2;
 				} else if (FLICKER_MODIFIER.test(itemStack)) {
 					bl = true;
 				} else if (TRAIL_MODIFIER.test(itemStack)) {

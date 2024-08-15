@@ -9,6 +9,7 @@ import net.minecraft.component.type.FireworkExplosionComponent;
 import net.minecraft.component.type.FireworksComponent;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
@@ -51,10 +52,11 @@ public class CelebrateRaidWinTask extends MultiTickTask<VillagerEntity> {
 			DyeColor dyeColor = Util.getRandom(DyeColor.values(), random);
 			int i = random.nextInt(3);
 			ItemStack itemStack = this.createFirework(dyeColor, i);
-			FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(
-				villagerEntity.getWorld(), villagerEntity, villagerEntity.getX(), villagerEntity.getEyeY(), villagerEntity.getZ(), itemStack
+			ProjectileEntity.spawn(
+				new FireworkRocketEntity(villagerEntity.getWorld(), villagerEntity, villagerEntity.getX(), villagerEntity.getEyeY(), villagerEntity.getZ(), itemStack),
+				serverWorld,
+				itemStack
 			);
-			villagerEntity.getWorld().spawnEntity(fireworkRocketEntity);
 		}
 	}
 

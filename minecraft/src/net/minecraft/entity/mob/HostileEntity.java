@@ -112,7 +112,7 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 	}
 
 	public static DefaultAttributeContainer.Builder createHostileAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+		return MobEntity.createMobAttributes().add(EntityAttributes.ATTACK_DAMAGE);
 	}
 
 	@Override

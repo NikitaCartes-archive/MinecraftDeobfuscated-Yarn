@@ -13,14 +13,14 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.SkullEntityModel;
+import net.minecraft.client.render.entity.state.WitherSkullEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class WitherSkullEntityRenderer extends EntityRenderer<WitherSkullEntity> {
+public class WitherSkullEntityRenderer extends EntityRenderer<WitherSkullEntity, WitherSkullEntityRenderState> {
 	private static final Identifier INVULNERABLE_TEXTURE = Identifier.ofVanilla("textures/entity/wither/wither_invulnerable.png");
 	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/wither/wither.png");
 	private final SkullEntityModel model;
@@ -41,19 +41,28 @@ public class WitherSkullEntityRenderer extends EntityRenderer<WitherSkullEntity>
 		return 15;
 	}
 
-	public void render(WitherSkullEntity witherSkullEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+	public void render(WitherSkullEntityRenderState witherSkullEntityRenderState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
-		float h = MathHelper.lerpAngleDegrees(g, witherSkullEntity.prevYaw, witherSkullEntity.getYaw());
-		float j = MathHelper.lerp(g, witherSkullEntity.prevPitch, witherSkullEntity.getPitch());
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.getTexture(witherSkullEntity)));
-		this.model.setHeadRotation(0.0F, h, j);
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.getTexture(witherSkullEntityRenderState)));
+		this.model.setHeadRotation(0.0F, witherSkullEntityRenderState.yaw, witherSkullEntityRenderState.pitch);
 		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 		matrixStack.pop();
-		super.render(witherSkullEntity, f, g, matrixStack, vertexConsumerProvider, i);
+		super.render(witherSkullEntityRenderState, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier getTexture(WitherSkullEntity witherSkullEntity) {
-		return witherSkullEntity.isCharged() ? INVULNERABLE_TEXTURE : TEXTURE;
+	public Identifier getTexture(WitherSkullEntityRenderState witherSkullEntityRenderState) {
+		return witherSkullEntityRenderState.charged ? INVULNERABLE_TEXTURE : TEXTURE;
+	}
+
+	public WitherSkullEntityRenderState getRenderState() {
+		return new WitherSkullEntityRenderState();
+	}
+
+	public void updateRenderState(WitherSkullEntity witherSkullEntity, WitherSkullEntityRenderState witherSkullEntityRenderState, float f) {
+		super.updateRenderState(witherSkullEntity, witherSkullEntityRenderState, f);
+		witherSkullEntityRenderState.charged = witherSkullEntity.isCharged();
+		witherSkullEntityRenderState.yaw = witherSkullEntity.getLerpedYaw(f);
+		witherSkullEntityRenderState.pitch = witherSkullEntity.getLerpedPitch(f);
 	}
 }

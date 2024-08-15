@@ -2,11 +2,11 @@ package net.minecraft.client.render;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
@@ -21,7 +21,6 @@ public abstract class DimensionEffects {
 		map.put(DimensionTypes.THE_NETHER_ID, new DimensionEffects.Nether());
 		map.put(DimensionTypes.THE_END_ID, new DimensionEffects.End());
 	});
-	private final float[] rgba = new float[4];
 	private final float cloudsHeight;
 	private final boolean alternateSkyColor;
 	private final DimensionEffects.SkyType skyType;
@@ -40,27 +39,12 @@ public abstract class DimensionEffects {
 		return BY_IDENTIFIER.get(dimensionType.effects());
 	}
 
-	/**
-	 * {@return an RGBA fog color override based on the current sky angle, or {@code null} if fog color should not be overridden}
-	 * This is used in vanilla to render sunset and sunrise fog.
-	 */
-	@Nullable
-	public float[] getFogColorOverride(float skyAngle, float tickDelta) {
-		float f = 0.4F;
-		float g = MathHelper.cos(skyAngle * (float) (Math.PI * 2)) - 0.0F;
-		float h = -0.0F;
-		if (g >= -0.4F && g <= 0.4F) {
-			float i = (g - -0.0F) / 0.4F * 0.5F + 0.5F;
-			float j = 1.0F - (1.0F - MathHelper.sin(i * (float) Math.PI)) * 0.99F;
-			j *= j;
-			this.rgba[0] = i * 0.3F + 0.7F;
-			this.rgba[1] = i * i * 0.7F + 0.2F;
-			this.rgba[2] = i * i * 0.0F + 0.2F;
-			this.rgba[3] = j;
-			return this.rgba;
-		} else {
-			return null;
-		}
+	public boolean method_62183(float skyAngle) {
+		return false;
+	}
+
+	public int getSkyColor(float skyAngle) {
+		return 0;
 	}
 
 	public float getCloudsHeight() {
@@ -106,12 +90,6 @@ public abstract class DimensionEffects {
 		public boolean useThickFog(int camX, int camY) {
 			return false;
 		}
-
-		@Nullable
-		@Override
-		public float[] getFogColorOverride(float skyAngle, float tickDelta) {
-			return null;
-		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -134,9 +112,24 @@ public abstract class DimensionEffects {
 	@Environment(EnvType.CLIENT)
 	public static class Overworld extends DimensionEffects {
 		public static final int CLOUDS_HEIGHT = 192;
+		private static final float field_53064 = 0.4F;
 
 		public Overworld() {
 			super(192.0F, true, DimensionEffects.SkyType.NORMAL, false, false);
+		}
+
+		@Override
+		public boolean method_62183(float skyAngle) {
+			float f = MathHelper.cos(skyAngle * (float) (Math.PI * 2));
+			return f >= -0.4F && f <= 0.4F;
+		}
+
+		@Override
+		public int getSkyColor(float skyAngle) {
+			float f = MathHelper.cos(skyAngle * (float) (Math.PI * 2));
+			float g = f / 0.4F * 0.5F + 0.5F;
+			float h = MathHelper.square(1.0F - (1.0F - MathHelper.sin(g * (float) Math.PI)) * 0.99F);
+			return ColorHelper.fromFloats(h, g * 0.3F + 0.7F, g * g * 0.7F + 0.2F, 0.2F);
 		}
 
 		@Override

@@ -42,14 +42,16 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public class RavagerEntity extends RaiderEntity {
-	private static final Predicate<Entity> IS_NOT_RAVAGER = entity -> entity.isAlive() && !(entity instanceof RavagerEntity);
+	private static final Predicate<Entity> CAN_KNOCK_BACK_WITH_ROAR = entity -> entity.isAlive()
+			&& !(entity instanceof RavagerEntity)
+			&& (entity.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) || !entity.getType().equals(EntityType.ARMOR_STAND));
 	private static final double field_30480 = 0.3;
 	private static final double field_30481 = 0.35;
 	private static final int field_30482 = 8356754;
 	private static final float STUNNED_PARTICLE_BLUE = 0.57254905F;
 	private static final float STUNNED_PARTICLE_GREEN = 0.5137255F;
 	private static final float STUNNED_PARTICLE_RED = 0.49803922F;
-	private static final int field_30486 = 10;
+	public static final int field_30486 = 10;
 	public static final int field_30479 = 40;
 	private int attackTick;
 	private int stunTick;
@@ -87,13 +89,13 @@ public class RavagerEntity extends RaiderEntity {
 
 	public static DefaultAttributeContainer.Builder createRavagerAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 100.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3)
-			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.75)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 12.0)
-			.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.5)
-			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0)
-			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
+			.add(EntityAttributes.MAX_HEALTH, 100.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.3)
+			.add(EntityAttributes.KNOCKBACK_RESISTANCE, 0.75)
+			.add(EntityAttributes.ATTACK_DAMAGE, 12.0)
+			.add(EntityAttributes.ATTACK_KNOCKBACK, 1.5)
+			.add(EntityAttributes.FOLLOW_RANGE, 32.0)
+			.add(EntityAttributes.STEP_HEIGHT, 1.0);
 	}
 
 	@Override
@@ -127,11 +129,11 @@ public class RavagerEntity extends RaiderEntity {
 		super.tickMovement();
 		if (this.isAlive()) {
 			if (this.isImmobile()) {
-				this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.0);
+				this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.0);
 			} else {
 				double d = this.getTarget() != null ? 0.35 : 0.3;
-				double e = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).getBaseValue();
-				this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(MathHelper.lerp(0.1, e, d));
+				double e = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getBaseValue();
+				this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(MathHelper.lerp(0.1, e, d));
 			}
 
 			if (this.horizontalCollision && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
@@ -217,7 +219,7 @@ public class RavagerEntity extends RaiderEntity {
 
 	private void roar() {
 		if (this.isAlive()) {
-			for (LivingEntity livingEntity : this.getWorld().getEntitiesByClass(LivingEntity.class, this.getBoundingBox().expand(4.0), IS_NOT_RAVAGER)) {
+			for (LivingEntity livingEntity : this.getWorld().getEntitiesByClass(LivingEntity.class, this.getBoundingBox().expand(4.0), CAN_KNOCK_BACK_WITH_ROAR)) {
 				if (!(livingEntity instanceof IllagerEntity)) {
 					livingEntity.damage(this.getDamageSources().mobAttack(this), 6.0F);
 				}

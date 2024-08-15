@@ -250,7 +250,7 @@ public class PandaEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-		PandaEntity pandaEntity = EntityType.PANDA.create(world);
+		PandaEntity pandaEntity = EntityType.PANDA.create(world, SpawnReason.BREEDING);
 		if (pandaEntity != null) {
 			if (entity instanceof PandaEntity pandaEntity2) {
 				pandaEntity.initGenes(this, pandaEntity2);
@@ -284,7 +284,7 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createPandaAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.15F).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
+		return AnimalEntity.createAnimalAttributes().add(EntityAttributes.MOVEMENT_SPEED, 0.15F).add(EntityAttributes.ATTACK_DAMAGE, 6.0);
 	}
 
 	public PandaEntity.Gene getProductGene() {
@@ -613,11 +613,11 @@ public class PandaEntity extends AnimalEntity {
 
 	public void resetAttributes() {
 		if (this.isWeak()) {
-			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(10.0);
+			this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(10.0);
 		}
 
 		if (this.isLazy()) {
-			this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.07F);
+			this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.07F);
 		}
 	}
 
@@ -636,7 +636,7 @@ public class PandaEntity extends AnimalEntity {
 			return ActionResult.PASS;
 		} else if (this.isLyingOnBack()) {
 			this.setLyingOnBack(false);
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else if (this.isBreedingItem(itemStack)) {
 			if (this.getTarget() != null) {
 				this.shouldGetRevenge = true;
@@ -664,7 +664,7 @@ public class PandaEntity extends AnimalEntity {
 				this.eat(player, hand, itemStack);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.SUCCESS_SERVER;
 		} else {
 			return ActionResult.PASS;
 		}

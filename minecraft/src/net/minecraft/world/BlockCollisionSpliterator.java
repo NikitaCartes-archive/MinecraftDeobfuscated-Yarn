@@ -33,7 +33,13 @@ public class BlockCollisionSpliterator<T> extends AbstractIterator<T> {
 	public BlockCollisionSpliterator(
 		CollisionView world, @Nullable Entity entity, Box box, boolean forEntity, BiFunction<BlockPos.Mutable, VoxelShape, T> resultFunction
 	) {
-		this.context = entity == null ? ShapeContext.absent() : ShapeContext.of(entity);
+		this(world, entity == null ? ShapeContext.absent() : ShapeContext.of(entity), box, forEntity, resultFunction);
+	}
+
+	public BlockCollisionSpliterator(
+		CollisionView world, ShapeContext context, Box box, boolean forEntity, BiFunction<BlockPos.Mutable, VoxelShape, T> resultFunction
+	) {
+		this.context = context;
 		this.pos = new BlockPos.Mutable();
 		this.boxShape = VoxelShapes.cuboid(box);
 		this.world = world;

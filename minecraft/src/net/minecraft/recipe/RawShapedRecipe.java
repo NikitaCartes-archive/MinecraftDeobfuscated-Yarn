@@ -7,6 +7,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.chars.CharArraySet;
 import it.unimi.dsi.fastutil.chars.CharSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,41 +15,46 @@ import java.util.function.Function;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.util.Util;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 
 public final class RawShapedRecipe {
 	private static final int MAX_WIDTH_AND_HEIGHT = 3;
+	public static final char SPACE = ' ';
 	public static final MapCodec<RawShapedRecipe> CODEC = RawShapedRecipe.Data.CODEC
 		.flatXmap(
 			RawShapedRecipe::fromData,
 			recipe -> (DataResult)recipe.data.map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Cannot encode unpacked recipe"))
 		);
-	public static final PacketCodec<RegistryByteBuf, RawShapedRecipe> PACKET_CODEC = PacketCodec.of(RawShapedRecipe::writeToBuf, RawShapedRecipe::readFromBuf);
+	public static final PacketCodec<RegistryByteBuf, RawShapedRecipe> PACKET_CODEC = PacketCodec.tuple(
+		PacketCodecs.VAR_INT,
+		recipe -> recipe.width,
+		PacketCodecs.VAR_INT,
+		recipe -> recipe.height,
+		Ingredient.OPTIONAL_PACKET_CODEC.collect(PacketCodecs.toList()),
+		recipe -> recipe.ingredients,
+		RawShapedRecipe::create
+	);
 	private final int width;
 	private final int height;
-	private final DefaultedList<Ingredient> ingredients;
+	private final List<Optional<Ingredient>> ingredients;
 	private final Optional<RawShapedRecipe.Data> data;
 	private final int ingredientCount;
 	private final boolean symmetrical;
 
-	public RawShapedRecipe(int width, int height, DefaultedList<Ingredient> ingredients, Optional<RawShapedRecipe.Data> data) {
+	public RawShapedRecipe(int width, int height, List<Optional<Ingredient>> ingredients, Optional<RawShapedRecipe.Data> data) {
 		this.width = width;
 		this.height = height;
 		this.ingredients = ingredients;
 		this.data = data;
-		int i = 0;
-
-		for (Ingredient ingredient : ingredients) {
-			if (!ingredient.isEmpty()) {
-				i++;
-			}
-		}
-
-		this.ingredientCount = i;
+		this.ingredientCount = (int)ingredients.stream().flatMap(Optional::stream).count();
 		this.symmetrical = Util.isSymmetrical(width, height, ingredients);
+	}
+
+	private static RawShapedRecipe create(Integer width, Integer height, List<Optional<Ingredient>> ingredients) {
+		return new RawShapedRecipe(width, height, ingredients, Optional.empty());
 	}
 
 	public static RawShapedRecipe create(Map<Character, Ingredient> key, String... pattern) {
@@ -64,27 +70,32 @@ public final class RawShapedRecipe {
 		String[] strings = removePadding(data.pattern);
 		int i = strings[0].length();
 		int j = strings.length;
-		DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(i * j, Ingredient.EMPTY);
+		List<Optional<Ingredient>> list = new ArrayList(i * j);
 		CharSet charSet = new CharArraySet(data.key.keySet());
 
-		for (int k = 0; k < strings.length; k++) {
-			String string = strings[k];
+		for (String string : strings) {
+			for (int k = 0; k < string.length(); k++) {
+				char c = string.charAt(k);
+				Optional<Ingredient> optional;
+				if (c == ' ') {
+					optional = Optional.empty();
+				} else {
+					Ingredient ingredient = (Ingredient)data.key.get(c);
+					if (ingredient == null) {
+						return DataResult.error(() -> "Pattern references symbol '" + c + "' but it's not defined in the key");
+					}
 
-			for (int l = 0; l < string.length(); l++) {
-				char c = string.charAt(l);
-				Ingredient ingredient = c == ' ' ? Ingredient.EMPTY : (Ingredient)data.key.get(c);
-				if (ingredient == null) {
-					return DataResult.error(() -> "Pattern references symbol '" + c + "' but it's not defined in the key");
+					optional = Optional.of(ingredient);
 				}
 
 				charSet.remove(c);
-				defaultedList.set(l + i * k, ingredient);
+				list.add(optional);
 			}
 		}
 
 		return !charSet.isEmpty()
 			? DataResult.error(() -> "Key defines symbols that aren't used in pattern: " + charSet)
-			: DataResult.success(new RawShapedRecipe(i, j, defaultedList, Optional.of(data)));
+			: DataResult.success(new RawShapedRecipe(i, j, list, Optional.of(data)));
 	}
 
 	/**
@@ -185,38 +196,21 @@ public final class RawShapedRecipe {
 	private boolean matches(CraftingRecipeInput input, boolean mirrored) {
 		for (int i = 0; i < this.height; i++) {
 			for (int j = 0; j < this.width; j++) {
-				Ingredient ingredient;
+				Optional<Ingredient> optional;
 				if (mirrored) {
-					ingredient = this.ingredients.get(this.width - j - 1 + i * this.width);
+					optional = (Optional<Ingredient>)this.ingredients.get(this.width - j - 1 + i * this.width);
 				} else {
-					ingredient = this.ingredients.get(j + i * this.width);
+					optional = (Optional<Ingredient>)this.ingredients.get(j + i * this.width);
 				}
 
 				ItemStack itemStack = input.getStackInSlot(j, i);
-				if (!ingredient.test(itemStack)) {
+				if (!Ingredient.matches(optional, itemStack)) {
 					return false;
 				}
 			}
 		}
 
 		return true;
-	}
-
-	private void writeToBuf(RegistryByteBuf buf) {
-		buf.writeVarInt(this.width);
-		buf.writeVarInt(this.height);
-
-		for (Ingredient ingredient : this.ingredients) {
-			Ingredient.PACKET_CODEC.encode(buf, ingredient);
-		}
-	}
-
-	private static RawShapedRecipe readFromBuf(RegistryByteBuf buf) {
-		int i = buf.readVarInt();
-		int j = buf.readVarInt();
-		DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(i * j, Ingredient.EMPTY);
-		defaultedList.replaceAll(ingredient -> Ingredient.PACKET_CODEC.decode(buf));
-		return new RawShapedRecipe(i, j, defaultedList, Optional.empty());
 	}
 
 	public int getWidth() {
@@ -227,7 +221,7 @@ public final class RawShapedRecipe {
 		return this.height;
 	}
 
-	public DefaultedList<Ingredient> getIngredients() {
+	public List<Optional<Ingredient>> getIngredients() {
 		return this.ingredients;
 	}
 
@@ -262,7 +256,7 @@ public final class RawShapedRecipe {
 		}, String::valueOf);
 		public static final MapCodec<RawShapedRecipe.Data> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
-						Codecs.strictUnboundedMap(KEY_ENTRY_CODEC, Ingredient.DISALLOW_EMPTY_CODEC).fieldOf("key").forGetter(data -> data.key),
+						Codecs.strictUnboundedMap(KEY_ENTRY_CODEC, Ingredient.CODEC).fieldOf("key").forGetter(data -> data.key),
 						PATTERN_CODEC.fieldOf("pattern").forGetter(data -> data.pattern)
 					)
 					.apply(instance, RawShapedRecipe.Data::new)

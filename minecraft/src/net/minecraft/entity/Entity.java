@@ -1,6 +1,7 @@
 package net.minecraft.entity;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableList.Builder;
@@ -10,6 +11,7 @@ import it.unimi.dsi.fastutil.floats.FloatArrays;
 import it.unimi.dsi.fastutil.floats.FloatSet;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -315,8 +317,6 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 */
 	public static final float DEFAULT_FRICTION = 0.6F;
 	public static final float MIN_RISING_BUBBLE_COLUMN_SPEED = 1.8F;
-	public float prevHorizontalSpeed;
-	public float horizontalSpeed;
 	public float distanceTraveled;
 	public float speed;
 	public float fallDistance;
@@ -352,7 +352,6 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	private static final TrackedData<Integer> FROZEN_TICKS = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
 	private EntityChangeListener changeListener = EntityChangeListener.NONE;
 	private final TrackedPosition trackedPosition = new TrackedPosition();
-	public boolean ignoreCameraFrustum;
 	public boolean velocityDirty;
 	@Nullable
 	public PortalManager portalManager;
@@ -368,7 +367,6 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	private float standingEyeHeight;
 	public boolean inPowderSnow;
 	public boolean wasInPowderSnow;
-	public boolean wasOnFire;
 	public Optional<BlockPos> supportingBlockPos = Optional.empty();
 	private boolean forceUpdateSupportingBlockPos = false;
 	private float lastChimeIntensity;
@@ -376,6 +374,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	private boolean hasVisualFire;
 	@Nullable
 	private BlockState stateAtPos = null;
+	private final Set<BlockState> collidedBlocks = new ReferenceArraySet<>();
 
 	public Entity(EntityType<?> type, World world) {
 		this.type = type;
@@ -677,7 +676,6 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			this.ridingCooldown--;
 		}
 
-		this.prevHorizontalSpeed = this.horizontalSpeed;
 		this.prevPitch = this.getPitch();
 		this.prevYaw = this.getYaw();
 		this.tickPortalTeleportation();
@@ -849,8 +847,9 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		this.updateSupportingBlockPos(onGround, null);
 	}
 
-	public void setOnGround(boolean onGround, Vec3d movement) {
+	public void setMovement(boolean onGround, boolean horizontalCollision, Vec3d movement) {
 		this.onGround = onGround;
+		this.horizontalCollision = horizontalCollision;
 		this.updateSupportingBlockPos(onGround, movement);
 	}
 
@@ -891,7 +890,6 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		if (this.noClip) {
 			this.setPosition(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
 		} else {
-			this.wasOnFire = this.isOnFire();
 			if (movementType == MovementType.PISTON) {
 				movement = this.adjustMovementForPiston(movement);
 				if (movement.equals(Vec3d.ZERO)) {
@@ -909,7 +907,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			movement = this.adjustMovementForSneaking(movement, movementType);
 			Vec3d vec3d = this.adjustMovementForCollisions(movement);
 			double d = vec3d.lengthSquared();
-			if (d > 1.0E-7) {
+			if (d > 1.0E-7 || movement.lengthSquared() - d < 1.0E-7) {
 				if (this.fallDistance != 0.0F && d >= 1.0) {
 					BlockHitResult blockHitResult = this.getWorld()
 						.raycast(
@@ -936,10 +934,13 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 				this.collidedSoftly = false;
 			}
 
-			this.setOnGround(this.groundCollision, vec3d);
+			this.setMovement(this.groundCollision, this.horizontalCollision, vec3d);
 			BlockPos blockPos = this.getLandingPos();
 			BlockState blockState = this.getWorld().getBlockState(blockPos);
-			this.fall(vec3d.y, this.isOnGround(), blockState, blockPos);
+			if (!this.getWorld().isClient() || this.isLogicalSideForUpdatingMovement()) {
+				this.fall(vec3d.y, this.isOnGround(), blockState, blockPos);
+			}
+
 			if (this.isRemoved()) {
 				this.getWorld().getProfiler().pop();
 			} else {
@@ -948,76 +949,90 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 					this.setVelocity(bl ? 0.0 : vec3d2.x, vec3d2.y, bl2 ? 0.0 : vec3d2.z);
 				}
 
-				Block block = blockState.getBlock();
-				if (movement.y != vec3d.y) {
-					block.onEntityLand(this.getWorld(), this);
-				}
-
-				if (this.isOnGround()) {
-					block.onSteppedOn(this.getWorld(), blockPos, blockState, this);
-				}
-
-				Entity.MoveEffect moveEffect = this.getMoveEffect();
-				if (moveEffect.hasAny() && !this.hasVehicle()) {
-					double e = vec3d.x;
-					double f = vec3d.y;
-					double g = vec3d.z;
-					this.speed = this.speed + (float)(vec3d.length() * 0.6);
-					BlockPos blockPos2 = this.getSteppingPos();
-					BlockState blockState2 = this.getWorld().getBlockState(blockPos2);
-					boolean bl3 = this.canClimb(blockState2);
-					if (!bl3) {
-						f = 0.0;
-					}
-
-					this.horizontalSpeed = this.horizontalSpeed + (float)vec3d.horizontalLength() * 0.6F;
-					this.distanceTraveled = this.distanceTraveled + (float)Math.sqrt(e * e + f * f + g * g) * 0.6F;
-					if (this.distanceTraveled > this.nextStepSoundDistance && !blockState2.isAir()) {
-						boolean bl4 = blockPos2.equals(blockPos);
-						boolean bl5 = this.stepOnBlock(blockPos, blockState, moveEffect.playsSounds(), bl4, movement);
-						if (!bl4) {
-							bl5 |= this.stepOnBlock(blockPos2, blockState2, false, moveEffect.emitsGameEvents(), movement);
-						}
-
-						if (bl5) {
-							this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
-						} else if (this.isTouchingWater()) {
-							this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
-							if (moveEffect.playsSounds()) {
-								this.playSwimSound();
-							}
-
-							if (moveEffect.emitsGameEvents()) {
-								this.emitGameEvent(GameEvent.SWIM);
-							}
-						}
-					} else if (blockState2.isAir()) {
-						this.addAirTravelEffects();
+				if (this.isLogicalSideForUpdatingMovement()) {
+					Block block = blockState.getBlock();
+					if (movement.y != vec3d.y) {
+						block.onEntityLand(this.getWorld(), this);
 					}
 				}
 
-				this.tryCheckBlockCollision();
-				float h = this.getVelocityMultiplier();
-				this.setVelocity(this.getVelocity().multiply((double)h, 1.0, (double)h));
-				if (this.getWorld()
-					.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6))
-					.noneMatch(state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA))) {
-					if (this.fireTicks <= 0) {
-						this.setFireTicks(-this.getBurningDuration());
-					}
-
-					if (this.wasOnFire && (this.inPowderSnow || this.isWet())) {
-						this.playExtinguishSound();
+				if (!this.getWorld().isClient() || this.isLogicalSideForUpdatingMovement()) {
+					Entity.MoveEffect moveEffect = this.getMoveEffect();
+					if (moveEffect.hasAny() && !this.hasVehicle()) {
+						this.method_61407(moveEffect, vec3d, blockPos, blockState);
 					}
 				}
 
-				if (this.isOnFire() && (this.inPowderSnow || this.isWet())) {
-					this.setFireTicks(-this.getBurningDuration());
-				}
-
+				float f = this.getVelocityMultiplier();
+				this.setVelocity(this.getVelocity().multiply((double)f, 1.0, (double)f));
 				this.getWorld().getProfiler().pop();
 			}
 		}
+	}
+
+	private void method_61407(Entity.MoveEffect moveEffect, Vec3d vec3d, BlockPos blockPos, BlockState blockState) {
+		float f = 0.6F;
+		float g = (float)(vec3d.length() * 0.6F);
+		float h = (float)(vec3d.horizontalLength() * 0.6F);
+		BlockPos blockPos2 = this.getSteppingPos();
+		BlockState blockState2 = this.getWorld().getBlockState(blockPos2);
+		boolean bl = this.canClimb(blockState2);
+		this.distanceTraveled += bl ? g : h;
+		this.speed += g;
+		if (this.distanceTraveled > this.nextStepSoundDistance && !blockState2.isAir()) {
+			boolean bl2 = blockPos2.equals(blockPos);
+			boolean bl3 = this.stepOnBlock(blockPos, blockState, moveEffect.playsSounds(), bl2, vec3d);
+			if (!bl2) {
+				bl3 |= this.stepOnBlock(blockPos2, blockState2, false, moveEffect.emitsGameEvents(), vec3d);
+			}
+
+			if (bl3) {
+				this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
+			} else if (this.isTouchingWater()) {
+				this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
+				if (moveEffect.playsSounds()) {
+					this.playSwimSound();
+				}
+
+				if (moveEffect.emitsGameEvents()) {
+					this.emitGameEvent(GameEvent.SWIM);
+				}
+			}
+		} else if (blockState2.isAir()) {
+			this.addAirTravelEffects();
+		}
+	}
+
+	public void tickBlockCollision() {
+		if (this.shouldTickBlockCollision()) {
+			boolean bl = this.isOnFire();
+			if (this.isOnGround()) {
+				BlockPos blockPos = this.getLandingPos();
+				BlockState blockState = this.getWorld().getBlockState(blockPos);
+				blockState.getBlock().onSteppedOn(this.getWorld(), blockPos, blockState, this);
+			}
+
+			this.checkBlockCollision(this.collidedBlocks);
+			boolean bl2 = Iterables.any(this.collidedBlocks, state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA));
+			this.collidedBlocks.clear();
+			if (!bl2) {
+				if (this.fireTicks <= 0) {
+					this.setFireTicks(-this.getBurningDuration());
+				}
+
+				if (bl && (this.inPowderSnow || this.isWet())) {
+					this.playExtinguishSound();
+				}
+			}
+
+			if (this.isOnFire() && (this.inPowderSnow || this.isWet())) {
+				this.setFireTicks(-this.getBurningDuration());
+			}
+		}
+	}
+
+	protected boolean shouldTickBlockCollision() {
+		return !this.isRemoved() && !this.noClip;
 	}
 
 	private boolean canClimb(BlockState state) {
@@ -1049,17 +1064,6 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return false;
 	}
 
-	protected void tryCheckBlockCollision() {
-		try {
-			this.checkBlockCollision();
-		} catch (Throwable var4) {
-			CrashReport crashReport = CrashReport.create(var4, "Checking entity block collision");
-			CrashReportSection crashReportSection = crashReport.addElement("Entity being checked for collision");
-			this.populateCrashReport(crashReportSection);
-			throw new CrashException(crashReport);
-		}
-	}
-
 	/**
 	 * Plays the {@link
 	 * net.minecraft.sound.SoundEvents#ENTITY_GENERIC_EXTINGUISH_FIRE} sound.
@@ -1069,7 +1073,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	}
 
 	public void extinguishWithSound() {
-		if (!this.getWorld().isClient && this.wasOnFire) {
+		if (!this.getWorld().isClient && this.isOnFire()) {
 			this.playExtinguishSound();
 		}
 
@@ -1333,32 +1337,34 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * This should be called manually if {@link #tick} is overridden.
 	 */
 	protected void checkBlockCollision() {
-		Box box = this.getBoundingBox();
-		BlockPos blockPos = BlockPos.ofFloored(box.minX + 1.0E-7, box.minY + 1.0E-7, box.minZ + 1.0E-7);
-		BlockPos blockPos2 = BlockPos.ofFloored(box.maxX - 1.0E-7, box.maxY - 1.0E-7, box.maxZ - 1.0E-7);
-		if (this.getWorld().isRegionLoaded(blockPos, blockPos2)) {
-			BlockPos.Mutable mutable = new BlockPos.Mutable();
+		this.checkBlockCollision(null);
+	}
 
-			for (int i = blockPos.getX(); i <= blockPos2.getX(); i++) {
-				for (int j = blockPos.getY(); j <= blockPos2.getY(); j++) {
-					for (int k = blockPos.getZ(); k <= blockPos2.getZ(); k++) {
-						if (!this.isAlive()) {
-							return;
-						}
+	protected void checkBlockCollision(@Nullable Set<BlockState> result) {
+		Vec3d vec3d = this.getLastRenderPos();
+		Vec3d vec3d2 = this.pos;
 
-						mutable.set(i, j, k);
-						BlockState blockState = this.getWorld().getBlockState(mutable);
+		for (BlockPos blockPos : BlockView.collectCollisionsBetween(vec3d, vec3d2, this.getBoundingBox())) {
+			if (!this.isAlive()) {
+				return;
+			}
 
-						try {
-							blockState.onEntityCollision(this.getWorld(), mutable, this);
-							this.onBlockCollision(blockState);
-						} catch (Throwable var12) {
-							CrashReport crashReport = CrashReport.create(var12, "Colliding entity with block");
-							CrashReportSection crashReportSection = crashReport.addElement("Block being collided with");
-							CrashReportSection.addBlockInfo(crashReportSection, this.getWorld(), mutable, blockState);
-							throw new CrashException(crashReport);
-						}
-					}
+			BlockState blockState = this.getWorld().getBlockState(blockPos);
+			if (!blockState.isAir()) {
+				try {
+					blockState.onEntityCollision(this.getWorld(), blockPos, this);
+					this.onBlockCollision(blockState);
+				} catch (Throwable var11) {
+					CrashReport crashReport = CrashReport.create(var11, "Colliding entity with block");
+					CrashReportSection crashReportSection = crashReport.addElement("Block being collided with");
+					CrashReportSection.addBlockInfo(crashReportSection, this.getWorld(), blockPos, blockState);
+					CrashReportSection crashReportSection2 = crashReport.addElement("Entity being checked for collision");
+					this.populateCrashReport(crashReportSection2);
+					throw new CrashException(crashReport);
+				}
+
+				if (result != null) {
+					result.add(blockState);
 				}
 			}
 		}
@@ -1870,7 +1876,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * {@return a vector with the horizontal direction being {@code yaw} degrees and the
 	 * absolute value being {@code movementInput} normalized and multiplied by {@code speed}}
 	 */
-	private static Vec3d movementInputToVelocity(Vec3d movementInput, float speed, float yaw) {
+	protected static Vec3d movementInputToVelocity(Vec3d movementInput, float speed, float yaw) {
 		double d = movementInput.lengthSquared();
 		if (d < 1.0E-7) {
 			return Vec3d.ZERO;
@@ -1962,6 +1968,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		this.lastRenderZ = f;
 		this.prevYaw = this.getYaw();
 		this.prevPitch = this.getPitch();
+	}
+
+	public final Vec3d getLastRenderPos() {
+		return new Vec3d(this.lastRenderX, this.lastRenderY, this.lastRenderZ);
 	}
 
 	/**
@@ -2097,6 +2107,14 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 
 	public float getYaw(float tickDelta) {
 		return tickDelta == 1.0F ? this.getYaw() : MathHelper.lerp(tickDelta, this.prevYaw, this.getYaw());
+	}
+
+	public float getLerpedPitch(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.prevPitch, this.getPitch());
+	}
+
+	public float getLerpedYaw(float tickDelta) {
+		return MathHelper.lerpAngleDegrees(tickDelta, this.prevYaw, this.getYaw());
 	}
 
 	public final Vec3d getRotationVector(float pitch, float yaw) {
@@ -2558,7 +2576,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 					this.emitGameEvent(GameEvent.ENTITY_INTERACT, player);
 				}
 
-				return ActionResult.success(this.getWorld().isClient);
+				return ActionResult.SUCCESS;
 			}
 
 			ItemStack itemStack = player.getStackInHand(hand);
@@ -2568,7 +2586,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 				}
 
 				itemStack.decrement(1);
-				return ActionResult.success(this.getWorld().isClient);
+				return ActionResult.SUCCESS;
 			}
 		}
 
@@ -3313,7 +3331,11 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * 
 	 * <p>This returns {@code false} if this entity is not in any team.
 	 */
-	public boolean isTeammate(Entity other) {
+	public final boolean isTeammate(@Nullable Entity other) {
+		return other == null ? false : this == other || this.isInSameTeam(other) || other.isInSameTeam(this);
+	}
+
+	protected boolean isInSameTeam(Entity other) {
 		return this.isTeamPlayer(other.getScoreboardTeam());
 	}
 
@@ -3322,7 +3344,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * 
 	 * <p>This returns {@code false} if this entity is not in any team.
 	 */
-	public boolean isTeamPlayer(AbstractTeam team) {
+	public boolean isTeamPlayer(@Nullable AbstractTeam team) {
 		return this.getScoreboardTeam() != null ? this.getScoreboardTeam().isEqual(team) : false;
 	}
 
@@ -3847,28 +3869,29 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			List<Entity> list2 = new ArrayList();
 
 			for (Entity entity : list) {
-				Entity entity2 = entity.teleportTo(teleportTarget);
+				float f = teleportTarget.yaw() + (entity.getYaw() - this.getYaw());
+				Entity entity2 = entity.teleportTo(teleportTarget.withRotation(f, entity.pitch));
 				if (entity2 != null) {
 					list2.add(entity2);
 				}
 			}
 
 			serverWorld.getProfiler().push("changeDimension");
-			Entity entity3 = serverWorld2.getRegistryKey() == serverWorld.getRegistryKey() ? this : this.getType().create(serverWorld2);
+			Entity entity3 = serverWorld2.getRegistryKey() == serverWorld.getRegistryKey() ? this : this.getType().create(serverWorld2, SpawnReason.DIMENSION_TRAVEL);
 			if (entity3 != null) {
 				if (this != entity3) {
 					entity3.copyFrom(this);
 					this.removeFromDimension();
 				}
 
-				entity3.refreshPositionAndAngles(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z, teleportTarget.yaw(), entity3.getPitch());
-				entity3.setVelocity(teleportTarget.velocity());
+				entity3.setPosition(teleportTarget);
+				this.checkBlockCollision();
 				if (this != entity3) {
 					serverWorld2.onDimensionChanged(entity3);
 				}
 
-				for (Entity entity2 : list2) {
-					entity2.startRiding(entity3, true);
+				for (Entity entity4 : list2) {
+					entity4.startRiding(entity3, true);
 				}
 
 				serverWorld.resetIdleTimeout();
@@ -3881,6 +3904,15 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		}
 
 		return null;
+	}
+
+	protected void setPosition(TeleportTarget teleportTarget) {
+		this.setPos(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z);
+		this.setYaw(teleportTarget.yaw());
+		this.setPitch(teleportTarget.pitch());
+		this.refreshPosition();
+		this.resetPosition();
+		this.setVelocity(teleportTarget.velocity());
 	}
 
 	public void addPortalChunkTicketAt(BlockPos pos) {
@@ -3926,6 +3958,14 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	}
 
 	public boolean canTeleportBetween(World from, World to) {
+		if (from.getRegistryKey() == World.END && to.getRegistryKey() == World.OVERWORLD) {
+			for (Entity entity : this.getPassengerList()) {
+				if (entity instanceof ServerPlayerEntity serverPlayerEntity && !serverPlayerEntity.seenCredits) {
+					return false;
+				}
+			}
+		}
+
 		return true;
 	}
 
@@ -4120,27 +4160,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * @see #teleportTo
 	 * @see #refreshPositionAndAngles(double, double, double, float, float)
 	 */
-	public boolean teleport(ServerWorld world, double destX, double destY, double destZ, Set<PositionFlag> flags, float yaw, float pitch) {
+	public boolean teleport(ServerWorld world, double destX, double destY, double destZ, Set<PositionFlag> flags, float yaw, float pitch, boolean resetCamera) {
 		float f = MathHelper.clamp(pitch, -90.0F, 90.0F);
-		if (world == this.getWorld()) {
-			this.refreshPositionAndAngles(destX, destY, destZ, yaw, f);
-			this.teleportPassengers();
-			this.setHeadYaw(yaw);
-		} else {
-			this.detach();
-			Entity entity = this.getType().create(world);
-			if (entity == null) {
-				return false;
-			}
-
-			entity.copyFrom(this);
-			entity.refreshPositionAndAngles(destX, destY, destZ, yaw, f);
-			entity.setHeadYaw(yaw);
-			this.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
-			world.onDimensionChanged(entity);
-		}
-
-		return true;
+		Entity entity = this.teleportTo(new TeleportTarget(world, new Vec3d(destX, destY, destZ), this.getVelocity(), yaw, f, TeleportTarget.NO_OP));
+		return entity != null;
 	}
 
 	/**
@@ -4240,7 +4263,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		this.dimensions = entityDimensions2;
 		this.standingEyeHeight = entityDimensions2.eyeHeight();
 		this.refreshPosition();
-		boolean bl = (double)entityDimensions2.width() <= 4.0 && (double)entityDimensions2.height() <= 4.0;
+		boolean bl = entityDimensions2.width() <= 4.0F && entityDimensions2.height() <= 4.0F;
 		if (!this.world.isClient
 			&& !this.firstUpdate
 			&& !this.noClip
@@ -4304,10 +4327,6 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	@Override
 	public final Box getBoundingBox() {
 		return this.boundingBox;
-	}
-
-	public Box getVisibilityBoundingBox() {
-		return this.getBoundingBox();
 	}
 
 	public final void setBoundingBox(Box boundingBox) {
@@ -5231,7 +5250,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 
 	public void setYaw(float yaw) {
 		if (!Float.isFinite(yaw)) {
-			Util.error("Invalid entity rotation: " + yaw + ", discarding.");
+			Util.logErrorOrPause("Invalid entity rotation: " + yaw + ", discarding.");
 		} else {
 			this.yaw = yaw;
 		}
@@ -5243,7 +5262,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 
 	public void setPitch(float pitch) {
 		if (!Float.isFinite(pitch)) {
-			Util.error("Invalid entity rotation: " + pitch + ", discarding.");
+			Util.logErrorOrPause("Invalid entity rotation: " + pitch + ", discarding.");
 		} else {
 			this.pitch = pitch;
 		}

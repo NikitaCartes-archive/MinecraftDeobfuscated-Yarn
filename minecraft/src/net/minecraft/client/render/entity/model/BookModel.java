@@ -10,8 +10,6 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -108,15 +106,6 @@ public class BookModel extends Model {
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 
-	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-		this.renderBook(matrices, vertices, light, overlay, color);
-	}
-
-	public void renderBook(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int i) {
-		this.root.render(matrices, vertices, light, overlay, i);
-	}
-
 	public void setPageAngles(float pageTurnAmount, float leftFlipAmount, float rightFlipAmount, float pageTurnSpeed) {
 		float f = (MathHelper.sin(pageTurnAmount * 0.02F) * 0.1F + 1.25F) * pageTurnSpeed;
 		this.leftCover.yaw = (float) Math.PI + f;
@@ -129,5 +118,10 @@ public class BookModel extends Model {
 		this.rightPages.pivotX = MathHelper.sin(f);
 		this.leftFlippingPage.pivotX = MathHelper.sin(f);
 		this.rightFlippingPage.pivotX = MathHelper.sin(f);
+	}
+
+	@Override
+	public ModelPart getPart() {
+		return this.root;
 	}
 }

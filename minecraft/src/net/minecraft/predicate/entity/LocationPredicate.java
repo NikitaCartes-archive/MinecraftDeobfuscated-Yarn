@@ -52,7 +52,7 @@ public record LocationPredicate(
 			return false;
 		} else {
 			BlockPos blockPos = BlockPos.ofFloored(x, y, z);
-			boolean bl = world.canSetBlock(blockPos);
+			boolean bl = world.isPosLoaded(blockPos);
 			if (!this.biomes.isPresent() || bl && ((RegistryEntryList)this.biomes.get()).contains(world.getBiome(blockPos))) {
 				if (!this.structures.isPresent()
 					|| bl && world.getStructureAccessor().getStructureContaining(blockPos, (RegistryEntryList<Structure>)this.structures.get()).hasChildren()) {

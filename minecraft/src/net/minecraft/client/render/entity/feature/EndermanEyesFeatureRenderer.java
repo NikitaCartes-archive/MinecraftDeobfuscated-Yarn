@@ -4,14 +4,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EndermanEntityModel;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.client.render.entity.state.EndermanEntityRenderState;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class EndermanEyesFeatureRenderer<T extends LivingEntity> extends EyesFeatureRenderer<T, EndermanEntityModel<T>> {
+public class EndermanEyesFeatureRenderer extends EyesFeatureRenderer<EndermanEntityRenderState, EndermanEntityModel<EndermanEntityRenderState>> {
 	private static final RenderLayer SKIN = RenderLayer.getEyes(Identifier.ofVanilla("textures/entity/enderman/enderman_eyes.png"));
 
-	public EndermanEyesFeatureRenderer(FeatureRendererContext<T, EndermanEntityModel<T>> featureRendererContext) {
+	public EndermanEyesFeatureRenderer(FeatureRendererContext<EndermanEntityRenderState, EndermanEntityModel<EndermanEntityRenderState>> featureRendererContext) {
 		super(featureRendererContext);
 	}
 

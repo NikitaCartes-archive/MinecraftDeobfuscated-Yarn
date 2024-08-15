@@ -5,7 +5,9 @@ import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -23,12 +25,20 @@ public class ModelPartData {
 
 	public ModelPartData addChild(String name, ModelPartBuilder builder, ModelTransform rotationData) {
 		ModelPartData modelPartData = new ModelPartData(builder.build(), rotationData);
-		ModelPartData modelPartData2 = (ModelPartData)this.children.put(name, modelPartData);
-		if (modelPartData2 != null) {
-			modelPartData.children.putAll(modelPartData2.children);
+		return this.addChild(name, modelPartData);
+	}
+
+	public ModelPartData addChild(String name, ModelPartData data) {
+		ModelPartData modelPartData = (ModelPartData)this.children.put(name, data);
+		if (modelPartData != null) {
+			data.children.putAll(modelPartData.children);
 		}
 
-		return modelPartData;
+		return data;
+	}
+
+	public ModelPartData addChild(String name) {
+		return this.addChild(name, ModelPartBuilder.create(), ModelTransform.NONE);
 	}
 
 	public ModelPart createPart(int textureWidth, int textureHeight) {
@@ -55,5 +65,15 @@ public class ModelPartData {
 
 	public ModelPartData getChild(String name) {
 		return (ModelPartData)this.children.get(name);
+	}
+
+	public Set<Entry<String, ModelPartData>> getChildren() {
+		return this.children.entrySet();
+	}
+
+	public ModelPartData applyTransformer(UnaryOperator<ModelTransform> transformer) {
+		ModelPartData modelPartData = new ModelPartData(this.cuboidData, (ModelTransform)transformer.apply(this.rotationData));
+		modelPartData.children.putAll(this.children);
+		return modelPartData;
 	}
 }

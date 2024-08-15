@@ -43,7 +43,6 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -96,10 +95,10 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.getBlockEntity(pos) instanceof DecoratedPotBlockEntity decoratedPotBlockEntity) {
 			if (world.isClient) {
-				return ItemActionResult.CONSUME;
+				return ActionResult.SUCCESS;
 			} else {
 				ItemStack itemStack = decoratedPotBlockEntity.getStack();
 				if (!stack.isEmpty() && (itemStack.isEmpty() || ItemStack.areItemsAndComponentsEqual(itemStack, stack) && itemStack.getCount() < itemStack.getMaxCount())) {
@@ -122,13 +121,13 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 
 					decoratedPotBlockEntity.markDirty();
 					world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-					return ItemActionResult.SUCCESS;
+					return ActionResult.SUCCESS;
 				} else {
-					return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+					return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 				}
 			}
 		} else {
-			return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+			return ActionResult.PASS;
 		}
 	}
 

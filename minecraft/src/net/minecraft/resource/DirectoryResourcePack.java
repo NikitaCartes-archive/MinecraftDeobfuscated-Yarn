@@ -87,7 +87,7 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 					String string2 = SEPARATOR_JOINER.join(path.relativize(foundPath));
 					Identifier identifier = Identifier.tryParse(namespace, string2);
 					if (identifier == null) {
-						Util.error(String.format(Locale.ROOT, "Invalid path in pack: %s:%s, ignoring", namespace, string2));
+						Util.logErrorOrPause(String.format(Locale.ROOT, "Invalid path in pack: %s:%s, ignoring", namespace, string2));
 					} else {
 						consumer.accept(identifier, InputSupplier.create(foundPath));
 					}

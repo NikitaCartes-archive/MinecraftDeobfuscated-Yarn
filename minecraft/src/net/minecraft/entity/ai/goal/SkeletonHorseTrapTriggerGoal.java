@@ -36,7 +36,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 		this.skeletonHorse.setTrapped(false);
 		this.skeletonHorse.setTame(true);
 		this.skeletonHorse.setBreedingAge(0);
-		LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(serverWorld);
+		LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(serverWorld, SpawnReason.TRIGGERED);
 		if (lightningEntity != null) {
 			lightningEntity.refreshPositionAfterTeleport(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
 			lightningEntity.setCosmetic(true);
@@ -65,7 +65,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 
 	@Nullable
 	private AbstractHorseEntity getHorse(LocalDifficulty localDifficulty) {
-		SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.skeletonHorse.getWorld());
+		SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.skeletonHorse.getWorld(), SpawnReason.TRIGGERED);
 		if (skeletonHorseEntity != null) {
 			skeletonHorseEntity.initialize((ServerWorld)this.skeletonHorse.getWorld(), localDifficulty, SpawnReason.TRIGGERED, null);
 			skeletonHorseEntity.setPosition(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
@@ -80,7 +80,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 
 	@Nullable
 	private SkeletonEntity getSkeleton(LocalDifficulty localDifficulty, AbstractHorseEntity vehicle) {
-		SkeletonEntity skeletonEntity = EntityType.SKELETON.create(vehicle.getWorld());
+		SkeletonEntity skeletonEntity = EntityType.SKELETON.create(vehicle.getWorld(), SpawnReason.TRIGGERED);
 		if (skeletonEntity != null) {
 			skeletonEntity.initialize((ServerWorld)vehicle.getWorld(), localDifficulty, SpawnReason.TRIGGERED, null);
 			skeletonEntity.setPosition(vehicle.getX(), vehicle.getY(), vehicle.getZ());

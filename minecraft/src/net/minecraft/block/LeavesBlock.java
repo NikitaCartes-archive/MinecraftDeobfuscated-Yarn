@@ -70,7 +70,7 @@ public class LeavesBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	protected int getOpacity(BlockState state, BlockView world, BlockPos pos) {
+	protected int getOpacity(BlockState state) {
 		return 1;
 	}
 

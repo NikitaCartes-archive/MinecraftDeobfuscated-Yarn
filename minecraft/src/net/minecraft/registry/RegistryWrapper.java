@@ -106,6 +106,10 @@ public interface RegistryWrapper<T> extends RegistryEntryLookup<T> {
 	public interface WrapperLookup {
 		Stream<RegistryKey<? extends Registry<?>>> streamAllRegistryKeys();
 
+		default Stream<RegistryWrapper.Impl<?>> stream() {
+			return this.streamAllRegistryKeys().map(this::getWrapperOrThrow);
+		}
+
 		<T> Optional<RegistryWrapper.Impl<T>> getOptionalWrapper(RegistryKey<? extends Registry<? extends T>> registryRef);
 
 		default <T> RegistryWrapper.Impl<T> getWrapperOrThrow(RegistryKey<? extends Registry<? extends T>> registryRef) {
@@ -141,6 +145,10 @@ public interface RegistryWrapper<T> extends RegistryEntryLookup<T> {
 					return Optional.ofNullable((RegistryWrapper.Impl)map.get(registryRef));
 				}
 			};
+		}
+
+		default Lifecycle getLifecycle() {
+			return (Lifecycle)this.stream().map(RegistryWrapper.Impl::getLifecycle).reduce(Lifecycle.stable(), Lifecycle::add);
 		}
 	}
 }

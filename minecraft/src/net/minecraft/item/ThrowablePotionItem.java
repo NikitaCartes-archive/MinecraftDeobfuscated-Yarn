@@ -3,9 +3,10 @@ package net.minecraft.item;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
@@ -16,25 +17,20 @@ public class ThrowablePotionItem extends PotionItem implements ProjectileItem {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		if (!world.isClient) {
-			PotionEntity potionEntity = new PotionEntity(world, user);
-			potionEntity.setItem(itemStack);
-			potionEntity.setVelocity(user, user.getPitch(), user.getYaw(), -20.0F, 0.5F, 1.0F);
-			world.spawnEntity(potionEntity);
+		if (world instanceof ServerWorld serverWorld) {
+			ProjectileEntity.spawnWithVelocity(PotionEntity::new, serverWorld, itemStack, user, -20.0F, 0.5F, 1.0F);
 		}
 
 		user.incrementStat(Stats.USED.getOrCreateStat(this));
 		itemStack.decrementUnlessCreative(1, user);
-		return TypedActionResult.success(itemStack, world.isClient());
+		return ActionResult.SUCCESS;
 	}
 
 	@Override
 	public ProjectileEntity createEntity(World world, Position pos, ItemStack stack, Direction direction) {
-		PotionEntity potionEntity = new PotionEntity(world, pos.getX(), pos.getY(), pos.getZ());
-		potionEntity.setItem(stack);
-		return potionEntity;
+		return new PotionEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack);
 	}
 
 	@Override

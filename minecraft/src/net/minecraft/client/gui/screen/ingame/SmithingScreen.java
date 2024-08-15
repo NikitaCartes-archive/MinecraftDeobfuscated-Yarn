@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -127,7 +128,7 @@ public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
 	@Override
 	protected void drawInvalidRecipeArrow(DrawContext context, int x, int y) {
 		if (this.hasInvalidRecipe()) {
-			context.drawGuiTexture(ERROR_TEXTURE, x + 65, y + 46, 28, 21);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, ERROR_TEXTURE, x + 65, y + 46, 28, 21);
 		}
 	}
 

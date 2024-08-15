@@ -8,12 +8,14 @@ import net.minecraft.network.packet.c2s.play.AcknowledgeReconfigurationC2SPacket
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
+import net.minecraft.network.packet.c2s.play.BundleItemSelectedC2SPacket;
 import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatCommandSignedC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientTickEndC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
@@ -108,6 +110,7 @@ import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.MoveMinecartAlongTrackS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
@@ -137,6 +140,8 @@ import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
 import net.minecraft.network.packet.s2c.play.ServerMetadataS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.SetCursorItemS2CPacket;
+import net.minecraft.network.packet.s2c.play.SetPlayerInventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
 import net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket;
@@ -209,6 +214,7 @@ public class PlayPackets {
 	public static final PacketType<SetTradeOffersS2CPacket> MERCHANT_OFFERS = s2c("merchant_offers");
 	public static final PacketType<EntityS2CPacket.MoveRelative> MOVE_ENTITY_POS = s2c("move_entity_pos");
 	public static final PacketType<EntityS2CPacket.RotateAndMoveRelative> MOVE_ENTITY_POS_ROT = s2c("move_entity_pos_rot");
+	public static final PacketType<MoveMinecartAlongTrackS2CPacket> MOVE_MINECART_ALONG_TRACK = s2c("move_minecart_along_track");
 	public static final PacketType<EntityS2CPacket.Rotate> MOVE_ENTITY_ROT = s2c("move_entity_rot");
 	public static final PacketType<VehicleMoveS2CPacket> MOVE_VEHICLE_S2C = s2c("move_vehicle");
 	public static final PacketType<OpenWrittenBookS2CPacket> OPEN_BOOK = s2c("open_book");
@@ -239,7 +245,6 @@ public class PlayPackets {
 	public static final PacketType<WorldBorderWarningTimeChangedS2CPacket> SET_BORDER_WARNING_DELAY = s2c("set_border_warning_delay");
 	public static final PacketType<WorldBorderWarningBlocksChangedS2CPacket> SET_BORDER_WARNING_DISTANCE = s2c("set_border_warning_distance");
 	public static final PacketType<SetCameraEntityS2CPacket> SET_CAMERA = s2c("set_camera");
-	public static final PacketType<UpdateSelectedSlotS2CPacket> SET_CARRIED_ITEM_S2C = s2c("set_carried_item");
 	public static final PacketType<ChunkRenderDistanceCenterS2CPacket> SET_CHUNK_CACHE_CENTER = s2c("set_chunk_cache_center");
 	public static final PacketType<ChunkLoadDistanceS2CPacket> SET_CHUNK_CACHE_RADIUS = s2c("set_chunk_cache_radius");
 	public static final PacketType<PlayerSpawnPositionS2CPacket> SET_DEFAULT_SPAWN_POSITION = s2c("set_default_spawn_position");
@@ -250,6 +255,7 @@ public class PlayPackets {
 	public static final PacketType<EntityEquipmentUpdateS2CPacket> SET_EQUIPMENT = s2c("set_equipment");
 	public static final PacketType<ExperienceBarUpdateS2CPacket> SET_EXPERIENCE = s2c("set_experience");
 	public static final PacketType<HealthUpdateS2CPacket> SET_HEALTH = s2c("set_health");
+	public static final PacketType<UpdateSelectedSlotS2CPacket> SET_CARRIED_ITEM_S2C = s2c("set_held_slot");
 	public static final PacketType<ScoreboardObjectiveUpdateS2CPacket> SET_OBJECTIVE = s2c("set_objective");
 	public static final PacketType<EntityPassengersSetS2CPacket> SET_PASSENGERS = s2c("set_passengers");
 	public static final PacketType<TeamS2CPacket> SET_PLAYER_TEAM = s2c("set_player_team");
@@ -275,6 +281,7 @@ public class PlayPackets {
 	public static final PacketType<ProjectilePowerS2CPacket> PROJECTILE_POWER = s2c("projectile_power");
 	public static final PacketType<TeleportConfirmC2SPacket> ACCEPT_TELEPORTATION = c2s("accept_teleportation");
 	public static final PacketType<QueryBlockNbtC2SPacket> BLOCK_ENTITY_TAG_QUERY = c2s("block_entity_tag_query");
+	public static final PacketType<BundleItemSelectedC2SPacket> BUNDLE_ITEM_SELECTED = c2s("bundle_item_selected");
 	public static final PacketType<UpdateDifficultyC2SPacket> CHANGE_DIFFICULTY_C2S = c2s("change_difficulty");
 	public static final PacketType<MessageAcknowledgmentC2SPacket> CHAT_ACK = c2s("chat_ack");
 	public static final PacketType<CommandExecutionC2SPacket> CHAT_COMMAND = c2s("chat_command");
@@ -283,6 +290,7 @@ public class PlayPackets {
 	public static final PacketType<PlayerSessionC2SPacket> CHAT_SESSION_UPDATE = c2s("chat_session_update");
 	public static final PacketType<AcknowledgeChunksC2SPacket> CHUNK_BATCH_RECEIVED = c2s("chunk_batch_received");
 	public static final PacketType<ClientStatusC2SPacket> CLIENT_COMMAND = c2s("client_command");
+	public static final PacketType<ClientTickEndC2SPacket> CLIENT_TICK_END = c2s("client_tick_end");
 	public static final PacketType<RequestCommandCompletionsC2SPacket> COMMAND_SUGGESTION = c2s("command_suggestion");
 	public static final PacketType<AcknowledgeReconfigurationC2SPacket> CONFIGURATION_ACKNOWLEDGED = c2s("configuration_acknowledged");
 	public static final PacketType<ButtonClickC2SPacket> CONTAINER_BUTTON_CLICK = c2s("container_button_click");
@@ -327,6 +335,8 @@ public class PlayPackets {
 	public static final PacketType<ScoreboardScoreResetS2CPacket> RESET_SCORE = s2c("reset_score");
 	public static final PacketType<UpdateTickRateS2CPacket> TICKING_STATE = s2c("ticking_state");
 	public static final PacketType<TickStepS2CPacket> TICKING_STEP = s2c("ticking_step");
+	public static final PacketType<SetCursorItemS2CPacket> SET_CURSOR_ITEM = s2c("set_cursor_item");
+	public static final PacketType<SetPlayerInventoryS2CPacket> SET_PLAYER_INVENTORY = s2c("set_player_inventory");
 
 	private static <T extends Packet<ClientPlayPacketListener>> PacketType<T> s2c(String id) {
 		return new PacketType<>(NetworkSide.CLIENTBOUND, Identifier.ofVanilla(id));

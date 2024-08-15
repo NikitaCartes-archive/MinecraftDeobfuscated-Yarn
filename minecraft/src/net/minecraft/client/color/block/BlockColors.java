@@ -83,7 +83,7 @@ public class BlockColors {
 		blockColors.registerColorProvider((state, world, pos, tintIndex) -> -2046180, Blocks.ATTACHED_MELON_STEM, Blocks.ATTACHED_PUMPKIN_STEM);
 		blockColors.registerColorProvider((state, world, pos, tintIndex) -> {
 			int i = (Integer)state.get(StemBlock.AGE);
-			return ColorHelper.Argb.getArgb(i * 32, 255 - i * 8, i * 4);
+			return ColorHelper.getArgb(i * 32, 255 - i * 8, i * 4);
 		}, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
 		blockColors.registerColorProperty(StemBlock.AGE, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
 		blockColors.registerColorProvider((state, world, pos, tintIndex) -> world != null && pos != null ? -14647248 : -9321636, Blocks.LILY_PAD);

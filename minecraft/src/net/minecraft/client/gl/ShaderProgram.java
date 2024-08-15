@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.Fog;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.util.Window;
@@ -98,7 +99,7 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 	@Nullable
 	public final GlUniform gameTime;
 	@Nullable
-	public final GlUniform chunkOffset;
+	public final GlUniform modelOffset;
 
 	public ShaderProgram(ResourceFactory factory, String name, VertexFormat format) throws IOException {
 		this.name = name;
@@ -194,7 +195,7 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 		this.fogShape = this.getUniform("FogShape");
 		this.lineWidth = this.getUniform("LineWidth");
 		this.gameTime = this.getUniform("GameTime");
-		this.chunkOffset = this.getUniform("ChunkOffset");
+		this.modelOffset = this.getUniform("ModelOffset");
 	}
 
 	private static ShaderStage loadShader(ResourceFactory factory, ShaderStage.Type type, String name) throws IOException {
@@ -497,20 +498,21 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 			this.glintAlpha.set(RenderSystem.getShaderGlintAlpha());
 		}
 
+		Fog fog = RenderSystem.getShaderFog();
 		if (this.fogStart != null) {
-			this.fogStart.set(RenderSystem.getShaderFogStart());
+			this.fogStart.set(fog.start());
 		}
 
 		if (this.fogEnd != null) {
-			this.fogEnd.set(RenderSystem.getShaderFogEnd());
+			this.fogEnd.set(fog.end());
 		}
 
 		if (this.fogColor != null) {
-			this.fogColor.set(RenderSystem.getShaderFogColor());
+			this.fogColor.setAndFlip(fog.red(), fog.green(), fog.blue(), fog.alpha());
 		}
 
 		if (this.fogShape != null) {
-			this.fogShape.set(RenderSystem.getShaderFogShape().getId());
+			this.fogShape.set(fog.shape().getId());
 		}
 
 		if (this.textureMat != null) {

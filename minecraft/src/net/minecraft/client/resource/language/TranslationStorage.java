@@ -1,10 +1,9 @@
 package net.minecraft.client.resource.language;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -14,6 +13,7 @@ import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
+import net.minecraft.util.DeprecatedLanguageData;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class TranslationStorage extends Language {
 	}
 
 	public static TranslationStorage load(ResourceManager resourceManager, List<String> definitions, boolean rightToLeft) {
-		Map<String, String> map = Maps.<String, String>newHashMap();
+		Map<String, String> map = new HashMap();
 
 		for (String string : definitions) {
 			String string2 = String.format(Locale.ROOT, "lang/%s.json", string);
@@ -45,7 +45,8 @@ public class TranslationStorage extends Language {
 			}
 		}
 
-		return new TranslationStorage(ImmutableMap.copyOf(map), rightToLeft);
+		DeprecatedLanguageData.create().apply(map);
+		return new TranslationStorage(Map.copyOf(map), rightToLeft);
 	}
 
 	private static void load(String langCode, List<Resource> resourceRefs, Map<String, String> translations) {

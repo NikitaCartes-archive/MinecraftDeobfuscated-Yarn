@@ -42,24 +42,24 @@ public record EntityEffectPredicate(Map<RegistryEntry<StatusEffect>, EntityEffec
 	}
 
 	public static class Builder {
-		private final ImmutableMap.Builder<RegistryEntry<StatusEffect>, EntityEffectPredicate.EffectData> EFFECTS = ImmutableMap.builder();
+		private final ImmutableMap.Builder<RegistryEntry<StatusEffect>, EntityEffectPredicate.EffectData> effects = ImmutableMap.builder();
 
 		public static EntityEffectPredicate.Builder create() {
 			return new EntityEffectPredicate.Builder();
 		}
 
 		public EntityEffectPredicate.Builder addEffect(RegistryEntry<StatusEffect> effect) {
-			this.EFFECTS.put(effect, new EntityEffectPredicate.EffectData());
+			this.effects.put(effect, new EntityEffectPredicate.EffectData());
 			return this;
 		}
 
 		public EntityEffectPredicate.Builder addEffect(RegistryEntry<StatusEffect> effect, EntityEffectPredicate.EffectData effectData) {
-			this.EFFECTS.put(effect, effectData);
+			this.effects.put(effect, effectData);
 			return this;
 		}
 
 		public Optional<EntityEffectPredicate> build() {
-			return Optional.of(new EntityEffectPredicate(this.EFFECTS.build()));
+			return Optional.of(new EntityEffectPredicate(this.effects.build()));
 		}
 	}
 

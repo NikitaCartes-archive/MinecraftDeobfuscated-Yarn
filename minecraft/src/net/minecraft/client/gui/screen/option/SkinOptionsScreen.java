@@ -26,7 +26,7 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 		for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
 			list.add(
 				CyclingButtonWidget.onOffBuilder(this.gameOptions.isPlayerModelPartEnabled(playerModelPart))
-					.build(playerModelPart.getOptionName(), (cyclingButtonWidget, boolean_) -> this.gameOptions.togglePlayerModelPart(playerModelPart, boolean_))
+					.build(playerModelPart.getOptionName(), (button, enabled) -> this.gameOptions.setPlayerModelPart(playerModelPart, enabled))
 			);
 		}
 

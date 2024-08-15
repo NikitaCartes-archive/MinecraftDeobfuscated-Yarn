@@ -52,9 +52,9 @@ public class SilverfishEntity extends HostileEntity {
 
 	public static DefaultAttributeContainer.Builder createSilverfishAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 8.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0);
+			.add(EntityAttributes.MAX_HEALTH, 8.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.25)
+			.add(EntityAttributes.ATTACK_DAMAGE, 1.0);
 	}
 
 	@Override
@@ -113,11 +113,13 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	public static boolean canSpawn(EntityType<SilverfishEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		if (canSpawnIgnoreLightLevel(type, world, spawnReason, pos, random)) {
+		if (!canSpawnIgnoreLightLevel(type, world, spawnReason, pos, random)) {
+			return false;
+		} else if (SpawnReason.isAnySpawner(spawnReason)) {
+			return true;
+		} else {
 			PlayerEntity playerEntity = world.getClosestPlayer((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0, true);
 			return playerEntity == null;
-		} else {
-			return false;
 		}
 	}
 

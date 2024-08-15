@@ -42,10 +42,10 @@ public class BreezeEntity extends HostileEntity {
 	private static final int field_47814 = 80;
 	public AnimationState field_47269 = new AnimationState();
 	public AnimationState slidingAnimationState = new AnimationState();
-	public AnimationState field_47816 = new AnimationState();
-	public AnimationState inhalingAnimationState = new AnimationState();
+	public AnimationState slidingBackAnimationState = new AnimationState();
+	public AnimationState longJumpingAnimationState = new AnimationState();
 	public AnimationState shootingAnimationState = new AnimationState();
-	public AnimationState field_47270 = new AnimationState();
+	public AnimationState inhalingAnimationState = new AnimationState();
 	private int longJumpingParticleAddCount = 0;
 	private int ticksUntilWhirlSound = 0;
 	private static final ProjectileDeflection PROJECTILE_DEFLECTOR = (projectile, hitEntity, random) -> {
@@ -55,10 +55,10 @@ public class BreezeEntity extends HostileEntity {
 
 	public static DefaultAttributeContainer.Builder createBreezeAttributes() {
 		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.63F)
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0)
-			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 24.0)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0);
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.63F)
+			.add(EntityAttributes.MAX_HEALTH, 30.0)
+			.add(EntityAttributes.FOLLOW_RANGE, 24.0)
+			.add(EntityAttributes.ATTACK_DAMAGE, 3.0);
 	}
 
 	public BreezeEntity(EntityType<? extends HostileEntity> entityType, World world) {
@@ -106,8 +106,8 @@ public class BreezeEntity extends HostileEntity {
 	private void stopAnimations() {
 		this.shootingAnimationState.stop();
 		this.field_47269.stop();
-		this.field_47270.stop();
 		this.inhalingAnimationState.stop();
+		this.longJumpingAnimationState.stop();
 	}
 
 	@Override
@@ -123,11 +123,12 @@ public class BreezeEntity extends HostileEntity {
 				this.addBlockParticles(20);
 				break;
 			case LONG_JUMPING:
+				this.longJumpingAnimationState.startIfNotRunning(this.age);
 				this.addLongJumpingParticles();
 		}
 
 		if (entityPose != EntityPose.SLIDING && this.slidingAnimationState.isRunning()) {
-			this.field_47816.start(this.age);
+			this.slidingBackAnimationState.start(this.age);
 			this.slidingAnimationState.stop();
 		}
 

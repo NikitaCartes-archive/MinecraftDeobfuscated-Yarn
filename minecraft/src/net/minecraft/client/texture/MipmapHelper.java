@@ -3,6 +3,7 @@ package net.minecraft.client.texture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class MipmapHelper {
@@ -35,14 +36,14 @@ public class MipmapHelper {
 
 					for (int l = 0; l < j; l++) {
 						for (int m = 0; m < k; m++) {
-							nativeImage2.setColor(
+							nativeImage2.setColorArgb(
 								l,
 								m,
 								blend(
-									nativeImage.getColor(l * 2 + 0, m * 2 + 0),
-									nativeImage.getColor(l * 2 + 1, m * 2 + 0),
-									nativeImage.getColor(l * 2 + 0, m * 2 + 1),
-									nativeImage.getColor(l * 2 + 1, m * 2 + 1),
+									nativeImage.getColorArgb(l * 2 + 0, m * 2 + 0),
+									nativeImage.getColorArgb(l * 2 + 1, m * 2 + 0),
+									nativeImage.getColorArgb(l * 2 + 0, m * 2 + 1),
+									nativeImage.getColorArgb(l * 2 + 1, m * 2 + 1),
 									bl
 								)
 							);
@@ -60,7 +61,7 @@ public class MipmapHelper {
 	private static boolean hasAlpha(NativeImage image) {
 		for (int i = 0; i < image.getWidth(); i++) {
 			for (int j = 0; j < image.getHeight(); j++) {
-				if (image.getColor(i, j) >> 24 == 0) {
+				if (ColorHelper.getAlpha(image.getColorArgb(i, j)) == 0) {
 					return true;
 				}
 			}
@@ -115,13 +116,13 @@ public class MipmapHelper {
 				j = 0;
 			}
 
-			return j << 24 | k << 16 | l << 8 | m;
+			return ColorHelper.getArgb(j, k, l, m);
 		} else {
 			int n = getColorComponent(one, two, three, four, 24);
 			int o = getColorComponent(one, two, three, four, 16);
 			int p = getColorComponent(one, two, three, four, 8);
 			int q = getColorComponent(one, two, three, four, 0);
-			return n << 24 | o << 16 | p << 8 | q;
+			return ColorHelper.getArgb(n, o, p, q);
 		}
 	}
 

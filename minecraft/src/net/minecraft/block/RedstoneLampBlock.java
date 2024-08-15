@@ -9,6 +9,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import net.minecraft.world.block.WireOrientation;
 
 public class RedstoneLampBlock extends Block {
 	public static final MapCodec<RedstoneLampBlock> CODEC = createCodec(RedstoneLampBlock::new);
@@ -31,7 +32,7 @@ public class RedstoneLampBlock extends Block {
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		if (!world.isClient) {
 			boolean bl = (Boolean)state.get(LIT);
 			if (bl != world.isReceivingRedstonePower(pos)) {

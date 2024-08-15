@@ -10,8 +10,8 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 /**
@@ -26,11 +26,11 @@ public interface Equipment {
 		return SoundEvents.ITEM_ARMOR_EQUIP_GENERIC;
 	}
 
-	default TypedActionResult<ItemStack> equipAndSwap(Item item, World world, PlayerEntity user, Hand hand) {
+	default ActionResult equipAndSwap(Item item, World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		EquipmentSlot equipmentSlot = user.getPreferredEquipmentSlot(itemStack);
 		if (!user.canUseSlot(equipmentSlot)) {
-			return TypedActionResult.pass(itemStack);
+			return ActionResult.PASS;
 		} else {
 			ItemStack itemStack2 = user.getEquippedStack(equipmentSlot);
 			if ((!EnchantmentHelper.hasAnyEnchantmentsWith(itemStack2, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE) || user.isCreative())
@@ -42,9 +42,9 @@ public interface Equipment {
 				ItemStack itemStack3 = itemStack2.isEmpty() ? itemStack : itemStack2.copyAndEmpty();
 				ItemStack itemStack4 = user.isCreative() ? itemStack.copy() : itemStack.copyAndEmpty();
 				user.equipStack(equipmentSlot, itemStack4);
-				return TypedActionResult.success(itemStack3, world.isClient());
+				return ActionResult.SUCCESS.withNewHandStack(itemStack3);
 			} else {
-				return TypedActionResult.fail(itemStack);
+				return ActionResult.FAIL;
 			}
 		}
 	}

@@ -1493,7 +1493,7 @@ public class OceanMonumentGenerator {
 		protected void spawnElderGuardian(StructureWorldAccess world, BlockBox box, int x, int y, int z) {
 			BlockPos blockPos = this.offsetPos(x, y, z);
 			if (box.contains(blockPos)) {
-				ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.create(world.toServerWorld());
+				ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.create(world.toServerWorld(), SpawnReason.STRUCTURE);
 				if (elderGuardianEntity != null) {
 					elderGuardianEntity.heal(elderGuardianEntity.getMaxHealth());
 					elderGuardianEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);

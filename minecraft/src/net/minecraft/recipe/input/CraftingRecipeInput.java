@@ -3,14 +3,14 @@ package net.minecraft.recipe.input;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeMatcher;
+import net.minecraft.recipe.RecipeFinder;
 
 public class CraftingRecipeInput implements RecipeInput {
 	public static final CraftingRecipeInput EMPTY = new CraftingRecipeInput(0, 0, List.of());
 	private final int width;
 	private final int height;
 	private final List<ItemStack> stacks;
-	private final RecipeMatcher matcher = new RecipeMatcher();
+	private final RecipeFinder matcher = new RecipeFinder();
 	private final int stackCount;
 
 	private CraftingRecipeInput(int width, int height, List<ItemStack> stacks) {
@@ -100,7 +100,7 @@ public class CraftingRecipeInput implements RecipeInput {
 		return this.stackCount == 0;
 	}
 
-	public RecipeMatcher getRecipeMatcher() {
+	public RecipeFinder getRecipeMatcher() {
 		return this.matcher;
 	}
 

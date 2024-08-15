@@ -6,6 +6,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.util.Colors;
+import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class OverlayTexture implements AutoCloseable {
@@ -22,10 +24,10 @@ public class OverlayTexture implements AutoCloseable {
 		for (int i = 0; i < 16; i++) {
 			for (int j = 0; j < 16; j++) {
 				if (i < 8) {
-					nativeImage.setColor(j, i, -1308622593);
+					nativeImage.setColorArgb(j, i, -1291911168);
 				} else {
 					int k = (int)((1.0F - (float)j / 15.0F * 0.75F) * 255.0F);
-					nativeImage.setColor(j, i, k << 24 | 16777215);
+					nativeImage.setColorArgb(j, i, ColorHelper.withAlpha(k, Colors.WHITE));
 				}
 			}
 		}

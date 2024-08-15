@@ -5,11 +5,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class CyclingSlotIcon {
@@ -52,7 +54,7 @@ public class CyclingSlotIcon {
 
 	private void drawIcon(Slot slot, Identifier texture, float alpha, DrawContext context, int x, int y) {
 		Sprite sprite = (Sprite)MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(texture);
-		context.drawSprite(x + slot.x, y + slot.y, 0, 16, 16, sprite, 1.0F, 1.0F, 1.0F, alpha);
+		context.drawSprite(RenderLayer::getGuiTextured, sprite, x + slot.x, y + slot.y, 16, 16, ColorHelper.getWhite(alpha));
 	}
 
 	private float computeAlpha(float delta) {

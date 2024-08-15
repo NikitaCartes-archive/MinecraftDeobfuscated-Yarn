@@ -17,6 +17,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.ColorHelper;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
@@ -189,8 +190,8 @@ public class PlayerSkinTexture extends ResourceTexture {
 	private static void stripColor(NativeImage image, int x1, int y1, int x2, int y2) {
 		for (int i = x1; i < x2; i++) {
 			for (int j = y1; j < y2; j++) {
-				int k = image.getColor(i, j);
-				if ((k >> 24 & 0xFF) < 128) {
+				int k = image.getColorArgb(i, j);
+				if (ColorHelper.getAlpha(k) < 128) {
 					return;
 				}
 			}
@@ -198,7 +199,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 
 		for (int i = x1; i < x2; i++) {
 			for (int jx = y1; jx < y2; jx++) {
-				image.setColor(i, jx, image.getColor(i, jx) & 16777215);
+				image.setColorArgb(i, jx, image.getColorArgb(i, jx) & 16777215);
 			}
 		}
 	}
@@ -206,7 +207,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 	private static void stripAlpha(NativeImage image, int x1, int y1, int x2, int y2) {
 		for (int i = x1; i < x2; i++) {
 			for (int j = y1; j < y2; j++) {
-				image.setColor(i, j, image.getColor(i, j) | 0xFF000000);
+				image.setColorArgb(i, j, ColorHelper.fullAlpha(image.getColorArgb(i, j)));
 			}
 		}
 	}

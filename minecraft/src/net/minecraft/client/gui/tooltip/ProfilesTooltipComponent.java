@@ -22,7 +22,7 @@ public class ProfilesTooltipComponent implements TooltipComponent {
 	}
 
 	@Override
-	public int getHeight() {
+	public int getHeight(TextRenderer textRenderer) {
 		return this.profiles.size() * 12 + 2;
 	}
 

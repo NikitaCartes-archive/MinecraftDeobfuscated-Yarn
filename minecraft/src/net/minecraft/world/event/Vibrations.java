@@ -186,7 +186,7 @@ public interface Vibrations {
 			instance -> instance.group(
 						Vibration.CODEC.lenientOptionalFieldOf("event").forGetter(listenerData -> Optional.ofNullable(listenerData.vibration)),
 						VibrationSelector.CODEC.fieldOf("selector").forGetter(Vibrations.ListenerData::getSelector),
-						Codecs.NONNEGATIVE_INT.fieldOf("event_delay").orElse(0).forGetter(Vibrations.ListenerData::getDelay)
+						Codecs.NON_NEGATIVE_INT.fieldOf("event_delay").orElse(0).forGetter(Vibrations.ListenerData::getDelay)
 					)
 					.apply(instance, (vibration, selector, delay) -> new Vibrations.ListenerData((Vibration)vibration.orElse(null), selector, delay, true))
 		);

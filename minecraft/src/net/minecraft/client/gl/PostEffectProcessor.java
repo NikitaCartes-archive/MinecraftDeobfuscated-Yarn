@@ -1,23 +1,33 @@
 package net.minecraft.client.gl;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableList.Builder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.serialization.JsonOps;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Map.Entry;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.FrameGraphBuilder;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.util.Handle;
+import net.minecraft.client.util.ObjectAllocator;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.util.Identifier;
@@ -27,78 +37,55 @@ import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class PostEffectProcessor implements AutoCloseable {
-	private static final String MAIN_TARGET_NAME = "minecraft:main";
-	private final Framebuffer mainTarget;
-	private final ResourceFactory resourceFactory;
-	private final String name;
-	private final List<PostEffectPass> passes = Lists.<PostEffectPass>newArrayList();
-	private final Map<String, Framebuffer> targetsByName = Maps.<String, Framebuffer>newHashMap();
-	private final List<Framebuffer> defaultSizedTargets = Lists.<Framebuffer>newArrayList();
-	private Matrix4f projectionMatrix;
-	private int width;
-	private int height;
+	public static final Identifier MAIN = Identifier.ofVanilla("main");
+	private final Identifier id;
+	private final List<PostEffectPass> passes;
+	private final Map<Identifier, PostEffectPipeline.Targets> internalTargets;
+	private final Set<Identifier> externalTargets;
 	private float time;
-	private float lastTickDelta;
 
-	public PostEffectProcessor(TextureManager textureManager, ResourceFactory resourceFactory, Framebuffer framebuffer, Identifier id) throws IOException, JsonSyntaxException {
-		this.resourceFactory = resourceFactory;
-		this.mainTarget = framebuffer;
-		this.time = 0.0F;
-		this.lastTickDelta = 0.0F;
-		this.width = framebuffer.viewportWidth;
-		this.height = framebuffer.viewportHeight;
-		this.name = id.toString();
-		this.setupProjectionMatrix();
-		this.parseEffect(textureManager, id);
+	private PostEffectProcessor(
+		Identifier id, List<PostEffectPass> passes, Map<Identifier, PostEffectPipeline.Targets> internalTargets, Set<Identifier> externalTargets
+	) {
+		this.id = id;
+		this.passes = passes;
+		this.internalTargets = internalTargets;
+		this.externalTargets = externalTargets;
 	}
 
-	private void parseEffect(TextureManager textureManager, Identifier id) throws IOException, JsonSyntaxException {
-		Resource resource = this.resourceFactory.getResourceOrThrow(id);
+	public static PostEffectProcessor parseEffect(
+		ResourceFactory resourceFactory, TextureManager textureManager, Identifier id, Set<Identifier> availableExternalTargets
+	) throws IOException, JsonSyntaxException {
+		Resource resource = resourceFactory.getResourceOrThrow(id);
 
 		try {
 			Reader reader = resource.getReader();
 
+			PostEffectProcessor var18;
 			try {
 				JsonObject jsonObject = JsonHelper.deserialize(reader);
-				if (JsonHelper.hasArray(jsonObject, "targets")) {
-					JsonArray jsonArray = jsonObject.getAsJsonArray("targets");
-					int i = 0;
-
-					for (JsonElement jsonElement : jsonArray) {
-						try {
-							this.parseTarget(jsonElement);
-						} catch (Exception var14) {
-							InvalidHierarchicalFileException invalidHierarchicalFileException = InvalidHierarchicalFileException.wrap(var14);
-							invalidHierarchicalFileException.addInvalidKey("targets[" + i + "]");
-							throw invalidHierarchicalFileException;
-						}
-
-						i++;
-					}
+				PostEffectPipeline postEffectPipeline = PostEffectPipeline.CODEC.parse(JsonOps.INSTANCE, jsonObject).getOrThrow(JsonSyntaxException::new);
+				Stream<Identifier> stream = postEffectPipeline.passes().stream().flatMap(passx -> passx.inputs().stream()).flatMap(input -> input.getTargetId().stream());
+				Set<Identifier> set = (Set<Identifier>)stream.filter(identifier -> !postEffectPipeline.internalTargets().containsKey(identifier))
+					.collect(Collectors.toSet());
+				Set<Identifier> set2 = Sets.<Identifier>difference(set, availableExternalTargets);
+				if (!set2.isEmpty()) {
+					throw new InvalidHierarchicalFileException("Referenced external targets are not available in this context: " + set2);
 				}
 
-				if (JsonHelper.hasArray(jsonObject, "passes")) {
-					JsonArray jsonArray = jsonObject.getAsJsonArray("passes");
-					int i = 0;
+				Builder<PostEffectPass> builder = ImmutableList.builder();
 
-					for (JsonElement jsonElement : jsonArray) {
-						try {
-							this.parsePass(textureManager, jsonElement);
-						} catch (Exception var13) {
-							InvalidHierarchicalFileException invalidHierarchicalFileException = InvalidHierarchicalFileException.wrap(var13);
-							invalidHierarchicalFileException.addInvalidKey("passes[" + i + "]");
-							throw invalidHierarchicalFileException;
-						}
-
-						i++;
-					}
+				for (PostEffectPipeline.Pass pass : postEffectPipeline.passes()) {
+					builder.add(parsePass(resourceFactory, textureManager, pass));
 				}
+
+				var18 = new PostEffectProcessor(id, builder.build(), postEffectPipeline.internalTargets(), set);
 			} catch (Throwable var15) {
 				if (reader != null) {
 					try {
 						reader.close();
-					} catch (Throwable var12) {
-						var15.addSuppressed(var12);
+					} catch (Throwable var14) {
+						var15.addSuppressed(var14);
 					}
 				}
 
@@ -108,239 +95,267 @@ public class PostEffectProcessor implements AutoCloseable {
 			if (reader != null) {
 				reader.close();
 			}
+
+			return var18;
 		} catch (Exception var16) {
-			InvalidHierarchicalFileException invalidHierarchicalFileException2 = InvalidHierarchicalFileException.wrap(var16);
-			invalidHierarchicalFileException2.addInvalidFile(id.getPath() + " (" + resource.getPackId() + ")");
-			throw invalidHierarchicalFileException2;
+			InvalidHierarchicalFileException invalidHierarchicalFileException = InvalidHierarchicalFileException.wrap(var16);
+			invalidHierarchicalFileException.addInvalidFile(id.getPath() + " (" + resource.getPackId() + ")");
+			throw invalidHierarchicalFileException;
 		}
 	}
 
-	private void parseTarget(JsonElement jsonTarget) throws InvalidHierarchicalFileException {
-		if (JsonHelper.isString(jsonTarget)) {
-			this.addTarget(jsonTarget.getAsString(), this.width, this.height);
-		} else {
-			JsonObject jsonObject = JsonHelper.asObject(jsonTarget, "target");
-			String string = JsonHelper.getString(jsonObject, "name");
-			int i = JsonHelper.getInt(jsonObject, "width", this.width);
-			int j = JsonHelper.getInt(jsonObject, "height", this.height);
-			if (this.targetsByName.containsKey(string)) {
-				throw new InvalidHierarchicalFileException(string + " is already defined");
-			}
+	// $VF: Inserted dummy exception handlers to handle obfuscated exceptions
+	private static PostEffectPass parsePass(ResourceFactory resourceFactory, TextureManager textureManager, PostEffectPipeline.Pass pass) throws IOException {
+		PostEffectPass postEffectPass = new PostEffectPass(resourceFactory, pass.name(), pass.outputTarget());
 
-			this.addTarget(string, i, j);
-		}
-	}
+		for (PostEffectPipeline.Input input : pass.inputs()) {
+			Objects.requireNonNull(input);
+			Throwable var43;
+			switch (input) {
+				case PostEffectPipeline.TextureSampler var8:
+					PostEffectPipeline.TextureSampler var51 = var8;
 
-	private void parsePass(TextureManager textureManager, JsonElement jsonPass) throws IOException {
-		JsonObject jsonObject = JsonHelper.asObject(jsonPass, "pass");
-		String string = JsonHelper.getString(jsonObject, "name");
-		String string2 = JsonHelper.getString(jsonObject, "intarget");
-		String string3 = JsonHelper.getString(jsonObject, "outtarget");
-		Framebuffer framebuffer = this.getTarget(string2);
-		Framebuffer framebuffer2 = this.getTarget(string3);
-		boolean bl = JsonHelper.getBoolean(jsonObject, "use_linear_filter", false);
-		if (framebuffer == null) {
-			throw new InvalidHierarchicalFileException("Input target '" + string2 + "' does not exist");
-		} else if (framebuffer2 == null) {
-			throw new InvalidHierarchicalFileException("Output target '" + string3 + "' does not exist");
-		} else {
-			PostEffectPass postEffectPass = this.addPass(string, framebuffer, framebuffer2, bl);
-			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "auxtargets", null);
-			if (jsonArray != null) {
-				int i = 0;
-
-				for (JsonElement jsonElement : jsonArray) {
 					try {
-						JsonObject jsonObject2 = JsonHelper.asObject(jsonElement, "auxtarget");
-						String string4 = JsonHelper.getString(jsonObject2, "name");
-						String string5 = JsonHelper.getString(jsonObject2, "id");
-						boolean bl2;
-						String string6;
-						if (string5.endsWith(":depth")) {
-							bl2 = true;
-							string6 = string5.substring(0, string5.lastIndexOf(58));
-						} else {
-							bl2 = false;
-							string6 = string5;
-						}
-
-						Framebuffer framebuffer3 = this.getTarget(string6);
-						if (framebuffer3 == null) {
-							if (bl2) {
-								throw new InvalidHierarchicalFileException("Render target '" + string6 + "' can't be used as depth buffer");
-							}
-
-							Identifier identifier = Identifier.ofVanilla("textures/effect/" + string6 + ".png");
-							this.resourceFactory
-								.getResource(identifier)
-								.orElseThrow(() -> new InvalidHierarchicalFileException("Render target or texture '" + string6 + "' does not exist"));
-							RenderSystem.setShaderTexture(0, identifier);
-							textureManager.bindTexture(identifier);
-							AbstractTexture abstractTexture = textureManager.getTexture(identifier);
-							int j = JsonHelper.getInt(jsonObject2, "width");
-							int k = JsonHelper.getInt(jsonObject2, "height");
-							boolean bl3 = JsonHelper.getBoolean(jsonObject2, "bilinear");
-							if (bl3) {
-								RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_LINEAR);
-								RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_LINEAR);
-							} else {
-								RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_NEAREST);
-								RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_NEAREST);
-							}
-
-							postEffectPass.addAuxTarget(string4, abstractTexture::getGlId, j, k);
-						} else if (bl2) {
-							postEffectPass.addAuxTarget(string4, framebuffer3::getDepthAttachment, framebuffer3.textureWidth, framebuffer3.textureHeight);
-						} else {
-							postEffectPass.addAuxTarget(string4, framebuffer3::getColorAttachment, framebuffer3.textureWidth, framebuffer3.textureHeight);
-						}
-					} catch (Exception var27) {
-						InvalidHierarchicalFileException invalidHierarchicalFileException = InvalidHierarchicalFileException.wrap(var27);
-						invalidHierarchicalFileException.addInvalidKey("auxtargets[" + i + "]");
-						throw invalidHierarchicalFileException;
+						var52 = var51.samplerName();
+					} catch (Throwable var28) {
+						var43 = var28;
+						boolean var64 = false;
+						break;
 					}
 
-					i++;
-				}
-			}
+					String var33 = var52;
+					PostEffectPipeline.TextureSampler var53 = var8;
 
-			JsonArray jsonArray2 = JsonHelper.getArray(jsonObject, "uniforms", null);
-			if (jsonArray2 != null) {
-				int l = 0;
-
-				for (JsonElement jsonElement2 : jsonArray2) {
 					try {
-						this.parseUniform(jsonElement2);
-					} catch (Exception var26) {
-						InvalidHierarchicalFileException invalidHierarchicalFileException2 = InvalidHierarchicalFileException.wrap(var26);
-						invalidHierarchicalFileException2.addInvalidKey("uniforms[" + l + "]");
-						throw invalidHierarchicalFileException2;
+						var54 = var53.location();
+					} catch (Throwable var27) {
+						var43 = var27;
+						boolean var65 = false;
+						break;
 					}
 
-					l++;
-				}
-			}
-		}
-	}
+					Identifier var34 = var54;
+					Identifier identifier = var34;
+					PostEffectPipeline.TextureSampler var55 = var8;
 
-	private void parseUniform(JsonElement jsonUniform) throws InvalidHierarchicalFileException {
-		JsonObject jsonObject = JsonHelper.asObject(jsonUniform, "uniform");
-		String string = JsonHelper.getString(jsonObject, "name");
-		GlUniform glUniform = ((PostEffectPass)this.passes.get(this.passes.size() - 1)).getProgram().getUniformByName(string);
-		if (glUniform == null) {
-			throw new InvalidHierarchicalFileException("Uniform '" + string + "' does not exist");
-		} else {
-			float[] fs = new float[4];
-			int i = 0;
+					try {
+						var56 = var55.width();
+					} catch (Throwable var26) {
+						var43 = var26;
+						boolean var66 = false;
+						break;
+					}
 
-			for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "values")) {
-				try {
-					fs[i] = JsonHelper.asFloat(jsonElement, "value");
-				} catch (Exception var12) {
-					InvalidHierarchicalFileException invalidHierarchicalFileException = InvalidHierarchicalFileException.wrap(var12);
-					invalidHierarchicalFileException.addInvalidKey("values[" + i + "]");
-					throw invalidHierarchicalFileException;
-				}
+					int var35 = var56;
+					PostEffectPipeline.TextureSampler var57 = var8;
 
-				i++;
-			}
+					try {
+						var58 = var57.height();
+					} catch (Throwable var25) {
+						var43 = var25;
+						boolean var67 = false;
+						break;
+					}
 
-			switch (i) {
-				case 0:
+					int var36 = var58;
+					PostEffectPipeline.TextureSampler var59 = var8;
+
+					try {
+						var60 = var59.bilinear();
+					} catch (Throwable var24) {
+						var43 = var24;
+						boolean var68 = false;
+						break;
+					}
+
+					boolean var37 = var60;
+					Identifier identifier2x = identifier.withPath((UnaryOperator<String>)(name -> "textures/effect/" + name + ".png"));
+					resourceFactory.getResource(identifier2x).orElseThrow(() -> new InvalidHierarchicalFileException("Texture '" + identifier + "' does not exist"));
+					RenderSystem.setShaderTexture(0, identifier2x);
+					textureManager.bindTexture(identifier2x);
+					AbstractTexture abstractTexture = textureManager.getTexture(identifier2x);
+					if (var37) {
+						RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_LINEAR);
+						RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_LINEAR);
+					} else {
+						RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_NEAREST);
+						RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_NEAREST);
+					}
+
+					postEffectPass.addSampler(new PostEffectPass.TextureSampler(var33, abstractTexture, var35, var36));
+					continue;
+				case PostEffectPipeline.TargetSampler identifier2:
+					PostEffectPipeline.TargetSampler var10000 = identifier2;
+
+					try {
+						var44 = var10000.samplerName();
+					} catch (Throwable var23) {
+						var43 = var23;
+						boolean var10001 = false;
+						break;
+					}
+
+					String var19 = var44;
+					PostEffectPipeline.TargetSampler var45 = identifier2;
+
+					try {
+						var46 = var45.targetId();
+					} catch (Throwable var22) {
+						var43 = var22;
+						boolean var61 = false;
+						break;
+					}
+
+					Identifier var40 = var46;
+					PostEffectPipeline.TargetSampler var47 = identifier2;
+
+					try {
+						var48 = var47.useDepthBuffer();
+					} catch (Throwable var21) {
+						var43 = var21;
+						boolean var62 = false;
+						break;
+					}
+
+					boolean var41 = var48;
+					PostEffectPipeline.TargetSampler var49 = identifier2;
+
+					try {
+						var50 = var49.bilinear();
+					} catch (Throwable var20) {
+						var43 = var20;
+						boolean var63 = false;
+						break;
+					}
+
+					boolean var42 = var50;
+					postEffectPass.addSampler(new PostEffectPass.TargetSampler(var19, var40, var41, var42));
+					continue;
 				default:
-					break;
-				case 1:
-					glUniform.set(fs[0]);
-					break;
-				case 2:
-					glUniform.set(fs[0], fs[1]);
-					break;
-				case 3:
-					glUniform.set(fs[0], fs[1], fs[2]);
-					break;
-				case 4:
-					glUniform.setAndFlip(fs[0], fs[1], fs[2], fs[3]);
+					throw new MatchException(null, null);
 			}
+
+			Throwable var29 = var43;
+			throw new MatchException(var29.toString(), var29);
 		}
+
+		for (PostEffectPipeline.Uniform uniform : pass.uniforms()) {
+			String string3 = uniform.name();
+			GlUniform glUniform = postEffectPass.getProgram().getUniformByName(string3);
+			if (glUniform == null) {
+				throw new InvalidHierarchicalFileException("Uniform '" + string3 + "' does not exist");
+			}
+
+			setUniform(glUniform, uniform.values());
+		}
+
+		return postEffectPass;
 	}
 
-	public Framebuffer getSecondaryTarget(String name) {
-		return (Framebuffer)this.targetsByName.get(name);
-	}
-
-	public void addTarget(String name, int width, int height) {
-		Framebuffer framebuffer = new SimpleFramebuffer(width, height, true, MinecraftClient.IS_SYSTEM_MAC);
-		framebuffer.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
-		this.targetsByName.put(name, framebuffer);
-		if (width == this.width && height == this.height) {
-			this.defaultSizedTargets.add(framebuffer);
+	private static void setUniform(GlUniform uniform, List<Float> elements) {
+		switch (elements.size()) {
+			case 0:
+			default:
+				break;
+			case 1:
+				uniform.set((Float)elements.getFirst());
+				break;
+			case 2:
+				uniform.set((Float)elements.get(0), (Float)elements.get(1));
+				break;
+			case 3:
+				uniform.set((Float)elements.get(0), (Float)elements.get(1), (Float)elements.get(2));
+				break;
+			case 4:
+				uniform.setAndFlip((Float)elements.get(0), (Float)elements.get(1), (Float)elements.get(2), (Float)elements.get(3));
 		}
 	}
 
 	public void close() {
-		for (Framebuffer framebuffer : this.targetsByName.values()) {
-			framebuffer.delete();
-		}
-
 		for (PostEffectPass postEffectPass : this.passes) {
 			postEffectPass.close();
 		}
-
-		this.passes.clear();
 	}
 
-	public PostEffectPass addPass(String programName, Framebuffer source, Framebuffer dest, boolean linear) throws IOException {
-		PostEffectPass postEffectPass = new PostEffectPass(this.resourceFactory, programName, source, dest, linear);
-		this.passes.add(this.passes.size(), postEffectPass);
-		return postEffectPass;
-	}
-
-	private void setupProjectionMatrix() {
-		this.projectionMatrix = new Matrix4f().setOrtho(0.0F, (float)this.mainTarget.textureWidth, 0.0F, (float)this.mainTarget.textureHeight, 0.1F, 1000.0F);
-	}
-
-	public void setupDimensions(int targetsWidth, int targetsHeight) {
-		this.width = this.mainTarget.textureWidth;
-		this.height = this.mainTarget.textureHeight;
-		this.setupProjectionMatrix();
-
-		for (PostEffectPass postEffectPass : this.passes) {
-			postEffectPass.setProjectionMatrix(this.projectionMatrix);
-		}
-
-		for (Framebuffer framebuffer : this.defaultSizedTargets) {
-			framebuffer.resize(targetsWidth, targetsHeight, MinecraftClient.IS_SYSTEM_MAC);
-		}
-	}
-
-	private void setTexFilter(int texFilter) {
-		this.mainTarget.setTexFilter(texFilter);
-
-		for (Framebuffer framebuffer : this.targetsByName.values()) {
-			framebuffer.setTexFilter(texFilter);
-		}
-	}
-
-	public void render(float tickDelta) {
-		this.time += tickDelta;
+	// $VF: Inserted dummy exception handlers to handle obfuscated exceptions
+	public void method_62234(FrameGraphBuilder frameGraphBuilder, RenderTickCounter renderTickCounter, int i, int j, PostEffectProcessor.FramebufferSet set) {
+		Matrix4f matrix4f = new Matrix4f().setOrtho(0.0F, (float)i, 0.0F, (float)j, 0.1F, 1000.0F);
+		this.time = this.time + renderTickCounter.getLastDuration();
 
 		while (this.time > 20.0F) {
 			this.time -= 20.0F;
 		}
 
-		int i = GlConst.GL_NEAREST;
+		Map<Identifier, Handle<Framebuffer>> map = new HashMap(this.internalTargets.size() + this.externalTargets.size());
 
-		for (PostEffectPass postEffectPass : this.passes) {
-			int j = postEffectPass.getTexFilter();
-			if (i != j) {
-				this.setTexFilter(j);
-				i = j;
-			}
-
-			postEffectPass.render(this.time / 20.0F);
+		for (Identifier identifier : this.externalTargets) {
+			map.put(identifier, set.getOrThrow(identifier));
 		}
 
-		this.setTexFilter(GlConst.GL_NEAREST);
+		for (Entry<Identifier, PostEffectPipeline.Targets> entry : this.internalTargets.entrySet()) {
+			Identifier identifier2 = (Identifier)entry.getKey();
+			PostEffectPipeline.Targets var36;
+			Objects.requireNonNull(var36);
+			Object var12 = var36;
+
+			var36 = (PostEffectPipeline.Targets)entry.getValue();
+			SimpleFramebufferFactory simpleFramebufferFactory = switch (var12) {
+				case PostEffectPipeline.CustomSized var14 -> {
+					PostEffectPipeline.CustomSized var30 = var14;
+
+					int var27;
+					label59: {
+						label85: {
+							try {
+								var32 = var30.width();
+							} catch (Throwable var19) {
+								var31 = var19;
+								boolean var10001 = false;
+								break label85;
+							}
+
+							var27 = var32;
+							PostEffectPipeline.CustomSized var33 = var14;
+
+							try {
+								var34 = var33.height();
+								break label59;
+							} catch (Throwable var18) {
+								var31 = var18;
+								boolean var35 = false;
+							}
+						}
+
+						Throwable var21 = var31;
+						throw new MatchException(var21.toString(), var21);
+					}
+
+					int var28 = var34;
+					yield new SimpleFramebufferFactory(var27, var28, true);
+				}
+				case PostEffectPipeline.ScreenSized var17 -> new SimpleFramebufferFactory(i, j, true);
+				default -> throw new MatchException(null, null);
+			};
+			map.put(identifier2, frameGraphBuilder.method_61912(identifier2.toString(), simpleFramebufferFactory));
+		}
+
+		for (PostEffectPass postEffectPass : this.passes) {
+			postEffectPass.method_62255(frameGraphBuilder, map, matrix4f, this.time / 20.0F);
+		}
+
+		for (Identifier identifier : this.externalTargets) {
+			set.set(identifier, (Handle<Framebuffer>)map.get(identifier));
+		}
+	}
+
+	@Deprecated
+	public void render(Framebuffer framebuffer, ObjectAllocator objectAllocator, RenderTickCounter renderTickCounter) {
+		FrameGraphBuilder frameGraphBuilder = new FrameGraphBuilder();
+		PostEffectProcessor.FramebufferSet framebufferSet = PostEffectProcessor.FramebufferSet.singleton(
+			MAIN, frameGraphBuilder.createObjectNode("main", framebuffer)
+		);
+		this.method_62234(frameGraphBuilder, renderTickCounter, framebuffer.textureWidth, framebuffer.textureHeight, framebufferSet);
+		frameGraphBuilder.method_61909(objectAllocator);
 	}
 
 	public void setUniforms(String name, float value) {
@@ -349,16 +364,45 @@ public class PostEffectProcessor implements AutoCloseable {
 		}
 	}
 
-	public final String getName() {
-		return this.name;
+	public final Identifier method_62231() {
+		return this.id;
 	}
 
-	@Nullable
-	private Framebuffer getTarget(@Nullable String name) {
-		if (name == null) {
-			return null;
-		} else {
-			return name.equals("minecraft:main") ? this.mainTarget : (Framebuffer)this.targetsByName.get(name);
+	@Environment(EnvType.CLIENT)
+	public interface FramebufferSet {
+		static PostEffectProcessor.FramebufferSet singleton(Identifier id, Handle<Framebuffer> framebuffer) {
+			return new PostEffectProcessor.FramebufferSet() {
+				private Handle<Framebuffer> framebuffer = framebuffer;
+
+				@Override
+				public void set(Identifier id, Handle<Framebuffer> framebuffer) {
+					if (id.equals(id)) {
+						this.framebuffer = framebuffer;
+					} else {
+						throw new IllegalArgumentException("No target with id " + id);
+					}
+				}
+
+				@Nullable
+				@Override
+				public Handle<Framebuffer> get(Identifier id) {
+					return id.equals(id) ? this.framebuffer : null;
+				}
+			};
+		}
+
+		void set(Identifier id, Handle<Framebuffer> framebuffer);
+
+		@Nullable
+		Handle<Framebuffer> get(Identifier id);
+
+		default Handle<Framebuffer> getOrThrow(Identifier id) {
+			Handle<Framebuffer> handle = this.get(id);
+			if (handle == null) {
+				throw new IllegalArgumentException("Missing target with id " + id);
+			} else {
+				return handle;
+			}
 		}
 	}
 }

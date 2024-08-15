@@ -100,6 +100,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 	@Override
 	protected void generate() {
 		RegistryWrapper.Impl<Enchantment> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Item> impl2 = this.registryLookup.getWrapperOrThrow(RegistryKeys.ITEM);
 		this.addDrop(Blocks.GRANITE);
 		this.addDrop(Blocks.POLISHED_GRANITE);
 		this.addDrop(Blocks.DIORITE);
@@ -1136,12 +1137,12 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 					)
 				)
 		);
-		this.addDrop(Blocks.NETHER_SPROUTS, block -> BlockLootTableGenerator.dropsWithShears(block));
-		this.addDrop(Blocks.SEAGRASS, block -> BlockLootTableGenerator.dropsWithShears(block));
-		this.addDrop(Blocks.VINE, block -> BlockLootTableGenerator.dropsWithShears(block));
-		this.addDrop(Blocks.GLOW_LICHEN, block -> this.multifaceGrowthDrops(block, WITH_SHEARS));
-		this.addDrop(Blocks.HANGING_ROOTS, block -> BlockLootTableGenerator.dropsWithShears(block));
-		this.addDrop(Blocks.SMALL_DRIPLEAF, block -> BlockLootTableGenerator.dropsWithShears(block));
+		this.addDrop(Blocks.NETHER_SPROUTS, block -> this.dropsWithShears(block));
+		this.addDrop(Blocks.SEAGRASS, block -> this.dropsWithShears(block));
+		this.addDrop(Blocks.VINE, block -> this.dropsWithShears(block));
+		this.addDrop(Blocks.GLOW_LICHEN, block -> this.multifaceGrowthDrops(block, this.createWithShearsCondition()));
+		this.addDrop(Blocks.HANGING_ROOTS, block -> this.dropsWithShears(block));
+		this.addDrop(Blocks.SMALL_DRIPLEAF, block -> this.dropsWithShears(block));
 		this.addDrop(Blocks.MANGROVE_LEAVES, block -> this.mangroveLeavesDrops(block));
 		this.addDrop(Blocks.TALL_SEAGRASS, this.seagrassDrops(Blocks.SEAGRASS));
 		this.addDrop(Blocks.LARGE_FERN, block -> this.tallPlantDrops(block, Blocks.FERN));
@@ -1304,7 +1305,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 					ItemEntry.builder(Items.AMETHYST_SHARD)
 						.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0F)))
 						.apply(ApplyBonusLootFunction.oreDrops(impl.getOrThrow(Enchantments.FORTUNE)))
-						.conditionally(MatchToolLootCondition.builder(ItemPredicate.Builder.create().tag(ItemTags.CLUSTER_MAX_HARVESTABLES)))
+						.conditionally(MatchToolLootCondition.builder(ItemPredicate.Builder.create().tag(impl2, ItemTags.CLUSTER_MAX_HARVESTABLES)))
 						.alternatively(
 							(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
 								block, ItemEntry.builder(Items.AMETHYST_SHARD).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F)))

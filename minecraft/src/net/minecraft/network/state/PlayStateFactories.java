@@ -21,12 +21,14 @@ import net.minecraft.network.packet.c2s.play.AcknowledgeReconfigurationC2SPacket
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
+import net.minecraft.network.packet.c2s.play.BundleItemSelectedC2SPacket;
 import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatCommandSignedC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientTickEndC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
@@ -134,6 +136,7 @@ import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.MoveMinecartAlongTrackS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
@@ -163,6 +166,8 @@ import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
 import net.minecraft.network.packet.s2c.play.ServerMetadataS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.SetCursorItemS2CPacket;
+import net.minecraft.network.packet.s2c.play.SetPlayerInventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
 import net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket;
@@ -194,6 +199,7 @@ public class PlayStateFactories {
 		NetworkPhase.PLAY,
 		builder -> builder.add(PlayPackets.ACCEPT_TELEPORTATION, TeleportConfirmC2SPacket.CODEC)
 				.add(PlayPackets.BLOCK_ENTITY_TAG_QUERY, QueryBlockNbtC2SPacket.CODEC)
+				.add(PlayPackets.BUNDLE_ITEM_SELECTED, BundleItemSelectedC2SPacket.CODEC)
 				.add(PlayPackets.CHANGE_DIFFICULTY_C2S, UpdateDifficultyC2SPacket.CODEC)
 				.add(PlayPackets.CHAT_ACK, MessageAcknowledgmentC2SPacket.CODEC)
 				.add(PlayPackets.CHAT_COMMAND, CommandExecutionC2SPacket.CODEC)
@@ -202,6 +208,7 @@ public class PlayStateFactories {
 				.add(PlayPackets.CHAT_SESSION_UPDATE, PlayerSessionC2SPacket.CODEC)
 				.add(PlayPackets.CHUNK_BATCH_RECEIVED, AcknowledgeChunksC2SPacket.CODEC)
 				.add(PlayPackets.CLIENT_COMMAND, ClientStatusC2SPacket.CODEC)
+				.add(PlayPackets.CLIENT_TICK_END, ClientTickEndC2SPacket.CODEC)
 				.add(CommonPackets.CLIENT_INFORMATION, ClientOptionsC2SPacket.CODEC)
 				.add(PlayPackets.COMMAND_SUGGESTION, RequestCommandCompletionsC2SPacket.CODEC)
 				.add(PlayPackets.CONFIGURATION_ACKNOWLEDGED, AcknowledgeReconfigurationC2SPacket.CODEC)
@@ -301,6 +308,7 @@ public class PlayStateFactories {
 				.add(PlayPackets.MERCHANT_OFFERS, SetTradeOffersS2CPacket.CODEC)
 				.add(PlayPackets.MOVE_ENTITY_POS, EntityS2CPacket.MoveRelative.CODEC)
 				.add(PlayPackets.MOVE_ENTITY_POS_ROT, EntityS2CPacket.RotateAndMoveRelative.CODEC)
+				.add(PlayPackets.MOVE_MINECART_ALONG_TRACK, MoveMinecartAlongTrackS2CPacket.PACKET_CODEC)
 				.add(PlayPackets.MOVE_ENTITY_ROT, EntityS2CPacket.Rotate.CODEC)
 				.add(PlayPackets.MOVE_VEHICLE_S2C, VehicleMoveS2CPacket.CODEC)
 				.add(PlayPackets.OPEN_BOOK, OpenWrittenBookS2CPacket.CODEC)
@@ -336,9 +344,9 @@ public class PlayStateFactories {
 				.add(PlayPackets.SET_BORDER_WARNING_DELAY, WorldBorderWarningTimeChangedS2CPacket.CODEC)
 				.add(PlayPackets.SET_BORDER_WARNING_DISTANCE, WorldBorderWarningBlocksChangedS2CPacket.CODEC)
 				.add(PlayPackets.SET_CAMERA, SetCameraEntityS2CPacket.CODEC)
-				.add(PlayPackets.SET_CARRIED_ITEM_S2C, UpdateSelectedSlotS2CPacket.CODEC)
 				.add(PlayPackets.SET_CHUNK_CACHE_CENTER, ChunkRenderDistanceCenterS2CPacket.CODEC)
 				.add(PlayPackets.SET_CHUNK_CACHE_RADIUS, ChunkLoadDistanceS2CPacket.CODEC)
+				.add(PlayPackets.SET_CURSOR_ITEM, SetCursorItemS2CPacket.CODEC)
 				.add(PlayPackets.SET_DEFAULT_SPAWN_POSITION, PlayerSpawnPositionS2CPacket.CODEC)
 				.add(PlayPackets.SET_DISPLAY_OBJECTIVE, ScoreboardDisplayS2CPacket.CODEC)
 				.add(PlayPackets.SET_ENTITY_DATA, EntityTrackerUpdateS2CPacket.CODEC)
@@ -347,8 +355,10 @@ public class PlayStateFactories {
 				.add(PlayPackets.SET_EQUIPMENT, EntityEquipmentUpdateS2CPacket.CODEC)
 				.add(PlayPackets.SET_EXPERIENCE, ExperienceBarUpdateS2CPacket.CODEC)
 				.add(PlayPackets.SET_HEALTH, HealthUpdateS2CPacket.CODEC)
+				.add(PlayPackets.SET_CARRIED_ITEM_S2C, UpdateSelectedSlotS2CPacket.CODEC)
 				.add(PlayPackets.SET_OBJECTIVE, ScoreboardObjectiveUpdateS2CPacket.CODEC)
 				.add(PlayPackets.SET_PASSENGERS, EntityPassengersSetS2CPacket.CODEC)
+				.add(PlayPackets.SET_PLAYER_INVENTORY, SetPlayerInventoryS2CPacket.CODEC)
 				.add(PlayPackets.SET_PLAYER_TEAM, TeamS2CPacket.CODEC)
 				.add(PlayPackets.SET_SCORE, ScoreboardScoreUpdateS2CPacket.CODEC)
 				.add(PlayPackets.SET_SIMULATION_DISTANCE, SimulationDistanceS2CPacket.CODEC)

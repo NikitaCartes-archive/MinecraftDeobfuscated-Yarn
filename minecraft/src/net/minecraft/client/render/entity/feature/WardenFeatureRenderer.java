@@ -8,25 +8,24 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.WardenEntityModel;
+import net.minecraft.client.render.entity.state.WardenEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class WardenFeatureRenderer<T extends WardenEntity, M extends WardenEntityModel<T>> extends FeatureRenderer<T, M> {
+public class WardenFeatureRenderer extends FeatureRenderer<WardenEntityRenderState, WardenEntityModel> {
 	private final Identifier texture;
-	private final WardenFeatureRenderer.AnimationAngleAdjuster<T> animationAngleAdjuster;
-	private final WardenFeatureRenderer.ModelPartVisibility<T, M> modelPartVisibility;
+	private final WardenFeatureRenderer.AnimationAngleAdjuster animationAngleAdjuster;
+	private final WardenFeatureRenderer.ModelPartVisibility modelPartVisibility;
 
 	public WardenFeatureRenderer(
-		FeatureRendererContext<T, M> context,
+		FeatureRendererContext<WardenEntityRenderState, WardenEntityModel> context,
 		Identifier texture,
-		WardenFeatureRenderer.AnimationAngleAdjuster<T> animationAngleAdjuster,
-		WardenFeatureRenderer.ModelPartVisibility<T, M> modelPartVisibility
+		WardenFeatureRenderer.AnimationAngleAdjuster animationAngleAdjuster,
+		WardenFeatureRenderer.ModelPartVisibility modelPartVisibility
 	) {
 		super(context);
 		this.texture = texture;
@@ -35,14 +34,14 @@ public class WardenFeatureRenderer<T extends WardenEntity, M extends WardenEntit
 	}
 
 	public void render(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T wardenEntity, float f, float g, float h, float j, float k, float l
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, WardenEntityRenderState wardenEntityRenderState, float f, float g
 	) {
-		if (!wardenEntity.isInvisible()) {
+		if (!wardenEntityRenderState.invisible) {
 			this.updateModelPartVisibility();
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucentEmissive(this.texture));
-			float m = this.animationAngleAdjuster.apply(wardenEntity, h, j);
-			int n = ColorHelper.Argb.getArgb(MathHelper.floor(m * 255.0F), 255, 255, 255);
-			this.getContextModel().render(matrixStack, vertexConsumer, i, LivingEntityRenderer.getOverlay(wardenEntity, 0.0F), n);
+			float h = this.animationAngleAdjuster.apply(wardenEntityRenderState, wardenEntityRenderState.age);
+			int j = ColorHelper.getArgb(MathHelper.floor(h * 255.0F), 255, 255, 255);
+			this.getContextModel().render(matrixStack, vertexConsumer, i, LivingEntityRenderer.getOverlay(wardenEntityRenderState, 0.0F), j);
 			this.unhideAllModelParts();
 		}
 	}
@@ -58,12 +57,12 @@ public class WardenFeatureRenderer<T extends WardenEntity, M extends WardenEntit
 	}
 
 	@Environment(EnvType.CLIENT)
-	public interface AnimationAngleAdjuster<T extends WardenEntity> {
-		float apply(T warden, float tickDelta, float animationProgress);
+	public interface AnimationAngleAdjuster {
+		float apply(WardenEntityRenderState state, float tickDelta);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public interface ModelPartVisibility<T extends WardenEntity, M extends EntityModel<T>> {
-		List<ModelPart> getPartsToDraw(M model);
+	public interface ModelPartVisibility {
+		List<ModelPart> getPartsToDraw(WardenEntityModel model);
 	}
 }

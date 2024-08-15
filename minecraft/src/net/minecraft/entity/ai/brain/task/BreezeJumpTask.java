@@ -12,6 +12,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.BreezeEntity;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
@@ -32,7 +33,9 @@ public class BreezeJumpTask extends MultiTickTask<BreezeEntity> {
 	private static final int JUMP_COOLDOWN_EXPIRY = 10;
 	private static final int JUMP_COOLDOWN_EXPIRY_WHEN_HURT = 2;
 	private static final int JUMP_INHALING_EXPIRY = Math.round(10.0F);
+	private static final float field_52499 = 24.0F;
 	private static final float MAX_JUMP_VELOCITY = 1.4F;
+	private static final float FOLLOW_RANGE_MULTIPLIER_FOR_VELOCITY = 0.058333334F;
 	private static final ObjectArrayList<Integer> POSSIBLE_JUMP_ANGLES = new ObjectArrayList<>(Lists.newArrayList(40, 55, 60, 75, 80));
 
 	@VisibleForTesting
@@ -189,7 +192,7 @@ public class BreezeJumpTask extends MultiTickTask<BreezeEntity> {
 	}
 
 	private static boolean isTargetOutOfRange(BreezeEntity breeze, LivingEntity target) {
-		return !target.isInRange(breeze, 24.0);
+		return !target.isInRange(breeze, breeze.getAttributeValue(EntityAttributes.FOLLOW_RANGE));
 	}
 
 	private static boolean isTargetTooClose(BreezeEntity breeze, LivingEntity target) {
@@ -211,7 +214,8 @@ public class BreezeJumpTask extends MultiTickTask<BreezeEntity> {
 
 	private static Optional<Vec3d> getJumpingVelocity(BreezeEntity breeze, Random random, Vec3d jumpTarget) {
 		for (int i : Util.copyShuffled(POSSIBLE_JUMP_ANGLES, random)) {
-			Optional<Vec3d> optional = LongJumpUtil.getJumpingVelocity(breeze, jumpTarget, 1.4F, i, false);
+			float f = 0.058333334F * (float)breeze.getAttributeValue(EntityAttributes.FOLLOW_RANGE);
+			Optional<Vec3d> optional = LongJumpUtil.getJumpingVelocity(breeze, jumpTarget, f, i, false);
 			if (optional.isPresent()) {
 				return optional;
 			}

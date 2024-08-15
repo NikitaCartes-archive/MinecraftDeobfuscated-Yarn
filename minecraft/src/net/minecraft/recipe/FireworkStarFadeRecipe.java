@@ -14,7 +14,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
 public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
-	private static final Ingredient INPUT_STAR = Ingredient.ofItems(Items.FIREWORK_STAR);
+	private static final Ingredient INPUT_STAR = Ingredient.ofItem(Items.FIREWORK_STAR);
 
 	public FireworkStarFadeRecipe(CraftingRecipeCategory craftingRecipeCategory) {
 		super(craftingRecipeCategory);

@@ -68,6 +68,12 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 	}
 
 	@Override
+	public void onPacketException(Packet packet, Exception exception) throws CrashException {
+		ServerCommonPacketListener.super.onPacketException(packet, exception);
+		this.server.onPacketException(exception, packet.getPacketId());
+	}
+
+	@Override
 	public void onKeepAlive(KeepAliveC2SPacket packet) {
 		if (this.waitingForKeepAlive && packet.getId() == this.keepAliveId) {
 			int i = (int)(Util.getMeasuringTimeMs() - this.lastKeepAliveTime);

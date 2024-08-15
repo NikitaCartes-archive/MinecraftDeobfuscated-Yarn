@@ -12,8 +12,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithHat;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
+import net.minecraft.client.render.entity.state.VillagerDataRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.registry.DefaultedRegistry;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
@@ -21,13 +22,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.village.VillagerData;
-import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
 
 @Environment(EnvType.CLIENT)
-public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDataContainer, M extends EntityModel<T> & ModelWithHat>
-	extends FeatureRenderer<T, M> {
+public class VillagerClothingFeatureRenderer<S extends LivingEntityRenderState & VillagerDataRenderState, M extends EntityModel<S> & ModelWithHat>
+	extends FeatureRenderer<S, M> {
 	private static final Int2ObjectMap<Identifier> LEVEL_TO_ID = Util.make(new Int2ObjectOpenHashMap<>(), levelToId -> {
 		levelToId.put(1, Identifier.ofVanilla("stone"));
 		levelToId.put(2, Identifier.ofVanilla("iron"));
@@ -40,17 +40,15 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 	private final ResourceManager resourceManager;
 	private final String entityType;
 
-	public VillagerClothingFeatureRenderer(FeatureRendererContext<T, M> context, ResourceManager resourceManager, String entityType) {
+	public VillagerClothingFeatureRenderer(FeatureRendererContext<S, M> context, ResourceManager resourceManager, String entityType) {
 		super(context);
 		this.resourceManager = resourceManager;
 		this.entityType = entityType;
 	}
 
-	public void render(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
-	) {
-		if (!livingEntity.isInvisible()) {
-			VillagerData villagerData = livingEntity.getVillagerData();
+	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, S livingEntityRenderState, float f, float g) {
+		if (!livingEntityRenderState.invisible) {
+			VillagerData villagerData = livingEntityRenderState.getVillagerData();
 			VillagerType villagerType = villagerData.getType();
 			VillagerProfession villagerProfession = villagerData.getProfession();
 			VillagerResourceMetadata.HatType hatType = this.getHatType(this.villagerTypeToHat, "type", Registries.VILLAGER_TYPE, villagerType);
@@ -61,14 +59,14 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 					|| hatType2 == VillagerResourceMetadata.HatType.PARTIAL && hatType != VillagerResourceMetadata.HatType.FULL
 			);
 			Identifier identifier = this.findTexture("type", Registries.VILLAGER_TYPE.getId(villagerType));
-			renderModel(entityModel, identifier, matrixStack, vertexConsumerProvider, i, livingEntity, -1);
+			renderModel(entityModel, identifier, matrixStack, vertexConsumerProvider, i, livingEntityRenderState, -1);
 			entityModel.setHatVisible(true);
-			if (villagerProfession != VillagerProfession.NONE && !livingEntity.isBaby()) {
+			if (villagerProfession != VillagerProfession.NONE && !livingEntityRenderState.baby) {
 				Identifier identifier2 = this.findTexture("profession", Registries.VILLAGER_PROFESSION.getId(villagerProfession));
-				renderModel(entityModel, identifier2, matrixStack, vertexConsumerProvider, i, livingEntity, -1);
+				renderModel(entityModel, identifier2, matrixStack, vertexConsumerProvider, i, livingEntityRenderState, -1);
 				if (villagerProfession != VillagerProfession.NITWIT) {
 					Identifier identifier3 = this.findTexture("profession_level", LEVEL_TO_ID.get(MathHelper.clamp(villagerData.getLevel(), 1, LEVEL_TO_ID.size())));
-					renderModel(entityModel, identifier3, matrixStack, vertexConsumerProvider, i, livingEntity, -1);
+					renderModel(entityModel, identifier3, matrixStack, vertexConsumerProvider, i, livingEntityRenderState, -1);
 				}
 			}
 		}

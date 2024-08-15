@@ -245,7 +245,8 @@ public class SpreadPlayersCommand {
 				(double)MathHelper.floor(pile.z) + 0.5,
 				Set.of(),
 				entity.getYaw(),
-				entity.getPitch()
+				entity.getPitch(),
+				true
 			);
 			double e = Double.MAX_VALUE;
 

@@ -51,6 +51,10 @@ public record TeleportTarget(
 		return entity.getWorldSpawnPos(world, world.getSpawnPos()).toBottomCenterPos();
 	}
 
+	public TeleportTarget withRotation(float yaw, float pitch) {
+		return new TeleportTarget(this.world(), this.pos(), this.velocity(), yaw, pitch, this.missingRespawnBlock(), this.postDimensionTransition());
+	}
+
 	@FunctionalInterface
 	public interface PostDimensionTransition {
 		void onTransition(Entity entity);

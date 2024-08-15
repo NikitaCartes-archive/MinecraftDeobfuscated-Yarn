@@ -10,9 +10,8 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.entity.state.VexEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.mob.VexEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 
@@ -47,7 +46,7 @@ import net.minecraft.util.math.MathHelper;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class VexEntityModel extends SinglePartEntityModel<VexEntity> implements ModelWithArms {
+public class VexEntityModel extends EntityModel<VexEntityRenderState> implements ModelWithArms {
 	private final ModelPart root;
 	private final ModelPart body;
 	private final ModelPart rightArm;
@@ -108,21 +107,21 @@ public class VexEntityModel extends SinglePartEntityModel<VexEntity> implements 
 		return TexturedModelData.of(modelData, 32, 32);
 	}
 
-	public void setAngles(VexEntity vexEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(VexEntityRenderState vexEntityRenderState) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		this.head.yaw = i * (float) (Math.PI / 180.0);
-		this.head.pitch = j * (float) (Math.PI / 180.0);
-		float k = MathHelper.cos(h * 5.5F * (float) (Math.PI / 180.0)) * 0.1F;
-		this.rightArm.roll = (float) (Math.PI / 5) + k;
-		this.leftArm.roll = -((float) (Math.PI / 5) + k);
-		if (vexEntity.isCharging()) {
+		this.head.yaw = vexEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
+		this.head.pitch = vexEntityRenderState.pitch * (float) (Math.PI / 180.0);
+		float f = MathHelper.cos(vexEntityRenderState.age * 5.5F * (float) (Math.PI / 180.0)) * 0.1F;
+		this.rightArm.roll = (float) (Math.PI / 5) + f;
+		this.leftArm.roll = -((float) (Math.PI / 5) + f);
+		if (vexEntityRenderState.charging) {
 			this.body.pitch = 0.0F;
-			this.setChargingArmAngles(vexEntity.getMainHandStack(), vexEntity.getOffHandStack(), k);
+			this.setChargingArmAngles(!vexEntityRenderState.rightHandStack.isEmpty(), !vexEntityRenderState.leftHandStack.isEmpty(), f);
 		} else {
 			this.body.pitch = (float) (Math.PI / 20);
 		}
 
-		this.leftWing.yaw = 1.0995574F + MathHelper.cos(h * 45.836624F * (float) (Math.PI / 180.0)) * (float) (Math.PI / 180.0) * 16.2F;
+		this.leftWing.yaw = 1.0995574F + MathHelper.cos(vexEntityRenderState.age * 45.836624F * (float) (Math.PI / 180.0)) * (float) (Math.PI / 180.0) * 16.2F;
 		this.rightWing.yaw = -this.leftWing.yaw;
 		this.leftWing.pitch = 0.47123888F;
 		this.leftWing.roll = -0.47123888F;
@@ -130,8 +129,8 @@ public class VexEntityModel extends SinglePartEntityModel<VexEntity> implements 
 		this.rightWing.roll = 0.47123888F;
 	}
 
-	private void setChargingArmAngles(ItemStack mainHandStack, ItemStack offHandStack, float f) {
-		if (mainHandStack.isEmpty() && offHandStack.isEmpty()) {
+	private void setChargingArmAngles(boolean bl, boolean bl2, float f) {
+		if (!bl && !bl2) {
 			this.rightArm.pitch = -1.2217305F;
 			this.rightArm.yaw = (float) (Math.PI / 12);
 			this.rightArm.roll = -0.47123888F - f;
@@ -139,13 +138,13 @@ public class VexEntityModel extends SinglePartEntityModel<VexEntity> implements 
 			this.leftArm.yaw = (float) (-Math.PI / 12);
 			this.leftArm.roll = 0.47123888F + f;
 		} else {
-			if (!mainHandStack.isEmpty()) {
+			if (bl) {
 				this.rightArm.pitch = (float) (Math.PI * 7.0 / 6.0);
 				this.rightArm.yaw = (float) (Math.PI / 12);
 				this.rightArm.roll = -0.47123888F - f;
 			}
 
-			if (!offHandStack.isEmpty()) {
+			if (bl2) {
 				this.leftArm.pitch = (float) (Math.PI * 7.0 / 6.0);
 				this.leftArm.yaw = (float) (-Math.PI / 12);
 				this.leftArm.roll = 0.47123888F + f;

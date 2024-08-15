@@ -20,6 +20,7 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.input.KeyCodes;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -334,7 +335,7 @@ public class PresetsScreen extends Screen {
 			}
 
 			private void drawIconBackground(DrawContext context, int x, int y) {
-				context.drawGuiTexture(PresetsScreen.SLOT_TEXTURE, x, y, 0, 18, 18);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, PresetsScreen.SLOT_TEXTURE, x, y, 18, 18);
 			}
 
 			@Override

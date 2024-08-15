@@ -2,7 +2,6 @@ package net.minecraft.registry;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Lifecycle;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,7 +42,7 @@ public interface DynamicRegistryManager extends RegistryWrapper.WrapperLookup {
 
 	@Override
 	default Stream<RegistryKey<? extends Registry<?>>> streamAllRegistryKeys() {
-		return this.streamAllRegistries().map(DynamicRegistryManager.Entry::key);
+		return this.streamAllRegistries().map(entry -> entry.key);
 	}
 
 	static DynamicRegistryManager.Immutable of(Registry<? extends Registry<?>> registries) {
@@ -74,10 +73,6 @@ public interface DynamicRegistryManager extends RegistryWrapper.WrapperLookup {
 		}
 
 		return new Immutablized(this.streamAllRegistries().map(DynamicRegistryManager.Entry::freeze));
-	}
-
-	default Lifecycle getRegistryLifecycle() {
-		return (Lifecycle)this.streamAllRegistries().map(entry -> entry.value.getLifecycle()).reduce(Lifecycle.stable(), Lifecycle::add);
 	}
 
 	public static record Entry<T>(RegistryKey<? extends Registry<T>> key, Registry<T> value) {

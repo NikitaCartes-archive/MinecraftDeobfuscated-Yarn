@@ -22,13 +22,13 @@ public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	private CraftRequestC2SPacket(PacketByteBuf buf) {
-		this.syncId = buf.readByte();
+		this.syncId = buf.readSyncId();
 		this.recipeId = buf.readIdentifier();
 		this.craftAll = buf.readBoolean();
 	}
 
 	private void write(PacketByteBuf buf) {
-		buf.writeByte(this.syncId);
+		buf.writeSyncId(this.syncId);
 		buf.writeIdentifier(this.recipeId);
 		buf.writeBoolean(this.craftAll);
 	}

@@ -7,44 +7,48 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EvokerFangsEntityModel;
+import net.minecraft.client.render.entity.state.EvokerFangsEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.EvokerFangsEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
-public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity> {
+public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity, EvokerFangsEntityRenderState> {
 	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/illager/evoker_fangs.png");
-	private final EvokerFangsEntityModel<EvokerFangsEntity> model;
+	private final EvokerFangsEntityModel model;
 
 	public EvokerFangsEntityRenderer(EntityRendererFactory.Context context) {
 		super(context);
-		this.model = new EvokerFangsEntityModel<>(context.getPart(EntityModelLayers.EVOKER_FANGS));
+		this.model = new EvokerFangsEntityModel(context.getPart(EntityModelLayers.EVOKER_FANGS));
 	}
 
-	public void render(EvokerFangsEntity evokerFangsEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		float h = evokerFangsEntity.getAnimationProgress(g);
-		if (h != 0.0F) {
-			float j = 2.0F;
-			if (h > 0.9F) {
-				j *= (1.0F - h) / 0.1F;
-			}
-
+	public void render(EvokerFangsEntityRenderState evokerFangsEntityRenderState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+		float f = evokerFangsEntityRenderState.animationProgress;
+		if (f != 0.0F) {
 			matrixStack.push();
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F - evokerFangsEntity.getYaw()));
-			matrixStack.scale(-j, -j, j);
-			float k = 0.03125F;
-			matrixStack.translate(0.0, -0.626, 0.0);
-			matrixStack.scale(0.5F, 0.5F, 0.5F);
-			this.model.setAngles(evokerFangsEntity, h, 0.0F, 0.0F, evokerFangsEntity.getYaw(), evokerFangsEntity.getPitch());
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F - evokerFangsEntityRenderState.yaw));
+			matrixStack.scale(-1.0F, -1.0F, 1.0F);
+			matrixStack.translate(0.0F, -1.501F, 0.0F);
+			this.model.setAngles(evokerFangsEntityRenderState);
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(TEXTURE));
 			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 			matrixStack.pop();
-			super.render(evokerFangsEntity, f, g, matrixStack, vertexConsumerProvider, i);
+			super.render(evokerFangsEntityRenderState, matrixStack, vertexConsumerProvider, i);
 		}
 	}
 
-	public Identifier getTexture(EvokerFangsEntity evokerFangsEntity) {
+	public Identifier getTexture(EvokerFangsEntityRenderState evokerFangsEntityRenderState) {
 		return TEXTURE;
+	}
+
+	public EvokerFangsEntityRenderState getRenderState() {
+		return new EvokerFangsEntityRenderState();
+	}
+
+	public void updateRenderState(EvokerFangsEntity evokerFangsEntity, EvokerFangsEntityRenderState evokerFangsEntityRenderState, float f) {
+		super.updateRenderState(evokerFangsEntity, evokerFangsEntityRenderState, f);
+		evokerFangsEntityRenderState.yaw = evokerFangsEntity.getYaw();
+		evokerFangsEntityRenderState.animationProgress = evokerFangsEntity.getAnimationProgress(f);
 	}
 }

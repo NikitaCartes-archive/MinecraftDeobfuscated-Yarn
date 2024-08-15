@@ -1,8 +1,8 @@
 package net.minecraft.client.gui.screen.ingame;
 
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -11,6 +11,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.BundleTooltipSubmenuHandler;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.gui.tooltip.TooltipSubmenuHandler;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.InputUtil;
@@ -29,6 +32,8 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public abstract class HandledScreen<T extends ScreenHandler> extends Screen implements ScreenHandlerProvider<T> {
 	public static final Identifier BACKGROUND_TEXTURE = Identifier.ofVanilla("textures/gui/container/inventory.png");
+	protected static final int field_52802 = 256;
+	protected static final int field_52803 = 256;
 	private static final float field_32318 = 100.0F;
 	private static final int field_32319 = 500;
 	public static final int field_32322 = 100;
@@ -39,6 +44,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	protected int titleY;
 	protected int playerInventoryTitleX;
 	protected int playerInventoryTitleY;
+	private final List<TooltipSubmenuHandler> tooltipSubmenuHandlers;
 	protected final T handler;
 	protected final Text playerInventoryTitle;
 	@Nullable
@@ -80,12 +86,19 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		this.titleY = 6;
 		this.playerInventoryTitleX = 8;
 		this.playerInventoryTitleY = this.backgroundHeight - 94;
+		this.tooltipSubmenuHandlers = new ArrayList();
 	}
 
 	@Override
 	protected void init() {
 		this.x = (this.width - this.backgroundWidth) / 2;
 		this.y = (this.height - this.backgroundHeight) / 2;
+		this.tooltipSubmenuHandlers.clear();
+		this.addTooltipSubmenuHandler(new BundleTooltipSubmenuHandler(this.client));
+	}
+
+	protected void addTooltipSubmenuHandler(TooltipSubmenuHandler handler) {
+		this.tooltipSubmenuHandlers.add(handler);
 	}
 
 	@Override
@@ -93,23 +106,19 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		int i = this.x;
 		int j = this.y;
 		super.render(context, mouseX, mouseY, delta);
-		RenderSystem.disableDepthTest();
 		context.getMatrices().push();
 		context.getMatrices().translate((float)i, (float)j, 0.0F);
-		this.focusedSlot = null;
+		this.updatePoint((double)mouseX, (double)mouseY);
 
-		for (int k = 0; k < this.handler.slots.size(); k++) {
-			Slot slot = this.handler.slots.get(k);
+		for (Slot slot : this.handler.slots) {
 			if (slot.isEnabled()) {
 				this.drawSlot(context, slot);
 			}
 
 			if (this.isPointOverSlot(slot, (double)mouseX, (double)mouseY) && slot.isEnabled()) {
 				this.focusedSlot = slot;
-				int l = slot.x;
-				int m = slot.y;
 				if (this.focusedSlot.canBeHighlighted()) {
-					drawSlotHighlight(context, l, m, 0);
+					drawSlotHighlight(context, slot.x, slot.y, 0);
 				}
 			}
 		}
@@ -117,7 +126,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		this.drawForeground(context, mouseX, mouseY);
 		ItemStack itemStack = this.touchDragStack.isEmpty() ? this.handler.getCursorStack() : this.touchDragStack;
 		if (!itemStack.isEmpty()) {
-			int n = 8;
+			int k = 8;
 			int l = this.touchDragStack.isEmpty() ? 8 : 16;
 			String string = null;
 			if (!this.touchDragStack.isEmpty() && this.touchIsRightClickDrag) {
@@ -141,13 +150,12 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 			int l = this.touchDropOriginSlot.x - this.touchDropX;
 			int m = this.touchDropOriginSlot.y - this.touchDropY;
-			int o = this.touchDropX + (int)((float)l * f);
-			int p = this.touchDropY + (int)((float)m * f);
-			this.drawItem(context, this.touchDropReturningStack, o, p, null);
+			int n = this.touchDropX + (int)((float)l * f);
+			int o = this.touchDropY + (int)((float)m * f);
+			this.drawItem(context, this.touchDropReturningStack, n, o, null);
 		}
 
 		context.getMatrices().pop();
-		RenderSystem.enableDepthTest();
 	}
 
 	@Override
@@ -156,15 +164,35 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		this.drawBackground(context, delta, mouseX, mouseY);
 	}
 
+	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+		if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
+			for (TooltipSubmenuHandler tooltipSubmenuHandler : this.tooltipSubmenuHandlers) {
+				if (tooltipSubmenuHandler.isApplicableTo(this.focusedSlot)
+					&& tooltipSubmenuHandler.onScroll(horizontalAmount, verticalAmount, this.focusedSlot.id, this.focusedSlot.getStack())) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	public static void drawSlotHighlight(DrawContext context, int x, int y, int z) {
 		context.fillGradient(RenderLayer.getGuiOverlay(), x, y, x + 16, y + 16, -2130706433, -2130706433, z);
 	}
 
-	protected void drawMouseoverTooltip(DrawContext context, int x, int y) {
-		if (this.handler.getCursorStack().isEmpty() && this.focusedSlot != null && this.focusedSlot.hasStack()) {
+	protected void drawMouseoverTooltip(DrawContext drawContext, int x, int y) {
+		if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
 			ItemStack itemStack = this.focusedSlot.getStack();
-			context.drawTooltip(this.textRenderer, this.getTooltipFromItem(itemStack), itemStack.getTooltipData(), x, y);
+			if (this.handler.getCursorStack().isEmpty() || this.isItemTooltipSticky(itemStack)) {
+				drawContext.drawTooltip(this.textRenderer, this.getTooltipFromItem(itemStack), itemStack.getTooltipData(), x, y);
+			}
 		}
+	}
+
+	private boolean isItemTooltipSticky(ItemStack item) {
+		return (Boolean)item.getTooltipData().map(TooltipComponent::of).map(TooltipComponent::isSticky).orElse(false);
 	}
 
 	protected List<Text> getTooltipFromItem(ItemStack stack) {
@@ -224,7 +252,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			Pair<Identifier, Identifier> pair = slot.getBackgroundSprite();
 			if (pair != null) {
 				Sprite sprite = (Sprite)this.client.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
-				context.drawSprite(i, j, 0, 16, 16, sprite);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, sprite, i, j, 16, 16);
 				bl2 = true;
 			}
 		}
@@ -549,6 +577,23 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		return pointX >= (double)(x - 1) && pointX < (double)(x + width + 1) && pointY >= (double)(y - 1) && pointY < (double)(y + height + 1);
 	}
 
+	private void updatePoint(double pointX, double pointY) {
+		if (this.focusedSlot != null && this.focusedSlot.hasStack() && !this.isPointOverSlot(this.focusedSlot, pointX, pointY)) {
+			this.resetTooltipSubmenus();
+			this.focusedSlot = null;
+		}
+	}
+
+	private void resetTooltipSubmenus() {
+		if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
+			for (TooltipSubmenuHandler tooltipSubmenuHandler : this.tooltipSubmenuHandlers) {
+				if (tooltipSubmenuHandler.isApplicableTo(this.focusedSlot)) {
+					tooltipSubmenuHandler.reset(this.focusedSlot);
+				}
+			}
+		}
+	}
+
 	/**
 	 * @see net.minecraft.screen.ScreenHandler#onSlotClick(int, int, net.minecraft.screen.slot.SlotActionType, net.minecraft.entity.player.PlayerEntity)
 	 */
@@ -571,6 +616,8 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		} else if (this.client.options.inventoryKey.matchesKey(keyCode, scanCode)) {
 			this.close();
 			return true;
+		} else if (this.submenuKeyPressed(keyCode, scanCode)) {
+			return true;
 		} else {
 			this.handleHotbarKeyPressed(keyCode, scanCode);
 			if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
@@ -583,6 +630,19 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 			return true;
 		}
+	}
+
+	boolean submenuKeyPressed(int keyCode, int scanCode) {
+		if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
+			for (TooltipSubmenuHandler tooltipSubmenuHandler : this.tooltipSubmenuHandlers) {
+				if (tooltipSubmenuHandler.isApplicableTo(this.focusedSlot)
+					&& tooltipSubmenuHandler.onKeyPressed(this.focusedSlot.getStack(), this.focusedSlot.id, keyCode, scanCode)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	protected boolean handleHotbarKeyPressed(int keyCode, int scanCode) {
@@ -636,6 +696,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	@Override
 	public void close() {
 		this.client.player.closeHandledScreen();
+		this.resetTooltipSubmenus();
 		super.close();
 	}
 }

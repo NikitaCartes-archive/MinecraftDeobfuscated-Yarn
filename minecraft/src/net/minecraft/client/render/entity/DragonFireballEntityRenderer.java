@@ -6,6 +6,7 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.util.Colors;
@@ -13,7 +14,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
-public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballEntity> {
+public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballEntity, EntityRenderState> {
 	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/enderdragon/dragon_fireball.png");
 	private static final RenderLayer LAYER = RenderLayer.getEntityCutoutNoCull(TEXTURE);
 
@@ -25,18 +26,19 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 		return 15;
 	}
 
-	public void render(DragonFireballEntity dragonFireballEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		matrixStack.push();
-		matrixStack.scale(2.0F, 2.0F, 2.0F);
-		matrixStack.multiply(this.dispatcher.getRotation());
-		MatrixStack.Entry entry = matrixStack.peek();
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
-		produceVertex(vertexConsumer, entry, i, 0.0F, 0, 0, 1);
-		produceVertex(vertexConsumer, entry, i, 1.0F, 0, 1, 1);
-		produceVertex(vertexConsumer, entry, i, 1.0F, 1, 1, 0);
-		produceVertex(vertexConsumer, entry, i, 0.0F, 1, 0, 0);
-		matrixStack.pop();
-		super.render(dragonFireballEntity, f, g, matrixStack, vertexConsumerProvider, i);
+	@Override
+	public void render(EntityRenderState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+		matrices.push();
+		matrices.scale(2.0F, 2.0F, 2.0F);
+		matrices.multiply(this.dispatcher.getRotation());
+		MatrixStack.Entry entry = matrices.peek();
+		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(LAYER);
+		produceVertex(vertexConsumer, entry, light, 0.0F, 0, 0, 1);
+		produceVertex(vertexConsumer, entry, light, 1.0F, 0, 1, 1);
+		produceVertex(vertexConsumer, entry, light, 1.0F, 1, 1, 0);
+		produceVertex(vertexConsumer, entry, light, 0.0F, 1, 0, 0);
+		matrices.pop();
+		super.render(state, matrices, vertexConsumers, light);
 	}
 
 	private static void produceVertex(VertexConsumer vertexConsumer, MatrixStack.Entry matrix, int light, float x, int z, int textureU, int textureV) {
@@ -48,7 +50,13 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 			.normal(matrix, 0.0F, 1.0F, 0.0F);
 	}
 
-	public Identifier getTexture(DragonFireballEntity dragonFireballEntity) {
+	@Override
+	public Identifier getTexture(EntityRenderState state) {
 		return TEXTURE;
+	}
+
+	@Override
+	public EntityRenderState getRenderState() {
+		return new EntityRenderState();
 	}
 }

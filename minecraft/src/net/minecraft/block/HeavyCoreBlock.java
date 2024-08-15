@@ -6,6 +6,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -16,10 +17,11 @@ import net.minecraft.world.WorldAccess;
 public class HeavyCoreBlock extends Block implements Waterloggable {
 	public static final MapCodec<HeavyCoreBlock> CODEC = createCodec(HeavyCoreBlock::new);
 	private static final VoxelShape OUTLINE_SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 8.0, 12.0);
+	public static final BooleanProperty field_52631 = Properties.WATERLOGGED;
 
 	public HeavyCoreBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(Properties.WATERLOGGED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(field_52631, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -29,14 +31,14 @@ public class HeavyCoreBlock extends Block implements Waterloggable {
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(Properties.WATERLOGGED);
+		builder.add(field_52631);
 	}
 
 	@Override
 	protected BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
-		if ((Boolean)state.get(Properties.WATERLOGGED)) {
+		if ((Boolean)state.get(field_52631)) {
 			world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
@@ -45,13 +47,13 @@ public class HeavyCoreBlock extends Block implements Waterloggable {
 
 	@Override
 	protected FluidState getFluidState(BlockState state) {
-		return state.get(Properties.WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
+		return state.get(field_52631) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-		return this.getDefaultState().with(Properties.WATERLOGGED, Boolean.valueOf(fluidState.isOf(Fluids.WATER)));
+		return this.getDefaultState().with(field_52631, Boolean.valueOf(fluidState.isOf(Fluids.WATER)));
 	}
 
 	@Override

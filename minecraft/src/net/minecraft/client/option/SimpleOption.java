@@ -582,7 +582,6 @@ public final class SimpleOption<T> {
 			N object = this.callbacks.toValue(this.value);
 			if (!Objects.equals(object, this.option.getValue())) {
 				this.option.setValue(object);
-				this.options.write();
 				this.changeCallback.accept(this.option.getValue());
 			}
 		}

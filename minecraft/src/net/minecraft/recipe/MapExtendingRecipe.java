@@ -17,7 +17,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 		super(
 			"",
 			category,
-			RawShapedRecipe.create(Map.of('#', Ingredient.ofItems(Items.PAPER), 'x', Ingredient.ofItems(Items.FILLED_MAP)), "###", "#x#", "###"),
+			RawShapedRecipe.create(Map.of('#', Ingredient.ofItem(Items.PAPER), 'x', Ingredient.ofItem(Items.FILLED_MAP)), "###", "#x#", "###"),
 			new ItemStack(Items.MAP)
 		);
 	}
@@ -48,9 +48,9 @@ public class MapExtendingRecipe extends ShapedRecipe {
 		return itemStack;
 	}
 
-	private static ItemStack findFilledMap(CraftingRecipeInput craftingRecipeInput) {
-		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
-			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
+	private static ItemStack findFilledMap(CraftingRecipeInput input) {
+		for (int i = 0; i < input.getSize(); i++) {
+			ItemStack itemStack = input.getStackInSlot(i);
 			if (itemStack.isOf(Items.FILLED_MAP)) {
 				return itemStack;
 			}

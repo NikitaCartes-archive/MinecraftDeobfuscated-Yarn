@@ -11,12 +11,14 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class GlowSquidEntity extends SquidEntity {
 	private static final TrackedData<Integer> DARK_TICKS_REMAINING = DataTracker.registerData(GlowSquidEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -34,6 +36,12 @@ public class GlowSquidEntity extends SquidEntity {
 	protected void initDataTracker(DataTracker.Builder builder) {
 		super.initDataTracker(builder);
 		builder.add(DARK_TICKS_REMAINING, 0);
+	}
+
+	@Nullable
+	@Override
+	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+		return EntityType.GLOW_SQUID.create(world, SpawnReason.BREEDING);
 	}
 
 	@Override

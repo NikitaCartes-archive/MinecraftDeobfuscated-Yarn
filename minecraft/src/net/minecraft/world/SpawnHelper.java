@@ -4,6 +4,8 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -96,14 +98,26 @@ public final class SpawnHelper {
 		return chunk.getBiomeForNoiseGen(BiomeCoords.fromBlock(pos.getX()), BiomeCoords.fromBlock(pos.getY()), BiomeCoords.fromBlock(pos.getZ())).value();
 	}
 
-	public static void spawn(ServerWorld world, WorldChunk chunk, SpawnHelper.Info info, boolean spawnAnimals, boolean spawnMonsters, boolean rareSpawn) {
-		world.getProfiler().push("spawner");
+	public static List<SpawnGroup> collectSpawnableGroups(SpawnHelper.Info info, boolean spawnAnimals, boolean spawnMonsters, boolean rare) {
+		List<SpawnGroup> list = new ArrayList(SPAWNABLE_GROUPS.length);
 
 		for (SpawnGroup spawnGroup : SPAWNABLE_GROUPS) {
 			if ((spawnAnimals || !spawnGroup.isPeaceful())
 				&& (spawnMonsters || spawnGroup.isPeaceful())
-				&& (rareSpawn || !spawnGroup.isRare())
-				&& info.isBelowCap(spawnGroup, chunk.getPos())) {
+				&& (rare || !spawnGroup.isRare())
+				&& info.isBelowCap(spawnGroup)) {
+				list.add(spawnGroup);
+			}
+		}
+
+		return list;
+	}
+
+	public static void spawn(ServerWorld world, WorldChunk chunk, SpawnHelper.Info info, List<SpawnGroup> spawnableGroups) {
+		world.getProfiler().push("spawner");
+
+		for (SpawnGroup spawnGroup : spawnableGroups) {
+			if (info.canSpawn(spawnGroup, chunk.getPos())) {
 				spawnEntitiesInChunk(spawnGroup, world, chunk, info::test, info::run);
 			}
 		}
@@ -230,7 +244,7 @@ public final class SpawnHelper {
 	@Nullable
 	private static MobEntity createMob(ServerWorld world, EntityType<?> type) {
 		try {
-			Entity var3 = type.create(world);
+			Entity var3 = type.create(world, SpawnReason.NATURAL);
 			if (var3 instanceof MobEntity) {
 				return (MobEntity)var3;
 			}
@@ -349,7 +363,7 @@ public final class SpawnHelper {
 
 								Entity entity;
 								try {
-									entity = spawnEntry.type.create(world.toServerWorld());
+									entity = spawnEntry.type.create(world.toServerWorld(), SpawnReason.NATURAL);
 								} catch (Exception var27) {
 									LOGGER.warn("Failed to create mob", (Throwable)var27);
 									continue;
@@ -475,9 +489,13 @@ public final class SpawnHelper {
 			return this.groupToCountView;
 		}
 
-		boolean isBelowCap(SpawnGroup group, ChunkPos chunkPos) {
+		boolean isBelowCap(SpawnGroup group) {
 			int i = group.getCapacity() * this.spawningChunkCount / SpawnHelper.CHUNK_AREA;
-			return this.groupToCount.getInt(group) >= i ? false : this.densityCapper.canSpawn(group, chunkPos);
+			return this.groupToCount.getInt(group) < i;
+		}
+
+		boolean canSpawn(SpawnGroup group, ChunkPos chunkPos) {
+			return this.densityCapper.canSpawn(group, chunkPos);
 		}
 	}
 

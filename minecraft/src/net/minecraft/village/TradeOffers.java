@@ -27,7 +27,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.DyeItem;
-import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -1281,7 +1280,7 @@ public class TradeOffers {
 				int i = Math.max(enchantment.getMinLevel(), this.minLevel);
 				int j = Math.min(enchantment.getMaxLevel(), this.maxLevel);
 				int k = MathHelper.nextInt(random, i, j);
-				itemStack = EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(registryEntry, k));
+				itemStack = EnchantmentHelper.getEnchantedBookWith(new EnchantmentLevelEntry(registryEntry, k));
 				l = 2 + random.nextInt(5 + k * 10) + 3 * k;
 				if (registryEntry.isIn(EnchantmentTags.DOUBLE_TRADE_PRICE)) {
 					l *= 2;

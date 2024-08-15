@@ -98,7 +98,7 @@ public class VineBlock extends Block {
 	}
 
 	@Override
-	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+	protected boolean isTransparent(BlockState state) {
 		return true;
 	}
 

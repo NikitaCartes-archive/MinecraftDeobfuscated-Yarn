@@ -17,12 +17,13 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -43,12 +44,12 @@ public class TridentItem extends Item implements ProjectileItem {
 	public static AttributeModifiersComponent createAttributeModifiers() {
 		return AttributeModifiersComponent.builder()
 			.add(
-				EntityAttributes.GENERIC_ATTACK_DAMAGE,
+				EntityAttributes.ATTACK_DAMAGE,
 				new EntityAttributeModifier(BASE_ATTACK_DAMAGE_MODIFIER_ID, 8.0, EntityAttributeModifier.Operation.ADD_VALUE),
 				AttributeModifierSlot.MAINHAND
 			)
 			.add(
-				EntityAttributes.GENERIC_ATTACK_SPEED,
+				EntityAttributes.ATTACK_SPEED,
 				new EntityAttributeModifier(BASE_ATTACK_SPEED_MODIFIER_ID, -2.9F, EntityAttributeModifier.Operation.ADD_VALUE),
 				AttributeModifierSlot.MAINHAND
 			)
@@ -84,20 +85,17 @@ public class TridentItem extends Item implements ProjectileItem {
 					if (!isAboutToBreak(stack)) {
 						RegistryEntry<SoundEvent> registryEntry = (RegistryEntry<SoundEvent>)EnchantmentHelper.getEffect(stack, EnchantmentEffectComponentTypes.TRIDENT_SOUND)
 							.orElse(SoundEvents.ITEM_TRIDENT_THROW);
-						if (!world.isClient) {
-							stack.damage(1, playerEntity, LivingEntity.getSlotForHand(user.getActiveHand()));
+						if (world instanceof ServerWorld serverWorld) {
+							stack.damage(1, playerEntity);
 							if (f == 0.0F) {
-								TridentEntity tridentEntity = new TridentEntity(world, playerEntity, stack);
-								tridentEntity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0F, 2.5F, 1.0F);
+								TridentEntity tridentEntity = ProjectileEntity.spawnWithVelocity(TridentEntity::new, serverWorld, stack, playerEntity, 0.0F, 2.5F, 1.0F);
 								if (playerEntity.isInCreativeMode()) {
 									tridentEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
-								}
-
-								world.spawnEntity(tridentEntity);
-								world.playSoundFromEntity(null, tridentEntity, registryEntry.value(), SoundCategory.PLAYERS, 1.0F, 1.0F);
-								if (!playerEntity.isInCreativeMode()) {
+								} else {
 									playerEntity.getInventory().removeOne(stack);
 								}
+
+								world.playSoundFromEntity(null, tridentEntity, registryEntry.value(), SoundCategory.PLAYERS, 1.0F, 1.0F);
 							}
 						}
 
@@ -128,15 +126,15 @@ public class TridentItem extends Item implements ProjectileItem {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		if (isAboutToBreak(itemStack)) {
-			return TypedActionResult.fail(itemStack);
+			return ActionResult.FAIL;
 		} else if (EnchantmentHelper.getTridentSpinAttackStrength(itemStack, user) > 0.0F && !user.isTouchingWaterOrRain()) {
-			return TypedActionResult.fail(itemStack);
+			return ActionResult.FAIL;
 		} else {
 			user.setCurrentHand(hand);
-			return TypedActionResult.consume(itemStack);
+			return ActionResult.CONSUME;
 		}
 	}
 
@@ -152,11 +150,6 @@ public class TridentItem extends Item implements ProjectileItem {
 	@Override
 	public void postDamageEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 		stack.damage(1, attacker, EquipmentSlot.MAINHAND);
-	}
-
-	@Override
-	public int getEnchantability() {
-		return 1;
 	}
 
 	@Override

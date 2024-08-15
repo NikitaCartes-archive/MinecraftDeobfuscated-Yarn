@@ -1,13 +1,13 @@
 package net.minecraft.client.gui.hud;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.text.Text;
@@ -88,13 +88,10 @@ public class BossBarHud {
 	}
 
 	private void renderBossBar(DrawContext context, int x, int y, BossBar bossBar, int width, Identifier[] textures, Identifier[] notchedTextures) {
-		RenderSystem.enableBlend();
-		context.drawGuiTexture(textures[bossBar.getColor().ordinal()], 182, 5, 0, 0, x, y, width, 5);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, textures[bossBar.getColor().ordinal()], 182, 5, 0, 0, x, y, width, 5);
 		if (bossBar.getStyle() != BossBar.Style.PROGRESS) {
-			context.drawGuiTexture(notchedTextures[bossBar.getStyle().ordinal() - 1], 182, 5, 0, 0, x, y, width, 5);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, notchedTextures[bossBar.getStyle().ordinal() - 1], 182, 5, 0, 0, x, y, width, 5);
 		}
-
-		RenderSystem.disableBlend();
 	}
 
 	public void handlePacket(BossBarS2CPacket packet) {

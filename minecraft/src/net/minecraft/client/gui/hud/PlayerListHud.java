@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.hud;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,6 +16,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerModelPart;
@@ -63,7 +63,8 @@ public class PlayerListHud {
 	private static final Identifier FULL_HEART_TEXTURE = Identifier.ofVanilla("hud/heart/full");
 	private static final Identifier ABSORBING_HALF_HEART_BLINKING_TEXTURE = Identifier.ofVanilla("hud/heart/absorbing_half_blinking");
 	private static final Identifier HALF_HEART_TEXTURE = Identifier.ofVanilla("hud/heart/half");
-	private static final Comparator<PlayerListEntry> ENTRY_ORDERING = Comparator.comparingInt(entry -> entry.getGameMode() == GameMode.SPECTATOR ? 1 : 0)
+	private static final Comparator<PlayerListEntry> ENTRY_ORDERING = Comparator.comparingInt(playerListEntry -> -playerListEntry.method_62154())
+		.thenComparingInt(entry -> entry.getGameMode() == GameMode.SPECTATOR ? 1 : 0)
 		.thenComparing(entry -> Nullables.mapOrElse(entry.getScoreboardTeam(), Team::getName, ""))
 		.thenComparing(entry -> entry.getProfile().getName(), String::compareToIgnoreCase);
 	public static final int MAX_ROWS = 20;
@@ -212,7 +213,6 @@ public class PlayerListHud {
 			int y = r + u * m + u * 5;
 			int z = s + x * 9;
 			context.fill(y, z, y + m, z + 8, v);
-			RenderSystem.enableBlend();
 			if (w < list.size()) {
 				PlayerListEntry playerListEntry2 = (PlayerListEntry)list.get(w);
 				PlayerListHud.ScoreDisplayEntry scoreDisplayEntry = (PlayerListHud.ScoreDisplayEntry)list2.get(w);
@@ -221,7 +221,7 @@ public class PlayerListHud {
 					PlayerEntity playerEntity = this.client.world.getPlayerByUuid(gameProfile.getId());
 					boolean bl2 = playerEntity != null && LivingEntityRenderer.shouldFlipUpsideDown(playerEntity);
 					boolean bl3 = playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT);
-					PlayerSkinDrawer.draw(context, playerListEntry2.getSkinTextures().texture(), y, z, 8, bl3, bl2);
+					PlayerSkinDrawer.draw(context, playerListEntry2.getSkinTextures().texture(), y, z, 8, bl3, bl2, -1);
 					y += 9;
 				}
 
@@ -270,7 +270,7 @@ public class PlayerListHud {
 
 		context.getMatrices().push();
 		context.getMatrices().translate(0.0F, 0.0F, 100.0F);
-		context.drawGuiTexture(identifier, x + width - 11, y, 10, 8);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, x + width - 11, y, 10, 8);
 		context.getMatrices().pop();
 	}
 
@@ -309,27 +309,27 @@ public class PlayerListHud {
 				Identifier identifier = bl ? CONTAINER_HEART_BLINKING_TEXTURE : CONTAINER_HEART_TEXTURE;
 
 				for (int l = i; l < j; l++) {
-					context.drawGuiTexture(identifier, left + l * k, y, 9, 9);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, left + l * k, y, 9, 9);
 				}
 
 				for (int l = 0; l < i; l++) {
-					context.drawGuiTexture(identifier, left + l * k, y, 9, 9);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, left + l * k, y, 9, 9);
 					if (bl) {
 						if (l * 2 + 1 < heart.getPrevScore()) {
-							context.drawGuiTexture(FULL_HEART_BLINKING_TEXTURE, left + l * k, y, 9, 9);
+							context.drawGuiTexture(RenderLayer::getGuiTextured, FULL_HEART_BLINKING_TEXTURE, left + l * k, y, 9, 9);
 						}
 
 						if (l * 2 + 1 == heart.getPrevScore()) {
-							context.drawGuiTexture(HALF_HEART_BLINKING_TEXTURE, left + l * k, y, 9, 9);
+							context.drawGuiTexture(RenderLayer::getGuiTextured, HALF_HEART_BLINKING_TEXTURE, left + l * k, y, 9, 9);
 						}
 					}
 
 					if (l * 2 + 1 < score) {
-						context.drawGuiTexture(l >= 10 ? ABSORBING_FULL_HEART_BLINKING_TEXTURE : FULL_HEART_TEXTURE, left + l * k, y, 9, 9);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, l >= 10 ? ABSORBING_FULL_HEART_BLINKING_TEXTURE : FULL_HEART_TEXTURE, left + l * k, y, 9, 9);
 					}
 
 					if (l * 2 + 1 == score) {
-						context.drawGuiTexture(l >= 10 ? ABSORBING_HALF_HEART_BLINKING_TEXTURE : HALF_HEART_TEXTURE, left + l * k, y, 9, 9);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, l >= 10 ? ABSORBING_HALF_HEART_BLINKING_TEXTURE : HALF_HEART_TEXTURE, left + l * k, y, 9, 9);
 					}
 				}
 			}

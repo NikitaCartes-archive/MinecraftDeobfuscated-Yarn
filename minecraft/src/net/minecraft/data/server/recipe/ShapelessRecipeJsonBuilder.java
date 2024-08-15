@@ -1,6 +1,8 @@
 package net.minecraft.data.server.recipe;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nullable;
@@ -15,44 +17,48 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.ShapelessRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 
 public class ShapelessRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
+	private final RegistryEntryLookup<Item> registryLookup;
 	private final RecipeCategory category;
-	private final Item output;
-	private final int count;
-	private final DefaultedList<Ingredient> inputs = DefaultedList.of();
+	private final ItemStack output;
+	private final List<Ingredient> inputs = new ArrayList();
 	private final Map<String, AdvancementCriterion<?>> advancementBuilder = new LinkedHashMap();
 	@Nullable
 	private String group;
 
-	public ShapelessRecipeJsonBuilder(RecipeCategory category, ItemConvertible output, int count) {
+	private ShapelessRecipeJsonBuilder(RegistryEntryLookup<Item> registryLookup, RecipeCategory category, ItemStack output) {
+		this.registryLookup = registryLookup;
 		this.category = category;
-		this.output = output.asItem();
-		this.count = count;
+		this.output = output;
 	}
 
-	public static ShapelessRecipeJsonBuilder create(RecipeCategory category, ItemConvertible output) {
-		return new ShapelessRecipeJsonBuilder(category, output, 1);
+	public static ShapelessRecipeJsonBuilder create(RegistryEntryLookup<Item> registryLookup, RecipeCategory category, ItemStack output) {
+		return new ShapelessRecipeJsonBuilder(registryLookup, category, output);
 	}
 
-	public static ShapelessRecipeJsonBuilder create(RecipeCategory category, ItemConvertible output, int count) {
-		return new ShapelessRecipeJsonBuilder(category, output, count);
+	public static ShapelessRecipeJsonBuilder create(RegistryEntryLookup<Item> registryLookup, RecipeCategory category, ItemConvertible output) {
+		return create(registryLookup, category, output, 1);
+	}
+
+	public static ShapelessRecipeJsonBuilder create(RegistryEntryLookup<Item> registryLookup, RecipeCategory category, ItemConvertible output, int count) {
+		return new ShapelessRecipeJsonBuilder(registryLookup, category, output.asItem().getDefaultStack().copyWithCount(count));
 	}
 
 	public ShapelessRecipeJsonBuilder input(TagKey<Item> tag) {
-		return this.input(Ingredient.fromTag(tag));
+		return this.input(Ingredient.fromTag(this.registryLookup.getOrThrow(tag)));
 	}
 
-	public ShapelessRecipeJsonBuilder input(ItemConvertible itemProvider) {
-		return this.input(itemProvider, 1);
+	public ShapelessRecipeJsonBuilder input(ItemConvertible item) {
+		return this.input(item, 1);
 	}
 
-	public ShapelessRecipeJsonBuilder input(ItemConvertible itemProvider, int size) {
-		for (int i = 0; i < size; i++) {
-			this.input(Ingredient.ofItems(itemProvider));
+	public ShapelessRecipeJsonBuilder input(ItemConvertible item, int amount) {
+		for (int i = 0; i < amount; i++) {
+			this.input(Ingredient.ofItem(item));
 		}
 
 		return this;
@@ -62,8 +68,8 @@ public class ShapelessRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 		return this.input(ingredient, 1);
 	}
 
-	public ShapelessRecipeJsonBuilder input(Ingredient ingredient, int size) {
-		for (int i = 0; i < size; i++) {
+	public ShapelessRecipeJsonBuilder input(Ingredient ingredient, int amount) {
+		for (int i = 0; i < amount; i++) {
 			this.inputs.add(ingredient);
 		}
 
@@ -82,7 +88,7 @@ public class ShapelessRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 
 	@Override
 	public Item getOutputItem() {
-		return this.output;
+		return this.output.getItem();
 	}
 
 	@Override
@@ -94,10 +100,7 @@ public class ShapelessRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
 		this.advancementBuilder.forEach(builder::criterion);
 		ShapelessRecipe shapelessRecipe = new ShapelessRecipe(
-			(String)Objects.requireNonNullElse(this.group, ""),
-			CraftingRecipeJsonBuilder.toCraftingCategory(this.category),
-			new ItemStack(this.output, this.count),
-			this.inputs
+			(String)Objects.requireNonNullElse(this.group, ""), CraftingRecipeJsonBuilder.toCraftingCategory(this.category), this.output, this.inputs
 		);
 		exporter.accept(recipeId, shapelessRecipe, builder.build(recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/")));
 	}

@@ -27,7 +27,7 @@ class WeavingStatusEffect extends StatusEffect {
 	@Override
 	public void onEntityRemoval(LivingEntity entity, int amplifier, Entity.RemovalReason reason) {
 		if (reason == Entity.RemovalReason.KILLED && (entity instanceof PlayerEntity || entity.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING))) {
-			this.tryPlaceCobweb(entity.getWorld(), entity.getRandom(), entity.getSteppingPos());
+			this.tryPlaceCobweb(entity.getWorld(), entity.getRandom(), entity.getBlockPos());
 		}
 	}
 

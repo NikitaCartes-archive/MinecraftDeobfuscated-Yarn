@@ -76,6 +76,10 @@ public class NetherPortalBlock extends Block implements Portal {
 				Entity entity = EntityType.ZOMBIFIED_PIGLIN.spawn(world, pos.up(), SpawnReason.STRUCTURE);
 				if (entity != null) {
 					entity.resetPortalCooldown();
+					Entity entity2 = entity.getVehicle();
+					if (entity2 != null) {
+						entity2.resetPortalCooldown();
+					}
 				}
 			}
 		}
@@ -104,7 +108,7 @@ public class NetherPortalBlock extends Block implements Portal {
 	public int getPortalDelay(ServerWorld world, Entity entity) {
 		return entity instanceof PlayerEntity playerEntity
 			? Math.max(
-				1,
+				0,
 				world.getGameRules()
 					.getInt(playerEntity.getAbilities().invulnerable ? GameRules.PLAYERS_NETHER_PORTAL_CREATIVE_DELAY : GameRules.PLAYERS_NETHER_PORTAL_DEFAULT_DELAY)
 			)
@@ -122,7 +126,7 @@ public class NetherPortalBlock extends Block implements Portal {
 			boolean bl = serverWorld.getRegistryKey() == World.NETHER;
 			WorldBorder worldBorder = serverWorld.getWorldBorder();
 			double d = DimensionType.getCoordinateScaleFactor(world.getDimension(), serverWorld.getDimension());
-			BlockPos blockPos = worldBorder.clamp(entity.getX() * d, entity.getY(), entity.getZ() * d);
+			BlockPos blockPos = worldBorder.clampFloored(entity.getX() * d, entity.getY(), entity.getZ() * d);
 			return this.getOrCreateExitPortalTarget(serverWorld, entity, pos, blockPos, bl, worldBorder);
 		}
 	}

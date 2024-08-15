@@ -8,6 +8,7 @@ import net.minecraft.enchantment.provider.EnchantmentProviders;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.decoration.painting.PaintingVariants;
 import net.minecraft.entity.passive.WolfVariants;
+import net.minecraft.item.Instruments;
 import net.minecraft.item.trim.ArmorTrimMaterials;
 import net.minecraft.item.trim.ArmorTrimPatterns;
 import net.minecraft.network.message.MessageType;
@@ -60,7 +61,8 @@ public class BuiltinRegistries {
 		.addRegistry(RegistryKeys.BANNER_PATTERN, BannerPatterns::bootstrap)
 		.addRegistry(RegistryKeys.ENCHANTMENT, Enchantments::bootstrap)
 		.addRegistry(RegistryKeys.ENCHANTMENT_PROVIDER, EnchantmentProviders::bootstrap)
-		.addRegistry(RegistryKeys.JUKEBOX_SONG, JukeboxSongs::bootstrap);
+		.addRegistry(RegistryKeys.JUKEBOX_SONG, JukeboxSongs::bootstrap)
+		.addRegistry(RegistryKeys.INSTRUMENT, Instruments::bootstrap);
 
 	private static void validate(RegistryWrapper.WrapperLookup wrapperLookup) {
 		validate(wrapperLookup.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE), wrapperLookup.getWrapperOrThrow(RegistryKeys.BIOME));
@@ -73,11 +75,11 @@ public class BuiltinRegistries {
 			list.stream().flatMap(RegistryEntryList::stream).forEach(placedFeature -> placedFeature.getKeyOrValue().ifLeft(key -> {
 					RegistryEntry.Reference<PlacedFeature> referencex = placedFeatureLookup.getOrThrow(key);
 					if (!hasBiomePlacementModifier(referencex.value())) {
-						Util.error("Placed feature " + key.getValue() + " in biome " + identifier + " is missing BiomeFilter.biome()");
+						Util.logErrorOrPause("Placed feature " + key.getValue() + " in biome " + identifier + " is missing BiomeFilter.biome()");
 					}
 				}).ifRight(value -> {
 					if (!hasBiomePlacementModifier(value)) {
-						Util.error("Placed inline feature in biome " + biome + " is missing BiomeFilter.biome()");
+						Util.logErrorOrPause("Placed inline feature in biome " + biome + " is missing BiomeFilter.biome()");
 					}
 				}));
 		});

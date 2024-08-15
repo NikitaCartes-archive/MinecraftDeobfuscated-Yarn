@@ -212,7 +212,8 @@ public interface RegistryEntry<T> {
 	 */
 	public static class Reference<T> implements RegistryEntry<T> {
 		private final RegistryEntryOwner<T> owner;
-		private Set<TagKey<T>> tags = Set.of();
+		@Nullable
+		private Set<TagKey<T>> tags;
 		private final RegistryEntry.Reference.Type referenceType;
 		@Nullable
 		private RegistryKey<T> registryKey;
@@ -287,9 +288,17 @@ public interface RegistryEntry<T> {
 			return this.registryKey() == key;
 		}
 
+		private Set<TagKey<T>> getTags() {
+			if (this.tags == null) {
+				throw new IllegalStateException("Tags not bound");
+			} else {
+				return this.tags;
+			}
+		}
+
 		@Override
 		public boolean isIn(TagKey<T> tag) {
-			return this.tags.contains(tag);
+			return this.getTags().contains(tag);
 		}
 
 		@Override
@@ -343,13 +352,13 @@ public interface RegistryEntry<T> {
 			}
 		}
 
-		public void setTags(Collection<TagKey<T>> tags) {
+		void setTags(Collection<TagKey<T>> tags) {
 			this.tags = Set.copyOf(tags);
 		}
 
 		@Override
 		public Stream<TagKey<T>> streamTags() {
-			return this.tags.stream();
+			return this.getTags().stream();
 		}
 
 		public String toString() {

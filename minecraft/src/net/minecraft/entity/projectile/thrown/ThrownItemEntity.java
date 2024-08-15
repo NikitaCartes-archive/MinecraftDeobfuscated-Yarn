@@ -19,12 +19,14 @@ public abstract class ThrownItemEntity extends ThrownEntity implements FlyingIte
 		super(entityType, world);
 	}
 
-	public ThrownItemEntity(EntityType<? extends ThrownItemEntity> entityType, double d, double e, double f, World world) {
-		super(entityType, d, e, f, world);
+	public ThrownItemEntity(EntityType<? extends ThrownItemEntity> type, double x, double y, double z, World world, ItemStack stack) {
+		super(type, x, y, z, world);
+		this.setItem(stack);
 	}
 
-	public ThrownItemEntity(EntityType<? extends ThrownItemEntity> entityType, LivingEntity livingEntity, World world) {
-		super(entityType, livingEntity, world);
+	public ThrownItemEntity(EntityType<? extends ThrownItemEntity> type, LivingEntity owner, World world, ItemStack stack) {
+		this(type, owner.getX(), owner.getEyeY() - 0.1F, owner.getZ(), world, stack);
+		this.setOwner(owner);
 	}
 
 	public void setItem(ItemStack stack) {

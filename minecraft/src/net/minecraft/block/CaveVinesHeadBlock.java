@@ -14,7 +14,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class CaveVinesHeadBlock extends AbstractPlantStemBlock implements Fertilizable, CaveVines {
+public class CaveVinesHeadBlock extends AbstractPlantStemBlock implements CaveVines {
 	public static final MapCodec<CaveVinesHeadBlock> CODEC = createCodec(CaveVinesHeadBlock::new);
 	private static final float GROW_CHANCE = 0.11F;
 

@@ -17,11 +17,14 @@ import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -178,7 +181,7 @@ public class GameRules {
 		"playersNetherPortalDefaultDelay", GameRules.Category.PLAYER, GameRules.IntRule.create(80)
 	);
 	public static final GameRules.Key<GameRules.IntRule> PLAYERS_NETHER_PORTAL_CREATIVE_DELAY = register(
-		"playersNetherPortalCreativeDelay", GameRules.Category.PLAYER, GameRules.IntRule.create(1)
+		"playersNetherPortalCreativeDelay", GameRules.Category.PLAYER, GameRules.IntRule.create(0)
 	);
 	public static final GameRules.Key<GameRules.BooleanRule> DROWNING_DAMAGE = register(
 		"drowningDamage", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true)
@@ -233,13 +236,18 @@ public class GameRules {
 	public static final GameRules.Key<GameRules.BooleanRule> ENDER_PEARLS_VANISH_ON_DEATH = register(
 		"enderPearlsVanishOnDeath", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true)
 	);
+	public static final GameRules.Key<GameRules.IntRule> MINECART_MAX_SPEED = register(
+		"minecartMaxSpeed", GameRules.Category.MISC, GameRules.IntRule.create(8, 1, 1000, FeatureSet.of(FeatureFlags.MINECART_IMPROVEMENTS), (server, value) -> {
+		})
+	);
 	public static final GameRules.Key<GameRules.IntRule> SPAWN_CHUNK_RADIUS = register(
-		"spawnChunkRadius", GameRules.Category.MISC, GameRules.IntRule.create(2, 0, 32, (server, value) -> {
+		"spawnChunkRadius", GameRules.Category.MISC, GameRules.IntRule.create(2, 0, 32, FeatureSet.empty(), (server, value) -> {
 			ServerWorld serverWorld = server.getOverworld();
 			serverWorld.setSpawnPos(serverWorld.getSpawnPos(), serverWorld.getSpawnAngle());
 		})
 	);
 	private final Map<GameRules.Key<?>, GameRules.Rule<?>> rules;
+	private final FeatureSet enabledFeatures;
 
 	private static <T extends GameRules.Rule<T>> GameRules.Key<T> register(String name, GameRules.Category category, GameRules.Type<T> type) {
 		GameRules.Key<T> key = new GameRules.Key<>(name, category);
@@ -251,23 +259,35 @@ public class GameRules {
 		}
 	}
 
-	public GameRules(DynamicLike<?> dynamic) {
-		this();
-		this.load(dynamic);
+	public GameRules(FeatureSet enabledFeatures, DynamicLike<?> values) {
+		this(enabledFeatures);
+		this.load(values);
 	}
 
-	public GameRules() {
-		this.rules = (Map<GameRules.Key<?>, GameRules.Rule<?>>)RULE_TYPES.entrySet()
-			.stream()
-			.collect(ImmutableMap.toImmutableMap(Entry::getKey, e -> ((GameRules.Type)e.getValue()).createRule()));
+	public GameRules(FeatureSet enabledFeatures) {
+		this(
+			(Map<GameRules.Key<?>, GameRules.Rule<?>>)streamAllRules(enabledFeatures)
+				.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> ((GameRules.Type)entry.getValue()).createRule())),
+			enabledFeatures
+		);
 	}
 
-	private GameRules(Map<GameRules.Key<?>, GameRules.Rule<?>> rules) {
+	private static Stream<Entry<GameRules.Key<?>, GameRules.Type<?>>> streamAllRules(FeatureSet enabledFeatures) {
+		return RULE_TYPES.entrySet().stream().filter(entry -> ((GameRules.Type)entry.getValue()).requiredFeatures.isSubsetOf(enabledFeatures));
+	}
+
+	private GameRules(Map<GameRules.Key<?>, GameRules.Rule<?>> rules, FeatureSet enabledFeatures) {
 		this.rules = rules;
+		this.enabledFeatures = enabledFeatures;
 	}
 
 	public <T extends GameRules.Rule<T>> T get(GameRules.Key<T> key) {
-		return (T)this.rules.get(key);
+		T rule = (T)this.rules.get(key);
+		if (rule == null) {
+			throw new IllegalArgumentException("Tried to access invalid game rule");
+		} else {
+			return rule;
+		}
 	}
 
 	public NbtCompound toNbt() {
@@ -276,16 +296,20 @@ public class GameRules {
 		return nbtCompound;
 	}
 
-	private void load(DynamicLike<?> dynamic) {
-		this.rules.forEach((key, rule) -> dynamic.get(key.name).asString().ifSuccess(rule::deserialize));
+	private void load(DynamicLike<?> values) {
+		this.rules.forEach((key, rule) -> values.get(key.name).asString().ifSuccess(rule::deserialize));
 	}
 
-	public GameRules copy() {
+	public GameRules copy(FeatureSet enabledFeatures) {
 		return new GameRules(
-			(Map<GameRules.Key<?>, GameRules.Rule<?>>)this.rules
-				.entrySet()
-				.stream()
-				.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> ((GameRules.Rule)entry.getValue()).copy()))
+			(Map<GameRules.Key<?>, GameRules.Rule<?>>)streamAllRules(enabledFeatures)
+				.collect(
+					ImmutableMap.toImmutableMap(
+						Entry::getKey,
+						entry -> this.rules.containsKey(entry.getKey()) ? (GameRules.Rule)this.rules.get(entry.getKey()) : ((GameRules.Type)entry.getValue()).createRule()
+					)
+				),
+			enabledFeatures
 		);
 	}
 
@@ -294,13 +318,15 @@ public class GameRules {
 	 * 
 	 * <p>The visitation involves calling both {@link Visitor#visit(GameRules.Key, GameRules.Type)} and {@code visitX} for every game rule, where X is the current rule's concrete type such as a boolean.
 	 */
-	public static void accept(GameRules.Visitor visitor) {
-		RULE_TYPES.forEach((key, type) -> accept(visitor, key, type));
+	public void accept(GameRules.Visitor visitor) {
+		RULE_TYPES.forEach((key, type) -> this.accept(visitor, key, type));
 	}
 
-	private static <T extends GameRules.Rule<T>> void accept(GameRules.Visitor consumer, GameRules.Key<?> key, GameRules.Type<?> type) {
-		consumer.visit(key, type);
-		type.accept(consumer, key);
+	private <T extends GameRules.Rule<T>> void accept(GameRules.Visitor visitor, GameRules.Key<?> key, GameRules.Type<?> type) {
+		if (type.requiredFeatures.isSubsetOf(this.enabledFeatures)) {
+			visitor.visit(key, type);
+			type.accept(visitor, key);
+		}
 	}
 
 	public void setAllValues(GameRules rules, @Nullable MinecraftServer server) {
@@ -328,7 +354,9 @@ public class GameRules {
 		private boolean value;
 
 		static GameRules.Type<GameRules.BooleanRule> create(boolean initialValue, BiConsumer<MinecraftServer, GameRules.BooleanRule> changeCallback) {
-			return new GameRules.Type<>(BoolArgumentType::bool, type -> new GameRules.BooleanRule(type, initialValue), changeCallback, GameRules.Visitor::visitBoolean);
+			return new GameRules.Type<>(
+				BoolArgumentType::bool, type -> new GameRules.BooleanRule(type, initialValue), changeCallback, GameRules.Visitor::visitBoolean, FeatureSet.empty()
+			);
 		}
 
 		static GameRules.Type<GameRules.BooleanRule> create(boolean initialValue) {
@@ -408,12 +436,20 @@ public class GameRules {
 		private int value;
 
 		private static GameRules.Type<GameRules.IntRule> create(int initialValue, BiConsumer<MinecraftServer, GameRules.IntRule> changeCallback) {
-			return new GameRules.Type<>(IntegerArgumentType::integer, type -> new GameRules.IntRule(type, initialValue), changeCallback, GameRules.Visitor::visitInt);
+			return new GameRules.Type<>(
+				IntegerArgumentType::integer, type -> new GameRules.IntRule(type, initialValue), changeCallback, GameRules.Visitor::visitInt, FeatureSet.empty()
+			);
 		}
 
-		static GameRules.Type<GameRules.IntRule> create(int initialValue, int min, int max, BiConsumer<MinecraftServer, GameRules.IntRule> changeCallback) {
+		static GameRules.Type<GameRules.IntRule> create(
+			int initialValue, int min, int max, FeatureSet requiredFeatures, BiConsumer<MinecraftServer, GameRules.IntRule> changeCallback
+		) {
 			return new GameRules.Type<>(
-				() -> IntegerArgumentType.integer(min, max), type -> new GameRules.IntRule(type, initialValue), changeCallback, GameRules.Visitor::visitInt
+				() -> IntegerArgumentType.integer(min, max),
+				type -> new GameRules.IntRule(type, initialValue),
+				changeCallback,
+				GameRules.Visitor::visitInt,
+				requiredFeatures
 			);
 		}
 
@@ -573,17 +609,20 @@ public class GameRules {
 		private final Function<GameRules.Type<T>, T> ruleFactory;
 		final BiConsumer<MinecraftServer, T> changeCallback;
 		private final GameRules.Acceptor<T> ruleAcceptor;
+		final FeatureSet requiredFeatures;
 
 		Type(
 			Supplier<ArgumentType<?>> argumentType,
 			Function<GameRules.Type<T>, T> ruleFactory,
 			BiConsumer<MinecraftServer, T> changeCallback,
-			GameRules.Acceptor<T> ruleAcceptor
+			GameRules.Acceptor<T> ruleAcceptor,
+			FeatureSet requiredFeatures
 		) {
 			this.argumentType = argumentType;
 			this.ruleFactory = ruleFactory;
 			this.changeCallback = changeCallback;
 			this.ruleAcceptor = ruleAcceptor;
+			this.requiredFeatures = requiredFeatures;
 		}
 
 		public RequiredArgumentBuilder<ServerCommandSource, ?> argument(String name) {
@@ -596,6 +635,10 @@ public class GameRules {
 
 		public void accept(GameRules.Visitor consumer, GameRules.Key<T> key) {
 			this.ruleAcceptor.call(consumer, key, this);
+		}
+
+		public FeatureSet getRequiredFeatures() {
+			return this.requiredFeatures;
 		}
 	}
 

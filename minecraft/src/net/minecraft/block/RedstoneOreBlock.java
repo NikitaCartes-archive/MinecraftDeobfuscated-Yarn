@@ -10,8 +10,8 @@ import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -49,16 +49,16 @@ public class RedstoneOreBlock extends Block {
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.isClient) {
 			spawnParticles(world, pos);
 		} else {
 			light(state, world, pos);
 		}
 
-		return stack.getItem() instanceof BlockItem && new ItemPlacementContext(player, hand, stack, hit).canPlace()
-			? ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION
-			: ItemActionResult.SUCCESS;
+		return (ActionResult)(stack.getItem() instanceof BlockItem && new ItemPlacementContext(player, hand, stack, hit).canPlace()
+			? ActionResult.PASS
+			: ActionResult.SUCCESS);
 	}
 
 	private static void light(BlockState state, World world, BlockPos pos) {
@@ -101,7 +101,7 @@ public class RedstoneOreBlock extends Block {
 
 		for (Direction direction : Direction.values()) {
 			BlockPos blockPos = pos.offset(direction);
-			if (!world.getBlockState(blockPos).isOpaqueFullCube(world, blockPos)) {
+			if (!world.getBlockState(blockPos).isOpaqueFullCube()) {
 				Direction.Axis axis = direction.getAxis();
 				double e = axis == Direction.Axis.X ? 0.5 + 0.5625 * (double)direction.getOffsetX() : (double)random.nextFloat();
 				double f = axis == Direction.Axis.Y ? 0.5 + 0.5625 * (double)direction.getOffsetY() : (double)random.nextFloat();

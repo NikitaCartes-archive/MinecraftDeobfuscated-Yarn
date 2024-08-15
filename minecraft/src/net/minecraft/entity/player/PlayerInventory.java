@@ -11,8 +11,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
-import net.minecraft.recipe.RecipeMatcher;
+import net.minecraft.network.packet.s2c.play.SetPlayerInventoryS2CPacket;
+import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -37,7 +38,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	 * 
 	 * <p>The same value dictates the size of the player's hotbar, excluding the offhand slot.
 	 */
-	private static final int HOTBAR_SIZE = 9;
+	public static final int HOTBAR_SIZE = 9;
 	/**
 	 * Zero-based index of the offhand slot.
 	 * 
@@ -50,8 +51,6 @@ public class PlayerInventory implements Inventory, Nameable {
 	 * or to indicate no preference when inserting an item into the inventory.
 	 */
 	public static final int NOT_FOUND = -1;
-	public static final int[] ARMOR_SLOTS = new int[]{0, 1, 2, 3};
-	public static final int[] HELMET_SLOTS = new int[]{3};
 	public final DefaultedList<ItemStack> main = DefaultedList.ofSize(36, ItemStack.EMPTY);
 	public final DefaultedList<ItemStack> armor = DefaultedList.ofSize(4, ItemStack.EMPTY);
 	public final DefaultedList<ItemStack> offHand = DefaultedList.ofSize(1, ItemStack.EMPTY);
@@ -131,20 +130,14 @@ public class PlayerInventory implements Inventory, Nameable {
 		return -1;
 	}
 
-	/**
-	 * Given the item stack to search for, returns the equivalent slot index with a matching stack that is all of:
-	 * not damaged, not enchanted, and not renamed.
-	 * 
-	 * @return the index where a matching stack was found, or {@value #NOT_FOUND}
-	 */
-	public int indexOf(ItemStack stack) {
+	public static boolean usableWhenFillingSlot(ItemStack stack) {
+		return !stack.isDamaged() && !stack.hasEnchantments() && !stack.contains(DataComponentTypes.CUSTOM_NAME);
+	}
+
+	public int getMatchingSlot(RegistryEntry<Item> item) {
 		for (int i = 0; i < this.main.size(); i++) {
 			ItemStack itemStack = this.main.get(i);
-			if (!itemStack.isEmpty()
-				&& ItemStack.areItemsAndComponentsEqual(stack, itemStack)
-				&& !itemStack.isDamaged()
-				&& !itemStack.hasEnchantments()
-				&& !itemStack.contains(DataComponentTypes.CUSTOM_NAME)) {
+			if (!itemStack.isEmpty() && itemStack.itemMatches(item) && usableWhenFillingSlot(itemStack)) {
 				return i;
 			}
 		}
@@ -170,17 +163,8 @@ public class PlayerInventory implements Inventory, Nameable {
 		return this.selectedSlot;
 	}
 
-	public void scrollInHotbar(double scrollAmount) {
-		int i = (int)Math.signum(scrollAmount);
-		this.selectedSlot -= i;
-
-		while (this.selectedSlot < 0) {
-			this.selectedSlot += 9;
-		}
-
-		while (this.selectedSlot >= 9) {
-			this.selectedSlot -= 9;
-		}
+	public void setSelectedSlot(int slot) {
+		this.selectedSlot = slot;
 	}
 
 	public int remove(Predicate<ItemStack> shouldRemove, int maxCount, Inventory craftingInventory) {
@@ -322,10 +306,14 @@ public class PlayerInventory implements Inventory, Nameable {
 			}
 
 			int j = stack.getMaxCount() - this.getStack(i).getCount();
-			if (this.insertStack(i, stack.split(j)) && notifiesClient && this.player instanceof ServerPlayerEntity) {
-				((ServerPlayerEntity)this.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, 0, i, this.getStack(i)));
+			if (this.insertStack(i, stack.split(j)) && notifiesClient && this.player instanceof ServerPlayerEntity serverPlayerEntity) {
+				serverPlayerEntity.networkHandler.sendPacket(this.createSlotSetPacket(i));
 			}
 		}
+	}
+
+	public SetPlayerInventoryS2CPacket createSlotSetPacket(int slot) {
+		return new SetPlayerInventoryS2CPacket(slot, this.getStack(slot).copy());
 	}
 
 	@Override
@@ -576,9 +564,9 @@ public class PlayerInventory implements Inventory, Nameable {
 		}
 	}
 
-	public void populateRecipeFinder(RecipeMatcher finder) {
+	public void populateRecipeFinder(RecipeFinder finder) {
 		for (ItemStack itemStack : this.main) {
-			finder.addUnenchantedInput(itemStack);
+			finder.addInputIfUsable(itemStack);
 		}
 	}
 

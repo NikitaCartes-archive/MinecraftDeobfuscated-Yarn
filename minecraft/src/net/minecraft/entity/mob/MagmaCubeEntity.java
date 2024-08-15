@@ -25,7 +25,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createMagmaCubeAttributes() {
-		return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2F);
+		return HostileEntity.createHostileAttributes().add(EntityAttributes.MOVEMENT_SPEED, 0.2F);
 	}
 
 	public static boolean canMagmaCubeSpawn(EntityType<MagmaCubeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
@@ -35,7 +35,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 	@Override
 	public void setSize(int size, boolean heal) {
 		super.setSize(size, heal);
-		this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue((double)(size * 3));
+		this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue((double)(size * 3));
 	}
 
 	@Override

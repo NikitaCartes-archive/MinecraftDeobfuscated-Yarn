@@ -24,6 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
@@ -101,7 +102,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createBatAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 6.0);
+		return MobEntity.createMobAttributes().add(EntityAttributes.MAX_HEALTH, 6.0);
 	}
 
 	/**
@@ -226,7 +227,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	public static boolean canSpawn(EntityType<BatEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		if (pos.getY() >= world.getSeaLevel()) {
+		if (pos.getY() >= world.getTopPosition(Heightmap.Type.WORLD_SURFACE, pos).getY()) {
 			return false;
 		} else {
 			int i = world.getLightLevel(pos);

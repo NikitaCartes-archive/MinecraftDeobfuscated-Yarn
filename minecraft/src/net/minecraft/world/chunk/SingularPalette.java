@@ -93,7 +93,7 @@ public class SingularPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public Palette<T> copy() {
+	public Palette<T> copy(PaletteResizeListener<T> resizeListener) {
 		if (this.entry == null) {
 			throw new IllegalStateException("Use of an uninitialized palette");
 		} else {

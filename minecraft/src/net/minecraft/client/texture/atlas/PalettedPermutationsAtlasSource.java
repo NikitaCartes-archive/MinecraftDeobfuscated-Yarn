@@ -82,26 +82,26 @@ public class PalettedPermutationsAtlasSource implements AtlasSource {
 
 			for (int i = 0; i < from.length; i++) {
 				int j = from[i];
-				if (ColorHelper.Abgr.getAlpha(j) != 0) {
-					int2IntMap.put(ColorHelper.Abgr.getBgr(j), to[i]);
+				if (ColorHelper.getAlpha(j) != 0) {
+					int2IntMap.put(ColorHelper.zeroAlpha(j), to[i]);
 				}
 			}
 
 			return color -> {
-				int ix = ColorHelper.Abgr.getAlpha(color);
+				int ix = ColorHelper.getAlpha(color);
 				if (ix == 0) {
 					return color;
 				} else {
-					int jx = ColorHelper.Abgr.getBgr(color);
-					int k = int2IntMap.getOrDefault(jx, ColorHelper.Abgr.toOpaque(jx));
-					int l = ColorHelper.Abgr.getAlpha(k);
-					return ColorHelper.Abgr.withAlpha(ix * l / 255, k);
+					int jx = ColorHelper.zeroAlpha(color);
+					int k = int2IntMap.getOrDefault(jx, ColorHelper.fullAlpha(jx));
+					int l = ColorHelper.getAlpha(k);
+					return ColorHelper.withAlpha(ix * l / 255, k);
 				}
 			};
 		}
 	}
 
-	public static int[] open(ResourceManager resourceManager, Identifier texture) {
+	private static int[] open(ResourceManager resourceManager, Identifier texture) {
 		Optional<Resource> optional = resourceManager.getResource(RESOURCE_FINDER.toResourcePath(texture));
 		if (optional.isEmpty()) {
 			LOGGER.error("Failed to load palette image {}", texture);
@@ -112,7 +112,7 @@ public class PalettedPermutationsAtlasSource implements AtlasSource {
 
 				int[] var5;
 				try (NativeImage nativeImage = NativeImage.read(inputStream)) {
-					var5 = nativeImage.copyPixelsRgba();
+					var5 = nativeImage.method_61942();
 				} catch (Throwable var10) {
 					if (inputStream != null) {
 						try {

@@ -11,6 +11,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -24,6 +25,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 
@@ -103,12 +105,12 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 			return ActionResult.PASS;
 		} else {
 			this.flip(state, world, pos, player);
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		}
 	}
 
 	@Override
-	protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+	protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
 		if (explosion.canTriggerBlocks() && this.blockSetType.canOpenByWindCharge() && !(Boolean)state.get(POWERED)) {
 			this.flip(state, world, pos, null);
 		}
@@ -139,7 +141,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		if (!world.isClient) {
 			boolean bl = world.isReceivingRedstonePower(pos);
 			if (bl != (Boolean)state.get(POWERED)) {

@@ -124,14 +124,7 @@ public class VertexFormat {
 	 * Specifies for OpenGL how the vertex data should be interpreted.
 	 */
 	public void setupState() {
-		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(this::setupStateInternal);
-		} else {
-			this.setupStateInternal();
-		}
-	}
-
-	private void setupStateInternal() {
+		RenderSystem.assertOnRenderThread();
 		int i = this.getVertexSizeByte();
 
 		for (int j = 0; j < this.elements.size(); j++) {
@@ -142,14 +135,8 @@ public class VertexFormat {
 	}
 
 	public void clearState() {
-		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(this::clearStateInternal);
-		} else {
-			this.clearStateInternal();
-		}
-	}
+		RenderSystem.assertOnRenderThread();
 
-	private void clearStateInternal() {
 		for (int i = 0; i < this.elements.size(); i++) {
 			GlStateManager._disableVertexAttribArray(i);
 		}

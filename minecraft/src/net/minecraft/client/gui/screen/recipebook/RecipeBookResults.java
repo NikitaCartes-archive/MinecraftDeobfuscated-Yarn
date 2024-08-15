@@ -30,7 +30,7 @@ public class RecipeBookResults {
 	private final List<AnimatedResultButton> resultButtons = Lists.<AnimatedResultButton>newArrayListWithCapacity(20);
 	@Nullable
 	private AnimatedResultButton hoveredResultButton;
-	private final RecipeAlternativesWidget alternatesWidget = new RecipeAlternativesWidget();
+	private final RecipeAlternativesWidget alternatesWidget;
 	private MinecraftClient client;
 	private final List<RecipeDisplayListener> recipeDisplayListeners = Lists.<RecipeDisplayListener>newArrayList();
 	private List<RecipeResultCollection> resultCollections = ImmutableList.of();
@@ -43,10 +43,13 @@ public class RecipeBookResults {
 	private RecipeEntry<?> lastClickedRecipe;
 	@Nullable
 	private RecipeResultCollection resultCollection;
+	private boolean field_52844;
 
-	public RecipeBookResults() {
+	public RecipeBookResults(CurrentIndexProvider currentIndexProvider, boolean bl) {
+		this.alternatesWidget = new RecipeAlternativesWidget(currentIndexProvider, bl);
+
 		for (int i = 0; i < 20; i++) {
-			this.resultButtons.add(new AnimatedResultButton());
+			this.resultButtons.add(new AnimatedResultButton(currentIndexProvider));
 		}
 	}
 
@@ -69,9 +72,10 @@ public class RecipeBookResults {
 		this.recipeDisplayListeners.add(widget);
 	}
 
-	public void setResults(List<RecipeResultCollection> resultCollections, boolean resetCurrentPage) {
-		this.resultCollections = resultCollections;
-		this.pageCount = (int)Math.ceil((double)resultCollections.size() / 20.0);
+	public void setResults(List<RecipeResultCollection> list, boolean resetCurrentPage, boolean bl) {
+		this.resultCollections = list;
+		this.field_52844 = bl;
+		this.pageCount = (int)Math.ceil((double)list.size() / 20.0);
 		if (this.pageCount <= this.currentPage || resetCurrentPage) {
 			this.currentPage = 0;
 		}
@@ -86,7 +90,7 @@ public class RecipeBookResults {
 			AnimatedResultButton animatedResultButton = (AnimatedResultButton)this.resultButtons.get(j);
 			if (i + j < this.resultCollections.size()) {
 				RecipeResultCollection recipeResultCollection = (RecipeResultCollection)this.resultCollections.get(i + j);
-				animatedResultButton.showResultCollection(recipeResultCollection, this);
+				animatedResultButton.showResultCollection(recipeResultCollection, this.field_52844, this);
 				animatedResultButton.visible = true;
 			} else {
 				animatedResultButton.visible = false;
@@ -171,8 +175,8 @@ public class RecipeBookResults {
 					} else if (button == 1 && !this.alternatesWidget.isVisible() && !animatedResultButton.hasResults()) {
 						this.alternatesWidget
 							.showAlternativesForResult(
-								this.client,
 								animatedResultButton.getResultCollection(),
+								this.field_52844,
 								animatedResultButton.getX(),
 								animatedResultButton.getY(),
 								areaLeft + areaWidth / 2,
@@ -193,10 +197,6 @@ public class RecipeBookResults {
 		for (RecipeDisplayListener recipeDisplayListener : this.recipeDisplayListeners) {
 			recipeDisplayListener.onRecipesDisplayed(recipes);
 		}
-	}
-
-	public MinecraftClient getClient() {
-		return this.client;
 	}
 
 	public RecipeBook getRecipeBook() {

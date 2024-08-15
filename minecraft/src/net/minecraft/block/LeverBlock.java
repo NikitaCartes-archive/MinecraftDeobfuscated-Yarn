@@ -7,6 +7,7 @@ import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.DustParticleEffect;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
@@ -21,6 +22,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.block.OrientationHelper;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 
@@ -91,16 +94,15 @@ public class LeverBlock extends WallMountedBlock {
 			if ((Boolean)blockState.get(POWERED)) {
 				spawnParticles(blockState, world, pos, 1.0F);
 			}
-
-			return ActionResult.SUCCESS;
 		} else {
 			this.togglePower(state, world, pos, null);
-			return ActionResult.CONSUME;
 		}
+
+		return ActionResult.SUCCESS;
 	}
 
 	@Override
-	protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+	protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
 		if (explosion.canTriggerBlocks()) {
 			this.togglePower(state, world, pos, null);
 		}
@@ -164,8 +166,10 @@ public class LeverBlock extends WallMountedBlock {
 	}
 
 	private void updateNeighbors(BlockState state, World world, BlockPos pos) {
-		world.updateNeighborsAlways(pos, this);
-		world.updateNeighborsAlways(pos.offset(getDirection(state).getOpposite()), this);
+		Direction direction = getDirection(state).getOpposite();
+		WireOrientation wireOrientation = OrientationHelper.getEmissionOrientation(world, direction, direction.getAxis().isHorizontal() ? Direction.UP : null);
+		world.updateNeighborsAlways(pos, this, wireOrientation);
+		world.updateNeighborsAlways(pos.offset(direction), this, wireOrientation);
 	}
 
 	@Override

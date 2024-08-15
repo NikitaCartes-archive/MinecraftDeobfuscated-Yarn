@@ -67,9 +67,9 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 	public static DefaultAttributeContainer.Builder createEvokerAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.5)
-			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 12.0)
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 24.0);
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.5)
+			.add(EntityAttributes.FOLLOW_RANGE, 12.0)
+			.add(EntityAttributes.MAX_HEALTH, 24.0);
 	}
 
 	@Override
@@ -98,15 +98,17 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	}
 
 	@Override
-	public boolean isTeammate(Entity other) {
-		if (other == null) {
-			return false;
-		} else if (other == this) {
+	protected boolean isInSameTeam(Entity other) {
+		if (other == this) {
 			return true;
-		} else if (super.isTeammate(other)) {
+		} else if (super.isInSameTeam(other)) {
 			return true;
 		} else {
-			return other instanceof VexEntity vexEntity ? this.isTeammate(vexEntity.getOwner()) : false;
+			if (other instanceof VexEntity vexEntity && vexEntity.getOwner() != null) {
+				return this.isInSameTeam(vexEntity.getOwner());
+			}
+
+			return false;
 		}
 	}
 
@@ -269,7 +271,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 			for (int i = 0; i < 3; i++) {
 				BlockPos blockPos = EvokerEntity.this.getBlockPos().add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
-				VexEntity vexEntity = EntityType.VEX.create(EvokerEntity.this.getWorld());
+				VexEntity vexEntity = EntityType.VEX.create(EvokerEntity.this.getWorld(), SpawnReason.MOB_SUMMONED);
 				if (vexEntity != null) {
 					vexEntity.refreshPositionAndAngles(blockPos, 0.0F, 0.0F);
 					vexEntity.initialize(serverWorld, EvokerEntity.this.getWorld().getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null);

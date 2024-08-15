@@ -4,11 +4,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class UsedTotemCriterion extends AbstractCriterion<UsedTotemCriterion.Conditions> {
@@ -34,8 +36,9 @@ public class UsedTotemCriterion extends AbstractCriterion<UsedTotemCriterion.Con
 			return Criteria.USED_TOTEM.create(new UsedTotemCriterion.Conditions(Optional.empty(), Optional.of(itemPredicate)));
 		}
 
-		public static AdvancementCriterion<UsedTotemCriterion.Conditions> create(ItemConvertible item) {
-			return Criteria.USED_TOTEM.create(new UsedTotemCriterion.Conditions(Optional.empty(), Optional.of(ItemPredicate.Builder.create().items(item).build())));
+		public static AdvancementCriterion<UsedTotemCriterion.Conditions> create(RegistryEntryLookup<Item> itemRegistry, ItemConvertible item) {
+			return Criteria.USED_TOTEM
+				.create(new UsedTotemCriterion.Conditions(Optional.empty(), Optional.of(ItemPredicate.Builder.create().items(itemRegistry, item).build())));
 		}
 
 		public boolean matches(ItemStack stack) {

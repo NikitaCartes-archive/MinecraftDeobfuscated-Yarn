@@ -5,6 +5,7 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -44,8 +45,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.StatHandler;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -294,7 +293,7 @@ public class ClientPlayerInteractionManager {
 		BlockPos blockPos = hitResult.getBlockPos();
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (this.gameMode == GameMode.SPECTATOR) {
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		} else {
 			boolean bl = !player.getMainHandStack().isEmpty() || !player.getOffHandStack().isEmpty();
 			boolean bl2 = player.shouldCancelInteraction() && bl;
@@ -304,31 +303,31 @@ public class ClientPlayerInteractionManager {
 					return ActionResult.FAIL;
 				}
 
-				ItemActionResult itemActionResult = blockState.onUseWithItem(player.getStackInHand(hand), this.client.world, player, hand, hitResult);
-				if (itemActionResult.isAccepted()) {
-					return itemActionResult.toActionResult();
+				ActionResult actionResult = blockState.onUseWithItem(player.getStackInHand(hand), this.client.world, player, hand, hitResult);
+				if (actionResult.isAccepted()) {
+					return actionResult;
 				}
 
-				if (itemActionResult == ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION && hand == Hand.MAIN_HAND) {
-					ActionResult actionResult = blockState.onUse(this.client.world, player, hitResult);
-					if (actionResult.isAccepted()) {
-						return actionResult;
+				if (actionResult instanceof ActionResult.PassToDefaultBlockAction && hand == Hand.MAIN_HAND) {
+					ActionResult actionResult2 = blockState.onUse(this.client.world, player, hitResult);
+					if (actionResult2.isAccepted()) {
+						return actionResult2;
 					}
 				}
 			}
 
 			if (!itemStack.isEmpty() && !player.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(player, hand, hitResult);
-				ActionResult actionResult2;
+				ActionResult actionResult3;
 				if (this.gameMode.isCreative()) {
 					int i = itemStack.getCount();
-					actionResult2 = itemStack.useOnBlock(itemUsageContext);
+					actionResult3 = itemStack.useOnBlock(itemUsageContext);
 					itemStack.setCount(i);
 				} else {
-					actionResult2 = itemStack.useOnBlock(itemUsageContext);
+					actionResult3 = itemStack.useOnBlock(itemUsageContext);
 				}
 
-				return actionResult2;
+				return actionResult3;
 			} else {
 				return ActionResult.PASS;
 			}
@@ -348,13 +347,19 @@ public class ClientPlayerInteractionManager {
 					mutableObject.setValue(ActionResult.PASS);
 					return playerInteractItemC2SPacket;
 				} else {
-					TypedActionResult<ItemStack> typedActionResult = itemStack.use(this.client.world, player, hand);
-					ItemStack itemStack2 = typedActionResult.getValue();
+					ActionResult actionResult = itemStack.use(this.client.world, player, hand);
+					ItemStack itemStack2;
+					if (actionResult instanceof ActionResult.Success success) {
+						itemStack2 = (ItemStack)Objects.requireNonNullElseGet(success.getNewHandStack(), () -> player.getStackInHand(hand));
+					} else {
+						itemStack2 = player.getStackInHand(hand);
+					}
+
 					if (itemStack2 != itemStack) {
 						player.setStackInHand(hand, itemStack2);
 					}
 
-					mutableObject.setValue(typedActionResult.getResult());
+					mutableObject.setValue(actionResult);
 					return playerInteractItemC2SPacket;
 				}
 			});
@@ -382,14 +387,14 @@ public class ClientPlayerInteractionManager {
 	public ActionResult interactEntity(PlayerEntity player, Entity entity, Hand hand) {
 		this.syncSelectedSlot();
 		this.networkHandler.sendPacket(PlayerInteractEntityC2SPacket.interact(entity, player.isSneaking(), hand));
-		return this.gameMode == GameMode.SPECTATOR ? ActionResult.PASS : player.interact(entity, hand);
+		return (ActionResult)(this.gameMode == GameMode.SPECTATOR ? ActionResult.PASS : player.interact(entity, hand));
 	}
 
 	public ActionResult interactEntityAtLocation(PlayerEntity player, Entity entity, EntityHitResult hitResult, Hand hand) {
 		this.syncSelectedSlot();
 		Vec3d vec3d = hitResult.getPos().subtract(entity.getX(), entity.getY(), entity.getZ());
 		this.networkHandler.sendPacket(PlayerInteractEntityC2SPacket.interactAt(entity, player.isSneaking(), hand, vec3d));
-		return this.gameMode == GameMode.SPECTATOR ? ActionResult.PASS : entity.interactAt(player, vec3d, hand);
+		return (ActionResult)(this.gameMode == GameMode.SPECTATOR ? ActionResult.PASS : entity.interactAt(player, vec3d, hand));
 	}
 
 	/**

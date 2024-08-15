@@ -17,7 +17,7 @@ import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.ModelBaker;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.type.BannerPatternsComponent;
@@ -50,7 +50,7 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
-		modelPartData.addChild("flag", ModelPartBuilder.create().uv(0, 0).cuboid(-10.0F, 0.0F, -2.0F, 20.0F, 40.0F, 1.0F), ModelTransform.NONE);
+		modelPartData.addChild("flag", ModelPartBuilder.create().uv(0, 0).cuboid(-10.0F, 0.0F, -2.0F, 20.0F, 40.0F, 1.0F), ModelTransform.pivot(0.0F, -32.0F, 0.0F));
 		modelPartData.addChild("pole", ModelPartBuilder.create().uv(44, 0).cuboid(-1.0F, -30.0F, -1.0F, 2.0F, 42.0F, 2.0F), ModelTransform.NONE);
 		modelPartData.addChild("bar", ModelPartBuilder.create().uv(0, 42).cuboid(-10.0F, -32.0F, -1.0F, 20.0F, 2.0F, 2.0F), ModelTransform.NONE);
 		return TexturedModelData.of(modelData, 64, 64);
@@ -84,15 +84,14 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 
 		matrixStack.push();
 		matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
-		VertexConsumer vertexConsumer = ModelLoader.BANNER_BASE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
+		VertexConsumer vertexConsumer = ModelBaker.BANNER_BASE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
 		this.pillar.render(matrixStack, vertexConsumer, i, j);
 		this.crossbar.render(matrixStack, vertexConsumer, i, j);
 		BlockPos blockPos = bannerBlockEntity.getPos();
 		float k = ((float)Math.floorMod((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l, 100L) + f) / 100.0F;
 		this.banner.pitch = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * k)) * (float) Math.PI;
-		this.banner.pivotY = -32.0F;
 		renderCanvas(
-			matrixStack, vertexConsumerProvider, i, j, this.banner, ModelLoader.BANNER_BASE, true, bannerBlockEntity.getColorForState(), bannerBlockEntity.getPatterns()
+			matrixStack, vertexConsumerProvider, i, j, this.banner, ModelBaker.BANNER_BASE, true, bannerBlockEntity.getColorForState(), bannerBlockEntity.getPatterns()
 		);
 		matrixStack.pop();
 		matrixStack.pop();
@@ -109,7 +108,7 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		DyeColor color,
 		BannerPatternsComponent patterns
 	) {
-		renderCanvas(matrices, vertexConsumers, light, overlay, canvas, baseSprite, isBanner, color, patterns, false);
+		renderCanvas(matrices, vertexConsumers, light, overlay, canvas, baseSprite, isBanner, color, patterns, false, true);
 	}
 
 	public static void renderCanvas(
@@ -122,9 +121,10 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		boolean isBanner,
 		DyeColor color,
 		BannerPatternsComponent patterns,
-		boolean glint
+		boolean bl,
+		boolean bl2
 	) {
-		canvas.render(matrices, baseSprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid, glint), light, overlay);
+		canvas.render(matrices, baseSprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid, bl2, bl), light, overlay);
 		renderLayer(matrices, vertexConsumers, light, overlay, canvas, isBanner ? TexturedRenderLayers.BANNER_BASE : TexturedRenderLayers.SHIELD_BASE, color);
 
 		for (int i = 0; i < 16 && i < patterns.layers().size(); i++) {

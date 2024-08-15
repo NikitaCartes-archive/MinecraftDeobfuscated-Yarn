@@ -9,7 +9,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.client.render.entity.state.WitherEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -43,7 +43,7 @@ import net.minecraft.util.math.MathHelper;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class WitherEntityModel<T extends WitherEntity> extends SinglePartEntityModel<T> {
+public class WitherEntityModel extends EntityModel<WitherEntityRenderState> {
 	/**
 	 * The key of the ribcage model part, whose value is {@value}.
 	 */
@@ -113,22 +113,19 @@ public class WitherEntityModel<T extends WitherEntity> extends SinglePartEntityM
 		return this.root;
 	}
 
-	public void setAngles(T witherEntity, float f, float g, float h, float i, float j) {
-		float k = MathHelper.cos(h * 0.1F);
-		this.ribcage.pitch = (0.065F + 0.05F * k) * (float) Math.PI;
+	public void setAngles(WitherEntityRenderState witherEntityRenderState) {
+		rotateHead(witherEntityRenderState, this.rightHead, 0);
+		rotateHead(witherEntityRenderState, this.leftHead, 1);
+		float f = MathHelper.cos(witherEntityRenderState.age * 0.1F);
+		this.ribcage.pitch = (0.065F + 0.05F * f) * (float) Math.PI;
 		this.tail.setPivot(-2.0F, 6.9F + MathHelper.cos(this.ribcage.pitch) * 10.0F, -0.5F + MathHelper.sin(this.ribcage.pitch) * 10.0F);
-		this.tail.pitch = (0.265F + 0.1F * k) * (float) Math.PI;
-		this.centerHead.yaw = i * (float) (Math.PI / 180.0);
-		this.centerHead.pitch = j * (float) (Math.PI / 180.0);
+		this.tail.pitch = (0.265F + 0.1F * f) * (float) Math.PI;
+		this.centerHead.yaw = witherEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
+		this.centerHead.pitch = witherEntityRenderState.pitch * (float) (Math.PI / 180.0);
 	}
 
-	public void animateModel(T witherEntity, float f, float g, float h) {
-		rotateHead(witherEntity, this.rightHead, 0);
-		rotateHead(witherEntity, this.leftHead, 1);
-	}
-
-	private static <T extends WitherEntity> void rotateHead(T entity, ModelPart head, int sigma) {
-		head.yaw = (entity.getHeadYaw(sigma) - entity.bodyYaw) * (float) (Math.PI / 180.0);
-		head.pitch = entity.getHeadPitch(sigma) * (float) (Math.PI / 180.0);
+	private static void rotateHead(WitherEntityRenderState witherEntityRenderState, ModelPart head, int sigma) {
+		head.yaw = (witherEntityRenderState.sideHeadYaws[sigma] - witherEntityRenderState.bodyYaw) * (float) (Math.PI / 180.0);
+		head.pitch = witherEntityRenderState.sideHeadPitches[sigma] * (float) (Math.PI / 180.0);
 	}
 }

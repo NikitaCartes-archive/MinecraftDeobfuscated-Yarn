@@ -64,7 +64,7 @@ public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFill
 
 	@Override
 	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
-		return true;
+		return world.getBlockState(pos.up()).isOf(Blocks.WATER);
 	}
 
 	@Override
@@ -82,10 +82,8 @@ public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFill
 		BlockState blockState = Blocks.TALL_SEAGRASS.getDefaultState();
 		BlockState blockState2 = blockState.with(TallSeagrassBlock.HALF, DoubleBlockHalf.UPPER);
 		BlockPos blockPos = pos.up();
-		if (world.getBlockState(blockPos).isOf(Blocks.WATER)) {
-			world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
-			world.setBlockState(blockPos, blockState2, Block.NOTIFY_LISTENERS);
-		}
+		world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
+		world.setBlockState(blockPos, blockState2, Block.NOTIFY_LISTENERS);
 	}
 
 	@Override

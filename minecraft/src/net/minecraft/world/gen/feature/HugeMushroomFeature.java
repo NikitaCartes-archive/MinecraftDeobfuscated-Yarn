@@ -18,7 +18,7 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 	protected void generateStem(WorldAccess world, Random random, BlockPos pos, HugeMushroomFeatureConfig config, int height, BlockPos.Mutable mutablePos) {
 		for (int i = 0; i < height; i++) {
 			mutablePos.set(pos).move(Direction.UP, i);
-			if (!world.getBlockState(mutablePos).isOpaqueFullCube(world, mutablePos)) {
+			if (!world.getBlockState(mutablePos).isOpaqueFullCube()) {
 				this.setBlockState(world, mutablePos, config.stemProvider.get(random, pos));
 			}
 		}

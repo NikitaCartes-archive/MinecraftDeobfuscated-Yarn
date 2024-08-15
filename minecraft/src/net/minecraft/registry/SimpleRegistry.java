@@ -1,10 +1,9 @@
 package net.minecraft.registry;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.mojang.datafixers.util.Pair;
-import com.mojang.logging.LogUtils;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
@@ -21,18 +20,18 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryInfo;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.entry.RegistryEntryOwner;
+import net.minecraft.registry.tag.TagGroupLoader;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
-import org.slf4j.Logger;
 
 /**
  * An implementation of a mutable registry. All vanilla registries use this (or its
@@ -41,7 +40,6 @@ import org.slf4j.Logger;
  * @see Registry
  */
 public class SimpleRegistry<T> implements MutableRegistry<T> {
-	private static final Logger LOGGER = LogUtils.getLogger();
 	final RegistryKey<? extends Registry<T>> key;
 	private final ObjectList<RegistryEntry.Reference<T>> rawIdToEntry = new ObjectArrayList<>(256);
 	private final Reference2IntMap<T> entryToRawId = Util.make(new Reference2IntOpenHashMap<>(), map -> map.defaultReturnValue(-1));
@@ -50,7 +48,8 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 	private final Map<T, RegistryEntry.Reference<T>> valueToEntry = new IdentityHashMap();
 	private final Map<RegistryKey<T>, RegistryEntryInfo> keyToEntryInfo = new IdentityHashMap();
 	private Lifecycle lifecycle;
-	private volatile Map<TagKey<T>, RegistryEntryList.Named<T>> tagToEntryList = new IdentityHashMap();
+	private final Map<TagKey<T>, RegistryEntryList.Named<T>> tags = new IdentityHashMap();
+	SimpleRegistry.TagLookup<T> tagLookup = SimpleRegistry.TagLookup.ofUnbound();
 	private boolean frozen;
 	@Nullable
 	private Map<T, RegistryEntry.Reference<T>> intrusiveValueToEntry;
@@ -82,10 +81,9 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 
 		@Override
 		public Stream<RegistryEntryList.Named<T>> streamTags() {
-			return SimpleRegistry.this.streamTagsAndEntries().map(Pair::getSecond);
+			return SimpleRegistry.this.streamTags();
 		}
 	};
-	private final Object tagLock = new Object();
 
 	public SimpleRegistry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle) {
 		this(key, lifecycle, false);
@@ -126,34 +124,32 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 		Objects.requireNonNull(key);
 		Objects.requireNonNull(value);
 		if (this.idToEntry.containsKey(key.getValue())) {
-			Util.throwOrPause((T)(new IllegalStateException("Adding duplicate key '" + key + "' to registry")));
-		}
+			throw (IllegalStateException)Util.getFatalOrPause((T)(new IllegalStateException("Adding duplicate key '" + key + "' to registry")));
+		} else if (this.valueToEntry.containsKey(value)) {
+			throw (IllegalStateException)Util.getFatalOrPause((T)(new IllegalStateException("Adding duplicate value '" + value + "' to registry")));
+		} else {
+			RegistryEntry.Reference<T> reference;
+			if (this.intrusiveValueToEntry != null) {
+				reference = (RegistryEntry.Reference<T>)this.intrusiveValueToEntry.remove(value);
+				if (reference == null) {
+					throw new AssertionError("Missing intrusive holder for " + key + ":" + value);
+				}
 
-		if (this.valueToEntry.containsKey(value)) {
-			Util.throwOrPause((T)(new IllegalStateException("Adding duplicate value '" + value + "' to registry")));
-		}
-
-		RegistryEntry.Reference<T> reference;
-		if (this.intrusiveValueToEntry != null) {
-			reference = (RegistryEntry.Reference<T>)this.intrusiveValueToEntry.remove(value);
-			if (reference == null) {
-				throw new AssertionError("Missing intrusive holder for " + key + ":" + value);
+				reference.setRegistryKey(key);
+			} else {
+				reference = (RegistryEntry.Reference<T>)this.keyToEntry.computeIfAbsent(key, k -> RegistryEntry.Reference.standAlone(this.getEntryOwner(), k));
 			}
 
-			reference.setRegistryKey(key);
-		} else {
-			reference = (RegistryEntry.Reference<T>)this.keyToEntry.computeIfAbsent(key, k -> RegistryEntry.Reference.standAlone(this.getEntryOwner(), k));
+			this.keyToEntry.put(key, reference);
+			this.idToEntry.put(key.getValue(), reference);
+			this.valueToEntry.put(value, reference);
+			int i = this.rawIdToEntry.size();
+			this.rawIdToEntry.add(reference);
+			this.entryToRawId.put(value, i);
+			this.keyToEntryInfo.put(key, info);
+			this.lifecycle = this.lifecycle.add(info.lifecycle());
+			return reference;
 		}
-
-		this.keyToEntry.put(key, reference);
-		this.idToEntry.put(key.getValue(), reference);
-		this.valueToEntry.put(value, reference);
-		int i = this.rawIdToEntry.size();
-		this.rawIdToEntry.add(reference);
-		this.entryToRawId.put(value, i);
-		this.keyToEntryInfo.put(key, info);
-		this.lifecycle = this.lifecycle.add(info.lifecycle());
-		return reference;
 	}
 
 	@Nullable
@@ -274,38 +270,16 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 	}
 
 	@Override
-	public Stream<Pair<TagKey<T>, RegistryEntryList.Named<T>>> streamTagsAndEntries() {
-		return this.tagToEntryList.entrySet().stream().map(entry -> Pair.of((TagKey)entry.getKey(), (RegistryEntryList.Named)entry.getValue()));
+	public Stream<RegistryEntryList.Named<T>> streamTags() {
+		return this.tagLookup.stream();
 	}
 
-	@Override
-	public RegistryEntryList.Named<T> getOrCreateEntryList(TagKey<T> tag) {
-		RegistryEntryList.Named<T> named = (RegistryEntryList.Named<T>)this.tagToEntryList.get(tag);
-		if (named != null) {
-			return named;
-		} else {
-			synchronized (this.tagLock) {
-				named = (RegistryEntryList.Named<T>)this.tagToEntryList.get(tag);
-				if (named != null) {
-					return named;
-				} else {
-					named = this.createNamedEntryList(tag);
-					Map<TagKey<T>, RegistryEntryList.Named<T>> map = new IdentityHashMap(this.tagToEntryList);
-					map.put(tag, named);
-					this.tagToEntryList = map;
-					return named;
-				}
-			}
-		}
+	RegistryEntryList.Named<T> getTag(TagKey<T> key) {
+		return (RegistryEntryList.Named<T>)this.tags.computeIfAbsent(key, this::createNamedEntryList);
 	}
 
 	private RegistryEntryList.Named<T> createNamedEntryList(TagKey<T> tag) {
 		return new RegistryEntryList.Named<>(this.getEntryOwner(), tag);
-	}
-
-	@Override
-	public Stream<TagKey<T>> streamTags() {
-		return this.tagToEntryList.keySet().stream();
 	}
 
 	@Override
@@ -353,7 +327,24 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 					this.intrusiveValueToEntry = null;
 				}
 
-				return this;
+				if (this.tagLookup.isBound()) {
+					throw new IllegalStateException("Tags already present before freezing");
+				} else {
+					List<Identifier> list2 = this.tags
+						.entrySet()
+						.stream()
+						.filter(entry -> !((RegistryEntryList.Named)entry.getValue()).isBound())
+						.map(entry -> ((TagKey)entry.getKey()).id())
+						.sorted()
+						.toList();
+					if (!list2.isEmpty()) {
+						throw new IllegalStateException("Unbound tags in registry " + this.getKey() + ": " + list2);
+					} else {
+						this.tagLookup = SimpleRegistry.TagLookup.fromMap(this.tags);
+						this.refreshTags();
+						return this;
+					}
+				}
 			}
 		}
 	}
@@ -371,47 +362,40 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 
 	@Override
 	public Optional<RegistryEntryList.Named<T>> getEntryList(TagKey<T> tag) {
-		return Optional.ofNullable((RegistryEntryList.Named)this.tagToEntryList.get(tag));
+		return this.tagLookup.getOptional(tag);
+	}
+
+	private RegistryEntry.Reference<T> ensureTagable(TagKey<T> key, RegistryEntry<T> entry) {
+		if (!entry.ownerEquals(this.getEntryOwner())) {
+			throw new IllegalStateException("Can't create named set " + key + " containing value " + entry + " from outside registry " + this);
+		} else if (entry instanceof RegistryEntry.Reference) {
+			return (RegistryEntry.Reference<T>)entry;
+		} else {
+			throw new IllegalStateException("Found direct holder " + entry + " value in tag " + key);
+		}
 	}
 
 	@Override
-	public void populateTags(Map<TagKey<T>, List<RegistryEntry<T>>> tagEntries) {
+	public void setEntries(TagKey<T> tag, List<RegistryEntry<T>> entries) {
+		this.assertNotFrozen();
+		this.getTag(tag).setEntries(entries);
+	}
+
+	void refreshTags() {
 		Map<RegistryEntry.Reference<T>, List<TagKey<T>>> map = new IdentityHashMap();
-		this.keyToEntry.values().forEach(entry -> map.put(entry, new ArrayList()));
-		tagEntries.forEach((tag, entries) -> {
-			for (RegistryEntry<T> registryEntry : entries) {
-				if (!registryEntry.ownerEquals(this.getReadOnlyWrapper())) {
-					throw new IllegalStateException("Can't create named set " + tag + " containing value " + registryEntry + " from outside registry " + this);
-				}
-
-				if (!(registryEntry instanceof RegistryEntry.Reference<T> reference)) {
-					throw new IllegalStateException("Found direct holder " + registryEntry + " value in tag " + tag);
-				}
-
-				((List)map.get(reference)).add(tag);
+		this.keyToEntry.values().forEach(key -> map.put(key, new ArrayList()));
+		this.tagLookup.forEach((key, value) -> {
+			for (RegistryEntry<T> registryEntry : value) {
+				RegistryEntry.Reference<T> reference = this.ensureTagable(key, registryEntry);
+				((List)map.get(reference)).add(key);
 			}
 		});
-		Set<TagKey<T>> set = Sets.<TagKey<T>>difference(this.tagToEntryList.keySet(), tagEntries.keySet());
-		if (!set.isEmpty()) {
-			LOGGER.warn(
-				"Not all defined tags for registry {} are present in data pack: {}",
-				this.getKey(),
-				set.stream().map(tag -> tag.id().toString()).sorted().collect(Collectors.joining(", "))
-			);
-		}
-
-		synchronized (this.tagLock) {
-			Map<TagKey<T>, RegistryEntryList.Named<T>> map2 = new IdentityHashMap(this.tagToEntryList);
-			tagEntries.forEach((tag, entries) -> ((RegistryEntryList.Named)map2.computeIfAbsent(tag, this::createNamedEntryList)).copyOf(entries));
-			map.forEach(RegistryEntry.Reference::setTags);
-			this.tagToEntryList = map2;
-		}
+		map.forEach(RegistryEntry.Reference::setTags);
 	}
 
-	@Override
-	public void clearTags() {
-		this.tagToEntryList.values().forEach(entryList -> entryList.copyOf(List.of()));
-		this.keyToEntry.values().forEach(entry -> entry.setTags(Set.of()));
+	public void resetTagEntries() {
+		this.assertNotFrozen();
+		this.tags.values().forEach(tag -> tag.setEntries(List.of()));
 	}
 
 	@Override
@@ -435,7 +419,7 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 
 			@Override
 			public RegistryEntryList.Named<T> getOrThrow(TagKey<T> tag) {
-				return SimpleRegistry.this.getOrCreateEntryList(tag);
+				return SimpleRegistry.this.getTag(tag);
 			}
 		};
 	}
@@ -448,5 +432,120 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 	@Override
 	public RegistryWrapper.Impl<T> getReadOnlyWrapper() {
 		return this.wrapper;
+	}
+
+	@Override
+	public Registry.PendingTagLoad<T> startTagReload(TagGroupLoader.RegistryTags<T> tags) {
+		if (!this.frozen) {
+			throw new IllegalStateException("Invalid method used for tag loading");
+		} else {
+			Builder<TagKey<T>, RegistryEntryList.Named<T>> builder = ImmutableMap.builder();
+			final Map<TagKey<T>, List<RegistryEntry<T>>> map = new HashMap();
+			tags.tags().forEach((key, values) -> {
+				RegistryEntryList.Named<T> named = (RegistryEntryList.Named<T>)this.tags.get(key);
+				if (named == null) {
+					named = this.createNamedEntryList(key);
+				}
+
+				builder.put(key, named);
+				map.put(key, List.copyOf(values));
+			});
+			final ImmutableMap<TagKey<T>, RegistryEntryList.Named<T>> immutableMap = builder.build();
+			final RegistryWrapper.Impl<T> impl = new RegistryWrapper.Impl.Delegating<T>() {
+				@Override
+				public RegistryWrapper.Impl<T> getBase() {
+					return SimpleRegistry.this.getReadOnlyWrapper();
+				}
+
+				@Override
+				public Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> tag) {
+					return Optional.ofNullable(immutableMap.get(tag));
+				}
+
+				@Override
+				public Stream<RegistryEntryList.Named<T>> streamTags() {
+					return immutableMap.values().stream();
+				}
+			};
+			return new Registry.PendingTagLoad<T>() {
+				@Override
+				public RegistryKey<? extends Registry<? extends T>> getKey() {
+					return SimpleRegistry.this.getKey();
+				}
+
+				@Override
+				public RegistryWrapper.Impl<T> getLookup() {
+					return impl;
+				}
+
+				@Override
+				public void apply() {
+					immutableMap.forEach((key, value) -> {
+						List<RegistryEntry<T>> list = (List<RegistryEntry<T>>)map.getOrDefault(key, List.of());
+						value.setEntries(list);
+					});
+					SimpleRegistry.this.tagLookup = SimpleRegistry.TagLookup.fromMap(immutableMap);
+					SimpleRegistry.this.refreshTags();
+				}
+			};
+		}
+	}
+
+	interface TagLookup<T> {
+		static <T> SimpleRegistry.TagLookup<T> ofUnbound() {
+			return new SimpleRegistry.TagLookup<T>() {
+				@Override
+				public boolean isBound() {
+					return false;
+				}
+
+				@Override
+				public Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> key) {
+					throw new IllegalStateException("Tags not bound, trying to access " + key);
+				}
+
+				@Override
+				public void forEach(BiConsumer<? super TagKey<T>, ? super RegistryEntryList.Named<T>> consumer) {
+					throw new IllegalStateException("Tags not bound");
+				}
+
+				@Override
+				public Stream<RegistryEntryList.Named<T>> stream() {
+					throw new IllegalStateException("Tags not bound");
+				}
+			};
+		}
+
+		static <T> SimpleRegistry.TagLookup<T> fromMap(Map<TagKey<T>, RegistryEntryList.Named<T>> map) {
+			return new SimpleRegistry.TagLookup<T>() {
+				@Override
+				public boolean isBound() {
+					return true;
+				}
+
+				@Override
+				public Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> key) {
+					return Optional.ofNullable((RegistryEntryList.Named)map.get(key));
+				}
+
+				@Override
+				public void forEach(BiConsumer<? super TagKey<T>, ? super RegistryEntryList.Named<T>> consumer) {
+					map.forEach(consumer);
+				}
+
+				@Override
+				public Stream<RegistryEntryList.Named<T>> stream() {
+					return map.values().stream();
+				}
+			};
+		}
+
+		boolean isBound();
+
+		Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> key);
+
+		void forEach(BiConsumer<? super TagKey<T>, ? super RegistryEntryList.Named<T>> consumer);
+
+		Stream<RegistryEntryList.Named<T>> stream();
 	}
 }

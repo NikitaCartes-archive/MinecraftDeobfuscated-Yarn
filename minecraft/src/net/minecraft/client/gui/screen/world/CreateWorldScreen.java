@@ -2,7 +2,6 @@ package net.minecraft.client.gui.screen.world;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
@@ -47,6 +46,7 @@ import net.minecraft.client.gui.widget.Positioner;
 import net.minecraft.client.gui.widget.TabNavigationWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.registry.CombinedDynamicRegistries;
@@ -230,7 +230,7 @@ public class CreateWorldScreen extends Screen {
 		CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries = generatorOptionsHolder.combinedDynamicRegistries()
 			.with(ServerDynamicRegistryType.DIMENSIONS, dimensionsConfig.toDynamicRegistryManager());
 		Lifecycle lifecycle = FeatureFlags.isNotVanilla(generatorOptionsHolder.dataConfiguration().enabledFeatures()) ? Lifecycle.experimental() : Lifecycle.stable();
-		Lifecycle lifecycle2 = combinedDynamicRegistries.getCombinedRegistryManager().getRegistryLifecycle();
+		Lifecycle lifecycle2 = combinedDynamicRegistries.getCombinedRegistryManager().getLifecycle();
 		Lifecycle lifecycle3 = lifecycle2.add(lifecycle);
 		boolean bl = !this.recreated && lifecycle2 == Lifecycle.stable();
 		IntegratedServerLoader.tryLoad(
@@ -258,7 +258,7 @@ public class CreateWorldScreen extends Screen {
 	private LevelInfo createLevelInfo(boolean debugWorld) {
 		String string = this.worldCreator.getWorldName().trim();
 		if (debugWorld) {
-			GameRules gameRules = new GameRules();
+			GameRules gameRules = new GameRules(DataConfiguration.SAFE_MODE.enabledFeatures());
 			gameRules.get(GameRules.DO_DAYLIGHT_CYCLE).set(false, null);
 			return new LevelInfo(string, GameMode.SPECTATOR, false, Difficulty.PEACEFUL, true, gameRules, DataConfiguration.SAFE_MODE);
 		} else {
@@ -301,14 +301,14 @@ public class CreateWorldScreen extends Screen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
-		RenderSystem.enableBlend();
-		context.drawTexture(Screen.FOOTER_SEPARATOR_TEXTURE, 0, this.height - this.layout.getFooterHeight() - 2, 0.0F, 0.0F, this.width, 2, 32, 2);
-		RenderSystem.disableBlend();
+		context.drawTexture(
+			RenderLayer::getGuiTextured, Screen.FOOTER_SEPARATOR_TEXTURE, 0, this.height - this.layout.getFooterHeight() - 2, 0.0F, 0.0F, this.width, 2, 32, 2
+		);
 	}
 
 	@Override
 	protected void renderDarkening(DrawContext context) {
-		context.drawTexture(TAB_HEADER_BACKGROUND_TEXTURE, 0, 0, 0.0F, 0.0F, this.width, this.layout.getHeaderHeight(), 16, 16);
+		context.drawTexture(RenderLayer::getGuiTextured, TAB_HEADER_BACKGROUND_TEXTURE, 0, 0, 0.0F, 0.0F, this.width, this.layout.getHeaderHeight(), 16, 16);
 		this.renderDarkening(context, 0, this.layout.getHeaderHeight(), this.width, this.height);
 	}
 
@@ -392,9 +392,9 @@ public class CreateWorldScreen extends Screen {
 		SaveLoading.<CreateWorldScreen.WorldCreationSettings, GeneratorOptionsHolder>load(
 				serverConfig,
 				context -> {
-					if (context.worldGenRegistryManager().get(RegistryKeys.WORLD_PRESET).size() == 0) {
+					if (context.worldGenRegistryManager().getWrapperOrThrow(RegistryKeys.WORLD_PRESET).streamEntries().findAny().isEmpty()) {
 						throw new IllegalStateException("Needs at least one world preset to continue");
-					} else if (context.worldGenRegistryManager().get(RegistryKeys.BIOME).size() == 0) {
+					} else if (context.worldGenRegistryManager().getWrapperOrThrow(RegistryKeys.BIOME).streamEntries().findAny().isEmpty()) {
 						throw new IllegalStateException("Needs at least one biome continue");
 					} else {
 						GeneratorOptionsHolder generatorOptionsHolder = this.worldCreator.getGeneratorOptionsHolder();
@@ -617,7 +617,7 @@ public class CreateWorldScreen extends Screen {
 	@Environment(EnvType.CLIENT)
 	class GameTab extends GridScreenTab {
 		private static final Text GAME_TAB_TITLE_TEXT = Text.translatable("createWorld.tab.game.title");
-		private static final Text ALLOW_COMMANDS_TEXT = Text.translatable("selectWorld.allowCommands.new");
+		private static final Text ALLOW_COMMANDS_TEXT = Text.translatable("selectWorld.allowCommands");
 		private final TextFieldWidget worldNameField;
 
 		GameTab() {
@@ -709,10 +709,18 @@ public class CreateWorldScreen extends Screen {
 		}
 
 		private void openGameRulesScreen() {
-			CreateWorldScreen.this.client.setScreen(new EditGameRulesScreen(CreateWorldScreen.this.worldCreator.getGameRules().copy(), gameRules -> {
-				CreateWorldScreen.this.client.setScreen(CreateWorldScreen.this);
-				gameRules.ifPresent(CreateWorldScreen.this.worldCreator::setGameRules);
-			}));
+			CreateWorldScreen.this.client
+				.setScreen(
+					new EditGameRulesScreen(
+						CreateWorldScreen.this.worldCreator
+							.getGameRules()
+							.copy(CreateWorldScreen.this.worldCreator.getGeneratorOptionsHolder().dataConfiguration().enabledFeatures()),
+						gameRules -> {
+							CreateWorldScreen.this.client.setScreen(CreateWorldScreen.this);
+							gameRules.ifPresent(CreateWorldScreen.this.worldCreator::setGameRules);
+						}
+					)
+				);
 		}
 	}
 

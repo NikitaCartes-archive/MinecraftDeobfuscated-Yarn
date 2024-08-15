@@ -57,6 +57,7 @@ import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.MoveMinecartAlongTrackS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
@@ -86,6 +87,8 @@ import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
 import net.minecraft.network.packet.s2c.play.ServerMetadataS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.SetCursorItemS2CPacket;
+import net.minecraft.network.packet.s2c.play.SetPlayerInventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
 import net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket;
@@ -190,6 +193,8 @@ public interface ClientPlayPacketListener extends ClientPingResultPacketListener
 	void onGameJoin(GameJoinS2CPacket packet);
 
 	void onEntity(EntityS2CPacket packet);
+
+	void onMoveMinecartAlongTrack(MoveMinecartAlongTrackS2CPacket packet);
 
 	void onPlayerPositionLook(PlayerPositionLookS2CPacket packet);
 
@@ -340,4 +345,8 @@ public interface ClientPlayPacketListener extends ClientPingResultPacketListener
 	void onDebugSample(DebugSampleS2CPacket packet);
 
 	void onProjectilePower(ProjectilePowerS2CPacket packet);
+
+	void onSetCursorItem(SetCursorItemS2CPacket packet);
+
+	void onSetPlayerInventory(SetPlayerInventoryS2CPacket packet);
 }

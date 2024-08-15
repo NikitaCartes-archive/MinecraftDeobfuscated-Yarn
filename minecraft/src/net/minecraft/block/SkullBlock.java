@@ -45,7 +45,7 @@ public class SkullBlock extends AbstractSkullBlock {
 	}
 
 	@Override
-	protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+	protected VoxelShape getCullingShape(BlockState state) {
 		return VoxelShapes.empty();
 	}
 

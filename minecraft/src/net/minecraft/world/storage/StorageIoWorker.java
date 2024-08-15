@@ -1,15 +1,14 @@
 package net.minecraft.world.storage;
 
-import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.BitSet;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Optional;
+import java.util.SequencedMap;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,7 +33,7 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 	private final AtomicBoolean closed = new AtomicBoolean();
 	private final TaskExecutor<TaskQueue.PrioritizedTask> executor;
 	private final RegionBasedStorage storage;
-	private final Map<ChunkPos, StorageIoWorker.Result> results = Maps.<ChunkPos, StorageIoWorker.Result>newLinkedHashMap();
+	private final SequencedMap<ChunkPos, StorageIoWorker.Result> results = new LinkedHashMap();
 	private final Long2ObjectLinkedOpenHashMap<CompletableFuture<BitSet>> blendingStatusCaches = new Long2ObjectLinkedOpenHashMap<>();
 	private static final int MAX_CACHE_SIZE = 1024;
 
@@ -129,9 +128,14 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 	}
 
 	public CompletableFuture<Void> setResult(ChunkPos pos, @Nullable NbtCompound nbt) {
+		return this.setResult(pos, () -> nbt);
+	}
+
+	public CompletableFuture<Void> setResult(ChunkPos pos, Supplier<NbtCompound> nbtSupplier) {
 		return this.run(() -> {
-			StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.computeIfAbsent(pos, pos2 -> new StorageIoWorker.Result(nbt));
-			result.nbt = nbt;
+			NbtCompound nbtCompound = (NbtCompound)nbtSupplier.get();
+			StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.computeIfAbsent(pos, pos2 -> new StorageIoWorker.Result(nbtCompound));
+			result.nbt = nbtCompound;
 			return Either.left(result.future);
 		}).thenCompose(Function.identity());
 	}
@@ -203,10 +207,8 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 	}
 
 	private void writeResult() {
-		if (!this.results.isEmpty()) {
-			Iterator<Entry<ChunkPos, StorageIoWorker.Result>> iterator = this.results.entrySet().iterator();
-			Entry<ChunkPos, StorageIoWorker.Result> entry = (Entry<ChunkPos, StorageIoWorker.Result>)iterator.next();
-			iterator.remove();
+		Entry<ChunkPos, StorageIoWorker.Result> entry = this.results.pollFirstEntry();
+		if (entry != null) {
 			this.write((ChunkPos)entry.getKey(), (StorageIoWorker.Result)entry.getValue());
 			this.writeRemainingResults();
 		}

@@ -3,6 +3,7 @@ package net.minecraft.entity.player;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.math.IntMath;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
@@ -37,6 +38,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.ProjectileDeflection;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
@@ -59,8 +61,8 @@ import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.MaceItem;
 import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
@@ -73,6 +75,7 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
@@ -217,17 +220,17 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	public static DefaultAttributeContainer.Builder createPlayerAttributes() {
 		return LivingEntity.createLivingAttributes()
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.1F)
-			.add(EntityAttributes.GENERIC_ATTACK_SPEED)
-			.add(EntityAttributes.GENERIC_LUCK)
-			.add(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE, 4.5)
-			.add(EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE, 3.0)
-			.add(EntityAttributes.PLAYER_BLOCK_BREAK_SPEED)
-			.add(EntityAttributes.PLAYER_SUBMERGED_MINING_SPEED)
-			.add(EntityAttributes.PLAYER_SNEAKING_SPEED)
-			.add(EntityAttributes.PLAYER_MINING_EFFICIENCY)
-			.add(EntityAttributes.PLAYER_SWEEPING_DAMAGE_RATIO);
+			.add(EntityAttributes.ATTACK_DAMAGE, 1.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.1F)
+			.add(EntityAttributes.ATTACK_SPEED)
+			.add(EntityAttributes.LUCK)
+			.add(EntityAttributes.BLOCK_INTERACTION_RANGE, 4.5)
+			.add(EntityAttributes.ENTITY_INTERACTION_RANGE, 3.0)
+			.add(EntityAttributes.BLOCK_BREAK_SPEED)
+			.add(EntityAttributes.SUBMERGED_MINING_SPEED)
+			.add(EntityAttributes.SNEAKING_SPEED)
+			.add(EntityAttributes.MINING_EFFICIENCY)
+			.add(EntityAttributes.SWEEPING_DAMAGE_RATIO);
 	}
 
 	@Override
@@ -545,8 +548,12 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		this.inventory.updateItems();
 		this.prevStrideDistance = this.strideDistance;
+		if (this.abilities.flying && !this.hasVehicle()) {
+			this.onLanding();
+		}
+
 		super.tickMovement();
-		this.setMovementSpeed((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+		this.setMovementSpeed((float)this.getAttributeValue(EntityAttributes.MOVEMENT_SPEED));
 		float f;
 		if (this.isOnGround() && !this.isDead() && !this.isSwimming()) {
 			f = Math.min(0.1F, (float)this.getVelocity().horizontalLength());
@@ -698,6 +705,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		return SoundEvents.ENTITY_PLAYER_DEATH;
 	}
 
+	public void dropCreativeStack(ItemStack stack) {
+	}
+
 	@Nullable
 	public ItemEntity dropItem(ItemStack stack, boolean retainOwnership) {
 		return this.dropItem(stack, false, retainOwnership);
@@ -708,47 +718,17 @@ public abstract class PlayerEntity extends LivingEntity {
 	 */
 	@Nullable
 	public ItemEntity dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership) {
-		if (stack.isEmpty()) {
-			return null;
-		} else {
-			if (this.getWorld().isClient) {
-				this.swingHand(Hand.MAIN_HAND);
-			}
-
-			double d = this.getEyeY() - 0.3F;
-			ItemEntity itemEntity = new ItemEntity(this.getWorld(), this.getX(), d, this.getZ(), stack);
-			itemEntity.setPickupDelay(40);
-			if (retainOwnership) {
-				itemEntity.setThrower(this);
-			}
-
-			if (throwRandomly) {
-				float f = this.random.nextFloat() * 0.5F;
-				float g = this.random.nextFloat() * (float) (Math.PI * 2);
-				itemEntity.setVelocity((double)(-MathHelper.sin(g) * f), 0.2F, (double)(MathHelper.cos(g) * f));
-			} else {
-				float f = 0.3F;
-				float g = MathHelper.sin(this.getPitch() * (float) (Math.PI / 180.0));
-				float h = MathHelper.cos(this.getPitch() * (float) (Math.PI / 180.0));
-				float i = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0));
-				float j = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0));
-				float k = this.random.nextFloat() * (float) (Math.PI * 2);
-				float l = 0.02F * this.random.nextFloat();
-				itemEntity.setVelocity(
-					(double)(-i * h * 0.3F) + Math.cos((double)k) * (double)l,
-					(double)(-g * 0.3F + 0.1F + (this.random.nextFloat() - this.random.nextFloat()) * 0.1F),
-					(double)(j * h * 0.3F) + Math.sin((double)k) * (double)l
-				);
-			}
-
-			return itemEntity;
+		if (!stack.isEmpty() && this.getWorld().isClient) {
+			this.swingHand(Hand.MAIN_HAND);
 		}
+
+		return null;
 	}
 
 	public float getBlockBreakingSpeed(BlockState block) {
 		float f = this.inventory.getBlockBreakingSpeed(block);
 		if (f > 1.0F) {
-			f += (float)this.getAttributeValue(EntityAttributes.PLAYER_MINING_EFFICIENCY);
+			f += (float)this.getAttributeValue(EntityAttributes.MINING_EFFICIENCY);
 		}
 
 		if (StatusEffectUtil.hasHaste(this)) {
@@ -764,9 +744,9 @@ public abstract class PlayerEntity extends LivingEntity {
 			};
 		}
 
-		f *= (float)this.getAttributeValue(EntityAttributes.PLAYER_BLOCK_BREAK_SPEED);
+		f *= (float)this.getAttributeValue(EntityAttributes.BLOCK_BREAK_SPEED);
 		if (this.isSubmergedIn(FluidTags.WATER)) {
-			f *= (float)this.getAttributeInstance(EntityAttributes.PLAYER_SUBMERGED_MINING_SPEED).getValue();
+			f *= (float)this.getAttributeInstance(EntityAttributes.SUBMERGED_MINING_SPEED).getValue();
 		}
 
 		if (!this.isOnGround()) {
@@ -807,7 +787,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.setScore(nbt.getInt("Score"));
 		this.hungerManager.readNbt(nbt);
 		this.abilities.readNbt(nbt);
-		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue((double)this.abilities.getWalkSpeed());
+		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue((double)this.abilities.getWalkSpeed());
 		if (nbt.contains("EnderItems", NbtElement.LIST_TYPE)) {
 			this.enderChestInventory.readNbtList(nbt.getList("EnderItems", NbtElement.COMPOUND_TYPE), this.getRegistryManager());
 		}
@@ -1167,9 +1147,15 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void attack(Entity target) {
 		if (target.isAttackable()) {
 			if (!target.handleAttack(this)) {
-				float f = this.isUsingRiptide() ? this.riptideAttackDamage : (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+				float f = this.isUsingRiptide() ? this.riptideAttackDamage : (float)this.getAttributeValue(EntityAttributes.ATTACK_DAMAGE);
 				ItemStack itemStack = this.getWeaponStack();
-				DamageSource damageSource = this.getDamageSources().playerAttack(this);
+				DamageSource damageSource;
+				if (itemStack.getItem() == Items.MACE && MaceItem.shouldDealAdditionalDamage(this)) {
+					damageSource = this.getDamageSources().maceSmash(this);
+				} else {
+					damageSource = this.getDamageSources().playerAttack(this);
+				}
+
 				float g = this.getDamageAgainst(target, f, damageSource) - f;
 				float h = this.getAttackCooldownProgress(0.5F);
 				f *= 0.2F + h * h * 0.8F;
@@ -1208,10 +1194,10 @@ public abstract class PlayerEntity extends LivingEntity {
 
 					float i = f + g;
 					boolean bl4 = false;
-					double d = (double)(this.horizontalSpeed - this.prevHorizontalSpeed);
-					if (bl && !bl3 && !bl2 && this.isOnGround() && d < (double)this.getMovementSpeed()) {
-						ItemStack itemStack2 = this.getStackInHand(Hand.MAIN_HAND);
-						if (itemStack2.getItem() instanceof SwordItem) {
+					if (bl && !bl3 && !bl2 && this.isOnGround()) {
+						double d = this.getMovement().horizontalLengthSquared();
+						double e = (double)this.getMovementSpeed() * 2.5;
+						if (d < MathHelper.square(e) && this.getStackInHand(Hand.MAIN_HAND).isIn(ItemTags.SWORDS)) {
 							bl4 = true;
 						}
 					}
@@ -1245,7 +1231,7 @@ public abstract class PlayerEntity extends LivingEntity {
 						}
 
 						if (bl4) {
-							float l = 1.0F + (float)this.getAttributeValue(EntityAttributes.PLAYER_SWEEPING_DAMAGE_RATIO) * f;
+							float l = 1.0F + (float)this.getAttributeValue(EntityAttributes.SWEEPING_DAMAGE_RATIO) * f;
 
 							for (LivingEntity livingEntity3 : this.getWorld().getNonSpectatingEntities(LivingEntity.class, target.getBoundingBox().expand(1.0, 0.25, 1.0))) {
 								if (livingEntity3 != this
@@ -1517,39 +1503,32 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void jump() {
-		super.jump();
-		this.incrementStat(Stats.JUMP);
-		if (this.isSprinting()) {
-			this.addExhaustion(0.2F);
+	public void travel(Vec3d movementInput) {
+		if (this.hasVehicle()) {
+			super.travel(movementInput);
 		} else {
-			this.addExhaustion(0.05F);
+			if (this.isSwimming()) {
+				double d = this.getRotationVector().y;
+				double e = d < -0.2 ? 0.085 : 0.06;
+				if (d <= 0.0 || this.jumping || !this.getWorld().getFluidState(BlockPos.ofFloored(this.getX(), this.getY() + 1.0 - 0.1, this.getZ())).isEmpty()) {
+					Vec3d vec3d = this.getVelocity();
+					this.setVelocity(vec3d.add(0.0, (d - vec3d.y) * e, 0.0));
+				}
+			}
+
+			if (this.getAbilities().flying) {
+				double d = this.getVelocity().y;
+				super.travel(movementInput);
+				this.setVelocity(this.getVelocity().withAxis(Direction.Axis.Y, d * 0.6));
+			} else {
+				super.travel(movementInput);
+			}
 		}
 	}
 
 	@Override
-	public void travel(Vec3d movementInput) {
-		if (this.isSwimming() && !this.hasVehicle()) {
-			double d = this.getRotationVector().y;
-			double e = d < -0.2 ? 0.085 : 0.06;
-			if (d <= 0.0
-				|| this.jumping
-				|| !this.getWorld().getBlockState(BlockPos.ofFloored(this.getX(), this.getY() + 1.0 - 0.1, this.getZ())).getFluidState().isEmpty()) {
-				Vec3d vec3d = this.getVelocity();
-				this.setVelocity(vec3d.add(0.0, (d - vec3d.y) * e, 0.0));
-			}
-		}
-
-		if (this.abilities.flying && !this.hasVehicle()) {
-			double d = this.getVelocity().y;
-			super.travel(movementInput);
-			Vec3d vec3d2 = this.getVelocity();
-			this.setVelocity(vec3d2.x, d * 0.6, vec3d2.z);
-			this.onLanding();
-			this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, false);
-		} else {
-			super.travel(movementInput);
-		}
+	protected boolean isFallFlyingAllowed(ItemStack chestEquipment) {
+		return !this.abilities.flying && super.isFallFlyingAllowed(chestEquipment);
 	}
 
 	@Override
@@ -1567,7 +1546,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public float getMovementSpeed() {
-		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+		return (float)this.getAttributeValue(EntityAttributes.MOVEMENT_SPEED);
 	}
 
 	@Override
@@ -1579,25 +1558,26 @@ public abstract class PlayerEntity extends LivingEntity {
 				this.increaseStat(Stats.FALL_ONE_CM, (int)Math.round((double)fallDistance * 100.0));
 			}
 
-			boolean bl;
-			if (this.ignoreFallDamageFromCurrentExplosion && this.currentExplosionImpactPos != null) {
-				double d = this.currentExplosionImpactPos.y;
-				this.tryClearCurrentExplosion();
-				if (d < this.getY()) {
-					return false;
-				}
-
-				float f = Math.min(fallDistance, (float)(d - this.getY()));
-				bl = super.handleFallDamage(f, damageMultiplier, damageSource);
-			} else {
-				bl = super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
-			}
-
+			boolean bl = this.currentExplosionImpactPos != null && this.ignoreFallDamageFromCurrentExplosion;
+			float f;
 			if (bl) {
-				this.clearCurrentExplosion();
+				f = Math.min(fallDistance, (float)(this.currentExplosionImpactPos.y - this.getY()));
+				boolean bl2 = f <= 0.0F;
+				if (bl2) {
+					this.clearCurrentExplosion();
+				} else {
+					this.tryClearCurrentExplosion();
+				}
+			} else {
+				f = fallDistance;
 			}
 
-			return bl;
+			if (f > 0.0F && super.handleFallDamage(f, damageMultiplier, damageSource)) {
+				this.clearCurrentExplosion();
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 
@@ -1708,7 +1688,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public void addExperienceLevels(int levels) {
-		this.experienceLevel += levels;
+		this.experienceLevel = IntMath.saturatedAdd(this.experienceLevel, levels);
 		if (this.experienceLevel < 0) {
 			this.experienceLevel = 0;
 			this.experienceProgress = 0.0F;
@@ -1879,7 +1859,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	private void dropShoulderEntity(NbtCompound entityNbt) {
 		if (!this.getWorld().isClient && !entityNbt.isEmpty()) {
-			EntityType.getEntityFromNbt(entityNbt, this.getWorld()).ifPresent(entity -> {
+			EntityType.getEntityFromNbt(entityNbt, this.getWorld(), SpawnReason.LOAD).ifPresent(entity -> {
 				if (entity instanceof TameableEntity) {
 					((TameableEntity)entity).setOwnerUuid(this.uuid);
 				}
@@ -2030,7 +2010,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public float getAttackCooldownProgressPerTick() {
-		return (float)(1.0 / this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_SPEED) * 20.0);
+		return (float)(1.0 / this.getAttributeValue(EntityAttributes.ATTACK_SPEED) * 20.0);
 	}
 
 	public float getAttackCooldownProgress(float baseTime) {
@@ -2051,7 +2031,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public float getLuck() {
-		return (float)this.getAttributeValue(EntityAttributes.GENERIC_LUCK);
+		return (float)this.getAttributeValue(EntityAttributes.LUCK);
 	}
 
 	public boolean isCreativeLevelTwoOp() {
@@ -2201,11 +2181,11 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public double getBlockInteractionRange() {
-		return this.getAttributeValue(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE);
+		return this.getAttributeValue(EntityAttributes.BLOCK_INTERACTION_RANGE);
 	}
 
 	public double getEntityInteractionRange() {
-		return this.getAttributeValue(EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE);
+		return this.getAttributeValue(EntityAttributes.ENTITY_INTERACTION_RANGE);
 	}
 
 	/**
@@ -2267,6 +2247,10 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.explodedBy = null;
 		this.currentExplosionImpactPos = null;
 		this.ignoreFallDamageFromCurrentExplosion = false;
+	}
+
+	public boolean shouldRotateWithMinecart() {
+		return false;
 	}
 
 	/**

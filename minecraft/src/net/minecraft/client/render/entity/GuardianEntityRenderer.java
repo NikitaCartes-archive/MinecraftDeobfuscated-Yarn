@@ -1,7 +1,9 @@
 package net.minecraft.client.render.entity;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
@@ -11,7 +13,9 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.GuardianEntityModel;
+import net.minecraft.client.render.entity.state.GuardianEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.util.Identifier;
@@ -21,7 +25,7 @@ import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
-public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
+public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, GuardianEntityRenderState, GuardianEntityModel> {
 	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/guardian.png");
 	private static final Identifier EXPLOSION_BEAM_TEXTURE = Identifier.ofVanilla("textures/entity/guardian_beam.png");
 	private static final RenderLayer LAYER = RenderLayer.getEntityCutoutNoCull(EXPLOSION_BEAM_TEXTURE);
@@ -58,74 +62,73 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		return new Vec3d(d, e, f);
 	}
 
-	public void render(GuardianEntity guardianEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		super.render(guardianEntity, f, g, matrixStack, vertexConsumerProvider, i);
-		LivingEntity livingEntity = guardianEntity.getBeamTarget();
-		if (livingEntity != null) {
-			float h = guardianEntity.getBeamProgress(g);
-			float j = guardianEntity.getBeamTicks() + g;
-			float k = j * 0.5F % 1.0F;
-			float l = guardianEntity.getStandingEyeHeight();
+	public void render(GuardianEntityRenderState guardianEntityRenderState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+		super.render(guardianEntityRenderState, matrixStack, vertexConsumerProvider, i);
+		Vec3d vec3d = guardianEntityRenderState.beamTargetPos;
+		if (vec3d != null) {
+			float f = guardianEntityRenderState.beamTicks * 0.5F % 1.0F;
 			matrixStack.push();
-			matrixStack.translate(0.0F, l, 0.0F);
-			Vec3d vec3d = this.fromLerpedPosition(livingEntity, (double)livingEntity.getHeight() * 0.5, g);
-			Vec3d vec3d2 = this.fromLerpedPosition(guardianEntity, (double)l, g);
-			Vec3d vec3d3 = vec3d.subtract(vec3d2);
-			float m = (float)(vec3d3.length() + 1.0);
-			vec3d3 = vec3d3.normalize();
-			float n = (float)Math.acos(vec3d3.y);
-			float o = (float)Math.atan2(vec3d3.z, vec3d3.x);
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(((float) (Math.PI / 2) - o) * (180.0F / (float)Math.PI)));
-			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(n * (180.0F / (float)Math.PI)));
-			int p = 1;
-			float q = j * 0.05F * -1.5F;
-			float r = h * h;
-			int s = 64 + (int)(r * 191.0F);
-			int t = 32 + (int)(r * 191.0F);
-			int u = 128 - (int)(r * 64.0F);
-			float v = 0.2F;
-			float w = 0.282F;
-			float x = MathHelper.cos(q + (float) (Math.PI * 3.0 / 4.0)) * 0.282F;
-			float y = MathHelper.sin(q + (float) (Math.PI * 3.0 / 4.0)) * 0.282F;
-			float z = MathHelper.cos(q + (float) (Math.PI / 4)) * 0.282F;
-			float aa = MathHelper.sin(q + (float) (Math.PI / 4)) * 0.282F;
-			float ab = MathHelper.cos(q + ((float) Math.PI * 5.0F / 4.0F)) * 0.282F;
-			float ac = MathHelper.sin(q + ((float) Math.PI * 5.0F / 4.0F)) * 0.282F;
-			float ad = MathHelper.cos(q + ((float) Math.PI * 7.0F / 4.0F)) * 0.282F;
-			float ae = MathHelper.sin(q + ((float) Math.PI * 7.0F / 4.0F)) * 0.282F;
-			float af = MathHelper.cos(q + (float) Math.PI) * 0.2F;
-			float ag = MathHelper.sin(q + (float) Math.PI) * 0.2F;
-			float ah = MathHelper.cos(q + 0.0F) * 0.2F;
-			float ai = MathHelper.sin(q + 0.0F) * 0.2F;
-			float aj = MathHelper.cos(q + (float) (Math.PI / 2)) * 0.2F;
-			float ak = MathHelper.sin(q + (float) (Math.PI / 2)) * 0.2F;
-			float al = MathHelper.cos(q + (float) (Math.PI * 3.0 / 2.0)) * 0.2F;
-			float am = MathHelper.sin(q + (float) (Math.PI * 3.0 / 2.0)) * 0.2F;
-			float ao = 0.0F;
-			float ap = 0.4999F;
-			float aq = -1.0F + k;
-			float ar = m * 2.5F + aq;
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
-			MatrixStack.Entry entry = matrixStack.peek();
-			vertex(vertexConsumer, entry, af, m, ag, s, t, u, 0.4999F, ar);
-			vertex(vertexConsumer, entry, af, 0.0F, ag, s, t, u, 0.4999F, aq);
-			vertex(vertexConsumer, entry, ah, 0.0F, ai, s, t, u, 0.0F, aq);
-			vertex(vertexConsumer, entry, ah, m, ai, s, t, u, 0.0F, ar);
-			vertex(vertexConsumer, entry, aj, m, ak, s, t, u, 0.4999F, ar);
-			vertex(vertexConsumer, entry, aj, 0.0F, ak, s, t, u, 0.4999F, aq);
-			vertex(vertexConsumer, entry, al, 0.0F, am, s, t, u, 0.0F, aq);
-			vertex(vertexConsumer, entry, al, m, am, s, t, u, 0.0F, ar);
-			float as = 0.0F;
-			if (guardianEntity.age % 2 == 0) {
-				as = 0.5F;
-			}
-
-			vertex(vertexConsumer, entry, x, m, y, s, t, u, 0.5F, as + 0.5F);
-			vertex(vertexConsumer, entry, z, m, aa, s, t, u, 1.0F, as + 0.5F);
-			vertex(vertexConsumer, entry, ad, m, ae, s, t, u, 1.0F, as);
-			vertex(vertexConsumer, entry, ab, m, ac, s, t, u, 0.5F, as);
+			matrixStack.translate(0.0F, guardianEntityRenderState.standingEyeHeight, 0.0F);
+			renderBeam(
+				matrixStack,
+				vertexConsumerProvider.getBuffer(LAYER),
+				vec3d.subtract(guardianEntityRenderState.cameraPosVec),
+				guardianEntityRenderState.beamTicks,
+				guardianEntityRenderState.baseScale,
+				f
+			);
 			matrixStack.pop();
 		}
+	}
+
+	private static void renderBeam(MatrixStack matrices, VertexConsumer vertexConsumer, Vec3d vec3d, float beamTicks, float f, float g) {
+		float h = (float)(vec3d.length() + 1.0);
+		vec3d = vec3d.normalize();
+		float i = (float)Math.acos(vec3d.y);
+		float j = (float) (Math.PI / 2) - (float)Math.atan2(vec3d.z, vec3d.x);
+		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(j * (180.0F / (float)Math.PI)));
+		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(i * (180.0F / (float)Math.PI)));
+		float k = beamTicks * 0.05F * -1.5F;
+		float l = f * f;
+		int m = 64 + (int)(l * 191.0F);
+		int n = 32 + (int)(l * 191.0F);
+		int o = 128 - (int)(l * 64.0F);
+		float p = 0.2F;
+		float q = 0.282F;
+		float r = MathHelper.cos(k + (float) (Math.PI * 3.0 / 4.0)) * 0.282F;
+		float s = MathHelper.sin(k + (float) (Math.PI * 3.0 / 4.0)) * 0.282F;
+		float t = MathHelper.cos(k + (float) (Math.PI / 4)) * 0.282F;
+		float u = MathHelper.sin(k + (float) (Math.PI / 4)) * 0.282F;
+		float v = MathHelper.cos(k + ((float) Math.PI * 5.0F / 4.0F)) * 0.282F;
+		float w = MathHelper.sin(k + ((float) Math.PI * 5.0F / 4.0F)) * 0.282F;
+		float x = MathHelper.cos(k + ((float) Math.PI * 7.0F / 4.0F)) * 0.282F;
+		float y = MathHelper.sin(k + ((float) Math.PI * 7.0F / 4.0F)) * 0.282F;
+		float z = MathHelper.cos(k + (float) Math.PI) * 0.2F;
+		float aa = MathHelper.sin(k + (float) Math.PI) * 0.2F;
+		float ab = MathHelper.cos(k + 0.0F) * 0.2F;
+		float ac = MathHelper.sin(k + 0.0F) * 0.2F;
+		float ad = MathHelper.cos(k + (float) (Math.PI / 2)) * 0.2F;
+		float ae = MathHelper.sin(k + (float) (Math.PI / 2)) * 0.2F;
+		float af = MathHelper.cos(k + (float) (Math.PI * 3.0 / 2.0)) * 0.2F;
+		float ag = MathHelper.sin(k + (float) (Math.PI * 3.0 / 2.0)) * 0.2F;
+		float ai = 0.0F;
+		float aj = 0.4999F;
+		float ak = -1.0F + g;
+		float al = ak + h * 2.5F;
+		MatrixStack.Entry entry = matrices.peek();
+		vertex(vertexConsumer, entry, z, h, aa, m, n, o, 0.4999F, al);
+		vertex(vertexConsumer, entry, z, 0.0F, aa, m, n, o, 0.4999F, ak);
+		vertex(vertexConsumer, entry, ab, 0.0F, ac, m, n, o, 0.0F, ak);
+		vertex(vertexConsumer, entry, ab, h, ac, m, n, o, 0.0F, al);
+		vertex(vertexConsumer, entry, ad, h, ae, m, n, o, 0.4999F, al);
+		vertex(vertexConsumer, entry, ad, 0.0F, ae, m, n, o, 0.4999F, ak);
+		vertex(vertexConsumer, entry, af, 0.0F, ag, m, n, o, 0.0F, ak);
+		vertex(vertexConsumer, entry, af, h, ag, m, n, o, 0.0F, al);
+		float am = MathHelper.floor(beamTicks) % 2 == 0 ? 0.5F : 0.0F;
+		vertex(vertexConsumer, entry, r, h, s, m, n, o, 0.5F, am + 0.5F);
+		vertex(vertexConsumer, entry, t, h, u, m, n, o, 1.0F, am + 0.5F);
+		vertex(vertexConsumer, entry, x, h, y, m, n, o, 1.0F, am);
+		vertex(vertexConsumer, entry, v, h, w, m, n, o, 0.5F, am);
 	}
 
 	private static void vertex(VertexConsumer vertexConsumer, MatrixStack.Entry matrix, float x, float y, float z, int red, int green, int blue, float u, float v) {
@@ -137,7 +140,41 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			.normal(matrix, 0.0F, 1.0F, 0.0F);
 	}
 
-	public Identifier getTexture(GuardianEntity guardianEntity) {
+	public Identifier getTexture(GuardianEntityRenderState guardianEntityRenderState) {
 		return TEXTURE;
+	}
+
+	public GuardianEntityRenderState getRenderState() {
+		return new GuardianEntityRenderState();
+	}
+
+	public void updateRenderState(GuardianEntity guardianEntity, GuardianEntityRenderState guardianEntityRenderState, float f) {
+		super.updateRenderState(guardianEntity, guardianEntityRenderState, f);
+		guardianEntityRenderState.spikesExtension = guardianEntity.getSpikesExtension(f);
+		guardianEntityRenderState.tailAngle = guardianEntity.getTailAngle(f);
+		guardianEntityRenderState.cameraPosVec = guardianEntity.getCameraPosVec(f);
+		Entity entity = getBeamTarget(guardianEntity);
+		if (entity != null) {
+			guardianEntityRenderState.rotationVec = guardianEntity.getRotationVec(f);
+			guardianEntityRenderState.lookAtPos = entity.getCameraPosVec(f);
+		} else {
+			guardianEntityRenderState.rotationVec = null;
+			guardianEntityRenderState.lookAtPos = null;
+		}
+
+		LivingEntity livingEntity = guardianEntity.getBeamTarget();
+		if (livingEntity != null) {
+			guardianEntityRenderState.beamProgress = guardianEntity.getBeamProgress(f);
+			guardianEntityRenderState.beamTicks = guardianEntity.getBeamTicks() + f;
+			guardianEntityRenderState.beamTargetPos = this.fromLerpedPosition(livingEntity, (double)livingEntity.getHeight() * 0.5, f);
+		} else {
+			guardianEntityRenderState.beamTargetPos = null;
+		}
+	}
+
+	@Nullable
+	private static Entity getBeamTarget(GuardianEntity guardian) {
+		Entity entity = MinecraftClient.getInstance().getCameraEntity();
+		return (Entity)(guardian.hasBeamTarget() ? guardian.getBeamTarget() : entity);
 	}
 }

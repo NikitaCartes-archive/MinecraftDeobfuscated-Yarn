@@ -95,7 +95,7 @@ public class SwampHutGenerator extends ShiftableStructurePiece {
 				BlockPos blockPos = this.offsetPos(2, 2, 5);
 				if (chunkBox.contains(blockPos)) {
 					this.hasWitch = true;
-					WitchEntity witchEntity = EntityType.WITCH.create(world.toServerWorld());
+					WitchEntity witchEntity = EntityType.WITCH.create(world.toServerWorld(), SpawnReason.STRUCTURE);
 					if (witchEntity != null) {
 						witchEntity.setPersistent();
 						witchEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
@@ -114,7 +114,7 @@ public class SwampHutGenerator extends ShiftableStructurePiece {
 			BlockPos blockPos = this.offsetPos(2, 2, 5);
 			if (box.contains(blockPos)) {
 				this.hasCat = true;
-				CatEntity catEntity = EntityType.CAT.create(world.toServerWorld());
+				CatEntity catEntity = EntityType.CAT.create(world.toServerWorld(), SpawnReason.STRUCTURE);
 				if (catEntity != null) {
 					catEntity.setPersistent();
 					catEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);

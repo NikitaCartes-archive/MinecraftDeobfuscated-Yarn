@@ -266,10 +266,10 @@ public class EntitySelectorOptions {
 			putOption("type", reader -> {
 				reader.setSuggestionProvider((builder, consumer) -> {
 					CommandSource.suggestIdentifiers(Registries.ENTITY_TYPE.getIds(), builder, String.valueOf('!'));
-					CommandSource.suggestIdentifiers(Registries.ENTITY_TYPE.streamTags().map(TagKey::id), builder, "!#");
+					CommandSource.suggestIdentifiers(Registries.ENTITY_TYPE.streamTags().map(tag -> tag.getTag().id()), builder, "!#");
 					if (!reader.excludesEntityType()) {
 						CommandSource.suggestIdentifiers(Registries.ENTITY_TYPE.getIds(), builder);
-						CommandSource.suggestIdentifiers(Registries.ENTITY_TYPE.streamTags().map(TagKey::id), builder, String.valueOf('#'));
+						CommandSource.suggestIdentifiers(Registries.ENTITY_TYPE.streamTags().map(tag -> tag.getTag().id()), builder, String.valueOf('#'));
 					}
 
 					return builder.buildFuture();

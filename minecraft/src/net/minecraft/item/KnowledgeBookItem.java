@@ -9,9 +9,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 
@@ -23,12 +23,12 @@ public class KnowledgeBookItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		List<Identifier> list = itemStack.getOrDefault(DataComponentTypes.RECIPES, List.of());
 		itemStack.decrementUnlessCreative(1, user);
 		if (list.isEmpty()) {
-			return TypedActionResult.fail(itemStack);
+			return ActionResult.FAIL;
 		} else {
 			if (!world.isClient) {
 				RecipeManager recipeManager = world.getServer().getRecipeManager();
@@ -38,7 +38,7 @@ public class KnowledgeBookItem extends Item {
 					Optional<RecipeEntry<?>> optional = recipeManager.get(identifier);
 					if (!optional.isPresent()) {
 						LOGGER.error("Invalid recipe: {}", identifier);
-						return TypedActionResult.fail(itemStack);
+						return ActionResult.FAIL;
 					}
 
 					list2.add((RecipeEntry)optional.get());
@@ -48,7 +48,7 @@ public class KnowledgeBookItem extends Item {
 				user.incrementStat(Stats.USED.getOrCreateStat(this));
 			}
 
-			return TypedActionResult.success(itemStack, world.isClient());
+			return ActionResult.SUCCESS;
 		}
 	}
 }

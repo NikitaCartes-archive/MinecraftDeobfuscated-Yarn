@@ -24,6 +24,7 @@ import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.FuelRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.packet.Packet;
@@ -63,6 +64,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.block.ChainRestrictedNeighborUpdater;
 import net.minecraft.world.block.NeighborUpdater;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
 import net.minecraft.world.chunk.Chunk;
@@ -339,33 +341,36 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public void scheduleBlockRerenderIfNeeded(BlockPos pos, BlockState old, BlockState updated) {
 	}
 
+	public void updateNeighborsAlways(BlockPos pos, Block block) {
+	}
+
 	/**
 	 * Emits a neighbor update to all 6 neighboring blocks of {@code pos}.
 	 * 
-	 * @see #updateNeighborsExcept(BlockPos, Block, Direction)
+	 * @see #updateNeighborsExcept(BlockPos, Block, Direction, WireOrientation)
 	 */
-	public void updateNeighborsAlways(BlockPos pos, Block sourceBlock) {
+	public void updateNeighborsAlways(BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation) {
 	}
 
 	/**
 	 * Emits a neighbor update to neighboring blocks of {@code pos}, except
 	 * for the one in {@code direction} direction.
 	 * 
-	 * @see #updateNeighborsAlways(BlockPos, Block)
+	 * @see #updateNeighborsAlways(BlockPos, Block, WireOrientation)
 	 */
-	public void updateNeighborsExcept(BlockPos pos, Block sourceBlock, Direction direction) {
+	public void updateNeighborsExcept(BlockPos pos, Block sourceBlock, Direction direction, @Nullable WireOrientation orientation) {
 	}
 
 	/**
 	 * Triggers a neighbor update originating from {@code sourcePos} at
 	 * {@code pos}.
 	 * 
-	 * @see #updateNeighborsAlways(BlockPos, Block)
+	 * @see #updateNeighborsAlways(BlockPos, Block, WireOrientation)
 	 */
-	public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos sourcePos) {
+	public void updateNeighbor(BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation) {
 	}
 
-	public void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	public void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation, boolean notify) {
 	}
 
 	@Override
@@ -573,8 +578,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 * 
 	 * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, World.ExplosionSourceType)
 	 */
-	public Explosion createExplosion(@Nullable Entity entity, double x, double y, double z, float power, World.ExplosionSourceType explosionSourceType) {
-		return this.createExplosion(
+	public void createExplosion(@Nullable Entity entity, double x, double y, double z, float power, World.ExplosionSourceType explosionSourceType) {
+		this.createExplosion(
 			entity,
 			Explosion.createDamageSource(this, entity),
 			null,
@@ -595,10 +600,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 * 
 	 * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, World.ExplosionSourceType)
 	 */
-	public Explosion createExplosion(
+	public void createExplosion(
 		@Nullable Entity entity, double x, double y, double z, float power, boolean createFire, World.ExplosionSourceType explosionSourceType
 	) {
-		return this.createExplosion(
+		this.createExplosion(
 			entity,
 			Explosion.createDamageSource(this, entity),
 			null,
@@ -619,7 +624,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 * 
 	 * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, World.ExplosionSourceType)
 	 */
-	public Explosion createExplosion(
+	public void createExplosion(
 		@Nullable Entity entity,
 		@Nullable DamageSource damageSource,
 		@Nullable ExplosionBehavior behavior,
@@ -628,7 +633,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		boolean createFire,
 		World.ExplosionSourceType explosionSourceType
 	) {
-		return this.createExplosion(
+		this.createExplosion(
 			entity,
 			damageSource,
 			behavior,
@@ -644,7 +649,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		);
 	}
 
-	public Explosion createExplosion(
+	public void createExplosion(
 		@Nullable Entity entity,
 		@Nullable DamageSource damageSource,
 		@Nullable ExplosionBehavior behavior,
@@ -655,7 +660,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		boolean createFire,
 		World.ExplosionSourceType explosionSourceType
 	) {
-		return this.createExplosion(
+		this.createExplosion(
 			entity,
 			damageSource,
 			behavior,
@@ -675,12 +680,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 * Creates an explosion.
 	 * 
 	 * @param createFire whether the explosion should create fire
-	 * @param entity the entity that exploded (like TNT) or {@code null} to indicate no entity exploded
+	 * @param behavior the explosion behavior, or {@code null} to use the default
 	 * @param damageSource the custom damage source, or {@code null} to use the default
 	 * ({@link net.minecraft.entity.damage.DamageSources#explosion(Explosion)})
-	 * @param behavior the explosion behavior, or {@code null} to use the default
+	 * @param entity the entity that exploded (like TNT) or {@code null} to indicate no entity exploded
 	 */
-	public Explosion createExplosion(
+	public abstract void createExplosion(
 		@Nullable Entity entity,
 		@Nullable DamageSource damageSource,
 		@Nullable ExplosionBehavior behavior,
@@ -690,46 +695,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		float power,
 		boolean createFire,
 		World.ExplosionSourceType explosionSourceType,
-		ParticleEffect particle,
-		ParticleEffect emitterParticle,
+		ParticleEffect smallParticle,
+		ParticleEffect largeParticle,
 		RegistryEntry<SoundEvent> soundEvent
-	) {
-		return this.createExplosion(entity, damageSource, behavior, x, y, z, power, createFire, explosionSourceType, true, particle, emitterParticle, soundEvent);
-	}
-
-	public Explosion createExplosion(
-		@Nullable Entity entity,
-		@Nullable DamageSource damageSource,
-		@Nullable ExplosionBehavior behavior,
-		double x,
-		double y,
-		double z,
-		float power,
-		boolean createFire,
-		World.ExplosionSourceType explosionSourceType,
-		boolean particles,
-		ParticleEffect particle,
-		ParticleEffect emitterParticle,
-		RegistryEntry<SoundEvent> soundEvent
-	) {
-		Explosion.DestructionType destructionType = switch (explosionSourceType) {
-			case NONE -> Explosion.DestructionType.KEEP;
-			case BLOCK -> this.getDestructionType(GameRules.BLOCK_EXPLOSION_DROP_DECAY);
-			case MOB -> this.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
-			? this.getDestructionType(GameRules.MOB_EXPLOSION_DROP_DECAY)
-			: Explosion.DestructionType.KEEP;
-			case TNT -> this.getDestructionType(GameRules.TNT_EXPLOSION_DROP_DECAY);
-			case TRIGGER -> Explosion.DestructionType.TRIGGER_BLOCK;
-		};
-		Explosion explosion = new Explosion(this, entity, damageSource, behavior, x, y, z, power, createFire, destructionType, particle, emitterParticle, soundEvent);
-		explosion.collectBlocksAndDamageEntities();
-		explosion.affectWorld(particles);
-		return explosion;
-	}
-
-	private Explosion.DestructionType getDestructionType(GameRules.Key<GameRules.BooleanRule> gameRuleKey) {
-		return this.getGameRules().getBoolean(gameRuleKey) ? Explosion.DestructionType.DESTROY_WITH_DECAY : Explosion.DestructionType.DESTROY;
-	}
+	);
 
 	public abstract String asString();
 
@@ -756,7 +725,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		}
 	}
 
-	public boolean canSetBlock(BlockPos pos) {
+	public boolean isPosLoaded(BlockPos pos) {
 		return this.isOutOfHeightLimit(pos)
 			? false
 			: this.getChunkManager().isChunkLoaded(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
@@ -785,8 +754,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	/**
 	 * Sets whether monsters or animals can spawn.
 	 */
-	public void setMobSpawnOptions(boolean spawnMonsters, boolean spawnAnimals) {
-		this.getChunkManager().setMobSpawnOptions(spawnMonsters, spawnAnimals);
+	public void setMobSpawnOptions(boolean spawnMonsters) {
+		this.getChunkManager().setMobSpawnOptions(spawnMonsters);
 	}
 
 	public BlockPos getSpawnPos() {
@@ -901,11 +870,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		if (this.isChunkLoaded(pos)) {
 			this.getWorldChunk(pos).setNeedsSaving(true);
 		}
-	}
-
-	@Override
-	public int getSeaLevel() {
-		return 63;
 	}
 
 	public void disconnect() {
@@ -1026,7 +990,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			return false;
 		} else {
 			Biome biome = this.getBiome(pos).value();
-			return biome.getPrecipitation(pos) == Biome.Precipitation.RAIN;
+			return biome.getPrecipitation(pos, this.getSeaLevel()) == Biome.Precipitation.RAIN;
 		}
 	}
 
@@ -1070,12 +1034,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			if (this.isChunkLoaded(blockPos)) {
 				BlockState blockState = this.getBlockState(blockPos);
 				if (blockState.isOf(Blocks.COMPARATOR)) {
-					this.updateNeighbor(blockState, blockPos, block, pos, false);
+					this.updateNeighbor(blockState, blockPos, block, null, false);
 				} else if (blockState.isSolidBlock(this, blockPos)) {
 					blockPos = blockPos.offset(direction);
 					blockState = this.getBlockState(blockPos);
 					if (blockState.isOf(Blocks.COMPARATOR)) {
-						this.updateNeighbor(blockState, blockPos, block, pos, false);
+						this.updateNeighbor(blockState, blockPos, block, null, false);
 					}
 				}
 			}
@@ -1195,6 +1159,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	public abstract BrewingRecipeRegistry getBrewingRecipeRegistry();
 
+	public abstract FuelRegistry getFuelRegistry();
+
 	public static enum ExplosionSourceType implements StringIdentifiable {
 		NONE("none"),
 		BLOCK("block"),
@@ -1205,7 +1171,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		public static final Codec<World.ExplosionSourceType> CODEC = StringIdentifiable.createCodec(World.ExplosionSourceType::values);
 		private final String id;
 
-		private ExplosionSourceType(String id) {
+		private ExplosionSourceType(final String id) {
 			this.id = id;
 		}
 

@@ -45,16 +45,7 @@ public class MerchantScreenHandler extends ScreenHandler {
 		this.addSlot(new Slot(this.merchantInventory, 0, 136, 37));
 		this.addSlot(new Slot(this.merchantInventory, 1, 162, 37));
 		this.addSlot(new TradeOutputSlot(playerInventory.player, merchant, this.merchantInventory, 2, 220, 37));
-
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 9; j++) {
-				this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 108 + j * 18, 84 + i * 18));
-			}
-		}
-
-		for (int i = 0; i < 9; i++) {
-			this.addSlot(new Slot(playerInventory, i, 108 + i * 18, 142));
-		}
+		this.addPlayerSlots(playerInventory, 108, 84);
 	}
 
 	public void setLeveled(boolean leveled) {

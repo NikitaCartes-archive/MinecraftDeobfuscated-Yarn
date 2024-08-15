@@ -12,8 +12,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -27,7 +27,7 @@ public class GlassBottleItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		List<AreaEffectCloudEntity> list = world.getEntitiesByClass(
 			AreaEffectCloudEntity.class,
 			user.getBoundingBox().expand(2.0),
@@ -43,26 +43,26 @@ public class GlassBottleItem extends Item {
 				Criteria.PLAYER_INTERACTED_WITH_ENTITY.trigger(serverPlayerEntity, itemStack, areaEffectCloudEntity);
 			}
 
-			return TypedActionResult.success(this.fill(itemStack, user, new ItemStack(Items.DRAGON_BREATH)), world.isClient());
+			return ActionResult.SUCCESS.withNewHandStack(this.fill(itemStack, user, new ItemStack(Items.DRAGON_BREATH)));
 		} else {
 			BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
 			if (blockHitResult.getType() == HitResult.Type.MISS) {
-				return TypedActionResult.pass(itemStack);
+				return ActionResult.PASS;
 			} else {
 				if (blockHitResult.getType() == HitResult.Type.BLOCK) {
 					BlockPos blockPos = blockHitResult.getBlockPos();
 					if (!world.canPlayerModifyAt(user, blockPos)) {
-						return TypedActionResult.pass(itemStack);
+						return ActionResult.PASS;
 					}
 
 					if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
 						world.playSound(user, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 						world.emitGameEvent(user, GameEvent.FLUID_PICKUP, blockPos);
-						return TypedActionResult.success(this.fill(itemStack, user, PotionContentsComponent.createStack(Items.POTION, Potions.WATER)), world.isClient());
+						return ActionResult.SUCCESS.withNewHandStack(this.fill(itemStack, user, PotionContentsComponent.createStack(Items.POTION, Potions.WATER)));
 					}
 				}
 
-				return TypedActionResult.pass(itemStack);
+				return ActionResult.PASS;
 			}
 		}
 	}

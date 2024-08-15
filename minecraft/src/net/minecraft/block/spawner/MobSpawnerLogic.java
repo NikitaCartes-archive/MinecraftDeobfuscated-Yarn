@@ -116,7 +116,7 @@ public abstract class MobSpawnerLogic {
 							continue;
 						}
 
-						Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, world, entityx -> {
+						Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, world, SpawnReason.SPAWNER, entityx -> {
 							entityx.refreshPositionAndAngles(d, e, f, entityx.getYaw(), entityx.getPitch());
 							return entityx;
 						});
@@ -252,7 +252,7 @@ public abstract class MobSpawnerLogic {
 				return null;
 			}
 
-			this.renderedEntity = EntityType.loadEntityWithPassengers(nbtCompound, world, Function.identity());
+			this.renderedEntity = EntityType.loadEntityWithPassengers(nbtCompound, world, SpawnReason.SPAWNER, Function.identity());
 			if (nbtCompound.getSize() == 1 && this.renderedEntity instanceof MobEntity) {
 			}
 		}

@@ -42,8 +42,8 @@ public class HoeItem extends MiningToolItem {
 		)
 	);
 
-	public HoeItem(ToolMaterial toolMaterial, Item.Settings settings) {
-		super(toolMaterial, BlockTags.HOE_MINEABLE, settings);
+	public HoeItem(ToolMaterial material, float attackDamage, float attackSpeed, Item.Settings settings) {
+		super(material, BlockTags.HOE_MINEABLE, attackDamage, attackSpeed, settings);
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class HoeItem extends MiningToolItem {
 					}
 				}
 
-				return ActionResult.success(world.isClient);
+				return ActionResult.SUCCESS;
 			} else {
 				return ActionResult.PASS;
 			}

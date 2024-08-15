@@ -14,6 +14,8 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.block.OrientationHelper;
+import net.minecraft.world.block.WireOrientation;
 
 public class ObserverBlock extends FacingBlock {
 	public static final MapCodec<ObserverBlock> CODEC = createCodec(ObserverBlock::new);
@@ -76,8 +78,9 @@ public class ObserverBlock extends FacingBlock {
 	protected void updateNeighbors(World world, BlockPos pos, BlockState state) {
 		Direction direction = state.get(FACING);
 		BlockPos blockPos = pos.offset(direction.getOpposite());
-		world.updateNeighbor(blockPos, this, pos);
-		world.updateNeighborsExcept(blockPos, this, direction);
+		WireOrientation wireOrientation = OrientationHelper.getEmissionOrientation(world, direction.getOpposite(), null);
+		world.updateNeighbor(blockPos, this, wireOrientation);
+		world.updateNeighborsExcept(blockPos, this, direction, wireOrientation);
 	}
 
 	@Override

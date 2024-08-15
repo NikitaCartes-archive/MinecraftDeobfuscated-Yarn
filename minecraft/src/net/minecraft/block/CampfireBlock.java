@@ -30,10 +30,10 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -89,21 +89,21 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.getBlockEntity(pos) instanceof CampfireBlockEntity campfireBlockEntity) {
 			ItemStack itemStack = player.getStackInHand(hand);
 			Optional<RecipeEntry<CampfireCookingRecipe>> optional = campfireBlockEntity.getRecipeFor(itemStack);
 			if (optional.isPresent()) {
 				if (!world.isClient && campfireBlockEntity.addItem(player, itemStack, ((CampfireCookingRecipe)((RecipeEntry)optional.get()).value()).getCookingTime())) {
 					player.incrementStat(Stats.INTERACT_WITH_CAMPFIRE);
-					return ItemActionResult.SUCCESS;
+					return ActionResult.SUCCESS_SERVER;
 				}
 
-				return ItemActionResult.CONSUME;
+				return ActionResult.CONSUME;
 			}
 		}
 
-		return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 	}
 
 	@Override

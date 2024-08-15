@@ -132,6 +132,8 @@ public class Models {
 	public static final Model TEMPLATE_HANGING_LANTERN = block("template_hanging_lantern", "_hanging", TextureKey.LANTERN);
 	public static final Model TEMPLATE_TORCH = block("template_torch", TextureKey.TORCH);
 	public static final Model TEMPLATE_TORCH_WALL = block("template_torch_wall", TextureKey.TORCH);
+	public static final Model TEMPLATE_REDSTONE_TORCH = block("template_redstone_torch", TextureKey.TORCH);
+	public static final Model TEMPLATE_REDSTONE_TORCH_WALL = block("template_redstone_torch_wall", TextureKey.TORCH);
 	public static final Model TEMPLATE_PISTON = block("template_piston", TextureKey.PLATFORM, TextureKey.BOTTOM, TextureKey.SIDE);
 	public static final Model TEMPLATE_PISTON_HEAD = block("template_piston_head", TextureKey.PLATFORM, TextureKey.SIDE, TextureKey.UNSTICKY);
 	public static final Model TEMPLATE_PISTON_HEAD_SHORT = block("template_piston_head_short", TextureKey.PLATFORM, TextureKey.SIDE, TextureKey.UNSTICKY);

@@ -21,6 +21,7 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryInfo;
+import net.minecraft.registry.tag.TagGroupLoader;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.ErrorReporter;
@@ -33,14 +34,20 @@ public class ReloadableRegistries {
 	private static final Gson GSON = new GsonBuilder().create();
 	private static final RegistryEntryInfo DEFAULT_REGISTRY_ENTRY_INFO = new RegistryEntryInfo(Optional.empty(), Lifecycle.experimental());
 
-	public static CompletableFuture<CombinedDynamicRegistries<ServerDynamicRegistryType>> reload(
-		CombinedDynamicRegistries<ServerDynamicRegistryType> dynamicRegistries, ResourceManager resourceManager, Executor prepareExecutor
+	public static CompletableFuture<ReloadableRegistries.ReloadResult> reload(
+		CombinedDynamicRegistries<ServerDynamicRegistryType> dynamicRegistries,
+		List<Registry.PendingTagLoad<?>> pendingTagLoads,
+		ResourceManager resourceManager,
+		Executor prepareExecutor
 	) {
-		DynamicRegistryManager.Immutable immutable = dynamicRegistries.getPrecedingRegistryManagers(ServerDynamicRegistryType.RELOADABLE);
-		RegistryOps<JsonElement> registryOps = new ReloadableRegistries.ReloadableWrapperLookup(immutable).getOps(JsonOps.INSTANCE);
-		List<CompletableFuture<MutableRegistry<?>>> list = LootDataType.stream().map(type -> prepare(type, registryOps, resourceManager, prepareExecutor)).toList();
-		CompletableFuture<List<MutableRegistry<?>>> completableFuture = Util.combineSafe(list);
-		return completableFuture.thenApplyAsync(registries -> apply(dynamicRegistries, registries), prepareExecutor);
+		List<RegistryWrapper.Impl<?>> list = TagGroupLoader.collectRegistries(
+			dynamicRegistries.getPrecedingRegistryManagers(ServerDynamicRegistryType.RELOADABLE), pendingTagLoads
+		);
+		RegistryWrapper.WrapperLookup wrapperLookup = RegistryWrapper.WrapperLookup.of(list.stream());
+		RegistryOps<JsonElement> registryOps = wrapperLookup.getOps(JsonOps.INSTANCE);
+		List<CompletableFuture<MutableRegistry<?>>> list2 = LootDataType.stream().map(type -> prepare(type, registryOps, resourceManager, prepareExecutor)).toList();
+		CompletableFuture<List<MutableRegistry<?>>> completableFuture = Util.combineSafe(list2);
+		return completableFuture.thenApplyAsync(registries -> toResult(dynamicRegistries, wrapperLookup, registries), prepareExecutor);
 	}
 
 	private static <T> CompletableFuture<MutableRegistry<?>> prepare(
@@ -56,22 +63,31 @@ public class ReloadableRegistries {
 					(id, json) -> type.parse(id, ops, json)
 							.ifPresent(value -> mutableRegistry.add(RegistryKey.of(type.registryKey(), id), (T)value, DEFAULT_REGISTRY_ENTRY_INFO))
 				);
+				TagGroupLoader.loadInitial(resourceManager, mutableRegistry);
 				return mutableRegistry;
 			},
 			prepareExecutor
 		);
 	}
 
-	private static CombinedDynamicRegistries<ServerDynamicRegistryType> apply(
-		CombinedDynamicRegistries<ServerDynamicRegistryType> dynamicRegistries, List<MutableRegistry<?>> registries
+	private static ReloadableRegistries.ReloadResult toResult(
+		CombinedDynamicRegistries<ServerDynamicRegistryType> dynamicRegistries, RegistryWrapper.WrapperLookup nonReloadables, List<MutableRegistry<?>> registries
 	) {
 		CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries = with(dynamicRegistries, registries);
+		RegistryWrapper.WrapperLookup wrapperLookup = concat(nonReloadables, combinedDynamicRegistries.get(ServerDynamicRegistryType.RELOADABLE));
+		validate(wrapperLookup);
+		return new ReloadableRegistries.ReloadResult(combinedDynamicRegistries, wrapperLookup);
+	}
+
+	private static RegistryWrapper.WrapperLookup concat(RegistryWrapper.WrapperLookup first, RegistryWrapper.WrapperLookup second) {
+		return RegistryWrapper.WrapperLookup.of(Stream.concat(first.stream(), second.stream()));
+	}
+
+	private static void validate(RegistryWrapper.WrapperLookup registries) {
 		ErrorReporter.Impl impl = new ErrorReporter.Impl();
-		DynamicRegistryManager.Immutable immutable = combinedDynamicRegistries.getCombinedRegistryManager();
-		LootTableReporter lootTableReporter = new LootTableReporter(impl, LootContextTypes.GENERIC, immutable.createRegistryLookup());
-		LootDataType.stream().forEach(lootDataType -> validateLootData(lootTableReporter, lootDataType, immutable));
-		impl.getErrors().forEach((path, message) -> LOGGER.warn("Found loot table element validation problem in {}: {}", path, message));
-		return combinedDynamicRegistries;
+		LootTableReporter lootTableReporter = new LootTableReporter(impl, LootContextTypes.GENERIC, registries.createRegistryLookup());
+		LootDataType.stream().forEach(type -> validateLootData(lootTableReporter, type, registries));
+		impl.getErrors().forEach((id, error) -> LOGGER.warn("Found loot table element validation problem in {}: {}", id, error));
 	}
 
 	private static CombinedDynamicRegistries<ServerDynamicRegistryType> with(
@@ -82,36 +98,28 @@ public class ReloadableRegistries {
 		return dynamicRegistries.with(ServerDynamicRegistryType.RELOADABLE, dynamicRegistryManager.toImmutable());
 	}
 
-	private static <T> void validateLootData(LootTableReporter reporter, LootDataType<T> lootDataType, DynamicRegistryManager registryManager) {
-		Registry<T> registry = registryManager.get(lootDataType.registryKey());
-		registry.streamEntries().forEach(entry -> lootDataType.validate(reporter, entry.registryKey(), (T)entry.value()));
+	private static <T> void validateLootData(LootTableReporter reporter, LootDataType<T> lootDataType, RegistryWrapper.WrapperLookup registries) {
+		RegistryWrapper<T> registryWrapper = registries.getWrapperOrThrow(lootDataType.registryKey());
+		registryWrapper.streamEntries().forEach(entry -> lootDataType.validate(reporter, entry.registryKey(), (T)entry.value()));
 	}
 
 	public static class Lookup {
-		private final DynamicRegistryManager.Immutable registryManager;
+		private final RegistryWrapper.WrapperLookup registriesLookup;
 
-		public Lookup(DynamicRegistryManager.Immutable registryManager) {
-			this.registryManager = registryManager;
-		}
-
-		public DynamicRegistryManager.Immutable getRegistryManager() {
-			return this.registryManager;
+		public Lookup(RegistryWrapper.WrapperLookup registriesLookup) {
+			this.registriesLookup = registriesLookup;
 		}
 
 		public RegistryEntryLookup.RegistryLookup createRegistryLookup() {
-			return this.registryManager.createRegistryLookup();
+			return this.registriesLookup.createRegistryLookup();
 		}
 
 		public Collection<Identifier> getIds(RegistryKey<? extends Registry<?>> registryRef) {
-			return this.registryManager
-				.getOptional(registryRef)
-				.stream()
-				.flatMap(registry -> registry.streamEntries().map(entry -> entry.registryKey().getValue()))
-				.toList();
+			return this.registriesLookup.getWrapperOrThrow(registryRef).streamKeys().map(RegistryKey::getValue).toList();
 		}
 
 		public LootTable getLootTable(RegistryKey<LootTable> key) {
-			return (LootTable)this.registryManager
+			return (LootTable)this.registriesLookup
 				.getOptionalWrapper(RegistryKeys.LOOT_TABLE)
 				.flatMap(registryEntryLookup -> registryEntryLookup.getOptional(key))
 				.map(RegistryEntry::value)
@@ -119,21 +127,6 @@ public class ReloadableRegistries {
 		}
 	}
 
-	static class ReloadableWrapperLookup implements RegistryWrapper.WrapperLookup {
-		private final DynamicRegistryManager registryManager;
-
-		ReloadableWrapperLookup(DynamicRegistryManager registryManager) {
-			this.registryManager = registryManager;
-		}
-
-		@Override
-		public Stream<RegistryKey<? extends Registry<?>>> streamAllRegistryKeys() {
-			return this.registryManager.streamAllRegistryKeys();
-		}
-
-		@Override
-		public <T> Optional<RegistryWrapper.Impl<T>> getOptionalWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
-			return this.registryManager.getOptional(registryRef).map(Registry::getTagCreatingWrapper);
-		}
+	public static record ReloadResult(CombinedDynamicRegistries<ServerDynamicRegistryType> layers, RegistryWrapper.WrapperLookup lookupWithUpdatedTags) {
 	}
 }

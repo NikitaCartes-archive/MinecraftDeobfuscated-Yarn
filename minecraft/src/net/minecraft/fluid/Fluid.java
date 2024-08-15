@@ -53,7 +53,7 @@ public abstract class Fluid {
 	protected void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
 	}
 
-	protected void onScheduledTick(World world, BlockPos pos, FluidState state) {
+	protected void onScheduledTick(World world, BlockPos pos, BlockState blockState, FluidState fluidState) {
 	}
 
 	protected void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {

@@ -2,50 +2,45 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.DolphinEntityModel;
-import net.minecraft.client.render.item.HeldItemRenderer;
+import net.minecraft.client.render.entity.state.DolphinEntityRenderState;
+import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
-	private final HeldItemRenderer heldItemRenderer;
+public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntityRenderState, DolphinEntityModel> {
+	private final ItemRenderer itemRenderer;
 
-	public DolphinHeldItemFeatureRenderer(FeatureRendererContext<DolphinEntity, DolphinEntityModel<DolphinEntity>> context, HeldItemRenderer heldItemRenderer) {
+	public DolphinHeldItemFeatureRenderer(FeatureRendererContext<DolphinEntityRenderState, DolphinEntityModel> context, ItemRenderer itemRenderer) {
 		super(context);
-		this.heldItemRenderer = heldItemRenderer;
+		this.itemRenderer = itemRenderer;
 	}
 
 	public void render(
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		DolphinEntity dolphinEntity,
-		float f,
-		float g,
-		float h,
-		float j,
-		float k,
-		float l
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, DolphinEntityRenderState dolphinEntityRenderState, float f, float g
 	) {
-		boolean bl = dolphinEntity.getMainArm() == Arm.RIGHT;
-		matrixStack.push();
-		float m = 1.0F;
-		float n = -1.0F;
-		float o = MathHelper.abs(dolphinEntity.getPitch()) / 60.0F;
-		if (dolphinEntity.getPitch() < 0.0F) {
-			matrixStack.translate(0.0F, 1.0F - o * 0.5F, -1.0F + o * 0.5F);
-		} else {
-			matrixStack.translate(0.0F, 1.0F + o * 0.8F, -1.0F + o * 0.2F);
-		}
+		ItemStack itemStack = dolphinEntityRenderState.getMainHandStack();
+		BakedModel bakedModel = dolphinEntityRenderState.getMainHandItemModel();
+		if (bakedModel != null) {
+			matrixStack.push();
+			float h = 1.0F;
+			float j = -1.0F;
+			float k = MathHelper.abs(dolphinEntityRenderState.pitch) / 60.0F;
+			if (dolphinEntityRenderState.pitch < 0.0F) {
+				matrixStack.translate(0.0F, 1.0F - k * 0.5F, -1.0F + k * 0.5F);
+			} else {
+				matrixStack.translate(0.0F, 1.0F + k * 0.8F, -1.0F + k * 0.2F);
+			}
 
-		ItemStack itemStack = bl ? dolphinEntity.getMainHandStack() : dolphinEntity.getOffHandStack();
-		this.heldItemRenderer.renderItem(dolphinEntity, itemStack, ModelTransformationMode.GROUND, false, matrixStack, vertexConsumerProvider, i);
-		matrixStack.pop();
+			this.itemRenderer
+				.renderItem(itemStack, ModelTransformationMode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
+			matrixStack.pop();
+		}
 	}
 }

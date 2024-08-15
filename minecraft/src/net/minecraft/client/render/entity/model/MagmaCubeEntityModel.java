@@ -9,11 +9,10 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.mob.SlimeEntity;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.render.entity.state.SlimeEntityRenderState;
 
 @Environment(EnvType.CLIENT)
-public class MagmaCubeEntityModel<T extends SlimeEntity> extends SinglePartEntityModel<T> {
+public class MagmaCubeEntityModel extends EntityModel<SlimeEntityRenderState> {
 	private static final int SLICES_COUNT = 8;
 	private final ModelPart root;
 	private final ModelPart[] slices = new ModelPart[8];
@@ -49,17 +48,11 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends SinglePartEntit
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 
-	public void setAngles(T slimeEntity, float f, float g, float h, float i, float j) {
-	}
+	public void setAngles(SlimeEntityRenderState slimeEntityRenderState) {
+		float f = Math.max(0.0F, slimeEntityRenderState.stretch);
 
-	public void animateModel(T slimeEntity, float f, float g, float h) {
-		float i = MathHelper.lerp(h, slimeEntity.lastStretch, slimeEntity.stretch);
-		if (i < 0.0F) {
-			i = 0.0F;
-		}
-
-		for (int j = 0; j < this.slices.length; j++) {
-			this.slices[j].pivotY = (float)(-(4 - j)) * i * 1.7F;
+		for (int i = 0; i < this.slices.length; i++) {
+			this.slices[i].pivotY = (float)(-(4 - i)) * f * 1.7F;
 		}
 	}
 

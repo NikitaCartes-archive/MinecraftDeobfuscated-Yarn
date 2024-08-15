@@ -1,5 +1,6 @@
 package net.minecraft.client.render.entity.model;
 
+import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelData;
@@ -8,12 +9,14 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.passive.PolarBearEntity;
+import net.minecraft.client.render.entity.state.PolarBearEntityRenderState;
 
 @Environment(EnvType.CLIENT)
-public class PolarBearEntityModel<T extends PolarBearEntity> extends QuadrupedEntityModel<T> {
-	public PolarBearEntityModel(ModelPart root) {
-		super(root, true, 16.0F, 4.0F, 2.25F, 2.0F, 24);
+public class PolarBearEntityModel extends QuadrupedEntityModel<PolarBearEntityRenderState> {
+	public static final ModelTransformer BABY_TRANSFORMER = new BabyModelTransformer(true, 16.0F, 4.0F, 2.25F, 2.0F, 24.0F, Set.of("head"));
+
+	public PolarBearEntityModel(ModelPart modelPart) {
+		super(modelPart);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -45,31 +48,29 @@ public class PolarBearEntityModel<T extends PolarBearEntity> extends QuadrupedEn
 		ModelPartBuilder modelPartBuilder2 = ModelPartBuilder.create().uv(50, 40).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 10.0F, 6.0F);
 		modelPartData.addChild(EntityModelPartNames.RIGHT_FRONT_LEG, modelPartBuilder2, ModelTransform.pivot(-3.5F, 14.0F, -8.0F));
 		modelPartData.addChild(EntityModelPartNames.LEFT_FRONT_LEG, modelPartBuilder2, ModelTransform.pivot(3.5F, 14.0F, -8.0F));
-		return TexturedModelData.of(modelData, 128, 64);
+		return TexturedModelData.of(modelData, 128, 64).transform(ModelTransformer.scaling(1.2F));
 	}
 
-	public void setAngles(T polarBearEntity, float f, float g, float h, float i, float j) {
-		super.setAngles(polarBearEntity, f, g, h, i, j);
-		float k = h - (float)polarBearEntity.age;
-		float l = polarBearEntity.getWarningAnimationProgress(k);
-		l *= l;
-		float m = 1.0F - l;
-		this.body.pitch = (float) (Math.PI / 2) - l * (float) Math.PI * 0.35F;
-		this.body.pivotY = 9.0F * m + 11.0F * l;
-		this.rightFrontLeg.pivotY = 14.0F * m - 6.0F * l;
-		this.rightFrontLeg.pivotZ = -8.0F * m - 4.0F * l;
-		this.rightFrontLeg.pitch -= l * (float) Math.PI * 0.45F;
+	public void setAngles(PolarBearEntityRenderState polarBearEntityRenderState) {
+		super.setAngles(polarBearEntityRenderState);
+		float f = polarBearEntityRenderState.warningAnimationProgress * polarBearEntityRenderState.warningAnimationProgress;
+		float g = 1.0F - f;
+		this.body.pitch = (float) (Math.PI / 2) - f * (float) Math.PI * 0.35F;
+		this.body.pivotY = 9.0F * g + 11.0F * f;
+		this.rightFrontLeg.pivotY = 14.0F * g - 6.0F * f;
+		this.rightFrontLeg.pivotZ = -8.0F * g - 4.0F * f;
+		this.rightFrontLeg.pitch -= f * (float) Math.PI * 0.45F;
 		this.leftFrontLeg.pivotY = this.rightFrontLeg.pivotY;
 		this.leftFrontLeg.pivotZ = this.rightFrontLeg.pivotZ;
-		this.leftFrontLeg.pitch -= l * (float) Math.PI * 0.45F;
-		if (this.child) {
-			this.head.pivotY = 10.0F * m - 9.0F * l;
-			this.head.pivotZ = -16.0F * m - 7.0F * l;
+		this.leftFrontLeg.pitch -= f * (float) Math.PI * 0.45F;
+		if (polarBearEntityRenderState.baby) {
+			this.head.pivotY = 10.0F * g - 9.0F * f;
+			this.head.pivotZ = -16.0F * g - 7.0F * f;
 		} else {
-			this.head.pivotY = 10.0F * m - 14.0F * l;
-			this.head.pivotZ = -16.0F * m - 3.0F * l;
+			this.head.pivotY = 10.0F * g - 14.0F * f;
+			this.head.pivotZ = -16.0F * g - 3.0F * f;
 		}
 
-		this.head.pitch += l * (float) Math.PI * 0.15F;
+		this.head.pitch += f * (float) Math.PI * 0.15F;
 	}
 }

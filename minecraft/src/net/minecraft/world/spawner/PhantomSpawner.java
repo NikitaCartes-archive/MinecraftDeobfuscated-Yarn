@@ -56,7 +56,7 @@ public class PhantomSpawner implements SpecialSpawner {
 											int l = 1 + random.nextInt(localDifficulty.getGlobalDifficulty().getId() + 1);
 
 											for (int m = 0; m < l; m++) {
-												PhantomEntity phantomEntity = EntityType.PHANTOM.create(world);
+												PhantomEntity phantomEntity = EntityType.PHANTOM.create(world, SpawnReason.NATURAL);
 												if (phantomEntity != null) {
 													phantomEntity.refreshPositionAndAngles(blockPos2, 0.0F, 0.0F);
 													entityData = phantomEntity.initialize(world, localDifficulty, SpawnReason.NATURAL, entityData);

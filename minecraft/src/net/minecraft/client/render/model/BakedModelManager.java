@@ -8,6 +8,7 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
@@ -25,6 +27,7 @@ import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
+import net.minecraft.client.render.model.json.ModelVariantMap;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
@@ -33,8 +36,10 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
+import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
@@ -44,6 +49,8 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class BakedModelManager implements ResourceReloader, AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final ResourceFinder BLOCK_STATES_FINDER = ResourceFinder.json("blockstates");
+	private static final ResourceFinder MODELS_FINDER = ResourceFinder.json("models");
 	private static final Map<Identifier, Identifier> LAYERS_TO_LOADERS = Map.of(
 		TexturedRenderLayers.BANNER_PATTERNS_ATLAS_TEXTURE,
 		Identifier.ofVanilla("banner_patterns"),
@@ -101,21 +108,34 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 		Executor applyExecutor
 	) {
 		prepareProfiler.startTick();
-		CompletableFuture<Map<Identifier, JsonUnbakedModel>> completableFuture = reloadModels(manager, prepareExecutor);
-		CompletableFuture<Map<Identifier, List<BlockStatesLoader.SourceTrackedData>>> completableFuture2 = reloadBlockStates(manager, prepareExecutor);
-		CompletableFuture<ModelLoader> completableFuture3 = completableFuture.thenCombineAsync(
-			completableFuture2, (jsonUnbakedModels, blockStates) -> new ModelLoader(this.colorMap, prepareProfiler, jsonUnbakedModels, blockStates), prepareExecutor
+		UnbakedModel unbakedModel = MissingModel.create();
+		BlockStatesLoader blockStatesLoader = new BlockStatesLoader(unbakedModel);
+		CompletableFuture<Map<Identifier, UnbakedModel>> completableFuture = reloadModels(manager, prepareExecutor);
+		CompletableFuture<BlockStatesLoader.BlockStateDefinition> completableFuture2 = reloadBlockStates(blockStatesLoader, manager, prepareExecutor);
+		CompletableFuture<ReferencedModelsCollector> completableFuture3 = completableFuture2.thenCombineAsync(
+			completableFuture, (blockStateDefinition, mapx) -> this.method_62657(unbakedModel, mapx, blockStateDefinition), prepareExecutor
+		);
+		CompletableFuture<Object2IntMap<BlockState>> completableFuture4 = completableFuture2.thenApplyAsync(
+			blockStateDefinition -> group(this.colorMap, blockStateDefinition), prepareExecutor
 		);
 		Map<Identifier, CompletableFuture<SpriteAtlasManager.AtlasPreparation>> map = this.atlasManager.reload(manager, this.mipmapLevels, prepareExecutor);
-		return CompletableFuture.allOf((CompletableFuture[])Stream.concat(map.values().stream(), Stream.of(completableFuture3)).toArray(CompletableFuture[]::new))
+		return CompletableFuture.allOf(
+				(CompletableFuture[])Stream.concat(map.values().stream(), Stream.of(completableFuture3, completableFuture4)).toArray(CompletableFuture[]::new)
+			)
 			.thenApplyAsync(
-				void1 -> this.bake(
+				void_ -> {
+					Map<Identifier, SpriteAtlasManager.AtlasPreparation> map2 = (Map<Identifier, SpriteAtlasManager.AtlasPreparation>)map.entrySet()
+						.stream()
+						.collect(Collectors.toMap(Entry::getKey, entry -> (SpriteAtlasManager.AtlasPreparation)((CompletableFuture)entry.getValue()).join()));
+					ReferencedModelsCollector referencedModelsCollector = (ReferencedModelsCollector)completableFuture3.join();
+					Object2IntMap<BlockState> object2IntMap = (Object2IntMap<BlockState>)completableFuture4.join();
+					return this.bake(
 						prepareProfiler,
-						(Map<Identifier, SpriteAtlasManager.AtlasPreparation>)map.entrySet()
-							.stream()
-							.collect(Collectors.toMap(Entry::getKey, entry -> (SpriteAtlasManager.AtlasPreparation)((CompletableFuture)entry.getValue()).join())),
-						(ModelLoader)completableFuture3.join()
-					),
+						map2,
+						new ModelBaker(referencedModelsCollector.getTopLevelModels(), referencedModelsCollector.getResolvedModels(), unbakedModel),
+						object2IntMap
+					);
+				},
 				prepareExecutor
 			)
 			.thenCompose(result -> result.readyForUpload.thenApply(void_ -> result))
@@ -123,39 +143,43 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 			.thenAcceptAsync(result -> this.upload(result, applyProfiler), applyExecutor);
 	}
 
-	private static CompletableFuture<Map<Identifier, JsonUnbakedModel>> reloadModels(ResourceManager resourceManager, Executor executor) {
-		return CompletableFuture.supplyAsync(() -> ModelLoader.MODELS_FINDER.findResources(resourceManager), executor)
+	private static CompletableFuture<Map<Identifier, UnbakedModel>> reloadModels(ResourceManager resourceManager, Executor executor) {
+		return CompletableFuture.supplyAsync(() -> MODELS_FINDER.findResources(resourceManager), executor)
 			.thenCompose(
 				models -> {
 					List<CompletableFuture<Pair<Identifier, JsonUnbakedModel>>> list = new ArrayList(models.size());
 
 					for (Entry<Identifier, Resource> entry : models.entrySet()) {
 						list.add(CompletableFuture.supplyAsync(() -> {
+							Identifier identifier = MODELS_FINDER.toResourceId((Identifier)entry.getKey());
+
 							try {
 								Reader reader = ((Resource)entry.getValue()).getReader();
 
-								Pair var2x;
+								Pair var4x;
 								try {
-									var2x = Pair.of((Identifier)entry.getKey(), JsonUnbakedModel.deserialize(reader));
-								} catch (Throwable var5) {
+									JsonUnbakedModel jsonUnbakedModel = JsonUnbakedModel.deserialize(reader);
+									jsonUnbakedModel.id = identifier.toString();
+									var4x = Pair.of(identifier, jsonUnbakedModel);
+								} catch (Throwable var6) {
 									if (reader != null) {
 										try {
 											reader.close();
-										} catch (Throwable var4x) {
-											var5.addSuppressed(var4x);
+										} catch (Throwable var5) {
+											var6.addSuppressed(var5);
 										}
 									}
 
-									throw var5;
+									throw var6;
 								}
 
 								if (reader != null) {
 									reader.close();
 								}
 
-								return var2x;
-							} catch (Exception var6) {
-								LOGGER.error("Failed to load model {}", entry.getKey(), var6);
+								return var4x;
+							} catch (Exception var7) {
+								LOGGER.error("Failed to load model {}", entry.getKey(), var7);
 								return null;
 							}
 						}, executor));
@@ -167,84 +191,115 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 			);
 	}
 
-	private static CompletableFuture<Map<Identifier, List<BlockStatesLoader.SourceTrackedData>>> reloadBlockStates(
-		ResourceManager resourceManager, Executor executor
+	private ReferencedModelsCollector method_62657(
+		UnbakedModel unbakedModel, Map<Identifier, UnbakedModel> map, BlockStatesLoader.BlockStateDefinition blockStateDefinition
 	) {
-		return CompletableFuture.supplyAsync(() -> BlockStatesLoader.FINDER.findAllResources(resourceManager), executor)
-			.thenCompose(
-				blockStates -> {
-					List<CompletableFuture<Pair<Identifier, List<BlockStatesLoader.SourceTrackedData>>>> list = new ArrayList(blockStates.size());
-
-					for (Entry<Identifier, List<Resource>> entry : blockStates.entrySet()) {
-						list.add(CompletableFuture.supplyAsync(() -> {
-							List<Resource> listx = (List<Resource>)entry.getValue();
-							List<BlockStatesLoader.SourceTrackedData> list2 = new ArrayList(listx.size());
-
-							for (Resource resource : listx) {
-								try {
-									Reader reader = resource.getReader();
-
-									try {
-										JsonObject jsonObject = JsonHelper.deserialize(reader);
-										list2.add(new BlockStatesLoader.SourceTrackedData(resource.getPackId(), jsonObject));
-									} catch (Throwable var9) {
-										if (reader != null) {
-											try {
-												reader.close();
-											} catch (Throwable var8) {
-												var9.addSuppressed(var8);
-											}
-										}
-
-										throw var9;
-									}
-
-									if (reader != null) {
-										reader.close();
-									}
-								} catch (Exception var10) {
-									LOGGER.error("Failed to load blockstate {} from pack {}", entry.getKey(), resource.getPackId(), var10);
-								}
-							}
-
-							return Pair.of((Identifier)entry.getKey(), list2);
-						}, executor));
-					}
-
-					return Util.combineSafe(list)
-						.thenApply(blockStatesx -> (Map)blockStatesx.stream().filter(Objects::nonNull).collect(Collectors.toUnmodifiableMap(Pair::getFirst, Pair::getSecond)));
-				}
-			);
+		ReferencedModelsCollector referencedModelsCollector = new ReferencedModelsCollector(map, unbakedModel);
+		referencedModelsCollector.addBlockStates(blockStateDefinition);
+		referencedModelsCollector.resolveAll();
+		return referencedModelsCollector;
 	}
 
-	private BakedModelManager.BakingResult bake(Profiler profiler, Map<Identifier, SpriteAtlasManager.AtlasPreparation> preparations, ModelLoader modelLoader) {
+	private static CompletableFuture<BlockStatesLoader.BlockStateDefinition> reloadBlockStates(
+		BlockStatesLoader blockStatesLoader, ResourceManager resourceManager, Executor executor
+	) {
+		Function<Identifier, StateManager<Block, BlockState>> function = BlockStatesLoader.getIdToStatesConverter();
+		return CompletableFuture.supplyAsync(() -> BLOCK_STATES_FINDER.findAllResources(resourceManager), executor).thenCompose(blockStates -> {
+			List<CompletableFuture<BlockStatesLoader.BlockStateDefinition>> list = new ArrayList(blockStates.size());
+
+			for (Entry<Identifier, List<Resource>> entry : blockStates.entrySet()) {
+				list.add(CompletableFuture.supplyAsync(() -> {
+					Identifier identifier = BLOCK_STATES_FINDER.toResourceId((Identifier)entry.getKey());
+					StateManager<Block, BlockState> stateManager = (StateManager<Block, BlockState>)function.apply(identifier);
+					if (stateManager == null) {
+						LOGGER.debug("Discovered unknown block state definition {}, ignoring", identifier);
+						return null;
+					} else {
+						List<Resource> listx = (List<Resource>)entry.getValue();
+						List<BlockStatesLoader.PackBlockStateDefinition> list2 = new ArrayList(listx.size());
+
+						for (Resource resource : listx) {
+							try {
+								Reader reader = resource.getReader();
+
+								try {
+									JsonObject jsonObject = JsonHelper.deserialize(reader);
+									ModelVariantMap modelVariantMap = ModelVariantMap.fromJson(jsonObject);
+									list2.add(new BlockStatesLoader.PackBlockStateDefinition(resource.getPackId(), modelVariantMap));
+								} catch (Throwable var14) {
+									if (reader != null) {
+										try {
+											reader.close();
+										} catch (Throwable var13) {
+											var14.addSuppressed(var13);
+										}
+									}
+
+									throw var14;
+								}
+
+								if (reader != null) {
+									reader.close();
+								}
+							} catch (Exception var15) {
+								LOGGER.error("Failed to load blockstate definition {} from pack {}", identifier, resource.getPackId(), var15);
+							}
+						}
+
+						try {
+							return blockStatesLoader.combine(identifier, stateManager, list2);
+						} catch (Exception var12) {
+							LOGGER.error("Failed to load blockstate definition {}", identifier, var12);
+							return null;
+						}
+					}
+				}, executor));
+			}
+
+			return Util.combineSafe(list).thenApply(blockStatesx -> {
+				Map<ModelIdentifier, BlockStatesLoader.BlockModel> map = new HashMap();
+
+				for (BlockStatesLoader.BlockStateDefinition blockStateDefinition : blockStatesx) {
+					if (blockStateDefinition != null) {
+						map.putAll(blockStateDefinition.models());
+					}
+				}
+
+				return new BlockStatesLoader.BlockStateDefinition(map);
+			});
+		});
+	}
+
+	private BakedModelManager.BakingResult bake(
+		Profiler profiler, Map<Identifier, SpriteAtlasManager.AtlasPreparation> preparations, ModelBaker modelLoader, Object2IntMap<BlockState> modelGroups
+	) {
 		profiler.push("load");
 		profiler.swap("baking");
 		Multimap<ModelIdentifier, SpriteIdentifier> multimap = HashMultimap.create();
-		modelLoader.bake((modelIdentifier, spriteId) -> {
+		modelLoader.bake((modelId, spriteId) -> {
 			SpriteAtlasManager.AtlasPreparation atlasPreparation = (SpriteAtlasManager.AtlasPreparation)preparations.get(spriteId.getAtlasId());
 			Sprite sprite = atlasPreparation.getSprite(spriteId.getTextureId());
 			if (sprite != null) {
 				return sprite;
 			} else {
-				multimap.put(modelIdentifier, spriteId);
+				multimap.put(modelId, spriteId);
 				return atlasPreparation.getMissingSprite();
 			}
 		});
 		multimap.asMap()
 			.forEach(
-				(modelIdentifier, spriteIds) -> LOGGER.warn(
+				(modelId, spriteIds) -> LOGGER.warn(
 						"Missing textures in model {}:\n{}",
-						modelIdentifier,
+						modelId,
 						spriteIds.stream()
 							.sorted(SpriteIdentifier.COMPARATOR)
-							.map(spriteIdentifier -> "    " + spriteIdentifier.getAtlasId() + ":" + spriteIdentifier.getTextureId())
+							.map(spriteId -> "    " + spriteId.getAtlasId() + ":" + spriteId.getTextureId())
 							.collect(Collectors.joining("\n"))
 					)
 			);
 		profiler.swap("dispatch");
-		Map<ModelIdentifier, BakedModel> map = modelLoader.getBakedModelMap();
-		BakedModel bakedModel = (BakedModel)map.get(ModelLoader.MISSING_MODEL_ID);
+		Map<ModelIdentifier, BakedModel> map = modelLoader.getBakedModels();
+		BakedModel bakedModel = (BakedModel)map.get(MissingModel.MODEL_ID);
 		Map<BlockState, BakedModel> map2 = new IdentityHashMap();
 
 		for (Block block : Registries.BLOCK) {
@@ -260,16 +315,20 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 		);
 		profiler.pop();
 		profiler.endTick();
-		return new BakedModelManager.BakingResult(modelLoader, bakedModel, map2, preparations, completableFuture);
+		return new BakedModelManager.BakingResult(modelLoader, modelGroups, bakedModel, map2, preparations, completableFuture);
+	}
+
+	private static Object2IntMap<BlockState> group(BlockColors colors, BlockStatesLoader.BlockStateDefinition definition) {
+		return ModelGrouper.group(colors, definition);
 	}
 
 	private void upload(BakedModelManager.BakingResult bakingResult, Profiler profiler) {
 		profiler.startTick();
 		profiler.push("upload");
 		bakingResult.atlasPreparations.values().forEach(SpriteAtlasManager.AtlasPreparation::upload);
-		ModelLoader modelLoader = bakingResult.modelLoader;
-		this.models = modelLoader.getBakedModelMap();
-		this.stateLookup = modelLoader.getStateLookup();
+		ModelBaker modelBaker = bakingResult.modelLoader;
+		this.models = modelBaker.getBakedModels();
+		this.stateLookup = bakingResult.modelGroups;
 		this.missingModel = bakingResult.missingModel;
 		profiler.swap("cache");
 		this.blockModelCache.setModels(bakingResult.modelCache);
@@ -309,7 +368,8 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 
 	@Environment(EnvType.CLIENT)
 	static record BakingResult(
-		ModelLoader modelLoader,
+		ModelBaker modelLoader,
+		Object2IntMap<BlockState> modelGroups,
 		BakedModel missingModel,
 		Map<BlockState, BakedModel> modelCache,
 		Map<Identifier, SpriteAtlasManager.AtlasPreparation> atlasPreparations,

@@ -38,11 +38,6 @@ public abstract class RangedWeaponItem extends Item {
 		}
 	}
 
-	@Override
-	public int getEnchantability() {
-		return 1;
-	}
-
 	public abstract int getRange();
 
 	protected void shootAll(
@@ -66,9 +61,13 @@ public abstract class RangedWeaponItem extends Item {
 			if (!itemStack.isEmpty()) {
 				float k = h + i * (float)((j + 1) / 2) * g;
 				i = -i;
-				ProjectileEntity projectileEntity = this.createArrowEntity(world, shooter, stack, itemStack, critical);
-				this.shoot(shooter, projectileEntity, j, speed, divergence, k, target);
-				world.spawnEntity(projectileEntity);
+				int l = j;
+				ProjectileEntity.spawn(
+					this.createArrowEntity(world, shooter, stack, itemStack, critical),
+					world,
+					itemStack,
+					projectile -> this.shoot(shooter, projectile, l, speed, divergence, k, target)
+				);
 				stack.damage(this.getWeaponStackDamage(itemStack), shooter, LivingEntity.getSlotForHand(hand));
 				if (stack.isEmpty()) {
 					break;

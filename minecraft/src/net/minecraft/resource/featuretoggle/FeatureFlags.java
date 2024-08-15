@@ -9,6 +9,8 @@ public class FeatureFlags {
 	public static final FeatureFlag VANILLA;
 	public static final FeatureFlag BUNDLE;
 	public static final FeatureFlag TRADE_REBALANCE;
+	public static final FeatureFlag REDSTONE_EXPERIMENTS;
+	public static final FeatureFlag MINECART_IMPROVEMENTS;
 	public static final FeatureManager FEATURE_MANAGER;
 	public static final Codec<FeatureSet> CODEC;
 	public static final FeatureSet VANILLA_FEATURES;
@@ -33,6 +35,8 @@ public class FeatureFlags {
 		VANILLA = builder.addVanillaFlag("vanilla");
 		BUNDLE = builder.addVanillaFlag("bundle");
 		TRADE_REBALANCE = builder.addVanillaFlag("trade_rebalance");
+		REDSTONE_EXPERIMENTS = builder.addVanillaFlag("redstone_experiments");
+		MINECART_IMPROVEMENTS = builder.addVanillaFlag("minecart_improvements");
 		FEATURE_MANAGER = builder.build();
 		CODEC = FEATURE_MANAGER.getCodec();
 		VANILLA_FEATURES = FeatureSet.of(VANILLA);

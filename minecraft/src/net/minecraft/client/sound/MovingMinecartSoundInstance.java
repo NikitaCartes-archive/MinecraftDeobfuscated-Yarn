@@ -3,6 +3,7 @@ package net.minecraft.client.sound;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.entity.vehicle.ExperimentalMinecartController;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
@@ -43,9 +44,8 @@ public class MovingMinecartSoundInstance extends MovingSoundInstance {
 
 	@Override
 	public void tick() {
-		if (this.minecart.isRemoved()) {
-			this.setDone();
-		} else {
+		boolean bl = !this.minecart.isOnRail() && this.minecart.getController() instanceof ExperimentalMinecartController;
+		if (!this.minecart.isRemoved() && !bl) {
 			this.x = (double)((float)this.minecart.getX());
 			this.y = (double)((float)this.minecart.getY());
 			this.z = (double)((float)this.minecart.getZ());
@@ -57,6 +57,8 @@ public class MovingMinecartSoundInstance extends MovingSoundInstance {
 				this.distance = 0.0F;
 				this.volume = 0.0F;
 			}
+		} else {
+			this.setDone();
 		}
 	}
 }

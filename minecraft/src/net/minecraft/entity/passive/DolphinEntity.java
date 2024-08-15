@@ -10,6 +10,7 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
@@ -40,7 +41,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -61,7 +61,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
-public class DolphinEntity extends WaterCreatureEntity {
+public class DolphinEntity extends WaterAnimalEntity {
 	private static final TrackedData<BlockPos> TREASURE_POS = DataTracker.registerData(DolphinEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
 	private static final TrackedData<Boolean> HAS_FISH = DataTracker.registerData(DolphinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> MOISTNESS = DataTracker.registerData(DolphinEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -69,6 +69,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 	public static final int MAX_AIR = 4800;
 	private static final int MAX_MOISTNESS = 2400;
 	public static final Predicate<ItemEntity> CAN_TAKE = item -> !item.cannotPickup() && item.isAlive() && item.isTouchingWater();
+	public static final float BABY_SCALE_FACTOR = 0.65F;
 
 	public DolphinEntity(EntityType<? extends DolphinEntity> entityType, World world) {
 		super(entityType, world);
@@ -82,11 +83,21 @@ public class DolphinEntity extends WaterCreatureEntity {
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		this.setAir(this.getMaxAir());
 		this.setPitch(0.0F);
-		return super.initialize(world, difficulty, spawnReason, entityData);
+		return super.initialize(world, difficulty, spawnReason, new PassiveEntity.PassiveData(true, 0.1F));
+	}
+
+	@Nullable
+	public DolphinEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		return EntityType.DOLPHIN.create(serverWorld, SpawnReason.BREEDING);
 	}
 
 	@Override
-	protected void tickWaterBreathingAir(int air) {
+	public float getScaleFactor() {
+		return this.isBaby() ? 0.65F : 1.0F;
+	}
+
+	@Override
+	protected void tickBreathing(int air) {
 	}
 
 	public void setTreasurePos(BlockPos treasurePos) {
@@ -161,9 +172,9 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 	public static DefaultAttributeContainer.Builder createDolphinAttributes() {
 		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1.2F)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0);
+			.add(EntityAttributes.MAX_HEALTH, 10.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 1.2F)
+			.add(EntityAttributes.ATTACK_DAMAGE, 3.0);
 	}
 
 	@Override
@@ -174,6 +185,11 @@ public class DolphinEntity extends WaterCreatureEntity {
 	@Override
 	public void playAttackSound() {
 		this.playSound(SoundEvents.ENTITY_DOLPHIN_ATTACK, 1.0F, 1.0F);
+	}
+
+	@Override
+	public boolean canTarget(LivingEntity target) {
+		return !this.isBaby() && super.canTarget(target);
 	}
 
 	@Override
@@ -305,7 +321,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 			this.setHasFish(true);
 			itemStack.decrementUnlessCreative(1, player);
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return super.interactMob(player, hand);
 		}
@@ -345,7 +361,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 	@Override
 	public void travel(Vec3d movementInput) {
-		if (this.canMoveVoluntarily() && this.isTouchingWater()) {
+		if (this.isLogicalSideForUpdatingMovement() && this.isTouchingWater()) {
 			this.updateVelocity(this.getMovementSpeed(), movementInput);
 			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));

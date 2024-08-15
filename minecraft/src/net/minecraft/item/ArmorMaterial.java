@@ -3,9 +3,8 @@ package net.minecraft.item;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
@@ -21,7 +20,7 @@ public record ArmorMaterial(
 	Map<ArmorItem.Type, Integer> defense,
 	int enchantability,
 	RegistryEntry<SoundEvent> equipSound,
-	Supplier<Ingredient> repairIngredient,
+	Predicate<ItemStack> repairIngredient,
 	List<ArmorMaterial.Layer> layers,
 	float toughness,
 	float knockbackResistance

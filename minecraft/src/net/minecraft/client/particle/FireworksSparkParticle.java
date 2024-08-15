@@ -213,7 +213,7 @@ public class FireworksSparkParticle {
 
 				int j = intList.getInt(0);
 				Particle particle = this.particleManager.addParticle(ParticleTypes.FLASH, this.x, this.y, this.z, 0.0, 0.0, 0.0);
-				particle.setColor((float)ColorHelper.Argb.getRed(j) / 255.0F, (float)ColorHelper.Argb.getGreen(j) / 255.0F, (float)ColorHelper.Argb.getBlue(j) / 255.0F);
+				particle.setColor((float)ColorHelper.getRed(j) / 255.0F, (float)ColorHelper.getGreen(j) / 255.0F, (float)ColorHelper.getBlue(j) / 255.0F);
 			}
 
 			this.age++;

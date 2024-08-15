@@ -13,12 +13,12 @@ public record SlotChangedStateC2SPacket(int slotId, int screenHandlerId, boolean
 	);
 
 	private SlotChangedStateC2SPacket(PacketByteBuf buf) {
-		this(buf.readVarInt(), buf.readVarInt(), buf.readBoolean());
+		this(buf.readVarInt(), buf.readSyncId(), buf.readBoolean());
 	}
 
 	private void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.slotId);
-		buf.writeVarInt(this.screenHandlerId);
+		buf.writeSyncId(this.screenHandlerId);
 		buf.writeBoolean(this.newState);
 	}
 

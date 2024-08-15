@@ -32,14 +32,7 @@ public class BufferRenderer {
 	 * RenderSystem#setShader}
 	 */
 	public static void drawWithGlobalProgram(BuiltBuffer buffer) {
-		if (!RenderSystem.isOnRenderThreadOrInit()) {
-			RenderSystem.recordRenderCall(() -> drawWithGlobalProgramInternal(buffer));
-		} else {
-			drawWithGlobalProgramInternal(buffer);
-		}
-	}
-
-	private static void drawWithGlobalProgramInternal(BuiltBuffer buffer) {
+		RenderSystem.assertOnRenderThread();
 		VertexBuffer vertexBuffer = upload(buffer);
 		vertexBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
 	}
@@ -53,12 +46,12 @@ public class BufferRenderer {
 	 * shader program before calling this method.
 	 */
 	public static void draw(BuiltBuffer buffer) {
+		RenderSystem.assertOnRenderThread();
 		VertexBuffer vertexBuffer = upload(buffer);
 		vertexBuffer.draw();
 	}
 
 	private static VertexBuffer upload(BuiltBuffer buffer) {
-		RenderSystem.assertOnRenderThread();
 		VertexBuffer vertexBuffer = bind(buffer.getDrawParameters().format());
 		vertexBuffer.upload(buffer);
 		return vertexBuffer;

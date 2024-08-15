@@ -8,11 +8,11 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.mob.RavagerEntity;
+import net.minecraft.client.render.entity.state.RavagerEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class RavagerEntityModel extends SinglePartEntityModel<RavagerEntity> {
+public class RavagerEntityModel extends EntityModel<RavagerEntityRenderState> {
 	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart jaw;
@@ -91,53 +91,47 @@ public class RavagerEntityModel extends SinglePartEntityModel<RavagerEntity> {
 		return this.root;
 	}
 
-	public void setAngles(RavagerEntity ravagerEntity, float f, float g, float h, float i, float j) {
-		this.head.pitch = j * (float) (Math.PI / 180.0);
-		this.head.yaw = i * (float) (Math.PI / 180.0);
-		float k = 0.4F * g;
-		this.rightHindLeg.pitch = MathHelper.cos(f * 0.6662F) * k;
-		this.leftHindLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * k;
-		this.rightFrontLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * k;
-		this.leftFrontLeg.pitch = MathHelper.cos(f * 0.6662F) * k;
-	}
-
-	public void animateModel(RavagerEntity ravagerEntity, float f, float g, float h) {
-		super.animateModel(ravagerEntity, f, g, h);
-		int i = ravagerEntity.getStunTick();
-		int j = ravagerEntity.getRoarTick();
-		int k = 20;
-		int l = ravagerEntity.getAttackTick();
-		int m = 10;
-		if (l > 0) {
-			float n = MathHelper.wrap((float)l - h, 10.0F);
-			float o = (1.0F + n) * 0.5F;
-			float p = o * o * o * 12.0F;
-			float q = p * MathHelper.sin(this.neck.pitch);
-			this.neck.pivotZ = -6.5F + p;
-			this.neck.pivotY = -7.0F - q;
-			float r = MathHelper.sin(((float)l - h) / 10.0F * (float) Math.PI * 0.25F);
-			this.jaw.pitch = (float) (Math.PI / 2) * r;
-			if (l > 5) {
-				this.jaw.pitch = MathHelper.sin(((float)(-4 + l) - h) / 4.0F) * (float) Math.PI * 0.4F;
+	public void setAngles(RavagerEntityRenderState ravagerEntityRenderState) {
+		float f = ravagerEntityRenderState.stunTick;
+		float g = ravagerEntityRenderState.attackTick;
+		int i = 10;
+		if (g > 0.0F) {
+			float h = MathHelper.wrap(g, 10.0F);
+			float j = (1.0F + h) * 0.5F;
+			float k = j * j * j * 12.0F;
+			float l = k * MathHelper.sin(this.neck.pitch);
+			this.neck.pivotZ = -6.5F + k;
+			this.neck.pivotY = -7.0F - l;
+			if (g > 5.0F) {
+				this.jaw.pitch = MathHelper.sin((-4.0F + g) / 4.0F) * (float) Math.PI * 0.4F;
 			} else {
-				this.jaw.pitch = (float) (Math.PI / 20) * MathHelper.sin((float) Math.PI * ((float)l - h) / 10.0F);
+				this.jaw.pitch = (float) (Math.PI / 20) * MathHelper.sin((float) Math.PI * g / 10.0F);
 			}
 		} else {
-			float n = -1.0F;
-			float o = -1.0F * MathHelper.sin(this.neck.pitch);
+			float h = -1.0F;
+			float j = -1.0F * MathHelper.sin(this.neck.pitch);
 			this.neck.pivotX = 0.0F;
-			this.neck.pivotY = -7.0F - o;
+			this.neck.pivotY = -7.0F - j;
 			this.neck.pivotZ = 5.5F;
-			boolean bl = i > 0;
+			boolean bl = f > 0.0F;
 			this.neck.pitch = bl ? 0.21991149F : 0.0F;
 			this.jaw.pitch = (float) Math.PI * (bl ? 0.05F : 0.01F);
 			if (bl) {
-				double d = (double)i / 40.0;
+				double d = (double)f / 40.0;
 				this.neck.pivotX = (float)Math.sin(d * 10.0) * 3.0F;
-			} else if (j > 0) {
-				float q = MathHelper.sin(((float)(20 - j) - h) / 20.0F * (float) Math.PI * 0.25F);
-				this.jaw.pitch = (float) (Math.PI / 2) * q;
+			} else if ((double)ravagerEntityRenderState.roarTick > 0.0) {
+				float l = MathHelper.sin(ravagerEntityRenderState.roarTick * (float) Math.PI * 0.25F);
+				this.jaw.pitch = (float) (Math.PI / 2) * l;
 			}
 		}
+
+		this.head.pitch = ravagerEntityRenderState.pitch * (float) (Math.PI / 180.0);
+		this.head.yaw = ravagerEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
+		float hx = ravagerEntityRenderState.limbFrequency;
+		float jx = 0.4F * ravagerEntityRenderState.limbAmplitudeMultiplier;
+		this.rightHindLeg.pitch = MathHelper.cos(hx * 0.6662F) * jx;
+		this.leftHindLeg.pitch = MathHelper.cos(hx * 0.6662F + (float) Math.PI) * jx;
+		this.rightFrontLeg.pitch = MathHelper.cos(hx * 0.6662F + (float) Math.PI) * jx;
+		this.leftFrontLeg.pitch = MathHelper.cos(hx * 0.6662F) * jx;
 	}
 }

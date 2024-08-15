@@ -95,12 +95,11 @@ public class EnchantingTableBlock extends BlockWithEntity {
 
 	@Override
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (world.isClient) {
-			return ActionResult.SUCCESS;
-		} else {
+		if (!world.isClient) {
 			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
-			return ActionResult.CONSUME;
 		}
+
+		return ActionResult.SUCCESS;
 	}
 
 	@Nullable

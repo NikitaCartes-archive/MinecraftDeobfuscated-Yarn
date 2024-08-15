@@ -129,13 +129,7 @@ public abstract class ChunkGenerator {
 	 * Generates caves for the given chunk.
 	 */
 	public abstract void carve(
-		ChunkRegion chunkRegion,
-		long seed,
-		NoiseConfig noiseConfig,
-		BiomeAccess biomeAccess,
-		StructureAccessor structureAccessor,
-		Chunk chunk,
-		GenerationStep.Carver carverStep
+		ChunkRegion chunkRegion, long seed, NoiseConfig noiseConfig, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk
 	);
 
 	/**

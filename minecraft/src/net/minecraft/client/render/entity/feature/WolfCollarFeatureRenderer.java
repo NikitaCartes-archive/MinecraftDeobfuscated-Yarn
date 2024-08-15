@@ -7,25 +7,27 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.WolfEntityModel;
+import net.minecraft.client.render.entity.state.WolfEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class WolfCollarFeatureRenderer extends FeatureRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
+public class WolfCollarFeatureRenderer extends FeatureRenderer<WolfEntityRenderState, WolfEntityModel> {
 	private static final Identifier SKIN = Identifier.ofVanilla("textures/entity/wolf/wolf_collar.png");
 
-	public WolfCollarFeatureRenderer(FeatureRendererContext<WolfEntity, WolfEntityModel<WolfEntity>> featureRendererContext) {
+	public WolfCollarFeatureRenderer(FeatureRendererContext<WolfEntityRenderState, WolfEntityModel> featureRendererContext) {
 		super(featureRendererContext);
 	}
 
 	public void render(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, WolfEntity wolfEntity, float f, float g, float h, float j, float k, float l
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, WolfEntityRenderState wolfEntityRenderState, float f, float g
 	) {
-		if (wolfEntity.isTamed() && !wolfEntity.isInvisible()) {
-			int m = wolfEntity.getCollarColor().getEntityColor();
+		DyeColor dyeColor = wolfEntityRenderState.collarColor;
+		if (dyeColor != null && !wolfEntityRenderState.invisible) {
+			int j = dyeColor.getEntityColor();
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(SKIN));
-			this.getContextModel().render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, m);
+			this.getContextModel().render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, j);
 		}
 	}
 }

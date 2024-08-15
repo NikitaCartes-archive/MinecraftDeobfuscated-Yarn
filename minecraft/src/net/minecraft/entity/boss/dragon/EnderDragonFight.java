@@ -26,6 +26,7 @@ import net.minecraft.block.pattern.BlockPatternBuilder;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
@@ -407,7 +408,7 @@ public class EnderDragonFight {
 		if (this.exitPortalLocation == null) {
 			this.exitPortalLocation = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.offsetOrigin(this.origin)).down();
 
-			while (this.world.getBlockState(this.exitPortalLocation).isOf(Blocks.BEDROCK) && this.exitPortalLocation.getY() > this.world.getSeaLevel()) {
+			while (this.world.getBlockState(this.exitPortalLocation).isOf(Blocks.BEDROCK) && this.exitPortalLocation.getY() > 63) {
 				this.exitPortalLocation = this.exitPortalLocation.down();
 			}
 		}
@@ -423,7 +424,7 @@ public class EnderDragonFight {
 	@Nullable
 	private EnderDragonEntity createDragon() {
 		this.world.getWorldChunk(new BlockPos(this.origin.getX(), 128 + this.origin.getY(), this.origin.getZ()));
-		EnderDragonEntity enderDragonEntity = EntityType.ENDER_DRAGON.create(this.world);
+		EnderDragonEntity enderDragonEntity = EntityType.ENDER_DRAGON.create(this.world, SpawnReason.EVENT);
 		if (enderDragonEntity != null) {
 			enderDragonEntity.setFight(this);
 			enderDragonEntity.setFightOrigin(this.origin);

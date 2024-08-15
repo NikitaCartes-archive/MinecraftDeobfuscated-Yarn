@@ -38,6 +38,8 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 	 */
 	int size();
 
+	boolean isBound();
+
 	/**
 	 * {@return the object that identifies this registry entry list}
 	 * 
@@ -130,6 +132,11 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 		}
 
 		@Override
+		public boolean isBound() {
+			return true;
+		}
+
+		@Override
 		public Either<TagKey<T>, List<RegistryEntry<T>>> getStorage() {
 			return Either.right(this.entries);
 		}
@@ -215,14 +222,15 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 	public static class Named<T> extends RegistryEntryList.ListBacked<T> {
 		private final RegistryEntryOwner<T> owner;
 		private final TagKey<T> tag;
-		private List<RegistryEntry<T>> entries = List.of();
+		@Nullable
+		private List<RegistryEntry<T>> entries;
 
 		public Named(RegistryEntryOwner<T> owner, TagKey<T> tag) {
 			this.owner = owner;
 			this.tag = tag;
 		}
 
-		public void copyOf(List<RegistryEntry<T>> entries) {
+		public void setEntries(List<RegistryEntry<T>> entries) {
 			this.entries = List.copyOf(entries);
 		}
 
@@ -235,7 +243,16 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 
 		@Override
 		protected List<RegistryEntry<T>> getEntries() {
-			return this.entries;
+			if (this.entries == null) {
+				throw new IllegalStateException("Trying to access unbound tag '" + this.tag + "' from registry " + this.owner);
+			} else {
+				return this.entries;
+			}
+		}
+
+		@Override
+		public boolean isBound() {
+			return this.entries != null;
 		}
 
 		@Override

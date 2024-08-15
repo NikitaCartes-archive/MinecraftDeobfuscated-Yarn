@@ -19,6 +19,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -30,7 +31,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -54,7 +54,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -79,7 +78,7 @@ public class SnifferEntity extends AnimalEntity {
 	public final AnimationState risingAnimationState = new AnimationState();
 
 	public static DefaultAttributeContainer.Builder createSnifferAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.1F).add(EntityAttributes.GENERIC_MAX_HEALTH, 14.0);
+		return AnimalEntity.createAnimalAttributes().add(EntityAttributes.MOVEMENT_SPEED, 0.1F).add(EntityAttributes.MAX_HEALTH, 14.0);
 	}
 
 	public SnifferEntity(EntityType<? extends AnimalEntity> entityType, World world) {
@@ -291,7 +290,7 @@ public class SnifferEntity extends AnimalEntity {
 	}
 
 	private SnifferEntity spawnDiggingParticles(AnimationState diggingAnimationState) {
-		boolean bl = diggingAnimationState.getTimeRunning() > 1700L && diggingAnimationState.getTimeRunning() < 6000L;
+		boolean bl = diggingAnimationState.getTimeInMilliseconds((float)this.age) > 1700L && diggingAnimationState.getTimeInMilliseconds((float)this.age) < 6000L;
 		if (bl) {
 			BlockPos blockPos = this.getDigPos();
 			BlockState blockState = this.getWorld().getBlockState(blockPos.down());
@@ -372,11 +371,16 @@ public class SnifferEntity extends AnimalEntity {
 		boolean bl = this.isBreedingItem(itemStack);
 		ActionResult actionResult = super.interactMob(player, hand);
 		if (actionResult.isAccepted() && bl) {
-			this.getWorld()
-				.playSoundFromEntity(null, this, this.getEatSound(itemStack), SoundCategory.NEUTRAL, 1.0F, MathHelper.nextBetween(this.getWorld().random, 0.8F, 1.2F));
+			this.playEatSound();
 		}
 
 		return actionResult;
+	}
+
+	@Override
+	protected void playEatSound() {
+		this.getWorld()
+			.playSoundFromEntity(null, this, SoundEvents.ENTITY_SNIFFER_EAT, SoundCategory.NEUTRAL, 1.0F, MathHelper.nextBetween(this.getWorld().random, 0.8F, 1.2F));
 	}
 
 	private void playSearchingSound() {
@@ -388,11 +392,6 @@ public class SnifferEntity extends AnimalEntity {
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
 		this.playSound(SoundEvents.ENTITY_SNIFFER_STEP, 0.15F, 1.0F);
-	}
-
-	@Override
-	public SoundEvent getEatSound(ItemStack stack) {
-		return SoundEvents.ENTITY_SNIFFER_EAT;
 	}
 
 	@Override
@@ -422,7 +421,7 @@ public class SnifferEntity extends AnimalEntity {
 
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-		return EntityType.SNIFFER.create(world);
+		return EntityType.SNIFFER.create(world, SpawnReason.BREEDING);
 	}
 
 	@Override
@@ -433,11 +432,6 @@ public class SnifferEntity extends AnimalEntity {
 			Set<SnifferEntity.State> set = Set.of(SnifferEntity.State.IDLING, SnifferEntity.State.SCENTING, SnifferEntity.State.FEELING_HAPPY);
 			return set.contains(this.getState()) && set.contains(snifferEntity.getState()) && super.canBreedWith(other);
 		}
-	}
-
-	@Override
-	public Box getVisibilityBoundingBox() {
-		return super.getVisibilityBoundingBox().expand(0.6F);
 	}
 
 	@Override

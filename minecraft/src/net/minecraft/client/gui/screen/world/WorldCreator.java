@@ -46,7 +46,7 @@ public class WorldCreator {
 	private WorldCreator.WorldType worldType;
 	private final List<WorldCreator.WorldType> normalWorldTypes = new ArrayList();
 	private final List<WorldCreator.WorldType> extendedWorldTypes = new ArrayList();
-	private GameRules gameRules = new GameRules();
+	private GameRules gameRules;
 
 	public WorldCreator(Path savesDirectory, GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> defaultWorldType, OptionalLong seed) {
 		this.savesDirectory = savesDirectory;
@@ -57,6 +57,7 @@ public class WorldCreator {
 		this.generateStructures = generatorOptionsHolder.generatorOptions().shouldGenerateStructures();
 		this.bonusChestEnabled = generatorOptionsHolder.generatorOptions().hasBonusChest();
 		this.worldDirectoryName = this.toDirectoryName(this.worldName);
+		this.gameRules = new GameRules(generatorOptionsHolder.dataConfiguration().enabledFeatures());
 	}
 
 	public void addListener(Consumer<WorldCreator> listener) {

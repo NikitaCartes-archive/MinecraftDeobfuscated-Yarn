@@ -12,7 +12,7 @@ import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.ModelBaker;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -24,7 +24,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockRenderView;
-import net.minecraft.world.BlockView;
 
 @Environment(EnvType.CLIENT)
 public class FluidRenderer {
@@ -35,38 +34,39 @@ public class FluidRenderer {
 
 	protected void onResourceReload() {
 		this.lavaSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.LAVA.getDefaultState()).getParticleSprite();
-		this.lavaSprites[1] = ModelLoader.LAVA_FLOW.getSprite();
+		this.lavaSprites[1] = ModelBaker.LAVA_FLOW.getSprite();
 		this.waterSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getParticleSprite();
-		this.waterSprites[1] = ModelLoader.WATER_FLOW.getSprite();
-		this.waterOverlaySprite = ModelLoader.WATER_OVERLAY.getSprite();
+		this.waterSprites[1] = ModelBaker.WATER_FLOW.getSprite();
+		this.waterOverlaySprite = ModelBaker.WATER_OVERLAY.getSprite();
 	}
 
 	private static boolean isSameFluid(FluidState a, FluidState b) {
 		return b.getFluid().matchesType(a.getFluid());
 	}
 
-	private static boolean isSideCovered(BlockView world, Direction direction, float height, BlockPos pos, BlockState state) {
-		if (state.isOpaque()) {
-			VoxelShape voxelShape = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, (double)height, 1.0);
-			VoxelShape voxelShape2 = state.getCullingShape(world, pos);
-			return VoxelShapes.isSideCovered(voxelShape, voxelShape2, direction);
-		} else {
+	private static boolean isSideCovered(Direction direction, float f, BlockState blockState) {
+		VoxelShape voxelShape = blockState.getCullingFace(direction.getOpposite());
+		if (voxelShape == VoxelShapes.empty()) {
 			return false;
+		} else if (voxelShape == VoxelShapes.fullCube()) {
+			boolean bl = f == 1.0F;
+			return direction != Direction.UP || bl;
+		} else {
+			VoxelShape voxelShape2 = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, (double)f, 1.0);
+			return VoxelShapes.isSideCovered(voxelShape2, voxelShape, direction);
 		}
 	}
 
-	private static boolean isSideCovered(BlockView world, BlockPos pos, Direction direction, float maxDeviation, BlockState state) {
-		return isSideCovered(world, direction, maxDeviation, pos.offset(direction), state);
+	private static boolean method_3344(Direction direction, float f, BlockState blockState) {
+		return isSideCovered(direction, f, blockState);
 	}
 
-	private static boolean isOppositeSideCovered(BlockView world, BlockPos pos, BlockState state, Direction direction) {
-		return isSideCovered(world, direction.getOpposite(), 1.0F, pos, state);
+	private static boolean isOppositeSideCovered(BlockState blockState, Direction direction) {
+		return isSideCovered(direction.getOpposite(), 1.0F, blockState);
 	}
 
-	public static boolean shouldRenderSide(
-		BlockRenderView world, BlockPos pos, FluidState fluidState, BlockState blockState, Direction direction, FluidState neighborFluidState
-	) {
-		return !isOppositeSideCovered(world, pos, blockState, direction) && !isSameFluid(fluidState, neighborFluidState);
+	public static boolean shouldRenderSide(FluidState fluidState, BlockState blockState, Direction direction, FluidState fluidState2) {
+		return !isOppositeSideCovered(blockState, direction) && !isSameFluid(fluidState, fluidState2);
 	}
 
 	public void render(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState, FluidState fluidState) {
@@ -89,12 +89,11 @@ public class FluidRenderer {
 		BlockState blockState7 = world.getBlockState(pos.offset(Direction.EAST));
 		FluidState fluidState7 = blockState7.getFluidState();
 		boolean bl2 = !isSameFluid(fluidState, fluidState3);
-		boolean bl3 = shouldRenderSide(world, pos, fluidState, blockState, Direction.DOWN, fluidState2)
-			&& !isSideCovered(world, pos, Direction.DOWN, 0.8888889F, blockState2);
-		boolean bl4 = shouldRenderSide(world, pos, fluidState, blockState, Direction.NORTH, fluidState4);
-		boolean bl5 = shouldRenderSide(world, pos, fluidState, blockState, Direction.SOUTH, fluidState5);
-		boolean bl6 = shouldRenderSide(world, pos, fluidState, blockState, Direction.WEST, fluidState6);
-		boolean bl7 = shouldRenderSide(world, pos, fluidState, blockState, Direction.EAST, fluidState7);
+		boolean bl3 = shouldRenderSide(fluidState, blockState, Direction.DOWN, fluidState2) && !method_3344(Direction.DOWN, 0.8888889F, blockState2);
+		boolean bl4 = shouldRenderSide(fluidState, blockState, Direction.NORTH, fluidState4);
+		boolean bl5 = shouldRenderSide(fluidState, blockState, Direction.SOUTH, fluidState5);
+		boolean bl6 = shouldRenderSide(fluidState, blockState, Direction.WEST, fluidState6);
+		boolean bl7 = shouldRenderSide(fluidState, blockState, Direction.EAST, fluidState7);
 		if (bl2 || bl3 || bl7 || bl6 || bl4 || bl5) {
 			float j = world.getBrightness(Direction.DOWN, true);
 			float k = world.getBrightness(Direction.UP, true);
@@ -127,7 +126,7 @@ public class FluidRenderer {
 			float u = (float)(pos.getZ() & 15);
 			float v = 0.001F;
 			float w = bl3 ? 0.001F : 0.0F;
-			if (bl2 && !isSideCovered(world, pos, Direction.UP, Math.min(Math.min(p, r), Math.min(q, o)), blockState3)) {
+			if (bl2 && !method_3344(Direction.UP, Math.min(Math.min(p, r), Math.min(q, o)), blockState3)) {
 				p -= 0.001F;
 				r -= 0.001F;
 				q -= 0.001F;
@@ -257,7 +256,7 @@ public class FluidRenderer {
 						bl8 = bl7;
 				}
 
-				if (bl8 && !isSideCovered(world, pos, direction, Math.max(adx, yx), world.getBlockState(pos.offset(direction)))) {
+				if (bl8 && !method_3344(direction, Math.max(adx, yx), world.getBlockState(pos.offset(direction)))) {
 					BlockPos blockPos = pos.offset(direction);
 					Sprite sprite2 = sprites[1];
 					if (!bl) {

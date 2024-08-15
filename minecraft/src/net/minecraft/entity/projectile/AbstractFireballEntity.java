@@ -16,6 +16,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity implements FlyingItemEntity {
+	private static final float MAX_RENDER_DISTANCE_WHEN_NEWLY_SPAWNED = 12.25F;
 	private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(AbstractFireballEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 
 	public AbstractFireballEntity(EntityType<? extends AbstractFireballEntity> entityType, World world) {
@@ -76,5 +77,10 @@ public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity i
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		return false;
+	}
+
+	@Override
+	public boolean shouldRender(double distance) {
+		return this.age < 2 && distance < 12.25 ? false : super.shouldRender(distance);
 	}
 }

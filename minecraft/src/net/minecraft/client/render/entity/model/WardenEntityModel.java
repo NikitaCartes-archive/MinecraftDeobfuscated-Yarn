@@ -12,11 +12,11 @@ import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.animation.WardenAnimations;
-import net.minecraft.entity.mob.WardenEntity;
+import net.minecraft.client.render.entity.state.WardenEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityModel<T> {
+public class WardenEntityModel extends EntityModel<WardenEntityRenderState> {
 	private static final float field_38324 = 13.0F;
 	private static final float field_38325 = 1.0F;
 	private final ModelPart root;
@@ -105,19 +105,18 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 		return TexturedModelData.of(modelData, 128, 128);
 	}
 
-	public void setAngles(T wardenEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(WardenEntityRenderState wardenEntityRenderState) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		float k = h - (float)wardenEntity.age;
-		this.setHeadAngle(i, j);
-		this.setLimbAngles(f, g);
-		this.setHeadAndBodyAngles(h);
-		this.setTendrilPitches(wardenEntity, h, k);
-		this.updateAnimation(wardenEntity.attackingAnimationState, WardenAnimations.ATTACKING, h);
-		this.updateAnimation(wardenEntity.chargingSonicBoomAnimationState, WardenAnimations.CHARGING_SONIC_BOOM, h);
-		this.updateAnimation(wardenEntity.diggingAnimationState, WardenAnimations.DIGGING, h);
-		this.updateAnimation(wardenEntity.emergingAnimationState, WardenAnimations.EMERGING, h);
-		this.updateAnimation(wardenEntity.roaringAnimationState, WardenAnimations.ROARING, h);
-		this.updateAnimation(wardenEntity.sniffingAnimationState, WardenAnimations.SNIFFING, h);
+		this.setHeadAngle(wardenEntityRenderState.yawDegrees, wardenEntityRenderState.pitch);
+		this.setLimbAngles(wardenEntityRenderState.limbFrequency, wardenEntityRenderState.limbAmplitudeMultiplier);
+		this.setHeadAndBodyAngles(wardenEntityRenderState.age);
+		this.setTendrilPitches(wardenEntityRenderState, wardenEntityRenderState.age);
+		this.animate(wardenEntityRenderState.attackingAnimationState, WardenAnimations.ATTACKING, wardenEntityRenderState.age);
+		this.animate(wardenEntityRenderState.chargingSonicBoomAnimationState, WardenAnimations.CHARGING_SONIC_BOOM, wardenEntityRenderState.age);
+		this.animate(wardenEntityRenderState.diggingAnimationState, WardenAnimations.DIGGING, wardenEntityRenderState.age);
+		this.animate(wardenEntityRenderState.emergingAnimationState, WardenAnimations.EMERGING, wardenEntityRenderState.age);
+		this.animate(wardenEntityRenderState.roaringAnimationState, WardenAnimations.ROARING, wardenEntityRenderState.age);
+		this.animate(wardenEntityRenderState.sniffingAnimationState, WardenAnimations.SNIFFING, wardenEntityRenderState.age);
 	}
 
 	private void setHeadAngle(float yaw, float pitch) {
@@ -165,8 +164,8 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 		this.rightArm.pivotY = -13.0F;
 	}
 
-	private void setTendrilPitches(T warden, float animationProgress, float tickDelta) {
-		float f = warden.getTendrilPitch(tickDelta) * (float)(Math.cos((double)animationProgress * 2.25) * Math.PI * 0.1F);
+	private void setTendrilPitches(WardenEntityRenderState wardenEntityRenderState, float animationProgress) {
+		float f = wardenEntityRenderState.tendrilPitch * (float)(Math.cos((double)animationProgress * 2.25) * Math.PI * 0.1F);
 		this.leftTendril.pitch = f;
 		this.rightTendril.pitch = -f;
 	}

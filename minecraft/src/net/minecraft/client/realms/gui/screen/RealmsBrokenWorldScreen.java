@@ -23,11 +23,13 @@ import net.minecraft.client.realms.gui.RealmsWorldSlotButton;
 import net.minecraft.client.realms.task.OpenServerTask;
 import net.minecraft.client.realms.task.SwitchSlotTask;
 import net.minecraft.client.realms.util.RealmsTextureManager;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import org.slf4j.Logger;
 
@@ -245,22 +247,16 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 			identifier = RealmsTextureManager.getTextureId(String.valueOf(this.serverData.minigameId), this.serverData.minigameImage);
 		}
 
-		if (!activeSlot) {
-			context.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
-		} else if (activeSlot) {
-			float f = 0.9F + 0.1F * MathHelper.cos((float)this.animTick * 0.2F);
-			context.setShaderColor(f, f, f, 1.0F);
-		}
-
-		context.drawTexture(identifier, x + 3, y + 3, 0.0F, 0.0F, 74, 74, 74, 74);
 		if (activeSlot) {
-			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+			float f = 0.9F + 0.1F * MathHelper.cos((float)this.animTick * 0.2F);
+			context.drawTexture(RenderLayer::getGuiTextured, identifier, x + 3, y + 3, 0.0F, 0.0F, 74, 74, 74, 74, 74, 74, ColorHelper.fromFloats(1.0F, f, f, f));
+			context.drawGuiTexture(RenderLayer::getGuiTextured, SLOT_FRAME_TEXTURE, x, y, 80, 80);
 		} else {
-			context.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
+			int i = ColorHelper.fromFloats(1.0F, 0.56F, 0.56F, 0.56F);
+			context.drawTexture(RenderLayer::getGuiTextured, identifier, x + 3, y + 3, 0.0F, 0.0F, 74, 74, 74, 74, 74, 74, i);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, SLOT_FRAME_TEXTURE, x, y, 80, 80, i);
 		}
 
-		context.drawGuiTexture(SLOT_FRAME_TEXTURE, x, y, 80, 80);
 		context.drawCenteredTextWithShadow(this.textRenderer, slotName, x + 40, y + 66, Colors.WHITE);
-		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 }

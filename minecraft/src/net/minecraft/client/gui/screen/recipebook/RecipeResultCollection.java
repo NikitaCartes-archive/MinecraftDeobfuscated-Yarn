@@ -1,15 +1,16 @@
 package net.minecraft.client.gui.screen.recipebook;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.recipe.RecipeMatcher;
+import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.book.RecipeBook;
 import net.minecraft.registry.DynamicRegistryManager;
 
@@ -62,16 +63,16 @@ public class RecipeResultCollection {
 		}
 	}
 
-	public void computeCraftables(RecipeMatcher recipeFinder, int gridWidth, int gridHeight, RecipeBook recipeBook) {
+	public void populateRecipes(RecipeFinder finder, int width, int height, RecipeBook recipeBook) {
 		for (RecipeEntry<?> recipeEntry : this.recipes) {
-			boolean bl = recipeEntry.value().fits(gridWidth, gridHeight) && recipeBook.contains(recipeEntry);
+			boolean bl = recipeEntry.value().fits(width, height) && recipeBook.contains(recipeEntry);
 			if (bl) {
 				this.fittingRecipes.add(recipeEntry);
 			} else {
 				this.fittingRecipes.remove(recipeEntry);
 			}
 
-			if (bl && recipeFinder.match(recipeEntry.value(), null)) {
+			if (bl && finder.isCraftable(recipeEntry.value(), null)) {
 				this.craftableRecipes.add(recipeEntry);
 			} else {
 				this.craftableRecipes.remove(recipeEntry);
@@ -95,24 +96,16 @@ public class RecipeResultCollection {
 		return this.recipes;
 	}
 
-	public List<RecipeEntry<?>> getResults(boolean craftableOnly) {
-		List<RecipeEntry<?>> list = Lists.<RecipeEntry<?>>newArrayList();
-		Set<RecipeEntry<?>> set = craftableOnly ? this.craftableRecipes : this.fittingRecipes;
+	public List<RecipeEntry<?>> method_62050(RecipeResultCollection.RecipeFilterMode filterMode) {
+		Predicate<RecipeEntry<?>> predicate = switch (filterMode) {
+			case ANY -> this.fittingRecipes::contains;
+			case CRAFTABLE -> this.craftableRecipes::contains;
+			case NOT_CRAFTABLE -> recipe -> this.fittingRecipes.contains(recipe) && !this.craftableRecipes.contains(recipe);
+		};
+		List<RecipeEntry<?>> list = new ArrayList();
 
 		for (RecipeEntry<?> recipeEntry : this.recipes) {
-			if (set.contains(recipeEntry)) {
-				list.add(recipeEntry);
-			}
-		}
-
-		return list;
-	}
-
-	public List<RecipeEntry<?>> getRecipes(boolean craftable) {
-		List<RecipeEntry<?>> list = Lists.<RecipeEntry<?>>newArrayList();
-
-		for (RecipeEntry<?> recipeEntry : this.recipes) {
-			if (this.fittingRecipes.contains(recipeEntry) && this.craftableRecipes.contains(recipeEntry) == craftable) {
+			if (predicate.test(recipeEntry)) {
 				list.add(recipeEntry);
 			}
 		}
@@ -122,5 +115,12 @@ public class RecipeResultCollection {
 
 	public boolean hasSingleOutput() {
 		return this.singleOutput;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum RecipeFilterMode {
+		ANY,
+		CRAFTABLE,
+		NOT_CRAFTABLE;
 	}
 }

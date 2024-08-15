@@ -38,7 +38,7 @@ public class WardenAngerManager {
 	int primeAnger;
 	private static final Codec<Pair<UUID, Integer>> SUSPECT_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Uuids.INT_STREAM_CODEC.fieldOf("uuid").forGetter(Pair::getFirst), Codecs.NONNEGATIVE_INT.fieldOf("anger").forGetter(Pair::getSecond)
+					Uuids.INT_STREAM_CODEC.fieldOf("uuid").forGetter(Pair::getFirst), Codecs.NON_NEGATIVE_INT.fieldOf("anger").forGetter(Pair::getSecond)
 				)
 				.apply(instance, Pair::of)
 	);

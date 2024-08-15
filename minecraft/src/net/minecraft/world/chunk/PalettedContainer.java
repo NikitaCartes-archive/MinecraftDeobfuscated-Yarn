@@ -108,6 +108,12 @@ public class PalettedContainer<T> implements PaletteResizeListener<T>, ReadableC
 		this.data = data;
 	}
 
+	private PalettedContainer(PalettedContainer<T> container) {
+		this.idList = container.idList;
+		this.paletteProvider = container.paletteProvider;
+		this.data = container.data.copy(this);
+	}
+
 	public PalettedContainer(IndexedIterable<T> idList, T object, PalettedContainer.PaletteProvider paletteProvider) {
 		this.paletteProvider = paletteProvider;
 		this.idList = idList;
@@ -323,8 +329,9 @@ public class PalettedContainer<T> implements PaletteResizeListener<T>, ReadableC
 		return this.data.palette.hasAny(predicate);
 	}
 
+	@Override
 	public PalettedContainer<T> copy() {
-		return new PalettedContainer<>(this.idList, this.paletteProvider, this.data.copy());
+		return new PalettedContainer<>(this);
 	}
 
 	@Override
@@ -387,8 +394,8 @@ public class PalettedContainer<T> implements PaletteResizeListener<T>, ReadableC
 			buf.writeLongArray(this.storage.getData());
 		}
 
-		public PalettedContainer.Data<T> copy() {
-			return new PalettedContainer.Data<>(this.configuration, this.storage.copy(), this.palette.copy());
+		public PalettedContainer.Data<T> copy(PaletteResizeListener<T> resizeListener) {
+			return new PalettedContainer.Data<>(this.configuration, this.storage.copy(), this.palette.copy(resizeListener));
 		}
 	}
 

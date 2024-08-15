@@ -22,6 +22,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.Registries;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.util.Language;
 import net.minecraft.util.logging.DebugLoggerPrintStream;
@@ -71,7 +72,8 @@ public class Bootstrap {
 
 	private static void collectMissingGameRuleTranslations(Set<String> translations) {
 		final Language language = Language.getInstance();
-		GameRules.accept(new GameRules.Visitor() {
+		GameRules gameRules = new GameRules(FeatureFlags.FEATURE_MANAGER.getFeatureSet());
+		gameRules.accept(new GameRules.Visitor() {
 			@Override
 			public <T extends GameRules.Rule<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
 				if (!language.hasTranslation(key.getTranslationKey())) {

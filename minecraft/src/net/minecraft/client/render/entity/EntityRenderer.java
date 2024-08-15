@@ -1,5 +1,6 @@
 package net.minecraft.client.render.entity;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -9,10 +10,13 @@ import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAttachmentType;
 import net.minecraft.entity.Leashable;
+import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.entity.vehicle.ExperimentalMinecartController;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
@@ -24,17 +28,18 @@ import net.minecraft.world.LightType;
 import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
-public abstract class EntityRenderer<T extends Entity> {
+public abstract class EntityRenderer<T extends Entity, S extends EntityRenderState> {
 	protected static final float field_32921 = 0.025F;
 	public static final int field_52257 = 24;
 	protected final EntityRenderDispatcher dispatcher;
 	private final TextRenderer textRenderer;
 	protected float shadowRadius;
 	protected float shadowOpacity = 1.0F;
+	private final S state = this.getRenderState();
 
-	protected EntityRenderer(EntityRendererFactory.Context ctx) {
-		this.dispatcher = ctx.getRenderDispatcher();
-		this.textRenderer = ctx.getTextRenderer();
+	protected EntityRenderer(EntityRendererFactory.Context context) {
+		this.dispatcher = context.getRenderDispatcher();
+		this.textRenderer = context.getTextRenderer();
 	}
 
 	public final int getLight(T entity, float tickDelta) {
@@ -53,10 +58,10 @@ public abstract class EntityRenderer<T extends Entity> {
 	public boolean shouldRender(T entity, Frustum frustum, double x, double y, double z) {
 		if (!entity.shouldRender(x, y, z)) {
 			return false;
-		} else if (entity.ignoreCameraFrustum) {
+		} else if (!this.canBeCulled(entity)) {
 			return true;
 		} else {
-			Box box = entity.getVisibilityBoundingBox().expand(0.5);
+			Box box = this.getBoundingBox(entity).expand(0.5);
 			if (box.isNaN() || box.getAverageSideLength() == 0.0) {
 				box = new Box(entity.getX() - 2.0, entity.getY() - 2.0, entity.getZ() - 2.0, entity.getX() + 2.0, entity.getY() + 2.0, entity.getZ() + 2.0);
 			}
@@ -67,7 +72,7 @@ public abstract class EntityRenderer<T extends Entity> {
 				if (entity instanceof Leashable leashable) {
 					Entity entity2 = leashable.getLeashHolder();
 					if (entity2 != null) {
-						return frustum.isVisible(entity2.getVisibilityBoundingBox());
+						return frustum.isVisible(this.dispatcher.getRenderer(entity2).getBoundingBox(entity2));
 					}
 				}
 
@@ -76,56 +81,80 @@ public abstract class EntityRenderer<T extends Entity> {
 		}
 	}
 
-	public Vec3d getPositionOffset(T entity, float tickDelta) {
-		return Vec3d.ZERO;
+	protected Box getBoundingBox(T entity) {
+		return entity.getBoundingBox();
 	}
 
-	public void render(T entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-		if (entity instanceof Leashable leashable) {
-			Entity entity2 = leashable.getLeashHolder();
-			if (entity2 != null) {
-				this.renderLeash(entity, tickDelta, matrices, vertexConsumers, entity2);
-			}
+	protected boolean canBeCulled(T entity) {
+		return true;
+	}
+
+	public Vec3d getPositionOffset(S state) {
+		return state.positionOffset != null ? state.positionOffset : Vec3d.ZERO;
+	}
+
+	public void render(S state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+		EntityRenderState.LeashData leashData = state.leashData;
+		if (leashData != null) {
+			renderLeash(matrices, vertexConsumers, leashData);
 		}
 
-		if (this.hasLabel(entity)) {
-			this.renderLabelIfPresent(entity, entity.getDisplayName(), matrices, vertexConsumers, light, tickDelta);
+		if (state.displayName != null) {
+			this.renderLabelIfPresent(state, state.displayName, matrices, vertexConsumers, light);
 		}
 	}
 
-	private <E extends Entity> void renderLeash(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, E leashHolder) {
+	private static void renderLeash(MatrixStack matrices, VertexConsumerProvider vertexConsumers, EntityRenderState.LeashData leashData) {
+		float f = 0.025F;
+		float g = (float)(leashData.endPos.x - leashData.startPos.x);
+		float h = (float)(leashData.endPos.y - leashData.startPos.y);
+		float i = (float)(leashData.endPos.z - leashData.startPos.z);
+		float j = MathHelper.inverseSqrt(g * g + i * i) * 0.025F / 2.0F;
+		float k = i * j;
+		float l = g * j;
 		matrices.push();
-		Vec3d vec3d = leashHolder.getLeashPos(tickDelta);
-		double d = (double)(entity.lerpYaw(tickDelta) * (float) (Math.PI / 180.0)) + (Math.PI / 2);
-		Vec3d vec3d2 = entity.getLeashOffset(tickDelta);
-		double e = Math.cos(d) * vec3d2.z + Math.sin(d) * vec3d2.x;
-		double f = Math.sin(d) * vec3d2.z - Math.cos(d) * vec3d2.x;
-		double g = MathHelper.lerp((double)tickDelta, entity.prevX, entity.getX()) + e;
-		double h = MathHelper.lerp((double)tickDelta, entity.prevY, entity.getY()) + vec3d2.y;
-		double i = MathHelper.lerp((double)tickDelta, entity.prevZ, entity.getZ()) + f;
-		matrices.translate(e, vec3d2.y, f);
-		float j = (float)(vec3d.x - g);
-		float k = (float)(vec3d.y - h);
-		float l = (float)(vec3d.z - i);
-		float m = 0.025F;
+		matrices.translate(leashData.offset);
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLeash());
 		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-		float n = MathHelper.inverseSqrt(j * j + l * l) * 0.025F / 2.0F;
-		float o = l * n;
-		float p = j * n;
-		BlockPos blockPos = BlockPos.ofFloored(entity.getCameraPosVec(tickDelta));
-		BlockPos blockPos2 = BlockPos.ofFloored(leashHolder.getCameraPosVec(tickDelta));
-		int q = this.getBlockLight(entity, blockPos);
-		int r = this.dispatcher.getRenderer(leashHolder).getBlockLight(leashHolder, blockPos2);
-		int s = entity.getWorld().getLightLevel(LightType.SKY, blockPos);
-		int t = entity.getWorld().getLightLevel(LightType.SKY, blockPos2);
 
-		for (int u = 0; u <= 24; u++) {
-			renderLeashSegment(vertexConsumer, matrix4f, j, k, l, q, r, s, t, 0.025F, 0.025F, o, p, u, false);
+		for (int m = 0; m <= 24; m++) {
+			renderLeashSegment(
+				vertexConsumer,
+				matrix4f,
+				g,
+				h,
+				i,
+				leashData.leashedEntityBlockLight,
+				leashData.leashHolderBlockLight,
+				leashData.leashedEntitySkyLight,
+				leashData.leashHolderSkyLight,
+				0.025F,
+				0.025F,
+				k,
+				l,
+				m,
+				false
+			);
 		}
 
-		for (int u = 24; u >= 0; u--) {
-			renderLeashSegment(vertexConsumer, matrix4f, j, k, l, q, r, s, t, 0.025F, 0.0F, o, p, u, true);
+		for (int m = 24; m >= 0; m--) {
+			renderLeashSegment(
+				vertexConsumer,
+				matrix4f,
+				g,
+				h,
+				i,
+				leashData.leashedEntityBlockLight,
+				leashData.leashHolderBlockLight,
+				leashData.leashedEntitySkyLight,
+				leashData.leashHolderSkyLight,
+				0.025F,
+				0.0F,
+				k,
+				l,
+				m,
+				true
+			);
 		}
 
 		matrices.pop();
@@ -168,45 +197,111 @@ public abstract class EntityRenderer<T extends Entity> {
 	 * 
 	 * <p>Checks for a custom nametag on living entities, and for teams/team visibilities for players.
 	 */
-	protected boolean hasLabel(T entity) {
+	protected boolean hasLabel(T entity, double squaredDistanceToCamera) {
 		return entity.shouldRenderName() || entity.hasCustomName() && entity == this.dispatcher.targetedEntity;
 	}
 
-	public abstract Identifier getTexture(T entity);
+	public abstract Identifier getTexture(S state);
 
 	public TextRenderer getTextRenderer() {
 		return this.textRenderer;
 	}
 
-	protected void renderLabelIfPresent(T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float tickDelta) {
-		double d = this.dispatcher.getSquaredDistanceToCamera(entity);
-		if (!(d > 4096.0)) {
-			Vec3d vec3d = entity.getAttachments().getPointNullable(EntityAttachmentType.NAME_TAG, 0, entity.getYaw(tickDelta));
-			if (vec3d != null) {
-				boolean bl = !entity.isSneaky();
-				int i = "deadmau5".equals(text.getString()) ? -10 : 0;
-				matrices.push();
-				matrices.translate(vec3d.x, vec3d.y + 0.5, vec3d.z);
-				matrices.multiply(this.dispatcher.getRotation());
-				matrices.scale(0.025F, -0.025F, 0.025F);
-				Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-				float f = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
-				int j = (int)(f * 255.0F) << 24;
-				TextRenderer textRenderer = this.getTextRenderer();
-				float g = (float)(-textRenderer.getWidth(text) / 2);
-				textRenderer.draw(
-					text, g, (float)i, 553648127, false, matrix4f, vertexConsumers, bl ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.NORMAL, j, light
-				);
-				if (bl) {
-					textRenderer.draw(text, g, (float)i, Colors.WHITE, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
-				}
-
-				matrices.pop();
+	protected void renderLabelIfPresent(S state, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+		Vec3d vec3d = state.nameLabelPos;
+		if (vec3d != null) {
+			boolean bl = !state.sneaking;
+			int i = "deadmau5".equals(text.getString()) ? -10 : 0;
+			matrices.push();
+			matrices.translate(vec3d.x, vec3d.y + 0.5, vec3d.z);
+			matrices.multiply(this.dispatcher.getRotation());
+			matrices.scale(0.025F, -0.025F, 0.025F);
+			Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+			float f = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
+			int j = (int)(f * 255.0F) << 24;
+			TextRenderer textRenderer = this.getTextRenderer();
+			float g = (float)(-textRenderer.getWidth(text) / 2);
+			textRenderer.draw(
+				text, g, (float)i, -2130706433, false, matrix4f, vertexConsumers, bl ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.NORMAL, j, light
+			);
+			if (bl) {
+				textRenderer.draw(text, g, (float)i, Colors.WHITE, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
 			}
+
+			matrices.pop();
 		}
 	}
 
-	protected float getShadowRadius(T entity) {
+	@Nullable
+	protected Text getDisplayName(T entity) {
+		return entity.getDisplayName();
+	}
+
+	protected float getShadowRadius(S state) {
 		return this.shadowRadius;
+	}
+
+	public abstract S getRenderState();
+
+	public final S getAndUpdateRenderState(T entity, float tickDelta) {
+		S entityRenderState = this.state;
+		this.updateRenderState(entity, entityRenderState, tickDelta);
+		return entityRenderState;
+	}
+
+	public void updateRenderState(T entity, S state, float tickDelta) {
+		state.x = MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());
+		state.y = MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.getY());
+		state.z = MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
+		state.invisible = entity.isInvisible();
+		state.age = (float)entity.age + tickDelta;
+		state.width = entity.getWidth();
+		state.height = entity.getHeight();
+		state.standingEyeHeight = entity.getStandingEyeHeight();
+		if (entity.hasVehicle()
+			&& entity.getVehicle() instanceof AbstractMinecartEntity abstractMinecartEntity
+			&& abstractMinecartEntity.getController() instanceof ExperimentalMinecartController experimentalMinecartController
+			&& experimentalMinecartController.method_61614()) {
+			double d = MathHelper.lerp((double)tickDelta, abstractMinecartEntity.lastRenderX, abstractMinecartEntity.getX());
+			double e = MathHelper.lerp((double)tickDelta, abstractMinecartEntity.lastRenderY, abstractMinecartEntity.getY());
+			double f = MathHelper.lerp((double)tickDelta, abstractMinecartEntity.lastRenderZ, abstractMinecartEntity.getZ());
+			state.positionOffset = experimentalMinecartController.getLerpedPosition(tickDelta).subtract(new Vec3d(d, e, f));
+		} else {
+			state.positionOffset = null;
+		}
+
+		state.squaredDistanceToCamera = this.dispatcher.getSquaredDistanceToCamera(entity);
+		boolean bl = state.squaredDistanceToCamera < 4096.0 && this.hasLabel(entity, state.squaredDistanceToCamera);
+		if (bl) {
+			state.displayName = this.getDisplayName(entity);
+			state.nameLabelPos = entity.getAttachments().getPointNullable(EntityAttachmentType.NAME_TAG, 0, entity.getLerpedYaw(tickDelta));
+		} else {
+			state.displayName = null;
+		}
+
+		state.sneaking = entity.isSneaky();
+		Entity entity2 = entity instanceof Leashable leashable ? leashable.getLeashHolder() : null;
+		if (entity2 != null) {
+			float g = entity.lerpYaw(tickDelta) * (float) (Math.PI / 180.0);
+			Vec3d vec3d = entity.getLeashOffset(tickDelta).rotateY(-g);
+			BlockPos blockPos = BlockPos.ofFloored(entity.getCameraPosVec(tickDelta));
+			BlockPos blockPos2 = BlockPos.ofFloored(entity2.getCameraPosVec(tickDelta));
+			if (state.leashData == null) {
+				state.leashData = new EntityRenderState.LeashData();
+			}
+
+			EntityRenderState.LeashData leashData = state.leashData;
+			leashData.offset = vec3d;
+			leashData.startPos = entity.getLerpedPos(tickDelta).add(vec3d);
+			leashData.endPos = entity2.getLeashPos(tickDelta);
+			leashData.leashedEntityBlockLight = this.getBlockLight(entity, blockPos);
+			leashData.leashHolderBlockLight = this.dispatcher.getRenderer(entity2).getBlockLight(entity2, blockPos2);
+			leashData.leashedEntitySkyLight = entity.getWorld().getLightLevel(LightType.SKY, blockPos);
+			leashData.leashHolderSkyLight = entity.getWorld().getLightLevel(LightType.SKY, blockPos2);
+		} else {
+			state.leashData = null;
+		}
+
+		state.onFire = entity.doesRenderOnFire();
 	}
 }

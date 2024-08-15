@@ -16,13 +16,12 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -71,18 +70,14 @@ public class ArmorItem extends Item implements Equipment {
 				AttributeModifiersComponent.Builder builder = AttributeModifiersComponent.builder();
 				AttributeModifierSlot attributeModifierSlot = AttributeModifierSlot.forEquipmentSlot(type.getEquipmentSlot());
 				Identifier identifier = Identifier.ofVanilla("armor." + type.getName());
+				builder.add(EntityAttributes.ARMOR, new EntityAttributeModifier(identifier, (double)i, EntityAttributeModifier.Operation.ADD_VALUE), attributeModifierSlot);
 				builder.add(
-					EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier(identifier, (double)i, EntityAttributeModifier.Operation.ADD_VALUE), attributeModifierSlot
-				);
-				builder.add(
-					EntityAttributes.GENERIC_ARMOR_TOUGHNESS,
-					new EntityAttributeModifier(identifier, (double)f, EntityAttributeModifier.Operation.ADD_VALUE),
-					attributeModifierSlot
+					EntityAttributes.ARMOR_TOUGHNESS, new EntityAttributeModifier(identifier, (double)f, EntityAttributeModifier.Operation.ADD_VALUE), attributeModifierSlot
 				);
 				float g = material.value().knockbackResistance();
 				if (g > 0.0F) {
 					builder.add(
-						EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE,
+						EntityAttributes.KNOCKBACK_RESISTANCE,
 						new EntityAttributeModifier(identifier, (double)g, EntityAttributeModifier.Operation.ADD_VALUE),
 						attributeModifierSlot
 					);
@@ -108,11 +103,11 @@ public class ArmorItem extends Item implements Equipment {
 
 	@Override
 	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-		return ((Ingredient)this.material.value().repairIngredient().get()).test(ingredient) || super.canRepair(stack, ingredient);
+		return this.material.value().repairIngredient().test(ingredient) || super.canRepair(stack, ingredient);
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		return this.equipAndSwap(this, world, user, hand);
 	}
 

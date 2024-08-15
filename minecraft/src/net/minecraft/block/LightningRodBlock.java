@@ -19,6 +19,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.block.OrientationHelper;
 
 public class LightningRodBlock extends RodBlock implements Waterloggable {
 	public static final MapCodec<LightningRodBlock> CODEC = createCodec(LightningRodBlock::new);
@@ -86,7 +87,8 @@ public class LightningRodBlock extends RodBlock implements Waterloggable {
 	}
 
 	private void updateNeighbors(BlockState state, World world, BlockPos pos) {
-		world.updateNeighborsAlways(pos.offset(((Direction)state.get(FACING)).getOpposite()), this);
+		Direction direction = ((Direction)state.get(FACING)).getOpposite();
+		world.updateNeighborsAlways(pos.offset(direction), this, OrientationHelper.getEmissionOrientation(world, direction, null));
 	}
 
 	@Override

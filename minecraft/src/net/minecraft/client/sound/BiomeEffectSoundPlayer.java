@@ -82,7 +82,7 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 					);
 					int j = world.getLightLevel(LightType.SKY, blockPos);
 					if (j > 0) {
-						this.moodPercentage = this.moodPercentage - (float)j / (float)world.getMaxLightLevel() * 0.001F;
+						this.moodPercentage -= (float)j / 15.0F * 0.001F;
 					} else {
 						this.moodPercentage = this.moodPercentage - (float)(world.getLightLevel(LightType.BLOCK, blockPos) - 1) / (float)sound.getCultivationTicks();
 					}

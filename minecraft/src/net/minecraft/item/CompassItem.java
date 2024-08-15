@@ -66,7 +66,7 @@ public class CompassItem extends Item {
 				}
 			}
 
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		}
 	}
 

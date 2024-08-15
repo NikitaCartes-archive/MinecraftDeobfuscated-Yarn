@@ -9,12 +9,12 @@ import net.minecraft.util.dynamic.Codecs;
 public record DimensionPadding(int bottom, int top) {
 	private static final Codec<DimensionPadding> OBJECT_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.NONNEGATIVE_INT.lenientOptionalFieldOf("bottom", 0).forGetter(padding -> padding.bottom),
-					Codecs.NONNEGATIVE_INT.lenientOptionalFieldOf("top", 0).forGetter(padding -> padding.top)
+					Codecs.NON_NEGATIVE_INT.lenientOptionalFieldOf("bottom", 0).forGetter(padding -> padding.bottom),
+					Codecs.NON_NEGATIVE_INT.lenientOptionalFieldOf("top", 0).forGetter(padding -> padding.top)
 				)
 				.apply(instance, DimensionPadding::new)
 	);
-	public static final Codec<DimensionPadding> CODEC = Codec.either(Codecs.NONNEGATIVE_INT, OBJECT_CODEC)
+	public static final Codec<DimensionPadding> CODEC = Codec.either(Codecs.NON_NEGATIVE_INT, OBJECT_CODEC)
 		.xmap(
 			either -> either.map(DimensionPadding::new, Function.identity()),
 			padding -> padding.paddedBySameDistance() ? Either.left(padding.bottom) : Either.right(padding)

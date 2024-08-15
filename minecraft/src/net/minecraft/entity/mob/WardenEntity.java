@@ -84,6 +84,7 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	private static final float KNOCKBACK_RESISTANCE = 1.0F;
 	private static final float ATTACK_KNOCKBACK = 1.5F;
 	private static final int ATTACK_DAMAGE = 30;
+	private static final int FOLLOW_RANGE = 24;
 	private static final TrackedData<Integer> ANGER = DataTracker.registerData(WardenEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final int field_38149 = 200;
 	private static final int DARKNESS_EFFECT_DURATION = 260;
@@ -178,11 +179,12 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 
 	public static DefaultAttributeContainer.Builder addAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 500.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0)
-			.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.5)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 30.0);
+			.add(EntityAttributes.MAX_HEALTH, 500.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.KNOCKBACK_RESISTANCE, 1.0)
+			.add(EntityAttributes.ATTACK_KNOCKBACK, 1.5)
+			.add(EntityAttributes.ATTACK_DAMAGE, 30.0)
+			.add(EntityAttributes.FOLLOW_RANGE, 24.0);
 	}
 
 	@Override
@@ -324,7 +326,7 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	}
 
 	private void addDigParticles(AnimationState animationState) {
-		if ((float)animationState.getTimeRunning() < 4500.0F) {
+		if ((float)animationState.getTimeInMilliseconds((float)this.age) < 4500.0F) {
 			Random random = this.getRandom();
 			BlockState blockState = this.getSteppingBlockState();
 			if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {

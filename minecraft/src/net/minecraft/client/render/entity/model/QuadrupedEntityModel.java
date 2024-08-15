@@ -1,6 +1,5 @@
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Dilation;
@@ -9,7 +8,7 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -43,7 +42,8 @@ import net.minecraft.util.math.MathHelper;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class QuadrupedEntityModel<T extends Entity> extends AnimalModel<T> {
+public class QuadrupedEntityModel<T extends LivingEntityRenderState> extends EntityModel<T> {
+	protected final ModelPart root;
 	protected final ModelPart head;
 	protected final ModelPart body;
 	protected final ModelPart rightHindLeg;
@@ -51,16 +51,8 @@ public class QuadrupedEntityModel<T extends Entity> extends AnimalModel<T> {
 	protected final ModelPart rightFrontLeg;
 	protected final ModelPart leftFrontLeg;
 
-	protected QuadrupedEntityModel(
-		ModelPart root,
-		boolean headScaled,
-		float childHeadYOffset,
-		float childHeadZOffset,
-		float invertedChildHeadScale,
-		float invertedChildBodyScale,
-		int childBodyYOffset
-	) {
-		super(headScaled, childHeadYOffset, childHeadZOffset, invertedChildHeadScale, invertedChildBodyScale, (float)childBodyYOffset);
+	protected QuadrupedEntityModel(ModelPart root) {
+		this.root = root;
 		this.head = root.getChild(EntityModelPartNames.HEAD);
 		this.body = root.getChild(EntityModelPartNames.BODY);
 		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
@@ -90,23 +82,19 @@ public class QuadrupedEntityModel<T extends Entity> extends AnimalModel<T> {
 		return modelData;
 	}
 
-	@Override
-	protected Iterable<ModelPart> getHeadParts() {
-		return ImmutableList.<ModelPart>of(this.head);
+	public void setAngles(T livingEntityRenderState) {
+		this.head.pitch = livingEntityRenderState.pitch * (float) (Math.PI / 180.0);
+		this.head.yaw = livingEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
+		float f = livingEntityRenderState.limbFrequency;
+		float g = livingEntityRenderState.limbAmplitudeMultiplier;
+		this.rightHindLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
+		this.leftHindLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
+		this.rightFrontLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
+		this.leftFrontLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
 	}
 
 	@Override
-	protected Iterable<ModelPart> getBodyParts() {
-		return ImmutableList.<ModelPart>of(this.body, this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg);
-	}
-
-	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
-		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
-		this.rightHindLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
-		this.leftHindLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
-		this.rightFrontLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
-		this.leftFrontLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
+	public ModelPart getPart() {
+		return this.root;
 	}
 }

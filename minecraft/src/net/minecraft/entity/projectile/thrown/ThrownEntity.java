@@ -1,7 +1,6 @@
 package net.minecraft.entity.projectile.thrown;
 
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.particle.ParticleTypes;
@@ -10,6 +9,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public abstract class ThrownEntity extends ProjectileEntity {
+	private static final float field_52510 = 12.25F;
+
 	protected ThrownEntity(EntityType<? extends ThrownEntity> entityType, World world) {
 		super(entityType, world);
 	}
@@ -19,20 +20,19 @@ public abstract class ThrownEntity extends ProjectileEntity {
 		this.setPosition(x, y, z);
 	}
 
-	protected ThrownEntity(EntityType<? extends ThrownEntity> type, LivingEntity owner, World world) {
-		this(type, owner.getX(), owner.getEyeY() - 0.1F, owner.getZ(), world);
-		this.setOwner(owner);
-	}
-
 	@Override
 	public boolean shouldRender(double distance) {
-		double d = this.getBoundingBox().getAverageSideLength() * 4.0;
-		if (Double.isNaN(d)) {
-			d = 4.0;
-		}
+		if (this.age < 2 && distance < 12.25) {
+			return false;
+		} else {
+			double d = this.getBoundingBox().getAverageSideLength() * 4.0;
+			if (Double.isNaN(d)) {
+				d = 4.0;
+			}
 
-		d *= 64.0;
-		return distance < d * d;
+			d *= 64.0;
+			return distance < d * d;
+		}
 	}
 
 	@Override
@@ -48,7 +48,6 @@ public abstract class ThrownEntity extends ProjectileEntity {
 			this.hitOrDeflect(hitResult);
 		}
 
-		this.checkBlockCollision();
 		Vec3d vec3d = this.getVelocity();
 		double d = this.getX() + vec3d.x;
 		double e = this.getY() + vec3d.y;
@@ -69,6 +68,7 @@ public abstract class ThrownEntity extends ProjectileEntity {
 		this.setVelocity(vec3d.multiply((double)h));
 		this.applyGravity();
 		this.setPosition(d, e, f);
+		this.checkBlockCollision();
 	}
 
 	@Override

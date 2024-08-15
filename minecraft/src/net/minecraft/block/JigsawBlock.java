@@ -70,7 +70,7 @@ public class JigsawBlock extends Block implements BlockEntityProvider, OperatorB
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof JigsawBlockEntity && player.isCreativeLevelTwoOp()) {
 			player.openJigsawScreen((JigsawBlockEntity)blockEntity);
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return ActionResult.PASS;
 		}

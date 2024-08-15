@@ -23,7 +23,7 @@ public record FoodComponent(
 	private static final float DEFAULT_EAT_SECONDS = 1.6F;
 	public static final Codec<FoodComponent> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.NONNEGATIVE_INT.fieldOf("nutrition").forGetter(FoodComponent::nutrition),
+					Codecs.NON_NEGATIVE_INT.fieldOf("nutrition").forGetter(FoodComponent::nutrition),
 					Codec.FLOAT.fieldOf("saturation").forGetter(FoodComponent::saturation),
 					Codec.BOOL.optionalFieldOf("can_always_eat", Boolean.valueOf(false)).forGetter(FoodComponent::canAlwaysEat),
 					Codecs.POSITIVE_FLOAT.optionalFieldOf("eat_seconds", 1.6F).forGetter(FoodComponent::eatSeconds),

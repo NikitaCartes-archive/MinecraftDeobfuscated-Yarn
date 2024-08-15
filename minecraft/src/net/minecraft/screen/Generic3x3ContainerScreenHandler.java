@@ -24,21 +24,16 @@ public class Generic3x3ContainerScreenHandler extends ScreenHandler {
 		checkSize(inventory, 9);
 		this.inventory = inventory;
 		inventory.onOpen(playerInventory.player);
+		this.add3x3Slots(inventory, 62, 17);
+		this.addPlayerSlots(playerInventory, 8, 84);
+	}
 
+	protected void add3x3Slots(Inventory inventory, int x, int y) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				this.addSlot(new Slot(inventory, j + i * 3, 62 + j * 18, 17 + i * 18));
+				int k = j + i * 3;
+				this.addSlot(new Slot(inventory, k, x + j * 18, y + i * 18));
 			}
-		}
-
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 9; j++) {
-				this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
-			}
-		}
-
-		for (int i = 0; i < 9; i++) {
-			this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
 		}
 	}
 

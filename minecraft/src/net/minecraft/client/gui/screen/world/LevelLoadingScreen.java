@@ -12,6 +12,7 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.server.WorldGenerationProgressTracker;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.ChunkStatus;
 
@@ -97,22 +98,20 @@ public class LevelLoadingScreen extends Screen {
 		int o = centerY - m / 2;
 		int p = k / 2 + 1;
 		int q = -16772609;
-		context.draw(() -> {
-			if (pixelMargin != 0) {
-				context.fill(centerX - p, centerY - p, centerX - p + 1, centerY + p, -16772609);
-				context.fill(centerX + p - 1, centerY - p, centerX + p, centerY + p, -16772609);
-				context.fill(centerX - p, centerY - p, centerX + p, centerY - p + 1, -16772609);
-				context.fill(centerX - p, centerY + p - 1, centerX + p, centerY + p, -16772609);
-			}
+		if (pixelMargin != 0) {
+			context.fill(centerX - p, centerY - p, centerX - p + 1, centerY + p, -16772609);
+			context.fill(centerX + p - 1, centerY - p, centerX + p, centerY + p, -16772609);
+			context.fill(centerX - p, centerY - p, centerX + p, centerY - p + 1, -16772609);
+			context.fill(centerX - p, centerY + p - 1, centerX + p, centerY + p, -16772609);
+		}
 
-			for (int r = 0; r < l; r++) {
-				for (int s = 0; s < l; s++) {
-					ChunkStatus chunkStatus = progressProvider.getChunkStatus(r, s);
-					int t = n + r * i;
-					int u = o + s * i;
-					context.fill(t, u, t + pixelSize, u + pixelSize, STATUS_TO_COLOR.getInt(chunkStatus) | 0xFF000000);
-				}
+		for (int r = 0; r < l; r++) {
+			for (int s = 0; s < l; s++) {
+				ChunkStatus chunkStatus = progressProvider.getChunkStatus(r, s);
+				int t = n + r * i;
+				int u = o + s * i;
+				context.fill(t, u, t + pixelSize, u + pixelSize, ColorHelper.fullAlpha(STATUS_TO_COLOR.getInt(chunkStatus)));
 			}
-		});
+		}
 	}
 }

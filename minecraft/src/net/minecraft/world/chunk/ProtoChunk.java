@@ -1,7 +1,7 @@
 package net.minecraft.world.chunk;
 
 import com.google.common.collect.Lists;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.shorts.ShortList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -29,7 +29,6 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
 import net.minecraft.world.chunk.light.LightingProvider;
-import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.structure.Structure;
@@ -42,7 +41,8 @@ public class ProtoChunk extends Chunk {
 	private volatile LightingProvider lightingProvider;
 	private volatile ChunkStatus status = ChunkStatus.EMPTY;
 	private final List<NbtCompound> entities = Lists.<NbtCompound>newArrayList();
-	private final Map<GenerationStep.Carver, CarvingMask> carvingMasks = new Object2ObjectArrayMap<>();
+	@Nullable
+	private CarvingMask carvingMask;
 	@Nullable
 	private BelowZeroRetrogen belowZeroRetrogen;
 	private final SimpleTickScheduler<Block> blockTickScheduler;
@@ -78,8 +78,8 @@ public class ProtoChunk extends Chunk {
 	}
 
 	@Override
-	public Chunk.TickSchedulers getTickSchedulers() {
-		return new Chunk.TickSchedulers(this.blockTickScheduler, this.fluidTickScheduler);
+	public Chunk.TickSchedulers getTickSchedulers(long time) {
+		return new Chunk.TickSchedulers(this.blockTickScheduler.collectTicks(time), this.fluidTickScheduler.collectTicks(time));
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public class ProtoChunk extends Chunk {
 						this.lightingProvider.setSectionStatus(pos, bl2);
 					}
 
-					if (ChunkLightProvider.needsLightUpdate(this, pos, blockState, state)) {
+					if (ChunkLightProvider.needsLightUpdate(blockState, state)) {
 						this.chunkSkyLight.isSkyLightAccessible(this, m, j, o);
 						this.lightingProvider.checkBlock(pos);
 					}
@@ -256,8 +256,8 @@ public class ProtoChunk extends Chunk {
 	}
 
 	@Override
-	public void markBlockForPostProcessing(short packedPos, int index) {
-		Chunk.getList(this.postProcessingLists, index).add(packedPos);
+	public void markBlocksForPostProcessing(ShortList packedPositions, int index) {
+		Chunk.getList(this.postProcessingLists, index).addAll(packedPositions);
 	}
 
 	public Map<BlockPos, NbtCompound> getBlockEntityNbts() {
@@ -278,16 +278,20 @@ public class ProtoChunk extends Chunk {
 	}
 
 	@Nullable
-	public CarvingMask getCarvingMask(GenerationStep.Carver step) {
-		return (CarvingMask)this.carvingMasks.get(step);
+	public CarvingMask getCarvingMask() {
+		return this.carvingMask;
 	}
 
-	public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver step) {
-		return (CarvingMask)this.carvingMasks.computeIfAbsent(step, step2 -> new CarvingMask(this.getHeight(), this.getBottomY()));
+	public CarvingMask getOrCreateCarvingMask() {
+		if (this.carvingMask == null) {
+			this.carvingMask = new CarvingMask(this.getHeight(), this.getBottomY());
+		}
+
+		return this.carvingMask;
 	}
 
-	public void setCarvingMask(GenerationStep.Carver step, CarvingMask carvingMask) {
-		this.carvingMasks.put(step, carvingMask);
+	public void setCarvingMask(CarvingMask carvingMask) {
+		this.carvingMask = carvingMask;
 	}
 
 	public void setLightingProvider(LightingProvider lightingProvider) {

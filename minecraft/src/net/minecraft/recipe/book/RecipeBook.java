@@ -4,7 +4,6 @@ import com.google.common.collect.Sets;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.util.Identifier;
 
 public class RecipeBook {
@@ -69,10 +68,6 @@ public class RecipeBook {
 
 	public void setGuiOpen(RecipeBookCategory category, boolean open) {
 		this.options.setGuiOpen(category, open);
-	}
-
-	public boolean isFilteringCraftable(AbstractRecipeScreenHandler<?, ?> handler) {
-		return this.isFilteringCraftable(handler.getCategory());
 	}
 
 	public boolean isFilteringCraftable(RecipeBookCategory category) {

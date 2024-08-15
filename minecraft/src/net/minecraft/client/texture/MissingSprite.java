@@ -24,15 +24,14 @@ public final class MissingSprite {
 
 	private static NativeImage createImage(int width, int height) {
 		NativeImage nativeImage = new NativeImage(width, height, false);
-		int i = -16777216;
-		int j = -524040;
+		int i = -524040;
 
-		for (int k = 0; k < height; k++) {
-			for (int l = 0; l < width; l++) {
-				if (k < height / 2 ^ l < width / 2) {
-					nativeImage.setColor(l, k, -524040);
+		for (int j = 0; j < height; j++) {
+			for (int k = 0; k < width; k++) {
+				if (j < height / 2 ^ k < width / 2) {
+					nativeImage.setColorArgb(k, j, -524040);
 				} else {
-					nativeImage.setColor(l, k, -16777216);
+					nativeImage.setColorArgb(k, j, -16777216);
 				}
 			}
 		}

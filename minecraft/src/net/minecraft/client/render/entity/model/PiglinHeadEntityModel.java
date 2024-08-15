@@ -5,9 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.block.entity.SkullBlockEntityModel;
-import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class PiglinHeadEntityModel extends SkullBlockEntityModel {
@@ -23,7 +21,7 @@ public class PiglinHeadEntityModel extends SkullBlockEntityModel {
 
 	public static ModelData getModelData() {
 		ModelData modelData = new ModelData();
-		PiglinEntityModel.addHead(Dilation.NONE, modelData);
+		PiglinEntityModel.getModelPartData(Dilation.NONE, modelData);
 		return modelData;
 	}
 
@@ -37,7 +35,7 @@ public class PiglinHeadEntityModel extends SkullBlockEntityModel {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-		this.head.render(matrices, vertices, light, overlay, color);
+	public ModelPart getPart() {
+		return this.head;
 	}
 }

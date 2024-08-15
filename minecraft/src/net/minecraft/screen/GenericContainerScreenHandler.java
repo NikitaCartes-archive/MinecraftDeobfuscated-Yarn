@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 
 public class GenericContainerScreenHandler extends ScreenHandler {
-	private static final int NUM_COLUMNS = 9;
 	private final Inventory inventory;
 	private final int rows;
 
@@ -54,22 +53,17 @@ public class GenericContainerScreenHandler extends ScreenHandler {
 		this.inventory = inventory;
 		this.rows = rows;
 		inventory.onOpen(playerInventory.player);
-		int i = (this.rows - 4) * 18;
+		int i = 18;
+		this.addInventorySlots(inventory, 8, 18);
+		int j = 18 + this.rows * 18 + 13;
+		this.addPlayerSlots(playerInventory, 8, j);
+	}
 
-		for (int j = 0; j < this.rows; j++) {
-			for (int k = 0; k < 9; k++) {
-				this.addSlot(new Slot(inventory, k + j * 9, 8 + k * 18, 18 + j * 18));
+	private void addInventorySlots(Inventory inventory, int left, int top) {
+		for (int i = 0; i < this.rows; i++) {
+			for (int j = 0; j < 9; j++) {
+				this.addSlot(new Slot(inventory, j + i * 9, left + j * 18, top + i * 18));
 			}
-		}
-
-		for (int j = 0; j < 3; j++) {
-			for (int k = 0; k < 9; k++) {
-				this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 103 + j * 18 + i));
-			}
-		}
-
-		for (int j = 0; j < 9; j++) {
-			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 161 + i));
 		}
 	}
 

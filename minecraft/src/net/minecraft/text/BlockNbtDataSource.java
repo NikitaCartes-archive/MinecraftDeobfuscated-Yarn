@@ -39,7 +39,7 @@ public record BlockNbtDataSource(String rawPos, @Nullable PosArgument pos) imple
 		if (this.pos != null) {
 			ServerWorld serverWorld = source.getWorld();
 			BlockPos blockPos = this.pos.toAbsoluteBlockPos(source);
-			if (serverWorld.canSetBlock(blockPos)) {
+			if (serverWorld.isPosLoaded(blockPos)) {
 				BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 				if (blockEntity != null) {
 					return Stream.of(blockEntity.createNbtWithIdentifyingData(source.getRegistryManager()));

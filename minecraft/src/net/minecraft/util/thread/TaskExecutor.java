@@ -13,7 +13,7 @@ import net.minecraft.util.profiler.SampleType;
 import net.minecraft.util.profiler.Sampler;
 import org.slf4j.Logger;
 
-public class TaskExecutor<T> implements SampleableExecutor, MessageListener<T>, AutoCloseable, Runnable {
+public class TaskExecutor<T> implements SampleableExecutor, MessageListener<T>, Runnable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_29940 = 1;
 	private static final int field_29941 = 2;

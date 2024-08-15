@@ -3,11 +3,11 @@ package net.minecraft.client.render.debug;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_9974;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -47,7 +47,7 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 							int m = ChunkSectionPos.getOffsetPos(chunkPos.x, k);
 							int n = ChunkSectionPos.getOffsetPos(chunkPos.z, l);
 							float f = (float)((double)((float)worldAccess.getTopY(type, m, n) + (float)type.ordinal() * 0.09375F) - cameraY);
-							WorldRenderer.renderFilledBox(
+							class_9974.method_62300(
 								matrices,
 								vertexConsumer,
 								(double)((float)m + 0.25F) - cameraX,

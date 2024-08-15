@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen.advancement;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
@@ -104,7 +105,7 @@ enum AdvancementTabType {
 			identifier = textures.middle();
 		}
 
-		context.drawGuiTexture(identifier, x + this.getTabX(index), y + this.getTabY(index), this.width, this.height);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, x + this.getTabX(index), y + this.getTabY(index), this.width, this.height);
 	}
 
 	public void drawIcon(DrawContext context, int x, int y, int index, ItemStack stack) {

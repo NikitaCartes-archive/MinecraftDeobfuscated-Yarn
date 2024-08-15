@@ -7,7 +7,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.chunk.ProtoChunk;
-import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -28,8 +27,8 @@ public class FeaturePlacementContext extends HeightContext {
 		return this.world.getTopY(heightmap, x, z);
 	}
 
-	public CarvingMask getOrCreateCarvingMask(ChunkPos chunkPos, GenerationStep.Carver carver) {
-		return ((ProtoChunk)this.world.getChunk(chunkPos.x, chunkPos.z)).getOrCreateCarvingMask(carver);
+	public CarvingMask getOrCreateCarvingMask(ChunkPos chunkPos) {
+		return ((ProtoChunk)this.world.getChunk(chunkPos.x, chunkPos.z)).getOrCreateCarvingMask();
 	}
 
 	public BlockState getBlockState(BlockPos pos) {

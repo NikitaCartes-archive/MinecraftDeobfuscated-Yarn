@@ -155,13 +155,12 @@ public class GrindstoneBlock extends WallMountedBlock {
 
 	@Override
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (world.isClient) {
-			return ActionResult.SUCCESS;
-		} else {
+		if (!world.isClient) {
 			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
 			player.incrementStat(Stats.INTERACT_WITH_GRINDSTONE);
-			return ActionResult.CONSUME;
 		}
+
+		return ActionResult.SUCCESS;
 	}
 
 	@Override

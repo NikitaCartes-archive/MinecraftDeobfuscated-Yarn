@@ -3,9 +3,11 @@ package net.minecraft.client.gui.screen.ingame;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.recipebook.AbstractCraftingRecipeBookWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.CraftingScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -16,18 +18,19 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class CraftingScreen extends HandledScreen<CraftingScreenHandler> implements RecipeBookProvider {
 	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/gui/container/crafting_table.png");
-	private final RecipeBookWidget recipeBook = new RecipeBookWidget();
+	private final RecipeBookWidget<?> recipeBook;
 	private boolean narrow;
 
 	public CraftingScreen(CraftingScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);
+		this.recipeBook = new AbstractCraftingRecipeBookWidget(handler);
 	}
 
 	@Override
 	protected void init() {
 		super.init();
 		this.narrow = this.width < 379;
-		this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, this.handler);
+		this.recipeBook.initialize(this.width, this.height, this.client, this.narrow);
 		this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
 		this.addDrawableChild(new TexturedButtonWidget(this.x + 5, this.height / 2 - 49, 20, 18, RecipeBookWidget.BUTTON_TEXTURES, button -> {
 			this.recipeBook.toggleOpen();
@@ -52,18 +55,18 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 		} else {
 			super.render(context, mouseX, mouseY, delta);
 			this.recipeBook.render(context, mouseX, mouseY, delta);
-			this.recipeBook.drawGhostSlots(context, this.x, this.y, true, delta);
+			this.recipeBook.drawGhostSlots(context, this.x, this.y, true);
 		}
 
 		this.drawMouseoverTooltip(context, mouseX, mouseY);
-		this.recipeBook.drawTooltip(context, this.x, this.y, mouseX, mouseY);
+		this.recipeBook.drawTooltip(context, mouseX, mouseY, this.focusedSlot);
 	}
 
 	@Override
 	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 		int i = this.x;
 		int j = (this.height - this.backgroundHeight) / 2;
-		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, i, j, 0.0F, 0.0F, this.backgroundWidth, this.backgroundHeight, 256, 256);
 	}
 
 	@Override
@@ -103,7 +106,7 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 	@Override
 	protected void onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType) {
 		super.onMouseClick(slot, slotId, button, actionType);
-		this.recipeBook.slotClicked(slot);
+		this.recipeBook.onMouseClick(slot);
 	}
 
 	@Override

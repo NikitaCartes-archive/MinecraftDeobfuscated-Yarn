@@ -54,13 +54,13 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 					if (j > i) {
 						this.mutablePos.set(m);
 						BlockState blockState2 = this.getStateForLighting(this.mutablePos);
-						int k = lightLevel - this.getOpacity(blockState2, this.mutablePos);
+						int k = lightLevel - this.getOpacity(blockState2);
 						if (k > i) {
 							if (blockState == null) {
 								blockState = ChunkLightProvider.class_8531.isTrivial(l) ? Blocks.AIR.getDefaultState() : this.getStateForLighting(this.mutablePos.set(blockPos));
 							}
 
-							if (!this.shapesCoverFullCube(blockPos, blockState, m, blockState2, direction)) {
+							if (!this.shapesCoverFullCube(blockState, blockState2, direction)) {
 								this.lightStorage.set(m, k);
 								if (k > 1) {
 									this.method_51566(m, ChunkLightProvider.class_8531.method_51574(k, isTrivialForLighting(blockState2), direction.getOpposite()));

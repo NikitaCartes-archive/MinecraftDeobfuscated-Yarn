@@ -210,19 +210,12 @@ public class VertexBuffer implements AutoCloseable {
 	 * <p>The caller of this method must {@linkplain #bind bind} this vertex
 	 * buffer before calling this method.
 	 */
-	public void draw(Matrix4f viewMatrix, Matrix4f projectionMatrix, ShaderProgram program) {
-		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(() -> this.drawInternal(new Matrix4f(viewMatrix), new Matrix4f(projectionMatrix), program));
-		} else {
-			this.drawInternal(viewMatrix, projectionMatrix, program);
-		}
-	}
-
-	private void drawInternal(Matrix4f viewMatrix, Matrix4f projectionMatrix, ShaderProgram shader) {
-		shader.initializeUniforms(this.drawMode, viewMatrix, projectionMatrix, MinecraftClient.getInstance().getWindow());
-		shader.bind();
+	public void draw(Matrix4f matrix4f, Matrix4f matrix4f2, ShaderProgram shaderProgram) {
+		RenderSystem.assertOnRenderThread();
+		shaderProgram.initializeUniforms(this.drawMode, matrix4f, matrix4f2, MinecraftClient.getInstance().getWindow());
+		shaderProgram.bind();
 		this.draw();
-		shader.unbind();
+		shaderProgram.unbind();
 	}
 
 	public void close() {

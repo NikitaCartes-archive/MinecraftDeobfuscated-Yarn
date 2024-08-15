@@ -221,7 +221,7 @@ public abstract class MultifaceGrowthBlock extends Block {
 
 	public static boolean hasDirection(BlockState state, Direction direction) {
 		BooleanProperty booleanProperty = getProperty(direction);
-		return state.contains(booleanProperty) && (Boolean)state.get(booleanProperty);
+		return (Boolean)state.get(booleanProperty, Boolean.valueOf(false));
 	}
 
 	public static boolean canGrowOn(BlockView world, Direction direction, BlockPos pos, BlockState state) {
@@ -246,9 +246,7 @@ public abstract class MultifaceGrowthBlock extends Block {
 		BlockState blockState = stateManager.getDefaultState();
 
 		for (BooleanProperty booleanProperty : FACING_PROPERTIES.values()) {
-			if (blockState.contains(booleanProperty)) {
-				blockState = blockState.with(booleanProperty, Boolean.valueOf(false));
-			}
+			blockState = blockState.withIfExists(booleanProperty, Boolean.valueOf(false));
 		}
 
 		return blockState;
@@ -267,11 +265,23 @@ public abstract class MultifaceGrowthBlock extends Block {
 	}
 
 	protected static boolean hasAnyDirection(BlockState state) {
-		return Arrays.stream(DIRECTIONS).anyMatch(direction -> hasDirection(state, direction));
+		for (Direction direction : DIRECTIONS) {
+			if (hasDirection(state, direction)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private static boolean isNotFullBlock(BlockState state) {
-		return Arrays.stream(DIRECTIONS).anyMatch(direction -> !hasDirection(state, direction));
+		for (Direction direction : DIRECTIONS) {
+			if (!hasDirection(state, direction)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public abstract LichenGrower getGrower();

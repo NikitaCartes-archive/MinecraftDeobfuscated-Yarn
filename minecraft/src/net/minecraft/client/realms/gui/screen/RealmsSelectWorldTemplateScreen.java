@@ -29,6 +29,7 @@ import net.minecraft.client.realms.dto.WorldTemplatePaginatedList;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.client.realms.util.TextRenderingUtils;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -355,8 +356,10 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			context.drawTexture(RealmsTextureManager.getTextureId(this.mTemplate.id, this.mTemplate.image), x + 1, y + 1 + 1, 0.0F, 0.0F, 38, 38, 38, 38);
-			context.drawGuiTexture(RealmsSelectWorldTemplateScreen.SLOT_FRAME_TEXTURE, x, y + 1, 40, 40);
+			context.drawTexture(
+				RenderLayer::getGuiTextured, RealmsTextureManager.getTextureId(this.mTemplate.id, this.mTemplate.image), x + 1, y + 1 + 1, 0.0F, 0.0F, 38, 38, 38, 38
+			);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, RealmsSelectWorldTemplateScreen.SLOT_FRAME_TEXTURE, x, y + 1, 40, 40);
 			int i = 5;
 			int j = RealmsSelectWorldTemplateScreen.this.textRenderer.getWidth(this.mTemplate.version);
 			if (this.infoButton != null) {

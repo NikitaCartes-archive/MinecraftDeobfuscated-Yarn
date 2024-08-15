@@ -1,28 +1,24 @@
 package net.minecraft.screen;
 
 import com.mojang.datafixers.util.Pair;
+import java.util.List;
 import java.util.Map;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.CraftingRecipe;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBookCategory;
-import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.screen.slot.ArmorSlot;
-import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 
-public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingRecipeInput, CraftingRecipe> {
+public class PlayerScreenHandler extends AbstractCraftingScreenHandler {
 	public static final int field_30802 = 0;
 	public static final int CRAFTING_RESULT_ID = 0;
+	private static final int field_52570 = 2;
+	private static final int field_52571 = 2;
 	public static final int CRAFTING_INPUT_START = 1;
 	public static final int CRAFTING_INPUT_COUNT = 4;
 	public static final int CRAFTING_INPUT_END = 5;
@@ -53,22 +49,15 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingRec
 	private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{
 		EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
 	};
-	private final RecipeInputInventory craftingInput = new CraftingInventory(this, 2, 2);
-	private final CraftingResultInventory craftingResult = new CraftingResultInventory();
 	public final boolean onServer;
 	private final PlayerEntity owner;
 
 	public PlayerScreenHandler(PlayerInventory inventory, boolean onServer, PlayerEntity owner) {
-		super(null, 0);
+		super(null, 0, 2, 2);
 		this.onServer = onServer;
 		this.owner = owner;
-		this.addSlot(new CraftingResultSlot(inventory.player, this.craftingInput, this.craftingResult, 0, 154, 28));
-
-		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < 2; j++) {
-				this.addSlot(new Slot(this.craftingInput, j + i * 2, 98 + j * 18, 18 + i * 18));
-			}
-		}
+		this.addResultSlot(owner, 154, 28);
+		this.addInputSlots(98, 18);
 
 		for (int i = 0; i < 4; i++) {
 			EquipmentSlot equipmentSlot = EQUIPMENT_SLOT_ORDER[i];
@@ -76,16 +65,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingRec
 			this.addSlot(new ArmorSlot(inventory, owner, equipmentSlot, 39 - i, 8, 8 + i * 18, identifier));
 		}
 
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 9; j++) {
-				this.addSlot(new Slot(inventory, j + (i + 1) * 9, 8 + j * 18, 84 + i * 18));
-			}
-		}
-
-		for (int i = 0; i < 9; i++) {
-			this.addSlot(new Slot(inventory, i, 8 + i * 18, 142));
-		}
-
+		this.addPlayerSlots(inventory, 8, 84);
 		this.addSlot(new Slot(inventory, 40, 77, 62) {
 			@Override
 			public void setStack(ItemStack stack, ItemStack previousStack) {
@@ -105,32 +85,16 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingRec
 	}
 
 	@Override
-	public void populateRecipeFinder(RecipeMatcher finder) {
-		this.craftingInput.provideRecipeInputs(finder);
-	}
-
-	@Override
-	public void clearCraftingSlots() {
-		this.craftingResult.clear();
-		this.craftingInput.clear();
-	}
-
-	@Override
-	public boolean matches(RecipeEntry<CraftingRecipe> recipe) {
-		return recipe.value().matches(this.craftingInput.createRecipeInput(), this.owner.getWorld());
-	}
-
-	@Override
 	public void onContentChanged(Inventory inventory) {
-		CraftingScreenHandler.updateResult(this, this.owner.getWorld(), this.owner, this.craftingInput, this.craftingResult, null);
+		CraftingScreenHandler.updateResult(this, this.owner.getWorld(), this.owner, this.craftingInventory, this.craftingResultInventory, null);
 	}
 
 	@Override
 	public void onClosed(PlayerEntity player) {
 		super.onClosed(player);
-		this.craftingResult.clear();
+		this.craftingResultInventory.clear();
 		if (!player.getWorld().isClient) {
-			this.dropInventory(player, this.craftingInput);
+			this.dropInventory(player, this.craftingInventory);
 		}
 	}
 
@@ -203,31 +167,21 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingRec
 
 	@Override
 	public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
-		return slot.inventory != this.craftingResult && super.canInsertIntoSlot(stack, slot);
+		return slot.inventory != this.craftingResultInventory && super.canInsertIntoSlot(stack, slot);
 	}
 
 	@Override
-	public int getCraftingResultSlotIndex() {
-		return 0;
+	public Slot getOutputSlot() {
+		return this.slots.get(0);
 	}
 
 	@Override
-	public int getCraftingWidth() {
-		return this.craftingInput.getWidth();
-	}
-
-	@Override
-	public int getCraftingHeight() {
-		return this.craftingInput.getHeight();
-	}
-
-	@Override
-	public int getCraftingSlotCount() {
-		return 5;
+	public List<Slot> getInputSlots() {
+		return this.slots.subList(1, 5);
 	}
 
 	public RecipeInputInventory getCraftingInput() {
-		return this.craftingInput;
+		return this.craftingInventory;
 	}
 
 	@Override
@@ -236,7 +190,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingRec
 	}
 
 	@Override
-	public boolean canInsertIntoSlot(int index) {
-		return index != this.getCraftingResultSlotIndex();
+	protected PlayerEntity getPlayer() {
+		return this.owner;
 	}
 }

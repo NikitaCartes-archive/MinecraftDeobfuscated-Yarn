@@ -28,12 +28,14 @@ import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -81,7 +83,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	public static DefaultAttributeContainer.Builder createAbstractSkeletonAttributes() {
-		return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25);
+		return HostileEntity.createHostileAttributes().add(EntityAttributes.MOVEMENT_SPEED, 0.25);
 	}
 
 	@Override
@@ -189,9 +191,13 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		double e = target.getBodyY(0.3333333333333333) - persistentProjectileEntity.getY();
 		double f = target.getZ() - this.getZ();
 		double g = Math.sqrt(d * d + f * f);
-		persistentProjectileEntity.setVelocity(d, e + g * 0.2F, f, 1.6F, (float)(14 - this.getWorld().getDifficulty().getId() * 4));
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			ProjectileEntity.spawnWithVelocity(
+				persistentProjectileEntity, serverWorld, itemStack2, d, e + g * 0.2F, f, 1.6F, (float)(14 - serverWorld.getDifficulty().getId() * 4)
+			);
+		}
+
 		this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-		this.getWorld().spawnEntity(persistentProjectileEntity);
 	}
 
 	protected PersistentProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier, @Nullable ItemStack shotFrom) {

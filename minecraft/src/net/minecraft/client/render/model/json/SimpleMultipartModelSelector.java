@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
+import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class SimpleMultipartModelSelector implements MultipartModelSelector {
@@ -45,10 +45,7 @@ public class SimpleMultipartModelSelector implements MultipartModelSelector {
 				if (list.size() == 1) {
 					predicate = this.createPredicate(stateManager, property, string);
 				} else {
-					List<Predicate<BlockState>> list2 = (List<Predicate<BlockState>>)list.stream()
-						.map(value -> this.createPredicate(stateManager, property, value))
-						.collect(Collectors.toList());
-					predicate = state -> list2.stream().anyMatch(predicatex -> predicatex.test(state));
+					predicate = Util.anyOf(list.stream().map(value -> this.createPredicate(stateManager, property, value)).toList());
 				}
 
 				return bl ? predicate.negate() : predicate;

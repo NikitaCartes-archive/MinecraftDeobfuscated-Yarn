@@ -90,11 +90,11 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 
 	public static DefaultAttributeContainer.Builder createIronGolemAttributes() {
 		return MobEntity.createMobAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 100.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25)
-			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 15.0)
-			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.0);
+			.add(EntityAttributes.MAX_HEALTH, 100.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.25)
+			.add(EntityAttributes.KNOCKBACK_RESISTANCE, 1.0)
+			.add(EntityAttributes.ATTACK_DAMAGE, 15.0)
+			.add(EntityAttributes.STEP_HEIGHT, 1.0);
 	}
 
 	@Override
@@ -182,7 +182,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	}
 
 	private float getAttackDamage() {
-		return (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+		return (float)this.getAttributeValue(EntityAttributes.ATTACK_DAMAGE);
 	}
 
 	@Override
@@ -194,7 +194,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 		DamageSource damageSource = this.getDamageSources().mobAttack(this);
 		boolean bl = target.damage(damageSource, g);
 		if (bl) {
-			double d = target instanceof LivingEntity livingEntity ? livingEntity.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE) : 0.0;
+			double d = target instanceof LivingEntity livingEntity ? livingEntity.getAttributeValue(EntityAttributes.KNOCKBACK_RESISTANCE) : 0.0;
 			double e = Math.max(0.0, 1.0 - d);
 			target.setVelocity(target.getVelocity().add(0.0, 0.4F * e, 0.0));
 			if (this.getWorld() instanceof ServerWorld serverWorld) {
@@ -273,7 +273,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 				float g = 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F;
 				this.playSound(SoundEvents.ENTITY_IRON_GOLEM_REPAIR, 1.0F, g);
 				itemStack.decrementUnlessCreative(1, player);
-				return ActionResult.success(this.getWorld().isClient);
+				return ActionResult.SUCCESS;
 			}
 		}
 	}

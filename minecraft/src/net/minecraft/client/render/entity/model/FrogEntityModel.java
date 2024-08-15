@@ -10,10 +10,10 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.animation.FrogAnimations;
-import net.minecraft.entity.passive.FrogEntity;
+import net.minecraft.client.render.entity.state.FrogEntityRenderState;
 
 @Environment(EnvType.CLIENT)
-public class FrogEntityModel<T extends FrogEntity> extends SinglePartEntityModel<T> {
+public class FrogEntityModel extends EntityModel<FrogEntityRenderState> {
 	private static final float WALKING_LIMB_ANGLE_SCALE = 1.5F;
 	private static final float SWIMMING_LIMB_ANGLE_SCALE = 1.0F;
 	private static final float LIMB_DISTANCE_SCALE = 2.5F;
@@ -97,19 +97,19 @@ public class FrogEntityModel<T extends FrogEntity> extends SinglePartEntityModel
 		return TexturedModelData.of(modelData, 48, 48);
 	}
 
-	public void setAngles(T frogEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(FrogEntityRenderState frogEntityRenderState) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		this.updateAnimation(frogEntity.longJumpingAnimationState, FrogAnimations.LONG_JUMPING, h);
-		this.updateAnimation(frogEntity.croakingAnimationState, FrogAnimations.CROAKING, h);
-		this.updateAnimation(frogEntity.usingTongueAnimationState, FrogAnimations.USING_TONGUE, h);
-		if (frogEntity.isInsideWaterOrBubbleColumn()) {
-			this.animateMovement(FrogAnimations.SWIMMING, f, g, 1.0F, 2.5F);
+		this.animate(frogEntityRenderState.longJumpingAnimationState, FrogAnimations.LONG_JUMPING, frogEntityRenderState.age);
+		this.animate(frogEntityRenderState.croakingAnimationState, FrogAnimations.CROAKING, frogEntityRenderState.age);
+		this.animate(frogEntityRenderState.usingTongueAnimationState, FrogAnimations.USING_TONGUE, frogEntityRenderState.age);
+		if (frogEntityRenderState.insideWaterOrBubbleColumn) {
+			this.animateWalking(FrogAnimations.SWIMMING, frogEntityRenderState.limbFrequency, frogEntityRenderState.limbAmplitudeMultiplier, 1.0F, 2.5F);
 		} else {
-			this.animateMovement(FrogAnimations.WALKING, f, g, 1.5F, 2.5F);
+			this.animateWalking(FrogAnimations.WALKING, frogEntityRenderState.limbFrequency, frogEntityRenderState.limbAmplitudeMultiplier, 1.5F, 2.5F);
 		}
 
-		this.updateAnimation(frogEntity.idlingInWaterAnimationState, FrogAnimations.IDLING_IN_WATER, h);
-		this.croakingBody.visible = frogEntity.croakingAnimationState.isRunning();
+		this.animate(frogEntityRenderState.idlingInWaterAnimationState, FrogAnimations.IDLING_IN_WATER, frogEntityRenderState.age);
+		this.croakingBody.visible = frogEntityRenderState.croakingAnimationState.isRunning();
 	}
 
 	@Override

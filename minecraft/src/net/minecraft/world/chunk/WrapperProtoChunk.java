@@ -24,7 +24,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.light.ChunkSkyLight;
-import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.structure.Structure;
@@ -65,11 +64,6 @@ public class WrapperProtoChunk extends ProtoChunk {
 	@Override
 	public FluidState getFluidState(BlockPos pos) {
 		return this.wrapped.getFluidState(pos);
-	}
-
-	@Override
-	public int getMaxLightLevel() {
-		return this.wrapped.getMaxLightLevel();
 	}
 
 	@Override
@@ -233,8 +227,8 @@ public class WrapperProtoChunk extends ProtoChunk {
 	}
 
 	@Override
-	public Chunk.TickSchedulers getTickSchedulers() {
-		return this.wrapped.getTickSchedulers();
+	public Chunk.TickSchedulers getTickSchedulers(long time) {
+		return this.wrapped.getTickSchedulers(time);
 	}
 
 	@Nullable
@@ -244,25 +238,20 @@ public class WrapperProtoChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void setBlendingData(BlendingData blendingData) {
-		this.wrapped.setBlendingData(blendingData);
-	}
-
-	@Override
-	public CarvingMask getCarvingMask(GenerationStep.Carver step) {
+	public CarvingMask getCarvingMask() {
 		if (this.propagateToWrapped) {
-			return super.getCarvingMask(step);
+			return super.getCarvingMask();
 		} else {
-			throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
+			throw (UnsupportedOperationException)Util.getFatalOrPause(new UnsupportedOperationException("Meaningless in this context"));
 		}
 	}
 
 	@Override
-	public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver step) {
+	public CarvingMask getOrCreateCarvingMask() {
 		if (this.propagateToWrapped) {
-			return super.getOrCreateCarvingMask(step);
+			return super.getOrCreateCarvingMask();
 		} else {
-			throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
+			throw (UnsupportedOperationException)Util.getFatalOrPause(new UnsupportedOperationException("Meaningless in this context"));
 		}
 	}
 

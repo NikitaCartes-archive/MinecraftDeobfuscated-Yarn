@@ -247,7 +247,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	@Override
-	protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+	protected VoxelShape getCullingShape(BlockState state) {
 		return VoxelShapes.empty();
 	}
 
@@ -271,7 +271,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 			voxelShape = MIDDLE_SHAPE;
 		}
 
-		Vec3d vec3d = state.getModelOffset(world, pos);
+		Vec3d vec3d = state.getModelOffset(pos);
 		return voxelShape.offset(vec3d.x, 0.0, vec3d.z);
 	}
 
@@ -399,7 +399,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	private static void createParticle(World world, BlockPos pos, BlockState state, Fluid fluid) {
-		Vec3d vec3d = state.getModelOffset(world, pos);
+		Vec3d vec3d = state.getModelOffset(pos);
 		double d = 0.0625;
 		double e = (double)pos.getX() + 0.5 + vec3d.x;
 		double f = (double)((float)(pos.getY() + 1) - 0.6875F) - 0.0625;
@@ -602,7 +602,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	private static boolean canDripThrough(BlockView world, BlockPos pos, BlockState state) {
 		if (state.isAir()) {
 			return true;
-		} else if (state.isOpaqueFullCube(world, pos)) {
+		} else if (state.isOpaqueFullCube()) {
 			return false;
 		} else if (!state.getFluidState().isEmpty()) {
 			return false;

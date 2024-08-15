@@ -335,7 +335,7 @@ public class GameTestState {
 		return gameTestState;
 	}
 
-	private BlockPos getBoxMinPos() {
+	public BlockPos getBoxMinPos() {
 		if (this.boxMinPos == null) {
 			BlockBox blockBox = StructureTestUtil.getStructureBlockBox(this.getStructureBlockBlockEntity());
 			this.boxMinPos = new BlockPos(blockBox.getMinX(), blockBox.getMinY(), blockBox.getMinZ());

@@ -27,13 +27,13 @@ public class ExperienceCommand {
 				.then(
 					CommandManager.literal("add")
 						.then(
-							CommandManager.argument("targets", EntityArgumentType.players())
+							CommandManager.argument("target", EntityArgumentType.players())
 								.then(
 									CommandManager.argument("amount", IntegerArgumentType.integer())
 										.executes(
 											context -> executeAdd(
 													context.getSource(),
-													EntityArgumentType.getPlayers(context, "targets"),
+													EntityArgumentType.getPlayers(context, "target"),
 													IntegerArgumentType.getInteger(context, "amount"),
 													ExperienceCommand.Component.POINTS
 												)
@@ -43,7 +43,7 @@ public class ExperienceCommand {
 												.executes(
 													context -> executeAdd(
 															context.getSource(),
-															EntityArgumentType.getPlayers(context, "targets"),
+															EntityArgumentType.getPlayers(context, "target"),
 															IntegerArgumentType.getInteger(context, "amount"),
 															ExperienceCommand.Component.POINTS
 														)
@@ -54,7 +54,7 @@ public class ExperienceCommand {
 												.executes(
 													context -> executeAdd(
 															context.getSource(),
-															EntityArgumentType.getPlayers(context, "targets"),
+															EntityArgumentType.getPlayers(context, "target"),
 															IntegerArgumentType.getInteger(context, "amount"),
 															ExperienceCommand.Component.LEVELS
 														)
@@ -66,13 +66,13 @@ public class ExperienceCommand {
 				.then(
 					CommandManager.literal("set")
 						.then(
-							CommandManager.argument("targets", EntityArgumentType.players())
+							CommandManager.argument("target", EntityArgumentType.players())
 								.then(
 									CommandManager.argument("amount", IntegerArgumentType.integer(0))
 										.executes(
 											context -> executeSet(
 													context.getSource(),
-													EntityArgumentType.getPlayers(context, "targets"),
+													EntityArgumentType.getPlayers(context, "target"),
 													IntegerArgumentType.getInteger(context, "amount"),
 													ExperienceCommand.Component.POINTS
 												)
@@ -82,7 +82,7 @@ public class ExperienceCommand {
 												.executes(
 													context -> executeSet(
 															context.getSource(),
-															EntityArgumentType.getPlayers(context, "targets"),
+															EntityArgumentType.getPlayers(context, "target"),
 															IntegerArgumentType.getInteger(context, "amount"),
 															ExperienceCommand.Component.POINTS
 														)
@@ -93,7 +93,7 @@ public class ExperienceCommand {
 												.executes(
 													context -> executeSet(
 															context.getSource(),
-															EntityArgumentType.getPlayers(context, "targets"),
+															EntityArgumentType.getPlayers(context, "target"),
 															IntegerArgumentType.getInteger(context, "amount"),
 															ExperienceCommand.Component.LEVELS
 														)
@@ -105,14 +105,14 @@ public class ExperienceCommand {
 				.then(
 					CommandManager.literal("query")
 						.then(
-							CommandManager.argument("targets", EntityArgumentType.player())
+							CommandManager.argument("target", EntityArgumentType.player())
 								.then(
 									CommandManager.literal("points")
-										.executes(context -> executeQuery(context.getSource(), EntityArgumentType.getPlayer(context, "targets"), ExperienceCommand.Component.POINTS))
+										.executes(context -> executeQuery(context.getSource(), EntityArgumentType.getPlayer(context, "target"), ExperienceCommand.Component.POINTS))
 								)
 								.then(
 									CommandManager.literal("levels")
-										.executes(context -> executeQuery(context.getSource(), EntityArgumentType.getPlayer(context, "targets"), ExperienceCommand.Component.LEVELS))
+										.executes(context -> executeQuery(context.getSource(), EntityArgumentType.getPlayer(context, "target"), ExperienceCommand.Component.LEVELS))
 								)
 						)
 				)

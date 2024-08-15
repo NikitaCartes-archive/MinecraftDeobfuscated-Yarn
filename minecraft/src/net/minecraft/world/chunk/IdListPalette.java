@@ -60,7 +60,7 @@ public class IdListPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public Palette<T> copy() {
+	public Palette<T> copy(PaletteResizeListener<T> resizeListener) {
 		return this;
 	}
 }

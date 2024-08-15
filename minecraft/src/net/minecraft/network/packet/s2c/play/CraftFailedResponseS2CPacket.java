@@ -22,12 +22,12 @@ public class CraftFailedResponseS2CPacket implements Packet<ClientPlayPacketList
 	}
 
 	private CraftFailedResponseS2CPacket(PacketByteBuf buf) {
-		this.syncId = buf.readByte();
+		this.syncId = buf.readSyncId();
 		this.recipeId = buf.readIdentifier();
 	}
 
 	private void write(PacketByteBuf buf) {
-		buf.writeByte(this.syncId);
+		buf.writeSyncId(this.syncId);
 		buf.writeIdentifier(this.recipeId);
 	}
 

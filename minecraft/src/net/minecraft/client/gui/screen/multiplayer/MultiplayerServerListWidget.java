@@ -2,7 +2,6 @@ package net.minecraft.client.gui.screen.multiplayer;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -22,6 +21,7 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.ServerList;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
@@ -310,7 +310,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 
 			int i = x + entryWidth - 10 - 5;
 			if (this.statusIconTexture != null) {
-				context.drawGuiTexture(this.statusIconTexture, i, y, 10, 8);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, this.statusIconTexture, i, y, 10, 8);
 			}
 
 			byte[] bs = this.server.getFavicon();
@@ -341,25 +341,25 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				int m = mouseY - y;
 				if (this.canConnect()) {
 					if (l < 32 && l > 16) {
-						context.drawGuiTexture(MultiplayerServerListWidget.JOIN_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, MultiplayerServerListWidget.JOIN_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 					} else {
-						context.drawGuiTexture(MultiplayerServerListWidget.JOIN_TEXTURE, x, y, 32, 32);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, MultiplayerServerListWidget.JOIN_TEXTURE, x, y, 32, 32);
 					}
 				}
 
 				if (index > 0) {
 					if (l < 16 && m < 16) {
-						context.drawGuiTexture(MultiplayerServerListWidget.MOVE_UP_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, MultiplayerServerListWidget.MOVE_UP_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 					} else {
-						context.drawGuiTexture(MultiplayerServerListWidget.MOVE_UP_TEXTURE, x, y, 32, 32);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, MultiplayerServerListWidget.MOVE_UP_TEXTURE, x, y, 32, 32);
 					}
 				}
 
 				if (index < this.screen.getServerList().size() - 1) {
 					if (l < 16 && m > 16) {
-						context.drawGuiTexture(MultiplayerServerListWidget.MOVE_DOWN_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, MultiplayerServerListWidget.MOVE_DOWN_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 					} else {
-						context.drawGuiTexture(MultiplayerServerListWidget.MOVE_DOWN_TEXTURE, x, y, 32, 32);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, MultiplayerServerListWidget.MOVE_DOWN_TEXTURE, x, y, 32, 32);
 					}
 				}
 			}
@@ -405,9 +405,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		}
 
 		protected void draw(DrawContext context, int x, int y, Identifier textureId) {
-			RenderSystem.enableBlend();
-			context.drawTexture(textureId, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
-			RenderSystem.disableBlend();
+			context.drawTexture(RenderLayer::getGuiTextured, textureId, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 		}
 
 		private boolean canConnect() {

@@ -321,7 +321,7 @@ public class PlaceCommand {
 	}
 
 	private static void throwOnUnloadedPos(ServerWorld world, ChunkPos pos1, ChunkPos pos2) throws CommandSyntaxException {
-		if (ChunkPos.stream(pos1, pos2).filter(pos -> !world.canSetBlock(pos.getStartPos())).findAny().isPresent()) {
+		if (ChunkPos.stream(pos1, pos2).filter(pos -> !world.isPosLoaded(pos.getStartPos())).findAny().isPresent()) {
 			throw BlockPosArgumentType.UNLOADED_EXCEPTION.create();
 		}
 	}

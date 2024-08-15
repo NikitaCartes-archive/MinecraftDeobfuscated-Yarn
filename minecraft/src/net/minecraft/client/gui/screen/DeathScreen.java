@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
@@ -104,7 +105,12 @@ public class DeathScreen extends Screen {
 
 		if (this.titleScreenButton != null && this.client.getAbuseReportContext().hasDraft()) {
 			context.drawGuiTexture(
-				DRAFT_REPORT_ICON_TEXTURE, this.titleScreenButton.getX() + this.titleScreenButton.getWidth() - 17, this.titleScreenButton.getY() + 3, 15, 15
+				RenderLayer::getGuiTextured,
+				DRAFT_REPORT_ICON_TEXTURE,
+				this.titleScreenButton.getX() + this.titleScreenButton.getWidth() - 17,
+				this.titleScreenButton.getY() + 3,
+				15,
+				15
 			);
 		}
 	}

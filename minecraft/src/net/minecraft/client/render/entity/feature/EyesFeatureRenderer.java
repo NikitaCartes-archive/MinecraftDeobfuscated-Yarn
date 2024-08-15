@@ -7,28 +7,17 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public abstract class EyesFeatureRenderer<T extends Entity, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
-	public EyesFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+public abstract class EyesFeatureRenderer<S extends EntityRenderState, M extends EntityModel<S>> extends FeatureRenderer<S, M> {
+	public EyesFeatureRenderer(FeatureRendererContext<S, M> featureRendererContext) {
 		super(featureRendererContext);
 	}
 
 	@Override
-	public void render(
-		MatrixStack matrices,
-		VertexConsumerProvider vertexConsumers,
-		int light,
-		T entity,
-		float limbAngle,
-		float limbDistance,
-		float tickDelta,
-		float animationProgress,
-		float headYaw,
-		float headPitch
-	) {
+	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, S state, float limbAngle, float limbDistance) {
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.getEyesTexture());
 		this.getContextModel().render(matrices, vertexConsumer, 15728640, OverlayTexture.DEFAULT_UV);
 	}

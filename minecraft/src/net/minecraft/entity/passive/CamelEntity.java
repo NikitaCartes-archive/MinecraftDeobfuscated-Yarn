@@ -10,9 +10,7 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.control.BodyControl;
@@ -47,7 +45,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Saddleable {
+public class CamelEntity extends AbstractHorseEntity {
 	public static final float field_45127 = 0.45F;
 	public static final int field_40132 = 55;
 	public static final int field_41764 = 30;
@@ -99,10 +97,10 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 
 	public static DefaultAttributeContainer.Builder createCamelAttributes() {
 		return createBaseHorseAttributes()
-			.add(EntityAttributes.GENERIC_MAX_HEALTH, 32.0)
-			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.09F)
-			.add(EntityAttributes.GENERIC_JUMP_STRENGTH, 0.42F)
-			.add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.5);
+			.add(EntityAttributes.MAX_HEALTH, 32.0)
+			.add(EntityAttributes.MOVEMENT_SPEED, 0.09F)
+			.add(EntityAttributes.JUMP_STRENGTH, 0.42F)
+			.add(EntityAttributes.STEP_HEIGHT, 1.5);
 	}
 
 	@Override
@@ -212,7 +210,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 			f = 0.0F;
 		}
 
-		this.limbAnimator.updateLimbs(f, 0.2F);
+		this.limbAnimator.updateLimbs(f, 0.2F, this.isBaby() ? 3.0F : 1.0F);
 	}
 
 	@Override
@@ -240,7 +238,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	@Override
 	protected float getSaddledSpeed(PlayerEntity controllingPlayer) {
 		float f = controllingPlayer.isSprinting() && this.getJumpCooldown() == 0 ? 0.1F : 0.0F;
-		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) + f;
+		return (float)this.getAttributeValue(EntityAttributes.MOVEMENT_SPEED) + f;
 	}
 
 	@Override
@@ -277,7 +275,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 			this.getRotationVector()
 				.multiply(1.0, 0.0, 1.0)
 				.normalize()
-				.multiply((double)(22.2222F * strength) * this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (double)this.getVelocityMultiplier())
+				.multiply((double)(22.2222F * strength) * this.getAttributeValue(EntityAttributes.MOVEMENT_SPEED) * (double)this.getVelocityMultiplier())
 				.add(0.0, (double)(1.4285F * strength) * d, 0.0)
 		);
 		this.dashCooldown = 55;
@@ -343,7 +341,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (player.shouldCancelInteraction() && !this.isBaby()) {
 			this.openInventory(player);
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
 			if (actionResult.isAccepted()) {
@@ -355,7 +353,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 					this.putPlayerOnBack(player);
 				}
 
-				return ActionResult.success(this.getWorld().isClient);
+				return ActionResult.SUCCESS;
 			}
 		}
 	}
@@ -438,7 +436,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 
 	@Nullable
 	public CamelEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		return EntityType.CAMEL.create(serverWorld);
+		return EntityType.CAMEL.create(serverWorld, SpawnReason.BREEDING);
 	}
 
 	@Nullable

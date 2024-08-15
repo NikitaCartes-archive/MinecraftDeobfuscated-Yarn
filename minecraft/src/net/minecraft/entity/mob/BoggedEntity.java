@@ -16,13 +16,8 @@ import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -38,7 +33,7 @@ public class BoggedEntity extends AbstractSkeletonEntity implements Shearable {
 	public static final String SHEARED_KEY = "sheared";
 
 	public static DefaultAttributeContainer.Builder createBoggedAttributes() {
-		return AbstractSkeletonEntity.createAbstractSkeletonAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 16.0);
+		return AbstractSkeletonEntity.createAbstractSkeletonAttributes().add(EntityAttributes.MAX_HEALTH, 16.0);
 	}
 
 	public BoggedEntity(EntityType<? extends BoggedEntity> entityType, World world) {
@@ -81,7 +76,7 @@ public class BoggedEntity extends AbstractSkeletonEntity implements Shearable {
 				itemStack.damage(1, player, getSlotForHand(hand));
 			}
 
-			return ActionResult.success(this.getWorld().isClient);
+			return ActionResult.SUCCESS;
 		} else {
 			return super.interactMob(player, hand);
 		}
@@ -135,17 +130,7 @@ public class BoggedEntity extends AbstractSkeletonEntity implements Shearable {
 	}
 
 	private void dropShearedItems() {
-		if (this.getWorld() instanceof ServerWorld serverWorld) {
-			LootTable lootTable = serverWorld.getServer().getReloadableRegistries().getLootTable(LootTables.BOGGED_SHEARING);
-			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
-				.add(LootContextParameters.ORIGIN, this.getPos())
-				.add(LootContextParameters.THIS_ENTITY, this)
-				.build(LootContextTypes.SHEARING);
-
-			for (ItemStack itemStack : lootTable.generateLoot(lootContextParameterSet)) {
-				this.dropStack(itemStack, this.getHeight());
-			}
-		}
+		this.forEachShearedItem(LootTables.BOGGED_SHEARING, stack -> this.dropStack(stack, this.getHeight()));
 	}
 
 	@Override

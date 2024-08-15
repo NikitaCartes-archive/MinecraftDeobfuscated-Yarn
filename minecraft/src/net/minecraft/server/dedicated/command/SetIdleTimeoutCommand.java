@@ -20,7 +20,12 @@ public class SetIdleTimeoutCommand {
 
 	private static int execute(ServerCommandSource source, int minutes) {
 		source.getServer().setPlayerIdleTimeout(minutes);
-		source.sendFeedback(() -> Text.translatable("commands.setidletimeout.success", minutes), true);
+		if (minutes > 0) {
+			source.sendFeedback(() -> Text.translatable("commands.setidletimeout.success", minutes), true);
+		} else {
+			source.sendFeedback(() -> Text.translatable("commands.setidletimeout.success.disabled"), true);
+		}
+
 		return minutes;
 	}
 }

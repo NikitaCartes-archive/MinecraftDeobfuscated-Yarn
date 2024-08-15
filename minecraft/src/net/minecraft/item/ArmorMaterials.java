@@ -2,8 +2,7 @@ package net.minecraft.item;
 
 import java.util.EnumMap;
 import java.util.List;
-import java.util.function.Supplier;
-import net.minecraft.recipe.Ingredient;
+import java.util.function.Predicate;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -26,7 +25,7 @@ public class ArmorMaterials {
 		SoundEvents.ITEM_ARMOR_EQUIP_LEATHER,
 		0.0F,
 		0.0F,
-		() -> Ingredient.ofItems(Items.LEATHER),
+		stack -> stack.isOf(Items.LEATHER),
 		List.of(new ArmorMaterial.Layer(Identifier.ofVanilla("leather"), "", true), new ArmorMaterial.Layer(Identifier.ofVanilla("leather"), "_overlay", false))
 	);
 	public static final RegistryEntry<ArmorMaterial> CHAIN = register("chainmail", Util.make(new EnumMap(ArmorItem.Type.class), map -> {
@@ -35,49 +34,49 @@ public class ArmorMaterials {
 		map.put(ArmorItem.Type.CHESTPLATE, 5);
 		map.put(ArmorItem.Type.HELMET, 2);
 		map.put(ArmorItem.Type.BODY, 4);
-	}), 12, SoundEvents.ITEM_ARMOR_EQUIP_CHAIN, 0.0F, 0.0F, () -> Ingredient.ofItems(Items.IRON_INGOT));
+	}), 12, SoundEvents.ITEM_ARMOR_EQUIP_CHAIN, 0.0F, 0.0F, stack -> stack.isOf(Items.IRON_INGOT));
 	public static final RegistryEntry<ArmorMaterial> IRON = register("iron", Util.make(new EnumMap(ArmorItem.Type.class), map -> {
 		map.put(ArmorItem.Type.BOOTS, 2);
 		map.put(ArmorItem.Type.LEGGINGS, 5);
 		map.put(ArmorItem.Type.CHESTPLATE, 6);
 		map.put(ArmorItem.Type.HELMET, 2);
 		map.put(ArmorItem.Type.BODY, 5);
-	}), 9, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.0F, 0.0F, () -> Ingredient.ofItems(Items.IRON_INGOT));
+	}), 9, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.0F, 0.0F, stack -> stack.isOf(Items.IRON_INGOT));
 	public static final RegistryEntry<ArmorMaterial> GOLD = register("gold", Util.make(new EnumMap(ArmorItem.Type.class), map -> {
 		map.put(ArmorItem.Type.BOOTS, 1);
 		map.put(ArmorItem.Type.LEGGINGS, 3);
 		map.put(ArmorItem.Type.CHESTPLATE, 5);
 		map.put(ArmorItem.Type.HELMET, 2);
 		map.put(ArmorItem.Type.BODY, 7);
-	}), 25, SoundEvents.ITEM_ARMOR_EQUIP_GOLD, 0.0F, 0.0F, () -> Ingredient.ofItems(Items.GOLD_INGOT));
+	}), 25, SoundEvents.ITEM_ARMOR_EQUIP_GOLD, 0.0F, 0.0F, stack -> stack.isOf(Items.GOLD_INGOT));
 	public static final RegistryEntry<ArmorMaterial> DIAMOND = register("diamond", Util.make(new EnumMap(ArmorItem.Type.class), map -> {
 		map.put(ArmorItem.Type.BOOTS, 3);
 		map.put(ArmorItem.Type.LEGGINGS, 6);
 		map.put(ArmorItem.Type.CHESTPLATE, 8);
 		map.put(ArmorItem.Type.HELMET, 3);
 		map.put(ArmorItem.Type.BODY, 11);
-	}), 10, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, 2.0F, 0.0F, () -> Ingredient.ofItems(Items.DIAMOND));
+	}), 10, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, 2.0F, 0.0F, stack -> stack.isOf(Items.DIAMOND));
 	public static final RegistryEntry<ArmorMaterial> TURTLE = register("turtle", Util.make(new EnumMap(ArmorItem.Type.class), map -> {
 		map.put(ArmorItem.Type.BOOTS, 2);
 		map.put(ArmorItem.Type.LEGGINGS, 5);
 		map.put(ArmorItem.Type.CHESTPLATE, 6);
 		map.put(ArmorItem.Type.HELMET, 2);
 		map.put(ArmorItem.Type.BODY, 5);
-	}), 9, SoundEvents.ITEM_ARMOR_EQUIP_TURTLE, 0.0F, 0.0F, () -> Ingredient.ofItems(Items.TURTLE_SCUTE));
+	}), 9, SoundEvents.ITEM_ARMOR_EQUIP_TURTLE, 0.0F, 0.0F, stack -> stack.isOf(Items.TURTLE_SCUTE));
 	public static final RegistryEntry<ArmorMaterial> NETHERITE = register("netherite", Util.make(new EnumMap(ArmorItem.Type.class), map -> {
 		map.put(ArmorItem.Type.BOOTS, 3);
 		map.put(ArmorItem.Type.LEGGINGS, 6);
 		map.put(ArmorItem.Type.CHESTPLATE, 8);
 		map.put(ArmorItem.Type.HELMET, 3);
 		map.put(ArmorItem.Type.BODY, 11);
-	}), 15, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, 3.0F, 0.1F, () -> Ingredient.ofItems(Items.NETHERITE_INGOT));
+	}), 15, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, 3.0F, 0.1F, stack -> stack.isOf(Items.NETHERITE_INGOT));
 	public static final RegistryEntry<ArmorMaterial> ARMADILLO = register("armadillo", Util.make(new EnumMap(ArmorItem.Type.class), map -> {
 		map.put(ArmorItem.Type.BOOTS, 3);
 		map.put(ArmorItem.Type.LEGGINGS, 6);
 		map.put(ArmorItem.Type.CHESTPLATE, 8);
 		map.put(ArmorItem.Type.HELMET, 3);
 		map.put(ArmorItem.Type.BODY, 11);
-	}), 10, SoundEvents.ITEM_ARMOR_EQUIP_WOLF, 0.0F, 0.0F, () -> Ingredient.ofItems(Items.ARMADILLO_SCUTE));
+	}), 10, SoundEvents.ITEM_ARMOR_EQUIP_WOLF, 0.0F, 0.0F, stack -> stack.isOf(Items.ARMADILLO_SCUTE));
 
 	public static RegistryEntry<ArmorMaterial> getDefault(Registry<ArmorMaterial> registry) {
 		return LEATHER;
@@ -90,7 +89,7 @@ public class ArmorMaterials {
 		RegistryEntry<SoundEvent> equipSound,
 		float toughness,
 		float knockbackResistance,
-		Supplier<Ingredient> repairIngredient
+		Predicate<ItemStack> repairIngredient
 	) {
 		List<ArmorMaterial.Layer> list = List.of(new ArmorMaterial.Layer(Identifier.ofVanilla(id)));
 		return register(id, defense, enchantability, equipSound, toughness, knockbackResistance, repairIngredient, list);
@@ -103,7 +102,7 @@ public class ArmorMaterials {
 		RegistryEntry<SoundEvent> equipSound,
 		float toughness,
 		float knockbackResistance,
-		Supplier<Ingredient> repairIngredient,
+		Predicate<ItemStack> repairIngredient,
 		List<ArmorMaterial.Layer> layers
 	) {
 		EnumMap<ArmorItem.Type, Integer> enumMap = new EnumMap(ArmorItem.Type.class);

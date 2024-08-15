@@ -2,7 +2,6 @@ package net.minecraft.client.gui.screen;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.net.URI;
@@ -37,6 +36,7 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.option.NarratorMode;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -380,12 +380,12 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			this.renderPanoramaBackground(context, delta);
 		}
 
-		this.applyBlur(delta);
+		this.applyBlur();
 		this.renderDarkening(context);
 	}
 
-	protected void applyBlur(float delta) {
-		this.client.gameRenderer.renderBlur(delta);
+	protected void applyBlur() {
+		this.client.gameRenderer.renderBlur();
 		this.client.getFramebuffer().beginWrite(false);
 	}
 
@@ -403,9 +403,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 	public static void renderBackgroundTexture(DrawContext context, Identifier texture, int x, int y, float u, float v, int width, int height) {
 		int i = 32;
-		RenderSystem.enableBlend();
-		context.drawTexture(texture, x, y, 0, u, v, width, height, 32, 32);
-		RenderSystem.disableBlend();
+		context.drawTexture(RenderLayer::getGuiTextured, texture, x, y, u, v, width, height, 32, 32);
 	}
 
 	/**

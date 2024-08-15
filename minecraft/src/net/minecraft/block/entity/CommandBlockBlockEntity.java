@@ -182,6 +182,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	public void removeFromCopiedStackNbt(NbtCompound nbt) {
 		super.removeFromCopiedStackNbt(nbt);
 		nbt.remove("CustomName");
+		nbt.remove("conditionMet");
+		nbt.remove("powered");
 	}
 
 	public static enum Type {

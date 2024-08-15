@@ -10,13 +10,14 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.mob.BreezeEntity;
 import net.minecraft.entity.projectile.BreezeWindChargeEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.Vec3d;
 
 public class BreezeShootTask extends MultiTickTask<BreezeEntity> {
-	private static final int MIN_SQUARED_RANGE = 4;
 	private static final int MAX_SQUARED_RANGE = 256;
 	private static final int BASE_PROJECTILE_DIVERGENCY = 5;
 	private static final int PROJECTILE_DIVERGENCY_DIFFICULTY_MODIFIER = 4;
@@ -95,10 +96,10 @@ public class BreezeShootTask extends MultiTickTask<BreezeEntity> {
 					double d = livingEntity.getX() - breezeEntity.getX();
 					double e = livingEntity.getBodyY(livingEntity.hasVehicle() ? 0.8 : 0.3) - breezeEntity.getBodyY(0.5);
 					double f = livingEntity.getZ() - breezeEntity.getZ();
-					BreezeWindChargeEntity breezeWindChargeEntity = new BreezeWindChargeEntity(breezeEntity, serverWorld);
+					ProjectileEntity.spawnWithVelocity(
+						new BreezeWindChargeEntity(breezeEntity, serverWorld), serverWorld, ItemStack.EMPTY, d, e, f, 0.7F, (float)(5 - serverWorld.getDifficulty().getId() * 4)
+					);
 					breezeEntity.playSound(SoundEvents.ENTITY_BREEZE_SHOOT, 1.5F, 1.0F);
-					breezeWindChargeEntity.setVelocity(d, e, f, 0.7F, (float)(5 - serverWorld.getDifficulty().getId() * 4));
-					serverWorld.spawnEntity(breezeWindChargeEntity);
 				}
 			}
 		}
@@ -113,6 +114,6 @@ public class BreezeShootTask extends MultiTickTask<BreezeEntity> {
 
 	private static boolean isTargetWithinRange(BreezeEntity breeze, LivingEntity target) {
 		double d = breeze.getPos().squaredDistanceTo(target.getPos());
-		return d > 4.0 && d < 256.0;
+		return d < 256.0;
 	}
 }

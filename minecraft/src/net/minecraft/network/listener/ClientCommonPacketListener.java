@@ -12,7 +12,7 @@ import net.minecraft.network.packet.s2c.common.ServerTransferS2CPacket;
 import net.minecraft.network.packet.s2c.common.StoreCookieS2CPacket;
 import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 
-public interface ClientCommonPacketListener extends ClientCookieRequestPacketListener, ClientPacketListener {
+public interface ClientCommonPacketListener extends ClientCookieRequestPacketListener {
 	void onKeepAlive(KeepAliveS2CPacket packet);
 
 	void onPing(CommonPingS2CPacket packet);

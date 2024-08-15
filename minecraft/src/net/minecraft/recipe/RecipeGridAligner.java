@@ -3,36 +3,33 @@ package net.minecraft.recipe;
 import java.util.Iterator;
 import net.minecraft.util.math.MathHelper;
 
-public interface RecipeGridAligner<T> {
-	default void alignRecipeToGrid(int gridWidth, int gridHeight, int gridOutputSlot, RecipeEntry<?> recipe, Iterator<T> inputs, int amount) {
-		int i = gridWidth;
-		int j = gridHeight;
+public interface RecipeGridAligner {
+	static <T> void alignRecipeToGrid(int width, int height, RecipeEntry<?> recipe, Iterable<T> inputs, RecipeGridAligner.Filler<T> filler) {
+		int i = width;
+		int j = height;
 		if (recipe.value() instanceof ShapedRecipe shapedRecipe) {
 			i = shapedRecipe.getWidth();
 			j = shapedRecipe.getHeight();
 		}
 
+		Iterator<T> iterator = inputs.iterator();
 		int k = 0;
 
-		for (int l = 0; l < gridHeight; l++) {
-			if (k == gridOutputSlot) {
-				k++;
-			}
-
-			boolean bl = (float)j < (float)gridHeight / 2.0F;
-			int m = MathHelper.floor((float)gridHeight / 2.0F - (float)j / 2.0F);
+		for (int l = 0; l < height; l++) {
+			boolean bl = (float)j < (float)height / 2.0F;
+			int m = MathHelper.floor((float)height / 2.0F - (float)j / 2.0F);
 			if (bl && m > l) {
-				k += gridWidth;
+				k += width;
 				l++;
 			}
 
-			for (int n = 0; n < gridWidth; n++) {
-				if (!inputs.hasNext()) {
+			for (int n = 0; n < width; n++) {
+				if (!iterator.hasNext()) {
 					return;
 				}
 
-				bl = (float)i < (float)gridWidth / 2.0F;
-				m = MathHelper.floor((float)gridWidth / 2.0F - (float)i / 2.0F);
+				bl = (float)i < (float)width / 2.0F;
+				m = MathHelper.floor((float)width / 2.0F - (float)i / 2.0F);
 				int o = i;
 				boolean bl2 = n < i;
 				if (bl) {
@@ -41,9 +38,9 @@ public interface RecipeGridAligner<T> {
 				}
 
 				if (bl2) {
-					this.acceptAlignedInput((T)inputs.next(), k, amount, n, l);
+					filler.addItemToSlot((T)iterator.next(), k, n, l);
 				} else if (o == n) {
-					k += gridWidth - n;
+					k += width - n;
 					break;
 				}
 
@@ -52,5 +49,8 @@ public interface RecipeGridAligner<T> {
 		}
 	}
 
-	void acceptAlignedInput(T input, int slot, int amount, int gridX, int gridY);
+	@FunctionalInterface
+	public interface Filler<T> {
+		void addItemToSlot(T slot, int index, int x, int y);
+	}
 }

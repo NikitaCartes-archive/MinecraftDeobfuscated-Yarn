@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.google.common.base.Preconditions;
+import net.minecraft.util.math.ColorHelper;
 
 /**
  * Represents the surface color of a block when rendered from the {@link net.minecraft.client.render.MapRenderer}.
@@ -90,15 +91,7 @@ public class MapColor {
 	}
 
 	public int getRenderColor(MapColor.Brightness brightness) {
-		if (this == CLEAR) {
-			return 0;
-		} else {
-			int i = brightness.brightness;
-			int j = (this.color >> 16 & 0xFF) * i / 255;
-			int k = (this.color >> 8 & 0xFF) * i / 255;
-			int l = (this.color & 0xFF) * i / 255;
-			return 0xFF000000 | l << 16 | k << 8 | j;
-		}
+		return this == CLEAR ? 0 : ColorHelper.scaleRgb(ColorHelper.fullAlpha(this.color), brightness.brightness);
 	}
 
 	public static MapColor get(int id) {

@@ -6,6 +6,7 @@ import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Urls;
@@ -14,6 +15,8 @@ import net.minecraft.util.Util;
 @Environment(EnvType.CLIENT)
 public class DemoScreen extends Screen {
 	private static final Identifier DEMO_BG = Identifier.ofVanilla("textures/gui/demo_background.png");
+	private static final int field_52797 = 256;
+	private static final int field_52798 = 256;
 	private MultilineText movementText = MultilineText.EMPTY;
 	private MultilineText fullWrappedText = MultilineText.EMPTY;
 
@@ -54,7 +57,7 @@ public class DemoScreen extends Screen {
 		super.renderBackground(context, mouseX, mouseY, delta);
 		int i = (this.width - 248) / 2;
 		int j = (this.height - 166) / 2;
-		context.drawTexture(DEMO_BG, i, j, 0, 0, 248, 166);
+		context.drawTexture(RenderLayer::getGuiTextured, DEMO_BG, i, j, 0.0F, 0.0F, 248, 166, 256, 256);
 	}
 
 	@Override

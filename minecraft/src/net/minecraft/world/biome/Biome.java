@@ -91,33 +91,34 @@ public final class Biome {
 		return this.weather.hasPrecipitation();
 	}
 
-	public Biome.Precipitation getPrecipitation(BlockPos pos) {
+	public Biome.Precipitation getPrecipitation(BlockPos pos, int seaLevel) {
 		if (!this.hasPrecipitation()) {
 			return Biome.Precipitation.NONE;
 		} else {
-			return this.isCold(pos) ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN;
+			return this.isCold(pos, seaLevel) ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN;
 		}
 	}
 
-	private float computeTemperature(BlockPos pos) {
+	private float computeTemperature(BlockPos pos, int seaLevel) {
 		float f = this.weather.temperatureModifier.getModifiedTemperature(pos, this.getTemperature());
-		if (pos.getY() > 80) {
+		int i = seaLevel + 17;
+		if (pos.getY() > i) {
 			float g = (float)(TEMPERATURE_NOISE.sample((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 8.0);
-			return f - (g + (float)pos.getY() - 80.0F) * 0.05F / 40.0F;
+			return f - (g + (float)pos.getY() - (float)i) * 0.05F / 40.0F;
 		} else {
 			return f;
 		}
 	}
 
 	@Deprecated
-	private float getTemperature(BlockPos blockPos) {
+	private float getTemperature(BlockPos blockPos, int seaLevel) {
 		long l = blockPos.asLong();
 		Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = (Long2FloatLinkedOpenHashMap)this.temperatureCache.get();
 		float f = long2FloatLinkedOpenHashMap.get(l);
 		if (!Float.isNaN(f)) {
 			return f;
 		} else {
-			float g = this.computeTemperature(blockPos);
+			float g = this.computeTemperature(blockPos, seaLevel);
 			if (long2FloatLinkedOpenHashMap.size() == 1024) {
 				long2FloatLinkedOpenHashMap.removeFirstFloat();
 			}
@@ -132,7 +133,7 @@ public final class Biome {
 	}
 
 	public boolean canSetIce(WorldView world, BlockPos pos, boolean doWaterCheck) {
-		if (this.doesNotSnow(pos)) {
+		if (this.doesNotSnow(pos, world.getSeaLevel())) {
 			return false;
 		} else {
 			if (pos.getY() >= world.getBottomY() && pos.getY() < world.getTopY() && world.getLightLevel(LightType.BLOCK, pos) < 10) {
@@ -154,20 +155,20 @@ public final class Biome {
 		}
 	}
 
-	public boolean isCold(BlockPos pos) {
-		return !this.doesNotSnow(pos);
+	public boolean isCold(BlockPos pos, int seaLevel) {
+		return !this.doesNotSnow(pos, seaLevel);
 	}
 
-	public boolean doesNotSnow(BlockPos pos) {
-		return this.getTemperature(pos) >= 0.15F;
+	public boolean doesNotSnow(BlockPos pos, int seaLevel) {
+		return this.getTemperature(pos, seaLevel) >= 0.15F;
 	}
 
-	public boolean shouldGenerateLowerFrozenOceanSurface(BlockPos pos) {
-		return this.getTemperature(pos) > 0.1F;
+	public boolean shouldGenerateLowerFrozenOceanSurface(BlockPos pos, int seaLevel) {
+		return this.getTemperature(pos, seaLevel) > 0.1F;
 	}
 
 	public boolean canSetSnow(WorldView world, BlockPos pos) {
-		if (this.doesNotSnow(pos)) {
+		if (this.doesNotSnow(pos, world.getSeaLevel())) {
 			return false;
 		} else {
 			if (pos.getY() >= world.getBottomY() && pos.getY() < world.getTopY() && world.getLightLevel(LightType.BLOCK, pos) < 10) {

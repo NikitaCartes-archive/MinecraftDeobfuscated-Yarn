@@ -30,7 +30,7 @@ import net.minecraft.text.Text;
 
 public class ItemEnchantmentsComponent implements TooltipAppender {
 	public static final ItemEnchantmentsComponent DEFAULT = new ItemEnchantmentsComponent(new Object2IntOpenHashMap<>(), true);
-	private static final Codec<Integer> ENCHANTMENT_LEVEL_CODEC = Codec.intRange(0, 255);
+	private static final Codec<Integer> ENCHANTMENT_LEVEL_CODEC = Codec.intRange(1, 255);
 	private static final Codec<Object2IntOpenHashMap<RegistryEntry<Enchantment>>> INLINE_CODEC = Codec.unboundedMap(
 			Enchantment.ENTRY_CODEC, ENCHANTMENT_LEVEL_CODEC
 		)

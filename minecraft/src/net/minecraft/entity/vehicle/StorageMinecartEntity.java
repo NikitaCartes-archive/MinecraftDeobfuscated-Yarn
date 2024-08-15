@@ -16,6 +16,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public abstract class StorageMinecartEntity extends AbstractMinecartEntity implements VehicleInventory {
@@ -99,7 +100,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	protected void applySlowdown() {
+	protected Vec3d applySlowdown(Vec3d velocity) {
 		float f = 0.98F;
 		if (this.lootTable == null) {
 			int i = 15 - ScreenHandler.calculateComparatorOutput(this);
@@ -110,7 +111,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 			f *= 0.95F;
 		}
 
-		this.setVelocity(this.getVelocity().multiply((double)f, 0.0, (double)f));
+		return velocity.multiply((double)f, 0.0, (double)f);
 	}
 
 	@Override

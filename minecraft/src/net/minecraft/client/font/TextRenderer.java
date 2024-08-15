@@ -20,6 +20,7 @@ import net.minecraft.text.TextColor;
 import net.minecraft.text.TextVisitFactory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
@@ -179,7 +180,7 @@ public class TextRenderer {
 	}
 
 	private static int tweakTransparency(int argb) {
-		return (argb & -67108864) == 0 ? argb | 0xFF000000 : argb;
+		return (argb & -67108864) == 0 ? ColorHelper.fullAlpha(argb) : argb;
 	}
 
 	private int drawInternal(
@@ -480,7 +481,7 @@ public class TextRenderer {
 				float g = (float)(underlineColor >> 16 & 0xFF) / 255.0F;
 				float h = (float)(underlineColor >> 8 & 0xFF) / 255.0F;
 				float i = (float)(underlineColor & 0xFF) / 255.0F;
-				this.addRectangle(new GlyphRenderer.Rectangle(x - 1.0F, this.y + 9.0F, this.x + 1.0F, this.y - 1.0F, 0.01F, g, h, i, f));
+				this.addRectangle(new GlyphRenderer.Rectangle(x - 1.0F, this.y + 9.0F, this.x, this.y - 1.0F, 0.01F, g, h, i, f));
 			}
 
 			if (this.rectangles != null) {

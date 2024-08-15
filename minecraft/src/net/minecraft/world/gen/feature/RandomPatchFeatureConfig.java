@@ -9,8 +9,8 @@ public record RandomPatchFeatureConfig(int tries, int xzSpread, int ySpread, Reg
 	public static final Codec<RandomPatchFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.POSITIVE_INT.fieldOf("tries").orElse(128).forGetter(RandomPatchFeatureConfig::tries),
-					Codecs.NONNEGATIVE_INT.fieldOf("xz_spread").orElse(7).forGetter(RandomPatchFeatureConfig::xzSpread),
-					Codecs.NONNEGATIVE_INT.fieldOf("y_spread").orElse(3).forGetter(RandomPatchFeatureConfig::ySpread),
+					Codecs.NON_NEGATIVE_INT.fieldOf("xz_spread").orElse(7).forGetter(RandomPatchFeatureConfig::xzSpread),
+					Codecs.NON_NEGATIVE_INT.fieldOf("y_spread").orElse(3).forGetter(RandomPatchFeatureConfig::ySpread),
 					PlacedFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(RandomPatchFeatureConfig::feature)
 				)
 				.apply(instance, RandomPatchFeatureConfig::new)

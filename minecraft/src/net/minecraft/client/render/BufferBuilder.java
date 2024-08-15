@@ -148,7 +148,7 @@ public class BufferBuilder implements VertexConsumer {
 	}
 
 	private static void putColor(long pointer, int argb) {
-		int i = ColorHelper.Abgr.toAbgr(argb);
+		int i = ColorHelper.toAbgr(argb);
 		MemoryUtil.memPutInt(pointer, LITTLE_ENDIAN ? i : Integer.reverseBytes(i));
 	}
 

@@ -19,8 +19,6 @@ import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -282,12 +280,18 @@ public class ServerPlayerInteractionManager {
 		} else {
 			int i = stack.getCount();
 			int j = stack.getDamage();
-			TypedActionResult<ItemStack> typedActionResult = stack.use(world, player, hand);
-			ItemStack itemStack = typedActionResult.getValue();
+			ActionResult actionResult = stack.use(world, player, hand);
+			ItemStack itemStack;
+			if (actionResult instanceof ActionResult.Success success) {
+				itemStack = (ItemStack)Objects.requireNonNullElse(success.getNewHandStack(), player.getStackInHand(hand));
+			} else {
+				itemStack = player.getStackInHand(hand);
+			}
+
 			if (itemStack == stack && itemStack.getCount() == i && itemStack.getMaxUseTime(player) <= 0 && itemStack.getDamage() == j) {
-				return typedActionResult.getResult();
-			} else if (typedActionResult.getResult() == ActionResult.FAIL && itemStack.getMaxUseTime(player) > 0 && !player.isUsingItem()) {
-				return typedActionResult.getResult();
+				return actionResult;
+			} else if (actionResult instanceof ActionResult.Fail && itemStack.getMaxUseTime(player) > 0 && !player.isUsingItem()) {
+				return actionResult;
 			} else {
 				if (stack != itemStack) {
 					player.setStackInHand(hand, itemStack);
@@ -301,7 +305,7 @@ public class ServerPlayerInteractionManager {
 					player.playerScreenHandler.syncState();
 				}
 
-				return typedActionResult.getResult();
+				return actionResult;
 			}
 		}
 	}
@@ -315,7 +319,7 @@ public class ServerPlayerInteractionManager {
 			NamedScreenHandlerFactory namedScreenHandlerFactory = blockState.createScreenHandlerFactory(world, blockPos);
 			if (namedScreenHandlerFactory != null) {
 				player.openHandledScreen(namedScreenHandlerFactory);
-				return ActionResult.SUCCESS;
+				return ActionResult.CONSUME;
 			} else {
 				return ActionResult.PASS;
 			}
@@ -324,37 +328,37 @@ public class ServerPlayerInteractionManager {
 			boolean bl2 = player.shouldCancelInteraction() && bl;
 			ItemStack itemStack = stack.copy();
 			if (!bl2) {
-				ItemActionResult itemActionResult = blockState.onUseWithItem(player.getStackInHand(hand), world, player, hand, hitResult);
-				if (itemActionResult.isAccepted()) {
+				ActionResult actionResult = blockState.onUseWithItem(player.getStackInHand(hand), world, player, hand, hitResult);
+				if (actionResult.isAccepted()) {
 					Criteria.ITEM_USED_ON_BLOCK.trigger(player, blockPos, itemStack);
-					return itemActionResult.toActionResult();
+					return actionResult;
 				}
 
-				if (itemActionResult == ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION && hand == Hand.MAIN_HAND) {
-					ActionResult actionResult = blockState.onUse(world, player, hitResult);
-					if (actionResult.isAccepted()) {
+				if (actionResult instanceof ActionResult.PassToDefaultBlockAction && hand == Hand.MAIN_HAND) {
+					ActionResult actionResult2 = blockState.onUse(world, player, hitResult);
+					if (actionResult2.isAccepted()) {
 						Criteria.DEFAULT_BLOCK_USE.trigger(player, blockPos);
-						return actionResult;
+						return actionResult2;
 					}
 				}
 			}
 
 			if (!stack.isEmpty() && !player.getItemCooldownManager().isCoolingDown(stack.getItem())) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(player, hand, hitResult);
-				ActionResult actionResult;
+				ActionResult actionResult2;
 				if (this.isCreative()) {
 					int i = stack.getCount();
-					actionResult = stack.useOnBlock(itemUsageContext);
+					actionResult2 = stack.useOnBlock(itemUsageContext);
 					stack.setCount(i);
 				} else {
-					actionResult = stack.useOnBlock(itemUsageContext);
+					actionResult2 = stack.useOnBlock(itemUsageContext);
 				}
 
-				if (actionResult.isAccepted()) {
+				if (actionResult2.isAccepted()) {
 					Criteria.ITEM_USED_ON_BLOCK.trigger(player, blockPos, itemStack);
 				}
 
-				return actionResult;
+				return actionResult2;
 			} else {
 				return ActionResult.PASS;
 			}

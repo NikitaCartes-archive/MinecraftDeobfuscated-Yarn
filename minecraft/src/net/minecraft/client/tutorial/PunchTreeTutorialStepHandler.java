@@ -1,5 +1,6 @@
 package net.minecraft.client.tutorial;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -18,6 +19,7 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 	private static final Text TITLE = Text.translatable("tutorial.punch_tree.title");
 	private static final Text DESCRIPTION = Text.translatable("tutorial.punch_tree.description", TutorialManager.keyToText("attack"));
 	private final TutorialManager manager;
+	@Nullable
 	private TutorialToast toast;
 	private int ticks;
 	private int punches;

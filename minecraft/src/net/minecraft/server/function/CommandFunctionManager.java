@@ -104,7 +104,7 @@ public class CommandFunctionManager {
 	}
 
 	private void load(FunctionLoader loader) {
-		this.tickFunctions = ImmutableList.copyOf(loader.getTagOrEmpty(TICK_TAG_ID));
+		this.tickFunctions = List.copyOf(loader.getTagOrEmpty(TICK_TAG_ID));
 		this.justLoaded = true;
 	}
 
@@ -126,7 +126,7 @@ public class CommandFunctionManager {
 		return this.loader.get(id);
 	}
 
-	public Collection<CommandFunction<ServerCommandSource>> getTag(Identifier id) {
+	public List<CommandFunction<ServerCommandSource>> getTag(Identifier id) {
 		return this.loader.getTagOrEmpty(id);
 	}
 

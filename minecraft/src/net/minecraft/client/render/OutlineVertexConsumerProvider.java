@@ -53,7 +53,7 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 	@Environment(EnvType.CLIENT)
 	static record OutlineVertexConsumer(VertexConsumer delegate, int color) implements VertexConsumer {
 		public OutlineVertexConsumer(VertexConsumer delegate, int red, int green, int blue, int alpha) {
-			this(delegate, ColorHelper.Argb.getArgb(alpha, red, green, blue));
+			this(delegate, ColorHelper.getArgb(alpha, red, green, blue));
 		}
 
 		@Override

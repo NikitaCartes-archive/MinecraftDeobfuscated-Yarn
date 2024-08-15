@@ -1,6 +1,5 @@
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelData;
@@ -9,16 +8,17 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.passive.TadpoleEntity;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class TadpoleEntityModel<T extends TadpoleEntity> extends AnimalModel<T> {
+public class TadpoleEntityModel extends EntityModel<LivingEntityRenderState> {
 	private final ModelPart root;
 	private final ModelPart tail;
 
 	public TadpoleEntityModel(ModelPart root) {
-		super(true, 8.0F, 3.35F);
+		super(RenderLayer::getEntityCutoutNoCull);
 		this.root = root;
 		this.tail = root.getChild(EntityModelPartNames.TAIL);
 	}
@@ -39,17 +39,12 @@ public class TadpoleEntityModel<T extends TadpoleEntity> extends AnimalModel<T> 
 	}
 
 	@Override
-	protected Iterable<ModelPart> getHeadParts() {
-		return ImmutableList.<ModelPart>of(this.root);
+	public ModelPart getPart() {
+		return this.root;
 	}
 
-	@Override
-	protected Iterable<ModelPart> getBodyParts() {
-		return ImmutableList.<ModelPart>of(this.tail);
-	}
-
-	public void setAngles(T tadpoleEntity, float f, float g, float h, float i, float j) {
-		float k = tadpoleEntity.isTouchingWater() ? 1.0F : 1.5F;
-		this.tail.yaw = -k * 0.25F * MathHelper.sin(0.3F * h);
+	public void setAngles(LivingEntityRenderState livingEntityRenderState) {
+		float f = livingEntityRenderState.touchingWater ? 1.0F : 1.5F;
+		this.tail.yaw = -f * 0.25F * MathHelper.sin(0.3F * livingEntityRenderState.age);
 	}
 }

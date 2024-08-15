@@ -144,11 +144,12 @@ public class ItemModelGenerator {
 		this.register(Items.BLAZE_ROD, Models.HANDHELD);
 		this.register(Items.BLUE_DYE, Models.GENERATED);
 		this.register(Items.BONE_MEAL, Models.GENERATED);
+		this.register(Items.BORDURE_INDENTED_BANNER_PATTERN, Models.GENERATED);
 		this.register(Items.BOOK, Models.GENERATED);
 		this.register(Items.BOWL, Models.GENERATED);
 		this.register(Items.BREAD, Models.GENERATED);
 		this.register(Items.BRICK, Models.GENERATED);
-		this.register(Items.BREEZE_ROD, Models.GENERATED);
+		this.register(Items.BREEZE_ROD, Models.HANDHELD);
 		this.register(Items.BROWN_DYE, Models.GENERATED);
 		this.register(Items.BUCKET, Models.GENERATED);
 		this.register(Items.CARROT_ON_A_STICK, Models.HANDHELD_ROD);
@@ -195,6 +196,7 @@ public class ItemModelGenerator {
 		this.register(Items.END_CRYSTAL, Models.GENERATED);
 		this.register(Items.EXPERIENCE_BOTTLE, Models.GENERATED);
 		this.register(Items.FERMENTED_SPIDER_EYE, Models.GENERATED);
+		this.register(Items.FIELD_MASONED_BANNER_PATTERN, Models.GENERATED);
 		this.register(Items.FIREWORK_ROCKET, Models.GENERATED);
 		this.register(Items.FIRE_CHARGE, Models.GENERATED);
 		this.register(Items.FLINT, Models.GENERATED);
@@ -417,6 +419,7 @@ public class ItemModelGenerator {
 		this.register(Items.TRIAL_KEY, Models.GENERATED);
 		this.register(Items.OMINOUS_TRIAL_KEY, Models.GENERATED);
 		this.register(Items.OMINOUS_BOTTLE, Models.GENERATED);
+		this.register(Items.BUNDLE, Models.GENERATED);
 	}
 
 	static record TrimMaterial(String name, float itemModelIndex, Map<RegistryEntry<ArmorMaterial>, String> overrideArmorMaterials) {

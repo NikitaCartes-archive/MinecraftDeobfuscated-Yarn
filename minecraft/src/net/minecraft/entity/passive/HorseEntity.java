@@ -45,9 +45,9 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 
 	@Override
 	protected void initAttributes(Random random) {
-		this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue((double)getChildHealthBonus(random::nextInt));
-		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(getChildMovementSpeedBonus(random::nextDouble));
-		this.getAttributeInstance(EntityAttributes.GENERIC_JUMP_STRENGTH).setBaseValue(getChildJumpStrengthBonus(random::nextDouble));
+		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue((double)getChildHealthBonus(random::nextInt));
+		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(getChildMovementSpeedBonus(random::nextDouble));
+		this.getAttributeInstance(EntityAttributes.JUMP_STRENGTH).setBaseValue(getChildJumpStrengthBonus(random::nextDouble));
 	}
 
 	@Override
@@ -148,7 +148,7 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 
 				if (!this.isTame()) {
 					this.playAngrySound();
-					return ActionResult.success(this.getWorld().isClient);
+					return ActionResult.SUCCESS;
 				}
 			}
 
@@ -171,7 +171,7 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
 		if (entity instanceof DonkeyEntity) {
-			MuleEntity muleEntity = EntityType.MULE.create(world);
+			MuleEntity muleEntity = EntityType.MULE.create(world, SpawnReason.BREEDING);
 			if (muleEntity != null) {
 				this.setChildAttributes(entity, muleEntity);
 			}
@@ -179,7 +179,7 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 			return muleEntity;
 		} else {
 			HorseEntity horseEntity = (HorseEntity)entity;
-			HorseEntity horseEntity2 = EntityType.HORSE.create(world);
+			HorseEntity horseEntity2 = EntityType.HORSE.create(world, SpawnReason.BREEDING);
 			if (horseEntity2 != null) {
 				int i = this.random.nextInt(9);
 				HorseColor horseColor;

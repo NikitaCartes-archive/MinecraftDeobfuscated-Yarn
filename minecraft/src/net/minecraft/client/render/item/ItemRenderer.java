@@ -28,6 +28,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BundleItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -100,7 +101,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 
 	public void renderItem(
 		ItemStack stack,
-		ModelTransformationMode renderMode,
+		ModelTransformationMode transformationMode,
 		boolean leftHanded,
 		MatrixStack matrices,
 		VertexConsumerProvider vertexConsumers,
@@ -110,49 +111,102 @@ public class ItemRenderer implements SynchronousResourceReloader {
 	) {
 		if (!stack.isEmpty()) {
 			matrices.push();
-			boolean bl = renderMode == ModelTransformationMode.GUI || renderMode == ModelTransformationMode.GROUND || renderMode == ModelTransformationMode.FIXED;
+			boolean bl = transformationMode == ModelTransformationMode.GUI
+				|| transformationMode == ModelTransformationMode.GROUND
+				|| transformationMode == ModelTransformationMode.FIXED;
 			if (bl) {
 				if (stack.isOf(Items.TRIDENT)) {
 					model = this.models.getModelManager().getModel(TRIDENT);
 				} else if (stack.isOf(Items.SPYGLASS)) {
 					model = this.models.getModelManager().getModel(SPYGLASS);
+				} else if (stack.isOf(Items.BUNDLE) && BundleItem.hasSelectedStack(stack)) {
+					this.renderBundle(stack, transformationMode, leftHanded, matrices, vertexConsumers, light, overlay, bl);
+					matrices.pop();
+					return;
 				}
 			}
 
-			model.getTransformation().getTransformation(renderMode).apply(leftHanded, matrices);
+			model.getTransformation().getTransformation(transformationMode).apply(leftHanded, matrices);
 			matrices.translate(-0.5F, -0.5F, -0.5F);
-			if (!model.isBuiltin() && (!stack.isOf(Items.TRIDENT) || bl)) {
-				boolean bl2;
-				if (renderMode != ModelTransformationMode.GUI && !renderMode.isFirstPerson() && stack.getItem() instanceof BlockItem blockItem) {
-					Block block = blockItem.getBlock();
-					bl2 = !(block instanceof TranslucentBlock) && !(block instanceof StainedGlassPaneBlock);
-				} else {
-					bl2 = true;
-				}
+			this.method_62476(stack, transformationMode, matrices, vertexConsumers, light, overlay, model, bl);
+			matrices.pop();
+		}
+	}
 
-				RenderLayer renderLayer = RenderLayers.getItemLayer(stack, bl2);
-				VertexConsumer vertexConsumer;
-				if (usesDynamicDisplay(stack) && stack.hasGlint()) {
-					MatrixStack.Entry entry = matrices.peek().copy();
-					if (renderMode == ModelTransformationMode.GUI) {
-						MatrixUtil.scale(entry.getPositionMatrix(), 0.5F);
-					} else if (renderMode.isFirstPerson()) {
-						MatrixUtil.scale(entry.getPositionMatrix(), 0.75F);
-					}
+	private void renderBundle(
+		ItemStack stack,
+		ModelTransformationMode transformationMode,
+		boolean leftHanded,
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		int light,
+		int overlay,
+		boolean bl
+	) {
+		if (stack.getItem() instanceof BundleItem bundleItem) {
+			matrices.push();
+			BakedModel bakedModel = this.models.getModelManager().getModel(getBundleOpenBackModelId(bundleItem));
+			bakedModel.getTransformation().getTransformation(transformationMode).apply(leftHanded, matrices);
+			matrices.translate(-0.5F, -0.5F, -1.5F);
+			this.method_62476(stack, transformationMode, matrices, vertexConsumers, light, overlay, bakedModel, bl);
+			matrices.pop();
+			matrices.push();
+			ItemStack itemStack = BundleItem.getSelectedStack(stack);
+			BakedModel bakedModel2 = this.models.getModel(itemStack);
+			bakedModel2.getTransformation().getTransformation(transformationMode).apply(leftHanded, matrices);
+			matrices.translate(-0.5F, -0.5F, -0.5F);
+			this.method_62476(itemStack, transformationMode, matrices, vertexConsumers, light, overlay, bakedModel2, bl);
+			matrices.pop();
+			matrices.push();
+			BakedModel bakedModel3 = this.models.getModelManager().getModel(getBundleOpenFrontModelId(bundleItem));
+			bakedModel3.getTransformation().getTransformation(transformationMode).apply(leftHanded, matrices);
+			matrices.translate(-0.5F, -0.5F, 0.5F);
+			this.method_62476(stack, transformationMode, matrices, vertexConsumers, light, overlay, bakedModel3, bl);
+			matrices.pop();
+		}
+	}
 
-					vertexConsumer = getDynamicDisplayGlintConsumer(vertexConsumers, renderLayer, entry);
-				} else if (bl2) {
-					vertexConsumer = getDirectItemGlintConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
-				} else {
-					vertexConsumer = getItemGlintConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
-				}
-
-				this.renderBakedItemModel(model, stack, light, overlay, matrices, vertexConsumer);
+	private void method_62476(
+		ItemStack itemStack,
+		ModelTransformationMode modelTransformationMode,
+		MatrixStack matrixStack,
+		VertexConsumerProvider vertexConsumerProvider,
+		int i,
+		int j,
+		BakedModel bakedModel,
+		boolean bl
+	) {
+		if (!bakedModel.isBuiltin() && (!itemStack.isOf(Items.TRIDENT) || bl)) {
+			boolean bl2;
+			if (modelTransformationMode != ModelTransformationMode.GUI && !modelTransformationMode.isFirstPerson() && itemStack.getItem() instanceof BlockItem blockItem
+				)
+			 {
+				Block block = blockItem.getBlock();
+				bl2 = !(block instanceof TranslucentBlock) && !(block instanceof StainedGlassPaneBlock);
 			} else {
-				this.builtinModelItemRenderer.render(stack, renderMode, matrices, vertexConsumers, light, overlay);
+				bl2 = true;
 			}
 
-			matrices.pop();
+			RenderLayer renderLayer = RenderLayers.getItemLayer(itemStack, bl2);
+			VertexConsumer vertexConsumer;
+			if (usesDynamicDisplay(itemStack) && itemStack.hasGlint()) {
+				MatrixStack.Entry entry = matrixStack.peek().copy();
+				if (modelTransformationMode == ModelTransformationMode.GUI) {
+					MatrixUtil.scale(entry.getPositionMatrix(), 0.5F);
+				} else if (modelTransformationMode.isFirstPerson()) {
+					MatrixUtil.scale(entry.getPositionMatrix(), 0.75F);
+				}
+
+				vertexConsumer = getDynamicDisplayGlintConsumer(vertexConsumerProvider, renderLayer, entry);
+			} else if (bl2) {
+				vertexConsumer = getDirectItemGlintConsumer(vertexConsumerProvider, renderLayer, true, itemStack.hasGlint());
+			} else {
+				vertexConsumer = getItemGlintConsumer(vertexConsumerProvider, renderLayer, true, itemStack.hasGlint());
+			}
+
+			this.renderBakedItemModel(bakedModel, itemStack, i, j, matrixStack, vertexConsumer);
+		} else {
+			this.builtinModelItemRenderer.render(itemStack, modelTransformationMode, matrixStack, vertexConsumerProvider, i, j);
 		}
 	}
 
@@ -194,10 +248,10 @@ public class ItemRenderer implements SynchronousResourceReloader {
 				i = this.colors.getColor(stack, bakedQuad.getColorIndex());
 			}
 
-			float f = (float)ColorHelper.Argb.getAlpha(i) / 255.0F;
-			float g = (float)ColorHelper.Argb.getRed(i) / 255.0F;
-			float h = (float)ColorHelper.Argb.getGreen(i) / 255.0F;
-			float j = (float)ColorHelper.Argb.getBlue(i) / 255.0F;
+			float f = (float)ColorHelper.getAlpha(i) / 255.0F;
+			float g = (float)ColorHelper.getRed(i) / 255.0F;
+			float h = (float)ColorHelper.getGreen(i) / 255.0F;
+			float j = (float)ColorHelper.getBlue(i) / 255.0F;
 			vertices.quad(entry, bakedQuad, g, h, j, f, light, overlay);
 		}
 	}
@@ -217,9 +271,17 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		return bakedModel2 == null ? this.models.getModelManager().getMissingModel() : bakedModel2;
 	}
 
+	public static ModelIdentifier getBundleOpenFrontModelId(BundleItem bundleItem) {
+		return ModelIdentifier.ofInventoryVariant(Identifier.ofVanilla(bundleItem.getOpenFrontModelName()));
+	}
+
+	public static ModelIdentifier getBundleOpenBackModelId(BundleItem bundleItem) {
+		return ModelIdentifier.ofInventoryVariant(Identifier.ofVanilla(bundleItem.getOpenBackModelName()));
+	}
+
 	public void renderItem(
 		ItemStack stack,
-		ModelTransformationMode transformationType,
+		ModelTransformationMode transformationMode,
 		int light,
 		int overlay,
 		MatrixStack matrices,
@@ -227,13 +289,13 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		@Nullable World world,
 		int seed
 	) {
-		this.renderItem(null, stack, transformationType, false, matrices, vertexConsumers, world, light, overlay, seed);
+		this.renderItem(null, stack, transformationMode, false, matrices, vertexConsumers, world, light, overlay, seed);
 	}
 
 	public void renderItem(
 		@Nullable LivingEntity entity,
 		ItemStack item,
-		ModelTransformationMode renderMode,
+		ModelTransformationMode transformationMode,
 		boolean leftHanded,
 		MatrixStack matrices,
 		VertexConsumerProvider vertexConsumers,
@@ -244,12 +306,17 @@ public class ItemRenderer implements SynchronousResourceReloader {
 	) {
 		if (!item.isEmpty()) {
 			BakedModel bakedModel = this.getModel(item, world, entity, seed);
-			this.renderItem(item, renderMode, leftHanded, matrices, vertexConsumers, light, overlay, bakedModel);
+			this.renderItem(item, transformationMode, leftHanded, matrices, vertexConsumers, light, overlay, bakedModel);
 		}
 	}
 
 	@Override
 	public void reload(ResourceManager manager) {
 		this.models.reloadModels();
+	}
+
+	@Nullable
+	public BakedModel getModel(ItemStack stack, LivingEntity entity, ModelTransformationMode transformationMode) {
+		return stack.isEmpty() ? null : this.getModel(stack, entity.getWorld(), entity, entity.getId() + transformationMode.ordinal());
 	}
 }

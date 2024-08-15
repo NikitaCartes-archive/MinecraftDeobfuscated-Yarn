@@ -60,7 +60,7 @@ public class PointOfInterestTypes {
 		)
 		.stream()
 		.flatMap(block -> block.getStateManager().getStates().stream())
-		.filter(blockState -> blockState.get(BedBlock.PART) == BedPart.HEAD)
+		.filter(state -> state.get(BedBlock.PART) == BedPart.HEAD)
 		.collect(ImmutableSet.toImmutableSet());
 	private static final Set<BlockState> CAULDRONS = (Set<BlockState>)ImmutableList.of(
 			Blocks.CAULDRON, Blocks.LAVA_CAULDRON, Blocks.WATER_CAULDRON, Blocks.POWDER_SNOW_CAULDRON
@@ -91,7 +91,7 @@ public class PointOfInterestTypes {
 		states.forEach(state -> {
 			RegistryEntry<PointOfInterestType> registryEntry2 = (RegistryEntry<PointOfInterestType>)POI_STATES_TO_TYPE.put(state, poiTypeEntry);
 			if (registryEntry2 != null) {
-				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException(String.format(Locale.ROOT, "%s is defined in more than one PoI type", state)));
+				throw (IllegalStateException)Util.getFatalOrPause(new IllegalStateException(String.format(Locale.ROOT, "%s is defined in more than one PoI type", state)));
 			}
 		});
 	}

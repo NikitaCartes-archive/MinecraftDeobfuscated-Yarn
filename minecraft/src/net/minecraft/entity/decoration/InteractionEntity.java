@@ -108,7 +108,7 @@ public class InteractionEntity extends Entity implements Attackable, Targeter {
 	public void onTrackedDataSet(TrackedData<?> data) {
 		super.onTrackedDataSet(data);
 		if (HEIGHT.equals(data) || WIDTH.equals(data)) {
-			this.setBoundingBox(this.calculateBoundingBox());
+			this.calculateDimensions();
 		}
 	}
 

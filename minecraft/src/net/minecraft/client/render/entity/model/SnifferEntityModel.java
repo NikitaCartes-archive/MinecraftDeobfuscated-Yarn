@@ -10,25 +10,25 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.animation.SnifferAnimations;
-import net.minecraft.entity.passive.SnifferEntity;
+import net.minecraft.client.render.entity.state.SnifferEntityRenderState;
 
 @Environment(EnvType.CLIENT)
-public class SnifferEntityModel<T extends SnifferEntity> extends SinglePartEntityModelWithChildTransform<T> {
+public class SnifferEntityModel extends EntityModel<SnifferEntityRenderState> {
+	public static final ModelTransformer BABY_TRANSFORMER = ModelTransformer.scaling(0.5F);
 	private static final float LIMB_ANGLE_SCALE = 9.0F;
 	private static final float LIMB_DISTANCE_SCALE = 100.0F;
 	private final ModelPart root;
 	private final ModelPart head;
 
 	public SnifferEntityModel(ModelPart root) {
-		super(0.5F, 24.0F);
-		this.root = root.getChild(EntityModelPartNames.ROOT);
-		this.head = this.root.getChild(EntityModelPartNames.BONE).getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.HEAD);
+		this.root = root;
+		this.head = root.getChild(EntityModelPartNames.BONE).getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.HEAD);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
-		ModelPartData modelPartData = modelData.getRoot().addChild(EntityModelPartNames.ROOT, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 5.0F, 0.0F));
-		ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.BONE, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+		ModelPartData modelPartData = modelData.getRoot();
+		ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.BONE, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 5.0F, 0.0F));
 		ModelPartData modelPartData3 = modelPartData2.addChild(
 			EntityModelPartNames.BODY,
 			ModelPartBuilder.create()
@@ -102,22 +102,22 @@ public class SnifferEntityModel<T extends SnifferEntity> extends SinglePartEntit
 		return TexturedModelData.of(modelData, 192, 192);
 	}
 
-	public void setAngles(T snifferEntity, float f, float g, float h, float i, float j) {
+	public void setAngles(SnifferEntityRenderState snifferEntityRenderState) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		this.head.pitch = j * (float) (Math.PI / 180.0);
-		this.head.yaw = i * (float) (Math.PI / 180.0);
-		if (snifferEntity.isSearching()) {
-			this.animateMovement(SnifferAnimations.SEARCHING, f, g, 9.0F, 100.0F);
+		this.head.pitch = snifferEntityRenderState.pitch * (float) (Math.PI / 180.0);
+		this.head.yaw = snifferEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
+		if (snifferEntityRenderState.searching) {
+			this.animateWalking(SnifferAnimations.SEARCHING, snifferEntityRenderState.limbFrequency, snifferEntityRenderState.limbAmplitudeMultiplier, 9.0F, 100.0F);
 		} else {
-			this.animateMovement(SnifferAnimations.WALKING, f, g, 9.0F, 100.0F);
+			this.animateWalking(SnifferAnimations.WALKING, snifferEntityRenderState.limbFrequency, snifferEntityRenderState.limbAmplitudeMultiplier, 9.0F, 100.0F);
 		}
 
-		this.updateAnimation(snifferEntity.diggingAnimationState, SnifferAnimations.DIGGING, h);
-		this.updateAnimation(snifferEntity.sniffingAnimationState, SnifferAnimations.SNIFFING, h);
-		this.updateAnimation(snifferEntity.risingAnimationState, SnifferAnimations.RISING, h);
-		this.updateAnimation(snifferEntity.feelingHappyAnimationState, SnifferAnimations.FEELING_HAPPY, h);
-		this.updateAnimation(snifferEntity.scentingAnimationState, SnifferAnimations.SCENTING, h);
-		if (this.child) {
+		this.animate(snifferEntityRenderState.diggingAnimationState, SnifferAnimations.DIGGING, snifferEntityRenderState.age);
+		this.animate(snifferEntityRenderState.sniffingAnimationState, SnifferAnimations.SNIFFING, snifferEntityRenderState.age);
+		this.animate(snifferEntityRenderState.risingAnimationState, SnifferAnimations.RISING, snifferEntityRenderState.age);
+		this.animate(snifferEntityRenderState.feelingHappyAnimationState, SnifferAnimations.FEELING_HAPPY, snifferEntityRenderState.age);
+		this.animate(snifferEntityRenderState.scentingAnimationState, SnifferAnimations.SCENTING, snifferEntityRenderState.age);
+		if (snifferEntityRenderState.baby) {
 			this.animate(SnifferAnimations.BABY_GROWTH);
 		}
 	}

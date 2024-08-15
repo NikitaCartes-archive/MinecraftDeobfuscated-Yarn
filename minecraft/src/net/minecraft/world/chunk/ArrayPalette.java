@@ -117,7 +117,7 @@ public class ArrayPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public Palette<T> copy() {
-		return new ArrayPalette<>(this.idList, (T[])((Object[])this.array.clone()), this.listener, this.indexBits, this.size);
+	public Palette<T> copy(PaletteResizeListener<T> resizeListener) {
+		return new ArrayPalette<>(this.idList, (T[])((Object[])this.array.clone()), resizeListener, this.indexBits, this.size);
 	}
 }

@@ -19,6 +19,7 @@ import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.data.report.BiomeParametersProvider;
 import net.minecraft.data.report.BlockListProvider;
 import net.minecraft.data.report.CommandSyntaxProvider;
+import net.minecraft.data.report.DataPackStructureProvider;
 import net.minecraft.data.report.ItemListProvider;
 import net.minecraft.data.report.PacketReportProvider;
 import net.minecraft.data.report.RegistryDumpProvider;
@@ -26,8 +27,8 @@ import net.minecraft.data.server.DynamicRegistriesProvider;
 import net.minecraft.data.server.advancement.vanilla.VanillaAdvancementProviders;
 import net.minecraft.data.server.loottable.rebalance.TradeRebalanceLootTableProviders;
 import net.minecraft.data.server.loottable.vanilla.VanillaLootTableProviders;
-import net.minecraft.data.server.recipe.BundleRecipeProvider;
-import net.minecraft.data.server.recipe.VanillaRecipeProvider;
+import net.minecraft.data.server.recipe.BundleRecipeGenerator;
+import net.minecraft.data.server.recipe.VanillaRecipeGenerator;
 import net.minecraft.data.server.tag.TagProvider;
 import net.minecraft.data.server.tag.rebalance.TradeRebalanceEnchantmentTagProvider;
 import net.minecraft.data.server.tag.rebalance.TradeRebalanceStructureTagProvider;
@@ -131,7 +132,7 @@ public class Main {
 		pack3.addProvider(toFactory(DynamicRegistriesProvider::new, completableFuture));
 		pack3.addProvider(toFactory(VanillaAdvancementProviders::createVanillaProvider, completableFuture));
 		pack3.addProvider(toFactory(VanillaLootTableProviders::createVanillaProvider, completableFuture));
-		pack3.addProvider(toFactory(VanillaRecipeProvider::new, completableFuture));
+		pack3.addProvider(toFactory(VanillaRecipeGenerator.Provider::new, completableFuture));
 		TagProvider<Block> tagProvider = pack3.addProvider(toFactory(VanillaBlockTagProvider::new, completableFuture));
 		TagProvider<Item> tagProvider2 = pack3.addProvider(outputx -> new VanillaItemTagProvider(outputx, completableFuture, tagProvider.getTagLookupFuture()));
 		TagProvider<Biome> tagProvider3 = pack3.addProvider(toFactory(VanillaBiomeTagProvider::new, completableFuture));
@@ -157,8 +158,9 @@ public class Main {
 		pack3.addProvider(toFactory(CommandSyntaxProvider::new, completableFuture));
 		pack3.addProvider(RegistryDumpProvider::new);
 		pack3.addProvider(PacketReportProvider::new);
+		pack3.addProvider(DataPackStructureProvider::new);
 		pack3 = dataGenerator.createVanillaSubPack(includeServer, "bundle");
-		pack3.addProvider(toFactory(BundleRecipeProvider::new, completableFuture));
+		pack3.addProvider(toFactory(BundleRecipeGenerator.Provider::new, completableFuture));
 		pack3.addProvider(outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.bundle.description"), FeatureSet.of(FeatureFlags.BUNDLE)));
 		CompletableFuture<RegistryBuilder.FullPatchesRegistriesPair> completableFuture2 = TradeRebalanceBuiltinRegistries.validate(completableFuture);
 		CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture3 = completableFuture2.thenApply(RegistryBuilder.FullPatchesRegistriesPair::patches);
@@ -170,6 +172,18 @@ public class Main {
 		pack4.addProvider(toFactory(TradeRebalanceLootTableProviders::createTradeRebalanceProvider, completableFuture));
 		pack4.addProvider(toFactory(TradeRebalanceStructureTagProvider::new, completableFuture));
 		pack4.addProvider(toFactory(TradeRebalanceEnchantmentTagProvider::new, completableFuture));
+		pack3 = dataGenerator.createVanillaSubPack(includeServer, "redstone_experiments");
+		pack3.addProvider(
+			dataOutput -> MetadataProvider.create(
+					dataOutput, Text.translatable("dataPack.redstone_experiments.description"), FeatureSet.of(FeatureFlags.REDSTONE_EXPERIMENTS)
+				)
+		);
+		pack3 = dataGenerator.createVanillaSubPack(includeServer, "minecart_improvements");
+		pack3.addProvider(
+			dataOutput -> MetadataProvider.create(
+					dataOutput, Text.translatable("dataPack.minecart_improvements.description"), FeatureSet.of(FeatureFlags.MINECART_IMPROVEMENTS)
+				)
+		);
 		return dataGenerator;
 	}
 }

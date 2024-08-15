@@ -232,6 +232,7 @@ public class SoundEvents {
 	public static final SoundEvent ITEM_BUCKET_FILL_TADPOLE = register("item.bucket.fill_tadpole");
 	public static final SoundEvent ITEM_BUNDLE_DROP_CONTENTS = register("item.bundle.drop_contents");
 	public static final SoundEvent ITEM_BUNDLE_INSERT = register("item.bundle.insert");
+	public static final SoundEvent ITEM_BUNDLE_INSERT_FAIL = register("item.bundle.insert_fail");
 	public static final SoundEvent ITEM_BUNDLE_REMOVE_ONE = register("item.bundle.remove_one");
 	public static final SoundEvent BLOCK_CAKE_ADD_CANDLE = register("block.cake.add_candle");
 	public static final SoundEvent BLOCK_CALCITE_BREAK = register("block.calcite.break");
@@ -1301,6 +1302,11 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_SOUL_SOIL_HIT = register("block.soul_soil.hit");
 	public static final SoundEvent BLOCK_SOUL_SOIL_FALL = register("block.soul_soil.fall");
 	public static final RegistryEntry.Reference<SoundEvent> PARTICLE_SOUL_ESCAPE = registerReference("particle.soul_escape");
+	public static final SoundEvent BLOCK_SPAWNER_BREAK = register("block.spawner.break");
+	public static final SoundEvent BLOCK_SPAWNER_FALL = register("block.spawner.fall");
+	public static final SoundEvent BLOCK_SPAWNER_HIT = register("block.spawner.hit");
+	public static final SoundEvent BLOCK_SPAWNER_PLACE = register("block.spawner.place");
+	public static final SoundEvent BLOCK_SPAWNER_STEP = register("block.spawner.step");
 	public static final SoundEvent BLOCK_SPORE_BLOSSOM_BREAK = register("block.spore_blossom.break");
 	public static final SoundEvent BLOCK_SPORE_BLOSSOM_FALL = register("block.spore_blossom.fall");
 	public static final SoundEvent BLOCK_SPORE_BLOSSOM_HIT = register("block.spore_blossom.hit");

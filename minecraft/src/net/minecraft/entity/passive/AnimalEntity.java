@@ -10,7 +10,10 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -39,6 +42,10 @@ public abstract class AnimalEntity extends PassiveEntity {
 		super(entityType, world);
 		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 16.0F);
 		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
+	}
+
+	public static DefaultAttributeContainer.Builder createAnimalAttributes() {
+		return MobEntity.createMobAttributes().add(EntityAttributes.TEMPT_RANGE, 10.0);
 	}
 
 	@Override
@@ -129,21 +136,22 @@ public abstract class AnimalEntity extends PassiveEntity {
 			if (!this.getWorld().isClient && i == 0 && this.canEat()) {
 				this.eat(player, hand, itemStack);
 				this.lovePlayer(player);
-				return ActionResult.SUCCESS;
+				this.playEatSound();
+				return ActionResult.SUCCESS_SERVER;
 			}
 
 			if (this.isBaby()) {
 				this.eat(player, hand, itemStack);
 				this.growUp(toGrowUpAge(-i), true);
-				return ActionResult.success(this.getWorld().isClient);
-			}
-
-			if (this.getWorld().isClient) {
-				return ActionResult.CONSUME;
+				this.playEatSound();
+				return ActionResult.SUCCESS;
 			}
 		}
 
 		return super.interactMob(player, hand);
+	}
+
+	protected void playEatSound() {
 	}
 
 	protected void eat(PlayerEntity player, Hand hand, ItemStack stack) {

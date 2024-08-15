@@ -86,10 +86,10 @@ public class BannerPatterns {
 		register(registry, HALF_VERTICAL_RIGHT);
 		register(registry, HALF_HORIZONTAL_BOTTOM);
 		register(registry, BORDER);
-		register(registry, CURLY_BORDER);
 		register(registry, GRADIENT);
 		register(registry, GRADIENT_UP);
 		register(registry, BRICKS);
+		register(registry, CURLY_BORDER);
 		register(registry, GLOBE);
 		register(registry, CREEPER);
 		register(registry, SKULL);

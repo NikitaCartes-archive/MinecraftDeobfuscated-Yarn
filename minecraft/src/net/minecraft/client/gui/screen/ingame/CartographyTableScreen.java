@@ -4,6 +4,9 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.MapRenderState;
+import net.minecraft.client.render.MapRenderer;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.entity.player.PlayerInventory;
@@ -23,6 +26,7 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 	private static final Identifier MAP_TEXTURE = Identifier.ofVanilla("container/cartography_table/map");
 	private static final Identifier LOCKED_TEXTURE = Identifier.ofVanilla("container/cartography_table/locked");
 	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/gui/container/cartography_table.png");
+	private final MapRenderState mapRenderState = new MapRenderState();
 
 	public CartographyTableScreen(CartographyTableScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);
@@ -39,7 +43,7 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 		int i = this.x;
 		int j = this.y;
-		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, i, j, 0.0F, 0.0F, this.backgroundWidth, this.backgroundHeight, 256, 256);
 		ItemStack itemStack = this.handler.getSlot(1).getStack();
 		boolean bl = itemStack.isOf(Items.MAP);
 		boolean bl2 = itemStack.isOf(Items.PAPER);
@@ -54,13 +58,13 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 				if (mapState.locked) {
 					bl4 = true;
 					if (bl2 || bl3) {
-						context.drawGuiTexture(ERROR_TEXTURE, i + 35, j + 31, 28, 21);
+						context.drawGuiTexture(RenderLayer::getGuiTextured, ERROR_TEXTURE, i + 35, j + 31, 28, 21);
 					}
 				}
 
 				if (bl2 && mapState.scale >= 4) {
 					bl4 = true;
-					context.drawGuiTexture(ERROR_TEXTURE, i + 35, j + 31, 28, 21);
+					context.drawGuiTexture(RenderLayer::getGuiTextured, ERROR_TEXTURE, i + 35, j + 31, 28, 21);
 				}
 			}
 		} else {
@@ -82,25 +86,25 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 		int i = this.x;
 		int j = this.y;
 		if (expandMode && !cannotExpand) {
-			context.drawGuiTexture(SCALED_MAP_TEXTURE, i + 67, j + 13, 66, 66);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, SCALED_MAP_TEXTURE, i + 67, j + 13, 66, 66);
 			this.drawMap(context, mapId, mapState, i + 85, j + 31, 0.226F);
 		} else if (cloneMode) {
-			context.drawGuiTexture(DUPLICATED_MAP_TEXTURE, i + 67 + 16, j + 13, 50, 66);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, DUPLICATED_MAP_TEXTURE, i + 67 + 16, j + 13, 50, 66);
 			this.drawMap(context, mapId, mapState, i + 86, j + 16, 0.34F);
 			context.getMatrices().push();
 			context.getMatrices().translate(0.0F, 0.0F, 1.0F);
-			context.drawGuiTexture(DUPLICATED_MAP_TEXTURE, i + 67, j + 13 + 16, 50, 66);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, DUPLICATED_MAP_TEXTURE, i + 67, j + 13 + 16, 50, 66);
 			this.drawMap(context, mapId, mapState, i + 70, j + 32, 0.34F);
 			context.getMatrices().pop();
 		} else if (lockMode) {
-			context.drawGuiTexture(MAP_TEXTURE, i + 67, j + 13, 66, 66);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, MAP_TEXTURE, i + 67, j + 13, 66, 66);
 			this.drawMap(context, mapId, mapState, i + 71, j + 17, 0.45F);
 			context.getMatrices().push();
 			context.getMatrices().translate(0.0F, 0.0F, 1.0F);
-			context.drawGuiTexture(LOCKED_TEXTURE, i + 118, j + 60, 10, 14);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, LOCKED_TEXTURE, i + 118, j + 60, 10, 14);
 			context.getMatrices().pop();
 		} else {
-			context.drawGuiTexture(MAP_TEXTURE, i + 67, j + 13, 66, 66);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, MAP_TEXTURE, i + 67, j + 13, 66, 66);
 			this.drawMap(context, mapId, mapState, i + 71, j + 17, 0.45F);
 		}
 	}
@@ -110,8 +114,9 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 			context.getMatrices().push();
 			context.getMatrices().translate((float)x, (float)y, 1.0F);
 			context.getMatrices().scale(scale, scale, 1.0F);
-			this.client.gameRenderer.getMapRenderer().draw(context.getMatrices(), context.getVertexConsumers(), mapId, mapState, true, 15728880);
-			context.draw();
+			MapRenderer mapRenderer = this.client.getMapRenderer();
+			mapRenderer.update(mapId, mapState, this.mapRenderState);
+			mapRenderer.draw(this.mapRenderState, context.getMatrices(), context.getVertexConsumers(), true, 15728880);
 			context.getMatrices().pop();
 		}
 	}

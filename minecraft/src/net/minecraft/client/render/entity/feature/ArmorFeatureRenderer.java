@@ -1,7 +1,5 @@
 package net.minecraft.client.render.entity.feature;
 
-import com.google.common.collect.Maps;
-import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.OverlayTexture;
@@ -10,6 +8,7 @@ import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -17,60 +16,94 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.trim.ArmorTrim;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
-public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>> extends FeatureRenderer<T, M> {
-	private static final Map<String, Identifier> ARMOR_TEXTURE_CACHE = Maps.<String, Identifier>newHashMap();
+public class ArmorFeatureRenderer<S extends BipedEntityRenderState, M extends BipedEntityModel<S>, A extends BipedEntityModel<S>> extends FeatureRenderer<S, M> {
 	private final A innerModel;
 	private final A outerModel;
+	private final A babyInnerModel;
+	private final A babyOuterModel;
 	private final SpriteAtlasTexture armorTrimsAtlas;
 
-	public ArmorFeatureRenderer(FeatureRendererContext<T, M> context, A innerModel, A outerModel, BakedModelManager bakery) {
+	public ArmorFeatureRenderer(FeatureRendererContext<S, M> context, A innerModel, A outerModel, BakedModelManager bakedModelManager) {
+		this(context, innerModel, outerModel, innerModel, outerModel, bakedModelManager);
+	}
+
+	public ArmorFeatureRenderer(
+		FeatureRendererContext<S, M> context, A innerModel, A outerModel, A babyInnerModel, A babyOuterModel, BakedModelManager bakedModelManager
+	) {
 		super(context);
 		this.innerModel = innerModel;
 		this.outerModel = outerModel;
-		this.armorTrimsAtlas = bakery.getAtlas(TexturedRenderLayers.ARMOR_TRIMS_ATLAS_TEXTURE);
+		this.babyInnerModel = babyInnerModel;
+		this.babyOuterModel = babyOuterModel;
+		this.armorTrimsAtlas = bakedModelManager.getAtlas(TexturedRenderLayers.ARMOR_TRIMS_ATLAS_TEXTURE);
 	}
 
-	public void render(
-		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
-	) {
-		this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.CHEST, i, this.getModel(EquipmentSlot.CHEST));
-		this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.LEGS, i, this.getModel(EquipmentSlot.LEGS));
-		this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.FEET, i, this.getModel(EquipmentSlot.FEET));
-		this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.HEAD, i, this.getModel(EquipmentSlot.HEAD));
+	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, S bipedEntityRenderState, float f, float g) {
+		this.renderArmor(
+			matrixStack,
+			vertexConsumerProvider,
+			bipedEntityRenderState.equippedChestStack,
+			EquipmentSlot.CHEST,
+			i,
+			this.getModel(bipedEntityRenderState, EquipmentSlot.CHEST)
+		);
+		this.renderArmor(
+			matrixStack,
+			vertexConsumerProvider,
+			bipedEntityRenderState.equippedLegsStack,
+			EquipmentSlot.LEGS,
+			i,
+			this.getModel(bipedEntityRenderState, EquipmentSlot.LEGS)
+		);
+		this.renderArmor(
+			matrixStack,
+			vertexConsumerProvider,
+			bipedEntityRenderState.equippedFeetStack,
+			EquipmentSlot.FEET,
+			i,
+			this.getModel(bipedEntityRenderState, EquipmentSlot.FEET)
+		);
+		this.renderArmor(
+			matrixStack,
+			vertexConsumerProvider,
+			bipedEntityRenderState.headEquippedStack,
+			EquipmentSlot.HEAD,
+			i,
+			this.getModel(bipedEntityRenderState, EquipmentSlot.HEAD)
+		);
 	}
 
-	private void renderArmor(MatrixStack matrices, VertexConsumerProvider vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model) {
-		ItemStack itemStack = entity.getEquippedStack(armorSlot);
-		if (itemStack.getItem() instanceof ArmorItem armorItem) {
+	private void renderArmor(MatrixStack matrices, VertexConsumerProvider vertexConsumers, ItemStack stack, EquipmentSlot armorSlot, int light, A model) {
+		if (stack.getItem() instanceof ArmorItem armorItem) {
 			if (armorItem.getSlotType() == armorSlot) {
 				this.getContextModel().copyBipedStateTo(model);
 				this.setVisible(model, armorSlot);
 				boolean bl = this.usesInnerModel(armorSlot);
 				ArmorMaterial armorMaterial = armorItem.getMaterial().value();
-				int i = itemStack.isIn(ItemTags.DYEABLE) ? ColorHelper.Argb.fullAlpha(DyedColorComponent.getColor(itemStack, -6265536)) : -1;
+				int i = stack.isIn(ItemTags.DYEABLE) ? ColorHelper.fullAlpha(DyedColorComponent.getColor(stack, -6265536)) : Colors.WHITE;
 
 				for (ArmorMaterial.Layer layer : armorMaterial.layers()) {
 					int j = layer.isDyeable() ? i : -1;
 					this.renderArmorParts(matrices, vertexConsumers, light, model, j, layer.getTexture(bl));
 				}
 
-				ArmorTrim armorTrim = itemStack.get(DataComponentTypes.TRIM);
+				ArmorTrim armorTrim = stack.get(DataComponentTypes.TRIM);
 				if (armorTrim != null) {
 					this.renderTrim(armorItem.getMaterial(), matrices, vertexConsumers, light, armorTrim, model, bl);
 				}
 
-				if (itemStack.hasGlint()) {
+				if (stack.hasGlint()) {
 					this.renderGlint(matrices, vertexConsumers, light, model);
 				}
 			}
@@ -100,9 +133,9 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 		}
 	}
 
-	private void renderArmorParts(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, A model, int i, Identifier identifier) {
-		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(identifier));
-		model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, i);
+	private void renderArmorParts(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, A model, int color, Identifier texture) {
+		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(texture));
+		model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, color);
 	}
 
 	private void renderTrim(
@@ -125,8 +158,12 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 		model.render(matrices, vertexConsumers.getBuffer(RenderLayer.getArmorEntityGlint()), light, OverlayTexture.DEFAULT_UV);
 	}
 
-	private A getModel(EquipmentSlot slot) {
-		return this.usesInnerModel(slot) ? this.innerModel : this.outerModel;
+	private A getModel(S state, EquipmentSlot slot) {
+		if (this.usesInnerModel(slot)) {
+			return state.baby ? this.babyInnerModel : this.innerModel;
+		} else {
+			return state.baby ? this.babyOuterModel : this.outerModel;
+		}
 	}
 
 	private boolean usesInnerModel(EquipmentSlot slot) {

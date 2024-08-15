@@ -8,11 +8,11 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class SmallPufferfishEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+public class SmallPufferfishEntityModel extends EntityModel<EntityRenderState> {
 	private final ModelPart root;
 	private final ModelPart leftFin;
 	private final ModelPart rightFin;
@@ -54,8 +54,8 @@ public class SmallPufferfishEntityModel<T extends Entity> extends SinglePartEnti
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		this.rightFin.roll = -0.2F + 0.4F * MathHelper.sin(animationProgress * 0.2F);
-		this.leftFin.roll = 0.2F - 0.4F * MathHelper.sin(animationProgress * 0.2F);
+	public void setAngles(EntityRenderState state) {
+		this.rightFin.roll = -0.2F + 0.4F * MathHelper.sin(state.age * 0.2F);
+		this.leftFin.roll = 0.2F - 0.4F * MathHelper.sin(state.age * 0.2F);
 	}
 }

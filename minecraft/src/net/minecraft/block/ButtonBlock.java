@@ -25,6 +25,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.block.OrientationHelper;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 
@@ -107,12 +109,12 @@ public class ButtonBlock extends WallMountedBlock {
 			return ActionResult.CONSUME;
 		} else {
 			this.powerOn(state, world, pos, player);
-			return ActionResult.success(world.isClient);
+			return ActionResult.SUCCESS;
 		}
 	}
 
 	@Override
-	protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+	protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
 		if (explosion.canTriggerBlocks() && !(Boolean)state.get(POWERED)) {
 			this.powerOn(state, world, pos, null);
 		}
@@ -199,9 +201,11 @@ public class ButtonBlock extends WallMountedBlock {
 		}
 	}
 
-	private void updateNeighbors(BlockState state, World world, BlockPos pos) {
-		world.updateNeighborsAlways(pos, this);
-		world.updateNeighborsAlways(pos.offset(getDirection(state).getOpposite()), this);
+	private void updateNeighbors(BlockState blockState, World world, BlockPos pos) {
+		Direction direction = getDirection(blockState).getOpposite();
+		WireOrientation wireOrientation = OrientationHelper.getEmissionOrientation(world, direction, direction.getAxis().isHorizontal() ? Direction.UP : null);
+		world.updateNeighborsAlways(pos, this, wireOrientation);
+		world.updateNeighborsAlways(pos.offset(direction), this, wireOrientation);
 	}
 
 	@Override

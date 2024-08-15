@@ -27,12 +27,15 @@ import net.minecraft.enchantment.provider.EnchantmentProvider;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.passive.WolfVariant;
+import net.minecraft.item.Instrument;
 import net.minecraft.item.trim.ArmorTrimMaterial;
 import net.minecraft.item.trim.ArmorTrimPattern;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.registry.entry.RegistryEntryInfo;
+import net.minecraft.registry.tag.TagGroupLoader;
+import net.minecraft.registry.tag.TagPacketSerializer;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourceFinder;
@@ -91,7 +94,8 @@ public class RegistryLoader {
 		new RegistryLoader.Entry<>(RegistryKeys.BANNER_PATTERN, BannerPattern.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.ENCHANTMENT, Enchantment.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.ENCHANTMENT_PROVIDER, EnchantmentProvider.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.JUKEBOX_SONG, JukeboxSong.CODEC)
+		new RegistryLoader.Entry<>(RegistryKeys.JUKEBOX_SONG, JukeboxSong.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.INSTRUMENT, Instrument.CODEC)
 	);
 	public static final List<RegistryLoader.Entry<?>> DIMENSION_REGISTRIES = List.of(new RegistryLoader.Entry<>(RegistryKeys.DIMENSION, DimensionOptions.CODEC));
 	public static final List<RegistryLoader.Entry<?>> SYNCED_REGISTRIES = List.of(
@@ -105,32 +109,33 @@ public class RegistryLoader {
 		new RegistryLoader.Entry<>(RegistryKeys.DAMAGE_TYPE, DamageType.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.BANNER_PATTERN, BannerPattern.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.ENCHANTMENT, Enchantment.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.JUKEBOX_SONG, JukeboxSong.CODEC)
+		new RegistryLoader.Entry<>(RegistryKeys.JUKEBOX_SONG, JukeboxSong.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.INSTRUMENT, Instrument.CODEC)
 	);
 
 	public static DynamicRegistryManager.Immutable loadFromResource(
-		ResourceManager resourceManager, DynamicRegistryManager registryManager, List<RegistryLoader.Entry<?>> entries
+		ResourceManager resourceManager, List<RegistryWrapper.Impl<?>> registries, List<RegistryLoader.Entry<?>> entries
 	) {
-		return load((loader, infoGetter) -> loader.loadFromResource(resourceManager, infoGetter), registryManager, entries);
+		return load((loader, infoGetter) -> loader.loadFromResource(resourceManager, infoGetter), registries, entries);
 	}
 
 	public static DynamicRegistryManager.Immutable loadFromNetwork(
-		Map<RegistryKey<? extends Registry<?>>, List<SerializableRegistries.SerializedRegistryEntry>> data,
+		Map<RegistryKey<? extends Registry<?>>, RegistryLoader.ElementsAndTags> data,
 		ResourceFactory factory,
-		DynamicRegistryManager registryManager,
+		List<RegistryWrapper.Impl<?>> registries,
 		List<RegistryLoader.Entry<?>> entries
 	) {
-		return load((loader, infoGetter) -> loader.loadFromNetwork(data, factory, infoGetter), registryManager, entries);
+		return load((loader, infoGetter) -> loader.loadFromNetwork(data, factory, infoGetter), registries, entries);
 	}
 
 	private static DynamicRegistryManager.Immutable load(
-		RegistryLoader.RegistryLoadable loadable, DynamicRegistryManager baseRegistryManager, List<RegistryLoader.Entry<?>> entries
+		RegistryLoader.RegistryLoadable loadable, List<RegistryWrapper.Impl<?>> registries, List<RegistryLoader.Entry<?>> entries
 	) {
 		Map<RegistryKey<?>, Exception> map = new HashMap();
 		List<RegistryLoader.Loader<?>> list = (List<RegistryLoader.Loader<?>>)entries.stream()
 			.map(entry -> entry.getLoader(Lifecycle.stable(), map))
 			.collect(Collectors.toUnmodifiableList());
-		RegistryOps.RegistryInfoGetter registryInfoGetter = createInfoGetter(baseRegistryManager, list);
+		RegistryOps.RegistryInfoGetter registryInfoGetter = createInfoGetter(registries, list);
 		list.forEach(loader -> loadable.apply(loader, registryInfoGetter));
 		list.forEach(loader -> {
 			Registry<?> registry = loader.registry();
@@ -153,9 +158,9 @@ public class RegistryLoader {
 		}
 	}
 
-	private static RegistryOps.RegistryInfoGetter createInfoGetter(DynamicRegistryManager baseRegistryManager, List<RegistryLoader.Loader<?>> additionalRegistries) {
+	private static RegistryOps.RegistryInfoGetter createInfoGetter(List<RegistryWrapper.Impl<?>> registries, List<RegistryLoader.Loader<?>> additionalRegistries) {
 		final Map<RegistryKey<? extends Registry<?>>, RegistryOps.RegistryInfo<?>> map = new HashMap();
-		baseRegistryManager.streamAllRegistries().forEach(entry -> map.put(entry.key(), createInfo(entry.value())));
+		registries.forEach(registry -> map.put(registry.getRegistryKey(), createInfo(registry)));
 		additionalRegistries.forEach(loader -> map.put(loader.registry.getKey(), createInfo(loader.registry)));
 		return new RegistryOps.RegistryInfoGetter() {
 			@Override
@@ -169,8 +174,8 @@ public class RegistryLoader {
 		return new RegistryOps.RegistryInfo<>(registry.getReadOnlyWrapper(), registry.createMutableEntryLookup(), registry.getLifecycle());
 	}
 
-	private static <T> RegistryOps.RegistryInfo<T> createInfo(Registry<T> registry) {
-		return new RegistryOps.RegistryInfo<>(registry.getReadOnlyWrapper(), registry.getTagCreatingWrapper(), registry.getLifecycle());
+	private static <T> RegistryOps.RegistryInfo<T> createInfo(RegistryWrapper.Impl<T> registry) {
+		return new RegistryOps.RegistryInfo<>(registry, registry, registry.getLifecycle());
 	}
 
 	private static void writeLoadingError(Map<RegistryKey<?>, Exception> exceptions) {
@@ -244,24 +249,26 @@ public class RegistryLoader {
 				errors.put(registryKey, new IllegalStateException(String.format(Locale.ROOT, "Failed to parse %s from pack %s", identifier, resource.getPackId()), var15));
 			}
 		}
+
+		TagGroupLoader.loadInitial(resourceManager, registry);
 	}
 
 	static <E> void loadFromNetwork(
-		Map<RegistryKey<? extends Registry<?>>, List<SerializableRegistries.SerializedRegistryEntry>> data,
+		Map<RegistryKey<? extends Registry<?>>, RegistryLoader.ElementsAndTags> data,
 		ResourceFactory factory,
 		RegistryOps.RegistryInfoGetter infoGetter,
 		MutableRegistry<E> registry,
 		Decoder<E> decoder,
 		Map<RegistryKey<?>, Exception> loadingErrors
 	) {
-		List<SerializableRegistries.SerializedRegistryEntry> list = (List<SerializableRegistries.SerializedRegistryEntry>)data.get(registry.getKey());
-		if (list != null) {
+		RegistryLoader.ElementsAndTags elementsAndTags = (RegistryLoader.ElementsAndTags)data.get(registry.getKey());
+		if (elementsAndTags != null) {
 			RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, infoGetter);
 			RegistryOps<JsonElement> registryOps2 = RegistryOps.of(JsonOps.INSTANCE, infoGetter);
 			String string = RegistryKeys.getPath(registry.getKey());
 			ResourceFinder resourceFinder = ResourceFinder.json(string);
 
-			for (SerializableRegistries.SerializedRegistryEntry serializedRegistryEntry : list) {
+			for (SerializableRegistries.SerializedRegistryEntry serializedRegistryEntry : elementsAndTags.elements) {
 				RegistryKey<E> registryKey = RegistryKey.of(registry.getKey(), serializedRegistryEntry.id());
 				Optional<NbtElement> optional = serializedRegistryEntry.data();
 				if (optional.isPresent()) {
@@ -283,13 +290,18 @@ public class RegistryLoader {
 					}
 				}
 			}
+
+			TagGroupLoader.loadFromNetwork(elementsAndTags.tags, registry);
 		}
+	}
+
+	public static record ElementsAndTags(List<SerializableRegistries.SerializedRegistryEntry> elements, TagPacketSerializer.Serialized tags) {
 	}
 
 	public static record Entry<T>(RegistryKey<? extends Registry<T>> key, Codec<T> elementCodec, boolean requiredNonEmpty) {
 
-		Entry(RegistryKey<? extends Registry<T>> registryKey, Codec<T> codec) {
-			this(registryKey, codec, false);
+		Entry(RegistryKey<? extends Registry<T>> key, Codec<T> codec) {
+			this(key, codec, false);
 		}
 
 		RegistryLoader.Loader<T> getLoader(Lifecycle lifecycle, Map<RegistryKey<?>, Exception> errors) {
@@ -309,9 +321,7 @@ public class RegistryLoader {
 		}
 
 		public void loadFromNetwork(
-			Map<RegistryKey<? extends Registry<?>>, List<SerializableRegistries.SerializedRegistryEntry>> data,
-			ResourceFactory factory,
-			RegistryOps.RegistryInfoGetter infoGetter
+			Map<RegistryKey<? extends Registry<?>>, RegistryLoader.ElementsAndTags> data, ResourceFactory factory, RegistryOps.RegistryInfoGetter infoGetter
 		) {
 			RegistryLoader.loadFromNetwork(data, factory, infoGetter, this.registry, this.data.elementCodec, this.loadingErrors);
 		}

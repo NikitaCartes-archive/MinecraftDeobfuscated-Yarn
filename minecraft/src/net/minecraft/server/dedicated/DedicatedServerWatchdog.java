@@ -45,29 +45,13 @@ public class DedicatedServerWatchdog implements Runnable {
 					String.format(Locale.ROOT, "%.2f", this.server.getTickManager().getMillisPerTick() / (float)TimeHelper.SECOND_IN_MILLIS)
 				);
 				LOGGER.error(LogUtils.FATAL_MARKER, "Considering it to be crashed, server will forcibly shutdown.");
-				ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-				ThreadInfo[] threadInfos = threadMXBean.dumpAllThreads(true, true);
-				StringBuilder stringBuilder = new StringBuilder();
-				Error error = new Error("Watchdog");
-
-				for (ThreadInfo threadInfo : threadInfos) {
-					if (threadInfo.getThreadId() == this.server.getThread().getId()) {
-						error.setStackTrace(threadInfo.getStackTrace());
-					}
-
-					stringBuilder.append(threadInfo);
-					stringBuilder.append("\n");
-				}
-
-				CrashReport crashReport = new CrashReport("Watching Server", error);
+				CrashReport crashReport = createCrashReport("Watching Server", this.server.getThread().threadId());
 				this.server.addSystemDetails(crashReport.getSystemDetailsSection());
-				CrashReportSection crashReportSection = crashReport.addElement("Thread Dump");
-				crashReportSection.add("Threads", stringBuilder);
-				CrashReportSection crashReportSection2 = crashReport.addElement("Performance stats");
-				crashReportSection2.add(
+				CrashReportSection crashReportSection = crashReport.addElement("Performance stats");
+				crashReportSection.add(
 					"Random tick rate", (CrashCallable<String>)(() -> this.server.getSaveProperties().getGameRules().get(GameRules.RANDOM_TICK_SPEED).toString())
 				);
-				crashReportSection2.add(
+				crashReportSection.add(
 					"Level stats",
 					(CrashCallable<String>)(() -> (String)Streams.stream(this.server.getWorlds())
 							.map(world -> world.getRegistryKey() + ": " + world.getDebugString())
@@ -86,9 +70,30 @@ public class DedicatedServerWatchdog implements Runnable {
 
 			try {
 				Thread.sleep((l + this.maxTickTime - m) / TimeHelper.MILLI_IN_NANOS);
-			} catch (InterruptedException var15) {
+			} catch (InterruptedException var10) {
 			}
 		}
+	}
+
+	public static CrashReport createCrashReport(String message, long threadId) {
+		ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+		ThreadInfo[] threadInfos = threadMXBean.dumpAllThreads(true, true);
+		StringBuilder stringBuilder = new StringBuilder();
+		Error error = new Error("Watchdog");
+
+		for (ThreadInfo threadInfo : threadInfos) {
+			if (threadInfo.getThreadId() == threadId) {
+				error.setStackTrace(threadInfo.getStackTrace());
+			}
+
+			stringBuilder.append(threadInfo);
+			stringBuilder.append("\n");
+		}
+
+		CrashReport crashReport = new CrashReport(message, error);
+		CrashReportSection crashReportSection = crashReport.addElement("Thread Dump");
+		crashReportSection.add("Threads", stringBuilder);
+		return crashReport;
 	}
 
 	private void shutdown() {

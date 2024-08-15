@@ -78,7 +78,7 @@ public abstract class ConnectingBlock extends Block {
 	}
 
 	@Override
-	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+	protected boolean isTransparent(BlockState state) {
 		return false;
 	}
 

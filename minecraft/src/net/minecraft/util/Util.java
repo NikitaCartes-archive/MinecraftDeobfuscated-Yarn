@@ -305,7 +305,7 @@ public class Util {
 	}
 
 	private static void uncaughtExceptionHandler(Thread thread, Throwable t) {
-		throwOrPause(t);
+		getFatalOrPause(t);
 		if (t instanceof CompletionException) {
 			t = t.getCause();
 		}
@@ -375,42 +375,128 @@ public class Util {
 		return identifier == null ? "[unregistered]" : identifier.toString();
 	}
 
-	public static <T> Predicate<T> allOf(List<? extends Predicate<T>> predicates) {
-		return switch (predicates.size()) {
-			case 0 -> object -> true;
-			case 1 -> (Predicate)predicates.get(0);
-			case 2 -> ((Predicate)predicates.get(0)).and((Predicate)predicates.get(1));
-			default -> {
-				Predicate<T>[] predicates2 = (Predicate<T>[])predicates.toArray(Predicate[]::new);
-				yield object -> {
-					for (Predicate<T> predicate : predicates2) {
-						if (!predicate.test(object)) {
-							return false;
-						}
-					}
+	public static <T> Predicate<T> and() {
+		return o -> true;
+	}
 
-					return true;
-				};
+	public static <T> Predicate<T> and(Predicate<? super T> a) {
+		return (Predicate<T>)a;
+	}
+
+	public static <T> Predicate<T> and(Predicate<? super T> a, Predicate<? super T> b) {
+		return o -> a.test(o) && b.test(o);
+	}
+
+	public static <T> Predicate<T> and(Predicate<? super T> a, Predicate<? super T> b, Predicate<? super T> c) {
+		return o -> a.test(o) && b.test(o) && c.test(o);
+	}
+
+	public static <T> Predicate<T> and(Predicate<? super T> a, Predicate<? super T> b, Predicate<? super T> c, Predicate<? super T> d) {
+		return o -> a.test(o) && b.test(o) && c.test(o) && d.test(o);
+	}
+
+	public static <T> Predicate<T> and(Predicate<? super T> a, Predicate<? super T> b, Predicate<? super T> c, Predicate<? super T> d, Predicate<? super T> e) {
+		return o -> a.test(o) && b.test(o) && c.test(o) && d.test(o) && e.test(o);
+	}
+
+	@SafeVarargs
+	public static <T> Predicate<T> and(Predicate<? super T>... predicates) {
+		return o -> {
+			for (Predicate<? super T> predicate : predicates) {
+				if (!predicate.test(o)) {
+					return false;
+				}
+			}
+
+			return true;
+		};
+	}
+
+	public static <T> Predicate<T> allOf(List<? extends Predicate<? super T>> predicates) {
+		return switch (predicates.size()) {
+			case 0 -> and();
+			case 1 -> and((Predicate<? super T>)predicates.get(0));
+			case 2 -> and((Predicate<? super T>)predicates.get(0), (Predicate<? super T>)predicates.get(1));
+			case 3 -> and((Predicate<? super T>)predicates.get(0), (Predicate<? super T>)predicates.get(1), (Predicate<? super T>)predicates.get(2));
+			case 4 -> and(
+			(Predicate<? super T>)predicates.get(0),
+			(Predicate<? super T>)predicates.get(1),
+			(Predicate<? super T>)predicates.get(2),
+			(Predicate<? super T>)predicates.get(3)
+		);
+			case 5 -> and(
+			(Predicate<? super T>)predicates.get(0),
+			(Predicate<? super T>)predicates.get(1),
+			(Predicate<? super T>)predicates.get(2),
+			(Predicate<? super T>)predicates.get(3),
+			(Predicate<? super T>)predicates.get(4)
+		);
+			default -> {
+				Predicate<? super T>[] predicates2 = (Predicate<? super T>[])predicates.toArray(Predicate[]::new);
+				yield and(predicates2);
 			}
 		};
 	}
 
-	public static <T> Predicate<T> anyOf(List<? extends Predicate<T>> predicates) {
-		return switch (predicates.size()) {
-			case 0 -> object -> false;
-			case 1 -> (Predicate)predicates.get(0);
-			case 2 -> ((Predicate)predicates.get(0)).or((Predicate)predicates.get(1));
-			default -> {
-				Predicate<T>[] predicates2 = (Predicate<T>[])predicates.toArray(Predicate[]::new);
-				yield object -> {
-					for (Predicate<T> predicate : predicates2) {
-						if (predicate.test(object)) {
-							return true;
-						}
-					}
+	public static <T> Predicate<T> or() {
+		return o -> false;
+	}
 
-					return false;
-				};
+	public static <T> Predicate<T> or(Predicate<? super T> a) {
+		return (Predicate<T>)a;
+	}
+
+	public static <T> Predicate<T> or(Predicate<? super T> a, Predicate<? super T> b) {
+		return o -> a.test(o) || b.test(o);
+	}
+
+	public static <T> Predicate<T> or(Predicate<? super T> a, Predicate<? super T> b, Predicate<? super T> c) {
+		return o -> a.test(o) || b.test(o) || c.test(o);
+	}
+
+	public static <T> Predicate<T> or(Predicate<? super T> a, Predicate<? super T> b, Predicate<? super T> c, Predicate<? super T> d) {
+		return o -> a.test(o) || b.test(o) || c.test(o) || d.test(o);
+	}
+
+	public static <T> Predicate<T> or(Predicate<? super T> a, Predicate<? super T> b, Predicate<? super T> c, Predicate<? super T> d, Predicate<? super T> e) {
+		return o -> a.test(o) || b.test(o) || c.test(o) || d.test(o) || e.test(o);
+	}
+
+	@SafeVarargs
+	public static <T> Predicate<T> or(Predicate<? super T>... predicates) {
+		return o -> {
+			for (Predicate<? super T> predicate : predicates) {
+				if (predicate.test(o)) {
+					return true;
+				}
+			}
+
+			return false;
+		};
+	}
+
+	public static <T> Predicate<T> anyOf(List<? extends Predicate<? super T>> predicates) {
+		return switch (predicates.size()) {
+			case 0 -> or();
+			case 1 -> or((Predicate<? super T>)predicates.get(0));
+			case 2 -> or((Predicate<? super T>)predicates.get(0), (Predicate<? super T>)predicates.get(1));
+			case 3 -> or((Predicate<? super T>)predicates.get(0), (Predicate<? super T>)predicates.get(1), (Predicate<? super T>)predicates.get(2));
+			case 4 -> or(
+			(Predicate<? super T>)predicates.get(0),
+			(Predicate<? super T>)predicates.get(1),
+			(Predicate<? super T>)predicates.get(2),
+			(Predicate<? super T>)predicates.get(3)
+		);
+			case 5 -> or(
+			(Predicate<? super T>)predicates.get(0),
+			(Predicate<? super T>)predicates.get(1),
+			(Predicate<? super T>)predicates.get(2),
+			(Predicate<? super T>)predicates.get(3),
+			(Predicate<? super T>)predicates.get(4)
+		);
+			default -> {
+				Predicate<? super T>[] predicates2 = (Predicate<? super T>[])predicates.toArray(Predicate[]::new);
+				yield or(predicates2);
 			}
 		};
 	}
@@ -683,21 +769,50 @@ public class Util {
 		return runnable;
 	}
 
-	public static void error(String message) {
+	/**
+	 * Logs an error-level message and pauses the game if
+	 * {@link net.minecraft.SharedConstants#isDevelopment SharedConstants.isDevelopment}
+	 * is {@code true}.
+	 * 
+	 * @param message the log message
+	 */
+	public static void logErrorOrPause(String message) {
 		LOGGER.error(message);
 		if (SharedConstants.isDevelopment) {
 			pause(message);
 		}
 	}
 
-	public static void error(String message, Throwable throwable) {
+	/**
+	 * Logs an error-level message and pauses the game if
+	 * {@link net.minecraft.SharedConstants#isDevelopment SharedConstants.isDevelopment}
+	 * is {@code true}.
+	 * 
+	 * @param throwable a throwable related to the log message
+	 * @param message the log message
+	 */
+	public static void logErrorOrPause(String message, Throwable throwable) {
 		LOGGER.error(message, throwable);
 		if (SharedConstants.isDevelopment) {
 			pause(message);
 		}
 	}
 
-	public static <T extends Throwable> T throwOrPause(T t) {
+	/**
+	 * Returns the provided fatal throwable, or pauses the game if
+	 * {@link net.minecraft.SharedConstants#isDevelopment SharedConstants.isDevelopment}
+	 * is {@code true}.
+	 * 
+	 * <p>This method is usually chained with a {@code throw} statement:
+	 * {@snippet :
+	 * throw Util.getFatalOrPause(theFatalException);
+	 * }
+	 * 
+	 * @return the provided throwable
+	 * 
+	 * @param t the throwable
+	 */
+	public static <T extends Throwable> T getFatalOrPause(T t) {
 		if (SharedConstants.isDevelopment) {
 			LOGGER.error("Trying to throw a fatal exception, pausing in IDE", t);
 			pause(t.getMessage());

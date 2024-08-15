@@ -28,8 +28,8 @@ public abstract class IllagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	public boolean isTeammate(Entity other) {
-		if (super.isTeammate(other)) {
+	protected boolean isInSameTeam(Entity other) {
+		if (super.isInSameTeam(other)) {
 			return true;
 		} else {
 			return !other.getType().isIn(EntityTypeTags.ILLAGER_FRIENDS) ? false : this.getScoreboardTeam() == null && other.getScoreboardTeam() == null;

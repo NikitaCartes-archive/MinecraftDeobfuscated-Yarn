@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen.ingame;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.BrewingStandScreenHandler;
 import net.minecraft.text.Text;
@@ -37,23 +38,23 @@ public class BrewingStandScreen extends HandledScreen<BrewingStandScreenHandler>
 	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
-		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, i, j, 0.0F, 0.0F, this.backgroundWidth, this.backgroundHeight, 256, 256);
 		int k = this.handler.getFuel();
 		int l = MathHelper.clamp((18 * k + 20 - 1) / 20, 0, 18);
 		if (l > 0) {
-			context.drawGuiTexture(FUEL_LENGTH_TEXTURE, 18, 4, 0, 0, i + 60, j + 44, l, 4);
+			context.drawGuiTexture(RenderLayer::getGuiTextured, FUEL_LENGTH_TEXTURE, 18, 4, 0, 0, i + 60, j + 44, l, 4);
 		}
 
 		int m = this.handler.getBrewTime();
 		if (m > 0) {
 			int n = (int)(28.0F * (1.0F - (float)m / 400.0F));
 			if (n > 0) {
-				context.drawGuiTexture(BREW_PROGRESS_TEXTURE, 9, 28, 0, 0, i + 97, j + 16, 9, n);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, BREW_PROGRESS_TEXTURE, 9, 28, 0, 0, i + 97, j + 16, 9, n);
 			}
 
 			n = BUBBLE_PROGRESS[m / 2 % 7];
 			if (n > 0) {
-				context.drawGuiTexture(BUBBLES_TEXTURE, 12, 29, 0, 29 - n, i + 63, j + 14 + 29 - n, 12, n);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, BUBBLES_TEXTURE, 12, 29, 0, 29 - n, i + 63, j + 14 + 29 - n, 12, n);
 			}
 		}
 	}

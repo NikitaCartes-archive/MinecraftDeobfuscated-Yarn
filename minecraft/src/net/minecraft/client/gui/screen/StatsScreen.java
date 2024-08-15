@@ -18,6 +18,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.realms.gui.RealmsLoadingWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.entity.EntityType;
@@ -344,18 +345,18 @@ public class StatsScreen extends Screen {
 
 			for (int i = 0; i < this.headerIconTextures.length; i++) {
 				Identifier identifier = this.selectedHeaderColumn == i ? StatsScreen.SLOT_TEXTURE : StatsScreen.HEADER_TEXTURE;
-				context.drawGuiTexture(identifier, x + this.method_57742(i) - 18, y + 1, 0, 18, 18);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, x + this.method_57742(i) - 18, y + 1, 18, 18);
 			}
 
 			if (this.selectedStatType != null) {
 				int i = this.method_57742(this.getHeaderIndex(this.selectedStatType)) - 36;
 				Identifier identifier = this.listOrder == 1 ? StatsScreen.SORT_UP_TEXTURE : StatsScreen.SORT_DOWN_TEXTURE;
-				context.drawGuiTexture(identifier, x + i, y + 1, 0, 18, 18);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, x + i, y + 1, 18, 18);
 			}
 
 			for (int i = 0; i < this.headerIconTextures.length; i++) {
 				int j = this.selectedHeaderColumn == i ? 1 : 0;
-				context.drawGuiTexture(this.headerIconTextures[i], x + this.method_57742(i) - 18 + j, y + 1 + j, 0, 18, 18);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, this.headerIconTextures[i], x + this.method_57742(i) - 18 + j, y + 1 + j, 18, 18);
 			}
 		}
 
@@ -460,7 +461,7 @@ public class StatsScreen extends Screen {
 
 			@Override
 			public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				context.drawGuiTexture(StatsScreen.SLOT_TEXTURE, x, y, 0, 18, 18);
+				context.drawGuiTexture(RenderLayer::getGuiTextured, StatsScreen.SLOT_TEXTURE, x, y, 18, 18);
 				context.drawItemWithoutEntity(this.item.getDefaultStack(), x + 1, y + 1);
 				if (StatsScreen.this.itemStats != null) {
 					for (int i = 0; i < StatsScreen.this.itemStats.blockStatTypes.size(); i++) {

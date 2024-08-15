@@ -101,6 +101,7 @@ public class OptimizeWorldScreen extends Screen {
 	@Override
 	public void removed() {
 		this.updater.cancel();
+		this.updater.close();
 	}
 
 	@Override

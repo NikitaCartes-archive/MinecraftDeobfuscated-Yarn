@@ -37,7 +37,7 @@ public abstract class PlantBlock extends Block {
 	}
 
 	@Override
-	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+	protected boolean isTransparent(BlockState state) {
 		return state.getFluidState().isEmpty();
 	}
 

@@ -49,7 +49,7 @@ public class DecoratedPotBlockEntityRenderer implements BlockEntityRenderer<Deco
 		ModelPart modelPart = context.getLayerModelPart(EntityModelLayers.DECORATED_POT_BASE);
 		this.neck = modelPart.getChild(EntityModelPartNames.NECK);
 		this.top = modelPart.getChild("top");
-		this.bottom = modelPart.getChild("bottom");
+		this.bottom = modelPart.getChild(EntityModelPartNames.BOTTOM);
 		ModelPart modelPart2 = context.getLayerModelPart(EntityModelLayers.DECORATED_POT_SIDES);
 		this.front = modelPart2.getChild("front");
 		this.back = modelPart2.getChild("back");
@@ -69,7 +69,7 @@ public class DecoratedPotBlockEntityRenderer implements BlockEntityRenderer<Deco
 		);
 		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(-14, 13).cuboid(0.0F, 0.0F, 0.0F, 14.0F, 0.0F, 14.0F);
 		modelPartData.addChild("top", modelPartBuilder, ModelTransform.of(1.0F, 16.0F, 1.0F, 0.0F, 0.0F, 0.0F));
-		modelPartData.addChild("bottom", modelPartBuilder, ModelTransform.of(1.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F));
+		modelPartData.addChild(EntityModelPartNames.BOTTOM, modelPartBuilder, ModelTransform.of(1.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F));
 		return TexturedModelData.of(modelData, 32, 32);
 	}
 

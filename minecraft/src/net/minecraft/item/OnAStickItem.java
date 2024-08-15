@@ -7,8 +7,8 @@ import net.minecraft.entity.ItemSteerable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class OnAStickItem<T extends Entity & ItemSteerable> extends Item {
@@ -22,20 +22,20 @@ public class OnAStickItem<T extends Entity & ItemSteerable> extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		if (world.isClient) {
-			return TypedActionResult.pass(itemStack);
+			return ActionResult.PASS;
 		} else {
 			Entity entity = user.getControllingVehicle();
 			if (user.hasVehicle() && entity instanceof ItemSteerable itemSteerable && entity.getType() == this.target && itemSteerable.consumeOnAStickItem()) {
 				EquipmentSlot equipmentSlot = LivingEntity.getSlotForHand(hand);
 				ItemStack itemStack2 = itemStack.damage(this.damagePerUse, Items.FISHING_ROD, user, equipmentSlot);
-				return TypedActionResult.success(itemStack2);
+				return ActionResult.SUCCESS_SERVER.withNewHandStack(itemStack2);
 			}
 
 			user.incrementStat(Stats.USED.getOrCreateStat(this));
-			return TypedActionResult.pass(itemStack);
+			return ActionResult.PASS;
 		}
 	}
 }

@@ -75,7 +75,7 @@ public class PropaguleBlock extends SaplingBlock implements Waterloggable {
 
 	@Override
 	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		Vec3d vec3d = state.getModelOffset(world, pos);
+		Vec3d vec3d = state.getModelOffset(pos);
 		VoxelShape voxelShape;
 		if (!(Boolean)state.get(HANGING)) {
 			voxelShape = SHAPES[4];

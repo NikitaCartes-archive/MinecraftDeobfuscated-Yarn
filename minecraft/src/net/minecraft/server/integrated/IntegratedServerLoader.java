@@ -33,9 +33,9 @@ import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.nbt.NbtCrashException;
 import net.minecraft.nbt.NbtException;
 import net.minecraft.registry.CombinedDynamicRegistries;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.registry.SimpleRegistry;
 import net.minecraft.resource.DataConfiguration;
@@ -85,7 +85,7 @@ public class IntegratedServerLoader {
 		String levelName,
 		LevelInfo levelInfo,
 		GeneratorOptions dynamicRegistryManager,
-		Function<DynamicRegistryManager, DimensionOptionsRegistryHolder> dimensionsRegistrySupplier,
+		Function<RegistryWrapper.WrapperLookup, DimensionOptionsRegistryHolder> dimensionsRegistrySupplier,
 		Screen screen
 	) {
 		this.client.setScreenAndRender(new MessageScreen(Text.translatable("selectWorld.data_read")));

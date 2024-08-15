@@ -6,6 +6,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.TurtleEntity;
@@ -101,7 +102,7 @@ public class TurtleEggBlock extends Block {
 
 				for (int j = 0; j < state.get(EGGS); j++) {
 					world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
-					TurtleEntity turtleEntity = EntityType.TURTLE.create(world);
+					TurtleEntity turtleEntity = EntityType.TURTLE.create(world, SpawnReason.BREEDING);
 					if (turtleEntity != null) {
 						turtleEntity.setBreedingAge(-24000);
 						turtleEntity.setHomePos(pos);

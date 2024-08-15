@@ -32,6 +32,7 @@ import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.GameRules;
 
 public class GoatBrain {
 	public static final int PREPARE_RAM_DURATION = 20;
@@ -49,7 +50,11 @@ public class GoatBrain {
 	private static final UniformIntProvider RAM_COOLDOWN_RANGE = UniformIntProvider.create(600, 6000);
 	private static final UniformIntProvider SCREAMING_RAM_COOLDOWN_RANGE = UniformIntProvider.create(100, 300);
 	private static final TargetPredicate RAM_TARGET_PREDICATE = TargetPredicate.createAttackable()
-		.setPredicate(entity -> !entity.getType().equals(EntityType.GOAT) && entity.getWorld().getWorldBorder().contains(entity.getBoundingBox()));
+		.setPredicate(
+			entity -> !entity.getType().equals(EntityType.GOAT)
+					&& (entity.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) || !entity.getType().equals(EntityType.ARMOR_STAND))
+					&& entity.getWorld().getWorldBorder().contains(entity.getBoundingBox())
+		);
 	private static final float RAM_SPEED = 3.0F;
 	public static final int MIN_RAM_TARGET_DISTANCE = 4;
 	public static final float ADULT_RAM_STRENGTH_MULTIPLIER = 2.5F;

@@ -4,6 +4,7 @@ import com.mojang.datafixers.DataFixer;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.ChunkPos;
 import org.apache.commons.io.FileUtils;
@@ -19,9 +20,9 @@ public class RecreatedChunkStorage extends VersionedChunkStorage {
 	}
 
 	@Override
-	public CompletableFuture<Void> setNbt(ChunkPos chunkPos, NbtCompound nbt) {
+	public CompletableFuture<Void> setNbt(ChunkPos chunkPos, Supplier<NbtCompound> nbtSupplier) {
 		this.markFeatureUpdateResolved(chunkPos);
-		return this.recreationWorker.setResult(chunkPos, nbt);
+		return this.recreationWorker.setResult(chunkPos, nbtSupplier);
 	}
 
 	@Override

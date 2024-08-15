@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
+import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.tag.FluidTags;
@@ -9,6 +10,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.block.WireOrientation;
 
 public class SpongeBlock extends Block {
 	public static final MapCodec<SpongeBlock> CODEC = createCodec(SpongeBlock::new);
@@ -33,9 +35,9 @@ public class SpongeBlock extends Block {
 	}
 
 	@Override
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		this.update(world, pos);
-		super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
+		super.neighborUpdate(state, world, pos, sourceBlock, wireOrientation, notify);
 	}
 
 	protected void update(World world, BlockPos pos) {

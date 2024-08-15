@@ -17,7 +17,9 @@ public enum SpawnReason {
 	COMMAND,
 	DISPENSER,
 	PATROL,
-	TRIAL_SPAWNER;
+	TRIAL_SPAWNER,
+	LOAD,
+	DIMENSION_TRAVEL;
 
 	public static boolean isAnySpawner(SpawnReason reason) {
 		return reason == SPAWNER || reason == TRIAL_SPAWNER;

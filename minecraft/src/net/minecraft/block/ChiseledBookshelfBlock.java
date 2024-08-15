@@ -24,7 +24,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -69,23 +68,23 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.getBlockEntity(pos) instanceof ChiseledBookshelfBlockEntity chiseledBookshelfBlockEntity) {
 			if (!stack.isIn(ItemTags.BOOKSHELF_BOOKS)) {
-				return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 			} else {
 				OptionalInt optionalInt = this.getSlotForHitPos(hit, state);
 				if (optionalInt.isEmpty()) {
-					return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+					return ActionResult.PASS;
 				} else if ((Boolean)state.get((Property)SLOT_OCCUPIED_PROPERTIES.get(optionalInt.getAsInt()))) {
-					return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+					return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 				} else {
 					tryAddBook(world, pos, player, chiseledBookshelfBlockEntity, stack, optionalInt.getAsInt());
-					return ItemActionResult.success(world.isClient);
+					return ActionResult.SUCCESS;
 				}
 			}
 		} else {
-			return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+			return ActionResult.PASS;
 		}
 	}
 
@@ -99,7 +98,7 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 				return ActionResult.CONSUME;
 			} else {
 				tryRemoveBook(world, pos, player, chiseledBookshelfBlockEntity, optionalInt.getAsInt());
-				return ActionResult.success(world.isClient);
+				return ActionResult.SUCCESS;
 			}
 		} else {
 			return ActionResult.PASS;

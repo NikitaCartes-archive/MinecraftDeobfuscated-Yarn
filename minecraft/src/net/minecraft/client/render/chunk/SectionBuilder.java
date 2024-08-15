@@ -53,7 +53,7 @@ public class SectionBuilder {
 
 		for (BlockPos blockPos3 : BlockPos.iterate(blockPos, blockPos2)) {
 			BlockState blockState = renderRegion.getBlockState(blockPos3);
-			if (blockState.isOpaqueFullCube(renderRegion, blockPos3)) {
+			if (blockState.isOpaqueFullCube()) {
 				chunkOcclusionDataBuilder.markClosed(blockPos3);
 			}
 

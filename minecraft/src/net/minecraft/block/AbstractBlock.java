@@ -59,7 +59,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -74,6 +74,7 @@ import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.explosion.Explosion;
 
 /**
@@ -513,8 +514,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @see #getStateForNeighborUpdate
 	 * @see net.minecraft.world.RedstoneView#isReceivingRedstonePower
 	 */
-	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-		DebugInfoSender.sendNeighborUpdate(world, pos);
+	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 	}
 
 	/**
@@ -559,13 +559,13 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		}
 	}
 
-	protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+	protected void onExploded(BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
 		if (!state.isAir() && explosion.getDestructionType() != Explosion.DestructionType.TRIGGER_BLOCK) {
 			Block block = state.getBlock();
 			boolean bl = explosion.getCausingEntity() instanceof PlayerEntity;
-			if (block.shouldDropItemsOnExplosion(explosion) && world instanceof ServerWorld serverWorld) {
+			if (block.shouldDropItemsOnExplosion(explosion)) {
 				BlockEntity blockEntity = state.hasBlockEntity() ? world.getBlockEntity(pos) : null;
-				LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(serverWorld)
+				LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
 					.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
 					.add(LootContextParameters.TOOL, ItemStack.EMPTY)
 					.addOptional(LootContextParameters.BLOCK_ENTITY, blockEntity)
@@ -574,7 +574,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 					builder.add(LootContextParameters.EXPLOSION_RADIUS, explosion.getPower());
 				}
 
-				state.onStacksDropped(serverWorld, pos, ItemStack.EMPTY, bl);
+				state.onStacksDropped(world, pos, ItemStack.EMPTY, bl);
 				state.getDroppedStacks(builder).forEach(stack -> stackMerger.accept(stack, pos));
 			}
 
@@ -587,8 +587,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		return ActionResult.PASS;
 	}
 
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 	}
 
 	/**
@@ -784,8 +784,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	/**
 	 * @see AbstractBlockState#getCullingShape
 	 */
-	protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
-		return state.getOutlineShape(world, pos);
+	protected VoxelShape getCullingShape(BlockState state) {
+		return state.getOutlineShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 	}
 
 	/**
@@ -805,11 +805,11 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	/**
 	 * @see AbstractBlockState#getOpacity
 	 */
-	protected int getOpacity(BlockState state, BlockView world, BlockPos pos) {
-		if (state.isOpaqueFullCube(world, pos)) {
-			return world.getMaxLightLevel();
+	protected int getOpacity(BlockState state) {
+		if (state.isOpaqueFullCube()) {
+			return 15;
 		} else {
-			return state.isTransparent(world, pos) ? 0 : 1;
+			return state.isTransparent() ? 0 : 1;
 		}
 	}
 
@@ -899,10 +899,6 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 */
 	protected boolean isShapeFullCube(BlockState state, BlockView world, BlockPos pos) {
 		return Block.isShapeFullCube(state.getCollisionShape(world, pos));
-	}
-
-	protected boolean isCullingShapeFullCube(BlockState state, BlockView world, BlockPos pos) {
-		return Block.isShapeFullCube(state.getCullingShape(world, pos));
 	}
 
 	/**
@@ -1108,8 +1104,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	protected void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
 	}
 
-	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
-		return !Block.isShapeFullCube(state.getOutlineShape(world, pos)) && state.getFluidState().isEmpty();
+	protected boolean isTransparent(BlockState state) {
+		return !Block.isShapeFullCube(state.getOutlineShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN)) && state.getFluidState().isEmpty();
 	}
 
 	protected boolean hasRandomTicks(BlockState state) {
@@ -1146,6 +1142,11 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	}
 
 	public abstract static class AbstractBlockState extends State<Block, BlockState> {
+		private static final Direction[] DIRECTIONS = Direction.values();
+		private static final VoxelShape[] EMPTY_CULLING_FACES = Util.make(new VoxelShape[DIRECTIONS.length], direction -> Arrays.fill(direction, VoxelShapes.empty()));
+		private static final VoxelShape[] FULL_CULLING_FACES = Util.make(
+			new VoxelShape[DIRECTIONS.length], direction -> Arrays.fill(direction, VoxelShapes.fullCube())
+		);
 		private final int luminance;
 		private final boolean hasSidedTransparency;
 		private final boolean isAir;
@@ -1170,9 +1171,14 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		private final NoteBlockInstrument instrument;
 		private final boolean replaceable;
 		@Nullable
-		protected AbstractBlock.AbstractBlockState.ShapeCache shapeCache;
+		private AbstractBlock.AbstractBlockState.ShapeCache shapeCache;
 		private FluidState fluidState = Fluids.EMPTY.getDefaultState();
 		private boolean ticksRandomly;
+		private boolean opaqueFullCube;
+		private VoxelShape cullingShape;
+		private VoxelShape[] cullingFaces;
+		private boolean transparent;
+		private int opacity;
 
 		protected AbstractBlockState(Block block, Reference2ObjectArrayMap<Property<?>, Comparable<?>> propertyMap, MapCodec<BlockState> codec) {
 			super(block, propertyMap, codec);
@@ -1224,6 +1230,22 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			}
 
 			this.solid = this.shouldBeSolid();
+			this.cullingShape = this.opaque ? this.owner.getCullingShape(this.asBlockState()) : VoxelShapes.empty();
+			this.opaqueFullCube = Block.isShapeFullCube(this.cullingShape);
+			if (this.cullingShape.isEmpty()) {
+				this.cullingFaces = EMPTY_CULLING_FACES;
+			} else if (this.opaqueFullCube) {
+				this.cullingFaces = FULL_CULLING_FACES;
+			} else {
+				this.cullingFaces = new VoxelShape[DIRECTIONS.length];
+
+				for (Direction direction : DIRECTIONS) {
+					this.cullingFaces[direction.ordinal()] = this.cullingShape.getFace(direction);
+				}
+			}
+
+			this.transparent = this.owner.isTransparent(this.asBlockState());
+			this.opacity = this.owner.getOpacity(this.asBlockState());
 		}
 
 		public Block getBlock() {
@@ -1249,22 +1271,20 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return this.getBlock().settings.allowsSpawningPredicate.test(this.asBlockState(), world, pos, type);
 		}
 
-		public boolean isTransparent(BlockView world, BlockPos pos) {
-			return this.shapeCache != null ? this.shapeCache.transparent : this.getBlock().isTransparent(this.asBlockState(), world, pos);
+		public boolean isTransparent() {
+			return this.transparent;
 		}
 
-		public int getOpacity(BlockView world, BlockPos pos) {
-			return this.shapeCache != null ? this.shapeCache.lightSubtracted : this.getBlock().getOpacity(this.asBlockState(), world, pos);
+		public int getOpacity() {
+			return this.opacity;
 		}
 
-		public VoxelShape getCullingFace(BlockView world, BlockPos pos, Direction direction) {
-			return this.shapeCache != null && this.shapeCache.extrudedFaces != null
-				? this.shapeCache.extrudedFaces[direction.ordinal()]
-				: VoxelShapes.extrudeFace(this.getCullingShape(world, pos), direction);
+		public VoxelShape getCullingFace(Direction direction) {
+			return this.cullingFaces[direction.ordinal()];
 		}
 
-		public VoxelShape getCullingShape(BlockView world, BlockPos pos) {
-			return this.getBlock().getCullingShape(this.asBlockState(), world, pos);
+		public VoxelShape getCullingShape() {
+			return this.cullingShape;
 		}
 
 		public boolean exceedsCube() {
@@ -1355,13 +1375,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return this.pistonBehavior;
 		}
 
-		public boolean isOpaqueFullCube(BlockView world, BlockPos pos) {
-			if (this.shapeCache != null) {
-				return this.shapeCache.fullOpaque;
-			} else {
-				BlockState blockState = this.asBlockState();
-				return blockState.isOpaque() ? Block.isShapeFullCube(blockState.getCullingShape(world, pos)) : false;
-			}
+		public boolean isOpaqueFullCube() {
+			return this.opaqueFullCube;
 		}
 
 		public boolean isOpaque() {
@@ -1408,9 +1423,9 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return Block.isFaceFullSquare(this.getCollisionShape(world, pos, ShapeContext.of(entity)), direction);
 		}
 
-		public Vec3d getModelOffset(BlockView world, BlockPos pos) {
+		public Vec3d getModelOffset(BlockPos pos) {
 			AbstractBlock.Offsetter offsetter = this.offsetter;
-			return offsetter != null ? offsetter.evaluate(this.asBlockState(), world, pos) : Vec3d.ZERO;
+			return offsetter != null ? offsetter.evaluate(this.asBlockState(), pos) : Vec3d.ZERO;
 		}
 
 		public boolean hasModelOffset() {
@@ -1421,8 +1436,9 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return this.getBlock().onSyncedBlockEvent(this.asBlockState(), world, pos, type, data);
 		}
 
-		public void neighborUpdate(World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-			this.getBlock().neighborUpdate(this.asBlockState(), world, pos, sourceBlock, sourcePos, notify);
+		public void neighborUpdate(World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
+			DebugInfoSender.sendNeighborUpdate(world, pos);
+			this.getBlock().neighborUpdate(this.asBlockState(), world, pos, sourceBlock, wireOrientation, notify);
 		}
 
 		public final void updateNeighbors(WorldAccess world, BlockPos pos, int flags) {
@@ -1454,7 +1470,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			this.getBlock().onStateReplaced(this.asBlockState(), world, pos, state, moved);
 		}
 
-		public void onExploded(World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
+		public void onExploded(ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
 			this.getBlock().onExploded(this.asBlockState(), world, pos, explosion, stackMerger);
 		}
 
@@ -1478,7 +1494,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return this.getBlock().getDroppedStacks(this.asBlockState(), builder);
 		}
 
-		public ItemActionResult onUseWithItem(ItemStack stack, World world, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		public ActionResult onUseWithItem(ItemStack stack, World world, PlayerEntity player, Hand hand, BlockHitResult hit) {
 			return this.getBlock().onUseWithItem(stack, this.asBlockState(), world, hit.getBlockPos(), player, hand, hit);
 		}
 
@@ -1628,11 +1644,6 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		static final class ShapeCache {
 			private static final Direction[] DIRECTIONS = Direction.values();
 			private static final int SHAPE_TYPE_LENGTH = SideShapeType.values().length;
-			protected final boolean fullOpaque;
-			final boolean transparent;
-			final int lightSubtracted;
-			@Nullable
-			final VoxelShape[] extrudedFaces;
 			protected final VoxelShape collisionShape;
 			protected final boolean exceedsCube;
 			private final boolean[] solidSides;
@@ -1640,20 +1651,6 @@ public abstract class AbstractBlock implements ToggleableFeature {
 
 			ShapeCache(BlockState state) {
 				Block block = state.getBlock();
-				this.fullOpaque = state.isOpaqueFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-				this.transparent = block.isTransparent(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-				this.lightSubtracted = block.getOpacity(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-				if (!state.isOpaque()) {
-					this.extrudedFaces = null;
-				} else {
-					this.extrudedFaces = new VoxelShape[DIRECTIONS.length];
-					VoxelShape voxelShape = block.getCullingShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-
-					for (Direction direction : DIRECTIONS) {
-						this.extrudedFaces[direction.ordinal()] = VoxelShapes.extrudeFace(voxelShape, direction);
-					}
-				}
-
 				this.collisionShape = block.getCollisionShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
 				if (!this.collisionShape.isEmpty() && state.hasModelOffset()) {
 					throw new IllegalStateException(
@@ -1666,9 +1663,9 @@ public abstract class AbstractBlock implements ToggleableFeature {
 						.anyMatch(axis -> this.collisionShape.getMin(axis) < 0.0 || this.collisionShape.getMax(axis) > 1.0);
 					this.solidSides = new boolean[DIRECTIONS.length * SHAPE_TYPE_LENGTH];
 
-					for (Direction direction2 : DIRECTIONS) {
+					for (Direction direction : DIRECTIONS) {
 						for (SideShapeType sideShapeType : SideShapeType.values()) {
-							this.solidSides[indexSolidSide(direction2, sideShapeType)] = sideShapeType.matches(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
+							this.solidSides[indexSolidSide(direction, sideShapeType)] = sideShapeType.matches(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction);
 						}
 					}
 
@@ -1697,7 +1694,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	}
 
 	public interface Offsetter {
-		Vec3d evaluate(BlockState state, BlockView world, BlockPos pos);
+		Vec3d evaluate(BlockState state, BlockPos pos);
 	}
 
 	public static class Settings {
@@ -1988,7 +1985,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		public AbstractBlock.Settings offset(AbstractBlock.OffsetType offsetType) {
 			this.offsetter = switch (offsetType) {
 				case NONE -> null;
-				case XZ -> (state, world, pos) -> {
+				case XZ -> (state, pos) -> {
 				Block block = state.getBlock();
 				long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
 				float f = block.getMaxHorizontalModelOffset();
@@ -1996,7 +1993,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 				double e = MathHelper.clamp(((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
 				return new Vec3d(d, 0.0, e);
 			};
-				case XYZ -> (state, world, pos) -> {
+				case XYZ -> (state, pos) -> {
 				Block block = state.getBlock();
 				long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
 				double d = ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * (double)block.getVerticalModelOffsetMultiplier();

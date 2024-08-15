@@ -3,7 +3,9 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.state.OminousItemSpawnerEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.OminousItemSpawnerEntity;
@@ -11,10 +13,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
-import net.minecraft.world.World;
+import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
-public class OminousItemSpawnerEntityRenderer extends EntityRenderer<OminousItemSpawnerEntity> {
+public class OminousItemSpawnerEntityRenderer extends EntityRenderer<OminousItemSpawnerEntity, OminousItemSpawnerEntityRenderState> {
 	private static final float field_50231 = 40.0F;
 	private static final int field_50232 = 50;
 	private final ItemRenderer itemRenderer;
@@ -24,26 +26,46 @@ public class OminousItemSpawnerEntityRenderer extends EntityRenderer<OminousItem
 		this.itemRenderer = context.getItemRenderer();
 	}
 
-	public Identifier getTexture(OminousItemSpawnerEntity ominousItemSpawnerEntity) {
+	public Identifier getTexture(OminousItemSpawnerEntityRenderState ominousItemSpawnerEntityRenderState) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 
-	public void render(
-		OminousItemSpawnerEntity ominousItemSpawnerEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
+	public OminousItemSpawnerEntityRenderState getRenderState() {
+		return new OminousItemSpawnerEntityRenderState();
+	}
+
+	public void updateRenderState(
+		OminousItemSpawnerEntity ominousItemSpawnerEntity, OminousItemSpawnerEntityRenderState ominousItemSpawnerEntityRenderState, float f
 	) {
+		super.updateRenderState(ominousItemSpawnerEntity, ominousItemSpawnerEntityRenderState, f);
 		ItemStack itemStack = ominousItemSpawnerEntity.getItem();
-		if (!itemStack.isEmpty()) {
+		ominousItemSpawnerEntityRenderState.stack = itemStack;
+		ominousItemSpawnerEntityRenderState.model = !itemStack.isEmpty() ? this.itemRenderer.getModel(itemStack, ominousItemSpawnerEntity.getWorld(), null, 0) : null;
+	}
+
+	public void render(
+		OminousItemSpawnerEntityRenderState ominousItemSpawnerEntityRenderState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
+	) {
+		BakedModel bakedModel = ominousItemSpawnerEntityRenderState.model;
+		if (bakedModel != null) {
 			matrixStack.push();
-			if (ominousItemSpawnerEntity.age <= 50) {
-				float h = Math.min((float)ominousItemSpawnerEntity.age + g, 50.0F) / 50.0F;
-				matrixStack.scale(h, h, h);
+			if (ominousItemSpawnerEntityRenderState.age <= 50.0F) {
+				float f = Math.min(ominousItemSpawnerEntityRenderState.age, 50.0F) / 50.0F;
+				matrixStack.scale(f, f, f);
 			}
 
-			World world = ominousItemSpawnerEntity.getWorld();
-			float j = MathHelper.wrapDegrees((float)(world.getTime() - 1L)) * 40.0F;
-			float k = MathHelper.wrapDegrees((float)world.getTime()) * 40.0F;
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerpAngleDegrees(g, j, k)));
-			ItemEntityRenderer.renderStack(this.itemRenderer, matrixStack, vertexConsumerProvider, 15728880, itemStack, world.random, world);
+			float f = MathHelper.wrapDegrees(ominousItemSpawnerEntityRenderState.age * 40.0F);
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(f));
+			ItemEntityRenderer.renderStack(
+				this.itemRenderer,
+				matrixStack,
+				vertexConsumerProvider,
+				15728880,
+				ominousItemSpawnerEntityRenderState.stack,
+				bakedModel,
+				bakedModel.hasDepth(),
+				Random.create()
+			);
 			matrixStack.pop();
 		}
 	}

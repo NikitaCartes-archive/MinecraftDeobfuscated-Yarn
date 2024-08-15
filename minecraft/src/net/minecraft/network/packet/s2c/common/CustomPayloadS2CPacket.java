@@ -27,6 +27,7 @@ import net.minecraft.network.packet.s2c.custom.DebugPoiAddedCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugPoiRemovedCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugPoiTicketCountCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugRaidsCustomPayload;
+import net.minecraft.network.packet.s2c.custom.DebugRedstoneUpdateOrderCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugStructuresCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugVillageSectionsCustomPayload;
 import net.minecraft.network.packet.s2c.custom.DebugWorldgenAttemptCustomPayload;
@@ -54,6 +55,7 @@ public record CustomPayloadS2CPacket(CustomPayload payload) implements Packet<Cl
 					new CustomPayload.Type<>(DebugPoiRemovedCustomPayload.ID, DebugPoiRemovedCustomPayload.CODEC),
 					new CustomPayload.Type<>(DebugPoiTicketCountCustomPayload.ID, DebugPoiTicketCountCustomPayload.CODEC),
 					new CustomPayload.Type<>(DebugRaidsCustomPayload.ID, DebugRaidsCustomPayload.CODEC),
+					new CustomPayload.Type<>(DebugRedstoneUpdateOrderCustomPayload.ID, DebugRedstoneUpdateOrderCustomPayload.PACKET_CODEC),
 					new CustomPayload.Type<>(DebugStructuresCustomPayload.ID, DebugStructuresCustomPayload.CODEC),
 					new CustomPayload.Type<>(DebugVillageSectionsCustomPayload.ID, DebugVillageSectionsCustomPayload.CODEC),
 					new CustomPayload.Type<>(DebugWorldgenAttemptCustomPayload.ID, DebugWorldgenAttemptCustomPayload.CODEC)
