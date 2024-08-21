@@ -198,8 +198,8 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		return new DataPackSettings(list, list2);
 	}
 
-	public DimensionOptionsRegistryHolder createDimensionsRegistryHolder(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.worldGenProperties.createDimensionsRegistryHolder(registryLookup);
+	public DimensionOptionsRegistryHolder createDimensionsRegistryHolder(RegistryWrapper.WrapperLookup registries) {
+		return this.worldGenProperties.createDimensionsRegistryHolder(registries);
 	}
 
 	static record WorldGenProperties(JsonObject generatorSettings, String levelType) {
@@ -207,8 +207,8 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 			"default", WorldPresets.DEFAULT, "largebiomes", WorldPresets.LARGE_BIOMES
 		);
 
-		public DimensionOptionsRegistryHolder createDimensionsRegistryHolder(RegistryWrapper.WrapperLookup registryLookup) {
-			RegistryWrapper<WorldPreset> registryWrapper = registryLookup.getWrapperOrThrow(RegistryKeys.WORLD_PRESET);
+		public DimensionOptionsRegistryHolder createDimensionsRegistryHolder(RegistryWrapper.WrapperLookup registries) {
+			RegistryWrapper<WorldPreset> registryWrapper = registries.getWrapperOrThrow(RegistryKeys.WORLD_PRESET);
 			RegistryEntry.Reference<WorldPreset> reference = (RegistryEntry.Reference<WorldPreset>)registryWrapper.getOptional(WorldPresets.DEFAULT)
 				.or(() -> registryWrapper.streamEntries().findAny())
 				.orElseThrow(() -> new IllegalStateException("Invalid datapack contents: can't find default preset"));
@@ -222,12 +222,12 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 				});
 			DimensionOptionsRegistryHolder dimensionOptionsRegistryHolder = registryEntry.value().createDimensionsRegistryHolder();
 			if (registryEntry.matchesKey(WorldPresets.FLAT)) {
-				RegistryOps<JsonElement> registryOps = registryLookup.getOps(JsonOps.INSTANCE);
+				RegistryOps<JsonElement> registryOps = registries.getOps(JsonOps.INSTANCE);
 				Optional<FlatChunkGeneratorConfig> optional = FlatChunkGeneratorConfig.CODEC
 					.parse(new Dynamic<>(registryOps, this.generatorSettings()))
 					.resultOrPartial(ServerPropertiesHandler.LOGGER::error);
 				if (optional.isPresent()) {
-					return dimensionOptionsRegistryHolder.with(registryLookup, new FlatChunkGenerator((FlatChunkGeneratorConfig)optional.get()));
+					return dimensionOptionsRegistryHolder.with(registries, new FlatChunkGenerator((FlatChunkGeneratorConfig)optional.get()));
 				}
 			}
 

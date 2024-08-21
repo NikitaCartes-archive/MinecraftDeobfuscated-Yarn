@@ -23,12 +23,12 @@ public class ForcedChunkState extends PersistentState {
 		this(new LongOpenHashSet());
 	}
 
-	public static ForcedChunkState fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	public static ForcedChunkState fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		return new ForcedChunkState(new LongOpenHashSet(nbt.getLongArray("Forced")));
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		nbt.putLongArray("Forced", this.chunks.toLongArray());
 		return nbt;
 	}

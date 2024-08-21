@@ -26,28 +26,33 @@ public class ExperimentalRedstoneController extends RedstoneController {
 	}
 
 	@Override
-	public void update(World world, BlockPos pos, BlockState state, @Nullable WireOrientation orientation) {
+	public void update(World world, BlockPos pos, BlockState state, @Nullable WireOrientation orientation, boolean blockAdded) {
 		WireOrientation wireOrientation = tweakOrientation(world, orientation);
 		this.propagatePowerUpdates(world, pos, wireOrientation);
 		ObjectIterator<Entry<BlockPos>> objectIterator = this.wireOrientationsAndPowers.object2IntEntrySet().iterator();
 
-		while (objectIterator.hasNext()) {
+		for (boolean bl = true; objectIterator.hasNext(); bl = false) {
 			Entry<BlockPos> entry = (Entry<BlockPos>)objectIterator.next();
 			BlockPos blockPos = (BlockPos)entry.getKey();
 			int i = entry.getIntValue();
 			int j = unpackPower(i);
 			BlockState blockState = world.getBlockState(blockPos);
 			if (blockState.isOf(this.wire) && !((Integer)blockState.get(RedstoneWireBlock.POWER)).equals(j)) {
-				world.setBlockState(blockPos, blockState.with(RedstoneWireBlock.POWER, Integer.valueOf(j)), Block.NOTIFY_LISTENERS);
+				int k = Block.NOTIFY_LISTENERS;
+				if (!blockAdded || !bl) {
+					k |= Block.SKIP_REDSTONE_WIRE_STATE_REPLACEMENT;
+				}
+
+				world.setBlockState(blockPos, blockState.with(RedstoneWireBlock.POWER, Integer.valueOf(j)), k);
 			} else {
 				objectIterator.remove();
 			}
 		}
 
-		this.method_61829(world);
+		this.update(world);
 	}
 
-	private void method_61829(World world) {
+	private void update(World world) {
 		this.wireOrientationsAndPowers.forEach((pos, orientationAndPower) -> {
 			WireOrientation wireOrientation = unpackOrientation(orientationAndPower);
 			BlockState blockState = world.getBlockState(pos);
@@ -56,12 +61,12 @@ public class ExperimentalRedstoneController extends RedstoneController {
 				if (canProvidePowerTo(blockState, direction)) {
 					BlockPos blockPos = pos.offset(direction);
 					BlockState blockState2 = world.getBlockState(blockPos);
-					WireOrientation wireOrientation2 = wireOrientation.withFront(direction);
+					WireOrientation wireOrientation2 = wireOrientation.withFrontIfNotUp(direction);
 					world.updateNeighbor(blockState2, blockPos, this.wire, wireOrientation2, false);
 					if (blockState2.isSolidBlock(world, blockPos)) {
 						for (Direction direction2 : wireOrientation2.getDirectionsByPriority()) {
 							if (direction2 != direction.getOpposite()) {
-								world.updateNeighbor(blockPos.offset(direction2), this.wire, wireOrientation2.withFront(direction2));
+								world.updateNeighbor(blockPos.offset(direction2), this.wire, wireOrientation2.withFrontIfNotUp(direction2));
 							}
 						}
 					}
@@ -83,7 +88,7 @@ public class ExperimentalRedstoneController extends RedstoneController {
 			wireOrientation = WireOrientation.random(world.random);
 		}
 
-		return wireOrientation.withUp(Direction.UP);
+		return wireOrientation.withUp(Direction.UP).withSideBias(WireOrientation.SideBias.LEFT);
 	}
 
 	private void propagatePowerUpdates(World world, BlockPos pos, WireOrientation orientation) {
@@ -118,7 +123,7 @@ public class ExperimentalRedstoneController extends RedstoneController {
 				this.updatePowerAt(blockPos, n, wireOrientation);
 			}
 
-			this.spreadPowerUpdateToNeighbors(world, blockPos, n, wireOrientation, true);
+			this.spreadPowerUpdateToNeighbors(world, blockPos, n, wireOrientation, j > m);
 		}
 
 		while (!this.powerDecreaseQueue.isEmpty()) {
@@ -173,7 +178,10 @@ public class ExperimentalRedstoneController extends RedstoneController {
 
 			for (Direction direction2 : orientation.getHorizontalDirections()) {
 				BlockPos blockPos2 = pos.offset(direction2);
-				if (direction == Direction.UP && !bl || direction == Direction.DOWN && bl && !world.getBlockState(blockPos2).isSolidBlock(world, blockPos2)) {
+				if (direction == Direction.UP && !bl) {
+					BlockPos blockPos3 = blockPos.offset(direction2);
+					this.spreadPowerUpdateTo(world, blockPos3, power, orientation.withFront(direction2), canIncreasePower);
+				} else if (direction == Direction.DOWN && !world.getBlockState(blockPos2).isSolidBlock(world, blockPos2)) {
 					BlockPos blockPos3 = blockPos.offset(direction2);
 					this.spreadPowerUpdateTo(world, blockPos3, power, orientation.withFront(direction2), canIncreasePower);
 				}

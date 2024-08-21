@@ -319,7 +319,7 @@ public class ChunkSectionPos extends Vec3i {
 	public static Stream<ChunkSectionPos> stream(ChunkPos center, int radius, int minY, int maxY) {
 		int i = center.x;
 		int j = center.z;
-		return stream(i - radius, minY, j - radius, i + radius, maxY - 1, j + radius);
+		return stream(i - radius, minY, j - radius, i + radius, maxY, j + radius);
 	}
 
 	public static Stream<ChunkSectionPos> stream(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {

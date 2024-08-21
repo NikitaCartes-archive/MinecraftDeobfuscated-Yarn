@@ -25,7 +25,7 @@ public class TrueTypeFont implements Font {
 	@Nullable
 	private FT_Face face;
 	final float oversample;
-	private final GlyphContainer<TrueTypeFont.class_9908> field_52695 = new GlyphContainer<>(TrueTypeFont.class_9908[]::new, TrueTypeFont.class_9908[][]::new);
+	private final GlyphContainer<TrueTypeFont.LazyGlyph> container = new GlyphContainer<>(TrueTypeFont.LazyGlyph[]::new, TrueTypeFont.LazyGlyph[][]::new);
 
 	public TrueTypeFont(ByteBuffer buffer, FT_Face face, float size, float oversample, float shiftX, float shiftY, String excludedCharacters) {
 		this.buffer = buffer;
@@ -51,7 +51,7 @@ public class TrueTypeFont implements Font {
 				}
 
 				if (!intSet.contains(j)) {
-					this.field_52695.put(j, new TrueTypeFont.class_9908(k));
+					this.container.put(j, new TrueTypeFont.LazyGlyph(k));
 				}
 
 				j = (int)FreeType.FT_Get_Next_Char(face, (long)j, intBuffer);
@@ -62,43 +62,43 @@ public class TrueTypeFont implements Font {
 	@Nullable
 	@Override
 	public Glyph getGlyph(int codePoint) {
-		TrueTypeFont.class_9908 lv = this.field_52695.get(codePoint);
-		return lv != null ? this.method_61901(codePoint, lv) : null;
+		TrueTypeFont.LazyGlyph lazyGlyph = this.container.get(codePoint);
+		return lazyGlyph != null ? this.getOrLoadGlyph(codePoint, lazyGlyph) : null;
 	}
 
-	private Glyph method_61901(int i, TrueTypeFont.class_9908 arg) {
-		Glyph glyph = arg.field_52697;
-		if (glyph == null) {
+	private Glyph getOrLoadGlyph(int codePoint, TrueTypeFont.LazyGlyph glyph) {
+		Glyph glyph2 = glyph.glyph;
+		if (glyph2 == null) {
 			FT_Face fT_Face = this.getInfo();
 			synchronized (fT_Face) {
-				glyph = arg.field_52697;
-				if (glyph == null) {
-					glyph = this.method_61902(i, fT_Face, arg.field_52696);
-					arg.field_52697 = glyph;
+				glyph2 = glyph.glyph;
+				if (glyph2 == null) {
+					glyph2 = this.loadGlyph(codePoint, fT_Face, glyph.index);
+					glyph.glyph = glyph2;
 				}
 			}
 		}
 
-		return glyph;
+		return glyph2;
 	}
 
-	private Glyph method_61902(int i, FT_Face fT_Face, int j) {
-		int k = FreeType.FT_Load_Glyph(fT_Face, j, 4194312);
-		if (k != 0) {
-			FreeTypeUtil.checkFatalError(k, String.format(Locale.ROOT, "Loading glyph U+%06X", i));
+	private Glyph loadGlyph(int codePoint, FT_Face face, int index) {
+		int i = FreeType.FT_Load_Glyph(face, index, 4194312);
+		if (i != 0) {
+			FreeTypeUtil.checkFatalError(i, String.format(Locale.ROOT, "Loading glyph U+%06X", codePoint));
 		}
 
-		FT_GlyphSlot fT_GlyphSlot = fT_Face.glyph();
+		FT_GlyphSlot fT_GlyphSlot = face.glyph();
 		if (fT_GlyphSlot == null) {
-			throw new NullPointerException(String.format(Locale.ROOT, "Glyph U+%06X not initialized", i));
+			throw new NullPointerException(String.format(Locale.ROOT, "Glyph U+%06X not initialized", codePoint));
 		} else {
 			float f = FreeTypeUtil.getX(fT_GlyphSlot.advance());
 			FT_Bitmap fT_Bitmap = fT_GlyphSlot.bitmap();
-			int l = fT_GlyphSlot.bitmap_left();
-			int m = fT_GlyphSlot.bitmap_top();
-			int n = fT_Bitmap.width();
-			int o = fT_Bitmap.rows();
-			return (Glyph)(n > 0 && o > 0 ? new TrueTypeFont.TtfGlyph((float)l, (float)m, n, o, f, j) : () -> f / this.oversample);
+			int j = fT_GlyphSlot.bitmap_left();
+			int k = fT_GlyphSlot.bitmap_top();
+			int l = fT_Bitmap.width();
+			int m = fT_Bitmap.rows();
+			return (Glyph)(l > 0 && m > 0 ? new TrueTypeFont.TtfGlyph((float)j, (float)k, l, m, f, index) : () -> f / this.oversample);
 		}
 	}
 
@@ -126,7 +126,18 @@ public class TrueTypeFont implements Font {
 
 	@Override
 	public IntSet getProvidedGlyphs() {
-		return this.field_52695.getProvidedGlyphs();
+		return this.container.getProvidedGlyphs();
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class LazyGlyph {
+		final int index;
+		@Nullable
+		volatile Glyph glyph;
+
+		LazyGlyph(int index) {
+			this.index = index;
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -196,17 +207,6 @@ public class TrueTypeFont implements Font {
 					return false;
 				}
 			});
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class class_9908 {
-		final int field_52696;
-		@Nullable
-		volatile Glyph field_52697;
-
-		class_9908(int i) {
-			this.field_52696 = i;
 		}
 	}
 }

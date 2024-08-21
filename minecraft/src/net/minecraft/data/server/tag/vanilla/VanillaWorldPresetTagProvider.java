@@ -15,7 +15,7 @@ public class VanillaWorldPresetTagProvider extends TagProvider<WorldPreset> {
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.getOrCreateTagBuilder(WorldPresetTags.NORMAL)
 			.add(WorldPresets.DEFAULT)
 			.add(WorldPresets.FLAT)

@@ -43,8 +43,8 @@ public enum AbuseReportReason {
 		return this.description;
 	}
 
-	public static List<AbuseReportReason> method_62164(AbuseReportType abuseReportType) {
-		return switch (abuseReportType) {
+	public static List<AbuseReportReason> getExcludedReasonsForType(AbuseReportType reportType) {
+		return switch (reportType) {
 			case CHAT -> List.of(SEXUALLY_INAPPROPRIATE);
 			case SKIN -> List.of(IMMINENT_HARM, DEFAMATION_IMPERSONATION_FALSE_INFORMATION);
 			default -> List.of();

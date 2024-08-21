@@ -48,7 +48,7 @@ public abstract class ThrownItemEntity extends ThrownEntity implements FlyingIte
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.put("Item", this.getStack().encode(this.getRegistryManager()));
+		nbt.put("Item", this.getStack().toNbt(this.getRegistryManager()));
 	}
 
 	@Override

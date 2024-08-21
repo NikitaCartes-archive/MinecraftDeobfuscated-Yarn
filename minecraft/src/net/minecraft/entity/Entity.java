@@ -959,7 +959,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 				if (!this.getWorld().isClient() || this.isLogicalSideForUpdatingMovement()) {
 					Entity.MoveEffect moveEffect = this.getMoveEffect();
 					if (moveEffect.hasAny() && !this.hasVehicle()) {
-						this.method_61407(moveEffect, vec3d, blockPos, blockState);
+						this.applyMoveEffect(moveEffect, vec3d, blockPos, blockState);
 					}
 				}
 
@@ -970,20 +970,20 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		}
 	}
 
-	private void method_61407(Entity.MoveEffect moveEffect, Vec3d vec3d, BlockPos blockPos, BlockState blockState) {
+	private void applyMoveEffect(Entity.MoveEffect moveEffect, Vec3d movement, BlockPos landingPos, BlockState landingState) {
 		float f = 0.6F;
-		float g = (float)(vec3d.length() * 0.6F);
-		float h = (float)(vec3d.horizontalLength() * 0.6F);
-		BlockPos blockPos2 = this.getSteppingPos();
-		BlockState blockState2 = this.getWorld().getBlockState(blockPos2);
-		boolean bl = this.canClimb(blockState2);
+		float g = (float)(movement.length() * 0.6F);
+		float h = (float)(movement.horizontalLength() * 0.6F);
+		BlockPos blockPos = this.getSteppingPos();
+		BlockState blockState = this.getWorld().getBlockState(blockPos);
+		boolean bl = this.canClimb(blockState);
 		this.distanceTraveled += bl ? g : h;
 		this.speed += g;
-		if (this.distanceTraveled > this.nextStepSoundDistance && !blockState2.isAir()) {
-			boolean bl2 = blockPos2.equals(blockPos);
-			boolean bl3 = this.stepOnBlock(blockPos, blockState, moveEffect.playsSounds(), bl2, vec3d);
+		if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
+			boolean bl2 = blockPos.equals(landingPos);
+			boolean bl3 = this.stepOnBlock(landingPos, landingState, moveEffect.playsSounds(), bl2, movement);
 			if (!bl2) {
-				bl3 |= this.stepOnBlock(blockPos2, blockState2, false, moveEffect.emitsGameEvents(), vec3d);
+				bl3 |= this.stepOnBlock(blockPos, blockState, false, moveEffect.emitsGameEvents(), movement);
 			}
 
 			if (bl3) {
@@ -998,7 +998,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 					this.emitGameEvent(GameEvent.SWIM);
 				}
 			}
-		} else if (blockState2.isAir()) {
+		} else if (blockState.isAir()) {
 			this.addAirTravelEffects();
 		}
 	}

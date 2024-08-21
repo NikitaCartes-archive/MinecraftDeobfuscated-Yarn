@@ -31,14 +31,14 @@ public class PersistentStateManager implements AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Map<String, Optional<PersistentState>> loadedStates = new HashMap();
 	private final DataFixer dataFixer;
-	private final RegistryWrapper.WrapperLookup registryLookup;
+	private final RegistryWrapper.WrapperLookup registries;
 	private final Path directory;
 	private CompletableFuture<?> savingFuture = CompletableFuture.completedFuture(null);
 
-	public PersistentStateManager(Path directory, DataFixer dataFixer, RegistryWrapper.WrapperLookup registryLookup) {
+	public PersistentStateManager(Path directory, DataFixer dataFixer, RegistryWrapper.WrapperLookup registries) {
 		this.dataFixer = dataFixer;
 		this.directory = directory;
-		this.registryLookup = registryLookup;
+		this.registries = registries;
 	}
 
 	private Path getFile(String id) {
@@ -75,7 +75,7 @@ public class PersistentStateManager implements AutoCloseable {
 			Path path = this.getFile(id);
 			if (Files.exists(path, new LinkOption[0])) {
 				NbtCompound nbtCompound = this.readNbt(id, dataFixTypes, SharedConstants.getGameVersion().getSaveVersion().getId());
-				return (T)readFunction.apply(nbtCompound.getCompound("data"), this.registryLookup);
+				return (T)readFunction.apply(nbtCompound.getCompound("data"), this.registries);
 			}
 		} catch (Exception var6) {
 			LOGGER.error("Error loading saved data: {}", id, var6);
@@ -186,7 +186,7 @@ public class PersistentStateManager implements AutoCloseable {
 	private Map<Path, NbtCompound> collectStatesToSave() {
 		Map<Path, NbtCompound> map = new Object2ObjectArrayMap<>();
 		this.loadedStates
-			.forEach((id, state) -> state.filter(PersistentState::isDirty).ifPresent(state2 -> map.put(this.getFile(id), state2.toNbt(this.registryLookup))));
+			.forEach((id, state) -> state.filter(PersistentState::isDirty).ifPresent(state2 -> map.put(this.getFile(id), state2.toNbt(this.registries))));
 		return map;
 	}
 

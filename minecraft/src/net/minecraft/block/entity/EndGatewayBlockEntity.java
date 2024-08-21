@@ -44,8 +44,8 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		nbt.putLong("Age", this.age);
 		if (this.exitPortalPos != null) {
 			nbt.put("exit_portal", NbtHelper.fromBlockPos(this.exitPortalPos));
@@ -57,8 +57,8 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		this.age = nbt.getLong("Age");
 		NbtHelper.toBlockPos(nbt, "exit_portal").filter(World::isValid).ifPresent(exitPortalPos -> this.exitPortalPos = exitPortalPos);
 		this.exactTeleport = nbt.getBoolean("ExactTeleport");
@@ -107,8 +107,8 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createComponentlessNbt(registryLookup);
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
+		return this.createComponentlessNbt(registries);
 	}
 
 	public static void startTeleportCooldown(World world, BlockPos pos, BlockState state, EndGatewayBlockEntity blockEntity) {
@@ -209,7 +209,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		for (int i = -searchRadius; i <= searchRadius; i++) {
 			for (int j = -searchRadius; j <= searchRadius; j++) {
 				if (i != 0 || j != 0 || force) {
-					for (int k = world.getTopY() - 1; k > (blockPos == null ? world.getBottomY() : blockPos.getY()); k--) {
+					for (int k = world.getTopYInclusive(); k > (blockPos == null ? world.getBottomY() : blockPos.getY()); k--) {
 						BlockPos blockPos2 = new BlockPos(pos.getX() + i, k, pos.getZ() + j);
 						BlockState blockState = world.getBlockState(blockPos2);
 						if (blockState.isFullCube(world, blockPos2) && (force || !blockState.isOf(Blocks.BEDROCK))) {

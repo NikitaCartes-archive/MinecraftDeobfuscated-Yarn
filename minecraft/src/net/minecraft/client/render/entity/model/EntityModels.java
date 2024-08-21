@@ -44,7 +44,7 @@ public class EntityModels {
 		TexturedModelData texturedModelData10 = AxolotlEntityModel.getTexturedModelData();
 		TexturedModelData texturedModelData11 = BeeEntityModel.getTexturedModelData();
 		TexturedModelData texturedModelData12 = CowEntityModel.getTexturedModelData();
-		TexturedModelData texturedModelData13 = CowEntityModel.getTexturedModelData().transform(CowEntityModel.BABY_TRANSFORMER);
+		TexturedModelData texturedModelData13 = texturedModelData12.transform(CowEntityModel.BABY_TRANSFORMER);
 		TexturedModelData texturedModelData14 = ElytraEntityModel.getTexturedModelData();
 		TexturedModelData texturedModelData15 = TexturedModelData.of(OcelotEntityModel.getModelData(Dilation.NONE), 64, 32);
 		TexturedModelData texturedModelData16 = texturedModelData15.transform(CatEntityModel.CAT_TRANSFORMER);
@@ -200,6 +200,7 @@ public class EntityModels {
 		builder.put(EntityModelLayers.MAGMA_CUBE, MagmaCubeEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.MINECART, texturedModelData5);
 		builder.put(EntityModelLayers.MOOSHROOM, texturedModelData12);
+		builder.put(EntityModelLayers.MOOSHROOM_BABY, texturedModelData13);
 		builder.put(EntityModelLayers.MULE, DonkeyEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.MULE_BABY, DonkeyEntityModel.getBabyTexturedModelData());
 		builder.put(EntityModelLayers.OCELOT, texturedModelData15);

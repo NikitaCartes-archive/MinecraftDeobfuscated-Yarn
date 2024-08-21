@@ -520,9 +520,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		nbt.putBoolean("crit", this.isCritical());
 		nbt.putByte("PierceLevel", this.getPierceLevel());
 		nbt.putString("SoundEvent", Registries.SOUND_EVENT.getId(this.sound).toString());
-		nbt.put("item", this.stack.encode(this.getRegistryManager()));
+		nbt.put("item", this.stack.toNbt(this.getRegistryManager()));
 		if (this.weapon != null) {
-			nbt.put("weapon", this.weapon.encode(this.getRegistryManager(), new NbtCompound()));
+			nbt.put("weapon", this.weapon.toNbt(this.getRegistryManager(), new NbtCompound()));
 		}
 	}
 
@@ -687,6 +687,11 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	@Override
 	public StackReference getStackReference(int mappedIndex) {
 		return mappedIndex == 0 ? StackReference.of(this::getItemStack, this::setStack) : super.getStackReference(mappedIndex);
+	}
+
+	@Override
+	protected boolean deflectsAgainstWorldBorder() {
+		return true;
 	}
 
 	public static enum PickupPermission {

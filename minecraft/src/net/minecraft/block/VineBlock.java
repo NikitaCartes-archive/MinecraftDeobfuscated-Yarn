@@ -219,7 +219,7 @@ public class VineBlock extends Block {
 						}
 					}
 				} else {
-					if (direction == Direction.UP && pos.getY() < world.getTopY() - 1) {
+					if (direction == Direction.UP && pos.getY() < world.getTopYInclusive()) {
 						if (this.shouldHaveSide(world, pos, direction)) {
 							world.setBlockState(pos, state.with(UP, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 							return;

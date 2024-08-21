@@ -190,22 +190,22 @@ public class RegistryBuilder {
 	}
 
 	public RegistryBuilder.FullPatchesRegistriesPair createWrapperLookup(
-		DynamicRegistryManager baseRegistryManager, RegistryWrapper.WrapperLookup wrapperLookup, RegistryCloner.CloneableRegistries cloneableRegistries
+		DynamicRegistryManager baseRegistryManager, RegistryWrapper.WrapperLookup registries, RegistryCloner.CloneableRegistries cloneableRegistries
 	) {
-		RegistryBuilder.Registries registries = this.createBootstrappedRegistries(baseRegistryManager);
+		RegistryBuilder.Registries registries2 = this.createBootstrappedRegistries(baseRegistryManager);
 		Map<RegistryKey<? extends Registry<?>>, RegistryBuilder.InitializedRegistry<?>> map = new HashMap();
-		this.registries.stream().map(info -> info.init(registries)).forEach(registry -> map.put(registry.key, registry));
+		this.registries.stream().map(info -> info.init(registries2)).forEach(registry -> map.put(registry.key, registry));
 		Set<RegistryKey<? extends Registry<?>>> set = (Set<RegistryKey<? extends Registry<?>>>)baseRegistryManager.streamAllRegistryKeys()
 			.collect(Collectors.toUnmodifiableSet());
-		wrapperLookup.streamAllRegistryKeys()
+		registries.streamAllRegistryKeys()
 			.filter(key -> !set.contains(key))
 			.forEach(key -> map.putIfAbsent(key, new RegistryBuilder.InitializedRegistry(key, Lifecycle.stable(), Map.of())));
-		Stream<RegistryWrapper.Impl<?>> stream = map.values().stream().map(registry -> registry.toWrapper(registries.owner));
-		RegistryWrapper.WrapperLookup wrapperLookup2 = createWrapperLookup(registries.owner, baseRegistryManager, stream);
-		registries.checkOrphanedValues();
-		registries.throwErrors();
-		RegistryWrapper.WrapperLookup wrapperLookup3 = this.createFullWrapperLookup(baseRegistryManager, wrapperLookup, cloneableRegistries, map, wrapperLookup2);
-		return new RegistryBuilder.FullPatchesRegistriesPair(wrapperLookup3, wrapperLookup2);
+		Stream<RegistryWrapper.Impl<?>> stream = map.values().stream().map(registry -> registry.toWrapper(registries2.owner));
+		RegistryWrapper.WrapperLookup wrapperLookup = createWrapperLookup(registries2.owner, baseRegistryManager, stream);
+		registries2.checkOrphanedValues();
+		registries2.throwErrors();
+		RegistryWrapper.WrapperLookup wrapperLookup2 = this.createFullWrapperLookup(baseRegistryManager, registries, cloneableRegistries, map, wrapperLookup);
+		return new RegistryBuilder.FullPatchesRegistriesPair(wrapperLookup2, wrapperLookup);
 	}
 
 	static class AnyOwner implements RegistryEntryOwner<Object> {

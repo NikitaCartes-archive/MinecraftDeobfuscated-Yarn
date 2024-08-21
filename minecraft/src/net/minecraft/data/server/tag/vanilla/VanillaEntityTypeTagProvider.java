@@ -14,7 +14,7 @@ public class VanillaEntityTypeTagProvider extends ValueLookupTagProvider<EntityT
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.getOrCreateTagBuilder(EntityTypeTags.SKELETONS)
 			.add(EntityType.SKELETON, EntityType.STRAY, EntityType.WITHER_SKELETON, EntityType.SKELETON_HORSE, EntityType.BOGGED);
 		this.getOrCreateTagBuilder(EntityTypeTags.ZOMBIES)

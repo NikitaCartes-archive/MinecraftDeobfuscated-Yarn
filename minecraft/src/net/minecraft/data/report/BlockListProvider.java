@@ -33,10 +33,10 @@ public class BlockListProvider implements DataProvider {
 		Path path = this.output.resolvePath(DataOutput.OutputType.REPORTS).resolve("blocks.json");
 		return this.registryLookupFuture
 			.thenCompose(
-				registryLookup -> {
+				registries -> {
 					JsonObject jsonObject = new JsonObject();
-					RegistryOps<JsonElement> registryOps = registryLookup.getOps(JsonOps.INSTANCE);
-					registryLookup.getWrapperOrThrow(RegistryKeys.BLOCK)
+					RegistryOps<JsonElement> registryOps = registries.getOps(JsonOps.INSTANCE);
+					registries.getWrapperOrThrow(RegistryKeys.BLOCK)
 						.streamEntries()
 						.forEach(
 							entry -> {

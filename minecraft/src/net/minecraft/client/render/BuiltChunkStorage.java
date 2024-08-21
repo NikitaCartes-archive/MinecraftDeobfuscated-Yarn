@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.World;
 
@@ -18,6 +18,7 @@ public class BuiltChunkStorage {
 	protected int sizeX;
 	protected int sizeZ;
 	private int viewDistance;
+	private ChunkSectionPos field_53952;
 	public ChunkBuilder.BuiltChunk[] chunks;
 
 	public BuiltChunkStorage(ChunkBuilder chunkBuilder, World world, int viewDistance, WorldRenderer worldRenderer) {
@@ -25,6 +26,7 @@ public class BuiltChunkStorage {
 		this.world = world;
 		this.setViewDistance(viewDistance);
 		this.createChunks(chunkBuilder);
+		this.field_53952 = ChunkSectionPos.from(this.viewDistance + 1, 0, this.viewDistance + 1);
 	}
 
 	protected void createChunks(ChunkBuilder chunkBuilder) {
@@ -38,7 +40,7 @@ public class BuiltChunkStorage {
 				for (int k = 0; k < this.sizeY; k++) {
 					for (int l = 0; l < this.sizeZ; l++) {
 						int m = this.getChunkIndex(j, k, l);
-						this.chunks[m] = chunkBuilder.new BuiltChunk(m, j * 16, this.world.getBottomY() + k * 16, l * 16);
+						this.chunks[m] = chunkBuilder.new BuiltChunk(m, ChunkSectionPos.asLong(j, k + this.world.getBottomSectionCoord(), l));
 					}
 				}
 			}
@@ -71,49 +73,73 @@ public class BuiltChunkStorage {
 		return this.world;
 	}
 
-	public void updateCameraPosition(double x, double z) {
-		int i = MathHelper.ceil(x);
-		int j = MathHelper.ceil(z);
+	public void updateCameraPosition(ChunkSectionPos chunkSectionPos) {
+		for (int i = 0; i < this.sizeX; i++) {
+			int j = chunkSectionPos.getSectionX() - this.viewDistance;
+			int k = j + Math.floorMod(i - j, this.sizeX);
 
-		for (int k = 0; k < this.sizeX; k++) {
-			int l = this.sizeX * 16;
-			int m = i - 8 - l / 2;
-			int n = m + Math.floorMod(k * 16 - m, l);
+			for (int l = 0; l < this.sizeZ; l++) {
+				int m = chunkSectionPos.getSectionZ() - this.viewDistance;
+				int n = m + Math.floorMod(l - m, this.sizeZ);
 
-			for (int o = 0; o < this.sizeZ; o++) {
-				int p = this.sizeZ * 16;
-				int q = j - 8 - p / 2;
-				int r = q + Math.floorMod(o * 16 - q, p);
-
-				for (int s = 0; s < this.sizeY; s++) {
-					int t = this.world.getBottomY() + s * 16;
-					ChunkBuilder.BuiltChunk builtChunk = this.chunks[this.getChunkIndex(k, s, o)];
-					BlockPos blockPos = builtChunk.getOrigin();
-					if (n != blockPos.getX() || t != blockPos.getY() || r != blockPos.getZ()) {
-						builtChunk.setOrigin(n, t, r);
+				for (int o = 0; o < this.sizeY; o++) {
+					int p = this.world.getBottomSectionCoord() + o;
+					ChunkBuilder.BuiltChunk builtChunk = this.chunks[this.getChunkIndex(i, o, l)];
+					long q = builtChunk.method_62975();
+					if (q != ChunkSectionPos.asLong(k, p, n)) {
+						builtChunk.method_62973(ChunkSectionPos.asLong(k, p, n));
 					}
 				}
 			}
 		}
+
+		this.field_53952 = chunkSectionPos;
+		this.worldRenderer.getChunkRenderingDataPreparer().scheduleTerrainUpdate();
+	}
+
+	public ChunkSectionPos method_62966() {
+		return this.field_53952;
 	}
 
 	public void scheduleRebuild(int x, int y, int z, boolean important) {
-		int i = Math.floorMod(x, this.sizeX);
-		int j = Math.floorMod(y - this.world.getBottomSectionCoord(), this.sizeY);
-		int k = Math.floorMod(z, this.sizeZ);
-		ChunkBuilder.BuiltChunk builtChunk = this.chunks[this.getChunkIndex(i, j, k)];
-		builtChunk.scheduleRebuild(important);
+		ChunkBuilder.BuiltChunk builtChunk = this.method_62964(x, y, z);
+		if (builtChunk != null) {
+			builtChunk.scheduleRebuild(important);
+		}
 	}
 
 	@Nullable
-	protected ChunkBuilder.BuiltChunk getRenderedChunk(BlockPos pos) {
-		int i = MathHelper.floorDiv(pos.getY() - this.world.getBottomY(), 16);
-		if (i >= 0 && i < this.sizeY) {
-			int j = MathHelper.floorMod(MathHelper.floorDiv(pos.getX(), 16), this.sizeX);
-			int k = MathHelper.floorMod(MathHelper.floorDiv(pos.getZ(), 16), this.sizeZ);
-			return this.chunks[this.getChunkIndex(j, i, k)];
-		} else {
+	protected ChunkBuilder.BuiltChunk getRenderedChunk(BlockPos blockPos) {
+		return this.method_62963(ChunkSectionPos.toLong(blockPos));
+	}
+
+	@Nullable
+	protected ChunkBuilder.BuiltChunk method_62963(long l) {
+		int i = ChunkSectionPos.unpackX(l);
+		int j = ChunkSectionPos.unpackY(l);
+		int k = ChunkSectionPos.unpackZ(l);
+		return this.method_62964(i, j, k);
+	}
+
+	@Nullable
+	private ChunkBuilder.BuiltChunk method_62964(int i, int j, int k) {
+		if (!this.method_62965(i, j, k)) {
 			return null;
+		} else {
+			int l = j - this.world.getBottomSectionCoord();
+			int m = Math.floorMod(i, this.sizeX);
+			int n = Math.floorMod(k, this.sizeZ);
+			return this.chunks[this.getChunkIndex(m, l, n)];
+		}
+	}
+
+	private boolean method_62965(int i, int j, int k) {
+		if (j >= this.world.getBottomSectionCoord() && j <= this.world.getTopSectionCoord()) {
+			return i < this.field_53952.getSectionX() - this.viewDistance || i > this.field_53952.getSectionX() + this.viewDistance
+				? false
+				: k >= this.field_53952.getSectionZ() - this.viewDistance && k <= this.field_53952.getSectionZ() + this.viewDistance;
+		} else {
+			return false;
 		}
 	}
 }

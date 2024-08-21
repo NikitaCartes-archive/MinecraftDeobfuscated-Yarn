@@ -71,9 +71,28 @@ public class Keyboard {
 				this.client.debugChunkInfo = !this.client.debugChunkInfo;
 				this.debugFormattedLog("SectionPath: {0}", this.client.debugChunkInfo ? "shown" : "hidden");
 				return true;
+			case 70:
+			case 71:
+			case 72:
+			case 73:
+			case 74:
+			case 75:
+			case 77:
+			case 78:
+			case 80:
+			case 81:
+			case 82:
+			case 83:
+			case 84:
+			default:
+				return false;
 			case 76:
 				this.client.chunkCullingEnabled = !this.client.chunkCullingEnabled;
 				this.debugFormattedLog("SmartCull: {0}", this.client.chunkCullingEnabled ? "enabled" : "disabled");
+				return true;
+			case 79:
+				boolean bl = this.client.debugRenderer.toggleShowOctree();
+				this.debugFormattedLog("Frustum culling Octree: {0}", bl ? "enabled" : "disabled");
 				return true;
 			case 85:
 				if (Screen.hasShiftDown()) {
@@ -93,8 +112,6 @@ public class Keyboard {
 				this.client.wireFrame = !this.client.wireFrame;
 				this.debugFormattedLog("WireFrame: {0}", this.client.wireFrame ? "enabled" : "disabled");
 				return true;
-			default:
-				return false;
 		}
 	}
 
@@ -464,7 +481,7 @@ public class Keyboard {
 					}
 
 					if (this.client.getDebugHud().shouldShowRenderingChart() && !bl && key >= GLFW.GLFW_KEY_0 && key <= GLFW.GLFW_KEY_9) {
-						this.client.getDebugHud().method_61981().method_61987(key - GLFW.GLFW_KEY_0);
+						this.client.getDebugHud().getPieChart().select(key - GLFW.GLFW_KEY_0);
 					}
 				}
 

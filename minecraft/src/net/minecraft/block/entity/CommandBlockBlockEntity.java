@@ -52,8 +52,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 				new Vec2f(0.0F, direction.asRotation()),
 				this.getWorld(),
 				2,
-				this.getCustomName().getString(),
-				this.getCustomName(),
+				this.getName().getString(),
+				this.getName(),
 				this.getWorld().getServer(),
 				null
 			);
@@ -70,18 +70,18 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
-		this.commandExecutor.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
+		this.commandExecutor.writeNbt(nbt, registries);
 		nbt.putBoolean("powered", this.isPowered());
 		nbt.putBoolean("conditionMet", this.isConditionMet());
 		nbt.putBoolean("auto", this.isAuto());
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
-		this.commandExecutor.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
+		this.commandExecutor.readNbt(nbt, registries);
 		this.powered = nbt.getBoolean("powered");
 		this.conditionMet = nbt.getBoolean("conditionMet");
 		this.setAuto(nbt.getBoolean("auto"));
@@ -173,9 +173,9 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
-		super.addComponents(componentMapBuilder);
-		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.commandExecutor.getCustomNameNullable());
+	protected void addComponents(ComponentMap.Builder builder) {
+		super.addComponents(builder);
+		builder.add(DataComponentTypes.CUSTOM_NAME, this.commandExecutor.getCustomName());
 	}
 
 	@Override

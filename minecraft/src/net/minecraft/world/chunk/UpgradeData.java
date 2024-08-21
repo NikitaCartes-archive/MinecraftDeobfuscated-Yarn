@@ -141,7 +141,7 @@ public class UpgradeData {
 			Direction[] directions = Direction.values();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-			for (BlockPos blockPos : BlockPos.iterate(k, world.getBottomY(), m, l, world.getTopY() - 1, n)) {
+			for (BlockPos blockPos : BlockPos.iterate(k, world.getBottomY(), m, l, world.getTopYInclusive(), n)) {
 				BlockState blockState = world.getBlockState(blockPos);
 				BlockState blockState2 = blockState;
 

@@ -93,11 +93,11 @@ public class SearchManager {
 		return (SearchProvider<ItemStack>)this.itemTagReloadFuture.join();
 	}
 
-	public void addItemTooltipReloader(RegistryWrapper.WrapperLookup registryLookup, List<ItemStack> stacks) {
+	public void addItemTooltipReloader(RegistryWrapper.WrapperLookup registries, List<ItemStack> stacks) {
 		this.addReloader(
 			ITEM_TOOLTIP,
 			() -> {
-				Item.TooltipContext tooltipContext = Item.TooltipContext.create(registryLookup);
+				Item.TooltipContext tooltipContext = Item.TooltipContext.create(registries);
 				TooltipType tooltipType = TooltipType.Default.BASIC.withCreative();
 				CompletableFuture<?> completableFuture = this.itemTooltipReloadFuture;
 				this.itemTooltipReloadFuture = CompletableFuture.supplyAsync(

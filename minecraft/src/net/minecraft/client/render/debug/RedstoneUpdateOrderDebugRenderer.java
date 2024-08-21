@@ -5,11 +5,11 @@ import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9974;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.s2c.custom.DebugRedstoneUpdateOrderCustomPayload;
 import net.minecraft.world.block.WireOrientation;
@@ -44,9 +44,9 @@ public class RedstoneUpdateOrderDebugRenderer implements DebugRenderer.Renderer 
 				for (DebugRedstoneUpdateOrderCustomPayload.Wire wire : debugRedstoneUpdateOrderCustomPayload.wires()) {
 					Vector3f vector3f = wire.pos().toBottomCenterPos().subtract(cameraX, cameraY - 0.1, cameraZ).toVector3f();
 					WireOrientation wireOrientation = wire.orientation();
-					class_9974.method_62298(matrices, vertexConsumer, vector3f, wireOrientation.getFront().getDoubleVector().multiply(0.5), -16776961);
-					class_9974.method_62298(matrices, vertexConsumer, vector3f, wireOrientation.getUp().getDoubleVector().multiply(0.4), -65536);
-					class_9974.method_62298(matrices, vertexConsumer, vector3f, wireOrientation.getRight().getDoubleVector().multiply(0.3), -256);
+					VertexRendering.drawVector(matrices, vertexConsumer, vector3f, wireOrientation.getFront().getDoubleVector().multiply(0.5), -16776961);
+					VertexRendering.drawVector(matrices, vertexConsumer, vector3f, wireOrientation.getUp().getDoubleVector().multiply(0.4), -65536);
+					VertexRendering.drawVector(matrices, vertexConsumer, vector3f, wireOrientation.getRight().getDoubleVector().multiply(0.3), -256);
 				}
 			}
 		}

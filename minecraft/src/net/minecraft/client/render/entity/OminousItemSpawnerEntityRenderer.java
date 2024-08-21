@@ -39,7 +39,7 @@ public class OminousItemSpawnerEntityRenderer extends EntityRenderer<OminousItem
 	) {
 		super.updateRenderState(ominousItemSpawnerEntity, ominousItemSpawnerEntityRenderState, f);
 		ItemStack itemStack = ominousItemSpawnerEntity.getItem();
-		ominousItemSpawnerEntityRenderState.stack = itemStack;
+		ominousItemSpawnerEntityRenderState.stack = itemStack.copy();
 		ominousItemSpawnerEntityRenderState.model = !itemStack.isEmpty() ? this.itemRenderer.getModel(itemStack, ominousItemSpawnerEntity.getWorld(), null, 0) : null;
 	}
 

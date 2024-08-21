@@ -33,6 +33,7 @@ import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Instrument;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.consume.ConsumeEffect;
 import net.minecraft.item.map.MapDecorationType;
 import net.minecraft.item.trim.ArmorTrimMaterial;
 import net.minecraft.item.trim.ArmorTrimPattern;
@@ -195,6 +196,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<ItemSubPredicate.Type<?>>> ITEM_SUB_PREDICATE_TYPE = of("item_sub_predicate_type");
 	public static final RegistryKey<Registry<MapDecorationType>> MAP_DECORATION_TYPE = of("map_decoration_type");
 	public static final RegistryKey<Registry<ComponentType<?>>> ENCHANTMENT_EFFECT_COMPONENT_TYPE = of("enchantment_effect_component_type");
+	public static final RegistryKey<Registry<ConsumeEffect.Type<?>>> CONSUME_EFFECT_TYPE = of("consume_effect_type");
 	public static final RegistryKey<Registry<Biome>> BIOME = of("worldgen/biome");
 	public static final RegistryKey<Registry<MessageType>> MESSAGE_TYPE = of("chat_type");
 	public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER = of("worldgen/configured_carver");

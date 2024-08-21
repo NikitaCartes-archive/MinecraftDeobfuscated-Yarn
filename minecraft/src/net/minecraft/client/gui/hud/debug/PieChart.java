@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.client.gui.hud.debug;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -19,49 +19,49 @@ import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.ProfilerTiming;
 
 @Environment(EnvType.CLIENT)
-public class class_9931 {
+public class PieChart {
 	private static final int field_52773 = 105;
 	private static final int field_52774 = 5;
 	private static final int field_52775 = 10;
-	private final TextRenderer field_52776;
+	private final TextRenderer textRenderer;
 	@Nullable
-	private ProfileResult field_52777;
-	private String field_52778 = "root";
-	private int field_52779 = 0;
+	private ProfileResult profileResult;
+	private String currentPath = "root";
+	private int bottomMargin = 0;
 
-	public class_9931(TextRenderer textRenderer) {
-		this.field_52776 = textRenderer;
+	public PieChart(TextRenderer textRenderer) {
+		this.textRenderer = textRenderer;
 	}
 
-	public void method_61985(@Nullable ProfileResult profileResult) {
-		this.field_52777 = profileResult;
+	public void setProfileResult(@Nullable ProfileResult profileResult) {
+		this.profileResult = profileResult;
 	}
 
-	public void method_61984(int i) {
-		this.field_52779 = i;
+	public void setBottomMargin(int bottomMargin) {
+		this.bottomMargin = bottomMargin;
 	}
 
-	public void method_61986(DrawContext drawContext) {
-		if (this.field_52777 != null) {
-			List<ProfilerTiming> list = this.field_52777.getTimings(this.field_52778);
+	public void render(DrawContext context) {
+		if (this.profileResult != null) {
+			List<ProfilerTiming> list = this.profileResult.getTimings(this.currentPath);
 			ProfilerTiming profilerTiming = (ProfilerTiming)list.removeFirst();
-			int i = drawContext.getScaledWindowWidth() - 105 - 10;
+			int i = context.getScaledWindowWidth() - 105 - 10;
 			int j = i - 105;
 			int k = i + 105;
 			int l = list.size() * 9;
-			int m = drawContext.getScaledWindowHeight() - this.field_52779 - 5;
+			int m = context.getScaledWindowHeight() - this.bottomMargin - 5;
 			int n = m - l;
 			int o = 62;
 			int p = n - 62 - 5;
-			drawContext.fill(j - 5, p - 62 - 5, k + 5, m + 5, -1873784752);
+			context.fill(j - 5, p - 62 - 5, k + 5, m + 5, -1873784752);
 			double d = 0.0;
 
 			for (ProfilerTiming profilerTiming2 : list) {
 				int q = MathHelper.floor(profilerTiming2.parentSectionUsagePercentage / 4.0) + 1;
-				VertexConsumer vertexConsumer = drawContext.getVertexConsumers().getBuffer(RenderLayer.getDebugTriangleFan());
+				VertexConsumer vertexConsumer = context.getVertexConsumers().getBuffer(RenderLayer.getDebugTriangleFan());
 				int r = ColorHelper.fullAlpha(profilerTiming2.getColor());
 				int s = ColorHelper.mix(r, Colors.GRAY);
-				MatrixStack.Entry entry = drawContext.getMatrices().peek();
+				MatrixStack.Entry entry = context.getMatrices().peek();
 				vertexConsumer.vertex(entry, (float)i, (float)p, 10.0F).color(r);
 
 				for (int t = q; t >= 0; t--) {
@@ -71,7 +71,7 @@ public class class_9931 {
 					vertexConsumer.vertex(entry, (float)i + g, (float)p - h, 10.0F).color(r);
 				}
 
-				vertexConsumer = drawContext.getVertexConsumers().getBuffer(RenderLayer.getDebugQuads());
+				vertexConsumer = context.getVertexConsumers().getBuffer(RenderLayer.getDebugQuads());
 
 				for (int t = q; t > 0; t--) {
 					float f = (float)((d + profilerTiming2.parentSectionUsagePercentage * (double)t / (double)q) * (float) (Math.PI * 2) / 100.0);
@@ -107,9 +107,9 @@ public class class_9931 {
 
 			int x = 16777215;
 			int r = p - 62;
-			drawContext.drawTextWithShadow(this.field_52776, string2, j, r, 16777215);
+			context.drawTextWithShadow(this.textRenderer, string2, j, r, 16777215);
 			string2 = decimalFormat.format(profilerTiming.totalUsagePercentage) + "%";
-			drawContext.drawTextWithShadow(this.field_52776, string2, k - this.field_52776.getWidth(string2), r, 16777215);
+			context.drawTextWithShadow(this.textRenderer, string2, k - this.textRenderer.getWidth(string2), r, 16777215);
 
 			for (int s = 0; s < list.size(); s++) {
 				ProfilerTiming profilerTiming3 = (ProfilerTiming)list.get(s);
@@ -122,35 +122,35 @@ public class class_9931 {
 
 				String string3 = stringBuilder.append(profilerTiming3.name).toString();
 				int y = n + s * 9;
-				drawContext.drawTextWithShadow(this.field_52776, string3, j, y, profilerTiming3.getColor());
+				context.drawTextWithShadow(this.textRenderer, string3, j, y, profilerTiming3.getColor());
 				string3 = decimalFormat.format(profilerTiming3.parentSectionUsagePercentage) + "%";
-				drawContext.drawTextWithShadow(this.field_52776, string3, k - 50 - this.field_52776.getWidth(string3), y, profilerTiming3.getColor());
+				context.drawTextWithShadow(this.textRenderer, string3, k - 50 - this.textRenderer.getWidth(string3), y, profilerTiming3.getColor());
 				string3 = decimalFormat.format(profilerTiming3.totalUsagePercentage) + "%";
-				drawContext.drawTextWithShadow(this.field_52776, string3, k - this.field_52776.getWidth(string3), y, profilerTiming3.getColor());
+				context.drawTextWithShadow(this.textRenderer, string3, k - this.textRenderer.getWidth(string3), y, profilerTiming3.getColor());
 			}
 		}
 	}
 
-	public void method_61987(int i) {
-		if (this.field_52777 != null) {
-			List<ProfilerTiming> list = this.field_52777.getTimings(this.field_52778);
+	public void select(int index) {
+		if (this.profileResult != null) {
+			List<ProfilerTiming> list = this.profileResult.getTimings(this.currentPath);
 			if (!list.isEmpty()) {
 				ProfilerTiming profilerTiming = (ProfilerTiming)list.remove(0);
-				if (i == 0) {
+				if (index == 0) {
 					if (!profilerTiming.name.isEmpty()) {
-						int j = this.field_52778.lastIndexOf(30);
-						if (j >= 0) {
-							this.field_52778 = this.field_52778.substring(0, j);
+						int i = this.currentPath.lastIndexOf(30);
+						if (i >= 0) {
+							this.currentPath = this.currentPath.substring(0, i);
 						}
 					}
 				} else {
-					i--;
-					if (i < list.size() && !"unspecified".equals(((ProfilerTiming)list.get(i)).name)) {
-						if (!this.field_52778.isEmpty()) {
-							this.field_52778 = this.field_52778 + "\u001e";
+					index--;
+					if (index < list.size() && !"unspecified".equals(((ProfilerTiming)list.get(index)).name)) {
+						if (!this.currentPath.isEmpty()) {
+							this.currentPath = this.currentPath + "\u001e";
 						}
 
-						this.field_52778 = this.field_52778 + ((ProfilerTiming)list.get(i)).name;
+						this.currentPath = this.currentPath + ((ProfilerTiming)list.get(index)).name;
 					}
 				}
 			}

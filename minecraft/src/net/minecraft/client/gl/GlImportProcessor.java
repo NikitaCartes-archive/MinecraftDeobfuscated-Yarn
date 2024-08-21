@@ -142,6 +142,16 @@ public abstract class GlImportProcessor {
 	@Nullable
 	public abstract String loadImport(boolean inline, String name);
 
+	public static String addDefines(String source, Defines defines) {
+		if (defines.isEmpty()) {
+			return source;
+		} else {
+			int i = source.indexOf(10);
+			int j = i + 1;
+			return source.substring(0, j) + defines.toSource() + "#line 1 0\n" + source.substring(j);
+		}
+	}
+
 	/**
 	 * A context for the parser to keep track of its current line and caret position in the file.
 	 */

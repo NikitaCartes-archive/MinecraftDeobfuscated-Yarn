@@ -1028,12 +1028,12 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		return this.spawn(world, consumer, pos, spawnReason, alignPosition, invertY);
 	}
 
-	public static <T extends Entity> Consumer<T> copier(ServerWorld world, ItemStack stack, @Nullable PlayerEntity player) {
+	public static <T extends Entity> Consumer<T> copier(World world, ItemStack stack, @Nullable PlayerEntity player) {
 		return copier(entity -> {
 		}, world, stack, player);
 	}
 
-	public static <T extends Entity> Consumer<T> copier(Consumer<T> chained, ServerWorld world, ItemStack stack, @Nullable PlayerEntity player) {
+	public static <T extends Entity> Consumer<T> copier(Consumer<T> chained, World world, ItemStack stack, @Nullable PlayerEntity player) {
 		return nbtCopier(customNameCopier(chained, stack), world, stack, player);
 	}
 
@@ -1042,7 +1042,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		return text != null ? chained.andThen(entity -> entity.setCustomName(text)) : chained;
 	}
 
-	public static <T extends Entity> Consumer<T> nbtCopier(Consumer<T> chained, ServerWorld world, ItemStack stack, @Nullable PlayerEntity player) {
+	public static <T extends Entity> Consumer<T> nbtCopier(Consumer<T> chained, World world, ItemStack stack, @Nullable PlayerEntity player) {
 		NbtComponent nbtComponent = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
 		return !nbtComponent.isEmpty() ? chained.andThen(entity -> loadFromEntityNbt(world, player, entity, nbtComponent)) : chained;
 	}

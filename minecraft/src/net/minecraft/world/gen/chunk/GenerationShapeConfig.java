@@ -53,7 +53,7 @@ public record GenerationShapeConfig(int minimumY, int height, int horizontalSize
 
 	public GenerationShapeConfig trimHeight(HeightLimitView world) {
 		int i = Math.max(this.minimumY, world.getBottomY());
-		int j = Math.min(this.minimumY + this.height, world.getTopY()) - i;
+		int j = Math.min(this.minimumY + this.height, world.getTopYInclusive() + 1) - i;
 		return new GenerationShapeConfig(i, j, this.horizontalSize, this.verticalSize);
 	}
 }

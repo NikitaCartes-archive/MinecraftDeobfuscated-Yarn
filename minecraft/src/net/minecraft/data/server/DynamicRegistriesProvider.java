@@ -28,12 +28,12 @@ public class DynamicRegistriesProvider implements DataProvider {
 	public CompletableFuture<?> run(DataWriter writer) {
 		return this.registryLookupFuture
 			.thenCompose(
-				lookup -> {
-					DynamicOps<JsonElement> dynamicOps = lookup.getOps(JsonOps.INSTANCE);
+				registries -> {
+					DynamicOps<JsonElement> dynamicOps = registries.getOps(JsonOps.INSTANCE);
 					return CompletableFuture.allOf(
 						(CompletableFuture[])RegistryLoader.DYNAMIC_REGISTRIES
 							.stream()
-							.flatMap(entry -> this.writeRegistryEntries(writer, lookup, dynamicOps, entry).stream())
+							.flatMap(entry -> this.writeRegistryEntries(writer, registries, dynamicOps, entry).stream())
 							.toArray(CompletableFuture[]::new)
 					);
 				}
@@ -41,10 +41,10 @@ public class DynamicRegistriesProvider implements DataProvider {
 	}
 
 	private <T> Optional<CompletableFuture<?>> writeRegistryEntries(
-		DataWriter writer, RegistryWrapper.WrapperLookup lookup, DynamicOps<JsonElement> ops, RegistryLoader.Entry<T> registry
+		DataWriter writer, RegistryWrapper.WrapperLookup registries, DynamicOps<JsonElement> ops, RegistryLoader.Entry<T> registry
 	) {
 		RegistryKey<? extends Registry<T>> registryKey = registry.key();
-		return lookup.getOptionalWrapper(registryKey)
+		return registries.getOptionalWrapper(registryKey)
 			.map(
 				wrapper -> {
 					DataOutput.PathResolver pathResolver = this.output.getResolver(registryKey);

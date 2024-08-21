@@ -23,7 +23,6 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9980;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.GroupableModel;
@@ -35,29 +34,29 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ModelVariantMap {
-	private static final Logger field_53162 = LogUtils.getLogger();
-	public static final Gson field_53161 = new GsonBuilder()
+	private static final Logger LOGGER = LogUtils.getLogger();
+	public static final Gson GSON = new GsonBuilder()
 		.registerTypeAdapter(ModelVariantMap.class, new ModelVariantMap.Deserializer())
 		.registerTypeAdapter(ModelVariant.class, new ModelVariant.Deserializer())
 		.registerTypeAdapter(WeightedUnbakedModel.class, new WeightedUnbakedModel.Deserializer())
-		.registerTypeAdapter(MultipartUnbakedModel.class_9982.class, new MultipartUnbakedModel.Deserializer())
+		.registerTypeAdapter(MultipartUnbakedModel.Serialized.class, new MultipartUnbakedModel.Deserializer())
 		.registerTypeAdapter(MultipartModelComponent.class, new MultipartModelComponent.Deserializer())
 		.create();
 	private final Map<String, WeightedUnbakedModel> variantMap;
 	@Nullable
-	private final MultipartUnbakedModel.class_9982 multipartModel;
+	private final MultipartUnbakedModel.Serialized multipartModel;
 
 	public static ModelVariantMap fromJson(Reader reader) {
-		return JsonHelper.deserialize(field_53161, reader, ModelVariantMap.class);
+		return JsonHelper.deserialize(GSON, reader, ModelVariantMap.class);
 	}
 
-	public static ModelVariantMap fromJson(JsonElement jsonElement) {
-		return field_53161.fromJson(jsonElement, ModelVariantMap.class);
+	public static ModelVariantMap fromJson(JsonElement json) {
+		return GSON.fromJson(json, ModelVariantMap.class);
 	}
 
-	public ModelVariantMap(Map<String, WeightedUnbakedModel> map, @Nullable MultipartUnbakedModel.class_9982 arg) {
-		this.multipartModel = arg;
-		this.variantMap = map;
+	public ModelVariantMap(Map<String, WeightedUnbakedModel> variantMap, @Nullable MultipartUnbakedModel.Serialized multipartModel) {
+		this.multipartModel = multipartModel;
+		this.variantMap = variantMap;
 	}
 
 	/**
@@ -98,39 +97,39 @@ public class ModelVariantMap {
 	public Set<WeightedUnbakedModel> getAllModels() {
 		Set<WeightedUnbakedModel> set = Sets.<WeightedUnbakedModel>newHashSet(this.variantMap.values());
 		if (this.multipartModel != null) {
-			set.addAll(this.multipartModel.method_62338());
+			set.addAll(this.multipartModel.getBackingModels());
 		}
 
 		return set;
 	}
 
 	@Nullable
-	public MultipartUnbakedModel.class_9982 getMultipartModel() {
+	public MultipartUnbakedModel.Serialized getMultipartModel() {
 		return this.multipartModel;
 	}
 
-	public Map<BlockState, GroupableModel> method_62327(StateManager<Block, BlockState> stateManager, String string) {
+	public Map<BlockState, GroupableModel> parse(StateManager<Block, BlockState> stateManager, String path) {
 		Map<BlockState, GroupableModel> map = new IdentityHashMap();
 		List<BlockState> list = stateManager.getStates();
 		MultipartUnbakedModel multipartUnbakedModel;
 		if (this.multipartModel != null) {
-			multipartUnbakedModel = this.multipartModel.method_62339(stateManager);
-			list.forEach(blockState -> map.put(blockState, multipartUnbakedModel));
+			multipartUnbakedModel = this.multipartModel.toModel(stateManager);
+			list.forEach(state -> map.put(state, multipartUnbakedModel));
 		} else {
 			multipartUnbakedModel = null;
 		}
 
-		this.variantMap.forEach((string2, weightedUnbakedModel) -> {
+		this.variantMap.forEach((key, model) -> {
 			try {
-				list.stream().filter(class_9980.method_62334(stateManager, string2)).forEach(blockState -> {
-					UnbakedModel unbakedModel = (UnbakedModel)map.put(blockState, weightedUnbakedModel);
+				list.stream().filter(BlockPropertiesPredicate.parse(stateManager, key)).forEach(state -> {
+					UnbakedModel unbakedModel = (UnbakedModel)map.put(state, model);
 					if (unbakedModel != null && unbakedModel != multipartUnbakedModel) {
-						String stringxx = (String)((Entry)this.variantMap.entrySet().stream().filter(entry -> entry.getValue() == unbakedModel).findFirst().get()).getKey();
-						throw new RuntimeException("Overlapping definition with: " + stringxx);
+						String stringx = (String)((Entry)this.variantMap.entrySet().stream().filter(entry -> entry.getValue() == unbakedModel).findFirst().get()).getKey();
+						throw new RuntimeException("Overlapping definition with: " + stringx);
 					}
 				});
 			} catch (Exception var9) {
-				field_53162.warn("Exception loading blockstate definition: '{}' for variant: '{}': {}", string, string2, var9.getMessage());
+				LOGGER.warn("Exception loading blockstate definition: '{}' for variant: '{}': {}", path, key, var9.getMessage());
 			}
 		});
 		return map;
@@ -141,9 +140,9 @@ public class ModelVariantMap {
 		public ModelVariantMap deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			Map<String, WeightedUnbakedModel> map = this.variantsFromJson(jsonDeserializationContext, jsonObject);
-			MultipartUnbakedModel.class_9982 lv = this.multipartFromJson(jsonDeserializationContext, jsonObject);
-			if (!map.isEmpty() || lv != null && !lv.method_62338().isEmpty()) {
-				return new ModelVariantMap(map, lv);
+			MultipartUnbakedModel.Serialized serialized = this.multipartFromJson(jsonDeserializationContext, jsonObject);
+			if (!map.isEmpty() || serialized != null && !serialized.getBackingModels().isEmpty()) {
+				return new ModelVariantMap(map, serialized);
 			} else {
 				throw new JsonParseException("Neither 'variants' nor 'multipart' found");
 			}
@@ -163,12 +162,12 @@ public class ModelVariantMap {
 		}
 
 		@Nullable
-		protected MultipartUnbakedModel.class_9982 multipartFromJson(JsonDeserializationContext context, JsonObject object) {
+		protected MultipartUnbakedModel.Serialized multipartFromJson(JsonDeserializationContext context, JsonObject object) {
 			if (!object.has("multipart")) {
 				return null;
 			} else {
 				JsonArray jsonArray = JsonHelper.getArray(object, "multipart");
-				return context.deserialize(jsonArray, MultipartUnbakedModel.class_9982.class);
+				return context.deserialize(jsonArray, MultipartUnbakedModel.Serialized.class);
 			}
 		}
 	}

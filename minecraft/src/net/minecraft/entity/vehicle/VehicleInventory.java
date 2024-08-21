@@ -60,24 +60,24 @@ public interface VehicleInventory extends Inventory, NamedScreenHandlerFactory {
 		return this.isInventoryEmpty();
 	}
 
-	default void writeInventoryToNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registriesLookup) {
+	default void writeInventoryToNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		if (this.getLootTable() != null) {
 			nbt.putString("LootTable", this.getLootTable().getValue().toString());
 			if (this.getLootTableSeed() != 0L) {
 				nbt.putLong("LootTableSeed", this.getLootTableSeed());
 			}
 		} else {
-			Inventories.writeNbt(nbt, this.getInventory(), registriesLookup);
+			Inventories.writeNbt(nbt, this.getInventory(), registries);
 		}
 	}
 
-	default void readInventoryFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registriesLookup) {
+	default void readInventoryFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		this.resetInventory();
 		if (nbt.contains("LootTable", NbtElement.STRING_TYPE)) {
 			this.setLootTable(RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of(nbt.getString("LootTable"))));
 			this.setLootTableSeed(nbt.getLong("LootTableSeed"));
 		} else {
-			Inventories.readNbt(nbt, this.getInventory(), registriesLookup);
+			Inventories.readNbt(nbt, this.getInventory(), registries);
 		}
 	}
 

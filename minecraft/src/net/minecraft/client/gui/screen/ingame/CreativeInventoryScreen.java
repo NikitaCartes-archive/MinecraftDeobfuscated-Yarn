@@ -129,11 +129,11 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		return player.isCreativeLevelTwoOp() && this.operatorTabEnabled;
 	}
 
-	private void updateDisplayParameters(FeatureSet enabledFeatures, boolean showOperatorTab, RegistryWrapper.WrapperLookup registryLookup) {
+	private void updateDisplayParameters(FeatureSet enabledFeatures, boolean showOperatorTab, RegistryWrapper.WrapperLookup registries) {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
-		if (this.populateDisplay(
-			clientPlayNetworkHandler != null ? clientPlayNetworkHandler.getSearchManager() : null, enabledFeatures, showOperatorTab, registryLookup
-		)) {
+		if (this.populateDisplay(clientPlayNetworkHandler != null ? clientPlayNetworkHandler.getSearchManager() : null, enabledFeatures, showOperatorTab, registries)
+			)
+		 {
 			for (ItemGroup itemGroup : ItemGroups.getGroups()) {
 				Collection<ItemStack> collection = itemGroup.getDisplayStacks();
 				if (itemGroup == selectedTab) {
@@ -148,14 +148,14 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	}
 
 	private boolean populateDisplay(
-		@Nullable SearchManager searchManager, FeatureSet enabledFeatures, boolean showOperatorTab, RegistryWrapper.WrapperLookup registryLookup
+		@Nullable SearchManager searchManager, FeatureSet enabledFeatures, boolean showOperatorTab, RegistryWrapper.WrapperLookup registries
 	) {
-		if (!ItemGroups.updateDisplayContext(enabledFeatures, showOperatorTab, registryLookup)) {
+		if (!ItemGroups.updateDisplayContext(enabledFeatures, showOperatorTab, registries)) {
 			return false;
 		} else {
 			if (searchManager != null) {
 				List<ItemStack> list = List.copyOf(ItemGroups.getSearchGroup().getDisplayStacks());
-				searchManager.addItemTooltipReloader(registryLookup, list);
+				searchManager.addItemTooltipReloader(registries, list);
 				searchManager.addItemTagReloader(list);
 			}
 

@@ -65,16 +65,16 @@ public class VaultBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return Util.make(new NbtCompound(), nbt -> nbt.put("shared_data", encodeValue(VaultSharedData.codec, this.sharedData, registryLookup)));
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
+		return Util.make(new NbtCompound(), nbt -> nbt.put("shared_data", encodeValue(VaultSharedData.codec, this.sharedData, registries)));
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
-		nbt.put("config", encodeValue(VaultConfig.codec, this.config, registryLookup));
-		nbt.put("shared_data", encodeValue(VaultSharedData.codec, this.sharedData, registryLookup));
-		nbt.put("server_data", encodeValue(VaultServerData.codec, this.serverData, registryLookup));
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
+		nbt.put("config", encodeValue(VaultConfig.codec, this.config, registries));
+		nbt.put("shared_data", encodeValue(VaultSharedData.codec, this.sharedData, registries));
+		nbt.put("server_data", encodeValue(VaultServerData.codec, this.serverData, registries));
 	}
 
 	private static <T> NbtElement encodeValue(Codec<T> codec, T value, RegistryWrapper.WrapperLookup registries) {
@@ -82,9 +82,9 @@ public class VaultBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
-		DynamicOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
+		DynamicOps<NbtElement> dynamicOps = registries.getOps(NbtOps.INSTANCE);
 		if (nbt.contains("server_data")) {
 			VaultServerData.codec.parse(dynamicOps, nbt.get("server_data")).resultOrPartial(LOGGER::error).ifPresent(this.serverData::copyFrom);
 		}

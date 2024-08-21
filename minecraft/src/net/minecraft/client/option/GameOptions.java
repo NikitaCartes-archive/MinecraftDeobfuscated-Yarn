@@ -45,7 +45,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.render.ChunkBuilderMode;
@@ -165,12 +164,6 @@ public class GameOptions {
 		),
 		CloudRenderMode.FANCY,
 		cloudRenderMode -> {
-			if (MinecraftClient.isFabulousGraphicsOrBetter()) {
-				Framebuffer framebuffer = MinecraftClient.getInstance().worldRenderer.getCloudsFramebuffer();
-				if (framebuffer != null) {
-					framebuffer.clear();
-				}
-			}
 		}
 	);
 	private static final Text FAST_GRAPHICS_TOOLTIP = Text.translatable("options.graphics.fast.tooltip");

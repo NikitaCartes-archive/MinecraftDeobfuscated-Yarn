@@ -58,7 +58,7 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 		armorStandEntityRenderState.marker = armorStandEntity.isMarker();
 		armorStandEntityRenderState.small = armorStandEntity.isSmall();
 		armorStandEntityRenderState.showArms = armorStandEntity.shouldShowArms();
-		armorStandEntityRenderState.hideBasePlate = armorStandEntity.shouldShowBasePlate();
+		armorStandEntityRenderState.showBasePlate = armorStandEntity.shouldShowBasePlate();
 		armorStandEntityRenderState.bodyRotation = armorStandEntity.getBodyRotation();
 		armorStandEntityRenderState.headRotation = armorStandEntity.getHeadRotation();
 		armorStandEntityRenderState.leftArmRotation = armorStandEntity.getLeftArmRotation();

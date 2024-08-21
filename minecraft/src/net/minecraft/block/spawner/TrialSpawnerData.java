@@ -101,10 +101,10 @@ public class TrialSpawnerData {
 	public void reset() {
 		this.spawnedMobsAlive.clear();
 		this.spawnData = Optional.empty();
-		this.method_61763();
+		this.deactivate();
 	}
 
-	public void method_61763() {
+	public void deactivate() {
 		this.players.clear();
 		this.totalSpawnedMobs = 0;
 		this.nextMobSpawnsAt = 0L;

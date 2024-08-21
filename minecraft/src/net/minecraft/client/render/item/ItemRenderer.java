@@ -6,9 +6,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
-import net.minecraft.block.StainedGlassPaneBlock;
-import net.minecraft.block.TranslucentBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.render.OverlayVertexConsumer;
@@ -27,7 +24,6 @@ import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.BundleItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -177,17 +173,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		boolean bl
 	) {
 		if (!bakedModel.isBuiltin() && (!itemStack.isOf(Items.TRIDENT) || bl)) {
-			boolean bl2;
-			if (modelTransformationMode != ModelTransformationMode.GUI && !modelTransformationMode.isFirstPerson() && itemStack.getItem() instanceof BlockItem blockItem
-				)
-			 {
-				Block block = blockItem.getBlock();
-				bl2 = !(block instanceof TranslucentBlock) && !(block instanceof StainedGlassPaneBlock);
-			} else {
-				bl2 = true;
-			}
-
-			RenderLayer renderLayer = RenderLayers.getItemLayer(itemStack, bl2);
+			RenderLayer renderLayer = RenderLayers.getItemLayer(itemStack);
 			VertexConsumer vertexConsumer;
 			if (usesDynamicDisplay(itemStack) && itemStack.hasGlint()) {
 				MatrixStack.Entry entry = matrixStack.peek().copy();
@@ -198,8 +184,6 @@ public class ItemRenderer implements SynchronousResourceReloader {
 				}
 
 				vertexConsumer = getDynamicDisplayGlintConsumer(vertexConsumerProvider, renderLayer, entry);
-			} else if (bl2) {
-				vertexConsumer = getDirectItemGlintConsumer(vertexConsumerProvider, renderLayer, true, itemStack.hasGlint());
 			} else {
 				vertexConsumer = getItemGlintConsumer(vertexConsumerProvider, renderLayer, true, itemStack.hasGlint());
 			}
@@ -230,12 +214,6 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		} else {
 			return vertexConsumers.getBuffer(layer);
 		}
-	}
-
-	public static VertexConsumer getDirectItemGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, boolean solid, boolean glint) {
-		return glint
-			? VertexConsumers.union(provider.getBuffer(solid ? RenderLayer.getGlint() : RenderLayer.getDirectEntityGlint()), provider.getBuffer(layer))
-			: provider.getBuffer(layer);
 	}
 
 	private void renderBakedItemQuads(MatrixStack matrices, VertexConsumer vertices, List<BakedQuad> quads, ItemStack stack, int light, int overlay) {

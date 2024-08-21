@@ -93,14 +93,14 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		.map(ItemConvertible::asItem)
 		.collect(Collectors.toSet());
 
-	public VanillaBlockLootTableGenerator(RegistryWrapper.WrapperLookup registryLookup) {
-		super(EXPLOSION_IMMUNE, FeatureFlags.FEATURE_MANAGER.getFeatureSet(), registryLookup);
+	public VanillaBlockLootTableGenerator(RegistryWrapper.WrapperLookup registries) {
+		super(EXPLOSION_IMMUNE, FeatureFlags.FEATURE_MANAGER.getFeatureSet(), registries);
 	}
 
 	@Override
 	protected void generate() {
-		RegistryWrapper.Impl<Enchantment> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
-		RegistryWrapper.Impl<Item> impl2 = this.registryLookup.getWrapperOrThrow(RegistryKeys.ITEM);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Item> impl2 = this.registries.getWrapperOrThrow(RegistryKeys.ITEM);
 		this.addDrop(Blocks.GRANITE);
 		this.addDrop(Blocks.POLISHED_GRANITE);
 		this.addDrop(Blocks.DIORITE);

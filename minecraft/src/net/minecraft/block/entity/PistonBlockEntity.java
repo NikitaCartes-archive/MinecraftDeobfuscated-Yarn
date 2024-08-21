@@ -61,8 +61,8 @@ public class PistonBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createComponentlessNbt(registryLookup);
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
+		return this.createComponentlessNbt(registries);
 	}
 
 	public boolean isExtending() {
@@ -284,12 +284,12 @@ public class PistonBlockEntity extends BlockEntity {
 				}
 
 				this.world.setBlockState(this.pos, blockState, Block.NOTIFY_ALL);
-				this.world.updateNeighbor(this.pos, blockState.getBlock(), OrientationHelper.getEmissionOrientation(this.world, this.method_61764(), null));
+				this.world.updateNeighbor(this.pos, blockState.getBlock(), OrientationHelper.getEmissionOrientation(this.world, this.getDirection(), null));
 			}
 		}
 	}
 
-	public Direction method_61764() {
+	public Direction getDirection() {
 		return this.extending ? this.facing : this.facing.getOpposite();
 	}
 
@@ -313,7 +313,7 @@ public class PistonBlockEntity extends BlockEntity {
 						}
 
 						world.setBlockState(pos, blockState, Block.NOTIFY_ALL | Block.MOVED);
-						world.updateNeighbor(pos, blockState.getBlock(), OrientationHelper.getEmissionOrientation(world, blockEntity.method_61764(), null));
+						world.updateNeighbor(pos, blockState.getBlock(), OrientationHelper.getEmissionOrientation(world, blockEntity.getDirection(), null));
 					}
 				}
 			}
@@ -329,8 +329,8 @@ public class PistonBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		RegistryEntryLookup<Block> registryEntryLookup = (RegistryEntryLookup<Block>)(this.world != null
 			? this.world.createCommandRegistryWrapper(RegistryKeys.BLOCK)
 			: Registries.BLOCK.getReadOnlyWrapper());
@@ -343,8 +343,8 @@ public class PistonBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		nbt.put("blockState", NbtHelper.fromBlockState(this.pushedBlock));
 		nbt.putInt("facing", this.facing.getId());
 		nbt.putFloat("progress", this.lastProgress);

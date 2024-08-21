@@ -210,6 +210,10 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> {
 		return this.enabledColumns.contains(l);
 	}
 
+	protected boolean isColumnEnabled(long columnPos) {
+		return this.enabledColumns.contains(columnPos);
+	}
+
 	public void setRetainColumn(long sectionPos, boolean retain) {
 		if (retain) {
 			this.columnsToRetain.add(sectionPos);

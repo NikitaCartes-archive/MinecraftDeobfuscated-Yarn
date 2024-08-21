@@ -3,6 +3,7 @@ package net.minecraft.client.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -16,7 +17,7 @@ import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
-public class SkyRendering {
+public class SkyRendering implements AutoCloseable {
 	private static final Identifier SUN_TEXTURE = Identifier.ofVanilla("textures/environment/sun.png");
 	private static final Identifier MOON_PHASES_TEXTURE = Identifier.ofVanilla("textures/environment/moon_phases.png");
 	private static final Identifier END_SKY_TEXTURE = Identifier.ofVanilla("textures/environment/end_sky.png");
@@ -89,9 +90,10 @@ public class SkyRendering {
 
 	public void renderSky(float red, float green, float blue) {
 		RenderSystem.depthMask(false);
+		RenderSystem.setShader(ShaderProgramKeys.POSITION);
 		RenderSystem.setShaderColor(red, green, blue, 1.0F);
 		this.skyBuffer.bind();
-		this.skyBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), GameRenderer.getPositionProgram());
+		this.skyBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
 		VertexBuffer.unbind();
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.depthMask(true);
@@ -99,11 +101,12 @@ public class SkyRendering {
 
 	public void renderSkyDark(MatrixStack matrices) {
 		RenderSystem.depthMask(false);
+		RenderSystem.setShader(ShaderProgramKeys.POSITION);
 		RenderSystem.setShaderColor(0.0F, 0.0F, 0.0F, 1.0F);
 		matrices.push();
 		matrices.translate(0.0F, 12.0F, 0.0F);
 		this.darkSkyBuffer.bind();
-		this.darkSkyBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), GameRenderer.getPositionProgram());
+		this.darkSkyBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
 		VertexBuffer.unbind();
 		matrices.pop();
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -130,7 +133,7 @@ public class SkyRendering {
 		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 		RenderSystem.depthMask(false);
 		RenderSystem.overlayBlendFunc();
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+		RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
 		RenderSystem.setShaderTexture(0, SUN_TEXTURE);
 		RenderSystem.enableBlend();
@@ -157,7 +160,7 @@ public class SkyRendering {
 		BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 		RenderSystem.depthMask(false);
 		RenderSystem.overlayBlendFunc();
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+		RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
 		RenderSystem.setShaderTexture(0, MOON_PHASES_TEXTURE);
 		RenderSystem.enableBlend();
@@ -179,11 +182,12 @@ public class SkyRendering {
 		matrix4fStack.mul(matrices.peek().getPositionMatrix());
 		RenderSystem.depthMask(false);
 		RenderSystem.overlayBlendFunc();
+		RenderSystem.setShader(ShaderProgramKeys.POSITION);
 		RenderSystem.setShaderColor(color, color, color, color);
 		RenderSystem.enableBlend();
 		RenderSystem.setShaderFog(Fog.DUMMY);
 		this.starBuffer.bind();
-		this.starBuffer.draw(matrix4fStack, RenderSystem.getProjectionMatrix(), GameRenderer.getPositionProgram());
+		this.starBuffer.draw(matrix4fStack, RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
 		VertexBuffer.unbind();
 		RenderSystem.setShaderFog(fog);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -194,7 +198,7 @@ public class SkyRendering {
 	}
 
 	public void method_62306(MatrixStack matrices, Tessellator tesselator, float angleRadians, int color) {
-		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+		RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
 		RenderSystem.depthMask(false);
 		RenderSystem.enableBlend();
 		matrices.push();
@@ -225,7 +229,7 @@ public class SkyRendering {
 	public void renderEndSky(MatrixStack matrices) {
 		RenderSystem.enableBlend();
 		RenderSystem.depthMask(false);
-		RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+		RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
 		RenderSystem.setShaderTexture(0, END_SKY_TEXTURE);
 		Tessellator tessellator = Tessellator.getInstance();
 
@@ -263,5 +267,11 @@ public class SkyRendering {
 
 		RenderSystem.depthMask(true);
 		RenderSystem.disableBlend();
+	}
+
+	public void close() {
+		this.starBuffer.close();
+		this.skyBuffer.close();
+		this.darkSkyBuffer.close();
 	}
 }

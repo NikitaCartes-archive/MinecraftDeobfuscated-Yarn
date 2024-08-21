@@ -7,7 +7,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.VertexFormat;
@@ -192,34 +191,25 @@ public abstract class Framebuffer {
 	}
 
 	public void draw(int width, int height) {
-		this.draw(width, height, true);
+		GlStateManager._glBindFramebuffer(GlConst.GL_READ_FRAMEBUFFER, this.fbo);
+		GlStateManager._glBlitFrameBuffer(0, 0, this.textureWidth, this.textureHeight, 0, 0, width, height, 16384, GlConst.GL_NEAREST);
+		GlStateManager._glBindFramebuffer(GlConst.GL_READ_FRAMEBUFFER, 0);
 	}
 
-	public void draw(int width, int height, boolean disableBlend) {
-		this.drawInternal(width, height, disableBlend);
-	}
-
-	private void drawInternal(int width, int height, boolean disableBlend) {
+	public void drawInternal(int width, int height) {
 		RenderSystem.assertOnRenderThread();
 		GlStateManager._colorMask(true, true, true, false);
 		GlStateManager._disableDepthTest();
 		GlStateManager._depthMask(false);
 		GlStateManager._viewport(0, 0, width, height);
-		if (disableBlend) {
-			GlStateManager._disableBlend();
-		}
-
-		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		ShaderProgram shaderProgram = (ShaderProgram)Objects.requireNonNull(minecraftClient.gameRenderer.blitScreenProgram, "Blit shader not loaded");
-		shaderProgram.addSampler("InSampler", this.colorAttachment);
-		shaderProgram.bind();
+		ShaderProgram shaderProgram = (ShaderProgram)Objects.requireNonNull(RenderSystem.setShader(ShaderProgramKeys.BLIT_SCREEN), "Blit shader not loaded");
+		shaderProgram.addSamplerTexture("InSampler", this.colorAttachment);
 		BufferBuilder bufferBuilder = RenderSystem.renderThreadTesselator().begin(VertexFormat.DrawMode.QUADS, VertexFormats.BLIT_SCREEN);
 		bufferBuilder.vertex(0.0F, 0.0F, 0.0F);
 		bufferBuilder.vertex(1.0F, 0.0F, 0.0F);
 		bufferBuilder.vertex(1.0F, 1.0F, 0.0F);
 		bufferBuilder.vertex(0.0F, 1.0F, 0.0F);
-		BufferRenderer.draw(bufferBuilder.end());
-		shaderProgram.unbind();
+		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 		GlStateManager._depthMask(true);
 		GlStateManager._colorMask(true, true, true, true);
 	}

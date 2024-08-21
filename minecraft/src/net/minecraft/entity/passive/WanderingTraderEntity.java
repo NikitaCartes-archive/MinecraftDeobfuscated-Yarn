@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import java.util.EnumSet;
 import javax.annotation.Nullable;
+import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -47,7 +48,7 @@ import net.minecraft.village.TradeOffers;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class WanderingTraderEntity extends MerchantEntity {
+public class WanderingTraderEntity extends MerchantEntity implements ConsumableComponent.ConsumableSoundProvider {
 	private static final int field_30629 = 5;
 	@Nullable
 	private BlockPos wanderTarget;
@@ -209,7 +210,7 @@ public class WanderingTraderEntity extends MerchantEntity {
 	}
 
 	@Override
-	protected SoundEvent getDrinkSound(ItemStack stack) {
+	public SoundEvent getConsumeSound(ItemStack stack) {
 		return stack.isOf(Items.MILK_BUCKET) ? SoundEvents.ENTITY_WANDERING_TRADER_DRINK_MILK : SoundEvents.ENTITY_WANDERING_TRADER_DRINK_POTION;
 	}
 

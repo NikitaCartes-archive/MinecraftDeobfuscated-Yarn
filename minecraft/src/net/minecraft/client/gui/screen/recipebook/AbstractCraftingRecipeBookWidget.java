@@ -44,9 +44,9 @@ public class AbstractCraftingRecipeBookWidget extends RecipeBookWidget<AbstractC
 			this.craftingScreenHandler.getHeight(),
 			entry,
 			entry.value().getIngredientPlacement().getPlacementSlots(),
-			(optional, i, j, k) -> optional.ifPresent(placementSlot -> {
-					Slot slotx = (Slot)list.get(i);
-					ghostRecipe.put(placementSlot.possibleItems(), slotx);
+			(slotx, index, x, y) -> slotx.ifPresent(slot2 -> {
+					Slot slotxx = (Slot)list.get(index);
+					ghostRecipe.put(slot2.possibleItems(), slotxx);
 				})
 		);
 	}

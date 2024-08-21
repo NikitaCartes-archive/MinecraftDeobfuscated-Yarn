@@ -4,6 +4,7 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -35,8 +36,10 @@ public interface NeighborUpdater {
 		WorldAccess world, Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int flags, int maxUpdateDepth
 	) {
 		BlockState blockState = world.getBlockState(pos);
-		BlockState blockState2 = blockState.getStateForNeighborUpdate(direction, neighborState, world, pos, neighborPos);
-		Block.replace(blockState, blockState2, world, pos, flags, maxUpdateDepth);
+		if ((flags & Block.SKIP_REDSTONE_WIRE_STATE_REPLACEMENT) == 0 || !neighborState.isOf(Blocks.REDSTONE_WIRE)) {
+			BlockState blockState2 = blockState.getStateForNeighborUpdate(direction, neighborState, world, pos, neighborPos);
+			Block.replace(blockState, blockState2, world, pos, flags, maxUpdateDepth);
+		}
 	}
 
 	static void tryNeighborUpdate(World world, BlockState state, BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation, boolean notify) {

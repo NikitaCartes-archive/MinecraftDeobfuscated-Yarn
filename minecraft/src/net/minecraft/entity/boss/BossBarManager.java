@@ -36,20 +36,20 @@ public class BossBarManager {
 		return this.commandBossBars.values();
 	}
 
-	public NbtCompound toNbt(RegistryWrapper.WrapperLookup wrapperLookup) {
+	public NbtCompound toNbt(RegistryWrapper.WrapperLookup registries) {
 		NbtCompound nbtCompound = new NbtCompound();
 
 		for (CommandBossBar commandBossBar : this.commandBossBars.values()) {
-			nbtCompound.put(commandBossBar.getId().toString(), commandBossBar.toNbt(wrapperLookup));
+			nbtCompound.put(commandBossBar.getId().toString(), commandBossBar.toNbt(registries));
 		}
 
 		return nbtCompound;
 	}
 
-	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
+	public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		for (String string : nbt.getKeys()) {
 			Identifier identifier = Identifier.of(string);
-			this.commandBossBars.put(identifier, CommandBossBar.fromNbt(nbt.getCompound(string), identifier, wrapperLookup));
+			this.commandBossBars.put(identifier, CommandBossBar.fromNbt(nbt.getCompound(string), identifier, registries));
 		}
 	}
 

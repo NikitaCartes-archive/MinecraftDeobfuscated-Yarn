@@ -10,6 +10,7 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
@@ -59,9 +60,10 @@ public class FireworkRocketEntityRenderer extends EntityRenderer<FireworkRocketE
 	public void updateRenderState(FireworkRocketEntity fireworkRocketEntity, FireworkRocketEntityRenderState fireworkRocketEntityRenderState, float f) {
 		super.updateRenderState(fireworkRocketEntity, fireworkRocketEntityRenderState, f);
 		fireworkRocketEntityRenderState.shotAtAngle = fireworkRocketEntity.wasShotAtAngle();
-		fireworkRocketEntityRenderState.stack = fireworkRocketEntity.getStack();
-		fireworkRocketEntityRenderState.model = !fireworkRocketEntityRenderState.stack.isEmpty()
-			? this.itemRenderer.getModel(fireworkRocketEntityRenderState.stack, fireworkRocketEntity.getWorld(), null, fireworkRocketEntity.getId())
+		ItemStack itemStack = fireworkRocketEntity.getStack();
+		fireworkRocketEntityRenderState.stack = itemStack.copy();
+		fireworkRocketEntityRenderState.model = !itemStack.isEmpty()
+			? this.itemRenderer.getModel(itemStack, fireworkRocketEntity.getWorld(), null, fireworkRocketEntity.getId())
 			: null;
 	}
 }

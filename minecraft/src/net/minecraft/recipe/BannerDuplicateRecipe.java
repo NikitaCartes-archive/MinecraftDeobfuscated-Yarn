@@ -22,7 +22,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack = null;
 		ItemStack itemStack2 = null;
 
-		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+		for (int i = 0; i < craftingRecipeInput.size(); i++) {
 			ItemStack itemStack3 = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack3.isEmpty()) {
 				Item item = itemStack3.getItem();
@@ -62,7 +62,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 	}
 
 	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
-		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+		for (int i = 0; i < craftingRecipeInput.size(); i++) {
 			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack.isEmpty()) {
 				int j = itemStack.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT).layers().size();
@@ -76,7 +76,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 	}
 
 	public DefaultedList<ItemStack> getRemainder(CraftingRecipeInput craftingRecipeInput) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingRecipeInput.getSize(), ItemStack.EMPTY);
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingRecipeInput.size(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
 			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);

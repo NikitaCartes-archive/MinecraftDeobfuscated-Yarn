@@ -20,7 +20,7 @@ public class ShulkerBoxColoringRecipe extends SpecialCraftingRecipe {
 		int i = 0;
 		int j = 0;
 
-		for (int k = 0; k < craftingRecipeInput.getSize(); k++) {
+		for (int k = 0; k < craftingRecipeInput.size(); k++) {
 			ItemStack itemStack = craftingRecipeInput.getStackInSlot(k);
 			if (!itemStack.isEmpty()) {
 				if (Block.getBlockFromItem(itemStack.getItem()) instanceof ShulkerBoxBlock) {
@@ -46,7 +46,7 @@ public class ShulkerBoxColoringRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack = ItemStack.EMPTY;
 		DyeItem dyeItem = (DyeItem)Items.WHITE_DYE;
 
-		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+		for (int i = 0; i < craftingRecipeInput.size(); i++) {
 			ItemStack itemStack2 = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack2.isEmpty()) {
 				Item item = itemStack2.getItem();

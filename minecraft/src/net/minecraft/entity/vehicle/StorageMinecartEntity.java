@@ -23,7 +23,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(36, ItemStack.EMPTY);
 	@Nullable
 	private RegistryKey<LootTable> lootTable;
-	private long lootSeed;
+	private long lootTableSeed;
 
 	protected StorageMinecartEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
@@ -121,7 +121,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 
 	public void setLootTable(RegistryKey<LootTable> lootTable, long lootSeed) {
 		this.lootTable = lootTable;
-		this.lootSeed = lootSeed;
+		this.lootTableSeed = lootSeed;
 	}
 
 	@Nullable
@@ -150,12 +150,12 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 
 	@Override
 	public long getLootTableSeed() {
-		return this.lootSeed;
+		return this.lootTableSeed;
 	}
 
 	@Override
 	public void setLootTableSeed(long lootTableSeed) {
-		this.lootSeed = lootTableSeed;
+		this.lootTableSeed = lootTableSeed;
 	}
 
 	@Override

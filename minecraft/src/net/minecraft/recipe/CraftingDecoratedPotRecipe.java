@@ -19,7 +19,7 @@ public class CraftingDecoratedPotRecipe extends SpecialCraftingRecipe {
 		if (!this.fits(craftingRecipeInput.getWidth(), craftingRecipeInput.getHeight())) {
 			return false;
 		} else {
-			for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+			for (int i = 0; i < craftingRecipeInput.size(); i++) {
 				ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
 				switch (i) {
 					case 1:

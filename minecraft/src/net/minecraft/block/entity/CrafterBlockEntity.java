@@ -111,12 +111,12 @@ public class CrafterBlockEntity extends LootableContainerBlockEntity implements 
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		this.craftingTicksRemaining = nbt.getInt("crafting_ticks_remaining");
 		this.inputStacks = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (!this.readLootTable(nbt)) {
-			Inventories.readNbt(nbt, this.inputStacks, registryLookup);
+			Inventories.readNbt(nbt, this.inputStacks, registries);
 		}
 
 		int[] is = nbt.getIntArray("disabled_slots");
@@ -135,11 +135,11 @@ public class CrafterBlockEntity extends LootableContainerBlockEntity implements 
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		nbt.putInt("crafting_ticks_remaining", this.craftingTicksRemaining);
 		if (!this.writeLootTable(nbt)) {
-			Inventories.writeNbt(nbt, this.inputStacks, registryLookup);
+			Inventories.writeNbt(nbt, this.inputStacks, registries);
 		}
 
 		this.putDisabledSlots(nbt);

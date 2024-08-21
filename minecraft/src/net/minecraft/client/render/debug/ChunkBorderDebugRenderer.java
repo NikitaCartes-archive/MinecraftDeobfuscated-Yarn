@@ -26,7 +26,7 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		Entity entity = this.client.gameRenderer.getCamera().getFocusedEntity();
 		float f = (float)((double)this.client.world.getBottomY() - cameraY);
-		float g = (float)((double)this.client.world.getTopY() - cameraY);
+		float g = (float)((double)(this.client.world.getTopYInclusive() + 1) - cameraY);
 		ChunkPos chunkPos = entity.getChunkPos();
 		float h = (float)((double)chunkPos.getStartX() - cameraX);
 		float i = (float)((double)chunkPos.getStartZ() - cameraZ);
@@ -66,7 +66,7 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 			vertexConsumer.vertex(matrix4f, h + 16.0F, g, i + (float)j).color(1.0F, 1.0F, 0.0F, 0.0F);
 		}
 
-		for (int j = this.client.world.getBottomY(); j <= this.client.world.getTopY(); j += 2) {
+		for (int j = this.client.world.getBottomY(); j <= this.client.world.getTopYInclusive() + 1; j += 2) {
 			float l = (float)((double)j - cameraY);
 			int m = j % 8 == 0 ? DARK_CYAN : YELLOW;
 			vertexConsumer.vertex(matrix4f, h, l, i).color(1.0F, 1.0F, 0.0F, 0.0F);
@@ -89,7 +89,7 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 			}
 		}
 
-		for (int j = this.client.world.getBottomY(); j <= this.client.world.getTopY(); j += 16) {
+		for (int j = this.client.world.getBottomY(); j <= this.client.world.getTopYInclusive() + 1; j += 16) {
 			float l = (float)((double)j - cameraY);
 			vertexConsumer.vertex(matrix4f, h, l, i).color(0.25F, 0.25F, 1.0F, 0.0F);
 			vertexConsumer.vertex(matrix4f, h, l, i).color(0.25F, 0.25F, 1.0F, 1.0F);

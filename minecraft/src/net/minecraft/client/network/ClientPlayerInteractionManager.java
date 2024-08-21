@@ -316,7 +316,7 @@ public class ClientPlayerInteractionManager {
 				}
 			}
 
-			if (!itemStack.isEmpty() && !player.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
+			if (!itemStack.isEmpty() && !player.getItemCooldownManager().isCoolingDown(itemStack)) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(player, hand, hitResult);
 				ActionResult actionResult3;
 				if (this.gameMode.isCreative()) {
@@ -343,7 +343,7 @@ public class ClientPlayerInteractionManager {
 			this.sendSequencedPacket(this.client.world, sequence -> {
 				PlayerInteractItemC2SPacket playerInteractItemC2SPacket = new PlayerInteractItemC2SPacket(hand, sequence, player.getYaw(), player.getPitch());
 				ItemStack itemStack = player.getStackInHand(hand);
-				if (player.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
+				if (player.getItemCooldownManager().isCoolingDown(itemStack)) {
 					mutableObject.setValue(ActionResult.PASS);
 					return playerInteractItemC2SPacket;
 				} else {

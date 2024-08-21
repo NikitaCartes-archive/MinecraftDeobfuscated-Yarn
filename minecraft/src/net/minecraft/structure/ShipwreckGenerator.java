@@ -122,7 +122,7 @@ public class ShipwreckGenerator {
 			if (this.isTooLargeForNormalGeneration()) {
 				super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);
 			} else {
-				int i = world.getTopY();
+				int i = world.getTopYInclusive() + 1;
 				int j = 0;
 				Vec3i vec3i = this.template.getSize();
 				Heightmap.Type type = this.grounded ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG;

@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9974;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -21,6 +20,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
@@ -218,7 +218,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 			matrices.push();
 			matrices.translate(entity2.getX() - entity.getX(), entity2.getY() - entity.getY(), entity2.getZ() - entity.getZ());
 			renderHitbox(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), entity2, 1.0F, 0.0F, 1.0F, 0.0F);
-			class_9974.method_62298(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), new Vector3f(), entity2.getVelocity(), -256);
+			VertexRendering.drawVector(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), new Vector3f(), entity2.getVelocity(), -256);
 			matrices.pop();
 		}
 	}
@@ -238,7 +238,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 
 	private static void renderHitbox(MatrixStack matrices, VertexConsumer vertices, Entity entity, float tickDelta, float red, float green, float blue) {
 		Box box = entity.getBoundingBox().offset(-entity.getX(), -entity.getY(), -entity.getZ());
-		class_9974.method_62295(matrices, vertices, box, red, green, blue, 1.0F);
+		VertexRendering.drawBox(matrices, vertices, box, red, green, blue, 1.0F);
 		if (entity instanceof EnderDragonEntity) {
 			double d = -MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());
 			double e = -MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.getY());
@@ -250,7 +250,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 				double h = e + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderY, enderDragonPart.getY());
 				double i = f + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderZ, enderDragonPart.getZ());
 				matrices.translate(g, h, i);
-				class_9974.method_62295(
+				VertexRendering.drawBox(
 					matrices,
 					vertices,
 					enderDragonPart.getBoundingBox().offset(-enderDragonPart.getX(), -enderDragonPart.getY(), -enderDragonPart.getZ()),
@@ -265,7 +265,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 
 		if (entity instanceof LivingEntity) {
 			float j = 0.01F;
-			class_9974.method_62292(
+			VertexRendering.drawBox(
 				matrices,
 				vertices,
 				box.minX,
@@ -286,12 +286,12 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 			float k = Math.min(entity2.getWidth(), entity.getWidth()) / 2.0F;
 			float l = 0.0625F;
 			Vec3d vec3d = entity2.getPassengerRidingPos(entity).subtract(entity.getPos());
-			class_9974.method_62292(
+			VertexRendering.drawBox(
 				matrices, vertices, vec3d.x - (double)k, vec3d.y, vec3d.z - (double)k, vec3d.x + (double)k, vec3d.y + 0.0625, vec3d.z + (double)k, 1.0F, 1.0F, 0.0F, 1.0F
 			);
 		}
 
-		class_9974.method_62298(
+		VertexRendering.drawVector(
 			matrices, vertices, new Vector3f(0.0F, entity.getStandingEyeHeight(), 0.0F), entity.getRotationVec(tickDelta).multiply(2.0), -16776961
 		);
 	}

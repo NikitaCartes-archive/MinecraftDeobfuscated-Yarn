@@ -258,7 +258,7 @@ public class BreezeEntity extends HostileEntity {
 	}
 
 	public double getChargeY() {
-		return this.getEyeY() - 0.4;
+		return this.getY() + (double)(this.getHeight() / 2.0F) + 0.3F;
 	}
 
 	@Override

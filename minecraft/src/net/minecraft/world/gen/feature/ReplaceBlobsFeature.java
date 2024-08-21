@@ -24,7 +24,7 @@ public class ReplaceBlobsFeature extends Feature<ReplaceBlobsFeatureConfig> {
 		Block block = replaceBlobsFeatureConfig.target.getBlock();
 		BlockPos blockPos = moveDownToTarget(
 			structureWorldAccess,
-			context.getOrigin().mutableCopy().clamp(Direction.Axis.Y, structureWorldAccess.getBottomY() + 1, structureWorldAccess.getTopY() - 1),
+			context.getOrigin().mutableCopy().clamp(Direction.Axis.Y, structureWorldAccess.getBottomY() + 1, structureWorldAccess.getTopYInclusive()),
 			block
 		);
 		if (blockPos == null) {

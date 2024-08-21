@@ -90,7 +90,7 @@ public abstract class BiomeSource implements BiomeSupplier {
 			return null;
 		} else {
 			int i = Math.floorDiv(radius, horizontalBlockCheckInterval);
-			int[] is = MathHelper.stream(origin.getY(), world.getBottomY() + 1, world.getTopY(), verticalBlockCheckInterval).toArray();
+			int[] is = MathHelper.stream(origin.getY(), world.getBottomY() + 1, world.getTopYInclusive() + 1, verticalBlockCheckInterval).toArray();
 
 			for (BlockPos.Mutable mutable : BlockPos.iterateInSquare(BlockPos.ORIGIN, i, Direction.EAST, Direction.SOUTH)) {
 				int j = origin.getX() + mutable.getX() * horizontalBlockCheckInterval;

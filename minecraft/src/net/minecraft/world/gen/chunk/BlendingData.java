@@ -94,7 +94,7 @@ public class BlendingData {
 
 		return new BlendingData.Serialized(
 			this.oldHeightLimit.getBottomSectionCoord(),
-			this.oldHeightLimit.getTopSectionCoord(),
+			this.oldHeightLimit.getTopSectionCoord() + 1,
 			bl ? Optional.of(DoubleArrays.copy(this.surfaceHeights)) : Optional.empty()
 		);
 	}
@@ -185,19 +185,20 @@ public class BlendingData {
 	private int getSurfaceBlockY(Chunk chunk, int blockX, int blockZ) {
 		int i;
 		if (chunk.hasHeightmap(Heightmap.Type.WORLD_SURFACE_WG)) {
-			i = Math.min(chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, blockX, blockZ) + 1, this.oldHeightLimit.getTopY());
+			i = Math.min(chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, blockX, blockZ), this.oldHeightLimit.getTopYInclusive());
 		} else {
-			i = this.oldHeightLimit.getTopY();
+			i = this.oldHeightLimit.getTopYInclusive();
 		}
 
 		int j = this.oldHeightLimit.getBottomY();
 		BlockPos.Mutable mutable = new BlockPos.Mutable(blockX, i, blockZ);
 
 		while (mutable.getY() > j) {
-			mutable.move(Direction.DOWN);
 			if (SURFACE_BLOCKS.contains(chunk.getBlockState(mutable).getBlock())) {
 				return mutable.getY();
 			}
+
+			mutable.move(Direction.DOWN);
 		}
 
 		return j;
@@ -228,7 +229,7 @@ public class BlendingData {
 	private double[] calculateCollidableBlockDensityColumn(Chunk chunk, int chunkBlockX, int chunkBlockZ, int surfaceHeight) {
 		double[] ds = new double[this.getVerticalHalfSectionCount()];
 		Arrays.fill(ds, -1.0);
-		BlockPos.Mutable mutable = new BlockPos.Mutable(chunkBlockX, this.oldHeightLimit.getTopY(), chunkBlockZ);
+		BlockPos.Mutable mutable = new BlockPos.Mutable(chunkBlockX, this.oldHeightLimit.getTopYInclusive() + 1, chunkBlockZ);
 		double d = getCollidableBlockDensityBelow(chunk, mutable);
 
 		for (int i = ds.length - 2; i >= 0; i--) {
@@ -307,7 +308,7 @@ public class BlendingData {
 	}
 
 	protected void acceptBiomes(int biomeX, int biomeY, int biomeZ, BlendingData.BiomeConsumer consumer) {
-		if (biomeY >= BiomeCoords.fromBlock(this.oldHeightLimit.getBottomY()) && biomeY < BiomeCoords.fromBlock(this.oldHeightLimit.getTopY())) {
+		if (biomeY >= BiomeCoords.fromBlock(this.oldHeightLimit.getBottomY()) && biomeY <= BiomeCoords.fromBlock(this.oldHeightLimit.getTopYInclusive())) {
 			int i = biomeY - BiomeCoords.fromBlock(this.oldHeightLimit.getBottomY());
 
 			for (int j = 0; j < this.biomes.size(); j++) {

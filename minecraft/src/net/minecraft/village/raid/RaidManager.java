@@ -33,7 +33,7 @@ public class RaidManager extends PersistentState {
 	private int currentTime;
 
 	public static PersistentState.Type<RaidManager> getPersistentStateType(ServerWorld world) {
-		return new PersistentState.Type<>(() -> new RaidManager(world), (nbt, registryLookup) -> fromNbt(world, nbt), DataFixTypes.SAVED_DATA_RAIDS);
+		return new PersistentState.Type<>(() -> new RaidManager(world), (nbt, registries) -> fromNbt(world, nbt), DataFixTypes.SAVED_DATA_RAIDS);
 	}
 
 	public RaidManager(ServerWorld world) {
@@ -145,7 +145,7 @@ public class RaidManager extends PersistentState {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		nbt.putInt("NextAvailableID", this.nextAvailableId);
 		nbt.putInt("Tick", this.currentTime);
 		NbtList nbtList = new NbtList();

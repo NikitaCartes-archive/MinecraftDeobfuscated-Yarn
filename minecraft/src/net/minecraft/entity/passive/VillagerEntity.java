@@ -548,7 +548,6 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 		this.lastRestockTime = nbt.getLong("LastRestock");
 		this.lastGossipDecayTime = nbt.getLong("LastGossipDecay");
-		this.setCanPickUpLoot(true);
 		if (this.getWorld() instanceof ServerWorld) {
 			this.reinitializeBrain((ServerWorld)this.getWorld());
 		}

@@ -17,8 +17,10 @@ import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
+import net.minecraft.client.input.KeyCodes;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.recipebook.RecipeBookGroup;
@@ -56,7 +58,7 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 	private int leftOffset;
 	private int parentWidth;
 	private int parentHeight;
-	private float field_52842;
+	private float displayTime;
 	@Nullable
 	private RecipeEntry<?> ghostSlots;
 	private final GhostRecipe ghostRecipe;
@@ -71,6 +73,10 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 	private String searchText = "";
 	private ClientRecipeBook recipeBook;
 	private final RecipeBookResults recipesArea;
+	@Nullable
+	private RecipeEntry<?> selectedRecipe;
+	@Nullable
+	private RecipeResultCollection selectedRecipeResults;
 	private final RecipeFinder recipeFinder = new RecipeFinder();
 	private int cachedInvChangeCount;
 	private boolean searching;
@@ -79,7 +85,7 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 
 	public RecipeBookWidget(T craftingScreenHandler) {
 		this.craftingScreenHandler = craftingScreenHandler;
-		CurrentIndexProvider currentIndexProvider = () -> MathHelper.floor(this.field_52842 / 30.0F);
+		CurrentIndexProvider currentIndexProvider = () -> MathHelper.floor(this.displayTime / 30.0F);
 		this.ghostRecipe = new GhostRecipe(currentIndexProvider);
 		this.recipesArea = new RecipeBookResults(currentIndexProvider, craftingScreenHandler instanceof AbstractFurnaceScreenHandler);
 	}
@@ -199,7 +205,7 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 
 	private void refreshResults(boolean resetCurrentPage, boolean filteringCraftable) {
 		List<RecipeResultCollection> list = this.recipeBook.getResultsForGroup(this.currentTab.getCategory());
-		list.forEach(recipeResultCollection -> this.populateRecipes(recipeResultCollection, this.recipeFinder, this.recipeBook));
+		list.forEach(collection -> this.populateRecipes(collection, this.recipeFinder, this.recipeBook));
 		List<RecipeResultCollection> list2 = Lists.<RecipeResultCollection>newArrayList(list);
 		list2.removeIf(resultCollection -> !resultCollection.isInitialized());
 		list2.removeIf(resultCollection -> !resultCollection.hasFittingRecipes());
@@ -268,7 +274,7 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.isOpen()) {
 			if (!Screen.hasControlDown()) {
-				this.field_52842 += delta;
+				this.displayTime += delta;
 			}
 
 			context.getMatrices().push();
@@ -308,12 +314,12 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 				RecipeEntry<?> recipeEntry = this.recipesArea.getLastClickedRecipe();
 				RecipeResultCollection recipeResultCollection = this.recipesArea.getLastClickedResults();
 				if (recipeEntry != null && recipeResultCollection != null) {
-					if (!recipeResultCollection.isCraftable(recipeEntry) && this.ghostSlots == recipeEntry) {
+					if (!this.select(recipeResultCollection, recipeEntry)) {
 						return false;
 					}
 
-					this.clearGhostRecipe();
-					this.client.interactionManager.clickRecipe(this.client.player.currentScreenHandler.syncId, recipeEntry, Screen.hasShiftDown());
+					this.selectedRecipeResults = recipeResultCollection;
+					this.selectedRecipe = recipeEntry;
 					if (!this.isWide()) {
 						this.setOpen(false);
 					}
@@ -357,6 +363,16 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 		}
 	}
 
+	private boolean select(RecipeResultCollection results, RecipeEntry<?> recipe) {
+		if (!results.isCraftable(recipe) && this.ghostSlots == recipe) {
+			return false;
+		} else {
+			this.clearGhostRecipe();
+			this.client.interactionManager.clickRecipe(this.client.player.currentScreenHandler.syncId, recipe, Screen.hasShiftDown());
+			return true;
+		}
+	}
+
 	private boolean toggleFilteringCraftable() {
 		RecipeBookCategory recipeBookCategory = this.craftingScreenHandler.getCategory();
 		boolean bl = !this.recipeBook.isFilteringCraftable(recipeBookCategory);
@@ -391,6 +407,9 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 			this.searching = true;
 			this.searchField.setFocused(true);
 			return true;
+		} else if (KeyCodes.isToggle(keyCode) && this.selectedRecipeResults != null && this.selectedRecipe != null) {
+			ClickableWidget.playClickSound(MinecraftClient.getInstance().getSoundManager());
+			return this.select(this.selectedRecipeResults, this.selectedRecipe);
 		} else {
 			return false;
 		}

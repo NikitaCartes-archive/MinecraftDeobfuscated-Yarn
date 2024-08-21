@@ -113,7 +113,7 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 		CompletableFuture<Map<Identifier, UnbakedModel>> completableFuture = reloadModels(manager, prepareExecutor);
 		CompletableFuture<BlockStatesLoader.BlockStateDefinition> completableFuture2 = reloadBlockStates(blockStatesLoader, manager, prepareExecutor);
 		CompletableFuture<ReferencedModelsCollector> completableFuture3 = completableFuture2.thenCombineAsync(
-			completableFuture, (blockStateDefinition, mapx) -> this.method_62657(unbakedModel, mapx, blockStateDefinition), prepareExecutor
+			completableFuture, (definition, models) -> this.collect(unbakedModel, models, definition), prepareExecutor
 		);
 		CompletableFuture<Object2IntMap<BlockState>> completableFuture4 = completableFuture2.thenApplyAsync(
 			blockStateDefinition -> group(this.colorMap, blockStateDefinition), prepareExecutor
@@ -191,11 +191,9 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 			);
 	}
 
-	private ReferencedModelsCollector method_62657(
-		UnbakedModel unbakedModel, Map<Identifier, UnbakedModel> map, BlockStatesLoader.BlockStateDefinition blockStateDefinition
-	) {
-		ReferencedModelsCollector referencedModelsCollector = new ReferencedModelsCollector(map, unbakedModel);
-		referencedModelsCollector.addBlockStates(blockStateDefinition);
+	private ReferencedModelsCollector collect(UnbakedModel missingModel, Map<Identifier, UnbakedModel> inputs, BlockStatesLoader.BlockStateDefinition definition) {
+		ReferencedModelsCollector referencedModelsCollector = new ReferencedModelsCollector(inputs, missingModel);
+		referencedModelsCollector.addBlockStates(definition);
 		referencedModelsCollector.resolveAll();
 		return referencedModelsCollector;
 	}

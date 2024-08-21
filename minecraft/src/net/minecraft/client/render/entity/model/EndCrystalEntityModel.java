@@ -38,9 +38,11 @@ public class EndCrystalEntityModel extends EntityModel<EndCrystalEntityRenderSta
 		ModelPartData modelPartData = modelData.getRoot();
 		float f = 0.875F;
 		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
-		ModelPartData modelPartData2 = modelPartData.addChild("outer_glass", modelPartBuilder, ModelTransform.pivot(0.0F, 24.0F, 0.0F).withScale(0.875F));
-		ModelPartData modelPartData3 = modelPartData2.addChild("inner_glass", modelPartBuilder, ModelTransform.NONE.withScale(0.765625F));
-		modelPartData3.addChild(EntityModelPartNames.CUBE, ModelPartBuilder.create().uv(32, 0).cuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F), ModelTransform.NONE);
+		ModelPartData modelPartData2 = modelPartData.addChild("outer_glass", modelPartBuilder, ModelTransform.pivot(0.0F, 24.0F, 0.0F));
+		ModelPartData modelPartData3 = modelPartData2.addChild("inner_glass", modelPartBuilder, ModelTransform.NONE.withScale(0.875F));
+		modelPartData3.addChild(
+			EntityModelPartNames.CUBE, ModelPartBuilder.create().uv(32, 0).cuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F), ModelTransform.NONE.withScale(0.765625F)
+		);
 		modelPartData.addChild("base", ModelPartBuilder.create().uv(0, 16).cuboid(-6.0F, 0.0F, -6.0F, 12.0F, 4.0F, 12.0F), ModelTransform.NONE);
 		return TexturedModelData.of(modelData, 64, 32);
 	}

@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Set;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.OminousBottleAmplifierComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
@@ -39,7 +40,7 @@ public class SetOminousBottleAmplifierLootFunction extends ConditionalLootFuncti
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		int i = MathHelper.clamp(this.amplifier.nextInt(context), 0, 4);
-		stack.set(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER, i);
+		stack.set(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER, new OminousBottleAmplifierComponent(i));
 		return stack;
 	}
 

@@ -37,14 +37,14 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Spawner {
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		this.logic.readNbt(this.world, this.pos, nbt);
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		this.logic.writeNbt(nbt);
 	}
 
@@ -61,8 +61,8 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Spawner {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		NbtCompound nbtCompound = this.createComponentlessNbt(registryLookup);
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
+		NbtCompound nbtCompound = this.createComponentlessNbt(registries);
 		nbtCompound.remove("SpawnPotentials");
 		return nbtCompound;
 	}

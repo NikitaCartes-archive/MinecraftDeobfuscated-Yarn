@@ -14,14 +14,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgram;
-import net.minecraft.client.option.GraphicsMode;
-import net.minecraft.client.option.SimpleOption;
+import net.minecraft.client.gl.ShaderProgramKey;
 import net.minecraft.client.render.Fog;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
@@ -617,18 +615,12 @@ public class RenderSystem {
 		blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
 	}
 
-	@Deprecated
-	public static void runAsFancy(Runnable runnable) {
-		boolean bl = MinecraftClient.isFabulousGraphicsOrBetter();
-		if (!bl) {
-			runnable.run();
-		} else {
-			SimpleOption<GraphicsMode> simpleOption = MinecraftClient.getInstance().options.getGraphicsMode();
-			GraphicsMode graphicsMode = simpleOption.getValue();
-			simpleOption.setValue(GraphicsMode.FANCY);
-			runnable.run();
-			simpleOption.setValue(graphicsMode);
-		}
+	@Nullable
+	public static ShaderProgram setShader(ShaderProgramKey shaderProgramKey) {
+		assertOnRenderThread();
+		ShaderProgram shaderProgram = MinecraftClient.getInstance().method_62887().getOrCreateProgram(shaderProgramKey);
+		shader = shaderProgram;
+		return shaderProgram;
 	}
 
 	/**
@@ -638,9 +630,14 @@ public class RenderSystem {
 	 * indirectly through the given shader program. The name of this method is
 	 * not obfuscated and is kept as is.
 	 */
-	public static void setShader(Supplier<ShaderProgram> program) {
+	public static void setShader(ShaderProgram shaderProgram) {
 		assertOnRenderThread();
-		shader = (ShaderProgram)program.get();
+		shader = shaderProgram;
+	}
+
+	public static void clearShader() {
+		assertOnRenderThread();
+		shader = null;
 	}
 
 	@Nullable

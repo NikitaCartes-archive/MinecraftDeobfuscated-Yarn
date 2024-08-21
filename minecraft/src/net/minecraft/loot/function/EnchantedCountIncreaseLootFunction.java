@@ -80,8 +80,8 @@ public class EnchantedCountIncreaseLootFunction extends ConditionalLootFunction 
 		return stack;
 	}
 
-	public static EnchantedCountIncreaseLootFunction.Builder builder(RegistryWrapper.WrapperLookup registryLookup, LootNumberProvider count) {
-		RegistryWrapper.Impl<Enchantment> impl = registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+	public static EnchantedCountIncreaseLootFunction.Builder builder(RegistryWrapper.WrapperLookup registries, LootNumberProvider count) {
+		RegistryWrapper.Impl<Enchantment> impl = registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		return new EnchantedCountIncreaseLootFunction.Builder(impl.getOrThrow(Enchantments.LOOTING), count);
 	}
 

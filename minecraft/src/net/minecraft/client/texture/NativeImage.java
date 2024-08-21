@@ -293,7 +293,7 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public int[] copyPixelsRgba() {
+	public int[] copyPixelsAbgr() {
 		if (this.format != NativeImage.Format.RGBA) {
 			throw new IllegalArgumentException(String.format(Locale.ROOT, "getPixels only works on RGBA images; have %s", this.format));
 		} else {
@@ -304,8 +304,8 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public int[] method_61942() {
-		int[] is = this.copyPixelsRgba();
+	public int[] copyPixelsArgb() {
+		int[] is = this.copyPixelsAbgr();
 
 		for (int i = 0; i < is.length; i++) {
 			is[i] = ColorHelper.fromAbgr(is[i]);

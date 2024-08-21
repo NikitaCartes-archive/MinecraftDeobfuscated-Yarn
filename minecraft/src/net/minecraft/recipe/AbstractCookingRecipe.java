@@ -57,7 +57,7 @@ public abstract class AbstractCookingRecipe implements Recipe<SingleStackRecipeI
 	}
 
 	@Override
-	public ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup) {
+	public ItemStack getResult(RegistryWrapper.WrapperLookup registries) {
 		return this.result;
 	}
 

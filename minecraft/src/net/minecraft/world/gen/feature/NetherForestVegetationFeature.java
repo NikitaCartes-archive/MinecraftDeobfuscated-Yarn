@@ -25,7 +25,7 @@ public class NetherForestVegetationFeature extends Feature<NetherForestVegetatio
 			return false;
 		} else {
 			int i = blockPos.getY();
-			if (i >= structureWorldAccess.getBottomY() + 1 && i + 1 < structureWorldAccess.getTopY()) {
+			if (i >= structureWorldAccess.getBottomY() + 1 && i + 1 <= structureWorldAccess.getTopYInclusive()) {
 				int j = 0;
 
 				for (int k = 0; k < netherForestVegetationFeatureConfig.spreadWidth * netherForestVegetationFeatureConfig.spreadWidth; k++) {

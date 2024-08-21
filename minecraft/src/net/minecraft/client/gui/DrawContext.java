@@ -621,7 +621,7 @@ public class DrawContext {
 			ClientPlayerEntity clientPlayerEntity = this.client.player;
 			float f = clientPlayerEntity == null
 				? 0.0F
-				: clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack.getItem(), this.client.getRenderTickCounter().getTickDelta(true));
+				: clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack, this.client.getRenderTickCounter().getTickDelta(true));
 			if (f > 0.0F) {
 				int k = y + MathHelper.floor(16.0F * (1.0F - f));
 				int l = k + MathHelper.ceil(16.0F * f);

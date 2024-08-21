@@ -18,7 +18,7 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.copy(BlockTags.WOOL, ItemTags.WOOL);
 		this.copy(BlockTags.PLANKS, ItemTags.PLANKS);
 		this.copy(BlockTags.STONE_BRICKS, ItemTags.STONE_BRICKS);

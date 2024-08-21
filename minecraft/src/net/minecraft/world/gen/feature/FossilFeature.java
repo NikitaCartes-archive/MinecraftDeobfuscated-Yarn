@@ -41,7 +41,7 @@ public class FossilFeature extends Feature<FossilFeatureConfig> {
 			structureWorldAccess.getBottomY(),
 			chunkPos.getStartZ() - 16,
 			chunkPos.getEndX() + 16,
-			structureWorldAccess.getTopY(),
+			structureWorldAccess.getTopYInclusive(),
 			chunkPos.getEndZ() + 16
 		);
 		StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(blockRotation).setBoundingBox(blockBox).setRandom(random);

@@ -2793,8 +2793,8 @@ public class VanillaRecipeGenerator extends RecipeGenerator {
 		}
 
 		@Override
-		protected RecipeGenerator getRecipeGenerator(RegistryWrapper.WrapperLookup registryLookup, RecipeExporter exporter) {
-			return new VanillaRecipeGenerator(registryLookup, exporter);
+		protected RecipeGenerator getRecipeGenerator(RegistryWrapper.WrapperLookup registries, RecipeExporter exporter) {
+			return new VanillaRecipeGenerator(registries, exporter);
 		}
 
 		@Override

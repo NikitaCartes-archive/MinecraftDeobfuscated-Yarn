@@ -20,7 +20,7 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack = ItemStack.EMPTY;
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
-		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+		for (int i = 0; i < craftingRecipeInput.size(); i++) {
 			ItemStack itemStack2 = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.isIn(ItemTags.DYEABLE)) {
@@ -46,7 +46,7 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 		List<DyeItem> list = Lists.<DyeItem>newArrayList();
 		ItemStack itemStack = ItemStack.EMPTY;
 
-		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+		for (int i = 0; i < craftingRecipeInput.size(); i++) {
 			ItemStack itemStack2 = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.isIn(ItemTags.DYEABLE)) {

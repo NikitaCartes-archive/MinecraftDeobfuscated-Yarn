@@ -1,35 +1,28 @@
 package net.minecraft.item;
 
 import java.util.List;
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.UseAction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class PotionItem extends Item {
-	private static final int MAX_USE_TIME = 32;
-
 	public PotionItem(Item.Settings settings) {
 		super(settings);
 	}
@@ -39,43 +32,6 @@ public class PotionItem extends Item {
 		ItemStack itemStack = super.getDefaultStack();
 		itemStack.set(DataComponentTypes.POTION_CONTENTS, new PotionContentsComponent(Potions.WATER));
 		return itemStack;
-	}
-
-	@Override
-	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-		PlayerEntity playerEntity = user instanceof PlayerEntity ? (PlayerEntity)user : null;
-		if (playerEntity instanceof ServerPlayerEntity) {
-			Criteria.CONSUME_ITEM.trigger((ServerPlayerEntity)playerEntity, stack);
-		}
-
-		if (!world.isClient) {
-			PotionContentsComponent potionContentsComponent = stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
-			potionContentsComponent.forEachEffect(effect -> {
-				if (effect.getEffectType().value().isInstant()) {
-					effect.getEffectType().value().applyInstantEffect(playerEntity, playerEntity, user, effect.getAmplifier(), 1.0);
-				} else {
-					user.addStatusEffect(effect);
-				}
-			});
-		}
-
-		if (playerEntity != null) {
-			playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-			stack.decrementUnlessCreative(1, playerEntity);
-		}
-
-		if (playerEntity == null || !playerEntity.isInCreativeMode()) {
-			if (stack.isEmpty()) {
-				return new ItemStack(Items.GLASS_BOTTLE);
-			}
-
-			if (playerEntity != null) {
-				playerEntity.getInventory().insertStack(new ItemStack(Items.GLASS_BOTTLE));
-			}
-		}
-
-		user.emitGameEvent(GameEvent.DRINK);
-		return stack;
 	}
 
 	@Override
@@ -115,21 +71,6 @@ public class PotionItem extends Item {
 		} else {
 			return ActionResult.PASS;
 		}
-	}
-
-	@Override
-	public int getMaxUseTime(ItemStack stack, LivingEntity user) {
-		return 32;
-	}
-
-	@Override
-	public UseAction getUseAction(ItemStack stack) {
-		return UseAction.DRINK;
-	}
-
-	@Override
-	public ActionResult use(World world, PlayerEntity user, Hand hand) {
-		return ItemUsage.consumeHeldItem(world, user, hand);
 	}
 
 	@Override

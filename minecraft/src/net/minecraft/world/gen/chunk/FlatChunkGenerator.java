@@ -91,7 +91,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	public int getHeight(int x, int z, Heightmap.Type heightmap, HeightLimitView world, NoiseConfig noiseConfig) {
 		List<BlockState> list = this.config.getLayerBlocks();
 
-		for (int i = Math.min(list.size(), world.getTopY()) - 1; i >= 0; i--) {
+		for (int i = Math.min(list.size() - 1, world.getTopYInclusive()); i >= 0; i--) {
 			BlockState blockState = (BlockState)list.get(i);
 			if (blockState != null && heightmap.getBlockPredicate().test(blockState)) {
 				return world.getBottomY() + i + 1;

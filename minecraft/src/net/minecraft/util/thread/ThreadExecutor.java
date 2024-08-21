@@ -151,9 +151,13 @@ public abstract class ThreadExecutor<R extends Runnable> implements SampleableEx
 		return ImmutableList.of(Sampler.create(this.name + "-pending-tasks", SampleType.EVENT_LOOPS, this::getTaskCount));
 	}
 
-	public static boolean method_61391(Throwable throwable) {
-		return throwable instanceof CrashException crashException
-			? method_61391(crashException.getCause())
-			: throwable instanceof OutOfMemoryError || throwable instanceof StackOverflowError;
+	/**
+	 * {@return whether {@code exception} represents an {@link OutOfMemoryError} or
+	 * {@link StackOverflowError}}
+	 */
+	public static boolean isMemoryError(Throwable exception) {
+		return exception instanceof CrashException crashException
+			? isMemoryError(crashException.getCause())
+			: exception instanceof OutOfMemoryError || exception instanceof StackOverflowError;
 	}
 }

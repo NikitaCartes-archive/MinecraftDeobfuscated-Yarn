@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
@@ -38,7 +39,7 @@ public class WorldBorderRendering {
 			float p = (float)ColorHelper.getGreen(n) / 255.0F;
 			float q = (float)ColorHelper.getBlue(n) / 255.0F;
 			RenderSystem.setShaderColor(o, p, q, (float)j);
-			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+			RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
 			RenderSystem.polygonOffset(-3.0F, -3.0F);
 			RenderSystem.enablePolygonOffset();
 			RenderSystem.disableCull();

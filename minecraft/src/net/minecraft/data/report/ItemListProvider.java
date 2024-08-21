@@ -28,10 +28,10 @@ public class ItemListProvider implements DataProvider {
 		Path path = this.output.resolvePath(DataOutput.OutputType.REPORTS).resolve("items.json");
 		return this.registryLookupFuture
 			.thenCompose(
-				registryLookup -> {
+				registries -> {
 					JsonObject jsonObject = new JsonObject();
-					RegistryOps<JsonElement> registryOps = registryLookup.getOps(JsonOps.INSTANCE);
-					registryLookup.getWrapperOrThrow(RegistryKeys.ITEM)
+					RegistryOps<JsonElement> registryOps = registries.getOps(JsonOps.INSTANCE);
+					registries.getWrapperOrThrow(RegistryKeys.ITEM)
 						.streamEntries()
 						.forEach(
 							entry -> {

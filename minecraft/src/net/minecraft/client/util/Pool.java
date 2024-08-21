@@ -45,8 +45,8 @@ public class Pool implements ObjectAllocator, AutoCloseable {
 	}
 
 	@Override
-	public <T> void release(ClosableFactory<T> factory, T object) {
-		this.entries.addFirst(new Pool.Entry<>(factory, object, this.lifespan));
+	public <T> void release(ClosableFactory<T> factory, T value) {
+		this.entries.addFirst(new Pool.Entry<>(factory, value, this.lifespan));
 	}
 
 	public void clear() {
@@ -59,7 +59,7 @@ public class Pool implements ObjectAllocator, AutoCloseable {
 	}
 
 	@VisibleForTesting
-	protected Collection<Pool.Entry<?>> method_61951() {
+	protected Collection<Pool.Entry<?>> getEntries() {
 		return this.entries;
 	}
 

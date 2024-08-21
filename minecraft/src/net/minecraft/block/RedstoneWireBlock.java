@@ -285,11 +285,11 @@ public class RedstoneWireBlock extends Block {
 		return floor.isSideSolidFullSquare(world, pos, Direction.UP) || floor.isOf(Blocks.HOPPER);
 	}
 
-	private void update(World world, BlockPos pos, BlockState state, @Nullable WireOrientation orientation) {
+	private void update(World world, BlockPos pos, BlockState state, @Nullable WireOrientation orientation, boolean blockAdded) {
 		if (areRedstoneExperimentsEnabled(world)) {
-			new ExperimentalRedstoneController(this).update(world, pos, state, orientation);
+			new ExperimentalRedstoneController(this).update(world, pos, state, orientation, blockAdded);
 		} else {
-			this.redstoneController.update(world, pos, state, orientation);
+			this.redstoneController.update(world, pos, state, orientation, blockAdded);
 		}
 	}
 
@@ -313,7 +313,7 @@ public class RedstoneWireBlock extends Block {
 	@Override
 	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!oldState.isOf(state.getBlock()) && !world.isClient) {
-			this.update(world, pos, state, null);
+			this.update(world, pos, state, null, true);
 
 			for (Direction direction : Direction.Type.VERTICAL) {
 				world.updateNeighborsAlways(pos.offset(direction), this);
@@ -332,7 +332,7 @@ public class RedstoneWireBlock extends Block {
 					world.updateNeighborsAlways(pos.offset(direction), this);
 				}
 
-				this.update(world, pos, state, null);
+				this.update(world, pos, state, null, false);
 				this.updateOffsetNeighbors(world, pos);
 			}
 		}
@@ -358,7 +358,7 @@ public class RedstoneWireBlock extends Block {
 		if (!world.isClient) {
 			if (sourceBlock != this || !areRedstoneExperimentsEnabled(world)) {
 				if (state.canPlaceAt(world, pos)) {
-					this.update(world, pos, state, wireOrientation);
+					this.update(world, pos, state, wireOrientation, false);
 				} else {
 					dropStacks(state, world, pos);
 					world.removeBlock(pos, false);
@@ -420,15 +420,15 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	private void addPoweredParticles(
-		World world, Random random, BlockPos pos, Vector3f color, Direction direction, Direction direction2, float minOffset, float maxOffset
+		World world, Random random, BlockPos pos, Vector3f color, Direction perpendicular, Direction direction, float minOffset, float maxOffset
 	) {
 		float f = maxOffset - minOffset;
 		if (!(random.nextFloat() >= 0.2F * f)) {
 			float g = 0.4375F;
 			float h = minOffset + f * random.nextFloat();
-			double d = 0.5 + (double)(0.4375F * (float)direction.getOffsetX()) + (double)(h * (float)direction2.getOffsetX());
-			double e = 0.5 + (double)(0.4375F * (float)direction.getOffsetY()) + (double)(h * (float)direction2.getOffsetY());
-			double i = 0.5 + (double)(0.4375F * (float)direction.getOffsetZ()) + (double)(h * (float)direction2.getOffsetZ());
+			double d = 0.5 + (double)(0.4375F * (float)perpendicular.getOffsetX()) + (double)(h * (float)direction.getOffsetX());
+			double e = 0.5 + (double)(0.4375F * (float)perpendicular.getOffsetY()) + (double)(h * (float)direction.getOffsetY());
+			double i = 0.5 + (double)(0.4375F * (float)perpendicular.getOffsetZ()) + (double)(h * (float)direction.getOffsetZ());
 			world.addParticle(new DustParticleEffect(color, 1.0F), (double)pos.getX() + d, (double)pos.getY() + e, (double)pos.getZ() + i, 0.0, 0.0, 0.0);
 		}
 	}

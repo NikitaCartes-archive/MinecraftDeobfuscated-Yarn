@@ -14,7 +14,7 @@ public class VanillaCatVariantTagProvider extends TagProvider<CatVariant> {
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.getOrCreateTagBuilder(CatVariantTags.DEFAULT_SPAWNS)
 			.add(
 				CatVariant.TABBY,

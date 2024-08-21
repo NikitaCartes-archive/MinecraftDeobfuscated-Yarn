@@ -148,10 +148,10 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 	}
 
 	@Override
-	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<AdvancementEntry> exporter) {
-		RegistryEntryLookup<EntityType<?>> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.ENTITY_TYPE);
-		RegistryEntryLookup<Item> registryEntryLookup2 = lookup.getWrapperOrThrow(RegistryKeys.ITEM);
-		RegistryEntryLookup<Block> registryEntryLookup3 = lookup.getWrapperOrThrow(RegistryKeys.BLOCK);
+	public void accept(RegistryWrapper.WrapperLookup registries, Consumer<AdvancementEntry> exporter) {
+		RegistryEntryLookup<EntityType<?>> registryEntryLookup = registries.getWrapperOrThrow(RegistryKeys.ENTITY_TYPE);
+		RegistryEntryLookup<Item> registryEntryLookup2 = registries.getWrapperOrThrow(RegistryKeys.ITEM);
+		RegistryEntryLookup<Block> registryEntryLookup3 = registries.getWrapperOrThrow(RegistryKeys.BLOCK);
 		AdvancementEntry advancementEntry = Advancement.Builder.create()
 			.display(
 				Items.MAP,
@@ -181,7 +181,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.criterion("slept_in_bed", TickCriterion.Conditions.createSleptInBed())
 			.build(exporter, "adventure/sleep_in_bed");
-		buildAdventuringTime(lookup, exporter, advancementEntry2, MultiNoiseBiomeSourceParameterList.Preset.OVERWORLD);
+		buildAdventuringTime(registries, exporter, advancementEntry2, MultiNoiseBiomeSourceParameterList.Preset.OVERWORLD);
 		AdvancementEntry advancementEntry3 = Advancement.Builder.create()
 			.parent(advancementEntry)
 			.display(
@@ -393,7 +393,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.rewards(AdvancementRewards.Builder.experience(85))
 			.criterion("arbalistic", KilledByCrossbowCriterion.Conditions.create(NumberRange.IntRange.exactly(5)))
 			.build(exporter, "adventure/arbalistic");
-		RegistryWrapper.Impl<BannerPattern> impl = lookup.getWrapperOrThrow(RegistryKeys.BANNER_PATTERN);
+		RegistryWrapper.Impl<BannerPattern> impl = registries.getWrapperOrThrow(RegistryKeys.BANNER_PATTERN);
 		AdvancementEntry advancementEntry8 = Advancement.Builder.create()
 			.parent(advancementEntry)
 			.display(
@@ -557,7 +557,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				"play_jukebox_in_meadows",
 				ItemCriterion.Conditions.createItemUsedOnBlock(
 					LocationPredicate.Builder.create()
-						.biome(RegistryEntryList.of(lookup.getWrapperOrThrow(RegistryKeys.BIOME).getOrThrow(BiomeKeys.MEADOW)))
+						.biome(RegistryEntryList.of(registries.getWrapperOrThrow(RegistryKeys.BIOME).getOrThrow(BiomeKeys.MEADOW)))
 						.block(BlockPredicate.Builder.create().blocks(registryEntryLookup3, Blocks.JUKEBOX)),
 					ItemPredicate.Builder.create().subPredicate(ItemSubPredicateTypes.JUKEBOX_PLAYABLE, JukeboxPlayablePredicate.empty())
 				)
@@ -750,7 +750,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"minecraft_trials_edition",
 				TickCriterion.Conditions.createLocation(
-					LocationPredicate.Builder.createStructure(lookup.getWrapperOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.TRIAL_CHAMBERS))
+					LocationPredicate.Builder.createStructure(registries.getWrapperOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.TRIAL_CHAMBERS))
 				)
 			)
 			.build(exporter, "adventure/minecraft_trials_edition");
@@ -1027,12 +1027,12 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 	}
 
 	protected static void buildAdventuringTime(
-		RegistryWrapper.WrapperLookup registryLookup,
+		RegistryWrapper.WrapperLookup registries,
 		Consumer<AdvancementEntry> exporter,
 		AdvancementEntry parent,
 		MultiNoiseBiomeSourceParameterList.Preset biomeSourceListPreset
 	) {
-		requireListedBiomesVisited(Advancement.Builder.create(), registryLookup, biomeSourceListPreset.biomeStream().toList())
+		requireListedBiomesVisited(Advancement.Builder.create(), registries, biomeSourceListPreset.biomeStream().toList())
 			.parent(parent)
 			.display(
 				Items.DIAMOND_BOOTS,
@@ -1061,9 +1061,9 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 	}
 
 	protected static Advancement.Builder requireListedBiomesVisited(
-		Advancement.Builder builder, RegistryWrapper.WrapperLookup registryLookup, List<RegistryKey<Biome>> biomes
+		Advancement.Builder builder, RegistryWrapper.WrapperLookup registries, List<RegistryKey<Biome>> biomes
 	) {
-		RegistryEntryLookup<Biome> registryEntryLookup = registryLookup.getWrapperOrThrow(RegistryKeys.BIOME);
+		RegistryEntryLookup<Biome> registryEntryLookup = registries.getWrapperOrThrow(RegistryKeys.BIOME);
 
 		for (RegistryKey<Biome> registryKey : biomes) {
 			builder.criterion(

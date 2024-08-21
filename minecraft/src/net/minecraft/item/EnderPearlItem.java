@@ -29,7 +29,7 @@ public class EnderPearlItem extends Item {
 			0.5F,
 			0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F)
 		);
-		user.getItemCooldownManager().set(this, 20);
+		user.getItemCooldownManager().set(itemStack, 20);
 		if (world instanceof ServerWorld serverWorld) {
 			ProjectileEntity.spawnWithVelocity(EnderPearlEntity::new, serverWorld, itemStack, user, 0.0F, 1.5F, 1.0F);
 		}

@@ -15,7 +15,7 @@ public class VanillaDamageTypeTagProvider extends TagProvider<DamageType> {
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.getOrCreateTagBuilder(DamageTypeTags.DAMAGES_HELMET).add(DamageTypes.FALLING_ANVIL, DamageTypes.FALLING_BLOCK, DamageTypes.FALLING_STALACTITE);
 		this.getOrCreateTagBuilder(DamageTypeTags.BYPASSES_ARMOR)
 			.add(

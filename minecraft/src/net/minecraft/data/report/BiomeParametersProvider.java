@@ -42,8 +42,8 @@ public class BiomeParametersProvider implements DataProvider {
 	public CompletableFuture<?> run(DataWriter writer) {
 		return this.registryLookupFuture
 			.thenCompose(
-				lookup -> {
-					DynamicOps<JsonElement> dynamicOps = lookup.getOps(JsonOps.INSTANCE);
+				registries -> {
+					DynamicOps<JsonElement> dynamicOps = registries.getOps(JsonOps.INSTANCE);
 					List<CompletableFuture<?>> list = new ArrayList();
 					MultiNoiseBiomeSourceParameterList.getPresetToEntriesMap()
 						.forEach((preset, entries) -> list.add(write(this.resolvePath(preset.id()), writer, dynamicOps, BIOME_ENTRY_CODEC, entries)));

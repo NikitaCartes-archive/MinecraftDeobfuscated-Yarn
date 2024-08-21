@@ -22,10 +22,10 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.math.Fraction;
 
 public class BundleItem extends Item {
-	public static final int field_52575 = 4;
-	public static final int field_52576 = 2;
-	public static final int field_52577 = 8;
-	public static final int field_52578 = 7;
+	public static final int TOOLTIP_STACKS_COLUMNS = 4;
+	public static final int TOOLTIP_STACKS_ROWS = 3;
+	public static final int MAX_TOOLTIP_STACKS_SHOWN = 12;
+	public static final int MAX_TOOLTIP_STACKS_SHOWN_WHEN_TOO_MANY_TYPES = 11;
 	private static final int FULL_ITEM_BAR_COLOR = ColorHelper.fromFloats(1.0F, 1.0F, 0.33F, 0.33F);
 	private static final int ITEM_BAR_COLOR = ColorHelper.fromFloats(1.0F, 0.44F, 0.53F, 1.0F);
 	private final String openFrontModelName;

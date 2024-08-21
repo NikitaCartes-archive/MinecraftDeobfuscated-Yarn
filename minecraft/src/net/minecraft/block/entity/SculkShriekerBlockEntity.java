@@ -78,13 +78,13 @@ public class SculkShriekerBlockEntity extends BlockEntity implements GameEventLi
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		if (nbt.contains("warning_level", NbtElement.NUMBER_TYPE)) {
 			this.warningLevel = nbt.getInt("warning_level");
 		}
 
-		RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
+		RegistryOps<NbtElement> registryOps = registries.getOps(NbtOps.INSTANCE);
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
 			Vibrations.ListenerData.CODEC
 				.parse(registryOps, nbt.getCompound("listener"))
@@ -94,10 +94,10 @@ public class SculkShriekerBlockEntity extends BlockEntity implements GameEventLi
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		nbt.putInt("warning_level", this.warningLevel);
-		RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
+		RegistryOps<NbtElement> registryOps = registries.getOps(NbtOps.INSTANCE);
 		Vibrations.ListenerData.CODEC
 			.encodeStart(registryOps, this.vibrationListenerData)
 			.resultOrPartial(string -> LOGGER.error("Failed to encode vibration listener for Sculk Shrieker: '{}'", string))

@@ -51,8 +51,8 @@ public class ConduitBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		if (nbt.containsUuid("Target")) {
 			this.targetUuid = nbt.getUuid("Target");
 		} else {
@@ -61,8 +61,8 @@ public class ConduitBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		if (this.targetEntity != null) {
 			nbt.putUuid("Target", this.targetEntity.getUuid());
 		}
@@ -73,8 +73,8 @@ public class ConduitBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createComponentlessNbt(registryLookup);
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
+		return this.createComponentlessNbt(registries);
 	}
 
 	public static void clientTick(World world, BlockPos pos, BlockState state, ConduitBlockEntity blockEntity) {

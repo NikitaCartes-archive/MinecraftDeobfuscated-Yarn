@@ -9,7 +9,7 @@ public class OrientationHelper {
 	@Nullable
 	public static WireOrientation getEmissionOrientation(World world, @Nullable Direction up, @Nullable Direction front) {
 		if (world.getEnabledFeatures().contains(FeatureFlags.REDSTONE_EXPERIMENTS)) {
-			WireOrientation wireOrientation = WireOrientation.random(world.random);
+			WireOrientation wireOrientation = WireOrientation.random(world.random).withSideBias(WireOrientation.SideBias.LEFT);
 			if (front != null) {
 				wireOrientation = wireOrientation.withUp(front);
 			}

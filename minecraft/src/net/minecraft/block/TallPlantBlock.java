@@ -55,7 +55,7 @@ public class TallPlantBlock extends PlantBlock {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockPos blockPos = ctx.getBlockPos();
 		World world = ctx.getWorld();
-		return blockPos.getY() < world.getTopY() - 1 && world.getBlockState(blockPos.up()).canReplace(ctx) ? super.getPlacementState(ctx) : null;
+		return blockPos.getY() < world.getTopYInclusive() && world.getBlockState(blockPos.up()).canReplace(ctx) ? super.getPlacementState(ctx) : null;
 	}
 
 	@Override

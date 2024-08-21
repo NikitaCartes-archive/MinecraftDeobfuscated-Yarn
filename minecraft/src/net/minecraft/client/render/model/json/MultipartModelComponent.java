@@ -25,9 +25,9 @@ public class MultipartModelComponent {
 	private final MultipartModelSelector selector;
 	private final WeightedUnbakedModel model;
 
-	public MultipartModelComponent(MultipartModelSelector multipartModelSelector, WeightedUnbakedModel weightedUnbakedModel) {
-		this.selector = multipartModelSelector;
-		this.model = weightedUnbakedModel;
+	public MultipartModelComponent(MultipartModelSelector selector, WeightedUnbakedModel model) {
+		this.selector = selector;
+		this.model = model;
 	}
 
 	public WeightedUnbakedModel getModel() {

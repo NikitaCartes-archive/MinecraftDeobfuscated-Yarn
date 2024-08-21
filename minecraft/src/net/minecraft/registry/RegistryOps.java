@@ -16,16 +16,16 @@ import net.minecraft.util.dynamic.ForwardingDynamicOps;
 public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	private final RegistryOps.RegistryInfoGetter registryInfoGetter;
 
-	public static <T> RegistryOps<T> of(DynamicOps<T> delegate, RegistryWrapper.WrapperLookup wrapperLookup) {
-		return of(delegate, new RegistryOps.CachedRegistryInfoGetter(wrapperLookup));
+	public static <T> RegistryOps<T> of(DynamicOps<T> delegate, RegistryWrapper.WrapperLookup registries) {
+		return of(delegate, new RegistryOps.CachedRegistryInfoGetter(registries));
 	}
 
 	public static <T> RegistryOps<T> of(DynamicOps<T> delegate, RegistryOps.RegistryInfoGetter registryInfoGetter) {
 		return new RegistryOps<>(delegate, registryInfoGetter);
 	}
 
-	public static <T> Dynamic<T> withRegistry(Dynamic<T> dynamic, RegistryWrapper.WrapperLookup registryLookup) {
-		return new Dynamic<>(registryLookup.getOps(dynamic.getOps()), dynamic.getValue());
+	public static <T> Dynamic<T> withRegistry(Dynamic<T> dynamic, RegistryWrapper.WrapperLookup registries) {
+		return new Dynamic<>(registries.getOps(dynamic.getOps()), dynamic.getValue());
 	}
 
 	private RegistryOps(DynamicOps<T> delegate, RegistryOps.RegistryInfoGetter registryInfoGetter) {
@@ -87,11 +87,11 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	}
 
 	static final class CachedRegistryInfoGetter implements RegistryOps.RegistryInfoGetter {
-		private final RegistryWrapper.WrapperLookup registriesLookup;
+		private final RegistryWrapper.WrapperLookup registries;
 		private final Map<RegistryKey<? extends Registry<?>>, Optional<? extends RegistryOps.RegistryInfo<?>>> cache = new ConcurrentHashMap();
 
-		public CachedRegistryInfoGetter(RegistryWrapper.WrapperLookup registriesLookup) {
-			this.registriesLookup = registriesLookup;
+		public CachedRegistryInfoGetter(RegistryWrapper.WrapperLookup registries) {
+			this.registries = registries;
 		}
 
 		@Override
@@ -100,14 +100,14 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 		}
 
 		private Optional<RegistryOps.RegistryInfo<Object>> compute(RegistryKey<? extends Registry<?>> registryRef) {
-			return this.registriesLookup.getOptionalWrapper(registryRef).map(RegistryOps.RegistryInfo::fromWrapper);
+			return this.registries.getOptionalWrapper(registryRef).map(RegistryOps.RegistryInfo::fromWrapper);
 		}
 
 		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
 			} else {
-				if (o instanceof RegistryOps.CachedRegistryInfoGetter cachedRegistryInfoGetter && this.registriesLookup.equals(cachedRegistryInfoGetter.registriesLookup)) {
+				if (o instanceof RegistryOps.CachedRegistryInfoGetter cachedRegistryInfoGetter && this.registries.equals(cachedRegistryInfoGetter.registries)) {
 					return true;
 				}
 
@@ -116,7 +116,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 		}
 
 		public int hashCode() {
-			return this.registriesLookup.hashCode();
+			return this.registries.hashCode();
 		}
 	}
 

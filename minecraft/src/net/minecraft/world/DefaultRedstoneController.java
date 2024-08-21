@@ -16,7 +16,7 @@ public class DefaultRedstoneController extends RedstoneController {
 	}
 
 	@Override
-	public void update(World world, BlockPos pos, BlockState state, @Nullable WireOrientation orientation) {
+	public void update(World world, BlockPos pos, BlockState state, @Nullable WireOrientation orientation, boolean blockAdded) {
 		int i = this.calculateTotalPowerAt(world, pos);
 		if ((Integer)state.get(RedstoneWireBlock.POWER) != i) {
 			if (world.getBlockState(pos) == state) {

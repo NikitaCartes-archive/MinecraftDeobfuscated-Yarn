@@ -35,7 +35,7 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 
 	protected boolean canGenerate(WorldAccess world, BlockPos pos, int height, BlockPos.Mutable mutablePos, HugeMushroomFeatureConfig config) {
 		int i = pos.getY();
-		if (i >= world.getBottomY() + 1 && i + height + 1 < world.getTopY()) {
+		if (i >= world.getBottomY() + 1 && i + height + 1 <= world.getTopYInclusive()) {
 			BlockState blockState = world.getBlockState(pos.down());
 			if (!isSoil(blockState) && !blockState.isIn(BlockTags.MUSHROOM_GROW_BLOCK)) {
 				return false;

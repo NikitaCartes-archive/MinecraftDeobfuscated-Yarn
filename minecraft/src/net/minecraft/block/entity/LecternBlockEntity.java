@@ -202,10 +202,10 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		if (nbt.contains("Book", NbtElement.COMPOUND_TYPE)) {
-			this.book = this.resolveBook((ItemStack)ItemStack.fromNbt(registryLookup, nbt.getCompound("Book")).orElse(ItemStack.EMPTY), null);
+			this.book = this.resolveBook((ItemStack)ItemStack.fromNbt(registries, nbt.getCompound("Book")).orElse(ItemStack.EMPTY), null);
 		} else {
 			this.book = ItemStack.EMPTY;
 		}
@@ -215,10 +215,10 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		if (!this.getBook().isEmpty()) {
-			nbt.put("Book", this.getBook().encode(registryLookup));
+			nbt.put("Book", this.getBook().toNbt(registries));
 			nbt.putInt("Page", this.currentPage);
 		}
 	}

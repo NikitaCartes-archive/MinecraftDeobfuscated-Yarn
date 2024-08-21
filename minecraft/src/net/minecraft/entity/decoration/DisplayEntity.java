@@ -732,7 +732,7 @@ public abstract class DisplayEntity extends Entity {
 		protected void writeCustomDataToNbt(NbtCompound nbt) {
 			super.writeCustomDataToNbt(nbt);
 			if (!this.getItemStack().isEmpty()) {
-				nbt.put("item", this.getItemStack().encode(this.getRegistryManager()));
+				nbt.put("item", this.getItemStack().toNbt(this.getRegistryManager()));
 			}
 
 			ModelTransformationMode.CODEC.encodeStart(NbtOps.INSTANCE, this.getTransformationMode()).ifSuccess(nbtx -> nbt.put("item_display", nbtx));

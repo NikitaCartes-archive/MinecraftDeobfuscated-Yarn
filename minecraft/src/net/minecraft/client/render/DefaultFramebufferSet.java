@@ -18,6 +18,8 @@ public class DefaultFramebufferSet implements PostEffectProcessor.FramebufferSet
 	public static final Identifier WEATHER = Identifier.ofVanilla("weather");
 	public static final Identifier CLOUDS = Identifier.ofVanilla("clouds");
 	public static final Identifier ENTITY_OUTLINE = Identifier.ofVanilla("entity_outline");
+	public static final Set<Identifier> field_53902 = Set.of(MAIN);
+	public static final Set<Identifier> field_53903 = Set.of(MAIN, ENTITY_OUTLINE);
 	public static final Set<Identifier> STAGES = Set.of(MAIN, TRANSLUCENT, ITEM_ENTITY, PARTICLES, WEATHER, CLOUDS);
 	public Handle<Framebuffer> mainFramebuffer = Handle.empty();
 	@Nullable

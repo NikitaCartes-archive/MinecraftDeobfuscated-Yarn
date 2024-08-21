@@ -85,7 +85,7 @@ public class Inventories {
 			if (!itemStack.isEmpty()) {
 				NbtCompound nbtCompound = new NbtCompound();
 				nbtCompound.putByte("Slot", (byte)i);
-				nbtList.add(itemStack.encode(registries, nbtCompound));
+				nbtList.add(itemStack.toNbt(registries, nbtCompound));
 			}
 		}
 

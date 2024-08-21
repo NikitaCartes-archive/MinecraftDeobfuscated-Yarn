@@ -91,7 +91,7 @@ public class CraftingRecipeInput implements RecipeInput {
 	}
 
 	@Override
-	public int getSize() {
+	public int size() {
 		return this.stacks.size();
 	}
 

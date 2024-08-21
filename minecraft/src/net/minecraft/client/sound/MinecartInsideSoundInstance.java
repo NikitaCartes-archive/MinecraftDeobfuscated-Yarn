@@ -43,14 +43,14 @@ public class MinecartInsideSoundInstance extends MovingSoundInstance {
 
 	@Override
 	public void tick() {
-		boolean bl = !this.minecart.isOnRail() && this.minecart.getController() instanceof ExperimentalMinecartController;
-		if (this.minecart.isRemoved() || !this.player.hasVehicle() || this.player.getVehicle() != this.minecart || bl) {
+		if (this.minecart.isRemoved() || !this.player.hasVehicle() || this.player.getVehicle() != this.minecart) {
 			this.setDone();
 		} else if (this.underwater != this.player.isSubmergedInWater()) {
 			this.volume = 0.0F;
 		} else {
 			float f = (float)this.minecart.getVelocity().horizontalLength();
-			if (f >= 0.01F) {
+			boolean bl = !this.minecart.isOnRail() && this.minecart.getController() instanceof ExperimentalMinecartController;
+			if (f >= 0.01F && !bl) {
 				this.volume = MathHelper.clampedLerp(0.0F, 0.75F, f);
 			} else {
 				this.volume = 0.0F;

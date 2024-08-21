@@ -17,7 +17,7 @@ public class VanillaBiomeTagProvider extends TagProvider<Biome> {
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.getOrCreateTagBuilder(BiomeTags.IS_DEEP_OCEAN)
 			.add(BiomeKeys.DEEP_FROZEN_OCEAN)
 			.add(BiomeKeys.DEEP_COLD_OCEAN)

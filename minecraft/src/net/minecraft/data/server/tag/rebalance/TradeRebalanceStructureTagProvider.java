@@ -15,7 +15,7 @@ public class TradeRebalanceStructureTagProvider extends TagProvider<Structure> {
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.getOrCreateTagBuilder(StructureTags.ON_SAVANNA_VILLAGE_MAPS).add(StructureKeys.VILLAGE_SAVANNA);
 		this.getOrCreateTagBuilder(StructureTags.ON_DESERT_VILLAGE_MAPS).add(StructureKeys.VILLAGE_DESERT);
 		this.getOrCreateTagBuilder(StructureTags.ON_PLAINS_VILLAGE_MAPS).add(StructureKeys.VILLAGE_PLAINS);

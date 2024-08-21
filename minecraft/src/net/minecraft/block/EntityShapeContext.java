@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.CollisionView;
 
 public class EntityShapeContext implements ShapeContext {
 	protected static final ShapeContext ABSENT = new EntityShapeContext(false, -Double.MAX_VALUE, ItemStack.EMPTY, fluidState -> false, null) {
@@ -52,6 +53,11 @@ public class EntityShapeContext implements ShapeContext {
 	@Override
 	public boolean canWalkOnFluid(FluidState stateAbove, FluidState state) {
 		return this.walkOnFluidPredicate.test(state) && !stateAbove.getFluid().matchesType(state.getFluid());
+	}
+
+	@Override
+	public VoxelShape getCollisionShape(BlockState state, CollisionView world, BlockPos pos) {
+		return state.getCollisionShape(world, pos, this);
 	}
 
 	@Override

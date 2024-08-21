@@ -58,9 +58,9 @@ public class RecipeCache {
 	}
 
 	private void cache(CraftingRecipeInput input, @Nullable RecipeEntry<CraftingRecipe> recipe) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(input.getSize(), ItemStack.EMPTY);
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(input.size(), ItemStack.EMPTY);
 
-		for (int i = 0; i < input.getSize(); i++) {
+		for (int i = 0; i < input.size(); i++) {
 			defaultedList.set(i, input.getStackInSlot(i).copyWithCount(1));
 		}
 

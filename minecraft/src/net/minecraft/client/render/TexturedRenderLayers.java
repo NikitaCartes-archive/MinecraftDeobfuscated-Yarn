@@ -48,7 +48,6 @@ public class TexturedRenderLayers {
 	private static final RenderLayer ENTITY_SOLID = RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
 	private static final RenderLayer ENTITY_CUTOUT = RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
 	private static final RenderLayer ITEM_ENTITY_TRANSLUCENT_CULL = RenderLayer.getItemEntityTranslucentCull(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
-	private static final RenderLayer ENTITY_TRANSLUCENT_CULL = RenderLayer.getEntityTranslucentCull(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
 	public static final SpriteIdentifier SHULKER_TEXTURE_ID = new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, Identifier.ofVanilla("entity/shulker/shulker"));
 	public static final List<SpriteIdentifier> COLORED_SHULKER_BOXES_TEXTURES = (List<SpriteIdentifier>)Stream.of(
 			"white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black"
@@ -127,10 +126,6 @@ public class TexturedRenderLayers {
 
 	public static RenderLayer getItemEntityTranslucentCull() {
 		return ITEM_ENTITY_TRANSLUCENT_CULL;
-	}
-
-	public static RenderLayer getEntityTranslucentCull() {
-		return ENTITY_TRANSLUCENT_CULL;
 	}
 
 	private static SpriteIdentifier createSignTextureId(WoodType type) {

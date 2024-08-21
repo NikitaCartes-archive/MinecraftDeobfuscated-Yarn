@@ -454,7 +454,7 @@ public class MineshaftGenerator {
 							return;
 						}
 
-						bl2 = j <= 50 && bl3 && mutable.getY() < world.getTopY() - 1;
+						bl2 = j <= 50 && bl3 && mutable.getY() < world.getTopYInclusive();
 					}
 				}
 			}

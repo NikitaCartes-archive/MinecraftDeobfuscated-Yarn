@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.block.AbstractRailBlock;
@@ -23,7 +22,6 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,11 +29,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -99,7 +95,7 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 	}
 
 	public static AbstractMinecartEntity create(
-		ServerWorld world, double x, double y, double z, AbstractMinecartEntity.Type type, ItemStack stack, @Nullable PlayerEntity player
+		World world, double x, double y, double z, AbstractMinecartEntity.Type type, ItemStack stack, @Nullable PlayerEntity player
 	) {
 		AbstractMinecartEntity abstractMinecartEntity = (AbstractMinecartEntity)(switch (type) {
 			case CHEST -> new ChestMinecartEntity(world, x, y, z);
@@ -111,6 +107,12 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 			default -> new MinecartEntity(world, x, y, z);
 		});
 		EntityType.copier(world, stack, player).accept(abstractMinecartEntity);
+		if (abstractMinecartEntity.getController() instanceof ExperimentalMinecartController experimentalMinecartController) {
+			BlockPos blockPos = abstractMinecartEntity.getRailOrMinecartPos();
+			BlockState blockState = world.getBlockState(blockPos);
+			experimentalMinecartController.adjustToRail(blockPos, blockState, true);
+		}
+
 		return abstractMinecartEntity;
 	}
 
@@ -255,44 +257,24 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 		this.firstUpdate = false;
 	}
 
-	public BlockPos decelerateFromPoweredRail() {
+	public boolean isFirstUpdate() {
+		return this.firstUpdate;
+	}
+
+	public BlockPos getRailOrMinecartPos() {
 		int i = MathHelper.floor(this.getX());
 		int j = MathHelper.floor(this.getY());
 		int k = MathHelper.floor(this.getZ());
-		if (this.getWorld().getBlockState(new BlockPos(i, j - 1, k)).isIn(BlockTags.RAILS)) {
+		if (areMinecartImprovementsEnabled(this.getWorld())) {
+			double d = this.getY() - 0.1 - 1.0E-5F;
+			if (this.getWorld().getBlockState(BlockPos.ofFloored((double)i, d, (double)k)).isIn(BlockTags.RAILS)) {
+				j = MathHelper.floor(d);
+			}
+		} else if (this.getWorld().getBlockState(new BlockPos(i, j - 1, k)).isIn(BlockTags.RAILS)) {
 			j--;
 		}
 
 		return new BlockPos(i, j, k);
-	}
-
-	public boolean handleEntityCollision(Box boundingBox, double squaredVelocityRequiredForPickUp) {
-		boolean bl = false;
-		if (this.getMinecartType() == AbstractMinecartEntity.Type.RIDEABLE && this.getVelocity().horizontalLengthSquared() >= squaredVelocityRequiredForPickUp) {
-			List<Entity> list = this.getWorld().getOtherEntities(this, boundingBox, EntityPredicates.canBePushedBy(this));
-			if (!list.isEmpty()) {
-				for (Entity entity : list) {
-					if (!(entity instanceof PlayerEntity)
-						&& !(entity instanceof IronGolemEntity)
-						&& !(entity instanceof AbstractMinecartEntity)
-						&& !this.hasPassengers()
-						&& !entity.hasVehicle()) {
-						entity.startRiding(this);
-						bl = true;
-					} else {
-						entity.pushAwayFrom(this);
-					}
-				}
-			}
-		} else {
-			for (Entity entity2 : this.getWorld().getOtherEntities(this, boundingBox)) {
-				if (!this.hasPassenger(entity2) && entity2.isPushable() && entity2 instanceof AbstractMinecartEntity) {
-					entity2.pushAwayFrom(this);
-				}
-			}
-		}
-
-		return bl;
 	}
 
 	protected double getMaxSpeed() {
@@ -380,8 +362,8 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 		}
 	}
 
-	protected double method_61564(BlockPos blockPos, RailShape railShape, double d) {
-		return this.controller.method_61577(blockPos, railShape, d);
+	protected double moveAlongTrack(BlockPos pos, RailShape shape, double remainingMovement) {
+		return this.controller.moveAlongTrack(pos, shape, remainingMovement);
 	}
 
 	@Override
@@ -389,11 +371,13 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 		if (areMinecartImprovementsEnabled(this.getWorld())) {
 			Vec3d vec3d = this.getPos().add(movement);
 			super.move(movementType, movement);
-			if (this.horizontalCollision || this.verticalCollision) {
-				boolean bl = this.handleEntityCollision(this.getBoundingBox().expand(1.0E-7), 0.0);
-				if (bl) {
-					super.move(movementType, vec3d.subtract(this.getPos()));
-				}
+			boolean bl = this.controller.handleCollision();
+			if (bl) {
+				super.move(movementType, vec3d.subtract(this.getPos()));
+			}
+
+			if (movementType.equals(MovementType.PISTON)) {
+				this.onRail = false;
 			}
 		} else {
 			super.move(movementType, movement);
@@ -467,6 +451,7 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 		}
 
 		this.yawFlipped = nbt.getBoolean("FlippedRotation");
+		this.firstUpdate = nbt.getBoolean("HasTicked");
 	}
 
 	@Override
@@ -478,6 +463,7 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 		}
 
 		nbt.putBoolean("FlippedRotation", this.yawFlipped);
+		nbt.putBoolean("HasTicked", this.firstUpdate);
 	}
 
 	@Override
@@ -504,15 +490,23 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 						d *= 0.5;
 						e *= 0.5;
 						if (entity instanceof AbstractMinecartEntity) {
-							double h = entity.getX() - this.getX();
-							double i = entity.getZ() - this.getZ();
+							double h;
+							double i;
+							if (areMinecartImprovementsEnabled(this.getWorld())) {
+								h = this.getVelocity().x;
+								i = this.getVelocity().z;
+							} else {
+								h = entity.getX() - this.getX();
+								i = entity.getZ() - this.getZ();
+							}
+
 							Vec3d vec3d = new Vec3d(h, 0.0, i).normalize();
 							Vec3d vec3d2 = new Vec3d(
 									(double)MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)), 0.0, (double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0))
 								)
 								.normalize();
 							double j = Math.abs(vec3d.dotProduct(vec3d2));
-							if (j < 0.8F) {
+							if (j < 0.8F && !areMinecartImprovementsEnabled(this.getWorld())) {
 								return;
 							}
 

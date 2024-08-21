@@ -203,7 +203,9 @@ public class ButtonBlock extends WallMountedBlock {
 
 	private void updateNeighbors(BlockState blockState, World world, BlockPos pos) {
 		Direction direction = getDirection(blockState).getOpposite();
-		WireOrientation wireOrientation = OrientationHelper.getEmissionOrientation(world, direction, direction.getAxis().isHorizontal() ? Direction.UP : null);
+		WireOrientation wireOrientation = OrientationHelper.getEmissionOrientation(
+			world, direction, direction.getAxis().isHorizontal() ? Direction.UP : blockState.get(FACING)
+		);
 		world.updateNeighborsAlways(pos, this, wireOrientation);
 		world.updateNeighborsAlways(pos.offset(direction), this, wireOrientation);
 	}

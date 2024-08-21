@@ -41,12 +41,12 @@ public class HotbarStorageEntry {
 		this(Collections.nCopies(HOTBAR_SIZE, EMPTY_STACK));
 	}
 
-	public List<ItemStack> deserialize(RegistryWrapper.WrapperLookup registryLookup) {
+	public List<ItemStack> deserialize(RegistryWrapper.WrapperLookup registries) {
 		return this.stacks
 			.stream()
 			.map(
 				stack -> (ItemStack)ItemStack.OPTIONAL_CODEC
-						.parse(RegistryOps.withRegistry(stack, registryLookup))
+						.parse(RegistryOps.withRegistry(stack, registries))
 						.resultOrPartial(error -> LOGGER.warn("Could not parse hotbar item: {}", error))
 						.orElse(ItemStack.EMPTY)
 			)

@@ -27,35 +27,35 @@ import net.minecraft.state.StateManager;
 
 @Environment(EnvType.CLIENT)
 public class MultipartUnbakedModel implements GroupableModel {
-	private final List<MultipartUnbakedModel.class_9983> components;
+	private final List<MultipartUnbakedModel.Selector> selectors;
 
-	MultipartUnbakedModel(List<MultipartUnbakedModel.class_9983> list) {
-		this.components = list;
+	MultipartUnbakedModel(List<MultipartUnbakedModel.Selector> selectors) {
+		this.selectors = selectors;
 	}
 
 	@Override
 	public Object getEqualityGroup(BlockState state) {
 		IntList intList = new IntArrayList();
 
-		for (int i = 0; i < this.components.size(); i++) {
-			if (((MultipartUnbakedModel.class_9983)this.components.get(i)).predicate.test(state)) {
+		for (int i = 0; i < this.selectors.size(); i++) {
+			if (((MultipartUnbakedModel.Selector)this.selectors.get(i)).predicate.test(state)) {
 				intList.add(i);
 			}
 		}
 
 		@Environment(EnvType.CLIENT)
-		record class_9981(MultipartUnbakedModel model, IntList selectors) {
-			class_9981(IntList selectors) {
+		record EqualityGroup(MultipartUnbakedModel model, IntList selectors) {
+			EqualityGroup(IntList selectors) {
 				this.selectors = selectors;
 			}
 		}
 
-		return new class_9981(intList);
+		return new EqualityGroup(intList);
 	}
 
 	@Override
 	public void resolve(UnbakedModel.Resolver resolver, UnbakedModel.ModelType currentlyResolvingType) {
-		this.components.forEach(arg -> arg.variant.resolve(resolver, currentlyResolvingType));
+		this.selectors.forEach(selector -> selector.variant.resolve(resolver, currentlyResolvingType));
 	}
 
 	@Nullable
@@ -63,10 +63,10 @@ public class MultipartUnbakedModel implements GroupableModel {
 	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer) {
 		MultipartBakedModel.Builder builder = new MultipartBakedModel.Builder();
 
-		for (MultipartUnbakedModel.class_9983 lv : this.components) {
-			BakedModel bakedModel = lv.variant.bake(baker, textureGetter, rotationContainer);
+		for (MultipartUnbakedModel.Selector selector : this.selectors) {
+			BakedModel bakedModel = selector.variant.bake(baker, textureGetter, rotationContainer);
 			if (bakedModel != null) {
-				builder.addComponent(lv.predicate, bakedModel);
+				builder.addComponent(selector.predicate, bakedModel);
 			}
 		}
 
@@ -74,9 +74,9 @@ public class MultipartUnbakedModel implements GroupableModel {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Deserializer implements JsonDeserializer<MultipartUnbakedModel.class_9982> {
-		public MultipartUnbakedModel.class_9982 deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-			return new MultipartUnbakedModel.class_9982(this.deserializeComponents(jsonDeserializationContext, jsonElement.getAsJsonArray()));
+	public static class Deserializer implements JsonDeserializer<MultipartUnbakedModel.Serialized> {
+		public MultipartUnbakedModel.Serialized deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			return new MultipartUnbakedModel.Serialized(this.deserializeComponents(jsonDeserializationContext, jsonElement.getAsJsonArray()));
 		}
 
 		private List<MultipartModelComponent> deserializeComponents(JsonDeserializationContext context, JsonArray array) {
@@ -91,23 +91,21 @@ public class MultipartUnbakedModel implements GroupableModel {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static record class_9982(List<MultipartModelComponent> selectors) {
-		public MultipartUnbakedModel method_62339(StateManager<Block, BlockState> stateManager) {
-			List<MultipartUnbakedModel.class_9983> list = this.selectors
+	static record Selector(Predicate<BlockState> predicate, WeightedUnbakedModel variant) {
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static record Serialized(List<MultipartModelComponent> selectors) {
+		public MultipartUnbakedModel toModel(StateManager<Block, BlockState> stateManager) {
+			List<MultipartUnbakedModel.Selector> list = this.selectors
 				.stream()
-				.map(
-					multipartModelComponent -> new MultipartUnbakedModel.class_9983(multipartModelComponent.getPredicate(stateManager), multipartModelComponent.getModel())
-				)
+				.map(selector -> new MultipartUnbakedModel.Selector(selector.getPredicate(stateManager), selector.getModel()))
 				.toList();
 			return new MultipartUnbakedModel(list);
 		}
 
-		public Set<WeightedUnbakedModel> method_62338() {
+		public Set<WeightedUnbakedModel> getBackingModels() {
 			return (Set<WeightedUnbakedModel>)this.selectors.stream().map(MultipartModelComponent::getModel).collect(Collectors.toSet());
 		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static record class_9983(Predicate<BlockState> predicate, WeightedUnbakedModel variant) {
 	}
 }

@@ -104,7 +104,7 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 
 	@Nullable
 	@Override
-	protected WireOrientation method_61748(World world, BlockState blockState) {
-		return OrientationHelper.getEmissionOrientation(world, ((Direction)blockState.get(FACING)).getOpposite(), Direction.UP);
+	protected WireOrientation getEmissionOrientation(World world, BlockState state) {
+		return OrientationHelper.getEmissionOrientation(world, ((Direction)state.get(FACING)).getOpposite(), Direction.UP);
 	}
 }

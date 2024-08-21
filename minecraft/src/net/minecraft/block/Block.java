@@ -126,6 +126,10 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	 * Signals that the current block is being moved to a different location, usually because of a piston.
 	 */
 	public static final int MOVED = 64;
+	/**
+	 * Skips {@link AbstractBlock#getStateForNeighborUpdate} call for redstone wire.
+	 */
+	public static final int SKIP_REDSTONE_WIRE_STATE_REPLACEMENT = 128;
 	public static final int field_31035 = 4;
 	/**
 	 * The default setBlockState behavior. Same as {@code NOTIFY_NEIGHBORS | NOTIFY_LISTENERS}.

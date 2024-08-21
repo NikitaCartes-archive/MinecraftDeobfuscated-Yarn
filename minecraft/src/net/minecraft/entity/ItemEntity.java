@@ -319,7 +319,7 @@ public class ItemEntity extends Entity implements Ownable {
 		}
 
 		if (!this.getStack().isEmpty()) {
-			nbt.put("Item", this.getStack().encode(this.getRegistryManager()));
+			nbt.put("Item", this.getStack().toNbt(this.getRegistryManager()));
 		}
 	}
 

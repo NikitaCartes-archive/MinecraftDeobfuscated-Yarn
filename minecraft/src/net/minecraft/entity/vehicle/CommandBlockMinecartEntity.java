@@ -135,7 +135,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 				CommandBlockMinecartEntity.this.getRotationClient(),
 				this.getWorld(),
 				2,
-				this.getCustomName().getString(),
+				this.getName().getString(),
 				CommandBlockMinecartEntity.this.getDisplayName(),
 				this.getWorld().getServer(),
 				CommandBlockMinecartEntity.this

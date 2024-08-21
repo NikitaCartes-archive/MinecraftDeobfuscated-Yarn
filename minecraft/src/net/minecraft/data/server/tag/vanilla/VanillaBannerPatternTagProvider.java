@@ -15,7 +15,7 @@ public class VanillaBannerPatternTagProvider extends TagProvider<BannerPattern> 
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.getOrCreateTagBuilder(BannerPatternTags.NO_ITEM_REQUIRED)
 			.add(
 				BannerPatterns.SQUARE_BOTTOM_LEFT,

@@ -59,7 +59,7 @@ public class PortalForcer {
 		double e = -1.0;
 		BlockPos blockPos2 = null;
 		WorldBorder worldBorder = this.world.getWorldBorder();
-		int i = Math.min(this.world.getTopY(), this.world.getBottomY() + this.world.getLogicalHeight()) - 1;
+		int i = Math.min(this.world.getTopYInclusive(), this.world.getBottomY() + this.world.getLogicalHeight() - 1);
 		int j = 1;
 		BlockPos.Mutable mutable = pos.mutableCopy();
 

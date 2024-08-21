@@ -4,10 +4,10 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9974;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 
@@ -37,7 +37,7 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 			BlockPos blockPos = (BlockPos)this.positions.get(i);
 			Float float_ = (Float)this.sizes.get(i);
 			float f = float_ / 2.0F;
-			class_9974.method_62300(
+			VertexRendering.drawFilledBox(
 				matrices,
 				vertexConsumer,
 				(double)((float)blockPos.getX() + 0.5F - f) - cameraX,

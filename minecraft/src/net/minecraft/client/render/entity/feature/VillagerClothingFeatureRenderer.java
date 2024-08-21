@@ -58,21 +58,21 @@ public class VillagerClothingFeatureRenderer<S extends LivingEntityRenderState &
 				hatType2 == VillagerResourceMetadata.HatType.NONE
 					|| hatType2 == VillagerResourceMetadata.HatType.PARTIAL && hatType != VillagerResourceMetadata.HatType.FULL
 			);
-			Identifier identifier = this.findTexture("type", Registries.VILLAGER_TYPE.getId(villagerType));
+			Identifier identifier = this.getTexture("type", Registries.VILLAGER_TYPE.getId(villagerType));
 			renderModel(entityModel, identifier, matrixStack, vertexConsumerProvider, i, livingEntityRenderState, -1);
 			entityModel.setHatVisible(true);
 			if (villagerProfession != VillagerProfession.NONE && !livingEntityRenderState.baby) {
-				Identifier identifier2 = this.findTexture("profession", Registries.VILLAGER_PROFESSION.getId(villagerProfession));
+				Identifier identifier2 = this.getTexture("profession", Registries.VILLAGER_PROFESSION.getId(villagerProfession));
 				renderModel(entityModel, identifier2, matrixStack, vertexConsumerProvider, i, livingEntityRenderState, -1);
 				if (villagerProfession != VillagerProfession.NITWIT) {
-					Identifier identifier3 = this.findTexture("profession_level", LEVEL_TO_ID.get(MathHelper.clamp(villagerData.getLevel(), 1, LEVEL_TO_ID.size())));
+					Identifier identifier3 = this.getTexture("profession_level", LEVEL_TO_ID.get(MathHelper.clamp(villagerData.getLevel(), 1, LEVEL_TO_ID.size())));
 					renderModel(entityModel, identifier3, matrixStack, vertexConsumerProvider, i, livingEntityRenderState, -1);
 				}
 			}
 		}
 	}
 
-	private Identifier findTexture(String keyType, Identifier keyId) {
+	private Identifier getTexture(String keyType, Identifier keyId) {
 		return keyId.withPath((UnaryOperator<String>)(path -> "textures/entity/" + this.entityType + "/" + keyType + "/" + path + ".png"));
 	}
 
@@ -80,7 +80,7 @@ public class VillagerClothingFeatureRenderer<S extends LivingEntityRenderState &
 		Object2ObjectMap<K, VillagerResourceMetadata.HatType> hatLookUp, String keyType, DefaultedRegistry<K> registry, K key
 	) {
 		return hatLookUp.computeIfAbsent(
-			key, k -> (VillagerResourceMetadata.HatType)this.resourceManager.getResource(this.findTexture(keyType, registry.getId(key))).flatMap(resource -> {
+			key, k -> (VillagerResourceMetadata.HatType)this.resourceManager.getResource(this.getTexture(keyType, registry.getId(key))).flatMap(resource -> {
 					try {
 						return resource.getMetadata().decode(VillagerResourceMetadata.READER).map(VillagerResourceMetadata::getHatType);
 					} catch (IOException var2) {

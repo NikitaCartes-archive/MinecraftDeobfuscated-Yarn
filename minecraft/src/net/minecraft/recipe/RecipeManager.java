@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 public class RecipeManager extends JsonDataLoader {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final RegistryWrapper.WrapperLookup registryLookup;
+	private final RegistryWrapper.WrapperLookup registries;
 	private Multimap<RecipeType<?>, RecipeEntry<?>> recipesByType = ImmutableMultimap.of();
 	private Map<Identifier, RecipeEntry<?>> recipesById = ImmutableMap.of();
 	@Nullable
@@ -53,16 +53,16 @@ public class RecipeManager extends JsonDataLoader {
 	 */
 	private boolean errored;
 
-	public RecipeManager(RegistryWrapper.WrapperLookup registryLookup) {
+	public RecipeManager(RegistryWrapper.WrapperLookup registries) {
 		super(GSON, RegistryKeys.getPath(RegistryKeys.RECIPE));
-		this.registryLookup = registryLookup;
+		this.registries = registries;
 	}
 
 	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
 		this.errored = false;
 		Builder<RecipeType<?>, RecipeEntry<?>> builder = ImmutableMultimap.builder();
 		com.google.common.collect.ImmutableMap.Builder<Identifier, RecipeEntry<?>> builder2 = ImmutableMap.builder();
-		RegistryOps<JsonElement> registryOps = this.registryLookup.getOps(JsonOps.INSTANCE);
+		RegistryOps<JsonElement> registryOps = this.registries.getOps(JsonOps.INSTANCE);
 
 		for (Entry<Identifier, JsonElement> entry : map.entrySet()) {
 			Identifier identifier = (Identifier)entry.getKey();
@@ -191,7 +191,7 @@ public class RecipeManager extends JsonDataLoader {
 		if (optional.isPresent()) {
 			return ((RecipeEntry)optional.get()).value().getRemainder(input);
 		} else {
-			DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(input.getSize(), ItemStack.EMPTY);
+			DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(input.size(), ItemStack.EMPTY);
 
 			for (int i = 0; i < defaultedList.size(); i++) {
 				defaultedList.set(i, input.getStackInSlot(i));
@@ -271,8 +271,8 @@ public class RecipeManager extends JsonDataLoader {
 	 * @param id the recipe's ID
 	 */
 	@VisibleForTesting
-	protected static RecipeEntry<?> deserialize(Identifier id, JsonObject json, RegistryWrapper.WrapperLookup registryLookup) {
-		Recipe<?> recipe = Recipe.CODEC.parse(registryLookup.getOps(JsonOps.INSTANCE), json).getOrThrow(JsonParseException::new);
+	protected static RecipeEntry<?> deserialize(Identifier id, JsonObject json, RegistryWrapper.WrapperLookup registries) {
+		Recipe<?> recipe = Recipe.CODEC.parse(registries.getOps(JsonOps.INSTANCE), json).getOrThrow(JsonParseException::new);
 		return new RecipeEntry<>(id, recipe);
 	}
 

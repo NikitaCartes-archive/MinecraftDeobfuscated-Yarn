@@ -7,9 +7,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
@@ -69,7 +69,7 @@ public class InGameOverlayRenderer {
 
 	private static void renderInWallOverlay(Sprite sprite, MatrixStack matrices) {
 		RenderSystem.setShaderTexture(0, sprite.getAtlasId());
-		RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+		RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
 		float f = 0.1F;
 		float g = -1.0F;
 		float h = 1.0F;
@@ -90,7 +90,7 @@ public class InGameOverlayRenderer {
 	}
 
 	private static void renderUnderwaterOverlay(MinecraftClient client, MatrixStack matrices) {
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+		RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
 		RenderSystem.setShaderTexture(0, UNDERWATER_TEXTURE);
 		BlockPos blockPos = BlockPos.ofFloored(client.player.getX(), client.player.getEyeY(), client.player.getZ());
 		float f = LightmapTextureManager.getBrightness(client.player.getWorld().getDimension(), client.player.getWorld().getLightLevel(blockPos));
@@ -116,7 +116,7 @@ public class InGameOverlayRenderer {
 	}
 
 	private static void renderFireOverlay(MinecraftClient client, MatrixStack matrices) {
-		RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+		RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
 		RenderSystem.depthFunc(519);
 		RenderSystem.depthMask(false);
 		RenderSystem.enableBlend();

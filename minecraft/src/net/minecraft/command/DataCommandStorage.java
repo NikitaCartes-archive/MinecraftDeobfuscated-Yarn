@@ -26,7 +26,7 @@ public class DataCommandStorage {
 
 	private net.minecraft.world.PersistentState.Type<DataCommandStorage.PersistentState> getPersistentStateType(String namespace) {
 		return new net.minecraft.world.PersistentState.Type<>(
-			() -> this.createStorage(namespace), (nbt, registryLookup) -> this.createStorage(namespace).readNbt(nbt), DataFixTypes.SAVED_DATA_COMMAND_STORAGE
+			() -> this.createStorage(namespace), (nbt, registries) -> this.createStorage(namespace).readNbt(nbt), DataFixTypes.SAVED_DATA_COMMAND_STORAGE
 		);
 	}
 
@@ -64,7 +64,7 @@ public class DataCommandStorage {
 		}
 
 		@Override
-		public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 			NbtCompound nbtCompound = new NbtCompound();
 			this.map.forEach((key, value) -> nbtCompound.put(key, value.copy()));
 			nbt.put("contents", nbtCompound);

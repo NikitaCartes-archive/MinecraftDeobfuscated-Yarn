@@ -127,6 +127,7 @@ public class EntityModelLayers {
 	public static final EntityModelLayer MAGMA_CUBE = registerMain("magma_cube");
 	public static final EntityModelLayer MINECART = registerMain("minecart");
 	public static final EntityModelLayer MOOSHROOM = registerMain("mooshroom");
+	public static final EntityModelLayer MOOSHROOM_BABY = registerMain("mooshroom_baby");
 	public static final EntityModelLayer MULE = registerMain("mule");
 	public static final EntityModelLayer MULE_BABY = registerMain("mule_baby");
 	public static final EntityModelLayer OCELOT = registerMain("ocelot");

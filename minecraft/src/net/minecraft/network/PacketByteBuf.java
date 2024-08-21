@@ -1460,8 +1460,9 @@ public class PacketByteBuf extends ByteBuf {
 		float g = this.readFloat();
 		float h = this.readFloat();
 		boolean bl = this.readBoolean();
+		boolean bl2 = this.readBoolean();
 		return new BlockHitResult(
-			new Vec3d((double)blockPos.getX() + (double)f, (double)blockPos.getY() + (double)g, (double)blockPos.getZ() + (double)h), direction, blockPos, bl
+			new Vec3d((double)blockPos.getX() + (double)f, (double)blockPos.getY() + (double)g, (double)blockPos.getZ() + (double)h), direction, blockPos, bl, bl2
 		);
 	}
 
@@ -1483,6 +1484,7 @@ public class PacketByteBuf extends ByteBuf {
 		this.writeFloat((float)(vec3d.y - (double)blockPos.getY()));
 		this.writeFloat((float)(vec3d.z - (double)blockPos.getZ()));
 		this.writeBoolean(hitResult.isInsideBlock());
+		this.writeBoolean(hitResult.isAgainstWorldBorder());
 	}
 
 	/**

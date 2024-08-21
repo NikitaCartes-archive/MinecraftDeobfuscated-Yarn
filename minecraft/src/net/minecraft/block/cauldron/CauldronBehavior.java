@@ -350,28 +350,20 @@ public interface CauldronBehavior {
 	}
 
 	private static ActionResult tryFillWithWater(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack) {
-		return (ActionResult)(isUnderwater(world, pos)
-			? ActionResult.SUCCESS
-			: fillCauldron(
-				world,
-				pos,
-				player,
-				hand,
-				stack,
-				Blocks.WATER_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, Integer.valueOf(3)),
-				SoundEvents.ITEM_BUCKET_EMPTY
-			));
+		return fillCauldron(
+			world, pos, player, hand, stack, Blocks.WATER_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, Integer.valueOf(3)), SoundEvents.ITEM_BUCKET_EMPTY
+		);
 	}
 
 	private static ActionResult tryFillWithLava(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack) {
 		return (ActionResult)(isUnderwater(world, pos)
-			? ActionResult.SUCCESS
+			? ActionResult.CONSUME
 			: fillCauldron(world, pos, player, hand, stack, Blocks.LAVA_CAULDRON.getDefaultState(), SoundEvents.ITEM_BUCKET_EMPTY_LAVA));
 	}
 
 	private static ActionResult tryFillWithPowderSnow(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack) {
 		return (ActionResult)(isUnderwater(world, pos)
-			? ActionResult.SUCCESS
+			? ActionResult.CONSUME
 			: fillCauldron(
 				world,
 				pos,

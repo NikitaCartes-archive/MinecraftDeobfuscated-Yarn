@@ -382,16 +382,16 @@ public class CommandManager {
 		}
 	}
 
-	public static CommandRegistryAccess createRegistryAccess(RegistryWrapper.WrapperLookup registryLookup) {
+	public static CommandRegistryAccess createRegistryAccess(RegistryWrapper.WrapperLookup registries) {
 		return new CommandRegistryAccess() {
 			@Override
 			public Stream<RegistryKey<? extends Registry<?>>> streamAllRegistryKeys() {
-				return registryLookup.streamAllRegistryKeys();
+				return registries.streamAllRegistryKeys();
 			}
 
 			@Override
 			public <T> Optional<RegistryWrapper.Impl<T>> getOptionalWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
-				return registryLookup.getOptionalWrapper(registryRef).map(this::createTagCreatingLookup);
+				return registries.getOptionalWrapper(registryRef).map(this::createTagCreatingLookup);
 			}
 
 			private <T> RegistryWrapper.Impl.Delegating<T> createTagCreatingLookup(RegistryWrapper.Impl<T> original) {

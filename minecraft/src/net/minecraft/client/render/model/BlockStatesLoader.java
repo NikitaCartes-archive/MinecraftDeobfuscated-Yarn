@@ -64,8 +64,8 @@ public class BlockStatesLoader {
 		try {
 			for (BlockStatesLoader.PackBlockStateDefinition packBlockStateDefinition : definitions) {
 				packBlockStateDefinition.contents
-					.method_62327(stateManager, id + "/" + packBlockStateDefinition.source)
-					.forEach((blockStatex, groupableModel) -> map.put(blockStatex, new BlockStatesLoader.BlockModel(blockStatex, groupableModel)));
+					.parse(stateManager, id + "/" + packBlockStateDefinition.source)
+					.forEach((state, model) -> map.put(state, new BlockStatesLoader.BlockModel(state, model)));
 			}
 		} finally {
 			Iterator var12 = list.iterator();

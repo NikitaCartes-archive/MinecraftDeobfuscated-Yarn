@@ -248,7 +248,7 @@ public class ChunkRegion implements StructureWorldAccess {
 		if (k <= this.generationStep.blockStateWriteRadius() && l <= this.generationStep.blockStateWriteRadius()) {
 			if (this.centerPos.hasBelowZeroRetrogen()) {
 				HeightLimitView heightLimitView = this.centerPos.getHeightLimitView();
-				if (pos.getY() < heightLimitView.getBottomY() || pos.getY() >= heightLimitView.getTopY()) {
+				if (heightLimitView.isOutOfHeightLimit(pos.getY())) {
 					return false;
 				}
 			}

@@ -179,7 +179,7 @@ public record SerializedChunk(
 				NbtCompound nbtCompound3 = nbtList3.getCompound(k);
 				int n = nbtCompound3.getByte("Y");
 				ChunkSection chunkSection;
-				if (n >= world.getBottomSectionCoord() && n < world.getTopSectionCoord()) {
+				if (n >= world.getBottomSectionCoord() && n <= world.getTopSectionCoord()) {
 					PalettedContainer<BlockState> palettedContainer;
 					if (nbtCompound3.contains("block_states", NbtElement.COMPOUND_TYPE)) {
 						palettedContainer = CODEC.parse(NbtOps.INSTANCE, nbtCompound3.getCompound("block_states"))
@@ -646,8 +646,8 @@ public record SerializedChunk(
 	}
 
 	public static class ChunkLoadingException extends NbtException {
-		public ChunkLoadingException(String message) {
-			super(message);
+		public ChunkLoadingException(String string) {
+			super(string);
 		}
 	}
 

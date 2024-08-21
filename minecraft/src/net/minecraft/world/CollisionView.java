@@ -112,7 +112,7 @@ public interface CollisionView extends BlockView {
 			Vec3d vec3d = hitResult.getPos().subtract(context.getStart());
 			Direction direction = Direction.getFacing(vec3d.x, vec3d.y, vec3d.z);
 			Vec3d vec3d2 = worldBorder.clamp(hitResult.getPos());
-			return new BlockHitResult(vec3d2, direction, BlockPos.ofFloored(vec3d2), false);
+			return new BlockHitResult(vec3d2, direction, BlockPos.ofFloored(vec3d2), false, true);
 		} else {
 			return hitResult;
 		}

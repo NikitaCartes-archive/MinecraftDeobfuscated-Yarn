@@ -10,11 +10,13 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Consumer;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
@@ -28,8 +30,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.world.World;
 
-public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Optional<Integer> customColor, List<StatusEffectInstance> customEffects) {
+public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Optional<Integer> customColor, List<StatusEffectInstance> customEffects)
+	implements Consumable {
 	public static final PotionContentsComponent DEFAULT = new PotionContentsComponent(Optional.empty(), Optional.empty(), List.of());
 	private static final Text NONE_TEXT = Text.translatable("effect.none").formatted(Formatting.GRAY);
 	private static final int EFFECTLESS_COLOR = -13083194;
@@ -140,6 +144,19 @@ public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Op
 		buildTooltip(this.getEffects(), textConsumer, durationMultiplier, tickRate);
 	}
 
+	public void apply(LivingEntity user) {
+		if (!user.getWorld().isClient) {
+			PlayerEntity playerEntity2 = user instanceof PlayerEntity playerEntity ? playerEntity : null;
+			this.forEachEffect(effect -> {
+				if (effect.getEffectType().value().isInstant()) {
+					effect.getEffectType().value().applyInstantEffect(playerEntity2, playerEntity2, user, effect.getAmplifier(), 1.0);
+				} else {
+					user.addStatusEffect(effect);
+				}
+			});
+		}
+	}
+
 	public static void buildTooltip(Iterable<StatusEffectInstance> effects, Consumer<Text> textConsumer, float durationMultiplier, float tickRate) {
 		List<Pair<RegistryEntry<EntityAttribute>, EntityAttributeModifier>> list = Lists.<Pair<RegistryEntry<EntityAttribute>, EntityAttributeModifier>>newArrayList();
 		boolean bl = true;
@@ -201,5 +218,10 @@ public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Op
 				}
 			}
 		}
+	}
+
+	@Override
+	public void onConsume(World world, LivingEntity user, ItemStack stack, ConsumableComponent consumable) {
+		this.apply(user);
 	}
 }

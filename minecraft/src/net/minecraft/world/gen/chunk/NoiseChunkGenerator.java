@@ -447,7 +447,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	public void populateEntities(ChunkRegion region) {
 		if (!this.settings.value().mobGenerationDisabled()) {
 			ChunkPos chunkPos = region.getCenterPos();
-			RegistryEntry<Biome> registryEntry = region.getBiome(chunkPos.getStartPos().withY(region.getTopY() - 1));
+			RegistryEntry<Biome> registryEntry = region.getBiome(chunkPos.getStartPos().withY(region.getTopYInclusive()));
 			ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(RandomSeed.getSeed()));
 			chunkRandom.setPopulationSeed(region.getSeed(), chunkPos.getStartX(), chunkPos.getStartZ());
 			SpawnHelper.populateEntities(region, registryEntry, chunkPos, chunkRandom);

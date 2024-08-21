@@ -18,7 +18,6 @@ import net.minecraft.util.Identifier;
  */
 public record ArmorMaterial(
 	Map<ArmorItem.Type, Integer> defense,
-	int enchantability,
 	RegistryEntry<SoundEvent> equipSound,
 	Predicate<ItemStack> repairIngredient,
 	List<ArmorMaterial.Layer> layers,

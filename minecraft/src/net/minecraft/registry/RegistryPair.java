@@ -45,7 +45,7 @@ public record RegistryPair<T>(Optional<RegistryEntry<T>> entry, RegistryKey<T> k
 		return this.entry.map(RegistryEntry::value).or(() -> registry.getOrEmpty(this.key));
 	}
 
-	public Optional<RegistryEntry<T>> getEntry(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.entry.or(() -> registryLookup.getWrapperOrThrow(this.key.getRegistryRef()).getOptional(this.key));
+	public Optional<RegistryEntry<T>> getEntry(RegistryWrapper.WrapperLookup registries) {
+		return this.entry.or(() -> registries.getWrapperOrThrow(this.key.getRegistryRef()).getOptional(this.key));
 	}
 }

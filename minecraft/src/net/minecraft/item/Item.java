@@ -16,12 +16,16 @@ import net.minecraft.component.ComponentMap;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.type.ConsumableComponent;
+import net.minecraft.component.type.ConsumableComponents;
 import net.minecraft.component.type.EnchantableComponent;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.component.type.JukeboxPlayableComponent;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.component.type.RepairableComponent;
 import net.minecraft.component.type.ToolComponent;
+import net.minecraft.component.type.UseCooldownComponent;
+import net.minecraft.component.type.UseRemainderComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -29,6 +33,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.item.map.MapState;
 import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.item.tooltip.TooltipType;
@@ -54,7 +59,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.Unit;
-import net.minecraft.util.UseAction;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -246,17 +250,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 */
 	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		FoodComponent foodComponent = itemStack.get(DataComponentTypes.FOOD);
-		if (foodComponent != null) {
-			if (user.canConsume(foodComponent.canAlwaysEat())) {
-				user.setCurrentHand(hand);
-				return ActionResult.CONSUME;
-			} else {
-				return ActionResult.FAIL;
-			}
-		} else {
-			return ActionResult.PASS;
-		}
+		ConsumableComponent consumableComponent = itemStack.get(DataComponentTypes.CONSUMABLE);
+		return (ActionResult)(consumableComponent != null ? consumableComponent.consume(user, itemStack, hand) : ActionResult.PASS);
 	}
 
 	/**
@@ -273,8 +268,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * @return the new item stack after using the item
 	 */
 	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-		FoodComponent foodComponent = stack.get(DataComponentTypes.FOOD);
-		return foodComponent != null ? user.eatFood(world, stack, foodComponent) : stack;
+		ConsumableComponent consumableComponent = stack.get(DataComponentTypes.CONSUMABLE);
+		return consumableComponent != null ? consumableComponent.finishConsumption(world, user, stack) : stack;
 	}
 
 	/**
@@ -509,7 +504,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * {@return the use action the item should perform}
 	 */
 	public UseAction getUseAction(ItemStack stack) {
-		return stack.contains(DataComponentTypes.FOOD) ? UseAction.EAT : UseAction.NONE;
+		ConsumableComponent consumableComponent = stack.get(DataComponentTypes.CONSUMABLE);
+		return consumableComponent != null ? consumableComponent.useAction() : UseAction.NONE;
 	}
 
 	/**
@@ -517,8 +513,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * Once a player has used an item for said number of ticks, they stop using it, and {@link Item#finishUsing} is called.
 	 */
 	public int getMaxUseTime(ItemStack stack, LivingEntity user) {
-		FoodComponent foodComponent = stack.get(DataComponentTypes.FOOD);
-		return foodComponent != null ? foodComponent.getEatTicks() : 0;
+		ConsumableComponent consumableComponent = stack.get(DataComponentTypes.CONSUMABLE);
+		return consumableComponent != null ? consumableComponent.getConsumeTicks() : 0;
 	}
 
 	/**
@@ -562,33 +558,10 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		return stack.hasEnchantments();
 	}
 
-	/**
-	 * {@return whether the given {@link ItemStack} is enchantable}
-	 * 
-	 * <p>By default, ItemStacks are enchantable if their max stack count is 1 and they can be damaged.
-	 */
-	public boolean isEnchantable(ItemStack stack) {
-		return stack.getMaxCount() == 1 && stack.contains(DataComponentTypes.MAX_DAMAGE);
-	}
-
 	protected static BlockHitResult raycast(World world, PlayerEntity player, RaycastContext.FluidHandling fluidHandling) {
 		Vec3d vec3d = player.getEyePos();
 		Vec3d vec3d2 = vec3d.add(player.getRotationVector(player.getPitch(), player.getYaw()).multiply(player.getBlockInteractionRange()));
 		return world.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.OUTLINE, fluidHandling, player));
-	}
-
-	/**
-	 * Gets the enchantability of an item.
-	 * This specifies the ability of an item to receive enchantments when enchanted using an enchanting table.
-	 * As the value increases, the amount and level of enchantments applied increase.
-	 * 
-	 * <p>If the value of this method is 0, the item cannot be enchanted using an enchanting table.
-	 */
-	@Deprecated(
-		forRemoval = true
-	)
-	public int getEnchantability() {
-		return 0;
 	}
 
 	/**
@@ -628,20 +601,6 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		return new ItemStack(this);
 	}
 
-	/**
-	 * {@return the sound for drinking the item}
-	 */
-	public SoundEvent getDrinkSound() {
-		return SoundEvents.ENTITY_GENERIC_DRINK;
-	}
-
-	/**
-	 * {@return the sound for eating the item}
-	 */
-	public SoundEvent getEatSound() {
-		return SoundEvents.ENTITY_GENERIC_EAT;
-	}
-
 	public SoundEvent getBreakSound() {
 		return SoundEvents.ENTITY_ITEM_BREAK;
 	}
@@ -679,7 +638,19 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		 * @param foodComponent configured food properties for any item using this Settings instance
 		 */
 		public Item.Settings food(FoodComponent foodComponent) {
-			return this.component(DataComponentTypes.FOOD, foodComponent);
+			return this.food(foodComponent, ConsumableComponents.FOOD);
+		}
+
+		public Item.Settings food(FoodComponent foodComponent, ConsumableComponent consumableComponent) {
+			return this.component(DataComponentTypes.FOOD, foodComponent).component(DataComponentTypes.CONSUMABLE, consumableComponent);
+		}
+
+		public Item.Settings useRemainder(Item convertInto) {
+			return this.component(DataComponentTypes.USE_REMAINDER, new UseRemainderComponent(new ItemStack(convertInto)));
+		}
+
+		public Item.Settings useCooldown(float seconds) {
+			return this.component(DataComponentTypes.USE_COOLDOWN, new UseCooldownComponent(seconds));
 		}
 
 		/**
@@ -843,11 +814,11 @@ public class Item implements ToggleableFeature, ItemConvertible {
 			};
 		}
 
-		static Item.TooltipContext create(RegistryWrapper.WrapperLookup registryLookup) {
+		static Item.TooltipContext create(RegistryWrapper.WrapperLookup registries) {
 			return new Item.TooltipContext() {
 				@Override
 				public RegistryWrapper.WrapperLookup getRegistryLookup() {
-					return registryLookup;
+					return registries;
 				}
 
 				@Override

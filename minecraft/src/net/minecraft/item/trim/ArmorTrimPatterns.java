@@ -55,8 +55,8 @@ public class ArmorTrimPatterns {
 		register(registry, Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, BOLT);
 	}
 
-	public static Optional<RegistryEntry.Reference<ArmorTrimPattern>> get(RegistryWrapper.WrapperLookup registriesLookup, ItemStack stack) {
-		return registriesLookup.getWrapperOrThrow(RegistryKeys.TRIM_PATTERN)
+	public static Optional<RegistryEntry.Reference<ArmorTrimPattern>> get(RegistryWrapper.WrapperLookup registries, ItemStack stack) {
+		return registries.getWrapperOrThrow(RegistryKeys.TRIM_PATTERN)
 			.streamEntries()
 			.filter(pattern -> stack.itemMatches(((ArmorTrimPattern)pattern.value()).templateItem()))
 			.findFirst();

@@ -207,8 +207,8 @@ public class WrapperProtoChunk extends ProtoChunk {
 
 	@Nullable
 	@Override
-	public NbtCompound getPackedBlockEntityNbt(BlockPos pos, RegistryWrapper.WrapperLookup registryLookup) {
-		return this.wrapped.getPackedBlockEntityNbt(pos, registryLookup);
+	public NbtCompound getPackedBlockEntityNbt(BlockPos pos, RegistryWrapper.WrapperLookup registries) {
+		return this.wrapped.getPackedBlockEntityNbt(pos, registries);
 	}
 
 	@Override

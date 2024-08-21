@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -45,6 +46,10 @@ import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.crash.CrashCallable;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterList;
@@ -62,6 +67,7 @@ import org.slf4j.Logger;
 
 public class RegistryLoader {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final Comparator<RegistryKey<?>> KEY_COMPARATOR = Comparator.comparing(RegistryKey::getRegistry).thenComparing(RegistryKey::getValue);
 	private static final RegistryEntryInfo EXPERIMENTAL_ENTRY_INFO = new RegistryEntryInfo(Optional.empty(), Lifecycle.experimental());
 	private static final Function<Optional<VersionedIdentifier>, RegistryEntryInfo> RESOURCE_ENTRY_INFO_GETTER = Util.memoize(
 		(Function<Optional<VersionedIdentifier>, RegistryEntryInfo>)(knownPacks -> {
@@ -151,8 +157,7 @@ public class RegistryLoader {
 			}
 		});
 		if (!map.isEmpty()) {
-			writeLoadingError(map);
-			throw new IllegalStateException("Failed to load registries due to above errors");
+			throw writeAndCreateLoadingException(map);
 		} else {
 			return new DynamicRegistryManager.ImmutableImpl(list.stream().map(RegistryLoader.Loader::registry).toList()).toImmutable();
 		}
@@ -178,6 +183,11 @@ public class RegistryLoader {
 		return new RegistryOps.RegistryInfo<>(registry, registry, registry.getLifecycle());
 	}
 
+	private static CrashException writeAndCreateLoadingException(Map<RegistryKey<?>, Exception> exceptions) {
+		writeLoadingError(exceptions);
+		return createLoadingException(exceptions);
+	}
+
 	private static void writeLoadingError(Map<RegistryKey<?>, Exception> exceptions) {
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(stringWriter);
@@ -190,13 +200,37 @@ public class RegistryLoader {
 			);
 		map.entrySet().stream().sorted(java.util.Map.Entry.comparingByKey()).forEach(entry -> {
 			printWriter.printf("> Errors in registry %s:%n", entry.getKey());
-			((Map)entry.getValue()).entrySet().stream().sorted(java.util.Map.Entry.comparingByKey()).forEach(elementEntry -> {
-				printWriter.printf(">> Errors in element %s:%n", elementEntry.getKey());
-				((Exception)elementEntry.getValue()).printStackTrace(printWriter);
+			((Map)entry.getValue()).entrySet().stream().sorted(java.util.Map.Entry.comparingByKey()).forEach(element -> {
+				printWriter.printf(">> Errors in element %s:%n", element.getKey());
+				((Exception)element.getValue()).printStackTrace(printWriter);
 			});
 		});
 		printWriter.flush();
 		LOGGER.error("Registry loading errors:\n{}", stringWriter);
+	}
+
+	private static CrashException createLoadingException(Map<RegistryKey<?>, Exception> exceptions) {
+		CrashReport crashReport = CrashReport.create(new IllegalStateException("Failed to load registries due to errors"), "Registry Loading");
+		CrashReportSection crashReportSection = crashReport.addElement("Loading info");
+		crashReportSection.add(
+			"Errors",
+			(CrashCallable<String>)(() -> {
+				StringBuilder stringBuilder = new StringBuilder();
+				exceptions.entrySet()
+					.stream()
+					.sorted(java.util.Map.Entry.comparingByKey(KEY_COMPARATOR))
+					.forEach(
+						entry -> stringBuilder.append("\n\t\t")
+								.append(((RegistryKey)entry.getKey()).getRegistry())
+								.append("/")
+								.append(((RegistryKey)entry.getKey()).getValue())
+								.append(": ")
+								.append(((Exception)entry.getValue()).getMessage())
+					);
+				return stringBuilder.toString();
+			})
+		);
+		return new CrashException(crashReport);
 	}
 
 	private static <E> void parseAndAdd(

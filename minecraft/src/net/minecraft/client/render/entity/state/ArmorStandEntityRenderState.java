@@ -12,7 +12,7 @@ public class ArmorStandEntityRenderState extends BipedEntityRenderState {
 	public boolean marker;
 	public boolean small;
 	public boolean showArms;
-	public boolean hideBasePlate = true;
+	public boolean showBasePlate = true;
 	public EulerAngle headRotation = ArmorStandEntity.DEFAULT_HEAD_ROTATION;
 	public EulerAngle bodyRotation = ArmorStandEntity.DEFAULT_BODY_ROTATION;
 	public EulerAngle leftArmRotation = ArmorStandEntity.DEFAULT_LEFT_ARM_ROTATION;

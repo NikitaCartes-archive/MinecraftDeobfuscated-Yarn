@@ -62,7 +62,7 @@ public class ChunkDebugRenderer implements DebugRenderer.Renderer {
 						}
 					}
 
-					if (this.client.debugChunkOcclusion && !builtChunk.getData().isEmpty()) {
+					if (this.client.debugChunkOcclusion && builtChunk.getData().method_62972()) {
 						VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
 						int i = 0;
 

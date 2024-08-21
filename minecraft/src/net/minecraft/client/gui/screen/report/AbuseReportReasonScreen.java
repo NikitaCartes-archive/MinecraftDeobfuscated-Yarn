@@ -38,16 +38,16 @@ public class AbuseReportReasonScreen extends Screen {
 	AbuseReportReason reason;
 	private final Consumer<AbuseReportReason> reasonConsumer;
 	final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
-	final AbuseReportType field_52852;
+	final AbuseReportType reportType;
 
 	public AbuseReportReasonScreen(
-		@Nullable Screen parent, @Nullable AbuseReportReason reason, AbuseReportType abuseReportType, Consumer<AbuseReportReason> consumer
+		@Nullable Screen parent, @Nullable AbuseReportReason reason, AbuseReportType reportType, Consumer<AbuseReportReason> reasonConsumer
 	) {
 		super(TITLE_TEXT);
 		this.parent = parent;
 		this.reason = reason;
-		this.reasonConsumer = consumer;
-		this.field_52852 = abuseReportType;
+		this.reasonConsumer = reasonConsumer;
+		this.reportType = reportType;
 	}
 
 	@Override
@@ -68,8 +68,8 @@ public class AbuseReportReasonScreen extends Screen {
 
 			this.client.setScreen(this.parent);
 		}).build());
-		this.layout.forEachChild(element -> {
-			ClickableWidget var10000 = this.addDrawableChild(element);
+		this.layout.forEachChild(child -> {
+			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
 		this.initTabNavigation();
 	}
@@ -142,7 +142,7 @@ public class AbuseReportReasonScreen extends Screen {
 			);
 
 			for (AbuseReportReason abuseReportReason : AbuseReportReason.values()) {
-				if (!AbuseReportReason.method_62164(AbuseReportReasonScreen.this.field_52852).contains(abuseReportReason)) {
+				if (!AbuseReportReason.getExcludedReasonsForType(AbuseReportReasonScreen.this.reportType).contains(abuseReportReason)) {
 					this.addEntry(new AbuseReportReasonScreen.ReasonListWidget.ReasonEntry(abuseReportReason));
 				}
 			}

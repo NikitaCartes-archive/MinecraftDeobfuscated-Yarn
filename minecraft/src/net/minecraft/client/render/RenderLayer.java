@@ -176,20 +176,6 @@ public abstract class RenderLayer extends RenderPhase {
 			);
 		})
 	);
-	private static final Function<Identifier, RenderLayer> ENTITY_TRANSLUCENT_CULL = Util.memoize(
-		(Function<Identifier, RenderLayer>)(texture -> {
-			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.program(ENTITY_TRANSLUCENT_CULL_PROGRAM)
-				.texture(new RenderPhase.Texture(texture, TriState.FALSE, false))
-				.transparency(TRANSLUCENT_TRANSPARENCY)
-				.lightmap(ENABLE_LIGHTMAP)
-				.overlay(ENABLE_OVERLAY_COLOR)
-				.build(true);
-			return of(
-				"entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 1536, true, true, multiPhaseParameters
-			);
-		})
-	);
 	private static final BiFunction<Identifier, Boolean, RenderLayer> ENTITY_TRANSLUCENT = Util.memoize(
 		(BiFunction<Identifier, Boolean, RenderLayer>)((texture, affectsOutline) -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
@@ -391,21 +377,6 @@ public abstract class RenderLayer extends RenderPhase {
 			.depthTest(EQUAL_DEPTH_TEST)
 			.transparency(GLINT_TRANSPARENCY)
 			.target(ITEM_ENTITY_TARGET)
-			.texturing(ENTITY_GLINT_TEXTURING)
-			.build(false)
-	);
-	private static final RenderLayer DIRECT_ENTITY_GLINT = of(
-		"entity_glint_direct",
-		VertexFormats.POSITION_TEXTURE,
-		VertexFormat.DrawMode.QUADS,
-		1536,
-		RenderLayer.MultiPhaseParameters.builder()
-			.program(DIRECT_ENTITY_GLINT_PROGRAM)
-			.texture(new RenderPhase.Texture(ItemRenderer.ENTITY_ENCHANTMENT_GLINT, TriState.DEFAULT, false))
-			.writeMaskState(COLOR_MASK)
-			.cull(DISABLE_CULLING)
-			.depthTest(EQUAL_DEPTH_TEST)
-			.transparency(GLINT_TRANSPARENCY)
 			.texturing(ENTITY_GLINT_TEXTURING)
 			.build(false)
 	);
@@ -978,10 +949,6 @@ public abstract class RenderLayer extends RenderPhase {
 		return (RenderLayer)ITEM_ENTITY_TRANSLUCENT_CULL.apply(texture);
 	}
 
-	public static RenderLayer getEntityTranslucentCull(Identifier texture) {
-		return (RenderLayer)ENTITY_TRANSLUCENT_CULL.apply(texture);
-	}
-
 	public static RenderLayer getEntityTranslucent(Identifier texture, boolean affectsOutline) {
 		return (RenderLayer)ENTITY_TRANSLUCENT.apply(texture, affectsOutline);
 	}
@@ -1096,10 +1063,6 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer getEntityGlint() {
 		return ENTITY_GLINT;
-	}
-
-	public static RenderLayer getDirectEntityGlint() {
-		return DIRECT_ENTITY_GLINT;
 	}
 
 	public static RenderLayer getBlockBreaking(Identifier texture) {

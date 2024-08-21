@@ -126,7 +126,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	protected int soundTicks;
 	@Nullable
 	private UUID ownerUuid;
-	private final Inventory inventory = new SingleStackInventory() {
+	private final Inventory armorInventory = new SingleStackInventory() {
 		@Override
 		public ItemStack getStack() {
 			return AbstractHorseEntity.this.getBodyArmor();
@@ -829,7 +829,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		}
 
 		if (!this.items.getStack(0).isEmpty()) {
-			nbt.put("SaddleItem", this.items.getStack(0).encode(this.getRegistryManager()));
+			nbt.put("SaddleItem", this.items.getStack(0).toNbt(this.getRegistryManager()));
 		}
 	}
 
@@ -1125,8 +1125,8 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 			);
 	}
 
-	public final Inventory getInventory() {
-		return this.inventory;
+	public final Inventory getArmorInventory() {
+		return this.armorInventory;
 	}
 
 	public int getInventoryColumns() {

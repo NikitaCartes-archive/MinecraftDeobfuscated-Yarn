@@ -155,14 +155,14 @@ public class LevelStorage {
 	}
 
 	public static ParsedSaveProperties parseSaveProperties(
-		Dynamic<?> dynamic, DataConfiguration dataConfiguration, Registry<DimensionOptions> dimensionsRegistry, RegistryWrapper.WrapperLookup registryLookup
+		Dynamic<?> dynamic, DataConfiguration dataConfiguration, Registry<DimensionOptions> dimensionsRegistry, RegistryWrapper.WrapperLookup registries
 	) {
-		Dynamic<?> dynamic2 = RegistryOps.withRegistry(dynamic, registryLookup);
+		Dynamic<?> dynamic2 = RegistryOps.withRegistry(dynamic, registries);
 		Dynamic<?> dynamic3 = dynamic2.get("WorldGenSettings").orElseEmptyMap();
 		WorldGenSettings worldGenSettings = WorldGenSettings.CODEC.parse(dynamic3).getOrThrow();
 		LevelInfo levelInfo = LevelInfo.fromDynamic(dynamic2, dataConfiguration);
 		DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = worldGenSettings.dimensionOptionsRegistryHolder().toConfig(dimensionsRegistry);
-		Lifecycle lifecycle = dimensionsConfig.getLifecycle().add(registryLookup.getLifecycle());
+		Lifecycle lifecycle = dimensionsConfig.getLifecycle().add(registries.getLifecycle());
 		LevelProperties levelProperties = LevelProperties.readProperties(
 			dynamic2, levelInfo, dimensionsConfig.specialWorldProperty(), worldGenSettings.generatorOptions(), lifecycle
 		);

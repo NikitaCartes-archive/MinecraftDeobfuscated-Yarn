@@ -272,10 +272,20 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 
 				return projectileDeflection;
 			}
+		} else if (this.deflectsAgainstWorldBorder() && hitResult instanceof BlockHitResult blockHitResult && blockHitResult.isAgainstWorldBorder()) {
+			ProjectileDeflection projectileDeflection2 = ProjectileDeflection.SIMPLE;
+			if (this.deflect(projectileDeflection2, null, this.getOwner(), false)) {
+				this.setVelocity(this.getVelocity().multiply(0.2));
+				return projectileDeflection2;
+			}
 		}
 
 		this.onCollision(hitResult);
 		return ProjectileDeflection.NONE;
+	}
+
+	protected boolean deflectsAgainstWorldBorder() {
+		return false;
 	}
 
 	public boolean deflect(ProjectileDeflection deflection, @Nullable Entity deflector, @Nullable Entity owner, boolean fromAttack) {

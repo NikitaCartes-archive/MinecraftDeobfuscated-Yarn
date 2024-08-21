@@ -2,6 +2,7 @@ package net.minecraft.client.render;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.Box;
 import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
@@ -74,17 +75,24 @@ public class Frustum {
 	}
 
 	public boolean isVisible(Box box) {
-		return this.isVisible(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
+		int i = this.intersectAab(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
+		return i == -2 || i == -1;
 	}
 
-	private boolean isVisible(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+	public int intersectAab(BlockBox box) {
+		return this.intersectAab(
+			(double)box.getMinX(), (double)box.getMinY(), (double)box.getMinZ(), (double)(box.getMaxX() + 1), (double)(box.getMaxY() + 1), (double)(box.getMaxZ() + 1)
+		);
+	}
+
+	private int intersectAab(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
 		float f = (float)(minX - this.x);
 		float g = (float)(minY - this.y);
 		float h = (float)(minZ - this.z);
 		float i = (float)(maxX - this.x);
 		float j = (float)(maxY - this.y);
 		float k = (float)(maxZ - this.z);
-		return this.frustumIntersection.testAab(f, g, h, i, j, k);
+		return this.frustumIntersection.intersectAab(f, g, h, i, j, k);
 	}
 
 	public Vector4f[] method_62342() {

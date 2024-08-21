@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.screen.ingame;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -151,7 +150,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		}
 
 		entityRenderDispatcher.setRenderShadows(false);
-		RenderSystem.runAsFancy(() -> entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 1.0F, context.getMatrices(), context.getVertexConsumers(), 15728880));
+		entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 1.0F, context.getMatrices(), context.getVertexConsumers(), 15728880);
 		context.draw();
 		entityRenderDispatcher.setRenderShadows(true);
 		context.getMatrices().pop();

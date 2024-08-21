@@ -23,7 +23,7 @@ public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer<
 			float g = endGatewayBlockEntity.isRecentlyGenerated()
 				? endGatewayBlockEntity.getRecentlyGeneratedBeamHeight(f)
 				: endGatewayBlockEntity.getCooldownBeamHeight(f);
-			double d = endGatewayBlockEntity.isRecentlyGenerated() ? (double)endGatewayBlockEntity.getWorld().getTopY() : 50.0;
+			double d = endGatewayBlockEntity.isRecentlyGenerated() ? (double)endGatewayBlockEntity.getWorld().getTopYInclusive() : 50.0;
 			g = MathHelper.sin(g * (float) Math.PI);
 			int k = MathHelper.floor((double)g * d);
 			int l = endGatewayBlockEntity.isRecentlyGenerated() ? DyeColor.MAGENTA.getEntityColor() : DyeColor.PURPLE.getEntityColor();

@@ -11,16 +11,12 @@ import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 
 public record BookUpdateC2SPacket(int slot, List<String> pages, Optional<String> title) implements Packet<ServerPlayPacketListener> {
-	public static final int field_34038 = 4;
-	private static final int MAX_TITLE_LENGTH = 128;
-	private static final int MAX_PAGE_LENGTH = 8192;
-	private static final int MAX_PAGES = 200;
 	public static final PacketCodec<PacketByteBuf, BookUpdateC2SPacket> CODEC = PacketCodec.tuple(
 		PacketCodecs.VAR_INT,
 		BookUpdateC2SPacket::slot,
-		PacketCodecs.string(8192).collect(PacketCodecs.toList(200)),
+		PacketCodecs.string(1024).collect(PacketCodecs.toList(100)),
 		BookUpdateC2SPacket::pages,
-		PacketCodecs.string(128).collect(PacketCodecs::optional),
+		PacketCodecs.string(32).collect(PacketCodecs::optional),
 		BookUpdateC2SPacket::title,
 		BookUpdateC2SPacket::new
 	);

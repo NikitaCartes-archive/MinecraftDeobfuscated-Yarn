@@ -135,7 +135,7 @@ public class ServerPlayerInteractionManager {
 	public void processBlockBreakingAction(BlockPos pos, PlayerActionC2SPacket.Action action, Direction direction, int worldHeight, int sequence) {
 		if (!this.player.canInteractWithBlockAt(pos, 1.0)) {
 			this.onBlockBreakingAction(pos, false, sequence, "too far");
-		} else if (pos.getY() >= worldHeight) {
+		} else if (pos.getY() > worldHeight) {
 			this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(pos, this.world.getBlockState(pos)));
 			this.onBlockBreakingAction(pos, false, sequence, "too high");
 		} else {
@@ -275,7 +275,7 @@ public class ServerPlayerInteractionManager {
 	public ActionResult interactItem(ServerPlayerEntity player, World world, ItemStack stack, Hand hand) {
 		if (this.gameMode == GameMode.SPECTATOR) {
 			return ActionResult.PASS;
-		} else if (player.getItemCooldownManager().isCoolingDown(stack.getItem())) {
+		} else if (player.getItemCooldownManager().isCoolingDown(stack)) {
 			return ActionResult.PASS;
 		} else {
 			int i = stack.getCount();
@@ -343,7 +343,7 @@ public class ServerPlayerInteractionManager {
 				}
 			}
 
-			if (!stack.isEmpty() && !player.getItemCooldownManager().isCoolingDown(stack.getItem())) {
+			if (!stack.isEmpty() && !player.getItemCooldownManager().isCoolingDown(stack)) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(player, hand, hitResult);
 				ActionResult actionResult2;
 				if (this.isCreative()) {

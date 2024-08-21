@@ -33,7 +33,7 @@ public class SmithingTransformRecipe implements SmithingRecipe {
 	}
 
 	@Override
-	public ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup) {
+	public ItemStack getResult(RegistryWrapper.WrapperLookup registries) {
 		return this.result;
 	}
 

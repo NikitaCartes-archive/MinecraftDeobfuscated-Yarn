@@ -15,7 +15,7 @@ public class VanillaFlatLevelGeneratorPresetTagProvider extends TagProvider<Flat
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.getOrCreateTagBuilder(FlatLevelGeneratorPresetTags.VISIBLE)
 			.add(FlatLevelGeneratorPresets.CLASSIC_FLAT)
 			.add(FlatLevelGeneratorPresets.TUNNELERS_DREAM)

@@ -58,16 +58,16 @@ public class AbstractFurnaceRecipeBookWidget extends RecipeBookWidget<AbstractFu
 		ghostRecipe.put(itemStack, slot);
 		List<Optional<IngredientPlacement.PlacementSlot>> list = entry.value().getIngredientPlacement().getPlacementSlots();
 		if (!list.isEmpty()) {
-			((Optional)list.getFirst()).ifPresent(placementSlot -> {
-				Slot slotx = this.craftingScreenHandler.slots.get(0);
-				ghostRecipe.put(placementSlot.possibleItems(), slotx);
+			((Optional)list.getFirst()).ifPresent(slotx -> {
+				Slot slot2x = this.craftingScreenHandler.slots.get(0);
+				ghostRecipe.put(slotx.possibleItems(), slot2x);
 			});
 		}
 
 		Slot slot2 = this.craftingScreenHandler.slots.get(1);
 		if (slot2.getStack().isEmpty()) {
 			if (list.size() > 1) {
-				((Optional)list.get(1)).ifPresent(placementSlot -> ghostRecipe.put(placementSlot.possibleItems(), slot2));
+				((Optional)list.get(1)).ifPresent(slotx -> ghostRecipe.put(slotx.possibleItems(), slot2));
 			} else {
 				if (this.fuels == null) {
 					this.fuels = this.getAllowedFuels(clientWorld.getFuelRegistry()).stream().map(ItemStack::new).toList();

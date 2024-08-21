@@ -148,7 +148,7 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 
 	@Override
 	public void tick() {
-		if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getTopY() + 30) {
+		if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getTopYInclusive() + 30) {
 			this.createExplosion(this.getPos());
 			this.discard();
 		} else {

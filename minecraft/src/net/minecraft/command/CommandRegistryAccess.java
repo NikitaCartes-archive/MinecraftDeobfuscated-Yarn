@@ -16,16 +16,16 @@ import net.minecraft.resource.featuretoggle.FeatureSet;
  * provides an instance with proper configurations.
  */
 public interface CommandRegistryAccess extends RegistryWrapper.WrapperLookup {
-	static CommandRegistryAccess of(RegistryWrapper.WrapperLookup wrapperLookup, FeatureSet enabledFeatures) {
+	static CommandRegistryAccess of(RegistryWrapper.WrapperLookup registries, FeatureSet enabledFeatures) {
 		return new CommandRegistryAccess() {
 			@Override
 			public Stream<RegistryKey<? extends Registry<?>>> streamAllRegistryKeys() {
-				return wrapperLookup.streamAllRegistryKeys();
+				return registries.streamAllRegistryKeys();
 			}
 
 			@Override
 			public <T> Optional<RegistryWrapper.Impl<T>> getOptionalWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
-				return wrapperLookup.getOptionalWrapper(registryRef).map(wrapper -> wrapper.withFeatureFilter(enabledFeatures));
+				return registries.getOptionalWrapper(registryRef).map(wrapper -> wrapper.withFeatureFilter(enabledFeatures));
 			}
 		};
 	}

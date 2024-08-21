@@ -54,8 +54,8 @@ public record JukeboxSong(RegistryEntry<SoundEvent> soundEvent, Text description
 		return ticksSinceSongStarted >= (long)(this.getLengthInTicks() + 20);
 	}
 
-	public static Optional<RegistryEntry<JukeboxSong>> getSongEntryFromStack(RegistryWrapper.WrapperLookup registryLookup, ItemStack stack) {
+	public static Optional<RegistryEntry<JukeboxSong>> getSongEntryFromStack(RegistryWrapper.WrapperLookup registries, ItemStack stack) {
 		JukeboxPlayableComponent jukeboxPlayableComponent = stack.get(DataComponentTypes.JUKEBOX_PLAYABLE);
-		return jukeboxPlayableComponent != null ? jukeboxPlayableComponent.song().getEntry(registryLookup) : Optional.empty();
+		return jukeboxPlayableComponent != null ? jukeboxPlayableComponent.song().getEntry(registries) : Optional.empty();
 	}
 }

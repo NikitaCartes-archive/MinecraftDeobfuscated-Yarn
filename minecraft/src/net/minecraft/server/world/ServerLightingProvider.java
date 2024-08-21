@@ -76,7 +76,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 				super.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(pos, i), null);
 			}
 
-			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
+			for (int i = this.world.getBottomSectionCoord(); i <= this.world.getTopSectionCoord(); i++) {
 				super.setSectionStatus(ChunkSectionPos.from(pos, i), true);
 			}
 		}), (Supplier<String>)(() -> "updateChunkStatus " + pos + " true")));

@@ -286,7 +286,7 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		for (int i = 0; i < this.size(); i++) {
 			ItemStack itemStack = this.getStack(i);
 			if (!itemStack.isEmpty()) {
-				nbtList.add(itemStack.encode(registries));
+				nbtList.add(itemStack.toNbt(registries));
 			}
 		}
 

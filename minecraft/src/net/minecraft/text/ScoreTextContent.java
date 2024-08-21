@@ -41,13 +41,15 @@ public record ScoreTextContent(Either<ParsedSelector, String> name, String objec
 			if (!list.isEmpty()) {
 				if (list.size() != 1) {
 					throw EntityArgumentType.TOO_MANY_ENTITIES_EXCEPTION.create();
+				} else {
+					return (ScoreHolder)list.getFirst();
 				}
-
-				return (ScoreHolder)list.getFirst();
+			} else {
+				return ScoreHolder.fromName(((ParsedSelector)optional.get()).comp_3067());
 			}
+		} else {
+			return ScoreHolder.fromName((String)this.name.right().orElseThrow());
 		}
-
-		return ScoreHolder.fromName((String)this.name.right().orElseThrow());
 	}
 
 	private MutableText getScore(ScoreHolder scoreHolder, ServerCommandSource source) {

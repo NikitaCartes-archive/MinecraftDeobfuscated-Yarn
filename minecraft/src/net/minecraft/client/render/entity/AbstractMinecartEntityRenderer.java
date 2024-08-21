@@ -136,8 +136,8 @@ public abstract class AbstractMinecartEntityRenderer<T extends AbstractMinecartE
 			state.lerpedYaw = controller.getLerpedYaw(tickDelta);
 		} else {
 			state.lerpedPos = null;
-			state.lerpedPitch = minecart.getLerpedPitch(tickDelta);
-			state.lerpedYaw = minecart.getLerpedYaw(tickDelta);
+			state.lerpedPitch = minecart.getPitch();
+			state.lerpedYaw = minecart.getYaw();
 		}
 	}
 

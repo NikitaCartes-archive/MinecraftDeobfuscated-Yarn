@@ -63,6 +63,10 @@ public class WireOrientation {
 		return (WireOrientation)this.siblingsByFront.get(direction);
 	}
 
+	public WireOrientation withFrontIfNotUp(Direction direction) {
+		return direction.getAxis() == this.up.getAxis() ? this : (WireOrientation)this.siblingsByFront.get(direction);
+	}
+
 	public WireOrientation withFrontAndSideBias(Direction direction) {
 		WireOrientation wireOrientation = this.withFront(direction);
 		return this.front == wireOrientation.right ? wireOrientation.withOppositeSideBias() : wireOrientation;

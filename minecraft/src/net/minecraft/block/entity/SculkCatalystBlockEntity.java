@@ -39,15 +39,15 @@ public class SculkCatalystBlockEntity extends BlockEntity implements GameEventLi
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		this.eventListener.spreadManager.readNbt(nbt);
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		this.eventListener.spreadManager.writeNbt(nbt);
-		super.writeNbt(nbt, registryLookup);
+		super.writeNbt(nbt, registries);
 	}
 
 	public SculkCatalystBlockEntity.Listener getEventListener() {

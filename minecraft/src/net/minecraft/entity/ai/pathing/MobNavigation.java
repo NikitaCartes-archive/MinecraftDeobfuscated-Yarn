@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -44,33 +45,35 @@ public class MobNavigation extends EntityNavigation {
 			return null;
 		} else {
 			if (worldChunk.getBlockState(target).isAir()) {
-				BlockPos blockPos = target.down();
+				BlockPos.Mutable mutable = target.mutableCopy().move(Direction.DOWN);
 
-				while (blockPos.getY() > this.world.getBottomY() && worldChunk.getBlockState(blockPos).isAir()) {
-					blockPos = blockPos.down();
+				while (mutable.getY() > this.world.getBottomY() && worldChunk.getBlockState(mutable).isAir()) {
+					mutable.move(Direction.DOWN);
 				}
 
-				if (blockPos.getY() > this.world.getBottomY()) {
-					return super.findPathTo(blockPos.up(), distance);
+				if (mutable.getY() > this.world.getBottomY()) {
+					return super.findPathTo(mutable.up(), distance);
 				}
 
-				while (blockPos.getY() < this.world.getTopY() && worldChunk.getBlockState(blockPos).isAir()) {
-					blockPos = blockPos.up();
+				mutable.setY(target.getY() + 1);
+
+				while (mutable.getY() <= this.world.getTopYInclusive() && worldChunk.getBlockState(mutable).isAir()) {
+					mutable.move(Direction.UP);
 				}
 
-				target = blockPos;
+				target = mutable;
 			}
 
 			if (!worldChunk.getBlockState(target).isSolid()) {
 				return super.findPathTo(target, distance);
 			} else {
-				BlockPos blockPos = target.up();
+				BlockPos.Mutable mutable = target.mutableCopy().move(Direction.UP);
 
-				while (blockPos.getY() < this.world.getTopY() && worldChunk.getBlockState(blockPos).isSolid()) {
-					blockPos = blockPos.up();
+				while (mutable.getY() <= this.world.getTopYInclusive() && worldChunk.getBlockState(mutable).isSolid()) {
+					mutable.move(Direction.UP);
 				}
 
-				return super.findPathTo(blockPos, distance);
+				return super.findPathTo(mutable.toImmutable(), distance);
 			}
 		}
 	}

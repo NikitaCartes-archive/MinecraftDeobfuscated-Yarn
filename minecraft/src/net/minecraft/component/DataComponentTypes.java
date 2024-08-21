@@ -10,6 +10,7 @@ import net.minecraft.component.type.BannerPatternsComponent;
 import net.minecraft.component.type.BlockStateComponent;
 import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.component.type.ChargedProjectilesComponent;
+import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.component.type.ContainerLootComponent;
 import net.minecraft.component.type.CustomModelDataComponent;
@@ -28,12 +29,15 @@ import net.minecraft.component.type.MapDecorationsComponent;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.component.type.MapPostProcessingComponent;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.component.type.OminousBottleAmplifierComponent;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.component.type.RepairableComponent;
 import net.minecraft.component.type.SuspiciousStewEffectsComponent;
 import net.minecraft.component.type.ToolComponent;
 import net.minecraft.component.type.UnbreakableComponent;
+import net.minecraft.component.type.UseCooldownComponent;
+import net.minecraft.component.type.UseRemainderComponent;
 import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.component.type.WrittenBookContentComponent;
 import net.minecraft.inventory.ContainerLock;
@@ -107,6 +111,15 @@ public class DataComponentTypes {
 	public static final ComponentType<FoodComponent> FOOD = register(
 		"food", builder -> builder.codec(FoodComponent.CODEC).packetCodec(FoodComponent.PACKET_CODEC).cache()
 	);
+	public static final ComponentType<ConsumableComponent> CONSUMABLE = register(
+		"consumable", builder -> builder.codec(ConsumableComponent.CODEC).packetCodec(ConsumableComponent.PACKET_CODEC).cache()
+	);
+	public static final ComponentType<UseRemainderComponent> USE_REMAINDER = register(
+		"use_remainder", builder -> builder.codec(UseRemainderComponent.CODEC).packetCodec(UseRemainderComponent.PACKET_CODEC).cache()
+	);
+	public static final ComponentType<UseCooldownComponent> USE_COOLDOWN = register(
+		"use_cooldown", builder -> builder.codec(UseCooldownComponent.CODEC).packetCodec(UseCooldownComponent.PACKET_CODEC).cache()
+	);
 	public static final ComponentType<Unit> FIRE_RESISTANT = register(
 		"fire_resistant", builder -> builder.codec(Unit.CODEC).packetCodec(PacketCodec.unit(Unit.INSTANCE))
 	);
@@ -171,8 +184,8 @@ public class DataComponentTypes {
 	public static final ComponentType<RegistryEntry<Instrument>> INSTRUMENT = register(
 		"instrument", builder -> builder.codec(Instrument.ENTRY_CODEC).packetCodec(Instrument.ENTRY_PACKET_CODEC).cache()
 	);
-	public static final ComponentType<Integer> OMINOUS_BOTTLE_AMPLIFIER = register(
-		"ominous_bottle_amplifier", builder -> builder.codec(Codecs.rangedInt(0, 4)).packetCodec(PacketCodecs.VAR_INT)
+	public static final ComponentType<OminousBottleAmplifierComponent> OMINOUS_BOTTLE_AMPLIFIER = register(
+		"ominous_bottle_amplifier", builder -> builder.codec(OminousBottleAmplifierComponent.CODEC).packetCodec(OminousBottleAmplifierComponent.PACKET_CODEC)
 	);
 	public static final ComponentType<JukeboxPlayableComponent> JUKEBOX_PLAYABLE = register(
 		"jukebox_playable", builder -> builder.codec(JukeboxPlayableComponent.CODEC).packetCodec(JukeboxPlayableComponent.PACKET_CODEC)

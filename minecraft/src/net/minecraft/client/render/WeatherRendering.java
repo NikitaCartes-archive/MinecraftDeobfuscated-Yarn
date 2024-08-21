@@ -9,6 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.particle.ParticleEffect;
@@ -113,7 +114,7 @@ public class WeatherRendering {
 		RenderSystem.enableBlend();
 		RenderSystem.enableDepthTest();
 		RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
-		RenderSystem.setShader(GameRenderer::getParticleProgram);
+		RenderSystem.setShader(ShaderProgramKeys.PARTICLE);
 		if (!list.isEmpty()) {
 			RenderSystem.setShaderTexture(0, RAIN_TEXTURE);
 			this.method_62318(tessellator, list, vec3d, 1.0F, i, f);

@@ -29,7 +29,7 @@ public class PlayerListEntry {
 	@Nullable
 	private PublicPlayerSession session;
 	private MessageVerifier messageVerifier;
-	private int field_53033;
+	private int listOrder;
 
 	public PlayerListEntry(GameProfile profile, boolean secureChatEnforced) {
 		this.profile = profile;
@@ -115,11 +115,11 @@ public class PlayerListEntry {
 		return this.displayName;
 	}
 
-	public void method_62153(int i) {
-		this.field_53033 = i;
+	public void setListOrder(int listOrder) {
+		this.listOrder = listOrder;
 	}
 
-	public int method_62154() {
-		return this.field_53033;
+	public int getListOrder() {
+		return this.listOrder;
 	}
 }

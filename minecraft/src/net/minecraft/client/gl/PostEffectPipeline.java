@@ -38,11 +38,11 @@ public record PostEffectPipeline(Map<Identifier, PostEffectPipeline.Targets> int
 
 	@Environment(EnvType.CLIENT)
 	public sealed interface Input permits PostEffectPipeline.TextureSampler, PostEffectPipeline.TargetSampler {
-		Codec<PostEffectPipeline.Input> field_53114 = Codec.xor(PostEffectPipeline.TextureSampler.CODEC, PostEffectPipeline.TargetSampler.CODEC)
-			.xmap(either -> either.map(Function.identity(), Function.identity()), input -> {
-				Objects.requireNonNull(input);
+		Codec<PostEffectPipeline.Input> CODEC = Codec.xor(PostEffectPipeline.TextureSampler.CODEC, PostEffectPipeline.TargetSampler.CODEC)
+			.xmap(either -> either.map(Function.identity(), Function.identity()), sampler -> {
+				Objects.requireNonNull(sampler);
 
-				return switch (input) {
+				return switch (sampler) {
 					case PostEffectPipeline.TextureSampler textureSampler -> Either.left(textureSampler);
 					case PostEffectPipeline.TargetSampler targetSampler -> Either.right(targetSampler);
 					default -> throw new MatchException(null, null);
@@ -55,24 +55,24 @@ public record PostEffectPipeline(Map<Identifier, PostEffectPipeline.Targets> int
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static record Pass(String name, List<PostEffectPipeline.Input> inputs, Identifier outputTarget, List<PostEffectPipeline.Uniform> uniforms) {
-		private static final Codec<List<PostEffectPipeline.Input>> field_53117 = PostEffectPipeline.Input.field_53114.listOf().validate(list -> {
-			Set<String> set = new ObjectArraySet<>(list.size());
+	public static record Pass(Identifier program, List<PostEffectPipeline.Input> inputs, Identifier outputTarget, List<PostEffectPipeline.Uniform> uniforms) {
+		private static final Codec<List<PostEffectPipeline.Input>> INPUTS_CODEC = PostEffectPipeline.Input.CODEC.listOf().validate(inputs -> {
+			Set<String> set = new ObjectArraySet<>(inputs.size());
 
-			for (PostEffectPipeline.Input input : list) {
+			for (PostEffectPipeline.Input input : inputs) {
 				if (!set.add(input.samplerName())) {
 					return DataResult.error(() -> "Encountered repeated sampler name: " + input.samplerName());
 				}
 			}
 
-			return DataResult.success(list);
+			return DataResult.success(inputs);
 		});
 		public static final Codec<PostEffectPipeline.Pass> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codec.STRING.fieldOf("name").forGetter(PostEffectPipeline.Pass::name),
-						field_53117.optionalFieldOf("inputs", List.of()).forGetter(PostEffectPipeline.Pass::inputs),
+						Identifier.CODEC.fieldOf("program").forGetter(PostEffectPipeline.Pass::program),
+						INPUTS_CODEC.optionalFieldOf("inputs", List.of()).forGetter(PostEffectPipeline.Pass::inputs),
 						Identifier.CODEC.fieldOf("output").forGetter(PostEffectPipeline.Pass::outputTarget),
-						PostEffectPipeline.Uniform.field_53120.listOf().optionalFieldOf("uniforms", List.of()).forGetter(PostEffectPipeline.Pass::uniforms)
+						PostEffectPipeline.Uniform.CODEC.listOf().optionalFieldOf("uniforms", List.of()).forGetter(PostEffectPipeline.Pass::uniforms)
 					)
 					.apply(instance, PostEffectPipeline.Pass::new)
 		);
@@ -136,7 +136,7 @@ public record PostEffectPipeline(Map<Identifier, PostEffectPipeline.Targets> int
 
 	@Environment(EnvType.CLIENT)
 	public static record Uniform(String name, List<Float> values) {
-		public static final Codec<PostEffectPipeline.Uniform> field_53120 = RecordCodecBuilder.create(
+		public static final Codec<PostEffectPipeline.Uniform> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.STRING.fieldOf("name").forGetter(PostEffectPipeline.Uniform::name),
 						Codec.FLOAT.sizeLimitedListOf(4).fieldOf("values").forGetter(PostEffectPipeline.Uniform::values)

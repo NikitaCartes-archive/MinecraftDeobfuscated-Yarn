@@ -40,9 +40,9 @@ public class ScaffoldingItem extends BlockItem {
 			while (i < 7) {
 				if (!world.isClient && !world.isInBuildLimit(mutable)) {
 					PlayerEntity playerEntity = context.getPlayer();
-					int j = world.getTopY();
-					if (playerEntity instanceof ServerPlayerEntity && mutable.getY() >= j) {
-						((ServerPlayerEntity)playerEntity).sendMessageToClient(Text.translatable("build.tooHigh", j - 1).formatted(Formatting.RED), true);
+					int j = world.getTopYInclusive();
+					if (playerEntity instanceof ServerPlayerEntity && mutable.getY() > j) {
+						((ServerPlayerEntity)playerEntity).sendMessageToClient(Text.translatable("build.tooHigh", j).formatted(Formatting.RED), true);
 					}
 					break;
 				}

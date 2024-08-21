@@ -57,19 +57,19 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		if (!this.writeLootTable(nbt)) {
-			Inventories.writeNbt(nbt, this.inventory, registryLookup);
+			Inventories.writeNbt(nbt, this.inventory, registries);
 		}
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (!this.readLootTable(nbt)) {
-			Inventories.readNbt(nbt, this.inventory, registryLookup);
+			Inventories.readNbt(nbt, this.inventory, registries);
 		}
 	}
 

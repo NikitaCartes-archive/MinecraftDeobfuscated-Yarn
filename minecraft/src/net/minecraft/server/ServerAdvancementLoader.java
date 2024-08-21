@@ -31,15 +31,15 @@ public class ServerAdvancementLoader extends JsonDataLoader {
 	private static final Gson GSON = new GsonBuilder().create();
 	private Map<Identifier, AdvancementEntry> advancements = Map.of();
 	private AdvancementManager manager = new AdvancementManager();
-	private final RegistryWrapper.WrapperLookup registryLookup;
+	private final RegistryWrapper.WrapperLookup registries;
 
-	public ServerAdvancementLoader(RegistryWrapper.WrapperLookup registryLookup) {
+	public ServerAdvancementLoader(RegistryWrapper.WrapperLookup registries) {
 		super(GSON, RegistryKeys.getPath(RegistryKeys.ADVANCEMENT));
-		this.registryLookup = registryLookup;
+		this.registries = registries;
 	}
 
 	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
-		RegistryOps<JsonElement> registryOps = this.registryLookup.getOps(JsonOps.INSTANCE);
+		RegistryOps<JsonElement> registryOps = this.registries.getOps(JsonOps.INSTANCE);
 		Builder<Identifier, AdvancementEntry> builder = ImmutableMap.builder();
 		map.forEach((id, json) -> {
 			try {
@@ -65,7 +65,7 @@ public class ServerAdvancementLoader extends JsonDataLoader {
 
 	private void validate(Identifier id, Advancement advancement) {
 		ErrorReporter.Impl impl = new ErrorReporter.Impl();
-		advancement.validate(impl, this.registryLookup.createRegistryLookup());
+		advancement.validate(impl, this.registries.createRegistryLookup());
 		impl.getErrorsAsString().ifPresent(string -> LOGGER.warn("Found validation problems in advancement {}: \n{}", id, string));
 	}
 

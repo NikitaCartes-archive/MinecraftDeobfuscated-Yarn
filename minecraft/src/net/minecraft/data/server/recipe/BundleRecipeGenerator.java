@@ -28,8 +28,8 @@ public class BundleRecipeGenerator extends RecipeGenerator {
 		}
 
 		@Override
-		protected RecipeGenerator getRecipeGenerator(RegistryWrapper.WrapperLookup registryLookup, RecipeExporter exporter) {
-			return new BundleRecipeGenerator(registryLookup, exporter);
+		protected RecipeGenerator getRecipeGenerator(RegistryWrapper.WrapperLookup registries, RecipeExporter exporter) {
+			return new BundleRecipeGenerator(registries, exporter);
 		}
 
 		@Override

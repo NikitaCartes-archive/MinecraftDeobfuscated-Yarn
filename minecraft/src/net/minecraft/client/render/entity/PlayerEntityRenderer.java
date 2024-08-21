@@ -30,6 +30,7 @@ import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.scoreboard.ReadableScoreboardScore;
 import net.minecraft.scoreboard.Scoreboard;
@@ -40,7 +41,6 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
@@ -152,7 +152,6 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		playerEntityRenderState.stingerCount = abstractClientPlayerEntity.getStingerCount();
 		playerEntityRenderState.itemUseTimeLeft = abstractClientPlayerEntity.getItemUseTimeLeft();
 		playerEntityRenderState.handSwinging = abstractClientPlayerEntity.handSwinging;
-		playerEntityRenderState.inSwimmingPose = abstractClientPlayerEntity.isInSwimmingPose();
 		playerEntityRenderState.spectator = abstractClientPlayerEntity.isSpectator();
 		playerEntityRenderState.hatVisible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.HAT);
 		playerEntityRenderState.jacketVisible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.JACKET);
@@ -223,7 +222,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		state.field_53538 = (float)(d * i - f * h) * 100.0F;
 		state.field_53538 = MathHelper.clamp(state.field_53538, -20.0F, 20.0F);
 		float j = MathHelper.lerp(tickDelta, player.prevStrideDistance, player.strideDistance);
-		float k = MathHelper.lerp(tickDelta, player.field_53038, player.field_53039);
+		float k = MathHelper.lerp(tickDelta, player.lastDistanceMoved, player.distanceMoved);
 		state.field_53536 = state.field_53536 + MathHelper.sin(k * 6.0F) * 32.0F * j;
 	}
 
@@ -235,18 +234,20 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			: null;
 	}
 
-	public void renderRightArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture) {
-		this.renderArm(matrices, vertexConsumers, light, skinTexture, this.model.rightArm);
+	public void renderRightArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture, boolean bl) {
+		this.renderArm(matrices, vertexConsumers, light, skinTexture, this.model.rightArm, bl);
 	}
 
-	public void renderLeftArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture) {
-		this.renderArm(matrices, vertexConsumers, light, skinTexture, this.model.leftArm);
+	public void renderLeftArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture, boolean bl) {
+		this.renderArm(matrices, vertexConsumers, light, skinTexture, this.model.leftArm, bl);
 	}
 
-	private void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture, ModelPart arm) {
+	private void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture, ModelPart arm, boolean bl) {
 		PlayerEntityModel playerEntityModel = this.getModel();
-		playerEntityModel.leftArm.resetTransform();
-		playerEntityModel.rightArm.resetTransform();
+		arm.resetTransform();
+		arm.visible = true;
+		playerEntityModel.leftSleeve.visible = bl;
+		playerEntityModel.rightSleeve.visible = bl;
 		playerEntityModel.leftArm.roll = -0.1F;
 		playerEntityModel.rightArm.roll = 0.1F;
 		arm.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(skinTexture)), light, OverlayTexture.DEFAULT_UV);
@@ -270,7 +271,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			float jx = playerEntityRenderState.touchingWater ? -90.0F - i : -90.0F;
 			float k = MathHelper.lerp(h, 0.0F, jx);
 			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(k));
-			if (playerEntityRenderState.inSwimmingPose) {
+			if (playerEntityRenderState.isSwimming) {
 				matrixStack.translate(0.0F, -1.0F, 0.3F);
 			}
 		} else {

@@ -39,21 +39,21 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		this.sherds.toNbt(nbt);
 		if (!this.writeLootTable(nbt) && !this.stack.isEmpty()) {
-			nbt.put("item", this.stack.encode(registryLookup));
+			nbt.put("item", this.stack.toNbt(registries));
 		}
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		this.sherds = Sherds.fromNbt(nbt);
 		if (!this.readLootTable(nbt)) {
 			if (nbt.contains("item", NbtElement.COMPOUND_TYPE)) {
-				this.stack = (ItemStack)ItemStack.fromNbt(registryLookup, nbt.getCompound("item")).orElse(ItemStack.EMPTY);
+				this.stack = (ItemStack)ItemStack.fromNbt(registries, nbt.getCompound("item")).orElse(ItemStack.EMPTY);
 			} else {
 				this.stack = ItemStack.EMPTY;
 			}
@@ -65,8 +65,8 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createComponentlessNbt(registryLookup);
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
+		return this.createComponentlessNbt(registries);
 	}
 
 	public Direction getHorizontalFacing() {
@@ -115,10 +115,10 @@ public class DecoratedPotBlockEntity extends BlockEntity implements LootableInve
 	}
 
 	@Override
-	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
-		super.addComponents(componentMapBuilder);
-		componentMapBuilder.add(DataComponentTypes.POT_DECORATIONS, this.sherds);
-		componentMapBuilder.add(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(List.of(this.stack)));
+	protected void addComponents(ComponentMap.Builder builder) {
+		super.addComponents(builder);
+		builder.add(DataComponentTypes.POT_DECORATIONS, this.sherds);
+		builder.add(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(List.of(this.stack)));
 	}
 
 	@Override

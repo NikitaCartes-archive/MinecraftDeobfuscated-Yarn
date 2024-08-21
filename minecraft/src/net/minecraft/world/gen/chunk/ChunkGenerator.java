@@ -427,7 +427,7 @@ public abstract class ChunkGenerator {
 		int j = chunkPos.getStartZ();
 		HeightLimitView heightLimitView = chunk.getHeightLimitView();
 		int k = heightLimitView.getBottomY() + 1;
-		int l = heightLimitView.getTopY() - 1;
+		int l = heightLimitView.getTopYInclusive();
 		return new BlockBox(i, k, j, i + 15, l, j + 15);
 	}
 

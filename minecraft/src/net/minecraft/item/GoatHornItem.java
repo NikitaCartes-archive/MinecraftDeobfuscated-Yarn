@@ -6,6 +6,7 @@ import java.util.Optional;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
@@ -22,7 +23,6 @@ import net.minecraft.text.Texts;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -63,7 +63,7 @@ public class GoatHornItem extends Item {
 			Instrument instrument = (Instrument)((RegistryEntry)optional.get()).value();
 			user.setCurrentHand(hand);
 			playSound(world, user, instrument);
-			user.getItemCooldownManager().set(this, MathHelper.floor(instrument.useDuration() * 20.0F));
+			user.getItemCooldownManager().set(itemStack, MathHelper.floor(instrument.useDuration() * 20.0F));
 			user.incrementStat(Stats.USED.getOrCreateStat(this));
 			return ActionResult.CONSUME;
 		} else {
@@ -77,12 +77,12 @@ public class GoatHornItem extends Item {
 		return (Integer)optional.map(instrument -> MathHelper.floor(((Instrument)instrument.value()).useDuration() * 20.0F)).orElse(0);
 	}
 
-	private Optional<RegistryEntry<Instrument>> getInstrument(ItemStack stack, RegistryWrapper.WrapperLookup registryLookup) {
+	private Optional<RegistryEntry<Instrument>> getInstrument(ItemStack stack, RegistryWrapper.WrapperLookup registries) {
 		RegistryEntry<Instrument> registryEntry = stack.get(DataComponentTypes.INSTRUMENT);
 		if (registryEntry != null) {
 			return Optional.of(registryEntry);
 		} else {
-			Optional<RegistryEntryList.Named<Instrument>> optional = registryLookup.getWrapperOrThrow(RegistryKeys.INSTRUMENT).getOptional(this.instrumentTag);
+			Optional<RegistryEntryList.Named<Instrument>> optional = registries.getWrapperOrThrow(RegistryKeys.INSTRUMENT).getOptional(this.instrumentTag);
 			if (optional.isPresent()) {
 				Iterator<RegistryEntry<Instrument>> iterator = ((RegistryEntryList.Named)optional.get()).iterator();
 				if (iterator.hasNext()) {

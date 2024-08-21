@@ -43,10 +43,10 @@ public class RecipeBookResults {
 	private RecipeEntry<?> lastClickedRecipe;
 	@Nullable
 	private RecipeResultCollection resultCollection;
-	private boolean field_52844;
+	private boolean filteringCraftable;
 
-	public RecipeBookResults(CurrentIndexProvider currentIndexProvider, boolean bl) {
-		this.alternatesWidget = new RecipeAlternativesWidget(currentIndexProvider, bl);
+	public RecipeBookResults(CurrentIndexProvider currentIndexProvider, boolean furnace) {
+		this.alternatesWidget = new RecipeAlternativesWidget(currentIndexProvider, furnace);
 
 		for (int i = 0; i < 20; i++) {
 			this.resultButtons.add(new AnimatedResultButton(currentIndexProvider));
@@ -72,10 +72,10 @@ public class RecipeBookResults {
 		this.recipeDisplayListeners.add(widget);
 	}
 
-	public void setResults(List<RecipeResultCollection> list, boolean resetCurrentPage, boolean bl) {
-		this.resultCollections = list;
-		this.field_52844 = bl;
-		this.pageCount = (int)Math.ceil((double)list.size() / 20.0);
+	public void setResults(List<RecipeResultCollection> resultCollections, boolean resetCurrentPage, boolean filteringCraftable) {
+		this.resultCollections = resultCollections;
+		this.filteringCraftable = filteringCraftable;
+		this.pageCount = (int)Math.ceil((double)resultCollections.size() / 20.0);
 		if (this.pageCount <= this.currentPage || resetCurrentPage) {
 			this.currentPage = 0;
 		}
@@ -90,7 +90,7 @@ public class RecipeBookResults {
 			AnimatedResultButton animatedResultButton = (AnimatedResultButton)this.resultButtons.get(j);
 			if (i + j < this.resultCollections.size()) {
 				RecipeResultCollection recipeResultCollection = (RecipeResultCollection)this.resultCollections.get(i + j);
-				animatedResultButton.showResultCollection(recipeResultCollection, this.field_52844, this);
+				animatedResultButton.showResultCollection(recipeResultCollection, this.filteringCraftable, this);
 				animatedResultButton.visible = true;
 			} else {
 				animatedResultButton.visible = false;
@@ -172,11 +172,11 @@ public class RecipeBookResults {
 					if (button == 0) {
 						this.lastClickedRecipe = animatedResultButton.currentRecipe();
 						this.resultCollection = animatedResultButton.getResultCollection();
-					} else if (button == 1 && !this.alternatesWidget.isVisible() && !animatedResultButton.hasResults()) {
+					} else if (button == 1 && !this.alternatesWidget.isVisible() && !animatedResultButton.hasSingleResult()) {
 						this.alternatesWidget
 							.showAlternativesForResult(
 								animatedResultButton.getResultCollection(),
-								this.field_52844,
+								this.filteringCraftable,
 								animatedResultButton.getX(),
 								animatedResultButton.getY(),
 								areaLeft + areaWidth / 2,

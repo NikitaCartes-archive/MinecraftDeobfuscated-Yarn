@@ -48,13 +48,13 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 	private static final Set<EntityType<?>> ENTITY_TYPES_IN_MISC_GROUP_TO_CHECK = ImmutableSet.of(
 		EntityType.PLAYER, EntityType.ARMOR_STAND, EntityType.IRON_GOLEM, EntityType.SNOW_GOLEM, EntityType.VILLAGER
 	);
-	protected final RegistryWrapper.WrapperLookup registryLookup;
+	protected final RegistryWrapper.WrapperLookup registries;
 	private final FeatureSet requiredFeatures;
 	private final FeatureSet featureSet;
 	private final Map<EntityType<?>, Map<RegistryKey<LootTable>, LootTable.Builder>> lootTables = Maps.<EntityType<?>, Map<RegistryKey<LootTable>, LootTable.Builder>>newHashMap();
 
 	protected final AnyOfLootCondition.Builder createSmeltLootCondition() {
-		RegistryWrapper.Impl<Enchantment> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		return AnyOfLootCondition.builder(
 			EntityPropertiesLootCondition.builder(
 				LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().flags(EntityFlagsPredicate.Builder.create().onFire(true))
@@ -76,14 +76,14 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 		);
 	}
 
-	protected EntityLootTableGenerator(FeatureSet requiredFeatures, RegistryWrapper.WrapperLookup registryLookup) {
-		this(requiredFeatures, requiredFeatures, registryLookup);
+	protected EntityLootTableGenerator(FeatureSet requiredFeatures, RegistryWrapper.WrapperLookup registries) {
+		this(requiredFeatures, requiredFeatures, registries);
 	}
 
-	protected EntityLootTableGenerator(FeatureSet requiredFeatures, FeatureSet featureSet, RegistryWrapper.WrapperLookup registryLookup) {
+	protected EntityLootTableGenerator(FeatureSet requiredFeatures, FeatureSet featureSet, RegistryWrapper.WrapperLookup registries) {
 		this.requiredFeatures = requiredFeatures;
 		this.featureSet = featureSet;
-		this.registryLookup = registryLookup;
+		this.registries = registries;
 	}
 
 	protected static LootTable.Builder createForSheep(ItemConvertible item) {

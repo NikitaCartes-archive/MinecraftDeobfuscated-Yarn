@@ -272,8 +272,8 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createComponentlessNbt(registryLookup);
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
+		return this.createComponentlessNbt(registries);
 	}
 
 	private static void writeStatusEffect(NbtCompound nbt, String key, @Nullable RegistryEntry<StatusEffect> effect) {
@@ -293,25 +293,25 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		this.primary = readStatusEffect(nbt, "primary_effect");
 		this.secondary = readStatusEffect(nbt, "secondary_effect");
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
-			this.customName = tryParseCustomName(nbt.getString("CustomName"), registryLookup);
+			this.customName = tryParseCustomName(nbt.getString("CustomName"), registries);
 		}
 
 		this.lock = ContainerLock.fromNbt(nbt);
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		writeStatusEffect(nbt, "primary_effect", this.primary);
 		writeStatusEffect(nbt, "secondary_effect", this.secondary);
 		nbt.putInt("Levels", this.level);
 		if (this.customName != null) {
-			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName, registryLookup));
+			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName, registries));
 		}
 
 		this.lock.writeNbt(nbt);
@@ -353,11 +353,11 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	@Override
-	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
-		super.addComponents(componentMapBuilder);
-		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
+	protected void addComponents(ComponentMap.Builder builder) {
+		super.addComponents(builder);
+		builder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
 		if (!this.lock.equals(ContainerLock.EMPTY)) {
-			componentMapBuilder.add(DataComponentTypes.LOCK, this.lock);
+			builder.add(DataComponentTypes.LOCK, this.lock);
 		}
 	}
 

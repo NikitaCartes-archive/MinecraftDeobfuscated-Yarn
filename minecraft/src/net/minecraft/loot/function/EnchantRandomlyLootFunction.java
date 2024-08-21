@@ -83,8 +83,8 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 		return new EnchantRandomlyLootFunction.Builder();
 	}
 
-	public static EnchantRandomlyLootFunction.Builder builder(RegistryWrapper.WrapperLookup registryLookup) {
-		return create().options(registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(EnchantmentTags.ON_RANDOM_LOOT));
+	public static EnchantRandomlyLootFunction.Builder builder(RegistryWrapper.WrapperLookup registries) {
+		return create().options(registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(EnchantmentTags.ON_RANDOM_LOOT));
 	}
 
 	public static class Builder extends ConditionalLootFunction.Builder<EnchantRandomlyLootFunction.Builder> {

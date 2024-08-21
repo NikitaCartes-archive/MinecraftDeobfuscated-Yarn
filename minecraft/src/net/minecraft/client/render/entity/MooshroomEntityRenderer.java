@@ -13,14 +13,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
-public class MooshroomEntityRenderer extends MobEntityRenderer<MooshroomEntity, MooshroomEntityRenderState, CowEntityModel> {
+public class MooshroomEntityRenderer extends AgeableMobEntityRenderer<MooshroomEntity, MooshroomEntityRenderState, CowEntityModel> {
 	private static final Map<MooshroomEntity.Type, Identifier> TEXTURES = Util.make(Maps.<MooshroomEntity.Type, Identifier>newHashMap(), map -> {
 		map.put(MooshroomEntity.Type.BROWN, Identifier.ofVanilla("textures/entity/cow/brown_mooshroom.png"));
 		map.put(MooshroomEntity.Type.RED, Identifier.ofVanilla("textures/entity/cow/red_mooshroom.png"));
 	});
 
 	public MooshroomEntityRenderer(EntityRendererFactory.Context context) {
-		super(context, new CowEntityModel(context.getPart(EntityModelLayers.MOOSHROOM)), 0.7F);
+		super(context, new CowEntityModel(context.getPart(EntityModelLayers.MOOSHROOM)), new CowEntityModel(context.getPart(EntityModelLayers.MOOSHROOM_BABY)), 0.7F);
 		this.addFeature(new MooshroomMushroomFeatureRenderer(this, context.getBlockRenderManager()));
 	}
 

@@ -27,7 +27,7 @@ public abstract class DebugChart {
 		return Math.min(this.log.getDimension() + 2, centerX);
 	}
 
-	public int method_61983() {
+	public int getHeight() {
 		return 60 + 9;
 	}
 

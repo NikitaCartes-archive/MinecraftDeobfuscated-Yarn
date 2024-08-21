@@ -24,7 +24,7 @@ public class BufferBuilderStorage {
 			map.put(TexturedRenderLayers.getEntitySolid(), this.blockBufferBuilders.get(RenderLayer.getSolid()));
 			map.put(TexturedRenderLayers.getEntityCutout(), this.blockBufferBuilders.get(RenderLayer.getCutout()));
 			map.put(TexturedRenderLayers.getBannerPatterns(), this.blockBufferBuilders.get(RenderLayer.getCutoutMipped()));
-			map.put(TexturedRenderLayers.getEntityTranslucentCull(), this.blockBufferBuilders.get(RenderLayer.getTranslucent()));
+			map.put(TexturedRenderLayers.getItemEntityTranslucentCull(), this.blockBufferBuilders.get(RenderLayer.getTranslucent()));
 			assignBufferBuilder(map, TexturedRenderLayers.getShieldPatterns());
 			assignBufferBuilder(map, TexturedRenderLayers.getBeds());
 			assignBufferBuilder(map, TexturedRenderLayers.getShulkerBoxes());
@@ -35,7 +35,6 @@ public class BufferBuilderStorage {
 			assignBufferBuilder(map, RenderLayer.getGlint());
 			assignBufferBuilder(map, RenderLayer.getGlintTranslucent());
 			assignBufferBuilder(map, RenderLayer.getEntityGlint());
-			assignBufferBuilder(map, RenderLayer.getDirectEntityGlint());
 			assignBufferBuilder(map, RenderLayer.getWaterMask());
 		});
 		this.entityVertexConsumers = VertexConsumerProvider.immediate(sequencedMap, new BufferAllocator(786432));

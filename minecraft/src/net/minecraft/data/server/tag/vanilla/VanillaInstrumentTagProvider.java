@@ -15,7 +15,7 @@ public class VanillaInstrumentTagProvider extends TagProvider<Instrument> {
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.getOrCreateTagBuilder(InstrumentTags.REGULAR_GOAT_HORNS)
 			.add(Instruments.PONDER_GOAT_HORN)
 			.add(Instruments.SING_GOAT_HORN)

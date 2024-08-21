@@ -54,28 +54,27 @@ public class LootTableProvider implements DataProvider {
 
 	@Override
 	public CompletableFuture<?> run(DataWriter writer) {
-		return this.registryLookupFuture.thenCompose(registryLookup -> this.run(writer, registryLookup));
+		return this.registryLookupFuture.thenCompose(registries -> this.run(writer, registries));
 	}
 
-	private CompletableFuture<?> run(DataWriter writer, RegistryWrapper.WrapperLookup registryLookup) {
+	private CompletableFuture<?> run(DataWriter writer, RegistryWrapper.WrapperLookup registries) {
 		MutableRegistry<LootTable> mutableRegistry = new SimpleRegistry<>(RegistryKeys.LOOT_TABLE, Lifecycle.experimental());
 		Map<RandomSeed.XoroshiroSeed, Identifier> map = new Object2ObjectOpenHashMap<>();
-		this.lootTypeGenerators
-			.forEach(lootTypeGenerator -> ((LootTableGenerator)lootTypeGenerator.provider().apply(registryLookup)).accept((lootTable, builder) -> {
-					Identifier identifier = getId(lootTable);
-					Identifier identifier2 = (Identifier)map.put(RandomSequence.createSeed(identifier), identifier);
-					if (identifier2 != null) {
-						Util.logErrorOrPause("Loot table random sequence seed collision on " + identifier2 + " and " + lootTable.getValue());
-					}
+		this.lootTypeGenerators.forEach(lootTypeGenerator -> ((LootTableGenerator)lootTypeGenerator.provider().apply(registries)).accept((lootTable, builder) -> {
+				Identifier identifier = getId(lootTable);
+				Identifier identifier2 = (Identifier)map.put(RandomSequence.createSeed(identifier), identifier);
+				if (identifier2 != null) {
+					Util.logErrorOrPause("Loot table random sequence seed collision on " + identifier2 + " and " + lootTable.getValue());
+				}
 
-					builder.randomSequenceId(identifier);
-					LootTable lootTable2 = builder.type(lootTypeGenerator.paramSet).build();
-					mutableRegistry.add(lootTable, lootTable2, RegistryEntryInfo.DEFAULT);
-				}));
+				builder.randomSequenceId(identifier);
+				LootTable lootTable2 = builder.type(lootTypeGenerator.paramSet).build();
+				mutableRegistry.add(lootTable, lootTable2, RegistryEntryInfo.DEFAULT);
+			}));
 		mutableRegistry.freeze();
 		ErrorReporter.Impl impl = new ErrorReporter.Impl();
-		RegistryEntryLookup.RegistryLookup registryLookup2 = new DynamicRegistryManager.ImmutableImpl(List.of(mutableRegistry)).toImmutable().createRegistryLookup();
-		LootTableReporter lootTableReporter = new LootTableReporter(impl, LootContextTypes.GENERIC, registryLookup2);
+		RegistryEntryLookup.RegistryLookup registryLookup = new DynamicRegistryManager.ImmutableImpl(List.of(mutableRegistry)).toImmutable().createRegistryLookup();
+		LootTableReporter lootTableReporter = new LootTableReporter(impl, LootContextTypes.GENERIC, registryLookup);
 
 		for (RegistryKey<LootTable> registryKey : Sets.difference(this.lootTableIds, mutableRegistry.getKeys())) {
 			impl.report("Missing built-in table: " + registryKey.getValue());
@@ -97,7 +96,7 @@ public class LootTableProvider implements DataProvider {
 				RegistryKey<LootTable> registryKeyx = (RegistryKey<LootTable>)entry.getKey();
 				LootTable lootTable = (LootTable)entry.getValue();
 				Path path = this.pathResolver.resolveJson(registryKeyx.getValue());
-				return DataProvider.writeCodecToPath(writer, registryLookup, LootTable.CODEC, lootTable, path);
+				return DataProvider.writeCodecToPath(writer, registries, LootTable.CODEC, lootTable, path);
 			}).toArray(CompletableFuture[]::new));
 		}
 	}

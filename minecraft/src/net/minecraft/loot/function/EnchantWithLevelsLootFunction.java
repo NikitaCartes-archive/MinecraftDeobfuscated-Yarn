@@ -58,9 +58,9 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 		return EnchantmentHelper.enchant(random, stack, this.levels.nextInt(context), dynamicRegistryManager, this.options);
 	}
 
-	public static EnchantWithLevelsLootFunction.Builder builder(RegistryWrapper.WrapperLookup registryLookup, LootNumberProvider levels) {
+	public static EnchantWithLevelsLootFunction.Builder builder(RegistryWrapper.WrapperLookup registries, LootNumberProvider levels) {
 		return new EnchantWithLevelsLootFunction.Builder(levels)
-			.options(registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(EnchantmentTags.ON_RANDOM_LOOT));
+			.options(registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(EnchantmentTags.ON_RANDOM_LOOT));
 	}
 
 	public static class Builder extends ConditionalLootFunction.Builder<EnchantWithLevelsLootFunction.Builder> {

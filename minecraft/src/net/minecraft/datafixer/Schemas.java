@@ -107,6 +107,7 @@ import net.minecraft.datafixer.fix.EntityWolfColorFix;
 import net.minecraft.datafixer.fix.EntityZombieSplitFix;
 import net.minecraft.datafixer.fix.EntityZombieVillagerTypeFix;
 import net.minecraft.datafixer.fix.EntityZombifiedPiglinRenameFix;
+import net.minecraft.datafixer.fix.FoodToConsumableFix;
 import net.minecraft.datafixer.fix.FurnaceRecipesFix;
 import net.minecraft.datafixer.fix.GameEventRenamesFix;
 import net.minecraft.datafixer.fix.GoatHornIdFix;
@@ -204,6 +205,7 @@ import net.minecraft.datafixer.fix.TippedArrowPotionToItemFix;
 import net.minecraft.datafixer.fix.TrialSpawnerConfigTagFix;
 import net.minecraft.datafixer.fix.UntaggedSpawnerFix;
 import net.minecraft.datafixer.fix.UpdateSignTextFormatFix;
+import net.minecraft.datafixer.fix.VillagerCanPickUpLootFix;
 import net.minecraft.datafixer.fix.VillagerFollowRangeFix;
 import net.minecraft.datafixer.fix.VillagerGossipFix;
 import net.minecraft.datafixer.fix.VillagerProfessionFix;
@@ -304,6 +306,7 @@ import net.minecraft.datafixer.schema.Schema3818_4;
 import net.minecraft.datafixer.schema.Schema3818_5;
 import net.minecraft.datafixer.schema.Schema3825;
 import net.minecraft.datafixer.schema.Schema3938;
+import net.minecraft.datafixer.schema.Schema4059;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -349,6 +352,7 @@ public class Schemas {
 		builder.addFixer(new EntityEquipmentToArmorAndHandFix(schema, true));
 		Schema schema2 = builder.addSchema(101, EMPTY);
 		builder.addFixer(new BlockEntitySignTextStrictJsonFix(schema2, false));
+		builder.addFixer(new VillagerCanPickUpLootFix(schema2));
 		Schema schema3 = builder.addSchema(102, Schema102::new);
 		builder.addFixer(new ItemIdFix(schema3, true));
 		builder.addFixer(new ItemPotionFix(schema3, false));
@@ -1317,6 +1321,8 @@ public class Schemas {
 		builder.addFixer(new AttributeIdPrefixFix(schema228));
 		Schema schema229 = builder.addSchema(4057, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new CarvingStepRemoveFix(schema229));
+		Schema schema230 = builder.addSchema(4059, Schema4059::new);
+		builder.addFixer(new FoodToConsumableFix(schema230));
 	}
 
 	private static UnaryOperator<String> replacingRaw(Map<String, String> replacements) {

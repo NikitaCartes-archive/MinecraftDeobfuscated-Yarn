@@ -63,7 +63,7 @@ public class PlayerListHud {
 	private static final Identifier FULL_HEART_TEXTURE = Identifier.ofVanilla("hud/heart/full");
 	private static final Identifier ABSORBING_HALF_HEART_BLINKING_TEXTURE = Identifier.ofVanilla("hud/heart/absorbing_half_blinking");
 	private static final Identifier HALF_HEART_TEXTURE = Identifier.ofVanilla("hud/heart/half");
-	private static final Comparator<PlayerListEntry> ENTRY_ORDERING = Comparator.comparingInt(playerListEntry -> -playerListEntry.method_62154())
+	private static final Comparator<PlayerListEntry> ENTRY_ORDERING = Comparator.comparingInt(entry -> -entry.getListOrder())
 		.thenComparingInt(entry -> entry.getGameMode() == GameMode.SPECTATOR ? 1 : 0)
 		.thenComparing(entry -> Nullables.mapOrElse(entry.getScoreboardTeam(), Team::getName, ""))
 		.thenComparing(entry -> entry.getProfile().getName(), String::compareToIgnoreCase);

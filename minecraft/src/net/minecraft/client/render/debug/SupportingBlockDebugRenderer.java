@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.function.DoubleSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9974;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -93,7 +93,7 @@ public class SupportingBlockDebugRenderer implements DebugRenderer.Renderer {
 		double g = d + 1.0 + 4.0 * dilation;
 		double h = e + 1.0 + 4.0 * dilation;
 		double i = f + 1.0 + 4.0 * dilation;
-		class_9974.method_62292(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), d, e, f, g, h, i, red, green, blue, 0.4F);
+		VertexRendering.drawBox(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), d, e, f, g, h, i, red, green, blue, 0.4F);
 		DebugRenderer.method_62350(
 			matrices,
 			vertexConsumers.getBuffer(RenderLayer.getLines()),

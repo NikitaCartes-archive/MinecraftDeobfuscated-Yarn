@@ -42,8 +42,8 @@ public class ArmorTrimMaterials {
 		register(registry, AMETHYST, Items.AMETHYST_SHARD, Style.EMPTY.withColor(10116294), 1.0F);
 	}
 
-	public static Optional<RegistryEntry.Reference<ArmorTrimMaterial>> get(RegistryWrapper.WrapperLookup registriesLookup, ItemStack stack) {
-		return registriesLookup.getWrapperOrThrow(RegistryKeys.TRIM_MATERIAL)
+	public static Optional<RegistryEntry.Reference<ArmorTrimMaterial>> get(RegistryWrapper.WrapperLookup registries, ItemStack stack) {
+		return registries.getWrapperOrThrow(RegistryKeys.TRIM_MATERIAL)
 			.streamEntries()
 			.filter(recipe -> stack.itemMatches(((ArmorTrimMaterial)recipe.value()).ingredient()))
 			.findFirst();

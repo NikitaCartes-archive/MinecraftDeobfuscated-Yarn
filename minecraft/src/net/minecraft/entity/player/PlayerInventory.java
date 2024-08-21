@@ -392,7 +392,7 @@ public class PlayerInventory implements Inventory, Nameable {
 			if (!this.main.get(i).isEmpty()) {
 				NbtCompound nbtCompound = new NbtCompound();
 				nbtCompound.putByte("Slot", (byte)i);
-				nbtList.add(this.main.get(i).encode(this.player.getRegistryManager(), nbtCompound));
+				nbtList.add(this.main.get(i).toNbt(this.player.getRegistryManager(), nbtCompound));
 			}
 		}
 
@@ -400,7 +400,7 @@ public class PlayerInventory implements Inventory, Nameable {
 			if (!this.armor.get(ix).isEmpty()) {
 				NbtCompound nbtCompound = new NbtCompound();
 				nbtCompound.putByte("Slot", (byte)(ix + 100));
-				nbtList.add(this.armor.get(ix).encode(this.player.getRegistryManager(), nbtCompound));
+				nbtList.add(this.armor.get(ix).toNbt(this.player.getRegistryManager(), nbtCompound));
 			}
 		}
 
@@ -408,7 +408,7 @@ public class PlayerInventory implements Inventory, Nameable {
 			if (!this.offHand.get(ixx).isEmpty()) {
 				NbtCompound nbtCompound = new NbtCompound();
 				nbtCompound.putByte("Slot", (byte)(ixx + 150));
-				nbtList.add(this.offHand.get(ixx).encode(this.player.getRegistryManager(), nbtCompound));
+				nbtList.add(this.offHand.get(ixx).toNbt(this.player.getRegistryManager(), nbtCompound));
 			}
 		}
 

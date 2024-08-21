@@ -92,7 +92,7 @@ public class SurfaceBuilder {
 			@Override
 			public void setState(int y, BlockState state) {
 				HeightLimitView heightLimitView = chunk.getHeightLimitView();
-				if (y >= heightLimitView.getBottomY() && y < heightLimitView.getTopY()) {
+				if (heightLimitView.isInHeightLimit(y)) {
 					chunk.setBlockState(mutable.setY(y), state, false);
 					if (!state.getFluidState().isEmpty()) {
 						chunk.markBlockForPostProcessing(mutable);

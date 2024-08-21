@@ -14,7 +14,7 @@ public record SmithingRecipeInput(ItemStack template, ItemStack base, ItemStack 
 	}
 
 	@Override
-	public int getSize() {
+	public int size() {
 		return 3;
 	}
 

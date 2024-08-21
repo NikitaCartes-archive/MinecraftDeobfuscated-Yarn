@@ -39,14 +39,14 @@ public class JsonReaderUtils {
 		}
 	}
 
-	public static <T> T parse(RegistryWrapper.WrapperLookup registryLookup, StringReader stringReader, Codec<T> codec) {
+	public static <T> T parse(RegistryWrapper.WrapperLookup registries, StringReader stringReader, Codec<T> codec) {
 		JsonReader jsonReader = new JsonReader(new java.io.StringReader(stringReader.getRemaining()));
 		jsonReader.setLenient(false);
 
 		Object var5;
 		try {
 			JsonElement jsonElement = Streams.parse(jsonReader);
-			var5 = codec.parse(registryLookup.getOps(JsonOps.INSTANCE), jsonElement).getOrThrow(JsonParseException::new);
+			var5 = codec.parse(registries.getOps(JsonOps.INSTANCE), jsonElement).getOrThrow(JsonParseException::new);
 		} catch (StackOverflowError var9) {
 			throw new JsonParseException(var9);
 		} finally {

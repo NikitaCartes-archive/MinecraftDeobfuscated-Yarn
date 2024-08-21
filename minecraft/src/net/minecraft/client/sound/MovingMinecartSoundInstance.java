@@ -44,21 +44,21 @@ public class MovingMinecartSoundInstance extends MovingSoundInstance {
 
 	@Override
 	public void tick() {
-		boolean bl = !this.minecart.isOnRail() && this.minecart.getController() instanceof ExperimentalMinecartController;
-		if (!this.minecart.isRemoved() && !bl) {
+		if (this.minecart.isRemoved()) {
+			this.setDone();
+		} else {
 			this.x = (double)((float)this.minecart.getX());
 			this.y = (double)((float)this.minecart.getY());
 			this.z = (double)((float)this.minecart.getZ());
 			float f = (float)this.minecart.getVelocity().horizontalLength();
-			if (f >= 0.01F && this.minecart.getWorld().getTickManager().shouldTick()) {
+			boolean bl = !this.minecart.isOnRail() && this.minecart.getController() instanceof ExperimentalMinecartController;
+			if (f >= 0.01F && this.minecart.getWorld().getTickManager().shouldTick() && !bl) {
 				this.distance = MathHelper.clamp(this.distance + 0.0025F, 0.0F, 1.0F);
 				this.volume = MathHelper.lerp(MathHelper.clamp(f, 0.0F, 0.5F), 0.0F, 0.7F);
 			} else {
 				this.distance = 0.0F;
 				this.volume = 0.0F;
 			}
-		} else {
-			this.setDone();
 		}
 	}
 }

@@ -68,8 +68,8 @@ public record DimensionOptionsRegistryHolder(Map<RegistryKey<DimensionOptions>, 
 		return Stream.concat(VANILLA_KEYS.stream(), otherKeys.filter(key -> !VANILLA_KEYS.contains(key)));
 	}
 
-	public DimensionOptionsRegistryHolder with(RegistryWrapper.WrapperLookup registryLookup, ChunkGenerator chunkGenerator) {
-		RegistryWrapper<DimensionType> registryWrapper = registryLookup.getWrapperOrThrow(RegistryKeys.DIMENSION_TYPE);
+	public DimensionOptionsRegistryHolder with(RegistryWrapper.WrapperLookup registries, ChunkGenerator chunkGenerator) {
+		RegistryWrapper<DimensionType> registryWrapper = registries.getWrapperOrThrow(RegistryKeys.DIMENSION_TYPE);
 		Map<RegistryKey<DimensionOptions>, DimensionOptions> map = createRegistry(registryWrapper, this.dimensions, chunkGenerator);
 		return new DimensionOptionsRegistryHolder(map);
 	}

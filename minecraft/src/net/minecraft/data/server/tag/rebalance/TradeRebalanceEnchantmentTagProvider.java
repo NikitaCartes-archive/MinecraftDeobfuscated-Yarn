@@ -15,7 +15,7 @@ public class TradeRebalanceEnchantmentTagProvider extends TagProvider<Enchantmen
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.getOrCreateTagBuilder(EnchantmentTags.DESERT_COMMON_TRADE).add(Enchantments.FIRE_PROTECTION, Enchantments.THORNS, Enchantments.INFINITY);
 		this.getOrCreateTagBuilder(EnchantmentTags.JUNGLE_COMMON_TRADE).add(Enchantments.FEATHER_FALLING, Enchantments.PROJECTILE_PROTECTION, Enchantments.POWER);
 		this.getOrCreateTagBuilder(EnchantmentTags.PLAINS_COMMON_TRADE).add(Enchantments.PUNCH, Enchantments.SMITE, Enchantments.BANE_OF_ARTHROPODS);

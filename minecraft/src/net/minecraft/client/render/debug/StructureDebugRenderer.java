@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9974;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.s2c.custom.DebugStructuresCustomPayload;
 import net.minecraft.registry.RegistryKey;
@@ -39,7 +39,7 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 		if (this.structureBoundingBoxes.containsKey(registryKey)) {
 			for (BlockBox blockBox : ((Map)this.structureBoundingBoxes.get(registryKey)).values()) {
 				if (blockPos.isWithinDistance(blockBox.getCenter(), 500.0)) {
-					class_9974.method_62293(
+					VertexRendering.drawBox(
 						matrices,
 						vertexConsumer,
 						(double)blockBox.getMinX() - cameraX,
@@ -66,7 +66,7 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 				BlockBox blockBox2 = piece.boundingBox();
 				if (blockPos.isWithinDistance(blockBox2.getCenter(), 500.0)) {
 					if (piece.isStart()) {
-						class_9974.method_62293(
+						VertexRendering.drawBox(
 							matrices,
 							vertexConsumer,
 							(double)blockBox2.getMinX() - cameraX,
@@ -84,7 +84,7 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 							0.0F
 						);
 					} else {
-						class_9974.method_62293(
+						VertexRendering.drawBox(
 							matrices,
 							vertexConsumer,
 							(double)blockBox2.getMinX() - cameraX,

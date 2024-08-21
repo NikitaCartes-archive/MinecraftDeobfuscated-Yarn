@@ -17,7 +17,7 @@ public abstract class SpecialCraftingRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup) {
+	public ItemStack getResult(RegistryWrapper.WrapperLookup registries) {
 		return ItemStack.EMPTY;
 	}
 

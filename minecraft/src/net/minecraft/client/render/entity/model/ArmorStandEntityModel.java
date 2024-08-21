@@ -76,7 +76,7 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 		super.setAngles(armorStandEntityRenderState);
 		this.leftArm.visible = armorStandEntityRenderState.showArms;
 		this.rightArm.visible = armorStandEntityRenderState.showArms;
-		this.basePlate.visible = armorStandEntityRenderState.hideBasePlate;
+		this.basePlate.visible = armorStandEntityRenderState.showBasePlate;
 		this.rightBodyStick.pitch = (float) (Math.PI / 180.0) * armorStandEntityRenderState.bodyRotation.getPitch();
 		this.rightBodyStick.yaw = (float) (Math.PI / 180.0) * armorStandEntityRenderState.bodyRotation.getYaw();
 		this.rightBodyStick.roll = (float) (Math.PI / 180.0) * armorStandEntityRenderState.bodyRotation.getRoll();

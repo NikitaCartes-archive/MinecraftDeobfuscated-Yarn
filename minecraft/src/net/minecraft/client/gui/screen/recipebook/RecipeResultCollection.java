@@ -96,7 +96,7 @@ public class RecipeResultCollection {
 		return this.recipes;
 	}
 
-	public List<RecipeEntry<?>> method_62050(RecipeResultCollection.RecipeFilterMode filterMode) {
+	public List<RecipeEntry<?>> filter(RecipeResultCollection.RecipeFilterMode filterMode) {
 		Predicate<RecipeEntry<?>> predicate = switch (filterMode) {
 			case ANY -> this.fittingRecipes::contains;
 			case CRAFTABLE -> this.craftableRecipes::contains;

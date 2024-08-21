@@ -1,5 +1,6 @@
 package net.minecraft.component;
 
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 /**
@@ -26,6 +27,10 @@ public interface ComponentHolder {
 	@Nullable
 	default <T> T get(ComponentType<? extends T> type) {
 		return this.getComponents().get(type);
+	}
+
+	default <T> Stream<T> streamAll(Class<? extends T> valueClass) {
+		return this.getComponents().stream().map(Component::value).filter(value -> valueClass.isAssignableFrom(value.getClass())).map(value -> value);
 	}
 
 	/**

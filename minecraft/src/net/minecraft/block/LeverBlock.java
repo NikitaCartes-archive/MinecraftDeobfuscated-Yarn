@@ -167,7 +167,9 @@ public class LeverBlock extends WallMountedBlock {
 
 	private void updateNeighbors(BlockState state, World world, BlockPos pos) {
 		Direction direction = getDirection(state).getOpposite();
-		WireOrientation wireOrientation = OrientationHelper.getEmissionOrientation(world, direction, direction.getAxis().isHorizontal() ? Direction.UP : null);
+		WireOrientation wireOrientation = OrientationHelper.getEmissionOrientation(
+			world, direction, direction.getAxis().isHorizontal() ? Direction.UP : state.get(FACING)
+		);
 		world.updateNeighborsAlways(pos, this, wireOrientation);
 		world.updateNeighborsAlways(pos.offset(direction), this, wireOrientation);
 	}

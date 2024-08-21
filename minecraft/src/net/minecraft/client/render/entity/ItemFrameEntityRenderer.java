@@ -164,13 +164,14 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 	public void updateRenderState(T itemFrameEntity, ItemFrameEntityRenderState itemFrameEntityRenderState, float f) {
 		super.updateRenderState(itemFrameEntity, itemFrameEntityRenderState, f);
 		itemFrameEntityRenderState.facing = itemFrameEntity.getHorizontalFacing();
-		itemFrameEntityRenderState.contents = itemFrameEntity.getHeldItemStack().copy();
+		ItemStack itemStack = itemFrameEntity.getHeldItemStack();
+		itemFrameEntityRenderState.contents = itemStack.copy();
 		itemFrameEntityRenderState.rotation = itemFrameEntity.getRotation();
 		itemFrameEntityRenderState.glow = itemFrameEntity.getType() == EntityType.GLOW_ITEM_FRAME;
 		itemFrameEntityRenderState.itemModel = null;
 		itemFrameEntityRenderState.mapId = null;
 		if (!itemFrameEntityRenderState.contents.isEmpty()) {
-			MapIdComponent mapIdComponent = itemFrameEntity.getMapId(itemFrameEntityRenderState.contents);
+			MapIdComponent mapIdComponent = itemFrameEntity.getMapId(itemStack);
 			if (mapIdComponent != null) {
 				MapState mapState = itemFrameEntity.getWorld().getMapState(mapIdComponent);
 				if (mapState != null) {
@@ -178,8 +179,7 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 					itemFrameEntityRenderState.mapId = mapIdComponent;
 				}
 			} else {
-				itemFrameEntityRenderState.itemModel = this.itemRenderer
-					.getModel(itemFrameEntityRenderState.contents, itemFrameEntity.getWorld(), null, itemFrameEntity.getId());
+				itemFrameEntityRenderState.itemModel = this.itemRenderer.getModel(itemStack, itemFrameEntity.getWorld(), null, itemFrameEntity.getId());
 			}
 		}
 	}

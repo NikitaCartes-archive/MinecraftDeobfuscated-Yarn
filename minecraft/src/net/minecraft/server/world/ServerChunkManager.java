@@ -322,7 +322,7 @@ public class ServerChunkManager extends ChunkManager {
 	public void tick(BooleanSupplier shouldKeepTicking, boolean tickChunks) {
 		this.world.getProfiler().push("purge");
 		if (this.world.getTickManager().shouldTick() || !tickChunks) {
-			this.ticketManager.purge();
+			this.ticketManager.purgeExpiredTickets();
 		}
 
 		this.updateChunks();

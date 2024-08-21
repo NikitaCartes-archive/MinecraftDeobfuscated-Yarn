@@ -7,7 +7,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 
 public interface AdvancementTabGenerator {
-	void accept(RegistryWrapper.WrapperLookup lookup, Consumer<AdvancementEntry> exporter);
+	void accept(RegistryWrapper.WrapperLookup registries, Consumer<AdvancementEntry> exporter);
 
 	/**
 	 * {@return an advancement to use as a reference in {@link

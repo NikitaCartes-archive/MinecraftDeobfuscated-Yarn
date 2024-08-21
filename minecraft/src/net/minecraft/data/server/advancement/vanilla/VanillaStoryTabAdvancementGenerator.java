@@ -32,8 +32,8 @@ import net.minecraft.world.gen.structure.StructureKeys;
 
 public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenerator {
 	@Override
-	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<AdvancementEntry> exporter) {
-		RegistryEntryLookup<Item> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.ITEM);
+	public void accept(RegistryWrapper.WrapperLookup registries, Consumer<AdvancementEntry> exporter) {
+		RegistryEntryLookup<Item> registryEntryLookup = registries.getWrapperOrThrow(RegistryKeys.ITEM);
 		AdvancementEntry advancementEntry = Advancement.Builder.create()
 			.display(
 				Blocks.GRASS_BLOCK,
@@ -257,7 +257,7 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 			.criterion(
 				"in_stronghold",
 				TickCriterion.Conditions.createLocation(
-					LocationPredicate.Builder.createStructure(lookup.getWrapperOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.STRONGHOLD))
+					LocationPredicate.Builder.createStructure(registries.getWrapperOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.STRONGHOLD))
 				)
 			)
 			.build(exporter, "story/follow_ender_eye");

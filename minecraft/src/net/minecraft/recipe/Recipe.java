@@ -52,7 +52,7 @@ public interface Recipe<T extends RecipeInput> {
 	 * 
 	 * @return the resulting item stack
 	 */
-	ItemStack craft(T input, RegistryWrapper.WrapperLookup lookup);
+	ItemStack craft(T input, RegistryWrapper.WrapperLookup registries);
 
 	/**
 	 * {@return whether this recipe will fit into the given grid size}
@@ -68,9 +68,9 @@ public interface Recipe<T extends RecipeInput> {
 	 * {@return a preview of the recipe's output}
 	 * 
 	 * <p>The returned stack should not be modified. To obtain the actual output,
-	 * call {@link #craft(Inventory, DynamicRegistryManager)}.
+	 * call {@link #craft(RecipeInput, RegistryWrapper.WrapperLookup)}.
 	 */
-	ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup);
+	ItemStack getResult(RegistryWrapper.WrapperLookup registries);
 
 	/**
 	 * {@return the remaining stacks to be left in the {@code inventory} after the recipe is used}
@@ -83,7 +83,7 @@ public interface Recipe<T extends RecipeInput> {
 	 * ItemStack#EMPTY empty} if the stack has no remainder.
 	 */
 	default DefaultedList<ItemStack> getRemainder(T input) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(input.getSize(), ItemStack.EMPTY);
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(input.size(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
 			Item item = input.getStackInSlot(i).getItem();

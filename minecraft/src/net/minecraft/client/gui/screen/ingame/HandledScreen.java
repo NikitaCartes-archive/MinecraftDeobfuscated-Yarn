@@ -108,19 +108,23 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		super.render(context, mouseX, mouseY, delta);
 		context.getMatrices().push();
 		context.getMatrices().translate((float)i, (float)j, 0.0F);
-		this.updatePoint((double)mouseX, (double)mouseY);
+		Slot slot = this.focusedSlot;
+		this.focusedSlot = null;
 
-		for (Slot slot : this.handler.slots) {
-			if (slot.isEnabled()) {
-				this.drawSlot(context, slot);
-			}
-
-			if (this.isPointOverSlot(slot, (double)mouseX, (double)mouseY) && slot.isEnabled()) {
-				this.focusedSlot = slot;
-				if (this.focusedSlot.canBeHighlighted()) {
-					drawSlotHighlight(context, slot.x, slot.y, 0);
+		for (Slot slot2 : this.handler.slots) {
+			if (slot2.isEnabled()) {
+				this.drawSlot(context, slot2);
+				if (this.isPointOverSlot(slot2, (double)mouseX, (double)mouseY)) {
+					this.focusedSlot = slot2;
+					if (this.focusedSlot.canBeHighlighted()) {
+						drawSlotHighlight(context, slot2.x, slot2.y, 0);
+					}
 				}
 			}
+		}
+
+		if (slot != null && slot != this.focusedSlot) {
+			this.resetTooltipSubmenus(slot);
 		}
 
 		this.drawForeground(context, mouseX, mouseY);
@@ -199,7 +203,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		return getTooltipFromItem(this.client, stack);
 	}
 
-	private void drawItem(DrawContext context, ItemStack stack, int x, int y, String amountText) {
+	private void drawItem(DrawContext context, ItemStack stack, int x, int y, @Nullable String amountText) {
 		context.getMatrices().push();
 		context.getMatrices().translate(0.0F, 0.0F, 232.0F);
 		context.drawItem(stack, x, y);
@@ -577,18 +581,11 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		return pointX >= (double)(x - 1) && pointX < (double)(x + width + 1) && pointY >= (double)(y - 1) && pointY < (double)(y + height + 1);
 	}
 
-	private void updatePoint(double pointX, double pointY) {
-		if (this.focusedSlot != null && this.focusedSlot.hasStack() && !this.isPointOverSlot(this.focusedSlot, pointX, pointY)) {
-			this.resetTooltipSubmenus();
-			this.focusedSlot = null;
-		}
-	}
-
-	private void resetTooltipSubmenus() {
-		if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
+	private void resetTooltipSubmenus(Slot slot) {
+		if (slot.hasStack()) {
 			for (TooltipSubmenuHandler tooltipSubmenuHandler : this.tooltipSubmenuHandlers) {
-				if (tooltipSubmenuHandler.isApplicableTo(this.focusedSlot)) {
-					tooltipSubmenuHandler.reset(this.focusedSlot);
+				if (tooltipSubmenuHandler.isApplicableTo(slot)) {
+					tooltipSubmenuHandler.reset(slot);
 				}
 			}
 		}
@@ -696,7 +693,10 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	@Override
 	public void close() {
 		this.client.player.closeHandledScreen();
-		this.resetTooltipSubmenus();
+		if (this.focusedSlot != null) {
+			this.resetTooltipSubmenus(this.focusedSlot);
+		}
+
 		super.close();
 	}
 }

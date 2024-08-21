@@ -292,16 +292,16 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, S extends Liv
 		livingEntityRenderState.touchingWater = livingEntity.isTouchingWater();
 		livingEntityRenderState.usingRiptide = livingEntity.isUsingRiptide();
 		livingEntityRenderState.hurt = livingEntity.hurtTime > 0 || livingEntity.deathTime > 0;
-		livingEntityRenderState.headEquippedStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD).copy();
-		livingEntityRenderState.headEquippedItemModel = this.itemRenderer
-			.getModel(livingEntityRenderState.headEquippedStack, livingEntity, ModelTransformationMode.HEAD);
+		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
+		livingEntityRenderState.headEquippedStack = itemStack.copy();
+		livingEntityRenderState.headEquippedItemModel = this.itemRenderer.getModel(itemStack, livingEntity, ModelTransformationMode.HEAD);
 		livingEntityRenderState.mainArm = livingEntity.getMainArm();
-		ItemStack itemStack = livingEntity.getStackInArm(Arm.RIGHT);
-		ItemStack itemStack2 = livingEntity.getStackInArm(Arm.LEFT);
-		livingEntityRenderState.rightHandStack = itemStack.copy();
-		livingEntityRenderState.leftHandStack = itemStack2.copy();
-		livingEntityRenderState.rightHandItemModel = this.itemRenderer.getModel(itemStack, livingEntity, ModelTransformationMode.THIRD_PERSON_RIGHT_HAND);
-		livingEntityRenderState.leftHandItemModel = this.itemRenderer.getModel(itemStack2, livingEntity, ModelTransformationMode.THIRD_PERSON_LEFT_HAND);
+		ItemStack itemStack2 = livingEntity.getStackInArm(Arm.RIGHT);
+		ItemStack itemStack3 = livingEntity.getStackInArm(Arm.LEFT);
+		livingEntityRenderState.rightHandStack = itemStack2.copy();
+		livingEntityRenderState.leftHandStack = itemStack3.copy();
+		livingEntityRenderState.rightHandItemModel = this.itemRenderer.getModel(itemStack2, livingEntity, ModelTransformationMode.THIRD_PERSON_RIGHT_HAND);
+		livingEntityRenderState.leftHandItemModel = this.itemRenderer.getModel(itemStack3, livingEntity, ModelTransformationMode.THIRD_PERSON_LEFT_HAND);
 		livingEntityRenderState.deathTime = livingEntity.deathTime > 0 ? (float)livingEntity.deathTime + f : 0.0F;
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		livingEntityRenderState.invisibleToPlayer = livingEntityRenderState.invisible && livingEntity.isInvisibleTo(minecraftClient.player);

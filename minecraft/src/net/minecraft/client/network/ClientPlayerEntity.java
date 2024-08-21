@@ -207,7 +207,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public void tick() {
 		if (this.getWorld().isPosLoaded(this.getBlockX(), this.getBlockZ())) {
 			super.tick();
-			this.method_62165();
+			this.sendSneakingPacket();
 			if (this.hasVehicle()) {
 				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.getYaw(), this.getPitch(), this.isOnGround(), this.horizontalCollision));
 				this.networkHandler.sendPacket(new PlayerInputC2SPacket(this.sidewaysSpeed, this.forwardSpeed, this.input.jumping, this.input.sneaking));
@@ -283,7 +283,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 	}
 
-	private void method_62165() {
+	private void sendSneakingPacket() {
 		boolean bl = this.isSneaking();
 		if (bl != this.lastSneaking) {
 			ClientCommandC2SPacket.Mode mode = bl ? ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY : ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY;
@@ -646,7 +646,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public void init() {
 		this.setPose(EntityPose.STANDING);
 		if (this.getWorld() != null) {
-			for (double d = this.getY(); d > (double)this.getWorld().getBottomY() && d < (double)this.getWorld().getTopY(); d++) {
+			for (double d = this.getY(); d > (double)this.getWorld().getBottomY() && d <= (double)this.getWorld().getTopYInclusive(); d++) {
 				this.setPosition(this.getX(), d, this.getZ());
 				if (this.getWorld().isSpaceEmpty(this)) {
 					break;
@@ -904,7 +904,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		float f = (float)(this.getX() - d);
 		float g = (float)(this.getZ() - e);
 		this.autoJump(f, g);
-		this.field_53039 = this.field_53039 + MathHelper.hypot(f, g) * 0.6F;
+		this.distanceMoved = this.distanceMoved + MathHelper.hypot(f, g) * 0.6F;
 	}
 
 	public boolean isAutoJumpEnabled() {

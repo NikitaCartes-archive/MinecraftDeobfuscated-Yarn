@@ -105,7 +105,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	public Stream<PointOfInterest> getInChunk(
 		Predicate<RegistryEntry<PointOfInterestType>> typePredicate, ChunkPos chunkPos, PointOfInterestStorage.OccupationStatus occupationStatus
 	) {
-		return IntStream.range(this.world.getBottomSectionCoord(), this.world.getTopSectionCoord())
+		return IntStream.rangeClosed(this.world.getBottomSectionCoord(), this.world.getTopSectionCoord())
 			.boxed()
 			.map(coord -> this.get(ChunkSectionPos.from(chunkPos, coord).asLong()))
 			.filter(Optional::isPresent)

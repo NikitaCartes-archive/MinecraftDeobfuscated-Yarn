@@ -23,7 +23,7 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack = null;
 		ItemStack itemStack2 = null;
 
-		for (int i = 0; i < input.getSize(); i++) {
+		for (int i = 0; i < input.size(); i++) {
 			ItemStack itemStack3 = input.getStackInSlot(i);
 			if (!itemStack3.isEmpty()) {
 				if (itemStack == null) {

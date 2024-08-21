@@ -21,7 +21,7 @@ import net.minecraft.world.PersistentState;
 
 public class ServerScoreboard extends Scoreboard {
 	private final MinecraftServer server;
-	private final Set<ScoreboardObjective> objectives = Sets.<ScoreboardObjective>newHashSet();
+	private final Set<ScoreboardObjective> syncableObjectives = Sets.<ScoreboardObjective>newHashSet();
 	private final List<Runnable> updateListeners = Lists.<Runnable>newArrayList();
 
 	public ServerScoreboard(MinecraftServer server) {
@@ -31,7 +31,7 @@ public class ServerScoreboard extends Scoreboard {
 	@Override
 	protected void updateScore(ScoreHolder scoreHolder, ScoreboardObjective objective, ScoreboardScore score) {
 		super.updateScore(scoreHolder, objective, score);
-		if (this.objectives.contains(objective)) {
+		if (this.syncableObjectives.contains(objective)) {
 			this.server
 				.getPlayerManager()
 				.sendToAll(
@@ -64,7 +64,7 @@ public class ServerScoreboard extends Scoreboard {
 	@Override
 	public void onScoreRemoved(ScoreHolder scoreHolder, ScoreboardObjective objective) {
 		super.onScoreRemoved(scoreHolder, objective);
-		if (this.objectives.contains(objective)) {
+		if (this.syncableObjectives.contains(objective)) {
 			this.server.getPlayerManager().sendToAll(new ScoreboardScoreResetS2CPacket(scoreHolder.getNameForScoreboard(), objective.getName()));
 		}
 
@@ -76,18 +76,18 @@ public class ServerScoreboard extends Scoreboard {
 		ScoreboardObjective scoreboardObjective = this.getObjectiveForSlot(slot);
 		super.setObjectiveSlot(slot, objective);
 		if (scoreboardObjective != objective && scoreboardObjective != null) {
-			if (this.getSlot(scoreboardObjective) > 0) {
+			if (this.countDisplaySlots(scoreboardObjective) > 0) {
 				this.server.getPlayerManager().sendToAll(new ScoreboardDisplayS2CPacket(slot, objective));
 			} else {
-				this.removeScoreboardObjective(scoreboardObjective);
+				this.stopSyncing(scoreboardObjective);
 			}
 		}
 
 		if (objective != null) {
-			if (this.objectives.contains(objective)) {
+			if (this.syncableObjectives.contains(objective)) {
 				this.server.getPlayerManager().sendToAll(new ScoreboardDisplayS2CPacket(slot, objective));
 			} else {
-				this.addScoreboardObjective(objective);
+				this.startSyncing(objective);
 			}
 		}
 
@@ -121,7 +121,7 @@ public class ServerScoreboard extends Scoreboard {
 	@Override
 	public void updateExistingObjective(ScoreboardObjective objective) {
 		super.updateExistingObjective(objective);
-		if (this.objectives.contains(objective)) {
+		if (this.syncableObjectives.contains(objective)) {
 			this.server.getPlayerManager().sendToAll(new ScoreboardObjectiveUpdateS2CPacket(objective, ScoreboardObjectiveUpdateS2CPacket.UPDATE_MODE));
 		}
 
@@ -131,8 +131,8 @@ public class ServerScoreboard extends Scoreboard {
 	@Override
 	public void updateRemovedObjective(ScoreboardObjective objective) {
 		super.updateRemovedObjective(objective);
-		if (this.objectives.contains(objective)) {
-			this.removeScoreboardObjective(objective);
+		if (this.syncableObjectives.contains(objective)) {
+			this.stopSyncing(objective);
 		}
 
 		this.runUpdateListeners();
@@ -194,7 +194,7 @@ public class ServerScoreboard extends Scoreboard {
 		return list;
 	}
 
-	public void addScoreboardObjective(ScoreboardObjective objective) {
+	public void startSyncing(ScoreboardObjective objective) {
 		List<Packet<?>> list = this.createChangePackets(objective);
 
 		for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
@@ -203,7 +203,7 @@ public class ServerScoreboard extends Scoreboard {
 			}
 		}
 
-		this.objectives.add(objective);
+		this.syncableObjectives.add(objective);
 	}
 
 	public List<Packet<?>> createRemovePackets(ScoreboardObjective objective) {
@@ -219,7 +219,7 @@ public class ServerScoreboard extends Scoreboard {
 		return list;
 	}
 
-	public void removeScoreboardObjective(ScoreboardObjective objective) {
+	public void stopSyncing(ScoreboardObjective objective) {
 		List<Packet<?>> list = this.createRemovePackets(objective);
 
 		for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
@@ -228,10 +228,10 @@ public class ServerScoreboard extends Scoreboard {
 			}
 		}
 
-		this.objectives.remove(objective);
+		this.syncableObjectives.remove(objective);
 	}
 
-	public int getSlot(ScoreboardObjective objective) {
+	public int countDisplaySlots(ScoreboardObjective objective) {
 		int i = 0;
 
 		for (ScoreboardDisplaySlot scoreboardDisplaySlot : ScoreboardDisplaySlot.values()) {
@@ -253,8 +253,8 @@ public class ServerScoreboard extends Scoreboard {
 		return scoreboardState;
 	}
 
-	private ScoreboardState stateFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createState().readNbt(nbt, registryLookup);
+	private ScoreboardState stateFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		return this.createState().readNbt(nbt, registries);
 	}
 
 	public static enum UpdateMode {

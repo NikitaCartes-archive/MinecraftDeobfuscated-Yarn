@@ -41,14 +41,11 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	private final IntBuffer intData;
 	private final FloatBuffer floatData;
 	private final String name;
-	private boolean stateDirty;
-	private final ShaderProgramSetupView program;
 
-	public GlUniform(String name, int dataType, int count, ShaderProgramSetupView program) {
+	public GlUniform(String name, int dataType, int count) {
 		this.name = name;
 		this.count = count;
 		this.dataType = dataType;
-		this.program = program;
 		if (dataType <= 3) {
 			this.intData = MemoryUtil.memAllocInt(count);
 			this.floatData = null;
@@ -69,14 +66,6 @@ public class GlUniform extends Uniform implements AutoCloseable {
 		RenderSystem.glUniform1i(location, value);
 	}
 
-	public static int getAttribLocation(int program, CharSequence name) {
-		return GlStateManager._glGetAttribLocation(program, name);
-	}
-
-	public static void bindAttribLocation(int program, int index, CharSequence name) {
-		GlStateManager._glBindAttribLocation(program, index, name);
-	}
-
 	public void close() {
 		if (this.intData != null) {
 			MemoryUtil.memFree(this.intData);
@@ -88,10 +77,6 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	private void markStateDirty() {
-		this.stateDirty = true;
-		if (this.program != null) {
-			this.program.markUniformsDirty();
-		}
 	}
 
 	public static int getTypeIndex(String typeName) {
@@ -459,10 +444,6 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	public void upload() {
-		if (!this.stateDirty) {
-		}
-
-		this.stateDirty = false;
 		if (this.dataType <= 3) {
 			this.uploadInts();
 		} else if (this.dataType <= 7) {

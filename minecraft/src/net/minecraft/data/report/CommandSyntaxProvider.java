@@ -25,9 +25,9 @@ public class CommandSyntaxProvider implements DataProvider {
 		Path path = this.output.resolvePath(DataOutput.OutputType.REPORTS).resolve("commands.json");
 		return this.registryLookupFuture
 			.thenCompose(
-				lookup -> {
+				registries -> {
 					CommandDispatcher<ServerCommandSource> commandDispatcher = new CommandManager(
-							CommandManager.RegistrationEnvironment.ALL, CommandManager.createRegistryAccess(lookup)
+							CommandManager.RegistrationEnvironment.ALL, CommandManager.createRegistryAccess(registries)
 						)
 						.getDispatcher();
 					return DataProvider.writeToPath(writer, ArgumentHelper.toJson(commandDispatcher, commandDispatcher.getRoot()), path);

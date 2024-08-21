@@ -41,21 +41,21 @@ public class RedstoneTorchBlock extends AbstractTorchBlock {
 
 	@Override
 	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		this.method_61749(world, pos, state);
+		this.update(world, pos, state);
 	}
 
-	private void method_61749(World world, BlockPos blockPos, BlockState blockState) {
-		WireOrientation wireOrientation = this.method_61748(world, blockState);
+	private void update(World world, BlockPos pos, BlockState state) {
+		WireOrientation wireOrientation = this.getEmissionOrientation(world, state);
 
 		for (Direction direction : Direction.values()) {
-			world.updateNeighborsAlways(blockPos.offset(direction), this, OrientationHelper.withFrontNullable(wireOrientation, direction));
+			world.updateNeighborsAlways(pos.offset(direction), this, OrientationHelper.withFrontNullable(wireOrientation, direction));
 		}
 	}
 
 	@Override
 	protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!moved) {
-			this.method_61749(world, pos, state);
+			this.update(world, pos, state);
 		}
 	}
 
@@ -142,7 +142,7 @@ public class RedstoneTorchBlock extends AbstractTorchBlock {
 	}
 
 	@Nullable
-	protected WireOrientation method_61748(World world, BlockState blockState) {
+	protected WireOrientation getEmissionOrientation(World world, BlockState state) {
 		return OrientationHelper.getEmissionOrientation(world, null, Direction.UP);
 	}
 

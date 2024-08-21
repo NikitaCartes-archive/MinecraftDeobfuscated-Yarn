@@ -167,7 +167,7 @@ public final class Window implements AutoCloseable {
 						try (NativeImage nativeImage = NativeImage.read((InputStream)((InputSupplier)list.get(j)).get())) {
 							ByteBuffer byteBuffer = MemoryUtil.memAlloc(nativeImage.getWidth() * nativeImage.getHeight() * 4);
 							list2.add(byteBuffer);
-							byteBuffer.asIntBuffer().put(nativeImage.copyPixelsRgba());
+							byteBuffer.asIntBuffer().put(nativeImage.copyPixelsAbgr());
 							buffer.position(j);
 							buffer.width(nativeImage.getWidth());
 							buffer.height(nativeImage.getHeight());

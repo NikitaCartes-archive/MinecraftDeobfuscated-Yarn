@@ -54,12 +54,12 @@ public class ModelBaker {
 	final Map<ModelBaker.BakedModelCacheKey, BakedModel> bakedModelCache = new HashMap();
 	private final Map<ModelIdentifier, BakedModel> bakedModels = new HashMap();
 	private final Map<ModelIdentifier, UnbakedModel> models;
-	final Map<Identifier, UnbakedModel> field_53663;
+	final Map<Identifier, UnbakedModel> resolvedModels;
 	final UnbakedModel missingModel;
 
-	public ModelBaker(Map<ModelIdentifier, UnbakedModel> models, Map<Identifier, UnbakedModel> map, UnbakedModel missingModel) {
+	public ModelBaker(Map<ModelIdentifier, UnbakedModel> models, Map<Identifier, UnbakedModel> resolvedModels, UnbakedModel missingModel) {
 		this.models = models;
-		this.field_53663 = map;
+		this.resolvedModels = resolvedModels;
 		this.missingModel = missingModel;
 	}
 
@@ -91,13 +91,13 @@ public class ModelBaker {
 	class BakerImpl implements Baker {
 		private final Function<SpriteIdentifier, Sprite> textureGetter;
 
-		BakerImpl(final ModelBaker.SpriteGetter spriteGetter, final ModelIdentifier modelIdentifier) {
-			this.textureGetter = spriteId -> spriteGetter.get(modelIdentifier, spriteId);
+		BakerImpl(final ModelBaker.SpriteGetter spriteGetter, final ModelIdentifier modelId) {
+			this.textureGetter = spriteId -> spriteGetter.get(modelId, spriteId);
 		}
 
 		@Override
 		public UnbakedModel getModel(Identifier id) {
-			UnbakedModel unbakedModel = (UnbakedModel)ModelBaker.this.field_53663.get(id);
+			UnbakedModel unbakedModel = (UnbakedModel)ModelBaker.this.resolvedModels.get(id);
 			if (unbakedModel == null) {
 				ModelBaker.LOGGER.warn("Requested a model that was not discovered previously: {}", id);
 				return ModelBaker.this.missingModel;

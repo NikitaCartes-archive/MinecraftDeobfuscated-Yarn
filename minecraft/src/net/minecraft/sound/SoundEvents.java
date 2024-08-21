@@ -583,8 +583,8 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_GENERIC_BIG_FALL = register("entity.generic.big_fall");
 	public static final SoundEvent ENTITY_GENERIC_BURN = register("entity.generic.burn");
 	public static final SoundEvent ENTITY_GENERIC_DEATH = register("entity.generic.death");
-	public static final SoundEvent ENTITY_GENERIC_DRINK = register("entity.generic.drink");
-	public static final SoundEvent ENTITY_GENERIC_EAT = register("entity.generic.eat");
+	public static final RegistryEntry.Reference<SoundEvent> ENTITY_GENERIC_DRINK = registerReference("entity.generic.drink");
+	public static final RegistryEntry.Reference<SoundEvent> ENTITY_GENERIC_EAT = registerReference("entity.generic.eat");
 	public static final RegistryEntry.Reference<SoundEvent> ENTITY_GENERIC_EXPLODE = registerReference("entity.generic.explode");
 	public static final SoundEvent ENTITY_GENERIC_EXTINGUISH_FIRE = register("entity.generic.extinguish_fire");
 	public static final SoundEvent ENTITY_GENERIC_HURT = register("entity.generic.hurt");
@@ -714,7 +714,7 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_HONEY_BLOCK_SLIDE = register("block.honey_block.slide");
 	public static final SoundEvent BLOCK_HONEY_BLOCK_STEP = register("block.honey_block.step");
 	public static final SoundEvent ITEM_HONEYCOMB_WAX_ON = register("item.honeycomb.wax_on");
-	public static final SoundEvent ITEM_HONEY_BOTTLE_DRINK = register("item.honey_bottle.drink");
+	public static final RegistryEntry.Reference<SoundEvent> ITEM_HONEY_BOTTLE_DRINK = registerReference("item.honey_bottle.drink");
 	public static final int GOAT_HORN_SOUND_COUNT = 8;
 	public static final ImmutableList<RegistryEntry.Reference<SoundEvent>> GOAT_HORN_SOUNDS = registerGoatHornSounds();
 	public static final SoundEvent ENTITY_HORSE_AMBIENT = register("entity.horse.ambient");
@@ -1016,7 +1016,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_OCELOT_HURT = register("entity.ocelot.hurt");
 	public static final SoundEvent ENTITY_OCELOT_AMBIENT = register("entity.ocelot.ambient");
 	public static final SoundEvent ENTITY_OCELOT_DEATH = register("entity.ocelot.death");
-	public static final SoundEvent ITEM_OMINOUS_BOTTLE_DISPOSE = register("item.ominous_bottle.dispose");
+	public static final RegistryEntry.Reference<SoundEvent> ITEM_OMINOUS_BOTTLE_DISPOSE = registerReference("item.ominous_bottle.dispose");
 	public static final SoundEvent ENTITY_PAINTING_BREAK = register("entity.painting.break");
 	public static final SoundEvent ENTITY_PAINTING_PLACE = register("entity.painting.place");
 	public static final SoundEvent ENTITY_PANDA_PRE_SNEEZE = register("entity.panda.pre_sneeze");

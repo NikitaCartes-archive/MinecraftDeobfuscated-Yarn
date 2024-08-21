@@ -68,7 +68,7 @@ public class BundleTooltipComponent implements TooltipComponent {
 	}
 
 	private int getNumVisibleSlots() {
-		return Math.min(8, this.bundleContents.size());
+		return Math.min(12, this.bundleContents.size());
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class BundleTooltipComponent implements TooltipComponent {
 	}
 
 	private void drawNonEmptyTooltip(TextRenderer textRenderer, int x, int y, DrawContext drawContext) {
-		boolean bl = this.bundleContents.size() > 8;
+		boolean bl = this.bundleContents.size() > 12;
 		List<ItemStack> list = this.firstStacksInContents(this.bundleContents.getNumberOfStacksShown());
 		int i = x + 96;
 		int j = y + this.getRows() * 24;

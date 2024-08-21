@@ -70,7 +70,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		BlockPos blockPos = (BlockPos)config.rootPlacer.map(rootPlacer -> rootPlacer.trunkOffset(pos, random)).orElse(pos);
 		int m = Math.min(pos.getY(), blockPos.getY());
 		int n = Math.max(pos.getY(), blockPos.getY()) + i + 1;
-		if (m >= world.getBottomY() + 1 && n <= world.getTopY()) {
+		if (m >= world.getBottomY() + 1 && n <= world.getTopYInclusive() + 1) {
 			OptionalInt optionalInt = config.minimumSize.getMinClippedHeight();
 			int o = this.getTopPosition(world, i, blockPos, config);
 			if (o >= i || !optionalInt.isEmpty() && o >= optionalInt.getAsInt()) {

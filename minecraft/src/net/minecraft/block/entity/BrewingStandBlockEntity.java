@@ -188,10 +188,10 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		Inventories.readNbt(nbt, this.inventory, registryLookup);
+		Inventories.readNbt(nbt, this.inventory, registries);
 		this.brewTime = nbt.getShort("BrewTime");
 		if (this.brewTime > 0) {
 			this.itemBrewing = this.inventory.get(3).getItem();
@@ -201,10 +201,10 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		nbt.putShort("BrewTime", (short)this.brewTime);
-		Inventories.writeNbt(nbt, this.inventory, registryLookup);
+		Inventories.writeNbt(nbt, this.inventory, registries);
 		nbt.putByte("Fuel", (byte)this.fuel);
 	}
 

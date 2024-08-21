@@ -40,7 +40,7 @@ public abstract class BipedEntityRenderer<T extends MobEntity, S extends BipedEn
 	public static void updateBipedRenderState(LivingEntity entity, BipedEntityRenderState state, float tickDelta) {
 		state.isInSneakingPose = entity.isInSneakingPose();
 		state.isFallFlying = entity.isFallFlying();
-		state.isSwimming = entity.isSwimming();
+		state.isSwimming = entity.isInSwimmingPose();
 		state.hasVehicle = entity.hasVehicle();
 		state.limbAmplitudeInverse = 1.0F;
 		if (state.isFallFlying) {

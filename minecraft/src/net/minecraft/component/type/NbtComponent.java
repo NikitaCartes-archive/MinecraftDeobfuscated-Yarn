@@ -89,20 +89,20 @@ public final class NbtComponent {
 		entity.setUuid(uUID);
 	}
 
-	public boolean applyToBlockEntity(BlockEntity blockEntity, RegistryWrapper.WrapperLookup registryLookup) {
-		NbtCompound nbtCompound = blockEntity.createComponentlessNbt(registryLookup);
+	public boolean applyToBlockEntity(BlockEntity blockEntity, RegistryWrapper.WrapperLookup registries) {
+		NbtCompound nbtCompound = blockEntity.createComponentlessNbt(registries);
 		NbtCompound nbtCompound2 = nbtCompound.copy();
 		nbtCompound.copyFrom(this.nbt);
 		if (!nbtCompound.equals(nbtCompound2)) {
 			try {
-				blockEntity.readComponentlessNbt(nbtCompound, registryLookup);
+				blockEntity.readComponentlessNbt(nbtCompound, registries);
 				blockEntity.markDirty();
 				return true;
 			} catch (Exception var8) {
 				LOGGER.warn("Failed to apply custom data to block entity at {}", blockEntity.getPos(), var8);
 
 				try {
-					blockEntity.readComponentlessNbt(nbtCompound2, registryLookup);
+					blockEntity.readComponentlessNbt(nbtCompound2, registries);
 				} catch (Exception var7) {
 					LOGGER.warn("Failed to rollback block entity at {} after failure", blockEntity.getPos(), var7);
 				}

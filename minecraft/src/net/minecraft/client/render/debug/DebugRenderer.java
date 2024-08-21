@@ -5,13 +5,14 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9974;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -50,7 +51,9 @@ public class DebugRenderer {
 	public final LightDebugRenderer lightDebugRenderer;
 	public final BreezeDebugRenderer breezeDebugRenderer;
 	public final ChunkDebugRenderer chunkDebugRenderer;
+	public final OctreeDebugRenderer octreeDebugRenderer;
 	private boolean showChunkBorder;
+	private boolean showOctree;
 
 	public DebugRenderer(MinecraftClient client) {
 		this.waterDebugRenderer = new WaterDebugRenderer(client);
@@ -75,6 +78,7 @@ public class DebugRenderer {
 		this.lightDebugRenderer = new LightDebugRenderer(client, LightType.SKY);
 		this.breezeDebugRenderer = new BreezeDebugRenderer(client);
 		this.chunkDebugRenderer = new ChunkDebugRenderer(client);
+		this.octreeDebugRenderer = new OctreeDebugRenderer(client);
 	}
 
 	public void reset() {
@@ -107,16 +111,24 @@ public class DebugRenderer {
 		return this.showChunkBorder;
 	}
 
-	public void render(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, double cameraX, double cameraY, double cameraZ) {
+	public boolean toggleShowOctree() {
+		return this.showOctree = !this.showOctree;
+	}
+
+	public void render(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		if (this.showChunkBorder && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
 			this.chunkBorderDebugRenderer.render(matrices, vertexConsumers, cameraX, cameraY, cameraZ);
+		}
+
+		if (this.showOctree) {
+			this.octreeDebugRenderer.render(matrices, frustum, vertexConsumers, cameraX, cameraY, cameraZ);
 		}
 
 		this.gameTestDebugRenderer.render(matrices, vertexConsumers, cameraX, cameraY, cameraZ);
 	}
 
-	public void method_62351(MatrixStack matrixStack, VertexConsumerProvider.Immediate immediate, double d, double e, double f) {
-		this.chunkDebugRenderer.render(matrixStack, immediate, d, e, f);
+	public void renderLate(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, double cameraX, double cameraY, double cameraZ) {
+		this.chunkDebugRenderer.render(matrices, vertexConsumers, cameraX, cameraY, cameraZ);
 	}
 
 	public static Optional<Entity> getTargetedEntity(@Nullable Entity entity, int maxDistance) {
@@ -182,7 +194,7 @@ public class DebugRenderer {
 		float alpha
 	) {
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getDebugFilledBox());
-		class_9974.method_62300(matrices, vertexConsumer, minX, minY, minZ, maxX, maxY, maxZ, red, green, blue, alpha);
+		VertexRendering.drawFilledBox(matrices, vertexConsumer, minX, minY, minZ, maxX, maxY, maxZ, red, green, blue, alpha);
 	}
 
 	public static void drawString(MatrixStack matrices, VertexConsumerProvider vertexConsumers, String string, int x, int y, int z, int color) {
@@ -270,13 +282,13 @@ public class DebugRenderer {
 		List<Box> list = voxelShape.getBoundingBoxes();
 		if (!list.isEmpty()) {
 			int k = bl ? list.size() : list.size() * 8;
-			class_9974.method_62296(matrixStack, vertexConsumer, VoxelShapes.cuboid((Box)list.get(0)), d, e, f, g, h, i, j);
+			VertexRendering.drawOutline(matrixStack, vertexConsumer, VoxelShapes.cuboid((Box)list.get(0)), d, e, f, g, h, i, j);
 
 			for (int l = 1; l < list.size(); l++) {
 				Box box = (Box)list.get(l);
 				float m = (float)l / (float)k;
 				Vec3d vec3d = method_62349(g, h, i, m);
-				class_9974.method_62296(matrixStack, vertexConsumer, VoxelShapes.cuboid(box), d, e, f, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z, j);
+				VertexRendering.drawOutline(matrixStack, vertexConsumer, VoxelShapes.cuboid(box), d, e, f, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z, j);
 			}
 		}
 	}

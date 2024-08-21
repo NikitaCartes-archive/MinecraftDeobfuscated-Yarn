@@ -196,14 +196,14 @@ public class BrushableBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		NbtCompound nbtCompound = super.toInitialChunkDataNbt(registryLookup);
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
+		NbtCompound nbtCompound = super.toInitialChunkDataNbt(registries);
 		if (this.hitDirection != null) {
 			nbtCompound.putInt("hit_direction", this.hitDirection.ordinal());
 		}
 
 		if (!this.item.isEmpty()) {
-			nbtCompound.put("item", this.item.encode(registryLookup));
+			nbtCompound.put("item", this.item.toNbt(registries));
 		}
 
 		return nbtCompound;
@@ -214,10 +214,10 @@ public class BrushableBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		if (!this.readLootTableFromNbt(nbt) && nbt.contains("item")) {
-			this.item = (ItemStack)ItemStack.fromNbt(registryLookup, nbt.getCompound("item")).orElse(ItemStack.EMPTY);
+			this.item = (ItemStack)ItemStack.fromNbt(registries, nbt.getCompound("item")).orElse(ItemStack.EMPTY);
 		} else {
 			this.item = ItemStack.EMPTY;
 		}
@@ -228,10 +228,10 @@ public class BrushableBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		if (!this.writeLootTableToNbt(nbt) && !this.item.isEmpty()) {
-			nbt.put("item", this.item.encode(registryLookup));
+			nbt.put("item", this.item.toNbt(registries));
 		}
 	}
 

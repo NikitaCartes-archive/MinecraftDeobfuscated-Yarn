@@ -112,7 +112,7 @@ public class PalettedPermutationsAtlasSource implements AtlasSource {
 
 				int[] var5;
 				try (NativeImage nativeImage = NativeImage.read(inputStream)) {
-					var5 = nativeImage.method_61942();
+					var5 = nativeImage.copyPixelsArgb();
 				} catch (Throwable var10) {
 					if (inputStream != null) {
 						try {

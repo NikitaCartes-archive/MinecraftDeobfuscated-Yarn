@@ -139,7 +139,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 					CrashReport crashReport = CrashReport.create(var6, "Executing command block");
 					CrashReportSection crashReportSection = crashReport.addElement("Command to be executed");
 					crashReportSection.add("Command", this::getCommand);
-					crashReportSection.add("Name", (CrashCallable<String>)(() -> this.getCustomName().getString()));
+					crashReportSection.add("Name", (CrashCallable<String>)(() -> this.getName().getString()));
 					throw new CrashException(crashReport);
 				}
 			}
@@ -154,12 +154,12 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		}
 	}
 
-	public Text getCustomName() {
+	public Text getName() {
 		return this.customName != null ? this.customName : DEFAULT_NAME;
 	}
 
 	@Nullable
-	public Text getCustomNameNullable() {
+	public Text getCustomName() {
 		return this.customName;
 	}
 

@@ -34,31 +34,31 @@ public class GhostRecipe {
 		this.items.put(slot, new GhostRecipe.CyclingItem(items, false));
 	}
 
-	public void draw(DrawContext drawContext, MinecraftClient client, int x, int y, boolean notInventory) {
+	public void draw(DrawContext context, MinecraftClient client, int x, int y, boolean notInventory) {
 		this.items.forEach((slot, item) -> {
 			int k = slot.x + x;
 			int l = slot.y + y;
 			if (item.isResultSlot && notInventory) {
-				drawContext.fill(k - 4, l - 4, k + 20, l + 20, 822018048);
+				context.fill(k - 4, l - 4, k + 20, l + 20, 822018048);
 			} else {
-				drawContext.fill(k, l, k + 16, l + 16, 822018048);
+				context.fill(k, l, k + 16, l + 16, 822018048);
 			}
 
 			ItemStack itemStack = item.get(this.currentIndexProvider.currentIndex());
-			drawContext.drawItemWithoutEntity(itemStack, k, l);
-			drawContext.fill(RenderLayer.getGuiGhostRecipeOverlay(), k, l, k + 16, l + 16, 822083583);
+			context.drawItemWithoutEntity(itemStack, k, l);
+			context.fill(RenderLayer.getGuiGhostRecipeOverlay(), k, l, k + 16, l + 16, 822083583);
 			if (item.isResultSlot) {
-				drawContext.drawItemInSlot(client.textRenderer, itemStack, k, l);
+				context.drawItemInSlot(client.textRenderer, itemStack, k, l);
 			}
 		});
 	}
 
-	public void drawTooltip(DrawContext drawContext, MinecraftClient client, int i, int j, @Nullable Slot slot) {
+	public void drawTooltip(DrawContext context, MinecraftClient client, int x, int y, @Nullable Slot slot) {
 		if (slot != null) {
 			GhostRecipe.CyclingItem cyclingItem = this.items.get(slot);
 			if (cyclingItem != null) {
 				ItemStack itemStack = cyclingItem.get(this.currentIndexProvider.currentIndex());
-				drawContext.drawTooltip(client.textRenderer, Screen.getTooltipFromItem(client, itemStack), i, j);
+				context.drawTooltip(client.textRenderer, Screen.getTooltipFromItem(client, itemStack), x, y);
 			}
 		}
 	}

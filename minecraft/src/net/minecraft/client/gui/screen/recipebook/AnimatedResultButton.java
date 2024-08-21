@@ -27,22 +27,22 @@ public class AnimatedResultButton extends ClickableWidget {
 	private static final int field_32415 = 25;
 	private static final Text MORE_RECIPES_TEXT = Text.translatable("gui.recipebook.moreRecipes");
 	private RecipeResultCollection resultCollection;
-	private List<RecipeEntry<?>> field_52845 = List.of();
-	private final CurrentIndexProvider field_52846;
+	private List<RecipeEntry<?>> results = List.of();
+	private final CurrentIndexProvider currentIndexProvider;
 	private float bounce;
 
 	public AnimatedResultButton(CurrentIndexProvider currentIndexProvider) {
 		super(0, 0, 25, 25, ScreenTexts.EMPTY);
-		this.field_52846 = currentIndexProvider;
+		this.currentIndexProvider = currentIndexProvider;
 	}
 
-	public void showResultCollection(RecipeResultCollection resultCollection, boolean bl, RecipeBookResults recipeBookResults) {
+	public void showResultCollection(RecipeResultCollection resultCollection, boolean filteringCraftable, RecipeBookResults results) {
 		this.resultCollection = resultCollection;
-		this.field_52845 = resultCollection.method_62050(bl ? RecipeResultCollection.RecipeFilterMode.CRAFTABLE : RecipeResultCollection.RecipeFilterMode.ANY);
+		this.results = resultCollection.filter(filteringCraftable ? RecipeResultCollection.RecipeFilterMode.CRAFTABLE : RecipeResultCollection.RecipeFilterMode.ANY);
 
-		for (RecipeEntry<?> recipeEntry : this.field_52845) {
-			if (recipeBookResults.getRecipeBook().shouldDisplay(recipeEntry)) {
-				recipeBookResults.onRecipesDisplayed(this.field_52845);
+		for (RecipeEntry<?> recipeEntry : this.results) {
+			if (results.getRecipeBook().shouldDisplay(recipeEntry)) {
+				results.onRecipesDisplayed(this.results);
 				this.bounce = 15.0F;
 				break;
 			}
@@ -57,12 +57,12 @@ public class AnimatedResultButton extends ClickableWidget {
 	public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		Identifier identifier;
 		if (this.resultCollection.hasCraftableRecipes()) {
-			if (this.method_62048()) {
+			if (this.hasMultipleResults()) {
 				identifier = SLOT_MANY_CRAFTABLE_TEXTURE;
 			} else {
 				identifier = SLOT_CRAFTABLE_TEXTURE;
 			}
-		} else if (this.method_62048()) {
+		} else if (this.hasMultipleResults()) {
 			identifier = SLOT_MANY_UNCRAFTABLE_TEXTURE;
 		} else {
 			identifier = SLOT_UNCRAFTABLE_TEXTURE;
@@ -81,7 +81,7 @@ public class AnimatedResultButton extends ClickableWidget {
 		context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, this.getX(), this.getY(), this.width, this.height);
 		ItemStack itemStack = this.currentRecipe().value().getResult(this.resultCollection.getRegistryManager());
 		int i = 4;
-		if (this.resultCollection.hasSingleOutput() && this.method_62048()) {
+		if (this.resultCollection.hasSingleOutput() && this.hasMultipleResults()) {
 			context.drawItem(itemStack, this.getX() + i + 1, this.getY() + i + 1, 0, 10);
 			i--;
 		}
@@ -92,23 +92,23 @@ public class AnimatedResultButton extends ClickableWidget {
 		}
 	}
 
-	private boolean method_62048() {
-		return this.field_52845.size() > 1;
+	private boolean hasMultipleResults() {
+		return this.results.size() > 1;
 	}
 
-	public boolean hasResults() {
-		return this.field_52845.size() == 1;
+	public boolean hasSingleResult() {
+		return this.results.size() == 1;
 	}
 
 	public RecipeEntry<?> currentRecipe() {
-		int i = this.field_52846.currentIndex() % this.field_52845.size();
-		return (RecipeEntry<?>)this.field_52845.get(i);
+		int i = this.currentIndexProvider.currentIndex() % this.results.size();
+		return (RecipeEntry<?>)this.results.get(i);
 	}
 
 	public List<Text> getTooltip() {
 		ItemStack itemStack = this.currentRecipe().value().getResult(this.resultCollection.getRegistryManager());
 		List<Text> list = Lists.<Text>newArrayList(Screen.getTooltipFromItem(MinecraftClient.getInstance(), itemStack));
-		if (this.method_62048()) {
+		if (this.hasMultipleResults()) {
 			list.add(MORE_RECIPES_TEXT);
 		}
 
@@ -119,7 +119,7 @@ public class AnimatedResultButton extends ClickableWidget {
 	public void appendClickableNarrations(NarrationMessageBuilder builder) {
 		ItemStack itemStack = this.currentRecipe().value().getResult(this.resultCollection.getRegistryManager());
 		builder.put(NarrationPart.TITLE, Text.translatable("narration.recipe", itemStack.getName()));
-		if (this.method_62048()) {
+		if (this.hasMultipleResults()) {
 			builder.put(NarrationPart.USAGE, Text.translatable("narration.button.usage.hovered"), Text.translatable("narration.recipe.usage.more"));
 		} else {
 			builder.put(NarrationPart.USAGE, Text.translatable("narration.button.usage.hovered"));

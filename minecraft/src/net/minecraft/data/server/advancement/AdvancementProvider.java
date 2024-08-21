@@ -31,7 +31,7 @@ public class AdvancementProvider implements DataProvider {
 
 	@Override
 	public CompletableFuture<?> run(DataWriter writer) {
-		return this.registryLookupFuture.thenCompose(lookup -> {
+		return this.registryLookupFuture.thenCompose(registries -> {
 			Set<Identifier> set = new HashSet();
 			List<CompletableFuture<?>> list = new ArrayList();
 			Consumer<AdvancementEntry> consumer = advancement -> {
@@ -39,12 +39,12 @@ public class AdvancementProvider implements DataProvider {
 					throw new IllegalStateException("Duplicate advancement " + advancement.id());
 				} else {
 					Path path = this.pathResolver.resolveJson(advancement.id());
-					list.add(DataProvider.writeCodecToPath(writer, lookup, Advancement.CODEC, advancement.value(), path));
+					list.add(DataProvider.writeCodecToPath(writer, registries, Advancement.CODEC, advancement.value(), path));
 				}
 			};
 
 			for (AdvancementTabGenerator advancementTabGenerator : this.tabGenerators) {
-				advancementTabGenerator.accept(lookup, consumer);
+				advancementTabGenerator.accept(registries, consumer);
 			}
 
 			return CompletableFuture.allOf((CompletableFuture[])list.toArray(CompletableFuture[]::new));

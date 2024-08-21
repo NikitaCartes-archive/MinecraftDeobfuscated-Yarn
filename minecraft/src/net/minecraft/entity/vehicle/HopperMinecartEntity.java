@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 
 public class HopperMinecartEntity extends StorageMinecartEntity implements Hopper {
 	private boolean enabled = true;
-	private boolean field_52523 = false;
+	private boolean hopperTicked = false;
 
 	public HopperMinecartEntity(EntityType<? extends HopperMinecartEntity> entityType, World world) {
 		super(entityType, world);
@@ -87,21 +87,21 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 
 	@Override
 	public void tick() {
-		this.field_52523 = false;
+		this.hopperTicked = false;
 		super.tick();
-		this.method_61600();
+		this.tickHopper();
 	}
 
 	@Override
-	protected double method_61564(BlockPos blockPos, RailShape railShape, double d) {
-		double e = super.method_61564(blockPos, railShape, d);
-		this.method_61600();
-		return e;
+	protected double moveAlongTrack(BlockPos pos, RailShape shape, double remainingMovement) {
+		double d = super.moveAlongTrack(pos, shape, remainingMovement);
+		this.tickHopper();
+		return d;
 	}
 
-	private void method_61600() {
-		if (!this.getWorld().isClient && this.isAlive() && this.isEnabled() && !this.field_52523 && this.canOperate()) {
-			this.field_52523 = true;
+	private void tickHopper() {
+		if (!this.getWorld().isClient && this.isAlive() && this.isEnabled() && !this.hopperTicked && this.canOperate()) {
+			this.hopperTicked = true;
 			this.markDirty();
 		}
 	}

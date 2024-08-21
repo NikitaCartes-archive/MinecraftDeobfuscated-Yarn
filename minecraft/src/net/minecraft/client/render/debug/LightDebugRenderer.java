@@ -5,11 +5,11 @@ import java.time.Instant;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9974;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
@@ -99,7 +99,7 @@ public class LightDebugRenderer implements DebugRenderer.Renderer {
 		float f = (float)((double)ChunkSectionPos.getBlockCoord(x) - cameraX);
 		float g = (float)((double)ChunkSectionPos.getBlockCoord(y) - cameraY);
 		float h = (float)((double)ChunkSectionPos.getBlockCoord(z) - cameraZ);
-		class_9974.method_62297(matrices, vertexConsumer, direction, f, g, h, f + 16.0F, g + 16.0F, h + 16.0F, color.x(), color.y(), color.z(), color.w());
+		VertexRendering.drawSide(matrices, vertexConsumer, direction, f, g, h, f + 16.0F, g + 16.0F, h + 16.0F, color.x(), color.y(), color.z(), color.w());
 	}
 
 	private static void drawEdge(

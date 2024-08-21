@@ -9,11 +9,11 @@ import java.util.Set;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9974;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.BlockPos;
@@ -61,7 +61,7 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 							.contract(0.0025 * (double)m)
 							.offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ())
 							.offset(-cameraX, -cameraY, -cameraZ);
-						class_9974.method_62292(matrices, vertexConsumer, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, 1.0F, 1.0F, 1.0F, 1.0F);
+						VertexRendering.drawBox(matrices, vertexConsumer, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, 1.0F, 1.0F, 1.0F, 1.0F);
 						map.put(blockPos, integer);
 					}
 				}

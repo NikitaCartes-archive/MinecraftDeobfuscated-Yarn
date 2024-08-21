@@ -209,6 +209,10 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 	}
 
 	public void playDownSound(SoundManager soundManager) {
+		playClickSound(soundManager);
+	}
+
+	public static void playClickSound(SoundManager soundManager) {
 		soundManager.play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 	}
 

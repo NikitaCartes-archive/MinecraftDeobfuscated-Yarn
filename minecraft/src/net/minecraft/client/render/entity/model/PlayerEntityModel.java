@@ -120,12 +120,12 @@ public class PlayerEntityModel extends BipedEntityModel<PlayerEntityRenderState>
 			ModelPartData modelPartData2 = modelPartData.addChild(
 				EntityModelPartNames.LEFT_ARM,
 				ModelPartBuilder.create().uv(32, 48).cuboid(-1.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, dilation),
-				ModelTransform.pivot(5.0F, 2.5F, 0.0F)
+				ModelTransform.pivot(5.0F, 2.0F, 0.0F)
 			);
 			ModelPartData modelPartData3 = modelPartData.addChild(
 				EntityModelPartNames.RIGHT_ARM,
 				ModelPartBuilder.create().uv(40, 16).cuboid(-2.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, dilation),
-				ModelTransform.pivot(-5.0F, 2.5F, 0.0F)
+				ModelTransform.pivot(-5.0F, 2.0F, 0.0F)
 			);
 			modelPartData2.addChild(
 				"left_sleeve", ModelPartBuilder.create().uv(48, 48).cuboid(-1.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, dilation.add(0.25F)), ModelTransform.NONE

@@ -64,8 +64,8 @@ public class BuiltinRegistries {
 		.addRegistry(RegistryKeys.JUKEBOX_SONG, JukeboxSongs::bootstrap)
 		.addRegistry(RegistryKeys.INSTRUMENT, Instruments::bootstrap);
 
-	private static void validate(RegistryWrapper.WrapperLookup wrapperLookup) {
-		validate(wrapperLookup.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE), wrapperLookup.getWrapperOrThrow(RegistryKeys.BIOME));
+	private static void validate(RegistryWrapper.WrapperLookup registries) {
+		validate(registries.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE), registries.getWrapperOrThrow(RegistryKeys.BIOME));
 	}
 
 	public static void validate(RegistryEntryLookup<PlacedFeature> placedFeatureLookup, RegistryWrapper<Biome> biomeLookup) {

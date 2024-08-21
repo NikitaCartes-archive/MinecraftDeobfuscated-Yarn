@@ -19,7 +19,7 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack = ItemStack.EMPTY;
 		ItemStack itemStack2 = ItemStack.EMPTY;
 
-		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+		for (int i = 0; i < craftingRecipeInput.size(); i++) {
 			ItemStack itemStack3 = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack3.isEmpty()) {
 				if (itemStack3.getItem() instanceof BannerItem) {
@@ -54,7 +54,7 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack = ItemStack.EMPTY;
 		ItemStack itemStack2 = ItemStack.EMPTY;
 
-		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+		for (int i = 0; i < craftingRecipeInput.size(); i++) {
 			ItemStack itemStack3 = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack3.isEmpty()) {
 				if (itemStack3.getItem() instanceof BannerItem) {

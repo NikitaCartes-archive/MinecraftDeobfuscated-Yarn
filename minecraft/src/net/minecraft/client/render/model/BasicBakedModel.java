@@ -103,10 +103,10 @@ public class BasicBakedModel implements BakedModel {
 			this(unbakedModel.useAmbientOcclusion(), unbakedModel.getGuiLight().isSide(), hasDepth, unbakedModel.getTransformations(), itemPropertyOverrides);
 		}
 
-		private Builder(boolean usesAo, boolean bl, boolean hasDepth, ModelTransformation transformation, ModelOverrideList itemPropertyOverrides) {
+		private Builder(boolean usesAo, boolean isSideLit, boolean hasDepth, ModelTransformation transformation, ModelOverrideList itemPropertyOverrides) {
 			this.itemPropertyOverrides = itemPropertyOverrides;
 			this.usesAo = usesAo;
-			this.isSideLit = bl;
+			this.isSideLit = isSideLit;
 			this.hasDepth = hasDepth;
 			this.transformation = transformation;
 

@@ -12,12 +12,12 @@ public interface ObjectAllocator {
 		}
 
 		@Override
-		public <T> void release(ClosableFactory<T> factory, T object) {
-			factory.close(object);
+		public <T> void release(ClosableFactory<T> factory, T value) {
+			factory.close(value);
 		}
 	};
 
 	<T> T acquire(ClosableFactory<T> factory);
 
-	<T> void release(ClosableFactory<T> factory, T object);
+	<T> void release(ClosableFactory<T> factory, T value);
 }

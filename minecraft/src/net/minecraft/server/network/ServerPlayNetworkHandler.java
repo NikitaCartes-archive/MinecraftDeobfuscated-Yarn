@@ -770,7 +770,7 @@ public class ServerPlayNetworkHandler
 			List<String> list = Lists.<String>newArrayList();
 			Optional<String> optional = packet.title();
 			optional.ifPresent(list::add);
-			packet.pages().stream().limit(100L).forEach(list::add);
+			list.addAll(packet.pages());
 			Consumer<List<FilteredMessage>> consumer = optional.isPresent()
 				? texts -> this.addBook((FilteredMessage)texts.get(0), texts.subList(1, texts.size()), i)
 				: texts -> this.updateBookContent(texts, i);
@@ -1043,7 +1043,9 @@ public class ServerPlayNetworkHandler
 			case START_DESTROY_BLOCK:
 			case ABORT_DESTROY_BLOCK:
 			case STOP_DESTROY_BLOCK:
-				this.player.interactionManager.processBlockBreakingAction(blockPos, action, packet.getDirection(), this.player.getWorld().getTopY(), packet.getSequence());
+				this.player
+					.interactionManager
+					.processBlockBreakingAction(blockPos, action, packet.getDirection(), this.player.getWorld().getTopYInclusive(), packet.getSequence());
 				this.player.networkHandler.updateSequence(packet.getSequence());
 				return;
 			default:
@@ -1061,7 +1063,7 @@ public class ServerPlayNetworkHandler
 			return false;
 		} else {
 			Item item = stack.getItem();
-			return (item instanceof BlockItem || item instanceof BucketItem) && !player.getItemCooldownManager().isCoolingDown(item);
+			return (item instanceof BlockItem || item instanceof BucketItem) && !player.getItemCooldownManager().isCoolingDown(stack);
 		}
 	}
 
@@ -1082,23 +1084,23 @@ public class ServerPlayNetworkHandler
 				if (Math.abs(vec3d2.getX()) < 1.0000001 && Math.abs(vec3d2.getY()) < 1.0000001 && Math.abs(vec3d2.getZ()) < 1.0000001) {
 					Direction direction = blockHitResult.getSide();
 					this.player.updateLastActionTime();
-					int i = this.player.getWorld().getTopY();
-					if (blockPos.getY() < i) {
+					int i = this.player.getWorld().getTopYInclusive();
+					if (blockPos.getY() <= i) {
 						if (this.requestedTeleportPos == null && serverWorld.canPlayerModifyAt(this.player, blockPos)) {
 							ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
 							if (actionResult.isAccepted()) {
 								Criteria.ANY_BLOCK_USE.trigger(this.player, blockHitResult.getBlockPos(), itemStack.copy());
 							}
 
-							if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= i - 1 && canPlace(this.player, itemStack)) {
-								Text text = Text.translatable("build.tooHigh", i - 1).formatted(Formatting.RED);
+							if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= i && canPlace(this.player, itemStack)) {
+								Text text = Text.translatable("build.tooHigh", i).formatted(Formatting.RED);
 								this.player.sendMessageToClient(text, true);
 							} else if (actionResult instanceof ActionResult.Success success && success.swingSource() == ActionResult.SwingSource.SERVER) {
 								this.player.swingHand(hand, true);
 							}
 						}
 					} else {
-						Text text2 = Text.translatable("build.tooHigh", i - 1).formatted(Formatting.RED);
+						Text text2 = Text.translatable("build.tooHigh", i).formatted(Formatting.RED);
 						this.player.sendMessageToClient(text2, true);
 					}
 

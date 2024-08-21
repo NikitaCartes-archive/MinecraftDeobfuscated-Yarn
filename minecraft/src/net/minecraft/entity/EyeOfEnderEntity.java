@@ -170,7 +170,7 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
-		nbt.put("Item", this.getStack().encode(this.getRegistryManager()));
+		nbt.put("Item", this.getStack().toNbt(this.getRegistryManager()));
 	}
 
 	@Override

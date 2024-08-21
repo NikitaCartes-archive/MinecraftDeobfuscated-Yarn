@@ -24,14 +24,13 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_9931;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.PostEffectProcessor;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.debug.PacketSizeChart;
+import net.minecraft.client.gui.hud.debug.PieChart;
 import net.minecraft.client.gui.hud.debug.PingChart;
 import net.minecraft.client.gui.hud.debug.RenderingChart;
 import net.minecraft.client.gui.hud.debug.TickChart;
@@ -48,6 +47,7 @@ import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -111,7 +111,7 @@ public class DebugHud {
 	private final TickChart tickChart;
 	private final PingChart pingChart;
 	private final PacketSizeChart packetSizeChart;
-	private final class_9931 field_52772;
+	private final PieChart pieChart;
 
 	public DebugHud(MinecraftClient client) {
 		this.client = client;
@@ -121,7 +121,7 @@ public class DebugHud {
 		this.tickChart = new TickChart(this.textRenderer, this.tickNanosLog, () -> client.world.getTickManager().getMillisPerTick());
 		this.pingChart = new PingChart(this.textRenderer, this.pingLog);
 		this.packetSizeChart = new PacketSizeChart(this.textRenderer, this.packetSizeLog);
-		this.field_52772 = new class_9931(this.textRenderer);
+		this.pieChart = new PieChart(this.textRenderer);
 	}
 
 	public void resetChunk() {
@@ -129,40 +129,40 @@ public class DebugHud {
 		this.chunk = null;
 	}
 
-	public void render(DrawContext drawContext) {
+	public void render(DrawContext context) {
 		this.client.getProfiler().push("debug");
 		Entity entity = this.client.getCameraEntity();
 		this.blockHit = entity.raycast(20.0, 0.0F, false);
 		this.fluidHit = entity.raycast(20.0, 0.0F, true);
-		this.drawLeftText(drawContext);
-		this.drawRightText(drawContext);
-		this.field_52772.method_61984(10);
+		this.drawLeftText(context);
+		this.drawRightText(context);
+		this.pieChart.setBottomMargin(10);
 		if (this.renderingAndTickChartsVisible) {
-			int i = drawContext.getScaledWindowWidth();
+			int i = context.getScaledWindowWidth();
 			int j = i / 2;
-			this.renderingChart.render(drawContext, 0, this.renderingChart.getWidth(j));
+			this.renderingChart.render(context, 0, this.renderingChart.getWidth(j));
 			if (this.tickNanosLog.getLength() > 0) {
 				int k = this.tickChart.getWidth(j);
-				this.tickChart.render(drawContext, i - k, k);
+				this.tickChart.render(context, i - k, k);
 			}
 
-			this.field_52772.method_61984(this.tickChart.method_61983());
+			this.pieChart.setBottomMargin(this.tickChart.getHeight());
 		}
 
 		if (this.packetSizeAndPingChartsVisible) {
-			int i = drawContext.getScaledWindowWidth();
+			int i = context.getScaledWindowWidth();
 			int j = i / 2;
 			if (!this.client.isInSingleplayer()) {
-				this.packetSizeChart.render(drawContext, 0, this.packetSizeChart.getWidth(j));
+				this.packetSizeChart.render(context, 0, this.packetSizeChart.getWidth(j));
 			}
 
 			int k = this.pingChart.getWidth(j);
-			this.pingChart.render(drawContext, i - k, k);
-			this.field_52772.method_61984(this.pingChart.method_61983());
+			this.pingChart.render(context, i - k, k);
+			this.pieChart.setBottomMargin(this.pingChart.getHeight());
 		}
 
 		this.client.getProfiler().push("profilerPie");
-		this.field_52772.method_61986(drawContext);
+		this.pieChart.render(context);
 		this.client.getProfiler().pop();
 		this.client.getProfiler().pop();
 	}
@@ -370,7 +370,7 @@ public class DebugHud {
 				}
 
 				list.add(stringBuilder.toString());
-				if (blockPos.getY() >= this.client.world.getBottomY() && blockPos.getY() < this.client.world.getTopY()) {
+				if (this.client.world.isInHeightLimit(blockPos.getY())) {
 					list.add("Biome: " + getBiomeString(this.client.world.getBiome(blockPos)));
 					if (worldChunk2 != null) {
 						float h = world.getMoonSize();
@@ -421,9 +421,9 @@ public class DebugHud {
 				}
 			}
 
-			PostEffectProcessor postEffectProcessor = this.client.gameRenderer.getPostProcessor();
-			if (postEffectProcessor != null) {
-				list.add("Shader: " + postEffectProcessor.method_62231());
+			Identifier identifier = this.client.gameRenderer.method_62906();
+			if (identifier != null) {
+				list.add("Post: " + identifier);
 			}
 
 			list.add(
@@ -620,8 +620,8 @@ public class DebugHud {
 		return this.packetSizeLog;
 	}
 
-	public class_9931 method_61981() {
-		return this.field_52772;
+	public PieChart getPieChart() {
+		return this.pieChart;
 	}
 
 	public void set(long[] values, DebugSampleType type) {

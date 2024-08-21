@@ -30,8 +30,8 @@ import net.minecraft.world.gen.structure.StructureKeys;
 
 public class VanillaEndTabAdvancementGenerator implements AdvancementTabGenerator {
 	@Override
-	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<AdvancementEntry> exporter) {
-		RegistryEntryLookup<EntityType<?>> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.ENTITY_TYPE);
+	public void accept(RegistryWrapper.WrapperLookup registries, Consumer<AdvancementEntry> exporter) {
+		RegistryEntryLookup<EntityType<?>> registryEntryLookup = registries.getWrapperOrThrow(RegistryKeys.ENTITY_TYPE);
 		AdvancementEntry advancementEntry = Advancement.Builder.create()
 			.display(
 				Blocks.END_STONE,
@@ -104,7 +104,7 @@ public class VanillaEndTabAdvancementGenerator implements AdvancementTabGenerato
 			.criterion(
 				"in_city",
 				TickCriterion.Conditions.createLocation(
-					LocationPredicate.Builder.createStructure(lookup.getWrapperOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.END_CITY))
+					LocationPredicate.Builder.createStructure(registries.getWrapperOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.END_CITY))
 				)
 			)
 			.build(exporter, "end/find_end_city");

@@ -39,7 +39,7 @@ public class DataPackContents {
 
 	private DataPackContents(
 		CombinedDynamicRegistries<ServerDynamicRegistryType> dynamicRegistries,
-		RegistryWrapper.WrapperLookup registryLookup,
+		RegistryWrapper.WrapperLookup registries,
 		FeatureSet enabledFeatures,
 		CommandManager.RegistrationEnvironment environment,
 		List<Registry.PendingTagLoad<?>> pendingTagLoads,
@@ -47,9 +47,9 @@ public class DataPackContents {
 	) {
 		this.reloadableRegistries = new ReloadableRegistries.Lookup(dynamicRegistries.getCombinedRegistryManager());
 		this.pendingTagLoads = pendingTagLoads;
-		this.recipeManager = new RecipeManager(registryLookup);
-		this.commandManager = new CommandManager(environment, CommandRegistryAccess.of(registryLookup, enabledFeatures));
-		this.serverAdvancementLoader = new ServerAdvancementLoader(registryLookup);
+		this.recipeManager = new RecipeManager(registries);
+		this.commandManager = new CommandManager(environment, CommandRegistryAccess.of(registries, enabledFeatures));
+		this.serverAdvancementLoader = new ServerAdvancementLoader(registries);
 		this.functionLoader = new FunctionLoader(functionPermissionLevel, this.commandManager.getDispatcher());
 	}
 

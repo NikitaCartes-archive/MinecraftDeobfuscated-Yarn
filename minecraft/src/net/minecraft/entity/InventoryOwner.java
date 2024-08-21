@@ -33,13 +33,13 @@ public interface InventoryOwner {
 		}
 	}
 
-	default void readInventory(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
+	default void readInventory(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		if (nbt.contains("Inventory", NbtElement.LIST_TYPE)) {
-			this.getInventory().readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE), wrapperLookup);
+			this.getInventory().readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE), registries);
 		}
 	}
 
-	default void writeInventory(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-		nbt.put("Inventory", this.getInventory().toNbtList(wrapperLookup));
+	default void writeInventory(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		nbt.put("Inventory", this.getInventory().toNbtList(registries));
 	}
 }

@@ -426,7 +426,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 
 		for (ItemStack itemStack : this.armorItems) {
 			if (!itemStack.isEmpty()) {
-				nbtList.add(itemStack.encode(this.getRegistryManager()));
+				nbtList.add(itemStack.toNbt(this.getRegistryManager()));
 			} else {
 				nbtList.add(new NbtCompound());
 			}
@@ -444,7 +444,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 
 		for (ItemStack itemStack2 : this.handItems) {
 			if (!itemStack2.isEmpty()) {
-				nbtList3.add(itemStack2.encode(this.getRegistryManager()));
+				nbtList3.add(itemStack2.toNbt(this.getRegistryManager()));
 			} else {
 				nbtList3.add(new NbtCompound());
 			}
@@ -459,7 +459,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 
 		nbt.put("HandDropChances", nbtList4);
 		if (!this.bodyArmor.isEmpty()) {
-			nbt.put("body_armor_item", this.bodyArmor.encode(this.getRegistryManager()));
+			nbt.put("body_armor_item", this.bodyArmor.toNbt(this.getRegistryManager()));
 			nbt.putFloat("body_armor_drop_chance", this.bodyArmorDropChance);
 		}
 

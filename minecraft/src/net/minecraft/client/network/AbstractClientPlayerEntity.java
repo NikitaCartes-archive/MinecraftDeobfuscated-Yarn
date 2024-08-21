@@ -24,8 +24,8 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	public float elytraYaw;
 	public float elytraRoll;
 	public final ClientWorld clientWorld;
-	public float field_53038;
-	public float field_53039;
+	public float lastDistanceMoved;
+	public float distanceMoved;
 
 	public AbstractClientPlayerEntity(ClientWorld world, GameProfile profile) {
 		super(world, world.getSpawnPos(), world.getSpawnAngle(), profile);
@@ -55,7 +55,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void tick() {
-		this.field_53038 = this.field_53039;
+		this.lastDistanceMoved = this.distanceMoved;
 		this.lastVelocity = this.getVelocity();
 		super.tick();
 	}
@@ -69,7 +69,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 		return playerListEntry == null ? DefaultSkinHelper.getSkinTextures(this.getUuid()) : playerListEntry.getSkinTextures();
 	}
 
-	public float getFovMultiplier(boolean firstPerson) {
+	public float getFovMultiplier(boolean firstPerson, float fovEffectScale) {
 		float f = 1.0F;
 		if (this.getAbilities().flying) {
 			f *= 1.1F;
@@ -90,6 +90,6 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 			}
 		}
 
-		return f;
+		return MathHelper.lerp(fovEffectScale, 1.0F, f);
 	}
 }

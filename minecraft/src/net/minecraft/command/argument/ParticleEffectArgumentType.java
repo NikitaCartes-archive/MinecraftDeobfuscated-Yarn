@@ -33,10 +33,10 @@ public class ParticleEffectArgumentType implements ArgumentType<ParticleEffect> 
 	public static final DynamicCommandExceptionType INVALID_OPTIONS_EXCEPTION = new DynamicCommandExceptionType(
 		error -> Text.stringifiedTranslatable("particle.invalidOptions", error)
 	);
-	private final RegistryWrapper.WrapperLookup registryLookup;
+	private final RegistryWrapper.WrapperLookup registries;
 
 	public ParticleEffectArgumentType(CommandRegistryAccess registryAccess) {
-		this.registryLookup = registryAccess;
+		this.registries = registryAccess;
 	}
 
 	public static ParticleEffectArgumentType particleEffect(CommandRegistryAccess registryAccess) {
@@ -48,7 +48,7 @@ public class ParticleEffectArgumentType implements ArgumentType<ParticleEffect> 
 	}
 
 	public ParticleEffect parse(StringReader stringReader) throws CommandSyntaxException {
-		return readParameters(stringReader, this.registryLookup);
+		return readParameters(stringReader, this.registries);
 	}
 
 	@Override
@@ -56,9 +56,9 @@ public class ParticleEffectArgumentType implements ArgumentType<ParticleEffect> 
 		return EXAMPLES;
 	}
 
-	public static ParticleEffect readParameters(StringReader reader, RegistryWrapper.WrapperLookup registryLookup) throws CommandSyntaxException {
-		ParticleType<?> particleType = getType(reader, registryLookup.getWrapperOrThrow(RegistryKeys.PARTICLE_TYPE));
-		return readParameters(reader, (ParticleType<ParticleEffect>)particleType, registryLookup);
+	public static ParticleEffect readParameters(StringReader reader, RegistryWrapper.WrapperLookup registries) throws CommandSyntaxException {
+		ParticleType<?> particleType = getType(reader, registries.getWrapperOrThrow(RegistryKeys.PARTICLE_TYPE));
+		return readParameters(reader, (ParticleType<ParticleEffect>)particleType, registries);
 	}
 
 	private static ParticleType<?> getType(StringReader reader, RegistryWrapper<ParticleType<?>> registryWrapper) throws CommandSyntaxException {
@@ -69,7 +69,7 @@ public class ParticleEffectArgumentType implements ArgumentType<ParticleEffect> 
 			.value();
 	}
 
-	private static <T extends ParticleEffect> T readParameters(StringReader reader, ParticleType<T> type, RegistryWrapper.WrapperLookup registryLookup) throws CommandSyntaxException {
+	private static <T extends ParticleEffect> T readParameters(StringReader reader, ParticleType<T> type, RegistryWrapper.WrapperLookup registries) throws CommandSyntaxException {
 		NbtCompound nbtCompound;
 		if (reader.canRead() && reader.peek() == '{') {
 			nbtCompound = new StringNbtReader(reader).parseCompound();
@@ -77,12 +77,12 @@ public class ParticleEffectArgumentType implements ArgumentType<ParticleEffect> 
 			nbtCompound = new NbtCompound();
 		}
 
-		return type.getCodec().codec().parse(registryLookup.getOps(NbtOps.INSTANCE), nbtCompound).getOrThrow(INVALID_OPTIONS_EXCEPTION::create);
+		return type.getCodec().codec().parse(registries.getOps(NbtOps.INSTANCE), nbtCompound).getOrThrow(INVALID_OPTIONS_EXCEPTION::create);
 	}
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		RegistryWrapper.Impl<ParticleType<?>> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.PARTICLE_TYPE);
+		RegistryWrapper.Impl<ParticleType<?>> impl = this.registries.getWrapperOrThrow(RegistryKeys.PARTICLE_TYPE);
 		return CommandSource.suggestIdentifiers(impl.streamKeys().map(RegistryKey::getValue), builder);
 	}
 }

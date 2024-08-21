@@ -298,7 +298,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		if (!this.getHeldItemStack().isEmpty()) {
-			nbt.put("Item", this.getHeldItemStack().encode(this.getRegistryManager()));
+			nbt.put("Item", this.getHeldItemStack().toNbt(this.getRegistryManager()));
 			nbt.putByte("ItemRotation", (byte)this.getRotation());
 			nbt.putFloat("ItemDropChance", this.itemDropChance);
 		}

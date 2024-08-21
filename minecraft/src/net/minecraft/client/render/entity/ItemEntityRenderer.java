@@ -49,7 +49,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity, ItemEntityRen
 		itemEntityRenderState.age = (float)itemEntity.getItemAge() + f;
 		itemEntityRenderState.uniqueOffset = itemEntity.uniqueOffset;
 		ItemStack itemStack = itemEntity.getStack();
-		itemEntityRenderState.stack = itemStack;
+		itemEntityRenderState.stack = itemStack.copy();
 		itemEntityRenderState.model = this.itemRenderer.getModel(itemStack, itemEntity.getWorld(), null, itemEntity.getId());
 	}
 

@@ -88,7 +88,7 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 				if (!itemStack.isEmpty()) {
 					NbtCompound nbtCompound = new NbtCompound();
 					nbtCompound.putByte("Slot", (byte)(i - 1));
-					nbtList.add(itemStack.encode(this.getRegistryManager(), nbtCompound));
+					nbtList.add(itemStack.toNbt(this.getRegistryManager(), nbtCompound));
 				}
 			}
 

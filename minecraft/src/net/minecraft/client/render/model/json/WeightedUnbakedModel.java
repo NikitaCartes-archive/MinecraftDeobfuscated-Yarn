@@ -31,7 +31,7 @@ public record WeightedUnbakedModel(List<ModelVariant> variants) implements Group
 
 	@Override
 	public void resolve(UnbakedModel.Resolver resolver, UnbakedModel.ModelType currentlyResolvingType) {
-		this.variants.forEach(modelVariant -> resolver.resolve(modelVariant.getLocation()));
+		this.variants.forEach(variant -> resolver.resolve(variant.getLocation()));
 	}
 
 	@Nullable

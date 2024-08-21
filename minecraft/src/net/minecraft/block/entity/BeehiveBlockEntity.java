@@ -287,8 +287,8 @@ public class BeehiveBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		this.bees.clear();
 		if (nbt.contains("bees")) {
 			BeehiveBlockEntity.BeeData.LIST_CODEC
@@ -301,8 +301,8 @@ public class BeehiveBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		nbt.put("bees", BeehiveBlockEntity.BeeData.LIST_CODEC.encodeStart(NbtOps.INSTANCE, this.createBeesData()).getOrThrow());
 		if (this.hasFlowerPos()) {
 			nbt.put("flower_pos", NbtHelper.fromBlockPos(this.flowerPos));
@@ -318,9 +318,9 @@ public class BeehiveBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
-		super.addComponents(componentMapBuilder);
-		componentMapBuilder.add(DataComponentTypes.BEES, this.createBeesData());
+	protected void addComponents(ComponentMap.Builder builder) {
+		super.addComponents(builder);
+		builder.add(DataComponentTypes.BEES, this.createBeesData());
 	}
 
 	@Override

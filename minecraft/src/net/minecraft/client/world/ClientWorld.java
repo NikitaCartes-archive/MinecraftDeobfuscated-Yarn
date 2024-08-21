@@ -319,6 +319,10 @@ public class ClientWorld extends World {
 		this.worldRenderer.method_52815(chunkPos);
 	}
 
+	public void method_62895(long l) {
+		this.worldRenderer.method_62908(l);
+	}
+
 	public void reloadColor() {
 		this.colorCache.forEach((resolver, cache) -> cache.reset());
 	}

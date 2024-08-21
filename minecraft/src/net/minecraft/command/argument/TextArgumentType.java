@@ -19,10 +19,10 @@ public class TextArgumentType implements ArgumentType<Text> {
 	public static final DynamicCommandExceptionType INVALID_COMPONENT_EXCEPTION = new DynamicCommandExceptionType(
 		text -> Text.stringifiedTranslatable("argument.component.invalid", text)
 	);
-	private final RegistryWrapper.WrapperLookup registryLookup;
+	private final RegistryWrapper.WrapperLookup registries;
 
-	private TextArgumentType(RegistryWrapper.WrapperLookup registryLookup) {
-		this.registryLookup = registryLookup;
+	private TextArgumentType(RegistryWrapper.WrapperLookup registries) {
+		this.registries = registries;
 	}
 
 	public static Text getTextArgument(CommandContext<ServerCommandSource> context, String name) {
@@ -35,7 +35,7 @@ public class TextArgumentType implements ArgumentType<Text> {
 
 	public Text parse(StringReader stringReader) throws CommandSyntaxException {
 		try {
-			return JsonReaderUtils.parse(this.registryLookup, stringReader, TextCodecs.CODEC);
+			return JsonReaderUtils.parse(this.registries, stringReader, TextCodecs.CODEC);
 		} catch (Exception var4) {
 			String string = var4.getCause() != null ? var4.getCause().getMessage() : var4.getMessage();
 			throw INVALID_COMPONENT_EXCEPTION.createWithContext(stringReader, string);

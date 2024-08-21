@@ -363,10 +363,11 @@ public class BipedEntityModel<T extends BipedEntityRenderState> extends EntityMo
 				this.body.yaw *= -1.0F;
 			}
 
-			this.rightArm.pivotZ = MathHelper.sin(this.body.yaw) * 5.0F;
-			this.rightArm.pivotX = -MathHelper.cos(this.body.yaw) * 5.0F;
-			this.leftArm.pivotZ = -MathHelper.sin(this.body.yaw) * 5.0F;
-			this.leftArm.pivotX = MathHelper.cos(this.body.yaw) * 5.0F;
+			float h = state.ageScale;
+			this.rightArm.pivotZ = MathHelper.sin(this.body.yaw) * 5.0F * h;
+			this.rightArm.pivotX = -MathHelper.cos(this.body.yaw) * 5.0F * h;
+			this.leftArm.pivotZ = -MathHelper.sin(this.body.yaw) * 5.0F * h;
+			this.leftArm.pivotX = MathHelper.cos(this.body.yaw) * 5.0F * h;
 			this.rightArm.yaw = this.rightArm.yaw + this.body.yaw;
 			this.leftArm.yaw = this.leftArm.yaw + this.body.yaw;
 			this.leftArm.pitch = this.leftArm.pitch + this.body.yaw;
@@ -374,9 +375,9 @@ public class BipedEntityModel<T extends BipedEntityRenderState> extends EntityMo
 			g *= g;
 			g *= g;
 			g = 1.0F - g;
-			float h = MathHelper.sin(g * (float) Math.PI);
-			float i = MathHelper.sin(f * (float) Math.PI) * -(this.head.pitch - 0.7F) * 0.75F;
-			modelPart.pitch -= h * 1.2F + i;
+			float i = MathHelper.sin(g * (float) Math.PI);
+			float j = MathHelper.sin(f * (float) Math.PI) * -(this.head.pitch - 0.7F) * 0.75F;
+			modelPart.pitch -= i * 1.2F + j;
 			modelPart.yaw = modelPart.yaw + this.body.yaw * 2.0F;
 			modelPart.roll = modelPart.roll + MathHelper.sin(f * (float) Math.PI) * -0.4F;
 		}

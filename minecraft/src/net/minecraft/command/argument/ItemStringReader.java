@@ -61,9 +61,9 @@ public class ItemStringReader {
 	final RegistryWrapper.Impl<Item> itemRegistry;
 	final DynamicOps<NbtElement> nbtOps;
 
-	public ItemStringReader(RegistryWrapper.WrapperLookup registryLookup) {
-		this.itemRegistry = registryLookup.getWrapperOrThrow(RegistryKeys.ITEM);
-		this.nbtOps = registryLookup.getOps(NbtOps.INSTANCE);
+	public ItemStringReader(RegistryWrapper.WrapperLookup registries) {
+		this.itemRegistry = registries.getWrapperOrThrow(RegistryKeys.ITEM);
+		this.nbtOps = registries.getOps(NbtOps.INSTANCE);
 	}
 
 	public ItemStringReader.ItemResult consume(StringReader reader) throws CommandSyntaxException {

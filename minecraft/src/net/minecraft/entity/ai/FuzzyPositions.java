@@ -7,6 +7,7 @@ import java.util.function.ToDoubleFunction;
 import javax.annotation.Nullable;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -56,13 +57,13 @@ public class FuzzyPositions {
 		if (!condition.test(pos)) {
 			return pos;
 		} else {
-			BlockPos blockPos = pos.up();
+			BlockPos.Mutable mutable = pos.mutableCopy().move(Direction.UP);
 
-			while (blockPos.getY() < maxY && condition.test(blockPos)) {
-				blockPos = blockPos.up();
+			while (mutable.getY() <= maxY && condition.test(mutable)) {
+				mutable.move(Direction.UP);
 			}
 
-			return blockPos;
+			return mutable.toImmutable();
 		}
 	}
 
@@ -78,24 +79,23 @@ public class FuzzyPositions {
 		} else if (!condition.test(pos)) {
 			return pos;
 		} else {
-			BlockPos blockPos = pos.up();
+			BlockPos.Mutable mutable = pos.mutableCopy().move(Direction.UP);
 
-			while (blockPos.getY() < max && condition.test(blockPos)) {
-				blockPos = blockPos.up();
+			while (mutable.getY() <= max && condition.test(mutable)) {
+				mutable.move(Direction.UP);
 			}
 
-			BlockPos blockPos2 = blockPos;
+			int i = mutable.getY();
 
-			while (blockPos2.getY() < max && blockPos2.getY() - blockPos.getY() < extraAbove) {
-				BlockPos blockPos3 = blockPos2.up();
-				if (condition.test(blockPos3)) {
+			while (mutable.getY() <= max && mutable.getY() - i < extraAbove) {
+				mutable.move(Direction.UP);
+				if (condition.test(mutable)) {
+					mutable.move(Direction.DOWN);
 					break;
 				}
-
-				blockPos2 = blockPos3;
 			}
 
-			return blockPos2;
+			return mutable.toImmutable();
 		}
 	}
 

@@ -51,7 +51,9 @@ public abstract class MinecartController {
 
 	public abstract void moveOnRail();
 
-	public abstract double method_61577(BlockPos blockPos, RailShape railShape, double d);
+	public abstract double moveAlongTrack(BlockPos blockPos, RailShape railShape, double remainingMovement);
+
+	public abstract boolean handleCollision();
 
 	public Vec3d getVelocity() {
 		return this.minecart.getVelocity();

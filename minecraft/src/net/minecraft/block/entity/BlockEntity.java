@@ -141,19 +141,19 @@ public abstract class BlockEntity {
 	 * 
 	 * @see #writeNbt
 	 */
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 	}
 
-	public final void read(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		this.readNbt(nbt, registryLookup);
+	public final void read(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		this.readNbt(nbt, registries);
 		BlockEntity.Components.CODEC
-			.parse(registryLookup.getOps(NbtOps.INSTANCE), nbt)
+			.parse(registries.getOps(NbtOps.INSTANCE), nbt)
 			.resultOrPartial(error -> LOGGER.warn("Failed to load components: {}", error))
 			.ifPresent(components -> this.components = components);
 	}
 
-	public final void readComponentlessNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		this.readNbt(nbt, registryLookup);
+	public final void readComponentlessNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		this.readNbt(nbt, registries);
 	}
 
 	/**
@@ -166,7 +166,7 @@ public abstract class BlockEntity {
 	 * 
 	 * @see #readNbt
 	 */
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 	}
 
 	/**
@@ -179,8 +179,8 @@ public abstract class BlockEntity {
 	 * @see #createNbt
 	 * @see #createNbtWithId
 	 */
-	public final NbtCompound createNbtWithIdentifyingData(RegistryWrapper.WrapperLookup registryLookup) {
-		NbtCompound nbtCompound = this.createNbt(registryLookup);
+	public final NbtCompound createNbtWithIdentifyingData(RegistryWrapper.WrapperLookup registries) {
+		NbtCompound nbtCompound = this.createNbt(registries);
 		this.writeIdentifyingData(nbtCompound);
 		return nbtCompound;
 	}
@@ -194,8 +194,8 @@ public abstract class BlockEntity {
 	 * @see #createNbt
 	 * @see #createNbtWithIdentifyingData
 	 */
-	public final NbtCompound createNbtWithId(RegistryWrapper.WrapperLookup registryLookup) {
-		NbtCompound nbtCompound = this.createNbt(registryLookup);
+	public final NbtCompound createNbtWithId(RegistryWrapper.WrapperLookup registries) {
+		NbtCompound nbtCompound = this.createNbt(registries);
 		this.writeIdToNbt(nbtCompound);
 		return nbtCompound;
 	}
@@ -210,24 +210,24 @@ public abstract class BlockEntity {
 	 * @see #createNbtWithIdentifyingData
 	 * @see #createNbtWithId
 	 */
-	public final NbtCompound createNbt(RegistryWrapper.WrapperLookup registryLookup) {
+	public final NbtCompound createNbt(RegistryWrapper.WrapperLookup registries) {
 		NbtCompound nbtCompound = new NbtCompound();
-		this.writeNbt(nbtCompound, registryLookup);
+		this.writeNbt(nbtCompound, registries);
 		BlockEntity.Components.CODEC
-			.encodeStart(registryLookup.getOps(NbtOps.INSTANCE), this.components)
+			.encodeStart(registries.getOps(NbtOps.INSTANCE), this.components)
 			.resultOrPartial(snbt -> LOGGER.warn("Failed to save components: {}", snbt))
 			.ifPresent(nbt -> nbtCompound.copyFrom((NbtCompound)nbt));
 		return nbtCompound;
 	}
 
-	public final NbtCompound createComponentlessNbt(RegistryWrapper.WrapperLookup registryLookup) {
+	public final NbtCompound createComponentlessNbt(RegistryWrapper.WrapperLookup registries) {
 		NbtCompound nbtCompound = new NbtCompound();
-		this.writeNbt(nbtCompound, registryLookup);
+		this.writeNbt(nbtCompound, registries);
 		return nbtCompound;
 	}
 
-	public final NbtCompound createComponentlessNbtWithIdentifyingData(RegistryWrapper.WrapperLookup registryLookup) {
-		NbtCompound nbtCompound = this.createComponentlessNbt(registryLookup);
+	public final NbtCompound createComponentlessNbtWithIdentifyingData(RegistryWrapper.WrapperLookup registries) {
+		NbtCompound nbtCompound = this.createComponentlessNbt(registries);
 		this.writeIdentifyingData(nbtCompound);
 		return nbtCompound;
 	}
@@ -288,7 +288,7 @@ public abstract class BlockEntity {
 	 * this logs an error and returns {@code null}.
 	 */
 	@Nullable
-	public static BlockEntity createFromNbt(BlockPos pos, BlockState state, NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	public static BlockEntity createFromNbt(BlockPos pos, BlockState state, NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		String string = nbt.getString("id");
 		Identifier identifier = Identifier.tryParse(string);
 		if (identifier == null) {
@@ -304,7 +304,7 @@ public abstract class BlockEntity {
 				}
 			}).map(blockEntity -> {
 				try {
-					blockEntity.read(nbt, registryLookup);
+					blockEntity.read(nbt, registries);
 					return blockEntity;
 				} catch (Throwable var5x) {
 					LOGGER.error("Failed to load data for block entity {}", string, var5x);
@@ -393,7 +393,7 @@ public abstract class BlockEntity {
 	 * 
 	 * @see #toUpdatePacket
 	 */
-	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
 		return new NbtCompound();
 	}
 
@@ -483,7 +483,7 @@ public abstract class BlockEntity {
 		this.components = componentChanges.toAddedRemovedPair().added();
 	}
 
-	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
+	protected void addComponents(ComponentMap.Builder builder) {
 	}
 
 	@Deprecated
@@ -506,9 +506,9 @@ public abstract class BlockEntity {
 	}
 
 	@Nullable
-	public static Text tryParseCustomName(String json, RegistryWrapper.WrapperLookup registryLookup) {
+	public static Text tryParseCustomName(String json, RegistryWrapper.WrapperLookup registries) {
 		try {
-			return Text.Serialization.fromJson(json, registryLookup);
+			return Text.Serialization.fromJson(json, registries);
 		} catch (Exception var3) {
 			LOGGER.warn("Failed to parse custom name from string '{}', discarding", json, var3);
 			return null;

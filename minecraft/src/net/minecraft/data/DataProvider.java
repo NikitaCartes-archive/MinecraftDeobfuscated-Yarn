@@ -35,8 +35,8 @@ public interface DataProvider {
 
 	String getName();
 
-	static <T> CompletableFuture<?> writeCodecToPath(DataWriter writer, RegistryWrapper.WrapperLookup registryLookup, Codec<T> codec, T value, Path path) {
-		RegistryOps<JsonElement> registryOps = registryLookup.getOps(JsonOps.INSTANCE);
+	static <T> CompletableFuture<?> writeCodecToPath(DataWriter writer, RegistryWrapper.WrapperLookup registries, Codec<T> codec, T value, Path path) {
+		RegistryOps<JsonElement> registryOps = registries.getOps(JsonOps.INSTANCE);
 		JsonElement jsonElement = codec.encodeStart(registryOps, value).getOrThrow();
 		return writeToPath(writer, jsonElement, path);
 	}

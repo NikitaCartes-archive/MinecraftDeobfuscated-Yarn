@@ -5,10 +5,10 @@ import net.minecraft.item.ItemStack;
 public interface RecipeInput {
 	ItemStack getStackInSlot(int slot);
 
-	int getSize();
+	int size();
 
 	default boolean isEmpty() {
-		for (int i = 0; i < this.getSize(); i++) {
+		for (int i = 0; i < this.size(); i++) {
 			if (!this.getStackInSlot(i).isEmpty()) {
 				return false;
 			}

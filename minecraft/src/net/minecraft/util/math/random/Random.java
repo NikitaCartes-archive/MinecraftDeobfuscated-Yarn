@@ -98,6 +98,10 @@ public interface Random {
 		return mode + deviation * (this.nextDouble() - this.nextDouble());
 	}
 
+	default float nextTriangular(float mode, float deviation) {
+		return mode + deviation * (this.nextFloat() - this.nextFloat());
+	}
+
 	default void skip(int count) {
 		for (int i = 0; i < count; i++) {
 			this.nextInt();

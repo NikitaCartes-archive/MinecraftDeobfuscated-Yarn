@@ -85,7 +85,7 @@ public class BlockCollisionSpliterator<T> extends AbstractIterator<T> {
 					if ((!this.forEntity || blockState.shouldSuffocate(blockView, this.pos))
 						&& (l != 1 || blockState.exceedsCube())
 						&& (l != 2 || blockState.isOf(Blocks.MOVING_PISTON))) {
-						VoxelShape voxelShape = blockState.getCollisionShape(this.world, this.pos, this.context);
+						VoxelShape voxelShape = this.context.getCollisionShape(blockState, this.world, this.pos);
 						if (voxelShape == VoxelShapes.fullCube()) {
 							if (this.box.intersects((double)i, (double)j, (double)k, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0)) {
 								return (T)this.resultFunction.apply(this.pos, voxelShape.offset((double)i, (double)j, (double)k));

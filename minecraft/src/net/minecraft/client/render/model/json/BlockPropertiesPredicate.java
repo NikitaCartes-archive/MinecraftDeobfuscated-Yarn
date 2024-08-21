@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.client.render.model.json;
 
 import com.google.common.base.Splitter;
 import java.util.HashMap;
@@ -15,21 +15,21 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 
 @Environment(EnvType.CLIENT)
-public class class_9980 {
-	private static final Splitter field_53163 = Splitter.on(',');
-	private static final Splitter field_53164 = Splitter.on('=').limit(2);
+public class BlockPropertiesPredicate {
+	private static final Splitter COMMA_SPLITTER = Splitter.on(',');
+	private static final Splitter EQUAL_SIGN_SPLITTER = Splitter.on('=').limit(2);
 
-	public static <O, S extends State<O, S>> Predicate<State<O, S>> method_62334(StateManager<O, S> stateManager, String string) {
+	public static <O, S extends State<O, S>> Predicate<State<O, S>> parse(StateManager<O, S> stateManager, String string) {
 		Map<Property<?>, Comparable<?>> map = new HashMap();
 
-		for (String string2 : field_53163.split(string)) {
-			Iterator<String> iterator = field_53164.split(string2).iterator();
+		for (String string2 : COMMA_SPLITTER.split(string)) {
+			Iterator<String> iterator = EQUAL_SIGN_SPLITTER.split(string2).iterator();
 			if (iterator.hasNext()) {
 				String string3 = (String)iterator.next();
 				Property<?> property = stateManager.getProperty(string3);
 				if (property != null && iterator.hasNext()) {
 					String string4 = (String)iterator.next();
-					Comparable<?> comparable = method_62335((Property<Comparable<?>>)property, string4);
+					Comparable<?> comparable = parse((Property<Comparable<?>>)property, string4);
 					if (comparable == null) {
 						throw new RuntimeException("Unknown value: '" + string4 + "' for blockstate property: '" + string3 + "' " + property.getValues());
 					}
@@ -53,7 +53,7 @@ public class class_9980 {
 	}
 
 	@Nullable
-	private static <T extends Comparable<T>> T method_62335(Property<T> property, String string) {
-		return (T)property.parse(string).orElse(null);
+	private static <T extends Comparable<T>> T parse(Property<T> property, String value) {
+		return (T)property.parse(value).orElse(null);
 	}
 }

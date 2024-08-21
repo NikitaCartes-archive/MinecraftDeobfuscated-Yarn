@@ -25,7 +25,7 @@ public class ChunkSkyLight {
 
 	public ChunkSkyLight(HeightLimitView heightLimitView) {
 		this.minY = heightLimitView.getBottomY() - 1;
-		int i = heightLimitView.getTopY();
+		int i = heightLimitView.getTopYInclusive() + 1;
 		int j = MathHelper.ceilLog2(i - this.minY + 1);
 		this.palette = new PackedIntegerArray(j, 256);
 	}

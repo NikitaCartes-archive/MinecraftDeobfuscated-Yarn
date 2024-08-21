@@ -133,10 +133,10 @@ public class ScoreboardState extends PersistentState {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		nbt.put("Objectives", this.objectivesToNbt(registryLookup));
-		nbt.put("PlayerScores", this.scoreboard.toNbt(registryLookup));
-		nbt.put("Teams", this.teamsToNbt(registryLookup));
+	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		nbt.put("Objectives", this.objectivesToNbt(registries));
+		nbt.put("PlayerScores", this.scoreboard.toNbt(registries));
+		nbt.put("Teams", this.teamsToNbt(registries));
 		this.writeDisplaySlotsNbt(nbt);
 		return nbt;
 	}

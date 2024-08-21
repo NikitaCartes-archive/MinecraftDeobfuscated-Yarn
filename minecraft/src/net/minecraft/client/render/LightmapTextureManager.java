@@ -1,23 +1,20 @@
 package net.minecraft.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.logging.LogUtils;
-import java.io.IOException;
-import javax.annotation.Nullable;
+import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgram;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.resource.ResourceFactory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.dimension.DimensionType;
 import org.joml.Vector3f;
-import org.slf4j.Logger;
 
 /**
  * The lightmap texture manager maintains a texture containing the RGBA overlay for each of the 16&times;16 sky and block light combinations.
@@ -43,9 +40,6 @@ public class LightmapTextureManager implements AutoCloseable {
 	 */
 	public static final int MAX_BLOCK_LIGHT_COORDINATE = 240;
 	private static final int field_53098 = 16;
-	private static final Logger field_53099 = LogUtils.getLogger();
-	@Nullable
-	private ShaderProgram shaderProgram;
 	private final SimpleFramebuffer lightmapFramebuffer;
 	private boolean dirty;
 	private float flickerIntensity;
@@ -61,25 +55,7 @@ public class LightmapTextureManager implements AutoCloseable {
 		this.lightmapFramebuffer.clear();
 	}
 
-	public void loadShaderProgram(ResourceFactory resourceFactory) {
-		if (this.shaderProgram != null) {
-			this.shaderProgram.close();
-		}
-
-		try {
-			this.shaderProgram = new ShaderProgram(resourceFactory, "lightmap", VertexFormats.BLIT_SCREEN);
-		} catch (IOException var3) {
-			field_53099.error("Failed to load lightmap shader", (Throwable)var3);
-			this.shaderProgram = null;
-		}
-	}
-
 	public void close() {
-		if (this.shaderProgram != null) {
-			this.shaderProgram.close();
-			this.shaderProgram = null;
-		}
-
 		this.lightmapFramebuffer.delete();
 	}
 
@@ -108,7 +84,7 @@ public class LightmapTextureManager implements AutoCloseable {
 	}
 
 	public void update(float delta) {
-		if (this.dirty && this.shaderProgram != null) {
+		if (this.dirty) {
 			this.dirty = false;
 			this.client.getProfiler().push("lightTex");
 			ClientWorld clientWorld = this.client.world;
@@ -139,24 +115,23 @@ public class LightmapTextureManager implements AutoCloseable {
 				float n = clientWorld.getDimension().ambientLight();
 				boolean bl = clientWorld.getDimensionEffects().shouldBrightenLighting();
 				float o = this.client.options.getGamma().getValue().floatValue();
-				this.shaderProgram.getUniformOrDefault("AmbientLightFactor").set(n);
-				this.shaderProgram.getUniformOrDefault("SkyFactor").set(g);
-				this.shaderProgram.getUniformOrDefault("BlockFactor").set(m);
-				this.shaderProgram.getUniformOrDefault("UseBrightLightmap").set(bl ? 1 : 0);
-				this.shaderProgram.getUniformOrDefault("SkyLightColor").set(vector3f);
-				this.shaderProgram.getUniformOrDefault("NightVisionFactor").set(l);
-				this.shaderProgram.getUniformOrDefault("DarknessScale").set(j);
-				this.shaderProgram.getUniformOrDefault("DarkenWorldFactor").set(this.renderer.getSkyDarkness(delta));
-				this.shaderProgram.getUniformOrDefault("BrightnessFactor").set(Math.max(0.0F, o - i));
-				this.shaderProgram.bind();
+				ShaderProgram shaderProgram = (ShaderProgram)Objects.requireNonNull(RenderSystem.setShader(ShaderProgramKeys.LIGHTMAP), "Lightmap shader not loaded");
+				shaderProgram.getUniformOrDefault("AmbientLightFactor").set(n);
+				shaderProgram.getUniformOrDefault("SkyFactor").set(g);
+				shaderProgram.getUniformOrDefault("BlockFactor").set(m);
+				shaderProgram.getUniformOrDefault("UseBrightLightmap").set(bl ? 1 : 0);
+				shaderProgram.getUniformOrDefault("SkyLightColor").set(vector3f);
+				shaderProgram.getUniformOrDefault("NightVisionFactor").set(l);
+				shaderProgram.getUniformOrDefault("DarknessScale").set(j);
+				shaderProgram.getUniformOrDefault("DarkenWorldFactor").set(this.renderer.getSkyDarkness(delta));
+				shaderProgram.getUniformOrDefault("BrightnessFactor").set(Math.max(0.0F, o - i));
 				this.lightmapFramebuffer.beginWrite(true);
 				BufferBuilder bufferBuilder = RenderSystem.renderThreadTesselator().begin(VertexFormat.DrawMode.QUADS, VertexFormats.BLIT_SCREEN);
 				bufferBuilder.vertex(0.0F, 0.0F, 0.0F);
 				bufferBuilder.vertex(1.0F, 0.0F, 0.0F);
 				bufferBuilder.vertex(1.0F, 1.0F, 0.0F);
 				bufferBuilder.vertex(0.0F, 1.0F, 0.0F);
-				BufferRenderer.draw(bufferBuilder.end());
-				this.shaderProgram.unbind();
+				BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 				this.lightmapFramebuffer.endWrite();
 				this.client.getProfiler().pop();
 			}
@@ -186,8 +161,12 @@ public class LightmapTextureManager implements AutoCloseable {
 	}
 
 	public static int applyEmission(int light, int lightEmission) {
-		int i = Math.max(getSkyLightCoordinates(light), lightEmission);
-		int j = Math.max(getBlockLightCoordinates(light), lightEmission);
-		return pack(j, i);
+		if (lightEmission == 0) {
+			return light;
+		} else {
+			int i = Math.max(getSkyLightCoordinates(light), lightEmission);
+			int j = Math.max(getBlockLightCoordinates(light), lightEmission);
+			return pack(j, i);
+		}
 	}
 }

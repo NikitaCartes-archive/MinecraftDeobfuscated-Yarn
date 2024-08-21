@@ -184,14 +184,14 @@ public class ArmorStandEntity extends LivingEntity {
 		NbtList nbtList = new NbtList();
 
 		for (ItemStack itemStack : this.armorItems) {
-			nbtList.add(itemStack.encodeAllowEmpty(this.getRegistryManager()));
+			nbtList.add(itemStack.toNbtAllowEmpty(this.getRegistryManager()));
 		}
 
 		nbt.put("ArmorItems", nbtList);
 		NbtList nbtList2 = new NbtList();
 
 		for (ItemStack itemStack2 : this.heldItems) {
-			nbtList2.add(itemStack2.encodeAllowEmpty(this.getRegistryManager()));
+			nbtList2.add(itemStack2.toNbtAllowEmpty(this.getRegistryManager()));
 		}
 
 		nbt.put("HandItems", nbtList2);

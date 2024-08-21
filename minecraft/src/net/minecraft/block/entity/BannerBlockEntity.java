@@ -56,27 +56,27 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		if (!this.patterns.equals(BannerPatternsComponent.DEFAULT)) {
-			nbt.put("patterns", BannerPatternsComponent.CODEC.encodeStart(registryLookup.getOps(NbtOps.INSTANCE), this.patterns).getOrThrow());
+			nbt.put("patterns", BannerPatternsComponent.CODEC.encodeStart(registries.getOps(NbtOps.INSTANCE), this.patterns).getOrThrow());
 		}
 
 		if (this.customName != null) {
-			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName, registryLookup));
+			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName, registries));
 		}
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
-			this.customName = tryParseCustomName(nbt.getString("CustomName"), registryLookup);
+			this.customName = tryParseCustomName(nbt.getString("CustomName"), registries);
 		}
 
 		if (nbt.contains("patterns")) {
 			BannerPatternsComponent.CODEC
-				.parse(registryLookup.getOps(NbtOps.INSTANCE), nbt.get("patterns"))
+				.parse(registries.getOps(NbtOps.INSTANCE), nbt.get("patterns"))
 				.resultOrPartial(patterns -> LOGGER.error("Failed to parse banner patterns: '{}'", patterns))
 				.ifPresent(patterns -> this.patterns = patterns);
 		}
@@ -87,8 +87,8 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createNbt(registryLookup);
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
+		return this.createNbt(registries);
 	}
 
 	public BannerPatternsComponent getPatterns() {
@@ -113,10 +113,10 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Override
-	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
-		super.addComponents(componentMapBuilder);
-		componentMapBuilder.add(DataComponentTypes.BANNER_PATTERNS, this.patterns);
-		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
+	protected void addComponents(ComponentMap.Builder builder) {
+		super.addComponents(builder);
+		builder.add(DataComponentTypes.BANNER_PATTERNS, this.patterns);
+		builder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
 	}
 
 	@Override

@@ -14,9 +14,9 @@ public class VanillaEnchantmentTagProvider extends EnchantmentTagProvider {
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.createTooltipOrderTag(
-			lookup,
+			registries,
 			new RegistryKey[]{
 				Enchantments.BINDING_CURSE,
 				Enchantments.VANISHING_CURSE,

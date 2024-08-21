@@ -125,10 +125,10 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		this.itemsBeingCooked.clear();
-		Inventories.readNbt(nbt, this.itemsBeingCooked, registryLookup);
+		Inventories.readNbt(nbt, this.itemsBeingCooked, registries);
 		if (nbt.contains("CookingTimes", NbtElement.INT_ARRAY_TYPE)) {
 			int[] is = nbt.getIntArray("CookingTimes");
 			System.arraycopy(is, 0, this.cookingTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
@@ -141,9 +141,9 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
-		Inventories.writeNbt(nbt, this.itemsBeingCooked, true, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
+		Inventories.writeNbt(nbt, this.itemsBeingCooked, true, registries);
 		nbt.putIntArray("CookingTimes", this.cookingTimes);
 		nbt.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
 	}
@@ -153,9 +153,9 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
 		NbtCompound nbtCompound = new NbtCompound();
-		Inventories.writeNbt(nbtCompound, this.itemsBeingCooked, true, registryLookup);
+		Inventories.writeNbt(nbtCompound, this.itemsBeingCooked, true, registries);
 		return nbtCompound;
 	}
 
@@ -204,9 +204,9 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	}
 
 	@Override
-	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
-		super.addComponents(componentMapBuilder);
-		componentMapBuilder.add(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(this.getItemsBeingCooked()));
+	protected void addComponents(ComponentMap.Builder builder) {
+		super.addComponents(builder);
+		builder.add(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(this.getItemsBeingCooked()));
 	}
 
 	@Override

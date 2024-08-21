@@ -53,7 +53,7 @@ public abstract class TagProvider<T> implements DataProvider {
 		return "Tags for " + this.registryRef.getValue();
 	}
 
-	protected abstract void configure(RegistryWrapper.WrapperLookup lookup);
+	protected abstract void configure(RegistryWrapper.WrapperLookup registries);
 
 	@Override
 	public CompletableFuture<?> run(DataWriter writer) {
@@ -65,7 +65,7 @@ public abstract class TagProvider<T> implements DataProvider {
 				this.registryLoadFuture.complete(null);
 				return registryLookupFuture;
 			})
-			.thenCombineAsync(this.parentTagLookupFuture, (lookup, parent) -> new RegistryInfo(lookup, parent), Util.getMainWorkerExecutor())
+			.thenCombineAsync(this.parentTagLookupFuture, (registries, parent) -> new RegistryInfo(registries, parent), Util.getMainWorkerExecutor())
 			.thenCompose(
 				info -> {
 					RegistryWrapper.Impl<T> impl = info.contents.getWrapperOrThrow(this.registryRef);
@@ -116,10 +116,10 @@ public abstract class TagProvider<T> implements DataProvider {
 	}
 
 	protected CompletableFuture<RegistryWrapper.WrapperLookup> getRegistryLookupFuture() {
-		return this.registryLookupFuture.thenApply(lookup -> {
+		return this.registryLookupFuture.thenApply(registries -> {
 			this.tagBuilders.clear();
-			this.configure(lookup);
-			return lookup;
+			this.configure(registries);
+			return registries;
 		});
 	}
 

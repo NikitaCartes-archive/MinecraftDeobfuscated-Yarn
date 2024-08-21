@@ -6,8 +6,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.entity.passive.ParrotEntity;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.text.Text;
-import net.minecraft.util.UseAction;
 
 @Environment(EnvType.CLIENT)
 public class PlayerEntityRenderState extends BipedEntityRenderState {
@@ -26,7 +26,6 @@ public class PlayerEntityRenderState extends BipedEntityRenderState {
 	public boolean leftSleeveVisible = true;
 	public boolean rightSleeveVisible = true;
 	public boolean capeVisible = true;
-	public boolean inSwimmingPose;
 	public float fallFlyingTicks;
 	public boolean applyFlyingRotation;
 	public float flyingRotation;

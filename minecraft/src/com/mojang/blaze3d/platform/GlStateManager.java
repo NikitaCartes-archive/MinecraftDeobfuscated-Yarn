@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
@@ -41,8 +40,8 @@ public class GlStateManager {
 	private static final GlStateManager.LogicOpState COLOR_LOGIC = new GlStateManager.LogicOpState();
 	private static final GlStateManager.StencilState STENCIL = new GlStateManager.StencilState();
 	private static final GlStateManager.ScissorTestState SCISSOR = new GlStateManager.ScissorTestState();
-	private static final GlStateManager.class_9877 READ_FRAMEBUFFER = new GlStateManager.class_9877();
-	private static final GlStateManager.class_9877 DRAW_FRAMEBUFFER = new GlStateManager.class_9877();
+	private static final GlStateManager.FramebufferState READ_FRAMEBUFFER = new GlStateManager.FramebufferState();
+	private static final GlStateManager.FramebufferState DRAW_FRAMEBUFFER = new GlStateManager.FramebufferState();
 	private static int activeTexture;
 	private static final GlStateManager.Texture2DState[] TEXTURES = (GlStateManager.Texture2DState[])IntStream.range(0, 12)
 		.mapToObj(i -> new GlStateManager.Texture2DState())
@@ -148,15 +147,9 @@ public class GlStateManager {
 		return GL20.glCreateShader(type);
 	}
 
-	public static void glShaderSource(int shader, List<String> strings) {
+	public static void glShaderSource(int shader, String string) {
 		RenderSystem.assertOnRenderThread();
-		StringBuilder stringBuilder = new StringBuilder();
-
-		for (String string : strings) {
-			stringBuilder.append(string);
-		}
-
-		byte[] bs = stringBuilder.toString().getBytes(Charsets.UTF_8);
+		byte[] bs = string.getBytes(Charsets.UTF_8);
 		ByteBuffer byteBuffer = MemoryUtil.memAlloc(bs.length + 1);
 		byteBuffer.put(bs);
 		byteBuffer.put((byte)0);
@@ -342,9 +335,9 @@ public class GlStateManager {
 		RenderSystem.assertOnRenderThreadOrInit();
 
 		boolean bl = switch (target) {
-			case 36008 -> READ_FRAMEBUFFER.method_61557(framebuffer);
-			case 36009 -> DRAW_FRAMEBUFFER.method_61557(framebuffer);
-			case 36160 -> READ_FRAMEBUFFER.method_61557(framebuffer) | DRAW_FRAMEBUFFER.method_61557(framebuffer);
+			case 36008 -> READ_FRAMEBUFFER.setBoundFramebuffer(framebuffer);
+			case 36009 -> DRAW_FRAMEBUFFER.setBoundFramebuffer(framebuffer);
+			case 36160 -> READ_FRAMEBUFFER.setBoundFramebuffer(framebuffer) | DRAW_FRAMEBUFFER.setBoundFramebuffer(framebuffer);
 			default -> true;
 		};
 		if (bl) {
@@ -823,6 +816,20 @@ public class GlStateManager {
 	}
 
 	@Environment(EnvType.CLIENT)
+	static class FramebufferState {
+		public int boundFramebuffer;
+
+		public boolean setBoundFramebuffer(int boundFramebuffer) {
+			if (boundFramebuffer != this.boundFramebuffer) {
+				this.boundFramebuffer = boundFramebuffer;
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
 	public static enum LogicOp {
 		AND(5377),
 		AND_INVERTED(5380),
@@ -937,20 +944,6 @@ public class GlStateManager {
 
 		public static int getHeight() {
 			return INSTANCE.height;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class class_9877 {
-		public int field_52509;
-
-		public boolean method_61557(int i) {
-			if (i != this.field_52509) {
-				this.field_52509 = i;
-				return true;
-			} else {
-				return false;
-			}
 		}
 	}
 }

@@ -223,7 +223,7 @@ public interface WorldView extends BlockRenderView, CollisionView, RedstoneView,
 
 	@Deprecated
 	default boolean isRegionLoaded(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-		return maxY >= this.getBottomY() && minY < this.getTopY() ? this.isRegionLoaded(minX, minZ, maxX, maxZ) : false;
+		return maxY >= this.getBottomY() && minY <= this.getTopYInclusive() ? this.isRegionLoaded(minX, minZ, maxX, maxZ) : false;
 	}
 
 	@Deprecated

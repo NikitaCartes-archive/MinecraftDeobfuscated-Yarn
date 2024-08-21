@@ -269,7 +269,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 		super.writeCustomDataToNbt(nbt);
 		nbt.putInt("Life", this.life);
 		nbt.putInt("LifeTime", this.lifeTime);
-		nbt.put("FireworksItem", this.getStack().encode(this.getRegistryManager()));
+		nbt.put("FireworksItem", this.getStack().toNbt(this.getRegistryManager()));
 		nbt.putBoolean("ShotAtAngle", this.dataTracker.get(SHOT_AT_ANGLE));
 	}
 

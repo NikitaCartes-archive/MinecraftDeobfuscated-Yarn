@@ -24,7 +24,7 @@ public class RandomSequencesState extends PersistentState {
 	private final Map<Identifier, RandomSequence> sequences = new Object2ObjectOpenHashMap<>();
 
 	public static PersistentState.Type<RandomSequencesState> getPersistentStateType(long seed) {
-		return new PersistentState.Type<>(() -> new RandomSequencesState(seed), (nbt, registryLookup) -> fromNbt(seed, nbt), DataFixTypes.SAVED_DATA_RANDOM_SEQUENCES);
+		return new PersistentState.Type<>(() -> new RandomSequencesState(seed), (nbt, registries) -> fromNbt(seed, nbt), DataFixTypes.SAVED_DATA_RANDOM_SEQUENCES);
 	}
 
 	public RandomSequencesState(long seed) {
@@ -56,7 +56,7 @@ public class RandomSequencesState extends PersistentState {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		nbt.putInt("salt", this.salt);
 		nbt.putBoolean("include_world_seed", this.includeWorldSeed);
 		nbt.putBoolean("include_sequence_id", this.includeSequenceId);

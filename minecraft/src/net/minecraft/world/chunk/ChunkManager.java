@@ -33,6 +33,9 @@ public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 
 	public abstract void tick(BooleanSupplier shouldKeepTicking, boolean tickChunks);
 
+	public void onSectionStatusChanged(int x, int sectionY, int z, boolean previouslyEmpty) {
+	}
+
 	public abstract String getDebugString();
 
 	public abstract int getLoadedChunkCount();

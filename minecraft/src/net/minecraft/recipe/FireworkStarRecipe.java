@@ -52,7 +52,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		boolean bl4 = false;
 		boolean bl5 = false;
 
-		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+		for (int i = 0; i < craftingRecipeInput.size(); i++) {
 			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack.isEmpty()) {
 				if (TYPE_MODIFIER_MAP.containsKey(itemStack.getItem())) {
@@ -98,7 +98,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		boolean bl2 = false;
 		IntList intList = new IntArrayList();
 
-		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+		for (int i = 0; i < craftingRecipeInput.size(); i++) {
 			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack.isEmpty()) {
 				FireworkExplosionComponent.Type type2 = (FireworkExplosionComponent.Type)TYPE_MODIFIER_MAP.get(itemStack.getItem());
@@ -125,7 +125,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup) {
+	public ItemStack getResult(RegistryWrapper.WrapperLookup registries) {
 		return new ItemStack(Items.FIREWORK_STAR);
 	}
 

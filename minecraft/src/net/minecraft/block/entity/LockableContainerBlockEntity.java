@@ -33,20 +33,20 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		this.lock = ContainerLock.fromNbt(nbt);
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
-			this.customName = tryParseCustomName(nbt.getString("CustomName"), registryLookup);
+			this.customName = tryParseCustomName(nbt.getString("CustomName"), registries);
 		}
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		this.lock.writeNbt(nbt);
 		if (this.customName != null) {
-			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName, registryLookup));
+			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName, registries));
 		}
 	}
 
@@ -151,14 +151,14 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	}
 
 	@Override
-	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
-		super.addComponents(componentMapBuilder);
-		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
+	protected void addComponents(ComponentMap.Builder builder) {
+		super.addComponents(builder);
+		builder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
 		if (!this.lock.equals(ContainerLock.EMPTY)) {
-			componentMapBuilder.add(DataComponentTypes.LOCK, this.lock);
+			builder.add(DataComponentTypes.LOCK, this.lock);
 		}
 
-		componentMapBuilder.add(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(this.getHeldStacks()));
+		builder.add(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(this.getHeldStacks()));
 	}
 
 	@Override

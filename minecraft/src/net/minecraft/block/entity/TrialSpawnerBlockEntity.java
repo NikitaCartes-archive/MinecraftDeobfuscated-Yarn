@@ -30,8 +30,8 @@ public class TrialSpawnerBlockEntity extends BlockEntity implements Spawner, Tri
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		if (nbt.contains("normal_config")) {
 			NbtCompound nbtCompound = nbt.getCompound("normal_config").copy();
 			nbt.put("ominous_config", nbtCompound.copyFrom(nbt.getCompound("ominous_config")));
@@ -44,8 +44,8 @@ public class TrialSpawnerBlockEntity extends BlockEntity implements Spawner, Tri
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		this.spawner
 			.codec()
 			.encodeStart(NbtOps.INSTANCE, this.spawner)
@@ -58,7 +58,7 @@ public class TrialSpawnerBlockEntity extends BlockEntity implements Spawner, Tri
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
 		return this.spawner.getData().getSpawnDataNbt(this.getCachedState().get(TrialSpawnerBlock.TRIAL_SPAWNER_STATE));
 	}
 

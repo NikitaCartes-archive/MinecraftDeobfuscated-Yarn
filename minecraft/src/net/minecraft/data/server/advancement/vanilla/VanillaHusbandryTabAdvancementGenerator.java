@@ -131,11 +131,11 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 	public static final Item[] AXE_ITEMS = new Item[]{Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE};
 
 	@Override
-	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<AdvancementEntry> exporter) {
-		RegistryEntryLookup<EntityType<?>> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.ENTITY_TYPE);
-		RegistryEntryLookup<Item> registryEntryLookup2 = lookup.getWrapperOrThrow(RegistryKeys.ITEM);
-		RegistryEntryLookup<Block> registryEntryLookup3 = lookup.getWrapperOrThrow(RegistryKeys.BLOCK);
-		RegistryWrapper.Impl<Enchantment> impl = lookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+	public void accept(RegistryWrapper.WrapperLookup registries, Consumer<AdvancementEntry> exporter) {
+		RegistryEntryLookup<EntityType<?>> registryEntryLookup = registries.getWrapperOrThrow(RegistryKeys.ENTITY_TYPE);
+		RegistryEntryLookup<Item> registryEntryLookup2 = registries.getWrapperOrThrow(RegistryKeys.ITEM);
+		RegistryEntryLookup<Block> registryEntryLookup3 = registries.getWrapperOrThrow(RegistryKeys.BLOCK);
+		RegistryWrapper.Impl<Enchantment> impl = registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		AdvancementEntry advancementEntry = Advancement.Builder.create()
 			.display(
 				Blocks.HAY_BLOCK,
@@ -303,7 +303,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.rewards(AdvancementRewards.Builder.experience(50))
 			.build(exporter, "husbandry/complete_catalogue");
-		requireAllWolvesTamed(Advancement.Builder.create(), lookup)
+		requireAllWolvesTamed(Advancement.Builder.create(), registries)
 			.parent(advancementEntry4)
 			.display(
 				Items.BONE,
@@ -754,8 +754,8 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 		return builder;
 	}
 
-	private static Advancement.Builder requireAllWolvesTamed(Advancement.Builder builder, RegistryWrapper.WrapperLookup registryLookup) {
-		RegistryWrapper.Impl<WolfVariant> impl = registryLookup.getWrapperOrThrow(RegistryKeys.WOLF_VARIANT);
+	private static Advancement.Builder requireAllWolvesTamed(Advancement.Builder builder, RegistryWrapper.WrapperLookup registries) {
+		RegistryWrapper.Impl<WolfVariant> impl = registries.getWrapperOrThrow(RegistryKeys.WOLF_VARIANT);
 		impl.streamKeys()
 			.sorted(Comparator.comparing(RegistryKey::getValue))
 			.forEach(

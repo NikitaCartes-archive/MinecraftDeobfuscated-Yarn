@@ -14,7 +14,7 @@ public abstract class RedstoneController {
 		this.wire = wire;
 	}
 
-	public abstract void update(World world, BlockPos pos, BlockState state, @Nullable WireOrientation orientation);
+	public abstract void update(World world, BlockPos pos, BlockState state, @Nullable WireOrientation orientation, boolean blockAdded);
 
 	protected int getStrongPowerAt(World world, BlockPos pos) {
 		return this.wire.getStrongPower(world, pos);

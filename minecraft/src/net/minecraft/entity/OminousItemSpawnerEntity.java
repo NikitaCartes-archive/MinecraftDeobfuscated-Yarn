@@ -121,7 +121,7 @@ public class OminousItemSpawnerEntity extends Entity {
 	@Override
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
 		if (!this.getItem().isEmpty()) {
-			nbt.put("item", this.getItem().encode(this.getRegistryManager()).copy());
+			nbt.put("item", this.getItem().toNbt(this.getRegistryManager()).copy());
 		}
 
 		nbt.putLong("spawn_item_after_ticks", this.spawnItemAfterTicks);

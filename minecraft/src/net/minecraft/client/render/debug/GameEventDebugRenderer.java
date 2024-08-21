@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9974;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -72,7 +72,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			for (GameEventDebugRenderer.Listener listener2 : this.listeners) {
 				listener2.getPos(world)
 					.ifPresent(
-						pos -> class_9974.method_62300(
+						pos -> VertexRendering.drawFilledBox(
 								matrices,
 								vertexConsumer2,
 								pos.getX() - 0.25 - cameraX,

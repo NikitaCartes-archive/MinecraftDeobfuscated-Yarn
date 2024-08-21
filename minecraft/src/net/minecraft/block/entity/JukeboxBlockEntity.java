@@ -74,24 +74,24 @@ public class JukeboxBlockEntity extends BlockEntity implements SingleStackInvent
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		if (nbt.contains("RecordItem", NbtElement.COMPOUND_TYPE)) {
-			this.recordStack = (ItemStack)ItemStack.fromNbt(registryLookup, nbt.getCompound("RecordItem")).orElse(ItemStack.EMPTY);
+			this.recordStack = (ItemStack)ItemStack.fromNbt(registries, nbt.getCompound("RecordItem")).orElse(ItemStack.EMPTY);
 		} else {
 			this.recordStack = ItemStack.EMPTY;
 		}
 
 		if (nbt.contains("ticks_since_song_started", NbtElement.LONG_TYPE)) {
-			JukeboxSong.getSongEntryFromStack(registryLookup, this.recordStack).ifPresent(song -> this.manager.setValues(song, nbt.getLong("ticks_since_song_started")));
+			JukeboxSong.getSongEntryFromStack(registries, this.recordStack).ifPresent(song -> this.manager.setValues(song, nbt.getLong("ticks_since_song_started")));
 		}
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		if (!this.getStack().isEmpty()) {
-			nbt.put("RecordItem", this.getStack().encode(registryLookup));
+			nbt.put("RecordItem", this.getStack().toNbt(registries));
 		}
 
 		if (this.manager.getSong() != null) {

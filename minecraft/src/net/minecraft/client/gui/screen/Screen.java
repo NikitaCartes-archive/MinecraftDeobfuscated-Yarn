@@ -168,6 +168,9 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		return new GuiNavigation.Arrow(direction);
 	}
 
+	/**
+	 * This should be overriden with a call to {@link #setInitialFocus(Element)} to set the element that is initially focused.
+	 */
 	protected void setInitialFocus() {
 		if (this.client.getNavigationType().isKeyboard()) {
 			GuiNavigation.Tab tab = new GuiNavigation.Tab(true);
@@ -180,7 +183,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 	/**
 	 * Sets the initial focus of this screen. This should be called inside the overridden
-	 * {@link #init()} method by screen implementations.
+	 * {@link #setInitialFocus()} method by screen implementations.
 	 */
 	protected void setInitialFocus(Element element) {
 		GuiNavigationPath guiNavigationPath = GuiNavigationPath.of(this, element.getNavigationPath(new GuiNavigation.Down()));
@@ -349,8 +352,6 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	 * Called when a screen should be initialized.
 	 * 
 	 * <p>This method is called when this screen is {@linkplain net.minecraft.client.MinecraftClient#setScreen(Screen) opened} or resized.
-	 * 
-	 * <p>This should call {@link #setInitialFocus} to set the element that is initially focused.
 	 */
 	protected void init() {
 	}

@@ -67,7 +67,7 @@ public abstract class ChunkTicketManager {
 		this.mainThreadExecutor = mainThreadExecutor;
 	}
 
-	protected void purge() {
+	protected void purgeExpiredTickets() {
 		this.age++;
 		ObjectIterator<Entry<SortedArraySet<ChunkTicket<?>>>> objectIterator = this.ticketsByPosition.long2ObjectEntrySet().fastIterator();
 

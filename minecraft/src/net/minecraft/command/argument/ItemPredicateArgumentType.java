@@ -130,11 +130,11 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		private final RegistryWrapper.Impl<ItemSubPredicate.Type<?>> itemSubPredicateTypeRegistryWrapper;
 		private final RegistryOps<NbtElement> nbtOps;
 
-		Context(RegistryWrapper.WrapperLookup registryLookup) {
-			this.itemRegistryWrapper = registryLookup.getWrapperOrThrow(RegistryKeys.ITEM);
-			this.dataComponentTypeRegistryWrapper = registryLookup.getWrapperOrThrow(RegistryKeys.DATA_COMPONENT_TYPE);
-			this.itemSubPredicateTypeRegistryWrapper = registryLookup.getWrapperOrThrow(RegistryKeys.ITEM_SUB_PREDICATE_TYPE);
-			this.nbtOps = registryLookup.getOps(NbtOps.INSTANCE);
+		Context(RegistryWrapper.WrapperLookup registries) {
+			this.itemRegistryWrapper = registries.getWrapperOrThrow(RegistryKeys.ITEM);
+			this.dataComponentTypeRegistryWrapper = registries.getWrapperOrThrow(RegistryKeys.DATA_COMPONENT_TYPE);
+			this.itemSubPredicateTypeRegistryWrapper = registries.getWrapperOrThrow(RegistryKeys.ITEM_SUB_PREDICATE_TYPE);
+			this.nbtOps = registries.getOps(NbtOps.INSTANCE);
 		}
 
 		public Predicate<ItemStack> itemMatchPredicate(ImmutableStringReader immutableStringReader, Identifier identifier) throws CommandSyntaxException {

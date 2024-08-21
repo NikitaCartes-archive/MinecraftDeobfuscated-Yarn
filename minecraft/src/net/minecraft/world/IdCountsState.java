@@ -21,7 +21,7 @@ public class IdCountsState extends PersistentState {
 		this.idCounts.defaultReturnValue(-1);
 	}
 
-	public static IdCountsState fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	public static IdCountsState fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		IdCountsState idCountsState = new IdCountsState();
 
 		for (String string : nbt.getKeys()) {
@@ -34,7 +34,7 @@ public class IdCountsState extends PersistentState {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		for (Entry<String> entry : this.idCounts.object2IntEntrySet()) {
 			nbt.putInt((String)entry.getKey(), entry.getIntValue());
 		}

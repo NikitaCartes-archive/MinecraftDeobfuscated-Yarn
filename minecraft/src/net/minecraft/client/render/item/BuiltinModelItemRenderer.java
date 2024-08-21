@@ -143,7 +143,7 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 				SpriteIdentifier spriteIdentifier = bl ? ModelBaker.SHIELD_BASE : ModelBaker.SHIELD_BASE_NO_PATTERN;
 				VertexConsumer vertexConsumer = spriteIdentifier.getSprite()
 					.getTextureSpecificVertexConsumer(
-						ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), false, stack.hasGlint())
+						ItemRenderer.getItemGlintConsumer(vertexConsumers, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), false, stack.hasGlint())
 					);
 				this.modelShield.getHandle().render(matrices, vertexConsumer, light, overlay);
 				if (bl) {
@@ -168,7 +168,7 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 			} else if (stack.isOf(Items.TRIDENT)) {
 				matrices.push();
 				matrices.scale(1.0F, -1.0F, -1.0F);
-				VertexConsumer vertexConsumer2 = ItemRenderer.getDirectItemGlintConsumer(
+				VertexConsumer vertexConsumer2 = ItemRenderer.getItemGlintConsumer(
 					vertexConsumers, this.modelTrident.getLayer(TridentEntityModel.TEXTURE), false, stack.hasGlint()
 				);
 				this.modelTrident.render(matrices, vertexConsumer2, light, overlay);

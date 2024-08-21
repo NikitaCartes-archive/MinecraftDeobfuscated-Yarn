@@ -45,7 +45,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup) {
+	public ItemStack getResult(RegistryWrapper.WrapperLookup registries) {
 		return this.result;
 	}
 
@@ -62,7 +62,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 		if (craftingRecipeInput.getStackCount() != this.ingredients.size()) {
 			return false;
 		} else {
-			return craftingRecipeInput.getSize() == 1 && this.ingredients.size() == 1
+			return craftingRecipeInput.size() == 1 && this.ingredients.size() == 1
 				? ((Ingredient)this.ingredients.getFirst()).test(craftingRecipeInput.getStackInSlot(0))
 				: craftingRecipeInput.getRecipeMatcher().isCraftable(this, null);
 		}

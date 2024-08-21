@@ -766,7 +766,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		for (ChunkBiomeDataS2CPacket.Serialized serialized : packet.chunkBiomeData()) {
 			for (int i = -1; i <= 1; i++) {
 				for (int j = -1; j <= 1; j++) {
-					for (int k = this.world.getBottomSectionCoord(); k < this.world.getTopSectionCoord(); k++) {
+					for (int k = this.world.getBottomSectionCoord(); k <= this.world.getTopSectionCoord(); k++) {
 						this.client.worldRenderer.scheduleBlockRender(serialized.pos().x + i, k, serialized.pos().z + j);
 					}
 				}
@@ -811,7 +811,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				lightingProvider.enqueueSectionData(LightType.SKY, chunkSectionPos, null);
 			}
 
-			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
+			for (int i = this.world.getBottomSectionCoord(); i <= this.world.getTopSectionCoord(); i++) {
 				lightingProvider.setSectionStatus(ChunkSectionPos.from(chunkPos, i), true);
 			}
 		});
@@ -1851,7 +1851,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				currentEntry.setDisplayName(receivedEntry.displayName());
 				break;
 			case UPDATE_LIST_ORDER:
-				currentEntry.method_62153(receivedEntry.listOrder());
+				currentEntry.setListOrder(receivedEntry.listOrder());
 		}
 	}
 
@@ -1932,9 +1932,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	public void onCooldownUpdate(CooldownUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		if (packet.cooldown() == 0) {
-			this.client.player.getItemCooldownManager().remove(packet.item());
+			this.client.player.getItemCooldownManager().remove(packet.cooldownGroup());
 		} else {
-			this.client.player.getItemCooldownManager().set(packet.item(), packet.cooldown());
+			this.client.player.getItemCooldownManager().set(packet.cooldownGroup(), packet.cooldown());
 		}
 	}
 

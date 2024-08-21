@@ -614,7 +614,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		if (optional.isPresent()) {
 			return (BlockPos)optional.get();
 		} else {
-			Box box = Box.enclosing(blockPos, new BlockPos(blockPos.withY(this.getTopY()))).expand(3.0);
+			Box box = Box.enclosing(blockPos, blockPos.withY(this.getTopYInclusive() + 1)).expand(3.0);
 			List<LivingEntity> list = this.getEntitiesByClass(
 				LivingEntity.class, box, entity -> entity != null && entity.isAlive() && this.isSkyVisible(entity.getBlockPos())
 			);

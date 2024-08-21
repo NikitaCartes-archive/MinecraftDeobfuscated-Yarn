@@ -104,22 +104,22 @@ public class ReloadableRegistries {
 	}
 
 	public static class Lookup {
-		private final RegistryWrapper.WrapperLookup registriesLookup;
+		private final RegistryWrapper.WrapperLookup registries;
 
-		public Lookup(RegistryWrapper.WrapperLookup registriesLookup) {
-			this.registriesLookup = registriesLookup;
+		public Lookup(RegistryWrapper.WrapperLookup registries) {
+			this.registries = registries;
 		}
 
 		public RegistryEntryLookup.RegistryLookup createRegistryLookup() {
-			return this.registriesLookup.createRegistryLookup();
+			return this.registries.createRegistryLookup();
 		}
 
 		public Collection<Identifier> getIds(RegistryKey<? extends Registry<?>> registryRef) {
-			return this.registriesLookup.getWrapperOrThrow(registryRef).streamKeys().map(RegistryKey::getValue).toList();
+			return this.registries.getWrapperOrThrow(registryRef).streamKeys().map(RegistryKey::getValue).toList();
 		}
 
 		public LootTable getLootTable(RegistryKey<LootTable> key) {
-			return (LootTable)this.registriesLookup
+			return (LootTable)this.registries
 				.getOptionalWrapper(RegistryKeys.LOOT_TABLE)
 				.flatMap(registryEntryLookup -> registryEntryLookup.getOptional(key))
 				.map(RegistryEntry::value)

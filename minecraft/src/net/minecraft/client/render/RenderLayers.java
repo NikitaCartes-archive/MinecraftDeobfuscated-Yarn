@@ -8,12 +8,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Util;
 
@@ -365,26 +363,17 @@ public class RenderLayers {
 		}
 	}
 
-	public static RenderLayer getEntityBlockLayer(BlockState state, boolean direct) {
+	public static RenderLayer getEntityBlockLayer(BlockState state) {
 		RenderLayer renderLayer = getBlockLayer(state);
-		if (renderLayer == RenderLayer.getTranslucent()) {
-			if (!MinecraftClient.isFabulousGraphicsOrBetter()) {
-				return TexturedRenderLayers.getEntityTranslucentCull();
-			} else {
-				return direct ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.getItemEntityTranslucentCull();
-			}
-		} else {
-			return TexturedRenderLayers.getEntityCutout();
-		}
+		return renderLayer == RenderLayer.getTranslucent() ? TexturedRenderLayers.getItemEntityTranslucentCull() : TexturedRenderLayers.getEntityCutout();
 	}
 
-	public static RenderLayer getItemLayer(ItemStack stack, boolean direct) {
-		Item item = stack.getItem();
-		if (item instanceof BlockItem) {
-			Block block = ((BlockItem)item).getBlock();
-			return getEntityBlockLayer(block.getDefaultState(), direct);
+	public static RenderLayer getItemLayer(ItemStack stack) {
+		if (stack.getItem() instanceof BlockItem blockItem) {
+			Block block = blockItem.getBlock();
+			return getEntityBlockLayer(block.getDefaultState());
 		} else {
-			return direct ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.getItemEntityTranslucentCull();
+			return TexturedRenderLayers.getItemEntityTranslucentCull();
 		}
 	}
 

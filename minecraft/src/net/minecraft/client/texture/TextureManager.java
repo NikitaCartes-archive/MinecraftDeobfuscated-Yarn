@@ -42,24 +42,6 @@ public class TextureManager implements ResourceReloader, TextureTickListener, Au
 		this.resourceContainer = resourceManager;
 	}
 
-	public void bindTexture(Identifier id) {
-		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(() -> this.bindTextureInner(id));
-		} else {
-			this.bindTextureInner(id);
-		}
-	}
-
-	private void bindTextureInner(Identifier id) {
-		AbstractTexture abstractTexture = (AbstractTexture)this.textures.get(id);
-		if (abstractTexture == null) {
-			abstractTexture = new ResourceTexture(id);
-			this.registerTexture(id, abstractTexture);
-		}
-
-		abstractTexture.bindTexture();
-	}
-
 	public void registerTexture(Identifier id, AbstractTexture texture) {
 		texture = this.loadTexture(id, texture);
 		AbstractTexture abstractTexture = (AbstractTexture)this.textures.put(id, texture);

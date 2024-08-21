@@ -61,7 +61,7 @@ public class SpreadPlayersCommand {
 																	Vec2ArgumentType.getVec2(context, "center"),
 																	FloatArgumentType.getFloat(context, "spreadDistance"),
 																	FloatArgumentType.getFloat(context, "maxRange"),
-																	context.getSource().getWorld().getTopY(),
+																	context.getSource().getWorld().getTopYInclusive() + 1,
 																	BoolArgumentType.getBool(context, "respectTeams"),
 																	EntityArgumentType.getEntities(context, "targets")
 																)

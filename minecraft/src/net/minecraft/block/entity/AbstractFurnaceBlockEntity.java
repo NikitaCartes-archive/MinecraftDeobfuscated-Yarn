@@ -113,10 +113,10 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		Inventories.readNbt(nbt, this.inventory, registryLookup);
+		Inventories.readNbt(nbt, this.inventory, registries);
 		this.burnTime = nbt.getShort("BurnTime");
 		this.cookTime = nbt.getShort("CookTime");
 		this.cookTimeTotal = nbt.getShort("CookTimeTotal");
@@ -129,12 +129,12 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		nbt.putShort("BurnTime", (short)this.burnTime);
 		nbt.putShort("CookTime", (short)this.cookTime);
 		nbt.putShort("CookTimeTotal", (short)this.cookTimeTotal);
-		Inventories.writeNbt(nbt, this.inventory, registryLookup);
+		Inventories.writeNbt(nbt, this.inventory, registries);
 		NbtCompound nbtCompound = new NbtCompound();
 		this.recipesUsed.forEach((identifier, count) -> nbtCompound.putInt(identifier.toString(), count));
 		nbt.put("RecipesUsed", nbtCompound);

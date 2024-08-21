@@ -122,7 +122,7 @@ public class MapState extends PersistentState {
 		return new MapState(0, 0, scale, false, false, locked, dimension);
 	}
 
-	public static MapState fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	public static MapState fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		RegistryKey<World> registryKey = (RegistryKey<World>)DimensionType.worldFromDimensionNbt(new Dynamic<>(NbtOps.INSTANCE, nbt.get("dimension")))
 			.resultOrPartial(LOGGER::error)
 			.orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + nbt.get("dimension")));
@@ -138,7 +138,7 @@ public class MapState extends PersistentState {
 			mapState.colors = bs;
 		}
 
-		RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
+		RegistryOps<NbtElement> registryOps = registries.getOps(NbtOps.INSTANCE);
 
 		for (MapBannerMarker mapBannerMarker : (List)MapBannerMarker.LIST_CODEC
 			.parse(registryOps, nbt.get("banners"))
@@ -178,7 +178,7 @@ public class MapState extends PersistentState {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		Identifier.CODEC
 			.encodeStart(NbtOps.INSTANCE, this.dimension.getValue())
 			.resultOrPartial(LOGGER::error)
@@ -190,7 +190,7 @@ public class MapState extends PersistentState {
 		nbt.putBoolean("trackingPosition", this.showDecorations);
 		nbt.putBoolean("unlimitedTracking", this.unlimitedTracking);
 		nbt.putBoolean("locked", this.locked);
-		RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
+		RegistryOps<NbtElement> registryOps = registries.getOps(NbtOps.INSTANCE);
 		nbt.put("banners", MapBannerMarker.LIST_CODEC.encodeStart(registryOps, List.copyOf(this.banners.values())).getOrThrow());
 		NbtList nbtList = new NbtList();
 

@@ -31,12 +31,12 @@ public class FuelRegistry {
 		return item.isEmpty() ? 0 : this.fuelValues.getInt(item.getItem());
 	}
 
-	public static FuelRegistry createDefault(RegistryWrapper.WrapperLookup lookup, FeatureSet featureSet) {
-		return createDefault(lookup, featureSet, 200);
+	public static FuelRegistry createDefault(RegistryWrapper.WrapperLookup registries, FeatureSet enabledFeatures) {
+		return createDefault(registries, enabledFeatures, 200);
 	}
 
-	public static FuelRegistry createDefault(RegistryWrapper.WrapperLookup lookup, FeatureSet featureSet, int itemSmeltTime) {
-		return new FuelRegistry.Builder(lookup, featureSet)
+	public static FuelRegistry createDefault(RegistryWrapper.WrapperLookup registries, FeatureSet enabledFeatures, int itemSmeltTime) {
+		return new FuelRegistry.Builder(registries, enabledFeatures)
 			.add(Items.LAVA_BUCKET, itemSmeltTime * 100)
 			.add(Blocks.COAL_BLOCK, itemSmeltTime * 8 * 10)
 			.add(Items.BLAZE_ROD, itemSmeltTime * 12)
@@ -102,12 +102,12 @@ public class FuelRegistry {
 
 	public static class Builder {
 		private final RegistryWrapper<Item> itemLookup;
-		private final FeatureSet featureSet;
+		private final FeatureSet enabledFeatures;
 		private final Object2IntSortedMap<Item> fuelValues = new Object2IntLinkedOpenHashMap<>();
 
-		public Builder(RegistryWrapper.WrapperLookup lookup, FeatureSet featureSet) {
-			this.itemLookup = lookup.getWrapperOrThrow(RegistryKeys.ITEM);
-			this.featureSet = featureSet;
+		public Builder(RegistryWrapper.WrapperLookup registries, FeatureSet enabledFeatures) {
+			this.itemLookup = registries.getWrapperOrThrow(RegistryKeys.ITEM);
+			this.enabledFeatures = enabledFeatures;
 		}
 
 		public FuelRegistry build() {
@@ -135,7 +135,7 @@ public class FuelRegistry {
 		}
 
 		private void add(int value, Item item) {
-			if (item.isEnabled(this.featureSet)) {
+			if (item.isEnabled(this.enabledFeatures)) {
 				this.fuelValues.put(item, value);
 			}
 		}

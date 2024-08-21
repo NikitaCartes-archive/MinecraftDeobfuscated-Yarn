@@ -92,11 +92,6 @@ public class ArmorItem extends Item implements Equipment {
 		return this.type;
 	}
 
-	@Override
-	public int getEnchantability() {
-		return this.material.value().enchantability();
-	}
-
 	public RegistryEntry<ArmorMaterial> getMaterial() {
 		return this.material;
 	}

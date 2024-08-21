@@ -52,7 +52,7 @@ public class ShapedRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup) {
+	public ItemStack getResult(RegistryWrapper.WrapperLookup registries) {
 		return this.result;
 	}
 

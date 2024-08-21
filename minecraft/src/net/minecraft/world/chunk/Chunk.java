@@ -253,8 +253,8 @@ public abstract class Chunk implements BiomeAccess.Storage, LightSourceView, Str
 			lowerHeight = this.getBottomY();
 		}
 
-		if (upperHeight >= this.getTopY()) {
-			upperHeight = this.getTopY() - 1;
+		if (upperHeight > this.getTopYInclusive()) {
+			upperHeight = this.getTopYInclusive();
 		}
 
 		for (int i = lowerHeight; i <= upperHeight; i += 16) {
@@ -318,7 +318,7 @@ public abstract class Chunk implements BiomeAccess.Storage, LightSourceView, Str
 	}
 
 	@Nullable
-	public abstract NbtCompound getPackedBlockEntityNbt(BlockPos pos, RegistryWrapper.WrapperLookup registryLookup);
+	public abstract NbtCompound getPackedBlockEntityNbt(BlockPos pos, RegistryWrapper.WrapperLookup registries);
 
 	@Override
 	public final void forEachLightSource(BiConsumer<BlockPos, BlockState> callback) {
@@ -328,7 +328,7 @@ public abstract class Chunk implements BiomeAccess.Storage, LightSourceView, Str
 	public void forEachBlockMatchingPredicate(Predicate<BlockState> predicate, BiConsumer<BlockPos, BlockState> consumer) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int i = this.getBottomSectionCoord(); i < this.getTopSectionCoord(); i++) {
+		for (int i = this.getBottomSectionCoord(); i <= this.getTopSectionCoord(); i++) {
 			ChunkSection chunkSection = this.getSection(this.sectionCoordToIndex(i));
 			if (chunkSection.hasAny(predicate)) {
 				BlockPos blockPos = ChunkSectionPos.from(this.pos, i).getMinPos();
@@ -444,7 +444,7 @@ public abstract class Chunk implements BiomeAccess.Storage, LightSourceView, Str
 		int j = BiomeCoords.fromBlock(chunkPos.getStartZ());
 		HeightLimitView heightLimitView = this.getHeightLimitView();
 
-		for (int k = heightLimitView.getBottomSectionCoord(); k < heightLimitView.getTopSectionCoord(); k++) {
+		for (int k = heightLimitView.getBottomSectionCoord(); k <= heightLimitView.getTopSectionCoord(); k++) {
 			ChunkSection chunkSection = this.getSection(this.sectionCoordToIndex(k));
 			int l = BiomeCoords.fromChunk(k);
 			chunkSection.populateBiomes(biomeSupplier, sampler, i, l, j);

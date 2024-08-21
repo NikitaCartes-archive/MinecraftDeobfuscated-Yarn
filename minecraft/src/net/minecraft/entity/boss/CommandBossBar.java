@@ -133,9 +133,9 @@ public class CommandBossBar extends ServerBossBar {
 		return !set.isEmpty() || !set2.isEmpty();
 	}
 
-	public NbtCompound toNbt(RegistryWrapper.WrapperLookup wrapperLookup) {
+	public NbtCompound toNbt(RegistryWrapper.WrapperLookup registries) {
 		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putString("Name", Text.Serialization.toJsonString(this.name, wrapperLookup));
+		nbtCompound.putString("Name", Text.Serialization.toJsonString(this.name, registries));
 		nbtCompound.putBoolean("Visible", this.isVisible());
 		nbtCompound.putInt("Value", this.value);
 		nbtCompound.putInt("Max", this.maxValue);
@@ -154,8 +154,8 @@ public class CommandBossBar extends ServerBossBar {
 		return nbtCompound;
 	}
 
-	public static CommandBossBar fromNbt(NbtCompound nbt, Identifier id, RegistryWrapper.WrapperLookup wrapperLookup) {
-		CommandBossBar commandBossBar = new CommandBossBar(id, Text.Serialization.fromJson(nbt.getString("Name"), wrapperLookup));
+	public static CommandBossBar fromNbt(NbtCompound nbt, Identifier id, RegistryWrapper.WrapperLookup registries) {
+		CommandBossBar commandBossBar = new CommandBossBar(id, Text.Serialization.fromJson(nbt.getString("Name"), registries));
 		commandBossBar.setVisible(nbt.getBoolean("Visible"));
 		commandBossBar.setValue(nbt.getInt("Value"));
 		commandBossBar.setMaxValue(nbt.getInt("Max"));

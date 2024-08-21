@@ -114,8 +114,8 @@ public record WrittenBookContentComponent(RawFilteredPair<String> title, String 
 		});
 	}
 
-	private static boolean exceedsSerializedLengthLimit(Text text, RegistryWrapper.WrapperLookup lookup) {
-		return Text.Serialization.toJsonString(text, lookup).length() > 32767;
+	private static boolean exceedsSerializedLengthLimit(Text text, RegistryWrapper.WrapperLookup registries) {
+		return Text.Serialization.toJsonString(text, registries).length() > 32767;
 	}
 
 	public List<Text> getPages(boolean shouldFilter) {

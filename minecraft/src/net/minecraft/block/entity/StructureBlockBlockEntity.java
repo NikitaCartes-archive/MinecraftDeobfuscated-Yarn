@@ -59,8 +59,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		nbt.putString("name", this.getTemplateName());
 		nbt.putString("author", this.author);
 		nbt.putString("metadata", this.metadata);
@@ -82,8 +82,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		this.setTemplateName(nbt.getString("name"));
 		this.author = nbt.getString("author");
 		this.metadata = nbt.getString("metadata");
@@ -143,8 +143,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createComponentlessNbt(registryLookup);
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
+		return this.createComponentlessNbt(registries);
 	}
 
 	public boolean openScreen(PlayerEntity player) {
@@ -262,7 +262,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			BlockPos blockPos = this.getPos();
 			int i = 80;
 			BlockPos blockPos2 = new BlockPos(blockPos.getX() - 80, this.world.getBottomY(), blockPos.getZ() - 80);
-			BlockPos blockPos3 = new BlockPos(blockPos.getX() + 80, this.world.getTopY() - 1, blockPos.getZ() + 80);
+			BlockPos blockPos3 = new BlockPos(blockPos.getX() + 80, this.world.getTopYInclusive(), blockPos.getZ() + 80);
 			Stream<BlockPos> stream = this.streamCornerPos(blockPos2, blockPos3);
 			return getStructureBox(blockPos, stream).filter(box -> {
 				int ix = box.getMaxX() - box.getMinX();

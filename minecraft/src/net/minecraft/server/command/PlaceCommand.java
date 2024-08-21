@@ -275,7 +275,9 @@ public class PlaceCommand {
 							serverWorld.getStructureAccessor(),
 							chunkGenerator,
 							serverWorld.getRandom(),
-							new BlockBox(chunkPosx.getStartX(), serverWorld.getBottomY(), chunkPosx.getStartZ(), chunkPosx.getEndX(), serverWorld.getTopY(), chunkPosx.getEndZ()),
+							new BlockBox(
+								chunkPosx.getStartX(), serverWorld.getBottomY(), chunkPosx.getStartZ(), chunkPosx.getEndX(), serverWorld.getTopYInclusive() + 1, chunkPosx.getEndZ()
+							),
 							chunkPosx
 						)
 				);

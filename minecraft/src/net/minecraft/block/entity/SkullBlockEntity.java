@@ -114,8 +114,8 @@ public class SkullBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		if (this.owner != null) {
 			nbt.put("profile", ProfileComponent.CODEC.encodeStart(NbtOps.INSTANCE, this.owner).getOrThrow());
 		}
@@ -125,13 +125,13 @@ public class SkullBlockEntity extends BlockEntity {
 		}
 
 		if (this.customName != null) {
-			nbt.putString("custom_name", Text.Serialization.toJsonString(this.customName, registryLookup));
+			nbt.putString("custom_name", Text.Serialization.toJsonString(this.customName, registries));
 		}
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		if (nbt.contains("profile")) {
 			ProfileComponent.CODEC
 				.parse(NbtOps.INSTANCE, nbt.get("profile"))
@@ -144,7 +144,7 @@ public class SkullBlockEntity extends BlockEntity {
 		}
 
 		if (nbt.contains("custom_name", NbtElement.STRING_TYPE)) {
-			this.customName = tryParseCustomName(nbt.getString("custom_name"), registryLookup);
+			this.customName = tryParseCustomName(nbt.getString("custom_name"), registries);
 		} else {
 			this.customName = null;
 		}
@@ -178,8 +178,8 @@ public class SkullBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createComponentlessNbt(registryLookup);
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
+		return this.createComponentlessNbt(registries);
 	}
 
 	public void setOwner(@Nullable ProfileComponent profile) {
@@ -220,11 +220,11 @@ public class SkullBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
-		super.addComponents(componentMapBuilder);
-		componentMapBuilder.add(DataComponentTypes.PROFILE, this.owner);
-		componentMapBuilder.add(DataComponentTypes.NOTE_BLOCK_SOUND, this.noteBlockSound);
-		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
+	protected void addComponents(ComponentMap.Builder builder) {
+		super.addComponents(builder);
+		builder.add(DataComponentTypes.PROFILE, this.owner);
+		builder.add(DataComponentTypes.NOTE_BLOCK_SOUND, this.noteBlockSound);
+		builder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
 	}
 
 	@Override

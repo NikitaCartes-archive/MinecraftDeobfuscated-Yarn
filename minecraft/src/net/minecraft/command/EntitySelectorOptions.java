@@ -317,7 +317,7 @@ public class EntitySelectorOptions {
 					if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
 						ItemStack itemStack = serverPlayerEntity.getInventory().getMainHandStack();
 						if (!itemStack.isEmpty()) {
-							nbtCompound2.put("SelectedItem", itemStack.encode(serverPlayerEntity.getRegistryManager()));
+							nbtCompound2.put("SelectedItem", itemStack.toNbt(serverPlayerEntity.getRegistryManager()));
 						}
 					}
 

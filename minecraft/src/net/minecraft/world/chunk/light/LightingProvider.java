@@ -151,11 +151,10 @@ public class LightingProvider implements LightingView {
 		return Math.max(j, i);
 	}
 
-	public boolean isLightingEnabled(ChunkSectionPos sectionPos) {
-		long l = sectionPos.asLong();
+	public boolean isLightingEnabled(long sectionPos) {
 		return this.blockLightProvider == null
-			|| this.blockLightProvider.lightStorage.isSectionInEnabledColumn(l)
-				&& (this.skyLightProvider == null || this.skyLightProvider.lightStorage.isSectionInEnabledColumn(l));
+			|| this.blockLightProvider.lightStorage.isColumnEnabled(sectionPos)
+				&& (this.skyLightProvider == null || this.skyLightProvider.lightStorage.isColumnEnabled(sectionPos));
 	}
 
 	public int getHeight() {

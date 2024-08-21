@@ -137,7 +137,7 @@ public class DoorBlock extends Block {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockPos blockPos = ctx.getBlockPos();
 		World world = ctx.getWorld();
-		if (blockPos.getY() < world.getTopY() - 1 && world.getBlockState(blockPos.up()).canReplace(ctx)) {
+		if (blockPos.getY() < world.getTopYInclusive() && world.getBlockState(blockPos.up()).canReplace(ctx)) {
 			boolean bl = world.isReceivingRedstonePower(blockPos) || world.isReceivingRedstonePower(blockPos.up());
 			return this.getDefaultState()
 				.with(FACING, ctx.getHorizontalPlayerFacing())

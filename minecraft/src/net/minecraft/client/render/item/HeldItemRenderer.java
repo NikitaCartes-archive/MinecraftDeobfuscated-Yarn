@@ -21,6 +21,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
@@ -167,9 +168,9 @@ public class HeldItemRenderer {
 		matrices.translate(f * 0.3F, -1.1F, 0.45F);
 		Identifier identifier = this.client.player.getSkinTextures().texture();
 		if (arm == Arm.RIGHT) {
-			playerEntityRenderer.renderRightArm(matrices, vertexConsumers, light, identifier);
+			playerEntityRenderer.renderRightArm(matrices, vertexConsumers, light, identifier, this.client.player.isPartVisible(PlayerModelPart.RIGHT_SLEEVE));
 		} else {
-			playerEntityRenderer.renderLeftArm(matrices, vertexConsumers, light, identifier);
+			playerEntityRenderer.renderLeftArm(matrices, vertexConsumers, light, identifier, this.client.player.isPartVisible(PlayerModelPart.LEFT_SLEEVE));
 		}
 
 		matrices.pop();
@@ -269,9 +270,9 @@ public class HeldItemRenderer {
 			.<AbstractClientPlayerEntity>getRenderer(abstractClientPlayerEntity);
 		Identifier identifier = abstractClientPlayerEntity.getSkinTextures().texture();
 		if (bl) {
-			playerEntityRenderer.renderRightArm(matrices, vertexConsumers, light, identifier);
+			playerEntityRenderer.renderRightArm(matrices, vertexConsumers, light, identifier, abstractClientPlayerEntity.isPartVisible(PlayerModelPart.RIGHT_SLEEVE));
 		} else {
-			playerEntityRenderer.renderLeftArm(matrices, vertexConsumers, light, identifier);
+			playerEntityRenderer.renderLeftArm(matrices, vertexConsumers, light, identifier, abstractClientPlayerEntity.isPartVisible(PlayerModelPart.LEFT_SLEEVE));
 		}
 	}
 

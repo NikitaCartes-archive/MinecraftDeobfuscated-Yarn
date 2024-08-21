@@ -24,7 +24,7 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 		boolean bl = false;
 		boolean bl2 = false;
 
-		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+		for (int i = 0; i < craftingRecipeInput.size(); i++) {
 			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack.isEmpty()) {
 				if (itemStack.getItem() instanceof DyeItem) {
@@ -50,7 +50,7 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 		IntList intList = new IntArrayList();
 		ItemStack itemStack = null;
 
-		for (int i = 0; i < craftingRecipeInput.getSize(); i++) {
+		for (int i = 0; i < craftingRecipeInput.size(); i++) {
 			ItemStack itemStack2 = craftingRecipeInput.getStackInSlot(i);
 			Item item = itemStack2.getItem();
 			if (item instanceof DyeItem) {

@@ -134,6 +134,7 @@ public class Codecs {
 		);
 	public static final Codec<Integer> NON_NEGATIVE_INT = rangedInt(0, Integer.MAX_VALUE, v -> "Value must be non-negative: " + v);
 	public static final Codec<Integer> POSITIVE_INT = rangedInt(1, Integer.MAX_VALUE, v -> "Value must be positive: " + v);
+	public static final Codec<Float> NON_NEGATIVE_FLOAT = rangedInclusiveFloat(0.0F, Float.MAX_VALUE, v -> "Value must be non-negative: " + v);
 	public static final Codec<Float> POSITIVE_FLOAT = rangedFloat(0.0F, Float.MAX_VALUE, v -> "Value must be positive: " + v);
 	public static final Codec<Pattern> REGULAR_EXPRESSION = Codec.STRING.comapFlatMap(pattern -> {
 		try {
@@ -364,10 +365,21 @@ public class Codecs {
 		return rangedInt(min, max, value -> "Value must be within range [" + min + ";" + max + "]: " + value);
 	}
 
-	private static Codec<Float> rangedFloat(float min, float max, Function<Float, String> messageFactory) {
+	private static Codec<Float> rangedInclusiveFloat(float minInclusive, float maxInclusive, Function<Float, String> messageFactory) {
 		return Codec.FLOAT
 			.validate(
-				value -> value.compareTo(min) > 0 && value.compareTo(max) <= 0 ? DataResult.success(value) : DataResult.error(() -> (String)messageFactory.apply(value))
+				value -> value.compareTo(minInclusive) >= 0 && value.compareTo(maxInclusive) <= 0
+						? DataResult.success(value)
+						: DataResult.error(() -> (String)messageFactory.apply(value))
+			);
+	}
+
+	private static Codec<Float> rangedFloat(float minExclusive, float maxInclusive, Function<Float, String> messageFactory) {
+		return Codec.FLOAT
+			.validate(
+				value -> value.compareTo(minExclusive) > 0 && value.compareTo(maxInclusive) <= 0
+						? DataResult.success(value)
+						: DataResult.error(() -> (String)messageFactory.apply(value))
 			);
 	}
 

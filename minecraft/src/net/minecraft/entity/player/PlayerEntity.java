@@ -15,7 +15,6 @@ import java.util.OptionalInt;
 import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
@@ -24,7 +23,6 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
-import net.minecraft.component.type.FoodComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAttachmentType;
@@ -901,8 +899,9 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	protected void takeShieldHit(LivingEntity attacker) {
 		super.takeShieldHit(attacker);
-		if (attacker.disablesShield()) {
-			this.disableShield();
+		ItemStack itemStack = this.getBlockingItem();
+		if (attacker.disablesShield() && itemStack != null) {
+			this.disableShield(itemStack);
 		}
 	}
 
@@ -1334,8 +1333,8 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.attack(target);
 	}
 
-	public void disableShield() {
-		this.getItemCooldownManager().set(Items.SHIELD, 100);
+	public void disableShield(ItemStack shield) {
+		this.getItemCooldownManager().set(shield, 100);
 		this.clearActiveItem();
 		this.getWorld().sendEntityStatus(this, EntityStatuses.BREAK_SHIELD);
 	}
@@ -2076,32 +2075,6 @@ public abstract class PlayerEntity extends LivingEntity {
 				return this.abilities.creativeMode ? new ItemStack(Items.ARROW) : ItemStack.EMPTY;
 			}
 		}
-	}
-
-	@Override
-	public ItemStack eatFood(World world, ItemStack stack, FoodComponent foodComponent) {
-		this.getHungerManager().eat(foodComponent);
-		this.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
-		world.playSound(
-			null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F
-		);
-		if (this instanceof ServerPlayerEntity) {
-			Criteria.CONSUME_ITEM.trigger((ServerPlayerEntity)this, stack);
-		}
-
-		ItemStack itemStack = super.eatFood(world, stack, foodComponent);
-		Optional<ItemStack> optional = foodComponent.usingConvertsTo();
-		if (optional.isPresent() && !this.isInCreativeMode()) {
-			if (itemStack.isEmpty()) {
-				return ((ItemStack)optional.get()).copy();
-			}
-
-			if (!this.getWorld().isClient()) {
-				this.getInventory().insertStack(((ItemStack)optional.get()).copy());
-			}
-		}
-
-		return itemStack;
 	}
 
 	@Override

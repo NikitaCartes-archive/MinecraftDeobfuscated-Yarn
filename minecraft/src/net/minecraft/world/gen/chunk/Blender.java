@@ -266,7 +266,7 @@ public class Blender {
 		BlendingData blendingData = chunk.getBlendingData();
 		if (blendingData != null) {
 			int i = blendingData.getOldHeightLimit().getBottomY();
-			int j = blendingData.getOldHeightLimit().getTopY() - 1;
+			int j = blendingData.getOldHeightLimit().getTopYInclusive();
 			if (bl) {
 				for (int k = 0; k < 16; k++) {
 					for (int l = 0; l < 16; l++) {

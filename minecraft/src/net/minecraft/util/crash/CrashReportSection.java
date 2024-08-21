@@ -48,7 +48,7 @@ public class CrashReportSection {
 			int p = world.getBottomY();
 			int q = ChunkSectionPos.getBlockCoord(k);
 			int r = ChunkSectionPos.getBlockCoord(i + 1) - 1;
-			int s = world.getTopY() - 1;
+			int s = world.getTopYInclusive();
 			int t = ChunkSectionPos.getBlockCoord(k + 1) - 1;
 			stringBuilder.append(
 				String.format(Locale.ROOT, "Section: (at %d,%d,%d in %d,%d,%d; chunk contains blocks %d,%d,%d to %d,%d,%d)", l, m, n, i, j, k, o, p, q, r, s, t)
@@ -70,7 +70,7 @@ public class CrashReportSection {
 			int p = world.getBottomY();
 			int q = j << 9;
 			int r = (i + 1 << 9) - 1;
-			int s = world.getTopY() - 1;
+			int s = world.getTopYInclusive();
 			int t = (j + 1 << 9) - 1;
 			stringBuilder.append(
 				String.format(Locale.ROOT, "Region: (%d,%d; contains chunks %d,%d to %d,%d, blocks %d,%d,%d to %d,%d,%d)", i, j, k, l, m, n, o, p, q, r, s, t)

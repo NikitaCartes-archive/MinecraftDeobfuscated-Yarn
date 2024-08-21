@@ -217,13 +217,13 @@ public class SerializingRegionBasedStorage<R, P> implements AutoCloseable {
 
 	private void onLoad(ChunkPos chunkPos, @Nullable SerializingRegionBasedStorage.LoadResult<P> result) {
 		if (result == null) {
-			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
+			for (int i = this.world.getBottomSectionCoord(); i <= this.world.getTopSectionCoord(); i++) {
 				this.loadedElements.put(chunkSectionPosAsLong(chunkPos, i), Optional.empty());
 			}
 		} else {
 			boolean bl = result.versionChanged();
 
-			for (int j = this.world.getBottomSectionCoord(); j < this.world.getTopSectionCoord(); j++) {
+			for (int j = this.world.getBottomSectionCoord(); j <= this.world.getTopSectionCoord(); j++) {
 				long l = chunkSectionPosAsLong(chunkPos, j);
 				Optional<R> optional = Optional.ofNullable(result.sectionsByY.get(j)).map(section -> this.deserializer.apply(section, (Runnable)() -> this.onUpdate(l)));
 				this.loadedElements.put(l, optional);
@@ -254,7 +254,7 @@ public class SerializingRegionBasedStorage<R, P> implements AutoCloseable {
 	private <T> Dynamic<T> serialize(ChunkPos chunkPos, DynamicOps<T> ops) {
 		Map<T, T> map = Maps.<T, T>newHashMap();
 
-		for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
+		for (int i = this.world.getBottomSectionCoord(); i <= this.world.getTopSectionCoord(); i++) {
 			long l = chunkSectionPosAsLong(chunkPos, i);
 			Optional<R> optional = this.loadedElements.get(l);
 			if (optional != null && !optional.isEmpty()) {
@@ -320,7 +320,7 @@ public class SerializingRegionBasedStorage<R, P> implements AutoCloseable {
 			OptionalDynamic<NbtElement> optionalDynamic = dynamic2.get("Sections");
 			Int2ObjectMap<T> int2ObjectMap = new Int2ObjectOpenHashMap<>();
 
-			for (int k = world.getBottomSectionCoord(); k < world.getTopSectionCoord(); k++) {
+			for (int k = world.getBottomSectionCoord(); k <= world.getTopSectionCoord(); k++) {
 				Optional<T> optional = optionalDynamic.get(Integer.toString(k))
 					.result()
 					.flatMap(section -> sectionCodec.parse(section).resultOrPartial(SerializingRegionBasedStorage.LOGGER::error));

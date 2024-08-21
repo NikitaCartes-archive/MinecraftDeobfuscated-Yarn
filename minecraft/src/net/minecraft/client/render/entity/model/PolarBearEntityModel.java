@@ -13,6 +13,7 @@ import net.minecraft.client.render.entity.state.PolarBearEntityRenderState;
 
 @Environment(EnvType.CLIENT)
 public class PolarBearEntityModel extends QuadrupedEntityModel<PolarBearEntityRenderState> {
+	private static final float field_53834 = 2.25F;
 	public static final ModelTransformer BABY_TRANSFORMER = new BabyModelTransformer(true, 16.0F, 4.0F, 2.25F, 2.0F, 24.0F, Set.of("head"));
 
 	public PolarBearEntityModel(ModelPart modelPart) {
@@ -52,25 +53,21 @@ public class PolarBearEntityModel extends QuadrupedEntityModel<PolarBearEntityRe
 	}
 
 	public void setAngles(PolarBearEntityRenderState polarBearEntityRenderState) {
+		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		super.setAngles(polarBearEntityRenderState);
 		float f = polarBearEntityRenderState.warningAnimationProgress * polarBearEntityRenderState.warningAnimationProgress;
-		float g = 1.0F - f;
-		this.body.pitch = (float) (Math.PI / 2) - f * (float) Math.PI * 0.35F;
-		this.body.pivotY = 9.0F * g + 11.0F * f;
-		this.rightFrontLeg.pivotY = 14.0F * g - 6.0F * f;
-		this.rightFrontLeg.pivotZ = -8.0F * g - 4.0F * f;
+		float g = polarBearEntityRenderState.ageScale;
+		float h = polarBearEntityRenderState.baby ? 0.44444445F : 1.0F;
+		this.body.pitch -= f * (float) Math.PI * 0.35F;
+		this.body.pivotY += f * g * 2.0F;
+		this.rightFrontLeg.pivotY -= f * g * 20.0F;
+		this.rightFrontLeg.pivotZ += f * g * 4.0F;
 		this.rightFrontLeg.pitch -= f * (float) Math.PI * 0.45F;
 		this.leftFrontLeg.pivotY = this.rightFrontLeg.pivotY;
 		this.leftFrontLeg.pivotZ = this.rightFrontLeg.pivotZ;
 		this.leftFrontLeg.pitch -= f * (float) Math.PI * 0.45F;
-		if (polarBearEntityRenderState.baby) {
-			this.head.pivotY = 10.0F * g - 9.0F * f;
-			this.head.pivotZ = -16.0F * g - 7.0F * f;
-		} else {
-			this.head.pivotY = 10.0F * g - 14.0F * f;
-			this.head.pivotZ = -16.0F * g - 3.0F * f;
-		}
-
+		this.head.pivotY -= f * h * 24.0F;
+		this.head.pivotZ += f * h * 13.0F;
 		this.head.pitch += f * (float) Math.PI * 0.15F;
 	}
 }

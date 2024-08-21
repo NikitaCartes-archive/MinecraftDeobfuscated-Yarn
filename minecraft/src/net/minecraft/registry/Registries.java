@@ -45,6 +45,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.Items;
+import net.minecraft.item.consume.ConsumeEffect;
 import net.minecraft.item.map.MapDecorationType;
 import net.minecraft.item.map.MapDecorationTypes;
 import net.minecraft.loot.condition.LootConditionType;
@@ -253,6 +254,9 @@ public class Registries {
 	);
 	public static final Registry<MapCodec<? extends EnchantmentProvider>> ENCHANTMENT_PROVIDER_TYPE = create(
 		RegistryKeys.ENCHANTMENT_PROVIDER_TYPE, EnchantmentProviderType::registerAndGetDefault
+	);
+	public static final Registry<ConsumeEffect.Type<?>> CONSUME_EFFECT_TYPE = create(
+		RegistryKeys.CONSUME_EFFECT_TYPE, registry -> ConsumeEffect.Type.APPLY_EFFECTS
 	);
 	public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
 

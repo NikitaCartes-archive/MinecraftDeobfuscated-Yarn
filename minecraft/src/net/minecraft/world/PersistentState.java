@@ -10,7 +10,7 @@ import net.minecraft.registry.RegistryWrapper;
 public abstract class PersistentState {
 	private boolean dirty;
 
-	public abstract NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup);
+	public abstract NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries);
 
 	public void markDirty() {
 		this.setDirty(true);
@@ -24,9 +24,9 @@ public abstract class PersistentState {
 		return this.dirty;
 	}
 
-	public NbtCompound toNbt(RegistryWrapper.WrapperLookup registryLookup) {
+	public NbtCompound toNbt(RegistryWrapper.WrapperLookup registries) {
 		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.put("data", this.writeNbt(new NbtCompound(), registryLookup));
+		nbtCompound.put("data", this.writeNbt(new NbtCompound(), registries));
 		NbtHelper.putDataVersion(nbtCompound);
 		this.setDirty(false);
 		return nbtCompound;

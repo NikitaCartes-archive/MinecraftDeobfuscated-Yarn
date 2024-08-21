@@ -37,7 +37,7 @@ public record NbtPredicate(NbtCompound nbt) {
 		if (entity instanceof PlayerEntity) {
 			ItemStack itemStack = ((PlayerEntity)entity).getInventory().getMainHandStack();
 			if (!itemStack.isEmpty()) {
-				nbtCompound.put("SelectedItem", itemStack.encode(entity.getRegistryManager()));
+				nbtCompound.put("SelectedItem", itemStack.toNbt(entity.getRegistryManager()));
 			}
 		}
 

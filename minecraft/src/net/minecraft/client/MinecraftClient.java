@@ -46,7 +46,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_9931;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -60,10 +59,12 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.GlDebug;
 import net.minecraft.client.gl.GlTimer;
+import net.minecraft.client.gl.ShaderLoader;
 import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gl.WindowFramebuffer;
 import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.hud.debug.PieChart;
 import net.minecraft.client.gui.navigation.GuiNavigationType;
 import net.minecraft.client.gui.screen.AccessibilityOnboardingScreen;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -315,6 +316,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final Path resourcePackDir;
 	private final CompletableFuture<com.mojang.authlib.yggdrasil.ProfileResult> gameProfileFuture;
 	private final TextureManager textureManager;
+	private final ShaderLoader field_53831;
 	private final DataFixer dataFixer;
 	private final WindowProvider windowProvider;
 	private final Window window;
@@ -582,6 +584,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceManager.registerReloader(this.languageManager);
 		this.textureManager = new TextureManager(this.resourceManager);
 		this.resourceManager.registerReloader(this.textureManager);
+		this.field_53831 = new ShaderLoader(this.textureManager);
+		this.resourceManager.registerReloader(this.field_53831);
 		this.skinProvider = new PlayerSkinProvider(this.textureManager, file.toPath().resolve("skins"), this.sessionService, this);
 		this.levelStorage = new LevelStorage(path.resolve("saves"), path.resolve("backups"), this.symlinkFinder, this.dataFixer);
 		this.commandHistoryManager = new CommandHistoryManager(path);
@@ -651,7 +655,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.guiAtlasManager = new GuiAtlasManager(this.textureManager);
 		this.resourceManager.registerReloader(this.guiAtlasManager);
 		this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getHeldItemRenderer(), this.resourceManager, this.bufferBuilders);
-		this.resourceManager.registerReloader(this.gameRenderer.createProgramReloader());
 		this.worldRenderer = new WorldRenderer(this, this.entityRenderDispatcher, this.blockEntityRenderDispatcher, this.bufferBuilders);
 		this.resourceManager.registerReloader(this.worldRenderer);
 		this.resourceManager.registerReloader(this.worldRenderer.getCloudRenderer());
@@ -1199,6 +1202,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.bakedModelManager.close();
 			this.fontManager.close();
 			this.gameRenderer.close();
+			this.field_53831.close();
 			this.worldRenderer.close();
 			this.soundManager.close();
 			this.particleManager.clearAtlas();
@@ -1384,11 +1388,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			monitor.endTick();
 		}
 
-		class_9931 lv = this.getDebugHud().method_61981();
+		PieChart pieChart = this.getDebugHud().getPieChart();
 		if (active) {
-			lv.method_61985(this.tickTimeTracker.getResult());
+			pieChart.setProfileResult(this.tickTimeTracker.getResult());
 		} else {
-			lv.method_61985(null);
+			pieChart.setProfileResult(null);
 		}
 
 		this.profiler = this.tickTimeTracker.getProfiler();
@@ -1803,8 +1807,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			if (!this.paused) {
 				this.world.tickEntities();
 			}
-		} else if (this.gameRenderer.getPostProcessor() != null) {
-			this.gameRenderer.disablePostProcessor();
+		} else if (this.gameRenderer.method_62906() != null) {
+			this.gameRenderer.method_62905();
 		}
 
 		if (!this.paused) {
@@ -2490,6 +2494,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.textureManager;
 	}
 
+	public ShaderLoader method_62887() {
+		return this.field_53831;
+	}
+
 	public ResourceManager getResourceManager() {
 		return this.resourceManager;
 	}
@@ -2693,7 +2701,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		MutableText var12;
 		try {
 			this.gameRenderer.setRenderingPanorama(true);
-			this.worldRenderer.reloadTransparencyPostProcessor();
 			this.window.setFramebufferWidth(width);
 			this.window.setFramebufferHeight(height);
 
@@ -2756,7 +2763,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.window.setFramebufferHeight(j);
 			framebuffer.delete();
 			this.gameRenderer.setRenderingPanorama(false);
-			this.worldRenderer.reloadTransparencyPostProcessor();
 			this.getFramebuffer().beginWrite(true);
 		}
 

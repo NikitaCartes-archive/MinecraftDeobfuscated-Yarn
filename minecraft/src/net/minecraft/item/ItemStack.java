@@ -30,11 +30,14 @@ import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.component.type.EnchantableComponent;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.component.type.RepairableComponent;
+import net.minecraft.component.type.UseCooldownComponent;
+import net.minecraft.component.type.UseRemainderComponent;
 import net.minecraft.component.type.WrittenBookContentComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -49,6 +52,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.item.tooltip.TooltipType;
@@ -84,7 +88,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.Unit;
-import net.minecraft.util.UseAction;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.dynamic.NullOps;
@@ -472,14 +475,37 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	public ActionResult use(World world, PlayerEntity user, Hand hand) {
-		return this.getItem().use(world, user, hand);
+		ItemStack itemStack = this.copy();
+		boolean bl = this.getMaxUseTime(user) <= 0;
+		ActionResult actionResult = this.getItem().use(world, user, hand);
+		return (ActionResult)(bl && actionResult instanceof ActionResult.Success success
+			? success.withNewHandStack(this.applyRemainderAndCooldown(user, itemStack))
+			: actionResult);
 	}
 
 	public ItemStack finishUsing(World world, LivingEntity user) {
-		return this.getItem().finishUsing(this, world, user);
+		ItemStack itemStack = this.copy();
+		ItemStack itemStack2 = this.getItem().finishUsing(this, world, user);
+		return itemStack2.applyRemainderAndCooldown(user, itemStack);
 	}
 
-	public NbtElement encode(RegistryWrapper.WrapperLookup registries, NbtElement prefix) {
+	private ItemStack applyRemainderAndCooldown(LivingEntity user, ItemStack stack) {
+		UseRemainderComponent useRemainderComponent = stack.get(DataComponentTypes.USE_REMAINDER);
+		UseCooldownComponent useCooldownComponent = stack.get(DataComponentTypes.USE_COOLDOWN);
+		int i = stack.getCount();
+		ItemStack itemStack = this;
+		if (useRemainderComponent != null) {
+			itemStack = useRemainderComponent.convert(user, this, i);
+		}
+
+		if (useCooldownComponent != null) {
+			useCooldownComponent.set(stack, user);
+		}
+
+		return itemStack;
+	}
+
+	public NbtElement toNbt(RegistryWrapper.WrapperLookup registries, NbtElement prefix) {
 		if (this.isEmpty()) {
 			throw new IllegalStateException("Cannot encode empty ItemStack");
 		} else {
@@ -487,7 +513,7 @@ public final class ItemStack implements ComponentHolder {
 		}
 	}
 
-	public NbtElement encode(RegistryWrapper.WrapperLookup registries) {
+	public NbtElement toNbt(RegistryWrapper.WrapperLookup registries) {
 		if (this.isEmpty()) {
 			throw new IllegalStateException("Cannot encode empty ItemStack");
 		} else {
@@ -495,8 +521,8 @@ public final class ItemStack implements ComponentHolder {
 		}
 	}
 
-	public NbtElement encodeAllowEmpty(RegistryWrapper.WrapperLookup registries) {
-		return (NbtElement)(this.isEmpty() ? new NbtCompound() : this.encode(registries, new NbtCompound()));
+	public NbtElement toNbtAllowEmpty(RegistryWrapper.WrapperLookup registries) {
+		return (NbtElement)(this.isEmpty() ? new NbtCompound() : this.toNbt(registries, new NbtCompound()));
 	}
 
 	public int getMaxCount() {
@@ -586,19 +612,19 @@ public final class ItemStack implements ComponentHolder {
 	 * Note that this method automatically decrements the stack size.
 	 */
 	public void damage(int amount, ServerWorld world, @Nullable ServerPlayerEntity player, Consumer<Item> breakCallback) {
-		int i = this.damage(amount, world, player);
+		int i = this.calculateDamage(amount, world, player);
 		if (i > 0) {
 			this.onDurabilityChange(this.getDamage() + i, player, breakCallback);
 		}
 	}
 
-	private int damage(int amount, ServerWorld world, @Nullable ServerPlayerEntity player) {
+	private int calculateDamage(int baseDamage, ServerWorld world, @Nullable ServerPlayerEntity player) {
 		if (!this.isDamageable()) {
 			return 0;
 		} else if (player != null && player.isInCreativeMode()) {
 			return 0;
 		} else {
-			return amount > 0 ? EnchantmentHelper.getItemDamage(world, this, amount) : amount;
+			return baseDamage > 0 ? EnchantmentHelper.getItemDamage(world, this, baseDamage) : baseDamage;
 		}
 	}
 
@@ -617,7 +643,7 @@ public final class ItemStack implements ComponentHolder {
 
 	public void damage(int amount, PlayerEntity player) {
 		if (player instanceof ServerPlayerEntity serverPlayerEntity) {
-			int i = this.damage(amount, serverPlayerEntity.getServerWorld(), serverPlayerEntity);
+			int i = this.calculateDamage(amount, serverPlayerEntity.getServerWorld(), serverPlayerEntity);
 			if (i <= 0) {
 				return;
 			}
@@ -925,7 +951,12 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	public void onStoppedUsing(World world, LivingEntity user, int remainingUseTicks) {
+		ItemStack itemStack = this.copy();
 		this.getItem().onStoppedUsing(this, world, user, remainingUseTicks);
+		ItemStack itemStack2 = this.applyRemainderAndCooldown(user, itemStack);
+		if (itemStack2 != this) {
+			user.setStackInHand(user.getActiveHand(), itemStack2);
+		}
 	}
 
 	public boolean isUsedOnRelease() {
@@ -1026,18 +1057,18 @@ public final class ItemStack implements ComponentHolder {
 	 * {@return the custom name of the stack if it exists, or the item's name}
 	 */
 	public Text getName() {
-		WrittenBookContentComponent writtenBookContentComponent = this.get(DataComponentTypes.WRITTEN_BOOK_CONTENT);
-		if (writtenBookContentComponent != null) {
-			String string = writtenBookContentComponent.title().raw();
-			if (!StringHelper.isBlank(string)) {
-				return Text.literal(string);
-			}
-		}
-
 		Text text = this.get(DataComponentTypes.CUSTOM_NAME);
 		if (text != null) {
 			return text;
 		} else {
+			WrittenBookContentComponent writtenBookContentComponent = this.get(DataComponentTypes.WRITTEN_BOOK_CONTENT);
+			if (writtenBookContentComponent != null) {
+				String string = writtenBookContentComponent.title().raw();
+				if (!StringHelper.isBlank(string)) {
+					return Text.literal(string);
+				}
+			}
+
 			Text text2 = this.get(DataComponentTypes.ITEM_NAME);
 			return text2 != null ? text2 : this.getItem().getName(this);
 		}
@@ -1083,6 +1114,8 @@ public final class ItemStack implements ComponentHolder {
 			this.appendTooltip(DataComponentTypes.LORE, context, consumer, type);
 			this.appendAttributeModifiersTooltip(consumer, player);
 			this.appendTooltip(DataComponentTypes.UNBREAKABLE, context, consumer, type);
+			this.appendTooltip(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER, context, consumer, type);
+			this.appendTooltip(DataComponentTypes.SUSPICIOUS_STEW_EFFECTS, context, consumer, type);
 			BlockPredicatesChecker blockPredicatesChecker = this.get(DataComponentTypes.CAN_BREAK);
 			if (blockPredicatesChecker != null && blockPredicatesChecker.showInTooltip()) {
 				consumer.accept(ScreenTexts.EMPTY);
@@ -1218,8 +1251,6 @@ public final class ItemStack implements ComponentHolder {
 	 */
 	public boolean isEnchantable() {
 		if (!this.contains(DataComponentTypes.ENCHANTABLE)) {
-			return false;
-		} else if (!this.getItem().isEnchantable(this)) {
 			return false;
 		} else {
 			ItemEnchantmentsComponent itemEnchantmentsComponent = this.get(DataComponentTypes.ENCHANTMENTS);
@@ -1427,19 +1458,16 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	public void usageTick(World world, LivingEntity user, int remainingUseTicks) {
+		ConsumableComponent consumableComponent = this.get(DataComponentTypes.CONSUMABLE);
+		if (consumableComponent != null && consumableComponent.shouldSpawnParticlesAndPlaySounds(remainingUseTicks)) {
+			consumableComponent.spawnParticlesAndPlaySound(user.getRandom(), user, this, 5);
+		}
+
 		this.getItem().usageTick(world, user, this, remainingUseTicks);
 	}
 
 	public void onItemEntityDestroyed(ItemEntity entity) {
 		this.getItem().onItemEntityDestroyed(entity);
-	}
-
-	public SoundEvent getDrinkSound() {
-		return this.getItem().getDrinkSound();
-	}
-
-	public SoundEvent getEatSound() {
-		return this.getItem().getEatSound();
 	}
 
 	public SoundEvent getBreakSound() {
@@ -1457,6 +1485,6 @@ public final class ItemStack implements ComponentHolder {
 
 	public int getEnchantability() {
 		EnchantableComponent enchantableComponent = this.get(DataComponentTypes.ENCHANTABLE);
-		return enchantableComponent != null ? enchantableComponent.value() : this.getItem().getEnchantability();
+		return enchantableComponent != null ? enchantableComponent.value() : 0;
 	}
 }

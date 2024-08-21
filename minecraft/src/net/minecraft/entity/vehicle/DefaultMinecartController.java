@@ -1,6 +1,7 @@
 package net.minecraft.entity.vehicle;
 
 import com.mojang.datafixers.util.Pair;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.BlockState;
@@ -9,9 +10,12 @@ import net.minecraft.block.PoweredRailBlock;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -86,7 +90,7 @@ public class DefaultMinecartController extends MinecartController {
 			}
 		} else {
 			this.minecart.applyGravity();
-			BlockPos blockPos = this.minecart.decelerateFromPoweredRail();
+			BlockPos blockPos = this.minecart.getRailOrMinecartPos();
 			BlockState blockState = this.getWorld().getBlockState(blockPos);
 			boolean bl = AbstractRailBlock.isRail(blockState);
 			this.minecart.setOnRail(bl);
@@ -118,13 +122,13 @@ public class DefaultMinecartController extends MinecartController {
 
 			this.setPitch(this.getPitch() % 360.0F);
 			this.setYaw(this.getYaw() % 360.0F);
-			this.minecart.handleEntityCollision(this.minecart.getBoundingBox().expand(0.2F, 0.0, 0.2F), 0.01);
+			this.handleCollision();
 		}
 	}
 
 	@Override
 	public void moveOnRail() {
-		BlockPos blockPos = this.minecart.decelerateFromPoweredRail();
+		BlockPos blockPos = this.minecart.getRailOrMinecartPos();
 		BlockState blockState = this.getWorld().getBlockState(blockPos);
 		this.minecart.onLanding();
 		double d = this.minecart.getX();
@@ -380,8 +384,37 @@ public class DefaultMinecartController extends MinecartController {
 	}
 
 	@Override
-	public double method_61577(BlockPos blockPos, RailShape railShape, double d) {
+	public double moveAlongTrack(BlockPos blockPos, RailShape railShape, double remainingMovement) {
 		return 0.0;
+	}
+
+	@Override
+	public boolean handleCollision() {
+		Box box = this.minecart.getBoundingBox().expand(0.2F, 0.0, 0.2F);
+		if (this.minecart.getMinecartType() == AbstractMinecartEntity.Type.RIDEABLE && this.getVelocity().horizontalLengthSquared() >= 0.01) {
+			List<Entity> list = this.getWorld().getOtherEntities(this.minecart, box, EntityPredicates.canBePushedBy(this.minecart));
+			if (!list.isEmpty()) {
+				for (Entity entity : list) {
+					if (!(entity instanceof PlayerEntity)
+						&& !(entity instanceof IronGolemEntity)
+						&& !(entity instanceof AbstractMinecartEntity)
+						&& !this.minecart.hasPassengers()
+						&& !entity.hasVehicle()) {
+						entity.startRiding(this.minecart);
+					} else {
+						entity.pushAwayFrom(this.minecart);
+					}
+				}
+			}
+		} else {
+			for (Entity entity2 : this.getWorld().getOtherEntities(this.minecart, box)) {
+				if (!this.minecart.hasPassenger(entity2) && entity2.isPushable() && entity2 instanceof AbstractMinecartEntity) {
+					entity2.pushAwayFrom(this.minecart);
+				}
+			}
+		}
+
+		return false;
 	}
 
 	@Override

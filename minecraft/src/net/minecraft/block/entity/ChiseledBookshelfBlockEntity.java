@@ -52,17 +52,17 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		this.inventory.clear();
-		Inventories.readNbt(nbt, this.inventory, registryLookup);
+		Inventories.readNbt(nbt, this.inventory, registries);
 		this.lastInteractedSlot = nbt.getInt("last_interacted_slot");
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
-		Inventories.writeNbt(nbt, this.inventory, true, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
+		Inventories.writeNbt(nbt, this.inventory, true, registries);
 		nbt.putInt("last_interacted_slot", this.lastInteractedSlot);
 	}
 
@@ -151,9 +151,9 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 	}
 
 	@Override
-	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
-		super.addComponents(componentMapBuilder);
-		componentMapBuilder.add(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(this.inventory));
+	protected void addComponents(ComponentMap.Builder builder) {
+		super.addComponents(builder);
+		builder.add(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(this.inventory));
 	}
 
 	@Override

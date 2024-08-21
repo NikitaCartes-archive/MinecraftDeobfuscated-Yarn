@@ -15,7 +15,7 @@ public class VanillaStructureTagProvider extends TagProvider<Structure> {
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.getOrCreateTagBuilder(StructureTags.VILLAGE)
 			.add(StructureKeys.VILLAGE_PLAINS)
 			.add(StructureKeys.VILLAGE_DESERT)

@@ -129,7 +129,7 @@ public class StructurePoolBasedGenerator {
 								(double)Math.max(m - maxDistanceFromCenter, heightLimitView.getBottomY() + dimensionPadding.bottom()),
 								(double)(j - maxDistanceFromCenter),
 								(double)(i + maxDistanceFromCenter + 1),
-								(double)Math.min(m + maxDistanceFromCenter + 1, heightLimitView.getTopY() - dimensionPadding.top()),
+								(double)Math.min(m + maxDistanceFromCenter + 1, heightLimitView.getTopYInclusive() + 1 - dimensionPadding.top()),
 								(double)(j + maxDistanceFromCenter + 1)
 							);
 							VoxelShape voxelShape = VoxelShapes.combineAndSimplify(VoxelShapes.cuboid(box), VoxelShapes.cuboid(Box.from(blockBox)), BooleanBiFunction.ONLY_FIRST);

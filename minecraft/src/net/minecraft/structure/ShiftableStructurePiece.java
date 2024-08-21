@@ -69,7 +69,7 @@ public abstract class ShiftableStructurePiece extends StructurePiece {
 		if (this.hPos >= 0) {
 			return true;
 		} else {
-			int i = world.getTopY();
+			int i = world.getTopYInclusive() + 1;
 			boolean bl = false;
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 

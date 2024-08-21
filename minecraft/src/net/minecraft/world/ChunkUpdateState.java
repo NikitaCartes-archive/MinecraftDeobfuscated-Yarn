@@ -25,12 +25,12 @@ public class ChunkUpdateState extends PersistentState {
 		this(new LongOpenHashSet(), new LongOpenHashSet());
 	}
 
-	public static ChunkUpdateState fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	public static ChunkUpdateState fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		return new ChunkUpdateState(new LongOpenHashSet(nbt.getLongArray("All")), new LongOpenHashSet(nbt.getLongArray("Remaining")));
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		nbt.putLongArray("All", this.all.toLongArray());
 		nbt.putLongArray("Remaining", this.remaining.toLongArray());
 		return nbt;

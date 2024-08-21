@@ -62,22 +62,22 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
 		if (!world.isClient) {
 			if (world.getBlockEntity(pos) instanceof CommandBlockBlockEntity commandBlockBlockEntity) {
-				this.method_61744(world, pos, commandBlockBlockEntity, world.isReceivingRedstonePower(pos));
+				this.update(world, pos, commandBlockBlockEntity, world.isReceivingRedstonePower(pos));
 			}
 		}
 	}
 
-	private void method_61744(World world, BlockPos blockPos, CommandBlockBlockEntity commandBlockBlockEntity, boolean bl) {
-		boolean bl2 = commandBlockBlockEntity.isPowered();
-		if (bl != bl2) {
-			commandBlockBlockEntity.setPowered(bl);
-			if (bl) {
-				if (commandBlockBlockEntity.isAuto() || commandBlockBlockEntity.getCommandBlockType() == CommandBlockBlockEntity.Type.SEQUENCE) {
+	private void update(World world, BlockPos pos, CommandBlockBlockEntity blockEntity, boolean powered) {
+		boolean bl = blockEntity.isPowered();
+		if (powered != bl) {
+			blockEntity.setPowered(powered);
+			if (powered) {
+				if (blockEntity.isAuto() || blockEntity.getCommandBlockType() == CommandBlockBlockEntity.Type.SEQUENCE) {
 					return;
 				}
 
-				commandBlockBlockEntity.updateConditionMet();
-				world.scheduleBlockTick(blockPos, this, 1);
+				blockEntity.updateConditionMet();
+				world.scheduleBlockTick(pos, this, 1);
 			}
 		}
 	}
@@ -155,7 +155,7 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 				}
 
 				boolean bl = world.isReceivingRedstonePower(pos);
-				this.method_61744(world, pos, commandBlockBlockEntity, bl);
+				this.update(world, pos, commandBlockBlockEntity, bl);
 			}
 		}
 	}

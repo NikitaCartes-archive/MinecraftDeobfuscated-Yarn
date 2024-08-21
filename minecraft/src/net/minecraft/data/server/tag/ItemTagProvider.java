@@ -41,13 +41,13 @@ public abstract class ItemTagProvider extends ValueLookupTagProvider<Item> {
 
 	@Override
 	protected CompletableFuture<RegistryWrapper.WrapperLookup> getRegistryLookupFuture() {
-		return super.getRegistryLookupFuture().thenCombine(this.blockTags, (lookup, blockTags) -> {
+		return super.getRegistryLookupFuture().thenCombine(this.blockTags, (registries, blockTags) -> {
 			this.blockTagsToCopy.forEach((blockTag, itemTag) -> {
 				TagBuilder tagBuilder = this.getTagBuilder(itemTag);
 				Optional<TagBuilder> optional = (Optional<TagBuilder>)blockTags.apply(blockTag);
 				((TagBuilder)optional.orElseThrow(() -> new IllegalStateException("Missing block tag " + itemTag.id()))).build().forEach(tagBuilder::add);
 			});
-			return lookup;
+			return registries;
 		});
 	}
 }

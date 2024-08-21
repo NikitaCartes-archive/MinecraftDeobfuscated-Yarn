@@ -35,18 +35,18 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable 
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		if (this.hasCustomName()) {
-			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName, registryLookup));
+			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName, registries));
 		}
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
-			this.customName = tryParseCustomName(nbt.getString("CustomName"), registryLookup);
+			this.customName = tryParseCustomName(nbt.getString("CustomName"), registries);
 		}
 	}
 
@@ -130,9 +130,9 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable 
 	}
 
 	@Override
-	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
-		super.addComponents(componentMapBuilder);
-		componentMapBuilder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
+	protected void addComponents(ComponentMap.Builder builder) {
+		super.addComponents(builder);
+		builder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
 	}
 
 	@Override

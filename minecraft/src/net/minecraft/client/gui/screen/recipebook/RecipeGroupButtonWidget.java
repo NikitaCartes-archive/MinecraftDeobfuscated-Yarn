@@ -32,7 +32,7 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 			: RecipeResultCollection.RecipeFilterMode.ANY;
 
 		for (RecipeResultCollection recipeResultCollection : recipeBook.getResultsForGroup(this.category)) {
-			for (RecipeEntry<?> recipeEntry : recipeResultCollection.method_62050(recipeFilterMode)) {
+			for (RecipeEntry<?> recipeEntry : recipeResultCollection.filter(recipeFilterMode)) {
 				if (recipeBook.shouldDisplay(recipeEntry)) {
 					this.bounce = 15.0F;
 					return;

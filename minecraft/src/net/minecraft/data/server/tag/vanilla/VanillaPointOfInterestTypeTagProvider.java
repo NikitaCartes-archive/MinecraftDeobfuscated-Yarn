@@ -15,7 +15,7 @@ public class VanillaPointOfInterestTypeTagProvider extends TagProvider<PointOfIn
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.getOrCreateTagBuilder(PointOfInterestTypeTags.ACQUIRABLE_JOB_SITE)
 			.add(
 				PointOfInterestTypes.ARMORER,

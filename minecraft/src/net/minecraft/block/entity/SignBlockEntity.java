@@ -89,18 +89,18 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
-		DynamicOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
+		DynamicOps<NbtElement> dynamicOps = registries.getOps(NbtOps.INSTANCE);
 		SignText.CODEC.encodeStart(dynamicOps, this.frontText).resultOrPartial(LOGGER::error).ifPresent(frontText -> nbt.put("front_text", frontText));
 		SignText.CODEC.encodeStart(dynamicOps, this.backText).resultOrPartial(LOGGER::error).ifPresent(backText -> nbt.put("back_text", backText));
 		nbt.putBoolean("is_waxed", this.waxed);
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
-		DynamicOps<NbtElement> dynamicOps = registryLookup.getOps(NbtOps.INSTANCE);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
+		DynamicOps<NbtElement> dynamicOps = registries.getOps(NbtOps.INSTANCE);
 		if (nbt.contains("front_text")) {
 			SignText.CODEC
 				.parse(dynamicOps, nbt.getCompound("front_text"))
@@ -222,8 +222,8 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createComponentlessNbt(registryLookup);
+	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
+		return this.createComponentlessNbt(registries);
 	}
 
 	@Override

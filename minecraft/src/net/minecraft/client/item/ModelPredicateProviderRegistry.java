@@ -80,9 +80,7 @@ public class ModelPredicateProviderRegistry {
 		register(Identifier.ofVanilla("lefthanded"), (stack, world, entity, seed) -> entity != null && entity.getMainArm() != Arm.RIGHT ? 1.0F : 0.0F);
 		register(
 			Identifier.ofVanilla("cooldown"),
-			(stack, world, entity, seed) -> entity instanceof PlayerEntity
-					? ((PlayerEntity)entity).getItemCooldownManager().getCooldownProgress(stack.getItem(), 0.0F)
-					: 0.0F
+			(stack, world, entity, seed) -> entity instanceof PlayerEntity ? ((PlayerEntity)entity).getItemCooldownManager().getCooldownProgress(stack, 0.0F) : 0.0F
 		);
 		ClampedModelPredicateProvider clampedModelPredicateProvider = (stack, world, entity, seed) -> {
 			ArmorTrim armorTrim = stack.get(DataComponentTypes.TRIM);

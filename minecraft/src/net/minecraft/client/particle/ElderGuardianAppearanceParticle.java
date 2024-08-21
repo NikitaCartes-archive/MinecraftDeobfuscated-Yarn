@@ -44,8 +44,9 @@ public class ElderGuardianAppearanceParticle extends Particle {
 		MatrixStack matrixStack = new MatrixStack();
 		matrixStack.multiply(camera.getRotation());
 		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(60.0F - 150.0F * f));
-		matrixStack.scale(1.0F, -1.0F, -1.0F);
-		matrixStack.translate(0.0F, -1.101F, 1.5F);
+		float h = 0.42553192F;
+		matrixStack.scale(0.42553192F, -0.42553192F, -0.42553192F);
+		matrixStack.translate(0.0F, -0.56F, 3.5F);
 		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
 		VertexConsumer vertexConsumer2 = immediate.getBuffer(this.layer);
 		this.model.render(matrixStack, vertexConsumer2, 15728880, OverlayTexture.DEFAULT_UV, i);

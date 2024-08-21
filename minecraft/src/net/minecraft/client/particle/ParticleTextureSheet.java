@@ -4,8 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -28,7 +28,7 @@ public interface ParticleTextureSheet {
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.depthMask(true);
-			RenderSystem.setShader(GameRenderer::getParticleProgram);
+			RenderSystem.setShader(ShaderProgramKeys.PARTICLE);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
 			return tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
@@ -42,7 +42,7 @@ public interface ParticleTextureSheet {
 		public BufferBuilder begin(Tessellator tessellator, TextureManager textureManager) {
 			RenderSystem.disableBlend();
 			RenderSystem.depthMask(true);
-			RenderSystem.setShader(GameRenderer::getParticleProgram);
+			RenderSystem.setShader(ShaderProgramKeys.PARTICLE);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
 			return tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
@@ -55,7 +55,7 @@ public interface ParticleTextureSheet {
 		@Override
 		public BufferBuilder begin(Tessellator tessellator, TextureManager textureManager) {
 			RenderSystem.depthMask(true);
-			RenderSystem.setShader(GameRenderer::getParticleProgram);
+			RenderSystem.setShader(ShaderProgramKeys.PARTICLE);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();

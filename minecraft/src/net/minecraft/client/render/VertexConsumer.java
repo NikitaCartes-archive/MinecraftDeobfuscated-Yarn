@@ -209,39 +209,40 @@ public interface VertexConsumer {
 		int j = 8;
 		int k = js.length / 8;
 		int l = (int)(f * 255.0F);
+		int m = quad.getLightEmission();
 
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 			ByteBuffer byteBuffer = memoryStack.malloc(VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL.getVertexSizeByte());
 			IntBuffer intBuffer = byteBuffer.asIntBuffer();
 
-			for (int m = 0; m < k; m++) {
+			for (int n = 0; n < k; n++) {
 				intBuffer.clear();
-				intBuffer.put(js, m * 8, 8);
+				intBuffer.put(js, n * 8, 8);
 				float g = byteBuffer.getFloat(0);
 				float h = byteBuffer.getFloat(4);
-				float n = byteBuffer.getFloat(8);
-				float r;
+				float o = byteBuffer.getFloat(8);
 				float s;
 				float t;
+				float u;
 				if (bl) {
-					float o = (float)(byteBuffer.get(12) & 255);
-					float p = (float)(byteBuffer.get(13) & 255);
-					float q = (float)(byteBuffer.get(14) & 255);
-					r = o * brightnesses[m] * red;
-					s = p * brightnesses[m] * green;
-					t = q * brightnesses[m] * blue;
+					float p = (float)(byteBuffer.get(12) & 255);
+					float q = (float)(byteBuffer.get(13) & 255);
+					float r = (float)(byteBuffer.get(14) & 255);
+					s = p * brightnesses[n] * red;
+					t = q * brightnesses[n] * green;
+					u = r * brightnesses[n] * blue;
 				} else {
-					r = brightnesses[m] * red * 255.0F;
-					s = brightnesses[m] * green * 255.0F;
-					t = brightnesses[m] * blue * 255.0F;
+					s = brightnesses[n] * red * 255.0F;
+					t = brightnesses[n] * green * 255.0F;
+					u = brightnesses[n] * blue * 255.0F;
 				}
 
-				int u = ColorHelper.getArgb(l, (int)r, (int)s, (int)t);
-				int v = is[m];
-				float q = byteBuffer.getFloat(16);
-				float w = byteBuffer.getFloat(20);
-				Vector3f vector3f2 = matrix4f.transformPosition(g, h, n, new Vector3f());
-				this.vertex(vector3f2.x(), vector3f2.y(), vector3f2.z(), u, q, w, i, v, vector3f.x(), vector3f.y(), vector3f.z());
+				int v = ColorHelper.getArgb(l, (int)s, (int)t, (int)u);
+				int w = LightmapTextureManager.applyEmission(is[n], m);
+				float r = byteBuffer.getFloat(16);
+				float x = byteBuffer.getFloat(20);
+				Vector3f vector3f2 = matrix4f.transformPosition(g, h, o, new Vector3f());
+				this.vertex(vector3f2.x(), vector3f2.y(), vector3f2.z(), v, r, x, i, w, vector3f.x(), vector3f.y(), vector3f.z());
 			}
 		}
 	}
@@ -281,7 +282,7 @@ public interface VertexConsumer {
 		return this.normal(vector3f.x(), vector3f.y(), vector3f.z());
 	}
 
-	default VertexConsumer method_61959(MatrixStack.Entry entry, Vector3f vector3f) {
-		return this.normal(entry, vector3f.x(), vector3f.y(), vector3f.z());
+	default VertexConsumer normal(MatrixStack.Entry matrix, Vector3f vec) {
+		return this.normal(matrix, vec.x(), vec.y(), vec.z());
 	}
 }

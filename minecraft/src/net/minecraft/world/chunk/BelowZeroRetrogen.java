@@ -76,7 +76,7 @@ public final class BelowZeroRetrogen {
 	public void fillColumnsWithAirIfMissingBedrock(ProtoChunk chunk) {
 		HeightLimitView heightLimitView = chunk.getHeightLimitView();
 		int i = heightLimitView.getBottomY();
-		int j = heightLimitView.getTopY() - 1;
+		int j = heightLimitView.getTopYInclusive();
 
 		for (int k = 0; k < 16; k++) {
 			for (int l = 0; l < 16; l++) {

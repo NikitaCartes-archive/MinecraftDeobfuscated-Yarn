@@ -3,13 +3,6 @@ package net.minecraft.client.gl;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableList.Builder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-import com.mojang.blaze3d.platform.GlConst;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.serialization.JsonOps;
-import java.io.IOException;
-import java.io.Reader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,349 +16,265 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.FrameGraphBuilder;
-import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.Handle;
 import net.minecraft.client.util.ObjectAllocator;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceFactory;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.InvalidHierarchicalFileException;
-import net.minecraft.util.JsonHelper;
 import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
-public class PostEffectProcessor implements AutoCloseable {
+public class PostEffectProcessor {
 	public static final Identifier MAIN = Identifier.ofVanilla("main");
-	private final Identifier id;
 	private final List<PostEffectPass> passes;
 	private final Map<Identifier, PostEffectPipeline.Targets> internalTargets;
 	private final Set<Identifier> externalTargets;
-	private float time;
 
-	private PostEffectProcessor(
-		Identifier id, List<PostEffectPass> passes, Map<Identifier, PostEffectPipeline.Targets> internalTargets, Set<Identifier> externalTargets
-	) {
-		this.id = id;
+	private PostEffectProcessor(List<PostEffectPass> passes, Map<Identifier, PostEffectPipeline.Targets> internalTargets, Set<Identifier> externalTargets) {
 		this.passes = passes;
 		this.internalTargets = internalTargets;
 		this.externalTargets = externalTargets;
 	}
 
 	public static PostEffectProcessor parseEffect(
-		ResourceFactory resourceFactory, TextureManager textureManager, Identifier id, Set<Identifier> availableExternalTargets
-	) throws IOException, JsonSyntaxException {
-		Resource resource = resourceFactory.getResourceOrThrow(id);
+		PostEffectPipeline pipeline, TextureManager textureManager, ShaderLoader shaderLoader, Set<Identifier> availableExternalTargets
+	) throws ShaderLoader.LoadException {
+		Stream<Identifier> stream = pipeline.passes().stream().flatMap(passx -> passx.inputs().stream()).flatMap(input -> input.getTargetId().stream());
+		Set<Identifier> set = (Set<Identifier>)stream.filter(target -> !pipeline.internalTargets().containsKey(target)).collect(Collectors.toSet());
+		Set<Identifier> set2 = Sets.<Identifier>difference(set, availableExternalTargets);
+		if (!set2.isEmpty()) {
+			throw new ShaderLoader.LoadException("Referenced external targets are not available in this context: " + set2);
+		} else {
+			Builder<PostEffectPass> builder = ImmutableList.builder();
 
-		try {
-			Reader reader = resource.getReader();
-
-			PostEffectProcessor var18;
-			try {
-				JsonObject jsonObject = JsonHelper.deserialize(reader);
-				PostEffectPipeline postEffectPipeline = PostEffectPipeline.CODEC.parse(JsonOps.INSTANCE, jsonObject).getOrThrow(JsonSyntaxException::new);
-				Stream<Identifier> stream = postEffectPipeline.passes().stream().flatMap(passx -> passx.inputs().stream()).flatMap(input -> input.getTargetId().stream());
-				Set<Identifier> set = (Set<Identifier>)stream.filter(identifier -> !postEffectPipeline.internalTargets().containsKey(identifier))
-					.collect(Collectors.toSet());
-				Set<Identifier> set2 = Sets.<Identifier>difference(set, availableExternalTargets);
-				if (!set2.isEmpty()) {
-					throw new InvalidHierarchicalFileException("Referenced external targets are not available in this context: " + set2);
-				}
-
-				Builder<PostEffectPass> builder = ImmutableList.builder();
-
-				for (PostEffectPipeline.Pass pass : postEffectPipeline.passes()) {
-					builder.add(parsePass(resourceFactory, textureManager, pass));
-				}
-
-				var18 = new PostEffectProcessor(id, builder.build(), postEffectPipeline.internalTargets(), set);
-			} catch (Throwable var15) {
-				if (reader != null) {
-					try {
-						reader.close();
-					} catch (Throwable var14) {
-						var15.addSuppressed(var14);
-					}
-				}
-
-				throw var15;
+			for (PostEffectPipeline.Pass pass : pipeline.passes()) {
+				builder.add(parsePass(textureManager, shaderLoader, pass));
 			}
 
-			if (reader != null) {
-				reader.close();
-			}
-
-			return var18;
-		} catch (Exception var16) {
-			InvalidHierarchicalFileException invalidHierarchicalFileException = InvalidHierarchicalFileException.wrap(var16);
-			invalidHierarchicalFileException.addInvalidFile(id.getPath() + " (" + resource.getPackId() + ")");
-			throw invalidHierarchicalFileException;
+			return new PostEffectProcessor(builder.build(), pipeline.internalTargets(), set);
 		}
 	}
 
 	// $VF: Inserted dummy exception handlers to handle obfuscated exceptions
-	private static PostEffectPass parsePass(ResourceFactory resourceFactory, TextureManager textureManager, PostEffectPipeline.Pass pass) throws IOException {
-		PostEffectPass postEffectPass = new PostEffectPass(resourceFactory, pass.name(), pass.outputTarget());
-
-		for (PostEffectPipeline.Input input : pass.inputs()) {
-			Objects.requireNonNull(input);
-			Throwable var43;
-			switch (input) {
-				case PostEffectPipeline.TextureSampler var8:
-					PostEffectPipeline.TextureSampler var51 = var8;
-
-					try {
-						var52 = var51.samplerName();
-					} catch (Throwable var28) {
-						var43 = var28;
-						boolean var64 = false;
-						break;
-					}
-
-					String var33 = var52;
-					PostEffectPipeline.TextureSampler var53 = var8;
-
-					try {
-						var54 = var53.location();
-					} catch (Throwable var27) {
-						var43 = var27;
-						boolean var65 = false;
-						break;
-					}
-
-					Identifier var34 = var54;
-					Identifier identifier = var34;
-					PostEffectPipeline.TextureSampler var55 = var8;
-
-					try {
-						var56 = var55.width();
-					} catch (Throwable var26) {
-						var43 = var26;
-						boolean var66 = false;
-						break;
-					}
-
-					int var35 = var56;
-					PostEffectPipeline.TextureSampler var57 = var8;
-
-					try {
-						var58 = var57.height();
-					} catch (Throwable var25) {
-						var43 = var25;
-						boolean var67 = false;
-						break;
-					}
-
-					int var36 = var58;
-					PostEffectPipeline.TextureSampler var59 = var8;
-
-					try {
-						var60 = var59.bilinear();
-					} catch (Throwable var24) {
-						var43 = var24;
-						boolean var68 = false;
-						break;
-					}
-
-					boolean var37 = var60;
-					Identifier identifier2x = identifier.withPath((UnaryOperator<String>)(name -> "textures/effect/" + name + ".png"));
-					resourceFactory.getResource(identifier2x).orElseThrow(() -> new InvalidHierarchicalFileException("Texture '" + identifier + "' does not exist"));
-					RenderSystem.setShaderTexture(0, identifier2x);
-					textureManager.bindTexture(identifier2x);
-					AbstractTexture abstractTexture = textureManager.getTexture(identifier2x);
-					if (var37) {
-						RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_LINEAR);
-						RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_LINEAR);
-					} else {
-						RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_NEAREST);
-						RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_NEAREST);
-					}
-
-					postEffectPass.addSampler(new PostEffectPass.TextureSampler(var33, abstractTexture, var35, var36));
-					continue;
-				case PostEffectPipeline.TargetSampler identifier2:
-					PostEffectPipeline.TargetSampler var10000 = identifier2;
-
-					try {
-						var44 = var10000.samplerName();
-					} catch (Throwable var23) {
-						var43 = var23;
-						boolean var10001 = false;
-						break;
-					}
-
-					String var19 = var44;
-					PostEffectPipeline.TargetSampler var45 = identifier2;
-
-					try {
-						var46 = var45.targetId();
-					} catch (Throwable var22) {
-						var43 = var22;
-						boolean var61 = false;
-						break;
-					}
-
-					Identifier var40 = var46;
-					PostEffectPipeline.TargetSampler var47 = identifier2;
-
-					try {
-						var48 = var47.useDepthBuffer();
-					} catch (Throwable var21) {
-						var43 = var21;
-						boolean var62 = false;
-						break;
-					}
-
-					boolean var41 = var48;
-					PostEffectPipeline.TargetSampler var49 = identifier2;
-
-					try {
-						var50 = var49.bilinear();
-					} catch (Throwable var20) {
-						var43 = var20;
-						boolean var63 = false;
-						break;
-					}
-
-					boolean var42 = var50;
-					postEffectPass.addSampler(new PostEffectPass.TargetSampler(var19, var40, var41, var42));
-					continue;
-				default:
-					throw new MatchException(null, null);
+	private static PostEffectPass parsePass(TextureManager textureManager, ShaderLoader shaderLoader, PostEffectPipeline.Pass pass) throws ShaderLoader.LoadException {
+		Identifier identifier = pass.program();
+		ShaderProgram shaderProgram = shaderLoader.getOrCreateProgram(new ShaderProgramKey(identifier, VertexFormats.POSITION, Defines.EMPTY));
+		if (shaderProgram == null) {
+			throw new ShaderLoader.LoadException("Shader '" + identifier + "' could not be loaded");
+		} else {
+			for (PostEffectPipeline.Uniform uniform : pass.uniforms()) {
+				String string = uniform.name();
+				if (shaderProgram.getUniform(string) == null) {
+					throw new ShaderLoader.LoadException("Uniform '" + string + "' does not exist for " + identifier);
+				}
 			}
 
-			Throwable var29 = var43;
-			throw new MatchException(var29.toString(), var29);
-		}
+			String string2 = identifier.toString();
+			PostEffectPass postEffectPass = new PostEffectPass(string2, shaderProgram, pass.outputTarget(), pass.uniforms());
 
-		for (PostEffectPipeline.Uniform uniform : pass.uniforms()) {
-			String string3 = uniform.name();
-			GlUniform glUniform = postEffectPass.getProgram().getUniformByName(string3);
-			if (glUniform == null) {
-				throw new InvalidHierarchicalFileException("Uniform '" + string3 + "' does not exist");
+			for (PostEffectPipeline.Input input : pass.inputs()) {
+				Objects.requireNonNull(input);
+				Throwable var45;
+				switch (input) {
+					case PostEffectPipeline.TextureSampler var11:
+						PostEffectPipeline.TextureSampler var53 = var11;
+
+						try {
+							var54 = var53.samplerName();
+						} catch (Throwable var31) {
+							var45 = var31;
+							boolean var66 = false;
+							break;
+						}
+
+						String var36 = var54;
+						PostEffectPipeline.TextureSampler var55 = var11;
+
+						try {
+							var56 = var55.location();
+						} catch (Throwable var30) {
+							var45 = var30;
+							boolean var67 = false;
+							break;
+						}
+
+						Identifier var37 = var56;
+						PostEffectPipeline.TextureSampler var57 = var11;
+
+						try {
+							var58 = var57.width();
+						} catch (Throwable var29) {
+							var45 = var29;
+							boolean var68 = false;
+							break;
+						}
+
+						int var38 = var58;
+						PostEffectPipeline.TextureSampler var59 = var11;
+
+						try {
+							var60 = var59.height();
+						} catch (Throwable var28) {
+							var45 = var28;
+							boolean var69 = false;
+							break;
+						}
+
+						int var39 = var60;
+						PostEffectPipeline.TextureSampler var61 = var11;
+
+						try {
+							var62 = var61.bilinear();
+						} catch (Throwable var27) {
+							var45 = var27;
+							boolean var70 = false;
+							break;
+						}
+
+						boolean var40 = var62;
+						AbstractTexture abstractTexturex = textureManager.getTexture(var37.withPath((UnaryOperator<String>)(name -> "textures/effect/" + name + ".png")));
+						abstractTexturex.setFilter(var40, false);
+						postEffectPass.addSampler(new PostEffectPass.TextureSampler(var36, abstractTexturex, var38, var39));
+						continue;
+					case PostEffectPipeline.TargetSampler abstractTexture:
+						PostEffectPipeline.TargetSampler var10000 = abstractTexture;
+
+						try {
+							var46 = var10000.samplerName();
+						} catch (Throwable var26) {
+							var45 = var26;
+							boolean var10001 = false;
+							break;
+						}
+
+						String var22 = var46;
+						PostEffectPipeline.TargetSampler var47 = abstractTexture;
+
+						try {
+							var48 = var47.targetId();
+						} catch (Throwable var25) {
+							var45 = var25;
+							boolean var63 = false;
+							break;
+						}
+
+						Identifier var42 = var48;
+						PostEffectPipeline.TargetSampler var49 = abstractTexture;
+
+						try {
+							var50 = var49.useDepthBuffer();
+						} catch (Throwable var24) {
+							var45 = var24;
+							boolean var64 = false;
+							break;
+						}
+
+						boolean var43 = var50;
+						PostEffectPipeline.TargetSampler var51 = abstractTexture;
+
+						try {
+							var52 = var51.bilinear();
+						} catch (Throwable var23) {
+							var45 = var23;
+							boolean var65 = false;
+							break;
+						}
+
+						boolean var44 = var52;
+						postEffectPass.addSampler(new PostEffectPass.TargetSampler(var22, var42, var43, var44));
+						continue;
+					default:
+						throw new MatchException(null, null);
+				}
+
+				Throwable var35 = var45;
+				throw new MatchException(var35.toString(), var35);
 			}
 
-			setUniform(glUniform, uniform.values());
-		}
-
-		return postEffectPass;
-	}
-
-	private static void setUniform(GlUniform uniform, List<Float> elements) {
-		switch (elements.size()) {
-			case 0:
-			default:
-				break;
-			case 1:
-				uniform.set((Float)elements.getFirst());
-				break;
-			case 2:
-				uniform.set((Float)elements.get(0), (Float)elements.get(1));
-				break;
-			case 3:
-				uniform.set((Float)elements.get(0), (Float)elements.get(1), (Float)elements.get(2));
-				break;
-			case 4:
-				uniform.setAndFlip((Float)elements.get(0), (Float)elements.get(1), (Float)elements.get(2), (Float)elements.get(3));
-		}
-	}
-
-	public void close() {
-		for (PostEffectPass postEffectPass : this.passes) {
-			postEffectPass.close();
+			return postEffectPass;
 		}
 	}
 
 	// $VF: Inserted dummy exception handlers to handle obfuscated exceptions
-	public void method_62234(FrameGraphBuilder frameGraphBuilder, RenderTickCounter renderTickCounter, int i, int j, PostEffectProcessor.FramebufferSet set) {
-		Matrix4f matrix4f = new Matrix4f().setOrtho(0.0F, (float)i, 0.0F, (float)j, 0.1F, 1000.0F);
-		this.time = this.time + renderTickCounter.getLastDuration();
-
-		while (this.time > 20.0F) {
-			this.time -= 20.0F;
-		}
-
+	public void render(FrameGraphBuilder builder, int textureWidth, int textureHeight, PostEffectProcessor.FramebufferSet framebufferSet) {
+		Matrix4f matrix4f = new Matrix4f().setOrtho(0.0F, (float)textureWidth, 0.0F, (float)textureHeight, 0.1F, 1000.0F);
 		Map<Identifier, Handle<Framebuffer>> map = new HashMap(this.internalTargets.size() + this.externalTargets.size());
 
 		for (Identifier identifier : this.externalTargets) {
-			map.put(identifier, set.getOrThrow(identifier));
+			map.put(identifier, framebufferSet.getOrThrow(identifier));
 		}
 
 		for (Entry<Identifier, PostEffectPipeline.Targets> entry : this.internalTargets.entrySet()) {
 			Identifier identifier2 = (Identifier)entry.getKey();
-			PostEffectPipeline.Targets var36;
-			Objects.requireNonNull(var36);
-			Object var12 = var36;
+			PostEffectPipeline.Targets var35;
+			Objects.requireNonNull(var35);
+			Object var11 = var35;
 
-			var36 = (PostEffectPipeline.Targets)entry.getValue();
-			SimpleFramebufferFactory simpleFramebufferFactory = switch (var12) {
-				case PostEffectPipeline.CustomSized var14 -> {
-					PostEffectPipeline.CustomSized var30 = var14;
+			var35 = (PostEffectPipeline.Targets)entry.getValue();
+			SimpleFramebufferFactory simpleFramebufferFactory = switch (var11) {
+				case PostEffectPipeline.CustomSized var13 -> {
+					PostEffectPipeline.CustomSized var29 = var13;
 
-					int var27;
-					label59: {
-						label85: {
+					int var26;
+					label56: {
+						label76: {
 							try {
-								var32 = var30.width();
-							} catch (Throwable var19) {
-								var31 = var19;
+								var31 = var29.width();
+							} catch (Throwable var18) {
+								var30 = var18;
 								boolean var10001 = false;
-								break label85;
+								break label76;
 							}
 
-							var27 = var32;
-							PostEffectPipeline.CustomSized var33 = var14;
+							var26 = var31;
+							PostEffectPipeline.CustomSized var32 = var13;
 
 							try {
-								var34 = var33.height();
-								break label59;
-							} catch (Throwable var18) {
-								var31 = var18;
-								boolean var35 = false;
+								var33 = var32.height();
+								break label56;
+							} catch (Throwable var17) {
+								var30 = var17;
+								boolean var34 = false;
 							}
 						}
 
-						Throwable var21 = var31;
-						throw new MatchException(var21.toString(), var21);
+						Throwable var20 = var30;
+						throw new MatchException(var20.toString(), var20);
 					}
 
-					int var28 = var34;
-					yield new SimpleFramebufferFactory(var27, var28, true);
+					int var27 = var33;
+					yield new SimpleFramebufferFactory(var26, var27, true);
 				}
-				case PostEffectPipeline.ScreenSized var17 -> new SimpleFramebufferFactory(i, j, true);
+				case PostEffectPipeline.ScreenSized var16 -> new SimpleFramebufferFactory(textureWidth, textureHeight, true);
 				default -> throw new MatchException(null, null);
 			};
-			map.put(identifier2, frameGraphBuilder.method_61912(identifier2.toString(), simpleFramebufferFactory));
+			map.put(identifier2, builder.createResourceHandle(identifier2.toString(), simpleFramebufferFactory));
 		}
 
 		for (PostEffectPass postEffectPass : this.passes) {
-			postEffectPass.method_62255(frameGraphBuilder, map, matrix4f, this.time / 20.0F);
+			postEffectPass.render(builder, map, matrix4f);
 		}
 
 		for (Identifier identifier : this.externalTargets) {
-			set.set(identifier, (Handle<Framebuffer>)map.get(identifier));
+			framebufferSet.set(identifier, (Handle<Framebuffer>)map.get(identifier));
 		}
 	}
 
 	@Deprecated
-	public void render(Framebuffer framebuffer, ObjectAllocator objectAllocator, RenderTickCounter renderTickCounter) {
+	public void render(Framebuffer framebuffer, ObjectAllocator objectAllocator) {
 		FrameGraphBuilder frameGraphBuilder = new FrameGraphBuilder();
 		PostEffectProcessor.FramebufferSet framebufferSet = PostEffectProcessor.FramebufferSet.singleton(
 			MAIN, frameGraphBuilder.createObjectNode("main", framebuffer)
 		);
-		this.method_62234(frameGraphBuilder, renderTickCounter, framebuffer.textureWidth, framebuffer.textureHeight, framebufferSet);
-		frameGraphBuilder.method_61909(objectAllocator);
+		this.render(frameGraphBuilder, framebuffer.textureWidth, framebuffer.textureHeight, framebufferSet);
+		frameGraphBuilder.run(objectAllocator);
 	}
 
 	public void setUniforms(String name, float value) {
 		for (PostEffectPass postEffectPass : this.passes) {
-			postEffectPass.getProgram().getUniformByNameOrDummy(name).set(value);
+			postEffectPass.getProgram().getUniformOrDefault(name).set(value);
 		}
-	}
-
-	public final Identifier method_62231() {
-		return this.id;
 	}
 
 	@Environment(EnvType.CLIENT)

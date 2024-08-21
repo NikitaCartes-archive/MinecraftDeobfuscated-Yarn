@@ -67,7 +67,7 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 		super.updateRenderState(entity, flyingItemEntityRenderState, f);
 		ItemStack itemStack = entity.getStack();
 		flyingItemEntityRenderState.model = !itemStack.isEmpty() ? this.itemRenderer.getModel(itemStack, entity.getWorld(), null, entity.getId()) : null;
-		flyingItemEntityRenderState.stack = itemStack;
+		flyingItemEntityRenderState.stack = itemStack.copy();
 	}
 
 	public Identifier getTexture(FlyingItemEntityRenderState flyingItemEntityRenderState) {

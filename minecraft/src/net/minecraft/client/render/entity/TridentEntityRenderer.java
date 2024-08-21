@@ -28,7 +28,7 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity, Trident
 		matrixStack.push();
 		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(tridentEntityRenderState.yaw - 90.0F));
 		matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(tridentEntityRenderState.pitch + 90.0F));
-		VertexConsumer vertexConsumer = ItemRenderer.getDirectItemGlintConsumer(
+		VertexConsumer vertexConsumer = ItemRenderer.getItemGlintConsumer(
 			vertexConsumerProvider, this.model.getLayer(this.getTexture(tridentEntityRenderState)), false, tridentEntityRenderState.enchanted
 		);
 		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);

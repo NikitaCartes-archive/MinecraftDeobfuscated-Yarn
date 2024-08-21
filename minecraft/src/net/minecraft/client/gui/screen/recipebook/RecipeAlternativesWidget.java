@@ -44,11 +44,11 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 	}
 
 	public void showAlternativesForResult(
-		RecipeResultCollection resultCollection, boolean bl, int buttonX, int buttonY, int areaCenterX, int areaCenterY, float delta
+		RecipeResultCollection resultCollection, boolean filteringCraftable, int buttonX, int buttonY, int areaCenterX, int areaCenterY, float delta
 	) {
 		this.resultCollection = resultCollection;
-		List<RecipeEntry<?>> list = resultCollection.method_62050(RecipeResultCollection.RecipeFilterMode.CRAFTABLE);
-		List<RecipeEntry<?>> list2 = bl ? Collections.emptyList() : resultCollection.method_62050(RecipeResultCollection.RecipeFilterMode.NOT_CRAFTABLE);
+		List<RecipeEntry<?>> list = resultCollection.filter(RecipeResultCollection.RecipeFilterMode.CRAFTABLE);
+		List<RecipeEntry<?>> list2 = filteringCraftable ? Collections.emptyList() : resultCollection.filter(RecipeResultCollection.RecipeFilterMode.NOT_CRAFTABLE);
 		int i = list.size();
 		int j = i + list2.size();
 		int k = j <= 16 ? 4 : 5;
@@ -77,14 +77,14 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 		this.alternativeButtons.clear();
 
 		for (int p = 0; p < j; p++) {
-			boolean bl2 = p < i;
-			RecipeEntry<?> recipeEntry = bl2 ? (RecipeEntry)list.get(p) : (RecipeEntry)list2.get(p - i);
+			boolean bl = p < i;
+			RecipeEntry<?> recipeEntry = bl ? (RecipeEntry)list.get(p) : (RecipeEntry)list2.get(p - i);
 			int q = this.buttonX + 4 + 25 * (p % k);
 			int r = this.buttonY + 5 + 25 * (p / k);
 			if (this.furnace) {
-				this.alternativeButtons.add(new RecipeAlternativesWidget.FurnaceAlternativeButtonWidget(q, r, recipeEntry, bl2));
+				this.alternativeButtons.add(new RecipeAlternativesWidget.FurnaceAlternativeButtonWidget(q, r, recipeEntry, bl));
 			} else {
-				this.alternativeButtons.add(new RecipeAlternativesWidget.CraftingAlternativeButtonWidget(q, r, recipeEntry, bl2));
+				this.alternativeButtons.add(new RecipeAlternativesWidget.CraftingAlternativeButtonWidget(q, r, recipeEntry, bl));
 			}
 		}
 
@@ -176,8 +176,8 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 			this.craftable = craftable;
 		}
 
-		protected static RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot method_62040(int i, int j, List<ItemStack> list) {
-			return new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(3 + i * 7, 3 + j * 7, list);
+		protected static RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot slot(int x, int y, List<ItemStack> stacks) {
+			return new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(3 + x * 7, 3 + y * 7, stacks);
 		}
 
 		protected abstract Identifier getOverlayTexture(boolean enabled);
@@ -199,7 +199,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 				context.getMatrices().translate(f + (float)inputSlot.y, g + (float)inputSlot.x, 150.0F);
 				context.getMatrices().scale(0.375F, 0.375F, 1.0F);
 				context.getMatrices().translate(-8.0F, -8.0F, 0.0F);
-				context.drawItem(inputSlot.method_62041(RecipeAlternativesWidget.this.currentIndexProvider.currentIndex()), 0, 0);
+				context.drawItem(inputSlot.get(RecipeAlternativesWidget.this.currentIndexProvider.currentIndex()), 0, 0);
 				context.getMatrices().pop();
 			}
 		}
@@ -217,8 +217,8 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 				}
 			}
 
-			public ItemStack method_62041(int i) {
-				return (ItemStack)this.stacks.get(i % this.stacks.size());
+			public ItemStack get(int index) {
+				return (ItemStack)this.stacks.get(index % this.stacks.size());
 			}
 		}
 	}
@@ -231,17 +231,17 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 		private static final Identifier CRAFTING_OVERLAY_DISABLED_HIGHLIGHTED = Identifier.ofVanilla("recipe_book/crafting_overlay_disabled_highlighted");
 
 		public CraftingAlternativeButtonWidget(final int x, final int y, final RecipeEntry<?> entry, final boolean craftable) {
-			super(x, y, entry, craftable, method_62036(entry));
+			super(x, y, entry, craftable, collectInputSlots(entry));
 		}
 
-		private static List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> method_62036(RecipeEntry<?> recipeEntry) {
+		private static List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> collectInputSlots(RecipeEntry<?> recipe) {
 			List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> list = new ArrayList();
 			RecipeGridAligner.alignRecipeToGrid(
 				3,
 				3,
-				recipeEntry,
-				recipeEntry.value().getIngredientPlacement().getPlacementSlots(),
-				(optional, i, j, k) -> optional.ifPresent(placementSlot -> list.add(method_62040(j, k, placementSlot.possibleItems())))
+				recipe,
+				recipe.value().getIngredientPlacement().getPlacementSlots(),
+				(slot, index, x, y) -> slot.ifPresent(slot2 -> list.add(slot(x, y, slot2.possibleItems())))
 			);
 			return list;
 		}
@@ -269,7 +269,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 
 		private static List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> alignRecipe(RecipeEntry<?> entry) {
 			return (List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot>)((Optional)entry.value().getIngredientPlacement().getPlacementSlots().getFirst())
-				.map(placementSlot -> List.of(method_62040(1, 1, placementSlot.possibleItems())))
+				.map(placementSlot -> List.of(slot(1, 1, placementSlot.possibleItems())))
 				.orElse(List.of());
 		}
 

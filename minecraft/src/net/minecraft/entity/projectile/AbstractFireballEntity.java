@@ -52,7 +52,7 @@ public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity i
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.put("Item", this.getStack().encode(this.getRegistryManager()));
+		nbt.put("Item", this.getStack().toNbt(this.getRegistryManager()));
 	}
 
 	@Override

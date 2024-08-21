@@ -25,7 +25,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 		boolean bl = false;
 		int i = 0;
 
-		for (int j = 0; j < craftingRecipeInput.getSize(); j++) {
+		for (int j = 0; j < craftingRecipeInput.size(); j++) {
 			ItemStack itemStack = craftingRecipeInput.getStackInSlot(j);
 			if (!itemStack.isEmpty()) {
 				if (PAPER.test(itemStack)) {
@@ -51,7 +51,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 		List<FireworkExplosionComponent> list = new ArrayList();
 		int i = 0;
 
-		for (int j = 0; j < craftingRecipeInput.getSize(); j++) {
+		for (int j = 0; j < craftingRecipeInput.size(); j++) {
 			ItemStack itemStack = craftingRecipeInput.getStackInSlot(j);
 			if (!itemStack.isEmpty()) {
 				if (DURATION_MODIFIER.test(itemStack)) {
@@ -76,7 +76,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup) {
+	public ItemStack getResult(RegistryWrapper.WrapperLookup registries) {
 		return new ItemStack(Items.FIREWORK_ROCKET);
 	}
 

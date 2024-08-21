@@ -110,7 +110,9 @@ public class ProtoChunk extends Chunk {
 		int i = pos.getX();
 		int j = pos.getY();
 		int k = pos.getZ();
-		if (j >= this.getBottomY() && j < this.getTopY()) {
+		if (this.isOutOfHeightLimit(j)) {
+			return Blocks.VOID_AIR.getDefaultState();
+		} else {
 			int l = this.getSectionIndex(j);
 			ChunkSection chunkSection = this.getSection(l);
 			boolean bl = chunkSection.isEmpty();
@@ -157,8 +159,6 @@ public class ProtoChunk extends Chunk {
 
 				return blockState;
 			}
-		} else {
-			return Blocks.VOID_AIR.getDefaultState();
 		}
 	}
 
@@ -196,7 +196,7 @@ public class ProtoChunk extends Chunk {
 		if (belowZeroRetrogen != null && start.hasChildren()) {
 			BlockBox blockBox = start.getBoundingBox();
 			HeightLimitView heightLimitView = this.getHeightLimitView();
-			if (blockBox.getMinY() < heightLimitView.getBottomY() || blockBox.getMaxY() >= heightLimitView.getTopY()) {
+			if (blockBox.getMinY() < heightLimitView.getBottomY() || blockBox.getMaxY() > heightLimitView.getTopYInclusive()) {
 				return;
 			}
 		}
@@ -266,9 +266,9 @@ public class ProtoChunk extends Chunk {
 
 	@Nullable
 	@Override
-	public NbtCompound getPackedBlockEntityNbt(BlockPos pos, RegistryWrapper.WrapperLookup registryLookup) {
+	public NbtCompound getPackedBlockEntityNbt(BlockPos pos, RegistryWrapper.WrapperLookup registries) {
 		BlockEntity blockEntity = this.getBlockEntity(pos);
-		return blockEntity != null ? blockEntity.createNbtWithIdentifyingData(registryLookup) : (NbtCompound)this.blockEntityNbts.get(pos);
+		return blockEntity != null ? blockEntity.createNbtWithIdentifyingData(registries) : (NbtCompound)this.blockEntityNbts.get(pos);
 	}
 
 	@Override

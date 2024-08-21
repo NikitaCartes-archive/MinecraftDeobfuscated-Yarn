@@ -53,8 +53,8 @@ import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.util.Identifier;
 
 public abstract class RecipeGenerator {
-	protected final RegistryWrapper.WrapperLookup registryLookupWrapper;
-	private final RegistryEntryLookup<Item> registryLookup;
+	protected final RegistryWrapper.WrapperLookup registries;
+	private final RegistryEntryLookup<Item> itemLookup;
 	protected final RecipeExporter exporter;
 	private static final Map<BlockFamily.Variant, RecipeGenerator.BlockFamilyRecipeFactory> VARIANT_FACTORIES = ImmutableMap.<BlockFamily.Variant, RecipeGenerator.BlockFamilyRecipeFactory>builder()
 		.put(BlockFamily.Variant.BUTTON, (generator, output, input) -> generator.createButtonRecipe(output, Ingredient.ofItem(input)))
@@ -83,9 +83,9 @@ public abstract class RecipeGenerator {
 		.put(BlockFamily.Variant.WALL, (generator, output, input) -> generator.getWallRecipe(RecipeCategory.DECORATIONS, output, Ingredient.ofItem(input)))
 		.build();
 
-	protected RecipeGenerator(RegistryWrapper.WrapperLookup registryLookup, RecipeExporter exporter) {
-		this.registryLookupWrapper = registryLookup;
-		this.registryLookup = registryLookup.getWrapperOrThrow(RegistryKeys.ITEM);
+	protected RecipeGenerator(RegistryWrapper.WrapperLookup registries, RecipeExporter exporter) {
+		this.registries = registries;
+		this.itemLookup = registries.getWrapperOrThrow(RegistryKeys.ITEM);
 		this.exporter = exporter;
 	}
 
@@ -681,15 +681,15 @@ public abstract class RecipeGenerator {
 	}
 
 	private AdvancementCriterion<InventoryChangedCriterion.Conditions> conditionsFromItem(NumberRange.IntRange count, ItemConvertible item) {
-		return conditionsFromPredicates(ItemPredicate.Builder.create().items(this.registryLookup, item).count(count));
+		return conditionsFromPredicates(ItemPredicate.Builder.create().items(this.itemLookup, item).count(count));
 	}
 
 	protected AdvancementCriterion<InventoryChangedCriterion.Conditions> conditionsFromItem(ItemConvertible item) {
-		return conditionsFromPredicates(ItemPredicate.Builder.create().items(this.registryLookup, item));
+		return conditionsFromPredicates(ItemPredicate.Builder.create().items(this.itemLookup, item));
 	}
 
 	protected AdvancementCriterion<InventoryChangedCriterion.Conditions> conditionsFromTag(TagKey<Item> tag) {
-		return conditionsFromPredicates(ItemPredicate.Builder.create().tag(this.registryLookup, tag));
+		return conditionsFromPredicates(ItemPredicate.Builder.create().tag(this.itemLookup, tag));
 	}
 
 	private static AdvancementCriterion<InventoryChangedCriterion.Conditions> conditionsFromPredicates(ItemPredicate.Builder... predicates) {
@@ -726,27 +726,27 @@ public abstract class RecipeGenerator {
 	}
 
 	protected Ingredient ingredientFromTag(TagKey<Item> tag) {
-		return Ingredient.fromTag(this.registryLookup.getOrThrow(tag));
+		return Ingredient.fromTag(this.itemLookup.getOrThrow(tag));
 	}
 
 	protected ShapedRecipeJsonBuilder createShaped(RecipeCategory category, ItemConvertible output) {
-		return ShapedRecipeJsonBuilder.create(this.registryLookup, category, output);
+		return ShapedRecipeJsonBuilder.create(this.itemLookup, category, output);
 	}
 
 	protected ShapedRecipeJsonBuilder createShaped(RecipeCategory category, ItemConvertible output, int count) {
-		return ShapedRecipeJsonBuilder.create(this.registryLookup, category, output, count);
+		return ShapedRecipeJsonBuilder.create(this.itemLookup, category, output, count);
 	}
 
 	protected ShapelessRecipeJsonBuilder createShapeless(RecipeCategory category, ItemStack output) {
-		return ShapelessRecipeJsonBuilder.create(this.registryLookup, category, output);
+		return ShapelessRecipeJsonBuilder.create(this.itemLookup, category, output);
 	}
 
 	protected ShapelessRecipeJsonBuilder createShapeless(RecipeCategory category, ItemConvertible output) {
-		return ShapelessRecipeJsonBuilder.create(this.registryLookup, category, output);
+		return ShapelessRecipeJsonBuilder.create(this.itemLookup, category, output);
 	}
 
 	protected ShapelessRecipeJsonBuilder createShapeless(RecipeCategory category, ItemConvertible output, int count) {
-		return ShapelessRecipeJsonBuilder.create(this.registryLookup, category, output, count);
+		return ShapelessRecipeJsonBuilder.create(this.itemLookup, category, output, count);
 	}
 
 	@FunctionalInterface
@@ -814,6 +814,6 @@ public abstract class RecipeGenerator {
 				);
 		}
 
-		protected abstract RecipeGenerator getRecipeGenerator(RegistryWrapper.WrapperLookup registryLookup, RecipeExporter exporter);
+		protected abstract RecipeGenerator getRecipeGenerator(RegistryWrapper.WrapperLookup registries, RecipeExporter exporter);
 	}
 }

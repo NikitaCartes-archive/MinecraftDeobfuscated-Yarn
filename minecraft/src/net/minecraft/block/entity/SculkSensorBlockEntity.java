@@ -42,10 +42,10 @@ public class SculkSensorBlockEntity extends BlockEntity implements GameEventList
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.readNbt(nbt, registryLookup);
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.readNbt(nbt, registries);
 		this.lastVibrationFrequency = nbt.getInt("last_vibration_frequency");
-		RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
+		RegistryOps<NbtElement> registryOps = registries.getOps(NbtOps.INSTANCE);
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
 			Vibrations.ListenerData.CODEC
 				.parse(registryOps, nbt.getCompound("listener"))
@@ -55,10 +55,10 @@ public class SculkSensorBlockEntity extends BlockEntity implements GameEventList
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-		super.writeNbt(nbt, registryLookup);
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+		super.writeNbt(nbt, registries);
 		nbt.putInt("last_vibration_frequency", this.lastVibrationFrequency);
-		RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
+		RegistryOps<NbtElement> registryOps = registries.getOps(NbtOps.INSTANCE);
 		Vibrations.ListenerData.CODEC
 			.encodeStart(registryOps, this.listenerData)
 			.resultOrPartial(string -> LOGGER.error("Failed to encode vibration listener for Sculk Sensor: '{}'", string))

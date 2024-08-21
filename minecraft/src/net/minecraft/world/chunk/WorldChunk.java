@@ -263,6 +263,7 @@ public class WorldChunk extends Chunk {
 				boolean bl2 = chunkSection.isEmpty();
 				if (bl != bl2) {
 					this.world.getChunkManager().getLightingProvider().setSectionStatus(pos, bl2);
+					this.world.getChunkManager().onSectionStatusChanged(this.pos.x, ChunkSectionPos.getSectionCoord(i), this.pos.z, bl2);
 				}
 
 				if (ChunkLightProvider.needsLightUpdate(blockState, state)) {
@@ -416,7 +417,7 @@ public class WorldChunk extends Chunk {
 
 	@Nullable
 	@Override
-	public NbtCompound getPackedBlockEntityNbt(BlockPos pos, RegistryWrapper.WrapperLookup registryLookup) {
+	public NbtCompound getPackedBlockEntityNbt(BlockPos pos, RegistryWrapper.WrapperLookup registries) {
 		BlockEntity blockEntity = this.getBlockEntity(pos);
 		if (blockEntity != null && !blockEntity.isRemoved()) {
 			NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData(this.world.getRegistryManager());

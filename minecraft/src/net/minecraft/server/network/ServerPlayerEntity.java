@@ -350,7 +350,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			blockPos = basePos;
 		}
 
-		while (!this.canSpawnIn(world, box.offset(blockPos.toBottomCenterPos())) && blockPos.getY() < world.getTopY() - 1) {
+		while (!this.canSpawnIn(world, box.offset(blockPos.toBottomCenterPos())) && blockPos.getY() < world.getTopYInclusive()) {
 			blockPos = blockPos.up();
 		}
 
@@ -1408,11 +1408,14 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	protected void onStatusEffectRemoved(StatusEffectInstance effect) {
-		super.onStatusEffectRemoved(effect);
-		this.networkHandler.sendPacket(new RemoveEntityStatusEffectS2CPacket(this.getId(), effect.getEffectType()));
-		if (effect.equals(StatusEffects.LEVITATION)) {
-			this.levitationStartPos = null;
+	protected void onStatusEffectsRemoved(Collection<StatusEffectInstance> effects) {
+		super.onStatusEffectsRemoved(effects);
+
+		for (StatusEffectInstance statusEffectInstance : effects) {
+			this.networkHandler.sendPacket(new RemoveEntityStatusEffectS2CPacket(this.getId(), statusEffectInstance.getEffectType()));
+			if (statusEffectInstance.equals(StatusEffects.LEVITATION)) {
+				this.levitationStartPos = null;
+			}
 		}
 
 		Criteria.EFFECTS_CHANGED.trigger(this, null);

@@ -36,12 +36,12 @@ public class RegistryEntryArgumentType<T> implements ArgumentType<RegistryEntry<
 		argument -> Text.stringifiedTranslatable("argument.resource_or_id.failed_to_parse", argument)
 	);
 	private static final SimpleCommandExceptionType INVALID_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.resource_or_id.invalid"));
-	private final RegistryWrapper.WrapperLookup registryLookup;
+	private final RegistryWrapper.WrapperLookup registries;
 	private final boolean canLookupRegistry;
 	private final Codec<RegistryEntry<T>> entryCodec;
 
 	protected RegistryEntryArgumentType(CommandRegistryAccess registryAccess, RegistryKey<Registry<T>> registry, Codec<RegistryEntry<T>> entryCodec) {
-		this.registryLookup = registryAccess;
+		this.registries = registryAccess;
 		this.canLookupRegistry = registryAccess.getOptionalWrapper(registry).isPresent();
 		this.entryCodec = entryCodec;
 	}
@@ -80,7 +80,7 @@ public class RegistryEntryArgumentType<T> implements ArgumentType<RegistryEntry<
 		if (!this.canLookupRegistry) {
 			return null;
 		} else {
-			RegistryOps<NbtElement> registryOps = this.registryLookup.getOps(NbtOps.INSTANCE);
+			RegistryOps<NbtElement> registryOps = this.registries.getOps(NbtOps.INSTANCE);
 			return this.entryCodec.parse(registryOps, nbtElement).getOrThrow(argument -> FAILED_TO_PARSE_EXCEPTION.createWithContext(stringReader, argument));
 		}
 	}

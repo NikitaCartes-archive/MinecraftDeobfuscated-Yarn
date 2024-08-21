@@ -102,10 +102,10 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	}
 
 	@Override
-	protected void addComponents(ComponentMap.Builder componentMapBuilder) {
-		super.addComponents(componentMapBuilder);
+	protected void addComponents(ComponentMap.Builder builder) {
+		super.addComponents(builder);
 		if (this.lootTable != null) {
-			componentMapBuilder.add(DataComponentTypes.CONTAINER_LOOT, new ContainerLootComponent(this.lootTable, this.lootTableSeed));
+			builder.add(DataComponentTypes.CONTAINER_LOOT, new ContainerLootComponent(this.lootTable, this.lootTableSeed));
 		}
 	}
 

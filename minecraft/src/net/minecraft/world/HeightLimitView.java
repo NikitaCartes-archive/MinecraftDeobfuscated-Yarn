@@ -9,34 +9,34 @@ import net.minecraft.util.math.ChunkSectionPos;
 public interface HeightLimitView {
 	/**
 	 * Returns the difference in the {@linkplain #getBottomY() minimum} and
-	 * {@linkplain #getTopY() maximum} height.
+	 * {@linkplain #getTopYInclusive() maximum} height.
 	 * 
 	 * <p>This is the number of blocks that can be modified in any vertical column
 	 * within the view, or the vertical size, in blocks, of the view.
 	 * 
 	 * @return the difference in the minimum and maximum height
 	 * @see #getBottomY()
-	 * @see #getTopY()
+	 * @see #getTopYInclusive()
 	 */
 	int getHeight();
 
 	/**
 	 * Returns the bottom Y level, or height, inclusive, of this view.
 	 * 
-	 * @see #getTopY()
+	 * @see #getTopYInclusive()
 	 * @see #getHeight()
 	 */
 	int getBottomY();
 
 	/**
-	 * Returns the top Y level, or height, exclusive, of this view.
+	 * Returns the top Y level, or height, inclusive, of this view.
 	 * 
-	 * @implNote This implementation sums up the bottom Y and the height.
+	 * @implNote This implementation sums up the bottom Y and the height, then subtracts 1.
 	 * @see #getBottomY()
 	 * @see #getHeight()
 	 */
-	default int getTopY() {
-		return this.getBottomY() + this.getHeight();
+	default int getTopYInclusive() {
+		return this.getBottomY() + this.getHeight() - 1;
 	}
 
 	/**
@@ -47,7 +47,7 @@ public interface HeightLimitView {
 	 * @see #getBottomSectionCoord()
 	 */
 	default int countVerticalSections() {
-		return this.getTopSectionCoord() - this.getBottomSectionCoord();
+		return this.getTopSectionCoord() - this.getBottomSectionCoord() + 1;
 	}
 
 	/**
@@ -67,15 +67,22 @@ public interface HeightLimitView {
 	/**
 	 * Returns the top section coordinate, exclusive, of this view.
 	 * 
-	 * @implNote This implementation passes the {@linkplain #getTopY() top Y}
+	 * @implNote This implementation passes the {@linkplain #getTopYInclusive() top Y}
 	 * through {@link net.minecraft.util.math.ChunkSectionPos#getSectionCoord(int)}.
 	 * 
 	 * @return the top section coordinate
 	 * @see #getBottomSectionCoord()
-	 * @see #getTopY()
+	 * @see #getTopYInclusive()
 	 */
 	default int getTopSectionCoord() {
-		return ChunkSectionPos.getSectionCoord(this.getTopY() - 1) + 1;
+		return ChunkSectionPos.getSectionCoord(this.getTopYInclusive());
+	}
+
+	/**
+	 * @see #isOutOfHeightLimit(int)
+	 */
+	default boolean isInHeightLimit(int y) {
+		return y >= this.getBottomY() && y <= this.getTopYInclusive();
 	}
 
 	/**
@@ -94,14 +101,14 @@ public interface HeightLimitView {
 	 * Checks if {@code y} is out of the height limit of this view.
 	 * 
 	 * <p>{@code y} is out of bounds if it's lower than the {@linkplain #getBottomY
-	 * bottom} or higher than or equal to the {@linkplain #getTopY() top}.
+	 * bottom} or higher than the {@linkplain #getTopYInclusive() top}.
 	 * 
 	 * @return {@code true} if {@code y} is out of bounds, {@code false} otherwise.
 	 * 
 	 * @param y the Y level to check
 	 */
 	default boolean isOutOfHeightLimit(int y) {
-		return y < this.getBottomY() || y >= this.getTopY();
+		return y < this.getBottomY() || y > this.getTopYInclusive();
 	}
 
 	/**

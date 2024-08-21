@@ -59,10 +59,10 @@ import net.minecraft.world.gen.structure.StructureKeys;
 
 public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGenerator {
 	@Override
-	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<AdvancementEntry> exporter) {
-		RegistryEntryLookup<EntityType<?>> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.ENTITY_TYPE);
-		RegistryEntryLookup<Item> registryEntryLookup2 = lookup.getWrapperOrThrow(RegistryKeys.ITEM);
-		RegistryEntryLookup<Block> registryEntryLookup3 = lookup.getWrapperOrThrow(RegistryKeys.BLOCK);
+	public void accept(RegistryWrapper.WrapperLookup registries, Consumer<AdvancementEntry> exporter) {
+		RegistryEntryLookup<EntityType<?>> registryEntryLookup = registries.getWrapperOrThrow(RegistryKeys.ENTITY_TYPE);
+		RegistryEntryLookup<Item> registryEntryLookup2 = registries.getWrapperOrThrow(RegistryKeys.ITEM);
+		RegistryEntryLookup<Block> registryEntryLookup3 = registries.getWrapperOrThrow(RegistryKeys.BLOCK);
 		AdvancementEntry advancementEntry = Advancement.Builder.create()
 			.display(
 				Blocks.RED_NETHER_BRICKS,
@@ -114,7 +114,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion(
 				"fortress",
 				TickCriterion.Conditions.createLocation(
-					LocationPredicate.Builder.createStructure(lookup.getWrapperOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.FORTRESS))
+					LocationPredicate.Builder.createStructure(registries.getWrapperOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.FORTRESS))
 				)
 			)
 			.build(exporter, "nether/find_fortress");
@@ -466,7 +466,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			)
 			.build(exporter, "nether/ride_strider_in_overworld_lava");
 		VanillaAdventureTabAdvancementGenerator.requireListedBiomesVisited(
-				Advancement.Builder.create(), lookup, MultiNoiseBiomeSourceParameterList.Preset.NETHER.biomeStream().toList()
+				Advancement.Builder.create(), registries, MultiNoiseBiomeSourceParameterList.Preset.NETHER.biomeStream().toList()
 			)
 			.parent(advancementEntry12)
 			.display(
@@ -496,7 +496,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion(
 				"bastion",
 				TickCriterion.Conditions.createLocation(
-					LocationPredicate.Builder.createStructure(lookup.getWrapperOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.BASTION_REMNANT))
+					LocationPredicate.Builder.createStructure(registries.getWrapperOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.BASTION_REMNANT))
 				)
 			)
 			.build(exporter, "nether/find_bastion");

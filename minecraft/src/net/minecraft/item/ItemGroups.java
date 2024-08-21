@@ -16,6 +16,7 @@ import net.minecraft.block.SuspiciousStewIngredient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FireworksComponent;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.component.type.OminousBottleAmplifierComponent;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -1871,7 +1872,7 @@ public class ItemGroups {
 	private static void addOminousBottles(ItemGroup.Entries entries, ItemGroup.StackVisibility visibility) {
 		for (int i = 0; i <= 4; i++) {
 			ItemStack itemStack = new ItemStack(Items.OMINOUS_BOTTLE);
-			itemStack.set(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER, i);
+			itemStack.set(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER, new OminousBottleAmplifierComponent(i));
 			entries.add(itemStack, visibility);
 		}
 	}
@@ -1886,12 +1887,12 @@ public class ItemGroups {
 
 	private static void addPaintings(
 		ItemGroup.Entries entries,
-		RegistryWrapper.WrapperLookup registryLookup,
+		RegistryWrapper.WrapperLookup registries,
 		RegistryWrapper.Impl<PaintingVariant> registryWrapper,
 		Predicate<RegistryEntry<PaintingVariant>> filter,
 		ItemGroup.StackVisibility stackVisibility
 	) {
-		RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
+		RegistryOps<NbtElement> registryOps = registries.getOps(NbtOps.INSTANCE);
 		registryWrapper.streamEntries()
 			.filter(filter)
 			.sorted(PAINTING_VARIANT_COMPARATOR)
@@ -1929,11 +1930,11 @@ public class ItemGroups {
 		stream().filter(group -> group.getType() != ItemGroup.Type.CATEGORY).forEach(group -> group.updateEntries(displayContext));
 	}
 
-	public static boolean updateDisplayContext(FeatureSet enabledFeatures, boolean operatorEnabled, RegistryWrapper.WrapperLookup lookup) {
-		if (displayContext != null && !displayContext.doesNotMatch(enabledFeatures, operatorEnabled, lookup)) {
+	public static boolean updateDisplayContext(FeatureSet enabledFeatures, boolean operatorEnabled, RegistryWrapper.WrapperLookup registries) {
+		if (displayContext != null && !displayContext.doesNotMatch(enabledFeatures, operatorEnabled, registries)) {
 			return false;
 		} else {
-			displayContext = new ItemGroup.DisplayContext(enabledFeatures, operatorEnabled, lookup);
+			displayContext = new ItemGroup.DisplayContext(enabledFeatures, operatorEnabled, registries);
 			updateEntries(displayContext);
 			return true;
 		}

@@ -74,7 +74,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 public abstract class BlockLootTableGenerator implements LootTableGenerator {
-	protected final RegistryWrapper.WrapperLookup registryLookup;
+	protected final RegistryWrapper.WrapperLookup registries;
 	protected final Set<Item> explosionImmuneItems;
 	protected final FeatureSet requiredFeatures;
 	protected final Map<RegistryKey<LootTable>, LootTable.Builder> lootTables;
@@ -82,7 +82,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	private static final float[] LEAVES_STICK_DROP_CHANCE = new float[]{0.02F, 0.022222223F, 0.025F, 0.033333335F, 0.1F};
 
 	protected LootCondition.Builder createSilkTouchCondition() {
-		RegistryWrapper.Impl<Enchantment> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		return MatchToolLootCondition.builder(
 			ItemPredicate.Builder.create()
 				.subPredicate(
@@ -97,7 +97,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootCondition.Builder createWithShearsCondition() {
-		return MatchToolLootCondition.builder(ItemPredicate.Builder.create().items(this.registryLookup.getWrapperOrThrow(RegistryKeys.ITEM), Items.SHEARS));
+		return MatchToolLootCondition.builder(ItemPredicate.Builder.create().items(this.registries.getWrapperOrThrow(RegistryKeys.ITEM), Items.SHEARS));
 	}
 
 	private LootCondition.Builder createWithShearsOrSilkTouchCondition() {
@@ -108,20 +108,20 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 		return this.createWithShearsOrSilkTouchCondition().invert();
 	}
 
-	protected BlockLootTableGenerator(Set<Item> explosionImmuneItems, FeatureSet requiredFeatures, RegistryWrapper.WrapperLookup registryLookup) {
-		this(explosionImmuneItems, requiredFeatures, new HashMap(), registryLookup);
+	protected BlockLootTableGenerator(Set<Item> explosionImmuneItems, FeatureSet requiredFeatures, RegistryWrapper.WrapperLookup registries) {
+		this(explosionImmuneItems, requiredFeatures, new HashMap(), registries);
 	}
 
 	protected BlockLootTableGenerator(
 		Set<Item> explosionImmuneItems,
 		FeatureSet requiredFeatures,
 		Map<RegistryKey<LootTable>, LootTable.Builder> lootTables,
-		RegistryWrapper.WrapperLookup registryLookup
+		RegistryWrapper.WrapperLookup registries
 	) {
 		this.explosionImmuneItems = explosionImmuneItems;
 		this.requiredFeatures = requiredFeatures;
 		this.lootTables = lootTables;
-		this.registryLookup = registryLookup;
+		this.registries = registries;
 	}
 
 	protected <T extends LootFunctionConsumingBuilder<T>> T applyExplosionDecay(ItemConvertible drop, LootFunctionConsumingBuilder<T> builder) {
@@ -262,7 +262,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder copperOreDrops(Block drop) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.dropsWithSilkTouch(
 			drop,
 			(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
@@ -275,7 +275,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder lapisOreDrops(Block drop) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.dropsWithSilkTouch(
 			drop,
 			(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
@@ -288,7 +288,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder redstoneOreDrops(Block drop) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.dropsWithSilkTouch(
 			drop,
 			(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
@@ -361,7 +361,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder oreDrops(Block withSilkTouch, Item withoutSilkTouch) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.dropsWithSilkTouch(
 			withSilkTouch,
 			(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
@@ -383,7 +383,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder shortPlantDrops(Block withShears) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.dropsWithShears(
 			withShears,
 			(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
@@ -455,7 +455,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder leavesDrops(Block leaves, Block sapling, float... saplingChance) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.dropsWithSilkTouchOrShears(
 				leaves,
 				((LeafEntry.Builder)this.addSurvivesExplosionCondition(leaves, ItemEntry.builder(sapling)))
@@ -475,7 +475,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder oakLeavesDrops(Block leaves, Block sapling, float... saplingChance) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.leavesDrops(leaves, sapling, saplingChance)
 			.pool(
 				LootPool.builder()
@@ -489,7 +489,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder mangroveLeavesDrops(Block leaves) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.dropsWithSilkTouchOrShears(
 			leaves,
 			((LeafEntry.Builder)this.applyExplosionDecay(
@@ -500,7 +500,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder cropDrops(Block crop, Item product, Item seeds, LootCondition.Builder condition) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.applyExplosionDecay(
 			crop,
 			LootTable.builder()
@@ -523,7 +523,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder tallPlantDrops(Block tallPlant, Block shortPlant) {
-		RegistryWrapper.Impl<Block> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.BLOCK);
+		RegistryWrapper.Impl<Block> impl = this.registries.getWrapperOrThrow(RegistryKeys.BLOCK);
 		LootPoolEntry.Builder<?> builder = ItemEntry.builder(shortPlant)
 			.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F)))
 			.conditionally(this.createWithShearsCondition())
@@ -642,7 +642,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected void addVinePlantDrop(Block vine, Block vinePlant) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
 		LootTable.Builder builder = this.dropsWithSilkTouchOrShears(
 			vine, ItemEntry.builder(vine).conditionally(TableBonusLootCondition.builder(impl.getOrThrow(Enchantments.FORTUNE), 0.33F, 0.55F, 0.77F, 1.0F))
 		);

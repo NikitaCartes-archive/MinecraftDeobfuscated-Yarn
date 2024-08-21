@@ -20,7 +20,7 @@ public class HorseScreenHandler extends ScreenHandler {
 	public HorseScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, AbstractHorseEntity entity, int slotColumnCount) {
 		super(null, syncId);
 		this.inventory = inventory;
-		this.horseArmorInventory = entity.getInventory();
+		this.horseArmorInventory = entity.getArmorInventory();
 		this.entity = entity;
 		inventory.onOpen(playerInventory.player);
 		this.addSlot(new Slot(inventory, 0, 8, 18) {

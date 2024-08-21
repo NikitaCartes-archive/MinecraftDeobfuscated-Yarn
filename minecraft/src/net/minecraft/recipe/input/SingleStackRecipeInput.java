@@ -13,7 +13,7 @@ public record SingleStackRecipeInput(ItemStack item) implements RecipeInput {
 	}
 
 	@Override
-	public int getSize() {
+	public int size() {
 		return 1;
 	}
 }

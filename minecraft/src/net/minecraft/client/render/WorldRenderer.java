@@ -2,7 +2,6 @@ package net.minecraft.client.render;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
@@ -14,7 +13,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -26,8 +24,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_9916;
-import net.minecraft.class_9974;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
@@ -94,6 +90,8 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final Identifier field_53900 = Identifier.ofVanilla("transparency");
+	private static final Identifier field_53901 = Identifier.ofVanilla("entity_outline");
 	public static final int field_32759 = 16;
 	public static final int field_34812 = 8;
 	private static final int field_32766 = 15;
@@ -116,11 +114,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	private final Int2ObjectMap<BlockBreakingInfo> blockBreakingInfos = new Int2ObjectOpenHashMap<>();
 	private final Long2ObjectMap<SortedSet<BlockBreakingInfo>> blockBreakingProgressions = new Long2ObjectOpenHashMap<>();
 	@Nullable
-	private PostEffectProcessor postEffectProcessor;
-	@Nullable
 	private Framebuffer entityOutlineFramebuffer;
-	@Nullable
-	private PostEffectProcessor transparencyPostProcessor;
 	private final DefaultFramebufferSet framebufferSet = new DefaultFramebufferSet();
 	private int cameraChunkX = Integer.MIN_VALUE;
 	private int cameraChunkY = Integer.MIN_VALUE;
@@ -159,86 +153,50 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	}
 
 	public void close() {
-		if (this.postEffectProcessor != null) {
-			this.postEffectProcessor.close();
-		}
-
 		if (this.entityOutlineFramebuffer != null) {
 			this.entityOutlineFramebuffer.delete();
 		}
 
-		if (this.transparencyPostProcessor != null) {
-			this.transparencyPostProcessor.close();
-		}
-
+		this.skyRendering.close();
 		this.cloudRenderer.close();
 	}
 
 	@Override
 	public void reload(ResourceManager manager) {
 		this.loadEntityOutlinePostProcessor();
-		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
-			this.loadTransparencyPostProcessor();
-		}
 	}
 
 	public void loadEntityOutlinePostProcessor() {
-		if (this.postEffectProcessor != null) {
-			this.postEffectProcessor.close();
-		}
-
 		if (this.entityOutlineFramebuffer != null) {
 			this.entityOutlineFramebuffer.delete();
 		}
 
-		Identifier identifier = Identifier.ofVanilla("shaders/post/entity_outline.json");
-
-		try {
-			this.postEffectProcessor = PostEffectProcessor.parseEffect(
-				this.client.getResourceManager(), this.client.getTextureManager(), identifier, Set.of(DefaultFramebufferSet.MAIN, DefaultFramebufferSet.ENTITY_OUTLINE)
-			);
-			this.entityOutlineFramebuffer = new SimpleFramebuffer(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), true);
-			this.entityOutlineFramebuffer.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
-		} catch (IOException var3) {
-			LOGGER.warn("Failed to load shader: {}", identifier, var3);
-			this.postEffectProcessor = null;
-			this.entityOutlineFramebuffer = null;
-		} catch (JsonSyntaxException var4) {
-			LOGGER.warn("Failed to parse shader: {}", identifier, var4);
-			this.postEffectProcessor = null;
-			this.entityOutlineFramebuffer = null;
-		}
+		this.entityOutlineFramebuffer = new SimpleFramebuffer(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), true);
+		this.entityOutlineFramebuffer.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
 	}
 
-	private void loadTransparencyPostProcessor() {
-		this.resetTransparencyPostProcessor();
-		Identifier identifier = Identifier.ofVanilla("shaders/post/transparency.json");
-
-		try {
-			this.transparencyPostProcessor = PostEffectProcessor.parseEffect(
-				this.client.getResourceManager(), this.client.getTextureManager(), identifier, DefaultFramebufferSet.STAGES
-			);
-		} catch (Exception var7) {
-			String string = var7 instanceof JsonSyntaxException ? "parse" : "load";
-			String string2 = "Failed to " + string + " shader: " + identifier;
-			WorldRenderer.ProgramInitException programInitException = new WorldRenderer.ProgramInitException(string2, var7);
-			if (this.client.getResourcePackManager().getEnabledIds().size() > 1) {
-				Text text = (Text)this.client.getResourceManager().streamResourcePacks().findFirst().map(resourcePack -> Text.literal(resourcePack.getId())).orElse(null);
-				this.client.options.getGraphicsMode().setValue(GraphicsMode.FANCY);
-				this.client.onResourceReloadFailure(programInitException, text, null);
-			} else {
-				this.client.options.getGraphicsMode().setValue(GraphicsMode.FANCY);
-				this.client.options.write();
-				LOGGER.error(LogUtils.FATAL_MARKER, string2, (Throwable)programInitException);
-				this.client.printCrashReport(new CrashReport(string2, programInitException));
+	@Nullable
+	private PostEffectProcessor method_62907() {
+		if (!MinecraftClient.isFabulousGraphicsOrBetter()) {
+			return null;
+		} else {
+			PostEffectProcessor postEffectProcessor = this.client.method_62887().loadPostEffect(field_53900, DefaultFramebufferSet.STAGES);
+			if (postEffectProcessor == null) {
+				String string = "Failed to load shader: " + field_53900;
+				WorldRenderer.ProgramInitException programInitException = new WorldRenderer.ProgramInitException(string);
+				if (this.client.getResourcePackManager().getEnabledIds().size() > 1) {
+					Text text = (Text)this.client.getResourceManager().streamResourcePacks().findFirst().map(resourcePack -> Text.literal(resourcePack.getId())).orElse(null);
+					this.client.options.getGraphicsMode().setValue(GraphicsMode.FANCY);
+					this.client.onResourceReloadFailure(programInitException, text, null);
+				} else {
+					this.client.options.getGraphicsMode().setValue(GraphicsMode.FANCY);
+					this.client.options.write();
+					LOGGER.error(LogUtils.FATAL_MARKER, string, (Throwable)programInitException);
+					this.client.printCrashReport(new CrashReport(string, programInitException));
+				}
 			}
-		}
-	}
 
-	private void resetTransparencyPostProcessor() {
-		if (this.transparencyPostProcessor != null) {
-			this.transparencyPostProcessor.close();
-			this.transparencyPostProcessor = null;
+			return postEffectProcessor;
 		}
 	}
 
@@ -248,17 +206,14 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			RenderSystem.blendFuncSeparate(
 				GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE
 			);
-			this.entityOutlineFramebuffer.draw(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), false);
+			this.entityOutlineFramebuffer.drawInternal(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
 			RenderSystem.disableBlend();
 			RenderSystem.defaultBlendFunc();
 		}
 	}
 
 	protected boolean canDrawEntityOutlines() {
-		return !this.client.gameRenderer.isRenderingPanorama()
-			&& this.entityOutlineFramebuffer != null
-			&& this.postEffectProcessor != null
-			&& this.client.player != null;
+		return !this.client.gameRenderer.isRenderingPanorama() && this.entityOutlineFramebuffer != null && this.client.player != null;
 	}
 
 	public void setWorld(@Nullable ClientWorld world) {
@@ -286,17 +241,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 	}
 
-	public void reloadTransparencyPostProcessor() {
-		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
-			this.loadTransparencyPostProcessor();
-		} else {
-			this.resetTransparencyPostProcessor();
-		}
-	}
-
 	public void reload() {
 		if (this.world != null) {
-			this.reloadTransparencyPostProcessor();
 			this.world.reloadColor();
 			if (this.chunkBuilder == null) {
 				this.chunkBuilder = new ChunkBuilder(
@@ -323,7 +269,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			this.builtChunks.clear();
 			Entity entity = this.client.getCameraEntity();
 			if (entity != null) {
-				this.chunks.updateCameraPosition(entity.getX(), entity.getZ());
+				this.chunks.updateCameraPosition(ChunkSectionPos.from(entity));
 			}
 		}
 	}
@@ -365,7 +311,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		int i = 0;
 
 		for (ChunkBuilder.BuiltChunk builtChunk : this.builtChunks) {
-			if (!builtChunk.getData().isEmpty()) {
+			if (builtChunk.getData().method_62972()) {
 				i++;
 			}
 		}
@@ -395,7 +341,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			this.cameraChunkX = i;
 			this.cameraChunkY = j;
 			this.cameraChunkZ = k;
-			this.chunks.updateCameraPosition(d, f);
+			this.chunks.updateCameraPosition(ChunkSectionPos.from(this.client.player));
 		}
 
 		this.chunkBuilder.setCameraPosition(vec3d);
@@ -418,7 +364,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			}
 
 			profiler.push("section_occlusion_graph");
-			this.chunkRenderingDataPreparer.method_52834(bl, camera, frustum, this.builtChunks);
+			this.chunkRenderingDataPreparer.method_52834(bl, camera, frustum, this.builtChunks, this.world.getChunkManager().method_62890());
 			profiler.pop();
 			double m = Math.floor((double)(camera.getPitch() / 2.0F));
 			double n = Math.floor((double)(camera.getYaw() / 2.0F));
@@ -511,21 +457,22 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		int i = this.client.getFramebuffer().textureWidth;
 		int j = this.client.getFramebuffer().textureHeight;
 		SimpleFramebufferFactory simpleFramebufferFactory = new SimpleFramebufferFactory(i, j, true);
-		if (this.transparencyPostProcessor != null) {
-			this.framebufferSet.translucentFramebuffer = frameGraphBuilder.method_61912("translucent", simpleFramebufferFactory);
-			this.framebufferSet.itemEntityFramebuffer = frameGraphBuilder.method_61912("item_entity", simpleFramebufferFactory);
-			this.framebufferSet.particlesFramebuffer = frameGraphBuilder.method_61912("particles", simpleFramebufferFactory);
-			this.framebufferSet.weatherFramebuffer = frameGraphBuilder.method_61912("weather", simpleFramebufferFactory);
-			this.framebufferSet.cloudsFramebuffer = frameGraphBuilder.method_61912("clouds", simpleFramebufferFactory);
+		PostEffectProcessor postEffectProcessor = this.method_62907();
+		if (postEffectProcessor != null) {
+			this.framebufferSet.translucentFramebuffer = frameGraphBuilder.createResourceHandle("translucent", simpleFramebufferFactory);
+			this.framebufferSet.itemEntityFramebuffer = frameGraphBuilder.createResourceHandle("item_entity", simpleFramebufferFactory);
+			this.framebufferSet.particlesFramebuffer = frameGraphBuilder.createResourceHandle("particles", simpleFramebufferFactory);
+			this.framebufferSet.weatherFramebuffer = frameGraphBuilder.createResourceHandle("weather", simpleFramebufferFactory);
+			this.framebufferSet.cloudsFramebuffer = frameGraphBuilder.createResourceHandle("clouds", simpleFramebufferFactory);
 		}
 
 		if (this.entityOutlineFramebuffer != null) {
 			this.framebufferSet.entityOutlineFramebuffer = frameGraphBuilder.createObjectNode("entity_outline", this.entityOutlineFramebuffer);
 		}
 
-		class_9916 lv = frameGraphBuilder.createStageNode("clear");
-		this.framebufferSet.mainFramebuffer = lv.method_61933(this.framebufferSet.mainFramebuffer);
-		lv.method_61929(() -> {
+		RenderPass renderPass = frameGraphBuilder.createPass("clear");
+		this.framebufferSet.mainFramebuffer = renderPass.transfer(this.framebufferSet.mainFramebuffer);
+		renderPass.setRenderer(() -> {
 			RenderSystem.clearColor(vector4f.x, vector4f.y, vector4f.z, 0.0F);
 			RenderSystem.clear(16640);
 		});
@@ -533,9 +480,10 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			this.renderSky(frameGraphBuilder, camera, f, fog2);
 		}
 
-		this.renderMain(frameGraphBuilder, camera, positionMatrix, projectionMatrix, fog, bl, bl4, tickCounter, profiler);
-		if (bl4 && this.postEffectProcessor != null) {
-			this.postEffectProcessor.method_62234(frameGraphBuilder, tickCounter, i, j, this.framebufferSet);
+		this.renderMain(frameGraphBuilder, frustum, camera, positionMatrix, projectionMatrix, fog, bl, bl4, tickCounter, profiler);
+		PostEffectProcessor postEffectProcessor2 = this.client.method_62887().loadPostEffect(field_53901, DefaultFramebufferSet.field_53903);
+		if (bl4 && postEffectProcessor2 != null) {
+			postEffectProcessor2.render(frameGraphBuilder, i, j, this.framebufferSet);
 		}
 
 		this.renderParticles(frameGraphBuilder, camera, lightmapTextureManager, f, fog);
@@ -550,20 +498,20 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 
 		this.renderWeather(frameGraphBuilder, lightmapTextureManager, camera.getPos(), f, fog);
-		if (this.transparencyPostProcessor != null) {
-			this.transparencyPostProcessor.method_62234(frameGraphBuilder, this.client.getRenderTickCounter(), i, j, this.framebufferSet);
+		if (postEffectProcessor != null) {
+			postEffectProcessor.render(frameGraphBuilder, i, j, this.framebufferSet);
 		}
 
 		this.renderLateDebug(frameGraphBuilder, vec3d, fog);
 		profiler.swap("framegraph");
-		frameGraphBuilder.method_61910(objectAllocator, new FrameGraphBuilder.class_9912() {
+		frameGraphBuilder.run(objectAllocator, new FrameGraphBuilder.Profiler() {
 			@Override
-			public void push(String string) {
-				profiler.push(string);
+			public void push(String location) {
+				profiler.push(location);
 			}
 
 			@Override
-			public void pop(String string) {
+			public void pop(String location) {
 				profiler.pop();
 			}
 		});
@@ -578,31 +526,32 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 	private void renderMain(
 		FrameGraphBuilder frameGraphBuilder,
+		Frustum frustum,
 		Camera camera,
-		Matrix4f positionMatrix,
-		Matrix4f projectionMatrix,
+		Matrix4f matrix4f,
+		Matrix4f matrix4f2,
 		Fog fog,
 		boolean bl,
 		boolean bl2,
-		RenderTickCounter tickCounter,
+		RenderTickCounter renderTickCounter,
 		Profiler profiler
 	) {
-		class_9916 lv = frameGraphBuilder.createStageNode("main");
-		this.framebufferSet.mainFramebuffer = lv.method_61933(this.framebufferSet.mainFramebuffer);
+		RenderPass renderPass = frameGraphBuilder.createPass("main");
+		this.framebufferSet.mainFramebuffer = renderPass.transfer(this.framebufferSet.mainFramebuffer);
 		if (this.framebufferSet.translucentFramebuffer != null) {
-			this.framebufferSet.translucentFramebuffer = lv.method_61933(this.framebufferSet.translucentFramebuffer);
+			this.framebufferSet.translucentFramebuffer = renderPass.transfer(this.framebufferSet.translucentFramebuffer);
 		}
 
 		if (this.framebufferSet.itemEntityFramebuffer != null) {
-			this.framebufferSet.itemEntityFramebuffer = lv.method_61933(this.framebufferSet.itemEntityFramebuffer);
+			this.framebufferSet.itemEntityFramebuffer = renderPass.transfer(this.framebufferSet.itemEntityFramebuffer);
 		}
 
 		if (this.framebufferSet.weatherFramebuffer != null) {
-			this.framebufferSet.weatherFramebuffer = lv.method_61933(this.framebufferSet.weatherFramebuffer);
+			this.framebufferSet.weatherFramebuffer = renderPass.transfer(this.framebufferSet.weatherFramebuffer);
 		}
 
 		if (bl2 && this.framebufferSet.entityOutlineFramebuffer != null) {
-			this.framebufferSet.entityOutlineFramebuffer = lv.method_61933(this.framebufferSet.entityOutlineFramebuffer);
+			this.framebufferSet.entityOutlineFramebuffer = renderPass.transfer(this.framebufferSet.entityOutlineFramebuffer);
 		}
 
 		Handle<Framebuffer> handle = this.framebufferSet.mainFramebuffer;
@@ -610,17 +559,17 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		Handle<Framebuffer> handle3 = this.framebufferSet.itemEntityFramebuffer;
 		Handle<Framebuffer> handle4 = this.framebufferSet.weatherFramebuffer;
 		Handle<Framebuffer> handle5 = this.framebufferSet.entityOutlineFramebuffer;
-		lv.method_61929(() -> {
+		renderPass.setRenderer(() -> {
 			RenderSystem.setShaderFog(fog);
-			float f = tickCounter.getTickDelta(false);
+			float f = renderTickCounter.getTickDelta(false);
 			Vec3d vec3d = camera.getPos();
 			double d = vec3d.getX();
 			double e = vec3d.getY();
 			double g = vec3d.getZ();
 			profiler.push("terrain");
-			this.renderLayer(RenderLayer.getSolid(), d, e, g, positionMatrix, projectionMatrix);
-			this.renderLayer(RenderLayer.getCutoutMipped(), d, e, g, positionMatrix, projectionMatrix);
-			this.renderLayer(RenderLayer.getCutout(), d, e, g, positionMatrix, projectionMatrix);
+			this.renderLayer(RenderLayer.getSolid(), d, e, g, matrix4f, matrix4f2);
+			this.renderLayer(RenderLayer.getCutoutMipped(), d, e, g, matrix4f, matrix4f2);
+			this.renderLayer(RenderLayer.getCutout(), d, e, g, matrix4f, matrix4f2);
 			if (this.world.getDimensionEffects().isDarkened()) {
 				DiffuseLighting.enableForLevel();
 			} else {
@@ -649,7 +598,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			VertexConsumerProvider.Immediate immediate = this.bufferBuilders.getEntityVertexConsumers();
 			VertexConsumerProvider.Immediate immediate2 = this.bufferBuilders.getEffectVertexConsumers();
 			profiler.swap("entities");
-			this.renderEntities(matrixStack, immediate, camera, tickCounter, this.renderedEntities);
+			this.renderEntities(matrixStack, immediate, camera, renderTickCounter, this.renderedEntities);
 			immediate.drawCurrentLayer();
 			this.checkEmpty(matrixStack);
 			profiler.swap("blockentities");
@@ -672,22 +621,21 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			}
 
 			profiler.swap("debug");
-			this.client.debugRenderer.render(matrixStack, immediate, d, e, g);
+			this.client.debugRenderer.render(matrixStack, frustum, immediate, d, e, g);
 			immediate.drawCurrentLayer();
 			this.checkEmpty(matrixStack);
+			immediate.draw(TexturedRenderLayers.getItemEntityTranslucentCull());
 			immediate.draw(TexturedRenderLayers.getBannerPatterns());
 			immediate.draw(TexturedRenderLayers.getShieldPatterns());
 			immediate.draw(RenderLayer.getArmorEntityGlint());
 			immediate.draw(RenderLayer.getGlint());
 			immediate.draw(RenderLayer.getGlintTranslucent());
 			immediate.draw(RenderLayer.getEntityGlint());
-			immediate.draw(RenderLayer.getDirectEntityGlint());
 			profiler.swap("destroyProgress");
 			this.renderBlockDamage(matrixStack, camera, immediate2);
 			immediate2.draw();
 			this.checkEmpty(matrixStack);
 			immediate.draw(RenderLayer.getWaterMask());
-			immediate.draw(TexturedRenderLayers.getEntityTranslucentCull());
 			immediate.draw();
 			if (handle2 != null) {
 				handle2.get().setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
@@ -696,9 +644,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			}
 
 			profiler.swap("translucent");
-			this.renderLayer(RenderLayer.getTranslucent(), d, e, g, positionMatrix, projectionMatrix);
+			this.renderLayer(RenderLayer.getTranslucent(), d, e, g, matrix4f, matrix4f2);
 			profiler.swap("string");
-			this.renderLayer(RenderLayer.getTripwire(), d, e, g, positionMatrix, projectionMatrix);
+			this.renderLayer(RenderLayer.getTripwire(), d, e, g, matrix4f, matrix4f2);
 			if (bl) {
 				this.renderTargetBlockOutline(camera, immediate, matrixStack, true);
 			}
@@ -709,17 +657,17 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	}
 
 	private void renderParticles(FrameGraphBuilder frameGraphBuilder, Camera camera, LightmapTextureManager lightmapTextureManager, float f, Fog fog) {
-		class_9916 lv = frameGraphBuilder.createStageNode("particles");
+		RenderPass renderPass = frameGraphBuilder.createPass("particles");
 		if (this.framebufferSet.particlesFramebuffer != null) {
-			this.framebufferSet.particlesFramebuffer = lv.method_61933(this.framebufferSet.particlesFramebuffer);
-			lv.method_61928(this.framebufferSet.mainFramebuffer);
+			this.framebufferSet.particlesFramebuffer = renderPass.transfer(this.framebufferSet.particlesFramebuffer);
+			renderPass.dependsOn(this.framebufferSet.mainFramebuffer);
 		} else {
-			this.framebufferSet.mainFramebuffer = lv.method_61933(this.framebufferSet.mainFramebuffer);
+			this.framebufferSet.mainFramebuffer = renderPass.transfer(this.framebufferSet.mainFramebuffer);
 		}
 
 		Handle<Framebuffer> handle = this.framebufferSet.mainFramebuffer;
 		Handle<Framebuffer> handle2 = this.framebufferSet.particlesFramebuffer;
-		lv.method_61929(() -> {
+		renderPass.setRenderer(() -> {
 			RenderSystem.setShaderFog(fog);
 			if (handle2 != null) {
 				handle2.get().setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
@@ -743,15 +691,15 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		int color,
 		float cloudHeight
 	) {
-		class_9916 lv = frameGraphBuilder.createStageNode("clouds");
+		RenderPass renderPass = frameGraphBuilder.createPass("clouds");
 		if (this.framebufferSet.cloudsFramebuffer != null) {
-			this.framebufferSet.cloudsFramebuffer = lv.method_61933(this.framebufferSet.cloudsFramebuffer);
+			this.framebufferSet.cloudsFramebuffer = renderPass.transfer(this.framebufferSet.cloudsFramebuffer);
 		} else {
-			this.framebufferSet.mainFramebuffer = lv.method_61933(this.framebufferSet.mainFramebuffer);
+			this.framebufferSet.mainFramebuffer = renderPass.transfer(this.framebufferSet.mainFramebuffer);
 		}
 
 		Handle<Framebuffer> handle = this.framebufferSet.cloudsFramebuffer;
-		lv.method_61929(() -> {
+		renderPass.setRenderer(() -> {
 			if (handle != null) {
 				handle.get().setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
 				handle.get().clear();
@@ -764,14 +712,14 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	private void renderWeather(FrameGraphBuilder frameGraphBuilder, LightmapTextureManager lightmapTextureManager, Vec3d vec3d, float f, Fog fog) {
 		int i = this.client.options.getClampedViewDistance() * 16;
 		float g = this.client.gameRenderer.getFarPlaneDistance();
-		class_9916 lv = frameGraphBuilder.createStageNode("weather");
+		RenderPass renderPass = frameGraphBuilder.createPass("weather");
 		if (this.framebufferSet.weatherFramebuffer != null) {
-			this.framebufferSet.weatherFramebuffer = lv.method_61933(this.framebufferSet.weatherFramebuffer);
+			this.framebufferSet.weatherFramebuffer = renderPass.transfer(this.framebufferSet.weatherFramebuffer);
 		} else {
-			this.framebufferSet.mainFramebuffer = lv.method_61933(this.framebufferSet.mainFramebuffer);
+			this.framebufferSet.mainFramebuffer = renderPass.transfer(this.framebufferSet.mainFramebuffer);
 		}
 
-		lv.method_61929(() -> {
+		renderPass.setRenderer(() -> {
 			RenderSystem.setShaderFog(fog);
 			RenderPhase.WEATHER_TARGET.startDrawing();
 			this.weatherRendering.method_62316(this.client.world, lightmapTextureManager, this.ticks, f, vec3d);
@@ -781,19 +729,19 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	}
 
 	private void renderLateDebug(FrameGraphBuilder frameGraphBuilder, Vec3d vec3d, Fog fog) {
-		class_9916 lv = frameGraphBuilder.createStageNode("late_debug");
-		this.framebufferSet.mainFramebuffer = lv.method_61933(this.framebufferSet.mainFramebuffer);
+		RenderPass renderPass = frameGraphBuilder.createPass("late_debug");
+		this.framebufferSet.mainFramebuffer = renderPass.transfer(this.framebufferSet.mainFramebuffer);
 		if (this.framebufferSet.itemEntityFramebuffer != null) {
-			this.framebufferSet.itemEntityFramebuffer = lv.method_61933(this.framebufferSet.itemEntityFramebuffer);
+			this.framebufferSet.itemEntityFramebuffer = renderPass.transfer(this.framebufferSet.itemEntityFramebuffer);
 		}
 
 		Handle<Framebuffer> handle = this.framebufferSet.mainFramebuffer;
-		lv.method_61929(() -> {
+		renderPass.setRenderer(() -> {
 			RenderSystem.setShaderFog(fog);
 			handle.get().beginWrite(false);
 			MatrixStack matrixStack = new MatrixStack();
 			VertexConsumerProvider.Immediate immediate = this.bufferBuilders.getEntityVertexConsumers();
-			this.client.debugRenderer.method_62351(matrixStack, immediate, vec3d.x, vec3d.y, vec3d.z);
+			this.client.debugRenderer.renderLate(matrixStack, immediate, vec3d.x, vec3d.y, vec3d.z);
 			immediate.drawCurrentLayer();
 			this.checkEmpty(matrixStack);
 		});
@@ -1073,9 +1021,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			DimensionEffects dimensionEffects = this.world.getDimensionEffects();
 			DimensionEffects.SkyType skyType = dimensionEffects.getSkyType();
 			if (skyType != DimensionEffects.SkyType.NONE) {
-				class_9916 lv = frameGraphBuilder.createStageNode("sky");
-				this.framebufferSet.mainFramebuffer = lv.method_61933(this.framebufferSet.mainFramebuffer);
-				lv.method_61929(() -> {
+				RenderPass renderPass = frameGraphBuilder.createPass("sky");
+				this.framebufferSet.mainFramebuffer = renderPass.transfer(this.framebufferSet.mainFramebuffer);
+				renderPass.setRenderer(() -> {
 					RenderSystem.setShaderFog(fog);
 					RenderPhase.MAIN_TARGET.startDrawing();
 					MatrixStack matrixStack = new MatrixStack();
@@ -1126,8 +1074,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		List<ChunkBuilder.BuiltChunk> list = Lists.<ChunkBuilder.BuiltChunk>newArrayList();
 
 		for (ChunkBuilder.BuiltChunk builtChunk : this.builtChunks) {
-			ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(builtChunk.getOrigin());
-			if (builtChunk.needsRebuild() && lightingProvider.isLightingEnabled(chunkSectionPos)) {
+			long l = builtChunk.method_62975();
+			if (builtChunk.needsRebuild() && builtChunk.shouldBuild() && method_62910(lightingProvider, l)) {
 				boolean bl = false;
 				if (this.client.options.getChunkBuilderMode().getValue() == ChunkBuilderMode.NEARBY) {
 					BlockPos blockPos2 = builtChunk.getOrigin().add(8, 8, 8);
@@ -1160,10 +1108,25 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		this.method_62198(camera.getPos(), RenderLayer.getTranslucent());
 	}
 
+	private static boolean method_62910(LightingProvider lightingProvider, long l) {
+		int i = ChunkSectionPos.unpackZ(l);
+		int j = ChunkSectionPos.unpackX(l);
+
+		for (int k = i - 1; k <= i + 1; k++) {
+			for (int m = j - 1; m <= j + 1; m++) {
+				if (!lightingProvider.isLightingEnabled(ChunkSectionPos.withZeroY(m, k))) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
 	private void drawBlockOutline(
 		MatrixStack matrices, VertexConsumer vertexConsumer, Entity entity, double cameraX, double cameraY, double cameraZ, BlockPos pos, BlockState state
 	) {
-		class_9974.method_62296(
+		VertexRendering.drawOutline(
 			matrices,
 			vertexConsumer,
 			state.getOutlineShape(this.world, pos, ShapeContext.of(entity)),
@@ -1227,6 +1190,13 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 	private void scheduleChunkRender(int x, int y, int z, boolean important) {
 		this.chunks.scheduleRebuild(x, y, z, important);
+	}
+
+	public void method_62908(long l) {
+		ChunkBuilder.BuiltChunk builtChunk = this.chunks.method_62963(l);
+		if (builtChunk != null) {
+			this.chunkRenderingDataPreparer.method_52827(builtChunk);
+		}
 	}
 
 	public void addParticle(
@@ -1417,8 +1387,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 	@Environment(EnvType.CLIENT)
 	public static class ProgramInitException extends RuntimeException {
-		public ProgramInitException(String message, Throwable cause) {
-			super(message, cause);
+		public ProgramInitException(String message) {
+			super(message);
 		}
 	}
 }

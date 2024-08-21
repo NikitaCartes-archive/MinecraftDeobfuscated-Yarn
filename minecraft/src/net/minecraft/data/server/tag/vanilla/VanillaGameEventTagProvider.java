@@ -61,7 +61,7 @@ public class VanillaGameEventTagProvider extends TagProvider<GameEvent> {
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.getOrCreateTagBuilder(GameEventTags.VIBRATIONS).add(BASIC_GAME_EVENTS).add(Vibrations.RESONATIONS).add(GameEvent.FLAP.registryKey());
 		this.getOrCreateTagBuilder(GameEventTags.SHRIEKER_CAN_LISTEN).add(GameEvent.SCULK_SENSOR_TENDRILS_CLICKING.registryKey());
 		this.getOrCreateTagBuilder(GameEventTags.WARDEN_CAN_LISTEN)

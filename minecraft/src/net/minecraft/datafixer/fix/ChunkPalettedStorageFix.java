@@ -221,7 +221,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 									if ("minecraft:grass_block".equals(ChunkPalettedStorageFix.getName(dynamic))) {
 										String string = ChunkPalettedStorageFix.getName(this.getBlock(adjacentTo(j, ChunkPalettedStorageFix.Facing.UP)));
 										if ("minecraft:snow".equals(string) || "minecraft:snow_layer".equals(string)) {
-											this.setBlock(j, ChunkPalettedStorageFix.class_9855.field_52405);
+											this.setBlock(j, ChunkPalettedStorageFix.Mapping.SNOWY_GRASS_BLOCK_STATE);
 										}
 									}
 								}
@@ -233,7 +233,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 									if ("minecraft:podzol".equals(ChunkPalettedStorageFix.getName(dynamic))) {
 										String string = ChunkPalettedStorageFix.getName(this.getBlock(adjacentTo(jxxxxxxxxx, ChunkPalettedStorageFix.Facing.UP)));
 										if ("minecraft:snow".equals(string) || "minecraft:snow_layer".equals(string)) {
-											this.setBlock(jxxxxxxxxx, ChunkPalettedStorageFix.class_9855.field_52404);
+											this.setBlock(jxxxxxxxxx, ChunkPalettedStorageFix.Mapping.SNOWY_PODZOL_STATE);
 										}
 									}
 								}
@@ -246,8 +246,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 										String string = Boolean.toString(dynamic.get("powered").asBoolean(false)) + (byte)Math.min(Math.max(dynamic.get("note").asInt(0), 0), 24);
 										this.setBlock(
 											jxxxxx,
-											(Dynamic<?>)ChunkPalettedStorageFix.class_9855.field_52416
-												.getOrDefault(string, (Dynamic)ChunkPalettedStorageFix.class_9855.field_52416.get("false0"))
+											(Dynamic<?>)ChunkPalettedStorageFix.Mapping.NOTE_BLOCK_IDS_TO_STATES
+												.getOrDefault(string, (Dynamic)ChunkPalettedStorageFix.Mapping.NOTE_BLOCK_IDS_TO_STATES.get("false0"))
 										);
 									}
 								}
@@ -264,8 +264,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 												+ ChunkPalettedStorageFix.getProperty(dynamic2, "occupied")
 												+ ChunkPalettedStorageFix.getProperty(dynamic2, "part")
 												+ k;
-											if (ChunkPalettedStorageFix.class_9855.field_52418.containsKey(string2)) {
-												this.setBlock(jxxxx, (Dynamic<?>)ChunkPalettedStorageFix.class_9855.field_52418.get(string2));
+											if (ChunkPalettedStorageFix.Mapping.BED_IDS_TO_STATES.containsKey(string2)) {
+												this.setBlock(jxxxx, (Dynamic<?>)ChunkPalettedStorageFix.Mapping.BED_IDS_TO_STATES.get(string2));
 											}
 										}
 									}
@@ -292,8 +292,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 												String string6 = ChunkPalettedStorageFix.getProperty(dynamic2, "open");
 												String string7 = bl ? "left" : ChunkPalettedStorageFix.getProperty(dynamic3, "hinge");
 												String string8 = bl ? "false" : ChunkPalettedStorageFix.getProperty(dynamic3, "powered");
-												this.setBlock(jxxx, (Dynamic<?>)ChunkPalettedStorageFix.class_9855.field_52415.get(string4 + string5 + "lower" + string7 + string6 + string8));
-												this.setBlock(k, (Dynamic<?>)ChunkPalettedStorageFix.class_9855.field_52415.get(string4 + string5 + "upper" + string7 + string6 + string8));
+												this.setBlock(jxxx, (Dynamic<?>)ChunkPalettedStorageFix.Mapping.DOOR_IDS_TO_STATES.get(string4 + string5 + "lower" + string7 + string6 + string8));
+												this.setBlock(k, (Dynamic<?>)ChunkPalettedStorageFix.Mapping.DOOR_IDS_TO_STATES.get(string4 + string5 + "upper" + string7 + string6 + string8));
 											}
 										}
 									}
@@ -306,7 +306,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 									if ("minecraft:carved_pumpkin".equals(ChunkPalettedStorageFix.getName(dynamic))) {
 										String string = ChunkPalettedStorageFix.getName(this.getBlock(adjacentTo(jxxxxxxxx, ChunkPalettedStorageFix.Facing.DOWN)));
 										if ("minecraft:grass_block".equals(string) || "minecraft:dirt".equals(string)) {
-											this.setBlock(jxxxxxxxx, ChunkPalettedStorageFix.class_9855.field_52403);
+											this.setBlock(jxxxxxxxx, ChunkPalettedStorageFix.Mapping.PUMPKIN_STATE);
 										}
 									}
 								}
@@ -318,7 +318,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 									if ("minecraft:mycelium".equals(ChunkPalettedStorageFix.getName(dynamic))) {
 										String string = ChunkPalettedStorageFix.getName(this.getBlock(adjacentTo(jxxxxxxx, ChunkPalettedStorageFix.Facing.UP)));
 										if ("minecraft:snow".equals(string) || "minecraft:snow_layer".equals(string)) {
-											this.setBlock(jxxxxxxx, ChunkPalettedStorageFix.class_9855.field_52406);
+											this.setBlock(jxxxxxxx, ChunkPalettedStorageFix.Mapping.SNOWY_MYCELIUM_STATE);
 										}
 									}
 								}
@@ -331,8 +331,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 										String string = dynamic.get("Item").asString("") + dynamic.get("Data").asInt(0);
 										this.setBlock(
 											jxx,
-											(Dynamic<?>)ChunkPalettedStorageFix.class_9855.field_52413
-												.getOrDefault(string, (Dynamic)ChunkPalettedStorageFix.class_9855.field_52413.get("minecraft:air0"))
+											(Dynamic<?>)ChunkPalettedStorageFix.Mapping.PLANT_TO_FLOWER_POT_STATES
+												.getOrDefault(string, (Dynamic)ChunkPalettedStorageFix.Mapping.PLANT_TO_FLOWER_POT_STATES.get("minecraft:air0"))
 										);
 									}
 								}
@@ -356,8 +356,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 										dynamic.remove("Rot");
 										this.setBlock(
 											jxxxxxx,
-											(Dynamic<?>)ChunkPalettedStorageFix.class_9855.field_52414
-												.getOrDefault(string2, (Dynamic)ChunkPalettedStorageFix.class_9855.field_52414.get("0north"))
+											(Dynamic<?>)ChunkPalettedStorageFix.Mapping.SKULL_IDS_TO_STATES
+												.getOrDefault(string2, (Dynamic)ChunkPalettedStorageFix.Mapping.SKULL_IDS_TO_STATES.get("0north"))
 										);
 									}
 								}
@@ -371,22 +371,22 @@ public class ChunkPalettedStorageFix extends DataFix {
 										String string3 = ChunkPalettedStorageFix.getName(dynamic2);
 										switch (string3) {
 											case "minecraft:sunflower":
-												this.setBlock(jx, ChunkPalettedStorageFix.class_9855.field_52407);
+												this.setBlock(jx, ChunkPalettedStorageFix.Mapping.UPPER_HALF_SUNFLOWER_STATE);
 												break;
 											case "minecraft:lilac":
-												this.setBlock(jx, ChunkPalettedStorageFix.class_9855.field_52408);
+												this.setBlock(jx, ChunkPalettedStorageFix.Mapping.UPPER_HALF_LILAC_STATE);
 												break;
 											case "minecraft:tall_grass":
-												this.setBlock(jx, ChunkPalettedStorageFix.class_9855.field_52409);
+												this.setBlock(jx, ChunkPalettedStorageFix.Mapping.UPPER_HALF_TALL_GRASS_STATE);
 												break;
 											case "minecraft:large_fern":
-												this.setBlock(jx, ChunkPalettedStorageFix.class_9855.field_52410);
+												this.setBlock(jx, ChunkPalettedStorageFix.Mapping.UPPER_HALF_LARGE_FERN_STATE);
 												break;
 											case "minecraft:rose_bush":
-												this.setBlock(jx, ChunkPalettedStorageFix.class_9855.field_52411);
+												this.setBlock(jx, ChunkPalettedStorageFix.Mapping.UPPER_HALF_ROSE_BUSH_STATE);
 												break;
 											case "minecraft:peony":
-												this.setBlock(jx, ChunkPalettedStorageFix.class_9855.field_52412);
+												this.setBlock(jx, ChunkPalettedStorageFix.Mapping.UPPER_HALF_PEONY_STATE);
 										}
 									}
 								}
@@ -401,8 +401,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 										int k = dynamic.get("Base").asInt(0);
 										if (k != 15 && k >= 0 && k < 16) {
 											String string2 = ChunkPalettedStorageFix.getProperty(dynamic2, entry.getIntKey() == 176 ? "rotation" : "facing") + "_" + k;
-											if (ChunkPalettedStorageFix.class_9855.field_52419.containsKey(string2)) {
-												this.setBlock(jxxxxxxxxxx, (Dynamic<?>)ChunkPalettedStorageFix.class_9855.field_52419.get(string2));
+											if (ChunkPalettedStorageFix.Mapping.BANNER_IDS_TO_STATES.containsKey(string2)) {
+												this.setBlock(jxxxxxxxxxx, (Dynamic<?>)ChunkPalettedStorageFix.Mapping.BANNER_IDS_TO_STATES.get(string2));
 											}
 										}
 									}
@@ -466,9 +466,9 @@ public class ChunkPalettedStorageFix extends DataFix {
 		public Dynamic<?> getBlock(int packedLocalPos) {
 			if (packedLocalPos >= 0 && packedLocalPos <= 65535) {
 				ChunkPalettedStorageFix.Section section = this.getSection(packedLocalPos);
-				return section == null ? ChunkPalettedStorageFix.class_9855.field_52420 : section.getBlock(packedLocalPos & 4095);
+				return section == null ? ChunkPalettedStorageFix.Mapping.AIR_STATE : section.getBlock(packedLocalPos & 4095);
 			} else {
-				return ChunkPalettedStorageFix.class_9855.field_52420;
+				return ChunkPalettedStorageFix.Mapping.AIR_STATE;
 			}
 		}
 
@@ -497,510 +497,398 @@ public class ChunkPalettedStorageFix extends DataFix {
 		}
 	}
 
-	static class Section {
-		private final Int2ObjectBiMap<Dynamic<?>> paletteMap = Int2ObjectBiMap.create(32);
-		private final List<Dynamic<?>> paletteData;
-		private final Dynamic<?> section;
-		private final boolean hasBlocks;
-		final Int2ObjectMap<IntList> inPlaceUpdates = new Int2ObjectLinkedOpenHashMap<>();
-		final IntList innerPositions = new IntArrayList();
-		public final int y;
-		private final Set<Dynamic<?>> seenStates = Sets.newIdentityHashSet();
-		private final int[] states = new int[4096];
-
-		public Section(Dynamic<?> section) {
-			this.paletteData = Lists.<Dynamic<?>>newArrayList();
-			this.section = section;
-			this.y = section.get("Y").asInt(0);
-			this.hasBlocks = section.get("Blocks").result().isPresent();
-		}
-
-		public Dynamic<?> getBlock(int index) {
-			if (index >= 0 && index <= 4095) {
-				Dynamic<?> dynamic = this.paletteMap.get(this.states[index]);
-				return dynamic == null ? ChunkPalettedStorageFix.class_9855.field_52420 : dynamic;
-			} else {
-				return ChunkPalettedStorageFix.class_9855.field_52420;
-			}
-		}
-
-		public void setBlock(int pos, Dynamic<?> dynamic) {
-			if (this.seenStates.add(dynamic)) {
-				this.paletteData.add("%%FILTER_ME%%".equals(ChunkPalettedStorageFix.getName(dynamic)) ? ChunkPalettedStorageFix.class_9855.field_52420 : dynamic);
-			}
-
-			this.states[pos] = ChunkPalettedStorageFix.addTo(this.paletteMap, dynamic);
-		}
-
-		public int visit(int sidesToUpgrade) {
-			if (!this.hasBlocks) {
-				return sidesToUpgrade;
-			} else {
-				ByteBuffer byteBuffer = (ByteBuffer)this.section.get("Blocks").asByteBufferOpt().result().get();
-				ChunkPalettedStorageFix.ChunkNibbleArray chunkNibbleArray = (ChunkPalettedStorageFix.ChunkNibbleArray)this.section
-					.get("Data")
-					.asByteBufferOpt()
-					.map(byteBufferx -> new ChunkPalettedStorageFix.ChunkNibbleArray(DataFixUtils.toArray(byteBufferx)))
-					.result()
-					.orElseGet(ChunkPalettedStorageFix.ChunkNibbleArray::new);
-				ChunkPalettedStorageFix.ChunkNibbleArray chunkNibbleArray2 = (ChunkPalettedStorageFix.ChunkNibbleArray)this.section
-					.get("Add")
-					.asByteBufferOpt()
-					.map(byteBufferx -> new ChunkPalettedStorageFix.ChunkNibbleArray(DataFixUtils.toArray(byteBufferx)))
-					.result()
-					.orElseGet(ChunkPalettedStorageFix.ChunkNibbleArray::new);
-				this.seenStates.add(ChunkPalettedStorageFix.class_9855.field_52420);
-				ChunkPalettedStorageFix.addTo(this.paletteMap, ChunkPalettedStorageFix.class_9855.field_52420);
-				this.paletteData.add(ChunkPalettedStorageFix.class_9855.field_52420);
-
-				for (int i = 0; i < 4096; i++) {
-					int j = i & 15;
-					int k = i >> 8 & 15;
-					int l = i >> 4 & 15;
-					int m = chunkNibbleArray2.get(j, k, l) << 12 | (byteBuffer.get(i) & 255) << 4 | chunkNibbleArray.get(j, k, l);
-					if (ChunkPalettedStorageFix.class_9855.field_52402.get(m >> 4)) {
-						this.addInPlaceUpdate(m >> 4, i);
-					}
-
-					if (ChunkPalettedStorageFix.class_9855.field_52401.get(m >> 4)) {
-						int n = ChunkPalettedStorageFix.getSideToUpgradeFlag(j == 0, j == 15, l == 0, l == 15);
-						if (n == 0) {
-							this.innerPositions.add(i);
-						} else {
-							sidesToUpgrade |= n;
-						}
-					}
-
-					this.setBlock(i, BlockStateFlattening.lookupState(m));
-				}
-
-				return sidesToUpgrade;
-			}
-		}
-
-		private void addInPlaceUpdate(int section, int index) {
-			IntList intList = this.inPlaceUpdates.get(section);
-			if (intList == null) {
-				intList = new IntArrayList();
-				this.inPlaceUpdates.put(section, intList);
-			}
-
-			intList.add(index);
-		}
-
-		public Dynamic<?> transform() {
-			Dynamic<?> dynamic = this.section;
-			if (!this.hasBlocks) {
-				return dynamic;
-			} else {
-				dynamic = dynamic.set("Palette", dynamic.createList(this.paletteData.stream()));
-				int i = Math.max(4, DataFixUtils.ceillog2(this.seenStates.size()));
-				WordPackedArray wordPackedArray = new WordPackedArray(i, 4096);
-
-				for (int j = 0; j < this.states.length; j++) {
-					wordPackedArray.set(j, this.states[j]);
-				}
-
-				dynamic = dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(wordPackedArray.getAlignedArray())));
-				dynamic = dynamic.remove("Blocks");
-				dynamic = dynamic.remove("Data");
-				return dynamic.remove("Add");
-			}
-		}
-	}
-
-	static class class_9855 {
+	static class Mapping {
 		static final BitSet field_52401 = new BitSet(256);
 		static final BitSet field_52402 = new BitSet(256);
-		static final Dynamic<?> field_52403 = FixUtil.createBlockState("minecraft:pumpkin");
-		static final Dynamic<?> field_52404 = FixUtil.createBlockState("minecraft:podzol", Map.of("snowy", "true"));
-		static final Dynamic<?> field_52405 = FixUtil.createBlockState("minecraft:grass_block", Map.of("snowy", "true"));
-		static final Dynamic<?> field_52406 = FixUtil.createBlockState("minecraft:mycelium", Map.of("snowy", "true"));
-		static final Dynamic<?> field_52407 = FixUtil.createBlockState("minecraft:sunflower", Map.of("half", "upper"));
-		static final Dynamic<?> field_52408 = FixUtil.createBlockState("minecraft:lilac", Map.of("half", "upper"));
-		static final Dynamic<?> field_52409 = FixUtil.createBlockState("minecraft:tall_grass", Map.of("half", "upper"));
-		static final Dynamic<?> field_52410 = FixUtil.createBlockState("minecraft:large_fern", Map.of("half", "upper"));
-		static final Dynamic<?> field_52411 = FixUtil.createBlockState("minecraft:rose_bush", Map.of("half", "upper"));
-		static final Dynamic<?> field_52412 = FixUtil.createBlockState("minecraft:peony", Map.of("half", "upper"));
-		static final Map<String, Dynamic<?>> field_52413 = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
-			hashMap.put("minecraft:air0", FixUtil.createBlockState("minecraft:flower_pot"));
-			hashMap.put("minecraft:red_flower0", FixUtil.createBlockState("minecraft:potted_poppy"));
-			hashMap.put("minecraft:red_flower1", FixUtil.createBlockState("minecraft:potted_blue_orchid"));
-			hashMap.put("minecraft:red_flower2", FixUtil.createBlockState("minecraft:potted_allium"));
-			hashMap.put("minecraft:red_flower3", FixUtil.createBlockState("minecraft:potted_azure_bluet"));
-			hashMap.put("minecraft:red_flower4", FixUtil.createBlockState("minecraft:potted_red_tulip"));
-			hashMap.put("minecraft:red_flower5", FixUtil.createBlockState("minecraft:potted_orange_tulip"));
-			hashMap.put("minecraft:red_flower6", FixUtil.createBlockState("minecraft:potted_white_tulip"));
-			hashMap.put("minecraft:red_flower7", FixUtil.createBlockState("minecraft:potted_pink_tulip"));
-			hashMap.put("minecraft:red_flower8", FixUtil.createBlockState("minecraft:potted_oxeye_daisy"));
-			hashMap.put("minecraft:yellow_flower0", FixUtil.createBlockState("minecraft:potted_dandelion"));
-			hashMap.put("minecraft:sapling0", FixUtil.createBlockState("minecraft:potted_oak_sapling"));
-			hashMap.put("minecraft:sapling1", FixUtil.createBlockState("minecraft:potted_spruce_sapling"));
-			hashMap.put("minecraft:sapling2", FixUtil.createBlockState("minecraft:potted_birch_sapling"));
-			hashMap.put("minecraft:sapling3", FixUtil.createBlockState("minecraft:potted_jungle_sapling"));
-			hashMap.put("minecraft:sapling4", FixUtil.createBlockState("minecraft:potted_acacia_sapling"));
-			hashMap.put("minecraft:sapling5", FixUtil.createBlockState("minecraft:potted_dark_oak_sapling"));
-			hashMap.put("minecraft:red_mushroom0", FixUtil.createBlockState("minecraft:potted_red_mushroom"));
-			hashMap.put("minecraft:brown_mushroom0", FixUtil.createBlockState("minecraft:potted_brown_mushroom"));
-			hashMap.put("minecraft:deadbush0", FixUtil.createBlockState("minecraft:potted_dead_bush"));
-			hashMap.put("minecraft:tallgrass2", FixUtil.createBlockState("minecraft:potted_fern"));
-			hashMap.put("minecraft:cactus0", FixUtil.createBlockState("minecraft:potted_cactus"));
+		static final Dynamic<?> PUMPKIN_STATE = FixUtil.createBlockState("minecraft:pumpkin");
+		static final Dynamic<?> SNOWY_PODZOL_STATE = FixUtil.createBlockState("minecraft:podzol", Map.of("snowy", "true"));
+		static final Dynamic<?> SNOWY_GRASS_BLOCK_STATE = FixUtil.createBlockState("minecraft:grass_block", Map.of("snowy", "true"));
+		static final Dynamic<?> SNOWY_MYCELIUM_STATE = FixUtil.createBlockState("minecraft:mycelium", Map.of("snowy", "true"));
+		static final Dynamic<?> UPPER_HALF_SUNFLOWER_STATE = FixUtil.createBlockState("minecraft:sunflower", Map.of("half", "upper"));
+		static final Dynamic<?> UPPER_HALF_LILAC_STATE = FixUtil.createBlockState("minecraft:lilac", Map.of("half", "upper"));
+		static final Dynamic<?> UPPER_HALF_TALL_GRASS_STATE = FixUtil.createBlockState("minecraft:tall_grass", Map.of("half", "upper"));
+		static final Dynamic<?> UPPER_HALF_LARGE_FERN_STATE = FixUtil.createBlockState("minecraft:large_fern", Map.of("half", "upper"));
+		static final Dynamic<?> UPPER_HALF_ROSE_BUSH_STATE = FixUtil.createBlockState("minecraft:rose_bush", Map.of("half", "upper"));
+		static final Dynamic<?> UPPER_HALF_PEONY_STATE = FixUtil.createBlockState("minecraft:peony", Map.of("half", "upper"));
+		static final Map<String, Dynamic<?>> PLANT_TO_FLOWER_POT_STATES = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), map -> {
+			map.put("minecraft:air0", FixUtil.createBlockState("minecraft:flower_pot"));
+			map.put("minecraft:red_flower0", FixUtil.createBlockState("minecraft:potted_poppy"));
+			map.put("minecraft:red_flower1", FixUtil.createBlockState("minecraft:potted_blue_orchid"));
+			map.put("minecraft:red_flower2", FixUtil.createBlockState("minecraft:potted_allium"));
+			map.put("minecraft:red_flower3", FixUtil.createBlockState("minecraft:potted_azure_bluet"));
+			map.put("minecraft:red_flower4", FixUtil.createBlockState("minecraft:potted_red_tulip"));
+			map.put("minecraft:red_flower5", FixUtil.createBlockState("minecraft:potted_orange_tulip"));
+			map.put("minecraft:red_flower6", FixUtil.createBlockState("minecraft:potted_white_tulip"));
+			map.put("minecraft:red_flower7", FixUtil.createBlockState("minecraft:potted_pink_tulip"));
+			map.put("minecraft:red_flower8", FixUtil.createBlockState("minecraft:potted_oxeye_daisy"));
+			map.put("minecraft:yellow_flower0", FixUtil.createBlockState("minecraft:potted_dandelion"));
+			map.put("minecraft:sapling0", FixUtil.createBlockState("minecraft:potted_oak_sapling"));
+			map.put("minecraft:sapling1", FixUtil.createBlockState("minecraft:potted_spruce_sapling"));
+			map.put("minecraft:sapling2", FixUtil.createBlockState("minecraft:potted_birch_sapling"));
+			map.put("minecraft:sapling3", FixUtil.createBlockState("minecraft:potted_jungle_sapling"));
+			map.put("minecraft:sapling4", FixUtil.createBlockState("minecraft:potted_acacia_sapling"));
+			map.put("minecraft:sapling5", FixUtil.createBlockState("minecraft:potted_dark_oak_sapling"));
+			map.put("minecraft:red_mushroom0", FixUtil.createBlockState("minecraft:potted_red_mushroom"));
+			map.put("minecraft:brown_mushroom0", FixUtil.createBlockState("minecraft:potted_brown_mushroom"));
+			map.put("minecraft:deadbush0", FixUtil.createBlockState("minecraft:potted_dead_bush"));
+			map.put("minecraft:tallgrass2", FixUtil.createBlockState("minecraft:potted_fern"));
+			map.put("minecraft:cactus0", FixUtil.createBlockState("minecraft:potted_cactus"));
 		});
-		static final Map<String, Dynamic<?>> field_52414 = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
-			method_61376(hashMap, 0, "skeleton", "skull");
-			method_61376(hashMap, 1, "wither_skeleton", "skull");
-			method_61376(hashMap, 2, "zombie", "head");
-			method_61376(hashMap, 3, "player", "head");
-			method_61376(hashMap, 4, "creeper", "head");
-			method_61376(hashMap, 5, "dragon", "head");
+		static final Map<String, Dynamic<?>> SKULL_IDS_TO_STATES = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), map -> {
+			skull(map, 0, "skeleton", "skull");
+			skull(map, 1, "wither_skeleton", "skull");
+			skull(map, 2, "zombie", "head");
+			skull(map, 3, "player", "head");
+			skull(map, 4, "creeper", "head");
+			skull(map, 5, "dragon", "head");
 		});
-		static final Map<String, Dynamic<?>> field_52415 = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
-			method_61377(hashMap, "oak_door");
-			method_61377(hashMap, "iron_door");
-			method_61377(hashMap, "spruce_door");
-			method_61377(hashMap, "birch_door");
-			method_61377(hashMap, "jungle_door");
-			method_61377(hashMap, "acacia_door");
-			method_61377(hashMap, "dark_oak_door");
+		static final Map<String, Dynamic<?>> DOOR_IDS_TO_STATES = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), map -> {
+			door(map, "oak_door");
+			door(map, "iron_door");
+			door(map, "spruce_door");
+			door(map, "birch_door");
+			door(map, "jungle_door");
+			door(map, "acacia_door");
+			door(map, "dark_oak_door");
 		});
-		static final Map<String, Dynamic<?>> field_52416 = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
+		static final Map<String, Dynamic<?>> NOTE_BLOCK_IDS_TO_STATES = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), map -> {
 			for (int i = 0; i < 26; i++) {
-				hashMap.put("true" + i, FixUtil.createBlockState("minecraft:note_block", Map.of("powered", "true", "note", String.valueOf(i))));
-				hashMap.put("false" + i, FixUtil.createBlockState("minecraft:note_block", Map.of("powered", "false", "note", String.valueOf(i))));
+				map.put("true" + i, FixUtil.createBlockState("minecraft:note_block", Map.of("powered", "true", "note", String.valueOf(i))));
+				map.put("false" + i, FixUtil.createBlockState("minecraft:note_block", Map.of("powered", "false", "note", String.valueOf(i))));
 			}
 		});
-		private static final Int2ObjectMap<String> field_52417 = DataFixUtils.make(new Int2ObjectOpenHashMap<>(), int2ObjectOpenHashMap -> {
-			int2ObjectOpenHashMap.put(0, "white");
-			int2ObjectOpenHashMap.put(1, "orange");
-			int2ObjectOpenHashMap.put(2, "magenta");
-			int2ObjectOpenHashMap.put(3, "light_blue");
-			int2ObjectOpenHashMap.put(4, "yellow");
-			int2ObjectOpenHashMap.put(5, "lime");
-			int2ObjectOpenHashMap.put(6, "pink");
-			int2ObjectOpenHashMap.put(7, "gray");
-			int2ObjectOpenHashMap.put(8, "light_gray");
-			int2ObjectOpenHashMap.put(9, "cyan");
-			int2ObjectOpenHashMap.put(10, "purple");
-			int2ObjectOpenHashMap.put(11, "blue");
-			int2ObjectOpenHashMap.put(12, "brown");
-			int2ObjectOpenHashMap.put(13, "green");
-			int2ObjectOpenHashMap.put(14, "red");
-			int2ObjectOpenHashMap.put(15, "black");
+		private static final Int2ObjectMap<String> COLORS_BY_IDS = DataFixUtils.make(new Int2ObjectOpenHashMap<>(), map -> {
+			map.put(0, "white");
+			map.put(1, "orange");
+			map.put(2, "magenta");
+			map.put(3, "light_blue");
+			map.put(4, "yellow");
+			map.put(5, "lime");
+			map.put(6, "pink");
+			map.put(7, "gray");
+			map.put(8, "light_gray");
+			map.put(9, "cyan");
+			map.put(10, "purple");
+			map.put(11, "blue");
+			map.put(12, "brown");
+			map.put(13, "green");
+			map.put(14, "red");
+			map.put(15, "black");
 		});
-		static final Map<String, Dynamic<?>> field_52418 = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
-			for (Entry<String> entry : field_52417.int2ObjectEntrySet()) {
+		static final Map<String, Dynamic<?>> BED_IDS_TO_STATES = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), map -> {
+			for (Entry<String> entry : COLORS_BY_IDS.int2ObjectEntrySet()) {
 				if (!Objects.equals(entry.getValue(), "red")) {
-					method_61375(hashMap, entry.getIntKey(), (String)entry.getValue());
+					bed(map, entry.getIntKey(), (String)entry.getValue());
 				}
 			}
 		});
-		static final Map<String, Dynamic<?>> field_52419 = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
-			for (Entry<String> entry : field_52417.int2ObjectEntrySet()) {
+		static final Map<String, Dynamic<?>> BANNER_IDS_TO_STATES = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), map -> {
+			for (Entry<String> entry : COLORS_BY_IDS.int2ObjectEntrySet()) {
 				if (!Objects.equals(entry.getValue(), "white")) {
-					method_61379(hashMap, 15 - entry.getIntKey(), (String)entry.getValue());
+					banner(map, 15 - entry.getIntKey(), (String)entry.getValue());
 				}
 			}
 		});
-		static final Dynamic<?> field_52420 = FixUtil.createBlockState("minecraft:air");
+		static final Dynamic<?> AIR_STATE = FixUtil.createBlockState("minecraft:air");
 
-		private class_9855() {
+		private Mapping() {
 		}
 
-		private static void method_61376(Map<String, Dynamic<?>> map, int i, String string, String string2) {
-			map.put(i + "north", FixUtil.createBlockState("minecraft:" + string + "_wall_" + string2, Map.of("facing", "north")));
-			map.put(i + "east", FixUtil.createBlockState("minecraft:" + string + "_wall_" + string2, Map.of("facing", "east")));
-			map.put(i + "south", FixUtil.createBlockState("minecraft:" + string + "_wall_" + string2, Map.of("facing", "south")));
-			map.put(i + "west", FixUtil.createBlockState("minecraft:" + string + "_wall_" + string2, Map.of("facing", "west")));
+		private static void skull(Map<String, Dynamic<?>> map, int id, String entity, String type) {
+			map.put(id + "north", FixUtil.createBlockState("minecraft:" + entity + "_wall_" + type, Map.of("facing", "north")));
+			map.put(id + "east", FixUtil.createBlockState("minecraft:" + entity + "_wall_" + type, Map.of("facing", "east")));
+			map.put(id + "south", FixUtil.createBlockState("minecraft:" + entity + "_wall_" + type, Map.of("facing", "south")));
+			map.put(id + "west", FixUtil.createBlockState("minecraft:" + entity + "_wall_" + type, Map.of("facing", "west")));
 
-			for (int j = 0; j < 16; j++) {
-				map.put("" + i + j, FixUtil.createBlockState("minecraft:" + string + "_" + string2, Map.of("rotation", String.valueOf(j))));
+			for (int i = 0; i < 16; i++) {
+				map.put("" + id + i, FixUtil.createBlockState("minecraft:" + entity + "_" + type, Map.of("rotation", String.valueOf(i))));
 			}
 		}
 
-		private static void method_61377(Map<String, Dynamic<?>> map, String string) {
-			String string2 = "minecraft:" + string;
+		private static void door(Map<String, Dynamic<?>> map, String id) {
+			String string = "minecraft:" + id;
 			map.put(
-				"minecraft:" + string + "eastlowerleftfalsefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "east", "half", "lower", "hinge", "left", "open", "false", "powered", "false"))
+				"minecraft:" + id + "eastlowerleftfalsefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "east", "half", "lower", "hinge", "left", "open", "false", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "eastlowerleftfalsetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "east", "half", "lower", "hinge", "left", "open", "false", "powered", "true"))
+				"minecraft:" + id + "eastlowerleftfalsetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "east", "half", "lower", "hinge", "left", "open", "false", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "eastlowerlefttruefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "east", "half", "lower", "hinge", "left", "open", "true", "powered", "false"))
+				"minecraft:" + id + "eastlowerlefttruefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "east", "half", "lower", "hinge", "left", "open", "true", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "eastlowerlefttruetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "east", "half", "lower", "hinge", "left", "open", "true", "powered", "true"))
+				"minecraft:" + id + "eastlowerlefttruetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "east", "half", "lower", "hinge", "left", "open", "true", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "eastlowerrightfalsefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "east", "half", "lower", "hinge", "right", "open", "false", "powered", "false"))
+				"minecraft:" + id + "eastlowerrightfalsefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "east", "half", "lower", "hinge", "right", "open", "false", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "eastlowerrightfalsetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "east", "half", "lower", "hinge", "right", "open", "false", "powered", "true"))
+				"minecraft:" + id + "eastlowerrightfalsetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "east", "half", "lower", "hinge", "right", "open", "false", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "eastlowerrighttruefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "east", "half", "lower", "hinge", "right", "open", "true", "powered", "false"))
+				"minecraft:" + id + "eastlowerrighttruefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "east", "half", "lower", "hinge", "right", "open", "true", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "eastlowerrighttruetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "east", "half", "lower", "hinge", "right", "open", "true", "powered", "true"))
+				"minecraft:" + id + "eastlowerrighttruetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "east", "half", "lower", "hinge", "right", "open", "true", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "eastupperleftfalsefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "east", "half", "upper", "hinge", "left", "open", "false", "powered", "false"))
+				"minecraft:" + id + "eastupperleftfalsefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "east", "half", "upper", "hinge", "left", "open", "false", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "eastupperleftfalsetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "east", "half", "upper", "hinge", "left", "open", "false", "powered", "true"))
+				"minecraft:" + id + "eastupperleftfalsetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "east", "half", "upper", "hinge", "left", "open", "false", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "eastupperlefttruefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "east", "half", "upper", "hinge", "left", "open", "true", "powered", "false"))
+				"minecraft:" + id + "eastupperlefttruefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "east", "half", "upper", "hinge", "left", "open", "true", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "eastupperlefttruetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "east", "half", "upper", "hinge", "left", "open", "true", "powered", "true"))
+				"minecraft:" + id + "eastupperlefttruetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "east", "half", "upper", "hinge", "left", "open", "true", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "eastupperrightfalsefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "east", "half", "upper", "hinge", "right", "open", "false", "powered", "false"))
+				"minecraft:" + id + "eastupperrightfalsefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "east", "half", "upper", "hinge", "right", "open", "false", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "eastupperrightfalsetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "east", "half", "upper", "hinge", "right", "open", "false", "powered", "true"))
+				"minecraft:" + id + "eastupperrightfalsetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "east", "half", "upper", "hinge", "right", "open", "false", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "eastupperrighttruefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "east", "half", "upper", "hinge", "right", "open", "true", "powered", "false"))
+				"minecraft:" + id + "eastupperrighttruefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "east", "half", "upper", "hinge", "right", "open", "true", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "eastupperrighttruetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "east", "half", "upper", "hinge", "right", "open", "true", "powered", "true"))
+				"minecraft:" + id + "eastupperrighttruetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "east", "half", "upper", "hinge", "right", "open", "true", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "northlowerleftfalsefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "north", "half", "lower", "hinge", "left", "open", "false", "powered", "false"))
+				"minecraft:" + id + "northlowerleftfalsefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "north", "half", "lower", "hinge", "left", "open", "false", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "northlowerleftfalsetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "north", "half", "lower", "hinge", "left", "open", "false", "powered", "true"))
+				"minecraft:" + id + "northlowerleftfalsetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "north", "half", "lower", "hinge", "left", "open", "false", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "northlowerlefttruefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "north", "half", "lower", "hinge", "left", "open", "true", "powered", "false"))
+				"minecraft:" + id + "northlowerlefttruefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "north", "half", "lower", "hinge", "left", "open", "true", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "northlowerlefttruetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "north", "half", "lower", "hinge", "left", "open", "true", "powered", "true"))
+				"minecraft:" + id + "northlowerlefttruetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "north", "half", "lower", "hinge", "left", "open", "true", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "northlowerrightfalsefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "north", "half", "lower", "hinge", "right", "open", "false", "powered", "false"))
+				"minecraft:" + id + "northlowerrightfalsefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "north", "half", "lower", "hinge", "right", "open", "false", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "northlowerrightfalsetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "north", "half", "lower", "hinge", "right", "open", "false", "powered", "true"))
+				"minecraft:" + id + "northlowerrightfalsetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "north", "half", "lower", "hinge", "right", "open", "false", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "northlowerrighttruefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "north", "half", "lower", "hinge", "right", "open", "true", "powered", "false"))
+				"minecraft:" + id + "northlowerrighttruefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "north", "half", "lower", "hinge", "right", "open", "true", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "northlowerrighttruetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "north", "half", "lower", "hinge", "right", "open", "true", "powered", "true"))
+				"minecraft:" + id + "northlowerrighttruetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "north", "half", "lower", "hinge", "right", "open", "true", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "northupperleftfalsefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "north", "half", "upper", "hinge", "left", "open", "false", "powered", "false"))
+				"minecraft:" + id + "northupperleftfalsefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "north", "half", "upper", "hinge", "left", "open", "false", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "northupperleftfalsetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "north", "half", "upper", "hinge", "left", "open", "false", "powered", "true"))
+				"minecraft:" + id + "northupperleftfalsetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "north", "half", "upper", "hinge", "left", "open", "false", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "northupperlefttruefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "north", "half", "upper", "hinge", "left", "open", "true", "powered", "false"))
+				"minecraft:" + id + "northupperlefttruefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "north", "half", "upper", "hinge", "left", "open", "true", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "northupperlefttruetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "north", "half", "upper", "hinge", "left", "open", "true", "powered", "true"))
+				"minecraft:" + id + "northupperlefttruetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "north", "half", "upper", "hinge", "left", "open", "true", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "northupperrightfalsefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "north", "half", "upper", "hinge", "right", "open", "false", "powered", "false"))
+				"minecraft:" + id + "northupperrightfalsefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "north", "half", "upper", "hinge", "right", "open", "false", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "northupperrightfalsetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "north", "half", "upper", "hinge", "right", "open", "false", "powered", "true"))
+				"minecraft:" + id + "northupperrightfalsetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "north", "half", "upper", "hinge", "right", "open", "false", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "northupperrighttruefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "north", "half", "upper", "hinge", "right", "open", "true", "powered", "false"))
+				"minecraft:" + id + "northupperrighttruefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "north", "half", "upper", "hinge", "right", "open", "true", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "northupperrighttruetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "north", "half", "upper", "hinge", "right", "open", "true", "powered", "true"))
+				"minecraft:" + id + "northupperrighttruetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "north", "half", "upper", "hinge", "right", "open", "true", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "southlowerleftfalsefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "south", "half", "lower", "hinge", "left", "open", "false", "powered", "false"))
+				"minecraft:" + id + "southlowerleftfalsefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "south", "half", "lower", "hinge", "left", "open", "false", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "southlowerleftfalsetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "south", "half", "lower", "hinge", "left", "open", "false", "powered", "true"))
+				"minecraft:" + id + "southlowerleftfalsetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "south", "half", "lower", "hinge", "left", "open", "false", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "southlowerlefttruefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "south", "half", "lower", "hinge", "left", "open", "true", "powered", "false"))
+				"minecraft:" + id + "southlowerlefttruefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "south", "half", "lower", "hinge", "left", "open", "true", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "southlowerlefttruetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "south", "half", "lower", "hinge", "left", "open", "true", "powered", "true"))
+				"minecraft:" + id + "southlowerlefttruetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "south", "half", "lower", "hinge", "left", "open", "true", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "southlowerrightfalsefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "south", "half", "lower", "hinge", "right", "open", "false", "powered", "false"))
+				"minecraft:" + id + "southlowerrightfalsefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "south", "half", "lower", "hinge", "right", "open", "false", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "southlowerrightfalsetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "south", "half", "lower", "hinge", "right", "open", "false", "powered", "true"))
+				"minecraft:" + id + "southlowerrightfalsetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "south", "half", "lower", "hinge", "right", "open", "false", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "southlowerrighttruefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "south", "half", "lower", "hinge", "right", "open", "true", "powered", "false"))
+				"minecraft:" + id + "southlowerrighttruefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "south", "half", "lower", "hinge", "right", "open", "true", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "southlowerrighttruetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "south", "half", "lower", "hinge", "right", "open", "true", "powered", "true"))
+				"minecraft:" + id + "southlowerrighttruetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "south", "half", "lower", "hinge", "right", "open", "true", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "southupperleftfalsefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "south", "half", "upper", "hinge", "left", "open", "false", "powered", "false"))
+				"minecraft:" + id + "southupperleftfalsefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "south", "half", "upper", "hinge", "left", "open", "false", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "southupperleftfalsetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "south", "half", "upper", "hinge", "left", "open", "false", "powered", "true"))
+				"minecraft:" + id + "southupperleftfalsetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "south", "half", "upper", "hinge", "left", "open", "false", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "southupperlefttruefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "south", "half", "upper", "hinge", "left", "open", "true", "powered", "false"))
+				"minecraft:" + id + "southupperlefttruefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "south", "half", "upper", "hinge", "left", "open", "true", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "southupperlefttruetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "south", "half", "upper", "hinge", "left", "open", "true", "powered", "true"))
+				"minecraft:" + id + "southupperlefttruetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "south", "half", "upper", "hinge", "left", "open", "true", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "southupperrightfalsefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "south", "half", "upper", "hinge", "right", "open", "false", "powered", "false"))
+				"minecraft:" + id + "southupperrightfalsefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "south", "half", "upper", "hinge", "right", "open", "false", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "southupperrightfalsetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "south", "half", "upper", "hinge", "right", "open", "false", "powered", "true"))
+				"minecraft:" + id + "southupperrightfalsetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "south", "half", "upper", "hinge", "right", "open", "false", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "southupperrighttruefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "south", "half", "upper", "hinge", "right", "open", "true", "powered", "false"))
+				"minecraft:" + id + "southupperrighttruefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "south", "half", "upper", "hinge", "right", "open", "true", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "southupperrighttruetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "south", "half", "upper", "hinge", "right", "open", "true", "powered", "true"))
+				"minecraft:" + id + "southupperrighttruetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "south", "half", "upper", "hinge", "right", "open", "true", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "westlowerleftfalsefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "west", "half", "lower", "hinge", "left", "open", "false", "powered", "false"))
+				"minecraft:" + id + "westlowerleftfalsefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "west", "half", "lower", "hinge", "left", "open", "false", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "westlowerleftfalsetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "west", "half", "lower", "hinge", "left", "open", "false", "powered", "true"))
+				"minecraft:" + id + "westlowerleftfalsetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "west", "half", "lower", "hinge", "left", "open", "false", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "westlowerlefttruefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "west", "half", "lower", "hinge", "left", "open", "true", "powered", "false"))
+				"minecraft:" + id + "westlowerlefttruefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "west", "half", "lower", "hinge", "left", "open", "true", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "westlowerlefttruetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "west", "half", "lower", "hinge", "left", "open", "true", "powered", "true"))
+				"minecraft:" + id + "westlowerlefttruetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "west", "half", "lower", "hinge", "left", "open", "true", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "westlowerrightfalsefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "west", "half", "lower", "hinge", "right", "open", "false", "powered", "false"))
+				"minecraft:" + id + "westlowerrightfalsefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "west", "half", "lower", "hinge", "right", "open", "false", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "westlowerrightfalsetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "west", "half", "lower", "hinge", "right", "open", "false", "powered", "true"))
+				"minecraft:" + id + "westlowerrightfalsetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "west", "half", "lower", "hinge", "right", "open", "false", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "westlowerrighttruefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "west", "half", "lower", "hinge", "right", "open", "true", "powered", "false"))
+				"minecraft:" + id + "westlowerrighttruefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "west", "half", "lower", "hinge", "right", "open", "true", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "westlowerrighttruetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "west", "half", "lower", "hinge", "right", "open", "true", "powered", "true"))
+				"minecraft:" + id + "westlowerrighttruetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "west", "half", "lower", "hinge", "right", "open", "true", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "westupperleftfalsefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "west", "half", "upper", "hinge", "left", "open", "false", "powered", "false"))
+				"minecraft:" + id + "westupperleftfalsefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "west", "half", "upper", "hinge", "left", "open", "false", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "westupperleftfalsetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "west", "half", "upper", "hinge", "left", "open", "false", "powered", "true"))
+				"minecraft:" + id + "westupperleftfalsetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "west", "half", "upper", "hinge", "left", "open", "false", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "westupperlefttruefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "west", "half", "upper", "hinge", "left", "open", "true", "powered", "false"))
+				"minecraft:" + id + "westupperlefttruefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "west", "half", "upper", "hinge", "left", "open", "true", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "westupperlefttruetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "west", "half", "upper", "hinge", "left", "open", "true", "powered", "true"))
+				"minecraft:" + id + "westupperlefttruetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "west", "half", "upper", "hinge", "left", "open", "true", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "westupperrightfalsefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "west", "half", "upper", "hinge", "right", "open", "false", "powered", "false"))
+				"minecraft:" + id + "westupperrightfalsefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "west", "half", "upper", "hinge", "right", "open", "false", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "westupperrightfalsetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "west", "half", "upper", "hinge", "right", "open", "false", "powered", "true"))
+				"minecraft:" + id + "westupperrightfalsetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "west", "half", "upper", "hinge", "right", "open", "false", "powered", "true"))
 			);
 			map.put(
-				"minecraft:" + string + "westupperrighttruefalse",
-				FixUtil.createBlockState(string2, Map.of("facing", "west", "half", "upper", "hinge", "right", "open", "true", "powered", "false"))
+				"minecraft:" + id + "westupperrighttruefalse",
+				FixUtil.createBlockState(string, Map.of("facing", "west", "half", "upper", "hinge", "right", "open", "true", "powered", "false"))
 			);
 			map.put(
-				"minecraft:" + string + "westupperrighttruetrue",
-				FixUtil.createBlockState(string2, Map.of("facing", "west", "half", "upper", "hinge", "right", "open", "true", "powered", "true"))
+				"minecraft:" + id + "westupperrighttruetrue",
+				FixUtil.createBlockState(string, Map.of("facing", "west", "half", "upper", "hinge", "right", "open", "true", "powered", "true"))
 			);
 		}
 
-		private static void method_61375(Map<String, Dynamic<?>> map, int i, String string) {
-			map.put("southfalsefoot" + i, FixUtil.createBlockState("minecraft:" + string + "_bed", Map.of("facing", "south", "occupied", "false", "part", "foot")));
-			map.put("westfalsefoot" + i, FixUtil.createBlockState("minecraft:" + string + "_bed", Map.of("facing", "west", "occupied", "false", "part", "foot")));
-			map.put("northfalsefoot" + i, FixUtil.createBlockState("minecraft:" + string + "_bed", Map.of("facing", "north", "occupied", "false", "part", "foot")));
-			map.put("eastfalsefoot" + i, FixUtil.createBlockState("minecraft:" + string + "_bed", Map.of("facing", "east", "occupied", "false", "part", "foot")));
-			map.put("southfalsehead" + i, FixUtil.createBlockState("minecraft:" + string + "_bed", Map.of("facing", "south", "occupied", "false", "part", "head")));
-			map.put("westfalsehead" + i, FixUtil.createBlockState("minecraft:" + string + "_bed", Map.of("facing", "west", "occupied", "false", "part", "head")));
-			map.put("northfalsehead" + i, FixUtil.createBlockState("minecraft:" + string + "_bed", Map.of("facing", "north", "occupied", "false", "part", "head")));
-			map.put("eastfalsehead" + i, FixUtil.createBlockState("minecraft:" + string + "_bed", Map.of("facing", "east", "occupied", "false", "part", "head")));
-			map.put("southtruehead" + i, FixUtil.createBlockState("minecraft:" + string + "_bed", Map.of("facing", "south", "occupied", "true", "part", "head")));
-			map.put("westtruehead" + i, FixUtil.createBlockState("minecraft:" + string + "_bed", Map.of("facing", "west", "occupied", "true", "part", "head")));
-			map.put("northtruehead" + i, FixUtil.createBlockState("minecraft:" + string + "_bed", Map.of("facing", "north", "occupied", "true", "part", "head")));
-			map.put("easttruehead" + i, FixUtil.createBlockState("minecraft:" + string + "_bed", Map.of("facing", "east", "occupied", "true", "part", "head")));
+		private static void bed(Map<String, Dynamic<?>> map, int id, String color) {
+			map.put("southfalsefoot" + id, FixUtil.createBlockState("minecraft:" + color + "_bed", Map.of("facing", "south", "occupied", "false", "part", "foot")));
+			map.put("westfalsefoot" + id, FixUtil.createBlockState("minecraft:" + color + "_bed", Map.of("facing", "west", "occupied", "false", "part", "foot")));
+			map.put("northfalsefoot" + id, FixUtil.createBlockState("minecraft:" + color + "_bed", Map.of("facing", "north", "occupied", "false", "part", "foot")));
+			map.put("eastfalsefoot" + id, FixUtil.createBlockState("minecraft:" + color + "_bed", Map.of("facing", "east", "occupied", "false", "part", "foot")));
+			map.put("southfalsehead" + id, FixUtil.createBlockState("minecraft:" + color + "_bed", Map.of("facing", "south", "occupied", "false", "part", "head")));
+			map.put("westfalsehead" + id, FixUtil.createBlockState("minecraft:" + color + "_bed", Map.of("facing", "west", "occupied", "false", "part", "head")));
+			map.put("northfalsehead" + id, FixUtil.createBlockState("minecraft:" + color + "_bed", Map.of("facing", "north", "occupied", "false", "part", "head")));
+			map.put("eastfalsehead" + id, FixUtil.createBlockState("minecraft:" + color + "_bed", Map.of("facing", "east", "occupied", "false", "part", "head")));
+			map.put("southtruehead" + id, FixUtil.createBlockState("minecraft:" + color + "_bed", Map.of("facing", "south", "occupied", "true", "part", "head")));
+			map.put("westtruehead" + id, FixUtil.createBlockState("minecraft:" + color + "_bed", Map.of("facing", "west", "occupied", "true", "part", "head")));
+			map.put("northtruehead" + id, FixUtil.createBlockState("minecraft:" + color + "_bed", Map.of("facing", "north", "occupied", "true", "part", "head")));
+			map.put("easttruehead" + id, FixUtil.createBlockState("minecraft:" + color + "_bed", Map.of("facing", "east", "occupied", "true", "part", "head")));
 		}
 
-		private static void method_61379(Map<String, Dynamic<?>> map, int i, String string) {
-			for (int j = 0; j < 16; j++) {
-				map.put(j + "_" + i, FixUtil.createBlockState("minecraft:" + string + "_banner", Map.of("rotation", String.valueOf(j))));
+		private static void banner(Map<String, Dynamic<?>> map, int id, String color) {
+			for (int i = 0; i < 16; i++) {
+				map.put(i + "_" + id, FixUtil.createBlockState("minecraft:" + color + "_banner", Map.of("rotation", String.valueOf(i))));
 			}
 
-			map.put("north_" + i, FixUtil.createBlockState("minecraft:" + string + "_wall_banner", Map.of("facing", "north")));
-			map.put("south_" + i, FixUtil.createBlockState("minecraft:" + string + "_wall_banner", Map.of("facing", "south")));
-			map.put("west_" + i, FixUtil.createBlockState("minecraft:" + string + "_wall_banner", Map.of("facing", "west")));
-			map.put("east_" + i, FixUtil.createBlockState("minecraft:" + string + "_wall_banner", Map.of("facing", "east")));
+			map.put("north_" + id, FixUtil.createBlockState("minecraft:" + color + "_wall_banner", Map.of("facing", "north")));
+			map.put("south_" + id, FixUtil.createBlockState("minecraft:" + color + "_wall_banner", Map.of("facing", "south")));
+			map.put("west_" + id, FixUtil.createBlockState("minecraft:" + color + "_wall_banner", Map.of("facing", "west")));
+			map.put("east_" + id, FixUtil.createBlockState("minecraft:" + color + "_wall_banner", Map.of("facing", "east")));
 		}
 
 		static {
@@ -1064,6 +952,118 @@ public class ChunkPalettedStorageFix extends DataFix {
 			field_52401.set(132);
 			field_52401.set(139);
 			field_52401.set(199);
+		}
+	}
+
+	static class Section {
+		private final Int2ObjectBiMap<Dynamic<?>> paletteMap = Int2ObjectBiMap.create(32);
+		private final List<Dynamic<?>> paletteData;
+		private final Dynamic<?> section;
+		private final boolean hasBlocks;
+		final Int2ObjectMap<IntList> inPlaceUpdates = new Int2ObjectLinkedOpenHashMap<>();
+		final IntList innerPositions = new IntArrayList();
+		public final int y;
+		private final Set<Dynamic<?>> seenStates = Sets.newIdentityHashSet();
+		private final int[] states = new int[4096];
+
+		public Section(Dynamic<?> section) {
+			this.paletteData = Lists.<Dynamic<?>>newArrayList();
+			this.section = section;
+			this.y = section.get("Y").asInt(0);
+			this.hasBlocks = section.get("Blocks").result().isPresent();
+		}
+
+		public Dynamic<?> getBlock(int index) {
+			if (index >= 0 && index <= 4095) {
+				Dynamic<?> dynamic = this.paletteMap.get(this.states[index]);
+				return dynamic == null ? ChunkPalettedStorageFix.Mapping.AIR_STATE : dynamic;
+			} else {
+				return ChunkPalettedStorageFix.Mapping.AIR_STATE;
+			}
+		}
+
+		public void setBlock(int pos, Dynamic<?> dynamic) {
+			if (this.seenStates.add(dynamic)) {
+				this.paletteData.add("%%FILTER_ME%%".equals(ChunkPalettedStorageFix.getName(dynamic)) ? ChunkPalettedStorageFix.Mapping.AIR_STATE : dynamic);
+			}
+
+			this.states[pos] = ChunkPalettedStorageFix.addTo(this.paletteMap, dynamic);
+		}
+
+		public int visit(int sidesToUpgrade) {
+			if (!this.hasBlocks) {
+				return sidesToUpgrade;
+			} else {
+				ByteBuffer byteBuffer = (ByteBuffer)this.section.get("Blocks").asByteBufferOpt().result().get();
+				ChunkPalettedStorageFix.ChunkNibbleArray chunkNibbleArray = (ChunkPalettedStorageFix.ChunkNibbleArray)this.section
+					.get("Data")
+					.asByteBufferOpt()
+					.map(byteBufferx -> new ChunkPalettedStorageFix.ChunkNibbleArray(DataFixUtils.toArray(byteBufferx)))
+					.result()
+					.orElseGet(ChunkPalettedStorageFix.ChunkNibbleArray::new);
+				ChunkPalettedStorageFix.ChunkNibbleArray chunkNibbleArray2 = (ChunkPalettedStorageFix.ChunkNibbleArray)this.section
+					.get("Add")
+					.asByteBufferOpt()
+					.map(byteBufferx -> new ChunkPalettedStorageFix.ChunkNibbleArray(DataFixUtils.toArray(byteBufferx)))
+					.result()
+					.orElseGet(ChunkPalettedStorageFix.ChunkNibbleArray::new);
+				this.seenStates.add(ChunkPalettedStorageFix.Mapping.AIR_STATE);
+				ChunkPalettedStorageFix.addTo(this.paletteMap, ChunkPalettedStorageFix.Mapping.AIR_STATE);
+				this.paletteData.add(ChunkPalettedStorageFix.Mapping.AIR_STATE);
+
+				for (int i = 0; i < 4096; i++) {
+					int j = i & 15;
+					int k = i >> 8 & 15;
+					int l = i >> 4 & 15;
+					int m = chunkNibbleArray2.get(j, k, l) << 12 | (byteBuffer.get(i) & 255) << 4 | chunkNibbleArray.get(j, k, l);
+					if (ChunkPalettedStorageFix.Mapping.field_52402.get(m >> 4)) {
+						this.addInPlaceUpdate(m >> 4, i);
+					}
+
+					if (ChunkPalettedStorageFix.Mapping.field_52401.get(m >> 4)) {
+						int n = ChunkPalettedStorageFix.getSideToUpgradeFlag(j == 0, j == 15, l == 0, l == 15);
+						if (n == 0) {
+							this.innerPositions.add(i);
+						} else {
+							sidesToUpgrade |= n;
+						}
+					}
+
+					this.setBlock(i, BlockStateFlattening.lookupState(m));
+				}
+
+				return sidesToUpgrade;
+			}
+		}
+
+		private void addInPlaceUpdate(int section, int index) {
+			IntList intList = this.inPlaceUpdates.get(section);
+			if (intList == null) {
+				intList = new IntArrayList();
+				this.inPlaceUpdates.put(section, intList);
+			}
+
+			intList.add(index);
+		}
+
+		public Dynamic<?> transform() {
+			Dynamic<?> dynamic = this.section;
+			if (!this.hasBlocks) {
+				return dynamic;
+			} else {
+				dynamic = dynamic.set("Palette", dynamic.createList(this.paletteData.stream()));
+				int i = Math.max(4, DataFixUtils.ceillog2(this.seenStates.size()));
+				WordPackedArray wordPackedArray = new WordPackedArray(i, 4096);
+
+				for (int j = 0; j < this.states.length; j++) {
+					wordPackedArray.set(j, this.states[j]);
+				}
+
+				dynamic = dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(wordPackedArray.getAlignedArray())));
+				dynamic = dynamic.remove("Blocks");
+				dynamic = dynamic.remove("Data");
+				return dynamic.remove("Add");
+			}
 		}
 	}
 }

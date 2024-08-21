@@ -111,6 +111,11 @@ public class FishingBobberEntity extends ProjectileEntity {
 	}
 
 	@Override
+	protected boolean deflectsAgainstWorldBorder() {
+		return true;
+	}
+
+	@Override
 	public void onTrackedDataSet(TrackedData<?> data) {
 		if (HOOK_ENTITY_ID.equals(data)) {
 			int i = this.getDataTracker().get(HOOK_ENTITY_ID);

@@ -15,7 +15,7 @@ public class VanillaPaintingVariantTagProvider extends TagProvider<PaintingVaria
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup lookup) {
+	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.getOrCreateTagBuilder(PaintingVariantTags.PLACEABLE)
 			.add(
 				PaintingVariants.KEBAB,
